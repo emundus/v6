@@ -700,4 +700,5 @@ function delayAct(user_id){
 	setTimeout("document.applicant_form.submit()",10) 
 }
 
+
 </script>

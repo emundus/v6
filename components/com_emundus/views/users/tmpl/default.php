@@ -148,7 +148,12 @@ JHTML::_('behavior.tooltip');
 	var loadingLine = "<?php echo JURI::Base().'media/com_emundus/images/icones/loader-line.gif'?>";
 	$(document).ready(function()
 	                  {
-		                  $('.chzn-select').chosen({width:'75%'});
+
+                          $('#rt-mainbody-surround').children().addClass('mainemundus');
+                          $('#rt-main').children().addClass('mainemundus');
+                          $('#rt-main').children().children().addClass('mainemundus');
+
+                          $('.chzn-select').chosen({width:'75%'});
 		                  $('body').on('hidden.bs.modal', '.modal', function () {
 			                  var itemid = getCookie("application_itemid");
 			                  $('#em-appli-menu .list-group-item#'+itemid).trigger('click');

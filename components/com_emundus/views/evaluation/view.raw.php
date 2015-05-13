@@ -110,8 +110,8 @@ class EmundusViewEvaluation extends JViewLegacy
                 $this->assignRef('fnum_assoc', $evaluation->fnum_assoc);
 
 				// reset filter
-				$filters = @EmundusHelperFiles::resetFilter();
-				$this->assignRef('filters', $filters);
+				//$filters = @EmundusHelperFiles::resetFilter();
+				//$this->assignRef('filters', $filters);
 
 				// get applications files
 				$users = $evaluation->getUsers($cfnum);

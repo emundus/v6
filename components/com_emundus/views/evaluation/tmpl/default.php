@@ -145,6 +145,10 @@ JHTML::_('behavior.tooltip');
 		refreshFilter();
 		reloadActions();
 
+        $('#rt-mainbody-surround').children().addClass('mainemundus');
+        $('#rt-main').children().addClass('mainemundus');
+        $('#rt-main').children().children().addClass('mainemundus');
+        
 		$(document).on("hidden.bs.modal", function (e) {
 		    $(e.target).removeData("bs.modal").find("#basicModal .modal-content").empty();
 		    $('#basicModal .modal-content').replaceWith('<div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><?php echo JText::_("LOADING");?></h4></div><div class="modal-body"><img src="<?php echo JURI::Base(); ?>media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_("CANCEL")?></button></div></div>');

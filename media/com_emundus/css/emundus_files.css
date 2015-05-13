@@ -258,8 +258,8 @@ thead  th:hover
 .em-dimmer
 {
     position:absolute;
-    background-color: rgba(142, 142, 142, 0.67);
-    width: 94%;
+    background-color: rgba(242, 242, 242, 0.67);
+    width: 100%;
     height : 100%;
     z-index: 1000;
 }
@@ -269,7 +269,7 @@ thead  th:hover
     display: block;
     margin: auto;
     position:relative;
-    top:50%;
+    top:10%;
 }
 
 /*
@@ -527,6 +527,6 @@ thead  th:hover
     cursor: pointer;
     background-color: rgba(0, 255, 0, 0.16);
 }
-.rt-container, .rt-grid-12 {
-    width: inherit!important;
+.mainemundus {
+    width: 100% !important;
 }

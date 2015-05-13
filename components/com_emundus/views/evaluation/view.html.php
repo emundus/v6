@@ -18,7 +18,7 @@ jimport( 'joomla.application.component.view');
  * @package    Emundus
  */
  
-class EmundusViewEvaluation extends JView
+class EmundusViewEvaluation extends JViewLegacy
 {
 	var $_user = null;
 	var $_db = null;
