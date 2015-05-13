@@ -1,0 +1,94 @@
+
+/************ HEADER *************/
+#rt-header {
+  background: @firstcolor;
+  border-color: @firstcolor;
+  height: 44px;
+  border-bottom-width: 1px;
+  color: #9F9F9F;
+  margin-bottom: 12px;
+}
+
+/************ CUSTOM MENU ************/
+.gf-menu {
+  background: @firstcolor;
+  border-radius: 8px;
+  list-style: none;
+  margin: 0 15px 0px;
+  display: inline-block;
+  float: right;
+}
+.gf-menu .item{
+  color: @firstcolor;
+}
+.gf-menu .item:hover{
+  color: @firstcolor;
+}
+.gf-menu.l1 > li > .item {
+  font-size: 14px;
+  font-weight: bold;
+}
+.gf-menu.l1 li:hover > .item {
+  color: @firstcolor;
+}
+.gf-menu.l1 li:hover, .gf-menu li.active:hover {
+  background: #e1edfa;
+  color: @firstcolor;
+}
+.gf-menu.l1 > li.active > .item {
+  color: #000000;
+  font-weight: bold;
+}
+#rt-logo-accent, #rt-bottom .rt-grey:hover, #rt-footer .rt-grey:hover, .menustyle-dark .gf-menu.l1 > li.active {
+  background: #e1edfa;
+  color: @firstcolor;
+}
+.gf-menu .dropdown {
+  background: #e1edfa;
+  border: 0px;
+  padding: 0px;
+  box-shadow: 0 0 0 0;
+}
+.gf-menu .dropdown ul li:hover > .item {
+  background-color: @firstcolor;
+  color: #FFFFFF;
+}
+.gf-menu .dropdown ul li.active > .item {
+  background: #002f6b;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+.layout-mode-responsive.gf-menu li.item {
+  color: @firstcolor;
+}
+
+
+/************ SECOND HEADER *************/
+#rt-secondmenu {
+  color: #00316B;
+  background: @firstcolor;
+  width: 100%;
+  min-height: 1px;
+}
+
+
+
+/************ FOOTER *************/
+#rt-footer {
+  background: #FFFFFF;
+  color: #FFFFFF;
+  width: 100%;
+}
+#rt-footer a {
+  color: #414146;
+}
+.footerSU {
+  height: 57px;
+  border-bottom-width: 1px;
+  border-top-width: 1px;
+  border-style: solid;
+  font-family: Arial,Helvetica,sans-serif;
+  font-size: 13px;
+  background-color: @firstcolor;
+  border-color: @firstcolor;
+}
