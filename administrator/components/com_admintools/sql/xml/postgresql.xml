@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema>
+    <!-- Metadata -->
+    <meta>
+        <!-- Supported driver types -->
+        <drivers>
+            <driver>postgres</driver>
+            <driver>postgresql</driver>
+        </drivers>
+    </meta>
+
+    <!-- SQL commands to run on installation and update -->
+    <sql>
+        <!-- Create the #__admintools_acl table if it's missing -->
+        <action table="#__admintools_acl" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE "#__admintools_acl" (
+	"user_id" bigint NOT NULL,
+	"permissions" text,
+	PRIMARY KEY ("user_id")
+);
+            ]]></query>
+        </action>
+
+        <!-- Create the #__admintools_adminiplist table if it's missing -->
+        <action table="#__admintools_adminiplist" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE "#__admintools_adminiplist" (
+	"id" serial NOT NULL,
+	"ip" character varying(255) DEFAULT NULL,
+	"description" character varying(255) DEFAULT NULL,
+	PRIMARY KEY ("id"),
+	CONSTRAINT "#__admintools_adminiplist_ip" UNIQUE ("ip")
+);
+            ]]></query>
+        </action>
+
+        <!-- Create the #__admintools_badwords table if it's missing -->
+        <action table="#__admintools_badwords" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE  "#__admintools_badwords" (
+	"id" serial NOT NULL,
+	"word" character varying(255) DEFAULT NULL,
+	PRIMARY KEY ("id"),
+	CONSTRAINT "#__admintools_badwords_word" UNIQUE ("word")
+);
+            ]]></query>
+        </action>
+
+        <!-- Create the #__admintools_customperms table if it's missing -->
+        <action table="#__admintools_customperms" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE  "#__admintools_customperms" (
+	"id" serial NOT NULL,
+	"path" character varying(255) NOT NULL,
+	"perms" character varying(4) DEFAULT '0644',
+	PRIMARY KEY ("id")
+);
+            ]]></query>
+            <query canfail="1"><![CDATA[
+CREATE INDEX "#__admintools_customperms_path" ON "#__admintools_customperms" ("path");
+            ]]></query>
+        </action>
+
+        <!-- Create the #__admintools_filescache table if it's missing -->
+        <action table="#__admintools_filescache" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE "#__admintools_filescache" (
+	"admintools_filescache_id" serial NOT NULL,
+	"path" character varying(2048) NOT NULL,
+	"filedate" int NOT NULL DEFAULT '0',
+	"filesize" int NOT NULL DEFAULT '0',
+	"data" bytea,
+	"checksum" character varying(32) NOT NULL DEFAULT '',
+	PRIMARY KEY ("admintools_filescache_id")
+);
+            ]]></query>
+        </action>
+
+        <!-- Create the #__admintools_ipautoban table if it's missing -->
+        <action table="#__admintools_ipautoban" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE "#__admintools_ipautoban" (
+	"ip" character varying(255) NOT NULL,
+	"reason" character varying(255) DEFAULT 'other',
+	"until" timestamp without time zone DEFAULT '1970-01-01 00:00:00' NOT NULL,
+	PRIMARY KEY ("ip")
+);
+            ]]></query>
+        </action>
+
+        <!-- Create the #__admintools_ipblock table if it's missing -->
+        <action table="#__admintools_ipblock" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE "#__admintools_ipblock" (
+	"id" serial NOT NULL,
+	"ip" character varying(255) DEFAULT NULL,
+	"description" character varying(255) DEFAULT NULL,
+	PRIMARY KEY ("id"),
+	CONSTRAINT "#__admintools_ipblock_ip" UNIQUE ("ip")
+);
+            ]]></query>
+        </action>
+
+        <!-- Create the #__admintools_log table if it's missing -->
+        <action table="#__admintools_log" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE  "#__admintools_log" (
+	"id" serial NOT NULL,
+	"logdate" timestamp without time zone DEFAULT '1970-01-01 00:00:00' NOT NULL,
+	"ip" character varying(40) DEFAULT NULL,
+	"url" character varying(255) DEFAULT NULL,
+	"reason" character varying(255) DEFAULT 'other',
+	"extradata" text,
+	PRIMARY KEY ("id")
+);
+            ]]></query>
+        </action>
+
+        <!-- Create the #__admintools_redirects table if it's missing -->
+        <action table="#__admintools_redirects" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE "#__admintools_redirects" (
+	"id" serial NOT NULL,
+	"source" character varying(255) DEFAULT NULL,
+	"dest" character varying(255) DEFAULT NULL,
+	"ordering" bigint NOT NULL DEFAULT '0',
+	"published" smallint NOT NULL DEFAULT '1',
+	"keepurlparams" smallint NOT NULL DEFAULT '1',
+	PRIMARY KEY ("id")
+);
+            ]]></query>
+        </action>
+
+        <!-- Create the #__admintools_scanalerts table if it's missing -->
+        <action table="#__admintools_scanalerts" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE "#__admintools_scanalerts" (
+	"admintools_scanalert_id" serial NOT NULL,
+	"path" character varying(2048) NOT NULL,
+	"scan_id" bigint NOT NULL DEFAULT '0',
+	"diff" text,
+	"threat_score" int NOT NULL DEFAULT '0',
+	"acknowledged" smallint NOT NULL DEFAULT '0',
+	PRIMARY KEY ("admintools_scanalert_id")
+);
+            ]]></query>
+        </action>
+
+        <!-- Create the #__admintools_scans table if it's missing -->
+        <action table="#__admintools_scans" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE "#__admintools_scans" (
+	"id" serial NOT NULL,
+	"description" character varying(255) NOT NULL,
+	"comment" text,
+	"backupstart" timestamp without time zone DEFAULT '1970-01-01 00:00:00' NOT NULL,
+	"backupend" timestamp without time zone DEFAULT '1970-01-01 00:00:00' NOT NULL,
+	"status" character varying(10) NOT NULL DEFAULT 'run',
+	"origin" character varying(30) NOT NULL DEFAULT 'backend',
+	"type" character varying(30) NOT NULL DEFAULT 'full',
+	"profile_id" bigint NOT NULL DEFAULT '1',
+	"archivename" text,
+	"absolute_path" text,
+	"multipart" int NOT NULL DEFAULT '0',
+	"tag" character varying(255) DEFAULT NULL,
+	"filesexist" smallint NOT NULL DEFAULT '1',
+	"remote_filename" character varying(1000) DEFAULT NULL,
+	"total_size" bigint NOT NULL DEFAULT '0',
+	PRIMARY KEY ("id")
+);
+            ]]></query>
+            <query canfail="1"><![CDATA[
+CREATE INDEX "#__admintools_scans_idx_fullstatus" ON "#__admintools_scans" ("filesexist", "status");
+            ]]></query>
+            <query canfail="1"><![CDATA[
+CREATE INDEX "#__admintools_scans_idx_stale" ON "#__admintools_scans" ("status", "origin");
+            ]]></query>
+        </action>
+
+        <!-- Create the #__admintools_storage table if it's missing -->
+        <action table="#__admintools_storage" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE "#__admintools_storage" (
+	"key" character varying(255) NOT NULL,
+	"value" text NOT NULL,
+	PRIMARY KEY ("key")
+);
+            ]]></query>
+        </action>
+
+        <!-- Create the #__admintools_wafexceptions table if it's missing -->
+        <action table="#__admintools_wafexceptions" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE "#__admintools_wafexceptions" (
+	"id" serial NOT NULL,
+	"option" character varying(255) DEFAULT NULL,
+	"view" character varying(255) DEFAULT NULL,
+	"query" character varying(255) DEFAULT NULL,
+	PRIMARY KEY ("id")
+);
+            ]]></query>
+        </action>
+
+        <!-- Create the #__admintools_profiles table if it's missing -->
+        <action table="#__admintools_profiles" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE "#__admintools_profiles" (
+	"id" serial NOT NULL,
+	"description" character varying(255) NOT NULL,
+	"configuration" text,
+	"filters" text,
+	PRIMARY KEY ("id")
+);
+            ]]></query>
+        </action>
+
+        <action table="#__admintools_waftemplates" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE "#__admintools_waftemplates" (
+  "admintools_waftemplate_id" serial NOT NULL AUTO_INCREMENT,
+  "reason" character varying(255) NOT NULL,
+  "language" character varying(10) NOT NULL DEFAULT '*',
+  "subject" character varying(255) NOT NULL,
+  "template" text NOT NULL,
+  "enabled" int NOT NULL DEFAULT 1,
+  "created_on" timestamp without time zone DEFAULT '1970-01-01 00:00:00' NOT NULL,
+  "created_by" int NOT NULL DEFAULT '0',
+  "modified_on" timestamp without time zone DEFAULT '1970-01-01 00:00:00' NOT NULL,
+  "modified_by" int NOT NULL DEFAULT '0',
+  PRIMARY KEY ("admintools_waftemplate_id"),
+  UNIQUE KEY "admintools_waftemplate_keylang" ("reason","language")
+) DEFAULT CHARSET=utf8;
+          ]]></query>
+        </action>
+
+        <action table="#__admintools_ipautobanhistory" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE "#__admintools_ipautobanhistory" (
+  "id" serial NOT NULL,
+  "ip" character varying(255) NOT NULL,
+  "reason" character varying(255) DEFAULT 'other',
+  "until" timestamp without time zone DEFAULT NULL,
+  PRIMARY KEY ("id")
+);
+          ]]></query>
+        </action>
+
+        <action table="#__admintools_cookies" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE "#__admintools_cookies" (
+  "series" character varying(255) NOT NULL,
+  "client_hash" character varying(255) NOT NULL,
+  "valid_to" timestamp without time zone DEFAULT '1970-01-01 00:00:00' NOT NULL,
+  PRIMARY KEY ("series")
+);
+          ]]></query>
+        </action>
+
+        <!-- Insert into #__admintools_profiles if id=1 is not there -->
+        <action table="#__admintools_profiles" canfail="1">
+            <condition type="equals" operator="not" value="1"><![CDATA[
+SELECT COUNT(*) FROM "#__admintools_profiles" WHERE "id" = 1;
+            ]]></condition>
+
+            <query><![CDATA[
+INSERT INTO "#__admintools_profiles"
+("id","description", "configuration", "filters") VALUES
+(1,'Default PHP Change Scanner Profile','','');
+            ]]></query>
+        </action>
+
+        <action table="#__admintools_log" canfail="1">
+            <condition type="true"/>
+            <query><![CDATA[
+  CREATE INDEX "idx_admintools_log_reason_logdate" ON "#__admintools_log" ("reason", "logdate");
+              ]]></query>
+        </action>
+
+        <action table="#__admintools_waftemplates" canfail="1">
+            <condition type="equals" value="0"><![CDATA[
+SELECT COUNT(*) FROM `#__admintools_waftemplates`;
+              ]]></condition>
+            <query><![CDATA[
+INSERT INTO "#__admintools_waftemplates" ("admintools_waftemplate_id", "reason", "language", "subject", "template", "enabled", "email_num", "email_numfreq", "email_freq", "created_on", "created_by", "modified_on", "modified_by")
+VALUES
+(NULL, 'all', '*', 'Security exception on [SITENAME]', '<div style=\"background-color: #e0e0e0; padding: 10px 20px;\">\r\n<div style=\"background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;\">\r\n<p>Hello,</p>\r\n<p>We would like to notify you that a security exception was detected on your site, [SITENAME], with the following details:</p>\r\n<p>IP Address: [IP] (IP Lookup: [LOOKUP])<br />Reason: [REASON]</p>\r\n<p>If this kind of security exception repeats itself, please log in to your site\'s back-end and add this IP address to your Admin Tools\'s Web Application Firewall feature in order to completely block the misbehaving user.</p>\r\n<p>Best regards,</p>\r\n<p>The [SITENAME] team</p>\r\n</div>\r\n<p style=\"font-size: x-small; color: #667;\">You are receiving this automatic email message because you have a subscription in <em>[SITENAME]</em>. <span style=\"line-height: 1.3em;\">Do not reply to this email, it\'s sent from an unmonitored email address.</span></p>\r\n</div>\r\n<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeebabackup.com/products/admin-tools.html\">Akeeba AdminTools</a></p>', 1, 5, 1, 'hour', '2014-04-14 14:36:34', 800, '2014-04-14 14:42:38', 800);
+
+              ]]></query>
+        </action>
+    </sql>
+</schema>

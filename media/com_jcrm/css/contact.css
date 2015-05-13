@@ -1,0 +1,196 @@
+.contact
+{
+    position : relative;
+    padding : 0px;
+}
+
+.contact-guests .glyphicon.glyphicon-remove:hover
+{
+    cursor : pointer;
+}
+
+.panel,
+.panel-heading
+{
+    border-radius: 0px !important;
+
+}
+.panel-heading
+{
+    height: 50px !important;
+}
+.panel-body
+{
+    height: 93%;
+}
+
+.contact-main,
+.contact-list,
+.contact-group
+{
+    padding-top: 5px;
+    height: 100%;
+    overflow: auto;
+}
+.panel-body
+{
+    padding: 0px !important;
+}
+
+.panel-heading h3
+{
+    display : inline-block;
+}
+
+.rt-container
+{
+    width: 99% !important;
+}
+
+.rt-container .rt-grid-12
+{
+    width: 100% !important;
+    float : none;
+}
+
+.jcrm-field
+{
+    margin-bottom: 10px;
+}
+
+.form-control
+{
+    height: 35px !important;
+    width: 100% !important;
+    /*border: none !important;
+    box-shadow: none !important;*/
+}
+
+.contact-group,
+.contact-list,
+.contact-view-list
+{
+    list-style: none;
+    margin: 0px 0px 20px 0px !important;
+}
+
+.contact-list-item:hover,
+.contact-group-item:hover
+{
+    background-color: rgba(218, 218, 218, 0.55);
+}
+
+textarea.form-control
+{
+    height: 550px !important;
+}
+
+textarea.form-control.add-contact
+{
+    height: 250px !important;
+}
+
+.contact-group-item,
+.contact-list-item
+{
+    height: 45px !important;
+}
+
+
+.contact-group-item a,
+.contact-list-item a
+{
+    display: inline-block !important;
+    padding: 0px 15px;
+    margin: 0px;
+}
+
+.my-alt-dime
+{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left : 0px;
+    z-index : 2;
+    background: rgba(255, 255, 255, 0.81) url('../images/loader.gif') no-repeat 50% 50%;
+}
+
+.contact-group-item .actions-group-name
+{
+    display: none;
+    margin-left: 5px;
+}
+
+.actions-group-name:hover
+{
+    cursor: pointer;
+}
+
+.group-input
+{
+    width: 65% !important;
+    height : 30px !important;
+}
+
+.contact-group-item:hover .actions-group-name
+{
+    display: inline;
+}
+
+.chosen-choices .default
+{
+    height: 35px !important;
+}
+
+.item-active
+{
+    background-color: lightblue;
+}
+
+.modal-body .row
+{
+    margin: 1% 10% !important;
+}
+
+.contact,
+.main,
+.main-row,
+.panel
+{
+    height : 100% !important;
+}
+
+.actions
+{
+    margin-right: 15px;
+}
+
+.red
+{
+    color: red;
+}
+
+.green
+{
+    color: #008000;
+}
+
+.blue
+{
+    color: deepskyblue;
+}
+
+.glyphicon.red:hover,
+.glyphicon.green:hover
+{
+    cursor: pointer;
+}
+.ct-type
+{
+    text-align: right;
+}
+
+.contact-view-item .col-md-6
+{
+    padding : 0px !important;
+}

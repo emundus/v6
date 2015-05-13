@@ -1,0 +1,11 @@
+/**
+ * @version   4.1.29 March 9, 2015
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
+.rt-block, .rt-pagination {zoom:1;}
+
+/* Typography */
+.rt-pagination .tab {display: inline;}
+.rt-pagination .page-block {display: inline;}

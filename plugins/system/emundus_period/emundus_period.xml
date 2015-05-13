@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="2.5" type="plugin" group="system">
+	<name>System - Check candidature period</name>
+	<author>Décision Publique</author>
+	<creationDate>December 2006</creationDate>
+	<copyright>Copyright (C) 2008 - 2010 Décision Publique</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<authorEmail>admin@decisionpublique.fr</authorEmail>
+	<authorUrl>www.decisionpublique.fr</authorUrl>
+	<version>2.5.0</version>
+	<description>Provides control on candidature period</description>
+	<files>
+		<filename plugin="emundus_period">emundus_period.php</filename>
+		<filename>index.html</filename>
+	</files>
+</extension>

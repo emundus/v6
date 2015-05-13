@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <config>
+        <fields name="params">
+            <fieldset name="dropdown" label="Dropdown Menu Options" addfieldpath="/templates/rt_afterburner2/fields">
+                <field name="dropdown_dropdown_width" type="text" size="10" label="Drop-Down Width (px)" description="width of any dropdown column in px, eg: 400"/>
+            </fieldset>
+        </fields>
+    </config>
+</form>

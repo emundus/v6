@@ -1,0 +1,259 @@
+/************ HEADER *************/
+.search {
+  margin-top: 4px;
+}
+body {
+    color: #000000;
+}
+ #rt-header {
+  background: #002f6b;
+  border-color: #002f6b;
+  height: 44px;
+  border-bottom-width: 1px;
+  color: #9F9F9F;
+  margin-bottom: 12px; 
+}
+#rt-top-surround {
+    color : #000000;
+}
+/************ CUSTOM MENU ************/
+@media(max-width:768px) {
+    .gf-menu-toggle{
+        background: none;
+        top: 10px;
+        right: 10px;
+        left: inherit;
+    }
+    .gf-menu-toggle.active {
+        background: none;
+    }
+    .gf-menu-toggle .icon-bar {
+        background-color: #FFFFFF;
+    }
+}
+.gf-menu l1 top {
+  float: right;
+}
+.gf-menu {
+  background: #00316B;
+  border-radius: 8px;
+  list-style: none;
+  margin: 0 15px 0px;
+  display: inline-block;
+  float: right;
+}
+.gf-menu.l1.emundus {
+  float: left;
+}
+.gf-menu .item{
+  color: #00316B;
+}
+.gf-menu .item:hover{
+  color: #00316B;
+}
+.gf-menu.l1 > li > .item {
+  font-size: 14px;
+  font-weight: bold;
+}
+.gf-menu.l1 li:hover > .item {
+  color: #00316B;
+}
+.gf-menu.l1 li:hover, .gf-menu li.active:hover {
+  background: #e1edfa;
+  color: #00316B;
+}
+.gf-menu.l1 > li.active > .item {
+  color: #000000;
+  font-weight: bold;
+}
+#rt-logo-accent, #rt-bottom .rt-grey:hover, #rt-footer .rt-grey:hover, .menustyle-dark .gf-menu.l1 > li.active {
+  background: #e1edfa;
+  color: #00316B;
+}
+.gf-menu .dropdown {
+  background: #e1edfa;
+  border: 0px;
+  padding: 0px;
+  box-shadow: 0 0 0 0;
+}
+.gf-menu .dropdown ul li:hover > .item {
+    background-color: #00316b;
+    color: #FFFFFF;
+}
+.gf-menu .dropdown ul li.active > .item {
+  background: #002f6b;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+.layout-mode-responsive.gf-menu li.item {
+    color: #00316b;
+}
+.column {
+  width: 280px;
+}
+.rt-block {
+  padding: 0px;
+  margin: 0px;
+  position: relative;
+}
+#rt-top-surround {
+  background: #FFFFFF;
+}
+.button {
+  padding: 6px 15px 6px 15px;
+}
+
+/************ SECOND HEADER *************/
+@media(min-width:768px) {
+    #responsive_menu {
+        display: none;
+    }
+    #second_header {
+        width: 100%;
+        background: #fff;
+        margin: 0;
+    }
+
+    .header-right {
+        float: right;
+        max-width: 430px;
+    }
+
+    .header-right p {
+        font-size: 13px;
+        text-align: right;
+        margin-bottom: 5px;
+    }
+}
+#rt-secondmenu {
+    color: #00316B;
+    background: #00316b;
+    width: 100%;
+    min-height: 1px;
+}
+
+.logo {
+    float: left;
+}
+
+/************ CONTENT MENU *************/
+@media(min-width:768px) {
+    .partenairesSU li {
+        display: inline;
+        padding: 0 0.5em;
+        margin: 0;
+    }
+}
+@media(max-width:768px) {
+    .partenairesSU li {
+        padding: 0;
+        margin: 0;
+    }
+}
+
+/************ FORM LOGIN *************/
+.component-content fieldset {
+  border: 1px solid #d5d5d5;
+  padding: 5px 5px 5px 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px 5px 5px 5px;
+  background: #FCFCFD;
+}
+
+
+/************ CUSTOM FORM *************/
+.form-horizontal .control-label {
+  float: left;
+  width: 300px;
+  padding-top: 5px;
+  text-align: right;
+}
+.form-horizontal .controls {
+  margin-left: 330px;
+}
+
+/******** CORRECTION ICON-DELETE********/
+form.fabrikForm i.icon-delete:before {
+    font-family: fontawesome !important;
+}
+
+
+
+/*********** SIDEBAR *************/
+#rt-sidebar-a {
+    margin: 0 15px 0 8px;
+}
+#rt-sidebar-b {
+    padding: 0;
+    margin: 0 15px 0 8px;
+    position: relative;
+}
+
+
+/******** CUSTOM EMUNDUS *********/
+#attachment_list_mand {
+    width: 100%;
+}
+#attachment_list_opt {
+    width: 100%;
+    float: left;
+}
+.element_home_emundus {
+    text-align: center;
+}
+
+/************ FOOTER *************/
+#rt-footer {
+  background: #FFFFFF;
+  color: #FFFFFF;
+  width: 100%;
+}
+#rt-footer a {
+    color: #414146;
+}
+.footerSU.blue {
+  background: #002f6b;
+  border-color: #002f6b;
+}
+.footerSU {
+  height: 57px;
+  border-bottom-width: 1px;
+  border-top-width: 1px;
+  border-style: solid;
+  font-family: Arial,Helvetica,sans-serif;
+  font-size: 13px;
+}
+.footerSU .content {
+  max-width: 1024px;
+  margin: 0 auto;
+}
+.footerSU .blasonSU {
+  width: 30px;
+  text-align: left;
+  display: inline-block;
+}
+.footerSU .sepSU {
+  width: 1px;
+  margin: 0 8px 0 26px;
+  display: inline-block;
+}
+.footerSU .partenairesSU {
+  max-width: 1047px;
+  display: inline-block;
+}
+.rt-containerbottom {
+  margin: 0 auto;
+  text-align: center;
+  width: 60% !important;
+}
+.notes {
+    color: #002f6b;
+    text-align: center;
+    font-size: 0.8em;
+    line-height: 1.25em;
+}
+
+input {
+    height: inherit!important;
+}

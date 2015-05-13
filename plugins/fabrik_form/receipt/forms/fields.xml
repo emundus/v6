@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-receipt">
+		
+			<field name="ask-receipt" 
+				type="radio"
+				default="0"
+				class="btn-group"
+				description="PLG_FORM_RECEIPT_USERCHOOSESRECEIPT_DESC"
+				label="PLG_FORM_RECEIPT_USERCHOOSESRECEIPT_LABEL"
+				repeat="true">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+			
+			<field name="from_email"
+				type="text"
+				repeat="true"
+				description="PLG_FORM_RECEIPT_FROM_DESC"
+				label="PLG_FORM_RECEIPT_FROM_LABEL" />
+				
+			<field name="receipt_to"
+				type="listfields"
+				addbrackets="true"
+				mode="gui"
+				modefield="field"
+				valueformat="tableelement"
+				description="PLG_FORM_RECEIPT_TO_DESC"
+				label="PLG_FORM_RECEIPT_TO_LABEL"
+				repeat="true"
+				size="30" />
+				  
+			<field name="receipt_subject"
+				type="text"
+				description="PLG_FORM_RECEIPT_TITLE_DESC"
+				label="PLG_FORM_RECEIPT_TITLE_LABEL"
+				repeat="true"
+				size="30" />
+				
+			<field name="receipt_message"
+				type="fabrikeditor"
+				mode="html"
+				width="100"
+				description="PLG_FORM_RECEIPT_MESSAGE_DESC"
+				label="PLG_FORM_RECEIPT_MESSAGE_LABEL"
+				repeat="true" />
+			
+			<field name="receipt_button_label"
+				description="PLG_FORM_RECEIPT_BUTTON_LABEL_DESC"
+				label="PLG_FORM_RECEIPT_BUTTON_LABEL_LABEL"
+				repeat="true"/>
+			
+		</fieldset>
+	</fields>
+</form>

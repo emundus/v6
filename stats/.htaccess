@@ -1,0 +1,7 @@
+AuthUserFile /home/pseappli/www/stats/.htpasswd
+AuthGroupFile /dev/null
+AuthName "Statistiques"
+AuthType Basic
+<Limit GET POST>
+require valid-user
+</Limit>

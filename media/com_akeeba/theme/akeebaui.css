@@ -1,0 +1,917 @@
+/*
+	Akeeba User Interface CSS
+	Copyright (c)2009-2012 Nicholas K. Dionysopoulos <nicholas@dionysopoulos.me>
+	Released under the GNU General Public License, version 3 or later
+*/
+
+/*
+ * Akeeba Backup title icon
+ */
+.icon-48-akeeba { background-image: url(../../../administrator/components/com_akeeba/assets/images/logo-48.png); }
+/*
+ * UI Icons - 32x32
+ */
+.ak-icon { display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden; background: transparent url(../icons/akeeba-ui-32.png) top left no-repeat; margin: 4px auto 6px; }
+.ak-icon-profiles { background-position: 0 0; }
+.ak-icon-configuration { background-position: -32px 0; }
+.ak-icon-backup { background-position: -64px 0; }
+.ak-icon-adminfiles { background-position: -96px 0; }
+.ak-icon-viewlog { background-position: -128px 0; }
+.ak-icon-fsfilter { background-position: -160px 0; }
+.ak-icon-dbfilter { background-position: -192px 0; }
+.ak-icon-extradirs { background-position: -224px 0; }
+.ak-icon-multidb { background-position: -256px 0; }
+.ak-icon-fsrx { background-position: -288px 0; }
+.ak-icon-dbrx { background-position: -320px 0; }
+.ak-icon-extfilter { background-position: -352px 0; }
+.ak-icon-restore { background-position: -384px 0; }
+.ak-icon-view { background-position: -416px 0; }
+.ak-icon-cancel { background-position: -448px 0; }
+.ak-icon-warning { background-position: -480px 0; }
+.ak-icon-ok { background-position: -512px 0; }
+.ak-icon-update { background-position: -544px 0; }
+.ak-icon-confwiz { background-position: -576px 0; }
+.ak-icon-download { background-position: -608px 0; }
+.ak-icon-delete { background-position: -640px 0; }
+.ak-icon-componentparams { background-position: -672px 0; }
+.ak-icon-acl { background-position: -704px 0; }
+.ak-icon-stw { background-position: -736px 0; }
+
+/*
+ * Tooltip support
+ */
+#tooltip {
+	position: absolute;
+	z-index: 3000;
+	border: thin solid black;
+	background-color: #f2f5f7;
+	padding: 5px;
+	font-size: small !important;
+}
+#tooltip h3, #tooltip div { margin: 0; }
+#tooltip div.ui-icon { float: left; margin-top: 0.2em; margin-right: 0.3em; }
+#tooltip h3 { margin: 0px; padding: 0px; font-size: medium !important; }
+div.viewport-bottom {
+	margin-top: 11px;
+}
+#tooltip .tooltip-arrow-up {
+	border-color: transparent transparent black transparent;
+	border-style: solid;
+	border-width: 10px;
+	height:0;
+	width:0;
+	position: absolute;
+	left: 20px;
+	top: -20px;
+}
+#tooltip .tooltip-arrow-up-leftaligned {
+	border-color: transparent transparent black transparent;
+	border-style: solid;
+	border-width: 5px;
+	height:0;
+	width:0;
+	position: absolute;
+	left: 5px;
+	top: -10px;
+}
+
+div.viewport-bottom .tooltip-arrow-up {
+	display: none;
+}
+div.viewport-bottom .url {
+	/** #AED0EA **/
+	border-color: black transparent transparent transparent;
+	border-style: solid;
+	border-width: 10px;
+	height:0;
+	width:0;
+	position: absolute;
+	left: 20px;
+	bottom: -20px;
+}
+
+/**
+ * Custom checkboxes
+ */
+.jquery-safari-checkbox {display: inline; font-size: 16px; line-height: 16px; cursor: pointer; cursor: hand;}
+.jquery-safari-checkbox .mark {display: inline;}
+
+.jquery-safari-checkbox img {vertical-align: middle; width: 16px; height: 16px;}
+.jquery-safari-checkbox img{background: transparent url(images/safari-checkbox.png) no-repeat;}
+
+.jquery-safari-checkbox img{
+	background-position: 0px 0px;
+}
+.jquery-safari-checkbox-hover img{
+	background-position: -16px 0px;
+}
+.jquery-safari-checkbox-checked img{
+	background-position: 0px -16px;
+}
+.jquery-safari-checkbox-checked .jquery-safari-checkbox-hover img {
+	background-position: -16px -16px;
+}
+
+.jquery-safari-checkbox-disabled img{
+	background-position: 0px -32px;
+}
+.jquery-safari-checkbox-checked .jquery-safari-checkbox-disabled img{
+	background-position: 0px -48px;
+}
+
+/*
+ * FTP Directory Browser
+ */
+#ftpBrowserFolderList { padding: 0; margin: 0.5em 0 0 0; width: 95%}
+#ftpBrowserFolderList folder-container { width: 95%; margin: 0; }
+
+/*
+ * Akeeba Buttons
+ */
+.akbutton {
+	display: block;
+	width: 250px;
+	height: 32px;
+	text-decoration: none;
+	padding: 3px;
+	margin: 0.5em;
+}
+
+.akbutton:hover {
+	background-color: #ffffee;
+	text-decoration: none;
+	border: thin solid #3333ff;
+}
+
+.ak-action-button {
+	display: block;
+	height: 32px;
+	margin: 2px 0;
+	text-align: left;
+}
+
+.ak-action-button .ak-icon {
+	display: inline-block;
+	width: 32px;
+	height: 32px;
+	float: left;
+	left: 0px;
+	margin: 0;
+}
+
+.ak-action-button button {
+	margin: 8px 0 0 10px;
+	cursor: pointer;
+}
+
+div.ak_cpanel_icons div.akbutton div.icon {
+	float: left !important;
+	top: 0px !important;
+	margin: 0 !important;
+	font-size: 9pt !important;
+}
+
+.akbutton div.text {
+	display: block;
+	width: 210px;
+	height: 20px;
+	font-size: 14px;
+	text-align: center;
+	margin: 0px;
+	float: right;
+	position: relative;
+	top: -24px;
+}
+
+/*
+ * Control Panel
+ */
+#cpanel {
+	display: block !important;
+}
+
+p.akwarningtitle {
+	font-weight: bold;
+	font-size: xx-large;
+	text-align: center;
+	margin: 0.5em;
+	color: #cc3333;
+}
+
+div.feedrotator {
+	float: left;
+	left: 5%;
+	width: 235px;
+	height: 60px;
+}
+
+div.updateservice {
+	display:block;
+	float: right;
+	right: 5px;
+	width: 100px;
+	height: 60px;
+	font-size: 7pt !important;
+	border: thin solid silver;
+	text-align: center;
+}
+
+div.updateservice:hover {
+	background-color: #ffffff;
+}
+
+div.updateservice .ak-icon {
+	margin: 2px auto 0px;
+}
+
+div.updateservice a, div.updateservice a:hover {
+	text-decoration: none;
+}
+
+div.ak_clr_left {
+	clear: left;
+}
+
+div.ak_clr {
+	clear: both;
+}
+
+div.ak_cpanel_main_container {
+	width: 65%;
+	padding: 0px;
+}
+
+div.ak_cpanel_header {
+	font-size: larger;
+	padding: 2px 5px 5px;
+}
+
+div.ak_cpanel_icons {
+	padding: 4px;
+	margin-bottom: 4px;
+}
+
+div.ak_cpanel_modules {
+	float: right;
+	width: 35%;
+}
+
+div.ak_cpanel_icons div.icon {
+	text-align: center;
+	float: left !important;
+	font-size: 8pt !important;
+	font-weight: normal !important;
+	color: #000000 !important;	
+	background-color: #f0f0f0 !important;
+	border: 1px solid #E5E5E5 !important;
+	width: 108px;
+	height: 97px;
+	-moz-border-radius: 7px;
+	-webkit-border-radius: 7px;
+}
+
+div.ak_cpanel_icons div.icon span {
+	font-family: "Segoe UI", "Arial", Helvetica, sans;
+	font-weight: bold !important;
+	font-size: 8pt !important;
+}
+
+div.content {
+	padding: 2px 5px;
+}
+
+div.content p {
+	text-align: center;
+	font-size: larger;
+	font-weight: bold;
+	padding: 10px 10px 10px 25px;
+}
+
+div.content p.ak_version {
+	font-weight: normal;
+	font-size: 9pt;
+	color: #333333;
+	font-family: Consolas, "Courier New", Courier, monospace;
+	padding: 0px;
+}
+
+p.ok {
+	border: thin solid #008000;
+	background: #aaeeaa;
+	background-image: url(../icons/ok_small.png) !important;
+	background-position: 5px 10px !important;
+	background-repeat: no-repeat !important;
+	padding: 10px 10px 10px 25px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+p.statuswarning {
+	background-image: url(../icons/ok_small.png) !important;
+	background-position: 5px 10px !important;
+	background-repeat: no-repeat !important;
+	padding: 10px 10px 10px 25px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+p.notok {
+	background-image: url(../icons/error_small.png) !important;
+	background-position: 5px 12px !important;
+	background-repeat: no-repeat !important;
+	padding: 10px 10px 10px 25px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+h4.ui-widget-header {
+	padding: 2px;
+	margin: 0px;
+}
+
+div.jpane-slider ul {
+	padding: 0px;
+	margin: 2px;
+	list-style: none;
+}
+
+div.jpane-slider ul li {
+	margin: 0px;
+	padding: 0px;
+}
+
+div.jpane-slider ul li a {
+	display: block;
+	width: 95%;
+	padding: 4px;
+	margin: 4px 2px;
+	border: thin solid #cccccc;
+	background: #faf9f9;
+}
+
+div.jpane-slider ul a:hover {
+	background: #fffff9;
+}
+
+a.severity-low {
+	color: #333333;
+	font-style: italic;
+}
+
+a.severity-medium {
+	color: #cc8833 !important;
+}
+
+a.severity-high {
+	color: red;
+	font-weight: bold;
+}
+
+/*
+ * Configuration page
+ */
+
+div.activeprofile2 {
+	width: 55%;
+	height: 3em;
+	margin: 0.2em auto;
+	text-align: center;
+}
+
+div.akeeba-ui-config-header {
+	margin: 5px 0px !important;
+}
+
+fieldset {
+	display: block;
+	width: 90%;
+	margin: 5px auto;
+}
+
+div.akeeba-ui-optionrow {
+	display: block;
+	width: 100%;
+	height: 100%;
+	margin: 2px 0;
+	clear: both;
+}
+
+fieldset div.akeeba-ui-optionrow label {
+	display: block;
+	float: left;
+	width: 40%;
+	padding: 2px 0 2px 3px;
+	margin: 0 3px 0 0;
+	background-color: #e9e9e9;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	cursor: help;
+}
+
+div.akeeba-ui-slider {
+	display: block;
+	width: 40%;
+	margin-left: 50%;
+}
+
+div.akeeba-ui-slider-label {
+	float: right;
+	width: 8%;
+	height: 1.2em;
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+	text-align: center;
+	color: black;
+	font-weight: bold;
+	font-size: 8pt;
+}
+
+div.akeeba_ui_separator {
+	width: 100%;
+	height: 1px;
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 5px;
+}
+
+.akeeba_bold_label {
+	font-weight: bold;
+	color: #333;
+}
+
+div.akeeba-settings-secured {
+	width: 90%;
+	margin: 0 5% 0.5em 3%;
+	border: thin solid #008000;
+	background: #aaeeaa;
+	background-image: url(../icons/ok_small.png) !important;
+	background-position: 5px 10px !important;
+	background-repeat: no-repeat !important;
+	padding: 10px 10px 10px 25px;
+	font-size: small;
+	font-weight: bold;
+	color: #003300;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+}
+
+div.akeeba-settings-notsecured {
+	width: 90%;
+	margin: 0 5% 0.5em 3%;
+	border: thin solid #800000;
+	background: #eeaaaa;
+	background-image: url(../icons/error_small.png) !important;
+	background-position: 5px 12px !important;
+	background-repeat: no-repeat !important;
+	padding: 10px 10px 10px 25px;
+	font-size: small;
+	font-weight: bold;
+	color: #330000;
+	-moz-border-radius: 10px;
+	border-radius: 10px;	
+}
+
+/**
+ * Backup Now page
+ */
+#backup-progress-pane {
+	width: 100%;
+}
+
+#backup-start {
+	min-width: 200px;
+	padding: 0.2em;
+	cursor: pointer;
+}
+
+table.backup-start-text {
+	background: transparent !important;
+	border: none;
+	font-size: 20px;
+	font-weight: bold;
+	text-align: center;
+	width: 200px;
+	height: 200px;
+	padding: 0px;
+	float:left;
+	position:relative;
+	margin-top: auto;
+	cursor: pointer;
+}
+
+table.backup-start-text, table.backup-start-text tr, table.backup-start-text tr td {
+	background: transparent !important;
+}
+
+#backup-start-sheet {
+	background-color: yellow;
+	display: block;
+	height: 198px;
+	width: 198px;
+	float: left;
+	z-index: 100;
+	top: -199px;
+	left: 1px;
+	position: relative;
+	opacity: 0.3;
+}
+/**
+ * Backup progress
+ */
+#backup-progress-header {
+	font-size: large;
+	padding: 0.1em;
+}
+
+#backup-steps {
+	border: thin solid #333333;
+	padding: 2px;
+	background-color: #f0f0f0;
+	margin: 0.5em;
+}
+
+#backup-steps div {
+	padding: 2px 2px 2px 20px;
+	border-bottom: thin dotted #cccccc;
+	font-size: 14px;
+	height: 17px;
+}
+
+.step-pending {
+	background: #e0e0e0;
+	color: #333333;
+	font-style: italic;
+}
+
+.step-active {
+	background: #f9f966 url(../icons/arrow_small.png) 1px 3px no-repeat;
+}
+
+.step-complete {
+	background: #ccf9cc url(../icons/ok_small.png) 1px 3px no-repeat;
+}
+
+.step-error {
+	background: #ff6666;
+	font-weight: bold;
+}
+
+#backup-status {
+	border: thin solid #333333;
+	padding: 2px;
+	background-color: #f0f0f0;
+	margin: 0.5em;	
+}
+
+#backup-status div {
+	height: 18px;
+	margin: 0 0.3em;
+	color: #000000;
+	font-size: 14px;
+}
+
+#backup-step {
+	font-weight: bold;
+	border-bottom: thin dotted #333333;
+}
+
+#backup-substep {
+	font-style: italic;
+	color: #000066 !important;
+}
+
+#response-timer {
+	display: block;
+	height: 10px;
+	margin: 5px 0.5em;
+	/* border: thin solid #0080c0; */
+}
+
+#response-timer div.color-overlay {
+	display: none;
+	/*
+	display: block;
+	height: 10px;
+	width: 1px;
+	background-color: #009900;
+	margin: 0;
+	padding: 0;
+	float: left;
+	z-index: 10;
+	top: -11px;
+	position: relative;
+	*/
+}
+
+#response-timer div.text {
+	display: block;
+	overflow: hidden;
+	width: 98%;
+	margin: 0 1% 0 0;
+	height: 10px;
+	float: left;
+	top: -12px;
+	position: relative;
+	font-size: 9px;
+	background-color: transparent;
+	text-align: center;
+	font-weight: bold;
+}
+
+#akeeba-confwiz #response-timer div.text {
+	display: block;
+	overflow: hidden;
+	width: 98%;
+	margin: 25px 1% 0 0;
+	height: 10px;
+	float: left;
+	position: relative;
+	font-size: 9px;
+	background-color: transparent;
+	text-align: center;
+	font-weight: bold;
+}
+
+#backup-percentage, #akeeba-confwiz #response-timer, #restoration-progress #response-timer {
+	display: block;
+	height: 25px;
+	margin: 0.2em 0.5em;
+	border: thin solid #0080c0;
+}
+
+#backup-percentage div.color-overlay, #akeeba-confwiz #response-timer div.color-overlay, #restoration-progress div.color-overlay {
+	display: block;
+	float: none;
+	position: relative;
+	top: 0;
+	height: 25px;
+	width: 1px;
+	background-color: #009900;
+	margin: 0;
+	padding: 0;
+	
+}
+
+#backup-percentage div.text, #akeeba-confwiz #response-timer div.text, #restoration-progress div.text {
+	display: block;
+	width: 100%;
+	height: 18px;
+	float: left;
+	position: relative;
+	top: -22px;
+	font-size: 14px;
+	background-color: transparent;
+	text-align: center;
+}
+
+/**
+ * Backup warnings pane
+ */
+#backup-warnings-panel {
+	margin: 0.5em 0;
+}
+
+#backup-warnings-panel h2 {
+	font-size: large;
+	font-weight: bold;
+	margin: 0;
+	padding: 0.1em;
+}
+
+#warnings-list {
+	background: #ffffee;
+	height: 180px;
+	overflow-y: scroll;
+}
+
+#warnings-list div {
+	background: #ffffcc;
+	border-bottom: thin dotted gray;
+	padding: 2px 0;
+}
+
+/**
+ * Backup error pane
+ */
+#backup-error-message {
+	padding: 1em;
+	margin: 0.5em 1em;
+	font-family: Consolas, "Courier New", Courier, monospace;
+}
+
+/**
+ * Backup files administration page
+ */
+.bufa-ok {
+	color: green;
+	font-weight: bold;
+}
+
+.bufa-obsolete {
+	color: #999;
+	font-style: italic;
+}
+
+.bufa-fail {
+	color: red;
+	font-weight: bold;
+}
+
+.bufa-pending {
+	color: #660;
+	font-style: italic;
+}
+
+.bufa-remote {
+	color: #099;
+	font-weight: bold;
+}
+
+/**
+ * Filesystem filters
+ */
+span.ak-toggle-button:active { border: 1px solid gray; border-bottom: 1px solid silver; border-right: 1px solid silver; }
+span.ak-toggle-button { border: 1px solid silver; border-bottom: 1px solid gray; border-right: 1px solid gray; background-color: #f9f9f6 }
+.ui-state-highlight span.ak-toggle-button { border: 1px solid gray; border-bottom: 1px solid silver; border-right: 1px solid silver; background-color: #ffff00; }
+.ui-state-error span.ak-toggle-button { background-color: red; }
+span.ak-toggle-button-spinning { background-color: #ccc }
+.ui-state-highlight span.ak-toggle-button-spinning { background-color: #ccc }
+.ak-stacked-button { display: inline-block; margin-right: 4px !important; }
+
+span.actionbutton { padding: 0.25em 0.5em; margin: 0 1em 0 0; cursor: pointer; }
+#ak_top_container, #ak_main_container { padding: 4px; }
+#ak_top_container div { text-align: center; }
+#ak_roots_container { border-bottom: thin dashed #666666; padding: 2px 0px 6px 0px; }
+#ak_crumbs_container { padding: 6px 0px 2px 0px; }
+#ak_crumbs_label, #ak_crumbs { display: inline; }
+#ak_crumbs { color: #333; }
+#ak_crumbs span { padding: 1px 3px; cursor: pointer; }
+#ak_main_container { height: 322px; }
+#ak_folder_header, #ak_files_header { height: 18px; }
+#ak_folder_container, #ak_files_container { display: block; width: 48.5%; position: relative; margin: 0; padding: 0px; }
+#ak_folder_container { float: left; }
+#ak_files_container { float: right; }
+#folders, #files { height: 300px; overflow-y: auto; }
+#ak_clr { clear: all; }
+
+.folder-container { background-color: white; height: 18px; padding: 1px; color: #333333; font-weight: normal; border-bottom: 1px solid #d0d0ff; }
+.folder-container span.folder-padding { float: left; cursor: pointer; border: none; margin-right: 4px; width: 16px; height: 16px; display: block; }
+.folder-container span.folder-up span.ui-icon { float: left; }
+.folder-container span.folder-icon-container { float: left; cursor: pointer; border: none; margin-right: 4px; }
+.folder-container span.ui-state-error { cursor: default; }
+.folder-container span.folder-name { padding-left: 4px; cursor: pointer; }
+.folder-container span.folder-name:hover { font-weight: bold; color: #333399; }
+
+.file-container { background-color: white; height: 18px; padding: 1px; color: #333333; font-weight: normal; border-bottom: 1px solid #d0d0ff; }
+.file-container span.file-icon-container { float: left; cursor: pointer; border: none; margin-right: 4px; }
+.file-container span.ui-state-error { cursor: default; }
+.file-container span.file-name { padding-left: 4px; }
+.file-container span.file-clickable { cursor: pointer; }
+.file-container span.file-clickable:hover { font-weight: bold; color: #333399; }
+.file-container span.file-size { display: block; float: right; }
+
+#ak_list_container { padding: 4px; }
+.ak_filter_type { font-weight: bold; }
+.ak_filter_row span.ui-icon { float: left; cursor: pointer; margin-right: 4px; }
+
+#addnewfilter { padding: 0.6em 0; }
+
+/**
+ * Database tables filters
+ */
+#ak_databases_container { padding: 2px 0px 6px 0px; }
+#ak_tables_header { height: 18px; }
+#ak_tables_container { display: block; width: 100%; position: relative; }
+#tables { height: 300px; overflow-y: auto; }
+
+.table-container { background-color: white; height: 18px; padding: 1px; color: #333333; font-weight: normal; border-bottom: 1px solid #d0d0ff; }
+.table-container span.table-icon-container { float: left; cursor: pointer; margin-right: 4px; }
+.table-container span.ui-state-error { cursor: default; }
+.table-container span.table-name { padding-left: 4px; }
+.table-container span.table-icon-noclick { cursor: default; }
+.table-container span.table-icon-small { margin-right: 0px; }
+
+/*
+ * Multiple databases definitions
+ */
+#ak_editor_notifier { display: block; margin: 0.5em; padding: 5px; border: thin solid #666666; background: #ffffff; color: #0080cc; font-weight: bold }
+#ak_editor_notifier span.ui-icon { float: left; margin-right: 6px; }
+#ak_editor_notifier img { margin-right: 8px; }
+
+/**
+ * Live Update
+ */
+
+#akeeba-update-results {
+	text-align: left;
+	width: 90%;
+	margin: 1em auto;
+}
+
+#akeeba-update-results #update-image {
+	float: left;
+	margin: 0.6em 1em 0 0 ;
+}
+
+div.ok {
+	border: thin solid #008000;
+	background: #aaeeaa;
+	padding: 10px 10px 10px 25px;
+}
+
+div.statuswarning {
+	background: #ffe0a8;
+	padding: 10px 10px 10px 25px;
+}
+
+div.notok {
+	background: #ff570f;
+	padding: 10px 10px 10px 25px;
+}
+
+#version_info_table {
+	border: thin solid gray;
+	background: #efefef;
+	padding: 1em;
+	margin: 0 auto;
+}
+#version_info_table td { padding: 3px 10px 3px 0; border-bottom: thin solid #d0d0d0; }
+#version_info_table .label { font-weight: bold; }
+.version { font-weight: bold; color: #333300; }
+.version-status { color: #666666; font-style: italic; }
+.akupdatebutton { display: inline-block; margin: 6px; padding: 4px; height: 24px; cursor: pointer; }
+.requerygfx {
+	display: block;
+	height: 24px;
+	padding: 5px 4px 0px 32px;
+	background: transparent url(../icons/reload.png) top left no-repeat;
+}
+.updategfx {
+	display: block;
+	height: 24px;
+	padding: 5px 4px 0px 32px;
+	background: transparent url(../icons/update.png) top left no-repeat;	
+}
+.updaterwarning { margin: 2em; padding: 1em; font-size: large; }
+
+/**
+ * Restoration
+ */
+#extprogress { border: thin solid gray; background-color: #f0f0f0; border-radius: 5px; -moz-border-radius: 5px; padding: 5px; margin: 5px; }
+#extprogress .extlabel { display: inline-block; min-width: 300px; font-weight: bold; }
+#extprogress .extprogrow { border-bottom: thin solid #e0e0e0 }
+
+/* Live Update status icon */
+.liveupdate-icon-notsupported,.liveupdate-icon-crashed { color: gray; }
+.liveupdate-icon-updates { font-weight: bold; color: red; }
+.liveupdate-icon-noupdates { color: green; }
+
+.postsetup-main { font-weight: bold; font-size: larger; }
+.postsetup-desc { margin-left: 20pt; text-align: justify; font-style: italic; color: #606060 }
+
+/*
+ * Joomla! 1.7 layout workarounds
+ */
+ 
+.akeeba-formstyle-reset label { float: none !important; clear: none !important; display: inline-block !important; }
+.akeeba-formstyle-reset input { float: none !important; }
+.akeeba-formstyle-reset select { float: none !important; }
+.akeeba-formstyle-reset button { float: none !important; }
+
+/*
+ * Changelog
+ */
+h3.akeeba-changelog { border-bottom: 2px solid #333; margin-top: 10pt; font-size: 13pt; }
+ul.akeeba-changelog { list-style-type: none; padding: 7px; margin: 3px; font-size: 10pt; border: thin solid #ccc; background-color: #fefefe; border-radius: 5px; }
+ul.akeeba-changelog li { line-height: 16px; padding: 0; margin: 0 3px 3px; }
+li.akeeba-changelog-added		{ color: green; }
+li.akeeba-changelog-removed		{ color: red; }
+li.akeeba-changelog-changed		{ color: #666; }
+li.akeeba-changelog-important	{ color: #cc8833; }
+li.akeeba-changelog-fixed		{ color: blue; }
+ul.akeeba-changelog span			{ display: inline-block; height: 16px; width: 32px; background: transparent url(../changelog.png) top left no-repeat; margin-right: 4px; }
+li.akeeba-changelog-removed span	{ background-position: 0 -16px; }
+li.akeeba-changelog-changed	span	{ background-position: 0 -32px; }
+li.akeeba-changelog-important span	{ background-position: 0 -64px; }
+li.akeeba-changelog-fixed span		{ background-position: 0 -48px; }
+
+/*
+ * Unwritable output directory warning
+ */
+
+#akeeba-fatal-outputdirectory {
+	margin: 2em;
+	padding: 1em;
+	font-size: 18px;
+	background-color: yellow;
+	border: 2px solid red;
+	border-radius: 10px;
+	box-shadow: 2px 2px 5px black;
+}
+
+/*
+ * Joomla! 1.6 compatibility
+ */
+#akeebagui button, #akeebagui input, #akeebagui select { float: none; }
+#akeebagui button { margin: 0 0 0 5px; }
+#akeeba-container button, #akeeba-container input,
+#akeeba-container select { float: none }

@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="2.5.0">
+	<name>EmundusPanel</name>
+	<author>Decision Publique</author>
+	<creationDate>May 2011</creationDate>
+	<license>GNU/GPL</license>
+	<authorEmail>emundus@decisionpublique.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0</version>
+	<description>Define the home page for differents profiles</description>
+	<files>
+		<filename module="mod_emunduspanel">mod_emunduspanel.php</filename>
+		<filename module="mod_emunduspanel">mod_emunduspanel.xml</filename>
+		<filename module="mod_emunduspanel">index.html</filename>
+		<filename module="mod_emunduspanel">tmpl/default.php</filename>	
+		<filename module="mod_emunduspanel">elements/multilist.php</filename>
+		<folder>language</folder>
+	</files>
+
+	<config>
+		<fields name="params">
+			<fieldset addfieldpath="/modules/mod_emunduspanel/elements" name="basic">
+				<field
+					name="show_profile_link"
+					type="radio"
+					default="0"
+					label="MOD_EMUNDUSPANEL_LINK_LABEL"
+					description="MOD_EMUNDUSPANEL_LINK_DESC">
+					<option
+						value="0">JNo</option>
+					<option
+						value="1">JYes</option>
+				</field>
+				<field name="@spacer" type="spacer" default="&lt;b&gt;Folder to find pictures&lt;b&gt;" label="" description="" />
+				<field name="folder" type="text" default="media/com_emundus/images/icones/" label="Enter the folder for all pictures" description="" size="60" />	
+		
+				<field name="@spacer" type="spacer" default="&lt;b&gt;Guest home page&lt;b&gt;" label="" description="" />
+				<field name="mainmenu" type="multilist" default="" label="Guest menu"/>
+				<field name="mainmenu_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
+				<field name="mainmenu_text" type="radio" default="0" label="Display menu text" description="">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </field>
+		
+				<field name="@spacer" type="spacer" default="&lt;b&gt;System administrator&lt;b&gt;" label="" description="" />
+				<field name="adminmenu" type="multilist" default="" label="adminmenu"/>
+				<field name="adminmenu_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
+				<field name="adminmenu_text" type="radio" default="1" label="Display menu text" description="">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </field>
+                
+				<field name="@spacer" type="spacer" default="&lt;b&gt;Coordinator&lt;b&gt;" label="" description="" />
+				<field name="coordinatormenu" type="multilist" default="" label="coordinatormenu"/>
+				<field name="coordinatormenu_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
+				<field name="coordinatormenu_text" type="radio" default="1" label="Display menu text" description="">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </field>
+		
+				<field name="@spacer" type="spacer" default="&lt;b&gt;Local coordinator&lt;b&gt;" label="" description="" />
+				<field name="localcoordinator_menu" type="multilist" default="" label="localcoordinator_menu"/>
+				<field name="localcoordinator_menu_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
+				<field name="localcoordinator_menu_text" type="radio" default="1" label="Display menu text" description="">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </field>
+		
+				<field name="@spacer" type="spacer" default="&lt;b&gt;Partner&lt;b&gt;" label="" description="" />
+				<field name="partnermenu" type="multilist" default="" label="partnermenu"/>
+				<field name="partnermenu_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
+				<field name="partnermenu_text" type="radio" default="1" label="Display menu text" description="">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </field>
+		
+				<field name="@spacer" type="spacer" default="&lt;b&gt;Selected student&lt;b&gt;" label="" description="" />
+				<field name="menu_profile8" type="multilist" default="" label="menu_profile8"/>
+				<field name="menu_profile8_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
+				<field name="menu_profile8_text" type="radio" default="1" label="Display menu text" description="">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </field>
+						
+				<field name="@spacer" type="spacer" default="&lt;b&gt;Applicant profile 9 &lt;b&gt;" label="" description="" />
+				<field name="menu-profile9" type="multilist" default="" label="menu-profile9"/>
+				<field name="menu-profile9_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
+				<field name="menu-profile9_text" type="radio" default="1" label="Display menu text" description="">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </field>
+                <field name="@spacer" type="spacer" default="&lt;b&gt;Applicant profile 10 &lt;b&gt;" label="" description="" />
+				<field name="menu-profile10" type="multilist" default="" label="menu-profile10"/>
+				<field name="menu-profile10_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
+				<field name="menu-profile10_text" type="radio" default="1" label="Display menu text" description="">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </field>
+
+                <field name="@spacer" type="spacer" default="&lt;b&gt;Applicant profile 12&lt;b&gt;" label="" description="" />
+				<field name="menu-profile12" type="multilist" default="" label="menu-profile12"/>
+				<field name="menu-profile12_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
+				<field name="menu-profile12_text" type="radio" default="1" label="Display menu text" description="">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </field>
+
+                <field name="@spacer" type="spacer" default="&lt;b&gt;Applicant profile 13&lt;b&gt;" label="" description="" />
+				<field name="menu-profile13" type="multilist" default="" label="menu-profile13"/>
+				<field name="menu-profile13_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
+				<field name="menu-profile13_text" type="radio" default="1" label="Display menu text" description="">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

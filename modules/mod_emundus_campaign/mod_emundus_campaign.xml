@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+	<extension type="module" version ="2.5.0" method="upgrade">
+		<name>EmundusCampaign</name>
+		<author>RC</author>
+		<version>1.0.0</version>
+		<description>Module Joomla 2.5</description>
+		<files>
+			<filename>mod_emundus_campaign.xml</filename>
+			<filename module="mod_emundus_campaign">mod_emundus_campaign.php</filename>
+			<filename>index.html</filename>
+			<folder>tmpl</folder>
+			<folder>language</folder>
+		</files>
+		<config>
+			<fields name="params">
+				<fieldset name="basic" label="Options">
+					<field type="checkboxes" name="mod_em_campaign_list_tab" label="MOD_EM_CAMPAIGN_LIST_TAB" description="MOD_EM_CAMPAIGN_LIST_TAB_DESC">
+						<option checked="true" value="current">LIST_CURRENT</option>
+						<option checked="true" value="futur">LIST_FUTUR</option>
+						<option checked="true" value="past">LIST_PAST</option>
+						<option checked="true" value="all">LIST_ALL</option>
+					</field>
+                    <field name="mod_em_campaign_param_tab" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_TAB" description="MOD_EM_CAMPAIGN_PARAM_TAB_DESC" value="1"/>
+                    <field name="mod_em_campaign_param_showprogramme" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_SHOWPROG" description="MOD_EM_CAMPAIGN_PARAM_TAB_SHOWPROG_DESC" default="1"/>
+                    <field name="mod_em_campaign_param_showcampaign" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_SHOWCAMP" description="MOD_EM_CAMPAIGN_PARAM_TAB_SHOWCAMP_DESC" />
+                    <field name="mod_em_campaign_display_groupby" type="checkbox" label="MOD_EM_CAMPAIGN_DISPLAY_GROUPBY" description="MOD_EM_CAMPAIGN_DISPLAY_GROUPBY_DESC" value="1"/>
+                    <field type="list" name="mod_em_campaign_groupby" default="" label="MOD_EM_CAMPAIGN_GROUP" description="MOD_EM_CAMPAIGN_GROUP_DESC">
+                        <option value="month">LIST_MONTH</option>
+                        <option value="program">LIST_PROGRAM</option>
+                    </field>
+					<field type="list" name="mod_em_campaign_orderby" default="" label="MOD_EM_CAMPAIGN_ORDER" description="MOD_EM_CAMPAIGN_ORDER_DESC">
+						<option value="start_date">LIST_DATE_START</option>
+						<option value="end_date">LIST_DATE_END</option>
+					</field>
+					<field type="list" name="mod_em_campaign_order_type" default="" label="MOD_EM_CAMPAIGN_ORDER_TYPE" description="MOD_EM_CAMPAIGN_ORDER_TYPE_DESC">
+						<option value="asc">ASC</option>
+						<option value="desc">DESC</option>
+					</field>
+                    <field type="text" name="mod_em_campaign_itemid" label="MOD_EM_CAMPAIGN_ITEMID" description="MOD_EM_CAMPAIGN_ITEMID_DESC" />
+					<field type="text" name="mod_em_campaign_class" label="MOD_EM_CAMPAIGN_CLASS" description="MOD_EM_CAMPAIGN_CLASS_DESC" default="dropdown-menu"/>
+
+				</fieldset>
+			</fields>
+		</config>
+	</extension>

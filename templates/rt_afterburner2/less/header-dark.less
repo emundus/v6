@@ -1,0 +1,36 @@
+/**
+* @version   $Id: header-dark.less 26100 2015-01-27 14:16:12Z james $
+* @author    RocketTheme http://www.rockettheme.com
+* @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+* @license   http://www.rockettheme.com/legal/license.php RocketTheme Proprietary Use License
+*/
+
+// Top Section -----------------
+@topbackground: 		#252D35;
+@topbackground2:		#314353;
+@toptext:				#C7C7C7;
+@toptitle:				#F2F2F2;
+@topborder:				#495565;
+@topshadow:				#000000;
+
+// Top
+#rt-top-surround {
+	background: @topbackground;
+	color: @toptext;
+	.rt-num {
+		background: @topborder;
+		color: @toptitle;
+	}
+	.promo {
+		> .gantry-width-block  {		   
+			&:hover {
+				#gradient > .vertical(@topbackground, @topbackground2);
+			}
+		}
+	}
+}
+
+// Logo
+.logo-type-afterburner2 #rt-logo {
+	background: url(../images/logo/dark/logo.png) no-repeat;
+}

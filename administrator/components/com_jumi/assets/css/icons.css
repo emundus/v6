@@ -1,0 +1,58 @@
+/**
+ * @version $Id: icons.css 2012-04-05 14:30:25 svn $
+ * @author Simon Poghosyan
+ * @package Joomla
+ * @subpackage sexy_polling
+ * @license GNU/GPL
+**/
+.icon-48-showapplications { background-image: url("../images/icon-48-showapplications.png"); }
+.icon-48-manage { background-image: url("../images/icon-48-showapplications.png"); }
+
+.jumi_bottom_icon {
+	width: 32px;
+	height: 33px;
+	display: block;
+	float: left;
+	margin: 0 6px 0 6px;
+	text-decoration: none !important;
+	outline: none !important;
+}
+
+#jumi_rate {
+	background:transparent url("../images/star.png") left 1px no-repeat;
+}
+#jumi_rate:HOVER {
+	background-position: left top;
+}
+
+#jumi_developer {
+	background:transparent url("../images/2glux.png") left 1px no-repeat;
+}
+#jumi_developer:HOVER {
+	background-position: left top;
+}
+
+#jumi_support {
+	background:transparent url("../images/support.png") left 1px no-repeat;
+}
+#jumi_support:HOVER {
+	background-position: left -32px;
+}
+
+#jumi_homepage {
+	background:transparent url("../images/jumi.png") left 1px no-repeat;
+}
+#jumi_homepage:HOVER {
+	background-position: left top;
+}
+
+#jumi_td {
+	box-shadow: inset 0 0 12px 0 rgba(201, 201, 201, 0.5);border: 1px solid #D6D6D6;border-radius: 6px;height: 40px;position: relative;
+}
+#jumi_td:hover {
+	box-shadow: inset 0 0 16px 0 rgba(201, 201, 201, 0.79);
+}
+
+.pagination {
+	height: 10px !important;
+}

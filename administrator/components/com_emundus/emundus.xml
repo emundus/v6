@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="2.5.0">
+	<name>Emundus</name>
+	<creationDate>August 2010</creationDate>
+	<author>Decision Publique</author>
+	<authorEmail>emundus@decisionpublique.fr</authorEmail>
+	<authorUrl>http://www.emundus.fr</authorUrl>
+	<version>5.0</version>
+	<description>Decision Publique eMundus application component for Joomla!.</description>
+
+	<files folder="site">
+		<filename>index.html</filename>
+		<filename>emundus.php</filename>
+		<filename>controller.php</filename>
+		<filename>views/index.html</filename>
+		<filename>views/checklist/index.html</filename>
+		<filename>views/checklist/view.html.php</filename>
+		<filename>views/checklist/tmpl/default.php</filename>
+		<filename>views/checklist/tmpl/index.html</filename>
+		<filename>views/profile/index.html</filename>
+		<filename>views/profile/view.html.php</filename>
+		<filename>views/profile/tmpl/default.php</filename>
+		<filename>views/profile/tmpl/index.html</filename>
+		<filename>views/trombi/index.html</filename>
+		<filename>views/trombi/view.html.php</filename>
+		<filename>views/trombi/tmpl/default.php</filename>
+		<filename>views/trombi/tmpl/index.html</filename>
+		<filename>views/users/index.html</filename>
+		<filename>views/users/view.html.php</filename>
+		<filename>views/users/tmpl/default.php</filename>
+		<filename>views/users/tmpl/index.html</filename>
+		<filename>style/emundus.css</filename>
+		<filename>style/index.html</filename>
+		<filename>style/images/index.html</filename>
+		<filename>style/images/button_cancel.png</filename>
+		<filename>style/images/button_cancel_black.png</filename>
+		<filename>style/images/button_ok.png</filename>
+		<filename>style/images/clean.png</filename>
+		<filename>style/images/error.png</filename>
+		<filename>style/images/filevalid.png</filename>
+		<filename>style/images/printer.png</filename>
+		<filename>style/images/wait.png</filename>
+		<filename>style/images/fail.png</filename>
+		<filename>style/images/graduated.png</filename>
+		<filename>models/checklist.php</filename>
+		<filename>models/profile.php</filename>
+		<filename>models/trombi.php</filename>
+		<filename>models/users.php</filename>
+		<filename>models/index.html</filename>
+	</files>
+
+	<languages folder="language">
+		<language tag="fr-FR">fr-FR.com_emundus.ini</language>
+		<language tag="en-GB">en-GB.com_emundus.ini</language>
+	</languages>
+
+	<install>
+		<sql>
+			<file charset="utf8" driver="mysql">install.sql</file>
+		</sql>
+	</install>
+
+	<uninstall>
+		<sql>
+			<file charset="utf8" driver="mysql">uninstall.sql</file>
+		</sql>
+	</uninstall>
+
+	<administration>
+		<menu img="../administrator/components/com_emundus/puce.gif">eMundus</menu>
+		<files folder="admin">
+			<filename>emundus.php</filename>
+			<filename>index.html</filename>
+			<filename>install.sql</filename>
+			<filename>uninstall.sql</filename>
+			<filename>logo.png</filename>
+			<filename>puce.gif</filename>
+		</files>
+		<languages folder="language">
+			<language tag="fr-FR">fr-FR.com_emundus.ini</language>
+			<language tag="en-GB">en-GB.com_emundus.ini</language>
+		</languages>
+	</administration>
+
+</extension>

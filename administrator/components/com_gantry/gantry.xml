@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension method="upgrade" type="component" version="1.6">
+    <!-- Note: we can use method="upgrade" to ensure an upgrade regardless of
+     if it is a new install or an actual upgrade; Normal installs will
+     behave like an install but upgrades will be treated appropriately even
+     if the interface doesn't support it properly -->
+    <!-- Generic Metadata -->
+    <name>Gantry</name>
+    <author>RocketTheme, LLC</author>
+    <creationDate>March 9, 2015</creationDate>
+    <copyright>(C) 2005 - 2015 RocketTheme, LLC. All rights reserved.</copyright>
+    <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+    <authorEmail>support@rockettheme.com</authorEmail>
+    <authorUrl>http://www.rockettheme.com</authorUrl>
+    <version>4.1.29</version>
+    <description>Gantry Starting Template for Joomla! v4.1.29</description>
+
+    <!-- Front end file, media and language specification -->
+    <files folder="site">
+        <filename>compatability.php</filename>
+        <filename>controller.php</filename>
+        <filename>index.html</filename>
+        <filename>gantry.php</filename>
+    </files>
+
+    <scriptfile>gantry_install.script.php</scriptfile>
+
+    <administration>
+        <!-- Administrator file and language specification;
+              Note: administrator doesn't have media -->
+        <files folder="admin">
+            <filename>compatability.php</filename>
+            <folder>views</folder>
+            <filename>controller.php</filename>
+            <folder>language</folder>
+            <folder>controllers</folder>
+            <filename>index.html</filename>
+            <filename>gantry.php</filename>
+            <filename>checksums</filename>
+            <folder>models</folder>
+        </files>
+        <languages folder="admin/language">
+            <language tag="en-GB">en-GB/en-GB.com_gantry.ini</language>
+        </languages>
+    </administration>
+</extension>

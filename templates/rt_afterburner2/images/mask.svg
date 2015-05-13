@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" height="0">
+	<mask id="light" maskUnits="objectBoundingBox" maskContentUnits="objectBoundingBox">
+		<linearGradient id="light-gradient" gradientUnits="objectBoundingBox" x2="0" y2="1">
+			<stop stop-color="white" offset="0"/>
+			<stop stop-color="white" offset="0.4"/>
+			<stop stop-color="white" stop-opacity="0.5" offset="1"/>
+		</linearGradient>
+		<rect x="0.0" y="0.0" width="1" height="1" fill="url(#light-gradient)"/>
+	</mask>
+	<mask id="dark" maskUnits="objectBoundingBox" maskContentUnits="objectBoundingBox">
+		<linearGradient id="dark-gradient" gradientUnits="objectBoundingBox" x2="0" y2="1">
+			<stop stop-color="white" offset="0"/>
+			<stop stop-color="white" stop-opacity="0.5" offset="1"/>
+		</linearGradient>
+		<rect x="0.0" y="0.0" width="1" height="1" fill="url(#dark-gradient)"/>
+	</mask>
+</svg>

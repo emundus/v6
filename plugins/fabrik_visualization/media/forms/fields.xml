@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields name="params">
+		<fieldset description="CONNECTIONONLYFABRIKTABLES" name="connection" label="COM_FABRIK_DATA">
+			<field label="Connection" name="media_connection" type="connections"/>
+			
+			<field default="jw" description="PLG_VISUALIZATION_MEDIA_WHICH_PLAYER_DESC" label="PLG_VISUALIZATION_MEDIA_WHICH_PLAYER_LABEL" name="media_which_player" type="list">
+				<option value="jw">JW</option>
+				<option value="xspf">XSPF</option>
+			</field>
+			
+			<field connection_in_repeat="false" label="PLG_VISUALIZATION_MEDIA_TABLE_LABEL" name="media_table" observe="params_media_connection" repeat="0" type="fabriktables"/>
+				
+			<field connection="params_media_connection" connection_in_repeat="false" description="PLG_VISUALIZATION_MEDIA_ELEMENT_DESC" include_calculations="1" label="PLG_VISUALIZATION_MEDIA_ELEMENT_LABEL" name="media_media_elementList" table="params_media_table" type="element"/>
+				
+			<field connection="params_media_connection" connection_in_repeat="false" description="PLG_VISUALIZATION_MEDIA_TITLE_ELEMENT_DESC" include_calculations="1" label="PLG_VISUALIZATION_MEDIA_TITLE_ELEMENT_LABEL" name="media_title_elementList" table="params_media_table" type="element"/>
+				
+			<field connection="params_media_connection" connection_in_repeat="false" description="PLG_VISUALIZATION_MEDIA_IMAGE_ELEMENT_DESC" include_calculations="1" label="PLG_VISUALIZATION_MEDIA_IMAGE_ELEMENT_LABEL" name="media_image_elementList" table="params_media_table" type="element"/>
+				
+			<field connection="params_media_connection" connection_in_repeat="false" description="PLG_VISUALIZATION_MEDIA_URL_ELEMENT_DESC" include_calculations="1" label="PLG_VISUALIZATION_MEDIA_URL_ELEMENT_LABEL" name="media_info_elementList" table="params_media_table" type="element"/>
+				
+			<field connection="params_media_connection" connection_in_repeat="false" description="PLG_VISUALIZATION_MEDIA_NOTE_ELEMENT_DESC" include_calculations="1" label="PLG_VISUALIZATION_MEDIA_NOTE_ELEMENT_LABEL" name="media_note_elementList" table="params_media_table" type="element"/>			
+				
+			<field connection="params_media_connection" connection_in_repeat="false" description="PLG_VISUALIZATION_MEDIA_PUBLISHED_ELEMENT_DESC" include_calculations="1" label="PLG_VISUALIZATION_MEDIA_PUBLISHED_ELEMENT_LABEL" name="media_published_elementList" table="params_media_table" type="element"/>
+			
+			<field default="snel.zip" description="PLG_VISUALIZATION_MEDIA_JW_SKIN_DESC" directory="plugins/fabrik_visualization/media/libs/jw/skins/" hide_default="1" label="PLG_VISUALIZATION_MEDIA_JW_SKIN_LABEL" name="media_jw_skin" type="filelist"/>
+			
+		</fieldset>
+
+		<fieldset name="rest" label="COM_FABRIK_OPTIONS">
+			<field description="PLG_VISUALIZATION_MEDIA_WIDTH_DESC" label="PLG_VISUALIZATION_MEDIA_WIDTH_LABEL" name="media_width" class="input-mini" size="5" type="text"/>
+				
+			<field description="PLG_VISUALIZATION_MEDIA_HEIGHT_DESC" label="PLG_VISUALIZATION_MEDIA_HEIGHT_LABEL" name="media_height" class="input-mini" size="5" type="text"/>
+
+		</fieldset>
+	</fields>
+</form>

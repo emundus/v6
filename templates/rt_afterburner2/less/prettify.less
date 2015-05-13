@@ -1,0 +1,36 @@
+/**
+* @version   $Id: prettify.less 26100 2015-01-27 14:16:12Z james $
+* @author    RocketTheme http://www.rockettheme.com
+* @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+* @license   http://www.rockettheme.com/legal/license.php RocketTheme Proprietary Use License
+*/
+
+.com { color: #93a1a1; }
+.lit { color: #195f91; }
+.pun, .opn, .clo { color: #93a1a1; }
+.fun { color: #dc322f; }
+.str, .atv { color: #dd1144; }
+.kwd, .linenums .tag { color: #1e347b; }
+.typ, .atn, .dec, .var { color: teal; }
+.pln { color: #48484c; }
+
+.prettyprint {
+  padding: 8px;
+  background-color: @bodybackground3;
+  border: 1px solid @bodyborder;
+}
+.prettyprint.linenums {
+  @box-shadow: 40px 0 0 @bodybackground inset, 41px 0 0 @bodyborder inset;
+  .box-shadow(@box-shadow);
+}
+
+ol.linenums {
+  margin: 0 0 0 33px;
+  padding-left: 0;
+}
+ol.linenums li {
+  padding-left: 12px;
+  color: @bodytextlight;
+  line-height: 18px;
+  text-shadow: 0 1px 0 @white;
+}

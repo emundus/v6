@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="2.5.0">
+	<name>EmundusFlow</name>
+	<author>Decision Publique</author>
+	<creationDate>August 2010</creationDate>
+	<license>GNU/GPL</license>
+	<authorEmail>emundus@decisionpublique.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0</version>
+	<description>Gives to the applicant an overview of his application.</description>
+	<files>
+		<filename module="mod_emundusflow">mod_emundusflow.php</filename>
+		<filename module="mod_emundusflow">index.html</filename>
+		<filename module="mod_emundusflow">tmpl/default.php</filename>
+		<filename module="mod_emundusflow">tmpl/index.html</filename>
+		<filename module="mod_emundusflow">style/index.html</filename>
+		<filename module="mod_emundusflow">style/emundus.css</filename>
+		<filename module="mod_emundusflow">style/images/index.html</filename>
+		<filename module="mod_emundusflow">style/images/next.png</filename>
+		<filename module="mod_emundusflow">style/images/ok.png</filename>
+		<filename module="mod_emundusflow">style/images/no.png</filename>
+		<folder>language</folder>
+	</files>
+	<languages folder="language">
+		<language tag="fr-FR">fr-FR.mod_emunduspanel.ini</language>
+		<language tag="en-GB">en-GB.mod_emunduspanel.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+					name="show_programme"
+					type="radio"
+					default="1"
+					label="MOD_EMUNDUSFLOW_SHOW_PROGRAMME_LABEL"
+					description="MOD_EMUNDUSFLOW_SHOW_PROGRAMME_DESC">
+					<option
+						value="1">JSHOW</option>
+					<option
+						value="0">JHIDE</option>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

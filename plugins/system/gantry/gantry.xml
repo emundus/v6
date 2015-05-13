@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<extension group="system" method="upgrade" type="plugin" version="1.6">
+    <name>System - Gantry</name>
+    <author>RocketTheme, LLC</author>
+    <creationDate>March 9, 2015</creationDate>
+    <copyright>(C) 2005 - 2015 RocketTheme, LLC. All rights reserved.</copyright>
+    <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+    <authorEmail>support@rockettheme.com</authorEmail>
+    <authorUrl>http://www.rockettheme.com</authorUrl>
+    <version>4.1.29</version>
+    <description>Gantry System Plugin for Joomla</description>
+    <files>
+        <folder>overrides</folder>
+        <folder>fields</folder>
+        <folder>language</folder>
+        <filename>index.html</filename>
+        <filename plugin="gantry">gantry.php</filename>
+        <filename>functions.php</filename>
+        <filename>checksums</filename>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset addfieldpath="/plugins/system/gantry/fields" label="PLG_SYSTEM_GANTRY_FIELD_LABEL_DEBUG" name="debug">
+                <field description="PLG_SYSTEM_GANTRY_DEBUG_LOG_LOCATION_DESC" label="PLG_SYSTEM_GANTRY_DEBUG_LOG_LOCATION_LABEL" logfile="gantry.php" name="debugloglocation" type="debuglink"/>
+
+                <field default="63" description="PLG_SYSTEM_GANTRY_DEBUG_LOG_LEVEL_DESC" label="PLG_SYSTEM_GANTRY_DEBUG_LOG_LEVEL_LABEL" name="debugloglevel" type="list">
+                    <option value="15">PLG_SYSTEM_GANTRY_DEBUG_LOG_LEVEL_DISABLED</option>
+                    <option value="15">PLG_SYSTEM_GANTRY_DEBUG_LOG_LEVEL_ERRORS_ONLY</option>
+                    <option value="63">PLG_SYSTEM_GANTRY_DEBUG_LOG_LEVEL_NORMAL</option>
+                    <option value="30719">PLG_SYSTEM_GANTRY_DEBUG_LOG_LEVEL_DEBUG</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

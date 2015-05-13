@@ -1,0 +1,94 @@
+<?php
+defined( '_JEXEC' ) or die();
+/**
+ * @version 3: isApplicationSent.php 89 2014-09-03 Benjamin Rivalland
+ * @package Fabrik
+ * @copyright Copyright (C) 2014 D�cision Publique. All rights reserved.
+ * @license GNU/GPL, see LICENSE.php
+ * Joomla! is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ * See COPYRIGHT.php for copyright notices and details.
+ * @description V�rification de l'autorisation de mettre � jour le formulaire
+ */
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+//var_dump($this->formModel->id);
+/**/
+$user = JFactory::getUser();
+$mainframe = JFactory::getApplication();
+$jinput = $mainframe->input;
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
+$id_applicants 			 = $eMConfig->get('id_applicants', '0');
+$applicants 			 = explode(',',$id_applicants);
+
+$fnum = $jinput->get('rowid', null);
+
+if(!EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
+ 	if ($jinput->get('tmpl')=='component') {
+        JHTML::stylesheet( JURI::Base().'media/com_fabrik/css/fabrik.css' );
+        JHTML::stylesheet( JURI::Base().'media/system/css/modal.css' );
+        $doc = JFactory::getDocument();
+        $doc->addScript(JURI::Base()."media/com_fabrik/js/window-min.js");
+        $doc->addScript(JURI::Base()."media/com_fabrik/js/lib/form_placeholder/Form.Placeholder.js");
+        $doc->addScript(JURI::Base()."templates/rt_afterburner2/js/rokmediaqueries.js");
+    }
+    //echo "<script>$('rt-header').remove(); $('rt-footer').remove(); $('gf-menu-toggle').remove();</script>";
+} else{
+    if (($user->fnum != $fnum && $fnum != -1) && !empty($fnum)) {
+        JError::raiseNotice('ERROR', JText::_('ERROR...'));
+        $mainframe->redirect("index.php");
+    }
+}
+
+
+//$registered = $db->loadResult();
+if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){
+	 $sid = $jinput->get('sid', null, 'ALNUM');
+//	$student = JUser::getInstance($sid);
+//	echo '<a href="index.php?option=com_emundus&view=application&sid='.$student_id.'"><h1>'.$student->name.'</h1></a>';
+	echo !empty($rowid)?'<h4 style="text-align:right">#'.$fnum.'</h4>':'';
+/*	JHTML::stylesheet( 'template_css.php?c=29&view=form" type="text/css', JURI::Base().'components/com_fabrik/views/form/tmpl/labels-above/' ); 
+	JHTML::stylesheet( 'fabrik.css', JURI::Base().'media/com_fabrik/css/' );
+
+	$doc = JFactory::getDocument();
+	$doc->addScript(JURI::Base()."media/system/js/calendar.js");
+  	$doc->addScript(JURI::Base()."media/system/js/calendar-setup.js");
+  	$doc->addScript(JURI::Base()."media/system/js/mootools-core.js");
+  	$doc->addScript(JURI::Base()."media/com_fabrik/js/mootools-ext-min.js");
+  	$doc->addScript(JURI::Base()."media/system/js/core.js");
+ 	$doc->addScript(JURI::Base()."media/system/js/mootools-more.js");
+  	$doc->addScript(JURI::Base()."media/com_fabrik/js/lib/head/head.min.js");
+
+
+	$doc->addScript(JURI::Base()."media/com_fabrik/js/icons-min.js");
+	$doc->addScript(JURI::Base()."media/com_fabrik/js/icongen-min.js");
+	$doc->addScript(JURI::Base()."media/com_fabrik/js/fabrik-min.js");
+	$doc->addScript(JURI::Base()."media/com_fabrik/js/encoder-min.js");
+	$doc->addScript(JURI::Base()."media/com_fabrik/js/tips-min.js");
+	$doc->addScript(JURI::Base()."media/com_fabrik/js/window-min.js");
+	$doc->addScript(JURI::Base()."media/com_fabrik/js/lib/Event.mock.js");*/
+}
+else {
+	if (empty($user->fnum) && !isset($user->fnum) && EmundusHelperAccess::isApplicant($user->id))
+		$mainframe->redirect("index.php?option=com_emundus&view=renew_application");
+	
+	if ($jinput->get('view') == 'form' && empty($fnum) && !isset($fnum)) {
+		$itemid = $jinput->get('Itemid');
+		// Si l'application Form a �t� envoy�e par le candidat : affichage vue details
+		if($user->candidature_posted > 0 && $user->candidature_incomplete == 0 && $can_edit_until_deadline == 0) {
+			$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
+		} elseif(strtotime(date("Y-m-d H:m:i")) > strtotime($user->end_date) && !in_array($user->id, $applicants) ) {
+			JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', utf8_encode(JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($user->end_date) ))));
+			$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
+		} else {
+			if (empty($fnum) && !isset($fnum)) {
+				// redirection vers l'enregistrement du dossier
+				$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
+				//$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=user&rowid=-1");
+			}
+		}
+	}
+}
+?>

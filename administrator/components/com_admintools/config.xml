@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <!-- These options must also be added to AdmintoolsModelCpanels::autoMigrate()'s $safeList -->
+    <fieldset
+            name="scan"
+            label="ATOOLS_JCONFIG_SCAN_LABEL"
+            description="ATOOLS_JCONFIG_SCAN_DESC"
+            >
+
+        <field name="scandiffs" type="list" default="0"
+               label="ATOOLS_JCONFIG_SCANDIFF_LABEL"
+               description="ATOOLS_JCONFIG_SCANDIFF_DESC">
+            <option value="0">JNo</option>
+            <option value="1">JYes</option>
+        </field>
+        <field name="scanemail" type="text" default="" size="30"
+               label="ATOOLS_LBL_CONFIG_SCANEMAIL_LABEL"
+               description="ATOOLS_LBL_CONFIG_SCANEMAIL_DESC"
+                />
+
+    </fieldset>
+
+    <fieldset
+            name="backend"
+            label="COM_ADMINTOOLS_JCONFIG_BACKEND_LABEL"
+            description="COM_ADMINTOOLS_JCONFIG_BACKEND_DESC"
+            >
+
+        <field name="showstats" type="list" default="1"
+               label="COM_ADMINTOOLS_JCONFIG_SHOWSTATS_LABEL"
+               description="COM_ADMINTOOLS_JCONFIG_SHOWSTATS_DESC">
+            <option value="0">JNo</option>
+            <option value="1">JYes</option>
+        </field>
+
+        <field name="longconfigpage" type="list" default="0"
+               label="COM_ADMINTOOLS_JCONFIG_LONGCONFIGPAGE_LABEL"
+               description="COM_ADMINTOOLS_JCONFIG_LONGCONFIGPAGE_DESC">
+            <option value="0">JNo</option>
+            <option value="1">JYes</option>
+        </field>
+    </fieldset>
+
+    <fieldset
+            name="updates"
+            label="ATOOLS_JCONFIG_UPDATES_LABEL"
+            description="ATOOLS_JCONFIG_UPDATES_DESC"
+            >
+        <field name="downloadid" type="text" default="" size="30"
+               label="ATOOLS_LBL_CONFIG_DOWNLOADID"
+               description=""/>
+
+      <field name="autoupdateCli" type="list" default="1"
+             label="CONFIG_AUTOUPDATE_SETTINGS_LABEL"
+             description="CONFIG_AUTOUPDATE_SETTINGS_DESC">
+        <option value="1">CONFIG_AUTOUPDATE_NOTIFY_UPDATE</option>
+        <option value="2">CONFIG_AUTOUPDATE_NOTIFY</option>
+        <option value="3">CONFIG_AUTOUPDATE_UPDATE</option>
+      </field>
+
+      <field name="notificationFreq" type="text" default="1"
+             label="CONFIG_NOTIFICATION_FREQ_LABEL" />
+
+      <field name="notificationTime" type="list" default="day"
+             label="CONFIG_NOTIFICATION_TIME_LABEL" >
+        <option value="min">CONFIG_NOTIFICATION_TIME_MIN</option>
+        <option value="hour">CONFIG_NOTIFICATION_TIME_HOUR</option>
+        <option value="day">CONFIG_NOTIFICATION_TIME_DAY</option>
+      </field>
+
+      <field name="notificationEmail" type="text" default=""
+             label="CONFIG_NOTIFICATION_EMAIL_LABEL"
+             description="CONFIG_NOTIFICATION_EMAIL_DESC"/>
+
+      <field name="stats_enabled" type="list" default="1" label="CONFIG_USAGESTATS_LABEL" description="CONFIG_USAGESTATS_DESC">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+      </field>
+    </fieldset>
+
+    <fieldset
+            name="permissions"
+            label="JCONFIG_PERMISSIONS_LABEL"
+            description="JCONFIG_PERMISSIONS_DESC"
+            >
+
+        <field
+                name="rules"
+                type="rules"
+                label="JCONFIG_PERMISSIONS_LABEL"
+                class="inputbox"
+                filter="rules"
+                component="com_admintools"
+                section="component"/>
+    </fieldset>
+</config>

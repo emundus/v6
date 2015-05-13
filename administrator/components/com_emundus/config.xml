@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<fieldset label="COM_EMUNDUS_EVALUATORS" name="evaluators" description="COM_EMUNDUS_EVALUATORS_DESC">
+		<field name="multi_eval" type="radio" default="0" label="ALLOW_MULTIPLE_EVALUATIONS" description="ALLOW_MULTIPLE_EVALUATIONS_DESC">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</field>
+		<!-- <field name="can_evaluators_see_all_applicants" menu="hide" type="list" default="0" label="CAN_EVALUATORS_SEE_ALL_APPLICANTS" description="CAN_EVALUATORS_SEE_ALL_APPLICANTS_DESC">
+			<option value="0">No</option>
+			<option value="1">Can see all applicants</option>
+			<option value="2">Can see and evaluate all applicants</option>
+		</field> -->
+		<field name="evaluators_can_see" menu="hide" type="list" default="0" label="COM_EMUNDUS_EVALUATORS_CAN_SEE" description="COM_EMUNDUS_EVALUATORS_CAN_SEE_DESC">
+			<option value="0">COM_EMUNDUS_NONE</option>
+			<option value="1">COM_EMUNDUS_AFFECTED</option>
+			<option value="2">COM_EMUNDUS_LINKED</option>
+			<option value="3">COM_EMUNDUS_AFFECTED_AND_LINKED</option>
+			<option value="4">COM_EMUNDUS_ALL</option>
+		</field>
+		<field name="evaluators_can_evaluate" menu="hide" type="list" default="0" label="COM_EMUNDUS_EVALUATORS_CAN_EVALUATE" description="COM_EMUNDUS_EVALUATORS_CAN_EVALUATE_DESC">
+			<option value="0">COM_EMUNDUS_NONE</option>
+			<option value="1">COM_EMUNDUS_AFFECTED</option>
+			<option value="2">COM_EMUNDUS_LINKED</option>
+			<option value="3">COM_EMUNDUS_AFFECTED_AND_LINKED</option>
+			<option value="4">COM_EMUNDUS_ALL</option>
+		</field>
+		<field name="evaluators_can_see_other_eval" menu="hide" type="list" default="0" label="COM_EMUNDUS_EVALUATORS_CAN_SEE_OTHER_EVALUATION" description="COM_EMUNDUS_EVALUATORS_CAN_SEE_OTHER_EVALUATION_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="default_actions" type="textarea" default='{
+"1":{"id":1, "c":0, "r":1, "u":0, "d":0},
+"4":{"id":4, "c":1, "r":1, "u":0, "d":0},
+"5":{"id":5, "c":1, "r":1, "u":1, "d":0},
+"6":{"id":6, "c":1, "r":0, "u":0, "d":0},
+"7":{"id":7, "c":1, "r":0, "u":0, "d":0},
+"8":{"id":8, "c":1, "r":0, "u":0, "d":0},
+"9":{"id":9, "c":0, "r":0, "u":0, "d":0},
+"10":{"id":10, "c":1, "r":1, "u":1, "d":0},
+"13":{"id":10, "c":0, "r":1, "u":0, "d":0},
+"14":{"id":14, "c":1, "r":1, "u":1, "d":0}
+}' label="COM_EMUNDUS_EVALUATORS_DEFAULT_ACTIONS" description="COM_EMUNDUS_EVALUATORS_DEFAULT_ACTIONS_DESC" />
+	<field name="show_related_files" type="radio" default="0" label="COM_EMUNDUS_EVALUATORS_SHOW_RELATED_FILES" description="COM_EMUNDUS_EVALUATORS_SHOW_RELATED_FILES_DESC">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+	</field>
+	<field name="nb_months_registration_period_access" type="text" size="2" default="11" label="NB_MONTHS_REGISTRATION_PERIOD_ACCESS" description="NB_MONTHS_REGISTRATION_PERIOD_ACCESS_DESC" />
+		<field name="alert_new_applicant" type="radio" default="0" label="ALERT_NEW_APPLICANT" description="ALERT_NEW_APPLICANT_DESC">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</field>
+		<field name="alert_new_attachment" type="radio" default="0" label="ALERT_NEW_ATTACHMENT" description="ALERT_NEW_ATTACHMENT_DESC">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</field>
+	</fieldset>
+
+	<fieldset label="COM_EMUNDUS_APPLICANTS" name="applicants" description="COM_EMUNDUS_APPLICANTS_DESC">
+		<field name="id_applicants" type="text" size="50" default="" label="ID_APPLICANTS" description="ID_APPLICANTS_DESC" />
+		<field name="applicant_files_path" type="text" size="50" default="images/emundus/files/" label="APPLICANT_FILES_PATH" description="APPLICANT_FILES_PATH_DESC" />
+		<field name="applicant_can_renew" menu="hide" type="list" default="1" label="COM_EMUNDUS_APPLICANT_CAN_RENEW" description="COM_EMUNDUS_APPLICANT_CAN_RENEW_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="applicant_can_renew" menu="hide" type="list" default="0" label="COM_EMUNDUS_APPLICANT_CAN_RENEW" description="COM_EMUNDUS_APPLICANT_CAN_RENEW_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="can_edit_until_deadline" menu="hide" type="list" default="1" label="COM_EMUNDUS_CAN_EDIT_UNTIL_DEADLINE" description="COM_EMUNDUS_CAN_EDIT_UNTIL_DEADLINE_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+	</fieldset>
+	<fieldset label="COM_EMUNDUS_EMAIL_REMINDER" name="email" description="COM_EMUNDUS_EMAIL_REMINDER_DESC">
+		<field name="nb_email_per_batch" type="text" size="3" default="50" label="NB_EMAIL_PER_BATCH" description="NB_EMAIL_PER_BATCH_DESC" />
+		<field name="time_sleep_per_batch" type="text" size="6" default="1000" label="TIME_SLEEP_PER_BATCH" description="TIME_SLEEP_PER_BATCH_DESC" />
+		<field
+			name="spacer1"
+			type="spacer"
+			hr="true"
+			/>
+		<field name="reminder" type="text" default="30" label="NUMBER_OF_DAYS_BETWEEN_EACH_REMIND" description="NUMBER_OF_DAYS_BETWEEN_EACH_REMIND_DESC" />
+		<field name="reminder_mail_id" type="text" default="" label="EMAIL_SENT_TO_APPLICANTS" description="EMAIL_SENT_TO_APPLICANTS_DESC" />
+		<field name="particular_remind" type="text" default="14,7,1" label="PARTICULAR_REMIND" description="PARTICULAR_REMIND_DESC" />
+		<field
+			name="spacer2"
+			type="spacer"
+			hr="true"
+			/>
+		<field name="reminder_element_date_id" type="text" default="" label="DATE_OF_BEGIN_REMIND" description="DATE_OF_BEGIN_REMIND_DESC" />
+		<field name="report_remind_mail_id" type="text" default="16" label="EMAIL_SENT_TO_APPLICANTS" description="EMAIL_SENT_TO_APPLICANTS_DESC" />
+		<field name="remind_days" type="text" default="90,120,150" label="REMIND_DAYS" description="REMIND_DAYS_DESC" /> 
+		<field name="reminder_attanchment_id" type="text" default="" label="ATTACHMENT_EXIST" description="ATTACHMENT_EXIST_DESC" />  
+		<field name="reminder_profile_id" type="text" default="" label="PROFILES_CONCERNED" description="PROFILES_CONCERNED_DESC" /> 
+		<field
+			name="spacer3"
+			type="spacer"
+			hr="true"
+			/>
+		<field name="keyid" type="text" label="Key id for the reminder email" description="REMINDERKEY" /> 
+		<field name="reference_table" type="text" label="Reference table" description="REFERENCE_TABLE" />
+		<field name="reference_field" type="text" label="Reference fiels" description="REFERENCE_FIELD" />
+		<field name="expert_fabrikformid" type="text" default="110" label="Fabrik form ID for expert" description="EXPERT_FIELD" />
+		<field name="expert_document_id" type="text" default="36" label="Document ID to upload in expert Fabrik form" description="EXPERT_DOCUMENT_FIELD" />
+    </fieldset>
+
+	<fieldset addfieldpath="/administrator/components/com_emundus/models/fields" label="COM_EMUNDUS_PDF" name="pdf" description="COM_EMUNDUS_PDF_DESC" >
+        <field name="export_pdf" type="text" size="60" default="" label="Select items for the pdf export"/>
+	</fieldset>
+	
+	<fieldset 
+        name="permissions"
+		description="JCONFIG_PERMISSIONS_DESC"
+		label="JCONFIG_PERMISSIONS_LABEL">
+
+		<field 
+			name="rules" type="rules" component="com_emundus"
+			class="inputbox" filter="rules" validate="rules"
+			label="JCONFIG_PERMISSIONS_LABEL"
+			section="component" />
+	</fieldset>
+</config>

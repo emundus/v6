@@ -1,0 +1,233 @@
+/* SCLogin Theme for sourcecoast.com look - Add new themes to templates/YOUR_TEMPLATE_NAME/html/mod_sclogin/themes directory */
+.sclogin {
+    overflow: visible;
+    text-align: left;
+}
+
+.sclogin .powered-by {
+    clear: both;
+}
+
+#login-modal {
+top:15%;
+}
+
+div.sclogin-social-login a.show,
+div.sclogin-joomla-login a.show,
+div.sclogin-social-connect a.show {
+    margin-bottom: 9px;
+}
+
+div.sclogin-social-connect,
+div.social-login.reconnect:nth-of-type(2) {
+    clear:left;
+}
+
+.sclogin li.connect .social-login.reconnect
+{
+    clear:none;
+}
+
+input#sclogin-username.input-block-level,
+input#sclogin-passwd.input-block-level {
+    height: 30px;
+}
+
+.sclogin a.forgot.btn {
+    height: 54px !important;
+    padding:0;
+}
+
+.sclogin a.forgot.btn i {
+    margin-top: 16px;
+}
+
+#form-sclogin-submitcreate a,
+.sclogin-modal-links a.btn,
+.scuser-menu a.dropdown-toggle {
+    text-decoration: none !important;
+}
+
+#form-sclogin-submitcreate a,
+.scuser-menu a.dropdown-toggle {
+    color: #000000;
+}
+
+.sclogin [class*="span"] {
+    margin-left: 0 !important;
+}
+
+.sclogin .clearfix {
+    clear: both;
+}
+
+#sclogin-username,
+#sclogin-passwd {
+    margin-top: 0px;
+}
+
+/* Vertical Layout */
+
+.sclogin-joomla-login.vertical input#sclogin-username.input-block-level,
+.sclogin-joomla-login.vertical input#sclogin-passwd.input-block-level {
+    width: 87% !important;
+    height:54px !important;
+}
+
+.sclogin-joomla-login.vertical a.forgot.btn {
+    width: 13% !important;
+}
+
+.sclogin-joomla-login.vertical input#sclogin-username.input-append,
+.sclogin-joomla-login.vertical input#sclogin-passwd.input-append {
+    width: 100%;
+}
+
+.sclogin-joomla-login.vertical #form-sclogin-submitcreate .btn {
+    margin-top: 2px !important;
+}
+
+/* Horizontal Layout */
+.sclogin-joomla-login.horizontal .control-group {
+    margin-right: 2px;
+}
+
+/* Modal Links */
+.sclogin-modal-links a {
+    margin-right: 5px;
+}
+
+.sclogin-modal-links a.btn-primary {
+    color: #FFFFFF;
+}
+
+/* Modal */
+.sourcecoast.modal .modal-title
+{
+    font-size: 28px;
+    font-weight: 300;
+    margin-top:0;
+    margin-bottom: 26px;
+    line-height: 40px;
+    color: #333;
+}
+
+.sourcecoast .modal-header {
+    border-bottom: 0px none;
+}
+
+/* Logged in User options */
+.sclogin .flat-list {
+    display: block !important;
+    border: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    margin-top: 1px !important;
+}
+
+.sclogin .logout-button {
+    margin-top: 0px;
+}
+
+.sclogin .sclogout-button {
+    float: left;
+    margin-right: 5px;
+}
+
+.sclogin .logout-link {
+    background-color: transparent;
+    text-decoration: underline;
+    border: none;
+    color: #000000;
+    cursor: pointer;
+}
+
+.sclogin .scuser-menu.dropdown-view {
+    float: left;
+}
+
+.sclogin .scuser-menu.list-view {
+    clear: both;
+}
+
+.sclogin #scprofile-pic,
+.sclogin .sclogin-greeting {
+    margin-bottom: 5px;
+}
+
+.sc-connect-user {
+    clear: both;
+}
+
+.header .sclogin span,
+.header .sclogin-modal-links {
+    padding:0 10px;
+}
+
+.header .sclogin span a,
+.header .sclogin-modal-links a{
+    padding:10px 13px;
+    margin-right:0px;
+}
+
+.sclogin li.connect {
+    margin-top: 5px;
+}
+.sclogin li.connect .reconnect a {
+    padding:0;
+}
+
+.sclogin .bottom {
+    border-top: 1px solid #ddd;
+    padding-top:15px;
+    padding-bottom:0px;
+}
+
+.sclogin .top {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+    padding-top: 0px;
+    padding-bottom: 15px;
+}
+
+.sclogin .side {
+    padding-left: 15px;
+}
+
+.sclogin-social-login .pull-left,
+.social-login.reconnect.pull-left {
+    margin:5px;
+}
+
+.sclogin-greeting,
+.sclogout-button {
+    float:left;
+}
+
+.sclogout-button form {
+    margin:0px;
+}
+
+.sclogout-button .btn {
+    padding:4px 12px;
+    margin-top:0px;
+    margin-left:5px;
+}
+
+.sclogin .nav span{
+    font-size:13px;
+}
+.sclogin .nav li {
+    line-height:43px;
+}
+
+.sourcecoast .btn {
+    border: 0;
+    background-image:none;
+    background-color:#333;
+    padding: 16px 22px;
+}
+
+.sourcecoast .btn-primary{background-color:#46b277}
+
+.sourcecoast .btn-primary:hover{background-color:rgba(70,178,119,0.6)}

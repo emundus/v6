@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_element" method="upgrade" type="plugin" version="2.5">
+
+		<name>autocomplete</name>
+		<author>Benjamin Rivalland</author>
+		<creationDate>Sept 2014</creationDate>
+		<copyright>(C) 2008-2014 decisionpublique.fr</copyright>
+		<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+		<authorEmail>benjamin@decisionpublique.fr</authorEmail>
+		<authorUrl>www.emundus.fr</authorUrl>
+		<version>2.0.0</version>
+		<description>Performs an ajax autocomplete on result data.</description>
+		
+		<files>
+			<filename plugin="autocomplete">autocomplete.php</filename>
+			<filename>autocomplete.js</filename>
+			<filename>index.html</filename>
+			<folder>forms</folder>
+			<folder>language</folder>
+		</files>
+
+</extension>

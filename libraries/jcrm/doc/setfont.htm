@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<TITLE>SetFont</TITLE>
+<LINK TYPE="text/css" REL="stylesheet" HREF="../fpdf.css">
+</HEAD>
+<BODY>
+<H2>SetFont</H2>
+<TT>SetFont(<B>string</B> family [, <B>string</B> style [, <B>float</B> size]])</TT>
+<H4 CLASS='st'>Version</H4>
+1.0
+<H4 CLASS='st'>Description</H4>
+Fixe la police utilisée pour imprimer les chaînes de caractères. Il est obligatoire
+d'appeler cette méthode au moins une fois avant d'imprimer du texte, sinon le document
+résultant ne sera pas valide.
+<BR>
+La police peut être soit une police standard, soit une police ajoutée à l'aide de la méthode
+AddFont(). Les polices standard utilisent l'encodage Windows cp1252 (Europe de l'ouest).
+<BR>
+La méthode peut être appelée avant que la première page ne soit créée et la police est
+conservée de page en page.
+<BR>
+Si vous souhaitez juste changer la taille courante, il est plus simple d'appeler
+SetFontSize().
+<BR>
+<BR>
+<B>Note :</B> il est nécessaire que les fichiers de métrique soient accessibles. Il sont
+recherchés successivement dans :
+<UL>
+<LI>Le répertoire défini par la constante <TT>FPDF_FONTPATH</TT> (si cette constante est définie)
+<LI>Le répertoire <TT>font</TT> situé dans le répertoire de <TT>fpdf.php</TT> (s'il existe)
+<LI>Les répertoires accessibles par <TT>include()</TT>
+</UL>
+Exemple d'utilisation de <TT>FPDF_FONTPATH</TT> (notez le slash final obligatoire) :
+<BR>
+<BR>
+<TABLE WIDTH="100%" BGCOLOR="#E0E0E0"><TR><TD>
+<TT>
+define('FPDF_FONTPATH','/home/www/font/');<BR>
+require('fpdf.php');
+</TT>
+</TD></TR></TABLE><BR>
+Si le fichier correspondant à la police demandée n'est pas trouvé, l'erreur "Could not include
+font metric file" est générée.
+<H4 CLASS='st'>Paramètres</H4>
+<TT><U>family</U></TT>
+<BLOCKQUOTE>
+Famille de la police. Il peut s'agir d'un nom défini par AddFont() ou bien d'une des familles
+standard :
+<UL>
+<LI><TT>Courier</TT> (caractères de largeur fixe)
+<LI><TT>Helvetica</TT> ou <TT>Arial</TT> (synonymes; sans serif)
+<LI><TT>Times</TT> (avec serif)
+<LI><TT>Symbol</TT> (symboles)
+<LI><TT>ZapfDingbats</TT> (symboles)
+</UL>
+Le nom n'est pas sensible à la casse.
+<BR>
+Il est également possible de passer une chaîne vide, auquel cas la famille courante est
+conservée.
+</BLOCKQUOTE>
+<TT><U>style</U></TT>
+<BLOCKQUOTE>
+Style de la police. Les valeurs possibles sont (indépendamment de la casse) :
+<UL>
+<LI>chaîne vide : normal
+<LI><TT>B</TT> : gras
+<LI><TT>I</TT> : italique
+<LI><TT>U</TT> : souligné
+</UL>
+ou une combinaison quelconque. La valeur par défaut est le style normal.
+Les styles gras et italique ne s'appliquent pas aux familles <TT>Symbol</TT> et <TT>ZapfDingbats</TT>.
+</BLOCKQUOTE>
+<TT><U>size</U></TT>
+<BLOCKQUOTE>
+Taille de la police en points.
+<BR>
+La valeur par défaut est la taille courante. Si aucune taille n'a encore été spécifiée
+depuis le début du document, la valeur prise est 12.
+</BLOCKQUOTE>
+<H4 CLASS='st'>Exemple</H4>
+<TABLE WIDTH="100%" BGCOLOR="#E0E0E0"><TR><TD>
+<TT>
+//Times normal 12<BR>
+$pdf-&gt;SetFont('Times');<BR>
+//Arial gras 14<BR>
+$pdf-&gt;SetFont('Arial','B',14);<BR>
+//Enl&egrave;ve le gras<BR>
+$pdf-&gt;SetFont('');<BR>
+//Times gras, italique et soulign&eacute; 14<BR>
+$pdf-&gt;SetFont('Times','BIU');
+</TT>
+</TD></TR></TABLE><BR>
+<H4 CLASS='st'>Voir</H4>
+<A HREF="addfont.htm">AddFont()</A>,
+<A HREF="setfontsize.htm">SetFontSize()</A>,
+<A HREF="cell.htm">Cell()</A>,
+<A HREF="multicell.htm">MultiCell()</A>,
+<A HREF="write.htm">Write()</A>.
+<HR STYLE="margin-top:1.2em">
+<DIV ALIGN="CENTER"><A HREF="index.htm">Index</A></DIV>
+</BODY>
+</HTML>

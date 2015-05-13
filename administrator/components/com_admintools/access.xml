@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<access component="com_admintools">
+    <section name="component">
+        <action name="core.admin" title="JACTION_ADMIN" description="JACTION_ADMIN_COMPONENT_DESC"/>
+        <action name="core.manage" title="JACTION_MANAGE" description="JACTION_MANAGE_COMPONENT_DESC"/>
+        <action name="admintools.utils" title="ATOOLS_ACL_UTILS_TITLE" description="ATOOLS_ACL_UTILS_DESC"/>
+        <action name="admintools.security" title="ATOOLS_ACL_SECURITY_TITLE" description="ATOOLS_ACL_SECURITY_DESC"/>
+        <action name="admintools.maintenance" title="ATOOLS_ACL_MAINTENANCE_TITLE"
+                description="ATOOLS_ACL_MAINTENANCE_DESC"/>
+    </section>
+</access>

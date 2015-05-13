@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="1.7" type="plugin" group="system" method="upgrade">
+	<name>plg_sys_smoothtop</name>
+	<author>Eric Schneider</author>
+	<creationDate>December 2011</creationDate>
+	<copyright>Copyright (C) 2011 - 2012 Eric Schneider. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>eric.s@craziation.com</authorEmail>
+	<authorUrl>www.craziation.com</authorUrl>
+	<version>J1.7-2.5/1.2.2</version>
+	<description>PLG_SYS_SMOOTHTOP_XML_DESCRIPTION</description>
+	<files>
+		<filename plugin="smoothtop">smoothtop.php</filename>
+		<filename>index.html</filename>
+		<folder>images</folder>
+		<folder>language</folder>
+	</files>
+    <config>
+	  <fields name="params">
+	    <fieldset name="basic">
+                <field type="text" name="linktext" default=""
+                    label="PLG_SYS_SMOOTHTOP_LINKTEXT_LABEL"
+                    description="PLG_SYS_SMOOTHTOP_LINKTEXT_DESC" />
+                <field type="text" name="linktitle" default=""
+                    label="PLG_SYS_SMOOTHTOP_LINKTITLE_LABEL"
+                    description="PLG_SYS_SMOOTHTOP_LINKTITLE_DESC" />
+                <field type="text" name="revealposition" default="250" class="validate-numeric"
+                    label="PLG_SYS_SMOOTHTOP_REVEALPOSITION_LABEL"
+                    description="PLG_SYS_SMOOTHTOP_REVEALPOSITION_DESC" />
+				<field type="radio" name="topalways" default="0"
+                    label="PLG_SYS_SMOOTHTOP_TOPALWAYS_LABEL"
+                    description="PLG_SYS_SMOOTHTOP_TOPALWAYS_DESC">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+				<field type="radio" name="runinadmin" default="0"
+                    label="PLG_SYS_SMOOTHTOP_RUNINADMIN_LABEL"
+                    description="PLG_SYS_SMOOTHTOP_RUNINADMIN_DESC">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field type="radio" name="hz-pos" default="right"
+                    label="PLG_SYS_SMOOTHTOP_HZ-POS_LABEL"
+                    description="PLG_SYS_SMOOTHTOP_HZ-POS_DESC">
+                    <option value="left">PLG_SYS_SMOOTHTOP_HZ-POS_OPTION_LEFT</option>
+                    <option value="center">PLG_SYS_SMOOTHTOP_HZ-POS_OPTION_CENTER</option>
+                    <option value="right">PLG_SYS_SMOOTHTOP_HZ-POS_OPTION_RIGHT</option>
+                </field>
+                <field type="text" name="hz-offset" default="5"
+                    label="PLG_SYS_SMOOTHTOP_HZ-OFFSET_LABEL"
+                    description="PLG_SYS_SMOOTHTOP_HZ-OFFSET_DESC" />
+				<field type="radio" name="vt-pos" default="bottom"
+                    label="PLG_SYS_SMOOTHTOP_VT-POS_LABEL"
+                    description="PLG_SYS_SMOOTHTOP_VT-POS_DESC">
+                    <option value="top">PLG_SYS_SMOOTHTOP_VT-POS_OPTION_TOP</option>
+                    <option value="bottom">PLG_SYS_SMOOTHTOP_VT-POS_OPTION_BOTTOM</option>
+                </field>
+                <field type="text" name="vt-offset" default="5"
+                    label="PLG_SYS_SMOOTHTOP_VT-OFFSET_LABEL"
+                    description="PLG_SYS_SMOOTHTOP_VT-OFFSET_DESC" />
+				<field type="list" name="trans-effect" default="Expo.easeInOut"
+                    label="PLG_SYS_SMOOTHTOP_TRANSITION_EFFECT_LABEL"
+                    description="PLG_SYS_SMOOTHTOP_TRANSITION_EFFECT_DESC">
+                    <option value="linear">linear</option>
+                    <option value="Bounce.easeIn">Bounce.easeIn</option>
+                    <option value="Bounce.easeOut">Bounce.easeOut</option>
+                    <option value="Bounce.easeInOut">Bounce.easeInOut</option>
+                    <option value="Circ.easeIn">Circ.easeIn</option>
+                    <option value="Circ.easeOut">Circ.easeOut</option>
+                    <option value="Circ.easeInOut">Circ.easeInOut</option>
+                    <option value="Cubic.easeIn">Cubic.easeIn</option>
+                    <option value="Cubic.easeOut">Cubic.easeOut</option>
+                    <option value="Cubic.easeInOut">Cubic.easeInOut</option>
+                    <option value="Expo.easeIn">Expo.easeIn</option>
+                    <option value="Expo.easeOut">Expo.easeOut</option>
+                    <option value="Expo.easeInOut">Expo.easeInOut</option>
+                    <option value="Pow.easeIn">Pow.easeIn</option>
+                    <option value="Pow.easeOut">Pow.easeOut</option>
+                    <option value="Pow.easeInOut">Pow.easeInOut</option>
+                    <option value="Quad.easeIn">Quad.easeIn</option>
+                    <option value="Quad.easeOut">Quad.easeOut</option>
+                    <option value="Quad.easeInOut">Quad.easeInOut</option>
+                    <option value="Quart.easeIn">Quart.easeIn</option>
+                    <option value="Quart.easeOut">Quart.easeOut</option>
+                    <option value="Quart.easeInOut">Quart.easeInOut</option>
+                    <option value="Quint.easeIn">Quint.easeIn</option>
+                    <option value="Quint.easeOut">Quint.easeOut</option>
+                    <option value="Quint.easeInOut">Quint.easeInOut</option>
+                    <option value="Sine.easeIn">Sine.easeIn</option>
+                    <option value="Sine.easeOut">Sine.easeOut</option>
+                    <option value="Sine.easeInOut">Sine.easeInOut</option>
+                </field>
+                <field type="text" name="scrollduration" default="500" class="validate-numeric"
+                    label="PLG_SYS_SMOOTHTOP_SCROLL_DURATION_LABEL"
+                    description="PLG_SYS_SMOOTHTOP_SCROLL_DURATION_DESC" />
+				<field type="list" name="non-hover-trans" default="0.7"
+                    label="PLG_SYS_SMOOTHTOP_NON_HOVER_TRANS_LABEL"
+                    description="PLG_SYS_SMOOTHTOP_NON_HOVER_TRANS_DESC">
+                    <option value="0.1">0.1</option>
+                    <option value="0.2">0.2</option>
+                    <option value="0.3">0.3</option>
+                    <option value="0.4">0.4</option>
+                    <option value="0.5">0.5</option>
+                    <option value="0.6">0.6</option>
+                    <option value="0.7">0.7</option>
+                    <option value="0.8">0.8</option>
+                    <option value="0.9">0.9</option>
+                    <option value="1">1</option>
+                </field>
+				<field type="radio" name="usestyle" default="1"
+                    label="PLG_SYS_SMOOTHTOP_USESTYLE_LABEL"
+                    description="PLG_SYS_SMOOTHTOP_USESTYLE_DESC">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field type="textarea" name="linkstyle" rows="10" cols="60"
+                    default="#smoothtop{&#10;&#09;height:45px;&#10;&#09;width:45px;&#10;&#09;background:url(/plugins/system/smoothtop/images/up-arrow.gif) center top no-repeat;&#10;&#09;&#10;}&#10;&#10;#smoothtop:hover{background-position: center bottom;}"
+                    label="PLG_SYS_SMOOTHTOP_LINKSTYLE_LABEL"
+                    description="PLG_SYS_SMOOTHTOP_LINKSTYLE_DESC" />
+            </fieldset>
+          </fields>
+        </config>
+</extension>

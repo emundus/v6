@@ -1,0 +1,128 @@
+/* Default SCLogin Theme - Add new themes to templates/YOUR_TEMPLATE_NAME/html/mod_sclogin/themes directory */
+
+div.jLinkedLogin,
+div.scGoogleLoginTag,
+div.scTwitterLoginTag {
+    height: 20px;
+    margin-top: 9px;
+}
+
+.sclogin {
+    overflow: visible;
+}
+
+.sclogin .powered-by {
+    clear: both;
+}
+
+div.sclogin-social-login a.show,
+div.sclogin-joomla-login a.show,
+div.sclogin-social-connect a.show {
+    margin-bottom: 9px;
+}
+
+input#sclogin-username.input-block-level,
+input#sclogin-passwd.input-block-level {
+    height: 30px;
+}
+
+a.forgot.btn {
+    height: 28px !important;
+    padding: 0px 0px;
+}
+
+a.forgot.btn i {
+    margin-top: 6px;
+}
+
+#form-sclogin-submitcreate a,
+.sclogin-modal-links a.btn,
+.scuser-menu a.dropdown-toggle {
+    text-decoration: none !important;
+}
+
+#form-sclogin-submitcreate a,
+.scuser-menu a.dropdown-toggle {
+    color: #000000;
+}
+
+.sclogin [class*="span"] {
+    margin-left: 0 !important;
+}
+
+.sclogin .clearfix {
+    clear: both;
+}
+
+#sclogin-username,
+#sclogin-passwd {
+    margin-top: 0px;
+}
+
+/* Vertical Layout */
+
+.sclogin-joomla-login.vertical input#sclogin-username.input-block-level,
+.sclogin-joomla-login.vertical input#sclogin-passwd.input-block-level {
+    width: 87% !important;
+}
+
+.sclogin-joomla-login.vertical a.forgot.btn {
+    width: 13% !important;
+}
+
+.sclogin-joomla-login.vertical input#sclogin-username.input-append,
+.sclogin-joomla-login.vertical input#sclogin-passwd.input-append {
+    width: 100%;
+}
+
+.sclogin-joomla-login.vertical #form-sclogin-submitcreate .btn {
+    margin-top: 2px !important;
+}
+
+/* Horizontal Layout */
+.sclogin-joomla-login.horizontal .control-group {
+    margin-right: 2px;
+}
+
+/* Modal Links */
+.sclogin-modal-links a {
+    margin-right: 5px;
+}
+
+.sclogin-modal-links a.btn-primary {
+    color: #FFFFFF;
+}
+
+/* Logged in User options */
+.sclogin .flat-list {
+    display: block !important;
+    border: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    margin-top: 1px !important;
+}
+
+.sclogin .logout-button {
+    margin-top: 5px;
+}
+
+.sclogin .sclogout-button {
+    float: right;
+}
+
+.sclogin .scuser-menu.dropdown-view {
+    float: left;
+}
+
+.sclogin .scuser-menu.list-view {
+    clear: both;
+}
+
+.sclogin #scprofile-pic,
+.sclogin .sclogin-greeting {
+    margin-bottom: 5px;
+}
+
+.sc-connect-user {
+    clear: both;
+}

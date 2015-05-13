@@ -1,0 +1,105 @@
+/* old_style
+#emundusflow {
+    margin-bottom: auto;
+    margin-left: 0px;
+    margin-right: auto;
+    margin-top: -10px;
+    padding-bottom: 0px;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0px;
+    text-align: center;
+	/*width:400px; // pour une version flottante en entête
+	text-align:center;
+	margin:auto;
+	margin: -5px 0 20px 310px;
+	position:absolute;*/
+/*
+}
+#emundusflow fieldset {
+	padding: 0 2px 0 0;
+}
+#emundusflow fieldset legend {
+	font-size:14px;
+}
+#emundusflow h1 {
+	text-align:center;
+	font-size: 11px;
+	margin:0;
+}
+
+.flowfleche {
+	background: url(images/next.png) 0 50% no-repeat;
+	width:40px;
+}
+#flowsent{
+    vertical-align: central;
+}
+*/
+
+/* new style */
+#emundusflow_new {
+	text-align: center;
+	margin-top: 5px;
+}
+#emundusflow_new div {
+	float : left;
+	display: inline;
+}
+.progression{
+	height: 20px !important;
+	margin:0 !important;
+	padding-right:5px;
+	/*background-color: #158bc8;*/
+	
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	-o-border-radius: 15px;
+	border-radius: 15px;
+}
+.part{
+	margin-left:10px;
+	width:20%;
+}
+.bar{
+	background:transparent;
+	border:1px solid #D4D5D5;
+	margin:0 0 0 5px!important;
+	padding:0 !important;
+	height:20px;
+	width:90%;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	-o-border-radius: 15px;
+	border-radius: 15px;
+}
+
+.precent{
+	color: white;
+	display: block;
+	text-align: center;
+	margin-left:10px;
+}
+
+.progress {
+	background:#D4D5D5;
+	width:90%;
+	margin-left:2px;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	-o-border-radius: 15px;
+	border-radius: 15px;
+	z-index:10;
+}
+
+.status {
+	margin:0 0 0 2px;
+}
+
+.emflow_legend {
+	position:absolute;
+	color:black;
+	z-index:1;
+	display:block !important;
+	padding-left:30px;
+}

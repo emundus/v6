@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+    <layout title="Application">
+        <message>Displays Jumi application.</message>
+    </layout>
+
+    <fields name="request">
+        <fieldset name="request">
+            <field name="fileid" type="sql" query="SELECT id, title FROM #__jumi" key_field="id" value_field="title" description="Select Jumi Application to be included" label="Jumi Application" required="true" />
+        </fieldset>
+    </fields>
+</metadata>

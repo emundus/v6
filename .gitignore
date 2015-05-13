@@ -523,3 +523,16 @@
 /index.php
 /joomla.xml
 /*.txt
+
+
+templates/rt_afterburner2/css-compiled/*
+images/emundus/files/*
+images/emundus/letters/*
+image/logo.png
+#_bdd/*
+components/com_emundus.*
+components/com_emundus/*.bak
+media/com_emundus.*
+media/com_emundus/*.bak
+htaccess.BAK*
+php.ini

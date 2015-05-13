@@ -1,0 +1,106 @@
+/**
+* @version   $Id: buttons.less 26100 2015-01-27 14:16:12Z james $
+* @author    RocketTheme http://www.rockettheme.com
+* @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+* @license   http://www.rockettheme.com/legal/license.php RocketTheme Proprietary Use License
+*/
+
+/* global button styling */
+.buttonStyle(@startColor: #f0f0f0, @endColor: #ebebeb){
+	vertical-align: middle;
+	text-align: center;
+	cursor: pointer;
+	.user-select(none);
+	.ie7-restore-left-whitespace();
+
+	#gradient > .vertical(@startColor, @endColor);
+}
+
+/* light button */
+.button(@startColor: #f0f0f0, @endColor: #ebebeb) when (lightness(@endColor) >= 50%){
+	color: #65646A;
+	border-width: 1px;
+	border-style: solid;
+	border-color: fade(@light, 85%) fade(@light, 85%) darken(@endColor, 2%);
+	text-shadow: 0 1px 0 lighten(@startColor, 6%);
+	@shadowCalc: darken(@endColor, 21%);
+	.box-shadow(~"0 0 0 1px @{shadowCalc}, 0 3px 5px #c6c6c6");
+	.buttonStyle(@startColor, @endColor);
+
+	.caret { .caret(#65646A); }
+
+	&:hover, &.rok-button-hover {
+		color: #484848;
+
+		.caret { .caret(#484848); }
+		#gradient > .vertical(lighten(@startColor, 4%), lighten(@endColor, 4%));
+	}
+
+	&:active, &.rok-button-active {
+		color: #464646;
+		border: 0;
+
+		.caret { .caret(#464646); }
+		@shadowCalc: darken(@endColor, 29%); // workaround: temp var so we can escape it next line
+		.box-shadow(~"0 0 0 1px @{shadowCalc}, 0 1px 1px @white");
+		#gradient > .vertical(darken(@startColor, 1%), darken(@endColor, 1%));
+	}
+
+	&.rok-button-disabled {
+		&, &:hover, &:active {
+			cursor: default;
+			color: #929292;
+			border: 0;
+
+			.caret { .caret(#464646); }
+			@shadowCalc: darken(@endColor, 19%); // workaround: temp var so we can escape it next line
+			.box-shadow(~"0 0 0 1px @{shadowCalc}, 0 1px 1px #fff");
+			#gradient > .vertical(darken(@startColor, 1%), darken(@endColor, 1%));
+
+			i {
+				.opacity(50);
+			}
+		}
+	}
+}
+
+/* dark button */
+.button(@startColor: #f0f0f0, @endColor: #ebebeb) when (lightness(@endColor) < 50%){
+	color: @white;
+	border-width: 1px;
+	border-style: solid;
+	border-color: fade(@light, 45%) fade(@light, 15%) darken(@endColor, 2%);
+	box-shadow: 0 0 0 1px darken(@startColor, 15%), 0 3px 5px #c6c6c6;
+	text-shadow: 0 -1px 0 darken(@endColor, 7%);
+	.buttonStyle(@startColor, @endColor);
+
+	.caret {
+		.caret(@white);
+	}
+
+	&:hover, &.rok-button-hover {
+		color: @white;
+		#gradient > .vertical(lighten(@startColor, 6%), lighten(@endColor, 1%));
+	}
+
+	&:active, &.rok-button-active {
+		color: @white;
+		border: 0;
+
+		@shadowCalc: darken(@endColor, 5%); // workaround: temp var so we can escape it next line
+		.box-shadow(~"0 0 0 1px @{shadowCalc}, 0 1px 1px @white");
+		#gradient > .vertical(darken(@startColor, 1%), darken(@endColor, 1%));
+
+	}
+}
+
+.caret(@color: @dark) {
+	display: inline-block;
+	width: 0;
+	height: 0;
+	vertical-align: top;
+	border-top:   4px solid @color;
+	border-right: 4px solid transparent;
+	border-left:  4px solid transparent;
+	content: "";
+}

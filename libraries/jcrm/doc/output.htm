@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<TITLE>Output</TITLE>
+<LINK TYPE="text/css" REL="stylesheet" HREF="../fpdf.css">
+</HEAD>
+<BODY>
+<H2>Output</H2>
+<TT><B>string</B> Output([<B>string</B> name [, <B>string</B> dest]])</TT>
+<H4 CLASS='st'>Version</H4>
+1.0
+<H4 CLASS='st'>Description</H4>
+Envoie le document vers une destination donnée : chaîne de caractères en mémoire, fichier
+local ou navigateur. Dans ce dernier cas, on peut utiliser le plug-in (s'il est présent)
+ou forcer la boîte de téléchargement de fichier.
+<BR>
+La méthode commence par appeler Close() si nécessaire pour terminer le document.
+<H4 CLASS='st'>Paramètres</H4>
+<TT><U>name</U></TT>
+<BLOCKQUOTE>
+Le nom du fichier. S'il n'est pas renseigné, le document est envoyé au navigateur
+(destination <TT>I</TT>) avec le nom <TT>doc.pdf</TT>.
+</BLOCKQUOTE>
+<TT><U>dest</U></TT>
+<BLOCKQUOTE>
+Destination où envoyer le document. Le paramètre peut prendre les valeurs suivantes :
+<UL>
+<LI><TT>I</TT> : envoyer en inline au navigateur. Le plug-in est utilisé s'il est installé.
+Le nom indiqué dans <TT>name</TT> est utilisé lorsque l'on sélectionne "enregistrer sous"
+sur le lien générant le PDF.
+<LI><TT>D</TT> : envoyer au navigateur en forçant le téléchargement, avec le nom indiqué
+dans <TT>name</TT>.
+<LI><TT>F</TT> : sauver dans un fichier local, avec le nom indiqué dans <TT>name</TT>.
+<LI><TT>S</TT> : renvoyer le document sous forme de chaîne. <TT>name</TT> est ignoré.
+</UL>
+Si le paramètre n'est pas renseigné et qu'un nom est indiqué, la destination est <TT>F</TT>.
+Si aucun paramètre n'est renseigné, la destination est <TT>I</TT>.<BR>
+<BR>
+Note : par souci de compatibilité avec les précédentes versions, un booléen est également
+accepté (<TT>false</TT> pour <TT>F</TT> et <TT>true</TT> pour <TT>D</TT>).
+</BLOCKQUOTE>
+<H4 CLASS='st'>Voir</H4>
+<A HREF="close.htm">Close()</A>.
+<HR STYLE="margin-top:1.2em">
+<DIV ALIGN="CENTER"><A HREF="index.htm">Index</A></DIV>
+</BODY>
+</HTML>

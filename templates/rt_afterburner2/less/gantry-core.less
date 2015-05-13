@@ -1,0 +1,342 @@
+/**
+* @version   $Id: gantry-core.less 26100 2015-01-27 14:16:12Z james $
+* @author    RocketTheme http://www.rockettheme.com
+* @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+* @license   http://www.rockettheme.com/legal/license.php RocketTheme Proprietary Use License
+*/
+
+// Core
+a {
+	&:hover {
+		text-decoration: none;
+	}
+}
+.table {
+	display: table;
+}
+.cell {
+	display: table-cell;
+}
+
+// Grid Container
+html {
+	margin-bottom: 1px;
+	height: 100%;
+}
+body {
+	margin-bottom: 1px;
+}
+
+// Blocks
+.rt-block {
+	padding: 15px;
+	margin: 10px;
+	position: relative;
+}
+#rt-content-top, #rt-content-bottom {
+	overflow: hidden;
+}
+.rt-grid-1:before, .rt-grid-2:before, .rt-grid-3:before, .rt-grid-4:before, .rt-grid-5:before, .rt-grid-6:before, .rt-grid-7:before, .rt-grid-8:before, .rt-grid-9:before, .rt-grid-10:before, .rt-grid-11:before, .rt-grid-12:before {
+	display: table;
+	content: "";
+	clear: both;
+}
+.rt-grid-1:after, .rt-grid-2:after, .rt-grid-3:after, .rt-grid-4:after, .rt-grid-5:after, .rt-grid-6:after, .rt-grid-7:after, .rt-grid-8:after, .rt-grid-9:after, .rt-grid-10:after, .rt-grid-11:after, .rt-grid-12:after {
+	display: table;
+	content: "";
+	clear: both;
+}
+
+// Font Stacks
+.font-family-optima {
+	font-family: Optima, Lucida, 'MgOpen Cosmetica', 'Lucida Sans Unicode', sans-serif;
+}
+.font-family-geneva {
+	font-family: Geneva, Tahoma, "Nimbus Sans L", sans-serif;
+}
+.font-family-helvetica {
+	font-family: Helvetica, Arial, FreeSans, sans-serif;
+}
+.font-family-lucida {
+	font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
+}
+.font-family-georgia {
+	font-family: Georgia, sans-serif;
+}
+.font-family-trebuchet {
+	font-family: "Trebuchet MS", sans-serif;
+}
+.font-family-palatino {
+	font-family: "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", Times, serif;
+}
+
+// Typography
+body {
+	font-size: 13px;
+	line-height: 1.7em;
+	font-family: Helvetica,Arial, Sans-Serif;
+}
+.font-size-is-xlarge {
+	font-size: 16px;
+	line-height: 1.7em;
+}
+.font-size-is-large {
+	font-size: 15px;
+	line-height: 1.7em;
+}
+.font-size-is-default {
+	font-size: baseFontSize;
+	line-height: @baseLineHeight;
+}
+.font-size-is-small {
+	font-size: 12px;
+	line-height: 1.7em;
+}
+.font-size-is-xsmall {
+	font-size: 10px;
+	line-height: 1.7em;
+}
+p {
+	margin: 0 0 15px 0;
+}
+h1 {
+	font-size: 260%;
+}
+h2 {
+	font-size: 200%;
+}
+h3 {
+	font-size: 175%;
+}
+h4 {
+	font-size: 130%;
+}
+h5 {
+	font-size: 110%;
+	text-transform: uppercase;
+}
+a {
+	text-decoration: none;
+}
+a:focus {
+	outline: none;
+}
+.left-1, .left-2, .left-3, .left-4, .left-5, .left-6, .left-7, .left-8, .left-9, .left-10, .right-11 {
+	float: left;
+	margin-right: 50px;
+	margin-bottom: 15px;
+	position: relative;
+}
+.right-1, .right-2, .right-3, .right-4, .right-5, .right-6, .right-7, .right-8, .right-9, .right-10, .right-11 {
+	float: right;
+	margin-left: 50px;
+	margin-bottom: 15px;
+	position: relative;
+}
+.date-block {
+	padding: 15px;
+}
+
+// Lists
+ol {
+	padding-left: 15px;
+}
+ul {
+	li {
+		padding: 0;
+		margin: 0;
+	}
+	li.author {
+		margin: 0;
+		letter-spacing: 1px;
+		list-style: none;
+		font-weight: bold;
+		text-align: right;
+		span {
+			display: block;
+			font-weight: normal;
+			margin-bottom: 10px;
+			line-height: 1em;
+		}
+	}
+	li.date {
+		margin: 0;
+		letter-spacing: 1px;
+		list-style: none;
+		text-align: right;
+		font-weight: bold;
+		span {
+			display: block;
+			font-weight: normal;
+			margin-bottom: 10px;
+			line-height: 1em;
+		}
+	}
+	li.comments {
+		list-style: none;
+		text-align: right;
+		font-weight: bold;
+		span {
+			display: block;
+			font-weight: normal;
+			margin-bottom: 10px;
+			line-height: 1em;
+		}
+	}
+	ul {
+		margin-left: 25px;
+		padding: 5px 0;
+	}
+}
+
+// RTL
+body.rtl {
+	direction: rtl;
+}
+body.rtl {
+	min-width: inherit;
+}
+
+// Clear Set
+html body * span.clear, html body * div.clear, html body * li.clear, html body * dd.clear {
+	background: none;
+	border: 0;
+	clear: both;
+	display: block;
+	float: none;
+	font-size: 0;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	visibility: hidden;
+	width: 0;
+	height: 0;
+}
+.clearfix:after {
+	clear: both;
+	content: '.';
+	display: block;
+	visibility: hidden;
+	height: 0;
+}
+.clearfix {
+	display: inline-block;
+}
+* html .clearfix {
+	height: 1%;
+}
+.clearfix {
+	display: block;
+}
+
+// Debug Only
+#debug #rt-main {
+	overflow: hidden;
+	border-bottom: 4px solid #666;
+	margin-top: 15px;
+	position: relative;
+}
+#debug .status {
+	position: absolute;
+	background:#333;
+	opacity: 0.3;
+	padding:0 15px;
+	z-index:10000;
+	color:#fff;
+	font-weight:bold;
+	font-size:150%;
+}
+
+// Responsive Classes
+.hidden {
+	display: none;
+	visibility: hidden;
+}
+.visible-phone {
+	display: none !important;
+}
+.visible-tablet {
+	display: none !important;
+}
+.hidden-desktop {
+	display: none !important;
+}
+.hidden-large {
+	display: none !important;
+}
+
+// Custom Widths
+.row {
+	margin: 0 -15px;
+}
+.gantry-width-block {
+	display: block;
+	float: left;
+}
+.gantry-width-spacer {
+	margin: 15px;
+}
+.gantry-width-10 {
+	width: 10%;
+}
+.gantry-width-15 {
+	width: 15%;
+}
+.gantry-width-20 {
+	width: 20%;
+}
+.gantry-width-25 {
+	width: 25%;
+}
+.gantry-width-30 {
+	width: 30%;
+}
+.gantry-width-33 {
+	width: 33.33%;
+}
+.gantry-width-40 {
+	width: 40%;
+}
+.gantry-width-50 {
+	width: 50%;
+}
+.gantry-width-60 {
+	width: 60%;
+}
+.gantry-width-66 {
+	width: 66.66%;
+}
+.gantry-width-70 {
+	width: 70%;
+}
+.gantry-width-75 {
+	width: 75%;
+}
+.gantry-width-80 {
+	width: 80%;
+}
+.gantry-width-85 {
+	width: 80%;
+}
+.gantry-width-90 {
+	width: 90%;
+}
+
+// Floats
+.gantry-left {
+	float: left;
+	margin-right: 15px;
+}
+.gantry-right {
+	float: right;
+	margin-left: 15px;
+}
+
+// Custom Utility Classes
+.gantry-center {
+	text-align: center;
+		td, th {
+			text-align: center;
+		}
+}

@@ -1,0 +1,14 @@
+.emundus_home_page{ 
+width:90%;
+margin-left:5%;
+text-align:center;
+}
+.emundus_home_page a {
+    opacity: 0.7;
+}
+.emundus_home_page a:hover {
+    opacity: 1;
+}
+a.text {
+    opacity: 1;
+}

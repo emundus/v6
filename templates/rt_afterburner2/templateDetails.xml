@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
+<extension method="upgrade" type="template" version="2.5">
+    <name>rt_afterburner2</name>
+    <author>RocketTheme, LLC</author>
+    <creationDate>February 21, 2015</creationDate>
+    <copyright>(C) 2005 - 2015 RocketTheme, LLC. All rights reserved.</copyright>
+    <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+    <authorEmail>support@rockettheme.com</authorEmail>
+    <authorUrl>http://www.rockettheme.com</authorUrl>
+    <version>1.4</version>
+    <description>Parent for all PHP based projects</description>
+    <legacycss>false</legacycss>
+    <gridcss>false</gridcss>
+    <files>
+        <folder>admin</folder>
+        <filename>index.php</filename>
+        <filename>error.php</filename>
+        <folder>images</folder>
+        <filename>component.php</filename>
+        <filename>template-thumb-big.png</filename>
+        <filename>template_preview.png</filename>
+        <filename>gantry.config.php</filename>
+        <filename>htaccess.txt</filename>
+        <folder>fields</folder>
+        <folder>language</folder>
+        <filename>template-overview.php</filename>
+        <filename>MD5SUMS</filename>
+        <folder>css-compiled</folder>
+        <folder>less</folder>
+        <folder>custom</folder>
+        <folder>html</folder>
+        <folder>css</folder>
+        <filename>template-options.xml</filename>
+        <filename>offline.php</filename>
+        <folder>features</folder>
+        <filename>template_thumbnail.png</filename>
+        <folder>lib</folder>
+        <folder>js</folder>
+    </files>
+    <positions>
+        <position>analytics</position>
+        <position>drawer</position>
+        <position>top-a</position>
+        <position>top-b</position>
+        <position>top-c</position>
+        <position>top-d</position>
+        <position>top-e</position>
+        <position>top-f</position>
+        <position>header-a</position>
+        <position>header-b</position>
+        <position>header-c</position>
+        <position>header-d</position>
+        <position>header-e</position>
+        <position>header-f</position>
+        <position>secondheader-a</position>
+        <position>secondheader-b</position>
+        <position>secondheader-c</position>
+        <position>secondheader-d</position>
+        <position>secondheader-e</position>
+        <position>secondheader-f</position>
+        <position>secondmenu-a</position>
+        <position>secondmenu-b</position>
+        <position>secondmenu-c</position>
+        <position>secondmenu-d</position>
+        <position>secondmenu-e</position>
+        <position>secondmenu-f</position>
+        <position>breadcrumb</position>
+        <position>sidebar-a</position>
+        <position>sidebar-b</position>
+        <position>sidebar-c</position>
+        <position>content-top-a</position>
+        <position>content-top-b</position>
+        <position>content-top-c</position>
+        <position>content-bottom-a</position>
+        <position>content-bottom-b</position>
+        <position>content-bottom-c</position>
+        <position>bottom-a</position>
+        <position>bottom-b</position>
+        <position>bottom-c</position>
+        <position>bottom-d</position>
+        <position>bottom-e</position>
+        <position>bottom-f</position>
+        <position>footer-a</position>
+        <position>footer-b</position>
+        <position>footer-c</position>
+        <position>footer-d</position>
+        <position>footer-e</position>
+        <position>footer-f</position>
+        <position>debug</position>
+    </positions>
+	<config>
+        <fields name="params">
+            <fieldset name="base">
+                <field default="true" name="master" type="hidden" value="true"/>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

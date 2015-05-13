@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fields name="params">
+        <fieldset name="params" addfieldpath="administrator/components/com_jfbconnect/models/fields">
+            <field name="socialButtonsOrientation"
+                   type="list"
+                   default="bottom"
+                   label="MOD_SCLOGIN_SOCIAL_ORIENTATION_LABEL"
+                   description="MOD_SCLOGIN_SOCIAL_ORIENTATION_DESC">
+                <option value="bottom">MOD_SCLOGIN_SOCIAL_ORIENTATION_VALUE_BOTTOM</option>
+                <option value="side">MOD_SCLOGIN_SOCIAL_ORIENTATION_VALUE_SIDE</option>
+                <option value="top">MOD_SCLOGIN_SOCIAL_ORIENTATION_VALUE_TOP</option>
+            </field>
+            <field name="socialButtonsAlignment"
+                   type="list"
+                   default="left"
+                   label="MOD_SCLOGIN_SOCIAL_ALIGNMENT_LABEL"
+                   description="MOD_SCLOGIN_SOCIAL_ALIGNMENT_DESC">
+                <option value="left">MOD_SCLOGIN_SOCIAL_ALIGNMENT_VALUE_LEFT</option>
+                <option value="right">MOD_SCLOGIN_SOCIAL_ALIGNMENT_VALUE_RIGHT</option>
+            </field>
+            <field name="loginbuttonsorder"
+                   type="textarea"
+                   rows="5"
+                   cols="70"
+                   label="COM_JFBCONNECT_WIDGET_LOGIN_PROVIDER_LABEL"
+                   description="COM_JFBCONNECT_WIDGET_LOGIN_PROVIDER_DESCRIPTION"/>
+            <field name="loginbuttonstype"
+                   type="buttonstype"
+                   default="default"
+                   label="COM_JFBCONNECT_WIDGET_LOGIN_BUTTON_TYPE_LABEL"
+                   description="COM_JFBCONNECT_WIDGET_LOGIN_BUTTON_TYPE_DESC">
+            </field>
+            <field name="loginbuttons"
+                   type="socialbuttons"
+                   label="COM_JFBCONNECT_WIDGET_IMAGE_STYLE_LABEL"
+                   description="COM_JFBCONNECT_WIDGET_IMAGE_STYLE_DESC"/>
+        </fieldset>
+    </fields>
+</form>
