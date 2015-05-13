@@ -19,7 +19,7 @@ if (!empty($tab)) {
     }
     
     ?>
-    <div class="emundus_home_page" ><div class="rt-grid-12">
+    <div class="emundus_home_page" ><div class="rt-grid-9">
     <?php 
     $i=1; $j=1;$k=0;
 	$l = (@$user->candidature_posted == 1 && @$user->candidature_incomplete == 0 ) ? 2 : '999';
@@ -31,8 +31,8 @@ if (!empty($tab)) {
         } else {
             echo '<div class="rt-grid-3 element_home_emundus">' . $t . '</div>';
             $k++;
-            if ($k >= 4) {
-                echo '</div><div class="rt-grid-12">';
+            if ($k > 2) {
+                echo '</div><div class="rt-grid-9">';
                 $k=0;
             }
         }

@@ -166,7 +166,7 @@ function reloadActions(view, fnum, onCheck)
 }
 
 function addDimmer() {
-    $('.col-md-9 .panel.panel-default').before('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+    $('.row').before('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
 }
 
 function addElement() {
@@ -351,7 +351,7 @@ function openFiles(fnum)
                 data:({fnum:fnum.fnum}),
                 success: function(result)
                 {
-
+                    $('.em-dimmer').remove();
                     $('#em-files-filters').hide();
                     $(".main-panel .panel.panel-default").hide();
                     $('#em-appli-block').empty();
@@ -375,6 +375,7 @@ function openFiles(fnum)
             console.log(jqXHR.responseText);
         }
     })
+
     // }
 }
 
@@ -833,6 +834,7 @@ $(document).ready(function()
     {
         if(e.handle !== true)
         {
+           addDimmer();
             e.handle = true;
             var fnum = new Object();
             fnum.fnum = $(this).parent('a').attr('id');
@@ -872,24 +874,31 @@ $(document).ready(function()
         e.preventDefault();
         var id = $(this).attr('id');
         var url = $(this).attr('href');
-
-        var fnum = $('.em-check:checked').attr('id').split('_')[0];
-        $.ajax({
-            type:"get",
-            url:url,
-            dataType:'html',
-            data:({id:id, fnum:fnum}),
-            success: function(result)
-            {
-                $('#em-appli-block').empty();
-                $('#em-appli-block').append(result);
-            },
-            error: function (jqXHR, textStatus, errorThrown)
-            {
-                console.log(jqXHR.responseText);
+        var currenturl = $(location).attr('href');
+        currenturl = currenturl.split("#");
+        if (currenturl[1] != null) {
+            currenturl = currenturl[1].split("|");
+            var fnum = currenturl[0];
+            if (fnum != null) {
+                $.ajax({
+                    type: "get",
+                    url: url,
+                    dataType: 'html',
+                    data: ({id: id, fnum: fnum}),
+                    success: function (result) {
+                        console.log(result);
+                        $('#em-appli-block').empty();
+                        $('#em-appli-block').append(result);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(jqXHR.responseText);
+                    }
+                });
             }
-        });
+            ;
+        };
     });
+
 //
 // Lien Edition / Ajout de données de formulaire de candidature
 //

@@ -148,7 +148,44 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 <script type="text/javascript">
 	refreshFilter();
+    function checkurl() {
+        var url = $(location).attr('href');
+        url = url.split("#");
+        if (url[1] != null) {
+            url = url[1].split("|");
+            var fnum = new Object();
+            fnum.fnum = url[0];
+            if (fnum != null) {
+                addDimmer();
+                $.ajax({
+                    type:'get',
+                    url:'index.php?option=com_emundus&controller=files&task=getfnuminfos',
+                    dataType:"json",
+                    data:({fnum: fnum.fnum}),
+                    success: function(result)
+                    {
+                        if (result.status)
+                        {
+                            var fnumInfos = result.fnumInfos;
+                            fnum.name = fnumInfos.name;
+                            fnum.label = fnumInfos.label;
+                            openFiles(fnum);
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        console.log(jqXHR.responseText);
+                    }
+                })
+            }
+        }
+
+    }
 	$(document).ready(function(){
+        checkurl();
+        $('#rt-mainbody-surround').children().addClass('mainemundus');
+        $('#rt-main').children().addClass('mainemundus');
+        $('#rt-main').children().children().addClass('mainemundus');
 		$('.em-data-container').doubleScroll();
 	});
 </script>

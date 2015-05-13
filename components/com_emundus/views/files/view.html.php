@@ -55,7 +55,7 @@ class EmundusViewFiles extends JViewLegacy
 		JHtml::script('chosen.jquery.min.js', JURI::base()."media/com_emundus/lib/chosen/" );
 
 	    JHTML::script( 'em_files.js', JURI::Base().'media/com_emundus/js/');
-    	JHtml::styleSheet('chosen.min.css', JURI::base()."media/com_emundus/lib/chosen/");
+    */	JHtml::styleSheet(JURI::base()."media/com_emundus/lib/chosen/chosen.min.css");/*
 	    JHtml::stylesheet('bootstrap.min.css', JURI::base() . 'media/com_emundus/lib/bootstrap-emundus/css/');
 	    JHtml::stylesheet('emundus_files.css', JURI::base() . 'media/com_emundus/css/');
 */

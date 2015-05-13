@@ -174,51 +174,27 @@ $gpreset = str_replace(' ','',strtolower($gantry->get('name')));
                     Sorbonne Universités rassemble des universités et des établissements d’enseignement supérieur et de recherche, reconnus pour leur excellence scientifique et pédagogique.
                 </p>
             </div>
-          	<div class="footerSU blue">
-          		<div class="rt-containerbottom">
-          			<div class="blasonSU">
-          				<a href="http://www.sorbonne-universites.fr/" target="_blank"><img class="light" src="//headerfooter.sorbonne-universites.fr/fileadmin/user_upload/footerSU-light-logo-sorbonne.png" width="24" height="26" alt=""></a>
-          			</div>
-          			<div class="sepSU">
-          				<img class="light" src="//headerfooter.sorbonne-universites.fr/typo3conf/ext/su_headerfooter/Resources/Public/Images/footerSU-light-separator.png" width="1" height="57" alt="">
-          			</div>
-          			<ul class="partenairesSU">
-          				<li>
-							<a href="http://www.paris-sorbonne.fr/" title="Université Paris-Sorbonne" target="_blank"><img class="light" src="//headerfooter.sorbonne-universites.fr/fileadmin/user_upload/footerSU-light-logo-paris-sorbonne.png" width="55" height="41" alt=""></a>
-						</li>
-						<li>
-							<a href="http://www.upmc.fr/" title="Université Pierre et Marie Curie" target="_blank"><img class="light" src="//headerfooter.sorbonne-universites.fr/fileadmin/user_upload/footerSU-light-logo-upmc.png" width="52" height="17" alt=""></a>
-						</li>
-						<li>
-							<a href="http://www.utc.fr/" title="Université de Technologie de Compiègne" target="_blank"><img class="light" src="//headerfooter.sorbonne-universites.fr/fileadmin/user_upload/footerSU-light-logo-utc.png" width="71" height="24" alt=""></a>
-						</li>
-						<li>
-							<a href="http://www.insead.edu/" title="Institut Européen d'Administration des Affaires" target="_blank"><img class="light" src="//headerfooter.sorbonne-universites.fr/fileadmin/user_upload/footerSU-light-logo-insead.png" width="57" height="19" alt=""></a>
-						</li>
-						<li>
-							<a href="http://www.mnhn.fr/" title="Muséum National d'Histoire Naturelle" target="_blank"><img class="light" src="//headerfooter.sorbonne-universites.fr/fileadmin/user_upload/footerSU-light-logo-museum.png" width="83" height="25" alt=""></a>
-						</li>
-						<li>
-							<a href="http://www.pspbb.fr/" title="Pôle Supérieur Paris Boulogne-Billancourt" target="_blank"><img class="light" src="//headerfooter.sorbonne-universites.fr/fileadmin/user_upload/footerSU-light-logo-pspbb.png" width="66" height="46" alt=""></a>
-						</li>
-						<li>
-							<a href="http://www.cnrs.fr/" title="Centre national de la Recherche Scientifique" target="_blank"><img class="light" src="//headerfooter.sorbonne-universites.fr/fileadmin/user_upload/footerSU-light-logo-cnrs.png" width="30" height="29" alt=""></a>
-						</li>
-						<li>
-							<a href="http://www.inserm.fr/" title="Institut National de la Santé et de la Recherche Médicale" target="_blank"><img class="light" src="//headerfooter.sorbonne-universites.fr/fileadmin/user_upload/footerSU-light-logo-inserm.png" width="89" height="23" alt=""></a>
-						</li>
-						<li>
-							<a href="http://www.ird.fr/" title="Institut de Recherche pour le Développement" target="_blank"><img class="light" src="//headerfooter.sorbonne-universites.fr/fileadmin/user_upload/footerSU-light-logo-ird.png" width="48" height="25" alt=""></a>
-						</li>
-						<li>
-							<a href="http://www.inria.fr/" title="Institut National de Recherche en Informatique et en Automatique" target="_blank"><img class="light" src="//headerfooter.sorbonne-universites.fr/fileadmin/user_upload/footerSU-light-logo-inria.png" width="65" height="22" alt=""></a>
-						</li>
-						<li>
-							<a href="http://www.ciep.fr/" title="Centre International d'Etudes Pédagogiques" target="_blank"><img class="light" src="//headerfooter.sorbonne-universites.fr/fileadmin/user_upload/footerSU-light-logo-ciep.png" width="28" height="47" alt=""></a>
-						</li>
-					</ul>
-				</div>	
-			</div>
+
+          	<section class="logos-area">
+                <div class="holder">
+                    <div class="company-logo">
+                        <img src="/images/footer/logo1.png" alt="S">
+                    </div>
+                    <ul class="logo-list">
+                        <li><a href="http://www.paris-sorbonne.fr" target="_blank"><img src="/images/footer/logo_paris-sorbonne.png" width="49" height="41" alt="" title="Paris Sorbonne"></a></li>
+                        <li><a href="http://www.upmc.fr" target="_blank"><img src="/images/footer/logo_upmc.png" width="61" height="22" alt="" title="UPMC"></a></li>
+                        <li><a href="http://www.utc.fr" target="_blank"><img src="/images/footer/logo_utc.png" width="66" height="24" alt="" title="UTC"></a></li>
+                        <li><a href="http://www.insead.edu" target="_blank"><img src="/images/footer/logo_insead.png" width="60" height="21" alt="" title="INSEAD"></a></li>
+                        <li><a href="http://www.mnhn.fr" target="_blank"><img src="/images/footer/logo_museum.png" width="82" height="26" alt="" title="MNHN"></a></li>
+                        <li><a href="http://www.pspbb.fr" target="_blank"><img src="/images/footer/logo_pspbb.png" width="68" height="49" alt="" title="PSPBB"></a></li>
+                        <li><a href="http://www.cnrs.fr" target="_blank"><img src="/images/footer/logo_cnrs.png" width="34" height="34" alt="" title="CNRS"></a></li>
+                        <li><a href="http://www.inserm.fr" target="_blank"><img src="/images/footer/logo_inserm.png" width="91" height="26" alt="" title="INSERM"></a></li>
+                        <li><a href="http://www.ird.fr" target="_blank"><img src="/images/footer/logo_ird.png" width="51" height="28" alt="" title="IRD"></a></li>
+                        <li><a href="http://www.inria.fr" target="_blank"><img src="/images/footer/logo_inria.png" width="65" height="24" alt="" title="INRIA"></a></li>
+                        <li><a href="http://www.ciep.fr" target="_blank"><img src="/images/footer/logo_ciep.png" width="22" height="38" alt="" title="CIEP"></a></li>
+                    </ul>
+                </div>
+			</section>
             <p style="color: #000000;float: right;">Logiciel <em><a target="_blank" title="Your open source candidatures management" href="http://www.emundus.fr">eMundus®</a></em></p>
         </footer>
   </div>

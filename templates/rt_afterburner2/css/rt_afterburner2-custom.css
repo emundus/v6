@@ -11,7 +11,7 @@ body {
   height: 44px;
   border-bottom-width: 1px;
   color: #9F9F9F;
-  margin-bottom: 12px; 
+  margin-bottom: 12px;
 }
 #rt-top-surround {
     color : #000000;
@@ -20,6 +20,8 @@ body {
 @media(max-width:768px) {
     .gf-menu-toggle{
         background: none;
+        float: right;
+        width: 30px;
         top: 10px;
         right: 10px;
         left: inherit;
@@ -29,13 +31,24 @@ body {
     }
     .gf-menu-toggle .icon-bar {
         background-color: #FFFFFF;
+        height: 3px;
+        width: 30px;
+    }
+    .gf-menu-device-container {
+        background: #00316B !important;
+    }
+    #responsive_menu {
+        position: relative;
+    }
+    .custom_esa {
+        margin-right: 40px;
     }
 }
 .gf-menu l1 top {
   float: right;
 }
 .gf-menu {
-  background: #00316B;
+  background: #00316B !important;
   border-radius: 8px;
   list-style: none;
   margin: 0 15px 0px;
@@ -152,6 +165,13 @@ body {
 }
 
 /************ FORM LOGIN *************/
+.sclogout-button {
+    float : right !important;
+}
+.sourcecoast form {
+    margin-top: 5px !important;
+}
+
 .component-content fieldset {
   border: 1px solid #d5d5d5;
   padding: 5px 5px 5px 5px;
@@ -202,6 +222,9 @@ form.fabrikForm i.icon-delete:before {
 .element_home_emundus {
     text-align: center;
 }
+.nav.nav-pills.pull-left li {
+    display: inline;
+}
 
 /************ FOOTER *************/
 #rt-footer {
@@ -212,40 +235,42 @@ form.fabrikForm i.icon-delete:before {
 #rt-footer a {
     color: #414146;
 }
-.footerSU.blue {
-  background: #002f6b;
-  border-color: #002f6b;
+.logos-area {
+    width: 100%;
+    background: #00316b;
+    margin: 0 0 5px;
 }
-.footerSU {
-  height: 57px;
-  border-bottom-width: 1px;
-  border-top-width: 1px;
-  border-style: solid;
-  font-family: Arial,Helvetica,sans-serif;
-  font-size: 13px;
+.holder {
+    max-width: 1044px;
+    margin: 0 auto;
+    padding: 0 10px;
+    overflow: hidden;
 }
-.footerSU .content {
-  max-width: 1024px;
-  margin: 0 auto;
+ul.logo-list {
+    width: 85%;
+    text-align: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 964px;
+    letter-spacing: -4px;
 }
-.footerSU .blasonSU {
-  width: 30px;
-  text-align: left;
-  display: inline-block;
+ul.logo-list li {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 5px 0 5px 10px;
+    letter-spacing: normal;
 }
-.footerSU .sepSU {
-  width: 1px;
-  margin: 0 8px 0 26px;
-  display: inline-block;
-}
-.footerSU .partenairesSU {
-  max-width: 1047px;
-  display: inline-block;
-}
-.rt-containerbottom {
-  margin: 0 auto;
-  text-align: center;
-  width: 60% !important;
+.company-logo {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 0 8px 0 0;
+    max-width: 70px;
+    border-right: 1px solid #90a5bf;
+    height: 41px;
 }
 .notes {
     color: #002f6b;
