@@ -3,7 +3,8 @@
 @media(min-width:768px) {
 	.position-me {
 	  position: absolute;
-	  transform: translateX(-100%);
+	  transform: translateX(27px);
+	  -webkit-transform: translateX(27px); 
 	  min-width: 152px;
 	  z-index: 99;
 	}
@@ -16,13 +17,20 @@
 	  font-size: 17px;
       color: #fff;
       font-weight: bold;
+	  transform-origin: 0% 0%;
+	-ms-transform-origin:0% 0%; /* IE 9 */
+	-webkit-transform-origin:0% 0%; /* Opera, Chrome, and Safari */
+
+	  text-align: left;
 	  
-	  transform: rotate(-90deg);
-	  transform-origin: right top;
-	  text-align: right;
+	  transform: rotate(450deg);
+	-webkit-transform: rotate(450deg);
+	-moz-transform: rotate(450deg);
+	-o-transform: rotate(450deg);
+	-ms-transform: rotate(450deg);
 	}
 	.rotate-me p {
-		margin:3px 5px 0 0;
+		margin:3px 5px 0 5px;
 	}
     .campaingapply {
         float: right!important;
