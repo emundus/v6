@@ -11,38 +11,44 @@ foreach($resultat as $resul)
 echo'</ul></div>';*/
 ?>
 <form action="<?php echo JRoute::_(JUri::getInstance()->toString(), true, $params->get('')); ?>" method="post" id="search_program">
-    <div class="navparams">
-        <div class="rt-grid-4 navsearch">
-            <div class="navsearch-content">
-                <div class="form-group sch">
-                    <input name="searchword" type="text" class="form-control" placeholder="<?php  echo JText::_("SEARCH")."..." ; ?>" <?php if (isset($_POST['searchword']) && !empty($_POST['searchword'])) { echo "value=".$_POST['searchword'];}; ?>>
-                </div>
-                <input type="submit" class="btn btn-default">
-            </div>
+    <?php if(isset($_POST['searchword']) && !empty($_POST['searchword'])) { ?>
+        <div class="rt-grid-12">
+            <p><b><?php echo JText::_("RESULT_FOR")." : ".$_POST['searchword']; ?></b></p>
+        </div>
+    <?php } ?>
+    <div class="rt-grid-12" id="navfilter">
+        <div class="rt-grid-5 navrowtabs">
+            <ul id="tabslist" class="nav nav-tabs">
+                <?php if($mod_em_campaign_param_tab) {?>
+                    <?php foreach($mod_em_campaign_list_tab as $tab) {?>
+                        <li role="presentation"><a data-toggle="tab" href="#<?php echo $tab ?>"><?php echo JText::_("MOD_EM_CAMPAIGN_LIST_".strtoupper($tab)); ?></a></li>
+                    <?php } ?>
+                <?php } ?>
+            </ul>
         </div>
         <div class="rt-grid-3 navorder">
             <p><?php if ($order=="start_date") {?>
-                    <?php if ($ordertime=="desc") {?><a href="index.php?order_date=start_date&order_time=asc"><i class="icon-chevron-down" aria-hidden="true"></i> <?php } else { ?><a href="index.php?order_date=start_date&order_time=desc"><i class="icon-chevron-up" aria-hidden="true"></i> <?php }?> <b><?php echo JText::_("CAMPAIGN_START_DATE");?></b></a> |  <a href="index.php?order_date=end_date&ordertime=<?php echo $ordertime ?>"><?php echo JText::_("LIST_DATE_END");?></a>
-                <?php } else { ?>
+                <?php if ($ordertime=="desc") {?><a href="index.php?order_date=start_date&order_time=asc"><i class="icon-chevron-down" aria-hidden="true"></i> <?php } else { ?><a href="index.php?order_date=start_date&order_time=desc"><i class="icon-chevron-up" aria-hidden="true"></i> <?php }?> <b><?php echo JText::_("CAMPAIGN_START_DATE");?></b></a> |  <a href="index.php?order_date=end_date&ordertime=<?php echo $ordertime ?>"><?php echo JText::_("LIST_DATE_END");?></a>
+                    <?php } else { ?>
                     <a href="index.php?order_date=start_date&order_time=<?php echo $ordertime ?>"><?php echo JText::_("CAMPAIGN_START_DATE");?></a>  |  <?php if ($ordertime=="desc") {?><a href="index.php?order_date=end_date&order_time=asc"><i class="icon-chevron-down" aria-hidden="true"></i> <?php } else { ?><a href="index.php?order_date=end_date&ordertime=desc"><i class="icon-chevron-up" aria-hidden="true"></i> <?php }?> <b><?php echo JText::_("LIST_DATE_END");?></b></a>
-                <?php }?> </p>
+                        <?php }?> </p>
+        </div>
+        <div class="rt-grid-4 navsearch">
+            <div class="navsearch-content">
+                <div class="rt-grid-4">
+                    <div class="input-group">
+                        <input name="searchword" type="text" class="form-control" placeholder="<?php  echo JText::_("SEARCH")."..." ; ?>" <?php if (isset($_POST['searchword']) && !empty($_POST['searchword'])) { echo "value=".$_POST['searchword'];}; ?>>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default sch" type="submit"><?php  echo JText::_("SEARCH"); ?></button>
+                        </span>
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div>
         </div>
         <div class="rt-grid-1"></div>
     </div>
-    <?php if(isset($_POST['searchword']) && !empty($_POST['searchword'])) { ?>
-        <div class="rt-grid-12">
-           <p><b><?php echo JText::_("RESULT_FOR")." : ".$_POST['searchword']; ?></b></p>
-        </div>
-    <?php } ?>
-    <div class="rt-grid-12 navrowtabs">
-        <ul id="tabslist" class="nav nav-tabs">
-        <?php if($mod_em_campaign_param_tab) {?>
-            <?php foreach($mod_em_campaign_list_tab as $tab) {?>
-                <li role="presentation"><a data-toggle="tab" href="#<?php echo $tab ?>"><?php echo JText::_("MOD_EM_CAMPAIGN_LIST_".strtoupper($tab)); ?></a></li>
-            <?php } ?>
-        <?php } ?>
-        </ul>
-    </div>
+
+
     <div class="tab-content">
         <div id="current" class="tab-pane fade in active">
             <div class="rt-grid-12">
