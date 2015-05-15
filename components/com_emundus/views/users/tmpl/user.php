@@ -135,4 +135,5 @@
 <?php endif;?>
 <script type="text/javascript">
 	refreshFilter();
+
 </script>

@@ -6,9 +6,11 @@
 function reloadActions(view)
 {
 	//addDimmer();
+    var mutli = 0;
+    multi = $('.em-check:checked').length;
     $.ajax({
         type: "GET",
-        url: 'index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId + '&display=inline',
+        url: 'index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId + '&display=inline&multi='+multi,
         dataType: 'html',
         success: function(data)
         {
@@ -135,7 +137,7 @@ function reloadData() {
 }
 
 function addDimmer() {
-	$('.col-md-9 .panel.panel-default').before('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+    $('.row').before('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
 }
 
 function refreshFilter() {
@@ -638,53 +640,9 @@ $(document).ready(function()
 			                  })
 
 	                  });
-	                  $(document).on('change', '.em-check', function()
-	                  {
-		                  if(($(this).attr('id') == 'em-check-all') || ($(this).attr('id') == 'em-check-all-all'))
-		                  {
-			                  $('.em-check-all-all').show();
-			                  if($(this).is(':checked'))
-			                  {
-				                  $(this).prop('checked', true);
-				                  $('.em-check').prop('checked', true);
-				                  $('.dropdown-menu .em-actions[multi="0"]').hide();
-				                  $('.dropdown-menu .em-actions[multi="1"]').show();
-			                  }
-			                  else
-			                  {
-				                  $('.em-check-all-all').hide();
-				                  $(this).prop('checked', false);
-				                  $('.em-check').prop('checked', false);
-				                  $('.dropdown-menu .em-actions[multi="0"]').hide();
-				                  $('.dropdown-menu .em-actions[multi="1"]').hide();
-			                  }
-		                  }
-		                  else
-		                  {
-			                  $('#em-check-all').prop('checked', false);
-			                  $('#em-check-all-all').prop('checked', false);
-
-			                  if($('.em-check:checked').length == 0)
-			                  {
-				                  $('.dropdown-menu .em-actions[multi="0"]').hide();
-				                  $('.dropdown-menu .em-actions[multi="1"]').hide();
-			                  }
-			                  else if($('.em-check:checked').length == 1)
-			                  {
-				                  $('.dropdown-menu .em-actions[multi="0"]').show();
-				                  $('.dropdown-menu .em-actions[multi="1"]').show();
-			                  }
-			                  else
-			                  {
-				                  $('.dropdown-menu .em-actions[multi="0"]').hide();
-				                  $('.dropdown-menu .em-actions[multi="1"]').show();
-			                  }
-		                  }
-	                  });
 	                  $(document).on('click', '.em-dropdown', function(e)
 	                  {
 		                  var id = $(this).attr('id');
-
 		                  $('ul.dropdown-menu.open').hide();
 		                  $('ul.dropdown-menu.open').removeClass('open');
 		                  if ($('ul[aria-labelledby="' + id + '"]').hasClass('open'))
