@@ -12,6 +12,12 @@ defined('_JEXEC') or die;
 // Note. It is important to remove spaces between elements.
 if (!empty($this->items)) :
 ?>
+<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-inverse-collapse">
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+</button>
+<span class="navbar-brand" href="#">Actions</span>
 <div class="navbar-collapse collapse navbar-inverse-collapse">
 <ul class="nav navbar-nav" style="display:<?php echo $this->display; ?>">
 <?php

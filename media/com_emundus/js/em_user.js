@@ -14,6 +14,8 @@ function reloadActions(view)
         {
             //$('.em-dimmer').remove();
             //$(".col-md-9 .panel.panel-default").remove();
+
+            $(".navbar.navbar-inverse").empty();
             $(".navbar.navbar-inverse").append(data);
         },
         error: function(jqXHR, textStatus, errorThrown) {

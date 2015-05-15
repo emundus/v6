@@ -41,7 +41,7 @@ class EmundusViewUsers extends JViewLegacy
 
 		parent::__construct($config);
 	}
-    /*
+
             private function _loadData()
         {
             $userModel = new EmundusModelUsers();
@@ -55,10 +55,10 @@ class EmundusViewUsers extends JViewLegacy
             $lists['order']   = JFactory::getSession()->get( 'filter_order' );
             $this->assignRef('lists', $lists);
         }
-        /*
+
             private function _loadFilter()       {
 
-                /*$menu = JSite::getMenu()->getActive();
+                $menu = JSite::getMenu()->getActive();
                 $access = !empty($menu)?$menu->access : 0;
 
                 $state			= EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access)  ? '' : NULL;
@@ -168,7 +168,7 @@ class EmundusViewUsers extends JViewLegacy
 		$this->assignRef('groups', $g);
 		$this->assignRef('users', $users);
 	}
-*/
+
     function display($tpl = null)
     {
 	    JHtml::script( JURI::base() . 'media/com_emundus/lib/jquery-1.10.2.min.js');
@@ -186,7 +186,7 @@ class EmundusViewUsers extends JViewLegacy
 		}
 
 
-/*
+
 		$layout = JFactory::getApplication()->input->getString('layout', null);
 		switch  ($layout)
 		{
@@ -245,7 +245,7 @@ class EmundusViewUsers extends JViewLegacy
 
 		$onSubmitForm = EmundusHelperJavascript::onSubmitForm();
 		$this->assignRef('onSubmitForm', $onSubmitForm);
-        */
+
         $this->assignRef('itemId', @JFactory::getApplication()->input->getInt('Itemid', null));
 
 
