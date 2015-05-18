@@ -4,7 +4,7 @@
 function application_form_pdf($user_id, $rowid, $output = true) {
 	jimport( 'joomla.html.parameter' );
 
-	$rowid = JRequest::getVar('rowid', null, 'GET', 'none',0);
+	//$rowid = JRequest::getVar('rowid', null, 'GET', 'none',0);
 
 	$db = JFactory::getDBO();
 
@@ -20,7 +20,7 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	$current_user =  JFactory::getUser();
 	$user =  JFactory::getUser($user_id); 
 
-	$application = new EmundusModelApplication;
+	$application = new @EmundusModelApplication;
 
 	// Element Fabrik ID list to display in PDF
 	$elts = array(2111, 2112, 2114, 2117, 2133, 2119, 2120, 2121, 2123, 2124, 2125, 2126, 2127);
@@ -30,7 +30,7 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	$forms = $application->getFormsPDFElts($user_id, $elts, $options);
 
 	// Set title for PDF
-	$title = EmundusHelperList::getElementsDetailsByID(2113); 
+	$title = @emunduShelpeRlist::getElementsDetailsByID(2113); 
 
 	$where = 'user='.$user_id;
 	$where .= $options['rowid']>0?' AND id='.$options['rowid']:'';
@@ -48,7 +48,7 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor('www.emundus.fr');
-	$pdf->SetTitle('Application Form');
+	$pdf->SetTitle('Fiche emploi étudiant');
 	
 	//get logo
 	$app 		= JFactory::getApplication();
@@ -88,7 +88,7 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 		$start_y = $pdf->GetY();
 		$start_page = $pdf->getPage();
 		//$pdf->Bookmark($itemt->label, 0);
-		$pdf->writeHTMLCell(0,'','',$start_y,$htmldata,'B', 1);
+		$pdf->writeHTMLCell(0,'','',$start_y, preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata),'B', 1);
 		// $pdf->Ln(1);
 		$end_page = $pdf->getPage();
 		/*if ($end_page != $start_page) {
@@ -108,9 +108,9 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	}
 */
 	if($output){
-		$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.'application.pdf', 'FI');
+		$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.'fiche_'.$rowid.'.pdf', 'FI');
 	}else{
-		$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.'application.pdf', 'FI');
+		$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.'fiche_'.$rowid.'.pdf', 'FI');
 	}
 
 }

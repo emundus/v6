@@ -113,7 +113,7 @@ class EmundusController extends JControllerLegacy {
         $user = JFactory::getUser();
         $student_id = JRequest::getVar('user', null, 'GET', 'none',0);
         $fnum = JRequest::getVar('fnum', null, 'GET', 'none',0);
-        $rowid = JRequest::getVar('rowid', null, 'GET', 'none',0);
+        $rowid = explode('-', JRequest::getVar('rowid', null, 'GET', 'none',0));
 
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_emploi.php';
 
@@ -128,7 +128,7 @@ class EmundusController extends JControllerLegacy {
         require_once($file);
 
         if(EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            application_form_pdf(!empty($student_id)?$student_id:$user->id, $rowid, true);
+            application_form_pdf(!empty($student_id)?$student_id:$user->id, $rowid[0], true);
         } else
             die(JText::_('ACCESS_DENIED'));
 
