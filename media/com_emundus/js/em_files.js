@@ -739,7 +739,8 @@ $(document).ready(function()
                 case 'add-filter':
                     addElement();
                     break;
-                case 'em-close-file':
+                case 'em-close-file': document.location.hash = "close";
+                    $('.alert.alert-warning').remove();
                 case 'em-mini-file':
                     $('#em-appli-block').remove();
                     $('.em-close-minimise').remove();
