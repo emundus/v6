@@ -1,4 +1,4 @@
-/******************************** 
+/********************************
  *        com_emundus
  ********************************/
  .hidden{
@@ -507,11 +507,6 @@ input.btnhov {
 	-webkit-border-radius:7px;
 	border-radius:7px;
 }
-.em_email_block div {
-	display:table !important;
-	width: 100%;
-}
-
 .em_email_block fieldset {
 	margin: 0 0 15px 0 !important;
 }
