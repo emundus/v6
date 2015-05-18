@@ -30,7 +30,7 @@ $student 	= JFactory::getUser();
 $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=1 WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
 try {
-    $db->Query();
+    $db->execute();
 } catch (Exception $e) {
     // catch any database errors.
 }
@@ -38,7 +38,7 @@ echo $query;
 $query = 'UPDATE #__emundus_declaration SET time_date=NOW() WHERE user='.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
 try {
-    $db->Query();
+    $db->execute();
 } catch (Exception $e) {
     // catch any database errors.
 }
@@ -99,7 +99,7 @@ if (count($recipients) > 0) {
 						('.$referent->id.', 13, '.$db->Quote($student->fnum).', 0,1,1,0),
 						('.$referent->id.', 14, '.$db->Quote($student->fnum).', 1,1,1,0)';
         $db->setQuery( $query );
-        $db->query();
+        $db->execute();
     }
 }
 
@@ -159,7 +159,8 @@ if (count($trigger_emails) > 0) {
                 $replyto = $from;
                 $replytoname = $fromname;
 
-                $res = JMail::sendMail( $from, $fromname, $to, $subject, $body, true );
+                $res = JFactory::getMailer()->sendMail( $from, $fromname, $to, $subject, $body, true );
+
                 if($res){
                     $message = array(
                         'user_id_from' => $from_id,

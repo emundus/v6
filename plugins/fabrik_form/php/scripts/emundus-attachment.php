@@ -55,7 +55,7 @@ if (!rename(JPATH_SITE.$upload->filename, EMUNDUS_PATH_ABS.$upload->user_id.DS.$
 	die("ERROR_MOVING_UPLOAD_FILE");
 
 $db->setQuery('UPDATE #__emundus_uploads SET filename="'.$nom.'" WHERE id='.$upload->id);
-$db->query();
+$db->execute();
 
 // PHOTOS
 if ($attachment_params->lbl=="_photo") {
@@ -118,6 +118,6 @@ if ($inform_applicant_by_email == 1) {
 	$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
 					VALUES ('".$from_id."', '".$student->id."', '".$subject."', '".$body."', NOW())";
 	$db->setQuery( $sql );
-	$db->query();
+	$db->execute();
 }
 ?>

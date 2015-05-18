@@ -25,14 +25,22 @@ $applicants 			 = explode(',',$id_applicants);
 $fnum = $mainframe->input->get('rowid', null, 'ALNUM');
 
 if(!EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
-		echo "<script>$('rt-header').remove(); $('rt-footer').remove(); $('gf-menu-toggle').remove(); $('rt-secondmenu').remove();</script>";
+    if ($jinput->get('tmpl')=='component') {
+        JHTML::stylesheet( JURI::Base().'media/com_fabrik/css/fabrik.css' );
+        JHTML::stylesheet( JURI::Base().'media/system/css/modal.css' );
+        $doc = JFactory::getDocument();
+        $doc->addScript(JURI::Base()."media/com_fabrik/js/window-min.js");
+        $doc->addScript(JURI::Base()."media/com_fabrik/js/lib/form_placeholder/Form.Placeholder.js");
+        $doc->addScript(JURI::Base()."templates/rt_afterburner2/js/rokmediaqueries.js");
     }
+    //echo "<script>$('rt-header').remove(); $('rt-footer').remove(); $('gf-menu-toggle').remove();</script>";
 } else{
-    if ($user->fnum != $fnum && !empty($fnum)) {
-        JError::raiseNotice('ERROR', JText::_('ERROR'));
+    if (($user->fnum != $fnum && $fnum != -1) && !empty($fnum)) {
+        JError::raiseNotice('ERROR', JText::_('ERROR...'));
         $mainframe->redirect("index.php");
     }
 }
+
 
 //$registered = $db->loadResult();
 if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){

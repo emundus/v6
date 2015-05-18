@@ -247,7 +247,7 @@ class EmundusController extends JControllerLegacy {
             if (unlink($chemin.$user->id.DS.$filename)) {
                 $query 	= 'DELETE FROM #__emundus_uploads WHERE id = '.mysql_real_escape_string($id).' AND user_id = '.mysql_real_escape_string($user->id). ' AND fnum like '.$db->Quote($fnum);
                 $db->setQuery( $query );
-                $db->Query() or die($db->getErrorMsg());
+                $db->execute() or die($db->getErrorMsg());
                 if (is_file($chemin.$user->id.DS.'tn_'.$filename)) unlink($chemin.$user->id.DS.'tn_'.$filename);
                 $this->setRedirect($url, JText::_('File has been succesfully deleted'), 'message');
             } else {
@@ -256,7 +256,7 @@ class EmundusController extends JControllerLegacy {
         } else {
             $query 	= 'DELETE FROM #__emundus_uploads WHERE id = '.mysql_real_escape_string($id).' AND user_id = '.mysql_real_escape_string($user->id). ' AND fnum like '.$db->Quote($fnum);
             $db->setQuery( $query );
-            $db->Query() or die($db->getErrorMsg());
+            $db->execute() or die($db->getErrorMsg());
             $this->setRedirect($url, JText::_('File was not existing, thanks for checking that your other attachments are correctly uploaded'), 'notice');
         }
     }
@@ -412,7 +412,7 @@ class EmundusController extends JControllerLegacy {
         if(!empty($query)) {
             $query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES '.substr($query,0,-1);
             $db->setQuery( $query );
-            $db->Query() or die($db->getErrorMsg());
+            $db->execute() or die($db->getErrorMsg());
             JFactory::getApplication()->enqueueMessage($nb.($nb>1?' '.JText::_("FILE_BEEN_UPLOADED"):' '.JText::_("FILES_BEEN_UPLOADED")), 'message');
         }
         if (isset($layout))
@@ -457,7 +457,7 @@ class EmundusController extends JControllerLegacy {
         $db = JFactory::getDBO();
 // ATTACHMENTS
         $db->setQuery('DELETE FROM #__emundus_setup_attachment_profiles WHERE profile_id = '.$profile_id);
-        $db->Query() or die($db->getErrorMsg());
+        $db->execute() or die($db->getErrorMsg());
         if(isset($attachments)) {
             $query = 'INSERT INTO #__emundus_setup_attachment_profiles (`profile_id`, `attachment_id`, `displayed`, `mandatory`, `bank_needed`) VALUES';
             foreach($attachments as $id => $attachment) {
@@ -471,7 +471,7 @@ class EmundusController extends JControllerLegacy {
                 $query .= '),';
             }
             $db->setQuery( substr($query, 0, -1) );
-            $db->Query() or die($db->getErrorMsg());
+            $db->execute() or die($db->getErrorMsg());
         }
 // FORMS
         $Itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
@@ -709,7 +709,7 @@ class EmundusController extends JControllerLegacy {
 						AND m.state = 1
 						LIMIT 0,'.$nb_email_per_batch;
             $db->setQuery( $query );
-            $db->query();
+            $db->execute();
 
             if($db->getNumRows() == 0){
                 $this->setRedirect('index.php?option=com_fabrik&view=table&tableid=90&Itemid='.$itemid);
@@ -727,7 +727,7 @@ class EmundusController extends JControllerLegacy {
                         usleep(100);
                         $query = 'UPDATE #__messages SET state = 0 WHERE user_id_to ='.$m->user_id_to;
                         $db->setQuery($query);
-                        $db->Query();
+                        $db->execute();
                     }
                 }
                 $this->setRedirect('index.php?option=com_emundus&task=sendmail&keyid='.$keyid.'&Itemid='.$itemid);
@@ -795,7 +795,7 @@ class EmundusController extends JControllerLegacy {
             $db = JFactory::getDBO();
             $query = 'UPDATE `'.$data[0].'` SET `'.$data[1].'`='.$db->Quote($value).' WHERE `'.$column.'` = '.$db->Quote((int)$uid). $and;
             $db->setQuery($query);
-            $db->Query();
+            $db->execute();
             if ($value > 0){
                 $img = 'tick.png';
                 $btn = 'unvalidate|'.$uid;

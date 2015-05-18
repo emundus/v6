@@ -71,7 +71,7 @@ $mode = 1;
 $replyto = $user->email;
 $replytoname = $user->name;
 
-$res = JMail::sendMail(( $from, $fromname, $recipient, $subject, $body, true );
+$res = JMail::sendMail( $from, $fromname, $recipient, $subject, $body, true );
 if($res){
     $message = array(
         'user_id_from' => $from_id,

@@ -1,6 +1,6 @@
 <?php
 
-function application_form_pdf_utc_dfp_dri($user_id, $fnum = null, $output = true) {
+function application_form_pdf($user_id, $fnum = null, $output = true) {
 	jimport( 'joomla.html.parameter' );
 
 	$rowid = JRequest::getVar('rowid', null, 'GET', 'none',0);
