@@ -175,13 +175,13 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                         } else {
                             console.log(result);
                             $('.em-dimmer').remove();
-                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?php echo JText::_('NO_RESULT') ?></div>");
+                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?php echo JText::_('CANNOT_OPEN_FILE') ?></div>");
                         }
                     },
                     error: function (jqXHR, textStatus, errorThrown)
                     {
                         $('.em-dimmer').remove();
-                        $("<div class=\"alert alert-warning\"><?php echo JText::_('NO_RESULT') ?></div>").prepend($(".panel.panel-default"));
+                        $("<div class=\"alert alert-warning\"><?php echo JText::_('CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
                         console.log(jqXHR.responseText);
                     }
                 })
