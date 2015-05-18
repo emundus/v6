@@ -20,7 +20,7 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	$current_user =  JFactory::getUser();
 	$user =  JFactory::getUser($user_id); 
 
-	$application = new @EmundusModelApplication;
+	$application = new EmundusModelApplication;
 
 	// Element Fabrik ID list to display in PDF
 	$elts = array(2111, 2112, 2114, 2117, 2133, 2119, 2120, 2121, 2123, 2124, 2125, 2126, 2127);
@@ -30,7 +30,7 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	$forms = $application->getFormsPDFElts($user_id, $elts, $options);
 
 	// Set title for PDF
-	$title = @emunduShelpeRlist::getElementsDetailsByID(2113); 
+	$title = @EmundusHelperList::getElementsDetailsByID(2113); 
 
 	$where = 'user='.$user_id;
 	$where .= $options['rowid']>0?' AND id='.$options['rowid']:'';
