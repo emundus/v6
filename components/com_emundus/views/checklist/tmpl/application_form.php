@@ -9,7 +9,7 @@ $user = JFactory::getUser();
 $_db = JFactory::getDBO();
 $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 
-$forms = EmundusHelperMenu::buildMenuQuery($user->profile);
+$forms = @EmundusHelperMenu::buildMenuQuery($user->profile);
 ?>
 </ul>
 <?php 
