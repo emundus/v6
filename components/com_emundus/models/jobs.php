@@ -347,7 +347,7 @@ class EmundusModelJobs extends JModelList
 	 * @return  JForm/false  the JForm object or false
 	 *
 	 */
-	public function getFilterForm()
+	public function getFilterForm($data = array(), $loadData = true)
 	{
 		$form = null;
 
