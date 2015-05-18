@@ -608,7 +608,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true) {
 	$logo 		= preg_match_all("/'([^']*)'/", $image, $matches);
 	$logo 		= !empty($matches[1][1]) ? JPATH_ROOT.DS.$matches[1][1] : preg_match_all('/"([^"]*)"/', $image, $matches);
 	$logo 		= !empty($logo) ? JPATH_ROOT.DS.$matches[1][1] : "";
-	
+
 	//get title
 	$title = $config->get('sitename');
 	$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
@@ -716,11 +716,12 @@ $htmldata .= '
 			//$output?'FI':'F'
 			$name = 'application_form_'.date('Y-m-d_H-i-s').'.pdf';
 			$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.$name, 'FI');
+            $attachment = $application->getAttachmentByLbl("_application_form");
 			$keys = array('user_id', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed', 'campaign_id', 'fnum' );
-			$values = array($item->user_id, '(SELECT id FROM #__emundus_setup_attachments WHERE lbl = "_application_form")', $name, $item->training.' '.date('Y-m-d H:i:s'), 0, 0, $campaign_id, $fnum);
+			$values = array($item->user_id, $attachment['id'], $name, $item->training.' '.date('Y-m-d H:i:s'), 0, 0, $campaign_id, $fnum);
 			$data = array('key' => $keys, 'value' => $values);
-			
 			$application->uploadAttachment($data);
+
 		}else{
 			$pdf->Output(EMUNDUS_PATH_ABS.@$item->user_id.DS.$fnum.'_application.pdf', 'FI');
 		}

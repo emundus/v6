@@ -258,15 +258,35 @@ class EmundusModelApplication extends JModelList
     }
 
     public function uploadAttachment($data) {
-        $query = 'INSERT INTO #__emundus_uploads ('.implode(",", $data["key"]).') VALUES ('.implode(",", $data["value"]).')';
-        $this->_db->setQuery( $query );
-        $this->_db->Query() or die($this->_db->getErrorMsg());
+        try
+        {
+           /* $i = 0;
+            foreach ($data['value'] as $key=>$value) {
+                $data['value'][$i] =  str_replace('"','', $value);
+                $i++;
+            }*/
+            $query = "INSERT INTO #__emundus_uploads (".implode(',', $data["key"]).") VALUES ('".implode("','", $data["value"])."')";
+            $this->_db->setQuery( $query );
+            $this->_db->execute();
+            return $this->_db->insertid();
+        }
+        catch (RuntimeException $e)
+        {
+            JFactory::getApplication()->enqueueMessage($e->getMessage());
 
-        return $this->_db->insertid();
+            return false;
+        }
     }
 
     public function getAttachmentByID($id) {
         $query = "SELECT * FROM #__emundus_setup_attachments WHERE id=".$id;
+        $this->_db->setQuery($query);
+
+        return $this->_db->loadAssoc();
+    }
+
+    public function getAttachmentByLbl($label) {
+        $query = "SELECT * FROM #__emundus_setup_attachments WHERE lbl LIKE".$this->_db->Quote($label);
         $this->_db->setQuery($query);
 
         return $this->_db->loadAssoc();
