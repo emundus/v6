@@ -1271,6 +1271,7 @@ $(document).ready(function()
                         if(result.status)
                         {
                             $('.modal-body').empty();
+                            $('.modal-body').append('<div><h4>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE')+'</h4> <select name="em-export-methode" id="em-export-methode" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+'</option><option value="1" data-value="1">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN')+'</option></select></div>');
                             $('.modal-body').append('<div><h4>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+'</h4> <select name="em-export-form" id="em-export-form" class="chzn-select"></select></div>');
                             var defaults = '<h6>'+Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM')+'</h6><div id="em-export-elts" class="well"><ul id="em-export"></ul></div>';
                             var item ="";
@@ -1310,7 +1311,7 @@ $(document).ready(function()
                                 item += '<option value="'+result.elts[d].id+'" data-value="'+result.elts[d].element_label+'">'+result.elts[d].element_label+'</option>';
                             }
                             $('#em-export-form').append(item);
-                            $('#em-export-form').chosen();
+                            $('#em-export-form').chosen({width: "95%"});
 
                             $('.modal-body').append('<div class="well">' +
                             '<input class="em-ex-check" type="checkbox" value="photo" name="em-ex-photo" id="em-ex-photo"/>' +
