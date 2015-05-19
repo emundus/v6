@@ -1727,6 +1727,8 @@ $(document).ready(function()
                 objJson = objJson.substr(0, objJson.length - 1);
                 objJson += '}';
 
+                methode = $('#em-export-methode').val();
+
                 $('.modal-body').empty();
                 $('.modal-body').append('<div>' +
                 '<h5>'+Joomla.JText._('COM_EMUNDUS_EXCEL_GENERATION')+'</h5>'+
@@ -1737,7 +1739,7 @@ $(document).ready(function()
                         type:'post',
                         url:'index.php?option=com_emundus&controller='+$('#view').val()+'&task=send_elements&Itemid='+itemId,
                         dataType:'JSON',
-                        data:{fnums: checkInput, elts: eltJson, objs:objJson},
+                        data:{fnums: checkInput, elts: eltJson, objs:objJson, methode:methode},
                         success: function(result)
                         {
                             if (result.status)

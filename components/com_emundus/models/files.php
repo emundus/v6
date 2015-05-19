@@ -1864,15 +1864,17 @@ class EmundusModelFiles extends JModelLegacy
 	/**
 	 * @param $fnums
 	 * @param $elements
+	 * @param $methode  aggregate in one cell (0) or split one data per line
 	 * @return bool|mixed
 	 */
-	public function getFnumArray($fnums, $elements)
+	public function getFnumArray($fnums, $elements, $methode=0)
 	{ 
 		try
 		{
 			$db = $this->getDbo();
 			$query = 'select c.fnum, u.email, esc.label, sp.code, esc.id as campaign_id';
 			$leftJoin = '';
+			$leftJoinMulti = '';
 			$tableAlias = array('jos_emundus_setup_campaigns' => 'esc',
 			                    'jos_emundus_campaign_candidature' => 'c',
 			                    'jos_emundus_setup_programmes' => 'sp',
@@ -1885,12 +1887,22 @@ class EmundusModelFiles extends JModelLegacy
 
 				if (array_key_exists($elt->tab_name, $tableAlias))
 				{
-					if ($params_group->repeat_group_button == 1) 
-						$query .= ', (
+					if ($params_group->repeat_group_button == 1) {
+						if ($methode == 1) {
+							$query .= ', '.$elt->tab_name.'_'.$elt->group_id.'_repeat'.'.'.$elt->element_name.' AS '. $elt->tab_name.'_'.$elt->group_id.'_repeat___'.$elt->element_name;
+							if(!in_array($elt->tab_name.'_'.$elt->group_id.'_repeat', $lastTab)) {
+								$leftJoinMulti .= ' left join ' . $elt->tab_name.'_'.$elt->group_id.'_repeat on '. $elt->tab_name.'_'.$elt->group_id.'_repeat.parent_id='.$elt->tab_name.'.id ';
+							}
+							$lastTab[] = $elt->tab_name.'_'.$elt->group_id.'_repeat';
+						}
+						else {
+							$query .= ', (
 										SELECT GROUP_CONCAT('.$tableAlias[$elt->tab_name].'_'.$elt->group_id.'_repeat'.'.'.$elt->element_name.' SEPARATOR ", ") 
 										FROM '.$tableAlias[$elt->tab_name].'_'.$elt->group_id.'_repeat 
 										WHERE '.$tableAlias[$elt->tab_name].'_'.$elt->group_id.'_repeat.parent_id='.$tableAlias[$elt->tab_name].'.id
 									  )	AS '. $elt->tab_name.'_'.$elt->group_id.'_repeat___'.$elt->element_name;
+						}
+					}
 					else {
                         $select = $tableAlias[$elt->tab_name].'.'.$elt->element_name;
                         if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
@@ -1905,12 +1917,22 @@ class EmundusModelFiles extends JModelLegacy
 				}
 				else
 				{
-					if ($params_group->repeat_group_button == 1) 
-						$query .= ', (
+					if ($params_group->repeat_group_button == 1) {
+						if ($methode == 1) {
+							$query .= ', '.$elt->tab_name.'_'.$elt->group_id.'_repeat'.'.'.$elt->element_name.' AS '. $elt->tab_name.'_'.$elt->group_id.'_repeat___'.$elt->element_name;
+							if(!in_array($elt->tab_name.'_'.$elt->group_id.'_repeat', $lastTab)) {
+								$leftJoinMulti .= ' left join ' . $elt->tab_name.'_'.$elt->group_id.'_repeat on '. $elt->tab_name.'_'.$elt->group_id.'_repeat.parent_id='.$elt->tab_name.'.id ';
+							}
+							$lastTab[] = $elt->tab_name.'_'.$elt->group_id.'_repeat';
+						}
+						else {
+							$query .= ', (
 										SELECT GROUP_CONCAT('.$elt->tab_name.'_'.$elt->group_id.'_repeat'.'.'.$elt->element_name.' SEPARATOR ", ") 
 										FROM '.$elt->tab_name.'_'.$elt->group_id.'_repeat 
 										WHERE '.$elt->tab_name.'_'.$elt->group_id.'_repeat.parent_id='.$elt->tab_name.'.id
 									  )	AS '. $elt->tab_name.'_'.$elt->group_id.'_repeat___'.$elt->element_name;
+						}
+					}
 					else {
                         $select = $elt->tab_name.'.'.$elt->element_name;
 
@@ -1930,7 +1952,7 @@ class EmundusModelFiles extends JModelLegacy
 
 					if(!in_array($elt->tab_name, $lastTab))
 					{
-						$leftJoin .= 'left join ' . $elt->tab_name .  ' on '. $elt->tab_name .'.fnum like c.fnum ';
+						$leftJoin .= ' left join ' . $elt->tab_name .  ' on '. $elt->tab_name .'.fnum like c.fnum ';
 					}
 					
 					$lastTab[] = $elt->tab_name;
@@ -1941,7 +1963,7 @@ class EmundusModelFiles extends JModelLegacy
 						left join #__emundus_setup_campaigns as esc on esc.id = c.campaign_id 
 						left join #__emundus_setup_programmes as sp on sp.code like esc.training ';
 
-			$query .= $leftJoin;
+			$query .= $leftJoin. ' '. $leftJoinMulti;
 
 			//$q = $this->_buildWhere($tableAlias);
 

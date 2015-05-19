@@ -831,9 +831,10 @@ class EmundusControllerFiles extends JControllerLegacy
         $elts = (array) json_decode(stripcslashes($elts));
         $objs = $jinput->getString('objs', null);
         $objs = (array) json_decode(stripcslashes($objs));
+        $methode = $jinput->getString('methode', 0);
 
         // export Excel
-        $name = $this->export_xls($validFnums, $objs, $elts);
+        $name = $this->export_xls($validFnums, $objs, $elts, $methode);
         $result = array('status' => true, 'name' => $name);
         echo json_encode((object) $result);
         exit();
@@ -931,10 +932,11 @@ class EmundusControllerFiles extends JControllerLegacy
      * @param $fnums
      * @param $objs
      * @param $element_id
+     * @param $methode  aggregate in one cell (0) or split one data per line
      * @return string
      * @throws Exception
      */
-    public function export_xls($fnums, $objs, $element_id)
+    public function export_xls($fnums, $objs, $element_id, $methode=0)
     {
         //$mainframe = JFactory::getApplication();
         $current_user = JFactory::getUser();
@@ -956,7 +958,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $model = $this->getModel('Files');
         $elements = @EmundusHelperFiles::getElementsName(implode(',',$element_id));
-        $fnumsArray = $model->getFnumArray($fnums, $elements);
+        $fnumsArray = $model->getFnumArray($fnums, $elements, $methode);
         $status = $model->getStatusByFnums($fnums);
 
         $menu = @JSite::getMenu();
