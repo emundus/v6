@@ -143,10 +143,12 @@ function reloadActions(view, fnum, onCheck)
     view = (typeof view === "undefined") ? "files" : view;
     fnum = (typeof fnum === "undefined") ? 0 : fnum;
     //addDimmer();
+    var mutli = 0;
+    multi = $('.em-check:checked').length;
     $.ajax({
         type: "GET",
         async: false,
-        url: 'index.php?option=com_emundus&view='+view+'&layout=menuactions&format=raw&Itemid=' + itemId+ '&display=none&fnum='+fnum,
+        url: 'index.php?option=com_emundus&view='+view+'&layout=menuactions&format=raw&Itemid=' + itemId+ '&display=none&fnum='+fnum+'&multi='+multi,
         dataType: 'html',
         success: function(data)
         {
