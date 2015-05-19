@@ -225,6 +225,19 @@ form.fabrikForm i.icon-delete:before {
 .nav.nav-pills.pull-left li {
     display: inline;
 }
+.legend {
+    border: 1px solid #d5d5d5;
+    padding: 5px 5px 5px 5px;
+    margin-left: -6px;
+    border-radius: 5px 5px 5px 5px;
+    color: #777777;
+    font-weight: bold;
+    text-shadow: 0 1px 0 #FFFFFF;
+    background-color: #c0c0c0;
+    border-bottom: 1px solid #B7B7B7;
+    background: linear-gradient(to left top,#F3F3F3,#D7D7D7);
+    background: -webkit-gradient(linear, left top, left bottom, from(#F3F3F3), to(#D7D7D7) );
+}
 
 /************ FOOTER *************/
 #rt-footer {
