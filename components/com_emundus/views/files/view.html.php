@@ -24,17 +24,7 @@ class EmundusViewFiles extends JViewLegacy
 	protected $actions;
 
 	public function __construct($config = array())
-	{/*
-//		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
-*/
-		
+	{
 		parent::__construct($config);
 	}
 
@@ -46,19 +36,8 @@ class EmundusViewFiles extends JViewLegacy
 
     	// translation to load in javacript file ; /media/com_emundus/em_files.js
     	// put it in com_emundus/emundus.php
-/*
-		JHtml::script('jquery-1.10.2.min.js', JURI::base() . 'media/com_emundus/lib/');
-		JHtml::script('jquery-ui-1.8.18.min.js', JURI::base() . 'media/com_emundus/lib/');
-		JHtml::script('jquery.doubleScroll.js', JURI::base()."media/com_emundus/lib/" );
+		JHtml::styleSheet(JURI::base()."media/com_emundus/lib/chosen/chosen.min.css");
 
-    	JHtml::script('bootstrap.min.js', JURI::base() . 'media/com_emundus/lib/bootstrap-emundus/js/');
-		JHtml::script('chosen.jquery.min.js', JURI::base()."media/com_emundus/lib/chosen/" );
-
-	    JHTML::script( 'em_files.js', JURI::Base().'media/com_emundus/js/');
-    */	JHtml::styleSheet(JURI::base()."media/com_emundus/lib/chosen/chosen.min.css");/*
-	    JHtml::stylesheet('bootstrap.min.css', JURI::base() . 'media/com_emundus/lib/bootstrap-emundus/css/');
-	    JHtml::stylesheet('emundus_files.css', JURI::base() . 'media/com_emundus/css/');
-*/
 	    $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 
 		/* Get the values from the state object that were inserted in the model's construct function */

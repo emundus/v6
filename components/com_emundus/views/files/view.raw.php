@@ -21,7 +21,7 @@ jimport( 'joomla.application.component.view');
  
 class EmundusViewFiles extends JViewLegacy
 {
-	protected $itemId;
+	//protected $itemId;
 	protected $actions;
 
 	public function __construct($config = array())
@@ -40,6 +40,8 @@ class EmundusViewFiles extends JViewLegacy
 
     public function display($tpl = null)
     {
+    	JHtml::styleSheet(JURI::base()."media/com_emundus/css/emundus.css");
+
     	$current_user = JFactory::getUser();
 
 		if( !EmundusHelperAccess::asPartnerAccessLevel($current_user->id) )
@@ -53,7 +55,6 @@ class EmundusViewFiles extends JViewLegacy
 	    $this->cfnum = $app->input->getString('cfnum', null);
 	    $layout = $app->input->getString('layout', null);
 	    $model = $this->getModel('Files');
-
 
 		switch  ($layout)
 		{

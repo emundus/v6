@@ -477,7 +477,7 @@ class EmundusModelApplication extends JModelList
                     $this->_db->setQuery( $query );
                     $elements = $this->_db->loadObjectList();
                     if(count($elements)>0) {
-                        $forms .= '<fieldset><legend>';
+                        $forms .= '<fieldset><legend class="legend">';
                         $forms .= $itemg->label;
                         $forms .= '</legend>';
 

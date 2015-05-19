@@ -2,7 +2,7 @@
 /**
  * @package     Joomla.Site
  * @subpackage  com_emundus
- * @copyright   Copyright (C) 2014 Décision Publique. All rights reserved.
+ * @copyright   Copyright (C) 2015 eMundus. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -25,15 +25,18 @@ if (!empty($this->items)) :
         } 
         else {
             switch ($multiple) {
-                case 0 : if ($item->action['multi']==-1) {
+                case 0 : 
+                if ($item->action['multi']==-1) {
                     echo '<li class="em-actions" id="' . $item->note . '" multi="' . $item->action['multi'] . '"><a id="l_' . $item->note . '" multi="' . $item->action['multi'] . '" href="' . $item->link . '">' . $item->title . '</a>';
-                    }
-                    break;
+                }
+                break;
 
-                case 1 : echo '<li class="em-actions" id="' . $item->note . '" multi="' . $item->action['multi'] . '"><a id="l_' . $item->note . '" multi="' . $item->action['multi'] . '" href="' . $item->link . '">' . $item->title . '</a>';
-                    break;
+                case 1 : 
+                echo '<li class="em-actions" id="' . $item->note . '" multi="' . $item->action['multi'] . '"><a id="l_' . $item->note . '" multi="' . $item->action['multi'] . '" href="' . $item->link . '">' . $item->title . '</a>';
+                break;
 
-                default: if ($item->action['multi']==-1 || $item->action['multi']==1) {
+                default: 
+                if ($item->action['multi']==-1 || $item->action['multi']==1) {
                     echo '<li class="em-actions" id="' . $item->note . '" multi="' . $item->action['multi'] . '"><a id="l_' . $item->note . '" multi="' . $item->action['multi'] . '" href="' . $item->link . '">' . $item->title . '</a>';
                 }
             }

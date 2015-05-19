@@ -26,7 +26,7 @@ endif;
 
 if ($this->params->get('show-title', 1)) :?>
 <div class="page-header">
-	<h1><?php echo $form->label;?></h1>
+	<h1><?php $title = explode('-', $form->label); echo $title[1]; ?></h1>
 </div>
 <?php
 endif;
