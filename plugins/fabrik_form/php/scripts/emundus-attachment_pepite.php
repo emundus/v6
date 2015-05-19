@@ -24,14 +24,14 @@ if (!empty($a49)) {
 	$query 	= "INSERT INTO `#__emundus_uploads` (`user_id`, `fnum`, `attachment_id`, `filename`, `timedate`, `campaign_id`) 
 				VALUES (".$user_id[0].", '".$fnum."', 49, '".$f1[5]."', NOW(), ".$cid.")";
 	$db->setQuery( $query );
-	$db->query();
+	$db->execute();
 }
 
 if (!empty($a48)) {
 	$query 	= "INSERT INTO `#__emundus_uploads` (`user_id`, `fnum`, `attachment_id`, `filename`, `timedate`, `campaign_id`) 
 				VALUES (".$user_id[0].", '".$fnum."', 48, '".$f2[5]."', NOW(), ".$cid.")";
 	$db->setQuery( $query );
-	$db->query();
+	$db->execute();
 }
 
 ?>

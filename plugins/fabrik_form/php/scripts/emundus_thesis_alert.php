@@ -22,7 +22,7 @@ $query = 'SELECT subject, message
 				FROM #__emundus_setup_emails
 				WHERE lbl="new_thesis"';
 $db->setQuery( $query );
-$db->query();
+$db->execute();
 $mail=$db->loadRow();
 
 $thesis_subject = $_REQUEST['jos_emundus_setup_thesis___subject'];
@@ -40,7 +40,7 @@ $query = 'SELECT u.email, eu.user_id, u.name
 					LIMIT 0,1)
 			AND u.id = eu.user_id';
 $db->setQuery( $query );
-$db->query();
+$db->execute();
 $cand=$db->loadObjectList();
 
 $conf =& JFactory::getConfig();
@@ -60,6 +60,6 @@ foreach($cand as $c){
 	$query = '	INSERT INTO #__messages (user_id_from,user_id_to,date_time,state,subject,message)
 				VALUES ('.$from.','.$id.',"'.$date.'",1,"'.$mail_subject.'","'.$body.'")';
 	$db->setQuery( $query );
-	$db->query();
+	$db->execute();
 }
 ?>

@@ -16,6 +16,7 @@ $baseurl = JURI::root();
 $student_id = $formModel->getElementData('jos_emundus_references___user', false, '');
 $student = JFactory::getUser($student_id[0]);
 $current_user = JFactory::getUser();
+$mailer = JFactory::getMailer();
 jimport( 'joomla.utilities.utility' );
 
 $db = JFactory::getDBO();
@@ -25,7 +26,7 @@ $query = 'SELECT id, subject, emailfrom, name, message
 				FROM #__emundus_setup_emails
 				WHERE lbl="referent_letter"';
 $db->setQuery( $query );
-$db->query();
+$db->execute();
 $obj=$db->loadObjectList();
 
 // Récupération de la pièce jointe : modele de lettre
@@ -34,7 +35,7 @@ $query = 'SELECT esp.reference_letter
 				LEFT JOIN #__emundus_setup_profiles as esp on esp.id = eu.profile 
 				WHERE eu.user_id = '.$student->id;
 $db->setQuery( $query );
-$db->query();
+$db->execute();
 $obj_letter=$db->loadRowList();
 
 //////////////////////////  SET FILES REQUEST  /////////////////////////////
@@ -61,7 +62,7 @@ $fnum_detail = $profile->getFnumDetails($current_user->fnum);
 $pgitemtitle1 = 4; //ID provenant de la table emundus_attachments
 $query = 'SELECT count(id) as cpt FROM #__emundus_uploads WHERE user_id='.$student->id.' AND attachment_id='.$pgitemtitle1.' AND fnum like '.$db->Quote($current_user->fnum);
 $db->setQuery( $query );
-$db->query();
+$db->execute();
 $is_uploaded1=$db->loadResult();
 
 if ($is_uploaded1==0) {
@@ -70,7 +71,7 @@ if ($is_uploaded1==0) {
 	$query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum) 
 						  VALUES (NOW(), '.$student->id.', "'.$key1.'", "'.$pgitemtitle1.'", '.$student->fnum.')';
 	$db->setQuery( $query );
-	$db->query();
+	$db->execute();
 	
 	// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
 	$link_upload1 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid='.$key1.'&sid='.$student->id;
@@ -81,7 +82,7 @@ if ($is_uploaded1==0) {
 $pgitemtitle2 = 6; //ID provenant de la table emundus_attachments
 $query = 'SELECT count(id) as cpt FROM #__emundus_uploads WHERE user_id='.$student->id.' AND attachment_id='.$pgitemtitle2.' AND fnum like '.$db->Quote($current_user->fnum);
 $db->setQuery( $query );
-$db->query();
+$db->execute();
 $is_uploaded2=$db->loadResult();
 
 if ($is_uploaded2==0) {
@@ -90,7 +91,7 @@ if ($is_uploaded2==0) {
 	$query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum) 
 						  VALUES (NOW(), '.$student->id.', "'.$key2.'", "'.$pgitemtitle2.'", '.$student->fnum.')';
 	$db->setQuery( $query );
-	$db->query();
+	$db->execute();
 	
 	// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
 	$link_upload2 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid='.$key2.'&sid='.$student->id;
@@ -101,7 +102,7 @@ if ($is_uploaded2==0) {
 $pgitemtitle3 = 21; //ID provenant de la table emundus_attachments
 $query = 'SELECT count(id) as cpt FROM #__emundus_uploads WHERE user_id='.$student->id.' AND attachment_id='.$pgitemtitle3.' AND fnum like '.$db->Quote($current_user->fnum);
 $db->setQuery( $query );
-$db->query();
+$db->execute();
 $is_uploaded3=$db->loadResult();
 
 if ($is_uploaded3<2) {
@@ -110,7 +111,7 @@ if ($is_uploaded3<2) {
 	$query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum) 
 						  VALUES (NOW(), '.$student->id.', "'.$key3.'", "'.$pgitemtitle3.'", '.$student->fnum.')';
 	$db->setQuery( $query );
-	$db->query();
+	$db->execute();
 	
 	// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
 	$link_upload3 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid='.$key3.'&sid='.$student->id;
@@ -121,7 +122,7 @@ if ($is_uploaded3<2) {
 $pgitemtitle4 = 19; //ID provenant de la table emundus_attachments
 $query = 'SELECT count(id) as cpt FROM #__emundus_uploads WHERE user_id='.$student->id.' AND attachment_id='.$pgitemtitle4.' AND fnum like '.$db->Quote($current_user->fnum);
 $db->setQuery( $query );
-$db->query();
+$db->execute();
 $is_uploaded4=$db->loadResult();
 
 if ($is_uploaded4<2) {
@@ -130,7 +131,7 @@ if ($is_uploaded4<2) {
 	$query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum) 
 						  VALUES (NOW(), '.$student->id.', "'.$key4.'", "'.$pgitemtitle4.'", '.$student->fnum.')';
 	$db->setQuery( $query );
-	$db->query();
+	$db->execute();
 	
 	// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
 	$link_upload4 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid='.$key4.'&sid='.$student->id;
@@ -162,42 +163,130 @@ $replytoname = $obj[0]->name;
 if ($is_uploaded1==0) {
 	$replacements = array ($student->id, $student->name, $student->email, $link_upload1, $fnum_detail['label']);
 	$body1 = preg_replace($patterns, $replacements, $obj[0]->message);
-	unset($replacements);
-	if(JUtility::sendMail($from, $fromname, $recipient[0], $subject, $body1, $mode, null, null, $attachment, $replyto, $replytoname)) {
-		$sql = 'INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) VALUES (62, -1, "'.$subject.'", "'.$db->quote($body1).'", NOW())';
-		$db->setQuery( $sql );
-		$db->query();
-	}
+
+    $config = JFactory::getConfig();
+    $sender = array(
+        $config->get( $from ),
+        $config->get( $fromname )
+    );
+
+    $mailer->setSender($sender);
+    $mailer->addRecipient($recipient[0]);
+    $mailer->setSubject($subject);
+    $mailer->isHTML(true);
+    $mailer->Encoding = 'base64';
+    $mailer->setBody($body1);
+    $mailer->addAttachment($attachment);
+
+    unset($replacements);
+    $send = $mailer->Send();
+    if ( $send !== true ) {
+        echo 'Error sending email: ' . $send->__toString(); die();
+    } else {
+        $sql = 'INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) VALUES (62, -1, "'.$subject.'", "'.$db->quote($body1).'", NOW())';
+        $db->setQuery( $sql );
+        try {
+            $db->execute();
+        } catch (Exception $e) {
+            // catch any database errors.
+        }
+    }
 }
 if ($is_uploaded2==0) {
 	$replacements = array ($student->id, $student->name, $student->email, $link_upload2, $fnum_detail['label']);
 	$body2 = preg_replace($patterns, $replacements, $obj[0]->message);
-	unset($replacements);
-	if(JUtility::sendMail($from, $fromname, $recipient[1], $subject, $body2, $mode, null, null, $attachment, $replyto, $replytoname)){
-		$sql = 'INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) VALUES (62, -1, "'.$subject.'", "'.$db->quote($body2).'", NOW())';
-		$db->setQuery( $sql );
-		$db->query();
-	}
+
+    $config = JFactory::getConfig();
+    $sender = array(
+        $config->get( $from ),
+        $config->get( $fromname )
+    );
+
+    $mailer->setSender($sender);
+    $mailer->addRecipient($recipient[1]);
+    $mailer->setSubject($subject);
+    $mailer->isHTML(true);
+    $mailer->Encoding = 'base64';
+    $mailer->setBody($body2);
+    $mailer->addAttachment($attachment);
+
+    unset($replacements);
+    $send = $mailer->Send();
+    if ( $send !== true ) {
+        echo 'Error sending email: ' . $send->__toString(); die();
+    } else {
+        $sql = 'INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) VALUES (62, -1, "'.$subject.'", "'.$db->quote($body2).'", NOW())';
+        $db->setQuery( $sql );
+        try {
+            $db->execute();
+        } catch (Exception $e) {
+            // catch any database errors.
+        }
+    }
 }
 if ($is_uploaded3<2) {
 	$replacements = array ($student->id, $student->name, $student->email, $link_upload3, $fnum_detail['label']);
 	$body3 = preg_replace($patterns, $replacements, $obj[0]->message);
-	unset($replacements);
-	if(JUtility::sendMail($from, $fromname, $recipient[2], $subject, $body3, $mode, null, null, $attachment, $replyto, $replytoname)){
-		$sql = 'INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) VALUES (62, -1, "'.$subject.'", "'.$db->quote($body3).'", NOW())';
-		$db->setQuery( $sql );
-		$db->query();
-	}
+
+    $config = JFactory::getConfig();
+    $sender = array(
+        $config->get( $from ),
+        $config->get( $fromname )
+    );
+
+    $mailer->setSender($sender);
+    $mailer->addRecipient($recipient[2]);
+    $mailer->setSubject($subject);
+    $mailer->isHTML(true);
+    $mailer->Encoding = 'base64';
+    $mailer->setBody($body3);
+    $mailer->addAttachment($attachment);
+
+    unset($replacements);
+    $send = $mailer->Send();
+    if ( $send !== true ) {
+        echo 'Error sending email: ' . $send->__toString(); die();
+    } else {
+        $sql = 'INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) VALUES (62, -1, "'.$subject.'", "'.$db->quote($body3).'", NOW())';
+        $db->setQuery( $sql );
+        try {
+            $db->execute();
+        } catch (Exception $e) {
+            // catch any database errors.
+        }
+    }
 }
 if ($is_uploaded4<2) {
 	$replacements = array ($student->id, $student->name, $student->email, $link_upload4, $fnum_detail['label']);
 	$body4 = preg_replace($patterns, $replacements, $obj[0]->message);
-	unset($replacements);
-	if(JUtility::sendMail($from, $fromname, $recipient[3], $subject, $body4, $mode, null, null, $attachment, $replyto, $replytoname)){
-		$sql = 'INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) VALUES (62, -1, "'.$subject.'", "'.$db->quote($body4).'", NOW())';
-		$db->setQuery( $sql );
-		$db->query();
-	}
+
+    $config = JFactory::getConfig();
+    $sender = array(
+        $config->get( $from ),
+        $config->get( $fromname )
+    );
+
+    $mailer->setSender($sender);
+    $mailer->addRecipient($recipient[3]);
+    $mailer->setSubject($subject);
+    $mailer->isHTML(true);
+    $mailer->Encoding = 'base64';
+    $mailer->setBody($body4);
+    $mailer->addAttachment($attachment);
+
+    unset($replacements);
+    $send = $mailer->Send();
+    if ( $send !== true ) {
+        echo 'Error sending email: ' . $send->__toString(); die();
+    } else {
+        $sql = 'INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) VALUES (62, -1, "'.$subject.'", "'.$db->quote($body4).'", NOW())';
+        $db->setQuery( $sql );
+        try {
+            $db->execute();
+        } catch (Exception $e) {
+            // catch any database errors.
+        }
+    }
 }
 
 ?>

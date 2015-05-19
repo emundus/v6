@@ -14,6 +14,7 @@ defined( '_JEXEC' ) or die();
  */
 $baseurl = JURI::base();
 $student_id = $_REQUEST['jos_emundus_bank___student_id'];
+$mailer = JFactory::getMailer();
 
 $db =& JFactory::getDBO();
 // Récupération des données du mail
@@ -21,7 +22,7 @@ $query = 'SELECT id, subject, emailfrom, name, message
 				FROM #__emundus_setup_emails
 				WHERE lbl="bank_letter"';
 $db->setQuery( $query );
-$db->query();
+$db->execute();
 $obj=$db->loadObject();
 
 // Email de la banque
@@ -29,7 +30,7 @@ $query = 'SELECT id, email_to
 				FROM #__contact_details
 				WHERE alias="bank"';
 $db->setQuery( $query );
-$db->query();
+$db->execute();
 $bank=$db->loadObject();
 
 // Pièces jointes nécessaires à l'ouverture d'un compte
@@ -40,7 +41,7 @@ $bank=$db->loadObject();
 					ORDER BY attachments.value';
 
 $db->setQuery( $query );
-$db->query();
+$db->execute();
 $attachments=$db->loadObjectList();
 	
 foreach ( $attachments as $row ) {
@@ -77,7 +78,7 @@ $attachment_id = 11;
 $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id) 
 					  VALUES (NOW(), '.$student_id.', "'.$key.'", "'.$attachment_id.'")';
 $db->setQuery( $query );
-$db->query();
+$db->execute();
 
 // 3. Envoi du lien vers lequel la bank va pouvoir uploader le RIB
 $link_upload = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=46&tableid=48&keyid='.$key.'&sid='.$student_id;
@@ -105,5 +106,23 @@ $mode = 1;
 $replyto = $obj->emailfrom;
 $replytoname = $obj->name;
 
-JUtility::sendMail($from, $fromname, $recipient, $subject, $body, $mode, null, null, $attachment, $replyto, $replytoname);
+$config = JFactory::getConfig();
+$sender = array(
+    $config->get( $from ),
+    $config->get( $fromname )
+);
+
+$mailer->setSender($sender);
+$mailer->addRecipient($recipient);
+$mailer->setSubject($subject);
+$mailer->isHTML(true);
+$mailer->Encoding = 'base64';
+$mailer->setBody($body);
+$mailer->addAttachment($attachment);
+
+$send = $mailer->Send();
+if ( $send !== true ) {
+    echo 'Error sending email: ' . $send->__toString(); die();
+}
+
 ?>

@@ -25,7 +25,7 @@ $query = 'SELECT id
 			FROM #__emundus_declaration
 			WHERE user='.$sid;
 $db->setQuery( $query );
-$db->query();
+$db->execute();
 $obj=$db->loadObjectList(); 
 
 if ($fgrade == 4 && count($obj) == 0) {
@@ -34,6 +34,6 @@ if ($fgrade == 4 && count($obj) == 0) {
 	$query = 'INSERT INTO #__emundus_declaration (id, time_date, user, city, country, type_mail) 
 					VALUE (NULL, "'.$today.'", '.$sid.', NULL, NULL, "admin_validation")';
 	$db->setQuery( $query );
-	$db->query();
+	$db->execute();
 }
 ?>

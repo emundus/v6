@@ -15,6 +15,7 @@ defined( '_JEXEC' ) or die();
  */
 
 $mainframe 		= JFactory::getApplication();
+$mailer = JFactory::getMailer();
 $jinput 		= $mainframe->input;
 $baseurl 		= JURI::base();
 $db 			= JFactory::getDBO();
@@ -56,7 +57,7 @@ if (!rename(JPATH_SITE.$upload->filename, EMUNDUS_PATH_ABS.$upload->user_id.DS.$
 	die("ERROR_MOVING_UPLOAD_FILE");
 
 $db->setQuery('UPDATE #__emundus_uploads SET filename="'.$nom.'" WHERE id='.$upload->id);
-$db->query();
+$db->execute();
 
 // PHOTOS
 if ($attachment_params->lbl=="_photo") {
@@ -98,7 +99,7 @@ elseif (in_array($aid, $references_id)) {
 
 	if ($nb_references >= 2 && $submitted > 0) {
 		$db->setQuery('UPDATE #__emundus_campaign_candidature SET status=2 WHERE fnum like '.$db->Quote($fnum));
-		$db->query();
+		$db->execute();
 	} 
 } else
 	$email_tmpl = "attachment";
@@ -126,10 +127,29 @@ if ($inform_applicant_by_email == 1) {
 	$body = preg_replace($patterns, $replacements, $email->message).'<br/>'.@$file_url;
 	$replyto = $email->emailfrom;
 	$replytoname = $email->name;
-	JUtility::sendMail($from, $fromname, $recipient, $subject, $body, $mode, null, null, @$attachment, $replyto, $replytoname);
-	$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
+
+    $config = JFactory::getConfig();
+    $sender = array(
+        $config->get( $from ),
+        $config->get( $fromname )
+    );
+
+    $mailer->setSender($sender);
+    $mailer->addRecipient($recipient);
+    $mailer->setSubject($subject);
+    $mailer->isHTML(true);
+    $mailer->Encoding = 'base64';
+    $mailer->setBody($body);
+    $mailer->addAttachment($attachment);
+
+    $send = $mailer->Send();
+    if ( $send !== true ) {
+        echo 'Error sending email: ' . $send->__toString(); die();
+    } else {
+        $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 					VALUES ('".$from_id."', '".$student->id."', '".$subject."', '".$body."', NOW())";
-	$db->setQuery( $sql );
-	$db->query();
+        $db->setQuery( $sql );
+        $db->execute();
+    }
 }
 ?>

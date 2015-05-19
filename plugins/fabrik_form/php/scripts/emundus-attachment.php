@@ -32,7 +32,7 @@ $inform_applicant_by_email 	= $jinput->get('jos_emundus_uploads___inform_applica
 $db->setQuery('SELECT id, user_id, filename FROM #__emundus_uploads WHERE id='.$jinput->get('jos_emundus_uploads___id'));
 $upload = $db->loadObject();
 $student = JFactory::getUser($upload->user_id);
-$query = 'SELECT profile FROM #__emundus_users WHERE user_id='.$upload->user_id.'';
+$query = 'SELECT profile FROM #__emundus_users WHERE user_id='.$upload->user_id;
 $db->setQuery( $query );
 $profile=$db->loadResult();
 $query = 'SELECT ap.displayed, attachment.lbl 
@@ -114,10 +114,33 @@ if ($inform_applicant_by_email == 1) {
 	$body = preg_replace($patterns, $replacements, $email->message).'<br/>'.@$file_url;
 	$replyto = $email->emailfrom;
 	$replytoname = $email->name;
-	JMail::sendMail($from, $fromname, $recipient, $subject, $body, $mode, null, null, @$attachment, $replyto, $replytoname);
-	$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
+
+    $config = JFactory::getConfig();
+    $sender = array(
+        $config->get( $from ),
+        $config->get( $fromname )
+    );
+
+    $mailer->setSender($sender);
+    $mailer->addRecipient($recipient);
+    $mailer->setSubject($subject);
+    $mailer->isHTML(true);
+    $mailer->Encoding = 'base64';
+    $mailer->setBody($body);
+    $mailer->addAttachment($attachment);
+
+    $send = $mailer->Send();
+    if ( $send !== true ) {
+        echo 'Error sending email: ' . $send->__toString(); die();
+    } else {
+        $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 					VALUES ('".$from_id."', '".$student->id."', '".$subject."', '".$body."', NOW())";
-	$db->setQuery( $sql );
-	$db->execute();
+        $db->setQuery( $sql );
+        try {
+            $db->execute();
+        } catch (Exception $e) {
+            // catch any database errors.
+        }
+    }
 }
 ?>

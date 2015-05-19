@@ -15,6 +15,7 @@ defined( '_JEXEC' ) or die();
 
 $db = JFactory::getDBO();
 $student =  JFactory::getUser();
+$mailer = JFactory::getMailer();
 include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/groups.php');
@@ -45,7 +46,7 @@ $email = $emails->getEmail("confirm_post");
 $query = 'UPDATE #__emundus_uploads SET can_be_deleted = 0 WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery( $query );
 try {
-	$db->Query();
+	$db->execute();
 } catch (Exception $e) {
 	// catch any database errors.
 }
@@ -55,14 +56,14 @@ try {
 $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=1 WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
 try {
-	$db->Query();
+	$db->execute();
 } catch (Exception $e) {
 	// catch any database errors.
 }
 $query = 'UPDATE #__emundus_declaration SET time_date=NOW() WHERE user='.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
 try {
-	$db->Query();
+	$db->execute();
 } catch (Exception $e) {
 	// catch any database errors.
 }
@@ -81,14 +82,32 @@ $replyto = $email->emailfrom;
 $replytoname = $email->name;
 
 $student->candidature_posted = 1;
-$res = JMail::sendMail( $from, $fromname, $recipient, $subject, $body, true );
-$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
+
+$config = JFactory::getConfig();
+$sender = array(
+    $config->get( $from ),
+    $config->get( $fromname )
+);
+
+$mailer->setSender($sender);
+$mailer->addRecipient($recipient);
+$mailer->setSubject($subject);
+$mailer->isHTML(true);
+$mailer->Encoding = 'base64';
+$mailer->setBody($body);
+
+$send = $mailer->Send();
+if ( $send !== true ) {
+    echo 'Error sending email: ' . $send->__toString(); die();
+} else {
+    $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 				VALUES ('".$from_id."', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
-$db->setQuery( $sql );
-try {
-	$db->Query();
-} catch (Exception $e) {
-	// catch any database errors.
+    $db->setQuery( $sql );
+    try {
+        $db->execute();
+    } catch (Exception $e) {
+        // catch any database errors.
+    }
 }
 
 unset($recipient);
@@ -124,18 +143,35 @@ if ($alert_new_applicant==1) {
 			//$attachment[] = $path_file;
 			$replyto = $email->emailfrom;
 			$replytoname = $email->name;
+            $student->candidature_posted = 1;
 
-			$student->candidature_posted = 1;
-			$res = JMail::sendMail($from, $fromname, $recipient, $subject, $body, true);
-			$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
+            $config = JFactory::getConfig();
+            $sender = array(
+                $config->get( $from ),
+                $config->get( $fromname )
+            );
+
+            $mailer->setSender($sender);
+            $mailer->addRecipient($recipient);
+            $mailer->setSubject($subject);
+            $mailer->isHTML(true);
+            $mailer->Encoding = 'base64';
+            $mailer->setBody($body);
+
+            $send = $mailer->Send();
+            if ( $send !== true ) {
+                echo 'Error sending email: ' . $send->__toString(); die();
+            } else {
+                $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 						VALUES ('" . $from_id . "', '" . $eval_user->id . "', " . $db->quote($subject) . ", " .
-				$db->quote($body) . ", NOW())";
-			$db->setQuery($sql);
-			try {
-				$db->Query();
-			} catch (Exception $e) {
-				// catch any database errors.
-			}
+                    $db->quote($body) . ", NOW())";
+                $db->setQuery($sql);
+                try {
+                    $db->execute();
+                } catch (Exception $e) {
+                    // catch any database errors.
+                }
+            }
 		}
 	}
 }

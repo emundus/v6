@@ -17,6 +17,7 @@ return false;
 */
 
 $mainframe 	= JFactory::getApplication();
+$mailer     = JFactory::getMailer();
 $jinput 	= $mainframe->input;
 $baseurl 	= JURI::base();
 $db 		= JFactory::getDBO();
@@ -109,7 +110,7 @@ $db->query();
 $query = 'UPDATE #__emundus_files_request SET uploaded=1, firstname="'.ucfirst($firstname).'", lastname="'.strtoupper($lastname).'", modified_date=NOW() WHERE keyid like "'.$key_id.'"';
 $db->setQuery( $query );
 
-$db->Query();
+$db->execute();
 ///////////////////////////////////////////
 // 2. Vérification de l'existance d'un compte utilisateur avec email de l'expert
 $query = "SELECT id FROM #__users WHERE email like ".$db->Quote($email);
@@ -134,11 +135,11 @@ if ($uid > 0) {
 	if ($is_evaluator == 0) {
 		$query = "INSERT INTO #__emundus_users_profiles (user_id, profile_id) VALUES (".$user->id.", ".$profile['profile_id'].")";
 		$db->setQuery( $query );
-		$db->Query();
+		$db->execute();
 
 		$query = "INSERT INTO #__emundus_users_profiles_history (user_id, profile_id, var) VALUES (".$user->id.", ".$profile['profile_id'].", 'profile')";
 		$db->setQuery( $query );
-		$db->Query();
+		$db->execute();
 	
 	// Modification du profil courant en profil Expert
 		$user->groups=$acl_aro_groups;
@@ -155,7 +156,7 @@ if ($uid > 0) {
 					SET firstname=".$db->Quote(ucfirst($firstname)).", lastname=".$db->Quote(strtoupper($lastname)).", profile=".$profile['profile_id']." 
 					WHERE user_id=".$user->id;
 		$db->setQuery( $query );
-		$db->Query();
+		$db->execute();
 	}
 	
 
@@ -170,21 +171,38 @@ if ($uid > 0) {
 						('.$user->id.', 8, '.$db->Quote($fnum).', 1,0,0,0),
 						('.$user->id.', 14, '.$db->Quote($fnum).', 1,1,1,0)';
 	$db->setQuery( $query );
-	$db->query();
+	$db->execute();
 
 // 2.1.2. Envoie des identifiants à l'expert + Envoie d'un message d'invitation à se connecter pour evaluer le dossier
 	$email = $m_emails->getEmail('expert_accept');
 	$body = $m_emails->setBody($user, $email->message, "");
 
-	JUtility::sendMail($email->emailfrom, $email->name, $user->email, $email->subject, $body, 1);
+    $config = JFactory::getConfig();
+    $sender = array(
+        $config->get( $email->emailfrom ),
+        $config->get( $email->name )
+    );
+    $recipient = $user->email;
 
-	$message = array(
-		'user_id_from' => 62, 
-		'user_id_to' => $user->id, 
-		'subject' => $email->subject, 
-		'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user->email.'</i><br>'.$body
-		);
-	$m_emails->logEmail($message);
+    $mailer->setSender($sender);
+    $mailer->addRecipient($recipient);
+    $mailer->setSubject($email->subject);
+    $mailer->isHTML(true);
+    $mailer->Encoding = 'base64';
+    $mailer->setBody($body);
+
+    $send = $mailer->Send();
+    if ( $send !== true ) {
+        echo 'Error sending email: ' . $send->__toString(); die();
+    } else {
+        $message = array(
+            'user_id_from' => 62,
+            'user_id_to' => $user->id,
+            'subject' => $email->subject,
+            'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user->email.'</i><br>'.$body
+        );
+        $m_emails->logEmail($message);
+    }
 
 // 2.1.3. Commentaire sur le dossier du candidat : nouvel expert ayant accepté l'évaluation du dossier
 	$row = array(
@@ -249,21 +267,38 @@ if ($uid > 0) {
 						('.$user->id.', 8, '.$db->Quote($fnum).', 1,0,0,0),
 						('.$user->id.', 14, '.$db->Quote($fnum).', 1,1,1,0)';
 	$db->setQuery( $query );
-	$db->query();
+	$db->execute();
 
 // 2.1.2. Envoie des identifiants à l'expert + Envoie d'un message d'invitation à se connecter pour evaluer le dossier
 	$email = $m_emails->getEmail('new_account');
 	$body = $m_emails->setBody($user, $email->message, $fnum, $password);
 
-	JUtility::sendMail($email->emailfrom, $email->name, $user->email, $email->subject, $body, 1);
+    $config = JFactory::getConfig();
+    $sender = array(
+        $config->get( $email->emailfrom ),
+        $config->get( $email->name )
+    );
+    $recipient = $user->email;
 
-	$message = array(
-		'user_id_from' => 62, 
-		'user_id_to' => $uid, 
-		'subject' => $email->subject, 
-		'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user->email.'</i><br>'.$body
-		);
-	$m_emails->logEmail($message);
+    $mailer->setSender($sender);
+    $mailer->addRecipient($recipient);
+    $mailer->setSubject($email->subject);
+    $mailer->isHTML(true);
+    $mailer->Encoding = 'base64';
+    $mailer->setBody($body);
+
+    $send = $mailer->Send();
+    if ( $send !== true ) {
+        echo 'Error sending email: ' . $send->__toString(); die();
+    } else {
+        $message = array(
+            'user_id_from' => 62,
+            'user_id_to' => $uid,
+            'subject' => $email->subject,
+            'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user->email.'</i><br>'.$body
+        );
+        $m_emails->logEmail($message);
+    }
 
 // 2.1.3. Commentaire sur le dossier du candidat : nouvel expert ayant accepté l'évaluation du dossier
 	$row = array(

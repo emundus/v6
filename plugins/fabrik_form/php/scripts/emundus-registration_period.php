@@ -31,7 +31,7 @@ if ($registration_periode[0] == 1) {
 	$query = "INSERT INTO `#__emundus_setup_campaigns` (`date_time`, `user`, `label`, `description`, `start_date`, `end_date`, `profile_id`, `training`, `year`, `published`) 
 				VALUES (NOW(), ".$user->id.", ".$db->quote($label).", ".$db->quote($note).", NOW(), DATE_SUB('".$end_date."', INTERVAL 1 MONTH), ".$profile_id.", ".$db->quote($code).", ".$db->quote($schoolyear).", 1)";
 	$db->setQuery( $query );
-	$db->query() or die($query);
+	$db->execute() or die($query);
 	$id = $db->insertid();
 
 	$application->enqueueMessage(JText::_('NEW_TRAINING_ADDED'), 'Message');

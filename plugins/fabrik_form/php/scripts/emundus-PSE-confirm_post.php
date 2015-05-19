@@ -3,18 +3,19 @@ defined( '_JEXEC' ) or die();
 /**
  * @version 1.5: confirm_post.php 89 2013-09-18 Benjamin Rivalland
  * @package Fabrik
- * @copyright Copyright (C) 2008 Décision Publique. All rights reserved.
+ * @copyright Copyright (C) 2008 Dï¿½cision Publique. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  * See COPYRIGHT.php for copyright notices and details.
- * @description Envoi automatique d'un email à l'étudiant lors de la validation de son dossier de candidature
+ * @description Envoi automatique d'un email ï¿½ l'ï¿½tudiant lors de la validation de son dossier de candidature
  */
 
 $db = JFactory::getDBO();
 $student =  JFactory::getUser();
+$mailer = JFactory::getMailer();
 include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/groups.php');
@@ -50,7 +51,7 @@ $email = $emails->getEmail("confirm_post");
 $query = 'UPDATE #__emundus_uploads SET can_be_deleted = 0 WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery( $query );
 try {
-	$db->Query();
+	$db->execute();
 } catch (Exception $e) {
 	// catch any database errors.
 }
@@ -70,7 +71,7 @@ if ($nb_references >= 2) {
 $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=1 WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);*/
 try {
-	$db->Query();
+	$db->execute();
 } catch (Exception $e) {
 	// catch any database errors.
 }
@@ -78,7 +79,7 @@ try {
 $query = 'UPDATE #__emundus_declaration SET time_date=NOW() WHERE user='.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
 try {
-	$db->Query();
+	$db->execute();
 } catch (Exception $e) {
 	// catch any database errors.
 }
@@ -98,14 +99,32 @@ $replyto = $email->emailfrom;
 $replytoname = $email->name;
 
 $student->candidature_posted = 1;
-$res = JUtility::sendMail( $from, $fromname, $recipient, $subject, $body, true );
-$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
+
+$config = JFactory::getConfig();
+$sender = array(
+    $config->get( $from ),
+    $config->get( $fromname )
+);
+
+$mailer->setSender($sender);
+$mailer->addRecipient($recipient);
+$mailer->setSubject($subject);
+$mailer->isHTML(true);
+$mailer->Encoding = 'base64';
+$mailer->setBody($body);
+
+$send = $mailer->Send();
+if ( $send !== true ) {
+    echo 'Error sending email: ' . $send->__toString(); die();
+} else {
+    $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 				VALUES ('".$from_id."', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
-$db->setQuery( $sql );
-try {
-	$db->Query();
-} catch (Exception $e) {
-	// catch any database errors.
+    $db->setQuery( $sql );
+    try {
+        $db->execute();
+    } catch (Exception $e) {
+        // catch any database errors.
+    }
 }
 
 unset($recipient);
@@ -141,15 +160,33 @@ if ($alert_new_applicant==1) {
 			$replytoname = $email->name;
 
 			$student->candidature_posted = 1;
-			$res = JUtility::sendMail( $from, $fromname, $recipient, $subject, $body, true );
-			$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
+
+            $config = JFactory::getConfig();
+            $sender = array(
+                $config->get( $from ),
+                $config->get( $fromname )
+            );
+
+            $mailer->setSender($sender);
+            $mailer->addRecipient($recipient);
+            $mailer->setSubject($subject);
+            $mailer->isHTML(true);
+            $mailer->Encoding = 'base64';
+            $mailer->setBody($body);
+
+            $send = $mailer->Send();
+            if ( $send !== true ) {
+                echo 'Error sending email: ' . $send->__toString(); die();
+            } else {
+                $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 							VALUES ('".$from_id."', '".$eval_user->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
-			$db->setQuery( $sql );
-			try {
-				$db->Query();
-			} catch (Exception $e) {
-				// catch any database errors.
-			}
+                $db->setQuery( $sql );
+                try {
+                    $db->execute();
+                } catch (Exception $e) {
+                    // catch any database errors.
+                }
+            }
 		}
 	}
 }

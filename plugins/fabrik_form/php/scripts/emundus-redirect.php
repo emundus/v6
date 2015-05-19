@@ -55,7 +55,7 @@ if (EmundusHelperAccess::asApplicantAccessLevel($user->id)){
 	$sid = is_array($student_id)?$student_id[0]:$student_id;
 	$query = 'UPDATE '.$db_table_name.' SET user='.$sid.' WHERE fnum like '.$db->Quote($fnum); 
 	$db->setQuery( $query );
-	$db->query();
+	$db->execute();
 
 	$link = 'index.php?option=com_fabrik&view=form&formid='.$formid.'&usekey=fnum&rowid='.$fnum;
 	//$link = "index.php?option=com_emundus&view=application&sid=".$sid.'&fnum='.$fnum;

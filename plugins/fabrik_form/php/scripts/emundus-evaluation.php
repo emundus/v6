@@ -37,7 +37,7 @@ if(!empty($result)) {
 	}
 	$db->setQuery( $query ); //die($query); 
 	try {
-		$result = $db->query();
+		$result = $db->execute();
 	} catch (Exception $e) {
 		die();
 	}

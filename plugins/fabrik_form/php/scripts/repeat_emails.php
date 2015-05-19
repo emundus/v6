@@ -15,6 +15,7 @@ function repeat_emails($params, &$formModel) {
 	$user						= JFactory::getUser();
 	$config					= JFactory::getConfig();
 	$db 						= JFactory::getDbo();
+    $mailer = JFactory::getMailer();
 	$w = new FabrikWorker();
 
 	$content = repeat_emails_get_article($article_id);
@@ -38,7 +39,23 @@ function repeat_emails($params, &$formModel) {
 		$this_content = $w->parseMessageForPlaceHolder($content, $email_data);
 		$this_subject = $w->parseMessageForPlaceHolder($email_subject, $email_data);
 		if (JMailHelper::isEmailAddress($email)) {
-			$res = JUtility::sendMail($email_from_addr, $email_from_name, $email, $this_subject, $this_content, true);
+            $config = JFactory::getConfig();
+            $sender = array(
+                $config->get( $email_from_addr ),
+                $config->get( $email_from_name )
+            );
+
+            $mailer->setSender($sender);
+            $mailer->addRecipient($email);
+            $mailer->setSubject($this_subject);
+            $mailer->isHTML(true);
+            $mailer->Encoding = 'base64';
+            $mailer->setBody($this_content);
+
+            $send = $mailer->Send();
+            if ( $send !== true ) {
+                echo 'Error sending email: ' . $send->__toString(); die();
+            }
 		}
 	}
 
@@ -62,6 +79,6 @@ function repeat_emails_get_article($contentTemplate)
 	return $res->introtext . " " . $res->fulltext;
 }
 
-repeat_emails($params, &$formModel);
+repeat_emails($params, $formModel);
 
 ?>

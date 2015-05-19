@@ -22,6 +22,7 @@ $baseurl = JURI::base();
 $db =& JFactory::getDBO();
 $eMConfig = JComponentHelper::getParams('com_emundus');
 alert_new_attachment = $eMConfig->get('alert_new_attachment');
+$mailer = JFactory::getMailer();
 
 $files 	= JRequest::get('FILES');
 $key_id = JRequest::getVar('keyid', null,'get');
@@ -89,10 +90,10 @@ if (!rename(JPATH_SITE.$upload->filename, EMUNDUS_PATH_ABS.$user_id.DS.$nom))
 	die("ERROR_MOVING_UPLOAD_FILE");
 
 $db->setQuery('UPDATE #__emundus_uploads SET filename="'.$nom.'" WHERE id='.$upload->id);
-$db->query();
+$db->execute();
 $query = 'UPDATE #__emundus_files_request SET uploaded=1, filename="'.$nom.'" WHERE keyid="'.$key_id.'"';
 $db->setQuery( $query );
-$db->Query();
+$db->execute();
 
 // Récupération des données du mail
 $query = 'SELECT id, subject, emailfrom, name, message
@@ -120,12 +121,30 @@ $obj=$db->loadObject();
 	//$attachment[] = $path_file;
 	$replyto = $obj->emailfrom;
 	$replytoname = $obj->name;
-	
-	JMail::sendMail($from, $fromname, $recipient, $subject, $body, $mode, null, null, $attachment, $replyto, $replytoname);
-	$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
+
+    $config = JFactory::getConfig();
+    $sender = array(
+        $config->get( $from ),
+        $config->get( $fromname )
+    );
+
+    $mailer->setSender($sender);
+    $mailer->addRecipient($recipient);
+    $mailer->setSubject($subject);
+    $mailer->isHTML(true);
+    $mailer->Encoding = 'base64';
+    $mailer->setBody($body);
+    $mailer->addAttachment($attachment);
+
+    $send = $mailer->Send();
+    if ( $send !== true ) {
+        echo 'Error sending email: ' . $send->__toString(); die();
+    } else {
+        $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 				VALUES ('62', '".$student->id."', '".$subject."', '".$body."', NOW())";
-	$db->setQuery( $sql );
-	$db->query();
+        $db->setQuery( $sql );
+        $db->execute();
+    }
 	
 // if($alert_new_attachment == 1){
 //	// Envoie d'une copie au user, le CC ou BCC n'est pas utilisé car cela bug avec les serveurs de Paris1

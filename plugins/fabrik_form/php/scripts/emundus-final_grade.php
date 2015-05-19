@@ -31,7 +31,7 @@ $query = 'UPDATE #__emundus_users
 		WHERE user_id='.$student->id;
 $db->setQuery( $query );
 //die($fg);
-if (!$db->query())
+if (!$db->execute())
 	die(JText::_('DB_ERROR'));
 
 ?>

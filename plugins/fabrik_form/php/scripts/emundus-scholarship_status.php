@@ -14,6 +14,7 @@ defined( '_JEXEC' ) or die();
  */
 $baseurl = JURI::base();
 $db =& JFactory::getDBO();
+$mailer = JFactory::getMailer();
 
 $r_scholarship_request = $_REQUEST['jos_emundus_scholarship___scholarship_request'];
 $r_scholarship_status = $_REQUEST['jos_emundus_scholarship___scholarship_status'];
@@ -26,7 +27,7 @@ $result = '<p><h3>'.$r_scholarship_request.' : '.$r_scholarship_status[0].'</h3>
 					FROM #__emundus_setup_emails
 					WHERE lbl="scholarship_status"';
 	$db->setQuery( $query );
-	$db->query();
+	$db->execute();
 	$obj=$db->loadObjectList();
 	
 	$student = & JUser::getInstance($r_student_id);
@@ -48,10 +49,32 @@ $result = '<p><h3>'.$r_scholarship_request.' : '.$r_scholarship_status[0].'</h3>
 	$attachment[] = $path_file;
 	$replyto = $obj[0]->emailfrom;
 	$replytoname = $obj[0]->name;
-	
-	JUtility::sendMail($from, $fromname, $recipient, $subject, $body, $mode, null, null, $attachment, $replyto, $replytoname);
-			$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
+
+    $config = JFactory::getConfig();
+    $sender = array(
+        $config->get( $from ),
+        $config->get( $fromname )
+    );
+
+    $mailer->setSender($sender);
+    $mailer->addRecipient($recipient);
+    $mailer->setSubject($subject);
+    $mailer->isHTML(true);
+    $mailer->Encoding = 'base64';
+    $mailer->setBody($body);
+    $mailer->addAttachment($attachment);
+
+    $send = $mailer->Send();
+    if ( $send !== true ) {
+        echo 'Error sending email: ' . $send->__toString(); die();
+    } else {
+        $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 				VALUES ('".$from_id."', '".$student->id."', '".$subject."', '".$body."', NOW())";
-			$db->setQuery( $sql );
-			$db->query();
+        $db->setQuery( $sql );
+        try {
+            $db->execute();
+        } catch (Exception $e) {
+            // catch any database errors.
+        }
+    }
 ?>

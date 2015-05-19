@@ -72,7 +72,7 @@ if ($campaign_id > 0)
 	$query 		= 'UPDATE #__emundus_campaign_candidature SET `fnum`='.$db->Quote($fnum). ', `applicant_id`='.$user->id.' WHERE id='.$id; 
 	$db->setQuery($query);
 	try {
-		$db->Query();
+		$db->execute();
 	} catch (Exception $e) {
 		// catch any database errors.
 		exit();
@@ -103,7 +103,7 @@ if ($campaign_id > 0)
 	$db->setQuery($query);
 
 	try {
-		$db->Query();
+		$db->execute();
 	} catch (Exception $e) {
 		// catch any database errors.
 		exit();
@@ -113,7 +113,7 @@ if ($campaign_id > 0)
 	$query = 'INSERT INTO #__emundus_users_profiles (user_id, profile_id) VALUES ('.$user->id.','.$profile.')';
 	$db->setQuery($query);
 	try {
-		$db->Query();
+		$db->execute();
 	} catch (Exception $e) {
 		// catch any database errors.
 		exit();
@@ -123,7 +123,7 @@ if ($campaign_id > 0)
 	$query = 'INSERT INTO #__emundus_users_profiles_history (user_id, profile_id, var) VALUES ('.$user->id.','.$profile.',"profile")';
 	$db->setQuery($query);
 	try {
-		$db->Query();
+		$db->execute();
 	} catch (Exception $e) {
 		// catch any database errors.
 		exit();

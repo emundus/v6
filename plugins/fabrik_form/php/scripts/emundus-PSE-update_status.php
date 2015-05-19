@@ -44,10 +44,10 @@ $submitted=$db->loadResult();
 
 if ($nb_references >= 2 && $submitted > 0) {
 	$db->setQuery('UPDATE #__emundus_campaign_candidature SET status=2 WHERE fnum like '.$db->Quote($fnum));
-	$db->query();
+	$db->execute();
 } elseif ($submitted > 0) {
 	$db->setQuery('UPDATE #__emundus_campaign_candidature SET status=1 WHERE fnum like '.$db->Quote($fnum));
-	$db->query();
+	$db->execute();
 }
 
 

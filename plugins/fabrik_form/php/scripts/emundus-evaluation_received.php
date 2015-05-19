@@ -17,23 +17,42 @@ include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.
 
 $m_emails = new EmundusModelEmails;
 $user = JFactory::getUser();
+$mailer = JFactory::getMailer();
 
 $email 		= $m_emails->getEmail('expert_received');
 
 $body 		= $m_emails->setBody($user, $email->message, "");
-$emailfrom 	= $m_emails->setBody($user, $email->emailfrom, "");
-$name 		= $m_emails->setBody($user, $email->name, "");
+$from 	= $m_emails->setBody($user, $email->emailfrom, "");
+$fromname 		= $m_emails->setBody($user, $email->name, "");
 $subject 	= $m_emails->setBody($user, $email->subject, "");
 
-JUtility::sendMail($emailfrom, $name, $user->email, $subject, $body, 1);
+$config = JFactory::getConfig();
+$sender = array(
+    $config->get( $from ),
+    $config->get( $fromname )
+);
+$recipient = $user->email;
 
-$message = array(
-	'user_id_from' => 62, 
-	'user_id_to' => $user->id, 
-	'subject' => $subject, 
-	'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user->email.'</i><br>'.$body
-	);
-$m_emails->logEmail($message);
+$mailer->setSender($sender);
+$mailer->addRecipient($recipient);
+$mailer->setSubject($subject);
+$mailer->isHTML(true);
+$mailer->Encoding = 'base64';
+$mailer->setBody($body);
+
+$send = $mailer->Send();
+if ( $send !== true ) {
+    echo 'Error sending email: ' . $send->__toString(); die();
+} else {
+    $message = array(
+        'user_id_from' => 62,
+        'user_id_to' => $user->id,
+        'subject' => $subject,
+        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user->email.'</i><br>'.$body
+    );
+    $m_emails->logEmail($message);
+}
+
 
 
 ?>

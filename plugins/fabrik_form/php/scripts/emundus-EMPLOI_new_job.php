@@ -20,6 +20,7 @@ include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 
 $db = JFactory::getDBO();
 $user =  JFactory::getUser();
+$mailer = JFactory::getMailer();
 
 //$eMConfig = JComponentHelper::getParams('com_emundus');
 
@@ -61,8 +62,23 @@ if (count($recipients) > 0) {
 		$replyto = $user->email;
 		$replytoname = $user->name;
 
-		$res = JMail::sendMail( $from, $fromname, $recipient, $subject, $body, true );
-        if($res){
+        $config = JFactory::getConfig();
+        $sender = array(
+            $config->get( $from ),
+            $config->get( $fromname )
+        );
+
+        $mailer->setSender($sender);
+        $mailer->addRecipient($recipient);
+        $mailer->setSubject($subject);
+        $mailer->isHTML(true);
+        $mailer->Encoding = 'base64';
+        $mailer->setBody($body);
+
+        $send = $mailer->Send();
+        if ( $send !== true ) {
+            echo 'Error sending email: ' . $send->__toString(); die();
+        } else {
             $message = array(
                 'user_id_from' => $user->id,
                 'user_id_to' => $referent->id,

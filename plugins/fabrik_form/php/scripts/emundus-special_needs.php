@@ -3,7 +3,7 @@ defined( '_JEXEC' ) or die();
 /**
  * @version 1: emundus_special_needs.php 89 2013-01-26 Benjamin Rivalland
  * @package Fabrik
- * @copyright Copyright (C) 2013 Décision Publique. All rights reserved.
+ * @copyright Copyright (C) 2013 Dï¿½cision Publique. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -32,7 +32,7 @@ if (!empty($filename[5])) {
 
 	$db->setQuery($query);
 	try {
-	    $result = $db->query(); // Use $db->execute() for Joomla 3.0.
+	    $result = $db->execute(); // Use $db->execute() for Joomla 3.0.
 	} catch (Exception $e) {
 	    // Catch the error.
 	}
@@ -40,7 +40,7 @@ if (!empty($filename[5])) {
 	$query = "DELETE FROM #__emundus_uploads WHERE user_id=".$user->id." AND attachment_id=".$attachment_id;
 	$db->setQuery($query);
 	try {
-	    $result = $db->query(); // Use $db->execute() for Joomla 3.0.
+	    $result = $db->execute(); // Use $db->execute() for Joomla 3.0.
 	} catch (Exception $e) {
 	    // Catch the error.
 	}

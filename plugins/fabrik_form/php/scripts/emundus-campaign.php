@@ -29,7 +29,7 @@ $fnum		 = date('YmdHis').str_pad($campaign_id[0], 7, '0', STR_PAD_LEFT).str_pad(
 $query 		 = 'UPDATE #__emundus_campaign_candidature SET `fnum`='.$db->Quote($fnum). ' WHERE id='.$id.' AND applicant_id='.$user->id. ' AND fnum like '.$db->Quote($fnum_tmp).' AND campaign_id='.$campaign_id[0]; 
 $db->setQuery($query);
 try {
-	$db->Query();
+	$db->execute();
 } catch (Exception $e) {
 	// catch any database errors.
 	exit();
@@ -66,7 +66,7 @@ else
 $db->setQuery($query);
 
 try {
-	$db->Query();
+	$db->execute();
 } catch (Exception $e) {
 	// catch any database errors.
 	exit();
@@ -76,7 +76,7 @@ try {
 $query = 'INSERT INTO #__emundus_users_profiles (user_id, profile_id) VALUES ('.$user->id.','.$profile.')';
 $db->setQuery($query);
 try {
-	$db->Query();
+	$db->execute();
 } catch (Exception $e) {
 	// catch any database errors.
 	exit();
@@ -86,7 +86,7 @@ try {
 $query = 'INSERT INTO #__emundus_users_profiles_history (user_id, profile_id, var) VALUES ('.$user->id.','.$profile.',"profile")';
 $db->setQuery($query);
 try {
-	$db->Query();
+	$db->execute();
 } catch (Exception $e) {
 	// catch any database errors.
 	exit();
