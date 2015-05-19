@@ -377,6 +377,7 @@ class EmundusHelperEmails
 	
 	function sendGroupEmail(){
 		$current_user = JFactory::getUser();
+        $mailer = JFactory::getMailer();
 
 		if (//!EmundusHelperAccess::asAccessAction(9, 'c')  && 	//email applicant
 			//!EmundusHelperAccess::asAccessAction(15, 'c') &&	//email evaluator
@@ -386,6 +387,9 @@ class EmundusHelperEmails
 		) {
 			die(JText::_("ACCESS_DENIED"));
 		}
+
+        // Model for GetCampaignWithID()
+        $model=$this->getModel('campaign');
 
 		// include model email for Tag
 		include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
@@ -405,7 +409,11 @@ class EmundusHelperEmails
 		if (!empty($ag_id) && count($ag_id) > 0) {
 			$query='SELECT user_id FROM #__emundus_groups WHERE group_id IN ('.implode(", ",$ag_id).') GROUP BY user_id';
 			$db->setQuery( $query );
-			$users_id=$db->loadColumn();
+            try {
+                $users_id=$db->loadColumn();
+            } catch (Exception $e) {
+                echo 'Error database: ' . $e ; die();
+            }
 		}
 	
 		// Content of email
@@ -450,61 +458,81 @@ class EmundusHelperEmails
 				$fromname = $admin->email;
 			}
 		}
-		
+
 		$query = 'SELECT u.id, u.name, u.email' .
 					' FROM #__users AS u' .
 					' WHERE u.id IN ('.implode( ',', $users_id ).')';
 		$db->setQuery( $query );
-		$users = $db->loadObjectList();
+        try {
+            $users = $db->loadObjectList();
+        } catch (Exception $e) {
+            echo '<div class="alert alert-warning">Aucun mail envoyé, groupe vide</div>';die();
+        }
+
 
 		$nUsers = count( $users );
+        $info = '';
 		for ($i = 0; $i < $nUsers; $i++) {
 			$user = $users[$i];
-			if (isset($campaigns_id[$i]) && !empty($campaigns_id[$i])) {			
+			if (isset($campaigns_id[$i]) && !empty($campaigns_id[$i])) {
 				$campaign = $model->getCampaignByID($campaigns_id[$i]);
 				$programme = $model->getProgrammeByCampaignID($campaigns_id[$i]);
 			}
 
 			// template replacements (patterns)
 			$post = array(	'COURSE_LABEL' => @$programme['label'],
-							'CAMPAIGN_LABEL' => @$campaign['label'], 
-							'SITE_URL' => JURI::base(), 
+							'CAMPAIGN_LABEL' => @$campaign['label'],
+							'SITE_URL' => JURI::base(),
 							'USER_EMAIL' => $user->email
 						 );
 			$tags = $emails->setTags($user->id, $post);
-		
+
 			$body = preg_replace($tags['patterns'], $tags['replacements'], $message);
 
 			if(!empty($user->email)){
 				// mail function
-				if (JUtility::sendMail($from, $fromname, $user->email, $subject, $body, 1)) {
-					$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
+
+                $config = JFactory::getConfig();
+                $sender = array(
+                    $config->get( $from ),
+                    $config->get( $fromname )
+                );
+
+                $mailer->setSender($sender);
+                $mailer->addRecipient($user->email);
+                $mailer->setSubject($subject);
+                $mailer->isHTML(true);
+                $mailer->Encoding = 'base64';
+                $mailer->setBody($body);
+
+                $send = $mailer->Send();
+                if ( $send !== true ) {
+                    echo 'Error sending email: ' . $send->__toString(); die();
+                } else {
+                    $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 						VALUES ('".$from_id."', '".$user->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
-					$db->setQuery( $sql );
-					$db->query();
-					$info .= "<hr>".($i+1)." : ".$user->email." ".JText::_('SENT');
-					if ($i%10 == 0) {
-						@set_time_limit(10800);
-						usleep(1000);
-					}
-					$sent = true;
-			
-				} else {
-					$error++;
-				}
+                    $db->setQuery( $sql );
+                    try {
+                        $db->execute();
+                    } catch (Exception $e) {
+                        echo 'Error database: ' . $e ; die();
+                    }
+                    $info .= "<hr>".($i+1)." : ".$user->email." ".JText::_('SENT');
+                    if ($i%10 == 0) {
+                        @set_time_limit(10800);
+                        usleep(1000);
+                    }
+                }
 			}
 		}
-		if ($error>0) {
-			JError::raiseWarning( 500, JText::_( 'ACTION_ABORDED' ) );
-			return;
-		} elseif($sent) {
-			$this->setRedirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent&desc=2', JText::_('REPORTS_MAILS_SENT').$info, 'message');
-		}
+        $this->setRedirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent&desc=2', JText::_('REPORTS_MAILS_SENT').$info, 'message');
+
 	}
 	
 	function sendApplicantEmail() {
 
 		$current_user = JFactory::getUser();
+        $mailer = JFactory::getMailer();
 
 		if (!EmundusHelperAccess::asAccessAction(9, 'c'))	//email applicant
 		{
@@ -564,9 +592,15 @@ class EmundusHelperEmails
 					' FROM #__users AS u' .
 					' WHERE u.id IN ('.implode( ',', $users_id ).')';
 		$db->setQuery( $query );
-		$users = $db->loadObjectList();
+        try {
+            $users = $db->loadObjectList();
+        } catch (Exception $e) {
+            echo 'Error database: ' . $e;
+            die();
+        }
 
 
+        die("test");
 		// setup mail
 		if (!isset($from) || !empty($from)) {
 			if (isset($current_user->email)) {
@@ -591,47 +625,63 @@ class EmundusHelperEmails
 		}
 
 		$nUsers = count( $users );
+        $info='';
 		for ($i = 0; $i < $nUsers; $i++) {
-			$user = $users[$i];
-			if (isset($campaigns_id[$i]) && !empty($campaigns_id[$i])) {			
-				$campaign = $model->getCampaignByID($campaigns_id[$i]);
-				$programme = $model->getProgrammeByCampaignID($campaigns_id[$i]);
-			}
+            $user = $users[$i];
+            if (isset($campaigns_id[$i]) && !empty($campaigns_id[$i])) {
+                $campaign = $model->getCampaignByID($campaigns_id[$i]);
+                $programme = $model->getProgrammeByCampaignID($campaigns_id[$i]);
+            }
 
-			// template replacements (patterns)
-			$post = array(	'COURSE_LABEL' => @$programme['label'],
-							'CAMPAIGN_LABEL' => @$campaign['label'], 
-							'SITE_URL' => JURI::base(), 
-							'USER_EMAIL' => $user->email
-						 );
-			$tags = $emails->setTags($user->id, $post);
-		
-			$body = preg_replace($tags['patterns'], $tags['replacements'], $message);
+            // template replacements (patterns)
+            $post = array('COURSE_LABEL' => @$programme['label'],
+                'CAMPAIGN_LABEL' => @$campaign['label'],
+                'SITE_URL' => JURI::base(),
+                'USER_EMAIL' => $user->email
+            );
+            $tags = $emails->setTags($user->id, $post);
 
-			if(!empty($user->email)){
-				// mail function
-				if (JUtility::sendMail($from, $fromname, $user->email, $subject, $body, 1)) {
-					$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
-						VALUES ('".$from_id."', '".$user->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
-					$db->setQuery( $sql );
-					$db->query();
-					$info .= "<hr>".($i+1)." : ".$user->email." ".JText::_('SENT');
-					if ($i%10 == 0) {
-						@set_time_limit(10800);
-						usleep(1000);
-					}
-					$sent = true;
-				} else {
-					$error++;
-				}
-			}
-		}
-		if ($error>0) {
-			JError::raiseWarning( 500, JText::_( 'ACTION_ABORDED' ) );
-			return;
-		} elseif($sent) {
-			$this->setRedirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent&desc=3', JText::_('REPORTS_MAILS_SENT').$info, 'message');
-		}	
+            $body = preg_replace($tags['patterns'], $tags['replacements'], $message);
+
+            if (!empty($user->email)) {
+                // mail function
+
+                $config = JFactory::getConfig();
+                $sender = array(
+                    $config->get($from),
+                    $config->get($fromname)
+                );
+
+                $mailer->setSender($sender);
+                $mailer->addRecipient($user->email);
+                $mailer->setSubject($subject);
+                $mailer->isHTML(true);
+                $mailer->Encoding = 'base64';
+                $mailer->setBody($body);
+
+                $send = $mailer->Send();
+                if ($send !== true) {
+                    echo 'Error sending email: ' . $send->__toString();
+                    die();
+                } else {
+                    $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
+						VALUES ('" . $from_id . "', '" . $user->id . "', " . $db->quote($subject) . ", " . $db->quote($body) . ", NOW())";
+                    $db->setQuery($sql);
+                    try {
+                        $db->execute();
+                    } catch (Exception $e) {
+                        echo 'Error database: ' . $e;
+                        die();
+                    }
+                    $info .= "<hr>" . ($i + 1) . " : " . $user->email . " " . JText::_('SENT');
+                    if ($i % 10 == 0) {
+                        @set_time_limit(10800);
+                        usleep(1000);
+                    }
+                }
+            }
+        }
+		$this->setRedirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent&desc=3', JText::_('REPORTS_MAILS_SENT').$info, 'message');
 	}
 
 }
