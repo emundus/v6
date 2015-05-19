@@ -152,7 +152,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
         var url = $(location).attr('href');
         url = url.split("#");
         $('.alert.alert-warning').remove();
-        if (url[1].length >= 20) {
+        if (url[1] != null && url[1].length >= 20) {
             url = url[1].split("|");
             var fnum = new Object();
             fnum.fnum = url[0];
