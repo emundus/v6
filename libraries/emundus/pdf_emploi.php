@@ -107,10 +107,11 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 			return JError::raiseWarning(500, 'Unable to create user file');
 	}
 */
+
 	if($output){
-		$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.'fiche_'.$rowid.'.pdf', 'FI');
+		$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.'fiche_'.$rowid.'.pdf', 'FI');
 	}else{
-		$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.'fiche_'.$rowid.'.pdf', 'FI');
+		$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.'fiche_'.$rowid.'.pdf', 'FI');
 	}
 
 }
