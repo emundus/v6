@@ -250,14 +250,17 @@ $(document).ready(function()
 			                    search();
 		                  }
 	                  });
-	                  $(document).on('click', '#em-data thead th strong', function(e) {
+	                  /*$(document).on('click', '#em-data thead th strong', function(e) {
 		                  if (e.handle !== true)
 		                  {
 			                  var id = $(this).parent('th').attr('id');
 			                  e.handle = true;
-			                  tableOrder(id);
+                              alert(id);
+                              if (id != 'check') {
+                                  tableOrder(id);
+                              }
 		                  }
-	                  });
+	                  });*/
 	                  $(document).on('click', 'input:button', function(e) {
 		                  if (e.event !== true) {
 			                  e.handle = true;

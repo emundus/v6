@@ -568,7 +568,7 @@ $(document).ready(function()
         if (e.handle !== true) {
             var id = $(this).attr('id');
             e.handle = true;
-            if (id != 'check') {
+            if (id != 'check' && id != 'checkuser' ) {
                 tableOrder(id);
             }
 

@@ -16,36 +16,51 @@
 			<thead>
 			<tr>
 				<?php foreach($this->users[0] as $key => $v):?>
-					<th id="<?php echo $key?>">
-						<?php if($key === 'id'):?>
-							<input type="checkbox" value="-1" id="em-check-all" class="em-check" style="width: 20px !important"/>
-							<label for="em-check-all">
-								<span>#</span>
-							</label>
-							<input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all" style="width: 20px !important"/>
-							<label class="em-hide em-check-all-all" for="em-check-all-all">
-								<span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_CHECK_ALL_ALL')?></span>
-							</label>
-						<?php endif;?>
-						<?php if($this->lists['order'] == $key):?>
-							<?php if($this->lists['order_dir'] == 'desc'):?>
-								<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-							<?php else:?>
-								<span class="glyphicon glyphicon-sort-by-attributes"></span>
-							<?php endif;?>
-							<strong>
-								<?php echo JText::_(strtoupper($key))?>
-							</strong>
-						<?php else:?>
-							<strong>
-								<?php echo JText::_(strtoupper($key))?>
-							</strong>
-						<?php endif;?>
-
-					</th>
-
+                    <?php if($key === 'id'):?>
+                        <th id="checkuser">
+                            <p class="em-cell">
+                                <label for="em-check-all">
+                                    <input type="checkbox" value="-1" id="em-check-all" class="em-check"/>
+                                </label>
+                            </p>
+                        </th>
+                        <th id="<?php echo $key?>">
+                            <p class="em-cell">
+                                <label for="em-check-all">
+                                    <?php if($this->lists['order'] == $key):?>
+                                        <?php if($this->lists['order_dir'] == 'desc'):?>
+                                            <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                        <?php else:?>
+                                            <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                                        <?php endif;?>
+                                    <?php endif;?>
+                                    <span>#</span>
+                                </label>
+                                <!--<label class="em-hide em-check-all-all" for="em-check-all-all">
+                                    <input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all"/>
+                                    <span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_CHECK_ALL_ALL')?></span>
+                                </label>-->
+                            </p>
+                        </th>
+                    <?php else: ?>
+                        <th id="<?php echo $key?>">
+                        <?php if($this->lists['order'] == $key):?>
+                                <p class="em-cell">
+                                <?php if($this->lists['order_dir'] == 'desc'):?>
+                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                <?php else:?>
+                                        <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                                <?php endif;?>
+                                <strong><?php echo JText::_(strtoupper($key))?></strong>
+                                </p>
+                        <?php else:?>
+                            <p class="em-cell">
+                                <strong><?php echo JText::_(strtoupper($key))?></strong>
+                            </p>
+                        <?php endif;?>
+                        </th>
+                     <?php endif;?>
 				<?php endforeach;?>
-
 			</tr>
 			</thead>
 			<tbody>
@@ -53,29 +68,57 @@
 			<?php foreach ($this->users as $l => $user):?>
 				<tr>
 					<?php foreach ($user as $k => $value):?>
-						<td>
-							<div class="em-cell" >
+
+
 								<?php if($k == 'id'): ?>
-									<input type="checkbox" name="<?php echo $value ?>_check" id="<?php echo $value?>_check" class='em-check' style="width: 20px !important"/>
-									<label for = "<?php echo $value?>_check">
-										<?php
-											echo ($l * 1 + 1 + $this->pagination->limitstart) .'#'.$value;
-										?>
-									</label>
+                                    <td>
+                                        <div class="em-cell" >
+                                            <input type="checkbox" name="<?php echo $value ?>_check" id="<?php echo $value?>_check" class='em-check'/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="em-cell" >
+                                            <label for = "<?php echo $value?>_check">
+                                                <?php
+                                                echo ($l * 1 + 1 + $this->pagination->limitstart) .'#'.$value;
+                                                ?>
+                                            </label>
+                                        </div>
+                                    </td>
 								<?php elseif($k == 'active'):?>
 									<?php if($value == 0): ?>
-										<span class="glyphicon glyphicon-ok" style="color: #00c500"></span>
+                                        <td>
+                                            <div class="em-cell" >
+										        <span class="glyphicon glyphicon-ok" style="color: #00c500"></span>
+                                            </div>
+                                        </td>
 									<?php else:?>
-										<span class="glyphicon glyphicon-ban-circle" style="color: #ff0000"></span>
+                                        <td>
+                                            <div class="em-cell" >
+										        <span class="glyphicon glyphicon-ban-circle" style="color: #ff0000"></span>
+                                            </div>
+                                        </td>
 									<?php endif;?>
 								<?php elseif($k == 'newsletter'):?>
 									<?php if($value == 1): ?>
-										<?php echo JText::_('JYES')?>
+                                        <td>
+                                            <div class="em-cell" >
+										        <?php echo JText::_('JYES')?>
+                                            </div>
+                                        </td>
 									<?php else:?>
-										<?php echo JText::_('JNO')?>
+                                        <td>
+                                            <div class="em-cell" >
+										        <?php echo JText::_('JNO')?>
+                                            </div>
+                                        </td>
 									<?php endif;?>
 								<?php else:?>
-									<?php echo $value;?>
+                                    <td>
+                                        <div class="em-cell" >
+									        <?php echo $value;?>
+                                        </div>
+                                    </td>
 								<?php endif;?>
 							</div>
 						</td>

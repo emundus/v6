@@ -238,7 +238,9 @@ form.fabrikForm i.icon-delete:before {
     background: linear-gradient(to left top,#F3F3F3,#D7D7D7);
     background: -webkit-gradient(linear, left top, left bottom, from(#F3F3F3), to(#D7D7D7) );
 }
-
+.checkuser {
+    min-width: inherit !important;
+}
 /************ FOOTER *************/
 #rt-footer {
   background: #FFFFFF;

@@ -35,8 +35,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									<input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all" style="width:20px !important;"/>
 									<span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_CHECK_ALL_ALL')?></span>
 								</label>
-							<?php elseif(@$this->lists['order'] == $kl):?>
-								<?php if(@$this->lists['order_dir'] == 'desc'):?>
+							<?php elseif($this->lists['order'] == $kl):?>
+								<?php if($this->lists['order_dir'] == 'desc'):?>
 									<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
 								<?php else:?>
 									<span class="glyphicon glyphicon-sort-by-attributes"></span>
