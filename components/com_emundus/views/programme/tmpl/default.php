@@ -1,7 +1,7 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
-JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
+JHTML::stylesheet(JURI::Base().'media/com_emundus/css/emundus.css' );
 
 ?>
 
@@ -18,6 +18,7 @@ JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
                 </div>
 
             <fieldset class="apply-now-small">
+                <legend><?php echo JText::_('CAMPAIGN_PERIOD'); ?></legend>
                 <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
                 <?php echo date('d/m/Y H:i', strtotime($this->campaign['start_date'])); ?><br>
                 <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>

@@ -21,8 +21,8 @@
 						<option checked="true" value="all">LIST_ALL</option>
 					</field>
                     <field name="mod_em_campaign_param_tab" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_TAB" description="MOD_EM_CAMPAIGN_PARAM_TAB_DESC" value="1"/>
-                    <field name="mod_em_campaign_param_showprogramme" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_SHOWPROG" description="MOD_EM_CAMPAIGN_PARAM_TAB_SHOWPROG_DESC" default="1"/>
-                    <field name="mod_em_campaign_param_showcampaign" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_SHOWCAMP" description="MOD_EM_CAMPAIGN_PARAM_TAB_SHOWCAMP_DESC" />
+                    <field name="mod_em_campaign_param_showprogramme" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_SHOWPROG" description="MOD_EM_CAMPAIGN_PARAM_SHOWPROG_DESC" default="1"/>
+                    <field name="mod_em_campaign_param_showcampaign" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_SHOWCAMP" description="MOD_EM_CAMPAIGN_PARAM_SHOWCAMP_DESC" />
                     <field name="mod_em_campaign_display_groupby" type="checkbox" label="MOD_EM_CAMPAIGN_DISPLAY_GROUPBY" description="MOD_EM_CAMPAIGN_DISPLAY_GROUPBY_DESC" value="1"/>
                     <field type="list" name="mod_em_campaign_groupby" default="" label="MOD_EM_CAMPAIGN_GROUP" description="MOD_EM_CAMPAIGN_GROUP_DESC">
                         <option value="month">LIST_MONTH</option>
@@ -37,6 +37,7 @@
 						<option value="desc">DESC</option>
 					</field>
                     <field type="text" name="mod_em_campaign_itemid" label="MOD_EM_CAMPAIGN_ITEMID" description="MOD_EM_CAMPAIGN_ITEMID_DESC" />
+                    <field type="text" name="mod_em_campaign_itemid2" label="MOD_EM_CAMPAIGN_ITEMID2" description="MOD_EM_CAMPAIGN_ITEMID2_DESC" />
 					<field type="text" name="mod_em_campaign_class" label="MOD_EM_CAMPAIGN_CLASS" description="MOD_EM_CAMPAIGN_CLASS_DESC" default="dropdown-menu"/>
 
 				</fieldset>

@@ -96,7 +96,7 @@ echo'</ul></div>';*/
                                         $textprog = strip_tags($resul->notes);
                                     }
                                     if ($showcampaign) {
-                                        $textcamp = strip_tags($resul->description);
+                                        $textcamp = strip_tags($resul->short_description);
 
                                     }
                                     $text = $textprog."<br />".$textcamp;
@@ -108,8 +108,14 @@ echo'</ul></div>';*/
                                 <div class="campaingapplycontent">
                                     <fieldset class="apply-now-small">
                                         <legend>
-                                            <a class="btn btn-info" role="button" href='<?php if($resul->apply_online==1) {echo ("index.php?option=com_users&view=registration&course=".$resul->code);} else { echo ("index.php?option=com_emundus&view=programme&id=".$resul->id); } ?>' data-toggle="sc-modal"><?php echo ($resul->apply_online==1)?JText::_('APPLY_NOW'):JText::_('MORE_INFO'); ?></a>
+                                            <?php if($resul->apply_online==1) {?>
+                                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                                <a class="btn btn-info" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+                                            <?php } else { ?>
+                                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                            <?php } ?>
                                         </legend>
+                                        <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?> :</b><br />
                                         <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
                                         <?php echo date('d/m/Y H:i', strtotime($resul->start_date)); ?><br>
                                         <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
@@ -175,7 +181,7 @@ echo'</ul></div>';*/
                                         $textprog = strip_tags($resul->notes);
                                     }
                                     if ($showcampaign) {
-                                        $textcamp = strip_tags($resul->description);
+                                        $textcamp = strip_tags($resul->short_description);
 
                                     }
                                     $text = $textprog."<br />".$textcamp;
@@ -187,8 +193,14 @@ echo'</ul></div>';*/
                                 <div class="campaingapplycontent">
                                     <fieldset class="apply-now-small">
                                         <legend>
-                                            <a class="btn btn-info" role="button" href='<?php if($resul->apply_online==1) {echo ("index.php?option=com_users&view=registration&course=".$resul->code);} else { echo ("index.php?option=com_emundus&view=programme&id=".$resul->id); } ?>' data-toggle="sc-modal"><?php echo ($resul->apply_online==1)?JText::_('APPLY_NOW'):JText::_('MORE_INFO'); ?></a>
+                                            <?php if($resul->apply_online==1) {?>
+                                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                                <a class="btn btn-info" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+                                            <?php } else { ?>
+                                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                            <?php } ?>
                                         </legend>
+                                        <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?> :</b><br />
                                         <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
                                         <?php echo date('d/m/Y H:i', strtotime($resul->start_date)); ?><br>
                                         <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
@@ -252,7 +264,7 @@ echo'</ul></div>';*/
                                         $textprog = strip_tags($resul->notes);
                                     }
                                     if ($showcampaign) {
-                                        $textcamp = strip_tags($resul->description);
+                                        $textcamp = strip_tags($resul->short_description);
 
                                     }
                                     $text = $textprog."<br />".$textcamp;
@@ -264,8 +276,14 @@ echo'</ul></div>';*/
                                 <div class="campaingapplycontent">
                                     <fieldset class="apply-now-small">
                                         <legend>
-                                            <a class="btn btn-info" role="button" href='<?php if($resul->apply_online==1) {echo ("index.php?option=com_users&view=registration&course=".$resul->code);} else { echo ("index.php?option=com_emundus&view=programme&id=".$resul->id); } ?>' data-toggle="sc-modal"><?php echo ($resul->apply_online==1)?JText::_('APPLY_NOW'):JText::_('MORE_INFO'); ?></a>
+                                            <?php if($resul->apply_online==1) {?>
+                                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                                <a class="btn btn-info" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+                                            <?php } else { ?>
+                                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                            <?php } ?>
                                         </legend>
+                                        <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?> :</b><br />
                                         <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
                                         <?php echo date('d/m/Y H:i', strtotime($resul->start_date)); ?><br>
                                         <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
@@ -329,7 +347,7 @@ echo'</ul></div>';*/
                                         $textprog = strip_tags($resul->notes);
                                     }
                                     if ($showcampaign) {
-                                        $textcamp = strip_tags($resul->description);
+                                        $textcamp = strip_tags($resul->short_description);
 
                                     }
                                     $text = $textprog."<br />".$textcamp;
@@ -341,8 +359,14 @@ echo'</ul></div>';*/
                                 <div class="campaingapplycontent">
                                     <fieldset class="apply-now-small">
                                         <legend>
-                                            <a class="btn btn-info" role="button" href='<?php if($resul->apply_online==1) {echo ("index.php?option=com_users&view=registration&course=".$resul->code);} else { echo ("index.php?option=com_emundus&view=programme&id=".$resul->id); } ?>' data-toggle="sc-modal"><?php echo ($resul->apply_online==1)?JText::_('APPLY_NOW'):JText::_('MORE_INFO'); ?></a>
+                                            <?php if($resul->apply_online==1) {?>
+                                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                                <a class="btn btn-info" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+                                            <?php } else { ?>
+                                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                            <?php } ?>
                                         </legend>
+                                        <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?> :</b><br />
                                         <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
                                         <?php echo date('d/m/Y H:i', strtotime($resul->start_date)); ?><br />
                                         <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>

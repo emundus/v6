@@ -20,6 +20,7 @@ $mod_em_campaign_order=$params->get('mod_em_campaign_orderby');
 $mod_em_campaign_order_type=$params->get('mod_em_campaign_order_type');
 $mod_em_campaign_class=$params->get('mod_em_campaign_order_type');
 $mod_em_campaign_itemid=$params->get('mod_em_campaign_itemid');
+$mod_em_campaign_itemid2=$params->get('mod_em_campaign_itemid2');
 $showcampaign =$params->get('mod_em_campaign_param_showcampaign');
 $showprogramme =$params->get('mod_em_campaign_param_showprogramme');
 

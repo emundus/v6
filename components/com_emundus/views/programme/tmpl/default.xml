@@ -11,7 +11,7 @@
             <field name="com_emundus_programme_showprogramme" type="checkbox" label="COM_EMUNDUS_PROGRAMME_SHOWPROG" description="COM_EMUNDUS_PROGRAMME_SHOWPROG_DESC" default="1"/>
             <field name="com_emundus_programme_showcampaign" type="checkbox" label="COM_EMUNDUS_PROGRAMME_SHOWCAMP" description="COM_EMUNDUS_PROGRAMME_SHOWCAMP_DESC" />
             <field type="text" name="com_emundus_programme_progdesc_class" label="COM_EMUNDUS_PROGRAMME_PROGDESC_CLASS" description="COM_EMUNDUS_PROGRAMME_PROGDESC_CLASS_DESC" />
-            <field type="text" name="com_emundus_programme_campdesc_class" label="COM_EMUNDUS_PROGRAMME_CAMPDESC_CLASS" description="COM_EMUNDUS_CAMPAIGN_CAMPDESC_CLASS_DESC" />
+            <field type="text" name="com_emundus_programme_campdesc_class" label="COM_EMUNDUS_PROGRAMME_CAMPDESC_CLASS" description="COM_EMUNDUS_PROGRAMME_CAMPDESC_CLASS_DESC" />
         </fieldset>
     </fields>
 </metadata>
