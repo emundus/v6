@@ -651,7 +651,9 @@ $htmldata .= '
 
 if(isset($item->maiden_name))
 	$htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
-$date_submitted = !empty($item->date_submitted)?strftime("%d/%m/%Y %H:%M", strtotime($item->date_submitted)):JText::_('NOT_SENT');
+
+$date_submitted = (!empty($item->date_submitted) && strpos($item->date_submitted, '0000')!=0)?strftime("%d/%m/%Y %H:%M", strtotime($item->date_submitted)):JText::_('NOT_SENT');
+
 $htmldata .= '
   <div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</div>
   <div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>

@@ -48,7 +48,7 @@ class EmundusHelperExport
 
 		require_once($file);
 
-		$application_form_pdf($sid, $fnum, false);
+		application_form_pdf($sid, $fnum, false);
 		return  EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_application.pdf';
 	}
 

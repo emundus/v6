@@ -743,9 +743,13 @@ class EmundusModelApplication extends JModelList
                                 $query = 'SELECT `id`, `'.$iteme->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
                                 $this->_db->setQuery($query);
                                 $res = $this->_db->loadRow();
-                                $iteme->content = $res[1];
-                                $iteme->content_id = $res[0];
-
+                                if(count($res)>1) {
+                                    $iteme->content = $res[1];
+                                    $iteme->content_id = $res[0];
+                                } else {
+                                    $iteme->content = '';
+                                    $iteme->content_id = -1;
+                                }
                                 if ($iteme->plugin == 'databasejoin') {
                                     $params = json_decode($iteme->params);
                                     if ($params->database_join_display_type == 'checkbox') {
@@ -755,8 +759,14 @@ class EmundusModelApplication extends JModelList
                                                     WHERE parent_id=' . $iteme->content_id . ' GROUP BY parent_id';
                                         $this->_db->setQuery($query);
                                         $res = $this->_db->loadRow();
-                                        $iteme->content = $res[1];
-                                        $iteme->content_id = $res[0];
+                                        
+                                        if(count($res)>1) {
+                                            $iteme->content = $res[1];
+                                            $iteme->content_id = $res[0];
+                                        } else {
+                                            $iteme->content = '';
+                                            $iteme->content_id = -1;
+                                        }
                                     }
                                 }
                             }
