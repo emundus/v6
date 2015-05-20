@@ -172,16 +172,16 @@ class EmundusViewApplication extends JViewLegacy
 							{
 								if(EmundusHelperAccess::asAccessAction(5, 'u', $this->_user->id, $fnum))
 								{
-								//$url_form = 'index.php?option=com_fabrik&c=form&view=form&formid=29&tableid=31&rowid='.$myEval[0]->id.'&student_id='.$student->id.'&tmpl=component&iframe=1';
-								$url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid='.$myEval[0]->id.'&student_id='.$student->id;
+								if(!empty($formid))
+								    $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid='.$myEval[0]->id.'&student_id='.$student->id;
 								}
 							}
 							else
 							{
 								if(EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id, $fnum))
 								{
-									//$url_form = 'index.php?option=com_fabrik&c=form&view=form&formid=29&tableid=31&rowid=&jos_emundus_evaluations___student_id[value]='.$student->id.'&jos_emundus_evaluations___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_evaluations___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
-									$url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid=&jos_emundus_evaluations___student_id[value]='.$student->id.'&jos_emundus_evaluations___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_evaluations___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
+                                    if(!empty($formid))
+                                        $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid=&jos_emundus_evaluations___student_id[value]='.$student->id.'&jos_emundus_evaluations___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_evaluations___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
 								}
 							}
 						$this->assignRef('campaign_id', $fnumInfos['campaign_id']);

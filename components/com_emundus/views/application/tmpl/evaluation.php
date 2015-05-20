@@ -30,7 +30,9 @@ $isCoordinator = EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)
         </div>
     <?php endif;?>
     <div class="form" id="form"></div>
-    <a href="<?php echo $this->url_form; ?>" target="_blank" title="<?php echo JText::_('OPEN_EVALUATION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?php echo JText::_('OPEN_EVALUATION_FORM_IN_NEW_TAB'); ?></a>
+    <?php if(!empty($this->url_form)):?>
+        <a href="<?php echo $this->url_form; ?>" target="_blank" title="<?php echo JText::_('OPEN_EVALUATION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?php echo JText::_('OPEN_EVALUATION_FORM_IN_NEW_TAB'); ?></a>
+    <?php endif;?>
     <div class="evaluations" id="evaluations"></div>
 </div>
 <script type="text/javascript">
