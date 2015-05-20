@@ -103,7 +103,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true) {
 	$logo 		= !empty($logo) ? JPATH_ROOT.DS.$matches[1][1] : "";
 	
 	//get title
-	$title = $config->getValue('config.sitename');
+	$title = $config->get('sitename');
 	$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
 	unset($logo);
 	unset($title);
