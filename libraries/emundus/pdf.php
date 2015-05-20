@@ -285,9 +285,9 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
 			@chdir('tmp');
 
+            $name = $attachment['lbl'].'_'.date('Y-m-d_H-i-s').'.pdf';
 			if($output){
 				//$output?'FI':'F'
-				$name = $attachment['lbl'].'_'.date('Y-m-d_H-i-s').'.pdf';
 				$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.$name, $output);
 
 			}else{
