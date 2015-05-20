@@ -541,3 +541,4 @@ php.ini
 favicon.ico
 robots.txt.dist
 stats/*
+.idea/*
