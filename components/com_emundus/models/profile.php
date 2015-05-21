@@ -82,7 +82,7 @@ class EmundusModelProfile extends JModelList
 	function updateProfile($uid, $campaign) {
 		$query = 'UPDATE #__emundus_users SET profile='.$campaign->profile_id.', schoolyear="'.$campaign->year.'" WHERE user_id='.$uid;
 		$this->_db->setQuery( $query ); 
-		return $this->_db->query();
+		return $this->_db->execute();
 	}
 
 	function getCurrentCampaignByApplicant($uid) {

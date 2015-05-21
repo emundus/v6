@@ -131,13 +131,13 @@ class EmundusModelCampaign extends JModelList
 	
 	function getCampaignByApplicant($aid)
 	{
-		$query = 'SELECT esc.*, esp.menutype, esp.label as profile_label
+		$query = 'SELECT esc.*,ecc.fnum, esp.menutype, esp.label as profile_label
 					FROM #__emundus_campaign_candidature AS ecc 
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ecc.campaign_id
 					LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = esc.profile_id
 					WHERE ecc.applicant_id='.$aid.' 
 					ORDER BY ecc.date_time DESC';
-		$this->_db->setQuery( $query ); 
+		$this->_db->setQuery( $query );
 		return $this->_db->loadObjectList();
 	}
 	
