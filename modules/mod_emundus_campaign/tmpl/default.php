@@ -72,7 +72,7 @@ if ($locallang == "fr-FR") {
                             <div class="rt-grid-12">
                                 <div class="position-me">
                                     <div class="rotate-me">
-                                        <p><?php echo utf8_encode($month); ?></p>
+                                        <p><?php echo ucfirst(utf8_encode($month)); ?></p>
                                     </div>
                                 </div>
                             </div>
@@ -90,7 +90,7 @@ if ($locallang == "fr-FR") {
                                         $textcamp = strip_tags($resul->short_description);
                                     }
                                     //$text = $textprog."<br />".$textcamp;
-                                    echo tronque($textcamp, 600);
+                                    echo $textcamp;
                                     ?>
                                 </p>
                             </div>
@@ -147,7 +147,7 @@ if ($locallang == "fr-FR") {
                             <div class="rt-grid-12">
                                 <div class="position-me">
                                     <div class="rotate-me">
-                                        <p><?php echo utf8_encode($month); ?></p>
+                                        <p><?php echo ucfirst(utf8_encode($month)); ?></p>
                                     </div>
                                 </div>
                             </div>
@@ -165,7 +165,7 @@ if ($locallang == "fr-FR") {
                                         $textcamp = strip_tags($resul->short_description);
                                     }
                                     //$text = $textprog."<br />".$textcamp;
-                                    echo tronque($textcamp, 600);
+                                    echo $textcamp;
                                     ?>
                                 </p>
                             </div>
@@ -220,7 +220,7 @@ if ($locallang == "fr-FR") {
                             <div class="rt-grid-12">
                                 <div class="position-me">
                                     <div class="rotate-me">
-                                        <p><?php echo utf8_encode($month); ?></p>
+                                        <p><?php echo ucfirst(utf8_encode($month)); ?></p>
                                     </div>
                                 </div>
                             </div>
@@ -238,7 +238,7 @@ if ($locallang == "fr-FR") {
                                         $textcamp = strip_tags($resul->short_description);
                                     }
                                     //$text = $textprog."<br />".$textcamp;
-                                    echo tronque($textcamp, 600);
+                                    echo $textcamp;
                                     ?>
                                 </p>
                             </div>
@@ -293,7 +293,7 @@ if ($locallang == "fr-FR") {
                             <div class="rt-grid-12">
                                 <div class="position-me">
                                     <div class="rotate-me">
-                                        <p><?php echo utf8_encode($month); ?></p>
+                                        <p><?php echo ucfirst(utf8_encode($month)); ?></p>
                                     </div>
                                 </div>
                             </div>
@@ -311,7 +311,7 @@ if ($locallang == "fr-FR") {
                                         $textcamp = strip_tags($resul->short_description);
                                     }
                                     //$text = $textprog."<br />".$textcamp;
-                                    echo tronque($textcamp, 600);
+                                    echo $textcamp;
                                     ?>
                                 </p>
                             </div>
