@@ -1,14 +1,14 @@
 <?php
 defined('_JEXEC') or die; 
-/*
-echo '<div class="dropdown clearfix" >
-   <ul class="'.jQuerymod_em_campaign_class.'" role="menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;">';
 
-foreach($resultat as $resul)
-{
-	echo '<li><a tabindex="-1" href="'.$resul->url.'">'.$resul->label.' | <em>'.date('d.m.Y H:i:s', strtotime($resul->start_date)).' - '.date('d.m.Y H:i:s', strtotime($resul->end_date)).'</em></a> </li>';
+$lang = JFactory::getLanguage();
+$locallang = $lang->getTag(); 
+if ($locallang == "fr-FR") {
+    setlocale(LC_TIME, 'fr', 'fr_FR', 'french', 'fra', 'fra_FRA', 'fr_FR.ISO_8859-1', 'fra_FRA.ISO_8859-1', 'fr_FR.utf8', 'fr_FR.utf-8', 'fra_FRA.utf8', 'fra_FRA.utf-8');
+} else {
+    setlocale (LC_ALL, 'en_GB');
 }
-echo'</ul></div>';*/
+
 ?>
 <form action="<?php echo JRoute::_(JUri::getInstance()->toString(), true, $params->get('')); ?>" method="post" id="search_program">
     <?php if(isset($_POST['searchword']) && !empty($_POST['searchword'])) { ?>
@@ -56,13 +56,7 @@ echo'</ul></div>';*/
                     <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
                 <?php } else {
                     $oldmonth = '';
-                    $lang = JFactory::getLanguage();
-                    $locallang = $lang->getTag();
-                    if ($locallang == "fr-FR") {
-                        setlocale(LC_TIME, 'fr', 'fr_FR', 'french', 'fra', 'fra_FRA', 'fr_FR.ISO_8859-1', 'fra_FRA.ISO_8859-1', 'fr_FR.utf8', 'fr_FR.utf-8', 'fra_FRA.utf8', 'fra_FRA.utf-8');
-                    } else {
-                        setlocale (LC_TIME, 'en_GB');
-                    }
+                    
                     foreach($currentCampaign as $resul) {
                         if ($order == "start_date") {
                             $month = strftime("%B %Y", strtotime($resul->start_date));
@@ -137,13 +131,7 @@ echo'</ul></div>';*/
                     <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
                 <?php } else {
                     $oldmonth = '';
-                    $lang = JFactory::getLanguage();
-                    $locallang = $lang->getTag();
-                    if ($locallang == "fr-FR") {
-                        setlocale(LC_TIME, 'fr', 'fr_FR', 'french', 'fra', 'fra_FRA', 'fr_FR.ISO_8859-1', 'fra_FRA.ISO_8859-1', 'fr_FR.utf8', 'fr_FR.utf-8', 'fra_FRA.utf8', 'fra_FRA.utf-8');
-                    } else {
-                        setlocale (LC_TIME, 'en_GB');
-                    }
+
                     foreach($futurCampaign as $resul) {
                         if ($order == "start_date") {
                             $month = strftime("%B %Y", strtotime($resul->start_date));
@@ -216,13 +204,7 @@ echo'</ul></div>';*/
                     <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
                 <?php } else {
                     $oldmonth = '';
-                    $lang = JFactory::getLanguage();
-                    $locallang = $lang->getTag();
-                    if ($locallang == "fr-FR") {
-                        setlocale(LC_TIME, 'fr', 'fr_FR', 'french', 'fra', 'fra_FRA', 'fr_FR.ISO_8859-1', 'fra_FRA.ISO_8859-1', 'fr_FR.utf8', 'fr_FR.utf-8', 'fra_FRA.utf8', 'fra_FRA.utf-8');
-                    } else {
-                        setlocale (LC_TIME, 'en_GB');
-                    }
+
                     foreach($pastCampaign as $resul) {
                         if ($order == "start_date") {
                             $month = strftime("%B %Y", strtotime($resul->start_date));
@@ -295,13 +277,7 @@ echo'</ul></div>';*/
                     <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
                 <?php } else {
                     $oldmonth = '';
-                    $lang = JFactory::getLanguage();
-                    $locallang = $lang->getTag();
-                    if ($locallang == "fr-FR") {
-                        setlocale(LC_TIME, 'fr', 'fr_FR', 'french', 'fra', 'fra_FRA', 'fr_FR.ISO_8859-1', 'fra_FRA.ISO_8859-1', 'fr_FR.utf8', 'fr_FR.utf-8', 'fra_FRA.utf8', 'fra_FRA.utf-8');
-                    } else {
-                        setlocale (LC_TIME, 'en_GB');
-                    }
+
                     foreach($allCampaign as $resul) {
                         if ($order == "start_date") {
                             $month = strftime("%B %Y", strtotime($resul->start_date));
