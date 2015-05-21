@@ -175,12 +175,7 @@ if ($locallang == "fr-FR") {
                                 <div class="campaingapplycontent">
                                     <fieldset class="apply-now-small">
                                         <legend>
-                                            <?php if($resul->apply_online==1) {?>
-                                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                                <a class="btn btn-info" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
-                                            <?php } else { ?>
-                                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                            <?php } ?>
+                                            <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                                         </legend>
                                         <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?> :</b><br />
                                         <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
@@ -197,7 +192,7 @@ if ($locallang == "fr-FR") {
                             </div> <!-- close last campaign block -->
                     </div> <!-- close last campaignbymonth block -->
             <?php } ?>
-            <?php echo $paginationFutur->getResultsCounter(); ?>
+
             </div>
         </div>
 
@@ -250,12 +245,7 @@ if ($locallang == "fr-FR") {
                                 <div class="campaingapplycontent">
                                     <fieldset class="apply-now-small">
                                         <legend>
-                                            <?php if($resul->apply_online==1) {?>
-                                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                                <a class="btn btn-info" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
-                                            <?php } else { ?>
-                                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                            <?php } ?>
+                                            <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                                         </legend>
                                         <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?> :</b><br />
                                         <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
@@ -324,12 +314,7 @@ if ($locallang == "fr-FR") {
                                 <div class="campaingapplycontent">
                                     <fieldset class="apply-now-small">
                                         <legend>
-                                            <?php if($resul->apply_online==1) {?>
-                                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                                <a class="btn btn-info" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
-                                            <?php } else { ?>
-                                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                            <?php } ?>
+                                            <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                                         </legend>
                                         <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?> :</b><br />
                                         <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>

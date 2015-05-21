@@ -24,11 +24,13 @@
         {
             $db = JFactory::getDbo();
             $query	= $db->getQuery(true);
-            $query->select('pr.url,ca.*, pr.notes, pr.code, pr.apply_online');
-            $query->from('#__emundus_setup_programmes as pr,#__emundus_setup_campaigns as ca');
+            $query->select('ca.*, pr.apply_online');
+            $query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
             $query->where('ca.training = pr.code AND ca.published=1 AND Now() <= ca.end_date and Now()>= ca.start_date '.$condition);
 
+            //
             $db->setQuery($query);
+            //die(str_replace('#_', 'jos', $db->getQuery()));
             $list = (array) $db->loadObjectList();
             $this->totalCurrent = count($list);
 
@@ -50,8 +52,8 @@
         {
             $db = JFactory::getDbo();
             $query	= $db->getQuery(true);
-            $query->select('pr.url,ca.*, pr.notes, pr.code, pr.apply_online');
-            $query->from('#__emundus_setup_programmes as pr,#__emundus_setup_campaigns as ca');
+            $query->select('ca.*, pr.apply_online');
+            $query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
             $query->where('ca.training = pr.code AND ca.published=1 AND Now() >= ca.end_date '.$condition);
 
             $db->setQuery($query);
@@ -67,8 +69,8 @@
         {
             $db = JFactory::getDbo();
             $query	= $db->getQuery(true);
-            $query->select('pr.url,ca.*, pr.notes, pr.code, pr.apply_online');
-            $query->from('#__emundus_setup_programmes as pr,#__emundus_setup_campaigns as ca');
+            $query->select('ca.*, pr.apply_online');
+            $query->from('#__emundus_setup_campaigns as ca,#__emundus_setup_programmes as pr');
             $query->where('ca.training = pr.code AND ca.published=1 AND Now() <= ca.start_date '.$condition);
 
             $db->setQuery($query);
@@ -84,8 +86,8 @@
         {
             $db = JFactory::getDbo();
             $query	= $db->getQuery(true);
-            $query->select('pr.url,ca.*, pr.notes, pr.code, pr.apply_online');
-            $query->from('#__emundus_setup_programmes as pr,#__emundus_setup_campaigns as ca');
+            $query->select('ca.*, pr.apply_online');
+            $query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
             $query->where('ca.training = pr.code AND ca.published=1 '.$condition);
 
             $db->setQuery($query);
