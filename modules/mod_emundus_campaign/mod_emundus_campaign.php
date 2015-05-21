@@ -84,6 +84,8 @@ $pastCampaign = modEmundusCampaignHelper::getPast($condition);
 $futurCampaign = modEmundusCampaignHelper::getFutur($condition);
 $allCampaign = modEmundusCampaignHelper::getProgram($condition);
 
+//$pagination    = modEmundusCampaignHelper::getPagination();
+
 require(JModuleHelper::getLayoutPath('mod_emundus_campaign'));
 
 ?>

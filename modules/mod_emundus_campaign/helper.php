@@ -1,13 +1,24 @@
 <?php
 	defined('_JEXEC') or die('Access Deny');
 
+    //JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models', 'EmundusModel');
+    require_once (JPATH_SITE . '/components/com_emundus/models/files.php');
+
 	class modEmundusCampaignHelper
 	{
 
+        static function getPagination()
+        {
+            $model = new EmundusModelFiles;
+            return $model->getPagination();
+
+        }
 
         /* **** CURRENT **** */
         static function getCurrent($condition)
         {
+            
+
             $db = JFactory::getDbo();
             $query	= $db->getQuery(true);
             $query->select('pr.url,ca.*, pr.notes, pr.code, pr.apply_online');

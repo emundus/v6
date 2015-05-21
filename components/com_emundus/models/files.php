@@ -20,8 +20,8 @@ if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 }
 */
 jimport('joomla.application.component.model');
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'files.php');
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'list.php');
+require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'helpers' . DS . 'files.php');
+require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'helpers' . DS . 'list.php');
 
 /**
  * Class EmundusModelFiles
