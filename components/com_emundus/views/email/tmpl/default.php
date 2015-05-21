@@ -26,8 +26,6 @@ function OnSubmitForm()
 	    //alert(button_name[0]);
 		switch(button_name[0]) {
             case 'expert':
-                document.adminForm.task.value = "expert";
-                document.adminForm.action ="index.php?option=com_emundus&view=files&controller=files&Itemid=<?php echo $itemid; ?>&task=applicantemail";
             break;
 			case 'applicant_email': 
 				document.adminForm.task.value = "applicantemail";

@@ -530,7 +530,6 @@ class EmundusHelperEmails
 	}
 	
 	function sendApplicantEmail() {
-
 		$current_user = JFactory::getUser();
         $mailer = JFactory::getMailer();
 
@@ -546,7 +545,6 @@ class EmundusHelperEmails
 		$mainframe = JFactory::getApplication();
 
 		$db	= JFactory::getDBO();
-		$current_user = JFactory::getUser();
 
 		// Model for GetCampaignWithID()
 		$model=$this->getModel('campaign');
@@ -599,8 +597,6 @@ class EmundusHelperEmails
             die();
         }
 
-
-        die("test");
 		// setup mail
 		if (!isset($from) || !empty($from)) {
 			if (isset($current_user->email)) {
