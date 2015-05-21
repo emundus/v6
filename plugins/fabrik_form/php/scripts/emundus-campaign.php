@@ -68,7 +68,7 @@ $db->setQuery($query);
 try {
 	$db->execute();
 } catch (Exception $e) {
-	// catch any database errors.
+    echo $e;
 	exit();
 }	
 
@@ -78,20 +78,9 @@ $db->setQuery($query);
 try {
 	$db->execute();
 } catch (Exception $e) {
-	// catch any database errors.
+    echo $e;
 	exit();
 }
-		
-// Insert data in #__emundus_users_profiles_history
-$query = 'INSERT INTO #__emundus_users_profiles_history (user_id, profile_id, var) VALUES ('.$user->id.','.$profile.',"profile")';
-$db->setQuery($query);
-try {
-	$db->execute();
-} catch (Exception $e) {
-	// catch any database errors.
-	exit();
-}
-
 
 $user->firstname 			= $firstname;
 $user->lastname	 			= $lastname;
@@ -111,6 +100,6 @@ $user->start_date 			= $candidature_start;
 $user->end_date 			= $candidature_end;
 $user->campaign_name 		= $campaign_label;
 
-$app->redirect("index.php");
+$app->redirect("index.php",  JText::_('FILE_OK'));
 
 ?>
