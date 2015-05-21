@@ -71,7 +71,7 @@ class  plgSystemEmundus_period extends JPlugin
 			$no_profile = (empty($user->profile) || !isset($user->profile))?1:0; 
 			if ($no_profile) $user->applicant = 1;
 			if ( $r != 1 && $user->applicant==1 && !in_array($user->id, $applicants) ) {	
-				if($no_profile && $task != "user.logout" && $task_get != "cancel_renew" && $option != 'com_users' && $option != 'com_content') { 
+				if($no_profile && $task != "user.logout" && $task_get != "cancel_renew"  && $task_get != "openfile" && $option != 'com_users' && $option != 'com_content') { 
 					die($app->redirect("index.php?option=com_fabrik&view=form&formid=102&random=0&r=1"));
 				}
 			}

@@ -28,10 +28,12 @@ $show_programme = $params->get('show_programme', 1);
 $checklist = new EmundusModelChecklist;
 $application = new EmundusModelApplication;
 
-$attachments = $application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
-$forms = $application->getFormsProgress($user->id, $user->profile, $user->fnum);
+if (isset($user->fnum) && !empty($user->fnum)) {
+	$attachments = $application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
+	$forms = $application->getFormsProgress($user->id, $user->profile, $user->fnum);
 
-$sent = $checklist->getSent();
-$confirm_form_url = $checklist->getConfirmUrl(); 
+	$sent = $checklist->getSent();
+	$confirm_form_url = $checklist->getConfirmUrl(); 
 
-require(JModuleHelper::getLayoutPath('mod_emundusflow'));
+	require(JModuleHelper::getLayoutPath('mod_emundusflow'));
+}

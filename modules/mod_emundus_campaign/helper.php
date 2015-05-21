@@ -1,16 +1,17 @@
 <?php
 	defined('_JEXEC') or die('Access Deny');
 
-    //JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models', 'EmundusModel');
-    require_once (JPATH_SITE . '/components/com_emundus/models/files.php');
+    JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models', 'EmundusModel');
+    
 
 	class modEmundusCampaignHelper
 	{
 
         static function getPagination()
-        {
-            $model = new EmundusModelFiles;
-            return $model->getPagination();
+        {echo JPATH_SITE . DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php';
+            require_once (JPATH_SITE . DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            $model = new EmundusModelFiles; 
+            return EmundusModelFiles::getPagination();
 
         }
 
@@ -39,9 +40,9 @@
             return $db->loadResult();
         }
         static function getPaginationCurrent($condition) {
-            $mainframe = JFactory::getApplication();
-            $limitstart 			= $mainframe->getUserStateFromRequest('global.list.limitstart', 'limitstart', 0, 'int');
-            $limitstart 			= (2 != 0 ? (floor($limitstart / 2) * 2) : 0);
+            $mainframe      = JFactory::getApplication();
+            $limitstart 	= $mainframe->getUserStateFromRequest('global.list.limitstart', 'limitstart', 0, 'int');
+            $limitstart 	= (2 != 0 ? (floor($limitstart / 2) * 2) : 0);
             $mainframe->setUserState('limitstart', $limitstart);
             jimport('joomla.html.pagination');
             $pagination = new JPagination(modEmundusCampaignHelper::getTotalCurrent($condition), $mainframe->getUserState('limitstart'), 2 );

@@ -106,7 +106,7 @@ class plgUserEmundus extends JPlugin
 		$mail_to_user 	= $this->params->get('mail_to_user', 1);
 		$db = JFactory::getDBO();
 		
-		if( count($details) > 0 ) {
+		if( count($details) > 0 ) { 
 			//$profile = @isset($details['emundus_profile']['profile'])?@$details['emundus_profile']['profile']:@$details['profile'];
 			$campaign_id = @isset($details['emundus_profile']['campaign'])?$details['emundus_profile']['campaign']:@$details['campaign'];
 			$name = @isset($details['emundus_profile']['name'])?$details['emundus_profile']['name']:$details['name'];

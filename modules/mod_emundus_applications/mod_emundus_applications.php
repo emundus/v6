@@ -26,11 +26,11 @@ $user 				= JFactory::getUser();
 $m_application 		= new EmundusModelApplication;
 $checklist 			= new EmundusModelChecklist;
 
-
-$attachments 		= $m_application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
-$forms 				= $m_application->getFormsProgress($user->id, $user->profile, $user->fnum);
-$progress 			= ($attachments + $forms)/2;
-$confirm_form_url 	= $checklist->getConfirmUrl(); 
-
+if (isset($user->fnum) && !empty($user->fnum)) {
+	$attachments 		= $m_application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
+	$forms 				= $m_application->getFormsProgress($user->id, $user->profile, $user->fnum);
+	$progress 			= ($attachments + $forms)/2;
+	$confirm_form_url 	= $checklist->getConfirmUrl(); 
+}
 
 require JModuleHelper::getLayoutPath('mod_emundus_applications', $params->get('layout', 'default'));

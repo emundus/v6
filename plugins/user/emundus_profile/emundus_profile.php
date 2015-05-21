@@ -153,36 +153,36 @@
  
         function onUserAfterSave($data, $isNew, $result, $error)
         {
-                $userId = JArrayHelper::getValue($data, 'id', 0, 'int');
- 
-                if ($userId && $result && isset($data['emundus_profile']) && (count($data['emundus_profile'])))
+            $userId = JArrayHelper::getValue($data, 'id', 0, 'int');
+
+            if ($userId && $result && isset($data['emundus_profile']) && (count($data['emundus_profile'])))
+            {
+                try
                 {
-                        try
-                        {
-                                $db = &JFactory::getDbo();
-                                $db->setQuery('DELETE FROM #__user_profiles WHERE user_id = '.$userId.' AND profile_key LIKE \'emundus_profile.%\'');
-                                if (!$db->query()) {
-                                        throw new Exception($db->getErrorMsg());
-                                }
- 
-                                $tuples = array();
-                                $order  = 1;
-                                foreach ($data['emundus_profile'] as $k => $v) {
-                                        $tuples[] = '('.$userId.', '.$db->quote('emundus_profile.'.$k).', '.$db->quote(json_encode($v)).', '.$order++.')';
-                                }
- 
-                                $db->setQuery('INSERT INTO #__user_profiles VALUES '.implode(', ', $tuples));
-                                if (!$db->query()) {
-                                        throw new Exception($db->getErrorMsg());
-                                }
-                        }
-                        catch (JException $e) {
-                                $this->_subject->setError($e->getMessage());
-                                return false;
-                        }
+                    $db = JFactory::getDbo();
+                    $db->setQuery('DELETE FROM #__user_profiles WHERE user_id = '.$userId.' AND profile_key LIKE \'emundus_profile.%\'');
+                    if (!$db->query()) {
+                            throw new Exception($db->getErrorMsg());
+                    }
+
+                    $tuples = array();
+                    $order  = 1;
+                    foreach ($data['emundus_profile'] as $k => $v) {
+                            $tuples[] = '('.$userId.', '.$db->quote('emundus_profile.'.$k).', '.$db->quote(json_encode($v)).', '.$order++.')';
+                    }
+
+                    $db->setQuery('INSERT INTO #__user_profiles VALUES '.implode(', ', $tuples));
+                    if (!$db->query()) {
+                            throw new Exception($db->getErrorMsg());
+                    }
                 }
- 
-                return true;
+                catch (JException $e) {
+                        $this->_subject->setError($e->getMessage());
+                        return false;
+                }
+            }
+
+            return true;
         }
  
         /**
