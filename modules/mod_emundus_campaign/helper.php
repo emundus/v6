@@ -24,7 +24,7 @@
         {
             $db = JFactory::getDbo();
             $query	= $db->getQuery(true);
-            $query->select('ca.*, pr.apply_online');
+            $query->select('ca.*, pr.apply_online, pr.code');
             $query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
             $query->where('ca.training = pr.code AND ca.published=1 AND Now() <= ca.end_date and Now()>= ca.start_date '.$condition);
 

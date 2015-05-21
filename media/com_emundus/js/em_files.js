@@ -280,7 +280,7 @@ function openFiles(fnum)
 
                     if (isNaN(parseInt(m)) || isNaN(menus[m].id) || typeof(menus[m].title) == "undefined")
                         break;
-                    menuList += '<a href="'+menus[m].link+'" class="list-group-item" title="'+menus[m].title+'" id="'+menus[m].id+'">';
+                    menuList += '<a href="'+menus[m].link+'&fnum='+fnum.fnum+'" class="list-group-item" title="'+menus[m].title+'" id="'+menus[m].id+'">';
 
                     if(menus[m].hasSons)
                     {
@@ -877,17 +877,17 @@ $(document).ready(function()
         e.preventDefault();
         var id = $(this).attr('id');
         var url = $(this).attr('href');
-        var currenturl = $(location).attr('href');
-        currenturl = currenturl.split("#");
-        if (currenturl[1] != null) {
-            currenturl = currenturl[1].split("|");
-            var fnum = currenturl[0];
-            if (fnum != null) {
+        //var currenturl = $(location).attr('href');
+       // currenturl = currenturl.split("#");
+        //if (currenturl[1] != null) {
+           // currenturl = currenturl[1].split("|");
+           // var fnum = currenturl[0];
+           // if (fnum != null) {
                 $.ajax({
                     type: "get",
                     url: url,
                     dataType: 'html',
-                    data: ({id: id, fnum: fnum}),
+                    data: ({id: id}),
                     success: function (result) {
                         console.log(result);
                         $('#em-appli-block').empty();
@@ -897,9 +897,9 @@ $(document).ready(function()
                         console.log(jqXHR.responseText);
                     }
                 });
-            }
-            ;
-        };
+            //}
+           // ;
+        //};
     });
 
 //

@@ -1486,8 +1486,8 @@ class EmundusControllerFiles extends JControllerLegacy
                 break;
             case 3:
                 // template DOCX
-                require_once JPATH_LIBRARIES.DS.'PHPWord'.DS.'src'.DS.'Autoloader.php';
-                /*
+                /*require_once JPATH_LIBRARIES.DS.'PHPWord'.DS.'src'.DS.'Autoloader.php';
+
                 if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
                     \PhpOffice\PhpWord\Autoloader::register();
                 }
@@ -1697,8 +1697,8 @@ class EmundusControllerFiles extends JControllerLegacy
 
     public function exportonedoc()
     {
-        require_once JPATH_LIBRARIES.DS.'PHPWord'.DS.'src'.DS.'Autoloader.php';
-        /*
+        /*require_once JPATH_LIBRARIES.DS.'PHPWord'.DS.'src'.DS.'Autoloader.php';
+
         if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
             \PhpOffice\PhpWord\Autoloader::register();
             $rendererName = \PhpOffice\PhpWord\Settings::PDF_RENDERER_TCPDF;
@@ -1711,7 +1711,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $files = $model->getAttachmentsById($idFiles);
         $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'_x'.(count($files)-1).'.pdf';
         $path = JPATH_BASE.DS.'tmp'.DS.$nom;
-        $wordPHP = new PhpWord();
+        /*
+         $wordPHP = new PhpWord();
+        */
         $docs = array();
         foreach($files as $key => $file)
         {
