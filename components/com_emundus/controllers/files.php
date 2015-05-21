@@ -607,7 +607,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $fnums = (array) json_decode(stripslashes($fnums));
         $model = $this->getModel('Files');
-        if(!is_array($fnums) || count($fnums) == 0 || $fnums[0] == "all")
+        if(!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
         {
             $fnums = $model->getAllFnums();
         }

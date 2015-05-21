@@ -1880,7 +1880,7 @@ class EmundusModelFiles extends JModelLegacy
 			                    'jos_emundus_setup_programmes' => 'sp',
 								'jos_users' => 'u',
 								'jos_emundus_tag_assoc' => 'eta');
-
+            $lastTab = array();
 			foreach ($elements as $elt)
 			{
 				$params_group = json_decode($elt->group_attribs);

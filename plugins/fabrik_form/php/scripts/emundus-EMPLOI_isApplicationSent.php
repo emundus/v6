@@ -22,7 +22,7 @@ $can_edit_until_deadline = 0;
 $id_applicants 			 = $eMConfig->get('id_applicants', '0');
 $applicants 			 = explode(',',$id_applicants);
 
-$fnum = $mainframe->input->get('rowid', null, 'ALNUM');
+$fnum = $jinput->get('rowid', null);
 
 if(!EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
     if ($jinput->get('tmpl')=='component') {
@@ -44,7 +44,7 @@ if(!EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
 
 //$registered = $db->loadResult();
 if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){
-    $sid = $mainframe->input->get('sid', null, 'ALNUM');
+    $sid = $jinput->get('sid', null, 'ALNUM');
 
     echo !empty($rowid)?'<h4 style="text-align:right">#'.$fnum.'</h4>':'';
 

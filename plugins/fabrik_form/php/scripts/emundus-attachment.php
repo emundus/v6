@@ -11,7 +11,7 @@ defined( '_JEXEC' ) or die();
  * other free or open source software licenses.
  * See COPYRIGHT.php for copyright notices and details.
  * @description Envoi automatique d'un email à l'étudiant lors d'un upload de document par le consortium. 
- *						Une copie est envoyée au user qui upload le document
+ *				Une copie est envoyée au user qui upload le document
  */
 
 $mainframe 		= JFactory::getApplication();
@@ -19,7 +19,7 @@ $jinput 		= $mainframe->input;
 $baseurl 		= JURI::base();
 $db 			=& JFactory::getDBO();
 $eMConfig = JComponentHelper::getParams('com_emundus');
-alert_new_attachment = $eMConfig->get('alert_new_attachment');
+$alert_new_attachment = $eMConfig->get('alert_new_attachment');
 
 $aid = $_REQUEST['jos_emundus_uploads___attachment_id'];
 $fnum = $_REQUEST['jos_emundus_uploads___fnum'];

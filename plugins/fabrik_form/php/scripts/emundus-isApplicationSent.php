@@ -13,8 +13,7 @@ defined( '_JEXEC' ) or die();
  * @description V�rification de l'autorisation de mettre � jour le formulaire
  */
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
-//var_dump($this->formModel->id);
-/**/
+
 $user = JFactory::getUser();
 $mainframe = JFactory::getApplication();
 $jinput = $mainframe->input;
@@ -49,26 +48,7 @@ if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){
 //	$student = JUser::getInstance($sid);
 //	echo '<a href="index.php?option=com_emundus&view=application&sid='.$student_id.'"><h1>'.$student->name.'</h1></a>';
 	echo !empty($rowid)?'<h4 style="text-align:right">#'.$fnum.'</h4>':'';
-/*	JHTML::stylesheet( 'template_css.php?c=29&view=form" type="text/css', JURI::Base().'components/com_fabrik/views/form/tmpl/labels-above/' ); 
-	JHTML::stylesheet( 'fabrik.css', JURI::Base().'media/com_fabrik/css/' );
 
-	$doc = JFactory::getDocument();
-	$doc->addScript(JURI::Base()."media/system/js/calendar.js");
-  	$doc->addScript(JURI::Base()."media/system/js/calendar-setup.js");
-  	$doc->addScript(JURI::Base()."media/system/js/mootools-core.js");
-  	$doc->addScript(JURI::Base()."media/com_fabrik/js/mootools-ext-min.js");
-  	$doc->addScript(JURI::Base()."media/system/js/core.js");
- 	$doc->addScript(JURI::Base()."media/system/js/mootools-more.js");
-  	$doc->addScript(JURI::Base()."media/com_fabrik/js/lib/head/head.min.js");
-
-
-	$doc->addScript(JURI::Base()."media/com_fabrik/js/icons-min.js");
-	$doc->addScript(JURI::Base()."media/com_fabrik/js/icongen-min.js");
-	$doc->addScript(JURI::Base()."media/com_fabrik/js/fabrik-min.js");
-	$doc->addScript(JURI::Base()."media/com_fabrik/js/encoder-min.js");
-	$doc->addScript(JURI::Base()."media/com_fabrik/js/tips-min.js");
-	$doc->addScript(JURI::Base()."media/com_fabrik/js/window-min.js");
-	$doc->addScript(JURI::Base()."media/com_fabrik/js/lib/Event.mock.js");*/
 }
 else {
 	if (empty($user->fnum) && !isset($user->fnum) && EmundusHelperAccess::isApplicant($user->id))

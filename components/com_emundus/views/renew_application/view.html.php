@@ -42,7 +42,7 @@ class EmundusViewRenew_application extends JViewLegacy
     function display($tpl = null)
     {
 
-		if ( !EmundusHelperAccess::isApplicant($this->_user->id) ) 
+		if ( $this->_user->guest) 
 			die(JText::_('ACCESS_DENIED'));
 		
 		$document = JFactory::getDocument();
