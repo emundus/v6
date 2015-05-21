@@ -57,7 +57,7 @@ echo'</ul></div>';*/
                 <?php } else {
                     $oldmonth = '';
                     $lang = JFactory::getLanguage();
-                    $locallang = $lang->getTag();;
+                    $locallang = $lang->getTag();
                     if ($locallang == "fr-FR") {
                         setlocale(LC_TIME, 'fr', 'fr_FR', 'french', 'fra', 'fra_FRA', 'fr_FR.ISO_8859-1', 'fra_FRA.ISO_8859-1', 'fr_FR.utf8', 'fr_FR.utf-8', 'fra_FRA.utf8', 'fra_FRA.utf-8');
                     } else {
@@ -92,15 +92,11 @@ echo'</ul></div>';*/
                                     $text = '';
                                     $textprog = '';
                                     $textcamp = '';
-                                    if ($showprogramme) {
-                                        $textprog = strip_tags($resul->notes);
-                                    }
                                     if ($showcampaign) {
                                         $textcamp = strip_tags($resul->short_description);
-
                                     }
-                                    $text = $textprog."<br />".$textcamp;
-                                    echo tronque($text, 600);
+                                    //$text = $textprog."<br />".$textcamp;
+                                    echo tronque($textcamp, 600);
                                     ?>
                                 </p>
                             </div>
@@ -142,7 +138,7 @@ echo'</ul></div>';*/
                 <?php } else {
                     $oldmonth = '';
                     $lang = JFactory::getLanguage();
-                    $locallang = $lang->getTag();;
+                    $locallang = $lang->getTag();
                     if ($locallang == "fr-FR") {
                         setlocale(LC_TIME, 'fr', 'fr_FR', 'french', 'fra', 'fra_FRA', 'fr_FR.ISO_8859-1', 'fra_FRA.ISO_8859-1', 'fr_FR.utf8', 'fr_FR.utf-8', 'fra_FRA.utf8', 'fra_FRA.utf-8');
                     } else {
@@ -177,15 +173,11 @@ echo'</ul></div>';*/
                                     $text = '';
                                     $textprog = '';
                                     $textcamp = '';
-                                    if ($showprogramme) {
-                                        $textprog = strip_tags($resul->notes);
-                                    }
                                     if ($showcampaign) {
                                         $textcamp = strip_tags($resul->short_description);
-
                                     }
-                                    $text = $textprog."<br />".$textcamp;
-                                    echo tronque($text, 600);
+                                    //$text = $textprog."<br />".$textcamp;
+                                    echo tronque($textcamp, 600);
                                     ?>
                                 </p>
                             </div>
@@ -225,7 +217,7 @@ echo'</ul></div>';*/
                 <?php } else {
                     $oldmonth = '';
                     $lang = JFactory::getLanguage();
-                    $locallang = $lang->getTag();;
+                    $locallang = $lang->getTag();
                     if ($locallang == "fr-FR") {
                         setlocale(LC_TIME, 'fr', 'fr_FR', 'french', 'fra', 'fra_FRA', 'fr_FR.ISO_8859-1', 'fra_FRA.ISO_8859-1', 'fr_FR.utf8', 'fr_FR.utf-8', 'fra_FRA.utf8', 'fra_FRA.utf-8');
                     } else {
@@ -260,15 +252,11 @@ echo'</ul></div>';*/
                                     $text = '';
                                     $textprog = '';
                                     $textcamp = '';
-                                    if ($showprogramme) {
-                                        $textprog = strip_tags($resul->notes);
-                                    }
                                     if ($showcampaign) {
                                         $textcamp = strip_tags($resul->short_description);
-
                                     }
-                                    $text = $textprog."<br />".$textcamp;
-                                    echo tronque($text, 600);
+                                    //$text = $textprog."<br />".$textcamp;
+                                    echo tronque($textcamp, 600);
                                     ?>
                                 </p>
                             </div>
@@ -308,7 +296,7 @@ echo'</ul></div>';*/
                 <?php } else {
                     $oldmonth = '';
                     $lang = JFactory::getLanguage();
-                    $locallang = $lang->getTag();;
+                    $locallang = $lang->getTag();
                     if ($locallang == "fr-FR") {
                         setlocale(LC_TIME, 'fr', 'fr_FR', 'french', 'fra', 'fra_FRA', 'fr_FR.ISO_8859-1', 'fra_FRA.ISO_8859-1', 'fr_FR.utf8', 'fr_FR.utf-8', 'fra_FRA.utf8', 'fra_FRA.utf-8');
                     } else {
@@ -343,15 +331,11 @@ echo'</ul></div>';*/
                                     $text = '';
                                     $textprog = '';
                                     $textcamp = '';
-                                    if ($showprogramme) {
-                                        $textprog = strip_tags($resul->notes);
-                                    }
                                     if ($showcampaign) {
                                         $textcamp = strip_tags($resul->short_description);
-
                                     }
-                                    $text = $textprog."<br />".$textcamp;
-                                    echo tronque($text, 600);
+                                    //$text = $textprog."<br />".$textcamp;
+                                    echo tronque($textcamp, 600);
                                     ?>
                                 </p>
                             </div>
