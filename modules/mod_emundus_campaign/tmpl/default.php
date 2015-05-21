@@ -52,6 +52,7 @@ if ($locallang == "fr-FR") {
     <div class="tab-content">
         <div id="current" class="tab-pane fade in active">
             <div class="rt-grid-12">
+                <?php echo $paginationCurrent->getResultsCounter(); ?>
                 <?php if (empty($currentCampaign)) { ?>
                     <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
                 <?php } else {
@@ -127,6 +128,7 @@ if ($locallang == "fr-FR") {
 
         <div id="futur" class="tab-pane fade in active">
             <div class="rt-grid-12">
+                <?php echo $paginationFutur->getResultsCounter(); ?>
                 <?php if (empty($futurCampaign)) { ?>
                     <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
                 <?php } else {
@@ -195,11 +197,13 @@ if ($locallang == "fr-FR") {
                             </div> <!-- close last campaign block -->
                     </div> <!-- close last campaignbymonth block -->
             <?php } ?>
+            <?php echo $paginationFutur->getResultsCounter(); ?>
             </div>
         </div>
 
         <div id="past" class="tab-pane fade in active">
             <div class="rt-grid-12">
+                <?php echo $paginationPast->getResultsCounter(); ?>
                 <?php if (empty($pastCampaign)) { ?>
                     <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
                 <?php } else {
@@ -273,6 +277,7 @@ if ($locallang == "fr-FR") {
 
         <div id="all" class="tab-pane fade in active">
             <div class="rt-grid-12">
+                <?php echo $paginationTotal->getResultsCounter(); ?>
                 <?php if (empty($allCampaign)) { ?>
                     <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
                 <?php } else {

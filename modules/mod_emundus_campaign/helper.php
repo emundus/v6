@@ -1,25 +1,27 @@
 <?php
 	defined('_JEXEC') or die('Access Deny');
 
-    JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models', 'EmundusModel');
-    
+    //JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models', 'EmundusModel');
+
 
 	class modEmundusCampaignHelper
 	{
+        private $totalCurrent;
+        private $totalFutur;
+        private $totalPast;
+        private $total;
 
-        static function getPagination()
-        {echo JPATH_SITE . DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php';
-            require_once (JPATH_SITE . DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-            $model = new EmundusModelFiles; 
-            return EmundusModelFiles::getPagination();
-
+        public function __construct()
+        {
+            $this->totalCurrent=0;
+            $this->totalFutur=0;
+            $this->totalPast=0;
+            $this->total=0;
         }
 
         /* **** CURRENT **** */
-        static function getCurrent($condition)
+        public function getCurrent($condition)
         {
-            
-
             $db = JFactory::getDbo();
             $query	= $db->getQuery(true);
             $query->select('pr.url,ca.*, pr.notes, pr.code, pr.apply_online');
@@ -27,19 +29,13 @@
             $query->where('ca.training = pr.code AND ca.published=1 AND Now() <= ca.end_date and Now()>= ca.start_date '.$condition);
 
             $db->setQuery($query);
-            return (array) $db->loadObjectList();
+            $list = (array) $db->loadObjectList();
+            $this->totalCurrent = count($list);
+
+            return $list;
         }
-        static function getTotalCurrent($condition)
-        {
-            $db = JFactory::getDbo();
-            $query	= $db->getQuery(true);
-            $query->select('COUNT(*)');
-            $query->from('#__emundus_setup_programmes as pr,#__emundus_setup_campaigns as ca');
-            $query->where('ca.training = pr.code AND ca.published=1 AND Now() <= ca.end_date and Now()>= ca.start_date '.$condition);
-            $db->setQuery($query);
-            return $db->loadResult();
-        }
-        static function getPaginationCurrent($condition) {
+
+        public function getPaginationCurrent($condition) {
             $mainframe      = JFactory::getApplication();
             $limitstart 	= $mainframe->getUserStateFromRequest('global.list.limitstart', 'limitstart', 0, 'int');
             $limitstart 	= (2 != 0 ? (floor($limitstart / 2) * 2) : 0);
@@ -50,7 +46,7 @@
         }
 
         /* **** PAST **** */
-        static function getPast($condition)
+        public function getPast($condition)
         {
             $db = JFactory::getDbo();
             $query	= $db->getQuery(true);
@@ -59,26 +55,15 @@
             $query->where('ca.training = pr.code AND ca.published=1 AND Now() >= ca.end_date '.$condition);
 
             $db->setQuery($query);
-            return (array) $db->loadObjectList();
-        }
-        function getTotalPast($condition)
-        {
-            // Load the content if it doesn't already exist
-            if (empty($this->_total)) {
-                $db = JFactory::getDbo();
-                $query	= $db->getQuery(true);
-                $query->select('pr.url,ca.*, pr.notes, pr.code, pr.apply_online');
-                $query->from('#__emundus_setup_programmes as pr,#__emundus_setup_campaigns as ca');
-                $query->where('ca.training = pr.code AND ca.published=1 AND Now() >= ca.end_date '.$condition);
+            $list = (array) $db->loadObjectList();
+            $this->totalPast = count($list);
 
-                $this->_total = $this->_getListCount($query);
-            }
-            return $this->_total;
+            return $list;
         }
 
 
         /* **** FUTUR **** */
-        static function getFutur($condition)
+        public function getFutur($condition)
         {
             $db = JFactory::getDbo();
             $query	= $db->getQuery(true);
@@ -87,26 +72,15 @@
             $query->where('ca.training = pr.code AND ca.published=1 AND Now() <= ca.start_date '.$condition);
 
             $db->setQuery($query);
-            return (array) $db->loadObjectList();
-        }
-        function getTotalFutur($condition)
-        {
-            // Load the content if it doesn't already exist
-            if (empty($this->_total)) {
-                $db = JFactory::getDbo();
-                $query	= $db->getQuery(true);
-                $query->select('pr.url,ca.*, pr.notes, pr.code, pr.apply_online');
-                $query->from('#__emundus_setup_programmes as pr,#__emundus_setup_campaigns as ca');
-                $query->where('ca.training = pr.code AND ca.published=1 AND Now() <= ca.start_date '.$condition);
+            $list = (array) $db->loadObjectList();
+            $this->totalFutur = count($list);
 
-                $this->_total = $this->_getListCount($query);
-            }
-            return $this->_total;
+            return $list;
         }
 
 
         /* **** ALL **** */
-        static function getProgram($condition)
+        public function getProgram($condition)
         {
             $db = JFactory::getDbo();
             $query	= $db->getQuery(true);
@@ -115,21 +89,30 @@
             $query->where('ca.training = pr.code AND ca.published=1 '.$condition);
 
             $db->setQuery($query);
-            return (array) $db->loadObjectList();
-        }
-        function getTotal($condition)
-        {
-            // Load the content if it doesn't already exist
-            if (empty($this->_total)) {
-                $db = JFactory::getDbo();
-                $query	= $db->getQuery(true);
-                $query->select('pr.url,ca.*, pr.notes, pr.code, pr.apply_online');
-                $query->from('#__emundus_setup_programmes as pr,#__emundus_setup_campaigns as ca');
-                $query->where('ca.training = pr.code AND ca.published=1 '.$condition);
+            $list = (array) $db->loadObjectList();
+            $this->total = count($list);
 
-                $this->_total = $this->_getListCount($query);
-            }
-            return $this->_total;
+            return $list;
+        }
+
+        public function getTotalCurrent()
+        {
+            return $this->totalCurrent;
+        }
+
+        public function getTotalPast()
+        {
+            return $this->totalPast;
+        }
+
+        public function getTotalFutur()
+        {
+            return $this->totalFutur;
+        }
+
+        public function getTotal()
+        {
+            return $this->total;
         }
     }
 ?>

@@ -78,14 +78,22 @@ switch ($ordertime) {
     $condition =' AND Now() >= ca.end_date and Now()<= ca.start_date';
     break;*/
 
+$helper = new modEmundusCampaignHelper;
 
-$currentCampaign = modEmundusCampaignHelper::getCurrent($condition);
-$pastCampaign = modEmundusCampaignHelper::getPast($condition);
-$futurCampaign = modEmundusCampaignHelper::getFutur($condition);
-$allCampaign = modEmundusCampaignHelper::getProgram($condition);
+$currentCampaign = $helper->getCurrent($condition);
+$pastCampaign = $helper->getPast($condition);
+$futurCampaign = $helper->getFutur($condition);
+$allCampaign = $helper->getProgram($condition);
 
-//$pagination    = modEmundusCampaignHelper::getPagination();
-//var_dump($pagination); die();
+jimport('joomla.html.pagination');
+$session = JFactory::getSession();
+
+$paginationCurrent = new JPagination($helper->getTotalCurrent(), $session->get('limitstartCurrent'), $session->get('limit'));
+$paginationPast = new JPagination($helper->getTotalPast(), $session->get('limitstartPast'), $session->get('limit'));
+$paginationFutur = new JPagination($helper->getTotalFutur(), $session->get('limitstartFutur'), $session->get('limit'));
+$paginationTotal = new JPagination($helper->getTotal(), $session->get('limitstart'), $session->get('limit'));
+
+
 
 require(JModuleHelper::getLayoutPath('mod_emundus_campaign'));
 
