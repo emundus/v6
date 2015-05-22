@@ -359,6 +359,10 @@ if ($locallang == "fr-FR") {
                     var h = jQuery(this).parent().height()-2;
                     jQuery(this).height(h);
                 });
+                jQuery('.campaigntext').each(function () {
+                    var h = jQuery(this).parent().height()-2;
+                    jQuery(this).height(h);
+                });
             };
         });
         if (jQuery(window).width() >= 767) {
@@ -367,6 +371,10 @@ if ($locallang == "fr-FR") {
                 jQuery(this).width(h);
             });
             jQuery('.campaingapply').each(function () {
+                var h = jQuery(this).parent().height()-2;
+                jQuery(this).height(h);
+            });
+            jQuery('.campaigntext').each(function () {
                 var h = jQuery(this).parent().height()-2;
                 jQuery(this).height(h);
             });
