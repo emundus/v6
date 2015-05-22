@@ -2,15 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2265e1a2-9d8d-45d6-98a3-754861c7dd84" name="Default" comment="">
-      <change type="DELETED" beforePath="C:\wamp\www\v6.1\modules\old-mod_emundusmenu\helper.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\wamp\www\v6.1\modules\old-mod_emundusmenu\index.html" afterPath="" />
-      <change type="DELETED" beforePath="C:\wamp\www\v6.1\modules\old-mod_emundusmenu\legacy.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\wamp\www\v6.1\modules\old-mod_emundusmenu\mod_emundusmenu.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\wamp\www\v6.1\modules\old-mod_emundusmenu\mod_emundusmenu.xml" afterPath="" />
-      <change type="DELETED" beforePath="C:\wamp\www\v6.1\modules\old-mod_emundusmenu\old-mod_emundusmenu.xml" afterPath="" />
-      <change type="DELETED" beforePath="C:\wamp\www\v6.1\modules\old-mod_emundusmenu\tmpl\default.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\wamp\www\v6.1\modules\old-mod_emundusmenu\tmpl\index.html" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/libraries/emundus/pdf.php" afterPath="$PROJECT_DIR$/libraries/emundus/pdf.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/media/com_emundus/js/em_files.js" afterPath="$PROJECT_DIR$/media/com_emundus/js/em_files.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/components/com_emundus/controllers/files.php" afterPath="$PROJECT_DIR$/components/com_emundus/controllers/files.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/components/com_emundus/models/files.php" afterPath="$PROJECT_DIR$/components/com_emundus/models/files.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/modules/mod_emundus_campaign/helper.php" afterPath="$PROJECT_DIR$/modules/mod_emundus_campaign/helper.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="sorbonnev3.iws" />
@@ -35,48 +30,6 @@
     <option name="GROUP_BY_TYPE" value="false" />
     <option name="SORT_CHILDREN" value="false" />
     <option name="SHOW_TABLE_CONSTRAINTS" value="true" />
-    <PATH>
-      <PATH_ELEMENT>
-        <option name="myItemId" />
-        <option name="myItemType" value="com.intellij.database.view.DbRootNodeDescriptor" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="MySQL - @127.0.0.1" />
-        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
-      </PATH_ELEMENT>
-    </PATH>
-    <PATH>
-      <PATH_ELEMENT>
-        <option name="myItemId" />
-        <option name="myItemType" value="com.intellij.database.view.DbRootNodeDescriptor" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="MySQL - @127.0.0.1" />
-        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="sorbonne" />
-        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
-      </PATH_ELEMENT>
-    </PATH>
-    <PATH>
-      <PATH_ELEMENT>
-        <option name="myItemId" />
-        <option name="myItemType" value="com.intellij.database.view.DbRootNodeDescriptor" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="MySQL - @127.0.0.1" />
-        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="sorbonne" />
-        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="jos_emundus_setup_campaigns" />
-        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
-      </PATH_ELEMENT>
-    </PATH>
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
@@ -84,45 +37,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="controller.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/components/com_emundus/controller.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.109091" vertical-offset="2482" max-vertical-offset="13787">
-              <caret line="176" column="65" selection-start-line="176" selection-start-column="53" selection-end-line="176" selection-end-column="65" />
-              <folding>
-                <marker date="1431966739501" expanded="true" signature="1934:2009" placeholder="SELECT year ..." />
-                <marker date="1431966739501" expanded="true" signature="8147:8301" placeholder="SELECT filen..#__emundus_uploads..." />
-                <marker date="1431966739501" expanded="true" signature="8358:8535" placeholder="SELECT filen..#__emundus_uploads..." />
-                <marker date="1431966739501" expanded="true" signature="8872:9017" placeholder="DELETE FROM ..." />
-                <marker date="1431966739501" expanded="true" signature="9524:9669" placeholder="DELETE FROM ..." />
-                <marker date="1431966739501" expanded="true" signature="13077:13150" placeholder="SELECT UPPER..#__emundus_setup_attachments..." />
-                <marker date="1431966739501" expanded="true" signature="16068:16240" placeholder="SELECT count..#__emundus_uploads..." />
-                <marker date="1431966739501" expanded="true" signature="16135:16197" placeholder="SELECT id FR..#__emundus_setup_attachments..." />
-                <marker date="1431966739501" expanded="true" signature="18352:18488" placeholder="INSERT INTO ..." />
-                <marker date="1431966739501" expanded="true" signature="21039:21107" placeholder="DELETE FROM ..." />
-                <marker date="1431966739501" expanded="true" signature="21230:21358" placeholder="INSERT INTO ..." />
-                <marker date="1431966739501" expanded="true" signature="28609:28697" placeholder="SELECT can_b..#__emundus_uploads..." />
-                <marker date="1431966739501" expanded="true" signature="31737:31910" placeholder="SELECT m.use..#__messages..." />
-                <marker date="1431966739501" expanded="true" signature="32744:32795" placeholder="UPDATE #__me..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="export.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/components/com_emundus/helpers/export.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.2545457" vertical-offset="336" max-vertical-offset="1921">
-              <caret line="51" column="47" selection-start-line="51" selection-start-column="47" selection-end-line="51" selection-end-column="47" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="application.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/components/com_emundus/models/application.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-4.9454546" vertical-offset="12512" max-vertical-offset="24871">
+            <state vertical-scroll-proportion="-491.69232" vertical-offset="0" max-vertical-offset="24871">
               <caret line="761" column="40" selection-start-line="761" selection-start-column="40" selection-end-line="761" selection-end-column="40" />
               <folding>
                 <marker date="1432131761680" expanded="true" signature="2544:3117" placeholder="SELECT esc.*..#__emundus_users..." />
@@ -207,23 +125,155 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pdf.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/libraries/emundus/pdf.php">
+      <file leaf-file-name="files.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/components/com_emundus/models/files.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.2937788" vertical-offset="10931" max-vertical-offset="12580">
-              <caret line="628" column="21" selection-start-line="628" selection-start-column="21" selection-end-line="628" selection-end-column="21" />
+            <state vertical-scroll-proportion="-1.8545455" vertical-offset="17" max-vertical-offset="42874">
+              <caret line="18" column="25" selection-start-line="18" selection-start-column="18" selection-end-line="18" selection-end-column="25" />
               <folding>
-                <marker date="1432132231483" expanded="true" signature="2490:2634" placeholder="SELECT * FRO..#__emundus_setup_teaching_unity..." />
-                <marker date="1432132231483" expanded="true" signature="6992:7147" placeholder="SELECT * FRO..#__emundus_uploads..." />
-                <marker date="1432132231483" expanded="true" signature="7478:7683" placeholder="DELETE FROM ..." />
-                <marker date="1432132231483" expanded="true" signature="11645:11925" placeholder="INSERT INTO ..." />
-                <marker date="1432132231483" expanded="true" signature="13337:13495" placeholder="SELECT * FRO..#__emundus_setup_teaching_unity..." />
-                <marker date="1432132231483" expanded="true" signature="22167:23154" placeholder="SELECT u.id ..#__emundus_campaign_candidature..." />
-                <marker date="1432132231483" expanded="true" signature="24325:24826" placeholder="..." />
-                <marker date="1432132231483" expanded="true" signature="24845:24859" placeholder="..." />
-                <marker date="1432132231483" expanded="true" signature="24853:24859" placeholder="..." />
-                <marker date="1432132231483" expanded="true" signature="25347:25493" placeholder="..." />
+                <marker date="1432235708267" expanded="true" signature="11221:11382" placeholder="SELECT esg.p..#__emundus_setup_groups..." />
+                <marker date="1432235708267" expanded="true" signature="22592:22658" placeholder="SELECT join_..#__fabrik_joins..." />
+                <marker date="1432235708267" expanded="true" signature="35702:36017" placeholder="SELECT disti..#__fabrik_elements..." />
+                <marker date="1432235708267" expanded="true" signature="36476:36658" placeholder="SELECT esp.i..#__emundus_setup_profiles..." />
+                <marker date="1432235708267" expanded="true" signature="36849:36981" placeholder="SELECT esp.*..jos_emundus_setup_profiles..." />
+                <marker date="1432235708267" expanded="true" signature="37178:37409" placeholder="SELECT esp.i..#__emundus_setup_profiles..." />
+                <marker date="1432235708267" expanded="true" signature="37585:37768" placeholder="SELECT esp.i..#__emundus_setup_profiles..." />
+                <marker date="1432235708267" expanded="true" signature="37979:38066" placeholder="SELECT esp.i..#__emundus_setup_profiles..." />
+                <marker date="1432235708267" expanded="true" signature="38581:38656" placeholder="SELECT eup.u..#__emundus_users_profiles..." />
+                <marker date="1432235708267" expanded="true" signature="38838:38899" placeholder="SELECT u.id,..#__users..." />
+                <marker date="1432235708267" expanded="true" signature="39069:39161" placeholder="SELECT esm.i..#__emundus_setup_mobility..." />
+                <marker date="1432235708267" expanded="true" signature="39331:40279" placeholder="SELECT eleme..jos_fabrik_elements..." />
+                <marker date="1432235708267" expanded="true" signature="40498:41446" placeholder="SELECT eleme..jos_fabrik_elements..." />
+                <marker date="1432235708267" expanded="true" signature="42884:43023" placeholder="SELECT DISTI..#__emundus_users..." />
+                <marker date="1432235708267" expanded="true" signature="43187:43280" placeholder="select disti..#__emundus_setup_actions..." />
+                <marker date="1432235708267" expanded="true" signature="43563:43608" placeholder="select * fro..#__emundus_setup_groups..." />
+                <marker date="1432235708267" expanded="true" signature="43699:44004" placeholder="SELECT eu.us..#__emundus_users..." />
+                <marker date="1432235708267" expanded="true" signature="44395:44476" placeholder="insert into ..." />
+                <marker date="1432235708267" expanded="true" signature="45417:45543" placeholder="insert into ..." />
+                <marker date="1432235708267" expanded="true" signature="45687:45858" placeholder="UPDATE #__em..." />
+                <marker date="1432235708267" expanded="true" signature="46236:46285" placeholder="select * fro..#__emundus_setup_action_tag..." />
+                <marker date="1432235708267" expanded="true" signature="46530:46575" placeholder="select * fro..#__emundus_setup_status..." />
+                <marker date="1432235708267" expanded="true" signature="46839:46886" placeholder="select * fro..#__emundus_setup_status..." />
+                <marker date="1432235708267" expanded="true" signature="47163:47350" placeholder="select * fro..#__emundus_campaign_candidature..." />
+                <marker date="1432235708267" expanded="true" signature="47733:47829" placeholder="insert into ..." />
+                <marker date="1432235708267" expanded="true" signature="48167:48289" placeholder="select t.fnu..#__emundus_tag_assoc..." />
+                <marker date="1432235708267" expanded="true" signature="48969:49048" placeholder="update #__em..." />
+                <marker date="1432235708267" expanded="true" signature="49371:49555" placeholder="select emu.i..#__emundus_uploads..." />
+                <marker date="1432235708267" expanded="true" signature="49804:50090" placeholder="select disti..#__emundus_group_assoc..." />
+                <marker date="1432235708267" expanded="true" signature="50323:50376" placeholder="select * fro..#__usergroups..." />
+                <marker date="1432235708267" expanded="true" signature="50448:50573" placeholder="select disti..#__emundus_users_assoc..." />
+                <marker date="1432235708267" expanded="true" signature="50907:50996" placeholder="delete from ..." />
+                <marker date="1432235708267" expanded="true" signature="51037:51125" placeholder="delete from ..." />
+                <marker date="1432235708267" expanded="true" signature="51385:51629" placeholder="select u.nam..#__emundus_campaign_candidature..." />
+                <marker date="1432235708267" expanded="true" signature="51904:52264" placeholder="select u.nam..#__emundus_campaign_candidature..." />
+                <marker date="1432235708267" expanded="true" signature="52534:53555" placeholder="select u.nam..jos_emundus_campaign_candidature..." />
+                <marker date="1432235708267" expanded="true" signature="53864:53950" placeholder="update #__em..." />
+                <marker date="1432235708267" expanded="true" signature="54212:54482" placeholder="SELECT c.fnu..#__emundus_campaign_candidature..." />
+                <marker date="1432235708267" expanded="true" signature="61210:61291" placeholder="select * fro..#__emundus_evaluations..." />
+                <marker date="1432235708267" expanded="true" signature="61559:61637" placeholder="select * fro..#__emundus_comments..." />
+                <marker date="1432235708267" expanded="true" signature="62006:62112" placeholder="select fu.* ..#__emundus_uploads..." />
+                <marker date="1432235708267" expanded="true" signature="62261:62687" placeholder="select cc.fn..#__emundus_campaign_candidature..." />
+                <marker date="1432235708267" expanded="true" signature="63010:63355" placeholder="select cc.fn..#__emundus_campaign_candidature..." />
+                <marker date="1432235708267" expanded="true" signature="64086:64464" placeholder="SELECT form_..." />
+                <marker date="1432235708267" expanded="true" signature="67299:67422" placeholder="SELECT AVG(o..#__emundus_evaluations..." />
+                <marker date="1432235708267" expanded="true" signature="67712:67970" placeholder="SELECT eta.*..#__emundus_tag_assoc..." />
+                <marker date="1432235708267" expanded="true" signature="68253:68723" placeholder="select jesp...#__emundus_campaign_candidature..." />
+                <marker date="1432235708267" expanded="true" signature="69008:69233" placeholder="select jesl...jos_emundus_setup_letters..." />
+                <marker date="1432235708267" expanded="true" signature="69492:69547" placeholder="select * fro..jos_emundus_setup_attachments..." />
+                <marker date="1432235708267" expanded="true" signature="69869:70112" placeholder="insert into ..." />
+                <marker date="1432235708267" expanded="true" signature="70341:70775" placeholder="select disti..jos_emundus_campaign_candidature..." />
+                <marker date="1432235708267" expanded="true" signature="70986:71060" placeholder="select * fro..jos_emundus_uploads..." />
+                <marker date="1432235708267" expanded="true" signature="71345:71810" placeholder="select jfe.i..jos_fabrik_elements..." />
+                <marker date="1432235708267" expanded="true" signature="75487:75577" placeholder="select fnum,..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="files.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-2.4727273" vertical-offset="0" max-vertical-offset="29716">
+              <caret line="15" column="25" selection-start-line="15" selection-start-column="18" selection-end-line="15" selection-end-column="25" />
+              <folding>
+                <marker date="1432235545405" expanded="true" signature="7426:7596" placeholder="INSERT INTO ..." />
+                <marker date="1432235545405" expanded="true" signature="7717:7873" placeholder="select f.id,..#__emundus_filters..." />
+                <marker date="1432235545405" expanded="true" signature="8406:8446" placeholder="DELETE FROM ..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="em_files.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/media/com_emundus/js/em_files.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.44692737" vertical-offset="14560" max-vertical-offset="37298">
+              <caret line="880" column="45" selection-start-line="880" selection-start-column="45" selection-end-line="880" selection-end-column="45" />
+              <folding>
+                <marker date="1432237023338" expanded="true" signature="57916:57938" placeholder="..." />
+                <marker date="1432237023338" expanded="true" signature="59462:59484" placeholder="..." />
+                <marker date="1432237023338" expanded="true" signature="77117:77131" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="data.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/data.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-3.1818182" vertical-offset="1440" max-vertical-offset="3502">
+              <caret line="95" column="20" selection-start-line="95" selection-start-column="20" selection-end-line="95" selection-end-column="20" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="view.html.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/view.html.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-10.163636" vertical-offset="138" max-vertical-offset="1020">
+              <caret line="48" column="50" selection-start-line="48" selection-start-column="39" selection-end-line="48" selection-end-column="50" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="view.raw.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/view.raw.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-4.109091" vertical-offset="1593" max-vertical-offset="5780">
+              <caret line="114" column="90" selection-start-line="114" selection-start-column="90" selection-end-line="114" selection-end-column="90" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="mod_emundus_campaign.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modules/mod_emundus_campaign/mod_emundus_campaign.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-13.076923" vertical-offset="153" max-vertical-offset="1785">
+              <caret line="29" column="0" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="helper.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modules/mod_emundus_campaign/helper.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-3.2692308" vertical-offset="357" max-vertical-offset="2125">
+              <caret line="26" column="58" selection-start-line="26" selection-start-column="58" selection-end-line="26" selection-end-column="58" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="default.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modules/mod_emundus_campaign/tmpl/default.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-5.2545457" vertical-offset="5083" max-vertical-offset="6511">
+              <caret line="316" column="83" selection-start-line="316" selection-start-column="77" selection-end-line="316" selection-end-column="83" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -236,12 +286,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/modules/mod_emundus_campaign/mod_emundus_campaign.xml" />
-        <option value="$PROJECT_DIR$/language/fr-FR/fr-FR.com_emundus.ini" />
-        <option value="$PROJECT_DIR$/language/en-GB/en-GB.com_emundus.ini" />
-        <option value="$PROJECT_DIR$/modules/mod_emundus_register/helper.php" />
-        <option value="$PROJECT_DIR$/modules/mod_emundus_register/tmpl/default.php" />
-        <option value="$PROJECT_DIR$/modules/mod_emundus_register/mod_emundus_register.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/files/view.raw.php" />
         <option value="$PROJECT_DIR$/modules/mod_emundus_campaign/language/fr-FR/fr-FR.mod_emundus_campaign.ini" />
         <option value="$PROJECT_DIR$/components/com_emundus/language/en-GB/en-GB.com_emundus.ini" />
@@ -260,12 +304,10 @@
         <option value="$PROJECT_DIR$/components/com_emundus/views/evaluation/view.raw.php" />
         <option value="$PROJECT_DIR$/plugins/fabrik_form/php/php.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/emundus.php" />
-        <option value="$PROJECT_DIR$/modules/mod_emundus_campaign/mod_emundus_campaign.php" />
         <option value="$PROJECT_DIR$/templates/rt_afterburner2/less/rt_afterburner2-custom.less" />
         <option value="$PROJECT_DIR$/templates/rt_afterburner2/features/styledeclaration.php" />
         <option value="$PROJECT_DIR$/templates/rt_afterburner2/template-options.xml" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/files/tmpl/default.php" />
-        <option value="$PROJECT_DIR$/media/com_emundus/js/em_files.js" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/files/tmpl/data.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/evaluation/tmpl/default.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/application/tmpl/default.php" />
@@ -275,7 +317,6 @@
         <option value="$PROJECT_DIR$/templates/rt_afterburner2/index.php" />
         <option value="$PROJECT_DIR$/templates/rt_afterburner2/css/rt_afterburner2-custom.css" />
         <option value="$PROJECT_DIR$/modules/mod_emunduspanel/tmpl/default.php" />
-        <option value="$PROJECT_DIR$/modules/mod_emundus_campaign/tmpl/default.php" />
         <option value="$PROJECT_DIR$/media/com_emundus/css/mod_emundus_campaign.css" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/users/tmpl/showgrouprights.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/views/users/view.html.php" />
@@ -287,6 +328,15 @@
         <option value="$PROJECT_DIR$/components/com_emundus/helpers/export.php" />
         <option value="$PROJECT_DIR$/components/com_emundus/models/application.php" />
         <option value="$PROJECT_DIR$/libraries/emundus/pdf.php" />
+        <option value="$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-attachment.php" />
+        <option value="$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-EMPLOI_isApplicationSent.php" />
+        <option value="$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-isApplicationSent.php" />
+        <option value="$PROJECT_DIR$/modules/mod_emundus_campaign/mod_emundus_campaign.php" />
+        <option value="$PROJECT_DIR$/modules/mod_emundus_campaign/tmpl/default.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/models/files.php" />
+        <option value="$PROJECT_DIR$/components/com_emundus/controllers/files.php" />
+        <option value="$PROJECT_DIR$/modules/mod_emundus_campaign/helper.php" />
+        <option value="$PROJECT_DIR$/media/com_emundus/js/em_files.js" />
       </list>
     </option>
   </component>
@@ -354,7 +404,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -402,6 +451,82 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="mod_emundus_campaign" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="v6.1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="v6.1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mod_emundus_campaign" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tmpl" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="v6.1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="v6.1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="media" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="v6.1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="v6.1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="media" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com_emundus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="v6.1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="v6.1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="media" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com_emundus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -535,12 +660,91 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="files" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="v6.1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="v6.1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="components" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com_emundus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="files" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tmpl" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="v6.1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="v6.1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="components" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com_emundus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="models" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="v6.1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="v6.1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="components" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com_emundus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="controllers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -596,13 +800,13 @@
     <configuration default="true" type="PhpLocalRunConfigurationType" factoryName="PHP Console">
       <method />
     </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
     <configuration default="true" type="com.intellij.database.run.ConsoleRunConfigurationType" factoryName="Query Language Console">
       <option name="VM_PARAMETERS" value="" />
       <option name="USER_CFG_CLASS" />
       <option name="CONTEXT_PROVIDER" />
-      <method />
-    </configuration>
-    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
       <method />
     </configuration>
     <configuration default="true" type="PhpBehatConfigurationType" factoryName="Behat">
@@ -612,9 +816,6 @@
     <configuration default="true" type="AppEnginePhpConfigurationType" factoryName="App Engine for PHP">
       <method />
     </configuration>
-    <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server" server_id="c93daa6d-2736-42e5-98de-c95251e6cc7c" server_name="apache_wamp">
-      <method />
-    </configuration>
     <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
       <node-options />
       <gulpfile />
@@ -622,6 +823,9 @@
       <arguments />
       <pass-parent-envs>true</pass-parent-envs>
       <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server" server_id="c93daa6d-2736-42e5-98de-c95251e6cc7c" server_name="apache_wamp">
       <method />
     </configuration>
     <configuration default="false" name="Sorbonne" type="PhpWebAppRunConfigurationType" factoryName="PHP Web Application" server_name="sorbonne" start_url="http://sorbonnev6.local/index.php?option=com_emundus&amp;view=users&amp;Itemid=592">
@@ -658,28 +862,28 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="-8" width="1936" height="1096" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.0" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.36124694" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3608742" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19616205" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19083156" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.3805889" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" x="10" y="629" width="1680" height="349" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31955308" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2603352" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Grunt" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5474373" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
     </layout>
     <layout-to-restore>
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -699,9 +903,9 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1601467" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5474373" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout-to-restore>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -796,90 +1000,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_campaign/tmpl/default.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="205" max-vertical-offset="6953">
-          <caret line="18" column="41" selection-start-line="18" selection-start-column="32" selection-end-line="18" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/com_emundus/css/mod_emundus_campaign.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="136" max-vertical-offset="3927">
-          <caret line="34" column="20" selection-start-line="34" selection-start-column="20" selection-end-line="34" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/evaluation/view.raw.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-30.076923" vertical-offset="0" max-vertical-offset="4573">
-          <caret line="53" column="90" selection-start-line="53" selection-start-column="8" selection-end-line="53" selection-end-column="90" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/evaluation/view.html.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.65384614" vertical-offset="17" max-vertical-offset="986">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/users.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="479.46155" vertical-offset="12466" max-vertical-offset="13294">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/libraries/cms/plugin/helper.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.076923" vertical-offset="2825" max-vertical-offset="5389">
-          <caret line="183" column="0" selection-start-line="183" selection-start-column="0" selection-end-line="183" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/libraries/joomla/application/base.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.076923" vertical-offset="1108" max-vertical-offset="2414">
-          <caret line="82" column="0" selection-start-line="82" selection-start-column="0" selection-end-line="82" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/system/admintools/admintools/main.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.076923" vertical-offset="8605" max-vertical-offset="9537">
-          <caret line="521" column="0" selection-start-line="521" selection-start-column="0" selection-end-line="521" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/libraries/joomla/factory.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.076923" vertical-offset="2757" max-vertical-offset="13583">
-          <caret line="178" column="0" selection-start-line="178" selection-start-column="0" selection-end-line="178" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/libraries/joomla/session/session.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.076923" vertical-offset="8095" max-vertical-offset="17476">
-          <caret line="493" column="0" selection-start-line="493" selection-start-column="0" selection-end-line="493" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/libraries/joomla/document/html/html.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.076923" vertical-offset="6106" max-vertical-offset="11934">
-          <caret line="376" column="0" selection-start-line="376" selection-start-column="0" selection-end-line="376" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/system/gantry/gantry.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.076923" vertical-offset="6786" max-vertical-offset="7480">
-          <caret line="410" column="0" selection-start-line="410" selection-start-column="0" selection-end-line="410" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/libraries/joomla/event/event.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-10.769231" vertical-offset="740" max-vertical-offset="1292">
@@ -927,7 +1047,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-4.8461537" vertical-offset="3138" max-vertical-offset="13362">
           <caret line="197" column="0" selection-start-line="197" selection-start-column="0" selection-end-line="197" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1013,13 +1132,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/default.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="77.30769" vertical-offset="2010" max-vertical-offset="2618">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/views/users/tmpl/showrights.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="37.423077" vertical-offset="973" max-vertical-offset="1581">
@@ -1038,15 +1150,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="3223" max-vertical-offset="13991">
           <caret line="208" column="0" selection-start-line="208" selection-start-column="0" selection-end-line="208" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/com_emundus/js/em_files.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="5916" max-vertical-offset="37298">
-          <caret line="348" column="20" selection-start-line="348" selection-start-column="20" selection-end-line="348" selection-end-column="20" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1070,9 +1173,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.8222491" vertical-offset="221" max-vertical-offset="1071">
           <caret line="58" column="0" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
-          <folding>
-            <marker date="1432046321235" expanded="true" signature="-1:-1" placeholder="..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1088,15 +1188,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.88391775" vertical-offset="1513" max-vertical-offset="2363">
           <caret line="137" column="0" selection-start-line="137" selection-start-column="0" selection-end-line="137" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/view.raw.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1564" max-vertical-offset="5780">
-          <caret line="99" column="17" selection-start-line="99" selection-start-column="17" selection-end-line="99" selection-end-column="17" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1104,7 +1195,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0133010885" vertical-offset="91" max-vertical-offset="918">
           <caret line="6" column="15" selection-start-line="6" selection-start-column="14" selection-end-line="6" selection-end-column="15" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1112,7 +1202,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.035066504" vertical-offset="29" max-vertical-offset="16575">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1120,7 +1209,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.019347038" vertical-offset="23238" max-vertical-offset="27625">
           <caret line="1377" column="31" selection-start-line="1377" selection-start-column="20" selection-end-line="1377" selection-end-column="31" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1136,7 +1224,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.87802196" vertical-offset="0" max-vertical-offset="1003">
           <caret line="53" column="41" selection-start-line="53" selection-start-column="29" selection-end-line="53" selection-end-column="41" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1144,44 +1231,126 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.7105562" vertical-offset="2417" max-vertical-offset="3298">
           <caret line="185" column="41" selection-start-line="185" selection-start-column="41" selection-end-line="185" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/com_emundus/controller.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.109091" vertical-offset="2482" max-vertical-offset="13787">
-          <caret line="176" column="65" selection-start-line="176" selection-start-column="53" selection-end-line="176" selection-end-column="65" />
-          <folding>
-            <marker date="1431966739501" expanded="true" signature="1934:2009" placeholder="SELECT year ..." />
-            <marker date="1431966739501" expanded="true" signature="8147:8301" placeholder="SELECT filen..#__emundus_uploads..." />
-            <marker date="1431966739501" expanded="true" signature="8358:8535" placeholder="SELECT filen..#__emundus_uploads..." />
-            <marker date="1431966739501" expanded="true" signature="8872:9017" placeholder="DELETE FROM ..." />
-            <marker date="1431966739501" expanded="true" signature="9524:9669" placeholder="DELETE FROM ..." />
-            <marker date="1431966739501" expanded="true" signature="13077:13150" placeholder="SELECT UPPER..#__emundus_setup_attachments..." />
-            <marker date="1431966739501" expanded="true" signature="16068:16240" placeholder="SELECT count..#__emundus_uploads..." />
-            <marker date="1431966739501" expanded="true" signature="16135:16197" placeholder="SELECT id FR..#__emundus_setup_attachments..." />
-            <marker date="1431966739501" expanded="true" signature="18352:18488" placeholder="INSERT INTO ..." />
-            <marker date="1431966739501" expanded="true" signature="21039:21107" placeholder="DELETE FROM ..." />
-            <marker date="1431966739501" expanded="true" signature="21230:21358" placeholder="INSERT INTO ..." />
-            <marker date="1431966739501" expanded="true" signature="28609:28697" placeholder="SELECT can_b..#__emundus_uploads..." />
-            <marker date="1431966739501" expanded="true" signature="31737:31910" placeholder="SELECT m.use..#__messages..." />
-            <marker date="1431966739501" expanded="true" signature="32744:32795" placeholder="UPDATE #__me..." />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/helpers/export.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.2545457" vertical-offset="336" max-vertical-offset="1921">
+        <state vertical-scroll-proportion="0.0" vertical-offset="336" max-vertical-offset="1921">
           <caret line="51" column="47" selection-start-line="51" selection-start-column="47" selection-end-line="51" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/emundus/pdf.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.28396437" vertical-offset="10931" max-vertical-offset="12580">
+          <caret line="628" column="21" selection-start-line="628" selection-start-column="21" selection-end-line="628" selection-end-column="21" />
+          <folding>
+            <marker date="1432132231483" expanded="true" signature="-1:-1" placeholder="SELECT * FRO..#__emundus_setup_teaching_unity..." />
+            <marker date="1432132231483" expanded="true" signature="-1:-1" placeholder="SELECT * FRO..#__emundus_uploads..." />
+            <marker date="1432132231483" expanded="true" signature="-1:-1" placeholder="DELETE FROM ..." />
+            <marker date="1432132231483" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
+            <marker date="1432132231483" expanded="true" signature="-1:-1" placeholder="SELECT * FRO..#__emundus_setup_teaching_unity..." />
+            <marker date="1432132231483" expanded="true" signature="-1:-1" placeholder="SELECT u.id ..#__emundus_campaign_candidature..." />
+            <marker date="1432132231483" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1432132231483" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1432132231483" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1432132231483" expanded="true" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/controller.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.43541202" vertical-offset="2482" max-vertical-offset="13787">
+          <caret line="176" column="65" selection-start-line="176" selection-start-column="53" selection-end-line="176" selection-end-column="65" />
+          <folding>
+            <marker date="1431966739501" expanded="true" signature="-1:-1" placeholder="SELECT year ..." />
+            <marker date="1431966739501" expanded="true" signature="-1:-1" placeholder="SELECT filen..#__emundus_uploads..." />
+            <marker date="1431966739501" expanded="true" signature="-1:-1" placeholder="SELECT filen..#__emundus_uploads..." />
+            <marker date="1431966739501" expanded="true" signature="-1:-1" placeholder="DELETE FROM ..." />
+            <marker date="1431966739501" expanded="true" signature="-1:-1" placeholder="DELETE FROM ..." />
+            <marker date="1431966739501" expanded="true" signature="-1:-1" placeholder="SELECT UPPER..#__emundus_setup_attachments..." />
+            <marker date="1431966739501" expanded="true" signature="-1:-1" placeholder="SELECT count..#__emundus_uploads..." />
+            <marker date="1431966739501" expanded="true" signature="-1:-1" placeholder="SELECT id FR..#__emundus_setup_attachments..." />
+            <marker date="1431966739501" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
+            <marker date="1431966739501" expanded="true" signature="-1:-1" placeholder="DELETE FROM ..." />
+            <marker date="1431966739501" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
+            <marker date="1431966739501" expanded="true" signature="-1:-1" placeholder="SELECT can_b..#__emundus_uploads..." />
+            <marker date="1431966739501" expanded="true" signature="-1:-1" placeholder="SELECT m.use..#__messages..." />
+            <marker date="1431966739501" expanded="true" signature="-1:-1" placeholder="UPDATE #__me..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-redirect.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-14.090909" vertical-offset="296" max-vertical-offset="1207">
+          <caret line="63" column="25" selection-start-line="63" selection-start-column="25" selection-end-line="63" selection-end-column="25" />
+          <folding>
+            <marker date="1432046315523" expanded="true" signature="-1:-1" placeholder="SELECT CONCA..#__menu..." />
+            <marker date="1432046315523" expanded="true" signature="-1:-1" placeholder="SELECT menu...." />
+            <marker date="1432046315523" expanded="true" signature="-1:-1" placeholder="SELECT CONCA..#__menu..." />
+            <marker date="1432046315523" expanded="true" signature="-1:-1" placeholder="SELECT db_ta..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-EMPLOI_isApplicationSent.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-14.192307" vertical-offset="277" max-vertical-offset="1258">
+          <caret line="38" column="59" selection-start-line="38" selection-start-column="59" selection-end-line="38" selection-end-column="59" />
+          <folding>
+            <marker date="1432222380403" expanded="true" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-isApplicationSent.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33256617" vertical-offset="357" max-vertical-offset="1343">
+          <caret line="38" column="55" selection-start-line="38" selection-start-column="52" selection-end-line="38" selection-end-column="55" />
+          <folding>
+            <marker date="1432222380408" expanded="true" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/default.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.05782313" vertical-offset="0" max-vertical-offset="2652">
+          <caret line="3" column="6" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/fabrik_form/php/scripts/emundus-attachment.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.24610245" vertical-offset="0" max-vertical-offset="2567">
+          <caret line="13" column="16" selection-start-line="13" selection-start-column="16" selection-end-line="13" selection-end-column="16" />
+          <folding>
+            <marker date="1432222380405" expanded="true" signature="-1:-1" placeholder="SELECT id, u..#__emundus_uploads..." />
+            <marker date="1432222380405" expanded="true" signature="-1:-1" placeholder="SELECT profi..#__emundus_users..." />
+            <marker date="1432222380405" expanded="true" signature="-1:-1" placeholder="SELECT ap.di..#__emundus_setup_attachments..." />
+            <marker date="1432222380405" expanded="true" signature="-1:-1" placeholder="UPDATE #__em..." />
+            <marker date="1432222380405" expanded="true" signature="-1:-1" placeholder="SELECT id, s..#__emundus_setup_emails..." />
+            <marker date="1432222380405" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/application.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="8738">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/components/com_emundus/models/application.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.9454546" vertical-offset="12512" max-vertical-offset="24871">
+        <state vertical-scroll-proportion="-491.69232" vertical-offset="0" max-vertical-offset="24871">
           <caret line="761" column="40" selection-start-line="761" selection-start-column="40" selection-end-line="761" selection-end-column="40" />
           <folding>
             <marker date="1432131761680" expanded="true" signature="2544:3117" placeholder="SELECT esc.*..#__emundus_users..." />
@@ -1265,21 +1434,137 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/libraries/emundus/pdf.php">
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/tmpl/data.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.2937788" vertical-offset="10931" max-vertical-offset="12580">
-          <caret line="628" column="21" selection-start-line="628" selection-start-column="21" selection-end-line="628" selection-end-column="21" />
+        <state vertical-scroll-proportion="-3.1818182" vertical-offset="1440" max-vertical-offset="3502">
+          <caret line="95" column="20" selection-start-line="95" selection-start-column="20" selection-end-line="95" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_campaign/tmpl/default.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.2545457" vertical-offset="5083" max-vertical-offset="6511">
+          <caret line="316" column="83" selection-start-line="316" selection-start-column="77" selection-end-line="316" selection-end-column="83" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/view.html.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.163636" vertical-offset="138" max-vertical-offset="1020">
+          <caret line="48" column="50" selection-start-line="48" selection-start-column="39" selection-end-line="48" selection-end-column="50" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/views/files/view.raw.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.109091" vertical-offset="1593" max-vertical-offset="5780">
+          <caret line="114" column="90" selection-start-line="114" selection-start-column="90" selection-end-line="114" selection-end-column="90" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/models/files.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.8545455" vertical-offset="17" max-vertical-offset="42840">
+          <caret line="18" column="25" selection-start-line="18" selection-start-column="18" selection-end-line="18" selection-end-column="25" />
           <folding>
-            <marker date="1432132231483" expanded="true" signature="2490:2634" placeholder="SELECT * FRO..#__emundus_setup_teaching_unity..." />
-            <marker date="1432132231483" expanded="true" signature="6992:7147" placeholder="SELECT * FRO..#__emundus_uploads..." />
-            <marker date="1432132231483" expanded="true" signature="7478:7683" placeholder="DELETE FROM ..." />
-            <marker date="1432132231483" expanded="true" signature="11645:11925" placeholder="INSERT INTO ..." />
-            <marker date="1432132231483" expanded="true" signature="13337:13495" placeholder="SELECT * FRO..#__emundus_setup_teaching_unity..." />
-            <marker date="1432132231483" expanded="true" signature="22167:23154" placeholder="SELECT u.id ..#__emundus_campaign_candidature..." />
-            <marker date="1432132231483" expanded="true" signature="24325:24826" placeholder="..." />
-            <marker date="1432132231483" expanded="true" signature="24845:24859" placeholder="..." />
-            <marker date="1432132231483" expanded="true" signature="24853:24859" placeholder="..." />
-            <marker date="1432132231483" expanded="true" signature="25347:25493" placeholder="..." />
+            <marker date="1432235708267" expanded="true" signature="11221:11382" placeholder="SELECT esg.p..#__emundus_setup_groups..." />
+            <marker date="1432235708267" expanded="true" signature="22592:22658" placeholder="SELECT join_..#__fabrik_joins..." />
+            <marker date="1432235708267" expanded="true" signature="35702:36017" placeholder="SELECT disti..#__fabrik_elements..." />
+            <marker date="1432235708267" expanded="true" signature="36476:36658" placeholder="SELECT esp.i..#__emundus_setup_profiles..." />
+            <marker date="1432235708267" expanded="true" signature="36849:36981" placeholder="SELECT esp.*..jos_emundus_setup_profiles..." />
+            <marker date="1432235708267" expanded="true" signature="37178:37409" placeholder="SELECT esp.i..#__emundus_setup_profiles..." />
+            <marker date="1432235708267" expanded="true" signature="37585:37768" placeholder="SELECT esp.i..#__emundus_setup_profiles..." />
+            <marker date="1432235708267" expanded="true" signature="37979:38066" placeholder="SELECT esp.i..#__emundus_setup_profiles..." />
+            <marker date="1432235708267" expanded="true" signature="38581:38656" placeholder="SELECT eup.u..#__emundus_users_profiles..." />
+            <marker date="1432235708267" expanded="true" signature="38838:38899" placeholder="SELECT u.id,..#__users..." />
+            <marker date="1432235708267" expanded="true" signature="39069:39161" placeholder="SELECT esm.i..#__emundus_setup_mobility..." />
+            <marker date="1432235708267" expanded="true" signature="39331:40279" placeholder="SELECT eleme..jos_fabrik_elements..." />
+            <marker date="1432235708267" expanded="true" signature="40498:41446" placeholder="SELECT eleme..jos_fabrik_elements..." />
+            <marker date="1432235708267" expanded="true" signature="42884:43023" placeholder="SELECT DISTI..#__emundus_users..." />
+            <marker date="1432235708267" expanded="true" signature="43187:43280" placeholder="select disti..#__emundus_setup_actions..." />
+            <marker date="1432235708267" expanded="true" signature="43563:43608" placeholder="select * fro..#__emundus_setup_groups..." />
+            <marker date="1432235708267" expanded="true" signature="43699:44004" placeholder="SELECT eu.us..#__emundus_users..." />
+            <marker date="1432235708267" expanded="true" signature="44395:44476" placeholder="insert into ..." />
+            <marker date="1432235708267" expanded="true" signature="45417:45543" placeholder="insert into ..." />
+            <marker date="1432235708267" expanded="true" signature="45687:45858" placeholder="UPDATE #__em..." />
+            <marker date="1432235708267" expanded="true" signature="46236:46285" placeholder="select * fro..#__emundus_setup_action_tag..." />
+            <marker date="1432235708267" expanded="true" signature="46530:46575" placeholder="select * fro..#__emundus_setup_status..." />
+            <marker date="1432235708267" expanded="true" signature="46839:46886" placeholder="select * fro..#__emundus_setup_status..." />
+            <marker date="1432235708267" expanded="true" signature="47163:47350" placeholder="select * fro..#__emundus_campaign_candidature..." />
+            <marker date="1432235708267" expanded="true" signature="47733:47829" placeholder="insert into ..." />
+            <marker date="1432235708267" expanded="true" signature="48167:48289" placeholder="select t.fnu..#__emundus_tag_assoc..." />
+            <marker date="1432235708267" expanded="true" signature="48969:49048" placeholder="update #__em..." />
+            <marker date="1432235708267" expanded="true" signature="49371:49555" placeholder="select emu.i..#__emundus_uploads..." />
+            <marker date="1432235708267" expanded="true" signature="49804:50090" placeholder="select disti..#__emundus_group_assoc..." />
+            <marker date="1432235708267" expanded="true" signature="50323:50376" placeholder="select * fro..#__usergroups..." />
+            <marker date="1432235708267" expanded="true" signature="50448:50573" placeholder="select disti..#__emundus_users_assoc..." />
+            <marker date="1432235708267" expanded="true" signature="50907:50996" placeholder="delete from ..." />
+            <marker date="1432235708267" expanded="true" signature="51037:51125" placeholder="delete from ..." />
+            <marker date="1432235708267" expanded="true" signature="51385:51629" placeholder="select u.nam..#__emundus_campaign_candidature..." />
+            <marker date="1432235708267" expanded="true" signature="51904:52264" placeholder="select u.nam..#__emundus_campaign_candidature..." />
+            <marker date="1432235708267" expanded="true" signature="52534:53555" placeholder="select u.nam..jos_emundus_campaign_candidature..." />
+            <marker date="1432235708267" expanded="true" signature="53864:53950" placeholder="update #__em..." />
+            <marker date="1432235708267" expanded="true" signature="54212:54482" placeholder="SELECT c.fnu..#__emundus_campaign_candidature..." />
+            <marker date="1432235708267" expanded="true" signature="61210:61291" placeholder="select * fro..#__emundus_evaluations..." />
+            <marker date="1432235708267" expanded="true" signature="61559:61637" placeholder="select * fro..#__emundus_comments..." />
+            <marker date="1432235708267" expanded="true" signature="62006:62112" placeholder="select fu.* ..#__emundus_uploads..." />
+            <marker date="1432235708267" expanded="true" signature="62261:62687" placeholder="select cc.fn..#__emundus_campaign_candidature..." />
+            <marker date="1432235708267" expanded="true" signature="63010:63355" placeholder="select cc.fn..#__emundus_campaign_candidature..." />
+            <marker date="1432235708267" expanded="true" signature="64086:64464" placeholder="SELECT form_..." />
+            <marker date="1432235708267" expanded="true" signature="67299:67422" placeholder="SELECT AVG(o..#__emundus_evaluations..." />
+            <marker date="1432235708267" expanded="true" signature="67712:67970" placeholder="SELECT eta.*..#__emundus_tag_assoc..." />
+            <marker date="1432235708267" expanded="true" signature="68253:68723" placeholder="select jesp...#__emundus_campaign_candidature..." />
+            <marker date="1432235708267" expanded="true" signature="69008:69233" placeholder="select jesl...jos_emundus_setup_letters..." />
+            <marker date="1432235708267" expanded="true" signature="69492:69547" placeholder="select * fro..jos_emundus_setup_attachments..." />
+            <marker date="1432235708267" expanded="true" signature="69869:70112" placeholder="insert into ..." />
+            <marker date="1432235708267" expanded="true" signature="70341:70775" placeholder="select disti..jos_emundus_campaign_candidature..." />
+            <marker date="1432235708267" expanded="true" signature="70986:71060" placeholder="select * fro..jos_emundus_uploads..." />
+            <marker date="1432235708267" expanded="true" signature="71345:71810" placeholder="select jfe.i..jos_fabrik_elements..." />
+            <marker date="1432235708267" expanded="true" signature="75487:75577" placeholder="select fnum,..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/com_emundus/controllers/files.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.4727273" vertical-offset="0" max-vertical-offset="29716">
+          <caret line="15" column="25" selection-start-line="15" selection-start-column="18" selection-end-line="15" selection-end-column="25" />
+          <folding>
+            <marker date="1432235545405" expanded="true" signature="7426:7596" placeholder="INSERT INTO ..." />
+            <marker date="1432235545405" expanded="true" signature="7717:7873" placeholder="select f.id,..#__emundus_filters..." />
+            <marker date="1432235545405" expanded="true" signature="8406:8446" placeholder="DELETE FROM ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_campaign/mod_emundus_campaign.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-13.076923" vertical-offset="153" max-vertical-offset="1785">
+          <caret line="29" column="0" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/mod_emundus_campaign/helper.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.2692308" vertical-offset="357" max-vertical-offset="2125">
+          <caret line="26" column="58" selection-start-line="26" selection-start-column="58" selection-end-line="26" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/media/com_emundus/js/em_files.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.44692737" vertical-offset="14560" max-vertical-offset="37298">
+          <caret line="880" column="45" selection-start-line="880" selection-start-column="45" selection-end-line="880" selection-end-column="45" />
+          <folding>
+            <marker date="1432237023338" expanded="true" signature="57916:57938" placeholder="..." />
+            <marker date="1432237023338" expanded="true" signature="59462:59484" placeholder="..." />
+            <marker date="1432237023338" expanded="true" signature="77117:77131" placeholder="..." />
           </folding>
         </state>
       </provider>

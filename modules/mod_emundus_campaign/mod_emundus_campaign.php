@@ -43,7 +43,7 @@ $ordertime = $session->get('order_time');
 
 if(isset($_POST['searchword']) && !empty($_POST['searchword'])) {
     $searchword=$_POST['searchword'];
-    $condition = "AND CONCAT(pr.code,pr.notes,ca.label,pr.label,ca.description,ca.short_description) LIKE '%$searchword%'";
+    $condition = "AND CONCAT(pr.code,ca.label,pr.label,ca.description,ca.short_description) LIKE '%$searchword%'";
 }
 
 
