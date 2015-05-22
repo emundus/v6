@@ -1272,59 +1272,55 @@ class EmundusControllerFiles extends JControllerLegacy
         $path = JPATH_BASE.DS.'tmp'.DS.$nom;
         $model = $this->getModel('Files');
         $files = $model->getFilesByFnums($fnums);
-
         if(file_exists($path))
             unlink($path);
+        if(!empty($files)) {
+            $users = array();
+            foreach ($fnums as $fnum) {
+                $sid = intval(substr($fnum, -7));
+                $users[$fnum] = JFactory::getUser($sid);
 
-        $users = array();
-        foreach($fnums as $fnum)
-        {
-            $sid = intval(substr($fnum, -7));
-            $users[$fnum] = JFactory::getUser($sid);
+                if (!is_numeric($sid) || empty($sid)) {
+                    continue;
+                }
 
-            if (!is_numeric($sid) || empty($sid)) {
-                continue;
+                if ($zip->open($path, ZipArchive::CREATE) == TRUE) {
+                    $dossier = EMUNDUS_PATH_ABS . $users[$fnum]->id . DS . $fnum;
+
+                    application_form_pdf($users[$fnum]->id, $fnum, false);
+                    $application_pdf = $fnum . '_application.pdf';
+
+                    $filename = $fnum . '_' . $application_pdf;
+
+                    if (!$zip->addFile($dossier . DS . $application_pdf, $filename)) {
+                        continue;
+                    }
+
+                    $zip->close();
+                } else {
+                    die ("ERROR");
+                }
             }
 
-            if($zip->open($path, ZipArchive::CREATE) == TRUE)
-            {
-                $dossier = EMUNDUS_PATH_ABS.$users[$fnum]->id.DS.$fnum;
-
-                application_form_pdf($users[$fnum]->id, $fnum, false);
-                $application_pdf = $fnum.'_application.pdf';
-
-                $filename = $fnum.'_'.$application_pdf;
-
-                if(!$zip->addFile($dossier.DS.$application_pdf, $filename)) {
-                    continue;
+            if ($zip->open($path, ZipArchive::CREATE) == TRUE) {
+                foreach ($files as $key => $file) {
+                    $filename = $file['fnum'] . '_' . $users[$file['fnum']]->name . DS . $file['filename'];
+                    $dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
+                    if (!$zip->addFile($dossier . $file['filename'], $filename)) {
+                        continue;
+                    }
                 }
 
                 $zip->close();
+
             } else {
                 die ("ERROR");
             }
-        }
-
-        if($zip->open($path, ZipArchive::CREATE) == TRUE)
-        {
-
-            foreach($files as $key => $file)
-            {
-                $filename = $file['fnum'].'_'.$users[$file['fnum']]->name.DS.$file['filename'];
-                $dossier = EMUNDUS_PATH_ABS.$users[$file['fnum']]->id.DS;
-
-                if(!$zip->addFile($dossier.$file['filename'], $filename)) {
-                    continue;
-                }
-            }
-
-            $zip->close();
-
+            return $nom;
         } else {
-            die ("ERROR");
+            return 0;
         }
 
-        return $nom;
     }
 
     /*

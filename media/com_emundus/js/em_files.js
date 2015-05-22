@@ -1369,10 +1369,13 @@ $(document).ready(function()
                     dataType:'json',
                     success: function(result)
                     {
-                        if(result.status)
+                        if(result.status && result.name!=0)
                         {
                             $('.modal-body').empty();
                             $('.modal-body').append('<a class="btn .btn-link" title="'+Joomla.JText._('COM_EMUNDUS_DOWNLOAD_ZIP')+'" href="index.php?option=com_emundus&controller='+$('#view').val()+'&task=download&format=zip&name='+result.name+'"><span class="glyphicon glyphicon-download-alt"></span>  <span>'+Joomla.JText._('COM_EMUNDUS_DOWNLOAD_ZIP')+'</span></a>');
+                        } else {
+                            $('.modal-body').empty();
+                            $('.modal-body').append('<div class="alert alert-warning"><!-- Joomla.JText._(\'NO_ATTACHMENT_ZIP\')+-->Erreur, pas de document dans ce dossier </div>');
                         }
                     },
                     error: function (jqXHR, textStatus, errorThrown)
