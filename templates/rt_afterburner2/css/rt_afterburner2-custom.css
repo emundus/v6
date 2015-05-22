@@ -39,6 +39,7 @@ body {
     }
     #responsive_menu {
         position: relative;
+        width: 100%;
     }
     .custom_esa {
         margin-right: 40px;
