@@ -104,6 +104,7 @@ jimport('joomla.application.component.helper');
 							   'validate'			=> NULL,
 							   'other'				=> NULL,
 							   'status'				=> NULL,
+                               'published'          => NULL,
                                'adv_filter'		    => NULL,
                                'newsletter'		    => NULL,
                                'spam_suspect'	    => NULL,
@@ -120,6 +121,7 @@ jimport('joomla.application.component.helper');
 							   'validate'			=> NULL,
 							   'other'				=> NULL,
 							   'status'				=> NULL,
+                               'published'          => NULL,
 							   'adv_filter'		    => NULL,
                                'newsletter'		    => NULL,
                                'spam_suspect'	    => NULL,
@@ -744,6 +746,7 @@ jimport('joomla.application.component.helper');
 		$complete_application	= @$filt_params['complete'];
 		$validate_application	= @$filt_params['validate'];
 		$current_status			= @$filt_params['status'];
+        $current_published      = $filt_params['published'];
 		$current_tag			= @$filt_params['tag'];
 		$current_group_eval     = @$filt_params['evaluator_group'];
 		$current_user_profile	= @$filt_params['profile_users'];
@@ -1054,6 +1057,20 @@ jimport('joomla.application.component.helper');
 			}
 			$filters .= $status;
 		}
+
+        if($params['published'] !== NULL){
+            $hidden = $types['published'] != 'hidden' ? false : true;
+            $filters.= '<div class="em_filters" id="published">
+				<div class="em_label"><label class="control-label">'.JText::_('PUBLISH').'</label></div>';
+            $filters .= '<div class="em_filtersElement">
+				<select class="chzn-select em-filt-select" id="select_published" name="published" '.($types['published'] == 'hidden' ? 'style="visibility:hidden" ' : '').'>
+					<option value="1">'.JText::_("PUBLISHED").'</option>
+					<option value="0">'.JText::_("ARCHIVED").'</option>
+					<option value="-1">'.JText::_("TRASHED").'</option>
+				</select>
+			</div>';
+            $filters.='</div>';
+        }
 
 		if(@$params['tag'] !== NULL){
 			$hidden = $types['tag'] != 'hidden' ? false : true;
