@@ -81,7 +81,7 @@ if ($locallang == "fr-FR") {
                         <?php } ?>
                         <div class="rt-grid-12 campaignright">
                             <div class="rt-grid-9 campaigntext">
-                                <h4><a href="index.php?option=com_emundus&view=programme<?php if($resul->apply_online==1) {echo "&Itemid=".$mod_em_campaign_itemid;} ?>&id=<?php echo $resul->id ?>"><?php echo $resul->label; ?></a></h4>
+                                <h4><a href="index.php?option=com_emundus&view=programme<?php if($resul->apply_online==1) {echo "&Itemid=".$mod_em_campaign_itemid;} else {echo "&Itemid=".$mod_em_campaign_itemid2;} ?>&id=<?php echo $resul->id ?>"><?php echo $resul->label; ?></a></h4>
                                 <p>
                                     <?php
                                     $text = '';
@@ -157,7 +157,7 @@ if ($locallang == "fr-FR") {
                         <?php } ?>
                         <div class="rt-grid-12 campaignright">
                             <div class="rt-grid-9 campaigntext">
-                                <h4><a href="index.php?option=com_emundus&view=programme<?php if($resul->apply_online==1) {echo "&Itemid=".$mod_em_campaign_itemid;} ?>&id=<?php echo $resul->id ?>"><?php echo $resul->label; ?></a></h4>
+                                <h4><a href="index.php?option=com_emundus&view=programme&id=<?php echo $resul->id ?>"><?php echo $resul->label; ?></a></h4>
                                 <p>
                                     <?php
                                     $text = '';
@@ -227,7 +227,7 @@ if ($locallang == "fr-FR") {
                         <?php } ?>
                         <div class="rt-grid-12 campaignright">
                             <div class="rt-grid-9 campaigntext">
-                                <h4><a href="index.php?option=com_emundus&view=programme<?php if($resul->apply_online==1) {echo "&Itemid=".$mod_em_campaign_itemid;} ?>&id=<?php echo $resul->id ?>"><?php echo $resul->label; ?></a></h4>
+                                <h4><a href="index.php?option=com_emundus&view=programme&id=<?php echo $resul->id ?>"><?php echo $resul->label; ?></a></h4>
                                 <p>
                                     <?php
                                     $text = '';
@@ -296,7 +296,7 @@ if ($locallang == "fr-FR") {
                         <?php } ?>
                         <div class="rt-grid-12 campaignright">
                             <div class="rt-grid-9 campaigntext">
-                                <h4><a href="index.php?option=com_emundus&view=programme<?php if($resul->apply_online==1) {echo "&Itemid=".$mod_em_campaign_itemid;} ?>&id=<?php echo $resul->id ?>"><?php echo $resul->label; ?></a></h4>
+                                <h4><a href="index.php?option=com_emundus&view=programme&id=<?php echo $resul->id ?>"><?php echo $resul->label; ?></a></h4>
                                 <p>
                                     <?php
                                     $text = '';

@@ -578,7 +578,8 @@ jimport('joomla.application.component.helper');
 					WHERE element.id IN ('.$elements_id.')';
 			$db->setQuery($query);
 	//echo '<hr>'.str_replace('#_', 'jos', $query);
-			$elementsIdTab = array_fill_keys(explode(',', $elements_id), "");
+			//$elementsIdTab = array_fill_keys(explode(',', $elements_id), "");
+			$elementsIdTab = array();
 			$res0 = $db->loadObjectList();
 			$res = $db->loadObjectList('id');
 			foreach($res as $kId => $r)
