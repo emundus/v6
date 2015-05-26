@@ -305,8 +305,7 @@ jimport('joomla.application.component.helper');
 	public  function getApplicants(){
 		$db = JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label
-		FROM #__emundus_setup_profiles esp 
-		WHERE esp.published =1';
+		FROM #__emundus_setup_profiles esp '; //WHERE esp.published =1';
 		$db->setQuery( $query );
 		return $db->loadObjectList('id');
 	}
