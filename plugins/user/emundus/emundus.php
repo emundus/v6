@@ -52,7 +52,7 @@ class plgUserEmundus extends JPlugin
 		{
 			if(strpos($table, 'emundus_')===FALSE) continue;
 			if(strpos($table, '_repeat')>0) continue;
-			if(strpos($table, 'setup_')>0 || strpos($table, '_country')>0 || strpos($table, '_users')>0 || strpos($table, '_evaluation_weight')>0) continue;
+			if(strpos($table, 'setup_')>0 || strpos($table, '_country')>0 || strpos($table, '_users')>0 || strpos($table, '_evaluation_weight')>0 || strpos($table, '_acl')>0) continue;
 			if(strpos($table, '_files_request')>0 || strpos($table, '_evaluations')>0 || strpos($table, '_final_grade')>0 || strpos($table, '_emundus_academic_transcrip')>0 || strpos($table, '_emundus_mobility')>0) {
 				$db->setQuery('DELETE FROM '.$table.' WHERE student_id = '.(int) $user['id']);
 			} elseif(strpos($table, '_uploads')>0 || strpos($table, '_groups')>0 || strpos($table, '_emundus_confirmed_applicants')>0 || strpos($table, '_emundus_learning_agreement')>0 || strpos($table, '_emundus_users')>0 || strpos($table, '_emundus_emailalert')>0) { 
