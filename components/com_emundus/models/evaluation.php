@@ -233,7 +233,8 @@ class EmundusModelEvaluation extends JModelList
 						$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
 						if (count($eval_elt_list)>0) { 
 							foreach ($eval_elt_list as $eel) {
-								$elements_id[] = $eel->element_id;
+                                if(isset($eel->element_id) && !empty($eel->element_id))
+    								$elements_id[] = $eel->element_id;
 							}
 						}
 					}

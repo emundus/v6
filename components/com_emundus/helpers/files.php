@@ -504,27 +504,33 @@ jimport('joomla.application.component.helper');
 	}
 
 
-	// @params string List of Fabrik groups comma separated
-	public  function getElementsByGroups($groups){
-		$db = JFactory::getDBO();
-		$query = 'SELECT element.name, element.label, element.plugin, element.id, groupe.id, groupe.label AS group_label, element.params,
+     /**
+      * Get list of elements declared in a list of Fabrik groups
+      * @param 	string 	List of Fabrik groups comma separated
+      * @param 	int 	Does the element are shown in Fabrik list ?
+      * @return   array 	list of Fabrik element ID used in evaluation form
+      **/
+     function getElementsByGroups($groups, $show_in_list_summary=1, $hidden=0){
+         $db = JFactory::getDBO();
+         $query = 'SELECT element.name, element.label, element.plugin, element.id as element_id, groupe.id, groupe.label AS group_label, element.params,
 				INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias
-				FROM #__fabrik_elements element 
-				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id 
-				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
-				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id 
-				INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id 
-				WHERE tab.published = 1
-					AND element.show_in_list_summary = 1
-					AND groupe.id IN ('.$groups.') 
-					AND element.published=1 
-					AND element.hidden=0 
-					AND element.label!=" " 
-					AND element.label!=""  
+				FROM #__fabrik_elements element
+				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
+				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
+				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
+				INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id
+				WHERE tab.published = 1 ';
+         $query .= $show_in_list_summary==1?' AND element.show_in_list_summary = 1 ':'';
+         $query .= $hidden==0?' AND element.hidden = 0 ':'';
+         $query .= ' AND element.published=1
+					AND groupe.id IN ('.$groups.')
+					AND element.label!=" "
+					AND element.label!=""
 				ORDER BY formgroup.ordering, groupe.id, element.ordering';
-	//die(str_replace("#_", "jos", $query));
-		$db->setQuery( $query );
-	}
+         //die(str_replace("#_", "jos", $query));
+         $db->setQuery( $query );
+         return $db->loadObjectList();
+     }
 	
 	public  function getElementsOther($tables){
 		$db = JFactory::getDBO();
@@ -576,7 +582,7 @@ jimport('joomla.application.component.helper');
 					INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
 					INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
 					LEFT JOIN #__fabrik_joins AS joins ON tab.id = joins.list_id AND groupe.id=joins.group_id
-					WHERE element.id IN ('.$elements_id.')';
+					WHERE element.id IN ('.ltrim($elements_id, ',').')';
 			$db->setQuery($query);
 	//echo '<hr>'.str_replace('#_', 'jos', $query);
 			//$elementsIdTab = array_fill_keys(explode(',', $elements_id), "");
