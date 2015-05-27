@@ -588,7 +588,7 @@ jimport('joomla.application.component.helper');
 	//echo '<hr>'.str_replace('#_', 'jos', $query);
 			//$elementsIdTab = array_fill_keys(explode(',', $elements_id), "");
 			$elementsIdTab = array();
-			$res0 = $db->loadObjectList();
+			//$res0 = $db->loadObjectList();
 			$res = $db->loadObjectList('id');
 			foreach($res as $kId => $r)
 			{
@@ -1585,12 +1585,13 @@ jimport('joomla.application.component.helper');
 		$evaluations = $files->getFnumArray($fnums, $elements);
 
 		$data = array();
-		$i = 0;
+		//$i = 0;
 		foreach($evaluations as $eval)
-		{	
-			if ($eval['jos_emundus_evaluations___user'] > 0) {	
-			
-				$str = '<br><hr><h1>'.JFactory::getUser($eval['jos_emundus_evaluations___user'])->name.'</h1>';
+		{
+			if ($eval['jos_emundus_evaluations___user'] > 0) {
+				$str = '<br><hr>';
+                $str .= '<em>'.JText::_('EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).'</em>';
+                $str .= '<h1>'.JFactory::getUser($eval['jos_emundus_evaluations___user'])->name.'</h1>';
 	            $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
 	            foreach($elements as $element){
@@ -1616,7 +1617,8 @@ jimport('joomla.application.component.helper');
 	                }
 	            }
 
-				$str .= '</table>';
+                $str .= '</table>';
+                $str .= '<p></p><hr>';
 
 				if ($format != 'html') {
 					//$str = str_replace('<hr>', chr(10).'------'.chr(10), $str);
@@ -1632,7 +1634,7 @@ jimport('joomla.application.component.helper');
 	  
 				$data[$eval['fnum']][$eval['jos_emundus_evaluations___user']] = $str;
 
-				$i++;
+				//$i++;
 			}
 		}
 
