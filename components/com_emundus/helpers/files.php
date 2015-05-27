@@ -582,7 +582,8 @@ jimport('joomla.application.component.helper');
 					INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
 					INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
 					LEFT JOIN #__fabrik_joins AS joins ON tab.id = joins.list_id AND groupe.id=joins.group_id
-					WHERE element.id IN ('.ltrim($elements_id, ',').')';
+					WHERE element.id IN ('.ltrim($elements_id, ',').')
+					ORDER BY formgroup.ordering, element.ordering ';
 			$db->setQuery($query);
 	//echo '<hr>'.str_replace('#_', 'jos', $query);
 			//$elementsIdTab = array_fill_keys(explode(',', $elements_id), "");
@@ -1563,6 +1564,7 @@ jimport('joomla.application.component.helper');
 		}
 	}
 
+     // getEvaluation
 	function getEvaluation($format='html', $fnums){
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');

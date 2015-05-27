@@ -161,7 +161,6 @@ $htmldata .= '
 	//$users = $evaluation->getUsers($fnum);
 
 	$data = @EmundusHelperFiles::getEvaluation('html', $fnum);
-
 	foreach ($data as $fnums => $evals) {
 		foreach ($evals as $user => $html) {
 			$htmldata .= $html;
