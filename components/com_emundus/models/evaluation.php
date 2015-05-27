@@ -260,7 +260,7 @@ class EmundusModelEvaluation extends JModelList
 		if ($session->has('filt_params'))
 		{
 			//var_dump($session->get('filt_params'));
-			$element_id = array();
+			$elements_id = array();
 			$filt_params = $session->get('filt_params'); 
 
 			if (count(@$filt_params['programme'])>0) {
@@ -277,7 +277,17 @@ class EmundusModelEvaluation extends JModelList
 						}
 					}
 				}
-			}
+			} else{
+                $groups = $this->getGroupsEvalByProgramme($programme_code);
+                if (!empty($groups)) {
+                    $eval_elt_list = $this->getAllElementsByGroups($groups); // $show_in_list_summary
+                    if (count($eval_elt_list)>0) {
+                        foreach ($eval_elt_list as $eel) {
+                            $elements_id[] = $eel->element_id;
+                        }
+                    }
+                }
+            }
 		} 
 		return @$elements_id;
 	}

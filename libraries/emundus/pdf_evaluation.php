@@ -49,20 +49,20 @@ function pdf_evaluation($user_id, $fnum = null, $output = true) {
 	$m_users 		= new EmundusModelUsers;
 	//$menu 			= new EmundusHelperMenu;
 	$application 	= new EmundusModelApplication;
-	$evaluation 	= new EmundusModelEvaluation;
+	//$evaluation 	= new EmundusModelEvaluation;
 	//$files 			= new EmundusModelFiles;
 
 	$db 			= JFactory::getDBO();
 	$app 			= JFactory::getApplication();
 	$config 		= JFactory::getConfig();
 	$eMConfig 		= JComponentHelper::getParams('com_emundus');
-	$current_user 	= JFactory::getUser();
+	//$current_user 	= JFactory::getUser();
 	$user 			= JFactory::getUser($user_id);
 	$fnum 			= empty($fnum)?$user->fnum:$fnum;
 
-	$export_pdf = $eMConfig->get('export_pdf'); 
+	//$export_pdf = $eMConfig->get('export_pdf');
 
-	$user_profile = $m_users->getCurrentUserProfile($user_id);
+	//$user_profile = $m_users->getCurrentUserProfile($user_id);
 	
 	$infos = $m_profile->getFnumDetails($fnum);
 	$campaign_id = $infos['campaign_id'];
@@ -70,7 +70,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true) {
 	// Get form HTML
 	$htmldata = '';
 
-	$forms = $application->getFormsPDF($user_id, $fnum);
+	//$forms = $application->getFormsPDF($user_id, $fnum);
 
 	// Create PDF object
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -98,7 +98,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true) {
 	$template 	= $app->getTemplate(true);
 	$params     = $template->params;
 	$image   	= $params->get('logo')->custom->image; 
-	$logo 		= preg_match_all("/'([^']*)'/", $image, $matches);
+	//$logo 		= preg_match_all("/'([^']*)'/", $image, $matches);
 	$logo 		= !empty($matches[1][1]) ? JPATH_ROOT.DS.$matches[1][1] : preg_match_all('/"([^"]*)"/', $image, $matches);
 	$logo 		= !empty($logo) ? JPATH_ROOT.DS.$matches[1][1] : "";
 	
@@ -117,7 +117,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true) {
 	$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 	$pdf->SetFont('helvetica', '', 8);
 	$pdf->AddPage();
-	$dimensions = $pdf->getPageDimensions();
+	//$dimensions = $pdf->getPageDimensions();
 	
 /*** Applicant   ***/   
 $htmldata .= 
