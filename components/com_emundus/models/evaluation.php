@@ -130,10 +130,10 @@ class EmundusModelEvaluation extends JModelList
 				if($def_elmt->element_plugin == 'date') {
 					if ($group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
-														SELECT  GROUP_CONCAT(DATE_FORMAT('.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat.' . $def_elmt->element_name.', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ") 
-														FROM '.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat 
-														WHERE '.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat.parent_id = '.$def_elmt->tab_name.'.id 
-													  ) AS `'.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat___' . $def_elmt->element_name.'`';
+														SELECT  GROUP_CONCAT(DATE_FORMAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ")
+														FROM '.$def_elmt->table_join.'
+														WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+													  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
 					} else
 						$this->_elements_default[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 				}
@@ -144,9 +144,9 @@ class EmundusModelEvaluation extends JModelList
 									select GROUP_CONCAT('.$attribs->join_val_column.' SEPARATOR ", ") 
 									from '.$attribs->join_db_name.' 
 									where '.$attribs->join_db_name.'.'.$attribs->join_key_column.' IN 
-										( select '.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat.' . $def_elmt->element_name.' 
-										  from '.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat 
-										  where '.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat.parent_id='.$def_elmt->tab_name.'.id
+										( select '.$def_elmt->table_join.'.' . $def_elmt->element_name.'
+										  from '.$def_elmt->table_join.'
+										  where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
 										)
 								  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 					} else
@@ -166,10 +166,10 @@ class EmundusModelEvaluation extends JModelList
 				else {
 					if (@$group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
-														SELECT  GROUP_CONCAT('.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat.' . $def_elmt->element_name.'  SEPARATOR ", ") 
-														FROM '.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat 
-														WHERE '.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat.parent_id = '.$def_elmt->tab_name.'.id 
-													  ) AS `'.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat___' . $def_elmt->element_name.'`';
+														SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", ")
+														FROM '.$def_elmt->table_join.'
+														WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+													  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
 					} else
 						$this->_elements_default[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
 				}
@@ -909,7 +909,7 @@ class EmundusModelEvaluation extends JModelList
 	{
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
 
-		$userModel = new EmundusModelUsers();
+		//$userModel = new EmundusModelUsers();
 		$session = JFactory::getSession();
 		$dbo = $this->getDbo();
 		$eMConfig = JComponentHelper::getParams('com_emundus');
@@ -994,7 +994,7 @@ class EmundusModelEvaluation extends JModelList
 			
 			$dbo->setQuery($query);
 			$res = $dbo->loadAssocList();
-//echo '<hr>'.str_replace('#_', 'jos', $query).'<hr>';
+echo '<hr>'.str_replace('#_', 'jos', $query).'<hr>';
 			return $res;
 		}
 		catch(Exception $e)
