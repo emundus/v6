@@ -1597,7 +1597,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         $isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
                         if($groupParams->repeat_group_button == 1 || $isDatabaseJoin)
                         {
-                            $fabrikValues[$elt['id']] = $model->getFabrikValueRepeat($elt['group_id'], $elt['db_table_name'], $elt['name'], $fnumsArray, $params, $elt['plugin'], $groupParams->repeat_group_button == 1);
+                            $fabrikValues[$elt['id']] = $model->getFabrikValueRepeat($elt, $fnumsArray, $params, $groupParams->repeat_group_button == 1);
                         }
                         else
                         {

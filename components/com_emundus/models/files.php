@@ -81,8 +81,8 @@ class EmundusModelFiles extends JModelLegacy
 			return false;
 		$menu_params = $menu->getParams($current_menu->id);
 
-		$em_filters_names = explode(',', $menu_params->get('em_filters_names'));
-		$em_filters_values = explode(',', $menu_params->get('em_filters_values'));
+		//$em_filters_names = explode(',', $menu_params->get('em_filters_names'));
+		//$em_filters_values = explode(',', $menu_params->get('em_filters_values'));
 		$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
 
 		$session = JFactory::getSession();
@@ -138,10 +138,10 @@ class EmundusModelFiles extends JModelLegacy
 				if($def_elmt->element_plugin == 'date') {
 					if (@$group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
-														SELECT  GROUP_CONCAT(DATE_FORMAT('.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat.' . $def_elmt->element_name.', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ") 
-														FROM '.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat 
-														WHERE '.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat.parent_id = '.$def_elmt->tab_name.'.id 
-													  ) AS `'.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat___' . $def_elmt->element_name.'`';
+														SELECT  GROUP_CONCAT(DATE_FORMAT('.$def_elmt->table_join.'.'.$def_elmt->element_name.', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ")
+														FROM '.$def_elmt->table_join.'
+														WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+													  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
 					} else
 						$this->_elements_default[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 				}
@@ -154,9 +154,9 @@ class EmundusModelFiles extends JModelLegacy
 									select GROUP_CONCAT('.$column.' SEPARATOR ", ") 
 									from '.$attribs->join_db_name.' 
 									where '.$attribs->join_db_name.'.'.$attribs->join_key_column.' IN 
-										( select '.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat.' . $def_elmt->element_name.' 
-										  from '.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat 
-										  where '.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat.parent_id='.$def_elmt->tab_name.'.id
+										( select '.$def_elmt->table_join.'.' . $def_elmt->element_name.'
+										  from '.$def_elmt->table_join.'
+										  where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
 										)
 								  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 					} else
@@ -169,10 +169,10 @@ class EmundusModelFiles extends JModelLegacy
 
                     if (@$group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
-                                    SELECT  GROUP_CONCAT('.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat.' . $def_elmt->element_name.' SEPARATOR ", ")
-                                    FROM '.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat
-                                    WHERE '.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat.parent_id = '.$def_elmt->tab_name.'.id
-                                  ) AS `'.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat___' . $def_elmt->element_name.'`';
+                                    SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")
+                                    FROM '.$def_elmt->table_join.'
+                                    WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+                                  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
                     } else {
                         $element_attribs = json_decode($def_elmt->element_attribs);
                         $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
@@ -186,10 +186,10 @@ class EmundusModelFiles extends JModelLegacy
 				else {
 					if (@$group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
-														SELECT  GROUP_CONCAT('.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat.' . $def_elmt->element_name.'  SEPARATOR ", ") 
-														FROM '.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat 
-														WHERE '.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat.parent_id = '.$def_elmt->tab_name.'.id 
-													  ) AS `'.$def_elmt->tab_name.'_'.$def_elmt->group_id.'_repeat___' . $def_elmt->element_name.'`';
+														SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", ")
+														FROM '.$def_elmt->table_join.'
+														WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+													  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
 					} else
 						$this->_elements_default[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
 				}
@@ -992,7 +992,6 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		$query .= $q['join'];
 		$query .= " where 1=1 ".$q['q'];
-        //echo($query);die();
 
 		// ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
        // if(count($this->code)>0)
@@ -1023,8 +1022,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch(Exception $e)
 		{
-			echo $e;
-            die();
+            echo $e->getMessage();
 		}
 	}
 
@@ -1927,18 +1925,18 @@ class EmundusModelFiles extends JModelLegacy
 				{
 					if ($params_group->repeat_group_button == 1) {
 						if ($methode == 1) {
-							$query .= ', '.$elt->tab_name.'_'.$elt->group_id.'_repeat'.'.'.$elt->element_name.' AS '. $elt->tab_name.'_'.$elt->group_id.'_repeat___'.$elt->element_name;
-							if(!in_array($elt->tab_name.'_'.$elt->group_id.'_repeat', $lastTab)) {
-								$leftJoinMulti .= ' left join ' . $elt->tab_name.'_'.$elt->group_id.'_repeat on '. $elt->tab_name.'_'.$elt->group_id.'_repeat.parent_id='.$elt->tab_name.'.id ';
+							$query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
+							if(!in_array($elt->table_join, $lastTab)) {
+								$leftJoinMulti .= ' left join ' . $elt->table_join.' on '. $elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
 							}
-							$lastTab[] = $elt->tab_name.'_'.$elt->group_id.'_repeat';
+							$lastTab[] = $elt->table_join;
 						}
 						else {
 							$query .= ', (
-										SELECT GROUP_CONCAT('.$tableAlias[$elt->tab_name].'_'.$elt->group_id.'_repeat'.'.'.$elt->element_name.' SEPARATOR ", ") 
-										FROM '.$tableAlias[$elt->tab_name].'_'.$elt->group_id.'_repeat 
-										WHERE '.$tableAlias[$elt->tab_name].'_'.$elt->group_id.'_repeat.parent_id='.$tableAlias[$elt->tab_name].'.id
-									  )	AS '. $elt->tab_name.'_'.$elt->group_id.'_repeat___'.$elt->element_name;
+										SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.'.'.$elt->element_name.' SEPARATOR ", ")
+										FROM '.$elt->table_join.'
+										WHERE '.$elt->table_join.'.parent_id='.$tableAlias[$elt->tab_name].'.id
+									  )	AS '. $elt->table_join.'___'.$elt->element_name;
 						}
 					}
 					else {
@@ -1957,18 +1955,18 @@ class EmundusModelFiles extends JModelLegacy
 				{
 					if ($params_group->repeat_group_button == 1) {
 						if ($methode == 1) {
-							$query .= ', '.$elt->tab_name.'_'.$elt->group_id.'_repeat'.'.'.$elt->element_name.' AS '. $elt->tab_name.'_'.$elt->group_id.'_repeat___'.$elt->element_name;
-							if(!in_array($elt->tab_name.'_'.$elt->group_id.'_repeat', $lastTab)) {
-								$leftJoinMulti .= ' left join ' . $elt->tab_name.'_'.$elt->group_id.'_repeat on '. $elt->tab_name.'_'.$elt->group_id.'_repeat.parent_id='.$elt->tab_name.'.id ';
+							$query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
+							if(!in_array($elt->table_join, $lastTab)) {
+								$leftJoinMulti .= ' left join ' . $elt->table_join.' on '. $elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
 							}
-							$lastTab[] = $elt->tab_name.'_'.$elt->group_id.'_repeat';
+							$lastTab[] = $elt->table_join;
 						}
 						else {
 							$query .= ', (
-										SELECT GROUP_CONCAT('.$elt->tab_name.'_'.$elt->group_id.'_repeat'.'.'.$elt->element_name.' SEPARATOR ", ") 
-										FROM '.$elt->tab_name.'_'.$elt->group_id.'_repeat 
-										WHERE '.$elt->tab_name.'_'.$elt->group_id.'_repeat.parent_id='.$elt->tab_name.'.id
-									  )	AS '. $elt->tab_name.'_'.$elt->group_id.'_repeat___'.$elt->element_name;
+										SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.' SEPARATOR ", ")
+										FROM '.$elt->table_join.'
+										WHERE '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id
+									  )	AS '. $elt->table_join.'___'.$elt->element_name;
 						}
 					}
 					else {
@@ -2412,11 +2410,12 @@ class EmundusModelFiles extends JModelLegacy
 	public function getValueFabrikByIds($idFabrik)
 	{
 		$dbo = $this->getDbo();
-		$select = "select jfe.id, jfe.name, jfe.plugin, jfe.params, jfg.params as group_params, jfg.id as group_id, jfl.db_table_name from jos_fabrik_elements as jfe
-					left join jos_fabrik_formgroup as jff on jff.group_id = jfe.group_id
-					left join jos_fabrik_groups as jfg on jfg.id = jff.group_id
-					left join jos_fabrik_forms as jff2 on jff2.id = jff.form_id
-					left join jos_fabrik_lists as jfl on jfl.form_id = jff2.id
+		$select = "select jfe.id, jfe.name, jfe.plugin, jfe.params, jfg.params as group_params, jfg.id as group_id, jfl.db_table_name from jos_fabrik_elements as jfe, jfj.table_join
+					left join #__fabrik_formgroup as jff on jff.group_id = jfe.group_id
+					left join #__fabrik_groups as jfg on jfg.id = jff.group_id
+					left join #__fabrik_forms as jff2 on jff2.id = jff.form_id
+					left join #__fabrik_lists as jfl on jfl.form_id = jff2.id
+					LEFT JOIN #__fabrik_joins AS jfj ON jfl.id = jfj.list_id AND jfg.id=jfj.group_id
 					where jfe.id in (".implode(',', $idFabrik).")";
 		try
 		{
@@ -2430,14 +2429,20 @@ class EmundusModelFiles extends JModelLegacy
 	}
 
 	/**
-	 * @param $gid
-	 * @param $tableName
-	 * @param $name
-	 * @param null $fnums
+	 * @param $elt
+     * @param null $fnums
+	 * @param $params
+	 * @param $groupRepeat
 	 * @return mixed
 	 */
-	public function getFabrikValueRepeat($gid, $tableName, $name, $fnums, $params = null, $plugin, $groupRepeat)
+	public function getFabrikValueRepeat($elt, $fnums, $params = null, $groupRepeat)
 	{
+        //$gid = $elt['group_id'];
+        $tableName = $elt['db_table_name'];
+        $tableJoin = $elt['table_join'];
+        $name = $elt['name'];
+        $plugin = $elt['plugin'];
+
 		$isFnumsNull = ($fnums === null);
 		$isDatabaseJoin = ($plugin === 'databasejoin');
 		$isMulti = ($params->database_join_display_type == "multilist" || $params->database_join_display_type == "checkbox");
@@ -2474,7 +2479,7 @@ class EmundusModelFiles extends JModelLegacy
 		{
 			if($groupRepeat)
 			{
-				$tableName2 = $tableName."_".$gid."_repeat";
+				$tableName2 = $tableJoin;
 				if($isMulti)
 				{
 					$query .= ' FROM ' . $params->join_db_name . ' as  t_origin left join '.$tableName.'_repeat_'.$name .' as t_repeat on t_repeat.' . $name . " = t_origin.".$params->join_key_column . ' left join ' . $tableName2 . ' as t_elt on t_elt.id = t_repeat.parent_id left join '.$tableName.' as t_table on t_table.id = t_elt.parent_id ';
@@ -2499,7 +2504,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		else
 		{
-			$query .= ' FROM ' . $tableName . '_' . $gid . '_repeat as t_repeat  left join '.$tableName.' as t_origin on t_origin.id = t_repeat.parent_id';
+			$query .= ' FROM ' . $tableJoin . ' as t_repeat  left join '.$tableName.' as t_origin on t_origin.id = t_repeat.parent_id';
 		}
 
 		if($isMulti || $isDatabaseJoin)
