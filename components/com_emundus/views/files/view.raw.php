@@ -62,8 +62,7 @@ class EmundusViewFiles extends JViewLegacy
 			case 'access':
 				$fnums = $app->input->getString('users', null);
 				$fnums_obj = (array) json_decode(stripslashes($fnums)); 
-				/*echo "<pre>";
-				var_dump($fnums_obj);*/
+
 			    if(@$fnums_obj[0] == 'all')
 					$fnums = $model->getAllFnums();
 			    else {

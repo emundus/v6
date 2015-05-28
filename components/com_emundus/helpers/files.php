@@ -406,13 +406,14 @@ class EmundusHelperFiles
 
     public  function getElements()
     {
+        $db 		= JFactory::getDBO();
   /*      require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
 
         $eMConfig 	= JComponentHelper::getParams('com_emundus');
         $export_pdf = $eMConfig->get('export_pdf');
-        $db 		= JFactory::getDBO();
+
         $menu 		= new EmundusHelperMenu;
         $user 		= new EmundusModelUsers;
         $profile 	= new EmundusModelProfile;

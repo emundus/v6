@@ -64,12 +64,11 @@ class EmundusModelFiles extends JModelLegacy
 	public function __construct()
 	{
 		parent::__construct();
-		global $option;
 
 		$mainframe = JFactory::getApplication();
 
 		// Get current menu parameters
-		$current_user = JFactory::getUser();
+		//$current_user = JFactory::getUser();
 		$menu = @JSite::getMenu();
 		$current_menu = $menu->getActive();
 
@@ -598,7 +597,6 @@ class EmundusModelFiles extends JModelLegacy
 	private function _buildWhere($tableAlias = array())
 	{
 		$params = JFactory::getSession()->get('filt_params');
-        //var_dump($params);die();
 		$db = JFactory::getDBO();
 		$query = array('q' => '', 'join' => '');
 		if(!empty($params))
@@ -977,7 +975,7 @@ class EmundusModelFiles extends JModelLegacy
 			$query .= ', '.implode(',', $this->_elements_default);
 		}
 
-//var_dump($this->_elements);
+
 		$query .= ' FROM #__emundus_campaign_candidature as c 
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = c.status 
 					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = c.campaign_id 

@@ -116,7 +116,7 @@ function reloadData(view)
         }
     })
 }
-
+/*
 // load Filter
 function reloadFilter(view)
 {
@@ -136,7 +136,7 @@ function reloadFilter(view)
         }
     })
 }
-
+*/
 // load Menu action
 function reloadActions(view, fnum, onCheck)
 {
@@ -233,7 +233,7 @@ function refreshFilter(view) {
             $("#em-files-filters .panel-body").empty();
             $("#em-files-filters .panel-body").append(data);
             $('.chzn-select').chosen();
-            //reloadData($('#view').val());
+            reloadData($('#view').val());
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText);

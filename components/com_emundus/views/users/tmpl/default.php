@@ -134,9 +134,10 @@ JHTML::_('behavior.tooltip');
 
 
 <script type="text/javascript">
-	<?php echo @$this->addElement; ?>
+/*	<?php echo @$this->addElement; ?>
 	<?php echo @$this->submitForm; ?>
 	<?php echo @$this->delayAct; ?>
+	*/
 	var itemId = "<?php echo $this->itemId;?>";
 	var filterName = "<?php echo JText::_('FILTER_NAME');?>";
 	var filterEmpty = "<?php echo JText::_('ALERT_EMPTY_FILTER');?>";

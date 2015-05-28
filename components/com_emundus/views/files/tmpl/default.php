@@ -144,7 +144,7 @@ JHTML::_('behavior.tooltip');
 	$(document).ready(function()
 	{
 		$('.chzn-select').chosen({width:'75%'});
-        reloadData();
+       // reloadData();
 		refreshFilter();
         reloadActions();
 	})
