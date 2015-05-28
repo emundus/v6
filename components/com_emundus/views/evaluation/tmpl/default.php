@@ -142,8 +142,8 @@ JHTML::_('behavior.tooltip');
 	$(document).ready(function()
 	{
 		$('.chzn-select').chosen({width:'75%'});
-		//reloadData('evaluation');
-		refreshFilter();
+        refreshFilter();
+        reloadData('evaluation');
 		reloadActions();
 
         $('#rt-mainbody-surround').children().addClass('mainemundus');

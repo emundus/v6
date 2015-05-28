@@ -233,7 +233,7 @@ function refreshFilter(view) {
             $("#em-files-filters .panel-body").empty();
             $("#em-files-filters .panel-body").append(data);
             $('.chzn-select').chosen();
-            reloadData($('#view').val());
+            //reloadData($('#view').val());
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText);

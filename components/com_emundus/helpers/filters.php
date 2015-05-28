@@ -1017,11 +1017,14 @@ class EmundusHelperFilters {
 	function getEmundusFilters()
 	{
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-		$user = JFactory::getUser();
-		$db = JFactory::getDBO();
-		$query = 'SELECT * FROM #__emundus_filters WHERE user='.$user->id.' AND item_id='.$itemid;
-		$db->setQuery( $query );
-		return $db->loadObjectlist();
+		if(isset($itemid) && !empty($itemid)){
+			$user = JFactory::getUser();
+			$db = JFactory::getDBO();
+			$query = 'SELECT * FROM #__emundus_filters WHERE user='.$user->id.' AND item_id='.$itemid;
+			$db->setQuery( $query );
+			return $db->loadObjectlist();
+		}
+		else return array();
 	}
 }
 ?>
