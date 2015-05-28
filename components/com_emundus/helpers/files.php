@@ -72,6 +72,7 @@ jimport('joomla.application.component.helper');
 	*/
 	public  function resetFilter()
 	{
+
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
 		//require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
 		$menu = @JSite::getMenu();
@@ -163,10 +164,9 @@ jimport('joomla.application.component.helper');
 		if (count(@$params['programme']) == 0 || @$params['programme'][0] == '%') { 
 			$params['programme'] = $programme;
 			$filts_details['programme'] = $programme;
-		} elseif(count($filts_details['programme']) == 0 || empty($filts_details['programme']))
-			$filts_details['programme'] = $programme;
-
-		var_dump($params);die();
+		} elseif(count($filts_details['programme']) == 0 || empty($filts_details['programme'])) {
+            $filts_details['programme'] = $programme;
+        }
         JFactory::getSession()->set('filt_params', $params);
 		return @EmundusHelperFiles::createFilterBlock($filts_details, $filts_options, $tables);
 	}
