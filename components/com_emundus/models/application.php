@@ -520,7 +520,7 @@ class EmundusModelApplication extends JModelList
                                 if(!empty($element->label) && $element->label!=' ') {
                                     if ($element->plugin=='date' && $element->content>0) {
                                         $date_params = json_decode($element->params);
-                                        $elt = strftime($date_params->date_form_format, strtotime($element->content));
+                                        $elt = date($date_params->date_form_format, strtotime($element->content));
                                     }
                                     elseif ($element->plugin=='birthday' && $element->content>0) {
                                         $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
@@ -584,7 +584,7 @@ class EmundusModelApplication extends JModelList
                                         if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
                                             if ($elements[$j]->plugin=='date') {
                                                 $date_params = json_decode($elements[$j]->params);
-                                                $elt = strftime($date_params->date_form_format, strtotime($r_elt));
+                                                $elt = date($date_params->date_form_format, strtotime($r_elt));
                                             }
                                             elseif ($elements[$j]->plugin=='birthday' && $r_elt>0) {
                                                 $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
@@ -625,7 +625,7 @@ class EmundusModelApplication extends JModelList
                                 if(!empty($element->label) && $element->label!=' ') {
                                     if ($element->plugin=='date' && $element->content>0) {
                                         $date_params = json_decode($element->params);
-                                        $elt = strftime($date_params->date_form_format, strtotime($element->content));
+                                        $elt = date($date_params->date_form_format, strtotime($element->content));
                                     }
                                     elseif ($element->plugin=='birthday' && $element->content>0) {
                                         $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
@@ -779,7 +779,7 @@ class EmundusModelApplication extends JModelList
                                 if(!empty($element->label) && $element->label!=' ') {
                                     if ($element->plugin=='date' && $element->content>0) {
                                         $date_params = json_decode($element->params);
-                                        $elt = strftime($date_params->date_form_format, strtotime($element->content));
+                                        $elt = date($date_params->date_form_format, strtotime($element->content));
                                     } else $elt = $element->content;
                                     $forms .= '<b>'.$element->label.': </b>'.$elt.'<br/>';
                                 }
@@ -826,7 +826,7 @@ class EmundusModelApplication extends JModelList
                                         if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
                                             if ($elements[$j]->plugin=='date') {
                                                 $date_params = json_decode($elements[$j]->params);
-                                                $elt = strftime($date_params->date_form_format, strtotime($r_elt));
+                                                $elt = date($date_params->date_form_format, strtotime($r_elt));
                                             }
                                             elseif ($elements[$j]->plugin=='birthday' && $r_elt>0) {
                                                 $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
@@ -861,7 +861,7 @@ class EmundusModelApplication extends JModelList
                                 if(!empty($element->label) && $element->label!=' ') {
                                     if ($element->plugin=='date' && $element->content>0) {
                                         $date_params = json_decode($element->params);
-                                        $elt = strftime($date_params->date_form_format, strtotime($element->content));
+                                        $elt = date($date_params->date_form_format, strtotime($element->content));
                                     }
                                     elseif ($element->plugin=='birthday' && $element->content>0) {
                                         $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
@@ -973,7 +973,7 @@ td {
                                 if(!empty($element->label) && $element->label!=' ') {
                                     if ($element->plugin=='date' && $element->content>0) {
                                         $date_params = json_decode($element->params);
-                                        $elt = strftime($date_params->date_form_format, strtotime($element->content));
+                                        $elt = date($date_params->date_form_format, strtotime($element->content));
                                     } else $elt = $element->content;
                                     $forms .= '<p><b>'.$element->label.': </b>'.$elt.'</p>';
                                 }
@@ -1018,7 +1018,7 @@ td {
                                     if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
                                         if ($elements[$j]->plugin=='date') {
                                             $date_params = json_decode($elements[$j]->params);
-                                            $elt = strftime($date_params->date_form_format, strtotime($r_elt));
+                                            $elt = date($date_params->date_form_format, strtotime($r_elt));
                                         }
                                         elseif ($elements[$j]->plugin=='birthday' && $r_elt>0) {
                                             //$date_params = json_decode($element->params);
@@ -1052,7 +1052,9 @@ td {
                                 if(!empty($element->label) && $element->label!=' ') {
                                     if ($element->plugin=='date' && $element->content>0) {
                                         $date_params = json_decode($element->params);
-                                        $elt = strftime($date_params->date_form_format, strtotime($element->content));
+                                       // $elt = strftime($date_params->date_form_format, strtotime($element->content));
+                                        $elt = date($date_params->date_form_format, strtotime($element->content));
+
                                     }
                                     elseif ($element->plugin=='birthday' && $element->content>0) {
                                         //$date_params = json_decode($element->params);
