@@ -1073,22 +1073,20 @@ jimport('joomla.application.component.helper');
                 $published.= '<div class="em_filters" id="published">
 				<div class="em_label"><label class="control-label">'.JText::_('PUBLISH').'</label></div>';
                 $published .= '<div class="em_filtersElement">';
-            }
-            $published .= '<select class="chzn-select em-filt-select" id="select_published" name="published" '.($types['published'] == 'hidden' ? 'style="visibility:hidden" ' : '').'>
-					<option value="1"';
-            if ($current_published=='1')
-                $published .= "selected='true'";
-            $published .='>'.JText::_("PUBLISHED").'</option>
-					<option value="0"';
-            if ($current_published=='0')
-                $published .= "selected='true'";
-            $published .='>'. JText::_("ARCHIVED").'</option>
-					<option value="-1"';
-            if ($current_published=='-1')
-                $published .= "selected='true'";
-            $published .='>'.JText::_("TRASHED").'</option>
-				</select>';
-            if (!$hidden) {
+                $published .= '<select class="chzn-select em-filt-select" id="select_published" name="published" '.($types['published'] == 'hidden' ? 'style="visibility:hidden" ' : '').'>
+                        <option value="1"';
+                if ($current_published=='1')
+                    $published .= "selected='true'";
+                $published .='>'.JText::_("PUBLISHED").'</option>
+                        <option value="0"';
+                if ($current_published=='0')
+                    $published .= "selected='true'";
+                $published .='>'. JText::_("ARCHIVED").'</option>
+                        <option value="-1"';
+                if ($current_published=='-1')
+                    $published .= "selected='true'";
+                $published .='>'.JText::_("TRASHED").'</option>
+                </select>';
                 $published .='</div></div>';
             }
             $filters .= $published;
