@@ -884,9 +884,9 @@ class EmundusModelFiles extends JModelLegacy
                         }
                         break;
                     case 'published':
-                        if ($value == -1) {
+                        if ($value[0] == -1) {
                             $query['q'] .= ' and c.published= -1 ';
-                        } elseif ($value == 0) {
+                        } elseif ($value[0] == 0) {
                             $query['q'] .= ' and c.published= 0 ';
                         } else {
                             $query['q'] .= ' and c.published= 1 ';
@@ -982,7 +982,7 @@ class EmundusModelFiles extends JModelLegacy
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code like esc.training  
 					LEFT JOIN #__users as u on u.id = c.applicant_id
 					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=c.fnum  ';
-
+        //var_dump(JFactory::getSession()->get('filt_params'));die();
 		$q = $this->_buildWhere($lastTab);
 		if (!empty($leftJoin))
 		{
@@ -990,6 +990,9 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		$query .= $q['join'];
 		$query .= " where 1=1 ".$q['q'];
+
+       // echo($query);die();
+
 
 		// ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
        // if(count($this->code)>0)

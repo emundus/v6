@@ -24,191 +24,196 @@ jimport('joomla.application.component.helper');
  * @subpackage	Content
  * @since 1.5
  */
-class EmundusHelperFiles
+ class EmundusHelperFiles
 {
+	
+	/*
+	** @description Clear session and reinit values by default
+	*/
+	public  function clear()
+	{
+		JFactory::getSession()->set('filt_params', array());
+		JFactory::getSession()->set('select_filter',null);
+		JFactory::getSession()->set('adv_cols', array());
+		JFactory::getSession()->set('filter_order', 'c.fnum');
+		JFactory::getSession()->set('filter_order_Dir', 'desc');
+		$limit = JFactory::getApplication()->getCfg('list_limit');
+		$limitstart = 0;
+		$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
-    /*
-    ** @description Clear session and reinit values by default
-    */
-    public  function clear()
-    {
-        JFactory::getSession()->set('filt_params', array());
-        JFactory::getSession()->set('select_filter',null);
-        JFactory::getSession()->set('adv_cols', array());
-        JFactory::getSession()->set('filter_order', 'c.fnum');
-        JFactory::getSession()->set('filter_order_Dir', 'desc');
-        $limit = JFactory::getApplication()->getCfg('list_limit');
-        $limitstart = 0;
-        $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
+		JFactory::getSession()->set('limit', $limit);
+		JFactory::getSession()->set('limitstart', $limitstart);
 
-        JFactory::getSession()->set('limit', $limit);
-        JFactory::getSession()->set('limitstart', $limitstart);
+		//@EmundusHelperFiles::resetFilter();
 
-        //@EmundusHelperFiles::resetFilter();
+	}
 
-    }
+	/*
+	** @description Clear session and reinit values by default
+	*/
+	public  function clearfilter()
+	{
+		JFactory::getSession()->set('filt_params', array());
+		JFactory::getSession()->set('select_filter',null);
+		JFactory::getSession()->set('filter_order', 'c.fnum');
+		JFactory::getSession()->set('filter_order_Dir', 'desc');
 
-    /*
-    ** @description Clear session and reinit values by default
-    */
-    public  function clearfilter()
-    {
-        JFactory::getSession()->set('filt_params', array());
-        JFactory::getSession()->set('select_filter',null);
-        JFactory::getSession()->set('filter_order', 'c.fnum');
-        JFactory::getSession()->set('filter_order_Dir', 'desc');
+		$limit = JFactory::getApplication()->getCfg('list_limit');
+		$limitstart = 0;
+		$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
-        $limit = JFactory::getApplication()->getCfg('list_limit');
-        $limitstart = 0;
-        $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
+		JFactory::getSession()->set('limit', $limit);
+		JFactory::getSession()->set('limitstart', $limitstart);
 
-        JFactory::getSession()->set('limit', $limit);
-        JFactory::getSession()->set('limitstart', $limitstart);
+	}
 
-    }
+	/*
+	** @description Clear session and reinit values by default
+	*/
+	public  function resetFilter()
+	{
+		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
+		//require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+		$menu = @JSite::getMenu();
+		$current_menu  = $menu->getActive();
+		$menu_params = $menu->getParams(@$current_menu->id);
 
-    /*
-    ** @description Clear session and reinit values by default
-    */
-    public  function resetFilter()
-    {
-        //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-        //require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
-        $menu = @JSite::getMenu();
-        $current_menu  = $menu->getActive();
-        $menu_params = $menu->getParams(@$current_menu->id);
+	    if (!JFactory::getSession()->has('filt_params'))
+	    {
+		    JFactory::getSession()->set('filt_params', array());
+	    }
 
-        if (!JFactory::getSession()->has('filt_params'))
-        {
-            JFactory::getSession()->set('filt_params', array());
-        }
-
-        $params = JFactory::getSession()->get('filt_params');
-
-        //Filters
-        $tables 		= explode(',', $menu_params->get('em_tables_id'));
-        $filts_names 	= explode(',', $menu_params->get('em_filters_names'));
-        $filts_values	= explode(',', $menu_params->get('em_filters_values'));
-        $filts_types  	= explode(',', $menu_params->get('em_filters_options'));
-
+	    $params = JFactory::getSession()->get('filt_params');
+		//Filters
+		$tables 		= explode(',', $menu_params->get('em_tables_id'));
+		$filts_names 	= explode(',', $menu_params->get('em_filters_names'));
+		$filts_values	= explode(',', $menu_params->get('em_filters_values'));
+		$filts_types  	= explode(',', $menu_params->get('em_filters_options'));
+		
         // All types of filters
-        $filts_details 	= array('profile'			=> NULL,
-                                  'evaluator'			=> NULL,
-                                  'evaluator_group'	=> NULL,
-                                  'schoolyear'			=> NULL,
-                                  'campaign'			=> NULL,
-                                  'programme'			=> NULL,
-                                  'missing_doc'		=> NULL,
-                                  'complete'			=> NULL,
-                                  'finalgrade'			=> NULL,
-                                  'validate'			=> NULL,
-                                  'other'				=> NULL,
-                                  'status'				=> NULL,
-                                  'published'          => NULL,
-                                  'adv_filter'		    => NULL,
-                                  'newsletter'		    => NULL,
-                                  'spam_suspect'	    => NULL,
-                                  'not_adv_filter' 	=> NULL);
-        $filts_options 	= array('profile'			=> NULL,
-                                  'evaluator'			=> NULL,
-                                  'evaluator_group'	=> NULL,
-                                  'schoolyear'			=> NULL,
-                                  'campaign'			=> NULL,
-                                  'programme'			=> NULL,
-                                  'missing_doc'		=> NULL,
-                                  'complete'			=> NULL,
-                                  'finalgrade'			=> NULL,
-                                  'validate'			=> NULL,
-                                  'other'				=> NULL,
-                                  'status'				=> NULL,
-                                  'published'          => NULL,
-                                  'adv_filter'		    => NULL,
-                                  'newsletter'		    => NULL,
-                                  'spam_suspect'	    => NULL,
-                                  'not_adv_filter'	    => NULL);
-        /*	$validate_id  	= explode(',', $menu_params->get('em_validate_id'));
-            $columnSupl = explode(',', $menu_params->get('em_actions'));*/
+		$filts_details 	= array('profile'			=> NULL,
+							   'evaluator'			=> NULL,
+							   'evaluator_group'	=> NULL,
+							   'schoolyear'			=> NULL,
+							   'campaign'			=> NULL,
+							   'programme'			=> NULL,
+							   'missing_doc'		=> NULL,
+							   'complete'			=> NULL,
+							   'finalgrade'			=> NULL,
+							   'validate'			=> NULL,
+							   'other'				=> NULL,
+							   'status'				=> NULL,
+                               'published'          => NULL,
+                               'adv_filter'		    => NULL,
+                               'newsletter'		    => NULL,
+                               'spam_suspect'	    => NULL,
+                               'not_adv_filter' 	=> NULL);
+		$filts_options 	= array('profile'			=> NULL,
+							   'evaluator'			=> NULL,
+							   'evaluator_group'	=> NULL,
+							   'schoolyear'			=> NULL,
+							   'campaign'			=> NULL,
+							   'programme'			=> NULL,
+							   'missing_doc'		=> NULL,
+							   'complete'			=> NULL,
+							   'finalgrade'			=> NULL,
+							   'validate'			=> NULL,
+							   'other'				=> NULL,
+							   'status'				=> NULL,
+                               'published'          => NULL,
+							   'adv_filter'		    => NULL,
+                               'newsletter'		    => NULL,
+                               'spam_suspect'	    => NULL,
+                               'not_adv_filter'	    => NULL);
+	/*	$validate_id  	= explode(',', $menu_params->get('em_validate_id'));
+		$columnSupl = explode(',', $menu_params->get('em_actions'));*/
 
-        $filter_multi_list = array('schoolyear', 'campaign', 'programme', 'status', 'profile', 'profile_users');
+		$filter_multi_list = array('schoolyear', 'campaign', 'programme', 'status', 'profile', 'profile_users');
 
-        //$tab_params = array();
-        foreach ($filts_names as $key => $filt_name)
-        {
-            if(!empty($filts_values[$key]) && isset($filts_values[$key]) && empty($params[$filt_name])){
+		//$tab_params = array();
+		foreach ($filts_names as $key => $filt_name) 
+		{
+            if(!is_null($filts_values[$key]) && isset($filts_values[$key]) && empty($params[$filt_name])){
                 if(in_array($filt_name, $filter_multi_list)) {
-                    $params[$filt_name] = array();
+					$params[$filt_name] = array();
+					$params[$filt_name] = explode('|', $filts_values[$key]);
+					$params[$filt_name] = array_unique($params[$filt_name]);
+				}
+				else {
                     $params[$filt_name] = explode('|', $filts_values[$key]);
-                    $params[$filt_name] = array_unique($params[$filt_name]);
                 }
-                else
-                    $params[$filt_name] = explode('|', $filts_values[$key]);
-            }
-            if (array_key_exists($key, $filts_values))
+			}
+			if (array_key_exists($key, $filts_values)) {
                 $filts_details[$filt_name] = explode('|', $filts_values[$key]);
-            else
-                $filts_details[$filt_name] = '';
-            if (array_key_exists($key, $filts_types))
-                $filts_options[$filt_name] = $filts_types[$key];
-            else
-                $filts_options[$filt_name] = '';
-        }
-        // ONLY FILES LINKED TO MY GROUP
-        $programme = count($this->code)>0?$this->code:null;
-        //////////////////////////////////////////
-
-        if (count(@$params['programme']) == 0 || @$params['programme'][0] == '%') {
-            $params['programme'] = $programme;
-            $filts_details['programme'] = $programme;
-        } elseif(count($filts_details['programme']) == 0 || empty($filts_details['programme']))
-            $filts_details['programme'] = $programme;
-
-        JFactory::getSession()->set('filt_params', $params);
-        return @EmundusHelperFiles::createFilterBlock($filts_details, $filts_options, $tables);
-    }
-
-
-    /*
-    * @param 			query results
-    * @param 	array 	values to extract and insert
-    */
-    public  function insertValuesInQueryResult($results, $options)
-    {
-        foreach ($results as $key => $result)
-        {
-            if (array_key_exists('params', $result))
-            {
-                if (is_array($result))
-                {
-                    $params = json_decode($result['params']);
-                    foreach ($options as $option)
-                    {
-                        if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options))
-                            $results[$key][$option] = implode('|', $params->sub_options->$option);
-                        else
-                            $results[$key][$option] = '';
-                    }
-                }
-                else
-                {
-                    $params = json_decode($result->params);
-                    foreach ($options as $option)
-                    {
-                        if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options))
-                            $results[$key]->$option = implode('|', $params->sub_options->$option);
-                        else
-                            $results[$key]->$option = '';
-                    }
-                }
             }
-        }
-        return $results;
-    }
+			else
+				$filts_details[$filt_name] = '';
+			if (array_key_exists($key, $filts_types)) {
+                if ($filts_types[$key] == "hidden") {
+                    $params[$filt_name] = explode('|', $filts_values[$key]);
+                }
+                $filts_options[$filt_name] = $filts_types[$key];
+            } else
+				$filts_options[$filt_name] = '';
+		}
+		// ONLY FILES LINKED TO MY GROUP
+        $programme = count($this->code)>0?$this->code:null;
+		//////////////////////////////////////////
 
-    public  function getCurrentCampaign(){
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-        $nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
-        $db = JFactory::getDBO();
-        $query = 'SELECT DISTINCT year as schoolyear
+		if (count(@$params['programme']) == 0 || @$params['programme'][0] == '%') { 
+			$params['programme'] = $programme;
+			$filts_details['programme'] = $programme;
+		} elseif(count($filts_details['programme']) == 0 || empty($filts_details['programme']))
+			$filts_details['programme'] = $programme;
+
+		var_dump($params);die();
+        JFactory::getSession()->set('filt_params', $params);
+		return @EmundusHelperFiles::createFilterBlock($filts_details, $filts_options, $tables);
+	}
+
+
+	/*
+	* @param 			query results
+	* @param 	array 	values to extract and insert
+	*/
+	public  function insertValuesInQueryResult($results, $options)
+	{
+		foreach ($results as $key => $result)
+		{
+			if (array_key_exists('params', $result))
+			{
+				if (is_array($result))
+				{
+					$params = json_decode($result['params']);
+					foreach ($options as $option)
+					{
+						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options))
+							$results[$key][$option] = implode('|', $params->sub_options->$option);
+						else
+							$results[$key][$option] = '';
+					}
+				}
+				else
+				{
+					$params = json_decode($result->params);
+					foreach ($options as $option)
+					{
+						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options))
+							$results[$key]->$option = implode('|', $params->sub_options->$option);
+						else
+							$results[$key]->$option = '';
+					}
+				}
+			}
+		}
+		return $results;
+	}
+	
+	public  function getCurrentCampaign(){
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
+		$db = JFactory::getDBO();
+		$query = 'SELECT DISTINCT year as schoolyear 
 		FROM #__emundus_setup_campaigns 
 		WHERE published = 1 AND end_date > DATE_ADD(NOW(), INTERVAL -'.$nb_months_registration_period_access.' MONTH) ORDER BY schoolyear DESC';
         $db->setQuery( $query );
@@ -727,40 +732,38 @@ class EmundusHelperFiles
         $document->addScript( JURI::base()."media/com_emundus/lib/chosen/chosen.jquery.min.js" );
 
         $session     = JFactory::getSession();
-        $filt_params = $session->get('filt_params');
-        $select_id	 = $session->get('select_filter');
+		$filt_params = $session->get('filt_params');
+		$select_id	 = $session->get('select_filter');
+		if (!is_null($select_id))
+		{
+			$research_filter = @EmundusHelperFiles::getEmundusFilters($select_id);
+			$filter =  json_decode($research_filter->constraints, true);
+			$filt_params = $filter['filter'];
+		}
 
-        if (!is_null($select_id))
-        {
-            $research_filter = @EmundusHelperFiles::getEmundusFilters($select_id);
-            $filter =  json_decode($research_filter->constraints, true);
-            $filt_params = $filter['filter'];
-        }
-
-        $current_s 				= @$filt_params['s'];
-        $current_profile		= @$filt_params['profile'];
-        $current_eval			= @$filt_params['user'];
-        //$current_group			= @$filt_params['group'];
-        $miss_doc				= @$filt_params['missing_doc'];
-        $current_finalgrade		= @$filt_params['finalgrade'];
-        $current_schoolyear		= @$filt_params['schoolyear'];
-        $current_campaign		= @$filt_params['campaign'];
-        $current_programme		= @$filt_params['programme'];
-        $search					= @$filt_params['elements'];
-        $search_other		 	= @$filt_params['elements_other'];
-        $complete_application	= @$filt_params['complete'];
-        $validate_application	= @$filt_params['validate'];
-        $current_status			= @$filt_params['status'];
-        $current_published      = $filt_params['published'];
-        $current_tag			= @$filt_params['tag'];
-        $current_group_eval     = @$filt_params['evaluator_group'];
-        $current_user_profile	= @$filt_params['profile_users'];
-        $newsletter	            = @$filt_params['newsletter'];
-        $spam_suspect           = @$filt_params['spam_suspect'];
-        $filters = '';
-
-        // Quick filter
-        $quick = '<div id="filters">
+		$current_s 				= @$filt_params['s'];
+		$current_profile		= @$filt_params['profile'];
+		$current_eval			= @$filt_params['user'];
+		//$current_group			= @$filt_params['group'];
+		$miss_doc				= @$filt_params['missing_doc'];
+		$current_finalgrade		= @$filt_params['finalgrade'];
+		$current_schoolyear		= @$filt_params['schoolyear'];
+		$current_campaign		= @$filt_params['campaign'];
+		$current_programme		= @$filt_params['programme'];
+		$search					= @$filt_params['elements'];
+		$search_other		 	= @$filt_params['elements_other'];
+		$complete_application	= @$filt_params['complete'];
+		$validate_application	= @$filt_params['validate'];
+		$current_status			= @$filt_params['status'];
+        $current_published      = $filt_params['published'][0];
+		$current_tag			= @$filt_params['tag'];
+		$current_group_eval     = @$filt_params['evaluator_group'];
+		$current_user_profile	= @$filt_params['profile_users'];
+		$newsletter	            = @$filt_params['newsletter'];
+		$spam_suspect           = @$filt_params['spam_suspect'];
+		$filters = '';
+		// Quick filter
+		$quick = '<div id="filters">
 					<div id="quick" class="form-group">
 						<label class="control-label editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'
 							<a href="javascript:clearchosen(\'#text_s\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a>
@@ -1065,25 +1068,31 @@ class EmundusHelperFiles
 
         if($params['published'] !== NULL){
             $hidden = $types['published'] != 'hidden' ? false : true;
-            $filters.= '<div class="em_filters" id="published">
+            $published='';
+            if (!$hidden) {
+                $published.= '<div class="em_filters" id="published">
 				<div class="em_label"><label class="control-label">'.JText::_('PUBLISH').'</label></div>';
-            $filters .= '<div class="em_filtersElement">
-				<select class="chzn-select em-filt-select" id="select_published" name="published" '.($types['published'] == 'hidden' ? 'style="visibility:hidden" ' : '').'>
+                $published .= '<div class="em_filtersElement">';
+            }
+            $published .= '<select class="chzn-select em-filt-select" id="select_published" name="published" '.($types['published'] == 'hidden' ? 'style="visibility:hidden" ' : '').'>
 					<option value="1"';
             if ($current_published=='1')
-                $filters .= "selected='true'";
-            $filters .='>'.JText::_("PUBLISHED").'</option>
+                $published .= "selected='true'";
+            $published .='>'.JText::_("PUBLISHED").'</option>
 					<option value="0"';
             if ($current_published=='0')
-                $filters .= "selected='true'";
-            $filters .='>'. JText::_("ARCHIVED").'</option>
+                $published .= "selected='true'";
+            $published .='>'. JText::_("ARCHIVED").'</option>
 					<option value="-1"';
             if ($current_published=='-1')
-                $filters .= "selected='true'";
-            $filters .='>'.JText::_("TRASHED").'</option>
-				</select>
-			</div>';
-            $filters.='</div>';
+                $published .= "selected='true'";
+            $published .='>'.JText::_("TRASHED").'</option>
+				</select>';
+            if (!$hidden) {
+                $published .='</div></div>';
+            }
+            $filters .= $published;
+
         }
 
         if(@$params['tag'] !== NULL){
