@@ -241,7 +241,7 @@ class EmundusModelEvaluation extends JModelList
 				}
 			}
 		}
-//die(var_dump($show_in_list_summary));
+//die(var_dump($elements_id));
 		return @$elements_id;
 	}
 
@@ -994,7 +994,7 @@ class EmundusModelEvaluation extends JModelList
 			
 			$dbo->setQuery($query);
 			$res = $dbo->loadAssocList();
-echo '<hr>'.str_replace('#_', 'jos', $query).'<hr>';
+//echo '<hr>'.str_replace('#_', 'jos', $query).'<hr>';
 			return $res;
 		}
 		catch(Exception $e)
