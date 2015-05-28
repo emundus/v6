@@ -585,14 +585,48 @@ class EmundusControllerFiles extends JControllerLegacy
     public function getstate()
     {
         $model = $this->getModel('Files');
-
-
         $states = $model->getAllStatus();
 
         echo json_encode((object)(array('status' => true,
                                         'states' => $states,
                                         'state' => JText::_('STATE'),
                                         'select_state' => JText::_('PLEASE_SELECT_STATE'))));
+        exit;
+    }
+
+    /**
+     *
+     */
+    public function getpublish()
+    {
+        $publish = array (
+                    0 =>
+                        array (
+                          'id' =>  '1',
+                          'step' =>  '1' ,
+                          'value' => JText::_('PUBLISHED') ,
+                          'ordering' =>  '1'
+                        ),
+                    1 =>
+                        array (
+                            'id' =>  '0',
+                            'step' =>  '0' ,
+                            'value' => JText::_('ARCHIVED') ,
+                            'ordering' =>  '2'
+                        ),
+                    3 =>
+                        array (
+                            'id' =>  '3',
+                            'step' =>  '-1' ,
+                            'value' => JText::_('TRASHED') ,
+                            'ordering' =>  '3'
+                        )
+                );
+
+        echo json_encode((object)(array('status' => true,
+            'states' => $publish,
+            'state' => JText::_('PUBLISH'),
+            'select_publish' => JText::_('PLEASE_SELECT_PUBLISH'))));
         exit;
     }
 
@@ -703,6 +737,49 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
             }
 
+            $msg = JText::_('STATE_SUCCESS');
+        }
+        else
+        {
+            $msg = JText::_('STATE_ERROR');
+
+        }
+        echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
+        exit;
+    }
+
+    public function updatepublish()
+    {
+        $jinput = JFactory::getApplication()->input;
+        $fnums = $jinput->getString('fnums', null);
+        $publish = $jinput->getInt('publish', null);
+
+        $fnums = (array) json_decode(stripslashes($fnums));
+        $model = $this->getModel('Files');
+        if(!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
+        {
+            $fnums = $model->getAllFnums();
+        }
+
+        $validFnums = array();
+
+        foreach($fnums as $fnum)
+        {
+            if(EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum))
+            {
+                $validFnums[] = $fnum;
+            }
+        }
+        $res = $model->updatePublish($validFnums, $publish);
+
+        if($res !== false)
+        {
+            // Get all codes from fnum
+            $fnumsInfos = $model->getFnumsInfos($validFnums);
+            $code = array();
+            foreach ($fnumsInfos as $fnum) {
+                $code[] = $fnum['training'];
+            }
             $msg = JText::_('STATE_SUCCESS');
         }
         else
@@ -1406,10 +1483,8 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', null);
-
         $model = $this->getModel('Files');
         $res = $model->getFormidByFnum($fnum);
-
         $formid = ($res>0)?$res:29;
 
         $result = array('status' => true, 'formid' => $formid);

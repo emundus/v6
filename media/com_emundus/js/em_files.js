@@ -1635,6 +1635,38 @@ $(document).ready(function()
                 });
 
                 break;
+            case 28:
+                $('.modal-body').append('<div>' +
+                '<img src="'+loadingLine+'" alt="loading"/>' +
+                '</div>');
+                //var url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getstate';
+                $.ajax({
+                    type:'get',
+                    url:url,
+                    dataType:'json',
+                    success: function(result)
+                    {
+                        $('.modal-body').empty();
+                        var status = '<div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.state+'</label><select class="col-lg-7 modal-chzn-select data-placeholder="'+result.select_state+'" name="em-action-publish" id="em-action-publish" value="">';
+
+                        for (var i in result.states)
+                        {
+                            if(isNaN(parseInt(i)))
+                                break;
+                            status += '<option value="'+result.states[i].step+'" >'+result.states[i].value+'</option>';
+                        }
+                        '</select></div>';
+                        $('.modal-body').append(status);
+
+                        $('.modal-chzn-select').chosen({width:'75%'});
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        console.log(jqXHR.responseText);
+                    }
+                });
+
+                break;
             default:
                 break;
         }
@@ -2098,6 +2130,48 @@ $(document).ready(function()
                         }
                     })
 
+                break;
+            // validation changement publication
+            case 28:
+                var publish = $("#em-action-publish").val();
+                $('.modal-body').empty();
+                $('.modal-body').append('<div>' +
+                '<img src="'+loadingLine+'" alt="loading"/>' +
+                '</div>');
+                url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=updatepublish';
+                $.ajax(
+                    {
+                        type:'POST',
+                        url:url,
+                        dataType:'json',
+                        data:({fnums:checkInput, publish: publish}),
+                        success: function(result)
+                        {
+                            console.log(result);
+                            if(result.status)
+                            {
+                                $('.modal-body').empty();
+                                $('.modal-body').append('<div class="alert alert-dismissable alert-success">' +
+                                '<button type="button" class="close" data-dismiss="alert">×</button>' +
+                                '<strong>'+result.msg+'</strong> ' +
+                                '</div>');
+                                reloadData($('#view').val());
+                            }
+                            else
+                            {
+                                $('.modal-body').empty();
+                                $('.modal-body').append('<div class="alert alert-dismissable alert-danger">' +
+                                '<button type="button" class="close" data-dismiss="alert">×</button>' +
+                                '<strong>'+result.msg+'</strong> ' +
+                                '</div>');
+                            }
+                            setTimeout(function(){$('#em-modal-actions').modal('hide');}, 800);
+                        },
+                        error: function (jqXHR, textStatus, errorThrown)
+                        {
+                            console.log(jqXHR.responseText);
+                        }
+                    });
                 break;
         }
     });

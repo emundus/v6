@@ -598,6 +598,7 @@ class EmundusModelFiles extends JModelLegacy
 	private function _buildWhere($tableAlias = array())
 	{
 		$params = JFactory::getSession()->get('filt_params');
+        //var_dump($params);die();
 		$db = JFactory::getDBO();
 		$query = array('q' => '', 'join' => '');
 		if(!empty($params))
@@ -873,20 +874,29 @@ class EmundusModelFiles extends JModelLegacy
 							}
 						}
 						break;
-					case 'tag':
-						if ($value)
-						{
-							if ( $value[0] == "%" || !isset($value[0]) )
-								$query['q'] .= ' ';
-							else
-							{
-								$query['q'] .= ' and eta.id_tag IN (' . implode(',', $value) . ') ';
-							}
-						}
-						break;
+                    case 'tag':
+                        if ($value)
+                        {
+                            if ( $value[0] == "%" || !isset($value[0]) )
+                                $query['q'] .= ' ';
+                            else
+                            {
+                                $query['q'] .= ' and eta.id_tag IN (' . implode(',', $value) . ') ';
+                            }
+                        }
+                        break;
+                    case 'published':
+                        if ($value == -1) {
+                            $query['q'] .= ' and c.published= -1 ';
+                        } elseif ($value == 0) {
+                            $query['q'] .= ' and c.published= 0 ';
+                        } else {
+                            $query['q'] .= ' and c.published= 1 ';
+                        }
+                        break;
 				}
 			}
-		} 
+		}
 		return $query;
 	}
 
@@ -981,7 +991,8 @@ class EmundusModelFiles extends JModelLegacy
 			$query .= $leftJoin;
 		}
 		$query .= $q['join'];
-		$query .= ' where c.published = 1 ' . $q['q'];
+		$query .= " where 1=1 ".$q['q'];
+        //echo($query);die();
 
 		// ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
        // if(count($this->code)>0)
@@ -1012,7 +1023,8 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch(Exception $e)
 		{
-			throw new JDatabaseException;
+			echo $e;
+            die();
 		}
 	}
 
@@ -1608,6 +1620,32 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 	}
+    /**
+     * @param $fnums
+     * @param $publish
+     * @return bool|mixed
+     */
+    public function updatePublish($fnums, $publish)
+    {
+        try
+        {
+            $db = $this->getDbo();
+            foreach ($fnums as $fnum)
+            {
+                $query = 'update #__emundus_campaign_candidature set published = '.$publish.' WHERE fnum like '.$db->Quote($fnum) ;
+                $db->setQuery($query);
+                $res = $db->execute();
+            }
+            return $res;
+        }
+        catch (Exception $e)
+        {
+            error_log($e->getMessage());
+            error_log($query);
+            return false;
+        }
+
+    }
 
 	/**
 	 * @return mixed|null

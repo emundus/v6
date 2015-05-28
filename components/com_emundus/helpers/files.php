@@ -134,7 +134,7 @@ jimport('joomla.application.component.helper');
 		//$tab_params = array();
 		foreach ($filts_names as $key => $filt_name) 
 		{
-			if(!empty($filts_values[$key]) && isset($filts_values[$key]) && empty($params[$filt_name])){
+            if(!empty($filts_values[$key]) && isset($filts_values[$key]) && empty($params[$filt_name])){
 				if(in_array($filt_name, $filter_multi_list)) {
 					$params[$filt_name] = array();
 					$params[$filt_name] = explode('|', $filts_values[$key]);
@@ -152,7 +152,6 @@ jimport('joomla.application.component.helper');
 			else
 				$filts_options[$filt_name] = '';
 		}
-
 		// ONLY FILES LINKED TO MY GROUP
         $programme = count($this->code)>0?$this->code:null;
 		//////////////////////////////////////////
@@ -164,7 +163,6 @@ jimport('joomla.application.component.helper');
 			$filts_details['programme'] = $programme;
 
 		JFactory::getSession()->set('filt_params', $params);
-
 		return @EmundusHelperFiles::createFilterBlock($filts_details, $filts_options, $tables);
 	}
 
@@ -718,7 +716,7 @@ jimport('joomla.application.component.helper');
 	** @param array $types Filters options indexed by filters names.
 	** @param array $tables List of the tables contained in "Other filters" dropbox.
 	** @return string HTML to display in page for filter block.
-	*/	
+	*/	//$filts_details, $filts_options, $tables
 	public  function createFilterBlock($params, $types, $tables){
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 		$files = new EmundusModelFiles();
@@ -1071,9 +1069,18 @@ jimport('joomla.application.component.helper');
 				<div class="em_label"><label class="control-label">'.JText::_('PUBLISH').'</label></div>';
             $filters .= '<div class="em_filtersElement">
 				<select class="chzn-select em-filt-select" id="select_published" name="published" '.($types['published'] == 'hidden' ? 'style="visibility:hidden" ' : '').'>
-					<option value="1">'.JText::_("PUBLISHED").'</option>
-					<option value="0">'.JText::_("ARCHIVED").'</option>
-					<option value="-1">'.JText::_("TRASHED").'</option>
+					<option value="1"';
+            if ($current_published=='1')
+                $filters .= "selected='true'";
+            $filters .='>'.JText::_("PUBLISHED").'</option>
+					<option value="0"';
+            if ($current_published=='0')
+                $filters .= "selected='true'";
+            $filters .='>'. JText::_("ARCHIVED").'</option>
+					<option value="-1"';
+            if ($current_published=='-1')
+                $filters .= "selected='true'";
+            $filters .='>'.JText::_("TRASHED").'</option>
 				</select>
 			</div>';
             $filters.='</div>';
