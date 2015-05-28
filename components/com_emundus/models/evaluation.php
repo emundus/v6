@@ -1330,7 +1330,7 @@ class EmundusModelEvaluation extends JModelList
 			if ($session->has('filt_params'))
 			{
 				$filt_params = $session->get('filt_params'); 
-				if (count($filt_params['programme'])>0) {
+				if (count(@$filt_params['programme'])>0) {
 					$code = $filt_params['programme'][0];
 				}
 			}
