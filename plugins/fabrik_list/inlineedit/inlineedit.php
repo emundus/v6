@@ -209,6 +209,8 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 		$opts->elements = $els;
 		$opts->formid = $model->getFormModel()->getId();
 		$opts->focusClass = 'focusClass';
+        $opts->iconeClass = 'icon-pencil';
+        $opts->iconeHtml = '<i class="icon-pencil"></i>';
 		$opts->editEvent = $params->get('inline_edit_event', 'dblclick');
 		$opts->tabSave = $params->get('inline_tab_save', false);
 		$opts->showCancel = $params->get('inline_show_cancel', true);
