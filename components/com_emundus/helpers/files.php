@@ -363,9 +363,8 @@ jimport('joomla.application.component.helper');
         $query = 'SELECT DISTINCT(year) as schoolyear
 			FROM #__emundus_setup_campaigns 
 			ORDER BY schoolyear DESC';
-        //echo str_replace("#_", "jos", $query);
         $db->setQuery( $query );
-        return $db->loadResultArray();
+        return $db->loadObjectList();
     }
 
     public  function getFinal_grade(){
@@ -998,11 +997,11 @@ jimport('joomla.application.component.helper');
             $schoolyear .= '<option value="%" ';
             if( ($current_schoolyear[0]=="%" || empty($current_schoolyear[0])) && count($current_schoolyear)<2 ) $schoolyear .= ' selected="true"';
             $schoolyear .= '>'.JText::_('ALL').'</option>';
-            foreach($schoolyearList as $s) {
-                $schoolyear .= '<option value="'.$s.'"';
-                if( !empty($current_schoolyear) && in_array($s, $current_schoolyear) )
+            foreach($schoolyearList as $key=>$value) {
+                $schoolyear .= '<option value="'.$value->schoolyear.'"';
+                if( !empty($current_schoolyear) && in_array($value->schoolyear, $current_schoolyear) )
                     $schoolyear .= ' selected="true"';
-                $schoolyear .= '>'.$s.'</option>';
+                $schoolyear .= '>'.$value->schoolyear.'</option>';
             }
             $schoolyear .= '</select>';
             if (!$hidden) {
