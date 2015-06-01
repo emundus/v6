@@ -140,16 +140,16 @@ class EmundusController extends JControllerLegacy {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 
         $current_user = JFactory::getUser();
-
         if(!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
             die( JText::_('RESTRICTED_ACCESS') );
 
         $jinput = JFactory::getApplication()->input;
         $fnums_post = $jinput->getVar('fnums', null);
-        $aggr = $jinput->getInt('aggr', 0);
+        $form_post = $jinput->getVar('forms', null);
+        $doc_post = $jinput->getVar('attachment', null);
+        $eval_post = $jinput->getVar('assessment', 0);
         $fnums_post = (array) json_decode(stripslashes($fnums_post));
         $model = $this->getModel('Files');
-
         if(!is_array($fnums_post) || count($fnums_post) == 0 || @$fnums_post[0] == "all")
         {
             $fnums = $model->getAllFnums();
@@ -172,17 +172,17 @@ class EmundusController extends JControllerLegacy {
 
         $files_list = array();
         foreach ($validFnums as $fnum) {
-            if (is_numeric($fnum) && !empty($fnum))
-            {
-                $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum);
+            if (is_numeric($fnum) && !empty($fnum)) {
+                $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post);
             }
-
-            if($aggr !== 0)
-            {
+            if($doc_post) {
                 $tmpArray = array();
                 $model = $this->getModel('application');
                 $files = $model->getAttachmentsByFnum($fnum);
                 EmundusHelperExport::getAttchmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
+            }
+            if($eval_post) {
+                EmundusHelperExport::getEvalPDF($files_list,$fnum);
             }
         }
         // all PDF in one file

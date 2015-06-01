@@ -1387,12 +1387,14 @@ $(document).ready(function()
             //export PDF;
             case 8 :
                 $('#em-modal-actions .modal-body').empty();
-                $('#em-modal-actions .modal-body').append('<div class="em_attachs">'+ Joomla.JText._('ATTACHEMENTS_AGGREGATIONS')+' <input type="radio" name="aggr" id="aggr-yes" value="1"/>'  +
-                '<label for="aggr-yes">'+Joomla.JText._('JYES')+'</label>'
-                +
-                '<input  type="radio" name="aggr" id="aggr-no" checked="checked" value="0"/> ' +
-                '<label for="aggr-no">'+Joomla.JText._('JNO')+'</label>'+
-                '<br/>' +
+                $('#em-modal-actions .modal-body').append('<div class="well">' +
+                '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms"/>' +
+                '<label for="em-ex-forms">'+Joomla.JText._('FORMS_PDF')+'</label> <br/>' +
+                '<input class="em-ex-check" type="checkbox" value="attachment" name="attachment" id="em-ex-attachment"/>' +
+                '<label for="em-ex-attachment">'+Joomla.JText._('ATTACHMENT_PDF')+'</label> <br/>' +
+                '<input class="em-ex-check" type="checkbox"  value="assessment" name="assessment" id="em-ex-assessment"/>' +
+                '<label for="em-ex-assessment">'+Joomla.JText._('ASSESSMENT_PDF')+'</label> <br/>' +
+                '</div>'+
                 '<a class="btn btn-default btn-attach" id="em_generate" href="'+url+'">'+Joomla.JText._('GENERATE_PDF')+'</a><div id="attachement_res"></div></div>');
                 $('#em-modal-actions .modal-footer').hide();
                 $('#em-modal-actions .modal-dialog').addClass('modal-lg');
@@ -1685,7 +1687,7 @@ $(document).ready(function()
                 type:'post',
                 url:link,
                 dataType:'json',
-                data:{aggr:$('input[name="aggr"]:checked').val()},
+                data:{forms:$('input[name="forms"]:checked').val(), attachment:$('input[name="attachment"]:checked').val(), assessment:$('input[name="assessment"]:checked').val()},
                 success: function(result)
                 {
                     if(result.status)

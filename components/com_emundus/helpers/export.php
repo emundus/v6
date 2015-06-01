@@ -28,7 +28,7 @@ jimport('joomla.application.component.helper');
 class EmundusHelperExport
 {
 	
-	public static function buildFormPDF($fnumInfos, $sid, $fnum)
+	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post )
 	{
 		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';
 
@@ -48,7 +48,7 @@ class EmundusHelperExport
 
 		require_once($file);
 
-		application_form_pdf($sid, $fnum, false);
+		application_form_pdf($sid, $fnum, false, $form_post);
 		return  EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_application.pdf';
 	}
 
@@ -72,6 +72,14 @@ class EmundusHelperExport
 			}
 		}
 	}
+
+    public static function getEvalPDF(&$exports, $fnum)
+    {
+        $fn = EmundusHelperExport::evalPDF($fnum);
+        $exports[] = $fn;
+
+       // $exports[] = EMUNDUS_PATH_ABS.$file->user_id.DS.$file->filename;
+    }
 
 	public static function makePDF($fileName, $ext, $aid)
 	{
@@ -116,4 +124,39 @@ class EmundusHelperExport
 		$pdf->Output($tmpName, 'F');
 		return $tmpName;
 	}
+    public static function evalPDF($fnum)
+    {
+        require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('Decision Publique');
+        $pdf->SetTitle('Evaluation');
+        $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+        $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+        $pdf->SetFont('helvetica', '', 8);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+        $pdf->AddPage();
+
+        $htmlData = '';
+        $data = @EmundusHelperFiles::getEvaluation('html', $fnum);
+        foreach ($data as $fnums => $evals) {
+            foreach ($evals as $user => $html) {
+                $htmlData .= $html;
+            }
+        }
+        $pdf->startTransaction();
+        $start_y = $pdf->GetY();
+        $start_page = $pdf->getPage();
+        $pdf->writeHTMLCell(0,'','',$start_y,$htmlData,'B', 1);
+
+        $tmpName = JPATH_BASE.DS.'tmp'.DS."evaluation.pdf";
+        $pdf->Output($tmpName, 'F');
+        return $tmpName;
+    }
+
 }

@@ -2036,6 +2036,25 @@ class EmundusModelFiles extends JModelLegacy
 		}
 	}
 
+    /**
+     * @param $fnum
+     * @return bool|mixed
+     */
+    public function getEvalByFnum($fnum)
+    {
+        try
+        {
+            $db = $this->getDbo();
+            $query = 'select * from #__emundus_evaluations where fnum in ("'.$fnum.'")';
+            $db->setQuery($query);
+            return $db->loadAssocList('fnum');
+        }
+        catch(Exception $e)
+        {
+            return false;
+        }
+    }
+
 	/**
 	 * @param $fnums
 	 * @return bool|mixed
@@ -2156,7 +2175,7 @@ class EmundusModelFiles extends JModelLegacy
 		try
 		{
 			$db = $this->getDbo();
-			$query = "SELECT form_id 
+			$query = "SELECT form_id
 						FROM `#__fabrik_formgroup`
 						WHERE group_id IN (
 							SELECT esp.fabrik_group_id
@@ -2173,6 +2192,33 @@ class EmundusModelFiles extends JModelLegacy
 			return false;
 		}
 	}
+
+    /**
+     * @param $fnum
+     * @return bool|mixed
+     */
+    public function getFormByFnum($fnum)
+    {
+        try
+        {
+            $db = $this->getDbo();
+            $query = "SELECT *
+						FROM `#__fabrik_formgroup`
+						WHERE group_id IN (
+							SELECT esp.fabrik_group_id
+							FROM  `#__emundus_campaign_candidature` AS ecc
+							LEFT JOIN `#__emundus_setup_campaigns` AS esc ON esc.id = ecc.campaign_id
+							LEFT JOIN `#__emundus_setup_programmes` AS esp ON esp.code = esc.training
+							WHERE ecc.fnum LIKE  " . $db->quote($fnum) .")";
+            $db->setQuery($query);
+            $res = $db->loadResult();
+            return $res;
+        }
+        catch(Exception $e)
+        {
+            return false;
+        }
+    }
 
 	/**
 	 * @param $fnums

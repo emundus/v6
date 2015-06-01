@@ -1600,6 +1600,7 @@ jimport('joomla.application.component.helper');
 
         $data = array();
         //$i = 0;
+
         foreach($evaluations as $eval)
         {
             if ($eval['jos_emundus_evaluations___user'] > 0) {
