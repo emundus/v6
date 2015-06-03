@@ -310,7 +310,7 @@ class EmundusModelApplication extends JModelList
             foreach ($forms as $form) {
                 $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE user = '.$aid.' AND fnum like '.$this->_db->Quote($fnum);
                 $this->_db->setQuery( $query );
-                $cpt = $this->_db->loadResult(); echo $cpt.' : ';
+                $cpt = $this->_db->loadResult();
                 if ($cpt==1)
                 {
                     $nb++;
