@@ -554,21 +554,21 @@ input.btnhov {
 			padding-right:10px;
 		}
 		.component-content .need_ok {
-			background-image: url(../images/emundus/tick.png);
+			background-image: url(../images/icones/tick.png);
 			background-repeat:no-repeat;
 			background-position:left center;
 			padding:0 0 0 20px;
 			width:98%;
 		}
 		.component-content .need_missing_fac {
-			background-image: url(../images/emundus/publish_x-grey.png);
+			background-image: url(../images/icones/publish_x-grey.png);
 			background-repeat:no-repeat;
 			background-position:left center;
 			padding:0 0 0 20px;
 			width:98%;
 		}
 		.component-content .need_missing {
-			background-image: url(../images/emundus/publish_x.png);
+			background-image: url(../images/icones/publish_x.png);
 			background-repeat:no-repeat;
 			background-position:left center;
 			padding:0 0 0 20px;

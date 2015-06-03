@@ -56,15 +56,15 @@ class EmundusModelEmails extends JModelList
 
     /**
      * Get email definition to trigger on Status changes
-     * @param   $step     		INT The status of application
-     * @param   $code   		ARRAY of programme code
+     * @param   $step           INT The status of application
+     * @param   $code           ARRAY of programme code
      * @param   $to_applicant   INT define if trigger concern selected fnum or not
      * @return  array    Emails templates and recipient to trigger
      */
     public function getEmailTrigger($step, $code, $to_applicant = 0)
     {
         $query = 'SELECT eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eseru.user_id
-        		  FROM #__emundus_setup_emails_trigger as eset
+                  FROM #__emundus_setup_emails_trigger as eset
                   LEFT JOIN #__emundus_setup_emails as ese ON ese.id=eset.email_id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_programme_id as eserp ON eserp.parent_id=eset.id
                   LEFT JOIN #__emundus_setup_programmes as esp ON esp.id=eserp.programme_id
@@ -115,21 +115,21 @@ class EmundusModelEmails extends JModelList
                     }
 
                     if($as_where) {
-                        $query = 'SELECT u.id, u.name, u.email
-		        					FROM #__users as u 
-		        					LEFT JOIN #__emundus_users as eu on eu.user_id=u.id 
-		        					WHERE '.$where;
+                        $query = 'SELECT u.id, u.name, u.email, eu.university_id
+                                    FROM #__users as u 
+                                    LEFT JOIN #__emundus_users as eu on eu.user_id=u.id 
+                                    WHERE '.$where;
                         $this->_db->setQuery( $query );
                         $users = $this->_db->loadObjectList();
 
                         foreach ($users as $key => $user) {
-                            $recipients[$user->id] = array('id' => $user->id, 'name' => $user->name, 'email' => $user->email);
+                            $recipients[$user->id] = array('id' => $user->id, 'name' => $user->name, 'email' => $user->email, 'university_id' => $user->university_id);
                         }
                     }
 
                     if ($tmpl['to']['to_current_user'] == 1) {
                         $current_user = JFactory::getUser();
-                        $recipients[$current_user->id] = array('id' => $current_user->id, 'name' => $current_user->name, 'email' => $current_user->email);
+                        $recipients[$current_user->id] = array('id' => $current_user->id, 'name' => $current_user->name, 'email' => $current_user->email, 'university_id' => $current_user->university_id);
                     }
 
                     $emails_tmpl[$trigger_id][$code]['to']['recipients'] = $recipients;
@@ -152,9 +152,9 @@ class EmundusModelEmails extends JModelList
     }
 
     /*
-     *	@description 	get tags with Fabrik elementd IDs
-     * 	@param 			$body 			string
-     * 	@return 		array 			array of application file elements IDs
+     *  @description    get tags with Fabrik elementd IDs
+     *  @param          $body           string
+     *  @return         array           array of application file elements IDs
      */
     public function getFabrikElementIDs($body){
         preg_match_all('/\{(.*?)\}/', $body, $element_ids);
@@ -163,10 +163,10 @@ class EmundusModelEmails extends JModelList
     }
 
     /*
-     *	@description 	replace tags like {fabrik_element_id} by the applicaiton form value for current application file
-     * 	@param 			$fum 			string 	application file number
-     *  @param 			$element_ids 	array 	Fabrik element ID
-     * 	@return 		array 			array of application file elements values
+     *  @description    replace tags like {fabrik_element_id} by the applicaiton form value for current application file
+     *  @param          $fum            string  application file number
+     *  @param          $element_ids    array   Fabrik element ID
+     *  @return         array           array of application file elements values
      */
     public function getFabrikElementValues($fnum, $element_ids){
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
@@ -184,10 +184,10 @@ class EmundusModelEmails extends JModelList
     }
 
     /*
-     *	@description 	replace tags like {fabrik_element_id} by the applicaiton form value in text
-     * 	@param 			$body 				string 	source containing tags like {fabrik_element_id}
-     *  @param 			$element_values 	array 	Array of values index by Fabrik elements IDs
-     * 	@return 		string 				String with values
+     *  @description    replace tags like {fabrik_element_id} by the applicaiton form value in text
+     *  @param          $body               string  source containing tags like {fabrik_element_id}
+     *  @param          $element_values     array   Array of values index by Fabrik elements IDs
+     *  @return         string              String with values
      */
     public function setElementValues($body, $element_values){
 
@@ -369,10 +369,10 @@ class EmundusModelEmails extends JModelList
             //
             // Replacement
             //
-            $post = array(  'TRAINING_PROGRAMME' 	=> $campaign['label'],
-                            'CAMPAIGN_START' 		=> $campaign['start_date'],
-                            'CAMPAIGN_END' 			=> $campaign['end_date'],
-                            'EVAL_DEADLINE' 		=> date("d/M/Y", mktime(0, 0, 0, date("m")+2, date("d"), date("Y")))
+            $post = array(  'TRAINING_PROGRAMME'    => $campaign['label'],
+                            'CAMPAIGN_START'        => $campaign['start_date'],
+                            'CAMPAIGN_END'          => $campaign['end_date'],
+                            'EVAL_DEADLINE'         => date("d/M/Y", mktime(0, 0, 0, date("m")+2, date("d"), date("Y")))
             );
             $tags = $this->setTags($student_id, $post, $fnum);
             $mail_body = preg_replace($tags['patterns'], $tags['replacements'], $mail_body);
@@ -388,7 +388,7 @@ class EmundusModelEmails extends JModelList
                 // 2. MAJ de la table emundus_files_request
                 $attachment_id = $documentid; // document avec clause de confidentialité
                 $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, campaign_id, email, fnum)
-							VALUES (NOW(), '.$student_id.', "'.$key1.'", "'.$attachment_id.'", '.$campaign_id.', '.$this->_db->quote($m_to).', '.$this->_db->quote($fnum).')';
+                            VALUES (NOW(), '.$student_id.', "'.$key1.'", "'.$attachment_id.'", '.$campaign_id.', '.$this->_db->quote($m_to).', '.$this->_db->quote($fnum).')';
                 $this->_db->setQuery( $query );
                 $this->_db->query();
 
@@ -397,8 +397,8 @@ class EmundusModelEmails extends JModelList
                 $link_refuse = JURI::base().'index.php?option=com_fabrik&c=form&view=form&formid=168&tableid=71&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
                 //$link_refuse = JURI::base().'index.php?option=com_emundus&task=decline&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id;
 
-                $post = array(  'EXPERT_ACCEPT_LINK' 	=> $link_accept,
-                                'EXPERT_REFUSE_LINK' 	=> $link_refuse
+                $post = array(  'EXPERT_ACCEPT_LINK'    => $link_accept,
+                                'EXPERT_REFUSE_LINK'    => $link_refuse
                 );
                 $tags = $this->setTags($student_id, $post, $fnum);
 
@@ -442,10 +442,10 @@ class EmundusModelEmails extends JModelList
                     $filename = explode(DS, $attachment);
 
                     $query = 'DELETE FROM #__emundus_uploads
-								WHERE user_id='.$student_id.' 
-									AND campaign_id='.$campaign_id. ' 
-									AND fnum like '.$this->_db->Quote($fnum).' 
-									AND filename LIKE "'.$filename[count($filename)-1].'"';
+                                WHERE user_id='.$student_id.' 
+                                    AND campaign_id='.$campaign_id. ' 
+                                    AND fnum like '.$this->_db->Quote($fnum).' 
+                                    AND filename LIKE "'.$filename[count($filename)-1].'"';
                     $this->_db->setQuery($query);
                     $this->_db->query();
 
@@ -464,7 +464,7 @@ class EmundusModelEmails extends JModelList
     // @param $row array of data
     public function logEmail($row) {
         $query = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-						VALUES (".$this->_db->quote($row['user_id_from']).", ".$this->_db->quote($row['user_id_to']).", ".$this->_db->quote($row['subject']).", ".$this->_db->quote($row['message']).", NOW())";
+                        VALUES (".$this->_db->quote($row['user_id_from']).", ".$this->_db->quote($row['user_id_to']).", ".$this->_db->quote($row['subject']).", ".$this->_db->quote($row['message']).", NOW())";
         $this->_db->setQuery( $query );
         $this->_db->query();
 

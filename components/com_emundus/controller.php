@@ -208,9 +208,9 @@ class EmundusController extends JControllerLegacy {
 
     function delete() {
         $student_id = JRequest::getVar('sid', null, 'GET', 'none',0);
-        $layout 	= JRequest::getVar('layout', null, 'GET', 'none',0);
-        $itemid 	= JRequest::getVar('Itemid', null, 'GET', 'none',0);
-        $fnum 		= JRequest::getVar('fnum', null, 'GET', 'none',0);
+        $layout     = JRequest::getVar('layout', null, 'GET', 'none',0);
+        $itemid     = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $fnum       = JRequest::getVar('fnum', null, 'GET', 'none',0);
         $current_user = JFactory::getUser();
 
         if ($student_id > 0 && $current_user->usertype != 'Registered')
@@ -226,26 +226,26 @@ class EmundusController extends JControllerLegacy {
             $url ='index.php?option=com_emundus&view=checklist&Itemid='.$itemid;
 
         $chemin = EMUNDUS_PATH_ABS;
-        //$user 	= JFactory::getUser();
-        $db 	= JFactory::getDBO();
-        $id 	= JRequest::get('get');
-        $id 	= $id['aid'];
+        //$user     = JFactory::getUser();
+        $db     = JFactory::getDBO();
+        $id     = JRequest::get('get');
+        $id     = $id['aid'];
 
         //$allowed = array("Super Users", "Administrator", "Editor");
         $user = JFactory::getUser();
         $menu=JSite::getMenu()->getActive();
         $access=!empty($menu)?$menu->access : 0;
         if (EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
-            $query 	= 'SELECT filename FROM #__emundus_uploads WHERE user_id = '.mysql_real_escape_string($user->id).' AND id = '.mysql_real_escape_string($id). ' AND fnum like '.$db->Quote($fnum);
+            $query  = 'SELECT filename FROM #__emundus_uploads WHERE user_id = '.mysql_real_escape_string($user->id).' AND id = '.mysql_real_escape_string($id). ' AND fnum like '.$db->Quote($fnum);
         else
-            $query 	= 'SELECT filename FROM #__emundus_uploads WHERE user_id = '.mysql_real_escape_string($user->id).' AND can_be_deleted = 1 AND id = '.mysql_real_escape_string($id). ' AND fnum like '.$db->Quote($fnum);
+            $query  = 'SELECT filename FROM #__emundus_uploads WHERE user_id = '.mysql_real_escape_string($user->id).' AND can_be_deleted = 1 AND id = '.mysql_real_escape_string($id). ' AND fnum like '.$db->Quote($fnum);
         $db->setQuery( $query );
         $filename = $db->loadResult();
         if (empty($filename)) {
             $this->setRedirect($url, JText::_('Error'), 'error');
         } elseif (is_file($chemin.$user->id.DS.$filename)) {
             if (unlink($chemin.$user->id.DS.$filename)) {
-                $query 	= 'DELETE FROM #__emundus_uploads WHERE id = '.mysql_real_escape_string($id).' AND user_id = '.mysql_real_escape_string($user->id). ' AND fnum like '.$db->Quote($fnum);
+                $query  = 'DELETE FROM #__emundus_uploads WHERE id = '.mysql_real_escape_string($id).' AND user_id = '.mysql_real_escape_string($user->id). ' AND fnum like '.$db->Quote($fnum);
                 $db->setQuery( $query );
                 $db->execute() or die($db->getErrorMsg());
                 if (is_file($chemin.$user->id.DS.'tn_'.$filename)) unlink($chemin.$user->id.DS.'tn_'.$filename);
@@ -254,7 +254,7 @@ class EmundusController extends JControllerLegacy {
                 $this->setRedirect($url, JText::_('Error occured while deleting file'), 'error');
             }
         } else {
-            $query 	= 'DELETE FROM #__emundus_uploads WHERE id = '.mysql_real_escape_string($id).' AND user_id = '.mysql_real_escape_string($user->id). ' AND fnum like '.$db->Quote($fnum);
+            $query  = 'DELETE FROM #__emundus_uploads WHERE id = '.mysql_real_escape_string($id).' AND user_id = '.mysql_real_escape_string($user->id). ' AND fnum like '.$db->Quote($fnum);
             $db->setQuery( $query );
             $db->execute() or die($db->getErrorMsg());
             $this->setRedirect($url, JText::_('File was not existing, thanks for checking that your other attachments are correctly uploaded'), 'notice');
@@ -266,31 +266,33 @@ class EmundusController extends JControllerLegacy {
     */
     function openfile() {
         require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-        $fnum 	= JRequest::getVar('fnum', null, 'GET', 'none',0);
-        $aid 	= JFactory::getUser();
+        $app    = JFactory::getApplication();
+        $Itemid = $app->input->getInt('Itemid', null, 'int');
+        $fnum   = JRequest::getVar('fnum', null, 'GET', 'none',0);
+        $aid    = JFactory::getUser();
 
         $model = new EmundusModelProfile;
         $infos = $model->getFnumDetails($fnum);
 
         if ($aid->id != $infos['applicant_id']) return;
 
-        $profile 		= $model->getProfileByCampaign($infos['campaign_id']);
-        $campaign 		= $model->getCampaignById($infos['campaign_id']);
+        $profile        = $model->getProfileByCampaign($infos['campaign_id']);
+        $campaign       = $model->getCampaignById($infos['campaign_id']);
 
-        $aid->profile 		= $profile['profile_id'];
+        $aid->profile       = $profile['profile_id'];
         $aid->profile_label = $profile['label'];
-        $aid->menutype 		= $profile['menutype'];
-        $aid->start_date 	= $profile['start_date'];
-        $aid->end_date 		= $profile['end_date'];
+        $aid->menutype      = $profile['menutype'];
+        $aid->start_date    = $profile['start_date'];
+        $aid->end_date      = $profile['end_date'];
         $aid->candidature_posted = $infos['submitted'];
         $aid->candidature_incomplete = $infos['status']==0?1:0;
-        $aid->schoolyear 	= $campaign['year'];
-        $aid->campaign_id 	= $infos['campaign_id'];
+        $aid->schoolyear    = $campaign['year'];
+        $aid->campaign_id   = $infos['campaign_id'];
         $aid->campaign_name = $campaign['label'];
-        $aid->fnum 			= $fnum;
+        $aid->fnum          = $fnum;
 
         JError::raiseNotice('PERIOD', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($aid->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($aid->end_date) )));
-        $this->setRedirect('/', JText::_('CURRENT_APPLICATION_FILE'). ' : '.$fnum, 'notice');
+        $this->setRedirect('/?Itemid='.$Itemid, JText::_('CURRENT_APPLICATION_FILE'). ' : '.$fnum, 'notice');
     }
 
 
@@ -307,20 +309,20 @@ class EmundusController extends JControllerLegacy {
         // $this->setRedirect('index.php?option=com_emundus', JText::_('Only students can access this function.'), 'error');
         // return;
         // }
-        $chemin 		= EMUNDUS_PATH_ABS;
-        $post 			= JRequest::get('post');
-        $attachments 	= $post['attachment'];
-        $descriptions 	= $post['description'];
-        $labels		 	= $post['label'];
-        $files 			= JRequest::get('files');
-        $files 			= $files['nom'];
+        $chemin         = EMUNDUS_PATH_ABS;
+        $post           = JRequest::get('post');
+        $attachments    = $post['attachment'];
+        $descriptions   = $post['description'];
+        $labels         = $post['label'];
+        $files          = JRequest::get('files');
+        $files          = $files['nom'];
 
         //$can_be_deleted = JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
         //$can_be_viewed  = JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
 
-        //$user 			= JFactory::getUser();
-        $db 			= JFactory::getDBO();
-        $query 			= '';
+        //$user             = JFactory::getUser();
+        $db             = JFactory::getDBO();
+        $query          = '';
         $nb = 0;
 
         if(!file_exists(EMUNDUS_PATH_ABS.$user->id)) {
@@ -364,7 +366,7 @@ class EmundusController extends JControllerLegacy {
             } elseif (isset($files['name'][$i])&&($files['error'][$i] == UPLOAD_ERR_OK)) {
                 $paths = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($user->name,ENT_NOQUOTES,'UTF-8'))));
                 $paths .= $labels[$i].rand().'.'.end(explode(".", $files['name'][$i]));
-                if (move_uploaded_file(	$files['tmp_name'][$i], $chemin.$user->id.DS.$paths)) {
+                if (move_uploaded_file( $files['tmp_name'][$i], $chemin.$user->id.DS.$paths)) {
                     $can_be_deleted = @$post['can_be_deleted_'.$attachments[$i]]!=''?$post['can_be_deleted_'.$attachments[$i]]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
                     $can_be_viewed = @$post['can_be_viewed_'.$attachments[$i]]!=''?$post['can_be_viewed_'.$attachments[$i]]:JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
                     $query .= '('.$user->id.', '.$attachments[$i].', \''.$paths.'\', '.$db->Quote($descriptions[$i]).', '.$can_be_deleted.', '.$can_be_viewed.', '.$user->campaign_id.', "'.$user->fnum.'"),';
@@ -621,7 +623,7 @@ class EmundusController extends JControllerLegacy {
      * Check if user can or not open PDF file
      */
     function getfile() {
-        $db	= JFactory::getDBO();
+        $db = JFactory::getDBO();
 
         $url = $_GET['u'];
         $urltab = explode('/', $url);
@@ -671,7 +673,7 @@ class EmundusController extends JControllerLegacy {
         }
     }
 
-    /*	function get_mime_type($filename, $mimePath = '../etc') {
+    /*  function get_mime_type($filename, $mimePath = '../etc') {
            $fileext = substr(strrchr($filename, '.'), 1);
            if (empty($fileext)) return (false);
            $regex = "/^([\w\+\-\.\/]+)\s+(\w+\s)*($fileext\s)/i";
@@ -690,7 +692,7 @@ class EmundusController extends JControllerLegacy {
     function sendmail($nb_email_per_batch = null){
         $app = JFactory::getApplication();
         $user = JFactory::getUser();
-        $db	= JFactory::getDBO();
+        $db = JFactory::getDBO();
         $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
         $keyid = JRequest::getVar('keyid', null, 'GET', 'none',0);
         //$allowed = array("Super Users", "Administrator");
@@ -703,11 +705,11 @@ class EmundusController extends JControllerLegacy {
                 $nb_email_per_batch = $eMConfig->get('nb_email_per_batch', '30');
 
             //Selection des mails à envoyer : table jos_emundus_emailtosend
-            $query = '	SELECT m.user_id_from, m.user_id_to, m.subject, m.message, u.email
-						FROM #__messages m, #__users u 
-						WHERE m.user_id_to = u.id
-						AND m.state = 1
-						LIMIT 0,'.$nb_email_per_batch;
+            $query = '  SELECT m.user_id_from, m.user_id_to, m.subject, m.message, u.email
+                        FROM #__messages m, #__users u 
+                        WHERE m.user_id_to = u.id
+                        AND m.state = 1
+                        LIMIT 0,'.$nb_email_per_batch;
             $db->setQuery( $query );
             $db->execute();
 
@@ -784,12 +786,12 @@ class EmundusController extends JControllerLegacy {
         $validate = JRequest::getVar('validate', null, 'GET', 'INT');
         $cible = JRequest::getVar('cible', null, 'GET', 'CMD');
         $data = explode('.', $cible);
-        if(count($data)>3)	$and = ' AND `campaign_id`='.$data[3];
+        if(count($data)>3)  $and = ' AND `campaign_id`='.$data[3];
         else $and = '';
         if($data[0] == "jos_emundus_final_grade") $column = "student_id";
         else $column = 'user';
 
-//		print_r($data);
+//      print_r($data);
         if(!empty($uid) && is_numeric($uid)) {
             $value = abs((int)$validate-1);
             $db = JFactory::getDBO();
@@ -806,7 +808,7 @@ class EmundusController extends JControllerLegacy {
                 $alt = JText::_('UNVALIDATED').'::'.JText::_('UNVALIDATED_NOTE');
             }
             echo '<span class="hasTip" title="'.$alt.'">
-					<input type="image" src="'.JURI::Base().'/media/com_emundus/images/icones/'.$img.'" onclick="validation('.$uid.', \''.$value.'\', \''.$cible.'\');" ></span> ';
+                    <input type="image" src="'.JURI::Base().'/media/com_emundus/images/icones/'.$img.'" onclick="validation('.$uid.', \''.$value.'\', \''.$cible.'\');" ></span> ';
         } else echo JText::_('ERROR');
 
     }

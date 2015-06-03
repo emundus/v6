@@ -14,7 +14,8 @@ require_once dirname(__FILE__).'/helper.php';
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
-
+$app 						= JFactory::getApplication();
+$Itemid 					= $app->input->getInt('Itemid', null, 'int');
 $description		 		= $params->get('description', 1);
 $show_add_application 		= $params->get('show_add_application', 1);
 $position_add_application 	= (int)$params->get('position_add_application', 0);

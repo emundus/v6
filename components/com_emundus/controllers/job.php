@@ -20,8 +20,8 @@ class EmundusControllerJob extends EmundusController {
     /**
      * Method to apply to a job.
      *
-     * @return	void
-     * @since	1.6
+     * @return  void
+     * @since   1.6
      */
     public function apply()
     {
@@ -31,25 +31,29 @@ class EmundusControllerJob extends EmundusController {
         // Get the previous edit id (if any) and the current edit id.
         //$previousId = (int) $app->getUserState('com_emundus.edit.job.id');
         $jobId = $app->input->getInt('id', null, 'array');
+        $Itemid = $app->input->getInt('Itemid', null, 'int');
 
         // Set the user id for the user to edit in the session.
         $app->setUserState('com_emundus.apply.job.id', $jobId);
 
         // Get the model.
         $model = $this->getModel('Job', 'EmundusModel');
-        if ($model->apply($user->id, $jobId)) {
+        $fnum = $model->apply($user->id, $jobId); 
+        if ($fnum) {
             // Redirect to the edit screen.
-            $this->setRedirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=205&Itemid=1465&usekey=fnum&rowid='.$user->fnum, false));
+            //$this->setRedirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=205&Itemid=1465&usekey=fnum&rowid='.$user->fnum, false));
+            $this->setRedirect(JRoute::_('index.php?option=com_emundus&controller=job&task=display&fnum='.$fnum.'&id='.$jobId.'&Itemid='.$Itemid, false));
+            
         } else {
             JError::raiseWarning( 100, JText::_('ERROR') );
-            $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=jobs&Itemid=1468', false));
+            $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=jobs&Itemid='.$Itemid, false));
         }
     }
     /**
      * Method to display application on a Job.
      *
-     * @return	void
-     * @since	1.6
+     * @return  void
+     * @since   1.6
      */
     public function display($cachable = false, $urlparams = false)
     {
@@ -70,8 +74,8 @@ class EmundusControllerJob extends EmundusController {
     /**
      * Method to cancel application on a Job.
      *
-     * @return	void
-     * @since	1.6
+     * @return  void
+     * @since   1.6
      */
     public function cancel()
     {
@@ -97,7 +101,7 @@ class EmundusControllerJob extends EmundusController {
     /**
      * Method to check out an item for editing and redirect to the edit form.
      *
-     * @since	1.6
+     * @since   1.6
      */
     public function edit() {
         $app = JFactory::getApplication();
@@ -129,8 +133,8 @@ class EmundusControllerJob extends EmundusController {
     /**
      * Method to save a user's profile data.
      *
-     * @return	void
-     * @since	1.6
+     * @return  void
+     * @since   1.6
      */
     public function publish() {
         // Initialise variables.

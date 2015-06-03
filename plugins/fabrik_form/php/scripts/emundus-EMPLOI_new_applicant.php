@@ -20,8 +20,6 @@ include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 
 $db 		= JFactory::getDBO();
 $student 	= JFactory::getUser();
-$mailer     = JFactory::getMailer();
-
 
 //$eMConfig = JComponentHelper::getParams('com_emundus');
 
@@ -101,6 +99,8 @@ if (count($recipients) > 0) {
 						('.$referent->id.', 14, '.$db->Quote($student->fnum).', 1,1,1,0)';
         $db->setQuery( $query );
         $db->execute();
+
+        $mail_to[] = $referent->id;
     }
 }
 
@@ -114,37 +114,12 @@ $trigger_emails = $emails->getEmailTrigger($step, $code, $to_applicant);
 if (count($trigger_emails) > 0) {
 
     foreach ($trigger_emails as $key => $trigger_email) {
-        /*if ($trigger_email[$student->code]['to']['to_current_user']) {
-            $post = array();
-            $tags = $emails->setTags($student->id, $post);
 
-            $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
-            $from_id = 62;
-            $fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['name']);
-            $to = $student->email;
-            $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
-            $body = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['message']);
-            $mode = 1;
-            //$attachment[] = $path_file;
-            $replyto = $from;
-            $replytoname = $fromname;
-
-            $res = JUtility::sendMail( $from, $fromname, $to, $subject, $body, true );
-            if($res){
-                $message = array(
-                    'user_id_from' => $from_id,
-                    'user_id_to' => $student->id,
-                    'subject' => $subject,
-                    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
-                );
-                $emails->logEmail($message);
-            }
-        }
-
-*/
         foreach ($trigger_email[$student->code]['to']['recipients'] as $key => $recipient) {
+            $mailer     = JFactory::getMailer();
+
             // only for logged user or Deposant
-            if ($student->id == $recipient['id'] || in_array($recipient['id'], $deposant)) {
+            if ($student->id == $recipient['id'] || $recipient['university_id'] == $university) {
 
                 $post = array();
                 $tags = $emails->setTags($recipient['id'], $post);
@@ -153,9 +128,10 @@ if (count($trigger_emails) > 0) {
                 $from_id = 62;
                 $fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['name']);
                 $to = $recipient['email'];
+                $to_id = $recipient['id'];
                 $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
                 $body = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['message']);
-                $mode = 1;
+
                 //$attachment[] = $path_file;
                 $replyto = $from;
                 $replytoname = $fromname;
@@ -173,14 +149,13 @@ if (count($trigger_emails) > 0) {
                 $mailer->Encoding = 'base64';
                 $mailer->setBody($body);
 
-               // $res = JFactory::getMailer()->sendMail( $from, $fromname, $to, $subject, $body, true );
-                $send = $mailer->Send();
+                //$send = $mailer->Send();
                 if ( $send !== true ) {
                     echo 'Error sending email: ' . $send->__toString(); die();
                 } else {
                     $message = array(
                         'user_id_from' => $from_id,
-                        'user_id_to' => $student->id,
+                        'user_id_to' => $to_id,
                         'subject' => $subject,
                         'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
                     );

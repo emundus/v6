@@ -23,7 +23,7 @@ class EmundusModelJob extends JModelItem {
      *
      * Note. Calling getState in this method will result in recursion.
      *
-     * @since	1.6
+     * @since   1.6
      */
     protected function populateState() {
         $app = JFactory::getApplication('com_emundus');
@@ -49,9 +49,9 @@ class EmundusModelJob extends JModelItem {
     /**
      * Method to get an ojbect.
      *
-     * @param	integer	The id of the object to get.
+     * @param   integer The id of the object to get.
      *
-     * @return	mixed	Object on success, false on failure.
+     * @return  mixed   Object on success, false on failure.
      */
     public function &getData($id = null) {
         if ($this->_item === null) {
@@ -122,9 +122,9 @@ class EmundusModelJob extends JModelItem {
     /**
      * Method to check in an item.
      *
-     * @param	integer		The id of the row to check out.
-     * @return	boolean		True on success, false on failure.
-     * @since	1.6
+     * @param   integer     The id of the row to check out.
+     * @return  boolean     True on success, false on failure.
+     * @since   1.6
      */
     public function checkin($id = null) {
         // Get the id.
@@ -150,9 +150,9 @@ class EmundusModelJob extends JModelItem {
     /**
      * Method to check out an item for editing.
      *
-     * @param	integer		The id of the row to check out.
-     * @return	boolean		True on success, false on failure.
-     * @since	1.6
+     * @param   integer     The id of the row to check out.
+     * @return  boolean     True on success, false on failure.
+     * @since   1.6
      */
     public function checkout($id = null) {
         // Get the user id.
@@ -203,10 +203,10 @@ class EmundusModelJob extends JModelItem {
     /**
      * Method to cancel application to a job
      *
-     * @param	integer		The id of the user.
-     * @param	varchar		The fnum of an application.
-     * @return	boolean		True on success, false on failure.
-     * @since	1.6
+     * @param   integer     The id of the user.
+     * @param   varchar     The fnum of an application.
+     * @return  boolean     True on success, false on failure.
+     * @since   1.6
      */
     public function cancel($user_id, $fnum) {
         $user = JFactory::getUser($user_id);
@@ -238,61 +238,38 @@ class EmundusModelJob extends JModelItem {
     /**
      * Method to apply to a job
      *
-     * @param	integer		The id of the user.
-     * @param	integer		The id of the job.
-     * @return	boolean		True on success, false on failure.
-     * @since	1.6
+     * @param   integer     The id of the user.
+     * @param   integer     The id of the job.
+     * @return  boolean     True on success, false on failure.
+     * @since   1.6
      */
     public function apply($user_id, $job_id) {
         $user = JFactory::getUser($user_id);
         $current_user = JFactory::getUser();
         $db = JFactory::getDbo();
 
-        // 1. Get the job infos
+        // 0. Get the job infos
         $query = "SELECT * FROM #__emundus_emploi_etudiant WHERE id=$job_id";
         $db->setQuery($query);
         $job = $db->loadObject();
         if($job->campaign_id>0 && $job->state==1 && $job->published==1 && $job->valide_comite==1) {
+            // 1. Check if a fnum exist without job
+            $query = "SELECT ecc.fnum 
+                        FROM #__emundus_campaign_candidature as ecc
+                        LEFT JOIN #__emundus_emploi_etudiant_candidat as eeec on eeec.fnum = ecc.fnum
+                        WHERE ecc.applicant_id=".$user_id." AND eeec.id is null
+                        order by ecc.date_time DESC";
+            $db->setQuery($query);
+            $fnum = $db->loadResult();
+
             // 2. Create a new fnum for campaign link to the job ID
-            $fnum = @EmundusHelperFiles::createFnum($job->campaign_id, $user->id);
-            try
-            {
-                $query = "INSERT INTO #__emundus_campaign_candidature (`date_time` ,`applicant_id` ,`user_id` ,`campaign_id` ,`submitted` ,`date_submitted` ,`cancelled` ,`fnum` ,`status` ,`published`)
-                          VALUES(NOW(), $user->id, $current_user->id, $job->campaign_id, 0, NULL, 0, '$fnum', 0, 1)";
-                $db->setQuery($query);
-                $db->execute();
-                $insertid = $db->insertid();
-            }
-            catch(Exception $e)
-            {
-                return false;
-            }
-            // 3. Insert a new line in #__emundus_emploi_etudiant_candidature to link user/fnum/job_ib
-            if($insertid > 0) {
+            if(!isset($fnum) || empty($fnum)){
+                $fnum = @EmundusHelperFiles::createFnum($job->campaign_id, $user->id);
+
                 try
                 {
-                    // 4. Get infos from previous submission
-                    $query = "SELECT * FROM #__emundus_emploi_etudiant_candidat WHERE user=$user->id order by date_time DESC";
-                    $db->setQuery($query);
-                    $lastjob = $db->loadAssoc();
-
-                    if(count($lastjob)>0){
-                        $column = "";
-                        $values = "";
-                        foreach($lastjob as $key => $value){
-                            if($key != 'id' && $key != 'date_time' && $key != 'etablissement' && $key != 'fiche_emploi' && $key != 'fnum') {
-                                $column .= $key.',';
-                                $values .= $db->Quote($value).',';
-                            }
-                        }
-                        $column .= 'date_time, etablissement, fiche_emploi, fnum';
-                        $values .= "NOW(), $job->etablissement, $job_id, '$fnum'";
-                        $query = "INSERT INTO #__emundus_emploi_etudiant_candidat ($column) VALUES($values)";
-                    } else {
-                        $query = "INSERT INTO #__emundus_emploi_etudiant_candidat (`date_time` ,`user` ,`fnum` ,`etablissement` ,`fiche_emploi`)
-                              VALUES(NOW(), $user->id, '$fnum', $job->etablissement, $job_id)";
-                    }
-
+                    $query = "INSERT INTO #__emundus_campaign_candidature (`date_time` ,`applicant_id` ,`user_id` ,`campaign_id` ,`submitted` ,`date_submitted` ,`cancelled` ,`fnum` ,`status` ,`published`)
+                              VALUES(NOW(), $user->id, $current_user->id, $job->campaign_id, 0, NULL, 0, '$fnum', 0, 1)";
                     $db->setQuery($query);
                     $db->execute();
                     $insertid = $db->insertid();
@@ -301,14 +278,49 @@ class EmundusModelJob extends JModelItem {
                 {
                     return false;
                 }
-                if($insertid > 0) {
-                    // 3. Set user session session
-                    $user->fnum = $fnum;
-                    $user->campaign_id = $job->campaign_id;
-
-                    return true;
-                }
             }
+            // 3. Insert a new line in #__emundus_emploi_etudiant_candidature to link user/fnum/job_ib
+           //if($insertid > 0) {
+            try
+            {
+                // 4. Get infos from previous submission
+                $query = "SELECT * FROM #__emundus_emploi_etudiant_candidat WHERE user=$user->id order by date_time DESC";
+                $db->setQuery($query);
+                $lastjob = $db->loadAssoc();
+
+                if(count($lastjob)>0){
+                    $column = "";
+                    $values = "";
+                    foreach($lastjob as $key => $value){
+                        if($key != 'id' && $key != 'date_time' && $key != 'etablissement' && $key != 'fiche_emploi' && $key != 'fnum') {
+                            $column .= $key.',';
+                            $values .= $db->Quote($value).',';
+                        }
+                    }
+                    $column .= 'date_time, etablissement, fiche_emploi, fnum';
+                    $values .= "NOW(), $job->etablissement, $job_id, '$fnum'";
+                    $query = "INSERT INTO #__emundus_emploi_etudiant_candidat ($column) VALUES($values)";
+                } else {
+                    $query = "INSERT INTO #__emundus_emploi_etudiant_candidat (`date_time` ,`user` ,`fnum` ,`etablissement` ,`fiche_emploi`)
+                          VALUES(NOW(), $user->id, '$fnum', $job->etablissement, $job_id)";
+                }
+
+                $db->setQuery($query);
+                $db->execute();
+                $insertid = $db->insertid();
+            }
+            catch(Exception $e)
+            {
+                return false;
+            }
+            if($insertid > 0) {
+                // 3. Set user session session
+                $user->fnum = $fnum;
+                $user->campaign_id = $job->campaign_id;
+
+                return $fnum;
+            }
+           // }
         } else
             return false;
     }
