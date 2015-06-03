@@ -1,6 +1,6 @@
 <?php 
 //JHTML::_('behavior.modal'); 
-JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
+JHTML::stylesheet(  JURI::Base().'media/com_emundus/css/emundus.css' );
 defined('_JEXEC') or die('Restricted access');
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
@@ -9,7 +9,7 @@ $user = JFactory::getUser();
 $_db = JFactory::getDBO();
 $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 
-$forms = EmundusHelperMenu::buildMenuQuery($user->profile);
+$forms = @EmundusHelperMenu::buildMenuQuery($user->profile);
 
 $app = JFactory::getApplication();
 $alias = $app->getMenu()->getActive()->alias;

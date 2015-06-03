@@ -793,7 +793,7 @@ $(document).ready(function()
                         fnum = fnum.substr(1, fnum.length);
                         $.ajax({
                             type:'POST',
-                            url:'index.php?option=com_emundus&controller='+$('#view').val()+'&task=deletefile',
+                            url:'index.php?option=com_emundus&controller=file&task=deletefile',
                             dataType:'json',
                             data:{fnum: fnum},
                             success: function(result)

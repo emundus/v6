@@ -303,15 +303,14 @@ class EmundusModelApplication extends JModelList
     {
         if(!is_array($fnum))
         {
-            $user = JFactory::getUser($aid);
+            //$user = JFactory::getUser($aid);
             $forms = @EmundusHelperMenu::buildMenuQuery($pid);
-            //var_dump($forms);
             $nb = 0;
             $formLst = array();
             foreach ($forms as $form) {
                 $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE user = '.$aid.' AND fnum like '.$this->_db->Quote($fnum);
                 $this->_db->setQuery( $query );
-                $cpt = $this->_db->loadResult();
+                $cpt = $this->_db->loadResult(); echo $cpt.' : ';
                 if ($cpt==1)
                 {
                     $nb++;

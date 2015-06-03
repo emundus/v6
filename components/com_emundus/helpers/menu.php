@@ -26,7 +26,7 @@ class EmundusHelperMenu{
 		WHERE menu.published=1 AND menu.parent_id !=1 
 		ORDER BY menu.lft';
 		$_db->setQuery( $query );
-		//die($query);
+		//die(str_replace('#_', 'jos', $query));
 		return $_db->loadObjectList();
 	}
 

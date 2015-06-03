@@ -281,7 +281,7 @@ class plgUserEmundus extends JPlugin
 
 
 				if ($current_user->code	== "pepite") {
-					$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=164&Itemid=1372&usekey=fnum");
+					$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=164&Itemid=1521&usekey=fnum");
 				}
 				elseif ($current_user->code	== "utc-dfp-dri") {
 					$mainframe->redirect("index.php?option=com_emundus&view=jobs&Itemid=1468");
@@ -315,7 +315,7 @@ class plgUserEmundus extends JPlugin
 		$campaign = $profiles->getCurrentCampaignInfoByApplicant($user['id']); 
 //die(var_dump($campaign));
 		if ($campaign["training"] == "pepite") 
-			$url = "index.php?option=com_content&view=article&id=55&Itemid=1399&course=pepite";
+			$url = "index.php?option=com_emundus&view=programme&id=65&Itemid=1521";
 		else
 			$url = '/';
 
