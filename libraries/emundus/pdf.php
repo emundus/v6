@@ -566,9 +566,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$user 			= JFactory::getUser($user_id);
 	$fnum 			= empty($fnum)?$user->fnum:$fnum;
 
-	$export_pdf = $eMConfig->get('export_pdf'); 
+	//$export_pdf = $eMConfig->get('export_pdf');
 
-	$user_profile = $m_users->getCurrentUserProfile($user_id);
+	//$user_profile = $m_users->getCurrentUserProfile($user_id);
 	
 	$infos = $m_profile->getFnumDetails($fnum);
 	$campaign_id = $infos['campaign_id'];
@@ -653,7 +653,7 @@ $htmldata .= '
 if(isset($item->maiden_name))
 	$htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
 
-$date_submitted = (!empty($item->date_submitted) && strpos($item->date_submitted, '0000')!=0)?strftime("%d/%m/%Y %H:%M", strtotime($item->date_submitted)):JText::_('NOT_SENT');
+$date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
 
 $htmldata .= '
   <div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</div>
