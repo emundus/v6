@@ -179,12 +179,19 @@ class EmundusController extends JControllerLegacy {
                 $tmpArray = array();
                 $model = $this->getModel('application');
                 $files = $model->getAttachmentsByFnum($fnum);
-                EmundusHelperExport::getAttchmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
+                $valid_files = array();
+                foreach ($files as $file) {
+                    if (strrpos($file->filename,"application_form")=== false) {
+                        $valid_files[] = $file;
+                    }
+                }
+                EmundusHelperExport::getAttchmentPDF($files_list, $tmpArray, $valid_files, $fnumsInfo[$fnum]['applicant_id']);
             }
             if($eval_post) {
                 EmundusHelperExport::getEvalPDF($files_list,$fnum);
             }
         }
+
         // all PDF in one file
         require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
         $pdf = new ConcatPdf();

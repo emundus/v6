@@ -59,8 +59,8 @@ class EmundusHelperExport
      */
     public static function pdftest_is_encrypted($file)
     {
-        require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
-        
+        require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+
         $pdf = new ConcatPdf();
         $pdf->setSourceFile($file);
 
@@ -114,6 +114,19 @@ class EmundusHelperExport
 	    return $prop;
 	}
 
+    public static  function  isEncrypted($file) {
+        $f = fopen($file,'rb');
+        if(!$f)
+            return false;
+
+        //Read the last 16KB
+        fseek($f, -16384, SEEK_END);
+        $s = fread($f, 16384);
+
+        //Extract Info object number
+        return preg_match('/Encrypt ([0-9]+) /', $s);
+    }
+
 	public static function getAttchmentPDF(&$exports, &$tmpArray, $files, $sid)
 	{
 		foreach($files as $file)
@@ -134,7 +147,7 @@ class EmundusHelperExport
 					/*$prop = EmundusHelperExport::get_pdf_prop($filePath);
 					echo "<pre>";
 	    var_dump($prop); die();*/
-                    if( !EmundusHelperExport::get_pdf_prop($filePath) ){
+                    if( EmundusHelperExport::isEncrypted($filePath) ){
                         $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
                         $exports[] = $fn;
                         $tmpArray[]= $fn;

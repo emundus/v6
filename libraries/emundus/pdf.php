@@ -672,8 +672,12 @@ $htmldata .= '
 
 	// Listes des fichiers chargés 
 	$uploads = $application->getUserAttachmentsByFnum($fnum);
-
-	$nbuploads = count($uploads);
+    $nbuploads=0;
+    foreach($uploads as $upload) {
+        if (strrpos($upload->filename, "application_form") === false) {
+            $nbuploads++;
+        }
+    }
 	$titleupload = $nbuploads>0?JText::_('FILES_UPLOADED'):JText::_('FILE_UPLOADED');
 	
 	$htmldata .='
@@ -688,14 +692,16 @@ $htmldata .= '
 	$htmldata .='<div class="file_upload">';
 	$htmldata .= '<ol>';
 	foreach($uploads as $upload){
-		$path_href = JURI::base().EMUNDUS_PATH_REL.$user_id.'/'.$upload->filename;
-		$htmldata .= '<li><h3>'.$upload->value.'</h3>';
-			$htmldata .= '<ul>';
-			 	$htmldata .= '<li><b>'.JText::_('FILE_NAME').'</b> : <a href="'.$path_href.'" dir="ltr" target="_blank">'.$upload->filename.'</a></li>';
-				$htmldata .= '<li><b>'.JText::_('SENT_ON').'</b> : '.strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)).'</li>';
-				$htmldata .= '<li><b>'.JText::_('DESCRIPTION').'</b> : '.$upload->description.'</li>';
-			$htmldata .= '</ul>';
-			$htmldata .= '</li>';
+        if (strrpos($upload->filename,"application_form")=== false) {
+            $path_href = JURI::base() . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
+            $htmldata .= '<li><h3>' . $upload->value . '</h3>';
+            $htmldata .= '<ul>';
+            $htmldata .= '<li><b>' . JText::_('FILE_NAME') . '</b> : <a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a></li>';
+            $htmldata .= '<li><b>' . JText::_('SENT_ON') . '</b> : ' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . '</li>';
+            $htmldata .= '<li><b>' . JText::_('DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
+            $htmldata .= '</ul>';
+            $htmldata .= '</li>';
+        }
 
 	}
 	$htmldata .='</ol></div>';
