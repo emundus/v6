@@ -540,7 +540,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 	exit();
 }
 
-function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = null) {
+function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1) {
 	jimport( 'joomla.html.parameter' );
 	set_time_limit(0);
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');

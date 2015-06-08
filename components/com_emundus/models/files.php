@@ -815,7 +815,7 @@ class EmundusModelFiles extends JModelLegacy
 						}
 						break;
 					case 'profile':
-						if(!empty($value))
+						if(!empty($value) && @$value[0]!=0)
 						{
 							$query['q'] .= 'and (spro.id = ' . $value . ' OR fg.result_for = ' . $value . ' OR ue.user_id IN (select user_id from #__emundus_users_profiles where profile_id = ' . $value . ')) ';
 
