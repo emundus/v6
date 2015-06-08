@@ -40,12 +40,6 @@ $isCoordinator = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $t
     <?php
     if(count($this->userAttachments) > 0)
     {
-        if(EmundusHelperAccess::asAccessAction(4,'d', $this->_user->id, $this->fnum))
-        {
-            echo ' <button class="btn btn-danger btn-xs btn-attach" data-title="'.JText::_('DELETE_SELECTED_ATTACHMENTS').'" id="em_delete_attachments" name="em_delete_attachments" link="/index.php?option=com_emundus&controller=application&task=deleteattachement&fnum='.$this->fnum.'&student_id='.$this->student_id.'">
-			<span class="glyphicon glyphicon-trash"></span>
-		</button> ';
-        }
         if($isCoordinator)
         {
             echo '<button class="btn btn-default btn-xs btn-attach" id="em_export_pdf"  title="'.JText::_('PDF').'" link="/index.php?option=com_emundus&controller=application&task=exportpdf&fnum='.$this->fnum.'&student_id='.$this->student_id.'&ids={ids}">
@@ -96,6 +90,12 @@ $isCoordinator = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $t
             //}
         }
         echo '</tbody></table>';
+        if(count($this->userAttachments) > 0) {
+            if (EmundusHelperAccess::asAccessAction(4, 'd', $this->_user->id, $this->fnum)) {
+                echo '<div style="width:40px;  margin-top: -15px; text-align: center"><span class="glyphicon glyphicon-chevron-down"></span><br /><button class="btn btn-danger btn-xs btn-attach" data-title="' . JText::_('DELETE_SELECTED_ATTACHMENTS') . '" id="em_delete_attachments" name="em_delete_attachments" link="/index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=' . $this->fnum . '&student_id=' . $this->student_id . '">
+                <span class="glyphicon glyphicon-trash"></span></button></div> ';
+            }
+        }
     } else echo JText::_('NO_ATTACHMENT');
     ?>
 </div>
