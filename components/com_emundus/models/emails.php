@@ -63,15 +63,16 @@ class EmundusModelEmails extends JModelList
      */
     public function getEmailTrigger($step, $code, $to_applicant = 0)
     {
-        $query = 'SELECT eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eseru.user_id
+        $query = 'SELECT eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id
                   FROM #__emundus_setup_emails_trigger as eset
                   LEFT JOIN #__emundus_setup_emails as ese ON ese.id=eset.email_id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_programme_id as eserp ON eserp.parent_id=eset.id
                   LEFT JOIN #__emundus_setup_programmes as esp ON esp.id=eserp.programme_id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_profile_id as eser ON eser.parent_id=eset.id
+                  LEFT JOIN #__emundus_setup_emails_trigger_repeat_group_id as eserg ON eserg.parent_id=eset.id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_user_id as eseru ON eseru.parent_id=eset.id
-                  WHERE eset.step='.mysql_real_escape_string($step).' AND eset.to_applicant='.$to_applicant.' AND esp.code IN ("'.implode('","', $code).'")';
-
+                  WHERE eset.step='.mysql_real_escape_string($step).' AND eset.to_applicant IN ('.$to_applicant.') AND esp.code IN ("'.implode('","', $code).'")';
+//die(str_replace('#_', 'jos', $query));
         $this->_db->setQuery( $query );
         $triggers = $this->_db->loadObjectList();
 
@@ -87,6 +88,8 @@ class EmundusModelEmails extends JModelList
                 // default recipients
                 if (isset($trigger->profile_id) && !empty($trigger->profile_id))
                     $emails_tmpl[$trigger->id][$trigger->code]['to']['profile'][] = $trigger->profile_id;
+                if (isset($trigger->group_id) && !empty($trigger->group_id))
+                    $emails_tmpl[$trigger->id][$trigger->code]['to']['group'][] = $trigger->group_id;
                 if (isset($trigger->user_id) && !empty($trigger->user_id))
                     $emails_tmpl[$trigger->id][$trigger->code]['to']['user'][] = $trigger->user_id;
                 $emails_tmpl[$trigger->id][$trigger->code]['to']['to_applicant'] = $trigger->to_applicant;
@@ -108,17 +111,24 @@ class EmundusModelEmails extends JModelList
                         $as_where = true;
                     }
 
+                    if (count(@$tmpl['to']['group']) > 0) {
+                        $where = ' eg.group_id IN ('.implode(',', $tmpl['to']['group']).')';
+                        $as_where = true;
+                    }
+
                     if (count(@$tmpl['to']['user']) > 0) {
                         $where .= $as_where?' OR ':'';
-                        $where .= 'u.id IN ('.implode(',', $tmpl['to']['user']).')';
+                        $where .= 'u.block=0 AND u.id IN ('.implode(',', $tmpl['to']['user']).')';
                         $as_where = true;
                     }
 
                     if($as_where) {
                         $query = 'SELECT u.id, u.name, u.email, eu.university_id
                                     FROM #__users as u 
-                                    LEFT JOIN #__emundus_users as eu on eu.user_id=u.id 
-                                    WHERE '.$where;
+                                    LEFT JOIN #__emundus_users as eu on eu.user_id=u.id
+                                    LEFT JOIN #__emundus_groups as eg on eg.user_id=u.id 
+                                    WHERE '.$where.' 
+                                    GROUP BY u.id';
                         $this->_db->setQuery( $query );
                         $users = $this->_db->loadObjectList();
 

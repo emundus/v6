@@ -110,9 +110,10 @@ class EmundusModelProfile extends JModelList
 	}
 
 	function getCurrentCampaignInfoByApplicant($uid) {
-		$query = 'SELECT esc.*, ecc.date_time, ecc.submitted, ecc.date_submitted, ecc.fnum
+		$query = 'SELECT esc.*, ecc.date_time, ecc.submitted, ecc.date_submitted, ecc.fnum, esc.profile_id, esp.label, esp.menutype, ecc.submitted
 					FROM #__emundus_campaign_candidature AS ecc 
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON ecc.campaign_id = esc.id
+					LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = esc.profile_id
 					WHERE ecc.applicant_id = '.$uid. ' ORDER BY ecc.date_time DESC';
 		$this->_db->setQuery( $query );
 		$res = $this->_db->loadAssoc();

@@ -296,6 +296,7 @@ class EmundusController extends JControllerLegacy {
         $aid->candidature_posted = $infos['submitted'];
         $aid->candidature_incomplete = $infos['status']==0?1:0;
         $aid->schoolyear    = $campaign['year'];
+        $aid->code          = $campaign['training'];
         $aid->campaign_id   = $infos['campaign_id'];
         $aid->campaign_name = $campaign['label'];
         $aid->fnum          = $fnum;

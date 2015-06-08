@@ -17,6 +17,19 @@ defined( '_JEXEC' ) or die();
 include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 //include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
 //include_once(JPATH_BASE.'/components/com_emundus/models/groups.php');
+jimport('joomla.log.log');
+JLog::addLogger(
+    array(
+        // Sets file name
+        'text_file' => 'com_emundus.email.php'
+    ),
+    // Sets messages of all log levels to be sent to the file
+    JLog::ALL,
+    // The log category/categories which should be recorded in this file
+    // In this case, it's just the one category from our extension, still
+    // we need to put it inside an array
+    array('com_emundus')
+);
 
 $db 		= JFactory::getDBO();
 $student 	= JFactory::getUser();
@@ -159,7 +172,9 @@ if (count($trigger_emails) > 0) {
 
                 $send = $mailer->Send();
                 if ( $send !== true ) {
-                    echo 'Error sending email: ' . $send->__toString(); die();
+                    echo 'Error sending email: ' . $send->__toString();
+                    JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                    die();
                 } else {
                     $message = array(
                         'user_id_from' => $from_id,
@@ -168,7 +183,9 @@ if (count($trigger_emails) > 0) {
                         'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
                     );
                     $emails->logEmail($message);
+                    JLog::add($to.' '.$body, JLog::INFO, 'com_emundus');
                 }
+
             }
         }
     }

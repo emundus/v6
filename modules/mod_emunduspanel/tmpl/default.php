@@ -11,7 +11,8 @@ if (!empty($tab)) {
         $query='SELECT label,id FROM #__emundus_setup_profiles WHERE id ='.$name;
         $db->setQuery($query);
         $label = $db->loadResult();*/
-        $title = strlen($user->campaign_name)>3?$user->campaign_name:$user->profile_label;
+        $title = $user->profile_label;
+        //$title = strlen($user->campaign_name)>3?$user->campaign_name:$user->profile_label;
         if($show_profile_link == 1)
         	echo '<a href="index.php?option=com_users&view=profile&layout=edit"><h2>'.$title. ' <span class="icon-cog"></span></h2></a>';
         else
