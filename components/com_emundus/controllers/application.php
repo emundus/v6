@@ -407,7 +407,7 @@ class EmundusControllerApplication extends JControllerLegacy
             }
             $model = $this->getModel('application');
             $files = $model->getAttachments($ids);
-            EmundusHelperExport::getAttchmentPDF($exports, $tmpArray,$files, $sid);
+            EmundusHelperExport::getAttchmentPDF($exports, $tmpArray, $files, $sid);
             if(!empty($exports))
             {
                 require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
@@ -421,7 +421,7 @@ class EmundusControllerApplication extends JControllerLegacy
                 $pdf->Output(EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_attachements.pdf', 'F');
                 $res = new stdClass();
                 $res->status = true;
-                $res->link = '/images/emundus/files'.DS.$sid.DS.$fnum.'_attachements.pdf';
+                $res->link = EMUNDUS_PATH_REL.DS.$sid.DS.$fnum.'_attachements.pdf';
                 echo json_encode($res);
                 exit();
 

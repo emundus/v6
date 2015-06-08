@@ -816,8 +816,8 @@ class EmundusModelEvaluation extends JModelList
 								if (!array_key_exists('jos_emundus_users', $tableAlias))
 									$query['join'] .= ' left join #__emundus_users as ue on ue.id = c.applicant_id ';
 							}
-							if (!array_key_exists('jos_emundus_setup_profile', $tableAlias))
-								$query['join'] .= ' left join #__emundus_setup_profile as spro on spro.id = ue.profile ';
+							if (!array_key_exists('jos_emundus_setup_profiles', $tableAlias))
+								$query['join'] .= ' left join #__emundus_setup_profiles as spro on spro.id = ue.profile ';
 						}
 						break;
 					case 'missing_doc':

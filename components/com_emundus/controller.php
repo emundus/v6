@@ -268,7 +268,9 @@ class EmundusController extends JControllerLegacy {
         require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
         $app    = JFactory::getApplication();
         $Itemid = $app->input->getInt('Itemid', null, 'int');
-        $fnum   = JRequest::getVar('fnum', null, 'GET', 'none',0);
+        $fnum   = JRequest::getVar('fnum', null, 'GET', 'none', 0);
+        $redirect   = JRequest::getVar('redirect', null, 'GET');
+        $redirect   = (!empty($redirect))?base64_decode($redirect):'/';
         $aid    = JFactory::getUser();
 
         $model = new EmundusModelProfile;
@@ -292,7 +294,7 @@ class EmundusController extends JControllerLegacy {
         $aid->fnum          = $fnum;
 
         JError::raiseNotice('PERIOD', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($aid->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($aid->end_date) )));
-        $this->setRedirect('/?Itemid='.$Itemid, JText::_('CURRENT_APPLICATION_FILE'). ' : '.$fnum, 'notice');
+        $this->setRedirect($redirect, JText::_('CURRENT_APPLICATION_FILE'). ' : '.$fnum, 'notice');
     }
 
 

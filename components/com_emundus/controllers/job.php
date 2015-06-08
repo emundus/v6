@@ -67,8 +67,9 @@ class EmundusControllerJob extends EmundusController {
         $app->setUserState('com_emundus.display.job.id', $jobId);
 
         $user->fnum = $fnum;
+        $redirect = 'index.php?option=com_fabrik&view=form&formid=205&Itemid=1465';
 
-        $this->setRedirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=205&Itemid=1465&usekey=fnum&rowid='.$fnum, false));
+        $this->setRedirect(JRoute::_('index.php?option=com_emundus&task=openfile&fnum='.$fnum.'&redirect='.base64_encode($redirect), false));
     }
 
     /**

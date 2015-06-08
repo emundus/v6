@@ -33,7 +33,7 @@ try {
 } catch (Exception $e) {
     // catch any database errors.
 }
-echo $query;
+
 $query = 'UPDATE #__emundus_declaration SET time_date=NOW() WHERE user='.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
 try {
@@ -43,18 +43,20 @@ try {
 }
 
 // Université du poste sélectionné par le candidat
-$query ='SELECT etablissement
+$query ='SELECT etablissement, fiche_emploi
 		 FROM #__emundus_emploi_etudiant_candidat
 		 WHERE fnum like '.$db->Quote($student->fnum);
 try {
     $db->setQuery($query);
-    $university = $db->loadResult();
+    $fiche = $db->loadAssoc();
+    $university = $fiche['etablissement'];
+    $fiche_emploi = $fiche['fiche_emploi'];
 } catch (Exception $e) {
     // catch any database errors.
 }
 
 // Liste des déposants de fiche emplois
-$deposant = JAccess::getUsersByGroup(16);
+//$deposant = JAccess::getUsersByGroup(16);
 $referents = JAccess::getUsersByGroup(17);
 $query ='SELECT eu.firstname, eu.lastname, u.email, u.id
 		 FROM #__users as u
@@ -67,11 +69,17 @@ try {
 } catch (Exception $e) {
     // catch any database errors.
 }
-$query ='SELECT eu.firstname, eu.lastname, u.email, u.id
+/*$query ='SELECT eu.firstname, eu.lastname, u.email, u.id
 		 FROM #__users as u
 		 LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
 		 WHERE u.id IN ('.implode(',', $deposant).') 
 		 AND eu.university_id = '.$university;
+		 */
+$query = 'SELECT eee.intitule_poste, eu.firstname, eu.lastname, u.email, u.id
+			FROM #__emundus_emploi_etudiant as eee 
+			LEFT JOIN #__users as u ON u.id=eee.user 
+			LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
+			WHERE eee.id='.$fiche_emploi;
 try {
     $db->setQuery($query);
     $deposants = $db->loadObjectList();
@@ -119,7 +127,7 @@ if (count($trigger_emails) > 0) {
             $mailer     = JFactory::getMailer();
 
             // only for logged user or Deposant
-            if ($student->id == $recipient['id'] || $recipient['university_id'] == $university) {
+            if ($student->id == $recipient['id'] || in_array($recipient['id'], $mail_to)) {
 
                 $post = array();
                 $tags = $emails->setTags($recipient['id'], $post);
@@ -149,7 +157,7 @@ if (count($trigger_emails) > 0) {
                 $mailer->Encoding = 'base64';
                 $mailer->setBody($body);
 
-                //$send = $mailer->Send();
+                $send = $mailer->Send();
                 if ( $send !== true ) {
                     echo 'Error sending email: ' . $send->__toString(); die();
                 } else {
