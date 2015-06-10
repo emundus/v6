@@ -414,47 +414,51 @@ jimport('joomla.application.component.helper');
         return $current_filter;
     }
 
-    public  function getElements()
+    public  function getElements($code = array())
     {
         $db 		= JFactory::getDBO();
-  /*      require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
+        require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
 
-        $eMConfig 	= JComponentHelper::getParams('com_emundus');
-        $export_pdf = $eMConfig->get('export_pdf');
+        //$eMConfig 	= JComponentHelper::getParams('com_emundus');
+        //$export_pdf = $eMConfig->get('export_pdf');
 
         $menu 		= new EmundusHelperMenu;
         $user 		= new EmundusModelUsers;
         $profile 	= new EmundusModelProfile;
 
-        $params 	= JFactory::getSession()->get('filt_params');
-        $programme  = $params['programme'];
-        $campaigns  = @$params['campaign'];
+        // get all profiles
+        $profiles = $user->getApplicantProfiles();
 
-                // get all profiles
-                $profiles = $user->getApplicantProfiles();
+        if(count($code) == 0) {
+            $params = JFactory::getSession()->get('filt_params');
+            $programme = $params['programme'];
+            $campaigns = @$params['campaign'];
 
-                // get profiles for selected programmes or campaigns
-                $plist 		= $profile->getProfileIDByCourse($programme);
-                $plist 		= count($plist)==0?$profe->getProfileIDByCampaign($campaigns):$plist;
+            // get profiles for selected programmes or campaigns
+            $plist = $profile->getProfileIDByCourse($programme);
+            $plist = count($plist) == 0 ? $profile->getProfileIDByCampaign($campaigns) : $plist;
+        } else {
+            $plist = $profile->getProfileIDByCourse($code);
+        }
 
-                // get Fabrik list ID for profile_id
-                $fl = array();
-                foreach ($profiles as $profile)
-                {
-                    if (is_array($plist)) {
+        // get Fabrik list ID for profile_id
+        $fl = array();
+        foreach ($profiles as $profile)
+        {
+            if (is_array($plist)) {
 
-                        if (count($plist)==0 || (count($plist)>0 && in_array($profile->id, $plist))) {
-                            $menu_list = $menu->buildMenuQuery($profile->id);
-                            foreach ($menu_list as $m)
-                            {
-                                $fl[] = $m->table_id;
-                            }
-                        }
+                if (count($plist)==0 || (count($plist)>0 && in_array($profile->id, $plist))) {
+                    $menu_list = $menu->buildMenuQuery($profile->id);
+                    foreach ($menu_list as $m)
+                    {
+                        $fl[] = $m->table_id;
                     }
                 }
-        */
+            }
+        }
+
         $query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
 				INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias, joins.table_join, menu.title
 				FROM #__fabrik_elements element';
@@ -465,6 +469,7 @@ jimport('joomla.application.component.helper');
 				LEFT JOIN #__fabrik_joins AS joins ON tab.id = joins.list_id AND groupe.id=joins.group_id
 				INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)';
         $where='WHERE tab.published = 1
+                    AND (tab.id IN ( '.implode(',', $fl).' ))
 					AND element.published=1
 					AND element.hidden=0
 					AND element.label!=" "

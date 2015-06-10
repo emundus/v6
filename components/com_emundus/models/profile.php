@@ -146,7 +146,7 @@ class EmundusModelProfile extends JModelList
 	*/
 	function getProfileIDByCourse($code = array()) {
 		if (count($code)>0) {
-			$query = 'SELECT esc.profile_id 
+			$query = 'SELECT DISTINCT(esc.profile_id)
 						FROM  #__emundus_setup_campaigns AS esc 
 						WHERE esc.training IN ("'.implode('","', $code).'")';
 			$this->_db->setQuery( $query ); 
@@ -162,7 +162,7 @@ class EmundusModelProfile extends JModelList
 	*/
 	function getProfileIDByCampaign($campaign_id) {
 		if (count($campaign_id)>0) {
-			$query = 'SELECT esc.profile_id 
+			$query = 'SELECT DISTINCT(esc.profile_id)
 						FROM  #__emundus_setup_campaigns AS esc 
 						WHERE esc.id IN ('.implode(',', $campaign_id).')';
 			$this->_db->setQuery( $query ); 
