@@ -1272,7 +1272,21 @@ $(document).ready(function()
                         {
                             $('.modal-body').empty();
                             $('.modal-body').append('<div><h4>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE')+'</h4> <select name="em-export-methode" id="em-export-methode" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+'</option><option value="1" data-value="1">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN')+'</option></select></div>');
-                            $('.modal-body').append('<div><h4>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+'</h4> <select name="em-export-form" id="em-export-form" class="chzn-select"></select></div>');
+                            $('.modal-body').append('<div><h4>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h4> <select name="em-export-prg" id="em-export-prg" style="width: 95%;" class="chzn-select">');
+                            $.ajax({
+                                type:'get',
+                                url: 'index.php?option=com_emundus&controller=files&task=getProgrammes',
+                                success: function(data)
+                                {
+                                    $('#em-export-prg').append(data);
+                                },
+                                error: function (jqXHR, textStatus, errorThrown)
+                                {
+                                    console.log(jqXHR.responseText);
+                                }
+                            });
+                            $('.modal-body').append('</select></div>');
+                            $('.modal-body').append('<div><h4>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+'</h4>  <input type="checkbox" id="showelements" name="showelements" value="showelements" />'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+' <br /><select name="em-export-form" id="em-export-form" class="chzn-select"></select></div>');
                             var defaults = '<h6>'+Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM')+'</h6><div id="em-export-elts" class="well"><ul id="em-export"></ul></div>';
                             var item ="";
                             for(var d in result.defaults)
@@ -1312,7 +1326,20 @@ $(document).ready(function()
                             }
                             $('#em-export-form').append(item);
                             $('#em-export-form').chosen({width: "95%"});
-
+                            $('.modal-body').append('<div id="elements" style="width : 95%;margin : auto; display: none"></div>');
+                            $.ajax({
+                                type:'get',
+                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw',
+                                success: function(data)
+                                {
+                                    $('#elements').append(data);
+                                },
+                                error: function (jqXHR, textStatus, errorThrown)
+                                {
+                                    console.log(jqXHR.responseText);
+                                }
+                            });
+                            $('head').append('<link rel="stylesheet" href="media/com_emundus/css/emundus.css" type="text/css" />');
                             $('.modal-body').append('<div class="well">' +
                             '<input class="em-ex-check" type="checkbox" value="photo" name="em-ex-photo" id="em-ex-photo"/>' +
                             '<label for="em-ex-photo">'+Joomla.JText._('COM_EMUNDUS_PHOTO')+'</label> <br/>' +
@@ -2262,6 +2289,15 @@ $(document).ready(function()
             $('.main-panel').removeClass('col-md-12');
         }
 
+    });
+    $(document).on('click', '#showelements', function() {
+        if($('input[name=showelements]').is(':checked')) {
+            $('#elements').toggle(400);
+        }
+        else
+        {
+            $('#elements').hide();
+        }
     });
 
 

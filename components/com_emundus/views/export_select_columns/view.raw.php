@@ -32,10 +32,12 @@ class EmundusViewExport_select_columns extends JViewLegacy
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
 		
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
-		
+
+
 		parent::__construct($config);
 	}
 	
@@ -44,15 +46,19 @@ class EmundusViewExport_select_columns extends JViewLegacy
     {
 		$document = JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
-		
-		//$current_user = JFactory::getUser();
+        $jinput = JFactory::getApplication()->input;
+        $code = $jinput->getString('code', null);
+
+        $profile = new EmundusModelProfile();
+        $profile_id = $profile->getProfileIDByCourse($code);
+		$current_user = JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor");
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) die("You are not allowed to access to this page.");
-		
+
+        if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+            die(JText::_('ACCESS_DENIED'));
+
 		//$elements = $this->get('Elements');
-		$elements = EmundusHelperFilters::getElements();
+		$elements = EmundusHelperFiles::getElements();
 		$this->assignRef('elements', $elements);
 		
 		parent::display($tpl);
