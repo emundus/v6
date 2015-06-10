@@ -52,10 +52,7 @@ $post = array(  'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($campaign[
                 'CAMPAIGN_END' => $campaign['end_date'],
                 'CAMPAIGN_CODE' => $campaign['training']
 );
-/*
-$tags = $emails->setTags($student->id, $post);
-$email = $emails->getEmail("confirm_post");
-*/
+
 // Apllicant cannot delete this attachments now
 $query = 'UPDATE #__emundus_uploads SET can_be_deleted = 0 WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery( $query );
@@ -65,7 +62,6 @@ try {
     // catch any database errors.
 }
 
-// Confirm candidature
 // Insert data in #__emundus_campaign_candidature
 $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=1 WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
@@ -83,118 +79,7 @@ try {
 }
 
 $student->candidature_posted = 1;
-/*
-// Mail 
-$from = $email->emailfrom;
-$from_id = 62;
-$fromname =$email->name;
-$recipient[] = $student->email;
-$subject = $email->subject;
-//$body = preg_replace($patterns, $replacements, $email->message);
-$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message); 
-$mode = 1;
 
-//$attachment[] = $path_file;
-$replyto = $email->emailfrom;
-$replytoname = $email->name;
-
-$student->candidature_posted = 1;
-
-$config = JFactory::getConfig();
-$sender = array(
-    $config->get( $from ),
-    $config->get( $fromname )
-);
-
-$mailer->setSender($sender);
-$mailer->addRecipient($recipient);
-$mailer->setSubject($subject);
-$mailer->isHTML(true);
-$mailer->Encoding = 'base64';
-$mailer->setBody($body);
-
-$send = $mailer->Send();
-if ( $send !== true ) {
-    echo 'Error sending email: ' . $send->__toString(); die();
-} else {
-    $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-				VALUES ('".$from_id."', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
-    $db->setQuery( $sql );
-    try {
-        $db->execute();
-    } catch (Exception $e) {
-        // catch any database errors.
-    }
-}
-
-unset($recipient);
-
-if ($alert_new_applicant==1) {
-
-
-// Alert by email evaluators
-// get evaluator list
-	$evaluators = $groups->getUsersByGroups($group_list);
-
-	$email = $emails->getEmail("new_applicant");
-	if (count($evaluators) > 0) {
-		foreach ($evaluators as $evaluator) {
-			$eval_user = &JFactory::getUser($evaluator);
-			$tags = $emails->setTags($eval_user->id, $post);
-			// Mail
-			$from = $email->emailfrom;
-			$from_id = 62;
-			$fromname = $email->name;
-			$recipient = $eval_user->email;
-			$subject = $email->subject;
-			//$body = preg_replace($patterns, $replacements, $email->message);
-			$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
-			$mode = 1;
-
-			//$attachment[] = $path_file;
-			$replyto = $email->emailfrom;
-			$replytoname = $email->name;
-            $student->candidature_posted = 1;
-
-            $config = JFactory::getConfig();
-            $sender = array(
-                $config->get( $from ),
-                $config->get( $fromname )
-            );
-
-            $mailer->setSender($sender);
-            $mailer->addRecipient($recipient);
-            $mailer->setSubject($subject);
-            $mailer->isHTML(true);
-            $mailer->Encoding = 'base64';
-            $mailer->setBody($body);
-
-            $send = $mailer->Send();
-            if ( $send !== true ) {
-                echo 'Error sending email: ' . $send->__toString(); die();
-            } else {
-                $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-						VALUES ('" . $from_id . "', '" . $eval_user->id . "', " . $db->quote($subject) . ", " .
-                    $db->quote($body) . ", NOW())";
-                $db->setQuery($sql);
-                try {
-                    $db->execute();
-                } catch (Exception $e) {
-                    // catch any database errors.
-                }
-            }
-		}
-	}
-}
-
-// get evaluators groups for current applicant course
-$groups = new EmundusModelGroups;
-$group_list = $groups->getGroupsIdByCourse($campaign['training']);
-
-// Link groups to current application
-$groups->affectEvaluatorsGroups($group_list, $student->id);
-
-*/
 // Send emails defined in trigger
 $emails = new EmundusModelEmails;
 $step = 1;
