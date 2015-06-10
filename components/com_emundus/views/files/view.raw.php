@@ -209,7 +209,7 @@ class EmundusViewFiles extends JViewLegacy
 				    if(EmundusHelperAccess::asAccessAction(11, 'r', JFactory::getUser()->id))
 				    {
 					    $hasAccess = true;
-					    $datas[0]['access'] = JText::_("Access");
+					    $datas[0]['access'] = JText::_("COM_EMUNDUS_ASSOCIATED_TO");
 				    }
 
 				    foreach ($users as $user)

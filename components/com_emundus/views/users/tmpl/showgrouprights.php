@@ -42,7 +42,7 @@ span:hover {
 					</th>
 				</tr>
 				</thead>
-				<tbody size="<?php echo count($this->actions)?>">
+				<tbody size="<?php echo count(@$this->actions)?>">
 				<?php 
 				//var_dump($g['acl']);
 				foreach($g['acl'] as $l => $action):?>
