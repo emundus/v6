@@ -1817,4 +1817,16 @@ class EmundusControllerFiles extends JControllerLegacy
         $pdf->Output($path, 'I');
         exit;
     }
+
+    public function getProgrammes(){
+        $html = '';
+        $session     = JFactory::getSession();
+        $filt_params = $session->get('filt_params');
+        $programmes = @EmundusHelperFiles::getProgrammes($filt_params['programme']);
+        foreach($programmes as $p) {
+            $html .= '<option value="'.$p->code.'">'.$p->label.' - '.$p->code.'</option>';
+        }
+        echo $html;
+        exit;
+    }
 }
