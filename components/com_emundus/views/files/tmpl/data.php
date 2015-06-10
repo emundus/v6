@@ -58,7 +58,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 					<tr>
 						<?php foreach ($line as $k => $value):?>
 							<td <?php if($k == 'check'&& $value->class != null){echo 'class="'.$value->class.'"';}   ?>>
-								<div class="em-cell" >
+                                <div class="em-cell" >
 									<?php if($k == 'check'): ?>
 										<label for = "<?php echo $line['fnum']->val ?>_check">
 											<input type="checkbox" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>

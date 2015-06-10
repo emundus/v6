@@ -1009,8 +1009,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		$query .= $q['join'];
 		$query .= " where 1=1 ".$q['q'];
-
-       // echo($query);die();
+        //echo($query);die();
 
 
 		// ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT

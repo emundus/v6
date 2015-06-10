@@ -508,6 +508,4 @@ class EmundusControllerApplication extends JControllerLegacy
             exit();
         }
     }
-
-
 }

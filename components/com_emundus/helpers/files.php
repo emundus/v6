@@ -173,6 +173,7 @@ jimport('joomla.application.component.helper');
 		} elseif(count($filts_details['programme']) == 0 || empty($filts_details['programme'])) {
             $filts_details['programme'] = $programme;
         }
+        //$params['published'] = 1;
         JFactory::getSession()->set('filt_params', $params);
 		return @EmundusHelperFiles::createFilterBlock($filts_details, $filts_options, $tables);
 	}
@@ -414,7 +415,7 @@ jimport('joomla.application.component.helper');
         return $current_filter;
     }
 
-    public  function getElements($code = array())
+    public static function getElements()
     {
         $db 		= JFactory::getDBO();
         require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
