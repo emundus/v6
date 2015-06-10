@@ -28,7 +28,7 @@ jimport('joomla.application.component.helper');
 class EmundusHelperExport
 {
 	
-	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post )
+	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 1 )
 	{
 		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';
 

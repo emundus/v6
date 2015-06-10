@@ -391,18 +391,18 @@ class EmundusControllerApplication extends JControllerLegacy
         $ids = $jinput->getString('ids', null);
         $ids = explode(',', $ids);
         $sid = $jinput->getInt('student_id', null);
-        $aggr = $jinput->getInt('aggr', 0);
+        $form_post = $jinput->getVar('forms', null);
         if(EmundusHelperAccess::asAccessAction(8,'c', JFactory::getUser()->id, $fnum))
         {
             $exports = array();
             $tmpArray = array();
 
-            if($aggr !== 0)
+            if($form_post)
             {
                 $modelFiles = $this->getModel('files');
                 $fnumInfos = $modelFiles->getFnumInfos($fnum);
 
-                $exports[] = EmundusHelperExport::buildFormPDF($fnumInfos, $sid, $fnum);
+                $exports[] = EmundusHelperExport::buildFormPDF($fnumInfos, $sid, $fnum, 1);
 
             }
             $model = $this->getModel('application');

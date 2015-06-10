@@ -146,6 +146,10 @@ $isCoordinator = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $t
         return checkedInput;
     }
 
+    $( document ).ready(function() {
+        $('td').css('vertical-align', 'inherit');
+    });
+
     $(document).on('click', '#em_application_attachments_all', function(e)
     {
         if($(this).is(':checked'))
@@ -231,12 +235,12 @@ $isCoordinator = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $t
         if(checkInput.length > 0)
         {
             $('#em-modal-actions .modal-body').empty();
-            $('#em-modal-actions .modal-body').append('<div class="em_attachs"><?php echo JText::_('ATTACHEMENTS_AGGREGATIONS')?> <input type="radio" name="aggr" id="aggr-yes" value="1"/>'  +
-            '<label for="aggr-yes"><?php echo JText::_('JYES')?></label>'
-            +
-            '<input  type="radio" name="aggr" id="aggr-no" checked="checked" value="0"/> ' +
-            '<label for="aggr-no"><?php echo JText::_('JNO')?></label>'+
-            '<br/>' +
+            $('#em-modal-actions-title').empty();
+            $('#em-modal-actions-title').append('<?php echo JText::_('GENERATE_PDF') ?>');
+            $('#em-modal-actions .modal-body').append('<div class="well">' +
+            '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms"/>' +
+            '<label for="em-ex-forms">'+Joomla.JText._('FORMS_PDF')+'</label> <br/>' +
+            '</div>' +
             '<a class="btn btn-default btn-attach" id="em_generate" href="'+url+'"><?php echo JText::_('GENERATE_PDF') ?></a><div id="attachement_res"></div></div>');
             $('#em-modal-actions .modal-footer').hide();
             $('#em-modal-actions .modal-dialog').addClass('modal-lg');
