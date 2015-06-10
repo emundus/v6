@@ -597,7 +597,11 @@ class EmundusModelFiles extends JModelLegacy
 	private function _buildWhere($tableAlias = array())
 	{
 		$params = JFactory::getSession()->get('filt_params');
-		$db = JFactory::getDBO();
+        $db = JFactory::getDBO();
+
+        if(!isset($params['published'] ))
+            $params['published'] = 1;
+
 		$query = array('q' => '', 'join' => '');
 		if(!empty($params))
 		{
@@ -884,12 +888,12 @@ class EmundusModelFiles extends JModelLegacy
                         }
                         break;
                     case 'published':
-                        if ($value[0] == -1) {
-                            $query['q'] .= ' and c.published= -1 ';
-                        } elseif ($value[0] == 0) {
-                            $query['q'] .= ' and c.published= 0 ';
+                        if ($value == "-1") {
+                            $query['q'] .= ' and c.published=-1 ';
+                        } elseif ($value == 0) {
+                            $query['q'] .= ' and c.published=0 ';
                         } else {
-                            $query['q'] .= ' and c.published= 1 ';
+                            $query['q'] .= ' and c.published=1 ';
                         }
                         break;
 				}
@@ -1001,9 +1005,12 @@ class EmundusModelFiles extends JModelLegacy
             $sql_fnum = ' OR c.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
 		$query .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
 		//////////////////////////////////////////////////////////////
-		$query .= ' GROUP BY c.fnum';
-		$query .=  $this->_buildContentOrderBy();
-		$dbo->setQuery($query);
+
+        $query .= ' GROUP BY c.fnum';
+
+        $query .=  $this->_buildContentOrderBy();
+
+        $dbo->setQuery($query);
 		try
 		{
 			$res = $dbo->loadAssocList();
@@ -1024,6 +1031,7 @@ class EmundusModelFiles extends JModelLegacy
 		catch(Exception $e)
 		{
             echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
 	}
 

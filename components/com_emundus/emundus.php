@@ -18,7 +18,15 @@ require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-
+// LOGGER
+jimport('joomla.log.log');
+JLog::addLogger(
+    array(
+        'text_file' => 'com_emundus.error.php'
+    ),
+    JLog::ALL,
+    array('com_emundus')
+);
 // translation for javacript
 JText::script('COM_EMUNDUS_ACCESS_FILE');
 JText::script('COM_EMUNDUS_ACCESS_ATTACHMENT');
