@@ -141,17 +141,23 @@ jimport('joomla.application.component.helper');
 					$params[$filt_name] = array_unique($params[$filt_name]);
 				}
 				else {
-                    $params[$filt_name] = explode('|', $filts_values[$key]);
+                    $params[$filt_name] = $filts_values[$key];
                 }
 			}
 			if (array_key_exists($key, $filts_values)) {
-                $filts_details[$filt_name] = explode('|', $filts_values[$key]);
+                if(in_array($filt_name, $filter_multi_list))
+                    $filts_details[$filt_name] = explode('|', $filts_values[$key]);
+                else
+                    $filts_details[$filt_name] = $filts_values[$key];
             }
 			else
 				$filts_details[$filt_name] = '';
 			if (array_key_exists($key, $filts_types)) {
                 if ($filts_types[$key] == "hidden") {
-                    $params[$filt_name] = explode('|', $filts_values[$key]);
+                    if(in_array($filt_name, $filter_multi_list))
+                        $params[$filt_name] = explode('|', $filts_values[$key]);
+                    else
+                        $params[$filt_name] = $filts_values[$key];
                 }
                 $filts_options[$filt_name] = $filts_types[$key];
             } else
@@ -754,7 +760,7 @@ jimport('joomla.application.component.helper');
 		$complete_application	= @$filt_params['complete'];
 		$validate_application	= @$filt_params['validate'];
 		$current_status			= @$filt_params['status'];
-        $current_published      = $filt_params['published'][0];
+        $current_published      = @$filt_params['published'];
 		$current_tag			= @$filt_params['tag'];
 		$current_group_eval     = @$filt_params['evaluator_group'];
 		$current_user_profile	= @$filt_params['profile_users'];

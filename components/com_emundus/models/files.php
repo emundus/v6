@@ -986,8 +986,9 @@ class EmundusModelFiles extends JModelLegacy
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code like esc.training  
 					LEFT JOIN #__users as u on u.id = c.applicant_id
 					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=c.fnum  ';
-        //var_dump(JFactory::getSession()->get('filt_params'));die();
+
 		$q = $this->_buildWhere($lastTab);
+
 		if (!empty($leftJoin))
 		{
 			$query .= $leftJoin;

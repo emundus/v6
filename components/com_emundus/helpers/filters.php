@@ -28,7 +28,7 @@ class EmundusHelperFilters {
 	
 	/*
 	** @description Clear session and reinit values by default
-	*/
+
 	function clear() {
 		global $option;
 
@@ -89,7 +89,7 @@ class EmundusHelperFilters {
 		$mainframe->setUserState( $option."select_filter", "" );
 		
 		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&Itemid='.JRequest::getCmd( 'Itemid' ));
-	}
+	}*/
 	/*
 	* @param 			query results
 	* @param 	array 	values to extract and insert
@@ -987,7 +987,7 @@ class EmundusHelperFilters {
 		</table>
 		<div id="emundus_filters_response"></div>
 		</div>
-		<script type="text/javascript" >'.@EmundusHelperJavascript::getPreferenceFilters().''.@EmundusHelperJavascript::clearAdvanceFilter().'</script>';
+		<script type="text/javascript" >'.@EmundusHelperJavascript::getPreferenceFilters().@EmundusHelperJavascript::clearAdvanceFilter().'</script>';
 		$quick = '<div id="filters"><div id="quick"><div class="em_label"><label><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'</span></label></div>';
 		$quick .= '<div class="em_filtersElement"><input id="text_s" type="text" name="s" size="30" value="'.$current_s.'"/> <span id="filter_action"> <a href="#" id="shower">'.JText::_('MORE_FILTERS').'</a> | <a href="#" id="hider">'.JText::_('HIDE_FILTERS').'</a> </span></div></div>';
 
