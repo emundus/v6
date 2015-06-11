@@ -68,7 +68,7 @@ class EmundusModelFiles extends JModelLegacy
 		$mainframe = JFactory::getApplication();
 
 		// Get current menu parameters
-		//$current_user = JFactory::getUser();
+		$current_user = JFactory::getUser();
 		$menu = @JSite::getMenu();
 		$current_menu = $menu->getActive();
 
@@ -164,6 +164,20 @@ class EmundusModelFiles extends JModelLegacy
 					$this->_elements_default[] = $query;
 					//$this->_elements_default[] = ' (SELECT esc.label FROM jos_emundus_setup_campaigns AS esc WHERE esc.id = jos_emundus_campaign_candidature.campaign_id) as `jos_emundus_campaign_candidature.campaign_id` ';
 				}
+                elseif($def_elmt->element_plugin == 'cascadingdropdown') {
+                    $attribs = json_decode($def_elmt->element_attribs);
+                    $cascadingdropdown_id = $attribs->cascadingdropdown_id;
+                    $r1 = explode('___', $cascadingdropdown_id);
+                    $cascadingdropdown_label = $attribs->cascadingdropdown_label;
+                    $r2 = explode('___', $cascadingdropdown_label);
+                    $select = !empty($attribs->cascadingdropdown_label_concat)?"CONCAT(".$attribs->cascadingdropdown_label_concat.")":$r2[1];
+                    $from = $r2[0];
+                    $where = $r1[1].'='.$def_elmt->element_name;
+                    $query = "(SELECT ".$select." FROM ".$from." WHERE ".$where.")";
+                    $query = preg_replace('#{thistable}#', $from, $query);
+                    $query = preg_replace('#{my->id}#', $current_user->id, $query);
+                    $this->_elements_default[] = $query; 
+                }
 				elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
 
                     if (@$group_params->repeat_group_button == 1) {

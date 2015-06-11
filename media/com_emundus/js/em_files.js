@@ -1156,10 +1156,10 @@ $(document).ready(function()
         $('.modal-footer').show();
 
 
-        $('.modal-footer').append('<div>' +
+       /* $('.modal-footer').append('<div>' +
         '<p>'+Joomla.JText._('SENT')+'</p>' +
         '<img src="'+loadingLine+'" alt="loading"/>' +
-        '</div>');
+        '</div>');*/
         // $('.modal-content').append('<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="em-modal-actions-title">'+Joomla.JText._('LOADING')+'</h4></div><div class="modal-body"><img src="media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'></button></div>');
         $('.modal-footer').hide();
 
