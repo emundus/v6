@@ -445,6 +445,7 @@ jimport('joomla.application.component.helper');
 
         // get Fabrik list ID for profile_id
         $fl = array();
+        $menutype = array();
         foreach ($profiles as $profile)
         {
             if (is_array($plist)) {
@@ -454,6 +455,7 @@ jimport('joomla.application.component.helper');
                     foreach ($menu_list as $m)
                     {
                         $fl[] = $m->table_id;
+                        $menutype[$profile->id] = 'menu-profile'.$profile->id;
                     }
                 }
             }
@@ -473,11 +475,12 @@ jimport('joomla.application.component.helper');
 					AND element.published=1
 					AND element.hidden=0
 					AND element.label!=" "
-					AND element.label!=""';
-        $order = 'ORDER BY menu.lft, formgroup.ordering, groupe.id, element.ordering';
+					AND element.label!=""
+					AND menu.menutype IN ( "'.implode('","', $menutype).'" )';
+        $order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
 
         $query .= ' '. $join . ' ' .  $where . ' '. $order;
-
+//echo str_replace('#_', 'jos', $query);
         try
         {
             $db->setQuery( $query );
