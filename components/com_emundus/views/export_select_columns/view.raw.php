@@ -47,10 +47,9 @@ class EmundusViewExport_select_columns extends JViewLegacy
 		$document = JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
         $jinput = JFactory::getApplication()->input;
-        $code = $jinput->getString('code', null);
-
-        $profile = new EmundusModelProfile();
-        $profile_id = $profile->getProfileIDByCourse($code);
+        $prg = $jinput->get('code', null);
+        $code = array();
+        $code[] = $prg;
 		$current_user = JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor");
 
@@ -58,7 +57,7 @@ class EmundusViewExport_select_columns extends JViewLegacy
             die(JText::_('ACCESS_DENIED'));
 
 		//$elements = $this->get('Elements');
-		$elements = EmundusHelperFiles::getElements();
+		$elements = EmundusHelperFiles::getElements($code);
 		$this->assignRef('elements', $elements);
 		
 		parent::display($tpl);

@@ -24,17 +24,18 @@ foreach($s_elements as $s){
 ?>
 
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" >
-	<input type='button' onclick='location.href="index.php?option=com_emundus&view=<?php echo $view;?>&Itemid=<?php echo $itemid; ?>"' value="<?php echo JText::_('RETURN_BACK'); ?>"/>
+    <!--<input type='button' onclick='location.href="index.php?option=com_emundus&view=<?php echo $view;?>&Itemid=<?php echo $itemid; ?>"' value="<?php echo JText::_('RETURN_BACK'); ?>"/>
 	<input type="submit" name="send_elements" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/> 
-	<!-- <input type="submit" name="send_elements_csv" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS_CSV'); ?>"/> -->
+	 <input type="submit" name="send_elements_csv" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS_CSV'); ?>"/> -->
 	<input type="hidden" name="option" value="com_emundus"/>
     <input type="hidden" name="view" value="<?php echo $view; ?>"/>
     <input type="hidden" name="task" value=""/>
     <input type="hidden" name="itemid" value="<?php echo $itemid; ?>"/>
 	<?php
-		echo JText::_('SELECT_ALL');
-		echo '<input type="checkbox" id="emundus_checkall" class="emundusraw" onClick="javascript:check_all(\'emundus_checkall\', \'emundus_elements\', 3)" /><div id="emundus_elements">';
-		$tbl_tmp='';
+		echo '<input type="checkbox" id="emundus_checkall" class="emundusall" onClick="javascript:check_all(\'emundus_checkall\', \'emundus_elements\', 3)" /> ';
+        echo '<label for="emundus_checkall">'.JText::_('SELECT_ALL').'</label>';
+        echo '<div id="emundus_elements">';
+        $tbl_tmp='';
 		$grp_tmp='';
 		
 		foreach($this->elements as $t){
@@ -53,7 +54,7 @@ foreach($s_elements as $s){
 						<fieldset id="emundus_table_'.$t->table_id.'">
 							<legend><input type="checkbox" ';
 					if($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
-					echo ' id="emundus_checkall_tbl_'.$t->table_id.'" class="emundusraw" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$t->table_id.'\', \'emundus_table_'.$t->table_id.'\', 2)" /> '.$t->table_label.'</legend>
+					echo ' id="emundus_checkall_tbl_'.$t->table_id.'" class="emunduspage" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$t->table_id.'\', \'emundus_table_'.$t->table_id.'\', 2)" /> '.$t->table_label.'</legend>
 						<fieldset id="emundus_grp_'.$t->group_id.'">
 							<legend><input type="checkbox" ';
 					
@@ -65,7 +66,7 @@ foreach($s_elements as $s){
 								<legend><input type="checkbox" ';
 						
 						if($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
-						echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusraw" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\', \'emundus_grp_'.$t->group_id.'\', 1)"/> '.$t->group_label.'</legend>';
+						echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusgroup" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\', \'emundus_grp_'.$t->group_id.'\', 1)"/> '.$t->group_label.'</legend>';
 				} 
 			}
 			echo ' <input name="ud[]" type="checkbox" id="emundus_elm_'.$t->id.'" class="emundusraw" ';
@@ -78,8 +79,8 @@ foreach($s_elements as $s){
 		echo '</fieldset></fieldset>';
 		echo '</div>';
 		?>
-	<input type="submit" name="send_elements" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/> 
-	<!-- <input type="submit" name="send_elements_csv" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS_CSV'); ?>"/>  -->
+    <!-- <input type="submit" name="send_elements" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/>
+	<input type="submit" name="send_elements_csv" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS_CSV'); ?>"/>  -->
 </form>    
 
 <script>
@@ -94,7 +95,23 @@ function check_all(box, obj, level) {
 // var frereSuiv = node.nextSibling; //récupère le frère suivant
  if(level == 1) {
 	 for (i=1 ; i < childList.length ; i++) {
-		childList[i].checked = checked;
+		 childList[i].checked = checked;
+         console.log("1");
+         var itemid = childList[i].id;
+
+         if (itemid) {
+             itemid = itemid.split('_');
+             itemid = itemid[2];
+             if (checked) {
+                 console.log(itemid);
+                 alert(itemid);
+                 var text = $("label[for='emundus_elm_" + itemid + "']").text();
+                 $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><span class="em-excel_elts"><strong>' + text + '</strong></span><button class="btn btn-danger btn-xs pull-right" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button></li>');
+
+             } else {
+                 $('#' + itemid + '-item').remove();
+             }
+         }
 	 }
  }
  if(level == 2) {
@@ -108,6 +125,20 @@ function check_all(box, obj, level) {
 		var grp = childList[i].childNodes;
 		for (j=1 ; j < grp.length ; j++) {
 			grp[j].checked = checked;
+            console.log("2");
+            var itemid = grp[j].id;
+            if (itemid) {
+                itemid = itemid.split('_');
+                itemid = itemid[2];
+                if (checked) {
+                    console.log(itemid);
+                    var text = $("label[for='emundus_elm_" + itemid + "']").text();
+                    $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><span class="em-excel_elts"><strong>' + text + '</strong></span><button class="btn btn-danger btn-xs pull-right" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button></li>');
+
+                } else {
+                    $('#' + itemid + '-item').remove();
+                }
+            }
 		}
 	 }
  }
@@ -130,6 +161,20 @@ function check_all(box, obj, level) {
 			var elm = grp[j].childNodes;
 			for (k=1 ; k < elm.length ; k++) {
 				elm[k].checked = checked;
+                console.log("3");
+                var itemid = elm[k].id;
+                if (itemid) {
+                    itemid = itemid.split('_');
+                    itemid = itemid[2];
+                    if (checked) {
+                        console.log(itemid);
+                        var text = $("label[for='emundus_elm_" + itemid + "']").text();
+                        $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><span class="em-excel_elts"><strong>' + text + '</strong></span><button class="btn btn-danger btn-xs pull-right" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button></li>');
+
+                    } else {
+                        $('#' + itemid + '-item').remove();
+                    }
+                }
 			}
 		}
 	 }
