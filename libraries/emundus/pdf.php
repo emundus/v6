@@ -548,20 +548,20 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
-	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
-	require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
+	//require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
+	//require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
 	include_once(JPATH_COMPONENT.DS.'models'.DS.'application.php');
 	include_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
 
 	$m_profile 		= new EmundusModelProfile;
-	$m_users 		= new EmundusModelUsers;
-	$menu 			= new EmundusHelperMenu;
+	//$m_users 		= new EmundusModelUsers;
+	//$menu 			= new EmundusHelperMenu;
 	$application 	= new EmundusModelApplication;
 
 	$db 			= JFactory::getDBO();
 	$app 			= JFactory::getApplication();
 	$config 		= JFactory::getConfig();
-	$eMConfig 		= JComponentHelper::getParams('com_emundus');
+	//$eMConfig 		= JComponentHelper::getParams('com_emundus');
 	$current_user 	= JFactory::getUser();
 	$user 			= JFactory::getUser($user_id);
 	$fnum 			= empty($fnum)?$user->fnum:$fnum;
