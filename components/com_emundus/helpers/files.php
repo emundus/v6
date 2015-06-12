@@ -415,7 +415,7 @@ jimport('joomla.application.component.helper');
         return $current_filter;
     }
 
-    public static function getElements()
+    public static function getElements($code = array())
     {
         $db 		= JFactory::getDBO();
         require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
