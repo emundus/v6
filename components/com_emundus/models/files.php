@@ -176,7 +176,7 @@ class EmundusModelFiles extends JModelLegacy
                     $query = "(SELECT ".$select." FROM ".$from." WHERE ".$where.")";
                     $query = preg_replace('#{thistable}#', $from, $query);
                     $query = preg_replace('#{my->id}#', $current_user->id, $query);
-                    $this->_elements_default[] = $query; 
+                    $this->_elements_default[] = $query;
                 }
 				elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
 

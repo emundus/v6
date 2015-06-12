@@ -51,6 +51,9 @@ class plgUserEmundus extends JPlugin
         foreach($tables as $table)
         {
             if(strpos($table, 'emundus_')===FALSE) continue;
+            if(strpos($table, 'emundus_group_assoc')>0) continue;
+            if(strpos($table, 'emundus_tag_assoc')>0) continue;
+            if(strpos($table, 'emundus_stats')>0) continue;
             if(strpos($table, '_repeat')>0) continue;
             if(strpos($table, 'setup_')>0 || strpos($table, '_country')>0 || strpos($table, '_users')>0 || strpos($table, '_evaluation_weight')>0 || strpos($table, '_acl')>0) continue;
             if(strpos($table, '_files_request')>0 || strpos($table, '_evaluations')>0 || strpos($table, '_final_grade')>0 || strpos($table, '_emundus_academic_transcrip')>0 || strpos($table, '_emundus_mobility')>0) {
