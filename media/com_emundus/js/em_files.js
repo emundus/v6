@@ -1156,7 +1156,7 @@ $(document).ready(function()
         $('.modal-footer').show();
 
 
-       /* $('.modal-footer').append('<div>' +
+        /*$('.modal-footer').append('<div>' +
         '<p>'+Joomla.JText._('SENT')+'</p>' +
         '<img src="'+loadingLine+'" alt="loading"/>' +
         '</div>');*/
@@ -1272,7 +1272,7 @@ $(document).ready(function()
                         {
                             $('.modal-body').empty();
                             $('.modal-body').append('<div><h4>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE')+'</h4> <select name="em-export-methode" id="em-export-methode" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+'</option><option value="1" data-value="1">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN')+'</option></select></div>');
-                            $('.modal-body').append('<div><h4>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h4> <select name="em-export-prg" id="em-export-prg" style="width: 95%;" class="chzn-select">');
+                            $('.modal-body').append('<div><h4>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h4> <select name="em-export-prg" id="em-export-prg" style="width: 95%;" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG_DEFAULT')+'</option></select>');
                             $.ajax({
                                 type:'get',
                                 url: 'index.php?option=com_emundus&controller=files&task=getProgrammes',
@@ -1285,8 +1285,25 @@ $(document).ready(function()
                                     console.log(jqXHR.responseText);
                                 }
                             });
-                            $('.modal-body').append('</select></div>');
-                            $('.modal-body').append('<div><h4>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+'</h4>  <input type="checkbox" id="showelements" name="showelements" value="showelements" />'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+' <br /><select name="em-export-form" id="em-export-form" class="chzn-select"></select></div>');
+                            $('.modal-body').append('<div id="elements_detail" style="display: none"><h4>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+'</h4>  <input type="checkbox" id="showelements" name="showelements" value="showelements" /><label for="showelements">'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'</label> <br /><select name="em-export-form" id="em-export-form" class="chzn-select"></select></div>');
+                            $('.modal-body').append('<div id="elements" style="width : 95%;margin : auto; display: none"></div>');
+                            $('#em-export-prg').on('change', function() {
+                                var code = $(this).val();
+                                $('#elements_detail').toggle(400);
+                                $.ajax({
+                                    type:'get',
+                                    url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code='+code,
+                                    success: function(data)
+                                    {
+                                        $('#elements').empty();
+                                        $('#elements').append(data);
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown)
+                                    {
+                                        console.log(jqXHR.responseText);
+                                    }
+                                });
+                            });
                             var defaults = '<h6>'+Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM')+'</h6><div id="em-export-elts" class="well"><ul id="em-export"></ul></div>';
                             var item ="";
                             for(var d in result.defaults)
@@ -1326,19 +1343,6 @@ $(document).ready(function()
                             }
                             $('#em-export-form').append(item);
                             $('#em-export-form').chosen({width: "95%"});
-                            $('.modal-body').append('<div id="elements" style="width : 95%;margin : auto; display: none"></div>');
-                            $.ajax({
-                                type:'get',
-                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw',
-                                success: function(data)
-                                {
-                                    $('#elements').append(data);
-                                },
-                                error: function (jqXHR, textStatus, errorThrown)
-                                {
-                                    console.log(jqXHR.responseText);
-                                }
-                            });
                             $('head').append('<link rel="stylesheet" href="media/com_emundus/css/emundus.css" type="text/css" />');
                             $('.modal-body').append('<div class="well">' +
                             '<input class="em-ex-check" type="checkbox" value="photo" name="em-ex-photo" id="em-ex-photo"/>' +
@@ -2214,12 +2218,31 @@ $(document).ready(function()
             e.handle = true;
             var id = $(this).val();
             var text = $('#em-modal-actions #em-export-form option:selected').attr('data-value');
-            $('#em-export').append('<li class="em-export-item" id="'+id+'-item"><span class="em-excel_elts"><strong>'+text+'</strong></span><button class="btn btn-danger btn-xs pull-right"><span class="glyphicon glyphicon-trash"></span></button></li>');
+            $('#emundus_elm_'+id).attr("checked", true);
+            $('#em-export').append('<li class="em-export-item" id="'+id+'-item"><span class="em-excel_elts"><strong>'+text+'</strong></span><button class="btn btn-danger btn-xs pull-right" id="' + id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button></li>');
+        }
+    });
+    $(document).on('click', '.emundusraw', function(e)
+    {
+        if (e.handle !== true)
+        {
+            e.handle = true;
+            var id = $(this).val();
+            if ($(this).is(':checked')) {
+                var text = $("label[for='" + $(this).attr('id') + "']").text();
+                $('#em-export').append('<li class="em-export-item" id="' + id + '-item"><span class="em-excel_elts"><strong>' + text + '</strong></span><button class="btn btn-danger btn-xs pull-right" id="' + id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button></li>');
+            } else {
+                $('#'+id+'-item').remove();
+            }
+
         }
     });
 
     $(document).on('click', '#em-export .em-export-item .btn.btn-danger', function(e)
     {
+        var id = $(this).attr('id').split('-');
+        id.pop();
+        $('#emundus_elm_'+id).removeAttr("checked");
         $(this).parent('li').remove();
     });
 
