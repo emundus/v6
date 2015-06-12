@@ -160,10 +160,10 @@ class EmundusViewApplication extends JViewLegacy
 
 						// get evaluation form ID
 						$formid = $evaluation->getEvaluationFormByProgramme($fnumInfos['training']);
-						$form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&tmpl=component&iframe=1&rowid='.@$myEval[0]->id.'&student_id='.$student->id;
+						/*$form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&tmpl=component&iframe=1&rowid='.@$myEval[0]->id.'&student_id='.$student->id;
 						$form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid='.@$myEval[0]->id.'&student_id='.$student->id;
 						$this->assignRef('form_url_edit', $form_url_edit);
-
+*/
 						$url_evaluation = 'index.php?option=com_emundus&view=evaluation&layout=data&format=raw&Itemid=&cfnum='.$fnum;
 
 						$url_form = '';
