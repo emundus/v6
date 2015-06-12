@@ -613,7 +613,7 @@ class EmundusModelFiles extends JModelLegacy
 		$params = JFactory::getSession()->get('filt_params');
         $db = JFactory::getDBO();
 
-        if(!isset($params['published'] ))
+        if(!isset($params['published']) || empty($params['published']))
             $params['published'] = 1;
 
 		$query = array('q' => '', 'join' => '');

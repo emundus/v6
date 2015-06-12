@@ -160,16 +160,22 @@ class EmundusModelProfile extends JModelList
 	* @param 	$code 	array 	list of programmes code
 	* @return  	string The greeting to be displayed to the user
 	*/
-	function getProfileIDByCampaign($campaign_id) {
-		if (count($campaign_id)>0) {
-			$query = 'SELECT DISTINCT(esc.profile_id)
-						FROM  #__emundus_setup_campaigns AS esc 
-						WHERE esc.id IN ('.implode(',', $campaign_id).')';
-			$this->_db->setQuery( $query ); 
-			$res = $this->_db->loadColumn();
-		} else $res = false;
-		return $res;
-	}
+    function getProfileIDByCampaign($campaign_id) {
+        if (count($campaign_id)>0) {
+            if (in_array('%', $campaign_id))
+                $where = '';
+            else
+                $where = 'WHERE esc.id IN ('.implode(',', $campaign_id).')';
+
+            $query = 'SELECT DISTINCT(esc.profile_id)
+						FROM  #__emundus_setup_campaigns AS esc '.$where;
+            $this->_db->setQuery( $query );
+            $res = $this->_db->loadColumn();
+        }
+        else
+            $res = false;
+        return $res;
+    }
 
 	function getFnumDetails($fnum){
 		$query = 'SELECT ecc.*, esc.*, ess.*
