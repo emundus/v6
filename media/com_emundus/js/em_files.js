@@ -1289,7 +1289,7 @@ $(document).ready(function()
                             $('.modal-body').append('<div id="elements" style="width : 95%;margin : auto; display: none"></div>');
                             $('#em-export-prg').on('change', function() {
                                 var code = $(this).val();
-                                $('#elements_detail').toggle(400);
+                                $('#elements_detail').show();
                                 $.ajax({
                                     type:'get',
                                     url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code='+code,
