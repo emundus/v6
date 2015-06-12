@@ -8,123 +8,133 @@
 
 <?php if(!empty($this->access['groups'])):?>
 	<div class="row">
-		<div class="col-md-2 table-left">
-			<table class="table table-bordered" id="groups-table">
-				<thead>
-				<tr>
-					<th></th>
-				</tr>
-				<tr>
-					<th><?php echo JText::_('Groups')?></th>
-				</tr>
-				</thead>
-				<tbody>
-				<?php foreach($this->access['groups'] as $gid => $groups):?>
-					<tr>
-						<td>
-							<?php echo $groups['gname']?>
-							<?php if($groups['isAssoc'] && EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $this->fnum)):?>
-								<?php if($groups['isACL']):?>
-									<a class = "btn btn-info btn-xs pull-right em-del-access" href = "/index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?php echo $this->fnum ?>&id=<?php echo $gid ?>&type=groups">
-										<span class = "glyphicon glyphicon-retweet"></span>
-									</a>
-								<?php else:?>
-									<a class = "btn btn-danger btn-xs pull-right em-del-access" href = "/index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?php echo $this->fnum ?>&id=<?php echo $gid ?>&type=groups">
-										<span class = "glyphicon glyphicon-remove"></span>
-									</a>
-								<?php endif;?>
-							<?php endif;?>
-						</td>
-					</tr>
-				<?php endforeach;?>
-				</tbody>
-			</table>
-		</div>
-		<div class="access-table col-md-10 table-right">
-			<table class="table table-bordered" id="groups-access-table" >
-				<thead>
-				<tr>
-					<?php foreach($this->access['groups'] as $gid => $groups):?>
-						<?php foreach($groups['actions'] as $aid => $action):?>
-							<th colspan="4" id="<?php echo $aid?>">
-								<?php echo JText::_($action['aname'])?>
-							</th>
-						<?php endforeach;?>
-						<?php break; endforeach;?>
-				</tr>
-				<tr>
-					<?php foreach($this->access['groups'] as $gid => $groups):?>
-						<?php foreach($groups['actions'] as $actions):?>
-							<th><?php echo JText::_('CREATE')?></th>
-							<th><?php echo JText::_('RETRIEVE')?></th>
-							<th><?php echo JText::_('UPDATE')?></th>
-							<th><?php echo JText::_('DELETE')?></th>
-						<?php endforeach;?>
-						<?php break; endforeach;?>
-				</tr>
-				</thead>
-				<tbody>
-				<?php foreach($this->access['groups'] as $gid => $groups):?>
-					<tr>
-						<?php foreach($groups['actions'] as $aid => $actions):?>
-							<?php if($this->defaultActions[$aid]['c'] == 1):?>
-								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?php echo $gid.'-'.$aid.'-c'?>" state="<?php echo $actions['c']?>">
-									<?php if($actions['c'] > 0): ?>
-										<span class="glyphicon glyphicon-ok green" title="<?php echo JText::_('ACTIVE')?>"></span>
-									<?php elseif($actions['c'] < 0):?>
-										<span class="glyphicon glyphicon-ban-circle red " title="<?php echo JText::_('BLOCKED')?>"></span>
-									<?php else:?>
-										<span class="glyphicon glyphicon-unchecked" title="<?php echo JText::_('UNDEFINED')?>"></span>
-									<?php endif?>
-								</td>
-							<?php else:?>
-								<td></td>
-							<?php endif;?>
-							<?php if($this->defaultActions[$aid]['r'] == 1):?>
-								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?php echo $gid.'-'.$aid.'-r'?>" state="<?php echo $actions['r']?>">
-									<?php if($actions['r'] > 0): ?>
-										<span class="glyphicon glyphicon-ok green" title="<?php echo JText::_('ACTIVE')?>"></span>
-									<?php elseif($actions['r'] < 0):?>
-										<span class="glyphicon glyphicon-ban-circle red " title="<?php echo JText::_('BLOCKED')?>"></span>
-									<?php else:?>
-										<span class="glyphicon glyphicon-unchecked" title="<?php echo JText::_('UNDEFINED')?>"></span>
-									<?php endif?>
-								</td>
-							<?php else:?>
-								<td></td>
-							<?php endif;?>
-							<?php if($this->defaultActions[$aid]['u'] == 1): ?>
-								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?php echo $gid.'-'.$aid.'-u'?>" state="<?php echo $actions['u']?>">
-									<?php if($actions['u'] > 0): ?>
-										<span class="glyphicon glyphicon-ok green" title="<?php echo JText::_('ACTIVE')?>"></span>
-									<?php elseif($actions['u'] < 0):?>
-										<span class="glyphicon glyphicon-ban-circle red " title="<?php echo JText::_('BLOCKED')?>"></span>
-									<?php else:?>
-										<span class="glyphicon glyphicon-unchecked" title="<?php echo JText::_('UNDEFINED')?>"></span>
-									<?php endif?>
-								</td>
-							<?php else:?>
-								<td></td>
-							<?php endif;?>
-							<?php if($this->defaultActions[$aid]['d'] == 1):?>
-								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?php echo $gid.'-'.$aid.'-d'?>" state="<?php echo $actions['d']?>">
-									<?php if($actions['d'] > 0): ?>
-										<span class="glyphicon glyphicon-ok green" title="<?php echo JText::_('ACTIVE')?>"></span>
-									<?php elseif($actions['d'] < 0):?>
-										<span class="glyphicon glyphicon-ban-circle red " title="<?php echo JText::_('BLOCKED')?>"></span>
-									<?php else:?>
-										<span class="glyphicon glyphicon-unchecked" title="<?php echo JText::_('UNDEFINED')?>"></span>
-									<?php endif?>
-								</td>
-							<?php else:?>
-								<td></td>
-							<?php endif;?>
-						<?php endforeach;?>
-					</tr>
-				<?php endforeach;?>
-				</tbody>
-			</table>
-		</div>
+        <div class="panel panel-default widget">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-eye-open"></span>
+                <h3 class="panel-title"><?php echo JText::_('CHECK_ACL'); ?> </h3>
+            </div>
+            <div class="panel-body">
+                <div class="active content">
+                    <div class="col-md-2 table-left">
+                        <table class="table table-bordered" id="groups-table">
+                            <thead>
+                            <tr>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th><?php echo JText::_('Groups')?></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach($this->access['groups'] as $gid => $groups):?>
+                                <tr>
+                                    <td>
+                                        <?php echo $groups['gname']?>
+                                        <?php if($groups['isAssoc'] && EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $this->fnum)):?>
+                                            <?php if($groups['isACL']):?>
+                                                <a class = "btn btn-info btn-xs pull-right em-del-access" href = "/index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?php echo $this->fnum ?>&id=<?php echo $gid ?>&type=groups">
+                                                    <span class = "glyphicon glyphicon-retweet"></span>
+                                                </a>
+                                            <?php else:?>
+                                                <a class = "btn btn-danger btn-xs pull-right em-del-access" href = "/index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?php echo $this->fnum ?>&id=<?php echo $gid ?>&type=groups">
+                                                    <span class = "glyphicon glyphicon-remove"></span>
+                                                </a>
+                                            <?php endif;?>
+                                        <?php endif;?>
+                                    </td>
+                                </tr>
+                            <?php endforeach;?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="access-table col-md-10 table-right">
+                        <table class="table table-bordered" id="groups-access-table" >
+                            <thead>
+                            <tr>
+                                <?php foreach($this->access['groups'] as $gid => $groups):?>
+                                    <?php foreach($groups['actions'] as $aid => $action):?>
+                                        <th colspan="4" id="<?php echo $aid?>">
+                                            <?php echo JText::_($action['aname'])?>
+                                        </th>
+                                    <?php endforeach;?>
+                                    <?php break; endforeach;?>
+                            </tr>
+                            <tr>
+                                <?php foreach($this->access['groups'] as $gid => $groups):?>
+                                    <?php foreach($groups['actions'] as $actions):?>
+                                        <th><?php echo JText::_('CREATE')?></th>
+                                        <th><?php echo JText::_('RETRIEVE')?></th>
+                                        <th><?php echo JText::_('UPDATE')?></th>
+                                        <th><?php echo JText::_('DELETE')?></th>
+                                    <?php endforeach;?>
+                                    <?php break; endforeach;?>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach($this->access['groups'] as $gid => $groups):?>
+                                <tr>
+                                    <?php foreach($groups['actions'] as $aid => $actions):?>
+                                        <?php if($this->defaultActions[$aid]['c'] == 1):?>
+                                            <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?php echo $gid.'-'.$aid.'-c'?>" state="<?php echo $actions['c']?>">
+                                                <?php if($actions['c'] > 0): ?>
+                                                    <span class="glyphicon glyphicon-ok green" title="<?php echo JText::_('ACTIVE')?>"></span>
+                                                <?php elseif($actions['c'] < 0):?>
+                                                    <span class="glyphicon glyphicon-ban-circle red " title="<?php echo JText::_('BLOCKED')?>"></span>
+                                                <?php else:?>
+                                                    <span class="glyphicon glyphicon-unchecked" title="<?php echo JText::_('UNDEFINED')?>"></span>
+                                                <?php endif?>
+                                            </td>
+                                        <?php else:?>
+                                            <td></td>
+                                        <?php endif;?>
+                                        <?php if($this->defaultActions[$aid]['r'] == 1):?>
+                                            <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?php echo $gid.'-'.$aid.'-r'?>" state="<?php echo $actions['r']?>">
+                                                <?php if($actions['r'] > 0): ?>
+                                                    <span class="glyphicon glyphicon-ok green" title="<?php echo JText::_('ACTIVE')?>"></span>
+                                                <?php elseif($actions['r'] < 0):?>
+                                                    <span class="glyphicon glyphicon-ban-circle red " title="<?php echo JText::_('BLOCKED')?>"></span>
+                                                <?php else:?>
+                                                    <span class="glyphicon glyphicon-unchecked" title="<?php echo JText::_('UNDEFINED')?>"></span>
+                                                <?php endif?>
+                                            </td>
+                                        <?php else:?>
+                                            <td></td>
+                                        <?php endif;?>
+                                        <?php if($this->defaultActions[$aid]['u'] == 1): ?>
+                                            <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?php echo $gid.'-'.$aid.'-u'?>" state="<?php echo $actions['u']?>">
+                                                <?php if($actions['u'] > 0): ?>
+                                                    <span class="glyphicon glyphicon-ok green" title="<?php echo JText::_('ACTIVE')?>"></span>
+                                                <?php elseif($actions['u'] < 0):?>
+                                                    <span class="glyphicon glyphicon-ban-circle red " title="<?php echo JText::_('BLOCKED')?>"></span>
+                                                <?php else:?>
+                                                    <span class="glyphicon glyphicon-unchecked" title="<?php echo JText::_('UNDEFINED')?>"></span>
+                                                <?php endif?>
+                                            </td>
+                                        <?php else:?>
+                                            <td></td>
+                                        <?php endif;?>
+                                        <?php if($this->defaultActions[$aid]['d'] == 1):?>
+                                            <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?php echo $gid.'-'.$aid.'-d'?>" state="<?php echo $actions['d']?>">
+                                                <?php if($actions['d'] > 0): ?>
+                                                    <span class="glyphicon glyphicon-ok green" title="<?php echo JText::_('ACTIVE')?>"></span>
+                                                <?php elseif($actions['d'] < 0):?>
+                                                    <span class="glyphicon glyphicon-ban-circle red " title="<?php echo JText::_('BLOCKED')?>"></span>
+                                                <?php else:?>
+                                                    <span class="glyphicon glyphicon-unchecked" title="<?php echo JText::_('UNDEFINED')?>"></span>
+                                                <?php endif?>
+                                            </td>
+                                        <?php else:?>
+                                            <td></td>
+                                        <?php endif;?>
+                                    <?php endforeach;?>
+                                </tr>
+                            <?php endforeach;?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
 	</div>
 <?php endif;?>
 <?php if(!empty($this->access['users'])):?>

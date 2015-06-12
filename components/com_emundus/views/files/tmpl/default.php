@@ -13,6 +13,7 @@
  */
 defined( '_JEXEC' ) or die( 'Restricted access' );
 JHTML::_('behavior.tooltip');
+JHTML::stylesheet(JURI::Base().'media/com_emundus/css/emundus_panel.css' );
 ?>
 
 <div class="container-fluid">

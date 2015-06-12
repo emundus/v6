@@ -22,113 +22,122 @@ $isCoordinator = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $t
 
 ?>
 
-<div class="title" id="em_application_attachments">
+<!--<div class="title" id="em_application_attachments">
     <i class="dropdown icon"></i> <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
-</div>
-
-<div class="content">
-    <div class="actions">
-
-        <?php
-        if ($isCoordinator):
-            $url =  JURI::Base().'/index.php?option=com_fabrik&view=form&formid=67&rowid=&jos_emundus_uploads___user_id[value]='.$this->student_id.'&jos_emundus_uploads___fnum[value]='.$this->fnum.'&student_id='.$this->student_id.'&tmpl=component&iframe=1';
-            ?>
-
-
-        <?php endif;?>
-    </div>
-    <?php
-    if(count($this->userAttachments) > 0)
-    {
-        if($isCoordinator)
-        {
-            echo '<button class="btn btn-default btn-xs btn-attach" id="em_export_pdf"  title="'.JText::_('PDF').'" link="/index.php?option=com_emundus&controller=application&task=exportpdf&fnum='.$this->fnum.'&student_id='.$this->student_id.'&ids={ids}">
-			<span class="glyphicon glyphicon-file"></span>
-		</button>';
-        }
-
-        if ($isCoordinator)
-            $checkbox = '<input type="checkbox" name="em_application_attachments_all" id="em_application_attachments_all" />';
-
-        echo '<table class="table table-hover">
-			<thead>
-                <tr>
-                  <th>'.$checkbox.'#</th>
-                  <th>'. JText::_('ATTACHMENT_FILENAME').'</th>
-                  <th>'. JText::_('ATTACHMENT_DATE').'</th>
-                  <th>'. JText::_('ATTACHMENT_DESCRIPTION').'</th>
-                  <th>'. JText::_('CAMPAIGN').'</th>
-                  <th>'. JText::_('ACADEMIC_YEAR').'</th>
-                </tr>
-              </thead><tbody>';
-        $i = 1;
-
-        foreach($this->userAttachments as $attachment)
-        {
-            /*if (EmundusHelperAccess::isExpert($this->_user->id) && $this->expert_document_id == $attachment->attachment_id && $this->_user->email != $attachment->description) {
-                continue;
-            }
-            else {*/
-            $path = $attachment->lbl == "_archive"?EMUNDUS_PATH_REL."archives/".$attachment->filename:EMUNDUS_PATH_REL.$this->student_id.'/'.$attachment->filename;
-            $img_missing = (!file_exists($path))?'<img style="border:0;" src="media/com_emundus/images/icones/agt_update_critical.png" width=20 height=20 title="'.JText::_( 'FILE_NOT_FOUND' ).'"/> ':"";
-            $img_dossier = (is_dir($path))?'<img style="border:0;" src="media/com_emundus/images/icones/dossier.png" width=20 height=20 title="'.JText::_( 'FILE_NOT_FOUND' ).'"/> ':"";
-            $img_locked = (strpos($attachment->filename, "_locked") > 0)?'<img src="media/com_emundus/images/icones/encrypted.png" />':"";
-
-            if ($isCoordinator)
-                $checkbox = '<input type="checkbox" name="attachments[]" class="em_application_attachments" id="aid'.$attachment->aid.'" value="'.$attachment->aid.'" />';
-
-            echo '<tr>
-	                  <td>'.$checkbox.' '.$i.'</td>
-	                  <td><a href="'.JURI::Base().$path.'" target="_blank">'.$img_dossier.' '. $img_locked.' '.$img_missing.' '.$attachment->value.'</a></td>
-	                  <td>'.JHtml::_('date', $attachment->timedate, JText::_('DATE_FORMAT_LC2')).'</td>
-	                  <td>'.$attachment->description.'</td>
-	                  <td>'.$attachment->campaign_label.'</td>
-	                  <td>'.$attachment->year.'</td>
-	                </tr>';
-
-            $i++;
-            //}
-        }
-        echo '</tbody></table>';
-        if(count($this->userAttachments) > 0) {
-            if (EmundusHelperAccess::asAccessAction(4, 'd', $this->_user->id, $this->fnum)) {
-                echo '<div style="width:40px;  margin-top: -15px; text-align: center"><span class="glyphicon glyphicon-chevron-down"></span><br /><button class="btn btn-danger btn-xs btn-attach" data-title="' . JText::_('DELETE_SELECTED_ATTACHMENTS') . '" id="em_delete_attachments" name="em_delete_attachments" link="/index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=' . $this->fnum . '&student_id=' . $this->student_id . '">
-                <span class="glyphicon glyphicon-trash"></span></button></div> ';
-            }
-        }
-    } else echo JText::_('NO_ATTACHMENT');
-    ?>
-</div>
-
-<div class="modal fade" id="em-modal-actions" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('TITLE');?></h4>
-            </div>
-            <div class="modal-body">
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
-                <button type="button" class="btn btn-success"><?php echo JText::_('OK');?></button>
-            </div>
+</div>-->
+<div class="row">
+    <div class="panel panel-default widget">
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-paperclip"></span>
+            <h3 class="panel-title"><?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?> </h3>
         </div>
-    </div>
-</div>
-<div class="modal fade" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('LOADING');?></h4>
+        <div class="panel-body">
+            <div class="content">
+                <div class="actions">
+
+                    <?php
+                    if ($isCoordinator):
+                        $url =  JURI::Base().'/index.php?option=com_fabrik&view=form&formid=67&rowid=&jos_emundus_uploads___user_id[value]='.$this->student_id.'&jos_emundus_uploads___fnum[value]='.$this->fnum.'&student_id='.$this->student_id.'&tmpl=component&iframe=1';
+                        ?>
+
+
+                    <?php endif;?>
+                </div>
+                <?php
+                if(count($this->userAttachments) > 0)
+                {
+                    if($isCoordinator)
+                    {
+                        echo '<button class="btn btn-default" id="em_export_pdf"  title="'.JText::_('PDF').'" link="/index.php?option=com_emundus&controller=application&task=exportpdf&fnum='.$this->fnum.'&student_id='.$this->student_id.'&ids={ids}">
+                        <span class="glyphicon glyphicon-file"></span>
+                    </button>';
+                    }
+
+                    if ($isCoordinator)
+                        $checkbox = '<input type="checkbox" name="em_application_attachments_all" id="em_application_attachments_all" />';
+
+                    echo '<table class="table table-hover">
+                        <thead>
+                            <tr>
+                              <th>'.$checkbox.'#</th>
+                              <th>'. JText::_('ATTACHMENT_FILENAME').'</th>
+                              <th>'. JText::_('ATTACHMENT_DATE').'</th>
+                              <th>'. JText::_('ATTACHMENT_DESCRIPTION').'</th>
+                              <th>'. JText::_('CAMPAIGN').'</th>
+                              <th>'. JText::_('ACADEMIC_YEAR').'</th>
+                            </tr>
+                          </thead><tbody>';
+                    $i = 1;
+
+                    foreach($this->userAttachments as $attachment)
+                    {
+                        /*if (EmundusHelperAccess::isExpert($this->_user->id) && $this->expert_document_id == $attachment->attachment_id && $this->_user->email != $attachment->description) {
+                            continue;
+                        }
+                        else {*/
+                        $path = $attachment->lbl == "_archive"?EMUNDUS_PATH_REL."archives/".$attachment->filename:EMUNDUS_PATH_REL.$this->student_id.'/'.$attachment->filename;
+                        $img_missing = (!file_exists($path))?'<img style="border:0;" src="media/com_emundus/images/icones/agt_update_critical.png" width=20 height=20 title="'.JText::_( 'FILE_NOT_FOUND' ).'"/> ':"";
+                        $img_dossier = (is_dir($path))?'<img style="border:0;" src="media/com_emundus/images/icones/dossier.png" width=20 height=20 title="'.JText::_( 'FILE_NOT_FOUND' ).'"/> ':"";
+                        $img_locked = (strpos($attachment->filename, "_locked") > 0)?'<img src="media/com_emundus/images/icones/encrypted.png" />':"";
+
+                        if ($isCoordinator)
+                            $checkbox = '<input type="checkbox" name="attachments[]" class="em_application_attachments" id="aid'.$attachment->aid.'" value="'.$attachment->aid.'" />';
+
+                        echo '<tr>
+                                  <td>'.$checkbox.' '.$i.'</td>
+                                  <td><a href="'.JURI::Base().$path.'" target="_blank">'.$img_dossier.' '. $img_locked.' '.$img_missing.' '.$attachment->value.'</a></td>
+                                  <td>'.JHtml::_('date', $attachment->timedate, JText::_('DATE_FORMAT_LC2')).'</td>
+                                  <td>'.$attachment->description.'</td>
+                                  <td>'.$attachment->campaign_label.'</td>
+                                  <td>'.$attachment->year.'</td>
+                                </tr>';
+
+                        $i++;
+                        //}
+                    }
+                    echo '</tbody></table>';
+                    if(count($this->userAttachments) > 0) {
+                        if (EmundusHelperAccess::asAccessAction(4, 'd', $this->_user->id, $this->fnum)) {
+                            echo '<div style="width:40px;  margin-top: -15px; text-align: center"><span class="glyphicon glyphicon-chevron-down"></span><br /><button class="btn btn-danger btn-xs btn-attach" data-title="' . JText::_('DELETE_SELECTED_ATTACHMENTS') . '" id="em_delete_attachments" name="em_delete_attachments" link="/index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=' . $this->fnum . '&student_id=' . $this->student_id . '">
+                            <span class="glyphicon glyphicon-trash"></span></button></div> ';
+                        }
+                    }
+                } else echo JText::_('NO_ATTACHMENT');
+                ?>
             </div>
-            <div class="modal-body">
-                <img src="<?php echo JURI::Base(); ?>media/com_emundus/images/icones/loader-line.gif">
+
+            <div class="modal fade" id="em-modal-actions" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('TITLE');?></h4>
+                        </div>
+                        <div class="modal-body">
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
+                            <button type="button" class="btn btn-success"><?php echo JText::_('OK');?></button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
+            <div class="modal fade" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('LOADING');?></h4>
+                        </div>
+                        <div class="modal-body">
+                            <img src="<?php echo JURI::Base(); ?>media/com_emundus/images/icones/loader-line.gif">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
