@@ -102,7 +102,7 @@ function check_all(box, obj, level) {
              itemid = itemid[2];
              if (checked) {
                  var text = $("label[for='emundus_elm_" + itemid + "']").text();
-                 $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><span class="em-excel_elts"><strong>' + text + '</strong></span><button class="btn btn-danger btn-xs pull-right" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button></li>');
+                 $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><button class="btn btn-danger btn-xs" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
              } else {
                  $('#' + itemid + '-item').remove();
              }
@@ -126,7 +126,7 @@ function check_all(box, obj, level) {
                 itemid = itemid[2];
                 if (checked) {
                     var text = $("label[for='emundus_elm_" + itemid + "']").text();
-                    $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><span class="em-excel_elts"><strong>' + text + '</strong></span><button class="btn btn-danger btn-xs pull-right" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button></li>');
+                    $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><button class="btn btn-danger btn-xs" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
 
                 } else {
                     $('#' + itemid + '-item').remove();
@@ -160,7 +160,7 @@ function check_all(box, obj, level) {
                     itemid = itemid[2];
                     if (checked) {
                         var text = $("label[for='emundus_elm_" + itemid + "']").text();
-                        $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><span class="em-excel_elts"><strong>' + text + '</strong></span><button class="btn btn-danger btn-xs pull-right" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button></li>');
+                        $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><button class="btn btn-danger btn-xs" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
 
                     } else {
                         $('#' + itemid + '-item').remove();

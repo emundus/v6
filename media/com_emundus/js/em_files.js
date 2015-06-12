@@ -1285,7 +1285,7 @@ $(document).ready(function()
                                     console.log(jqXHR.responseText);
                                 }
                             });
-                            $('.modal-body').append('<div id="elements_detail" style="display: none"><h4>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+'</h4>  <input type="checkbox" id="showelements" name="showelements" value="showelements" /><label for="showelements">'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'</label> <br /><select name="em-export-form" id="em-export-form" class="chzn-select"></select></div>');
+                            $('.modal-body').append('<div id="elements_detail" style="display: none"><h4>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+' <button type="button" id="showelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'"><span class="glyphicon glyphicon-plus"></span></button> </h4><select name="em-export-form" id="em-export-form" class="chzn-select"></select></div>');
                             $('.modal-body').append('<div id="elements-popup" style="width : 95%;margin : auto; display: none"></div>');
                             $('#em-export-prg').on('change', function() {
                                 var code = $(this).val();
@@ -1310,7 +1310,7 @@ $(document).ready(function()
                             {
                                 if(isNaN(parseInt(d)))
                                     break;
-                                item += '<li class="em-export-item" id="'+result.defaults[d].id+'-item"><span class="em-excel_elts"><strong>'+result.defaults[d].element_label+'</strong></span> <button class="btn btn-danger btn-xs pull-right"><span class="glyphicon glyphicon-trash"></span></button></li>';
+                                item += '<li class="em-export-item" id="'+result.defaults[d].id+'-item"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>'+result.defaults[d].element_label+'</strong></span></li>';
                             }
                             $('.modal-body').append(defaults);
                             $('#em-export').append(item);
@@ -2219,7 +2219,7 @@ $(document).ready(function()
             var id = $(this).val();
             var text = $('#em-modal-actions #em-export-form option:selected').attr('data-value');
             $('#emundus_elm_'+id).attr("checked", true);
-            $('#em-export').append('<li class="em-export-item" id="'+id+'-item"><span class="em-excel_elts"><strong>'+text+'</strong></span><button class="btn btn-danger btn-xs pull-right" id="' + id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button></li>');
+            $('#em-export').append('<li class="em-export-item" id="'+id+'-item"><button class="btn btn-danger btn-xs" id="' + id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button><span class="em-excel_elts"><strong>'+text+'</strong></span></li>');
         }
     });
     $(document).on('click', '.emundusraw', function(e)
@@ -2230,7 +2230,7 @@ $(document).ready(function()
             var id = $(this).val();
             if ($(this).is(':checked')) {
                 var text = $("label[for='" + $(this).attr('id') + "']").text();
-                $('#em-export').append('<li class="em-export-item" id="' + id + '-item"><span class="em-excel_elts"><strong>' + text + '</strong></span><button class="btn btn-danger btn-xs pull-right" id="' + id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button></li>');
+                $('#em-export').append('<li class="em-export-item" id="' + id + '-item"><button class="btn btn-danger btn-xs" id="' + id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button><span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
             } else {
                 $('#'+id+'-item').remove();
             }
@@ -2314,13 +2314,14 @@ $(document).ready(function()
 
     });
     $(document).on('click', '#showelements', function() {
-        if($('input[name=showelements]').is(':checked')) {
+        if ($(this).hasClass("btn btn-info")) {
             $('#elements-popup').toggle(400);
-        }
-        else
-        {
+            $(this).removeClass("btn btn-info").addClass("btn btn-elements-success");
+        } else {
             $('#elements-popup').hide();
+            $(this).removeClass("btn btn-elements-success").addClass("btn btn-info");
         }
+
     });
 
 

@@ -137,6 +137,13 @@ label
     -moz-user-select: none !important;
 }
 
+.btn-elements-success
+{
+    background-color: #5bb75b!important;
+    color: #FFFFFF!important;
+}
+
+
 ul
 {
     list-style : none;
