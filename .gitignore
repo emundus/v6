@@ -542,3 +542,4 @@ favicon.ico
 robots.txt.dist
 stats/*
 .idea/*
+.idea/workspace.xml
