@@ -1286,7 +1286,7 @@ $(document).ready(function()
                                 }
                             });
                             $('.modal-body').append('<div id="elements_detail" style="display: none"><h4>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+'</h4>  <input type="checkbox" id="showelements" name="showelements" value="showelements" /><label for="showelements">'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'</label> <br /><select name="em-export-form" id="em-export-form" class="chzn-select"></select></div>');
-                            $('.modal-body').append('<div id="elements" style="width : 95%;margin : auto; display: none"></div>');
+                            $('.modal-body').append('<div id="elements-popup" style="width : 95%;margin : auto; display: none"></div>');
                             $('#em-export-prg').on('change', function() {
                                 var code = $(this).val();
                                 $('#elements_detail').show();
@@ -1295,8 +1295,8 @@ $(document).ready(function()
                                     url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code='+code,
                                     success: function(data)
                                     {
-                                        $('#elements').empty();
-                                        $('#elements').append(data);
+                                        $('#elements-popup').empty();
+                                        $('#elements-popup').append(data);
                                     },
                                     error: function (jqXHR, textStatus, errorThrown)
                                     {
@@ -2315,11 +2315,11 @@ $(document).ready(function()
     });
     $(document).on('click', '#showelements', function() {
         if($('input[name=showelements]').is(':checked')) {
-            $('#elements').toggle(400);
+            $('#elements-popup').toggle(400);
         }
         else
         {
-            $('#elements').hide();
+            $('#elements-popup').hide();
         }
     });
 

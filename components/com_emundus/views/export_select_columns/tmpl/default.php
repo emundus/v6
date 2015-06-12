@@ -96,18 +96,13 @@ function check_all(box, obj, level) {
  if(level == 1) {
 	 for (i=1 ; i < childList.length ; i++) {
 		 childList[i].checked = checked;
-         console.log("1");
          var itemid = childList[i].id;
-
          if (itemid) {
              itemid = itemid.split('_');
              itemid = itemid[2];
              if (checked) {
-                 console.log(itemid);
-                 alert(itemid);
                  var text = $("label[for='emundus_elm_" + itemid + "']").text();
                  $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><span class="em-excel_elts"><strong>' + text + '</strong></span><button class="btn btn-danger btn-xs pull-right" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button></li>');
-
              } else {
                  $('#' + itemid + '-item').remove();
              }
@@ -125,13 +120,11 @@ function check_all(box, obj, level) {
 		var grp = childList[i].childNodes;
 		for (j=1 ; j < grp.length ; j++) {
 			grp[j].checked = checked;
-            console.log("2");
             var itemid = grp[j].id;
             if (itemid) {
                 itemid = itemid.split('_');
                 itemid = itemid[2];
                 if (checked) {
-                    console.log(itemid);
                     var text = $("label[for='emundus_elm_" + itemid + "']").text();
                     $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><span class="em-excel_elts"><strong>' + text + '</strong></span><button class="btn btn-danger btn-xs pull-right" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button></li>');
 
@@ -161,13 +154,11 @@ function check_all(box, obj, level) {
 			var elm = grp[j].childNodes;
 			for (k=1 ; k < elm.length ; k++) {
 				elm[k].checked = checked;
-                console.log("3");
                 var itemid = elm[k].id;
                 if (itemid) {
                     itemid = itemid.split('_');
                     itemid = itemid[2];
                     if (checked) {
-                        console.log(itemid);
                         var text = $("label[for='emundus_elm_" + itemid + "']").text();
                         $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><span class="em-excel_elts"><strong>' + text + '</strong></span><button class="btn btn-danger btn-xs pull-right" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button></li>');
 
