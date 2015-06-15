@@ -28,7 +28,6 @@ if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus' . $this->item->
     </div>
 <?php endif; ?>
 <?php if ($this->item) : ?>
-    <hr>
     <h1><?php echo $this->item->intitule_poste; ?></h1>
     <div class="item_fields">
         <table class="table">

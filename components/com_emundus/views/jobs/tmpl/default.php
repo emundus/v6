@@ -120,7 +120,7 @@ $canView = $user->authorise('core.viewjob', 'com_emundus');
                         <?php if (isset($item->checked_out) && $item->checked_out) : ?>
                             <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'jobs.', $canCheckin); ?>
                         <?php endif; ?>
-                        <a class="em-job" href="<?php echo JRoute::_('index.php?option=com_emundus&view=job&id=' . (int) $item->id); ?>">
+                        <a class="em-job" href="<?php echo JRoute::_('index.php?option=com_emundus&view=job&id=' . (int) $item->id); ?>&tmpl=component">
                             <span class="glyphicon glyphicon-play"></span>
                             <?php echo $item->intitule_poste; ?>
                         </a>
