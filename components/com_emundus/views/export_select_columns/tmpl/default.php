@@ -2,7 +2,7 @@
 defined('_JEXEC') or die('Restricted access');
 JHTML::_('behavior.tooltip'); 
 JHTML::_('behavior.modal');
-JHTML::stylesheet(JURI::Base().'media/com_emundus/css/emundus.css' );
+//JHTML::stylesheet(JURI::Base().'media/com_emundus/css/emundus.css' );
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $current_user = JFactory::getUser();
@@ -22,7 +22,43 @@ foreach($s_elements as $s){
 	$element_name[] = $t[1];
 }
 ?>
-
+<style>
+    .component-content legend {
+         border: 0px;
+         padding: none;
+         margin-left: -6px;
+         border-radius: 0px;
+         background: inherit;
+         border-bottom: 0px;
+         margin-bottom: 0;
+         line-height: 0;
+    }
+    .panel-info legend {
+        color: #000000;
+        font-size: 14px;
+    }
+    .panel-info.excel {
+        min-height: inherit!important;
+    }
+    .panel-primary {
+        border-color: #00316b;
+    }
+    .panel-primary.excel>.panel-heading {
+        background-color: #00316b;
+    }
+    .panel-heading label {
+        color: #FFFFFF!important;
+        font-weight: bold!important;
+        text-shadow: none ;
+        font-size: 18px;
+    }
+    .panel-info>.panel-heading label {
+        color: #000000!important;
+        font-weight: bold!important;
+        text-shadow: none ;
+        font-size: 14px;
+    }
+</style>
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" >
     <!--<input type='button' onclick='location.href="index.php?option=com_emundus&view=<?php echo $view;?>&Itemid=<?php echo $itemid; ?>"' value="<?php echo JText::_('RETURN_BACK'); ?>"/>
 	<input type="submit" name="send_elements" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/> 
@@ -40,33 +76,33 @@ foreach($s_elements as $s){
 		
 		foreach($this->elements as $t){
 			if ($tbl_tmp == '') {
-				echo '<fieldset id="emundus_table_'.$t->table_id.'">
-						<legend><input type="checkbox" ';
+				echo '<div class="panel panel-primary excel" id="emundus_table_'.$t->table_id.'">
+						<div class="panel-heading"><legend><input type="checkbox" ';
 				if($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
-				echo ' id="emundus_checkall_tbl_'.$t->table_id.'" class="emundusraw" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$t->table_id.'\', \'emundus_table_'.$t->table_id.'\', 2)" /> '.$t->table_label.'</legend>
-					  <fieldset id="emundus_grp_'.$t->group_id.'">
-						<legend><input type="checkbox" ';
+				echo ' id="emundus_checkall_tbl_'.$t->table_id.'" class="emundusraw" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$t->table_id.'\', \'emundus_table_'.$t->table_id.'\', 2)" /><label for=""> '.$t->table_label.'</label></legend></div><div class="panel-body">
+					  <div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
+						<div class="panel-heading"><legend><input type="checkbox" ';
 				
 				if($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
-				echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusraw" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\', \'emundus_grp_'.$t->group_id.'\', 1)" /> '.$t->group_label.'</legend>';
+				echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusraw" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\', \'emundus_grp_'.$t->group_id.'\', 1)" /><label for=""> '.$t->group_label.'</label></legend></div><div class="panel-body">';
 			} elseif ($t->table_id != $tbl_tmp && $tbl_tmp != '') {
-					echo '</fieldset></fieldset>
-						<fieldset id="emundus_table_'.$t->table_id.'">
-							<legend><input type="checkbox" ';
+					echo '</div></div></div></div>
+						<div class="panel panel-primary excel" id="emundus_table_'.$t->table_id.'">
+							<div class="panel-heading"><legend><input type="checkbox" ';
 					if($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
-					echo ' id="emundus_checkall_tbl_'.$t->table_id.'" class="emunduspage" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$t->table_id.'\', \'emundus_table_'.$t->table_id.'\', 2)" /> '.$t->table_label.'</legend>
-						<fieldset id="emundus_grp_'.$t->group_id.'">
-							<legend><input type="checkbox" ';
+					echo ' id="emundus_checkall_tbl_'.$t->table_id.'" class="emunduspage" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$t->table_id.'\', \'emundus_table_'.$t->table_id.'\', 2)" /><label for=""> '.$t->table_label.'</label></legend></div><div class="panel-body">
+						<div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
+							<div class="panel-heading"><legend><input type="checkbox" ';
 					
 					if($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
-					echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusraw" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\', \'emundus_grp_'.$t->group_id.'\', 1)" /> '.$t->group_label.'</legend>';
+					echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusraw" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\', \'emundus_grp_'.$t->group_id.'\', 1)" /><label for=""> '.$t->group_label.'</label></legend></div><div class="panel-body">';
 			} else {
 				if ($t->group_id != $grp_tmp && $grp_tmp != '') {
-						echo '</fieldset><fieldset id="emundus_grp_'.$t->group_id.'">
-								<legend><input type="checkbox" ';
+						echo '</div></div><div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
+								<div class="panel-heading"><legend><input type="checkbox" ';
 						
 						if($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
-						echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusgroup" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\', \'emundus_grp_'.$t->group_id.'\', 1)"/> '.$t->group_label.'</legend>';
+						echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusgroup" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\', \'emundus_grp_'.$t->group_id.'\', 1)"/> '.$t->group_label.'</legend></div><div class="panel-body">';
 				} 
 			}
 			echo ' <input name="ud[]" type="checkbox" id="emundus_elm_'.$t->id.'" class="emundusraw" ';
@@ -76,7 +112,7 @@ foreach($s_elements as $s){
 			$tbl_tmp=$t->table_id;
 			$grp_tmp=$t->group_id;
 		}
-		echo '</fieldset></fieldset>';
+		echo '</div></div></div></div>';
 		echo '</div>';
 		?>
     <!-- <input type="submit" name="send_elements" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/>
