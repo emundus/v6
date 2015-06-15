@@ -25,9 +25,18 @@ class EmundusHelperMenu{
 		LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = fbforms.id
 		WHERE menu.published=1 AND menu.parent_id !=1 
 		ORDER BY menu.lft';
-		$_db->setQuery( $query );
+		
 		//die(str_replace('#_', 'jos', $query));
-		return $_db->loadObjectList();
+		 try
+	        {
+	        	$_db->setQuery( $query );
+	            return $_db->loadObjectList();
+	        }
+	        catch(Exception $e)
+	        {
+	            throw new $e->getMessage();
+	        }
+
 	}
 
 	function buildMenuListQuery($profile)
@@ -40,9 +49,17 @@ class EmundusHelperMenu{
 		LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = fbforms.id
 		WHERE fbtables.published = 1 AND menu.parent_id !=1
 		ORDER BY menu.lft';
-		$_db->setQuery( $query );
-		//die($query);
-		return $_db->loadResultArray();
+		
+		try
+	        {
+	        	$_db->setQuery( $query );
+				//die($query);
+				return $_db->loadResultArray();
+	        }
+	        catch(Exception $e)
+	        {
+	            throw new $e->getMessage();
+	        }
 	}
 
 }

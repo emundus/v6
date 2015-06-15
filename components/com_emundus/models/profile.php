@@ -139,7 +139,7 @@ class EmundusModelProfile extends JModelList
 		return $res;
 	}
 
-	/**
+		/**
 	* Gets the list of profiles from array of programmes
 	* @param 	$code 	array 	list of programmes code
 	* @return  	string The greeting to be displayed to the user
@@ -148,10 +148,20 @@ class EmundusModelProfile extends JModelList
 		if (count($code)>0) {
 			$query = 'SELECT DISTINCT(esc.profile_id)
 						FROM  #__emundus_setup_campaigns AS esc 
-						WHERE esc.training IN ("'.implode('","', $code).'")';
-			$this->_db->setQuery( $query ); 
-			$res = $this->_db->loadColumn();
-		} else $res = $code;
+						WHERE esc.training IN ("'.implode('","', $code).'")';		
+			try
+	        {
+	            $this->_db->setQuery( $query ); 
+				$res = $this->_db->loadColumn();
+	        }
+	        catch(Exception $e)
+	        {
+	            throw new $e->getMessage();
+	        }
+		} 
+		else 
+			$res = $code;
+		
 		return $res;
 	}
 
@@ -169,11 +179,20 @@ class EmundusModelProfile extends JModelList
 
             $query = 'SELECT DISTINCT(esc.profile_id)
 						FROM  #__emundus_setup_campaigns AS esc '.$where;
-            $this->_db->setQuery( $query );
-            $res = $this->_db->loadColumn();
+           
+            try
+	        {
+	            $this->_db->setQuery( $query );
+            	$res = $this->_db->loadColumn();
+	        }
+	        catch(Exception $e)
+	        {
+	            throw new $e->getMessage();
+	        }
         }
         else
             $res = false;
+        
         return $res;
     }
 
