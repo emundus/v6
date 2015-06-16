@@ -444,57 +444,57 @@ jimport('joomla.application.component.helper');
             $plist = $profile->getProfileIDByCourse($code);
         }
 
-        // get Fabrik list ID for profile_id
-        $fl = array();
-        $menutype = array();
-        foreach ($profiles as $profile)
-        {
-            if (is_array($plist)) {
+        if ($plist) {
+            // get Fabrik list ID for profile_id
+            $fl = array();
+            $menutype = array();
+            foreach ($profiles as $profile) {
+                if (is_array($plist)) {
 
-                if (count($plist)==0 || (count($plist)>0 && in_array($profile->id, $plist))) {
-                    $menu_list = $menu->buildMenuQuery($profile->id);
-                    foreach ($menu_list as $m)
-                    {
-                        $fl[] = $m->table_id;
-                        $menutype[$profile->id] = 'menu-profile'.$profile->id;
+                    if (count($plist) == 0 || (count($plist) > 0 && in_array($profile->id, $plist))) {
+                        $menu_list = $menu->buildMenuQuery($profile->id);
+                        foreach ($menu_list as $m) {
+                            $fl[] = $m->table_id;
+                            $menutype[$profile->id] = 'menu-profile' . $profile->id;
+                        }
                     }
                 }
             }
-        }
 
-        $query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
-				INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias, joins.table_join, menu.title
-				FROM #__fabrik_elements element';
-        $join='INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
-				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
-				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id 
-				INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id 
-				LEFT JOIN #__fabrik_joins AS joins ON tab.id = joins.list_id AND groupe.id=joins.group_id
-				INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)';
-        $where='WHERE tab.published = 1
-                    AND (tab.id IN ( '.implode(',', $fl).' ))
-					AND element.published=1
-					AND element.hidden=0
-					AND element.label!=" "
-					AND element.label!=""
-					AND menu.menutype IN ( "'.implode('","', $menutype).'" )';
-        $order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
+            $query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
+                    INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias, joins.table_join, menu.title
+                    FROM #__fabrik_elements element';
+            $join = 'INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
+                    INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
+                    INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
+                    INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id
+                    LEFT JOIN #__fabrik_joins AS joins ON tab.id = joins.list_id AND groupe.id=joins.group_id
+                    INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)';
+            $where = 'WHERE tab.published = 1
+                        AND (tab.id IN ( ' . implode(',', $fl) . ' ))
+                        AND element.published=1
+                        AND element.hidden=0
+                        AND element.label!=" "
+                        AND element.label!=""
+                        AND menu.menutype IN ( "' . implode('","', $menutype) . '" )';
+            $order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
 
-        $query .= ' '. $join . ' ' .  $where . ' '. $order;
-//echo str_replace('#_', 'jos', $query);
-        try
-        {
-            $db->setQuery( $query );
-            $elements = $db->loadObjectList('id');
-            foreach ($elements as $key => $value) {
-                $value->id = $key;
-                $elts[] = $value;
+            $query .= ' ' . $join . ' ' . $where . ' ' . $order;
+            //echo str_replace('#_', 'jos', $query);
+
+            try {
+                $db->setQuery($query);
+                $elements = $db->loadObjectList('id');
+                foreach ($elements as $key => $value) {
+                    $value->id = $key;
+                    $elts[] = $value;
+                }
+                return $elts;
+            } catch (Exception $e) {
+                throw new $e->getMessage();
             }
-            return  $elts;
-        }
-        catch(Exception $e)
-        {
-            throw new $e->getMessage();
+        } else {
+            return array();
         }
     }
 
@@ -1670,6 +1670,66 @@ jimport('joomla.application.component.helper');
 
         return $data;
     }
+
+     /*// getComment
+     function getComment($format='html', $fnums){
+         require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
+         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+
+         $app 	= new EmundusModelApplication();
+         $files = new EmundusModelFiles;
+
+         //$fnums = '2014103012343200000630002385';
+         if (!is_array($fnums)) {
+             $fnumInfo = $files->getFnumInfos($fnums);
+             $fnums = array($fnums);
+         } else {
+             $fnumInfo = $files->getFnumInfos($fnums[1]);
+         }
+
+         $comments = $app->getFileComments($fnumInfo['training']);
+
+         $data = array();
+         //$i = 0;
+         $str = '<br><hr>';
+
+         foreach($comments as $comment)
+         {
+             $str .= '<li class="list-group-item" id="'.$comment->id.'">';
+             $str .= '<div class="row">';
+             $str .= '<div class="col-xs-10 col-md-11">';
+             $str .= '<div>';
+             $str .= ' <a href="#">'.$comment->reason.'</a>';
+             $str .= '<div class="mic-info">';
+             $str .= ' <a href="#">'. $comment->name.'</a> - ';
+             $str .=  JHtml::_('date', $comment->date, JText::_('DATE_FORMAT_LC2'));
+             $str .= ' </div>';
+             $str .= '</div>';
+             $str .= '<div class="comment-text">';
+             $str .=  $comment->comment;
+             $str .= '</div>';
+             $str .= ' </div>';
+             $str .= '</div>';
+             $str .= '</li>';
+
+             $str .= '<p></p><hr>';
+
+             if ($format != 'html') {
+                 //$str = str_replace('<hr>', chr(10).'------'.chr(10), $str);
+                 $str = str_replace('<br>', chr(10), $str);
+                 $str = str_replace('<br />', chr(10), $str);
+                 $str = str_replace('<h1>', '* ', $str);
+                 $str = str_replace('</h1>', ' : ', $str);
+                 $str = str_replace('<b>', chr(10), $str);
+                 $str = str_replace('</b>', ' : ', $str);
+                 $str = str_replace('&nbsp;', ' ', $str);
+                 $str = strip_tags($str, '<h1>');
+             }
+             $data[$comment['fnum']] = $str;
+         }
+
+         return $data;
+     }*/
 
     /**
      * Method to create a new FNUM
