@@ -92,7 +92,7 @@ class EmundusViewEmail extends JViewLegacy
 			    $tables = array('jos_users.name', 'jos_users.username', 'jos_users.email', 'jos_users.id');
 			    foreach ($fnums as $fnum)
 			    {
-				    if(EmundusHelperAccess::asAccessAction(9, 'c', $this->_user->id, $fnum->fnum))
+				    if(EmundusHelperAccess::asAccessAction(9, 'c', $this->_user->id, $fnum->fnum) && is_int($fnum->sid))
 				    {
 					    $user = $appModel->getApplicantInfos($fnum->sid, $tables);
 					    $user['campaign_id'] = $fnum->cid;
