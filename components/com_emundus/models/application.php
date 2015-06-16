@@ -1130,7 +1130,7 @@ td {
 
             $query = 'SELECT m.id, m.title, m.link, m.lft, m.rgt, m.note
 						FROM #__menu as m 
-						WHERE m.menutype = "application" and m.access in ('.implode(',', $grUser).') 
+						WHERE m.published=1 AND m.menutype = "application" and m.access in ('.implode(',', $grUser).')
 						ORDER BY m.lft';
 
             $db->setQuery($query);

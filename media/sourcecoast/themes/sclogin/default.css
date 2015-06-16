@@ -120,7 +120,9 @@ a.forgot.btn i {
 
 .sclogin #scprofile-pic,
 .sclogin .sclogin-greeting {
-    margin-bottom: 5px;
+    display: inline-block;
+    /*margin-left: 140px;*/
+    margin-top: 10px;
 }
 
 .sc-connect-user {
