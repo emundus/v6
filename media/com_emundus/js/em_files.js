@@ -1271,8 +1271,8 @@ $(document).ready(function()
                         if(result.status)
                         {
                             $('.modal-body').empty();
-                            $('.modal-body').append('<div><h4>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE')+'</h4> <select name="em-export-methode" id="em-export-methode" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+'</option><option value="1" data-value="1">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN')+'</option></select></div>');
-                            $('.modal-body').append('<div><h4>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h4> <select name="em-export-prg" id="em-export-prg" style="width: 95%;" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG_DEFAULT')+'</option></select>');
+                            $('.modal-body').append('<fieldset><legend class="legend">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE')+'</legend> <select name="em-export-methode" id="em-export-methode" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+'</option><option value="1" data-value="1">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN')+'</option></select></fieldset>');
+                            $('.modal-body').append('<fieldset><legend class="legend">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</legend> <select name="em-export-prg" id="em-export-prg" style="width: 95%;" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG_DEFAULT')+'</option></select></fieldset>');
                             $.ajax({
                                 type:'get',
                                 url: 'index.php?option=com_emundus&controller=files&task=getProgrammes',
@@ -1285,8 +1285,8 @@ $(document).ready(function()
                                     console.log(jqXHR.responseText);
                                 }
                             });
-                            $('.modal-body').append('<div id="elements_detail" style="display: none"><h4>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+' <button type="button" id="showelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'"><span class="glyphicon glyphicon-plus"></span></button> </h4><select name="em-export-form" id="em-export-form" class="chzn-select"></select></div>');
-                            $('.modal-body').append('<div id="elements-popup" style="width : 95%;margin : auto; display: none"></div>');
+                            $('.modal-body').append('<fieldset><div id="elements_detail" style="display: none"><legend class="legend">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+' <button type="button" id="showelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'"><span class="glyphicon glyphicon-plus"></span></button></legend><select name="em-export-form" id="em-export-form" class="chzn-select"></select></div>');
+                            $('.modal-body').append('<div id="elements-popup" style="width : 95%;margin : auto; display: none"></div></fieldset>');
                             $('#em-export-prg').on('change', function() {
                                 var code = $(this).val();
                                 $('#elements_detail').show();
@@ -2218,7 +2218,7 @@ $(document).ready(function()
             e.handle = true;
             var id = $(this).val();
             var text = $('#em-modal-actions #em-export-form option:selected').attr('data-value');
-            $('#emundus_elm_'+id).attr("checked", true);
+            $('#emundus_elm_'+id).prop("checked", true);
             $('#em-export').append('<li class="em-export-item" id="'+id+'-item"><button class="btn btn-danger btn-xs" id="' + id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button><span class="em-excel_elts"><strong>'+text+'</strong></span></li>');
         }
     });
