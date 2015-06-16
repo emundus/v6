@@ -173,7 +173,7 @@ class EmundusModelFiles extends JModelLegacy
                     $select = !empty($attribs->cascadingdropdown_label_concat)?"CONCAT(".$attribs->cascadingdropdown_label_concat.")":$r2[1];
                     $from = $r2[0];
                     $where = $r1[1].'='.$def_elmt->element_name;
-                    $query = "(SELECT ".$select." FROM ".$from." WHERE ".$where.")";
+                    $query = "(SELECT ".$select." FROM ".$from." WHERE ".$where.") AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
                     $query = preg_replace('#{thistable}#', $from, $query);
                     $query = preg_replace('#{my->id}#', $current_user->id, $query);
                     $this->_elements_default[] = $query;
