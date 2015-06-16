@@ -600,33 +600,33 @@ class EmundusControllerFiles extends JControllerLegacy
     public function getpublish()
     {
         $publish = array (
-                    0 =>
-                        array (
-                          'id' =>  '1',
-                          'step' =>  '1' ,
-                          'value' => JText::_('PUBLISHED') ,
-                          'ordering' =>  '1'
-                        ),
-                    1 =>
-                        array (
-                            'id' =>  '0',
-                            'step' =>  '0' ,
-                            'value' => JText::_('ARCHIVED') ,
-                            'ordering' =>  '2'
-                        ),
-                    3 =>
-                        array (
-                            'id' =>  '3',
-                            'step' =>  '-1' ,
-                            'value' => JText::_('TRASHED') ,
-                            'ordering' =>  '3'
-                        )
-                );
+            0 =>
+                array (
+                    'id' =>  '1',
+                    'step' =>  '1' ,
+                    'value' => JText::_('PUBLISHED') ,
+                    'ordering' =>  '1'
+                ),
+            1 =>
+                array (
+                    'id' =>  '0',
+                    'step' =>  '0' ,
+                    'value' => JText::_('ARCHIVED') ,
+                    'ordering' =>  '2'
+                ),
+            3 =>
+                array (
+                    'id' =>  '3',
+                    'step' =>  '-1' ,
+                    'value' => JText::_('TRASHED') ,
+                    'ordering' =>  '3'
+                )
+        );
 
         echo json_encode((object)(array('status' => true,
-            'states' => $publish,
-            'state' => JText::_('PUBLISH'),
-            'select_publish' => JText::_('PLEASE_SELECT_PUBLISH'))));
+                                        'states' => $publish,
+                                        'state' => JText::_('PUBLISH'),
+                                        'select_publish' => JText::_('PLEASE_SELECT_PUBLISH'))));
         exit;
     }
 
@@ -676,6 +676,8 @@ class EmundusControllerFiles extends JControllerLegacy
                 foreach ($trigger_emails as $key => $trigger_email) {
                     // Manage with selected fnum
                     foreach($fnumsInfos as $file) {
+                        $mailer     = JFactory::getMailer();
+
                         $post = array();
                         $tags = $emails->setTags($file['applicant_id'], $post);
 
@@ -689,22 +691,52 @@ class EmundusControllerFiles extends JControllerLegacy
                         //$attachment[] = $path_file;
                         $replyto = $from;
                         $replytoname = $fromname;
+                        /*
+                                                $res = JUtility::sendMail($from, $fromname, $to, $subject, $body, true);
+                                                if ($res) {
+                                                    $message = array(
+                                                        'user_id_from' => $from_id,
+                                                        'user_id_to' => $file['applicant_id'],
+                                                        'subject' => $subject,
+                                                        'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' .
+                                                            JText::_('TO') . ' ' . $to . '</i><br>' . $body
+                                                    );
+                                                    $emails->logEmail($message);
+                                                }
+                        */
+                        $sender = array(
+                            $from,
+                            $fromname
+                        );
 
-                        $res = JUtility::sendMail($from, $fromname, $to, $subject, $body, true);
-                        if ($res) {
+                        $mailer->setSender($sender);
+                        $mailer->addRecipient($to);
+                        $mailer->setSubject($subject);
+                        $mailer->isHTML(true);
+                        $mailer->Encoding = 'base64';
+                        $mailer->setBody($body);
+
+                        $send = $mailer->Send();
+                        if ( $send !== true ) {
+                            echo 'Error sending email: ' . $send->__toString();
+                            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                            die();
+                        } else {
                             $message = array(
                                 'user_id_from' => $from_id,
                                 'user_id_to' => $file['applicant_id'],
                                 'subject' => $subject,
-                                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' .
-                                    JText::_('TO') . ' ' . $to . '</i><br>' . $body
+                                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
                             );
                             $emails->logEmail($message);
+                            JLog::add($to.' '.$body, JLog::INFO, 'com_emundus');
                         }
+
                     }
                     // Manage with default recipient by programme
                     foreach ($trigger_email as $code => $trigger) {
                         foreach ($trigger['to']['recipients'] as $key => $recipient) {
+                            $mailer     = JFactory::getMailer();
 
                             $post = array();
                             $tags = $emails->setTags($recipient['id'], $post);
@@ -719,17 +751,45 @@ class EmundusControllerFiles extends JControllerLegacy
                             //$attachment[] = $path_file;
                             $replyto = $from;
                             $replytoname = $fromname;
+                            /*
+                                                        $res = JUtility::sendMail($from, $fromname, $to, $subject, $body, true);
+                                                        if ($res) {
+                                                            $message = array(
+                                                                'user_id_from' => $from_id,
+                                                                'user_id_to' => $recipient['id'],
+                                                                'subject' => $subject,
+                                                                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' .
+                                                                    JText::_('TO') . ' ' . $to . '</i><br>' . $body
+                                                            );
+                                                            $emails->logEmail($message);
+                                                        }
+                            */
+                            $sender = array(
+                                $from,
+                                $fromname
+                            );
 
-                            $res = JUtility::sendMail($from, $fromname, $to, $subject, $body, true);
-                            if ($res) {
+                            $mailer->setSender($sender);
+                            $mailer->addRecipient($to);
+                            $mailer->setSubject($subject);
+                            $mailer->isHTML(true);
+                            $mailer->Encoding = 'base64';
+                            $mailer->setBody($body);
+
+                            $send = $mailer->Send();
+                            if ( $send !== true ) {
+                                echo 'Error sending email: ' . $send->__toString();
+                                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                                die();
+                            } else {
                                 $message = array(
                                     'user_id_from' => $from_id,
                                     'user_id_to' => $recipient['id'],
                                     'subject' => $subject,
-                                    'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' .
-                                        JText::_('TO') . ' ' . $to . '</i><br>' . $body
+                                    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
                                 );
                                 $emails->logEmail($message);
+                                JLog::add($to.' '.$body, JLog::INFO, 'com_emundus');
                             }
 
                         }

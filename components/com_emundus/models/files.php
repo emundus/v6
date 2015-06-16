@@ -1635,8 +1635,8 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch (Exception $e)
 		{
-			error_log($e->getMessage());
-			error_log($query);
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
@@ -1661,8 +1661,8 @@ class EmundusModelFiles extends JModelLegacy
         }
         catch (Exception $e)
         {
-            error_log($e->getMessage());
-            error_log($query);
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -1682,6 +1682,8 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch(Exception $e)
 		{
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 			return null;
 		}
 
@@ -1701,6 +1703,8 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch(Exception $e)
 		{
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 			return null;
 		}
 	}
@@ -1723,6 +1727,8 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch(Exception $e)
 		{
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 			return null;
 		}
 	}
@@ -1753,6 +1759,8 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch(Exception $e)
 		{
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -1776,6 +1784,8 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch (Exception $e)
 		{
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -1800,6 +1810,8 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch (Exception $e)
 		{
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
