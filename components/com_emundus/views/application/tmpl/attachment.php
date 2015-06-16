@@ -18,7 +18,7 @@ defined('_JEXEC') or die('Restricted access');
 
 JFactory::getSession()->set('application_layout', 'attachment');
 
-$isCoordinator = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this->fnum)?true:false;
+$can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this->fnum)?true:false;
 
 ?>
 
@@ -29,31 +29,21 @@ $isCoordinator = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $t
     <div class="panel panel-default widget">
         <div class="panel-heading">
             <span class="glyphicon glyphicon-paperclip"></span>
-            <h3 class="panel-title"><?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?> </h3>
+            <h3 class="panel-title">
+                <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
+                <?php if($can_export && count($this->userAttachments) > 0)
+                    echo '<button class="btn btn-default" id="em_export_pdf"  title="'.JText::_('PDF').'" link="/index.php?option=com_emundus&controller=application&task=exportpdf&fnum='.$this->fnum.'&student_id='.$this->student_id.'&ids={ids}">
+                        <span class="glyphicon glyphicon-file"></span>
+                    </button>';
+                ?>
+            </h3>
         </div>
         <div class="panel-body">
             <div class="content">
-                <div class="actions">
-
-                    <?php
-                    if ($isCoordinator):
-                        $url =  JURI::Base().'/index.php?option=com_fabrik&view=form&formid=67&rowid=&jos_emundus_uploads___user_id[value]='.$this->student_id.'&jos_emundus_uploads___fnum[value]='.$this->fnum.'&student_id='.$this->student_id.'&tmpl=component&iframe=1';
-                        ?>
-
-
-                    <?php endif;?>
-                </div>
                 <?php
                 if(count($this->userAttachments) > 0)
                 {
-                    if($isCoordinator)
-                    {
-                        echo '<button class="btn btn-default" id="em_export_pdf"  title="'.JText::_('PDF').'" link="/index.php?option=com_emundus&controller=application&task=exportpdf&fnum='.$this->fnum.'&student_id='.$this->student_id.'&ids={ids}">
-                        <span class="glyphicon glyphicon-file"></span>
-                    </button>';
-                    }
-
-                    if ($isCoordinator)
+                    if ($can_export)
                         $checkbox = '<input type="checkbox" name="em_application_attachments_all" id="em_application_attachments_all" />';
 
                     echo '<table class="table table-hover">
@@ -80,7 +70,7 @@ $isCoordinator = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $t
                         $img_dossier = (is_dir($path))?'<img style="border:0;" src="media/com_emundus/images/icones/dossier.png" width=20 height=20 title="'.JText::_( 'FILE_NOT_FOUND' ).'"/> ':"";
                         $img_locked = (strpos($attachment->filename, "_locked") > 0)?'<img src="media/com_emundus/images/icones/encrypted.png" />':"";
 
-                        if ($isCoordinator)
+                        if ($can_export)
                             $checkbox = '<input type="checkbox" name="attachments[]" class="em_application_attachments" id="aid'.$attachment->aid.'" value="'.$attachment->aid.'" />';
 
                         echo '<tr>

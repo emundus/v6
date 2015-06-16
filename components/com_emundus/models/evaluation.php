@@ -1299,12 +1299,19 @@ class EmundusModelEvaluation extends JModelList
 	* 	@return array
 	*/
 	function getEvaluationsFnumUser($fnum, $user) {
-		$query = 'SELECT *
+        try {
+            $query = 'SELECT *
 					FROM #__emundus_evaluations ee 
-					WHERE ee.fnum like '.$this->_db->Quote($fnum). ' AND user = '.$user;
+					WHERE ee.fnum like ' . $this->_db->Quote($fnum) . ' AND user = ' . $user;
 //die(str_replace('#_', 'jos', $query));
-		$this->_db->setQuery( $query );
-		return $this->_db->loadObjectList();
+            $this->_db->setQuery($query);
+            return $this->_db->loadObjectList();
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
 	}
 
 	function getLettersTemplate($eligibility, $training) {
@@ -1314,35 +1321,83 @@ class EmundusModelEvaluation extends JModelList
 	}
 
 	function getLettersTemplateByID($id) {
-		$query = "SELECT * FROM #__emundus_setup_letters WHERE id=".$id;
-		$this->_db->setQuery($query); 
-		return $this->_db->loadAssocList();
+		try {
+            $query = "SELECT * FROM #__emundus_setup_letters WHERE id=" . $id;
+            $this->_db->setQuery($query);
+            return $this->_db->loadAssocList();
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
 	}
 
-	/*
-	* 	Get evaluations form ID By programme code
-	*	@param code 		code of the programme
-	* 	@return int
-	*/
-	function getEvaluationFormByProgramme($code=null) {
-		if ($code === NULL) {
-			$session = JFactory::getSession();
-			if ($session->has('filt_params'))
-			{
-				$filt_params = $session->get('filt_params'); 
-				if (count(@$filt_params['programme'])>0) {
-					$code = $filt_params['programme'][0];
-				}
-			}
-		}
-		
-		$query = 'SELECT ff.form_id
+    /*
+    * 	Get evaluations form ID By programme code
+    *	@param code 		code of the programme
+    * 	@return int
+    */
+    function getEvaluationFormByProgramme($code=null) {
+        if ($code === NULL) {
+            $session = JFactory::getSession();
+            if ($session->has('filt_params'))
+            {
+                $filt_params = $session->get('filt_params');
+                if (count(@$filt_params['programme'])>0) {
+                    $code = $filt_params['programme'][0];
+                }
+            }
+        }
+        try {
+            $query = 'SELECT ff.form_id
 					FROM #__fabrik_formgroup ff 
-					WHERE ff.group_id IN (SELECT fabrik_group_id FROM #__emundus_setup_programmes WHERE code like '.$this->_db->Quote($code).')';
+					WHERE ff.group_id IN (SELECT fabrik_group_id FROM #__emundus_setup_programmes WHERE code like ' .
+                $this->_db->Quote($code) . ')';
 //die(str_replace('#_', 'jos', $query));
-		$this->_db->setQuery( $query );
-		return $this->_db->loadResult();
-	}
+            $this->_db->setQuery($query);
+
+            return $this->_db->loadResult();
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+    }
+
+    /*
+* 	Get Decision form ID By programme code
+*	@param code 		code of the programme
+* 	@return int
+*/
+    function getDecisionFormByProgramme($code=null) {
+        if ($code === NULL) {
+            $session = JFactory::getSession();
+            if ($session->has('filt_params'))
+            {
+                $filt_params = $session->get('filt_params');
+                if (count(@$filt_params['programme'])>0) {
+                    $code = $filt_params['programme'][0];
+                }
+            }
+        }
+        try {
+            $query = 'SELECT ff.form_id
+					FROM #__fabrik_formgroup ff
+					WHERE ff.group_id IN (SELECT fabrik_decision_group_id FROM #__emundus_setup_programmes WHERE code like ' .
+                $this->_db->Quote($code) . ')';
+//die(str_replace('#_', 'jos', $query));
+            $this->_db->setQuery($query);
+
+            return $this->_db->loadResult();
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+    }
 
 }
 

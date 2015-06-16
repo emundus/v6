@@ -151,51 +151,93 @@ class EmundusViewApplication extends JViewLegacy
 						exit();
 					}
 					break;
-				case 'evaluation':
-					if(EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id, $fnum))
-					{
-						$student = JFactory::getUser(intval($fnumInfos['applicant_id']));
-						$evaluation = new EmundusModelEvaluation();
-						$myEval = $evaluation->getEvaluationsFnumUser($fnum, $this->_user->id);
+                case 'evaluation':
+                    if(EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id, $fnum))
+                    {
+                        $student = JFactory::getUser(intval($fnumInfos['applicant_id']));
+                        $evaluation = new EmundusModelEvaluation();
+                        $myEval = $evaluation->getEvaluationsFnumUser($fnum, $this->_user->id);
 
-						// get evaluation form ID
-						$formid = $evaluation->getEvaluationFormByProgramme($fnumInfos['training']);
-						/*$form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&tmpl=component&iframe=1&rowid='.@$myEval[0]->id.'&student_id='.$student->id;
-						$form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid='.@$myEval[0]->id.'&student_id='.$student->id;
-						$this->assignRef('form_url_edit', $form_url_edit);
+                        // get evaluation form ID
+                        $formid = $evaluation->getEvaluationFormByProgramme($fnumInfos['training']);
+                        /*$form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&tmpl=component&iframe=1&rowid='.@$myEval[0]->id.'&student_id='.$student->id;
+                        $form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid='.@$myEval[0]->id.'&student_id='.$student->id;
+                        $this->assignRef('form_url_edit', $form_url_edit);
 */
-						$url_evaluation = 'index.php?option=com_emundus&view=evaluation&layout=data&format=raw&Itemid=&cfnum='.$fnum;
+                        $url_evaluation = 'index.php?option=com_emundus&view=evaluation&layout=data&format=raw&Itemid=&cfnum='.$fnum;
 
-						$url_form = '';
+                        $url_form = '';
 
-							if(count($myEval) > 0)
-							{
-								if(EmundusHelperAccess::asAccessAction(5, 'u', $this->_user->id, $fnum))
-								{
-								if(!empty($formid))
-								    $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid='.$myEval[0]->id.'&student_id='.$student->id;
-								}
-							}
-							else
-							{
-								if(EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id, $fnum))
-								{
-                                    if(!empty($formid))
-                                        $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid=&jos_emundus_evaluations___student_id[value]='.$student->id.'&jos_emundus_evaluations___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_evaluations___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
-								}
-							}
-						$this->assignRef('campaign_id', $fnumInfos['campaign_id']);
-						$this->assignRef('student', $student);
-						$this->assignRef('fnum', $fnum);
-						$this->assignRef('url_evaluation', $url_evaluation);
-						$this->assignRef('url_form', $url_form);
-					}
-					else
-					{
-						echo JText::_("RESTRICTED_ACCESS");
-						exit();
-					}
-					break;
+                        if(count($myEval) > 0)
+                        {
+                            if(EmundusHelperAccess::asAccessAction(5, 'u', $this->_user->id, $fnum))
+                            {
+                                if(!empty($formid))
+                                    $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid='.$myEval[0]->id.'&student_id='.$student->id;
+                            }
+                        }
+                        else
+                        {
+                            if(EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id, $fnum))
+                            {
+                                if(!empty($formid))
+                                    $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid=&jos_emundus_evaluations___student_id[value]='.$student->id.'&jos_emundus_evaluations___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_evaluations___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
+                            }
+                        }
+                        $this->assignRef('campaign_id', $fnumInfos['campaign_id']);
+                        $this->assignRef('student', $student);
+                        $this->assignRef('fnum', $fnum);
+                        $this->assignRef('url_evaluation', $url_evaluation);
+                        $this->assignRef('url_form', $url_form);
+                    }
+                    else
+                    {
+                        echo JText::_("RESTRICTED_ACCESS");
+                        exit();
+                    }
+                    break;
+                case 'decision':
+                    if(EmundusHelperAccess::asAccessAction(29, 'r', $this->_user->id, $fnum))
+                    {
+                        $student = JFactory::getUser(intval($fnumInfos['applicant_id']));
+                        $evaluation = new EmundusModelEvaluation();
+                        $myEval = $evaluation->getEvaluationsFnumUser($fnum, $this->_user->id);
+
+                        // get evaluation form ID
+                        $formid = $evaluation->getDecisionFormByProgramme($fnumInfos['training']);
+
+                        //$url_evaluation = 'index.php?option=com_emundus&view=evaluation&layout=data&format=raw&Itemid=&cfnum='.$fnum;
+
+                        $url_form = '';
+
+                        if(count($myEval) > 0)
+                        {
+                            if(EmundusHelperAccess::asAccessAction(29, 'u', $this->_user->id, $fnum))
+                            {
+                                if(!empty($formid))
+                                    $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid='.$myEval[0]->id.'&student_id='.$student->id;
+                            }
+                        }
+                        else
+                        {
+                            if(EmundusHelperAccess::asAccessAction(29, 'c', $this->_user->id, $fnum))
+                            {
+                                if(!empty($formid))
+                                    $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid=&jos_emundus_evaluations___student_id[value]='.$student->id.'&jos_emundus_evaluations___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_evaluations___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
+                            }
+                        }
+                        $this->assignRef('campaign_id', $fnumInfos['campaign_id']);
+                        $this->assignRef('student', $student);
+                        $this->assignRef('fnum', $fnum);
+                        //$this->assignRef('url_evaluation', $url_evaluation);
+                        $this->assignRef('url_form', $url_form);
+                    }
+                    else
+                    {
+                        echo JText::_("RESTRICTED_ACCESS");
+                        exit();
+                    }
+                    break;
 				case 'comment':
 					if(EmundusHelperAccess::asAccessAction(10, 'r', $this->_user->id, $fnum))
 					{

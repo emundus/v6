@@ -14,22 +14,17 @@ JFactory::getSession()->set('application_layout', 'form');
     <div class="panel panel-default widget">
         <div class="panel-heading">
             <span class="glyphicon glyphicon-list"></span>
-            <h3 class="panel-title"><?php echo JText::_('APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COMPLETED"); ?> </h3>
+            <h3 class="panel-title">
+                <?php echo JText::_('APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COMPLETED"); ?>
+                <?php if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)):?>
+                    <a class="  clean" target="_blank" href="<?php echo JURI::Base(); ?>index.php?option=com_emundus&task=pdf&user=<?php echo $this->sid; ?>&fnum=<?php echo $this->fnum; ?>">
+                        <button class="btn btn-default" data-title="<?php echo JText::_('DOWNLOAD_APPLICATION_FORM'); ?>"><span class="glyphicon glyphicon-file"></span></button>
+                    </a>
+                <?php endif;?>
+            </h3>
         </div>
         <div class="panel-body">
             <div class="active content">
-                <div class="actions">
-                    <?php if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)):?>
-                        <a class="  clean" target="_blank" href="<?php echo JURI::Base(); ?>index.php?option=com_emundus&task=pdf&user=<?php echo $this->sid; ?>&fnum=<?php echo $this->fnum; ?>">
-                            <button class="btn btn-default" data-title="<?php echo JText::_('DOWNLOAD_APPLICATION_FORM'); ?>"><span class="glyphicon glyphicon-file"></span></button>
-                        </a>
-                    <?php endif;?>
-                    <!--
-                    <button class="btn btn-default" data-title="<?php echo JText::_('EXPORT_TO_ZIP'); ?>" onclick="document.pressed=this.name;" name="export_zip">
-                        <span class="glyphicon glyphicon-folder-close"></span>
-                    </button>
-                    -->
-                </div>
                 <?php echo $this->forms; ?>
             </div>
         </div>
