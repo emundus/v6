@@ -86,7 +86,7 @@ foreach($s_elements as $s){
 						<div class="panel-heading"><legend><input type="checkbox" ';
 				
 				if($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
-				echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusgroup_'.$t->table_id.'" data-check=".emundusitem_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\')" /><label for="emundus_checkall_grp_'.$t->group_id.'"> 2'.$t->group_label.'</label></legend></div><div class="panel-body">';
+				echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusgroup_'.$t->table_id.'" data-check=".emundusitem_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\')" /><label for="emundus_checkall_grp_'.$t->group_id.'">'.$t->group_label.'</label></legend></div><div class="panel-body">';
 			} elseif ($t->table_id != $tbl_tmp && $tbl_tmp != '') {
 					echo '</div></div></div></div>
 						<div class="panel panel-primary excel" id="emundus_table_'.$t->table_id.'">
@@ -94,19 +94,19 @@ foreach($s_elements as $s){
 					if($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
                 $label = explode("-", $t->table_label);
                 $label = $label[1];
-					echo ' id="emundus_checkall_tbl_'.$t->table_id.'" class="emunduspage" data-check=".emundusgroup_'.$t->table_id.'" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$t->table_id.'\')" /><label for="emundus_checkall_tbl_'.$t->table_id.'"> 3'.$label.'</label></legend></div><div class="panel-body">
+					echo ' id="emundus_checkall_tbl_'.$t->table_id.'" class="emunduspage" data-check=".emundusgroup_'.$t->table_id.'" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$t->table_id.'\')" /><label for="emundus_checkall_tbl_'.$t->table_id.'">'.$label.'</label></legend></div><div class="panel-body">
 						<div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
 							<div class="panel-heading"><legend><input type="checkbox" ';
 					
 					if($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
-					echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusgroup_'.$t->table_id.'" data-check=".emundusitem_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\')" /><label for="emundus_checkall_grp_'.$t->group_id.'">4 '.$t->group_label.'</label></legend></div><div class="panel-body">';
+					echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusgroup_'.$t->table_id.'" data-check=".emundusitem_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\')" /><label for="emundus_checkall_grp_'.$t->group_id.'">'.$t->group_label.'</label></legend></div><div class="panel-body">';
 			} else {
 				if ($t->group_id != $grp_tmp && $grp_tmp != '') {
 						echo '</div></div><div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
 								<div class="panel-heading"><legend><input type="checkbox" ';
 						
 						if($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
-						echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusgroup_'.$t->table_id.'" data-check=".emundusitem_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\')"/><label for="emundus_checkall_grp_'.$t->group_id.'">5 '.$t->group_label.'</legend></div><div class="panel-body">';
+						echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusgroup_'.$t->table_id.'" data-check=".emundusitem_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\')"/><label for="emundus_checkall_grp_'.$t->group_id.'">'.$t->group_label.'</legend></div><div class="panel-body">';
 				} 
 			}
 			echo ' <input name="ud[]" type="checkbox" id="emundus_elm_'.$t->id.'" class="emundusitem_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_elm_'.$t->id.'\')" ';
