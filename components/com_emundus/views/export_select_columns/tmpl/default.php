@@ -52,6 +52,10 @@ foreach($s_elements as $s){
         text-shadow: none ;
         font-size: 18px;
     }
+    .label-element {
+        color: #000000!important;
+        font-weight: normal!important;
+    }
     .panel-info>.panel-heading label {
         color: #000000!important;
         font-weight: bold!important;
@@ -111,7 +115,7 @@ foreach($s_elements as $s){
 			}
 			echo ' <input name="ud[]" type="checkbox" id="emundus_elm_'.$t->id.'" class="emundusitem_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_elm_'.$t->id.'\')" ';
 			if((!empty($s_elements) && in_array($t->table_name,$table_name) && in_array($t->element_name,$element_name)) || ($t->created_by_alias == 'comment' && $comments == 1)) echo "checked=checked";
-			echo ' value="'.$t->id.'"/><label for="emundus_elm_'.$t->id.'">'.$t->element_label.'</label> ';
+			echo ' value="'.$t->id.'"/><label class="label-element" for="emundus_elm_'.$t->id.'">'.$t->element_label.'</label> ';
 		
 			$tbl_tmp=$t->table_id;
 			$grp_tmp=$t->group_id;

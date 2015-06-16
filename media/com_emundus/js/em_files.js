@@ -1271,8 +1271,8 @@ $(document).ready(function()
                         if(result.status)
                         {
                             $('.modal-body').empty();
-                            $('.modal-body').append('<fieldset><legend class="legend">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE')+'</legend> <select name="em-export-methode" id="em-export-methode" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+'</option><option value="1" data-value="1">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN')+'</option></select></fieldset>');
-                            $('.modal-body').append('<fieldset><legend class="legend">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</legend> <select name="em-export-prg" id="em-export-prg" style="width: 95%;" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG_DEFAULT')+'</option></select></fieldset>');
+                            $('.modal-body').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE')+'</h5></div><div class="panel-body"><select name="em-export-methode" id="em-export-methode" style="width: 95%;" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+'</option><option value="1" data-value="1">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN')+'</option></select></div></div>');
+                            $('.modal-body').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select name="em-export-prg" id="em-export-prg" style="width: 95%;" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG_DEFAULT')+'</option></select></div></div>');
                             $.ajax({
                                 type:'get',
                                 url: 'index.php?option=com_emundus&controller=files&task=getProgrammes',
@@ -1285,8 +1285,21 @@ $(document).ready(function()
                                     console.log(jqXHR.responseText);
                                 }
                             });
-                            $('.modal-body').append('<fieldset><div id="elements_detail" style="display: none"><legend class="legend">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+' <button type="button" id="showelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'"><span class="glyphicon glyphicon-plus"></span></button></legend><select name="em-export-form" id="em-export-form" class="chzn-select"></select></div>');
-                            $('.modal-body').append('<div id="elements-popup" style="width : 95%;margin : auto; display: none"></div></fieldset>');
+                            $('.modal-body').append('<div id="elements_detail" style="display: none">' +
+                                                        '<div class="panel panel-default xclsform">' +
+                                                            '<div class="panel-heading"><h5>' +
+                                                                Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+
+                                                                ' <button type="button" id="showelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
+                                                                '<span class="glyphicon glyphicon-plus"></span>' +
+                                                                 '</button></h5>' +
+                                                            '</div>' +
+                                                            '<div class="panel-body">' +
+                                                                '<select name="em-export-form" id="em-export-form" class="chzn-select"></select>' +
+                                                                '<div id="elements-popup" style="width : 95%;margin : auto; display: none">' +
+                                                                '</div>' +
+                                                            '</div>' +
+                                                        '</div>' +
+                                                    '</div>');
                             $('#em-export-prg').on('change', function() {
                                 var code = $(this).val();
                                 $('#elements_detail').show();
@@ -1304,7 +1317,8 @@ $(document).ready(function()
                                     }
                                 });
                             });
-                            var defaults = '<h6>'+Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM')+'</h6><div id="em-export-elts" class="well"><ul id="em-export"></ul></div>';
+                            $('.modal-body').append('<div id="list-element-export" class="panel panel-default xclsform"></div>');
+                            var defaults = '<h5>  '+Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM')+'</h5><div id="em-export-elts" class="well"><ul id="em-export"></ul></div>';
                             var item ="";
                             for(var d in result.defaults)
                             {
@@ -1312,7 +1326,7 @@ $(document).ready(function()
                                     break;
                                 item += '<li class="em-export-item" id="'+result.defaults[d].id+'-item"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>'+result.defaults[d].element_label+'</strong></span></li>';
                             }
-                            $('.modal-body').append(defaults);
+                            $('#list-element-export').append(defaults);
                             $('#em-export').append(item);
                             item = "<option></option>";
                             var grId = null;
@@ -1342,9 +1356,8 @@ $(document).ready(function()
                                 item += '<option value="'+result.elts[d].id+'" data-value="'+result.elts[d].element_label+'">'+result.elts[d].element_label+'</option>';
                             }
                             $('#em-export-form').append(item);
-                            $('#em-export-form').chosen({width: "95%"});
-                            $('head').append('<link rel="stylesheet" href="media/com_emundus/css/emundus.css" type="text/css" />');
-                            $('.modal-body').append('<div class="well">' +
+
+                            $('#list-element-export').append('<div class="well">' +
                             '<input class="em-ex-check" type="checkbox" value="photo" name="em-ex-photo" id="em-ex-photo"/>' +
                             '<label for="em-ex-photo">'+Joomla.JText._('COM_EMUNDUS_PHOTO')+'</label> <br/>' +
                             '<input class="em-ex-check" type="checkbox" value="forms" name="em-ex-forms" id="em-ex-forms"/>' +
@@ -1355,7 +1368,10 @@ $(document).ready(function()
                             '<label for="em-ex-assessment">'+Joomla.JText._('COM_EMUNDUS_ASSESSMENT')+'</label> <br/>' +
                             '<input class="em-ex-check" type="checkbox" value="comment" name="em-ex-comment" id="em-ex-comment"/>' +
                             '<label for="em-ex-comment">'+Joomla.JText._('COM_EMUNDUS_COMMENT')+'</label> <br/>' +
-                            '</div>');
+                            '</div></div>');
+                            $('#em-export-form').chosen({width: "95%"});
+                            $('.xclsform').css({width: "95%", 'margin': "auto", 'margin-top': "15px"});
+                            $('head').append('<link rel="stylesheet" href="media/com_emundus/css/emundus.css" type="text/css" />');
 
                         }
                     },
@@ -2317,9 +2333,13 @@ $(document).ready(function()
         if ($(this).hasClass("btn btn-info")) {
             $('#elements-popup').toggle(400);
             $(this).removeClass("btn btn-info").addClass("btn btn-elements-success");
+            $(this).empty();
+            $(this).append('<span class="glyphicon glyphicon-minus"></span>');
         } else {
             $('#elements-popup').hide();
             $(this).removeClass("btn btn-elements-success").addClass("btn btn-info");
+            $(this).empty();
+            $(this).append('<span class="glyphicon glyphicon-plus"></span>');
         }
 
     });
