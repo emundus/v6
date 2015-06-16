@@ -1272,20 +1272,9 @@ $(document).ready(function()
                         {
                             $('.modal-body').empty();
                             $('.modal-body').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE')+'</h5></div><div class="panel-body"><select name="em-export-methode" id="em-export-methode" style="width: 95%;" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+'</option><option value="1" data-value="1">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN')+'</option></select></div></div>');
-                            $('.modal-body').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select name="em-export-prg" id="em-export-prg" style="width: 95%;" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG_DEFAULT')+'</option></select></div></div>');
-                            $.ajax({
-                                type:'get',
-                                url: 'index.php?option=com_emundus&controller=files&task=getProgrammes',
-                                success: function(data)
-                                {
-                                    $('#em-export-prg').append(data);
-                                },
-                                error: function (jqXHR, textStatus, errorThrown)
-                                {
-                                    console.log(jqXHR.responseText);
-                                }
-                            });
-                            $('.modal-body').append('<div id="elements_detail" style="display: none">' +
+                            $('.modal-body').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select name="em-export-prg" id="em-export-prg" style="width: 95%;" class="chzn-select"></select></div></div>');
+
+                            $('.modal-body').append('<div id="elements_detail">' +
                                                         '<div class="panel panel-default xclsform">' +
                                                             '<div class="panel-heading"><h5>' +
                                                                 Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+
@@ -1300,9 +1289,34 @@ $(document).ready(function()
                                                             '</div>' +
                                                         '</div>' +
                                                     '</div>');
+                            $.ajax({
+                                type:'get',
+                                url: 'index.php?option=com_emundus&controller=files&task=getProgrammes',
+                                success: function(data)
+                                {
+                                    $('#em-export-prg').append(data);
+                                    var code = $('#em-export-prg').val();
+                                    $.ajax({
+                                        type:'get',
+                                        url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code='+code,
+                                        success: function(data)
+                                        {
+                                            $('#elements-popup').empty();
+                                            $('#elements-popup').append(data);
+                                        },
+                                        error: function (jqXHR, textStatus, errorThrown)
+                                        {
+                                            console.log(jqXHR.responseText);
+                                        }
+                                    });
+                                },
+                                error: function (jqXHR, textStatus, errorThrown)
+                                {
+                                    console.log(jqXHR.responseText);
+                                }
+                            });
                             $('#em-export-prg').on('change', function() {
                                 var code = $(this).val();
-                                $('#elements_detail').show();
                                 $.ajax({
                                     type:'get',
                                     url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code='+code,
