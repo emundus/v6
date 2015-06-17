@@ -2437,7 +2437,7 @@ class EmundusModelFiles extends JModelLegacy
 	 * @param $desc
 	 * @return int
 	 */
-	public function addAttachement($fnum, $name, $uid, $cid, $attachment_id,$desc)
+	public function addAttachment($fnum, $name, $uid, $cid, $attachment_id,$desc)
 	{
 		$dbo = $this->getDbo();
 		$query = "insert into jos_emundus_uploads (user_id, fnum, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id) values ({$uid}, {$dbo->quote($fnum)}, {$attachment_id}, {$dbo->quote($name)}, {$dbo->quote($desc)}, 0, 0, {$cid})";
@@ -2491,7 +2491,8 @@ class EmundusModelFiles extends JModelLegacy
 	public function getValueFabrikByIds($idFabrik)
 	{
 		$dbo = $this->getDbo();
-		$select = "select jfe.id, jfe.name, jfe.plugin, jfe.params, jfg.params as group_params, jfg.id as group_id, jfl.db_table_name from jos_fabrik_elements as jfe, jfj.table_join
+		$select = "select jfe.id, jfe.name, jfe.plugin, jfe.params, jfg.params as group_params, jfg.id as group_id, jfl.db_table_name, jfj.table_join
+                    from jos_fabrik_elements as jfe
 					left join #__fabrik_formgroup as jff on jff.group_id = jfe.group_id
 					left join #__fabrik_groups as jfg on jfg.id = jff.group_id
 					left join #__fabrik_forms as jff2 on jff2.id = jff.form_id
@@ -2526,7 +2527,7 @@ class EmundusModelFiles extends JModelLegacy
 
 		$isFnumsNull = ($fnums === null);
 		$isDatabaseJoin = ($plugin === 'databasejoin');
-		$isMulti = ($params->database_join_display_type == "multilist" || $params->database_join_display_type == "checkbox");
+		$isMulti = (@$params->database_join_display_type == "multilist" || @$params->database_join_display_type == "checkbox");
 		$dbo = $this->getDbo();
 
 		if($plugin === 'date')

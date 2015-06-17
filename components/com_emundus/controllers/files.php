@@ -11,6 +11,7 @@
 // No direct access
 /*
 if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
+
     use PhpOffice\PhpWord\IOFactory;
     use PhpOffice\PhpWord\PhpWord;
     use PhpOffice\PhpWord\TemplateProcessor;
@@ -1617,12 +1618,12 @@ class EmundusControllerFiles extends JControllerLegacy
                 break;
             case 3:
                 // template DOCX
-                /*require_once JPATH_LIBRARIES.DS.'PHPWord'.DS.'src'.DS.'Autoloader.php';
+                require_once JPATH_LIBRARIES.DS.'PHPWord'.DS.'src'.DS.'Autoloader.php';
 
                 if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
                     \PhpOffice\PhpWord\Autoloader::register();
                 }
-                */
+
                 $res = new stdClass();
                 $res->status = true;
                 $res->files = array();
@@ -1630,7 +1631,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
                 try
                 {
-                    $preprocess = new TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
+                    $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
 
                     $tags = $preprocess->getVariables();
                     $idFabrik = array();
@@ -1655,7 +1656,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         $groupParams = json_decode($elt['group_params']);
                         $isDate = ($elt['plugin'] == 'date');
                         $isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
-                        if($groupParams->repeat_group_button == 1 || $isDatabaseJoin)
+                        if(@$groupParams->repeat_group_button == 1 || $isDatabaseJoin)
                         {
                             $fabrikValues[$elt['id']] = $model->getFabrikValueRepeat($elt, $fnumsArray, $params, $groupParams->repeat_group_button == 1);
                         }
@@ -1706,7 +1707,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                     foreach($fnumsArray as $fnum)
                     {
-                        $preprocess = new TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
+                        $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
                         if(isset($fnumsInfos[$fnum]))
                         {
                             foreach($setupTags as $tag)
@@ -1743,7 +1744,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                             $preprocess->saveAs(EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id'].DS.$filename);
 
-                            $upId = $model->addAttachement($fnum, $filename, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
+                            $upId = $model->addAttachment($fnum, $filename, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
 
                             $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => EMUNDUS_PATH_REL.$fnumsInfos[$fnum]['applicant_id'].'/', );
                         }
@@ -1828,23 +1829,23 @@ class EmundusControllerFiles extends JControllerLegacy
 
     public function exportonedoc()
     {
-        /*require_once JPATH_LIBRARIES.DS.'PHPWord'.DS.'src'.DS.'Autoloader.php';
+        require_once JPATH_LIBRARIES.DS.'PHPWord'.DS.'src'.DS.'Autoloader.php';
 
         if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
             \PhpOffice\PhpWord\Autoloader::register();
             $rendererName = \PhpOffice\PhpWord\Settings::PDF_RENDERER_TCPDF;
             \PhpOffice\PhpWord\Settings::setPdfRenderer($rendererName, JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf');
         }
-        */
+
         $jinput = JFactory::getApplication()->input;
         $idFiles = explode(",", $jinput->getStrings('ids', ""));
         $model = $this->getModel('Files');
         $files = $model->getAttachmentsById($idFiles);
         $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'_x'.(count($files)-1).'.pdf';
         $path = JPATH_BASE.DS.'tmp'.DS.$nom;
-        /*
-         $wordPHP = new PhpWord();
-        */
+
+        $wordPHP = new \PhpOffice\PhpWord\PhpWord();
+
         $docs = array();
         foreach($files as $key => $file)
         {
@@ -1852,14 +1853,14 @@ class EmundusControllerFiles extends JControllerLegacy
             $tmpName = JPATH_BASE.DS.'tmp'.DS.$file['filename'];
             $document = $wordPHP->loadTemplate($filename);
             $document->saveAs($tmpName); // Save to temp file
-            /*
+
             if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
                 $wordPHP = \PhpOffice\PhpWord\IOFactory::load($tmpName); // Read the temp file
                 $xmlWriter = \PhpOffice\PhpWord\IOFactory::createWriter($wordPHP, 'PDF');
 
 			    $xmlWriter->save($tmpName.'.pdf');  // Save to PDF
             }
-            */
+
             $docs[] = $tmpName.'.pdf';
             unlink($tmpName); // Delete the temp file
         }
