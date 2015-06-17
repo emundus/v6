@@ -2053,6 +2053,7 @@ $(document).ready(function()
                         data:({fnums:checkInput, state: state}),
                         success: function(result)
                         {
+                            $('.modal-footer').hide();
                             if(result.status)
                             {
                                 $('.modal-body').empty();
@@ -2069,7 +2070,7 @@ $(document).ready(function()
                                 '<strong>'+result.msg+'</strong> ' +
                                 '</div>');
                             }
-                            setTimeout(function(){$('#em-modal-actions').modal('hide');}, 800);
+                            setTimeout(function(){$('#em-modal-actions').modal('hide');}, 380000);
                         },
                         error: function (jqXHR, textStatus, errorThrown)
                         {

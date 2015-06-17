@@ -161,6 +161,13 @@ class EmundusModelEmails extends JModelList
         return $strval;
     }
 
+    public function replace($replacement, $str)
+    {
+        $strval = preg_replace($replacement['patterns'], $replacement['replacements'], $str);
+
+        return $strval;
+    }
+
     /*
      *  @description    get tags with Fabrik elementd IDs
      *  @param          $body           string
@@ -173,7 +180,7 @@ class EmundusModelEmails extends JModelList
     }
 
     /*
-     *  @description    replace tags like {fabrik_element_id} by the applicaiton form value for current application file
+     *  @description    replace tags like {fabrik_element_id} by the application form value for current application file
      *  @param          $fum            string  application file number
      *  @param          $element_ids    array   Fabrik element ID
      *  @return         array           array of application file elements values
@@ -240,7 +247,7 @@ class EmundusModelEmails extends JModelList
     public function setTags($user_id, $post=null, $fnum=null, $passwd='')
     {
         $db = JFactory::getDBO();
-        $user = JFactory::getUser($user_id);
+        //$user = JFactory::getUser($user_id);
 
         $query = "SELECT tag, request FROM #__emundus_setup_tags";
         $db->setQuery($query);
@@ -271,6 +278,108 @@ class EmundusModelEmails extends JModelList
         $tags = array('patterns' => $patterns , 'replacements' => $replacements);
 
         return $tags;
+    }
+
+    public function setTagsFabrik($str)
+    {
+        require_once(JPATH_COMPONENT.DS.'models'.DS.'files.php');
+        $file = new EmundusModelFiles();
+
+        $jinput = JFactory::getApplication()->input;
+        $fnums = $jinput->getString('fnums', null);
+        $fnumsArray = (array) json_decode(stripslashes($fnums));
+        $tags = $file->getVariables($str);
+        $idFabrik = array();
+        $setupTags = array();
+        foreach($tags as $i => $val)
+        {
+            $tag = strip_tags($val);
+            if(is_numeric($tag))
+            {
+                $idFabrik[] = $tag;
+            }
+            else
+            {
+                $setupTags[] = $tag;
+            }
+        }
+        if(count($idFabrik) > 0) {
+            $fabrikElts = $file->getValueFabrikByIds($idFabrik);
+            $fabrikValues = array();
+            foreach ($fabrikElts as $elt) {
+                $params = json_decode($elt['params']);
+                $groupParams = json_decode($elt['group_params']);
+                $isDate = ($elt['plugin'] == 'date');
+                $isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
+                if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
+                    $fabrikValues[$elt['id']] = $file->getFabrikValueRepeat($elt, $fnumsArray, $params,
+                        @$groupParams->repeat_group_button == 1);
+                } else {
+                    if ($isDate) {
+                        $fabrikValues[$elt['id']] =
+                            $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'],
+                                $params->date_form_format);
+                    } else {
+                        $fabrikValues[$elt['id']] =
+                            $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
+                    }
+                }
+                if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
+                    foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+                        if (($elt['plugin'] == "checkbox") || ($elt['plugin'] == "radiobutton")) {
+                            $val = json_decode($val['val']);
+                        } else {
+                            $val = explode(',', $val['val']);
+                        }
+
+                        foreach ($val as $k => $v) {
+                            $index = array_search(trim($v), $params->sub_options->sub_values);
+                            $val[$k] = $params->sub_options->sub_labels[$index];
+                        }
+                        $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
+                    }
+                }
+                if ($elt['plugin'] == "birthday") {
+                    foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+                        $val = explode(',', $val['val']);
+                        foreach ($val as $k => $v) {
+                            $val[$k] = date($params->details_date_format, strtotime($v));
+                        }
+                        $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
+                    }
+                }
+            }
+            $preg = array('patterns' => array(), 'replacements' => array());
+            foreach ($fnumsArray as $fnum) {
+
+                foreach ($idFabrik as $id) {
+                    $preg['patterns'][] = '/\${' . $id . '\}/';
+                    if (isset($fabrikValues[$id][$fnum])) {
+                        $preg['replacements'][] = $fabrikValues[$id][$fnum]['val'];
+                    } else {
+                        $preg['replacements'][] = '';
+                    }
+                }
+            }
+            return $this->replace($preg, $str);
+        }
+        else
+            return $str;
+    }
+
+  
+
+    /**
+     * Find all variables like ${var} in string.
+     *
+     * @param string $str
+     * @return string[]
+     */
+    private function getVariables($str)
+    {
+        preg_match_all('/\$\{(.*?)}/i', $str, $matches);
+
+        return $matches[1];
     }
 
     public function setTagsWord($user_id, $post=null, $fnum=null, $passwd='')

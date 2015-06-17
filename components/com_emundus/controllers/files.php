@@ -658,84 +658,81 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $res = $model->updateState($validFnums, $state);
-
+        $msg = '';
         if($res !== false)
         {
+            $application = $this->getModel('application');
+
             // Get all codes from fnum
             $fnumsInfos = $model->getFnumsInfos($validFnums);
             $code = array();
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
+                $row = array('applicant_id' => $fnum->applicant_id,
+                             'user_id' => $this->_user->id,
+                             'reason' => JText::_('STATUS'),
+                             'comment_body' => JText::_('TO'),
+                             'fnum' => $fnum->fnum
+                );
+                $application->addComment($row);
             }
-
+            //*********************************************************************
             // Get triggered email
             include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
             $emails = new EmundusModelEmails;
             $trigger_emails = $emails->getEmailTrigger($state, $code, 1);
 
             if (count($trigger_emails) > 0) {
+
                 foreach ($trigger_emails as $key => $trigger_email) {
-                    // Manage with selected fnum
-                    foreach($fnumsInfos as $file) {
-                        $mailer     = JFactory::getMailer();
-
-                        $post = array();
-                        $tags = $emails->setTags($file['applicant_id'], $post);
-
-                        $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$file['training']]['tmpl']['emailfrom']);
-                        $from_id = 62;
-                        $fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$file['training']]['tmpl']['name']);
-                        $to = $file['email'];
-                        $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$file['training']]['tmpl']['subject']);
-                        $body = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$file['training']]['tmpl']['message']);
-                        $mode = 1;
-                        //$attachment[] = $path_file;
-                        $replyto = $from;
-                        $replytoname = $fromname;
-                        /*
-                                                $res = JUtility::sendMail($from, $fromname, $to, $subject, $body, true);
-                                                if ($res) {
-                                                    $message = array(
-                                                        'user_id_from' => $from_id,
-                                                        'user_id_to' => $file['applicant_id'],
-                                                        'subject' => $subject,
-                                                        'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' .
-                                                            JText::_('TO') . ' ' . $to . '</i><br>' . $body
-                                                    );
-                                                    $emails->logEmail($message);
-                                                }
-                        */
-                        $sender = array(
-                            $from,
-                            $fromname
-                        );
-
-                        $mailer->setSender($sender);
-                        $mailer->addRecipient($to);
-                        $mailer->setSubject($subject);
-                        $mailer->isHTML(true);
-                        $mailer->Encoding = 'base64';
-                        $mailer->setBody($body);
-
-                        $send = $mailer->Send();
-                        if ( $send !== true ) {
-                            echo 'Error sending email: ' . $send->__toString();
-                            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-                            die();
-                        } else {
-                            $message = array(
-                                'user_id_from' => $from_id,
-                                'user_id_to' => $file['applicant_id'],
-                                'subject' => $subject,
-                                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
-                            );
-                            $emails->logEmail($message);
-                            JLog::add($to.' '.$body, JLog::INFO, 'com_emundus');
-                        }
-
-                    }
                     // Manage with default recipient by programme
                     foreach ($trigger_email as $code => $trigger) {
+                        if($trigger['to']['to_applicant'] == 1){
+                            // Manage with selected fnum
+                            foreach($fnumsInfos as $file) {
+                                $mailer     = JFactory::getMailer();
+
+                                $post = array();
+                                $tags = $emails->setTags($file['applicant_id'], $post);
+
+                                $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
+                                $from_id = 62;
+                                $fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['name']);
+                                $to = $file['email'];
+                                $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
+                                $body = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['message']);
+                                $body = $emails->setTagsFabrik($body);
+
+                                $sender = array(
+                                    $from,
+                                    $fromname
+                                );
+
+                                $mailer->setSender($sender);
+                                $mailer->addRecipient($to);
+                                $mailer->setSubject($subject);
+                                $mailer->isHTML(true);
+                                $mailer->Encoding = 'base64';
+                                $mailer->setBody($body);
+
+                                $send = $mailer->Send();
+                                if ( $send !== true ) {
+                                    $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('EMAIL_NOT_SENT').' : '.$to.' '.$send->__toString().'</div>';
+                                    JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                                } else {
+                                    $message = array(
+                                        'user_id_from' => $from_id,
+                                        'user_id_to' => $file['applicant_id'],
+                                        'subject' => $subject,
+                                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+                                    );
+                                    $emails->logEmail($message);
+                                    $msg .= JText::_('EMAIL_SENT').' : '.$to.'<br>';
+                                    JLog::add($to.' '.$body, JLog::INFO, 'com_emundus');
+                                }
+
+                            }
+                        }
                         foreach ($trigger['to']['recipients'] as $key => $recipient) {
                             $mailer     = JFactory::getMailer();
 
@@ -748,23 +745,8 @@ class EmundusControllerFiles extends JControllerLegacy
                             $to = $recipient['email'];
                             $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
                             $body = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['message']);
-                            $mode = 1;
-                            //$attachment[] = $path_file;
-                            $replyto = $from;
-                            $replytoname = $fromname;
-                            /*
-                                                        $res = JUtility::sendMail($from, $fromname, $to, $subject, $body, true);
-                                                        if ($res) {
-                                                            $message = array(
-                                                                'user_id_from' => $from_id,
-                                                                'user_id_to' => $recipient['id'],
-                                                                'subject' => $subject,
-                                                                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' .
-                                                                    JText::_('TO') . ' ' . $to . '</i><br>' . $body
-                                                            );
-                                                            $emails->logEmail($message);
-                                                        }
-                            */
+                            $body = $emails->setTagsFabrik($body);
+
                             $sender = array(
                                 $from,
                                 $fromname
@@ -779,9 +761,9 @@ class EmundusControllerFiles extends JControllerLegacy
 
                             $send = $mailer->Send();
                             if ( $send !== true ) {
-                                echo 'Error sending email: ' . $send->__toString();
+                                $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('EMAIL_NOT_SENT').' : '.$to.' '.$send->__toString().'</div>';
                                 JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-                                die();
+                                //die();
                             } else {
                                 $message = array(
                                     'user_id_from' => $from_id,
@@ -790,6 +772,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                     'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
                                 );
                                 $emails->logEmail($message);
+                                $msg .= JText::_('EMAIL_SENT').' : '.$to.'<br>';
                                 JLog::add($to.' '.$body, JLog::INFO, 'com_emundus');
                             }
 
@@ -797,12 +780,14 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                 }
             }
+            //
+            //***************************************************
 
-            $msg = JText::_('STATE_SUCCESS');
+            $msg .= JText::_('STATE_SUCCESS');
         }
         else
         {
-            $msg = JText::_('STATE_ERROR');
+            $msg .= JText::_('STATE_ERROR');
 
         }
         echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
@@ -967,8 +952,10 @@ class EmundusControllerFiles extends JControllerLegacy
         $elts = $jinput->getString('elts', null);
 //$elts = '{"0":"224","1":"1738","2":"1974","3":"2533","4":"2535","5":"2573","6":"2577","7":"2581","8":"2617","9":"2587","10":"2546","11":"2547","12":"2549","13":"2590","14":"2594","15":"2567","16":"2621"}';
         $elts = (array) json_decode(stripcslashes($elts));
+
         $objs = $jinput->getString('objs', null);
         $objs = (array) json_decode(stripcslashes($objs));
+
         $methode = $jinput->getString('methode', 0);
 
         // export Excel

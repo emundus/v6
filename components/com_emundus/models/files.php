@@ -1803,6 +1803,7 @@ class EmundusModelFiles extends JModelLegacy
 						from #__emundus_campaign_candidature as cc
  						left join #__users as u on u.id = cc.applicant_id
  						left join #__emundus_setup_campaigns as sc on sc.id = cc.campaign_id
+ 						left join #__emundus_setup_status as ss on ss.step = cc.status
  						where cc.fnum in ("'. implode('","', $fnums).'")';
 			$db->setQuery($query);
 
@@ -2509,6 +2510,19 @@ class EmundusModelFiles extends JModelLegacy
 			throw $e;
 		}
 	}
+
+    /**
+     * Find all variables like ${var} in string.
+     *
+     * @param string $str
+     * @return string[]
+     */
+    public function getVariables($str)
+    {
+        preg_match_all('/\$\{(.*?)}/i', $str, $matches);
+
+        return $matches[1];
+    }
 
 	/**
 	 * @param $elt
