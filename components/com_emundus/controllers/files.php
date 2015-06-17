@@ -656,23 +656,22 @@ class EmundusControllerFiles extends JControllerLegacy
                 $validFnums[] = $fnum;
             }
         }
-
+        $fnumsInfos = $model->getFnumsInfos($validFnums);
         $res = $model->updateState($validFnums, $state);
         $msg = '';
         if($res !== false)
         {
             $application = $this->getModel('application');
-
+            $status = $model->getStatus();
             // Get all codes from fnum
-            $fnumsInfos = $model->getFnumsInfos($validFnums);
             $code = array();
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
-                $row = array('applicant_id' => $fnum->applicant_id,
+                $row = array('applicant_id' => $fnum['applicant_id'],
                              'user_id' => $this->_user->id,
                              'reason' => JText::_('STATUS'),
-                             'comment_body' => $fnum->value.' ('.$fnum->step.')'.JText::_('TO').' '.$state,
-                             'fnum' => $fnum->fnum
+                             'comment_body' => $fnum['value'].' ('.$fnum['step'].') '.JText::_('TO').' '.$status[$state]['value'].' ('.$state.')',
+                             'fnum' => $fnum['fnum']
                 );
                 $application->addComment($row);
             }

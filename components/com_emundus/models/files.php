@@ -2663,4 +2663,11 @@ class EmundusModelFiles extends JModelLegacy
 			throw $e;
 		}
 	}
+
+    public function getStatus() {
+        $db = JFactory::getDBO();
+        $query = 'SELECT *  FROM #__emundus_setup_status ORDER BY ordering';
+        $db->setQuery( $query );
+        return $db->loadAssocList('step');
+    }
 }
