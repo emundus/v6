@@ -320,11 +320,11 @@ class EmundusControllerApplication extends JControllerLegacy
         if(!EmundusHelperAccess::asPartnerAccessLevel($user->id))
             die(JText::_("ACCESS_DENIED"));
 
-        $fnum = JRequest::getVar('fnum', null, 'GET', 'none',0);
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->getString('$fnum', null);
 
         $model = $this->getModel('Application');
         $menus = $model->getActionMenu();
-
         $res = false;
         if(EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum))
         {
@@ -332,21 +332,22 @@ class EmundusControllerApplication extends JControllerLegacy
             {
                 $res = true;
                 $menu_application = array();
+                $i=0;
                 foreach($menus as $k => $menu)
                 {
                     $action = explode('|', $menu['note']);
                     if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
                         $menu_application[] = $menu;
+                        if ((intval($menu['rgt']) - intval($menu['lft'])) == 1)
+                        {
+                            $menu_application[$i++]['hasSons'] = false;
+                        }
+                        else
+                        {
+                            $menu_application[$i++]['hasSons'] = true;
+                        }
                     }
 
-                    if ((intval($menu['rgt']) - intval($menu['lft'])) == 1)
-                    {
-                        $menu_application[$k]['hasSons'] = false;
-                    }
-                    else
-                    {
-                        $menu_application[$k]['hasSons'] = true;
-                    }
                 }
             }
             $tab = array('status' => $res, 'menus' => $menu_application);
