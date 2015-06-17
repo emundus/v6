@@ -109,7 +109,7 @@ class EmundusViewApplication extends JViewLegacy
 				case 'assoc_files':
 					$show_related_files = $params->get('show_related_files', 0);
 
-					if($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+					if($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) || EmundusHelperAccess::asManagerAccessLevel($this->_user->id))
 						$campaignInfo = $model->getUserCampaigns($fnumInfos['applicant_id']);
 					else
 						$campaignInfo = $model->getCampaignByFnum($fnum);
