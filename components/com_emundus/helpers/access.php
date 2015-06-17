@@ -41,9 +41,14 @@ class EmundusHelperAccess {
 	static function asCoordinatorAccessLevel($user_id){
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 7);
 	}
-	static function asPartnerAccessLevel($user_id){
-		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 6);
-	}
+
+    static function asManagerAccessLevel($user_id){
+        return EmundusHelperAccess::isAllowedAccessLevel($user_id, 17);
+    }
+
+    static function asPartnerAccessLevel($user_id){
+        return EmundusHelperAccess::isAllowedAccessLevel($user_id, 6);
+    }
 	
 	static function asEvaluatorAccessLevel($user_id){
 		return (EmundusHelperAccess::isAllowedAccessLevel($user_id, 5) ||
