@@ -1052,6 +1052,85 @@ class EmundusControllerFiles extends JControllerLegacy
         return sortArrayByArray($properties,$orderArray);
     }
 
+    public function create_file_csv() {
+        $name = md5(today().rand(10));
+        $chemin = 'tmp/'.$name.'.csv';
+
+        $fichier_csv = fopen($chemin, 'w+');
+
+        fprintf($fichier_csv, chr(0xEF).chr(0xBB).chr(0xBF));
+        fclose($fichier_csv);
+        $result = array('status' => true, 'file' => $chemin);
+        echo json_encode((object) $result);
+        exit();
+    }
+
+    public function getfnums_csv() {
+        $jinput = JFactory::getApplication()->input;
+        $fnums = $jinput->getString('fnums', null);
+        $state = $jinput->getInt('state', null);
+
+        $fnums = (array) json_decode(stripslashes($fnums));
+        $model = $this->getModel('Files');
+        if(!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
+        {
+            $fnums = $model->getAllFnums();
+        }
+
+        $validFnums = array();
+
+        foreach($fnums as $fnum)
+        {
+            if(EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum))
+            {
+                $validFnums[] = $fnum;
+            }
+        }
+        $result = array('status' => true, 'fnums' => $validFnums);
+        echo json_encode((object) $result);
+        exit();
+    }
+
+    public function generate_array($start, $pas, $file, $fnums) {
+
+        $model = $this->getModel('Files');
+        $menu = @JSite::getMenu();
+        $current_menu  = $menu->getActive();
+        $menu_params = $menu->getParams($current_menu->id);
+        $columnSupl = explode(',', $menu_params->get('em_actions'));
+        $colOpt = array();
+        $modelApp = $this->getModel('Application');
+
+        foreach ($columnSupl as $col)
+        {
+            $col = explode('.', $col);
+            switch ($col[0])
+            {
+                case "photo":
+                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($model, JURI::base());
+                    break;
+                case "forms":
+                    $colOpt['forms'] = $modelApp->getFormsProgress(null, null, $fnums);
+                    break;
+                case "attachment":
+                    $colOpt['attachment'] = $modelApp->getAttachmentsProgress(null, null, $fnums);
+                    break;
+                case "assessment":
+                    $colOpt['assessment'] = @EmundusHelperFiles::getEvaluation('text', $fnums);
+                    break;
+                case "comment":
+                    $colOpt['comment'] = $model->getCommentsByFnum($fnums);
+                    break;
+                case 'evaluators':
+                    $colOpt['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
+                    break;
+            }
+        }
+
+        foreach ($fnums as $fnum) {
+
+        }
+    }
     /**
      * @param $fnums
      * @param $objs
@@ -1130,7 +1209,6 @@ class EmundusControllerFiles extends JControllerLegacy
                 if(count($colonne_by_id) == count($fnums)) break;
             }
         }
-
         // Create new PHPExcel object
         $objPHPExcel = new PHPExcel();
         // Initiate cache
@@ -1196,11 +1274,12 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         foreach($colOpt as $kOpt => $vOpt)
         {
+            var_dump($colOpt);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_(strtoupper($kOpt)));
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
 
             $i++;
-        }
+        }die();
         $line = 2;
         foreach($fnumsArray as $fnunLine)
         {
