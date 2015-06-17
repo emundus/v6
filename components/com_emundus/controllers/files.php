@@ -958,7 +958,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $methode = $jinput->getString('methode', 0);
 
         // export Excel
-        $name = $this->export_xls($validFnums, $objs, $elts, $methode);
+        //$name = $this->export_xls($validFnums, $objs, $elts, $methode);
+        $name = $this->generate_array($validFnums);
         $result = array('status' => true, 'name' => $name);
         echo json_encode((object) $result);
         exit();
@@ -1091,45 +1092,79 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
-    public function generate_array($start, $pas, $file, $fnums) {
+    public function getcolumn() {
+        $jinput = JFactory::getApplication()->input;
+        $elts = $jinput->getString('elts', null);
+        $elts = (array) json_decode(stripcslashes($elts));
+        return $elts;
+    }
 
-        $model = $this->getModel('Files');
+    public function getcolumnSup() {
+        $jinput = JFactory::getApplication()->input;
         $menu = @JSite::getMenu();
         $current_menu  = $menu->getActive();
         $menu_params = $menu->getParams($current_menu->id);
         $columnSupl = explode(',', $menu_params->get('em_actions'));
-        $colOpt = array();
+        $objs = $jinput->getString('objs', null);
+        $objs = (array) json_decode(stripcslashes($objs));
+        $columnSupl = array_merge($columnSupl, $objs);
+        return $columnSupl;
+    }
+
+    public function generate_array($fnums, $start=0/*, $pas, $file,*/ ) {
+        $model = $this->getModel('Files');
         $modelApp = $this->getModel('Application');
+        var_dump("Avant  ".$fnums);
+        $col = $this->getcolumn();
+        $colsup  = $this->getcolumnSup();
 
-        foreach ($columnSupl as $col)
-        {
-            $col = explode('.', $col);
-            switch ($col[0])
-            {
-                case "photo":
-                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($model, JURI::base());
-                    break;
-                case "forms":
-                    $colOpt['forms'] = $modelApp->getFormsProgress(null, null, $fnums);
-                    break;
-                case "attachment":
-                    $colOpt['attachment'] = $modelApp->getAttachmentsProgress(null, null, $fnums);
-                    break;
-                case "assessment":
-                    $colOpt['assessment'] = @EmundusHelperFiles::getEvaluation('text', $fnums);
-                    break;
-                case "comment":
-                    $colOpt['comment'] = $model->getCommentsByFnum($fnums);
-                    break;
-                case 'evaluators':
-                    $colOpt['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
-                    break;
+        $elements = @EmundusHelperFiles::getElementsName(implode(',',$col));
+        $fnumsArray = $model->getFnumArray($fnums, $elements);
+        $file_array ="";
+        $element_array="";
+        $i = $start;
+        foreach ($fnumsArray as $fnum) {
+
+            foreach ($elements as $fKey => $fLine) {
+
+                if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id') {
+                    $file_array .= "\"" . $fLine->element_label . "\" => " . $fnum["c___".$fLine->element_name];
+                }
             }
+            $element_array .= array($file_array);
+            array_shift($fnums);
+            $i++;
         }
+        $data = array($element_array);
+        var_dump($fnums);
+        die(var_dump($data));
 
-        foreach ($fnums as $fnum) {
-
-        }
+            /*foreach ($colsup as $col)
+            {
+                $col = explode('.', $col);
+                switch ($col[0])
+                {
+                    case "photo":
+                        $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($model, JURI::base());
+                        break;
+                    case "forms":
+                        $colOpt['forms'] = $modelApp->getFormsProgress(null, null, $fnums);
+                        break;
+                    case "attachment":
+                        $colOpt['attachment'] = $modelApp->getAttachmentsProgress(null, null, $fnums);
+                        break;
+                    case "assessment":
+                        $colOpt['assessment'] = @EmundusHelperFiles::getEvaluation('text', $fnums);
+                        break;
+                    case "comment":
+                        $colOpt['comment'] = $model->getCommentsByFnum($fnums);
+                        break;
+                    case 'evaluators':
+                        $colOpt['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
+                        break;
+                }
+            }
+        }*/
     }
     /**
      * @param $fnums
@@ -1274,17 +1309,15 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         foreach($colOpt as $kOpt => $vOpt)
         {
-            var_dump($colOpt);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_(strtoupper($kOpt)));
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
 
             $i++;
-        }die();
+        }
         $line = 2;
         foreach($fnumsArray as $fnunLine)
         {
             $col = 0;
-
             foreach($fnunLine as $k => $v)
             {
                 if ($k != 'code' && $k != 'campaign_id' && $k != 'jos_emundus_campaign_candidature___campaign_id' && $k != 'c___campaign_id') {
