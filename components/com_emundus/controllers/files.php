@@ -671,7 +671,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $row = array('applicant_id' => $fnum->applicant_id,
                              'user_id' => $this->_user->id,
                              'reason' => JText::_('STATUS'),
-                             'comment_body' => JText::_('TO'),
+                             'comment_body' => $fnum->value.' ('.$fnum->step.')'.JText::_('TO').' '.$state,
                              'fnum' => $fnum->fnum
                 );
                 $application->addComment($row);

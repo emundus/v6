@@ -1799,7 +1799,7 @@ class EmundusModelFiles extends JModelLegacy
 		try
 		{
 			$db = $this->getDbo();
-			$query = 'select u.name, u.email, cc.fnum, sc.label, sc.start_date, sc.end_date, sc.year, sc.published, sc.training, cc.applicant_id
+			$query = 'select u.name, u.email, cc.fnum, ss.step, ss.value, sc.label, sc.start_date, sc.end_date, sc.year, sc.published, sc.training, cc.applicant_id
 						from #__emundus_campaign_candidature as cc
  						left join #__users as u on u.id = cc.applicant_id
  						left join #__emundus_setup_campaigns as sc on sc.id = cc.campaign_id
