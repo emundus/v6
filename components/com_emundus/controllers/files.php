@@ -717,7 +717,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $send = $mailer->Send();
                                 if ( $send !== true ) {
                                     $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('EMAIL_NOT_SENT').' : '.$to.' '.$send->__toString().'</div>';
-                                    JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                                    JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
                                 } else {
                                     $message = array(
                                         'user_id_from' => $from_id,
@@ -727,7 +727,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                     );
                                     $emails->logEmail($message);
                                     $msg .= JText::_('EMAIL_SENT').' : '.$to.'<br>';
-                                    JLog::add($to.' '.$body, JLog::INFO, 'com_emundus');
+                                    JLog::add($to.' '.$body, JLog::INFO, 'com_emundus.email');
                                 }
 
                             }
@@ -761,7 +761,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             $send = $mailer->Send();
                             if ( $send !== true ) {
                                 $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('EMAIL_NOT_SENT').' : '.$to.' '.$send->__toString().'</div>';
-                                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
                                 //die();
                             } else {
                                 $message = array(
@@ -772,7 +772,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 );
                                 $emails->logEmail($message);
                                 $msg .= JText::_('EMAIL_SENT').' : '.$to.'<br>';
-                                JLog::add($to.' '.$body, JLog::INFO, 'com_emundus');
+                                JLog::add($to.' '.$body, JLog::INFO, 'com_emundus.email');
                             }
 
                         }

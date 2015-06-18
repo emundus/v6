@@ -27,6 +27,13 @@ JLog::addLogger(
     JLog::ALL,
     array('com_emundus')
 );
+JLog::addLogger(
+    array(
+        'text_file' => 'com_emundus.email.php'
+    ),
+    JLog::ALL,
+    array('com_emundus.email')
+);
 // translation for javacript
 JText::script('COM_EMUNDUS_ACCESS_FILE');
 JText::script('COM_EMUNDUS_ACCESS_ATTACHMENT');
