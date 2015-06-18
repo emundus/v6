@@ -26,10 +26,10 @@ JFactory::getSession()->set('application_layout', 'decision');
         <div class="panel-heading">
             <span class="glyphicon glyphicon-check"></span>
             <h3 class="panel-title">
-                <?php echo JText::_('COM_EMUNDUS_ASSESSMENT'); ?>
+                <?php echo JText::_('COM_EMUNDUS_DECISION'); ?>
                 <?php if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)):?>
                 <a class="  clean" target="_blank" href="<?php echo JURI::Base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf_decision&user=<?php echo $this->student->id; ?>&fnum=<?php echo $this->fnum; ?>">
-                    <button class="btn btn-default" data-title="<?php echo JText::_('DOWNLOAD_DECISION'); ?>"><span class="glyphicon glyphicon-file"></span></button>
+                    <button class="btn btn-default" data-title="<?php echo JText::_('DOWNLOAD_PDF'); ?>"><span class="glyphicon glyphicon-file"></span></button>
                 </a>
                 <?php endif;?>
             </h3>
@@ -39,7 +39,7 @@ JFactory::getSession()->set('application_layout', 'decision');
 
                 <div class="form" id="form"></div>
                 <?php if(!empty($this->url_form)):?>
-                    <a href="<?php echo $this->url_form; ?>" target="_blank" title="<?php echo JText::_('OPEN_EVALUATION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?php echo JText::_('OPEN_EVALUATION_FORM_IN_NEW_TAB'); ?></a>
+                    <a href="<?php echo $this->url_form; ?>" target="_blank" title="<?php echo JText::_('OPEN_DECISION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?php echo JText::_('OPEN_DECISION_FORM_IN_NEW_TAB'); ?></a>
                 <?php endif;?>
                 <div class="evaluations" id="evaluations"></div>
             </div>
