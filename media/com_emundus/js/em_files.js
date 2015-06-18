@@ -1847,8 +1847,73 @@ $(document).ready(function()
                 $('.modal-body').append('<div>' +
                 '<h5>'+Joomla.JText._('COM_EMUNDUS_EXCEL_GENERATION')+'</h5>'+
                 '<img src="'+loadingLine+'" alt="loading"/>' +
+                '<div id="extractstep"><p>Création du fichier CSV</p></div>'+
                 '</div>');
                 $.ajax(
+                    {
+                        type: 'post',
+                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnums_csv',
+                        dataType: 'JSON',
+                        data: {fnums: checkInput},
+                        success: function (result) {
+                            if (result.status) {
+                                var fnums = result.fnums;
+                                $.ajax(
+                                    {
+                                        type: 'post',
+                                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=create_file_csv',
+                                        dataType: 'JSON',
+                                        success: function (result) {
+                                            if (result.status) {
+                                                $('#extractstep').empty();
+                                                $('#extractstep').append('<p>Ajout des données</p>');
+                                                var start = 0;
+                                                var pas = 10;
+                                                var totalfile = fnums.length;
+                                                while (start < totalfile) {
+                                                    $.ajax(
+                                                        {
+                                                            type: 'post',
+                                                            url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=generate_array',
+                                                            dataType: 'JSON',
+                                                            data: {
+                                                                fnums: fnums,
+                                                                file: result.file,
+                                                                start: start,
+                                                                pas: pas
+                                                            },
+                                                            success: function (result) {
+                                                                if (result.status) {
+                                                                    start = result.start;
+                                                                    $('#extractstep').empty();
+                                                                    $('#extractstep').append('<p>' + start + '/' + totalfile + '</p>');
+
+                                                                }
+                                                            },
+                                                            error: function (jqXHR, textStatus, errorThrown) {
+                                                                $('#extractstep').empty();
+                                                                $('#extractstep').append('<div class="alert alert-danger" role="alert">' + jqXHR.responseText + '</div>');
+                                                            }
+                                                        });
+                                                }
+                                                $('#extractstep').empty();
+                                                $('#extractstep').append('<div class="alert alert-success" role="alert">NextStep</div>');
+                                            }
+                                        },
+                                        error: function (jqXHR, textStatus, errorThrown) {
+                                            $('#extractstep').empty();
+                                            $('#extractstep').append('<div class="alert alert-danger" role="alert">' + jqXHR.responseText + '</div>');
+                                        }
+                                    });
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            $('#extractstep').empty();
+                            $('#extractstep').append('<div class="alert alert-danger" role="alert">' + jqXHR.responseText + '</div>');
+                        }
+                    });
+
+                /*$.ajax(
                     {
                         type:'post',
                         url:'index.php?option=com_emundus&controller='+$('#view').val()+'&task=send_elements&Itemid='+itemId,
@@ -1867,7 +1932,7 @@ $(document).ready(function()
                             console.log(jqXHR.responseText);
                         }
                     }
-                );
+                );*/
                 break;
             //ajout de commentaire
             case 10:

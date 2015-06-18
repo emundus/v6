@@ -1939,7 +1939,7 @@ class EmundusModelFiles extends JModelLegacy
 	 * @param $methode  aggregate in one cell (0) or split one data per line
 	 * @return bool|mixed
 	 */
-	public function getFnumArray($fnums, $elements, $methode=0)
+	public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0)
 	{ 
 		try
 		{
@@ -2042,13 +2042,17 @@ class EmundusModelFiles extends JModelLegacy
 			//$query .= $q['join'];
 
 			$query .= 'where c.fnum in ("'.implode('","', $fnums).'") ';
+            if ($pas !=0 ) {
+                $query .= 'LIMIT ' . $pas . ' OFFSET ' . $start;
+            }
 //die( str_replace('#_', 'jos', $query) );
 			$db->setQuery($query);
 			return $db->loadAssocList();
 		}
 		catch(Exception $e)
 		{
-			return false;
+			echo '$e';
+            return false;
 		}
 	}
 

@@ -959,9 +959,10 @@ class EmundusControllerFiles extends JControllerLegacy
 
         // export Excel
         //$name = $this->export_xls($validFnums, $objs, $elts, $methode);
-        $name = $this->generate_array($validFnums);
-        $result = array('status' => true, 'name' => $name);
-        echo json_encode((object) $result);
+        //$this->create_file_csv();
+        $name = $this->generate_array($validFnums, "665138d6c87e407615cae074d7102ad6.csv", 0, 3);
+        /*$result = array('status' => true, 'name' => $name);
+        echo json_encode((object) $result);*/
         exit();
     }
 
@@ -1054,7 +1055,8 @@ class EmundusControllerFiles extends JControllerLegacy
     }
 
     public function create_file_csv() {
-        $name = md5(today().rand(10));
+        $today = date_default_timezone_get();
+        $name = md5($today.rand(0,10));
         $chemin = 'tmp/'.$name.'.csv';
 
         $fichier_csv = fopen($chemin, 'w+');
@@ -1068,9 +1070,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
     public function getfnums_csv() {
         $jinput = JFactory::getApplication()->input;
-        $fnums = $jinput->getString('fnums', null);
-        $state = $jinput->getInt('state', null);
-
+        $fnums = $jinput->getVar('fnums', null);
         $fnums = (array) json_decode(stripslashes($fnums));
         $model = $this->getModel('Files');
         if(!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
@@ -1082,7 +1082,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         foreach($fnums as $fnum)
         {
-            if(EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum))
+            if(EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all')
             {
                 $validFnums[] = $fnum;
             }
@@ -1111,61 +1111,194 @@ class EmundusControllerFiles extends JControllerLegacy
         return $columnSupl;
     }
 
-    public function generate_array($fnums, $start=0/*, $pas, $file,*/ ) {
+    public function generate_array($fnums,$file,$start=0, $pas=0) {
         $model = $this->getModel('Files');
         $modelApp = $this->getModel('Application');
-        var_dump("Avant  ".$fnums);
         $col = $this->getcolumn();
         $colsup  = $this->getcolumnSup();
+        $colOpt = array();
+        $csv = fopen("tmp/".$file, 'w');
+
 
         $elements = @EmundusHelperFiles::getElementsName(implode(',',$col));
-        $fnumsArray = $model->getFnumArray($fnums, $elements);
-        $file_array ="";
-        $element_array="";
-        $i = $start;
+        $fnumsArray = $model->getFnumArray($fnums, $elements,0, $start,$pas);
+
+        // On met a jour la liste des fnums traités
+        $fnums =array();
         foreach ($fnumsArray as $fnum) {
+            array_push($fnums, $fnum['fnum']);
+        }
+        foreach ($colsup as $col) {
+            $col = explode('.', $col);
+            switch ($col[0]) {
+                case "photo":
+                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($model, JURI::base());
+                    break;
+                case "forms":
+                    $colOpt['forms'] = $modelApp->getFormsProgress(null, null, $fnums);
+                    break;
+                case "attachment":
+                    $colOpt['attachment'] = $modelApp->getAttachmentsProgress(null, null, $fnums);
+                    break;
+                case "assessment":
+                    $colOpt['assessment'] = @EmundusHelperFiles::getEvaluation('text', $fnums);
+                    break;
+                case "comment":
+                    $colOpt['comment'] = $model->getCommentsByFnum($fnums);
+                    break;
+                case 'evaluators':
+                    $colOpt['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
+                    break;
+            }
+        }
+        $status = $model->getStatusByFnums($fnums);
+        $line ="";
+        $element_csv=array();
+        $i = $start;
 
+        // On traite les en-têtes
+        if ($start==0) {
+            $line=JText::_('F_NUM').",".JText::_('STATUS').",".JText::_('LAST_NAME').",".JText::_('FIRST_NAME').",".JText::_('EMAIL').",".JText::_('CAMPAIGN').",";
             foreach ($elements as $fKey => $fLine) {
-
                 if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id') {
-                    $file_array .= "\"" . $fLine->element_label . "\" => " . $fnum["c___".$fLine->element_name];
+                    $line .= $fLine->element_label . ",";
                 }
             }
-            $element_array .= array($file_array);
-            array_shift($fnums);
-            $i++;
-        }
-        $data = array($element_array);
-        var_dump($fnums);
-        die(var_dump($data));
+            foreach ($colsup as $kOpt => $vOpt) {
+                $line .= $vOpt . ",";
+            }
 
-            /*foreach ($colsup as $col)
+            // On met les en-têtes dans le CSV
+            $element_csv[] = $line;
+            $line = "";
+        }
+
+        // On parcours les fnums
+        foreach ($fnumsArray as $fnum) {
+            // On traitre les données du fnum
+            foreach($fnum as $k => $v)
             {
-                $col = explode('.', $col);
-                switch ($col[0])
-                {
+                if ($k != 'code' && $k != 'campaign_id' && $k != 'jos_emundus_campaign_candidature___campaign_id' && $k != 'c___campaign_id') {
+                    if($k === 'fnum')
+                    {
+                        $line .= $v.",";
+                        $line .= $status[$v]['value'].",";
+                        $uid = intval(substr($v, 21, 7));
+                        $userProfil = JUserHelper::getProfile($uid)->emundus_profile;
+                        $line .= strtoupper($userProfil['lastname']).",";
+                        $line .= $userProfil['firstname'].",";
+                    }
+                    else
+                    {
+                        $line .= $v.",";
+                    }
+                }
+            }
+            // On ajoute les données supplémentaires
+            foreach($colOpt as $kOpt => $vOpt) {
+                switch ($kOpt) {
                     case "photo":
-                        $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($model, JURI::base());
+                        $line .= JText::_('photo') . ",";
                         break;
                     case "forms":
-                        $colOpt['forms'] = $modelApp->getFormsProgress(null, null, $fnums);
+                        $val = $vOpt[$fnum['fnum']];
+                        $line .= $val . '%,';
                         break;
                     case "attachment":
-                        $colOpt['attachment'] = $modelApp->getAttachmentsProgress(null, null, $fnums);
+                        $val = $vOpt[$fnum['fnum']];
+                        $line .= $val . '%,';
+                        break;
                         break;
                     case "assessment":
-                        $colOpt['assessment'] = @EmundusHelperFiles::getEvaluation('text', $fnums);
+                        $eval = '';
+                        $evaluations = $vOpt[$fnum['fnum']];
+                        foreach ($evaluations as $evaluation) {
+                            $eval .= $evaluation;
+                            $eval .= chr(10) . '______' . chr(10);
+                        }
+                        $line .= $eval . ",";
                         break;
                     case "comment":
-                        $colOpt['comment'] = $model->getCommentsByFnum($fnums);
+                        $comments = "";
+                        foreach ($colOpt['comment'] as $comment) {
+                            if ($comment['fnum'] == $fnum['fnum']) {
+                                $comments .= $comment['reason'] . " | " . $comment['comment_body'] . "\rn";
+                            }
+                        }
+                        str_replace(',', '', $comments);
+                        $line .= $comments . ",";
                         break;
                     case 'evaluators':
-                        $colOpt['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
+                        $line .= $vOpt[$fnum['fnum']] . ",";
                         break;
                 }
             }
-        }*/
+            // On met les données du fnum dans le CSV
+            $element_csv[] = $line;
+            $line ="";
+            $i++;
+        }
+        // On remplit le fichier CSV
+        foreach ($element_csv as $data)
+        {
+            $res = fputcsv($csv,explode(',',$data));
+            if( !$res) {
+                die("erreur csv");
+            }
+        }
+        if (!fclose($csv)) {
+            die("erreur fermeture csv");
+        }
+
+        $start = $i;
+        $result = array('status' => true, 'start' => $start);
+        echo json_encode((object) $result);
+        exit();
     }
+
+   /* public function export_xls_from_csv($csv) {
+        //$objPHPExcel = new PHPExcel();
+        $inputFileType = 'CSV';
+        $inputFileName = 'testFile.csv';
+
+
+        // Create new PHPExcel object
+        $objPHPExcel = new PHPExcel();
+        // Initiate cache
+        $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+        $cacheSettings = array( 'memoryCacheSize' => '32MB');
+        PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+
+
+
+        // Initiate cache
+        $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+        $cacheSettings = array( 'memoryCacheSize' => '32MB');
+        PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $objPHPExcel = $objReader->load($inputFileName);
+
+        // Set properties
+        $objPHPExcel->getProperties()->setCreator("Décision Publique : http://www.decisionpublique.fr/");
+        $objPHPExcel->getProperties()->setLastModifiedBy("Décision Publique");
+        $objPHPExcel->getProperties()->setTitle("eMmundus Report");
+        $objPHPExcel->getProperties()->setSubject("eMmundus Report");
+        $objPHPExcel->getProperties()->setDescription("Report from open source eMundus plateform : http://www.emundus.fr/");
+        $objPHPExcel->setActiveSheetIndex(0);
+        $objPHPExcel->getActiveSheet()->setTitle('Extraction');
+        $objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+
+        $objPHPExcel->getActiveSheet()->freezePane('A2');
+
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+       // $objWriter = new PHPExcel_Writer_Excel5($objPHPExcel);
+
+        $objWriter->save(JPATH_BASE.DS.'tmp'.DS.JFactory::getUser()->id.'_extraction.xls');
+        return JFactory::getUser()->id.'_extraction.xls';
+
+    }*/
     /**
      * @param $fnums
      * @param $objs
