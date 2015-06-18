@@ -28,7 +28,11 @@ require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campai
 $campaign = new EmundusModelCampaign;
 $campaigns = $campaign->getCampaignsByCourse($course);
 $campaign_id = $campaigns['id'];
-
+if(count($campaign_id) == 0) { 
+	JFactory::getApplication()->enqueueMessage(JText::_('EMUNDUS_NO_CAMPAIGN'), 'error');
+	JLog::add('No available campaign', JLog::ERROR, 'com_emundus');
+}
+else {
 ?>
 <style> #jform_name {border:solid 0px #FFF;} </style>
 <div class="box">
@@ -88,6 +92,7 @@ $campaign_id = $campaigns['id'];
 </div>
 
 <?php
+}
 $HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
 //Detection du browser
 if(preg_match('/Safari/', $HTTP_USER_AGENT) && !preg_match('/Konqueror/', $HTTP_USER_AGENT))
