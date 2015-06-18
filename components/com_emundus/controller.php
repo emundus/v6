@@ -174,17 +174,18 @@ class EmundusController extends JControllerLegacy {
         foreach ($validFnums as $fnum) {
             if (is_numeric($fnum) && !empty($fnum)) {
                 $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post);
-            }
-            if($doc_post) {
-                $tmpArray = array();
-                $model = $this->getModel('application');
-                $files = $model->getAttachmentsByFnum($fnum);
+            
+				if($doc_post) {
+					$tmpArray = array();
+					$model = $this->getModel('application');
+					$files = $model->getAttachmentsByFnum($fnum);
 
-                EmundusHelperExport::getAttchmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
-            }
-            if($eval_post) {
-                EmundusHelperExport::getEvalPDF($files_list,$fnum);
-            }
+					EmundusHelperExport::getAttchmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
+				}
+				if($eval_post) {
+					EmundusHelperExport::getEvalPDF($files_list,$fnum);
+				}
+			}
         }
 
         // all PDF in one file
