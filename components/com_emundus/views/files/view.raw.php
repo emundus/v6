@@ -182,7 +182,7 @@ class EmundusViewFiles extends JViewLegacy
 			    if(!empty($users))
 			    {
 				    $i = 1;
-				    $taggedFile = $model->getTaggedFile();
+                    $taggedFile = array();
 				    foreach($columnSupl as $col)
 				    {
 					    $col = explode('.', $col);
@@ -199,19 +199,24 @@ class EmundusViewFiles extends JViewLegacy
 							case 'overall':
 								$datas[0] = array_merge($datas[0], array('overall' => JText::_('EVALUATION_OVERALL')));
 								break;
-							case 'tags':
-								$datas[0]['eta.id_tag'] = JText::_('TAGS');
-								$colsSup['id_tag'] = array();
-								break;
+                            case 'tags':
+                                $taggedFile = $model->getTaggedFile();
+                                $datas[0]['eta.id_tag'] = JText::_('TAGS');
+                                $colsSup['id_tag'] = array();
+                                break;
+                            case 'access':
+                                $datas[0]['access'] = JText::_('COM_EMUNDUS_ASSOCIATED_TO');
+                                $colsSup['access'] = array();
+                                break;
 					    }
 				    }
-					$hasAccess = false;
+				/*	$hasAccess = false;
 				    if(EmundusHelperAccess::asAccessAction(11, 'r', JFactory::getUser()->id))
 				    {
 					    $hasAccess = true;
 					    $datas[0]['access'] = JText::_("COM_EMUNDUS_ASSOCIATED_TO");
 				    }
-
+*/
 				    foreach ($users as $user)
 				    {
 					    $usObj = new stdClass();
@@ -275,16 +280,20 @@ class EmundusViewFiles extends JViewLegacy
 								{
 									$line['overall'] = "";
 								}
-								elseif($key === 'id_tag')
-								{
-									$line['id_tag'] = "";
-								}
+                                elseif($key === 'id_tag')
+                                {
+                                    $line['id_tag'] = "";
+                                }
+                                elseif($key === 'access')
+                                {
+                                    $line['access'] = "";
+                                }
 						    }
 					    }
-					    if($hasAccess)
+					   /* if($hasAccess)
 					    {
 						    $line['access'] = "";
-					    }
+					    }*/
 					    $datas[$line['fnum']->val.'-'.$i] = $line;
 					    $i++;
 				    }
@@ -299,11 +308,11 @@ class EmundusViewFiles extends JViewLegacy
 						$colsSup['id_tag'] = @EmundusHelperFiles::createTagsList($tags);
 					}
 
-				    if($hasAccess)
+                    if(isset($colsSup['access']))
 				    {
 					    $objAccess = $model->getAccessorByFnums($fnumArray);
-
 				    }
+                  //var_dump($fnumArray);echo '<hr>';
 			    }
 			    else
 			    {

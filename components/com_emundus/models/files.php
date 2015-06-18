@@ -2322,7 +2322,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch(Exception $e)
 		{
-			error_log($e->getMessage(), 0);
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus.email');
 			return false;
 		}
 	}
