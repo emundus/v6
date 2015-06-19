@@ -6,12 +6,12 @@
 	method="upgrade">
 	<name>MOD_EMUNDUS_APPLICATIONS_XML</name>
 	<author>Benjamin Rivalland</author>
-	<creationDate>June 2014</creationDate>
-	<copyright>Copyright (C) 2008 - 2014 Décision Publique SAS. All rights reserved.</copyright>
+	<creationDate>June 2015</creationDate>
+	<copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>benjamin@emundus.fr</authorEmail>
 	<authorUrl>www.emundus.fr</authorUrl>
-	<version>2.5.0</version>
+	<version>6.0</version>
 	<description>MOD_EMUNDUS_APPLICATIONS_XML_DESCRIPTION</description>
 	<files>
 		<filename module="mod_users_latest">mod_emundus_applications.php</filename>

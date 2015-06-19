@@ -1,9 +1,14 @@
 <?xml version="1.0"?>
 	<extension type="module" version ="2.5.0" method="upgrade">
 		<name>Emundus Register</name>
-		<author>RC</author>
-		<version>1.0.0</version>
-		<description>Module Joomla 2.5</description>
+        <author>Benjamin Rivalland</author>
+        <creationDate>June 2015</creationDate>
+        <copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
+        <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+        <authorEmail>benjamin@emundus.fr</authorEmail>
+        <authorUrl>www.emundus.fr</authorUrl>
+        <version>6.0</version>
+		<description>MOD_EM_REGISTER_URL_XML_DESCRIPTION</description>
 		<files>
 			<filename>mod_emundus_register.xml</filename>
 			<filename module="mod_emundus_register">mod_emundus_register.php</filename>

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <install type="module" version="1.5.0">
 	<name>EmundusUniv</name>
-	<author>Decision Publique</author>
-	<creationDate>May 2011</creationDate>
-	<license>GNU/GPL</license>
-	<authorEmail>contact@emundus.fr</authorEmail>
-	<authorUrl>www.emundus.fr</authorUrl>
-	<version>2.0</version>
+    <author>Benjamin Rivalland</author>
+    <creationDate>June 2015</creationDate>
+    <copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>benjamin@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>6.0</version>
 	<description>List of partner's univerties.</description>
 	<files>
 		<filename module="mod_emundusuniv">mod_emundusuniv.php</filename>

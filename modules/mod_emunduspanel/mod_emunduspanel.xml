@@ -1,12 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="2.5.0">
 	<name>EmundusPanel</name>
-	<author>Decision Publique</author>
-	<creationDate>May 2011</creationDate>
-	<license>GNU/GPL</license>
-	<authorEmail>emundus@decisionpublique.fr</authorEmail>
-	<authorUrl>www.emundus.fr</authorUrl>
-	<version>2.0</version>
+    <author>Benjamin Rivalland</author>
+    <creationDate>June 2015</creationDate>
+    <copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>benjamin@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>6.0</version>
 	<description>Define the home page for differents profiles</description>
 	<files>
 		<filename module="mod_emunduspanel">mod_emunduspanel.php</filename>
