@@ -958,11 +958,10 @@ class EmundusControllerFiles extends JControllerLegacy
         $methode = $jinput->getString('methode', 0);
 
         // export Excel
-        //$name = $this->export_xls($validFnums, $objs, $elts, $methode);
-        //$this->create_file_csv();
-        $name = $this->generate_array($validFnums, "665138d6c87e407615cae074d7102ad6.csv", 0, 3);
-        /*$result = array('status' => true, 'name' => $name);
-        echo json_encode((object) $result);*/
+        $name = $this->export_xls($validFnums, $objs, $elts, $methode);
+
+        $result = array('status' => true, 'name' => $name);
+        echo json_encode((object) $result);
         exit();
     }
 
@@ -1057,13 +1056,19 @@ class EmundusControllerFiles extends JControllerLegacy
     public function create_file_csv() {
         $today = date_default_timezone_get();
         $name = md5($today.rand(0,10));
-        $chemin = 'tmp/'.$name.'.csv';
+        $name = $name.'.csv';
+        $chemin = 'tmp/'.$name;
 
         $fichier_csv = fopen($chemin, 'w+');
 
         fprintf($fichier_csv, chr(0xEF).chr(0xBB).chr(0xBF));
-        fclose($fichier_csv);
-        $result = array('status' => true, 'file' => $chemin);
+        if (!fclose($fichier_csv)) {
+            echo ('erreur fermeture csv');
+            $result = array('status' => false);
+            echo json_encode((object) $result);
+            exit();
+        }
+        $result = array('status' => true, 'file' => $name);
         echo json_encode((object) $result);
         exit();
     }
@@ -1092,36 +1097,48 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
-    public function getcolumn() {
-        $jinput = JFactory::getApplication()->input;
-        $elts = $jinput->getString('elts', null);
-        $elts = (array) json_decode(stripcslashes($elts));
-        return $elts;
+    public function getcolumn($elts) {
+        return(array) json_decode(stripcslashes($elts));
     }
 
-    public function getcolumnSup() {
-        $jinput = JFactory::getApplication()->input;
-        $menu = @JSite::getMenu();
+    public function getcolumnSup($objs) {
+
+       /* $menu = @JSite::getMenu();
         $current_menu  = $menu->getActive();
         $menu_params = $menu->getParams($current_menu->id);
-        $columnSupl = explode(',', $menu_params->get('em_actions'));
-        $objs = $jinput->getString('objs', null);
+        $columnSupl = explode(',', $menu_params->get('em_actions'));*/
         $objs = (array) json_decode(stripcslashes($objs));
-        $columnSupl = array_merge($columnSupl, $objs);
-        return $columnSupl;
+        //$columnSupl = array_merge($columnSupl, $objs);
+        return $objs;
     }
 
-    public function generate_array($fnums,$file,$start=0, $pas=0) {
+    public function generate_array() {
+        $current_user = JFactory::getUser();
+
+        if( !@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)
+        )
+            die( JText::_('RESTRICTED_ACCESS') );
+
         $model = $this->getModel('Files');
         $modelApp = $this->getModel('Application');
-        $col = $this->getcolumn();
-        $colsup  = $this->getcolumnSup();
+
+        $jinput = JFactory::getApplication()->input;
+        $fnums = $jinput->getVar('fnums', null);
+        $file = $jinput->getVar('file', null);
+        $totalfile = $jinput->getVar('totalfile', null);
+        $start = $jinput->getInt('start', 0);
+        $limit = $jinput->getInt('limit', 0);
+        $elts = $jinput->getString('elts', null);
+        $objs = $jinput->getString('objs', null);
+
+        $col = $this->getcolumn($elts);
+        $colsup  = $this->getcolumnSup($objs);
         $colOpt = array();
-        $csv = fopen("tmp/".$file, 'w');
+        $csv = fopen('tmp/'.$file, 'a');
 
 
         $elements = @EmundusHelperFiles::getElementsName(implode(',',$col));
-        $fnumsArray = $model->getFnumArray($fnums, $elements,0, $start,$pas);
+        $fnumsArray = $model->getFnumArray($fnums, $elements,0, $start,$limit);
 
         // On met a jour la liste des fnums traités
         $fnums =array();
@@ -1201,35 +1218,56 @@ class EmundusControllerFiles extends JControllerLegacy
                         $line .= JText::_('photo') . ",";
                         break;
                     case "forms":
-                        $val = $vOpt[$fnum['fnum']];
-                        $line .= $val . '%,';
+                        if (array_key_exists($fnum['fnum'],$vOpt)) {
+                            $val = $vOpt[$fnum['fnum']];
+                            $line .= $val . '%,';
+                        } else {
+                            $line .= ' ,';
+                        }
                         break;
                     case "attachment":
-                        $val = $vOpt[$fnum['fnum']];
-                        $line .= $val . '%,';
-                        break;
+                        if (array_key_exists($fnum['fnum'],$vOpt)) {
+                            $val = $vOpt[$fnum['fnum']];
+                            str_replace(',', '', $val);
+                            $line .= $val . '%,';
+                        } else {
+                                $line .= ' ,';
+                        }
                         break;
                     case "assessment":
                         $eval = '';
-                        $evaluations = $vOpt[$fnum['fnum']];
-                        foreach ($evaluations as $evaluation) {
-                            $eval .= $evaluation;
-                            $eval .= chr(10) . '______' . chr(10);
+                        if (array_key_exists($fnum['fnum'],$vOpt)) {
+                            $evaluations = $vOpt[$fnum['fnum']];
+                            str_replace(',', '', $evaluations);
+                            foreach ($evaluations as $evaluation) {
+                                $eval .= $evaluation;
+                                $eval .= chr(10) . '______' . chr(10);
+                            }
+                            $line .= $eval . ",";
+                        } else {
+                                $line .= ' ,';
                         }
-                        $line .= $eval . ",";
                         break;
                     case "comment":
                         $comments = "";
-                        foreach ($colOpt['comment'] as $comment) {
-                            if ($comment['fnum'] == $fnum['fnum']) {
-                                $comments .= $comment['reason'] . " | " . $comment['comment_body'] . "\rn";
+                        if (array_key_exists($fnum['fnum'],$vOpt)) {
+                            foreach ($colOpt['comment'] as $comment) {
+                                if ($comment['fnum'] == $fnum['fnum']) {
+                                    $comments .= $comment['reason'] . " | " . $comment['comment_body'] . "\rn";
+                                }
                             }
+                            str_replace(',', '', $comments);
+                            $line .= $comments . ",";
+                        } else {
+                            $line .= ' ,';
                         }
-                        str_replace(',', '', $comments);
-                        $line .= $comments . ",";
                         break;
                     case 'evaluators':
-                        $line .= $vOpt[$fnum['fnum']] . ",";
+                        if (array_key_exists($fnum['fnum'],$vOpt)) {
+                            $line .= $vOpt[$fnum['fnum']] . ",";
+                        } else {
+                            $line .= ' ,';
+                        }
                         break;
                 }
             }
@@ -1243,20 +1281,50 @@ class EmundusControllerFiles extends JControllerLegacy
         {
             $res = fputcsv($csv,explode(',',$data));
             if( !$res) {
-                die("erreur csv");
+                echo ('erreur ecriture');
+                $result = array('status' => false);
+                echo json_encode((object) $result);
+                exit();
             }
         }
         if (!fclose($csv)) {
-            die("erreur fermeture csv");
+            echo ('erreur fermeture csv');
+            $result = array('status' => false);
+            echo json_encode((object) $result);
+            exit();
         }
 
         $start = $i;
-        $result = array('status' => true, 'start' => $start);
+        $dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'elts'=>$elts, 'objs'=> $objs, 'file'=>$file );
+        $result = array('status' => true, 'json' => $dataresult);
         echo json_encode((object) $result);
+        //var_dump($result);
         exit();
     }
 
-   /* public function export_xls_from_csv($csv) {
+    public function export_xls_from_csv() {
+        /** PHPExcel */
+        ini_set('include_path', JPATH_BASE.DS.'libraries'.DS);
+        include 'PHPExcel.php';
+        include 'PHPExcel/Writer/Excel5.php';
+        include 'PHPExcel/IOFactory.php';
+
+        $jinput = JFactory::getApplication()->input;
+        $csv = $jinput->getVar('csv', null);
+        $objReader = PHPExcel_IOFactory::createReader('CSV');
+        $objPHPExcel = $objReader->load('tmp/'.$csv);
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        $objWriter->save(JPATH_BASE.DS.'tmp'.DS.JFactory::getUser()->id.'_extraction.xls');
+        $link = JFactory::getUser()->id.'_extraction.xls';
+        $result = array('status' => true, 'link' => $link);
+        echo json_encode((object) $result);
+        exit();
+
+   }/*
+
+
+
+
         //$objPHPExcel = new PHPExcel();
         $inputFileType = 'CSV';
         $inputFileName = 'testFile.csv';
