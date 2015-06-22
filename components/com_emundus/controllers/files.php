@@ -1123,6 +1123,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $modelApp = $this->getModel('Application');
 
         $jinput = JFactory::getApplication()->input;
+
         $fnums = $jinput->getVar('fnums', null);
         $file = $jinput->getVar('file', null, 'STRING');
         $totalfile = $jinput->getVar('totalfile', null);

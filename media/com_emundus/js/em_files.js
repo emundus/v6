@@ -539,14 +539,14 @@ function generate_csv(json, fnums, eltJson, objJson) {
                 url: 'index.php?option=com_emundus&controller=files&task=generate_array',
                 dataType: 'JSON',
                 data: {
-                    fnums: fnums,
                     file: file,
                     totalfile: totalfile,
                     start: start,
                     limit: limit,
                     nbcol: nbcol,
                     elts: eltJson,
-                    objs: objJson
+                    objs: objJson,
+                    fnums: fnums
                 },
                 success: function (result) {
                     var json = result.json;
