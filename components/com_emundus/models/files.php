@@ -1989,7 +1989,7 @@ class EmundusModelFiles extends JModelLegacy
 				}
 				else
 				{
-					if ($params_group->repeat_group_button == 1) {
+					if (@$params_group->repeat_group_button == 1) {
 						if ($methode == 1) {
 							$query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
 							if(!in_array($elt->table_join, $lastTab)) {

@@ -536,7 +536,7 @@ function generate_csv(json, fnums, eltJson, objJson) {
         $.ajax(
             {
                 type: 'post',
-                url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=generate_array',
+                url: 'index.php?option=com_emundus&controller=files&task=generate_array',
                 dataType: 'JSON',
                 data: {
                     fnums: fnums,
@@ -552,7 +552,7 @@ function generate_csv(json, fnums, eltJson, objJson) {
                     var json = result.json;
                    // alert(json.start);
                     if (result.status) {
-                        $('#extractstep').append('<div id="extractstep"><p>' + result.json.start + '/' + result.json.totalfile + '</p></div>');
+                        $('#extractstep').append('<div id="extractstep"><p>' + result.json.start + ' / ' + result.json.totalfile + '</p></div>');
                         generate_csv(json, fnums, eltJson, objJson);
                     }
                 },

@@ -1063,7 +1063,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         fprintf($fichier_csv, chr(0xEF).chr(0xBB).chr(0xBF));
         if (!fclose($fichier_csv)) {
-            echo ('erreur fermeture csv');
+            echo (JText::_('ERROR_CANNOT_CLOSE_CSV_FILE'));
             $result = array('status' => false);
             echo json_encode((object) $result);
             exit();
@@ -1124,7 +1124,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getVar('fnums', null);
-        $file = $jinput->getVar('file', null);
+        $file = $jinput->getVar('file', null, 'STRING');
         $totalfile = $jinput->getVar('totalfile', null);
         $start = $jinput->getInt('start', 0);
         $limit = $jinput->getInt('limit', 0);
@@ -1135,8 +1135,11 @@ class EmundusControllerFiles extends JControllerLegacy
         $col = $this->getcolumn($elts);
         $colsup  = $this->getcolumnSup($objs);
         $colOpt = array();
-        $csv = fopen(JPATH_BASE.DS.'tmp'.DS.$file, 'a');
-
+        if (!$csv = fopen(JPATH_BASE.DS.'tmp'.DS.$file, 'a')){
+            $result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$file);
+            echo json_encode((object) $result);
+            exit();
+        }
 
         $elements = @EmundusHelperFiles::getElementsName(implode(',',$col));
         $fnumsArray = $model->getFnumArray($fnums, $elements,0, $start,$limit);
@@ -1280,17 +1283,15 @@ class EmundusControllerFiles extends JControllerLegacy
         // On remplit le fichier CSV
         foreach ($element_csv as $data)
         {
-            $res = fputcsv($csv,explode("\t",$data),"\t");
+            $res = fputcsv($csv, explode("\t",$data),"\t");
             if( !$res) {
-                echo ('erreur ecriture');
-                $result = array('status' => false);
+                $result = array('status' => false, 'msg'=>JText::_('ERROR_CANNOT_WRITE_TO_FILE'.' : '.$csv));
                 echo json_encode((object) $result);
                 exit();
             }
         }
         if (!fclose($csv)) {
-            echo ('erreur fermeture csv');
-            $result = array('status' => false);
+            $result = array('status' => false, 'msg'=>JText::_('ERROR_CANNOT_CLOSE_FILE'));
             echo json_encode((object) $result);
             exit();
         }
