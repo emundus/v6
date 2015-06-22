@@ -1933,7 +1933,7 @@ $(document).ready(function()
                                         dataType: 'JSON',
                                         success: function (result) {
                                             if (result.status) {
-                                                $('#extractstep').replaceWith('<div id="extractstep"><p>Ajout des données</p></div>' );
+                                                $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_ADD_DATA_TO_CSV')+'</p></div>' );
                                                 var start = 0;
                                                 var limit = 10;
                                                 var totalfile = fnums.length;

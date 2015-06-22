@@ -109,6 +109,9 @@ JText::script('SENT');
 JText::script('FILES_GENERATED');
 JText::script('STATE');
 
+//Export Excel
+JText::script('COM_EMUNDUS_ADD_DATA_TO_CSV');
+
 //view application layout share
 JText::script('COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');
 
