@@ -1057,7 +1057,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $today = date_default_timezone_get();
         $name = md5($today.rand(0,10));
         $name = $name.'.csv';
-        $chemin = 'tmp/'.$name;
+        $chemin = JPATH_BASE.DS.'tmp'.DS.$name;
 
         $fichier_csv = fopen($chemin, 'w+');
 
@@ -1135,7 +1135,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $col = $this->getcolumn($elts);
         $colsup  = $this->getcolumnSup($objs);
         $colOpt = array();
-        $csv = fopen('tmp/'.$file, 'a');
+        $csv = fopen(JPATH_BASE.DS.'tmp'.DS.$file, 'a');
 
 
         $elements = @EmundusHelperFiles::getElementsName(implode(',',$col));
@@ -1343,7 +1343,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $objPHPExcel->getActiveSheet()->freezePane('A2');
 
-        $objReader->loadIntoExisting("tmp/".$csv,$objPHPExcel);
+        $objReader->loadIntoExisting(JPATH_BASE.DS."tmp".DS.$csv,$objPHPExcel);
 
         $objConditional1 = new PHPExcel_Style_Conditional();
         $objConditional1->setConditionType(PHPExcel_Style_Conditional::CONDITION_CELLIS)
@@ -1394,7 +1394,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         $objWriter->save(JPATH_BASE.DS.'tmp'.DS.JFactory::getUser()->id.'_extraction.xls');
         $link = JFactory::getUser()->id.'_extraction.xls';
-        if (!unlink("tmp/".$csv)) {
+        if (!unlink(JPATH_BASE.DS."tmp".DS.$csv)) {
             echo ('erreur suppression CSV');
             $result = array('status' => false);
             echo json_encode((object) $result);
