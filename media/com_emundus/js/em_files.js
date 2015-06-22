@@ -525,12 +525,13 @@ function getUserCheck()
     return checkInput;
 }
 maxcsv = 65000;
-maxxls = 11;
+maxxls = 65000;
 function generate_csv(json, fnums, eltJson, objJson) {
     var start = json.start;
     var limit = json.limit;
     var totalfile = json.totalfile;
     var file = json.file;
+    var nbcol = json.nbcol;
     if ((start+limit <= totalfile) && (start+limit <= maxcsv)) {
         $.ajax(
             {
@@ -543,6 +544,7 @@ function generate_csv(json, fnums, eltJson, objJson) {
                     totalfile: totalfile,
                     start: start,
                     limit: limit,
+                    nbcol: nbcol,
                     elts: eltJson,
                     objs: objJson
                 },
@@ -550,7 +552,7 @@ function generate_csv(json, fnums, eltJson, objJson) {
                     var json = result.json;
                    // alert(json.start);
                     if (result.status) {
-                        $('#extractstep').replaceWith('<div id="extractstep"><p>' + result.json.start + '/' + result.json.totalfile + '</p></div>');
+                        $('#extractstep').append('<div id="extractstep"><p>' + result.json.start + '/' + result.json.totalfile + '</p></div>');
                         generate_csv(json, fnums, eltJson, objJson);
                     }
                 },
@@ -565,12 +567,13 @@ function generate_csv(json, fnums, eltJson, objJson) {
         $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">Capacité max du CSV dépassée</div>');
         exit();
     } else if((start < maxxls) && (start+limit < maxcsv) ) {
+        $('#extractstep').replaceWith('<div id="extractstep"><p>Génération du fichier XLS</p></div>');
         $.ajax(
             {
                 type: 'post',
                 url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=export_xls_from_csv',
                 dataType: 'JSON',
-                data: {csv: file},
+                data: {csv: file, nbcol: nbcol, totalfile: totalfile},
                 success: function (result) {
                     if (result.status) {
                         $('#loadingimg').empty();
@@ -1935,7 +1938,7 @@ $(document).ready(function()
                                                 var limit = 10;
                                                 var totalfile = fnums.length;
                                                 var file = result.file;
-                                                var json= jQuery.parseJSON('{"start":"'+start+'","limit":"'+limit+'","totalfile":"'+totalfile+'","file":"'+file+'"}');
+                                                var json= jQuery.parseJSON('{"start":"'+start+'","limit":"'+limit+'","totalfile":"'+totalfile+'","nbcol":"0", "file":"'+file+'"}');
                                                 generate_csv(json, fnums, eltJson, objJson);
                                             }
                                         },

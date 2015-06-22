@@ -1128,6 +1128,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $totalfile = $jinput->getVar('totalfile', null);
         $start = $jinput->getInt('start', 0);
         $limit = $jinput->getInt('limit', 0);
+        $nbcol = $jinput->getVar('nbcol', 0);
         $elts = $jinput->getString('elts', null);
         $objs = $jinput->getString('objs', null);
 
@@ -1175,14 +1176,17 @@ class EmundusControllerFiles extends JControllerLegacy
 
         // On traite les en-têtes
         if ($start==0) {
-            $line=JText::_('F_NUM').",".JText::_('STATUS').",".JText::_('LAST_NAME').",".JText::_('FIRST_NAME').",".JText::_('EMAIL').",".JText::_('CAMPAIGN').",";
+            $line=JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('CAMPAIGN')."\t";
+            $nbcol = 6;
             foreach ($elements as $fKey => $fLine) {
                 if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id') {
-                    $line .= $fLine->element_label . ",";
+                    $line .= $fLine->element_label . "\t";
+                    $nbcol++;
                 }
             }
             foreach ($colsup as $kOpt => $vOpt) {
-                $line .= $vOpt . ",";
+                $line .= $vOpt . "\t";
+                $nbcol++;
             }
 
             // On met les en-têtes dans le CSV
@@ -1198,16 +1202,16 @@ class EmundusControllerFiles extends JControllerLegacy
                 if ($k != 'code' && $k != 'campaign_id' && $k != 'jos_emundus_campaign_candidature___campaign_id' && $k != 'c___campaign_id') {
                     if($k === 'fnum')
                     {
-                        $line .= $v.",";
-                        $line .= $status[$v]['value'].",";
+                        $line .= $v."\t";
+                        $line .= $status[$v]['value']."\t";
                         $uid = intval(substr($v, 21, 7));
                         $userProfil = JUserHelper::getProfile($uid)->emundus_profile;
-                        $line .= strtoupper($userProfil['lastname']).",";
-                        $line .= $userProfil['firstname'].",";
+                        $line .= strtoupper($userProfil['lastname'])."\t";
+                        $line .= $userProfil['firstname']."\t";
                     }
                     else
                     {
-                        $line .= $v.",";
+                        $line .= $v."\t";
                     }
                 }
             }
@@ -1215,37 +1219,35 @@ class EmundusControllerFiles extends JControllerLegacy
             foreach($colOpt as $kOpt => $vOpt) {
                 switch ($kOpt) {
                     case "photo":
-                        $line .= JText::_('photo') . ",";
+                        $line .= JText::_('photo') . "\t";
                         break;
                     case "forms":
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
                             $val = $vOpt[$fnum['fnum']];
-                            $line .= $val . '%,';
+                            $line .= $val . "%\t";
                         } else {
-                            $line .= ' ,';
+                            $line .= "\t";
                         }
                         break;
                     case "attachment":
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
                             $val = $vOpt[$fnum['fnum']];
-                            str_replace(',', '', $val);
-                            $line .= $val . '%,';
+                            $line .= $val . "%\t";
                         } else {
-                                $line .= ' ,';
+                                $line .= "\t";
                         }
                         break;
                     case "assessment":
                         $eval = '';
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
                             $evaluations = $vOpt[$fnum['fnum']];
-                            str_replace(',', '', $evaluations);
                             foreach ($evaluations as $evaluation) {
                                 $eval .= $evaluation;
                                 $eval .= chr(10) . '______' . chr(10);
                             }
-                            $line .= $eval . ",";
+                            $line .= $eval . "\t";
                         } else {
-                                $line .= ' ,';
+                                $line .= "\t";
                         }
                         break;
                     case "comment":
@@ -1256,17 +1258,16 @@ class EmundusControllerFiles extends JControllerLegacy
                                     $comments .= $comment['reason'] . " | " . $comment['comment_body'] . "\rn";
                                 }
                             }
-                            str_replace(',', '', $comments);
-                            $line .= $comments . ",";
+                            $line .= $comments . "\t";
                         } else {
-                            $line .= ' ,';
+                            $line .= "\t";
                         }
                         break;
                     case 'evaluators':
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
-                            $line .= $vOpt[$fnum['fnum']] . ",";
+                            $line .= $vOpt[$fnum['fnum']] . "\t";
                         } else {
-                            $line .= ' ,';
+                            $line .= "\t";
                         }
                         break;
                 }
@@ -1279,7 +1280,7 @@ class EmundusControllerFiles extends JControllerLegacy
         // On remplit le fichier CSV
         foreach ($element_csv as $data)
         {
-            $res = fputcsv($csv,explode(',',$data));
+            $res = fputcsv($csv,explode("\t",$data),"\t");
             if( !$res) {
                 echo ('erreur ecriture');
                 $result = array('status' => false);
@@ -1295,7 +1296,7 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $start = $i;
-        $dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'elts'=>$elts, 'objs'=> $objs, 'file'=>$file );
+        $dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file );
         $result = array('status' => true, 'json' => $dataresult);
         echo json_encode((object) $result);
         //var_dump($result);
@@ -1311,12 +1312,96 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $jinput = JFactory::getApplication()->input;
         $csv = $jinput->getVar('csv', null);
+        $nbcol = $jinput->getVar('nbcol', 0);
+        $nbrow = $jinput->getVar('totalfile', 0);
         $objReader = PHPExcel_IOFactory::createReader('CSV');
-        $objPHPExcel = $objReader->load('tmp/'.$csv);
+        $objReader->setDelimiter("\t");
+        $objPHPExcel = new PHPExcel();
+
+        // Excel colonne
+        $colonne_by_id = array();
+        for ($i=ord("A");$i<=ord("Z");$i++) {
+            $colonne_by_id[]=chr($i);
+        }
+        for ($i=ord("A");$i<=ord("Z");$i++) {
+            for ($j=ord("A");$j<=ord("Z");$j++) {
+                $colonne_by_id[]=chr($i).chr($j);
+                if(count($colonne_by_id) == $nbrow) break;
+            }
+        }
+
+        // Set properties
+        $objPHPExcel->getProperties()->setCreator("Décision Publique : http://www.decisionpublique.fr/");
+        $objPHPExcel->getProperties()->setLastModifiedBy("Décision Publique");
+        $objPHPExcel->getProperties()->setTitle("eMmundus Report");
+        $objPHPExcel->getProperties()->setSubject("eMmundus Report");
+        $objPHPExcel->getProperties()->setDescription("Report from open source eMundus plateform : http://www.emundus.fr/");
+        $objPHPExcel->setActiveSheetIndex(0);
+        $objPHPExcel->getActiveSheet()->setTitle('Extraction');
+        $objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+
+        $objPHPExcel->getActiveSheet()->freezePane('A2');
+
+        $objReader->loadIntoExisting("tmp/".$csv,$objPHPExcel);
+
+        $objConditional1 = new PHPExcel_Style_Conditional();
+        $objConditional1->setConditionType(PHPExcel_Style_Conditional::CONDITION_CELLIS)
+            ->setOperatorType(PHPExcel_Style_Conditional::OPERATOR_EQUAL)
+            ->addCondition('0');
+        $objConditional1->getStyle()->getFill()->getStartColor()->setARGB('FFFF6600');
+
+        $objConditional2 = new PHPExcel_Style_Conditional();
+        $objConditional2->setConditionType(PHPExcel_Style_Conditional::CONDITION_CELLIS)
+            ->setOperatorType(PHPExcel_Style_Conditional::OPERATOR_EQUAL)
+            ->addCondition('100');
+        $objConditional2->getStyle()->getFill()->getStartColor()->setARGB('FF66FF66');
+
+        $objConditional3 = new PHPExcel_Style_Conditional();
+        $objConditional3->setConditionType(PHPExcel_Style_Conditional::CONDITION_CELLIS)
+            ->setOperatorType(PHPExcel_Style_Conditional::OPERATOR_EQUAL)
+            ->addCondition('50');
+        $objConditional3->getStyle()->getFill()->getStartColor()->setARGB('FFFFFF00');
+
+        $i = 0;
+        $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
+        $i++;
+        $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
+        $i++;
+        $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
+        $i++;
+        $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
+        $i++;
+        $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
+        $i++;
+        $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
+        $i++;
+        //var_dump($nbcol);die();
+        for ($i; $i<$nbcol;$i++) {
+            $value = $objPHPExcel->getActiveSheet()->getCellByColumnAndRow($i, 1)->getValue();
+            //var_dump($value);
+            if ($value=="forms" || $value=="attachment") {
+                //var_dump($colonne_by_id[$i]);
+                $conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle('J2')->getConditionalStyles();
+                array_push($conditionalStyles, $objConditional1);
+                array_push($conditionalStyles, $objConditional2);
+                array_push($conditionalStyles, $objConditional3);
+                $objPHPExcel->getActiveSheet()->getStyle('J2')->setConditionalStyles($conditionalStyles);
+            }
+            $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
+        }
+
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         $objWriter->save(JPATH_BASE.DS.'tmp'.DS.JFactory::getUser()->id.'_extraction.xls');
         $link = JFactory::getUser()->id.'_extraction.xls';
+        if (!unlink("tmp/".$csv)) {
+            echo ('erreur suppression CSV');
+            $result = array('status' => false);
+            echo json_encode((object) $result);
+            exit();
+        }
         $result = array('status' => true, 'link' => $link);
+
         echo json_encode((object) $result);
         exit();
 
