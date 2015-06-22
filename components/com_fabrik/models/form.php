@@ -3076,7 +3076,7 @@ echo "form get errors";
 
 		foreach ($this->errors as $field => $errors)
 		{
-			if (!empty($errors))
+			if (!empty($errors) && is_array($errors))
 			{
 				foreach ($errors as $error)
 				{

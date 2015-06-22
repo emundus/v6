@@ -1292,13 +1292,13 @@ class EmundusModelEvaluation extends JModelList
 		return $this->_db->loadObjectList();
 	}
 
-	/*
-	* 	Get evaluations for fnum done by a user
-	*	@param fnum 		Application File number
-	*	@param user 		user
-	* 	@return array
-	*/
-	function getEvaluationsFnumUser($fnum, $user) {
+    /*
+    * 	Get evaluations for fnum done by a user
+    *	@param fnum 		Application File number
+    *	@param user 		user
+    * 	@return array
+    */
+    function getEvaluationsFnumUser($fnum, $user) {
         try {
             $query = 'SELECT *
 					FROM #__emundus_evaluations ee 
@@ -1312,7 +1312,29 @@ class EmundusModelEvaluation extends JModelList
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
-	}
+    }
+
+    /*
+* 	Get evaluations for fnum done by a user
+*	@param fnum 		Application File number
+*	@param user 		user
+* 	@return array
+*/
+    function getDecisionFnum($fnum) {
+        try {
+            $query = 'SELECT *
+					FROM #__emundus_final_grade efg
+					WHERE efg.fnum like ' . $this->_db->Quote($fnum);
+//die(str_replace('#_', 'jos', $query));
+            $this->_db->setQuery($query);
+            return $this->_db->loadObjectList();
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+    }
 
 	function getLettersTemplate($eligibility, $training) {
 		$query = "SELECT * FROM #__emundus_setup_letters WHERE eligibility=".$eligibility." AND training=".$this->_db->Quote($training);

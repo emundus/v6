@@ -104,3 +104,5 @@ echo $this->loadTemplate('actions');
 echo $form->outro;
 echo $this->pluginend;
 echo FabrikHelperHTML::keepalive();
+?>
+

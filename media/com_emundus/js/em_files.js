@@ -264,12 +264,25 @@ function tableOrder(order) {
 function openFiles(fnum)
 {
     reloadActions(undefined, fnum.fnum);
+    //var fnum = fnum.fnum;
+    var cid = parseInt(fnum.fnum.substr(14, 7));
+    var sid = parseInt(fnum.fnum.substr(21, 7));
+
     $.ajax({
         type:'get',
         url:'index.php?option=com_emundus&controller=application&task=getactionmenu&fnum='+fnum.fnum,
         dataType:'json',
         success: function(result)
         {
+
+
+            String.prototype.fmt = function (hash) {
+                var string = this, key;
+                for (key in hash) string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]); return string;
+            }
+
+
+
             $('#em-appli-menu .list-group').empty();
             if (result.status)
             {
@@ -280,7 +293,10 @@ function openFiles(fnum)
 
                     if (isNaN(parseInt(m)) || isNaN(menus[m].id) || typeof(menus[m].title) == "undefined")
                         break;
-                    menuList += '<a href="'+menus[m].link+'&fnum='+fnum.fnum+'" class="list-group-item" title="'+menus[m].title+'" id="'+menus[m].id+'">';
+
+                    url = menus[m].link.fmt({ fnum: fnum.fnum, applicant_id: sid, campaign_id: cid });
+                    url += '&fnum='+fnum.fnum;
+                    menuList += '<a href="'+url+'" class="list-group-item" title="'+menus[m].title+'" id="'+menus[m].id+'">';
 
                     if(menus[m].hasSons)
                     {
