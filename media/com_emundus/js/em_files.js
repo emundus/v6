@@ -532,6 +532,7 @@ function generate_csv(json, fnums, eltJson, objJson) {
     var totalfile = json.totalfile;
     var file = json.file;
     var nbcol = json.nbcol;
+    var oldstart = json.start;
     if ((start+limit <= totalfile) && (start+limit <= maxcsv)) {
         $.ajax(
             {
@@ -550,10 +551,30 @@ function generate_csv(json, fnums, eltJson, objJson) {
                 },
                 success: function (result) {
                     var json = result.json;
-                   // alert(json.start);
                     if (result.status) {
-                        $('#extractstep').append('<div id="extractstep"><p>' + result.json.start + ' / ' + result.json.totalfile + '</p></div>');
+                        $('#datasbs').replaceWith('<div id="datasbs"><p>' + result.json.start + ' / ' + result.json.totalfile + '</p></div>');
                         generate_csv(json, fnums, eltJson, objJson);
+                        if (oldstart == json.start) {
+                            $.ajax(
+                                {
+                                    type: 'post',
+                                    url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=export_xls_from_csv',
+                                    dataType: 'JSON',
+                                    data: {csv: file, nbcol: nbcol, totalfile: totalfile},
+                                    success: function (result) {
+                                        if (result.status) {
+                                            $('#loadingimg').empty();
+                                            $('#extractstep').replaceWith('<div class="alert alert-warning" role="alert">'+Joomla.JText._('COM_EMUNDUS_LIMIT_POST_SERVER')+'</div>' );
+                                            $('.modal-body').append('<a class="btn .btn-link" title="' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + result.link + '"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
+                                        }
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        $('#loadingimg').empty();
+                                        $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">'+Joomla.JText._('COM_EMUNDUS_ERROR_XLS')+'</div>');
+                                        console.log(jqXHR.responseText);
+                                    }
+                                });
+                        }
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -564,10 +585,10 @@ function generate_csv(json, fnums, eltJson, objJson) {
             });
     } else if (start+limit> maxcsv) {
         $('#loadingimg').empty();
-        $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">Capacité max du CSV dépassée</div>');
+        $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">'+Joomla.JText._('COM_EMUNDUS_ERROR_CSV_CAPACITY')+'</div>');
         exit();
     } else if((start < maxxls) && (start+limit < maxcsv) ) {
-        $('#extractstep').replaceWith('<div id="extractstep"><p>Génération du fichier XLS</p></div>');
+        $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_XLS_GENERATION')+'</p></div>');
         $.ajax(
             {
                 type: 'post',
@@ -577,19 +598,19 @@ function generate_csv(json, fnums, eltJson, objJson) {
                 success: function (result) {
                     if (result.status) {
                         $('#loadingimg').empty();
-                        $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">Exportation terminée</div>' );
+                        $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</div>' );
                         $('.modal-body').append('<a class="btn .btn-link" title="' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + result.link + '"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     $('#loadingimg').empty();
-                    $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">erreur de conversion</div>');
+                    $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">'+Joomla.JText._('COM_EMUNDUS_ERROR_XLS')+'</div>');
                     console.log(jqXHR.responseText);
                 }
             });
     } else {
         $('#loadingimg').empty();
-        $('#extractstep').replaceWith('<div class="alert alert-info" role="alert">Capacité du XLS dépassée, format CSV proposé :</div><a class="btn .btn-link" title="'+Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION')+'" href="index.php?option=com_emundus&controller='+$('#view').val()+'&task=download&format=xls&name='+file+'"><span class="glyphicon glyphicon-download-alt"></span>  <span>'+Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION')+'</span></a>');
+        $('#extractstep').replaceWith('<div class="alert alert-info" role="alert">'+Joomla.JText._('COM_EMUNDUS_ERROR_CAPACITY_XLS')+'</div><a class="btn .btn-link" title="'+Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION')+'" href="index.php?option=com_emundus&controller='+$('#view').val()+'&task=download&format=xls&name='+file+'"><span class="glyphicon glyphicon-download-alt"></span>  <span>'+Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION')+'</span></a>');
 
     }
 }
@@ -1915,7 +1936,7 @@ $(document).ready(function()
                 $('.modal-body').append('<div>' +
                 '<h5>'+Joomla.JText._('COM_EMUNDUS_EXCEL_GENERATION')+'</h5>'+
                 '<div id="loadingimg"><img src="'+loadingLine+'" alt="loading"/></div>' +
-                '<div id="extractstep"><p>Création du fichier CSV</p></div>'+
+                '<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_CREATE_CSV')+'</p></div>'+
                 '</div>');
                 $.ajax(
                     {
@@ -1933,12 +1954,13 @@ $(document).ready(function()
                                         dataType: 'JSON',
                                         success: function (result) {
                                             if (result.status) {
-                                                $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_ADD_DATA_TO_CSV')+'</p></div>' );
+                                                $('#extractstep').replaceWith('<div id="extractstep"><div id="addatatext"><p>'+Joomla.JText._('COM_EMUNDUS_ADD_DATA_TO_CSV')+'</p></div><div id="datasbs"</div>' );
                                                 var start = 0;
-                                                var limit = 10;
+                                                var limit = 100;
                                                 var totalfile = fnums.length;
                                                 var file = result.file;
                                                 var json= jQuery.parseJSON('{"start":"'+start+'","limit":"'+limit+'","totalfile":"'+totalfile+'","nbcol":"0", "file":"'+file+'"}');
+                                                $('#datasbs').replaceWith('<div id="datasbs"><p>0 / ' + totalfile + '</p></div>');
                                                 generate_csv(json, fnums, eltJson, objJson);
                                             }
                                         },

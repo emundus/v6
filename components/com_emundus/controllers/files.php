@@ -1060,11 +1060,15 @@ class EmundusControllerFiles extends JControllerLegacy
         $chemin = JPATH_BASE.DS.'tmp'.DS.$name;
 
         $fichier_csv = fopen($chemin, 'w+');
+        if (!$fichier_csv = fopen($chemin, 'w+')){
+            $result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$chemin);
+            echo json_encode((object) $result);
+            exit();
+        }
 
         fprintf($fichier_csv, chr(0xEF).chr(0xBB).chr(0xBF));
         if (!fclose($fichier_csv)) {
-            echo (JText::_('ERROR_CANNOT_CLOSE_CSV_FILE'));
-            $result = array('status' => false);
+            $result = array('status' => false, 'msg'=>JText::_('ERROR_CANNOT_CLOSE_CSV_FILE'));
             echo json_encode((object) $result);
             exit();
         }
@@ -1189,7 +1193,12 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
             }
             foreach ($colsup as $kOpt => $vOpt) {
-                $line .= $vOpt . "\t";
+                if ($vOpt=="forms" || $vOpt=="attachment") {
+                    $line .= $vOpt . "(%)\t";
+                } else {
+                    $line .= $vOpt . "\t";
+                }
+
                 $nbcol++;
             }
 
@@ -1228,7 +1237,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     case "forms":
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
                             $val = $vOpt[$fnum['fnum']];
-                            $line .= $val . "%\t";
+                            $line .= $val . "\t";
                         } else {
                             $line .= "\t";
                         }
@@ -1236,7 +1245,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     case "attachment":
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
                             $val = $vOpt[$fnum['fnum']];
-                            $line .= $val . "%\t";
+                            $line .= $val . "\t";
                         } else {
                                 $line .= "\t";
                         }
@@ -1292,7 +1301,7 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
         if (!fclose($csv)) {
-            $result = array('status' => false, 'msg'=>JText::_('ERROR_CANNOT_CLOSE_FILE'));
+            $result = array('status' => false, 'msg'=>JText::_('ERROR_CANNOT_CLOSE_CSV_FILE'));
             echo json_encode((object) $result);
             exit();
         }
@@ -1382,13 +1391,14 @@ class EmundusControllerFiles extends JControllerLegacy
         for ($i; $i<$nbcol;$i++) {
             $value = $objPHPExcel->getActiveSheet()->getCellByColumnAndRow($i, 1)->getValue();
             //var_dump($value);
-            if ($value=="forms" || $value=="attachment") {
+            if ($value=="forms(%)" || $value=="attachment(%)") {
                 //var_dump($colonne_by_id[$i]);
-                $conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle('J2')->getConditionalStyles();
+                $conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i].'1')->getConditionalStyles();
                 array_push($conditionalStyles, $objConditional1);
                 array_push($conditionalStyles, $objConditional2);
                 array_push($conditionalStyles, $objConditional3);
-                $objPHPExcel->getActiveSheet()->getStyle('J2')->setConditionalStyles($conditionalStyles);
+                $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i].'1')->setConditionalStyles($conditionalStyles);
+                $objPHPExcel->getActiveSheet()->duplicateConditionalStyle($conditionalStyles,$colonne_by_id[$i].'1:'.$colonne_by_id[$i].($nbrow+ 1));
             }
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         }
