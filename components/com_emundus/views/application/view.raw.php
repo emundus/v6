@@ -164,8 +164,6 @@ class EmundusViewApplication extends JViewLegacy
                         $form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid='.@$myEval[0]->id.'&student_id='.$student->id;
                         $this->assignRef('form_url_edit', $form_url_edit);
 */
-                        $url_evaluation = 'index.php?option=com_emundus&view=evaluation&layout=data&format=raw&Itemid=&cfnum='.$fnum;
-
                         $url_form = '';
 
                         if(count($myEval) > 0)
@@ -184,6 +182,11 @@ class EmundusViewApplication extends JViewLegacy
                                     $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&rowid=&jos_emundus_evaluations___student_id[value]='.$student->id.'&jos_emundus_evaluations___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_evaluations___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
                             }
                         }
+                        if(!empty($formid))
+                            $url_evaluation = 'index.php?option=com_emundus&view=evaluation&layout=data&format=raw&Itemid=&cfnum='.$fnum;
+                        else
+                            $url_evaluation = '';
+
                         $this->assignRef('campaign_id', $fnumInfos['campaign_id']);
                         $this->assignRef('student', $student);
                         $this->assignRef('fnum', $fnum);
@@ -206,8 +209,6 @@ class EmundusViewApplication extends JViewLegacy
                         // get evaluation form ID
                         $formid = $evaluation->getDecisionFormByProgramme($fnumInfos['training']);
 
-                        //$url_evaluation = 'index.php?option=com_emundus&view=evaluation&layout=data&format=raw&Itemid=&cfnum='.$fnum;
-
                         $url_form = '';
 
                         if(count($myEval) > 0)
@@ -215,7 +216,6 @@ class EmundusViewApplication extends JViewLegacy
                             if(EmundusHelperAccess::asAccessAction(29, 'u', $this->_user->id, $fnum))
                             {
                                 if(!empty($formid))
-                                    //$url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid='.$myEval[0]->id.'&student_id='.$student->id;
                                     $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&rowid='.$myEval[0]->id.'&jos_emundus_final_grade___student_id[value]='.$student->id.'&jos_emundus_final_grade___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
 
                             }
