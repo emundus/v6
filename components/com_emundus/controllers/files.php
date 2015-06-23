@@ -1138,6 +1138,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $nbcol = $jinput->getVar('nbcol', 0);
         $elts = $jinput->getString('elts', null);
         $objs = $jinput->getString('objs', null);
+        $methode = $jinput->getString('methode', null);
 
         $col = $this->getcolumn($elts);
         $colsup  = $this->getcolumnSup($objs);
@@ -1149,7 +1150,7 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $elements = @EmundusHelperFiles::getElementsName(implode(',',$col));
-        $fnumsArray = $model->getFnumArray($fnums, $elements,0, $start,$limit);
+        $fnumsArray = $model->getFnumArray($fnums, $elements, $methode, $start,$limit);
 
         // On met a jour la liste des fnums traités
         $fnums =array();
