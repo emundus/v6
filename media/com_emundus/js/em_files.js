@@ -1448,7 +1448,7 @@ $(document).ready(function()
                             {
                                 if(isNaN(parseInt(d)))
                                     break;
-                                item += '<li class="em-export-item" id="'+result.defaults[d].id+'-item"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>'+result.defaults[d].element_label+'</strong></span></li>';
+                                item += '<li class="em-export-item" id="'+result.defaults[d].id+'-item"><button class="btn btn-danger btn-xs" id="'+result.defaults[d].id+'-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>'+result.defaults[d].element_label+'</strong></span></li>';
                             }
                             $('#list-element-export').append(defaults);
                             $('#em-export').append(item);
