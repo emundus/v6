@@ -114,9 +114,9 @@ $input->set('view', $origView);
     </div>
 </div>
 <script type="text/javascript">
+    $('.fabrikMainError').hide();
+    /*var url_form = '<?php echo $this->url_form; ?>';
 
-    var url_form = '<?php echo $this->url_form; ?>';
-    /*
      if (url_form != '') {
      $.ajax({
      type: "GET",
