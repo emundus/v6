@@ -1363,19 +1363,19 @@ class EmundusControllerFiles extends JControllerLegacy
         $objConditional1->setConditionType(PHPExcel_Style_Conditional::CONDITION_CELLIS)
             ->setOperatorType(PHPExcel_Style_Conditional::OPERATOR_EQUAL)
             ->addCondition('0');
-        $objConditional1->getStyle()->getFill()->getStartColor()->setARGB('FFFF0000');
+        $objConditional1->getStyle()->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFF0000');
 
         $objConditional2 = new PHPExcel_Style_Conditional();
         $objConditional2->setConditionType(PHPExcel_Style_Conditional::CONDITION_CELLIS)
             ->setOperatorType(PHPExcel_Style_Conditional::OPERATOR_EQUAL)
             ->addCondition('100');
-        $objConditional2->getStyle()->getFill()->getStartColor()->setARGB('FF00FF00');
+        $objConditional2->getStyle()->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FF00FF00');
 
         $objConditional3 = new PHPExcel_Style_Conditional();
         $objConditional3->setConditionType(PHPExcel_Style_Conditional::CONDITION_CELLIS)
             ->setOperatorType(PHPExcel_Style_Conditional::OPERATOR_EQUAL)
             ->addCondition('50');
-        $objConditional3->getStyle()->getFill()->getStartColor()->setARGB('FFFFFF00');
+        $objConditional3->getStyle()->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
         //die(var_dump($nbrow));
         $i = 0;
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
