@@ -532,6 +532,7 @@ function generate_csv(json, eltJson, objJson) {
     var totalfile = json.totalfile;
     var file = json.file;
     var nbcol = json.nbcol;
+    var methode = json.methode;
     var oldstart = json.start;
     if ((start != totalfile) && (start+limit <= maxcsv)) {
         if (start+limit >= totalfile) {
@@ -549,6 +550,7 @@ function generate_csv(json, eltJson, objJson) {
                         start: start,
                         limit: limit,
                         nbcol: nbcol,
+                        methode: methode,
                         elts: eltJson,
                         objs: objJson
                     },
@@ -1933,7 +1935,7 @@ $(document).ready(function()
                 objJson = objJson.substr(0, objJson.length - 1);
                 objJson += '}';
 
-                methode = $('#em-export-methode').val();
+                var methode = $('#em-export-methode').val();
 
                 $('.modal-body').empty();
                 $('.modal-body').append('<div>' +
@@ -1961,7 +1963,7 @@ $(document).ready(function()
                                                 var start = 0;
                                                 var limit = 100;
                                                 var file = result.file;
-                                                var json= jQuery.parseJSON('{"start":"'+start+'","limit":"'+limit+'","totalfile":"'+totalfile+'","nbcol":"0", "file":"'+file+'"}');
+                                                var json= jQuery.parseJSON('{"start":"'+start+'","limit":"'+limit+'","totalfile":"'+totalfile+'","nbcol":"0","methode":"'+methode+'","file":"'+file+'"}');
                                                 $('#datasbs').replaceWith('<div id="datasbs"><p>0 / ' + totalfile + '</p></div>');
                                                 generate_csv(json, eltJson, objJson);
                                             }

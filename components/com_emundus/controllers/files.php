@@ -1136,6 +1136,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $start = $jinput->getInt('start', 0);
         $limit = $jinput->getInt('limit', 0);
         $nbcol = $jinput->getVar('nbcol', 0);
+        $methode = $jinput->getString('methode', null);
         $elts = $jinput->getString('elts', null);
         $objs = $jinput->getString('objs', null);
         $methode = $jinput->getString('methode', null);
@@ -1234,7 +1235,7 @@ class EmundusControllerFiles extends JControllerLegacy
             // On ajoute les données supplémentaires
             foreach($colOpt as $kOpt => $vOpt) {
                 switch ($kOpt) {
-                    case "photo":
+                    case "PHOTO":
                         $line .= JText::_('photo') . "\t";
                         break;
                     case "forms":
@@ -1310,7 +1311,7 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $start = $i;
-        $dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file );
+        $dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'methode'=>$methode,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file );
         $result = array('status' => true, 'json' => $dataresult);
         echo json_encode((object) $result);
         //var_dump($result);
@@ -1415,6 +1416,8 @@ class EmundusControllerFiles extends JControllerLegacy
             echo json_encode((object) $result);
             exit();
         }
+        $session     = JFactory::getSession();
+        $session->clear('fnums_export');
         $result = array('status' => true, 'link' => $link);
 
         echo json_encode((object) $result);
