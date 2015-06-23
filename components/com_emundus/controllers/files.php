@@ -1136,7 +1136,6 @@ class EmundusControllerFiles extends JControllerLegacy
         $start = $jinput->getInt('start', 0);
         $limit = $jinput->getInt('limit', 0);
         $nbcol = $jinput->getVar('nbcol', 0);
-        $methode = $jinput->getString('methode', null);
         $elts = $jinput->getString('elts', null);
         $objs = $jinput->getString('objs', null);
         $methode = $jinput->getString('methode', null);
