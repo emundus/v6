@@ -1916,7 +1916,7 @@ class EmundusModelFiles extends JModelLegacy
 				$query .= $leftJoin;
 			}
 			$query .= $q['join'];
-			$query .= ' where c.published = 1 ' . $q['q']; 
+			$query .= ' where 1 = 1 ' . $q['q'];
 			$db->setQuery($query);
 
 			return $db->loadColumn();

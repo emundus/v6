@@ -1058,8 +1058,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $name = md5($today.rand(0,10));
         $name = $name.'.csv';
         $chemin = JPATH_BASE.DS.'tmp'.DS.$name;
-
-        $fichier_csv = fopen($chemin, 'w+');
+        
         if (!$fichier_csv = fopen($chemin, 'w+')){
             $result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$chemin);
             echo json_encode((object) $result);
@@ -1086,9 +1085,7 @@ class EmundusControllerFiles extends JControllerLegacy
         {
             $fnums = $model->getAllFnums();
         }
-
         $validFnums = array();
-
         foreach($fnums as $fnum)
         {
             if(EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all')
