@@ -558,8 +558,13 @@ function generate_csv(json, eltJson, objJson) {
                     success: function (result) {
                         var json = result.json;
                         if (result.status) {
-                            $('#datasbs').replaceWith('<div id="datasbs" data-start="'+ result.json.start+'"><p>' + result.json.start + ' / ' + result.json.totalfile + '</p></div>');
-                            if (start!= json.start) {
+                            if (methode == 0) {
+                                $('#datasbs').replaceWith('<div id="datasbs" data-start="' + result.json.start + '"><p>' + result.json.start + ' / ' + result.json.totalfile + '</p></div>');
+                            } else {
+                                $('#datasbs').replaceWith('<div id="datasbs" data-start="' + result.json.start + '"><p>' + result.json.start+'</p></div>');
+
+                            }
+                                if (start!= json.start) {
                                 generate_csv(json, eltJson, objJson);
                             } else {
                                 $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_XLS_GENERATION')+'</p></div>');
@@ -1402,6 +1407,7 @@ $(document).ready(function()
                         if(result.status)
                         {
                             $('.modal-body').empty();
+                            $('.btn-success').show();
                             $('.modal-body').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE')+'</h5></div><div class="panel-body"><select name="em-export-methode" id="em-export-methode" style="width: 95%;" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+'</option><option value="1" data-value="1">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN')+'</option></select></div></div>');
                             $('.modal-body').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select name="em-export-prg" id="em-export-prg" style="width: 95%;" class="chzn-select"></select></div></div>');
 
@@ -1964,6 +1970,7 @@ $(document).ready(function()
                 '<div id="loadingimg"><img src="'+loadingLine+'" alt="loading"/></div>' +
                 '<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_CREATE_CSV')+'</p></div>'+
                 '</div>');
+                $('.btn-success').attr('style', 'display: none !important');
                 $.ajax(
                     {
                         type: 'post',
@@ -1985,7 +1992,11 @@ $(document).ready(function()
                                                 var limit = 100;
                                                 var file = result.file;
                                                 var json= jQuery.parseJSON('{"start":"'+start+'","limit":"'+limit+'","totalfile":"'+totalfile+'","nbcol":"0","methode":"'+methode+'","file":"'+file+'"}');
-                                                $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0 / ' + totalfile + '</p></div>');
+                                                if (methode == 0) {
+                                                    $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0 / ' + totalfile + '</p></div>');
+                                                } else {
+                                                    $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0</p></div>');
+                                                }
                                                 generate_csv(json, eltJson, objJson);
                                             }
                                         },
