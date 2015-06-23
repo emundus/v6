@@ -23,8 +23,14 @@ $.ajaxQ = (function(){
             return r;
         }
     };
-
 })();
+
+// to resize iframe
+function UpdateIframeSize(id) {
+    var iFrames = document.getElementById(id);
+    var height = parseInt($($("#"+id).contents()).height())+10;
+    iFrames.style.height =  height + 'px';
+}
 
 function search(){
     var inputs = [{

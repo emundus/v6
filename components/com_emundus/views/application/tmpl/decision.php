@@ -40,7 +40,14 @@ JFactory::getSession()->set('application_layout', 'decision');
         <div class="panel-body">
             <div class="content">
                 <div class="form" id="form">
+                    <?php if(!empty($this->url_form)):?>
+                        <iframe id="iframe" src="<?php echo $this->url_form; ?>" align="left" frameborder="0" height="600" width="100%" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+                    <?php else:?>
+                        <div class="em_no-form"><?php echo JText::_('NO_DECISION_FORM_SET'); ?></div>
+                    <?php endif;?>
+
 <?php
+/*
 jimport('joomla.filesystem.file');
 
 // Load front end language file as well
@@ -106,7 +113,7 @@ $input->set('formid', $origFormid);
 $input->set('ajax', $ajax);
 $input->set('layout', $origLayout);
 $input->set('view', $origView);
-
+*/
 ?>
                 </div>
             </div>
@@ -115,6 +122,7 @@ $input->set('view', $origView);
 </div>
 <script type="text/javascript">
     $('.fabrikMainError').hide();
+
     /*var url_form = '<?php echo $this->url_form; ?>';
 
      if (url_form != '') {

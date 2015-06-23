@@ -40,7 +40,13 @@ JFactory::getSession()->set('application_layout', 'evaluation');
         <div class="panel-body">
             <div class="content">
 
-                <div class="form" id="form"></div>
+                <div class="form" id="form">
+                    <?php if(!empty($this->url_form)):?>
+                        <iframe id="iframe" src="<?php echo $this->url_form; ?>" align="left" frameborder="0" height="600" width="100%" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+                    <?php else:?>
+                        <div class="em_no-form"><?php echo JText::_('NO_EVALUATION_FORM_SET'); ?></div>
+                    <?php endif;?>
+                </div>
                 <div class="evaluations" id="evaluations"></div>
             </div>
         </div>
@@ -63,6 +69,7 @@ if (url_evaluation != '') {
             }
         });
 }
+/*
 if (url_form != '') {
     $.ajax({
             type: "GET",
@@ -86,4 +93,5 @@ if (url_form != '') {
             }
         });
 }
+*/
 </script>
