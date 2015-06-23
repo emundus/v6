@@ -111,6 +111,13 @@ JText::script('STATE');
 
 //Export Excel
 JText::script('COM_EMUNDUS_ADD_DATA_TO_CSV');
+JText::script('COM_EMUNDUS_LIMIT_POST_SERVER');
+JText::script('COM_EMUNDUS_ERROR_XLS');
+JText::script('COM_EMUNDUS_ERROR_CSV_CAPACITY');
+JText::script('COM_EMUNDUS_XLS_GENERATION');
+JText::script('COM_EMUNDUS_EXPORT_FINISHED');
+JText::script('COM_EMUNDUS_ERROR_CAPACITY_XLS');
+JText::script('COM_EMUNDUS_CREATE_CSV');
 
 //view application layout share
 JText::script('COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');
