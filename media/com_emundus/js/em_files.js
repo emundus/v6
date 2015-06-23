@@ -568,7 +568,7 @@ function generate_csv(json, eltJson, objJson) {
                                         type: 'post',
                                         url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=export_xls_from_csv',
                                         dataType: 'JSON',
-                                        data: {csv: file, nbcol: nbcol, totalfile: totalfile},
+                                        data: {csv: file, nbcol: nbcol, start: start},
                                         success: function (result) {
                                             if (result.status) {
                                                 $('#loadingimg').empty();
@@ -620,7 +620,7 @@ function generate_csv(json, eltJson, objJson) {
                 type: 'post',
                 url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=export_xls_from_csv',
                 dataType: 'JSON',
-                data: {csv: file, nbcol: nbcol, totalfile: totalfile},
+                data: {csv: file, nbcol: nbcol, start: start},
                 success: function (result) {
                     if (result.status) {
                         $('#loadingimg').empty();

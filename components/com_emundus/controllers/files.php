@@ -1327,7 +1327,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $csv = $jinput->getVar('csv', null);
         $nbcol = $jinput->getVar('nbcol', 0);
-        $nbrow = $jinput->getVar('totalfile', 0);
+        $nbrow = $jinput->getVar('start', 0);
         $objReader = PHPExcel_IOFactory::createReader('CSV');
         $objReader->setDelimiter("\t");
         $objPHPExcel = new PHPExcel();
@@ -1376,9 +1376,10 @@ class EmundusControllerFiles extends JControllerLegacy
             ->setOperatorType(PHPExcel_Style_Conditional::OPERATOR_EQUAL)
             ->addCondition('50');
         $objConditional3->getStyle()->getFill()->getStartColor()->setARGB('FFFFFF00');
-
+        //die(var_dump($nbrow));
         $i = 0;
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
+        $objPHPExcel->getActiveSheet()->getStyle('A2:A'.($nbrow+ 1))->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_NUMBER );
         $i++;
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
         $i++;
@@ -1410,8 +1411,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $objWriter->save(JPATH_BASE.DS.'tmp'.DS.JFactory::getUser()->id.'_extraction.xls');
         $link = JFactory::getUser()->id.'_extraction.xls';
         if (!unlink(JPATH_BASE.DS."tmp".DS.$csv)) {
-            echo ('erreur suppression CSV');
-            $result = array('status' => false);
+            $result = array('status' => false, 'msg'=>'ERROR_DELETE_CSV');
             echo json_encode((object) $result);
             exit();
         }
