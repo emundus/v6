@@ -602,7 +602,7 @@ jimport('joomla.application.component.helper');
 					WHERE element.id IN ('.ltrim($elements_id, ',').')
 					ORDER BY formgroup.ordering, element.ordering ';
             $db->setQuery($query);
-            //echo '<hr>'.str_replace('#_', 'jos', $query);
+//echo '<hr>'.str_replace('#_', 'jos', $query);
             //$elementsIdTab = array_fill_keys(explode(',', $elements_id), "");
             $elementsIdTab = array();
             //$res0 = $db->loadObjectList();

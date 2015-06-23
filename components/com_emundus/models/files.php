@@ -1940,7 +1940,7 @@ class EmundusModelFiles extends JModelLegacy
 	 * @return bool|mixed
 	 */
 	public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0)
-	{ 
+	{
 		try
 		{
 			$db = $this->getDbo();

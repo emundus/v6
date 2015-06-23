@@ -44,19 +44,18 @@ class EmundusViewExport_select_columns extends JViewLegacy
 	
     function display($tpl = null)
     {
-		$document = JFactory::getDocument();
+		//$document = JFactory::getDocument();
 		//$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
         $jinput = JFactory::getApplication()->input;
         $prg = $jinput->get('code', null);
         $code = array();
         $code[] = $prg;
 		$current_user = JFactory::getUser();
-		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor");
 
         if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
             die(JText::_('ACCESS_DENIED'));
 
-		//$elements = $this->get('Elements');
+        //@TODO fix bug when a different application form is created for the same programme. Need to now the campaign id, then associated profile and menu links...
 		$elements = EmundusHelperFiles::getElements($code);
 		$this->assignRef('elements', $elements);
 		

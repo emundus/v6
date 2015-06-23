@@ -1150,7 +1150,7 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $elements = @EmundusHelperFiles::getElementsName(implode(',',$col));
-        $fnumsArray = $model->getFnumArray($fnums, $elements, $methode, $start,$limit);
+        $fnumsArray = $model->getFnumArray($fnums, $elements, $methode, $start, $limit);
 
         // On met a jour la liste des fnums traités
         $fnums =array();
@@ -1363,13 +1363,13 @@ class EmundusControllerFiles extends JControllerLegacy
         $objConditional1->setConditionType(PHPExcel_Style_Conditional::CONDITION_CELLIS)
             ->setOperatorType(PHPExcel_Style_Conditional::OPERATOR_EQUAL)
             ->addCondition('0');
-        $objConditional1->getStyle()->getFill()->getStartColor()->setARGB('FFFF6600');
+        $objConditional1->getStyle()->getFill()->getStartColor()->setARGB('FFFF0000');
 
         $objConditional2 = new PHPExcel_Style_Conditional();
         $objConditional2->setConditionType(PHPExcel_Style_Conditional::CONDITION_CELLIS)
             ->setOperatorType(PHPExcel_Style_Conditional::OPERATOR_EQUAL)
             ->addCondition('100');
-        $objConditional2->getStyle()->getFill()->getStartColor()->setARGB('FF66FF66');
+        $objConditional2->getStyle()->getFill()->getStartColor()->setARGB('FF00FF00');
 
         $objConditional3 = new PHPExcel_Style_Conditional();
         $objConditional3->setConditionType(PHPExcel_Style_Conditional::CONDITION_CELLIS)
