@@ -534,11 +534,9 @@ function generate_csv(json, fnums, eltJson, objJson) {
     var nbcol = json.nbcol;
     var oldstart = json.start;
     if ((start != totalfile) && (start+limit <= maxcsv)) {
-        alert(start +" "+limit);
         if (start+limit >= totalfile) {
             limit = totalfile - start;
         }
-        alert(start +" "+limit);
         if (limit > 0) {
             $.ajax(
                 {
@@ -583,8 +581,7 @@ function generate_csv(json, fnums, eltJson, objJson) {
                             }
                         }
                     },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        alert("erreur");
+                    error: function (jqXHR, textStatus, errorThrown) {;
                         $('#loadingimg').empty();
                         $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + jqXHR.responseText + '</div>');
                     }
