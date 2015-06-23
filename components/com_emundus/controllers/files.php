@@ -1058,7 +1058,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $name = md5($today.rand(0,10));
         $name = $name.'.csv';
         $chemin = JPATH_BASE.DS.'tmp'.DS.$name;
-        
+
         if (!$fichier_csv = fopen($chemin, 'w+')){
             $result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$chemin);
             echo json_encode((object) $result);
@@ -1093,7 +1093,10 @@ class EmundusControllerFiles extends JControllerLegacy
                 $validFnums[] = $fnum;
             }
         }
-        $result = array('status' => true, 'fnums' => $validFnums);
+        $totalfile = sizeof($validFnums);
+        $session = JFactory::getSession();
+        $session->set('fnums_export', $validFnums);
+        $result = array('status' => true, 'totalfile'=> $totalfile);
         echo json_encode((object) $result);
         exit();
     }
@@ -1123,9 +1126,11 @@ class EmundusControllerFiles extends JControllerLegacy
         $model = $this->getModel('Files');
         $modelApp = $this->getModel('Application');
 
+        $session     = JFactory::getSession();
+        $fnums = $session->get('fnums_export');
+
         $jinput = JFactory::getApplication()->input;
 
-        $fnums = $jinput->getVar('fnums', null);
         $file = $jinput->getVar('file', null, 'STRING');
         $totalfile = $jinput->getVar('totalfile', null);
         $start = $jinput->getInt('start', 0);

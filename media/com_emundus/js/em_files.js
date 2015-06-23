@@ -526,7 +526,7 @@ function getUserCheck()
 }
 maxcsv = 65000;
 maxxls = 65000;
-function generate_csv(json, fnums, eltJson, objJson) {
+function generate_csv(json, eltJson, objJson) {
     var start = json.start;
     var limit = json.limit;
     var totalfile = json.totalfile;
@@ -550,14 +550,13 @@ function generate_csv(json, fnums, eltJson, objJson) {
                         limit: limit,
                         nbcol: nbcol,
                         elts: eltJson,
-                        objs: objJson,
-                        fnums: fnums
+                        objs: objJson
                     },
                     success: function (result) {
                         var json = result.json;
                         if (result.status) {
                             $('#datasbs').replaceWith('<div id="datasbs"><p>' + result.json.start + ' / ' + result.json.totalfile + '</p></div>');
-                            generate_csv(json, fnums, eltJson, objJson);
+                            generate_csv(json, eltJson, objJson);
                             if (oldstart == json.start) {
                                 $.ajax(
                                     {
@@ -1949,8 +1948,8 @@ $(document).ready(function()
                         dataType: 'JSON',
                         data: {fnums: checkInput},
                         success: function (result) {
+                            var totalfile = result.totalfile;
                             if (result.status) {
-                                var fnums = result.fnums;
                                 $.ajax(
                                     {
                                         type: 'post',
@@ -1961,11 +1960,10 @@ $(document).ready(function()
                                                 $('#extractstep').replaceWith('<div id="extractstep"><div id="addatatext"><p>'+Joomla.JText._('COM_EMUNDUS_ADD_DATA_TO_CSV')+'</p></div><div id="datasbs"</div>' );
                                                 var start = 0;
                                                 var limit = 100;
-                                                var totalfile = fnums.length;
                                                 var file = result.file;
                                                 var json= jQuery.parseJSON('{"start":"'+start+'","limit":"'+limit+'","totalfile":"'+totalfile+'","nbcol":"0", "file":"'+file+'"}');
                                                 $('#datasbs').replaceWith('<div id="datasbs"><p>0 / ' + totalfile + '</p></div>');
-                                                generate_csv(json, fnums, eltJson, objJson);
+                                                generate_csv(json, eltJson, objJson);
                                             }
                                         },
                                         error: function (jqXHR, textStatus, errorThrown) {
