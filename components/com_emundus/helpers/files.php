@@ -1676,8 +1676,8 @@ jimport('joomla.application.component.helper');
          require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
          require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
-         $evaluation 	= new EmundusModelEvaluation();
-         $files 			= new EmundusModelFiles;
+         $evaluation    = new EmundusModelEvaluation();
+         $files             = new EmundusModelFiles;
 
          //$fnums = '2014103012343200000630002385';
          if (!is_array($fnums)) {
@@ -1692,14 +1692,13 @@ jimport('joomla.application.component.helper');
          $evaluations = $files->getFnumArray($fnums, $elements);
 
          $data = array();
-         //$i = 0;
 
          foreach($evaluations as $eval)
          {
-             if ($eval['jos_emundus_evaluations___user'] > 0) {
+             if ($eval['jos_emundus_final_grade___user'] > 0) {
                  $str = '<br><hr>';
-                 $str .= '<em>'.JText::_('EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).'</em>';
-                 $str .= '<h1>'.JFactory::getUser($eval['jos_emundus_evaluations___user'])->name.'</h1>';
+                 $str .= '<em>'.JHtml::_('date', $eval['jos_emundus_final_grade___time_date'], JText::_('DATE_FORMAT_LC')).'</em>';
+                 $str .= '<h1>'.JFactory::getUser($eval['jos_emundus_final_grade___user'])->name.'</h1>';
                  $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
                  foreach($elements as $element){
@@ -1717,7 +1716,7 @@ jimport('joomla.application.component.helper');
                          array_key_exists($k, $eval))
                      {
                          $str .= '<tr>';
-                         if(strpos($element->element_name, 'comment') !== false)
+                         if(strpos($element->element_plugin, 'textarea') !== false)
                              $str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . $eval[$k] . '</td>';
                          else
                              $str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . $eval[$k] . '</td>';
@@ -1740,7 +1739,7 @@ jimport('joomla.application.component.helper');
                      $str = strip_tags($str, '<h1>');
                  }
 
-                 $data[$eval['fnum']][$eval['jos_emundus_evaluations___user']] = $str;
+                 $data[$eval['fnum']][$eval['jos_emundus_final_grade___user']] = $str;
 
                  //$i++;
              }

@@ -54,7 +54,7 @@ function pdf_decision($user_id, $fnum = null, $output = true) {
 
 	$db 			= JFactory::getDBO();
 	$app 			= JFactory::getApplication();
-    $config 		= JFactory::getConfig();
+	$config 		= JFactory::getConfig();
 	//$eMConfig 		= JComponentHelper::getParams('com_emundus');
 	//$current_user 	= JFactory::getUser();
 	$user 			= JFactory::getUser($user_id);
@@ -95,11 +95,11 @@ function pdf_decision($user_id, $fnum = null, $output = true) {
 //die(str_replace("#_", "jos", $query));
 
 	//get logo
-    $template 	= $app->getTemplate(true);
-    $params     = $template->params;
+	$template 	= $app->getTemplate(true);
+	$params     = $template->params;
 
-    $logo   	= json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-    $logo 		= !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+	$logo   	= json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+	$logo 		= !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
 
 	//get title
 	$title = $config->get('sitename');
@@ -156,10 +156,9 @@ $htmldata .= '
 </div>';
 /**  END APPLICANT   ****/
 
-	// get evaluations
-	//$users = $evaluation->getUsers($fnum);
-
+	// get decision
 	$data = @EmundusHelperFiles::getDecision('html', $fnum);
+
 	foreach ($data as $fnums => $evals) {
 		foreach ($evals as $user => $html) {
 			$htmldata .= $html;
