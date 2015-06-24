@@ -187,7 +187,7 @@ if ($uid > 0) {
         $config->get( $email->emailfrom ),
         $config->get( $email->name )
     );
-
+    $mailer = JFactory::getMailer();
     $mailer->setSender($sender);
     $mailer->addRecipient($user->email);
     $mailer->setSubject($email->subject);

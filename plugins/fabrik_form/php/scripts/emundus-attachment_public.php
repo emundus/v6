@@ -127,7 +127,7 @@ $obj=$db->loadObject();
         $config->get( $from ),
         $config->get( $fromname )
     );
-
+    $mailer = JFactory::getMailer();
     $mailer->setSender($sender);
     $mailer->addRecipient($recipient);
     $mailer->setSubject($subject);

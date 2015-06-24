@@ -17,7 +17,7 @@ defined( '_JEXEC' ) or die();
 $mainframe 		= JFactory::getApplication();
 $jinput 		= $mainframe->input;
 $baseurl 		= JURI::base();
-$db 			=& JFactory::getDBO();
+$db 			= JFactory::getDBO();
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $alert_new_attachment = $eMConfig->get('alert_new_attachment');
 
@@ -120,7 +120,7 @@ if ($inform_applicant_by_email == 1) {
         $config->get( $from ),
         $config->get( $fromname )
     );
-
+    $mailer = JFactory::getMailer();
     $mailer->setSender($sender);
     $mailer->addRecipient($recipient);
     $mailer->setSubject($subject);
