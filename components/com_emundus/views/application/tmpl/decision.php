@@ -24,8 +24,8 @@ JFactory::getSession()->set('application_layout', 'decision');
 <div class="row">
     <div class="panel panel-default widget">
         <div class="panel-heading">
-            <span class="glyphicon glyphicon-check"></span>
             <h3 class="panel-title">
+            <span class="glyphicon glyphicon-check"></span> 
                 <?php echo JText::_('COM_EMUNDUS_DECISION'); ?>
                 <?php if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)):?>
                 <a class="  clean" target="_blank" href="<?php echo JURI::Base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf_decision&user=<?php echo $this->student->id; ?>&fnum=<?php echo $this->fnum; ?>">

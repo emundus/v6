@@ -13,8 +13,8 @@ JFactory::getSession()->set('application_layout', 'form');
 <div class="row">
     <div class="panel panel-default widget">
         <div class="panel-heading">
-            <span class="glyphicon glyphicon-list"></span>
             <h3 class="panel-title">
+                <span class="glyphicon glyphicon-list"></span> 
                 <?php echo JText::_('APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COMPLETED"); ?>
                 <?php if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)):?>
                     <a class="  clean" target="_blank" href="<?php echo JURI::Base(); ?>index.php?option=com_emundus&task=pdf&user=<?php echo $this->sid; ?>&fnum=<?php echo $this->fnum; ?>">

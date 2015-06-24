@@ -9,9 +9,12 @@ JFactory::getSession()->set('application_layout', 'tag');
     <div class="row">
         <div class="panel panel-default widget">
             <div class="panel-heading">
-                <span class="glyphicon glyphicon-tags"></span>
-                <h3 class="panel-title"><?php echo JText::_('TAGS'); ?></h3>
-                <span class="label label-info"><?php echo count($this->tags); ?></span>
+                <h3 class="panel-title">
+                    <span class="glyphicon glyphicon-tags"></span> 
+                    <?php echo JText::_('TAGS'); ?> 
+                    <span class="label label-info"><?php echo count($this->tags); ?></span>
+                </h3>
+               
             </div>
             <div class="panel-body">
                 <ul class="list-group">

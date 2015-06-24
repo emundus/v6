@@ -10,8 +10,10 @@
 	<div class="row">
         <div class="panel panel-default widget">
             <div class="panel-heading">
-                <span class="glyphicon glyphicon-eye-open"></span>
-                <h3 class="panel-title"><?php echo JText::_('CHECK_ACL'); ?> </h3>
+                <h3 class="panel-title">
+                	<span class="glyphicon glyphicon-eye-open"></span>
+                	<?php echo JText::_('CHECK_ACL'); ?> 
+                </h3>
             </div>
             <div class="panel-body">
                 <div class="active content">

@@ -28,8 +28,8 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
 <div class="row">
     <div class="panel panel-default widget">
         <div class="panel-heading">
-            <span class="glyphicon glyphicon-paperclip"></span>
             <h3 class="panel-title">
+            <span class="glyphicon glyphicon-paperclip"></span> 
                 <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
                 <?php if($can_export && count($this->userAttachments) > 0)
                     echo '<button class="btn btn-default" id="em_export_pdf"  title="'.JText::_('PDF').'" link="/index.php?option=com_emundus&controller=application&task=exportpdf&fnum='.$this->fnum.'&student_id='.$this->student_id.'&ids={ids}">
