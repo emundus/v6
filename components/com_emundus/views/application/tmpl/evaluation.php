@@ -39,7 +39,6 @@ JFactory::getSession()->set('application_layout', 'evaluation');
         </div>
         <div class="panel-body">
             <div class="content">
-
                 <div class="form" id="form">
                     <?php if(!empty($this->url_form)):?>
                         <div class="holds-iframe"><?php echo JText::_('LOADING'); ?></div>
