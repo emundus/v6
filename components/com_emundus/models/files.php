@@ -87,7 +87,7 @@ class EmundusModelFiles extends JModelLegacy
 		$session = JFactory::getSession();
 		if (!$session->has('filter_order'))
 		{
-			$session->set('filter_order', 'c.fnum');
+			$session->set('filter_order', 'jos_emundus_campaign_candidature.id');
 			$session->set('filter_order_Dir', 'desc');
 		}
 
@@ -211,7 +211,7 @@ class EmundusModelFiles extends JModelLegacy
 			}
 		}
 		if(in_array('overall', $em_other_columns))
-			$this->_elements_default[] = '(SELECT AVG(ee.overall) FROM jos_emundus_evaluations as ee WHERE ee.fnum like c.fnum GROUP BY ee.fnum) as overall ';
+			$this->_elements_default[] = '(SELECT AVG(ee.overall) FROM jos_emundus_evaluations as ee WHERE ee.fnum like jos_emundus_campaign_candidature.fnum GROUP BY ee.fnum) as overall ';
 
 		if (count($col_elt) == 0)
 			$col_elt = array();
@@ -263,8 +263,8 @@ class EmundusModelFiles extends JModelLegacy
 			}
 		}
 
-		$can_be_ordering[] = 'c.fnum';
-		$can_be_ordering[] = 'c.status';
+		$can_be_ordering[] = 'jos_emundus_campaign_candidature.fnum';
+		$can_be_ordering[] = 'jos_emundus_campaign_candidature.status';
 		$can_be_ordering[] = 'u.name';
 		$can_be_ordering[] = 'eta.id_tag';
 		$can_be_ordering[] = 'overall';
@@ -657,7 +657,7 @@ class EmundusModelFiles extends JModelLegacy
 												{
 													$query[$table] = true;
 													if (!array_key_exists($table, $tableAlias) && !in_array($table, $tableAlias))
-														$query['join'] .= ' left join '.$table.' on ' .$table.'.fnum like c.fnum ';
+														$query['join'] .= ' left join '.$table.' on ' .$table.'.fnum like jos_emundus_campaign_candidature.fnum ';
 												}
 												if(!isset($query[$table_join]))
 												{
@@ -673,7 +673,7 @@ class EmundusModelFiles extends JModelLegacy
 												{
 													$query[$tab[0]] = true;
 													if (!array_key_exists($tab[0], $tableAlias) && !in_array($tab[0], $tableAlias))
-														$query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like c.fnum ';
+														$query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like jos_emundus_campaign_candidature.fnum ';
 												}
 											}
 										}
@@ -711,7 +711,7 @@ class EmundusModelFiles extends JModelLegacy
 													{
 														$query[$tab[0]] = true;
 														if (!array_key_exists($tab[0], $tableAlias))
-															$query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like c.fnum ';
+															$query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like jos_emundus_campaign_candidature.fnum ';
 													}
 												}
 											}
@@ -746,7 +746,7 @@ class EmundusModelFiles extends JModelLegacy
 							{
 								$query['final_g'] = true;
 								if (!array_key_exists('jos_emundus_final_grade', $tableAlias))
-									$query['join'] .=' left join #__emundus_final_grade as fg on fg.fnum like c.fnum ';
+									$query['join'] .=' left join #__emundus_final_grade as fg on fg.fnum like jos_emundus_campaign_candidature.fnum ';
 							}
 						}
 						break;
@@ -762,7 +762,7 @@ class EmundusModelFiles extends JModelLegacy
 								{
 									$query['campaign'] = true;
 									if (!array_key_exists('jos_emundus_setup_campaigns', $tableAlias))
-										$query['join'] .= ' left join #__emundus_setup_campaigns as esc on esc.id = c.campaign_id ';
+										$query['join'] .= ' left join #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id ';
 								}*/
 							}
 						}
@@ -779,7 +779,7 @@ class EmundusModelFiles extends JModelLegacy
 								{
 									$query['campaign'] = true;
 									if (!in_array('jos_emundus_setup_campaigns', $tableAlias))
-										$query['join'] .= ' left join #__emundus_setup_campaigns as esc on esc.id = c.campaign_id ';
+										$query['join'] .= ' left join #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id ';
 								}*/
 								/*if (!in_array('jos_emundus_setup_programmes', $tableAlias)) 
 									$query['join'] .= ' left join #__emundus_setup_programmes as esp on esp.code like esc.training ';*/
@@ -799,7 +799,7 @@ class EmundusModelFiles extends JModelLegacy
 								{
 									$query['campaign'] = true;
 									if (!array_key_exists('jos_emundus_setup_campaigns', $tableAlias))
-										$query['join'] .= ' left join #__emundus_setup_campaigns as esc on esc.id = c.campaign_id ';
+										$query['join'] .= ' left join #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id ';
 								}*/
 							}
 						}
@@ -813,7 +813,7 @@ class EmundusModelFiles extends JModelLegacy
 							{
 								$query['group_eval'] = true;
 								if (!array_key_exists('jos_emundus_groups_eval', $tableAlias))
-									$query['join'] .= ' left join #__emundus_groups_eval as ge on ge.applicant_id = c.applicant_id and ge.campaign_id = c.campaign_id ';
+									$query['join'] .= ' left join #__emundus_groups_eval as ge on ge.applicant_id = jos_emundus_campaign_candidature.applicant_id and ge.campaign_id = jos_emundus_campaign_candidature.campaign_id ';
 							}
 
 						}
@@ -828,7 +828,7 @@ class EmundusModelFiles extends JModelLegacy
 							{
 								$query['group_eval'] = true;
 								if (!array_key_exists('jos_emundus_groups_eval', $tableAlias))
-									$query['join'] .= ' left join #__emundus_groups_eval as ge on ge.applicant_id = c.applicant_id and ge.campaign_id = c.campaign_id ';
+									$query['join'] .= ' left join #__emundus_groups_eval as ge on ge.applicant_id = jos_emundus_campaign_candidature.applicant_id and ge.campaign_id = jos_emundus_campaign_candidature.campaign_id ';
 							}
 						}
 						break;
@@ -841,13 +841,13 @@ class EmundusModelFiles extends JModelLegacy
 							{
 								$query['final_g'] = true;
 								if (!array_key_exists('jos_emundus_final_grade', $tableAlias))
-									$query['join'] .=' left join #__emundus_final_grade as fg on fg.fnum like c.fnum ';
+									$query['join'] .=' left join #__emundus_final_grade as fg on fg.fnum like jos_emundus_campaign_candidature.fnum ';
 							}
 							if(isset($query['em_user']))
 							{
 								$query['em_user'] = true;
 								if (!array_key_exists('jos_emundus_users', $tableAlias))
-									$query['join'] .= ' left join #__emundus_users as ue on ue.id = c.applicant_id ';
+									$query['join'] .= ' left join #__emundus_users as ue on ue.id = jos_emundus_campaign_candidature.applicant_id ';
 							}
 							if (!array_key_exists('jos_emundus_setup_profiles', $tableAlias))
 								$query['join'] .= ' left join #__emundus_setup_profiles as spro on spro.id = ue.profile ';
@@ -858,7 +858,7 @@ class EmundusModelFiles extends JModelLegacy
 						{
 							$query['q'] .=' and (' . $value . ' NOT IN (SELECT attachment_id FROM #__emundus_uploads eup WHERE #__emundus_uploads.user_id = u.id)) ';
 							if (!array_key_exists('jos_emundus_uploads', $tableAlias))
-								$query['join'] = ' left join #__emundus_uploads on #__emundus_uploads.user_id = c.applicant_id ';
+								$query['join'] = ' left join #__emundus_uploads on #__emundus_uploads.user_id = jos_emundus_campaign_candidature.applicant_id ';
 						}
 						break;
 					case 'complete':
@@ -886,7 +886,7 @@ class EmundusModelFiles extends JModelLegacy
 								$query['q'] .= ' ';
 							else
 							{
-								$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
+								$query['q'] .= ' and jos_emundus_campaign_candidature.status IN (' . implode(',', $value) . ') ';
 							}
 						}
 						break;
@@ -903,11 +903,11 @@ class EmundusModelFiles extends JModelLegacy
                         break;
                     case 'published':
                         if ($value == "-1") {
-                            $query['q'] .= ' and c.published=-1 ';
+                            $query['q'] .= ' and jos_emundus_campaign_candidature.published=-1 ';
                         } elseif ($value == 0) {
-                            $query['q'] .= ' and c.published=0 ';
+                            $query['q'] .= ' and jos_emundus_campaign_candidature.published=0 ';
                         } else {
-                            $query['q'] .= ' and c.published=1 ';
+                            $query['q'] .= ' and jos_emundus_campaign_candidature.published=1 ';
                         }
                         break;
 				}
@@ -928,9 +928,9 @@ class EmundusModelFiles extends JModelLegacy
 		if (is_numeric($str))
 		{
 			//possibly fnum ou uid
-			$q['q'] .= ' (u.id = ' . $str . ' or c.fnum like "'.$str.'%") ';
+			$q['q'] .= ' (u.id = ' . $str . ' or jos_emundus_campaign_candidature.fnum like "'.$str.'%") ';
 			if (!in_array('jos_users', $tableAlias))
-				$q['join'] .= ' left join #__users as u on u.id = c.applicant_id ';
+				$q['join'] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
 			$q['users'] = true;
 
 		}
@@ -941,7 +941,7 @@ class EmundusModelFiles extends JModelLegacy
 				//the request is an email
 				$q['q'] .= 'u.email = "'.mysql_real_escape_string($str).'"';
 				if (!in_array('jos_users', $tableAlias))
-					$q['join'] .= ' left join #__users as u on u.id = c.applicant_id ';
+					$q['join'] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
 				$q['users'] = true;
 
 			}
@@ -949,8 +949,8 @@ class EmundusModelFiles extends JModelLegacy
 			{
 				$q['q'] .= ' (ue.lastname LIKE "%' . mysql_real_escape_string($str) . '%" OR ue.firstname LIKE "%' . mysql_real_escape_string($str) . '%" OR u.email LIKE "%' . mysql_real_escape_string($str) . '%" OR u.username LIKE "%' . mysql_real_escape_string($str) . '%" ) ';
 				if (!in_array('jos_users', $tableAlias))
-					$q['join'] .= ' left join #__users as u on u.id = c.applicant_id';
-				$q['join'] .= ' left join #__emundus_users as ue on ue.user_id = c.applicant_id ';
+					$q['join'] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id';
+				$q['join'] .= ' left join #__emundus_users as ue on ue.user_id = jos_emundus_campaign_candidature.applicant_id ';
 				$q['users'] = true;
 				$q['em_user'] = true;
 
@@ -965,10 +965,11 @@ class EmundusModelFiles extends JModelLegacy
 	public function getUsers()
 	{
 		$dbo = $this->getDbo();
-		$query = 'select c.fnum, ss.value as status, u.name ';
+		$query = 'select jos_emundus_campaign_candidature.fnum, ss.value as status, u.name ';
 
 		// prevent double left join on query 
-		$lastTab = array('#__emundus_setup_status', 'jos_emundus_setup_status', 
+		$lastTab = array('#__emundus_campaign_candidature', 'jos_emundus_campaign_candidature',
+						 '#__emundus_setup_status', 'jos_emundus_setup_status', 
 						 '#__emundus_setup_programmes', 'jos_emundus_setup_programmes',
 						 '#__emundus_setup_campaigns', 'jos_emundus_setup_campaigns',
 						 '#__users', 'jos_users',
@@ -984,7 +985,7 @@ class EmundusModelFiles extends JModelLegacy
 				}
 				if(!in_array($elt->tab_name, $lastTab))
 				{ 
-					$leftJoin .= 'left join ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum like c.fnum ';
+					$leftJoin .= 'left join ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = jos_emundus_campaign_candidature.fnum ';
 				}
 				$lastTab[] = $elt->tab_name;
 			}
@@ -994,12 +995,12 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 
-		$query .= ' FROM #__emundus_campaign_candidature as c 
-					LEFT JOIN #__emundus_setup_status as ss on ss.step = c.status 
-					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = c.campaign_id 
-					LEFT JOIN #__emundus_setup_programmes as sp on sp.code like esc.training  
-					LEFT JOIN #__users as u on u.id = c.applicant_id
-					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=c.fnum  ';
+		$query .= ' FROM #__emundus_campaign_candidature 
+					LEFT JOIN #__emundus_setup_status as ss on ss.step = jos_emundus_campaign_candidature.status 
+					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id 
+					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training  
+					LEFT JOIN #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id
+					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jos_emundus_campaign_candidature.fnum  ';
 
 		$q = $this->_buildWhere($lastTab);
 
@@ -1016,11 +1017,11 @@ class EmundusModelFiles extends JModelLegacy
        // if(count($this->code)>0)
             $sql_code = ' sp.code IN ("'.implode('","', $this->code).'") ';
         //if(count($this->fnum_assoc)>0)
-            $sql_fnum = ' OR c.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
+            $sql_fnum = ' OR jos_emundus_campaign_candidature.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
 		$query .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
 		//////////////////////////////////////////////////////////////
 
-        $query .= ' GROUP BY c.fnum';
+        $query .= ' GROUP BY jos_emundus_campaign_candidature.id';
 
         $query .=  $this->_buildContentOrderBy();
 
