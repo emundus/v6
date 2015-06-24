@@ -12,7 +12,7 @@ p {
 
 .em-excel_elts {
     display: inline-block;
-    max-width: 400px;
+    width: 90%;
     line-height: 0.8em;
 }
 .em-excel_elts > strong {

@@ -1437,8 +1437,7 @@ $(document).ready(function()
                                     if(result.status) {
                                         $('#em-export-prg').append(result.html);
                                         var code = $('#em-export-prg').val();
-                                        nbprg = result.nbprg
-                                        alert(nbprg);
+                                        nbprg = result.nbprg;
                                         $.ajax({
                                             type: 'get',
                                             url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code,
