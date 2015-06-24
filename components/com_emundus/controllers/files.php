@@ -2285,10 +2285,20 @@ class EmundusControllerFiles extends JControllerLegacy
         $session     = JFactory::getSession();
         $filt_params = $session->get('filt_params');
         $programmes = @EmundusHelperFiles::getProgrammes($filt_params['programme']);
-        foreach($programmes as $p) {
-            $html .= '<option value="'.$p->code.'">'.$p->label.' - '.$p->code.'</option>';
+        $nbprg = count($programmes);
+        if(empty($filt_params)){
+            $params['programme'] = $programmes;
+            $session->set('filt_params', $params);
         }
-        echo $html;
+        foreach($programmes as $p) {
+            if ($nbprg==1) {
+                $html .= '<option value="'.$p->code.'" selected>'.$p->label.' - '.$p->code.'</option>';
+            } else {
+                $html .= '<option value="'.$p->code.'">'.$p->label.' - '.$p->code.'</option>';
+            }
+        }
+
+        echo json_encode((object)(array('status' => true, 'html' => $html, 'nbprg' => $nbprg)));
         exit;
     }
 }

@@ -867,7 +867,392 @@ class EmundusControllerEvaluation extends JControllerLegacy
         return sortArrayByArray($properties,$orderArray);
     }
 
-    public function export_xls($fnums, $objs, $element_id)
+    public function create_file_csv() {
+        $today = date_default_timezone_get();
+        $name = md5($today.rand(0,10));
+        $name = $name.'.csv';
+        $chemin = JPATH_BASE.DS.'tmp'.DS.$name;
+
+        if (!$fichier_csv = fopen($chemin, 'w+')){
+            $result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$chemin);
+            echo json_encode((object) $result);
+            exit();
+        }
+
+        fprintf($fichier_csv, chr(0xEF).chr(0xBB).chr(0xBF));
+        if (!fclose($fichier_csv)) {
+            $result = array('status' => false, 'msg'=>JText::_('ERROR_CANNOT_CLOSE_CSV_FILE'));
+            echo json_encode((object) $result);
+            exit();
+        }
+        $result = array('status' => true, 'file' => $name);
+        echo json_encode((object) $result);
+        exit();
+    }
+
+    public function getfnums_csv() {
+        $jinput = JFactory::getApplication()->input;
+        $fnums = $jinput->getVar('fnums', null);
+        $fnums = (array) json_decode(stripslashes($fnums));
+        $model = $this->getModel('Files');
+        if(!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
+        {
+            $fnums = $model->getAllFnums();
+        }
+        $validFnums = array();
+        foreach($fnums as $fnum)
+        {
+            if(EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all')
+            {
+                $validFnums[] = $fnum;
+            }
+        }
+        $totalfile = sizeof($validFnums);
+        $session = JFactory::getSession();
+        $session->set('fnums_export', $validFnums);
+        $result = array('status' => true, 'totalfile'=> $totalfile);
+        echo json_encode((object) $result);
+        exit();
+    }
+
+    public function getcolumn($elts) {
+        return(array) json_decode(stripcslashes($elts));
+    }
+
+    public function getcolumnSup($objs) {
+
+        /* $menu = @JSite::getMenu();
+         $current_menu  = $menu->getActive();
+         $menu_params = $menu->getParams($current_menu->id);
+         $columnSupl = explode(',', $menu_params->get('em_actions'));*/
+        $objs = (array) json_decode(stripcslashes($objs));
+        //$columnSupl = array_merge($columnSupl, $objs);
+        return $objs;
+    }
+
+    public function generate_array() {
+        $current_user = JFactory::getUser();
+
+        if( !@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)
+        )
+            die( JText::_('RESTRICTED_ACCESS') );
+
+        $model = $this->getModel('Files');
+        $modelApp = $this->getModel('Application');
+        $modelEval = $this->getModel('Evaluation');
+
+        $session     = JFactory::getSession();
+        $fnums = $session->get('fnums_export');
+
+        $jinput = JFactory::getApplication()->input;
+
+        $file = $jinput->getVar('file', null, 'STRING');
+        $totalfile = $jinput->getVar('totalfile', null);
+        $start = $jinput->getInt('start', 0);
+        $limit = $jinput->getInt('limit', 0);
+        $nbcol = $jinput->getVar('nbcol', 0);
+        $elts = $jinput->getString('elts', null);
+        $objs = $jinput->getString('objs', null);
+
+        $col = $this->getcolumn($elts);
+
+        $eval_elements_id = array();
+        $show_in_list_summary = 0;
+        $hidden = 0;
+        $eval_elements_id = $modelEval->getEvaluationElements($show_in_list_summary, $hidden);
+        //die(var_dump($eval_elements_id));
+        $col = array_merge($col, $eval_elements_id);
+
+        $colsup  = $this->getcolumnSup($objs);
+        $colOpt = array();
+        if (!$csv = fopen(JPATH_BASE.DS.'tmp'.DS.$file, 'a')){
+            $result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$file);
+            echo json_encode((object) $result);
+            exit();
+        }
+
+        $elements = @EmundusHelperFiles::getElementsName(implode(',',$col));
+        $fnumsArray = $model->getFnumArray($fnums, $elements, 0, $start, $limit);
+
+        // On met a jour la liste des fnums traités
+        $fnums =array();
+        foreach ($fnumsArray as $fnum) {
+            array_push($fnums, $fnum['fnum']);
+        }
+        foreach ($colsup as $col) {
+            $col = explode('.', $col);
+            switch ($col[0]) {
+                case "photo":
+                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($model, JURI::base());
+                    break;
+                case "forms":
+                    $colOpt['forms'] = $modelApp->getFormsProgress(null, null, $fnums);
+                    break;
+                case "attachment":
+                    $colOpt['attachment'] = $modelApp->getAttachmentsProgress(null, null, $fnums);
+                    break;
+                case "assessment":
+                    $colOpt['assessment'] = @EmundusHelperFiles::getEvaluation('text', $fnums);
+                    break;
+                case "comment":
+                    $colOpt['comment'] = $model->getCommentsByFnum($fnums);
+                    break;
+                case 'evaluators':
+                    $colOpt['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
+                    break;
+            }
+        }
+        $status = $model->getStatusByFnums($fnums);
+        $line ="";
+        $element_csv=array();
+        $i = $start;
+
+        // On traite les en-têtes
+        if ($start==0) {
+            $line=JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('CAMPAIGN')."\t";
+            $nbcol = 6;
+            foreach ($elements as $fKey => $fLine) {
+                if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id') {
+                    $line .= $fLine->element_label . "\t";
+                    $nbcol++;
+                }
+            }
+            foreach ($colsup as $kOpt => $vOpt) {
+                if ($vOpt=="forms" || $vOpt=="attachment") {
+                    $line .= $vOpt . "(%)\t";
+                } else {
+                    $line .= $vOpt . "\t";
+                }
+
+                $nbcol++;
+            }
+
+            // On met les en-têtes dans le CSV
+            $element_csv[] = $line;
+            $line = "";
+        }
+
+        // On parcours les fnums
+        foreach ($fnumsArray as $fnum) {
+            // On traitre les données du fnum
+            foreach($fnum as $k => $v)
+            {
+                if ($k != 'code' && $k != 'campaign_id' && $k != 'jos_emundus_campaign_candidature___campaign_id' && $k != 'c___campaign_id') {
+                    if($k === 'fnum')
+                    {
+                        $line .= $v."\t";
+                        $line .= $status[$v]['value']."\t";
+                        $uid = intval(substr($v, 21, 7));
+                        $userProfil = JUserHelper::getProfile($uid)->emundus_profile;
+                        $line .= strtoupper($userProfil['lastname'])."\t";
+                        $line .= $userProfil['firstname']."\t";
+                    }
+                    elseif($k === 'jos_emundus_evaluations___user')
+                    {
+                        $line .= strip_tags(JFactory::getUser($v)->name)."\t";
+                    }
+                    else
+                    {
+                        $line .= $v."\t";
+                    }
+                }
+            }
+            // On ajoute les données supplémentaires
+            foreach($colOpt as $kOpt => $vOpt) {
+                switch ($kOpt) {
+                    case "PHOTO":
+                        $line .= JText::_('photo') . "\t";
+                        break;
+                    case "forms":
+                        if (array_key_exists($fnum['fnum'],$vOpt)) {
+                            $val = $vOpt[$fnum['fnum']];
+                            $line .= $val . "\t";
+                        } else {
+                            $line .= "\t";
+                        }
+                        break;
+                    case "attachment":
+                        if (array_key_exists($fnum['fnum'],$vOpt)) {
+                            $val = $vOpt[$fnum['fnum']];
+                            $line .= $val . "\t";
+                        } else {
+                            $line .= "\t";
+                        }
+                        break;
+                    case "assessment":
+                        $eval = '';
+                        if (array_key_exists($fnum['fnum'],$vOpt)) {
+                            $evaluations = $vOpt[$fnum['fnum']];
+                            foreach ($evaluations as $evaluation) {
+                                $eval .= $evaluation;
+                                $eval .= chr(10) . '______' . chr(10);
+                            }
+                            $line .= $eval . "\t";
+                        } else {
+                            $line .= "\t";
+                        }
+                        break;
+                    case "comment":
+                        $comments = "";
+                        if (array_key_exists($fnum['fnum'],$vOpt)) {
+                            foreach ($colOpt['comment'] as $comment) {
+                                if ($comment['fnum'] == $fnum['fnum']) {
+                                    $comments .= $comment['reason'] . " | " . $comment['comment_body'] . "\rn";
+                                }
+                            }
+                            $line .= $comments . "\t";
+                        } else {
+                            $line .= "\t";
+                        }
+                        break;
+                    case 'evaluators':
+                        if (array_key_exists($fnum['fnum'],$vOpt)) {
+                            $line .= $vOpt[$fnum['fnum']] . "\t";
+                        } else {
+                            $line .= "\t";
+                        }
+                        break;
+                }
+            }
+            // On met les données du fnum dans le CSV
+            $element_csv[] = $line;
+            $line ="";
+            $i++;
+        }
+        // On remplit le fichier CSV
+        foreach ($element_csv as $data)
+        {
+            $res = fputcsv($csv, explode("\t",$data),"\t");
+            if( !$res) {
+                $result = array('status' => false, 'msg'=>JText::_('ERROR_CANNOT_WRITE_TO_FILE'.' : '.$csv));
+                echo json_encode((object) $result);
+                exit();
+            }
+        }
+        if (!fclose($csv)) {
+            $result = array('status' => false, 'msg'=>JText::_('ERROR_CANNOT_CLOSE_CSV_FILE'));
+            echo json_encode((object) $result);
+            exit();
+        }
+
+        $start = $i;
+        $dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'methode'=>$methode,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file );
+        $result = array('status' => true, 'json' => $dataresult);
+        echo json_encode((object) $result);
+        //var_dump($result);
+        exit();
+    }
+    public function export_xls_from_csv()
+    {
+        /** PHPExcel */
+        ini_set('include_path', JPATH_BASE . DS . 'libraries' . DS);
+        include 'PHPExcel.php';
+        include 'PHPExcel/Writer/Excel5.php';
+        include 'PHPExcel/IOFactory.php';
+
+        $current_user = JFactory::getUser();
+
+        $jinput = JFactory::getApplication()->input;
+        $csv = $jinput->getVar('csv', null);
+        $nbcol = $jinput->getVar('nbcol', 0);
+        $nbrow = $jinput->getVar('start', 0);
+        $objReader = PHPExcel_IOFactory::createReader('CSV');
+        $objReader->setDelimiter("\t");
+        $objPHPExcel = new PHPExcel();
+
+        // Excel colonne
+        $colonne_by_id = array();
+        for ($i = ord("A"); $i <= ord("Z"); $i++) {
+            $colonne_by_id[] = chr($i);
+        }
+        for ($i = ord("A"); $i <= ord("Z"); $i++) {
+            for ($j = ord("A"); $j <= ord("Z"); $j++) {
+                $colonne_by_id[] = chr($i) . chr($j);
+                if (count($colonne_by_id) == $nbrow) break;
+            }
+        }
+
+        // Set properties
+        $objPHPExcel->getProperties()->setCreator($current_user->name);
+        $objPHPExcel->getProperties()->setLastModifiedBy($current_user->name);
+        $objPHPExcel->getProperties()->setTitle("eMmundus Report");
+        $objPHPExcel->getProperties()->setSubject("eMmundus Report");
+        $objPHPExcel->getProperties()->setDescription("Report from open source eMundus plateform : http://www.emundus.fr/");
+        $objPHPExcel->setActiveSheetIndex(0);
+        $objPHPExcel->getActiveSheet()->setTitle('Extraction');
+        $objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+
+        $objPHPExcel->getActiveSheet()->freezePane('A2');
+
+
+        $objReader->loadIntoExisting(JPATH_BASE . DS . "tmp" . DS . $csv, $objPHPExcel);
+
+        $objConditional1 = new PHPExcel_Style_Conditional();
+        $objConditional1->setConditionType(PHPExcel_Style_Conditional::CONDITION_CELLIS)
+            ->setOperatorType(PHPExcel_Style_Conditional::OPERATOR_EQUAL)
+            ->addCondition('0');
+        $objConditional1->getStyle()->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFF0000');
+
+        $objConditional2 = new PHPExcel_Style_Conditional();
+        $objConditional2->setConditionType(PHPExcel_Style_Conditional::CONDITION_CELLIS)
+            ->setOperatorType(PHPExcel_Style_Conditional::OPERATOR_EQUAL)
+            ->addCondition('100');
+        $objConditional2->getStyle()->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FF00FF00');
+
+        $objConditional3 = new PHPExcel_Style_Conditional();
+        $objConditional3->setConditionType(PHPExcel_Style_Conditional::CONDITION_CELLIS)
+            ->setOperatorType(PHPExcel_Style_Conditional::OPERATOR_EQUAL)
+            ->addCondition('50');
+        $objConditional3->getStyle()->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        //die(var_dump($nbrow));
+        $i = 0;
+        $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
+        $objPHPExcel->getActiveSheet()->getStyle('A2:A' . ($nbrow + 1))->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
+        $i++;
+        $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
+        $i++;
+        $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
+        $i++;
+        $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
+        $i++;
+        $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
+        $i++;
+        $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
+        $i++;
+        //var_dump($nbcol);die();
+        for ($i; $i < $nbcol; $i++) {
+            $value = $objPHPExcel->getActiveSheet()->getCellByColumnAndRow($i, 1)->getValue();
+            //var_dump($value);
+            if ($value == "forms(%)" || $value == "attachment(%)") {
+                //var_dump($colonne_by_id[$i]);
+                $conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i] . '1')->getConditionalStyles();
+                array_push($conditionalStyles, $objConditional1);
+                array_push($conditionalStyles, $objConditional2);
+                array_push($conditionalStyles, $objConditional3);
+                $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i] . '1')->setConditionalStyles($conditionalStyles);
+                $objPHPExcel->getActiveSheet()->duplicateConditionalStyle($conditionalStyles, $colonne_by_id[$i] . '1:' . $colonne_by_id[$i] . ($nbrow + 1));
+            }
+            $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
+        }
+
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        $objWriter->save(JPATH_BASE . DS . 'tmp' . DS . JFactory::getUser()->id . '_extraction.xls');
+        $link = JFactory::getUser()->id . '_extraction.xls';
+        if (!unlink(JPATH_BASE . DS . "tmp" . DS . $csv)) {
+            $result = array('status' => false, 'msg' => 'ERROR_DELETE_CSV');
+            echo json_encode((object)$result);
+            exit();
+        }
+        $session = JFactory::getSession();
+        $session->clear('fnums_export');
+        $result = array('status' => true, 'link' => $link);
+
+        echo json_encode((object)$result);
+        exit();
+    }
+
+        public function export_xls($fnums, $objs, $element_id)
     {
         $mainframe = JFactory::getApplication();
         $current_user = JFactory::getUser();
