@@ -1687,7 +1687,7 @@ jimport('joomla.application.component.helper');
              $fnumInfo = $files->getFnumInfos($fnums[1]);
          }
 
-         $element_id = $evaluation->getAllEvaluationElements(1, $fnumInfo['training']);
+         $element_id = $evaluation->getAllDecisionElements(1, $fnumInfo['training']);
          $elements = @EmundusHelperFiles::getElementsName(implode(',',$element_id));
          $evaluations = $files->getFnumArray($fnums, $elements);
 

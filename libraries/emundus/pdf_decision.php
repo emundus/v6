@@ -54,7 +54,7 @@ function pdf_decision($user_id, $fnum = null, $output = true) {
 
 	$db 			= JFactory::getDBO();
 	$app 			= JFactory::getApplication();
-	//$config 		= JFactory::getConfig();
+    $config 		= JFactory::getConfig();
 	//$eMConfig 		= JComponentHelper::getParams('com_emundus');
 	//$current_user 	= JFactory::getUser();
 	$user 			= JFactory::getUser($user_id);
