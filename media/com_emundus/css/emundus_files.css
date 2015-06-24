@@ -529,6 +529,10 @@ thead  th:hover
     height: 56px;
 }
 
+.holds-iframe {
+    background:url(../images/icones/loader-line.gif) center center no-repeat;
+}
+
 .can-update:hover
 {
     cursor: pointer;
