@@ -284,7 +284,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
             throw $e;
         }
     }
-
+/*
     public function getbox()
     {
         try
@@ -328,7 +328,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
             throw $e;
         }
     }
-
+*/
     public function deladvfilter()
     {
         $jinput = JFactory::getApplication()->input;

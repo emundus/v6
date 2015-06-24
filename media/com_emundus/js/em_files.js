@@ -461,7 +461,7 @@ function getSearchBox(id, father_id) {
     var index = father_id.split('-');
     $.ajax({
         type: 'get',
-        url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getbox&ItemId=' + itemId,
+        url: 'index.php?option=com_emundus&controller=files&task=getbox&ItemId=' + itemId,
         dataType: 'json',
         data: ({
             id: id,
