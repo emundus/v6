@@ -1151,7 +1151,7 @@ $(document).ready(function()
         $.ajax(
             {
                 type: 'POST',
-                url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=deladvfilter',
+                url: 'index.php?option=com_emundus&controller=files&task=deladvfilter',
                 dataType: 'json',
                 data: ({
                     elem: sonName,

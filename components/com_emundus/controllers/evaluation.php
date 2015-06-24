@@ -328,7 +328,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
             throw $e;
         }
     }
-*/
+
     public function deladvfilter()
     {
         $jinput = JFactory::getApplication()->input;
@@ -345,7 +345,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         echo json_encode((object)(array('status' => true)));
         exit;
     }
-
+*/
     public function addcomment()
     {
         $jinput = JFactory::getApplication()->input;
@@ -775,6 +775,41 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
         if (!file_exists($file)) {
             $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_evaluation.php';
+        }
+
+        if (!file_exists(EMUNDUS_PATH_ABS.$student_id)) {
+            mkdir(EMUNDUS_PATH_ABS.$student_id);
+            chmod(EMUNDUS_PATH_ABS.$student_id, 0755);
+        }
+
+        require($file);
+
+        if(EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+            pdf_evaluation(!empty($student_id)?$student_id:$user->id, $fnum);
+            exit;
+        } else
+            die(JText::_('ACCESS_DENIED'));
+
+        exit();
+    }
+
+    function pdf_decision(){
+        $user = JFactory::getUser();
+        $student_id = JRequest::getVar('user', null, 'GET', 'none',0);
+        $fnum = JRequest::getVar('fnum', null, 'GET', 'none',0);
+        $m_profile = $this->getModel('profile');
+        $m_campaign = $this->getModel('campaign');
+        //$profile = $model->getProfileByApplicant($student_id);
+
+        if (!empty($fnum)) {
+            $candidature = $m_profile->getFnumDetails($fnum);
+            $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
+        }
+
+        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_decision_'.$campaign['training'].'.php';
+
+        if (!file_exists($file)) {
+            $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_decision.php';
         }
 
         if (!file_exists(EMUNDUS_PATH_ABS.$student_id)) {
