@@ -52,11 +52,11 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	
 	//get logo
 	$app 		= JFactory::getApplication();
-	$template 	= $app->getTemplate(true);
-	$params     = $template->params;
-	$image   	= $params->get('logo')->custom->image; 
-	$logo 		= preg_match_all("/'([^']*)'/", $image, $matches);
-	$logo 		= !empty($matches[1][1]) ? JPATH_ROOT.DS.$matches[1][1] : preg_match_all('/"([^"]*)"/', $image, $matches);
+    $template 	= $app->getTemplate(true);
+    $params     = $template->params;
+
+    $logo   	= json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+    $logo 		= !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
 	$logo 		= !empty($logo) ? JPATH_ROOT.DS.$matches[1][1] : "";
 	
 	//get title

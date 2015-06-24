@@ -820,7 +820,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         require($file);
 
         if(EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            pdf_evaluation(!empty($student_id)?$student_id:$user->id, $fnum);
+            pdf_decision(!empty($student_id)?$student_id:$user->id, $fnum);
             exit;
         } else
             die(JText::_('ACCESS_DENIED'));
