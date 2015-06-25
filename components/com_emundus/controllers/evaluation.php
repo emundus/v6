@@ -973,7 +973,13 @@ class EmundusControllerEvaluation extends JControllerLegacy
         }
 
         $elements = @EmundusHelperFiles::getElementsName(implode(',',$col));
-        $fnumsArray = $model->getFnumArray($fnums, $elements, 0, $start, $limit);
+
+        // re-order elements
+        $ordered_elements = array();
+        foreach($col as $c){
+            $ordered_elements[$c] = $elements[$c];
+        }
+        $fnumsArray = $model->getFnumArray($fnums, $ordered_elements, 0, $start, $limit);
 
         // On met a jour la liste des fnums traités
         $fnums =array();
