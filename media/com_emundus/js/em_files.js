@@ -1484,9 +1484,8 @@ $(document).ready(function()
                                                             {
                                                                 if(isNaN(parseInt(d)))
                                                                     break;
-                                                                item += '<li class="em-export-item" id="'+result.defaults[d].id+'-item"><button class="btn btn-danger btn-xs" id="'+result.defaults[d].id+'-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>'+result.defaults[d].element_label+'</strong></span></li>';
+                                                                item += '<li class="em-export-item" id="'+result.defaults[d][0].element_id+'-item"><button class="btn btn-danger btn-xs" id="'+result.defaults[d][0].element_id+'-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>'+result.defaults[d][0].element_label+'</strong></span></li>';
                                                             }
-                                                            $('#list-element-export').append(defaults);
                                                             $('#em-export').append(item);
                                                             $('.btn-success').show();
                                                             $('#elements_detail').show();
@@ -1518,6 +1517,7 @@ $(document).ready(function()
                                         success: function (data) {
                                             $('.btn-success').show();
                                             $('#em-export-form').empty();
+                                            $('#em-export').empty();
                                             $.ajax({
                                                 type:'get',
                                                 url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getformelem',
@@ -1555,9 +1555,8 @@ $(document).ready(function()
                                                     {
                                                         if(isNaN(parseInt(d)))
                                                             break;
-                                                        item += '<li class="em-export-item" id="'+result.defaults[d].id+'-item"><button class="btn btn-danger btn-xs" id="'+result.defaults[d].id+'-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>'+result.defaults[d].element_label+'</strong></span></li>';
+                                                        item += '<li class="em-export-item" id="'+result.defaults[d][0].element_id+'-item"><button class="btn btn-danger btn-xs" id="'+result.defaults[d][0].element_id+'-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>'+result.defaults[d][0].element_label+'</strong></span></li>';
                                                     }
-                                                    $('#list-element-export').append(defaults);
                                                     $('#em-export').append(item);
 
                                                 },
@@ -1582,7 +1581,7 @@ $(document).ready(function()
                             });
                             $('.modal-body').append('<div id="list-element-export" class="panel panel-default xclsform"></div>');
                             var defaults = '<h5>  '+Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM')+'</h5><div id="em-export-elts" class="well"><ul id="em-export"></ul></div>';
-
+                            $('#list-element-export').append(defaults);
                             var grId = null;
                             var menu = null;
 

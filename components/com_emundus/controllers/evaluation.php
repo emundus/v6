@@ -684,10 +684,10 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
     public function getformelem()
     {
-        //Filters
+         //Filters
         $model = $this->getModel('Evaluation');
-        $defaultElements = $model->getEvaluationElements();
-        $defaultElements = EmundusHelperFilters::getElements($defaultElements);
+        $defaultElements = $model->getEvaluationElementsName();
+        //var_dump($defaultElements);die();
         $elements = EmundusHelperFilters::getElements();
         $res = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);
         echo json_encode((object)$res);
@@ -1137,7 +1137,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         }
 
         $start = $i;
-        $dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'methode'=>$methode,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file );
+        $dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'methode'=>0,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file );
         $result = array('status' => true, 'json' => $dataresult);
         echo json_encode((object) $result);
         //var_dump($result);

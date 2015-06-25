@@ -267,7 +267,7 @@ class EmundusModelEvaluation extends JModelList
                         if (count($eval_elt_list)>0) {
                             foreach ($eval_elt_list as $eel) {
                                 if(isset($eel->element_id) && !empty($eel->element_id))
-                                    $elements[] = EmundusHelperList::getElementsDetails($eel->element_id);
+                                    $elements[] = EmundusHelperList::getElementsDetailsByID($eel->element_id);
                             }
                         }
                     }
