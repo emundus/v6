@@ -196,5 +196,6 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
         $('#rt-main').children().children().addClass('mainemundus');
 		$('.em-data-container').doubleScroll();
 	});
+    window.parent.$("html, body").animate({scrollTop : 0}, 300);
 </script>
 
