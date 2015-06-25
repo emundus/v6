@@ -1150,7 +1150,14 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $elements = @EmundusHelperFiles::getElementsName(implode(',',$col));
-        $fnumsArray = $model->getFnumArray($fnums, $elements, $methode, $start, $limit);
+
+        // re-order elements
+        $ordered_elements = array();
+        foreach($col as $c){
+            $ordered_elements[$c] = $elements[$c];
+        }
+
+        $fnumsArray = $model->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit);
 
         // On met a jour la liste des fnums traités
         $fnums =array();
@@ -1189,7 +1196,7 @@ class EmundusControllerFiles extends JControllerLegacy
         if ($start==0) {
             $line=JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('CAMPAIGN')."\t";
             $nbcol = 6;
-            foreach ($elements as $fKey => $fLine) {
+            foreach ($ordered_elements as $fKey => $fLine) {
                 if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id') {
                     $line .= $fLine->element_label . "\t";
                     $nbcol++;

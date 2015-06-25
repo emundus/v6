@@ -558,7 +558,7 @@ function generate_csv(json, eltJson, objJson) {
                     success: function (result) {
                         var json = result.json;
                         if (result.status) {
-                            if (methode == 0) {
+                            if ((methode == 0) && ($('#view').val()!="evaluation")) {
                                 $('#datasbs').replaceWith('<div id="datasbs" data-start="' + result.json.start + '"><p>' + result.json.start + ' / ' + result.json.totalfile + '</p></div>');
                             } else {
                                 $('#datasbs').replaceWith('<div id="datasbs" data-start="' + result.json.start + '"><p>' + result.json.start+'</p></div>');
@@ -1448,7 +1448,7 @@ $(document).ready(function()
                                                 if (nbprg == 1) {
                                                     $.ajax({
                                                         type:'get',
-                                                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getformelem',
+                                                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getformelem&Itemid=542',
                                                         dataType:'json',
                                                         success: function(result)
                                                         {
@@ -1484,7 +1484,11 @@ $(document).ready(function()
                                                             {
                                                                 if(isNaN(parseInt(d)))
                                                                     break;
-                                                                item += '<li class="em-export-item" id="'+result.defaults[d][0].element_id+'-item"><button class="btn btn-danger btn-xs" id="'+result.defaults[d][0].element_id+'-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>'+result.defaults[d][0].element_label+'</strong></span></li>';
+                                                                if ($('#view').val()!="evaluation") {
+                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                } else {
+                                                                    item += '<li class="em-export-item" id="' + result.defaults[d][0].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d][0].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d][0].element_label + '</strong></span></li>';
+                                                                }
                                                             }
                                                             $('#em-export').append(item);
                                                             $('.btn-success').show();
@@ -1520,7 +1524,7 @@ $(document).ready(function()
                                             $('#em-export').empty();
                                             $.ajax({
                                                 type:'get',
-                                                url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getformelem',
+                                                url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getformelem&Itemid=542',
                                                 dataType:'json',
                                                 success: function(result)
                                                 {
@@ -1555,8 +1559,11 @@ $(document).ready(function()
                                                     {
                                                         if(isNaN(parseInt(d)))
                                                             break;
-                                                        item += '<li class="em-export-item" id="'+result.defaults[d][0].element_id+'-item"><button class="btn btn-danger btn-xs" id="'+result.defaults[d][0].element_id+'-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>'+result.defaults[d][0].element_label+'</strong></span></li>';
-                                                    }
+                                                        if ($('#view').val()!="evaluation") {
+                                                            item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                        } else {
+                                                            item += '<li class="em-export-item" id="' + result.defaults[d][0].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d][0].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d][0].element_label + '</strong></span></li>';
+                                                        }                                                    }
                                                     $('#em-export').append(item);
 
                                                 },
@@ -2071,7 +2078,7 @@ $(document).ready(function()
                                                 var limit = 100;
                                                 var file = result.file;
                                                 var json= jQuery.parseJSON('{"start":"'+start+'","limit":"'+limit+'","totalfile":"'+totalfile+'","nbcol":"0","methode":"'+methode+'","file":"'+file+'"}');
-                                                if (methode == 0) {
+                                                if ((methode == 0) && ($('#view').val()!="evaluation")) {
                                                     $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0 / ' + totalfile + '</p></div>');
                                                 } else {
                                                     $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0</p></div>');
