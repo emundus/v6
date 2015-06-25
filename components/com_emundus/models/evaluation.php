@@ -245,6 +245,38 @@ class EmundusModelEvaluation extends JModelList
 		return @$elements_id;
 	}
 
+    public function getEvaluationElementsName($show_in_list_summary=1, $hidden=0)
+    {
+        $session = JFactory::getSession();
+
+        $jinput = JFactory::getApplication()->input;
+        $fnums = $jinput->getString('cfnums', null);
+
+        if ($session->has('filt_params'))
+        {
+            //var_dump($session->get('filt_params'));
+            $element_id = array();
+            $filt_params = $session->get('filt_params');
+            if (count(@$filt_params['programme'])>0) {
+                foreach ($filt_params['programme'] as $value) {
+                    $groups = $this->getGroupsEvalByProgramme($value);
+                    if (empty($groups)) {
+                        $eval_elt_list = array();
+                    } else {
+                        $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+                        if (count($eval_elt_list)>0) {
+                            foreach ($eval_elt_list as $eel) {
+                                if(isset($eel->element_id) && !empty($eel->element_id))
+                                    $elements[] = EmundusHelperList::getElementsDetails($eel->element_id);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+//die(var_dump($elements_id));
+        return @$elements;
+    }
     /**
      * Get list of ALL evaluation element
      * @param 	  int displayed in Fabrik List ; yes=1

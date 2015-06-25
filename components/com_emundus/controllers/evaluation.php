@@ -685,8 +685,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
     public function getformelem()
     {
         //Filters
-        $model = $this->getModel('Files');
-        $defaultElements = $model->getDefaultElements();
+        $model = $this->getModel('Evaluation');
+        $defaultElements = $model->getEvaluationElements();
+        $defaultElements = EmundusHelperFilters::getElements($defaultElements);
         $elements = EmundusHelperFilters::getElements();
         $res = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);
         echo json_encode((object)$res);
@@ -956,13 +957,13 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
         $col = $this->getcolumn($elts);
 
-        $eval_elements_id = array();
+        /*$eval_elements_id = array();
         $show_in_list_summary = 0;
         $hidden = 0;
         $eval_elements_id = $modelEval->getEvaluationElements($show_in_list_summary, $hidden);
         //die(var_dump($eval_elements_id));
-        $col = array_merge($col, $eval_elements_id);
-
+        $col = array_merge($col,  );
+        */
         $colsup  = $this->getcolumnSup($objs);
         $colOpt = array();
         if (!$csv = fopen(JPATH_BASE.DS.'tmp'.DS.$file, 'a')){
@@ -1053,7 +1054,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
                     }
                     else
                     {
-                        $line .= $v."\t";
+                        $line .= strip_tags($v)."\t";
                     }
                 }
             }
