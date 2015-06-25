@@ -593,14 +593,14 @@ class EmundusModelEvaluation extends JModelList
 						'jos_emundus_final_grade',
 		                'jos_emundus_declaration');
 
-		$query = 'SELECT #__emundus_users.user_id, #__emundus_users.user_id as user, #__emundus_users.user_id as id, #__emundus_users.lastname, #__emundus_users.firstname, #__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile, #__emundus_declaration.validated, #__emundus_campaign_candidature.date_submitted,
+		$query = 'SELECT #__emundus_users.user_id, #__emundus_users.user_id as user, #__emundus_users.user_id as id, #__emundus_users.lastname, #__emundus_users.firstname,
+		#__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile, #__emundus_campaign_candidature.date_submitted,
 		#__emundus_setup_campaigns.year as schoolyear, #__emundus_setup_campaigns.label, #__emundus_campaign_candidature.date_submitted, #__emundus_campaign_candidature.campaign_id';
 		if (!empty($cols)) $query .= ', ' . $cols;
 		if (!empty($cols_other)) $query .= ', ' . $cols_other;
 		if (!empty($cols_default)) $query .= ', ' . $cols_default;
 		if (!empty($col_validate)) $query .= ', ' . $col_validate;
 		$query .= '	FROM #__emundus_campaign_candidature
-					LEFT JOIN #__emundus_declaration ON #__emundus_declaration.user =  #__emundus_campaign_candidature.applicant_id
 					LEFT JOIN #__emundus_users ON #__emundus_declaration.user=#__emundus_users.user_id
 					LEFT JOIN #__emundus_setup_campaigns ON #__emundus_setup_campaigns.id=#__emundus_campaign_candidature.campaign_id
 					LEFT JOIN #__users ON #__users.id=#__emundus_users.user_id
@@ -1015,7 +1015,7 @@ class EmundusModelEvaluation extends JModelList
 				}
 				if(!in_array($elt->tab_name, $lastTab))
 				{ 
-					$leftJoin .= 'left join ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum like c.fnum ';
+					$leftJoin .= 'left join ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = c.fnum ';
 				}
 				$lastTab[] = $elt->tab_name;
 			}
@@ -1029,16 +1029,16 @@ class EmundusModelEvaluation extends JModelList
 		$query .= ' FROM #__emundus_campaign_candidature as c 
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = c.status 
 					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = c.campaign_id 
-					LEFT JOIN #__emundus_setup_programmes as sp on sp.code like esc.training  
+					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__users as u on u.id = c.applicant_id ';
 		$q = $this->_buildWhere($lastTab);
 
 
 		if ((EmundusHelperAccess::isExpert($current_user->id) && $evaluators_can_see_other_eval == 0) || 
 			(EmundusHelperAccess::isEvaluator($current_user->id) && $evaluators_can_see_other_eval == 0))  {
-			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum like c.fnum AND (jos_emundus_evaluations.user='.$current_user->id.' OR jos_emundus_evaluations.user IS NULL)';
+			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum AND (jos_emundus_evaluations.user='.$current_user->id.' OR jos_emundus_evaluations.user IS NULL)';
 		} else
-			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum like c.fnum ';
+			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum ';
 
 		if (!empty($leftJoin))
 		{
@@ -1049,7 +1049,7 @@ class EmundusModelEvaluation extends JModelList
 		$query .= ' where c.published = 1 ' . $q['q'];
 
 		if (isset($current_fnum) && !empty($current_fnum)) {
-			$query .= ' AND c.fnum like'.$dbo->Quote($current_fnum);
+			$query .= ' AND c.fnum like '.$dbo->Quote($current_fnum);
 		}
 		// ONLY FILES LINKED TO MY GROUPS
 		//$code = $userModel->getUserGroupsProgrammeAssoc($current_user->id);
@@ -1074,7 +1074,7 @@ class EmundusModelEvaluation extends JModelList
 			
 			$dbo->setQuery($query);
 			$res = $dbo->loadAssocList();
-//echo '<hr>'.str_replace('#_', 'jos', $query).'<hr>';
+echo '<hr>'.str_replace('#_', 'jos', $query).'<hr>';
 			return $res;
 		}
 		catch(Exception $e)

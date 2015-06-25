@@ -143,4 +143,55 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 		<?php echo $this->datas?>
 	<?php endif;?>
 </div>
+<script type="text/javascript">
+    //refreshFilter();
+    function checkurl() {
+        var url = $(location).attr('href');
+        url = url.split("#");
+        $('.alert.alert-warning').remove();
+        if (url[1] != null && url[1].length >= 20) {
+            url = url[1].split("|");
+            var fnum = new Object();
+            fnum.fnum = url[0];
+            if (fnum != null && fnum.fnum != "close") {
+                addDimmer();
+                $.ajax({
+                    type:'get',
+                    url:'index.php?option=com_emundus&controller=files&task=getfnuminfos',
+                    dataType:"json",
+                    data:({fnum: fnum.fnum}),
+                    success: function(result)
+                    {
+                        if (result.status && result.fnumInfos != null)
+                        {
+                            console.log(result);
+                            var fnumInfos = result.fnumInfos;
+                            fnum.name = fnumInfos.name;
+                            fnum.label = fnumInfos.label;
+                            openFiles(fnum);
+                        } else {
+                            console.log(result);
+                            $('.em-dimmer').remove();
+                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?php echo JText::_('CANNOT_OPEN_FILE') ?></div>");
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        $('.em-dimmer').remove();
+                        $("<div class=\"alert alert-warning\"><?php echo JText::_('CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
+                        console.log(jqXHR.responseText);
+                    }
+                })
+            }
+        }
 
+    }
+    $(document).ready(function(){
+        checkurl();
+        $('#rt-mainbody-surround').children().addClass('mainemundus');
+        $('#rt-main').children().addClass('mainemundus');
+        $('#rt-main').children().children().addClass('mainemundus');
+        $('.em-data-container').doubleScroll();
+    });
+    window.parent.$("html, body").animate({scrollTop : 0}, 300);
+</script>

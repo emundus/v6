@@ -147,7 +147,6 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 </div>
 
 <script type="text/javascript">
-	//refreshFilter();
     function checkurl() {
         var url = $(location).attr('href');
         url = url.split("#");
