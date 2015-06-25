@@ -1879,7 +1879,7 @@ class EmundusModelFiles extends JModelLegacy
         try
         {
             $db = $this->getDbo();
-            $query = "SELECT c.fnum
+            $query = "SELECT jos_emundus_campaign_candidature.fnum
 						FROM #__emundus_campaign_candidature
 						LEFT JOIN #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id
 						LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id
@@ -1921,6 +1921,7 @@ class EmundusModelFiles extends JModelLegacy
             }
             $query .= $q['join'];
             $query .= ' where 1 = 1 ' . $q['q'];
+            //die( str_replace('#_', 'jos', $query) );
             $db->setQuery($query);
 
             return $db->loadColumn();
