@@ -1411,7 +1411,7 @@ $(document).ready(function()
                             $('.btn-success').attr('style', 'display: none !important');
                             if ($('#view').val()!="evaluation")
                                 $('.modal-body').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE')+'</h5></div><div class="panel-body"><select name="em-export-methode" id="em-export-methode" style="width: 95%;" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+'</option><option value="1" data-value="1">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN')+'</option></select></div></div>');
-                            $('.modal-body').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select name="em-export-prg" id="em-export-prg" style="width: 95%;" class="chzn-select"><option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_SELECT_PRG')+' --</option></select></div></div>');
+                            $('.modal-body').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select name="em-export-prg" id="em-export-prg" style="width: 95%;" class="chzn-select"><option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option></select></div></div>');
 
                             $('.modal-body').append('<div id="elements_detail" style="display: none">' +
                                                         '<div class="panel panel-default xclsform">' +
@@ -1444,13 +1444,15 @@ $(document).ready(function()
                                             success: function (data) {
                                                 $('#elements-popup').empty();
                                                 $('#em-export-form').empty();
+                                                $('#em-export').empty();
                                                 if (nbprg == 1) {
                                                     $.ajax({
                                                         type:'get',
-                                                        url: 'index.php?option=com_emundus&controller=files&task=getformelem',
+                                                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getformelem',
                                                         dataType:'json',
                                                         success: function(result)
                                                         {
+                                                            var item="";
                                                             for(var d in result.elts)
                                                             {
                                                                 if(isNaN(parseInt(d)))
@@ -1477,6 +1479,15 @@ $(document).ready(function()
                                                             $('#elements-popup').append(data);
                                                             $('#em-export-form').append(item);
                                                             $('#em-export-form').trigger("chosen:updated");
+                                                            item ="";
+                                                            for(var d in result.defaults)
+                                                            {
+                                                                if(isNaN(parseInt(d)))
+                                                                    break;
+                                                                item += '<li class="em-export-item" id="'+result.defaults[d].id+'-item"><button class="btn btn-danger btn-xs" id="'+result.defaults[d].id+'-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>'+result.defaults[d].element_label+'</strong></span></li>';
+                                                            }
+                                                            $('#list-element-export').append(defaults);
+                                                            $('#em-export').append(item);
                                                             $('.btn-success').show();
                                                             $('#elements_detail').show();
                                                         },
@@ -1509,11 +1520,11 @@ $(document).ready(function()
                                             $('#em-export-form').empty();
                                             $.ajax({
                                                 type:'get',
-                                                url: 'index.php?option=com_emundus&controller=files&task=getformelem',
+                                                url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getformelem',
                                                 dataType:'json',
                                                 success: function(result)
                                                 {
-                                                    item ='';
+                                                    var item ='';
                                                     for(var d in result.elts)
                                                     {
                                                         if(isNaN(parseInt(d)))
@@ -1539,6 +1550,16 @@ $(document).ready(function()
                                                     }
                                                     $('#em-export-form').append(item);
                                                     $('#em-export-form').trigger("chosen:updated");
+                                                    item ="";
+                                                    for(var d in result.defaults)
+                                                    {
+                                                        if(isNaN(parseInt(d)))
+                                                            break;
+                                                        item += '<li class="em-export-item" id="'+result.defaults[d].id+'-item"><button class="btn btn-danger btn-xs" id="'+result.defaults[d].id+'-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>'+result.defaults[d].element_label+'</strong></span></li>';
+                                                    }
+                                                    $('#list-element-export').append(defaults);
+                                                    $('#em-export').append(item);
+
                                                 },
                                                 error: function (jqXHR, textStatus, errorThrown)
                                                 {
@@ -1561,16 +1582,7 @@ $(document).ready(function()
                             });
                             $('.modal-body').append('<div id="list-element-export" class="panel panel-default xclsform"></div>');
                             var defaults = '<h5>  '+Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM')+'</h5><div id="em-export-elts" class="well"><ul id="em-export"></ul></div>';
-                            var item ="";
-                            for(var d in result.defaults)
-                            {
-                                if(isNaN(parseInt(d)))
-                                    break;
-                                item += '<li class="em-export-item" id="'+result.defaults[d].id+'-item"><button class="btn btn-danger btn-xs" id="'+result.defaults[d].id+'-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>'+result.defaults[d].element_label+'</strong></span></li>';
-                            }
-                            $('#list-element-export').append(defaults);
-                            $('#em-export').append(item);
-                            item = "<option></option>";
+
                             var grId = null;
                             var menu = null;
 
