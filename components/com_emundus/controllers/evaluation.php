@@ -1018,7 +1018,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         if ($start==0) {
             $line=JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('CAMPAIGN')."\t";
             $nbcol = 6;
-            foreach ($elements as $fKey => $fLine) {
+            foreach ($ordered_elements as $fKey => $fLine) {
                 if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id') {
                     $line .= $fLine->element_label . "\t";
                     $nbcol++;
