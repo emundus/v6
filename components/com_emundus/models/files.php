@@ -1880,10 +1880,10 @@ class EmundusModelFiles extends JModelLegacy
         {
             $db = $this->getDbo();
             $query = "SELECT c.fnum
-						FROM #__emundus_campaign_candidature as c 
-						LEFT JOIN #__users as u on u.id = c.applicant_id 
-						LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = c.campaign_id 
-						LEFT JOIN #__emundus_setup_programmes as sp on sp.code=esc.training ";
+						FROM #__emundus_campaign_candidature
+						LEFT JOIN #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id
+						LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id
+						LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training ";
             $leftJoin = '';
             if(!isset($lastTab))
             {
@@ -1908,7 +1908,7 @@ class EmundusModelFiles extends JModelLegacy
                 {
                     if(!in_array($elt->tab_name, $lastTab))
                     {
-                        $leftJoin .= ' left join ' . $elt->tab_name .  ' on '. $elt->tab_name .'.fnum = c.fnum ';
+                        $leftJoin .= ' left join ' . $elt->tab_name .  ' on '. $elt->tab_name .'.fnum = jos_emundus_campaign_candidature.fnum ';
                     }
                     $lastTab[] = $elt->tab_name;
                 }

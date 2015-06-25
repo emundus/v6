@@ -899,7 +899,10 @@ class EmundusControllerFiles extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', null);
         $model = $this->getModel('Files');
-        $res = $model->changePublished($fnum);
+        if (EmundusHelperAccess::asAccessAction(1, 'd', $this->_user->id, $fnum))
+            $res = $model->changePublished($fnum);
+        else
+            $res = false;
 
         $result = array('status' => $res);
 
@@ -915,7 +918,6 @@ class EmundusControllerFiles extends JControllerLegacy
         //Filters
         $model = $this->getModel('Files');
         $defaultElements = $model->getDefaultElements();
-        //$elements = EmundusHelperFilters::getElements();
         $elements = @EmundusHelperFiles::getElements();
         $res = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);
         echo json_encode((object)$res);
