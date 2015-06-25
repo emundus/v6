@@ -167,7 +167,7 @@ class EmundusViewFiles extends JViewLegacy
 			    $users = $this->get('Users');
 
 			    $defaultElements = $this->get('DefaultElements');
-			    $datas = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
+			    $datas = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'status' => JText::_('STATUS')));
 			    $fl = array();
 			    $model = $this->getModel('Files');
 			    if (count($defaultElements)>0) {
