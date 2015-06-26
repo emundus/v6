@@ -1,7 +1,7 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1: final_grade.php 89 2008-10-13 Benjamin Rivalland
+ * @version 1: final_grade.php 89 2015-06-15 Benjamin Rivalland
  * @package Fabrik
  * @copyright Copyright (C) 2008 Décision Publique. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
@@ -12,26 +12,24 @@ defined( '_JEXEC' ) or die();
  * See COPYRIGHT.php for copyright notices and details.
  * @description Validation finale du dossier de candidature
  */
-$baseurl = JURI::base();
 
-$student = & JUser::getInstance($_REQUEST['jos_emundus_final_grade___student_id']);
-$fg = $_REQUEST['jos_emundus_final_grade___final_grade'][0];
-$result_for = $_REQUEST['jos_emundus_final_grade___result_for'][0];
+$baseurl 	= JURI::base();
+$db 		= JFactory::getDBO();
+$jinput 	= $mainframe->input;
 
+$sid 	= $jinput->get('jos_emundus_final_grade___student_id');
+$fnum 	= $jinput->get('jos_emundus_final_grade___fnum');
+$status 	= $jinput->get('jos_emundus_final_grade___final_grade');
 
-if ($fg == 4)
-	$profil = 8; // 8 = Selected
-else
-	$profil = $result_for; // 9 = Applicant
+$query = 'UPDATE #__emundus_campaign_candidature SET status='.$status.' WHERE fnum like '.$fnum.' AND applicant_id='.sid;
 
-$db = JFactory::getDBO();
-// Mise à jour du profil
-$query = 'UPDATE #__emundus_users
-		SET profile='.$profil.' 
-		WHERE user_id='.$student->id;
-$db->setQuery( $query );
-//die($fg);
-if (!$db->execute())
-	die(JText::_('DB_ERROR'));
-
+try
+{
+    $db->setQuery($query);
+    return $db->execute();
+}
+catch(Exception $e)
+{
+    throw $e;
+}
 ?>
