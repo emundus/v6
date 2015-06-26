@@ -1074,7 +1074,7 @@ class EmundusModelEvaluation extends JModelList
 			
 			$dbo->setQuery($query);
 			$res = $dbo->loadAssocList();
-echo '<hr>'.str_replace('#_', 'jos', $query).'<hr>';
+//echo '<hr>'.str_replace('#_', 'jos', $query).'<hr>';
 			return $res;
 		}
 		catch(Exception $e)
