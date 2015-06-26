@@ -24,135 +24,137 @@ jimport('joomla.application.component.helper');
  * @subpackage	Content
  * @since 1.5
  */
- class EmundusHelperFiles
+class EmundusHelperFiles
 {
-	
-	/*
-	** @description Clear session and reinit values by default
-	*/
-	public  function clear()
-	{
-		JFactory::getSession()->set('filt_params', array());
-		JFactory::getSession()->set('select_filter',null);
-		JFactory::getSession()->set('adv_cols', array());
-		JFactory::getSession()->set('filter_order', 'c.fnum');
-		JFactory::getSession()->set('filter_order_Dir', 'desc');
-		$limit = JFactory::getApplication()->getCfg('list_limit');
-		$limitstart = 0;
-		$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
-		JFactory::getSession()->set('limit', $limit);
-		JFactory::getSession()->set('limitstart', $limitstart);
+    /*
+    ** @description Clear session and reinit values by default
+    */
+    public  function clear()
+    {
+        JFactory::getSession()->set('filt_params', array());
+        JFactory::getSession()->set('select_filter',null);
+        JFactory::getSession()->set('adv_cols', array());
+        JFactory::getSession()->set('filter_order', 'c.fnum');
+        JFactory::getSession()->set('filter_order_Dir', 'desc');
+        $limit = JFactory::getApplication()->getCfg('list_limit');
+        $limitstart = 0;
+        $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
-		//@EmundusHelperFiles::resetFilter();
+        JFactory::getSession()->set('limit', $limit);
+        JFactory::getSession()->set('limitstart', $limitstart);
 
-	}
+        //@EmundusHelperFiles::resetFilter();
 
-	/*
-	** @description Clear session and reinit values by default
-	*/
-	public  function clearfilter()
-	{
-		JFactory::getSession()->set('filt_params', array());
-		JFactory::getSession()->set('select_filter',null);
-		JFactory::getSession()->set('filter_order', 'c.fnum');
-		JFactory::getSession()->set('filter_order_Dir', 'desc');
+    }
 
-		$limit = JFactory::getApplication()->getCfg('list_limit');
-		$limitstart = 0;
-		$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
+    /*
+    ** @description Clear session and reinit values by default
+    */
+    public  function clearfilter()
+    {
+        JFactory::getSession()->set('filt_params', array());
+        JFactory::getSession()->set('select_filter',null);
+        JFactory::getSession()->set('filter_order', 'c.fnum');
+        JFactory::getSession()->set('filter_order_Dir', 'desc');
 
-		JFactory::getSession()->set('limit', $limit);
-		JFactory::getSession()->set('limitstart', $limitstart);
+        $limit = JFactory::getApplication()->getCfg('list_limit');
+        $limitstart = 0;
+        $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
-	}
+        JFactory::getSession()->set('limit', $limit);
+        JFactory::getSession()->set('limitstart', $limitstart);
 
-	/*
-	** @description Clear session and reinit values by default
-	*/
-	public  function resetFilter()
-	{
+    }
 
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-		//require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
-		$menu = @JSite::getMenu();
-		$current_menu  = $menu->getActive();
-		$menu_params = $menu->getParams(@$current_menu->id);
+    /*
+    ** @description Clear session and reinit values by default
+    */
+    public  function resetFilter()
+    {
 
-	    if (!JFactory::getSession()->has('filt_params'))
-	    {
-		    JFactory::getSession()->set('filt_params', array());
-	    }
+        //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
+        //require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+        $menu = @JSite::getMenu();
+        $current_menu  = $menu->getActive();
+        $menu_params = $menu->getParams(@$current_menu->id);
 
-	    $params = JFactory::getSession()->get('filt_params');
-		//Filters
-		$tables 		= explode(',', $menu_params->get('em_tables_id'));
-		$filts_names 	= explode(',', $menu_params->get('em_filters_names'));
-		$filts_values	= explode(',', $menu_params->get('em_filters_values'));
-		$filts_types  	= explode(',', $menu_params->get('em_filters_options'));
-		
+        if (!JFactory::getSession()->has('filt_params'))
+        {
+            JFactory::getSession()->set('filt_params', array());
+        }
+
+        $params = JFactory::getSession()->get('filt_params');
+
+        //Filters
+        $tables 		= explode(',', $menu_params->get('em_tables_id'));
+        $filts_names 	= explode(',', $menu_params->get('em_filters_names'));
+        $filts_values	= explode(',', $menu_params->get('em_filters_values'));
+        $filts_types  	= explode(',', $menu_params->get('em_filters_options'));
+
         // All types of filters
-		$filts_details 	= array('profile'			=> NULL,
-							   'evaluator'			=> NULL,
-							   'evaluator_group'	=> NULL,
-							   'schoolyear'			=> NULL,
-							   'campaign'			=> NULL,
-							   'programme'			=> NULL,
-							   'missing_doc'		=> NULL,
-							   'complete'			=> NULL,
-							   'finalgrade'			=> NULL,
-							   'validate'			=> NULL,
-							   'other'				=> NULL,
-							   'status'				=> NULL,
-                               'published'          => NULL,
-                               'adv_filter'		    => NULL,
-                               'newsletter'		    => NULL,
-                               'spam_suspect'	    => NULL,
-                               'not_adv_filter' 	=> NULL);
-		$filts_options 	= array('profile'			=> NULL,
-							   'evaluator'			=> NULL,
-							   'evaluator_group'	=> NULL,
-							   'schoolyear'			=> NULL,
-							   'campaign'			=> NULL,
-							   'programme'			=> NULL,
-							   'missing_doc'		=> NULL,
-							   'complete'			=> NULL,
-							   'finalgrade'			=> NULL,
-							   'validate'			=> NULL,
-							   'other'				=> NULL,
-							   'status'				=> NULL,
-                               'published'          => NULL,
-							   'adv_filter'		    => NULL,
-                               'newsletter'		    => NULL,
-                               'spam_suspect'	    => NULL,
-                               'not_adv_filter'	    => NULL);
-	/*	$validate_id  	= explode(',', $menu_params->get('em_validate_id'));
-		$columnSupl = explode(',', $menu_params->get('em_actions'));*/
+        $filts_details 	= array('profile'			=> NULL,
+                                  'evaluator'			=> NULL,
+                                  'evaluator_group'	=> NULL,
+                                  'schoolyear'			=> NULL,
+                                  'campaign'			=> NULL,
+                                  'programme'			=> NULL,
+                                  'missing_doc'		=> NULL,
+                                  'complete'			=> NULL,
+                                  'finalgrade'			=> NULL,
+                                  'validate'			=> NULL,
+                                  'other'				=> NULL,
+                                  'status'				=> NULL,
+                                  'published'          => NULL,
+                                  'adv_filter'		    => NULL,
+                                  'newsletter'		    => NULL,
+                                  'spam_suspect'	    => NULL,
+                                  'not_adv_filter' 	=> NULL);
+        $filts_options 	= array('profile'			=> NULL,
+                                  'evaluator'			=> NULL,
+                                  'evaluator_group'	=> NULL,
+                                  'schoolyear'			=> NULL,
+                                  'campaign'			=> NULL,
+                                  'programme'			=> NULL,
+                                  'missing_doc'		=> NULL,
+                                  'complete'			=> NULL,
+                                  'finalgrade'			=> NULL,
+                                  'validate'			=> NULL,
+                                  'other'				=> NULL,
+                                  'status'				=> NULL,
+                                  'published'          => NULL,
+                                  'adv_filter'		    => NULL,
+                                  'newsletter'		    => NULL,
+                                  'spam_suspect'	    => NULL,
+                                  'not_adv_filter'	    => NULL);
+        /*	$validate_id  	= explode(',', $menu_params->get('em_validate_id'));
+            $columnSupl = explode(',', $menu_params->get('em_actions'));*/
 
-		$filter_multi_list = array('schoolyear', 'campaign', 'programme', 'status', 'profile', 'profile_users');
+        $filter_multi_list = array('schoolyear', 'campaign', 'programme', 'status', 'profile_users');
 
-		//$tab_params = array();
-		foreach ($filts_names as $key => $filt_name) 
-		{
+        //$tab_params = array();
+        foreach ($filts_names as $key => $filt_name)
+        {
             if(!is_null($filts_values[$key]) && isset($filts_values[$key]) && empty($params[$filt_name])){
+
                 if(in_array($filt_name, $filter_multi_list)) {
-					$params[$filt_name] = array();
-					$params[$filt_name] = explode('|', $filts_values[$key]);
-					$params[$filt_name] = array_unique($params[$filt_name]);
-				}
-				else {
+                    $params[$filt_name] = array();
+                    $params[$filt_name] = explode('|', $filts_values[$key]);
+                    $params[$filt_name] = array_unique($params[$filt_name]);
+                }
+                else {
                     $params[$filt_name] = $filts_values[$key];
                 }
-			}
-			if (array_key_exists($key, $filts_values)) {
+            }
+            if (array_key_exists($key, $filts_values)) {
                 if(in_array($filt_name, $filter_multi_list))
                     $filts_details[$filt_name] = explode('|', $filts_values[$key]);
                 else
                     $filts_details[$filt_name] = $filts_values[$key];
             }
-			else
-				$filts_details[$filt_name] = '';
-			if (array_key_exists($key, $filts_types)) {
+            else
+                $filts_details[$filt_name] = '';
+            if (array_key_exists($key, $filts_types)) {
                 if ($filts_types[$key] == "hidden") {
                     if(in_array($filt_name, $filter_multi_list))
                         $params[$filt_name] = explode('|', $filts_values[$key]);
@@ -161,66 +163,68 @@ jimport('joomla.application.component.helper');
                 }
                 $filts_options[$filt_name] = $filts_types[$key];
             } else
-				$filts_options[$filt_name] = '';
-		}
-		// ONLY FILES LINKED TO MY GROUP
+                $filts_options[$filt_name] = '';
+        }
+        // ONLY FILES LINKED TO MY GROUP
         $programme = count($this->code)>0?$this->code:null;
-		//////////////////////////////////////////
+        //////////////////////////////////////////
 
-		if (count(@$params['programme']) == 0 || @$params['programme'][0] == '%') { 
-			$params['programme'] = $programme;
-			$filts_details['programme'] = $programme;
-		} elseif(count($filts_details['programme']) == 0 || empty($filts_details['programme'])) {
+        if (count(@$params['programme']) == 0 || @$params['programme'][0] == '%') {
+            $params['programme'] = $programme;
+            $filts_details['programme'] = $programme;
+        } elseif(count($filts_details['programme']) == 0 || empty($filts_details['programme'])) {
             $filts_details['programme'] = $programme;
         }
         //$params['published'] = 1;
         JFactory::getSession()->set('filt_params', $params);
-		return @EmundusHelperFiles::createFilterBlock($filts_details, $filts_options, $tables);
-	}
+        //var_dump($filts_details);
+
+        return @EmundusHelperFiles::createFilterBlock($filts_details, $filts_options, $tables);
+    }
 
 
-	/*
-	* @param 			query results
-	* @param 	array 	values to extract and insert
-	*/
-	public  function insertValuesInQueryResult($results, $options)
-	{
-		foreach ($results as $key => $result)
-		{
-			if (array_key_exists('params', $result))
-			{
-				if (is_array($result))
-				{
-					$params = json_decode($result['params']);
-					foreach ($options as $option)
-					{
-						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options))
-							$results[$key][$option] = implode('|', $params->sub_options->$option);
-						else
-							$results[$key][$option] = '';
-					}
-				}
-				else
-				{
-					$params = json_decode($result->params);
-					foreach ($options as $option)
-					{
-						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options))
-							$results[$key]->$option = implode('|', $params->sub_options->$option);
-						else
-							$results[$key]->$option = '';
-					}
-				}
-			}
-		}
-		return $results;
-	}
-	
-	public  function getCurrentCampaign(){
-		$eMConfig = JComponentHelper::getParams('com_emundus');
-		$nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
-		$db = JFactory::getDBO();
-		$query = 'SELECT DISTINCT year as schoolyear 
+    /*
+    * @param 			query results
+    * @param 	array 	values to extract and insert
+    */
+    public  function insertValuesInQueryResult($results, $options)
+    {
+        foreach ($results as $key => $result)
+        {
+            if (array_key_exists('params', $result))
+            {
+                if (is_array($result))
+                {
+                    $params = json_decode($result['params']);
+                    foreach ($options as $option)
+                    {
+                        if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options))
+                            $results[$key][$option] = implode('|', $params->sub_options->$option);
+                        else
+                            $results[$key][$option] = '';
+                    }
+                }
+                else
+                {
+                    $params = json_decode($result->params);
+                    foreach ($options as $option)
+                    {
+                        if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options))
+                            $results[$key]->$option = implode('|', $params->sub_options->$option);
+                        else
+                            $results[$key]->$option = '';
+                    }
+                }
+            }
+        }
+        return $results;
+    }
+
+    public  function getCurrentCampaign(){
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
+        $db = JFactory::getDBO();
+        $query = 'SELECT DISTINCT year as schoolyear
 		FROM #__emundus_setup_campaigns 
 		WHERE published = 1 AND end_date > DATE_ADD(NOW(), INTERVAL -'.$nb_months_registration_period_access.' MONTH) ORDER BY schoolyear DESC';
         $db->setQuery( $query );
@@ -746,38 +750,38 @@ jimport('joomla.application.component.helper');
         $document->addScript( JURI::base()."media/com_emundus/lib/chosen/chosen.jquery.min.js" );
 
         $session     = JFactory::getSession();
-		$filt_params = $session->get('filt_params');
-		$select_id	 = $session->get('select_filter');
-		if (!is_null($select_id))
-		{
-			$research_filter = @EmundusHelperFiles::getEmundusFilters($select_id);
-			$filter =  json_decode($research_filter->constraints, true);
-			$filt_params = $filter['filter'];
-		}
+        $filt_params = $session->get('filt_params');
+        $select_id	 = $session->get('select_filter');
+        if (!is_null($select_id))
+        {
+            $research_filter = @EmundusHelperFiles::getEmundusFilters($select_id);
+            $filter =  json_decode($research_filter->constraints, true);
+            $filt_params = $filter['filter'];
+        }
 
-		$current_s 				= @$filt_params['s'];
-		$current_profile		= @$filt_params['profile'];
-		$current_eval			= @$filt_params['user'];
-		//$current_group			= @$filt_params['group'];
-		$miss_doc				= @$filt_params['missing_doc'];
-		$current_finalgrade		= @$filt_params['finalgrade'];
-		$current_schoolyear		= @$filt_params['schoolyear'];
-		$current_campaign		= @$filt_params['campaign'];
-		$current_programme		= @$filt_params['programme'];
-		$search					= @$filt_params['elements'];
-		$search_other		 	= @$filt_params['elements_other'];
-		$complete_application	= @$filt_params['complete'];
-		$validate_application	= @$filt_params['validate'];
-		$current_status			= @$filt_params['status'];
+        $current_s 				= @$filt_params['s'];
+        $current_profile		= @$filt_params['profile'];
+        $current_eval			= @$filt_params['user'];
+        //$current_group			= @$filt_params['group'];
+        $miss_doc				= @$filt_params['missing_doc'];
+        $current_finalgrade		= @$filt_params['finalgrade'];
+        $current_schoolyear		= @$filt_params['schoolyear'];
+        $current_campaign		= @$filt_params['campaign'];
+        $current_programme		= @$filt_params['programme'];
+        $search					= @$filt_params['elements'];
+        $search_other		 	= @$filt_params['elements_other'];
+        $complete_application	= @$filt_params['complete'];
+        $validate_application	= @$filt_params['validate'];
+        $current_status			= @$filt_params['status'];
         $current_published      = @$filt_params['published'];
-		$current_tag			= @$filt_params['tag'];
-		$current_group_eval     = @$filt_params['evaluator_group'];
-		$current_user_profile	= @$filt_params['profile_users'];
-		$newsletter	            = @$filt_params['newsletter'];
-		$spam_suspect           = @$filt_params['spam_suspect'];
-		$filters = '';
-		// Quick filter
-		$quick = '<div id="filters">
+        $current_tag			= @$filt_params['tag'];
+        $current_group_eval     = @$filt_params['evaluator_group'];
+        $current_user_profile	= @$filt_params['profile_users'];
+        $newsletter	            = @$filt_params['newsletter'];
+        $spam_suspect           = @$filt_params['spam_suspect'];
+        $filters = '';
+        // Quick filter
+        $quick = '<div id="filters">
 					<div id="quick" class="form-group">
 						<label class="control-label editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'
 							<a href="javascript:clearchosen(\'#text_s\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a>
@@ -803,7 +807,8 @@ jimport('joomla.application.component.helper');
             foreach($profiles as $prof)
             {
                 $profile .= '<option value="'.$prof->id.'"';
-                if(!empty($current_profile) && in_array($prof->id, $current_profile)) $profile .= ' selected="true"';
+                if(!empty($current_profile) && (in_array($prof->id, $current_profile) || $prof->id == $current_profile))
+                    $profile .= ' selected="true"';
                 $profile .= '>'.$prof->label.'</option>';
             }
             $profile .= '</select>';
@@ -1593,220 +1598,220 @@ jimport('joomla.application.component.helper');
         }
     }
 
-     // getEvaluation
-     function getEvaluation($format='html', $fnums){
-         require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
-         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+    // getEvaluation
+    function getEvaluation($format='html', $fnums){
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
-         $evaluation 	= new EmundusModelEvaluation();
-         $files 			= new EmundusModelFiles;
+        $evaluation 	= new EmundusModelEvaluation();
+        $files 			= new EmundusModelFiles;
 
-         //$fnums = '2014103012343200000630002385';
-         if (!is_array($fnums)) {
-             $fnumInfo = $files->getFnumInfos($fnums);
-             $fnums = array($fnums);
-         } else {
-             $fnumInfo = $files->getFnumInfos($fnums[1]);
-         }
+        //$fnums = '2014103012343200000630002385';
+        if (!is_array($fnums)) {
+            $fnumInfo = $files->getFnumInfos($fnums);
+            $fnums = array($fnums);
+        } else {
+            $fnumInfo = $files->getFnumInfos($fnums[1]);
+        }
 
-         $element_id = $evaluation->getAllEvaluationElements(1, $fnumInfo['training']);
-         $elements = @EmundusHelperFiles::getElementsName(implode(',',$element_id));
-         $evaluations = $files->getFnumArray($fnums, $elements);
+        $element_id = $evaluation->getAllEvaluationElements(1, $fnumInfo['training']);
+        $elements = @EmundusHelperFiles::getElementsName(implode(',',$element_id));
+        $evaluations = $files->getFnumArray($fnums, $elements);
 
-         $data = array();
-         //$i = 0;
+        $data = array();
+        //$i = 0;
 
-         foreach($evaluations as $eval)
-         {
-             if ($eval['jos_emundus_evaluations___user'] > 0) {
-                 $str = '<br><hr>';
-                 $str .= '<em>'.JText::_('EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).'</em>';
-                 $str .= '<h1>'.JFactory::getUser($eval['jos_emundus_evaluations___user'])->name.'</h1>';
-                 $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
+        foreach($evaluations as $eval)
+        {
+            if ($eval['jos_emundus_evaluations___user'] > 0) {
+                $str = '<br><hr>';
+                $str .= '<em>'.JText::_('EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).'</em>';
+                $str .= '<h1>'.JFactory::getUser($eval['jos_emundus_evaluations___user'])->name.'</h1>';
+                $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
-                 foreach($elements as $element){
-                     $k = $element->tab_name.'___'.$element->element_name;
+                foreach($elements as $element){
+                    $k = $element->tab_name.'___'.$element->element_name;
 
-                     if( $element->element_name != 'id' &&
-                         $element->element_name != 'time_date' &&
-                         $element->element_name != 'campaign_id' &&
-                         $element->element_name != 'student_id'&&
-                         $element->element_name != 'user' &&
-                         $element->element_name != 'fnum' &&
-                         $element->element_name != 'email' &&
-                         $element->element_name != 'label' &&
-                         $element->element_name != 'code' &&
-                         array_key_exists($k, $eval))
-                     {
-                         $str .= '<tr>';
-                         if(strpos($element->element_name, 'comment') !== false)
-                             $str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . $eval[$k] . '</td>';
-                         else
-                             $str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . $eval[$k] . '</td>';
-                         $str .= '</tr>';
-                     }
-                 }
+                    if( $element->element_name != 'id' &&
+                        $element->element_name != 'time_date' &&
+                        $element->element_name != 'campaign_id' &&
+                        $element->element_name != 'student_id'&&
+                        $element->element_name != 'user' &&
+                        $element->element_name != 'fnum' &&
+                        $element->element_name != 'email' &&
+                        $element->element_name != 'label' &&
+                        $element->element_name != 'code' &&
+                        array_key_exists($k, $eval))
+                    {
+                        $str .= '<tr>';
+                        if(strpos($element->element_name, 'comment') !== false)
+                            $str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . $eval[$k] . '</td>';
+                        else
+                            $str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . $eval[$k] . '</td>';
+                        $str .= '</tr>';
+                    }
+                }
 
-                 $str .= '</table>';
-                 $str .= '<p></p><hr>';
+                $str .= '</table>';
+                $str .= '<p></p><hr>';
 
-                 if ($format != 'html') {
-                     //$str = str_replace('<hr>', chr(10).'------'.chr(10), $str);
-                     $str = str_replace('<br>', chr(10), $str);
-                     $str = str_replace('<br />', chr(10), $str);
-                     $str = str_replace('<h1>', '* ', $str);
-                     $str = str_replace('</h1>', ' : ', $str);
-                     $str = str_replace('<b>', chr(10), $str);
-                     $str = str_replace('</b>', ' : ', $str);
-                     $str = str_replace('&nbsp;', ' ', $str);
-                     $str = strip_tags($str, '<h1>');
-                 }
+                if ($format != 'html') {
+                    //$str = str_replace('<hr>', chr(10).'------'.chr(10), $str);
+                    $str = str_replace('<br>', chr(10), $str);
+                    $str = str_replace('<br />', chr(10), $str);
+                    $str = str_replace('<h1>', '* ', $str);
+                    $str = str_replace('</h1>', ' : ', $str);
+                    $str = str_replace('<b>', chr(10), $str);
+                    $str = str_replace('</b>', ' : ', $str);
+                    $str = str_replace('&nbsp;', ' ', $str);
+                    $str = strip_tags($str, '<h1>');
+                }
 
-                 $data[$eval['fnum']][$eval['jos_emundus_evaluations___user']] = $str;
+                $data[$eval['fnum']][$eval['jos_emundus_evaluations___user']] = $str;
 
-                 //$i++;
-             }
-         }
+                //$i++;
+            }
+        }
 
-         return $data;
-     }
+        return $data;
+    }
 
-     // getDecision
-     function getDecision($format='html', $fnums){
-         require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
-         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+    // getDecision
+    function getDecision($format='html', $fnums){
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
-         $evaluation    = new EmundusModelEvaluation();
-         $files             = new EmundusModelFiles;
+        $evaluation    = new EmundusModelEvaluation();
+        $files             = new EmundusModelFiles;
 
-         //$fnums = '2014103012343200000630002385';
-         if (!is_array($fnums)) {
-             $fnumInfo = $files->getFnumInfos($fnums);
-             $fnums = array($fnums);
-         } else {
-             $fnumInfo = $files->getFnumInfos($fnums[1]);
-         }
+        //$fnums = '2014103012343200000630002385';
+        if (!is_array($fnums)) {
+            $fnumInfo = $files->getFnumInfos($fnums);
+            $fnums = array($fnums);
+        } else {
+            $fnumInfo = $files->getFnumInfos($fnums[1]);
+        }
 
-         $element_id = $evaluation->getAllDecisionElements(1, $fnumInfo['training']);
-         $elements = @EmundusHelperFiles::getElementsName(implode(',',$element_id));
-         $evaluations = $files->getFnumArray($fnums, $elements);
+        $element_id = $evaluation->getAllDecisionElements(1, $fnumInfo['training']);
+        $elements = @EmundusHelperFiles::getElementsName(implode(',',$element_id));
+        $evaluations = $files->getFnumArray($fnums, $elements);
 
-         $data = array();
+        $data = array();
 
-         foreach($evaluations as $eval)
-         {
-             if ($eval['jos_emundus_final_grade___user'] > 0) {
-                 $str = '<br><hr>';
-                 $str .= '<em>'.JHtml::_('date', $eval['jos_emundus_final_grade___time_date'], JText::_('DATE_FORMAT_LC')).'</em>';
-                 $str .= '<h1>'.JFactory::getUser($eval['jos_emundus_final_grade___user'])->name.'</h1>';
-                 $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
+        foreach($evaluations as $eval)
+        {
+            if ($eval['jos_emundus_final_grade___user'] > 0) {
+                $str = '<br><hr>';
+                $str .= '<em>'.JHtml::_('date', $eval['jos_emundus_final_grade___time_date'], JText::_('DATE_FORMAT_LC')).'</em>';
+                $str .= '<h1>'.JFactory::getUser($eval['jos_emundus_final_grade___user'])->name.'</h1>';
+                $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
-                 foreach($elements as $element){
-                     $k = $element->tab_name.'___'.$element->element_name;
+                foreach($elements as $element){
+                    $k = $element->tab_name.'___'.$element->element_name;
 
-                     if( $element->element_name != 'id' &&
-                         $element->element_name != 'time_date' &&
-                         $element->element_name != 'campaign_id' &&
-                         $element->element_name != 'student_id'&&
-                         $element->element_name != 'user' &&
-                         $element->element_name != 'fnum' &&
-                         $element->element_name != 'email' &&
-                         $element->element_name != 'label' &&
-                         $element->element_name != 'code' &&
-                         array_key_exists($k, $eval))
-                     {
-                         $str .= '<tr>';
-                         if(strpos($element->element_plugin, 'textarea') !== false)
-                             $str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . $eval[$k] . '</td>';
-                         else
-                             $str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . $eval[$k] . '</td>';
-                         $str .= '</tr>';
-                     }
-                 }
+                    if( $element->element_name != 'id' &&
+                        $element->element_name != 'time_date' &&
+                        $element->element_name != 'campaign_id' &&
+                        $element->element_name != 'student_id'&&
+                        $element->element_name != 'user' &&
+                        $element->element_name != 'fnum' &&
+                        $element->element_name != 'email' &&
+                        $element->element_name != 'label' &&
+                        $element->element_name != 'code' &&
+                        array_key_exists($k, $eval))
+                    {
+                        $str .= '<tr>';
+                        if(strpos($element->element_plugin, 'textarea') !== false)
+                            $str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . $eval[$k] . '</td>';
+                        else
+                            $str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . $eval[$k] . '</td>';
+                        $str .= '</tr>';
+                    }
+                }
 
-                 $str .= '</table>';
-                 $str .= '<p></p><hr>';
+                $str .= '</table>';
+                $str .= '<p></p><hr>';
 
-                 if ($format != 'html') {
-                     //$str = str_replace('<hr>', chr(10).'------'.chr(10), $str);
-                     $str = str_replace('<br>', chr(10), $str);
-                     $str = str_replace('<br />', chr(10), $str);
-                     $str = str_replace('<h1>', '* ', $str);
-                     $str = str_replace('</h1>', ' : ', $str);
-                     $str = str_replace('<b>', chr(10), $str);
-                     $str = str_replace('</b>', ' : ', $str);
-                     $str = str_replace('&nbsp;', ' ', $str);
-                     $str = strip_tags($str, '<h1>');
-                 }
+                if ($format != 'html') {
+                    //$str = str_replace('<hr>', chr(10).'------'.chr(10), $str);
+                    $str = str_replace('<br>', chr(10), $str);
+                    $str = str_replace('<br />', chr(10), $str);
+                    $str = str_replace('<h1>', '* ', $str);
+                    $str = str_replace('</h1>', ' : ', $str);
+                    $str = str_replace('<b>', chr(10), $str);
+                    $str = str_replace('</b>', ' : ', $str);
+                    $str = str_replace('&nbsp;', ' ', $str);
+                    $str = strip_tags($str, '<h1>');
+                }
 
-                 $data[$eval['fnum']][$eval['jos_emundus_final_grade___user']] = $str;
+                $data[$eval['fnum']][$eval['jos_emundus_final_grade___user']] = $str;
 
-                 //$i++;
-             }
-         }
+                //$i++;
+            }
+        }
 
-         return $data;
-     }
+        return $data;
+    }
 
-     /*// getComment
-     function getComment($format='html', $fnums){
-         require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
-         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+    /*// getComment
+    function getComment($format='html', $fnums){
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
-         $app 	= new EmundusModelApplication();
-         $files = new EmundusModelFiles;
+        $app 	= new EmundusModelApplication();
+        $files = new EmundusModelFiles;
 
-         //$fnums = '2014103012343200000630002385';
-         if (!is_array($fnums)) {
-             $fnumInfo = $files->getFnumInfos($fnums);
-             $fnums = array($fnums);
-         } else {
-             $fnumInfo = $files->getFnumInfos($fnums[1]);
-         }
+        //$fnums = '2014103012343200000630002385';
+        if (!is_array($fnums)) {
+            $fnumInfo = $files->getFnumInfos($fnums);
+            $fnums = array($fnums);
+        } else {
+            $fnumInfo = $files->getFnumInfos($fnums[1]);
+        }
 
-         $comments = $app->getFileComments($fnumInfo['training']);
+        $comments = $app->getFileComments($fnumInfo['training']);
 
-         $data = array();
-         //$i = 0;
-         $str = '<br><hr>';
+        $data = array();
+        //$i = 0;
+        $str = '<br><hr>';
 
-         foreach($comments as $comment)
-         {
-             $str .= '<li class="list-group-item" id="'.$comment->id.'">';
-             $str .= '<div class="row">';
-             $str .= '<div class="col-xs-10 col-md-11">';
-             $str .= '<div>';
-             $str .= ' <a href="#">'.$comment->reason.'</a>';
-             $str .= '<div class="mic-info">';
-             $str .= ' <a href="#">'. $comment->name.'</a> - ';
-             $str .=  JHtml::_('date', $comment->date, JText::_('DATE_FORMAT_LC2'));
-             $str .= ' </div>';
-             $str .= '</div>';
-             $str .= '<div class="comment-text">';
-             $str .=  $comment->comment;
-             $str .= '</div>';
-             $str .= ' </div>';
-             $str .= '</div>';
-             $str .= '</li>';
+        foreach($comments as $comment)
+        {
+            $str .= '<li class="list-group-item" id="'.$comment->id.'">';
+            $str .= '<div class="row">';
+            $str .= '<div class="col-xs-10 col-md-11">';
+            $str .= '<div>';
+            $str .= ' <a href="#">'.$comment->reason.'</a>';
+            $str .= '<div class="mic-info">';
+            $str .= ' <a href="#">'. $comment->name.'</a> - ';
+            $str .=  JHtml::_('date', $comment->date, JText::_('DATE_FORMAT_LC2'));
+            $str .= ' </div>';
+            $str .= '</div>';
+            $str .= '<div class="comment-text">';
+            $str .=  $comment->comment;
+            $str .= '</div>';
+            $str .= ' </div>';
+            $str .= '</div>';
+            $str .= '</li>';
 
-             $str .= '<p></p><hr>';
+            $str .= '<p></p><hr>';
 
-             if ($format != 'html') {
-                 //$str = str_replace('<hr>', chr(10).'------'.chr(10), $str);
-                 $str = str_replace('<br>', chr(10), $str);
-                 $str = str_replace('<br />', chr(10), $str);
-                 $str = str_replace('<h1>', '* ', $str);
-                 $str = str_replace('</h1>', ' : ', $str);
-                 $str = str_replace('<b>', chr(10), $str);
-                 $str = str_replace('</b>', ' : ', $str);
-                 $str = str_replace('&nbsp;', ' ', $str);
-                 $str = strip_tags($str, '<h1>');
-             }
-             $data[$comment['fnum']] = $str;
-         }
+            if ($format != 'html') {
+                //$str = str_replace('<hr>', chr(10).'------'.chr(10), $str);
+                $str = str_replace('<br>', chr(10), $str);
+                $str = str_replace('<br />', chr(10), $str);
+                $str = str_replace('<h1>', '* ', $str);
+                $str = str_replace('</h1>', ' : ', $str);
+                $str = str_replace('<b>', chr(10), $str);
+                $str = str_replace('</b>', ' : ', $str);
+                $str = str_replace('&nbsp;', ' ', $str);
+                $str = strip_tags($str, '<h1>');
+            }
+            $data[$comment['fnum']] = $str;
+        }
 
-         return $data;
-     }*/
+        return $data;
+    }*/
 
     /**
      * Method to create a new FNUM
