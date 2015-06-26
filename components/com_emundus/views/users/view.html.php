@@ -171,13 +171,13 @@ class EmundusViewUsers extends JViewLegacy
 
     function display($tpl = null)
     {
-	    JHtml::script( JURI::base() . 'media/com_emundus/lib/jquery-1.10.2.min.js');
-	    JHtml::script( JURI::base() . 'media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
-	    JHtml::script( JURI::base()."media/com_emundus/lib/chosen/chosen.jquery.min.js" );
+	   // JHtml::script( JURI::base() . 'media/com_emundus/lib/jquery-1.10.2.min.js');
+	   // JHtml::script( JURI::base() . 'media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
+	   // JHtml::script( JURI::base()."media/com_emundus/lib/chosen/chosen.jquery.min.js" );
 	    JHTML::script( JURI::Base().'media/com_emundus/js/em_user.js');
-	    JHTML::script( JURI::Base().'media/com_emundus/js/jquery-form.js');
-	    JHtml::styleSheet( JURI::base()."media/com_emundus/lib/chosen/chosen.min.css");
-	    JHtml::stylesheet( JURI::base() . 'media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
+	   // JHTML::script( JURI::Base().'media/com_emundus/js/jquery-form.js');
+	   // JHtml::styleSheet( JURI::base()."media/com_emundus/lib/chosen/chosen.min.css");
+	   // JHtml::stylesheet( JURI::base() . 'media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
 	    JHtml::stylesheet( JURI::base() . 'media/com_emundus/css/emundus_files.css');
 
 	    if(!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))

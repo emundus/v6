@@ -177,7 +177,3 @@
 <?php else:?>
 	<?php echo JText::_('NO_RESULT'); ?>
 <?php endif;?>
-<script type="text/javascript">
-	refreshFilter();
-
-</script>

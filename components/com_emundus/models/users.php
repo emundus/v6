@@ -182,7 +182,7 @@ class EmundusModelUsers extends JModelList
 					LEFT JOIN #__categories AS cat ON cat.id = e.university_id
 					LEFT JOIN #__user_profiles AS up ON ( u.id = up.user_id AND up.profile_key like "emundus_profiles.newsletter")';
 
-        if(isset($programme) && !empty($programme) ) {
+        if(isset($programme) && !empty($programme) && $programme[0] != '%') {
             $query .= ' LEFT JOIN #__emundus_campaign_candidature AS ecc ON u.id = ecc.applicant_id
 						LEFT JOIN #__emundus_setup_campaigns as esc ON ecc.campaign_id=esc.id ';
         }
@@ -193,7 +193,7 @@ class EmundusModelUsers extends JModelList
 
         $query .= ' where 1=1 ';
 
-        if(isset($programme) && !empty($programme)) {
+        if(isset($programme) && !empty($programme) && $programme[0] != '%') {
             $query .= ' AND esc.training IN ("'.implode('","', $programme).'")';
         }
 
@@ -273,7 +273,7 @@ class EmundusModelUsers extends JModelList
         {
             $query = $this->_buildQuery();
             $query .= $this->_buildContentOrderBy();
-echo '<hr>'.str_replace ('#_', 'jos', $query);
+//echo '<hr>'.str_replace ('#_', 'jos', $query);
             return $this->_getList( $query ,$session->get('limitstart'), $session->get('limit'));
         }
         catch(Exception $e)

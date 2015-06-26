@@ -209,7 +209,7 @@ function search(){
 	$.ajax({
 		       type: 'POST',
 		       dataType: 'json',
-		       url: 'index.php?option=com_emundus&controller=users&task=setfilters',
+		       url: 'index.php?option=com_emundus&controller=users&task=setfilters&1',
 		       data: ({
 			       val: JSON.stringify(inputs),
 			       multi: false,
@@ -539,7 +539,7 @@ $(document).ready(function()
 			                         });
 		                  }
 	                  });
-	                  $(document).on('keyup', 'input:text', function(e) {
+	                 /* $(document).on('keyup', 'input:text', function(e) {
 		                  if (e.keyCode == 13) {
 			                  var id = $(this).attr('id');
 			                  var test = id.split('-');
@@ -552,7 +552,7 @@ $(document).ready(function()
 			                  $.ajax({
 				                         type: "POST",
 				                         dataType: 'json',
-				                         url: 'index.php?option=com_emundus&controller=users&task=setfilters',
+				                         url: 'index.php?option=com_emundus&controller=users&task=setfilters&2',
 				                         data: ({
 					                         id: $('#' + id).attr('name'),
 					                         val: $('#' + id).val(),
@@ -569,14 +569,14 @@ $(document).ready(function()
 				                         }
 			                         });
 		                  }
-	                  });
+	                  });*/
 	                  $(document).on('change', '#select_filter', function(e) {
 		                  var id = $(this).attr('id');
 		                  var val = $('#' + id).val();
 		                  $.ajax({
 			                         type: "POST",
 			                         dataType: 'json',
-			                         url: 'index.php?option=com_emundus&controller=users&task=setfilters',
+			                         url: 'index.php?option=com_emundus&controller=users&task=setfilters&3',
 			                         data: ({
 				                         id: $('#' + id).attr('name'),
 				                         val: val,
