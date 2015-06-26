@@ -1452,7 +1452,8 @@ $(document).ready(function()
                                                         dataType:'json',
                                                         success: function(result)
                                                         {
-                                                            var item="";
+                                                            var item='';
+                                                            item+='<option value="0" selected>Select an option</option>';
                                                             for(var d in result.elts)
                                                             {
                                                                 if(isNaN(parseInt(d)))
@@ -1528,7 +1529,8 @@ $(document).ready(function()
                                                 dataType:'json',
                                                 success: function(result)
                                                 {
-                                                    var item ='';
+                                                    var item='';
+                                                    item+='<option value="0" selected>Select an option</option>';
                                                     for(var d in result.elts)
                                                     {
                                                         if(isNaN(parseInt(d)))
@@ -1923,7 +1925,7 @@ $(document).ready(function()
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
                 '</div>');
-                //var url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getstate';
+                //var url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getpublish';
                 $.ajax({
                     type:'get',
                     url:url,
