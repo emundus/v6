@@ -57,7 +57,7 @@ JFactory::getSession()->set('application_layout', 'evaluation');
     $('iframe').load(function(){
         $(".holds-iframe").remove();
     }).show();
-
+    /*
 var url_evaluation = '<?php echo $this->url_evaluation; ?>';
 var url_form = '<?php echo $this->url_form; ?>';
 if (url_evaluation != '') {
@@ -74,7 +74,7 @@ if (url_evaluation != '') {
             }
         });
 }
-/*
+
 if (url_form != '') {
     $.ajax({
             type: "GET",
