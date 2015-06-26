@@ -835,7 +835,7 @@ class EmundusModelFiles extends JModelLegacy
                             }
                         }
                         break;
-                    case 'profile':
+                    /*case 'profile':
                         if(!empty($value) && @$value[0]!=0)
                         {
                             $query['q'] .= 'and (spro.id = ' . $value . ' OR fg.result_for = ' . $value . ' OR ue.user_id IN (select user_id from #__emundus_users_profiles where profile_id = ' . $value . ')) ';
@@ -855,7 +855,7 @@ class EmundusModelFiles extends JModelLegacy
                             if (!array_key_exists('jos_emundus_setup_profiles', $tableAlias))
                                 $query['join'] .= ' left join #__emundus_setup_profiles as spro on spro.id = ue.profile ';
                         }
-                        break;
+                        break;*/
                     case 'missing_doc':
                         if(!empty($value))
                         {
