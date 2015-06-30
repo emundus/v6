@@ -119,10 +119,9 @@ class EmundusHelperExport
         if(!$f)
             return false;
 
-        //Read the last 16KB
-        fseek($f, -16384, SEEK_END);
-        $s = fread($f, 16384);
-
+        //Read the last 320KB
+        fseek($f, -323840, SEEK_END);
+        $s = fread($f, 323840);
         //Extract Info object number
         return preg_match('/Encrypt ([0-9]+) /', $s);
     }
@@ -143,7 +142,7 @@ class EmundusHelperExport
                         /*$prop = EmundusHelperExport::get_pdf_prop($filePath);
                         echo "<pre>";
             var_dump($prop); die();*/
-                        if (EmundusHelperExport::isEncrypted($filePath)) {
+                        if (EmundusHelperExport::isEncrypted($filePath)) { 
                             $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
                             $exports[] = $fn;
                             $tmpArray[] = $fn;
@@ -195,8 +194,8 @@ class EmundusHelperExport
 		}
 		else
 		{
-
-			$htmlData = '<a href="'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';
+			$htmlData = JText::_('ENCRYPTED_FILE').' : ';
+			$htmlData .= '<a href="'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';
 			$pdf->startTransaction();
 			$start_y = $pdf->GetY();
 			$start_page = $pdf->getPage();

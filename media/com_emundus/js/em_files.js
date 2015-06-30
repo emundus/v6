@@ -1448,7 +1448,7 @@ $(document).ready(function()
                                                 if (nbprg == 1) {
                                                     $.ajax({
                                                         type:'get',
-                                                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getformelem&Itemid=542',
+                                                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getformelem&Itemid='+itemId,
                                                         dataType:'json',
                                                         success: function(result)
                                                         {
@@ -1525,7 +1525,7 @@ $(document).ready(function()
                                             $('#em-export').empty();
                                             $.ajax({
                                                 type:'get',
-                                                url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getformelem&Itemid=542',
+                                                url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getformelem&Itemid='+itemId,
                                                 dataType:'json',
                                                 success: function(result)
                                                 {

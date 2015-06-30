@@ -137,10 +137,10 @@ class EmundusModelFiles extends JModelLegacy
                 if($def_elmt->element_plugin == 'date') {
                     if (@$group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
-														SELECT  GROUP_CONCAT(DATE_FORMAT('.$def_elmt->table_join.'.'.$def_elmt->element_name.', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ")
-														FROM '.$def_elmt->table_join.'
-														WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
-													  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
+                                                        SELECT  GROUP_CONCAT(DATE_FORMAT('.$def_elmt->table_join.'.'.$def_elmt->element_name.', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ")
+                                                        FROM '.$def_elmt->table_join.'
+                                                        WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+                                                      ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
                     } else
                         $this->_elements_default[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
                 }
@@ -150,14 +150,14 @@ class EmundusModelFiles extends JModelLegacy
 
                     if (@$group_params->repeat_group_button == 1) {
                         $query = '(
-									select GROUP_CONCAT('.$column.' SEPARATOR ", ") 
-									from '.$attribs->join_db_name.' 
-									where '.$attribs->join_db_name.'.'.$attribs->join_key_column.' IN 
-										( select '.$def_elmt->table_join.'.' . $def_elmt->element_name.'
-										  from '.$def_elmt->table_join.'
-										  where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
-										)
-								  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
+                                    select GROUP_CONCAT('.$column.' SEPARATOR ", ") 
+                                    from '.$attribs->join_db_name.' 
+                                    where '.$attribs->join_db_name.'.'.$attribs->join_key_column.' IN 
+                                        ( select '.$def_elmt->table_join.'.' . $def_elmt->element_name.'
+                                          from '.$def_elmt->table_join.'
+                                          where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
+                                        )
+                                  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
                     } else
                         $query = '(select DISTINCT '.$column.' from '.$attribs->join_db_name.' where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`'.$def_elmt->tab_name . '`.`' . $def_elmt->element_name.'`) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 
@@ -199,10 +199,10 @@ class EmundusModelFiles extends JModelLegacy
                 else {
                     if (@$group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
-														SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", ")
-														FROM '.$def_elmt->table_join.'
-														WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
-													  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
+                                                        SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", ")
+                                                        FROM '.$def_elmt->table_join.'
+                                                        WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+                                                      ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
                     } else
                         $this->_elements_default[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
                 }
@@ -343,8 +343,8 @@ class EmundusModelFiles extends JModelLegacy
     {
         $db = JFactory::getDBO();
         $query = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
-					LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
-					WHERE esg.published=1 AND eg.user_id=' . $user;
+                    LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
+                    WHERE esg.published=1 AND eg.user_id=' . $user;
         $db->setQuery($query);
         $profiles = $db->loadResultArray();
 
@@ -366,9 +366,9 @@ class EmundusModelFiles extends JModelLegacy
         $db = JFactory::getDBO();
 
         $query = 'SELECT DISTINCT(#__emundus_users.user_id), ' . $tab . '.' . $elem . ' AS ' . $tab . '___' . $elem;
-        $query .= '	FROM #__emundus_campaign_candidature
-					LEFT JOIN #__emundus_users ON #__emundus_users.user_id=#__emundus_campaign_candidature.applicant_id
-					LEFT JOIN #__users ON #__users.id=#__emundus_users.user_id';
+        $query .= ' FROM #__emundus_campaign_candidature
+                    LEFT JOIN #__emundus_users ON #__emundus_users.user_id=#__emundus_campaign_candidature.applicant_id
+                    LEFT JOIN #__users ON #__users.id=#__emundus_users.user_id';
 
         // subquery JOINS
         $joined = array('jos_emundus_users');
@@ -519,18 +519,18 @@ class EmundusModelFiles extends JModelLegacy
                         'jos_emundus_declaration');
 
         $query = 'SELECT #__emundus_users.user_id, #__emundus_users.user_id as user, #__emundus_users.user_id as id, #__emundus_users.lastname, #__emundus_users.firstname, #__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile, #__emundus_declaration.validated, #__emundus_campaign_candidature.date_submitted,
-		#__emundus_setup_campaigns.year as schoolyear, #__emundus_setup_campaigns.label, #__emundus_campaign_candidature.date_submitted, #__emundus_campaign_candidature.campaign_id';
+        #__emundus_setup_campaigns.year as schoolyear, #__emundus_setup_campaigns.label, #__emundus_campaign_candidature.date_submitted, #__emundus_campaign_candidature.campaign_id';
         if (!empty($cols)) $query .= ', ' . $cols;
         if (!empty($cols_other)) $query .= ', ' . $cols_other;
         if (!empty($cols_default)) $query .= ', ' . $cols_default;
         if (!empty($col_validate)) $query .= ', ' . $col_validate;
-        $query .= '	FROM #__emundus_campaign_candidature
-					LEFT JOIN #__emundus_declaration ON #__emundus_declaration.user =  #__emundus_campaign_candidature.applicant_id
-					LEFT JOIN #__emundus_users ON #__emundus_declaration.user=#__emundus_users.user_id
-					LEFT JOIN #__emundus_setup_campaigns ON #__emundus_setup_campaigns.id=#__emundus_campaign_candidature.campaign_id
-					LEFT JOIN #__users ON #__users.id=#__emundus_users.user_id
-					LEFT JOIN #__emundus_setup_profiles ON #__emundus_setup_profiles.id=#__emundus_users.profile
-					LEFT JOIN #__emundus_final_grade ON #__emundus_final_grade.student_id=#__emundus_users.user_id';
+        $query .= ' FROM #__emundus_campaign_candidature
+                    LEFT JOIN #__emundus_declaration ON #__emundus_declaration.user =  #__emundus_campaign_candidature.applicant_id
+                    LEFT JOIN #__emundus_users ON #__emundus_declaration.user=#__emundus_users.user_id
+                    LEFT JOIN #__emundus_setup_campaigns ON #__emundus_setup_campaigns.id=#__emundus_campaign_candidature.campaign_id
+                    LEFT JOIN #__users ON #__users.id=#__emundus_users.user_id
+                    LEFT JOIN #__emundus_setup_profiles ON #__emundus_setup_profiles.id=#__emundus_users.profile
+                    LEFT JOIN #__emundus_final_grade ON #__emundus_final_grade.student_id=#__emundus_users.user_id';
 
         $this->setJoins($search, $query, $joined);
         $this->setJoins($search_other, $query, $joined);
@@ -559,13 +559,13 @@ class EmundusModelFiles extends JModelLegacy
         ) {
             $pa = EmundusHelperAccess::getProfileAccess($current_user->id);
             $query .= ' AND (#__emundus_users.user_id IN (
-								SELECT user_id
-								FROM #__emundus_users_profiles
-								WHERE profile_id in (' . implode(',', $pa) . ')) OR #__emundus_users.user_id IN (
-									SELECT user_id
-									FROM #__emundus_users
-									WHERE profile in (' . implode(',', $pa) . '))
-							) ';
+                                SELECT user_id
+                                FROM #__emundus_users_profiles
+                                WHERE profile_id in (' . implode(',', $pa) . ')) OR #__emundus_users.user_id IN (
+                                    SELECT user_id
+                                    FROM #__emundus_users
+                                    WHERE profile in (' . implode(',', $pa) . '))
+                            ) ';
         }
         return $query;
     }
@@ -999,11 +999,11 @@ class EmundusModelFiles extends JModelLegacy
 
 
         $query .= ' FROM #__emundus_campaign_candidature
-					LEFT JOIN #__emundus_setup_status as ss on ss.step = jos_emundus_campaign_candidature.status 
-					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id 
-					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training  
-					LEFT JOIN #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id
-					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jos_emundus_campaign_candidature.fnum  ';
+                    LEFT JOIN #__emundus_setup_status as ss on ss.step = jos_emundus_campaign_candidature.status 
+                    LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id 
+                    LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training  
+                    LEFT JOIN #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id
+                    LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jos_emundus_campaign_candidature.fnum  ';
 
         $q = $this->_buildWhere($lastTab);
 
@@ -1088,11 +1088,11 @@ class EmundusModelFiles extends JModelLegacy
                     $tables = $tab[0];
 
                     $query = 'SELECT distinct(fe.name), fe.label, ft.db_table_name as table_name
-						FROM #__fabrik_elements fe
-						LEFT JOIN #__fabrik_formgroup ff ON ff.group_id = fe.group_id
-						LEFT JOIN #__fabrik_lists ft ON ft.form_id = ff.form_id
-						WHERE fe.name = "' . $names . '"
-						AND ft.db_table_name = "' . $tables . '"';
+                        FROM #__fabrik_elements fe
+                        LEFT JOIN #__fabrik_formgroup ff ON ff.group_id = fe.group_id
+                        LEFT JOIN #__fabrik_lists ft ON ft.form_id = ff.form_id
+                        WHERE fe.name = "' . $names . '"
+                        AND ft.db_table_name = "' . $tables . '"';
                     $this->_db->setQuery($query);
                     $cols[] = $this->_db->loadObject();
                 }
@@ -1118,8 +1118,8 @@ class EmundusModelFiles extends JModelLegacy
     {
         $db = JFactory::getDBO();
         $query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft FROM #__emundus_setup_profiles esp
-		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
-		ORDER BY caag.lft, esp.label';
+        INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
+        ORDER BY caag.lft, esp.label';
         $db->setQuery($query);
         return $db->loadObjectList('id');
     }
@@ -1132,8 +1132,8 @@ class EmundusModelFiles extends JModelLegacy
     {
         $db = JFactory::getDBO();
         $query = 'SELECT esp.* FROM jos_emundus_setup_profiles as esp
-				LEFT JOIN jos_emundus_users as eu ON eu.profile=esp.id
-				WHERE eu.user_id=' . $id;
+                LEFT JOIN jos_emundus_users as eu ON eu.profile=esp.id
+                WHERE eu.user_id=' . $id;
         $db->setQuery($query);
         return $db->loadObjectList();
     }
@@ -1146,10 +1146,10 @@ class EmundusModelFiles extends JModelLegacy
     {
         $db = JFactory::getDBO();
         $query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft
-		FROM #__emundus_setup_profiles esp
-		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
-		WHERE esp.id IN (' . implode(',', $ids) . ')
-		ORDER BY caag.lft, esp.label';
+        FROM #__emundus_setup_profiles esp
+        INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
+        WHERE esp.id IN (' . implode(',', $ids) . ')
+        ORDER BY caag.lft, esp.label';
         $db->setQuery($query);
         return $db->loadObjectList('id');
     }
@@ -1161,9 +1161,9 @@ class EmundusModelFiles extends JModelLegacy
     {
         $db = JFactory::getDBO();
         $query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft
-		FROM #__emundus_setup_profiles esp
-		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
-		WHERE esp.acl_aro_groups=19';
+        FROM #__emundus_setup_profiles esp
+        INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
+        WHERE esp.acl_aro_groups=19';
         $db->setQuery($query);
         return $db->loadObjectList('id');
     }
@@ -1176,7 +1176,7 @@ class EmundusModelFiles extends JModelLegacy
         $user = JFactory::getUser();
         $db = JFactory::getDBO();
         $query = 'SELECT esp.id, esp.label FROM #__emundus_setup_profiles esp
-				  WHERE esp.published=1 ';
+                  WHERE esp.published=1 ';
         $no_filter = array("Super Users", "Administrator");
         if (!in_array($user->usertype, $no_filter))
             $query .= ' AND esp.id IN (select profile_id from #__emundus_users_profiles where profile_id in (' .
@@ -1206,8 +1206,8 @@ class EmundusModelFiles extends JModelLegacy
     {
         $db = JFactory::getDBO();
         $query = 'SELECT u.id, u.gid, u.name
-		FROM #__users u
-		WHERE u.gid=19';
+        FROM #__users u
+        WHERE u.gid=19';
         $db->setQuery($query);
         return $db->loadObjectList('id');
     }
@@ -1219,8 +1219,8 @@ class EmundusModelFiles extends JModelLegacy
     {
         $db = JFactory::getDBO();
         $query = 'SELECT esm.id, esm.label, esm.value
-		FROM #__emundus_setup_mobility esm
-		ORDER BY ordering';
+        FROM #__emundus_setup_mobility esm
+        ORDER BY ordering';
         $db->setQuery($query);
         return $db->loadObjectList('id');
     }
@@ -1232,16 +1232,16 @@ class EmundusModelFiles extends JModelLegacy
     {
         $db = JFactory::getDBO();
         $query = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
-				 groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
-				 tab.db_table_name AS table_name, tab.label AS table_label
-			FROM jos_fabrik_elements element
-				 INNER JOIN jos_fabrik_groups AS groupe ON element.group_id = groupe.id
-				 INNER JOIN jos_fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
-				 INNER JOIN jos_fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-				 INNER JOIN jos_menu AS menu ON tab.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)
-				 INNER JOIN jos_emundus_setup_profiles AS profile ON profile.menutype = menu.menutype
-			WHERE tab.published = 1 AND element.published=1 AND element.hidden=0 AND element.label!=" " AND element.label!=""
-			ORDER BY menu.ordering, formgroup.ordering, element.ordering';
+                 groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
+                 tab.db_table_name AS table_name, tab.label AS table_label
+            FROM jos_fabrik_elements element
+                 INNER JOIN jos_fabrik_groups AS groupe ON element.group_id = groupe.id
+                 INNER JOIN jos_fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
+                 INNER JOIN jos_fabrik_lists AS tab ON tab.form_id = formgroup.form_id
+                 INNER JOIN jos_menu AS menu ON tab.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)
+                 INNER JOIN jos_emundus_setup_profiles AS profile ON profile.menutype = menu.menutype
+            WHERE tab.published = 1 AND element.published=1 AND element.hidden=0 AND element.label!=" " AND element.label!=""
+            ORDER BY menu.ordering, formgroup.ordering, element.ordering';
         $db->setQuery($query);
         //die(print_r($db->loadObjectList('id')));
         return $db->loadObjectList('id');
@@ -1254,16 +1254,16 @@ class EmundusModelFiles extends JModelLegacy
     {
         $db = JFactory::getDBO();
         $query = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
-				 groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
-				 tab.db_table_name AS table_name, tab.label AS table_label
-			FROM jos_fabrik_elements element
-				 INNER JOIN jos_fabrik_groups AS groupe ON element.group_id = groupe.id
-				 INNER JOIN jos_fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
-				 INNER JOIN jos_fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-				 INNER JOIN jos_menu AS menu ON tab.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)
-				 INNER JOIN jos_emundus_setup_profiles AS profile ON profile.menutype = menu.menutype
-			WHERE tab.published = 1 AND element.published=1 AND element.hidden=0 AND element.label!=" " AND element.label!=""
-			ORDER BY menu.ordering, formgroup.ordering, element.ordering';
+                 groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
+                 tab.db_table_name AS table_name, tab.label AS table_label
+            FROM jos_fabrik_elements element
+                 INNER JOIN jos_fabrik_groups AS groupe ON element.group_id = groupe.id
+                 INNER JOIN jos_fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
+                 INNER JOIN jos_fabrik_lists AS tab ON tab.form_id = formgroup.form_id
+                 INNER JOIN jos_menu AS menu ON tab.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)
+                 INNER JOIN jos_emundus_setup_profiles AS profile ON profile.menutype = menu.menutype
+            WHERE tab.published = 1 AND element.published=1 AND element.hidden=0 AND element.label!=" " AND element.label!=""
+            ORDER BY menu.ordering, formgroup.ordering, element.ordering';
         $db->setQuery($query);
 //echo str_replace('#_', 'jos', $query);
         return $db->loadObjectList('element_name');
@@ -1326,9 +1326,9 @@ class EmundusModelFiles extends JModelLegacy
     {
         $db = JFactory::getDBO();
         $query = 'SELECT DISTINCT(schoolyear) as schoolyear
-		FROM #__emundus_users
-		WHERE schoolyear is not null AND schoolyear != ""
-		ORDER BY schoolyear';
+        FROM #__emundus_users
+        WHERE schoolyear is not null AND schoolyear != ""
+        ORDER BY schoolyear';
         $db->setQuery($query);
         return $db->loadResultArray();
     }
@@ -1367,11 +1367,11 @@ class EmundusModelFiles extends JModelLegacy
             $db->setQuery($query);
             $evalGroups['groups'] = $db->loadAssocList();
             $query = 'SELECT eu.user_id, CONCAT( eu.firstname, " ", eu.lastname ) as name
-						FROM #__emundus_users AS eu
-						LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile
-						LEFT JOIN #__emundus_users_profiles AS eup ON eup.user_id = eu.user_id
-						WHERE eu.profile !=1
-						AND esp.published !=1';
+                        FROM #__emundus_users AS eu
+                        LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile
+                        LEFT JOIN #__emundus_users_profiles AS eup ON eup.user_id = eu.user_id
+                        WHERE eu.profile !=1
+                        AND esp.published !=1';
 //echo str_replace('#_', 'jos', $query);
             $db->setQuery($query);
             $evalGroups['users'] = $db->loadAssocList();
@@ -1534,9 +1534,9 @@ class EmundusModelFiles extends JModelLegacy
     public function getStatusByFnums($fnums)
     {
         $query = 'select *
-				  from #__emundus_campaign_candidature as ecc  
-				  left join #__emundus_setup_status as ess on ess.step=ecc.status 
-				  where ecc.fnum in ("'.implode('","', $fnums).'")';
+                  from #__emundus_campaign_candidature as ecc  
+                  left join #__emundus_setup_status as ess on ess.step=ecc.status 
+                  where ecc.fnum in ("'.implode('","', $fnums).'")';
         $db = $this->getDbo();
 
         try
@@ -1779,9 +1779,9 @@ class EmundusModelFiles extends JModelLegacy
         {
             $db = $this->getDbo();
             $query = 'select u.name, c.label, cc.fnum, c.training
-						from #__emundus_campaign_candidature as cc 
-						left join #__emundus_setup_campaigns as c on c.id = cc.campaign_id left join 
-						#__users as u on u.id = cc.applicant_id where cc.fnum like '.$db->Quote($fnum);
+                        from #__emundus_campaign_candidature as cc 
+                        left join #__emundus_setup_campaigns as c on c.id = cc.campaign_id left join 
+                        #__users as u on u.id = cc.applicant_id where cc.fnum like '.$db->Quote($fnum);
             $db->setQuery($query);
 
             return $db->loadAssoc();
@@ -1804,11 +1804,11 @@ class EmundusModelFiles extends JModelLegacy
         {
             $db = $this->getDbo();
             $query = 'select u.name, u.email, cc.fnum, ss.step, ss.value, sc.label, sc.start_date, sc.end_date, sc.year, sc.published, sc.training, cc.applicant_id
-						from #__emundus_campaign_candidature as cc
- 						left join #__users as u on u.id = cc.applicant_id
- 						left join #__emundus_setup_campaigns as sc on sc.id = cc.campaign_id
- 						left join #__emundus_setup_status as ss on ss.step = cc.status
- 						where cc.fnum in ("'. implode('","', $fnums).'")';
+                        from #__emundus_campaign_candidature as cc
+                        left join #__users as u on u.id = cc.applicant_id
+                        left join #__emundus_setup_campaigns as sc on sc.id = cc.campaign_id
+                        left join #__emundus_setup_status as ss on ss.step = cc.status
+                        where cc.fnum in ("'. implode('","', $fnums).'")';
             $db->setQuery($query);
 
             return $db->loadAssocList('fnum');
@@ -1831,15 +1831,15 @@ class EmundusModelFiles extends JModelLegacy
         {
             $db = $this->getDbo();
             $query = 'select u.name as applicant_name, u.email as applicant_email, u.username as applicant_email, cc.fnum, sc.id as campaign_id , sc.label as campaign_label, sc.training as campaign_code,  sc.start_date as campaign_start, sc.end_date as campaign_end, sc.year as campaign_year,  jesp.code as training_code, jesp.label as training_programme, cc.applicant_id as applicant_id, jess.value as application_status, group_concat(jesat.label) as application_tags
-						from jos_emundus_campaign_candidature as cc
- 						left join jos_users as u on u.id = cc.applicant_id
- 						left join jos_emundus_setup_campaigns as sc on sc.id = cc.campaign_id
- 						left join jos_emundus_setup_programmes as jesp on jesp.code = sc.training
- 						left join jos_emundus_setup_status as jess on jess.step = cc.status
- 						left join jos_emundus_tag_assoc as jeta on jeta.fnum like cc.fnum
- 						left join jos_emundus_setup_action_tag as jesat on jesat.id = jeta.id_tag
- 						where cc.fnum in ("'. implode('","', $fnums).'")
- 						group by cc.fnum';
+                        from jos_emundus_campaign_candidature as cc
+                        left join jos_users as u on u.id = cc.applicant_id
+                        left join jos_emundus_setup_campaigns as sc on sc.id = cc.campaign_id
+                        left join jos_emundus_setup_programmes as jesp on jesp.code = sc.training
+                        left join jos_emundus_setup_status as jess on jess.step = cc.status
+                        left join jos_emundus_tag_assoc as jeta on jeta.fnum like cc.fnum
+                        left join jos_emundus_setup_action_tag as jesat on jesat.id = jeta.id_tag
+                        where cc.fnum in ("'. implode('","', $fnums).'")
+                        group by cc.fnum';
             $db->setQuery($query);
             return $db->loadAssocList('fnum');
         }
@@ -1880,10 +1880,10 @@ class EmundusModelFiles extends JModelLegacy
         {
             $db = $this->getDbo();
             $query = "SELECT jos_emundus_campaign_candidature.fnum
-						FROM #__emundus_campaign_candidature
-						LEFT JOIN #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id
-						LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id
-						LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training ";
+                        FROM #__emundus_campaign_candidature
+                        LEFT JOIN #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id
+                        LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id
+                        LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training ";
             $leftJoin = '';
             if(!isset($lastTab))
             {
@@ -1921,7 +1921,10 @@ class EmundusModelFiles extends JModelLegacy
             }
             $query .= $q['join'];
             $query .= ' where 1 = 1 ' . $q['q'];
-            //die( str_replace('#_', 'jos', $query) );
+
+            $query .= $this->_buildContentOrderBy();
+
+//die( str_replace('#_', 'jos', $query) );
             $db->setQuery($query);
 
             return $db->loadColumn();
@@ -1933,10 +1936,10 @@ class EmundusModelFiles extends JModelLegacy
     }
 
     /*
-    * 	Get values of elements by list of files numbers
-    *	@param fnums 	List of application files numbers
-    *	@param elements 	array of element to get value
-    * 	@return array
+    *   Get values of elements by list of files numbers
+    *   @param fnums    List of application files numbers
+    *   @param elements     array of element to get value
+    *   @return array
     */
     /**
      * @param $fnums
@@ -1974,10 +1977,10 @@ class EmundusModelFiles extends JModelLegacy
                         }
                         else {
                             $query .= ', (
-										SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.'.'.$elt->element_name.' SEPARATOR ", ")
-										FROM '.$elt->table_join.'
-										WHERE '.$elt->table_join.'.parent_id='.$tableAlias[$elt->tab_name].'.id
-									  )	AS '. $elt->table_join.'___'.$elt->element_name;
+                                        SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.'.'.$elt->element_name.' SEPARATOR ", ")
+                                        FROM '.$elt->table_join.'
+                                        WHERE '.$elt->table_join.'.parent_id='.$tableAlias[$elt->tab_name].'.id
+                                      ) AS '. $elt->table_join.'___'.$elt->element_name;
                         }
                     }
                     else {
@@ -2004,10 +2007,10 @@ class EmundusModelFiles extends JModelLegacy
                         }
                         else {
                             $query .= ', (
-										SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.' SEPARATOR ", ")
-										FROM '.$elt->table_join.'
-										WHERE '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id
-									  )	AS '. $elt->table_join.'___'.$elt->element_name;
+                                        SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.' SEPARATOR ", ")
+                                        FROM '.$elt->table_join.'
+                                        WHERE '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id
+                                      ) AS '. $elt->table_join.'___'.$elt->element_name;
                         }
                     }
                     else {
@@ -2036,9 +2039,9 @@ class EmundusModelFiles extends JModelLegacy
                 }
             }
             $query .= ' from #__emundus_campaign_candidature as c
-						left join #__users as u on u.id = c.applicant_id 
-						left join #__emundus_setup_campaigns as esc on esc.id = c.campaign_id 
-						left join #__emundus_setup_programmes as sp on sp.code = esc.training ';
+                        left join #__users as u on u.id = c.applicant_id 
+                        left join #__emundus_setup_campaigns as esc on esc.id = c.campaign_id 
+                        left join #__emundus_setup_programmes as sp on sp.code = esc.training ';
 
             $query .= $leftJoin. ' '. $leftJoinMulti;
 
@@ -2146,11 +2149,11 @@ class EmundusModelFiles extends JModelLegacy
     public function getGroupsByFnums($fnums)
     {
         $query = 'select cc.fnum,  GROUP_CONCAT( DISTINCT esg.label ) as groupe
-					from #__emundus_campaign_candidature as cc 
-					left join #__emundus_setup_campaigns as esc on esc.id = cc.campaign_id 
-					left join #__emundus_setup_groups_repeat_course as esgrc on esgrc.course = esc.training 
-					left join #__emundus_setup_groups as esg on esg.id = esgrc.parent_id
-					where cc.fnum in ("'.implode('","', $fnums).'") group by cc.fnum';
+                    from #__emundus_campaign_candidature as cc 
+                    left join #__emundus_setup_campaigns as esc on esc.id = cc.campaign_id 
+                    left join #__emundus_setup_groups_repeat_course as esgrc on esgrc.course = esc.training 
+                    left join #__emundus_setup_groups as esg on esg.id = esgrc.parent_id
+                    where cc.fnum in ("'.implode('","', $fnums).'") group by cc.fnum';
         try
         {
             $db = $this->getDbo();
@@ -2206,9 +2209,9 @@ class EmundusModelFiles extends JModelLegacy
     }
 
     /*
-    * 	Get evaluation Fabrik formid from fnum
-    *	@param fnum 	fnum to evaluate
-    * 	@return int 	Fabrik formid
+    *   Get evaluation Fabrik formid from fnum
+    *   @param fnum     fnum to evaluate
+    *   @return int     Fabrik formid
     */
     /**
      * @param $fnum
@@ -2220,13 +2223,13 @@ class EmundusModelFiles extends JModelLegacy
         {
             $db = $this->getDbo();
             $query = "SELECT form_id
-						FROM `#__fabrik_formgroup`
-						WHERE group_id IN (
-							SELECT esp.fabrik_group_id
-							FROM  `#__emundus_campaign_candidature` AS ecc
-							LEFT JOIN `#__emundus_setup_campaigns` AS esc ON esc.id = ecc.campaign_id
-							LEFT JOIN `#__emundus_setup_programmes` AS esp ON esp.code = esc.training
-							WHERE ecc.fnum LIKE  " . $db->quote($fnum) .")";
+                        FROM `#__fabrik_formgroup`
+                        WHERE group_id IN (
+                            SELECT esp.fabrik_group_id
+                            FROM  `#__emundus_campaign_candidature` AS ecc
+                            LEFT JOIN `#__emundus_setup_campaigns` AS esc ON esc.id = ecc.campaign_id
+                            LEFT JOIN `#__emundus_setup_programmes` AS esp ON esp.code = esc.training
+                            WHERE ecc.fnum LIKE  " . $db->quote($fnum) .")";
             $db->setQuery($query);
             $res = $db->loadResult();
             return $res;
@@ -2247,13 +2250,13 @@ class EmundusModelFiles extends JModelLegacy
         {
             $db = $this->getDbo();
             $query = "SELECT *
-						FROM `#__fabrik_formgroup`
-						WHERE group_id IN (
-							SELECT esp.fabrik_group_id
-							FROM  `#__emundus_campaign_candidature` AS ecc
-							LEFT JOIN `#__emundus_setup_campaigns` AS esc ON esc.id = ecc.campaign_id
-							LEFT JOIN `#__emundus_setup_programmes` AS esp ON esp.code = esc.training
-							WHERE ecc.fnum LIKE  " . $db->quote($fnum) .")";
+                        FROM `#__fabrik_formgroup`
+                        WHERE group_id IN (
+                            SELECT esp.fabrik_group_id
+                            FROM  `#__emundus_campaign_candidature` AS ecc
+                            LEFT JOIN `#__emundus_setup_campaigns` AS esc ON esc.id = ecc.campaign_id
+                            LEFT JOIN `#__emundus_setup_programmes` AS esp ON esp.code = esc.training
+                            WHERE ecc.fnum LIKE  " . $db->quote($fnum) .")";
             $db->setQuery($query);
             $res = $db->loadResult();
             return $res;
@@ -2366,10 +2369,10 @@ class EmundusModelFiles extends JModelLegacy
     {
         $dbo = $this->getDbo();
         $query = 'SELECT eta.*, esat.*, u.name FROM #__emundus_tag_assoc as eta
-					LEFT JOIN #__emundus_setup_action_tag as esat on esat.id=eta.id_tag
-					LEFT JOIN #__users AS u on u.id=eta.user_id
-					WHERE fnum IN ("'.implode('","', $fnums).'")
-					ORDER BY esat.label';
+                    LEFT JOIN #__emundus_setup_action_tag as esat on esat.id=eta.id_tag
+                    LEFT JOIN #__users AS u on u.id=eta.user_id
+                    WHERE fnum IN ("'.implode('","', $fnums).'")
+                    ORDER BY esat.label';
 
         try
         {
@@ -2392,10 +2395,10 @@ class EmundusModelFiles extends JModelLegacy
         try
         {
             $query = 'select  jesp.code, jesp.label  from #__emundus_campaign_candidature as jecc
-						left join #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
-						left join #__emundus_setup_programmes as jesp on jesp.code like jesc.training
-						left join jos_emundus_setup_letters_repeat_training as jeslrt on jeslrt.training like jesp.code
-						where jecc.fnum in ("'.implode('","', $fnums).'") and jeslrt.parent_id IS NOT NULL  group by jesp.code order by jesp.code';
+                        left join #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
+                        left join #__emundus_setup_programmes as jesp on jesp.code like jesc.training
+                        left join jos_emundus_setup_letters_repeat_training as jeslrt on jeslrt.training like jesp.code
+                        where jecc.fnum in ("'.implode('","', $fnums).'") and jeslrt.parent_id IS NOT NULL  group by jesp.code order by jesp.code';
             $dbo->setQuery($query);
             return $dbo->loadAssocList('code', 'label');
         }
@@ -2415,8 +2418,8 @@ class EmundusModelFiles extends JModelLegacy
         try
         {
             $query = 'select jesl.title, jesl.template_type, jesl.id as file_id from jos_emundus_setup_letters as jesl
-						left join jos_emundus_setup_letters_repeat_training as jeslrt on jeslrt.parent_id = jesl.id
-						where jeslrt.training = '.$dbo->quote($code);
+                        left join jos_emundus_setup_letters_repeat_training as jeslrt on jeslrt.parent_id = jesl.id
+                        where jeslrt.training = '.$dbo->quote($code);
             $dbo->setQuery($query);
             return $dbo->loadAssocList();
         }
@@ -2465,10 +2468,10 @@ class EmundusModelFiles extends JModelLegacy
     {
         $dbo = $this->getDbo();
         $query = "select distinct (jecc.fnum) from jos_emundus_campaign_candidature as jecc
-					left join jos_emundus_setup_letters_repeat_status as jeslrs on jeslrs.status = jecc.status
-					left join jos_emundus_setup_letters as jesl on jesl.id = jeslrs.parent_id
-					left join jos_emundus_setup_letters_repeat_training as jeslrt on jeslrt.training like {$dbo->quote($code)}
-					WHERE jecc.fnum in ('".implode("','", $fnums)."') group by jecc.fnum";
+                    left join jos_emundus_setup_letters_repeat_status as jeslrs on jeslrs.status = jecc.status
+                    left join jos_emundus_setup_letters as jesl on jesl.id = jeslrs.parent_id
+                    left join jos_emundus_setup_letters_repeat_training as jeslrt on jeslrt.training like {$dbo->quote($code)}
+                    WHERE jecc.fnum in ('".implode("','", $fnums)."') group by jecc.fnum";
         $dbo->setQuery($query);
         return $dbo->loadColumn();
     }
@@ -2503,12 +2506,12 @@ class EmundusModelFiles extends JModelLegacy
         $dbo = $this->getDbo();
         $select = "select jfe.id, jfe.name, jfe.plugin, jfe.params, jfg.params as group_params, jfg.id as group_id, jfl.db_table_name, jfj.table_join
                     from jos_fabrik_elements as jfe
-					left join #__fabrik_formgroup as jff on jff.group_id = jfe.group_id
-					left join #__fabrik_groups as jfg on jfg.id = jff.group_id
-					left join #__fabrik_forms as jff2 on jff2.id = jff.form_id
-					left join #__fabrik_lists as jfl on jfl.form_id = jff2.id
-					LEFT JOIN #__fabrik_joins AS jfj ON jfl.id = jfj.list_id AND jfg.id=jfj.group_id
-					where jfe.id in (".implode(',', $idFabrik).")";
+                    left join #__fabrik_formgroup as jff on jff.group_id = jfe.group_id
+                    left join #__fabrik_groups as jfg on jfg.id = jff.group_id
+                    left join #__fabrik_forms as jff2 on jff2.id = jff.form_id
+                    left join #__fabrik_lists as jfl on jfl.form_id = jff2.id
+                    LEFT JOIN #__fabrik_joins AS jfj ON jfl.id = jfj.list_id AND jfg.id=jfj.group_id
+                    where jfe.id in (".implode(',', $idFabrik).")";
         try
         {
             $dbo->setQuery($select);

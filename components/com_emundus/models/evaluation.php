@@ -70,7 +70,7 @@ class EmundusModelEvaluation extends JModelList
 
 		if (!$session->has('filter_order'))
 		{
-			$session->set('filter_order', 'c.fnum');
+			$session->set('filter_order', 'jos_emundus_campaign_candidature.fnum');
 			$session->set('filter_order_Dir', 'desc');
 		}
 
@@ -373,33 +373,35 @@ class EmundusModelEvaluation extends JModelList
         return @$elements_id;
     }
 
-	//public function getEvaluationElementID($group_id){}
-
 	public function _buildContentOrderBy()
-	{
-		$filter_order = JFactory::getSession()->get('filter_order');
-		$filter_order_Dir = JFactory::getSession()->get('filter_order_Dir');
+    {
+        $filter_order = JFactory::getSession()->get('filter_order');
+        $filter_order_Dir = JFactory::getSession()->get('filter_order_Dir');
 
-		$can_be_ordering = array();
-		if(count($this->_elements) > 0) {
-			foreach ($this->_elements as $element) {
-				$can_be_ordering[] = $element->tab_name.'___'.$element->element_name;
-				$can_be_ordering[] = $element->tab_name.'.'.$element->element_name;
-			}
-		}
+        $can_be_ordering = array();
+        if(count($this->_elements) > 0) {
+            foreach ($this->_elements as $element) {
+                $can_be_ordering[] = $element->tab_name.'___'.$element->element_name;
+                $can_be_ordering[] = $element->tab_name.'.'.$element->element_name;
+            }
+        }
 
-		$can_be_ordering[] = 'c.fnum';
-		$can_be_ordering[] = 'c.status';
-		$can_be_ordering[] = 'jos_emundus_evaluations.user';
-		$can_be_ordering[] = 'u.name';
+        $can_be_ordering[] = 'jos_emundus_campaign_candidature.id';
+        $can_be_ordering[] = 'jos_emundus_campaign_candidature.fnum';
+        $can_be_ordering[] = 'jos_emundus_campaign_candidature.status';
+        $can_be_ordering[] = 'fnum';
+        $can_be_ordering[] = 'status';
+        $can_be_ordering[] = 'u.name';
+        $can_be_ordering[] = 'eta.id_tag';
+        $can_be_ordering[] = 'overall';
 
-		if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering))
-		{
-			return ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
-		}
+        if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering))
+        {
+            return ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
+        }
 
-		return '';
-	}
+        return '';
+    }
 
 	public function multi_array_sort($multi_array = array(), $sort_key, $sort = SORT_ASC)
 	{
