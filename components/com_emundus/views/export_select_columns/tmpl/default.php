@@ -294,34 +294,4 @@ foreach($s_elements as $s){
              }
          }
     }*/
-
-    <?php
-    if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) {
-    ?>
-        function hidden_all() {
-            document.getElementById('checkall').style.visibility='hidden';
-            <?php foreach ($this->elements as $t) { ?>
-                document.getElementById('emundus_elm_<?php echo $t->id; ?>').style.visibility='hidden';
-            <?php } ?>
-        }
-        hidden_all();
-        <?php
-    }?>
-
-    function OnSubmitForm() {
-        var button_name=document.pressed.split("|");
-    //alert(button_name[0]);
-        switch(button_name[0]) {
-            case 'send_elements':
-                document.adminForm.task.value = "send_elements";
-                document.adminForm.action ="index.php?option=com_emundus&task=send_elements&v=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>";
-            break;
-            case 'send_elements_csv':
-                document.adminForm.task.value = "send_elements_csv";
-                document.adminForm.action ="index.php?option=com_emundus&task=send_elements_csv&v=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>";
-            break;
-            default: return false;
-        }
-        return true;
-    }
 </script>
