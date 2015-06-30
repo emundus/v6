@@ -72,6 +72,7 @@ JText::script('COM_EMUNDUS_ZIP_GENERATION');
 JText::script('COM_EMUNDUS_DOWNLOAD_ZIP');
 JText::script('COM_EMUNDUS_PUBLISH');
 
+JText::script('LOADING');
 JText::script('TITLE');
 JText::script('ENTER_COMMENT');
 JText::script('COMMENT_SENT');
@@ -86,7 +87,6 @@ JText::script('ASSESSMENT_PDF');
 JText::script('JYES');
 JText::script('JNO');
 JText::script('YOU_MUST_SELECT_ATTACHMENT');
-JText::script('GENERATE_PDF');
 JText::script('ATTACHEMENTS_AGGREGATIONS');
 JText::script('FILES_GENERATED');
 JText::script('FILE_NAME');
@@ -118,6 +118,14 @@ JText::script('COM_EMUNDUS_XLS_GENERATION');
 JText::script('COM_EMUNDUS_EXPORT_FINISHED');
 JText::script('COM_EMUNDUS_ERROR_CAPACITY_XLS');
 JText::script('COM_EMUNDUS_CREATE_CSV');
+
+//Export PDF
+JText::script('COM_EMUNDUS_PDF_GENERATION');
+JText::script('COM_EMUNDUS_EXPORT_FINISHED');
+JText::script('COM_EMUNDUS_ERROR_NBFILES_CAPACITY');
+JText::script('COM_EMUNDUS_ERROR_CAPACITY_PDF');
+JText::script('DECISION_PDF');
+JText::script('GENERATE_PDF');
 
 //view application layout share
 JText::script('COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');

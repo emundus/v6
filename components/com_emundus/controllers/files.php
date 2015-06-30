@@ -1055,6 +1055,10 @@ class EmundusControllerFiles extends JControllerLegacy
         return sortArrayByArray($properties,$orderArray);
     }
 
+    /**
+     * Create temp CSV file for XLS extraction
+     * @return String json
+     */
     public function create_file_csv() {
         $today = date_default_timezone_get();
         $name = md5($today.rand(0,10));
@@ -1073,6 +1077,32 @@ class EmundusControllerFiles extends JControllerLegacy
             echo json_encode((object) $result);
             exit();
         }
+        $result = array('status' => true, 'file' => $name);
+        echo json_encode((object) $result);
+        exit();
+    }
+
+    /**
+     * Create temp PDF file for PDF extraction
+     * @return String json
+     */
+    public function create_file_pdf() {
+        $today = date_default_timezone_get();
+        $name = md5($today.rand(0,10));
+        $name = $name.'-applications.pdf';
+        /*      $path = JPATH_BASE.DS.'tmp'.DS.$name;
+
+            require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
+             $pdf = new ConcatPdf();
+
+             $pdf->Output($path, 'F');
+
+             if (!$f = fopen($path, 'w+')){
+                 $result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$path);
+                 echo json_encode((object) $result);
+                 exit();
+             }
+     */
         $result = array('status' => true, 'file' => $name);
         echo json_encode((object) $result);
         exit();
@@ -1118,11 +1148,14 @@ class EmundusControllerFiles extends JControllerLegacy
         return $objs;
     }
 
+    /**
+     * Add lines to temp CSV file
+     * @return String json
+     */
     public function generate_array() {
         $current_user = JFactory::getUser();
 
-        if( !@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)
-        )
+        if( !@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
             die( JText::_('RESTRICTED_ACCESS') );
 
         $model = $this->getModel('Files');
@@ -1324,6 +1357,100 @@ class EmundusControllerFiles extends JControllerLegacy
         echo json_encode((object) $result);
         //var_dump($result);
         exit();
+    }
+
+
+    /**
+     * Add lines to temp PDF file
+     * @return String json
+     */
+    public function generate_pdf()
+    {
+        $current_user = JFactory::getUser();
+
+        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+            die(JText::_('RESTRICTED_ACCESS'));
+
+        $model = $this->getModel('Files');
+        //$modelApp = $this->getModel('Application');
+
+        $session = JFactory::getSession();
+        $fnums_post = $session->get('fnums_export');
+
+        $jinput = JFactory::getApplication()->input;
+
+        $file = $jinput->getVar('file', null, 'STRING');
+        $totalfile = $jinput->getVar('totalfile', null);
+        $start = $jinput->getInt('start', 0);
+        $limit = $jinput->getInt('limit', 1);
+        $forms = $jinput->getVar('forms', false);
+        $attachment = $jinput->getVar('attachment', false);
+        $assessment = $jinput->getVar('assessment', false);
+        $decision = $jinput->getVar('decision', false);
+
+        $validFnums = array();
+        foreach ($fnums_post as $fnum) {
+            if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum)) {
+                $validFnums[] = $fnum;
+            }
+        }
+        $fnumsInfo = $model->getFnumsInfos($validFnums);
+        if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $file)) {
+            $files_list = array(JPATH_BASE . DS . 'tmp' . DS . $file);
+        } else
+            $files_list = array();
+
+
+        for ($i=$start ; $i<($start+$limit && $i<count($validFnums)) ; $i++) {
+            $fnum = $validFnums[$i];
+            if (is_numeric($fnum) && !empty($fnum)) {
+                if ($forms) {
+                    $files_list[] =
+                        EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum,
+                            $forms);
+                }
+                if ($assessment) {
+                    $tmpArray = array();
+                    $model = $this->getModel('application');
+                    $files = $model->getAttachmentsByFnum($fnum);
+
+                    EmundusHelperExport::getAttchmentPDF($files_list, $tmpArray, $files,
+                        $fnumsInfo[$fnum]['applicant_id']);
+                }
+                if ($assessment) {
+                    EmundusHelperExport::getEvalPDF($files_list, $fnum);
+                }
+            }
+        }
+        if (count($files_list) > 0) {
+            // all PDF in one file
+            require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+            $pdf = new ConcatPdf();
+            $pdf->setFiles($files_list);
+            $pdf->concat();
+            if (isset($tmpArray)) {
+                foreach ($tmpArray as $fn) {
+                    unlink($fn);
+                }
+            }
+
+            $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $file, 'F');
+            /************************************************************/
+
+            $start = $i;
+            $dataresult =
+                array('start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms,
+                      'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
+                      'file' => $file);
+            $result = array('status' => true, 'json' => $dataresult);
+            echo json_encode((object)$result);
+            //var_dump($result);
+            exit();
+        } else {
+            $result = array('status' => false, 'msg' => JText::_('ERROR_NO_FILE_TO_ADD').' : '.$file);
+            echo json_encode((object) $result);
+           // exit();
+        }
     }
 
     public function export_xls_from_csv() {

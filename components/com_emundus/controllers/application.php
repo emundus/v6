@@ -419,10 +419,10 @@ class EmundusControllerApplication extends JControllerLegacy
                 {
                     unlink($fn);
                 }
-                $pdf->Output(EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_attachements.pdf', 'F');
+                $pdf->Output(EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_attachments.pdf', 'F');
                 $res = new stdClass();
                 $res->status = true;
-                $res->link = EMUNDUS_PATH_REL.DS.$sid.DS.$fnum.'_attachements.pdf';
+                $res->link = EMUNDUS_PATH_REL.DS.$sid.DS.$fnum.'_attachments.pdf';
                 echo json_encode($res);
                 exit();
 

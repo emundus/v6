@@ -127,11 +127,6 @@ JHTML::stylesheet(JURI::Base().'media/com_emundus/css/emundus_panel.css' );
 
 
 <script type="text/javascript">
-/*
-	<?php echo @$this->addElement; ?>
-	<?php echo @$this->submitForm; ?>
-	<?php echo @$this->delayAct; ?>
-*/
 	var itemId = '<?php echo @$this->itemId;?>';
 	var cfnum = '<?php echo @$this->cfnum;?>';
 	var filterName = '<?php echo JText::_('FILTER_NAME');?>';
@@ -147,6 +142,7 @@ JHTML::stylesheet(JURI::Base().'media/com_emundus/css/emundus_panel.css' );
 		$('.chzn-select').chosen({width:'75%'});
        // reloadData();
 		refreshFilter();
+       // search();
         reloadActions();
 	})
 </script>
