@@ -1399,7 +1399,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $files_list = array();
 
 
-        for ($i=$start ; $i<($start+$limit) && $i < $totalfile ; $i++) {
+        for ($i=$start ; $i<($start+$limit) && $i < $totalfile ; $i++) { //var_dump($fnum);
             $fnum = $validFnums[$i];
             if (is_numeric($fnum) && !empty($fnum)) {
                 if ($forms) {
@@ -1408,6 +1408,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             $forms);
                 }
                 if ($attachment) {
+
                     $tmpArray = array();
                     $model = $this->getModel('application');
                     $files = $model->getAttachmentsByFnum($fnum);
@@ -1415,11 +1416,16 @@ class EmundusControllerFiles extends JControllerLegacy
                     EmundusHelperExport::getAttchmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
                 }
                 if ($assessment) {
-                    EmundusHelperExport::getEvalPDF($files_list, $fnum);
+                    $files_list[] = EmundusHelperExport::getEvalPDF($fnum);
+                }
+                if ($decision) {
+                    continue;
                 }
             }
         }
-        if (count($files_list) > 0) {
+        $start = $i;
+
+        if (count($files_list) > 0) { //die(var_dump($files_list));
             // all PDF in one file
             require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
             $pdf = new ConcatPdf();
@@ -1430,9 +1436,11 @@ class EmundusControllerFiles extends JControllerLegacy
                     unlink($fn);
                 }
             }
+            //for($f=1 ; $f < count($files_list) ; $f++){
+            //    unlink($files_list[$f]);
+            //}
 
             $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $file, 'F');
-            /************************************************************/
 
             $start = $i;
             $dataresult =

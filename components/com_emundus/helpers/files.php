@@ -1613,7 +1613,6 @@ class EmundusHelperFiles
         } else {
             $fnumInfo = $files->getFnumInfos($fnums[1]);
         }
-
         $element_id = $evaluation->getAllEvaluationElements(1, $fnumInfo['training']);
         $elements = @EmundusHelperFiles::getElementsName(implode(',',$element_id));
         $evaluations = $files->getFnumArray($fnums, $elements);
@@ -1625,7 +1624,7 @@ class EmundusHelperFiles
         {
             if ($eval['jos_emundus_evaluations___user'] > 0) {
                 $str = '<br><hr>';
-                $str .= '<em>'.JText::_('EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).'</em>';
+                $str .= '<em>'.JText::_('EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em>';
                 $str .= '<h1>'.JFactory::getUser($eval['jos_emundus_evaluations___user'])->name.'</h1>';
                 $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 

@@ -763,7 +763,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
     }
 */
     function pdf(){
-        $user = JFactory::getUser();
+       /* $user = JFactory::getUser();
         $student_id = JRequest::getVar('user', null, 'GET', 'none',0);
         $fnum = JRequest::getVar('fnum', null, 'GET', 'none',0);
         $m_profile = $this->getModel('profile');
@@ -793,7 +793,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
             exit;
         } else
             die(JText::_('ACCESS_DENIED'));
-
+*/
+        $table = array();
+        EmundusHelperExport::getEvalPDF($table, $fnum);
         exit();
     }
 

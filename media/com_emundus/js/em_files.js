@@ -699,7 +699,7 @@ function generate_pdf(json) {
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     $('#loadingimg').empty();
-                    $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + jqXHR.responseText + '</div>');
+                    $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
                 }
             });
     } else if (start+limit> maxfiles) {
@@ -2043,7 +2043,7 @@ $(document).ready(function()
             var checkInput = getUserCheck();
 
             var start = 0;
-            var limit = 1;
+            var limit = 5;
             var forms = 0;
             var attachment = 0;
             var assessment = 0;

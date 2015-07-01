@@ -154,12 +154,40 @@ class EmundusHelperExport
 		}
 	}
 
-    public static function getEvalPDF(&$exports, $fnum)
+    public static function getEvalPDF($fnum)
     {
-        $fn = EmundusHelperExport::evalPDF($fnum);
-        $exports[] = $fn;
+        //$fn = EmundusHelperExport::evalPDF($fnum);
+        //$today = date_default_timezone_get();
 
-       // $exports[] = EMUNDUS_PATH_ABS.$file->user_id.DS.$file->filename;
+        $user       = JFactory::getUser();
+        if(!EmundusHelperAccess::asPartnerAccessLevel($user->id))
+            die(JText::_('ACCESS_DENIED'));
+
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+
+        $m_profile = new EmundusModelProfile();
+        $m_campaign = new EmundusModelCampaign();
+
+        $name = $fnum.'-evaluation.pdf';
+        $tmpName = JPATH_BASE.DS.'tmp'.DS.$name;
+        //$exports[] = $tmpName;
+
+        if (!empty($fnum)) {
+            $candidature = $m_profile->getFnumDetails($fnum);
+            $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
+        }
+
+        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_evaluation_'.$campaign['training'].'.php';
+
+        if (!file_exists($file)) {
+            $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_evaluation.php';
+        }
+
+        require_once($file);
+        pdf_evaluation($user->id, $fnum, false, $tmpName);
+
+        return $tmpName;
     }
 
 	public static function makePDF($fileName, $ext, $aid)
@@ -205,12 +233,13 @@ class EmundusHelperExport
 		$pdf->Output($tmpName, 'F');
 		return $tmpName;
 	}
+    /*
     public static function evalPDF($fnum)
     {
         require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
         $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->SetCreator(PDF_CREATOR);
-        $pdf->SetAuthor('Decision Publique');
+        $pdf->SetAuthor('eMundus');
         $pdf->SetTitle('Evaluation');
         $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
         $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
@@ -235,9 +264,11 @@ class EmundusHelperExport
         $start_page = $pdf->getPage();
         $pdf->writeHTMLCell(0,'','',$start_y,$htmlData,'B', 1);
 
-        $tmpName = JPATH_BASE.DS.'tmp'.DS."evaluation.pdf";
+        $today = date_default_timezone_get();
+        $name = md5($today.rand(0,10)).'-evaluation.pdf';
+        $tmpName = JPATH_BASE.DS.'tmp'.DS.$name;
         $pdf->Output($tmpName, 'F');
         return $tmpName;
     }
-
+*/
 }
