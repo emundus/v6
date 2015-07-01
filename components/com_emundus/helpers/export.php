@@ -130,7 +130,7 @@ class EmundusHelperExport
 	{
 		foreach($files as $file)
 		{
-            if (strrpos($file->filename,"application_form")=== false) {
+            if (strrpos($file->filename, 'application_form')=== false) {
                 $exFileName = explode('.', $file->filename);
                 $filePath = EMUNDUS_PATH_ABS.$file->user_id.DS.$file->filename;
                 if(file_exists($filePath)) {

@@ -675,15 +675,25 @@ function generate_pdf(json) {
                 success: function (result) {
                     var json = result.json;
                     if (result.status) {
-                        $('#datasbs').replaceWith('<div id="datasbs" data-start="' + result.json.start + '"><p>' + result.json.start+'</p></div>');
+                        $('#datasbs').replaceWith('<div id="datasbs" data-start="' + result.json.start + '"><p>' + result.json.start + ' / ' + result.json.totalfile + '</p></div>');
 
-                        if (start!= json.start) {
+                        if (start != json.start) {
+                            //$('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+json.msg+'</div>' );
                             generate_pdf(json);
                         } else {
                             $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_PDF_GENERATION')+'</p></div>');
                             $('#loadingimg').empty();
                             $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</div>' );
                             $('.modal-body').append('<a class="btn .btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="tmp/' + file + '"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
+                        }
+                    }
+                    else {
+                        var json = result.json;
+                        if (start != json.start) {
+                            generate_pdf(json);
+                        } else {
+                            $('#loadingimg').empty();
+                            //$('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + json.msg + '</div>');
                         }
                     }
                 },
@@ -2031,64 +2041,80 @@ $(document).ready(function()
             f.handle = true;
 */
             var checkInput = getUserCheck();
-            $('.modal-body').empty();
-            $('.modal-body').append('<div>' +
-            '<h5>'+Joomla.JText._('COM_EMUNDUS_PDF_GENERATION')+'</h5>'+
-            '<div id="loadingimg"><img src="'+loadingLine+'" alt="loading"/></div>' +
-            '<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_CREATE_PDF')+'</p></div>'+
-            '</div>');
-            $('.btn-success').attr('style', 'display: none !important');
+
             var start = 0;
             var limit = 1;
-            var forms = $('#em-ex-forms').is(":checked");
-            var attachment = $('#em-ex-attachment').is(":checked");
-            var assessment = $('#em-ex-assessment').is(":checked");
-            var decision = $('#em-ex-decision').is(":checked");
+            var forms = 0;
+            var attachment = 0;
+            var assessment = 0;
+            var decision = 0;
+            if($('#em-ex-forms').is(":checked"))
+                forms = 1;
+            if($('#em-ex-attachment').is(":checked"))
+                attachment = 1;
+            if($('#em-ex-assessment').is(":checked"))
+                assessment = 1;
+            if($('#em-ex-decision').is(":checked"))
+                decision = 1;
+
+        $('.modal-body').empty();
+        $('.modal-body').append('<div>' +
+        '<h5>'+Joomla.JText._('COM_EMUNDUS_PDF_GENERATION')+'</h5>'+
+        '<div id="loadingimg"><img src="'+loadingLine+'" alt="loading"/></div>' +
+        '<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_CREATE_PDF')+'</p></div>'+
+        '</div>');
+        $('.btn-success').attr('style', 'display: none !important');
+
             $.ajax(
-                {
-                    type: 'post',
-                    url: 'index.php?option=com_emundus&controller=files&task=getfnums_csv',
-                    dataType: 'JSON',
-                    data: {fnums: checkInput},
-                    success: function (result) {
-                        var totalfile = result.totalfile;
-                        if (result.status) {
-                            $.ajax(
-                                {
-                                    type: 'post',
-                                    url: 'index.php?option=com_emundus&controller=files&task=create_file_pdf&format=raw',
-                                    dataType: 'JSON',
-                                    success: function (result) {
-                                        if (result.status) {
-                                            $('#extractstep').replaceWith('<div id="extractstep"><div id="addatatext"><p>' +
-                                            Joomla.JText._('COM_EMUNDUS_ADD_FILES_TO_PDF') +
-                                            '</p></div><div id="datasbs"</div>');
+            {
+                type: 'post',
+                url: 'index.php?option=com_emundus&controller=files&task=getfnums_csv',
+                dataType: 'JSON',
+                data: {fnums: checkInput},
+                success: function (result) {
+                    var totalfile = result.totalfile;
+                    if (result.status) {
+                        $.ajax(
+                            {
+                                type: 'post',
+                                url: 'index.php?option=com_emundus&controller=files&task=create_file_pdf&format=raw',
+                                dataType: 'JSON',
+                                success: function (result) {
+                                    if (result.status) {
+                                        $('#extractstep').replaceWith('<div id="extractstep"><div id="addatatext"><p>' +
+                                        Joomla.JText._('COM_EMUNDUS_ADD_FILES_TO_PDF') +
+                                        '</p></div><div id="datasbs"</div>');
 
-                                            var json = jQuery.parseJSON('{"start":"' + start + '","limit":"' + limit +
-                                            '","totalfile":"' + totalfile + '","forms":"' + forms +
-                                            '","attachment":"' + attachment + '","assessment":"' + assessment +
-                                            '","decision":"' + decision + '","file":"' + result.file + '"}');
+                                        var json = jQuery.parseJSON('{"start":"' + start + '","limit":"' + limit +
+                                        '","totalfile":"' + totalfile + '","forms":"' + forms +
+                                        '","attachment":"' + attachment + '","assessment":"' + assessment +
+                                        '","decision":"' + decision + '","file":"' + result.file + '"}');
 
-                                            $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0</p></div>');
+                                        $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>...</p></div>');
 
-                                            generate_pdf(json);
-                                        }
-                                    },
-                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        generate_pdf(json);
+                                    }
+                                    else {
                                         $('#loadingimg').empty();
                                         $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' +
-                                        jqXHR.responseText + '</div>');
+                                        result.msg + '</div>');
                                     }
-                                });
-                        }
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        $('#loadingimg').empty();
-                        $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + jqXHR.responseText +
-                        '</div>');
+                                },
+                                error: function (jqXHR, textStatus, errorThrown) {
+                                    $('#loadingimg').empty();
+                                    $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' +
+                                    jqXHR.responseText + '</div>');
+                                }
+                            });
                     }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $('#loadingimg').empty();
+                    $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + jqXHR.responseText +
+                    '</div>');
+                }
 
-                });
+            });
         /*
         var link = $(this).attr('href');
         $('#attachement_res').empty();

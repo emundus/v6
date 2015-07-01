@@ -1372,21 +1372,19 @@ class EmundusControllerFiles extends JControllerLegacy
             die(JText::_('RESTRICTED_ACCESS'));
 
         $model = $this->getModel('Files');
-        //$modelApp = $this->getModel('Application');
 
-        $session = JFactory::getSession();
+        $session    = JFactory::getSession();
         $fnums_post = $session->get('fnums_export');
 
-        $jinput = JFactory::getApplication()->input;
-
-        $file = $jinput->getVar('file', null, 'STRING');
-        $totalfile = $jinput->getVar('totalfile', null);
-        $start = $jinput->getInt('start', 0);
-        $limit = $jinput->getInt('limit', 1);
-        $forms = $jinput->getVar('forms', false);
-        $attachment = $jinput->getVar('attachment', false);
-        $assessment = $jinput->getVar('assessment', false);
-        $decision = $jinput->getVar('decision', false);
+        $jinput     = JFactory::getApplication()->input;
+        $file       = $jinput->getVar('file', null, 'STRING');
+        $totalfile  = $jinput->getVar('totalfile', null);
+        $start      = $jinput->getInt('start', 0);
+        $limit      = $jinput->getInt('limit', 1);
+        $forms      = $jinput->getInt('forms', 0);
+        $attachment = $jinput->getInt('attachment', 0);
+        $assessment = $jinput->getInt('assessment', 0);
+        $decision   = $jinput->getInt('decision', 0);
 
         $validFnums = array();
         foreach ($fnums_post as $fnum) {
@@ -1401,7 +1399,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $files_list = array();
 
 
-        for ($i=$start ; $i<($start+$limit && $i<count($validFnums)) ; $i++) {
+        for ($i=$start ; $i<($start+$limit) && $i < $totalfile ; $i++) {
             $fnum = $validFnums[$i];
             if (is_numeric($fnum) && !empty($fnum)) {
                 if ($forms) {
@@ -1409,13 +1407,12 @@ class EmundusControllerFiles extends JControllerLegacy
                         EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum,
                             $forms);
                 }
-                if ($assessment) {
+                if ($attachment) {
                     $tmpArray = array();
                     $model = $this->getModel('application');
                     $files = $model->getAttachmentsByFnum($fnum);
 
-                    EmundusHelperExport::getAttchmentPDF($files_list, $tmpArray, $files,
-                        $fnumsInfo[$fnum]['applicant_id']);
+                    EmundusHelperExport::getAttchmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
                 }
                 if ($assessment) {
                     EmundusHelperExport::getEvalPDF($files_list, $fnum);
@@ -1441,15 +1438,19 @@ class EmundusControllerFiles extends JControllerLegacy
             $dataresult =
                 array('start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms,
                       'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-                      'file' => $file);
+                      'file' => $file, 'msg' => JText::_('FILES_ADDED').' : '.$fnum);
             $result = array('status' => true, 'json' => $dataresult);
             echo json_encode((object)$result);
             //var_dump($result);
             exit();
         } else {
-            $result = array('status' => false, 'msg' => JText::_('ERROR_NO_FILE_TO_ADD').' : '.$file);
+            $dataresult =
+                array('start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms,
+                      'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
+                      'file' => $file, 'msg' => JText::_('ERROR_NO_FILE_TO_ADD').' : '.$fnum);
+            $result = array('status' => false, 'json' => $dataresult);
             echo json_encode((object) $result);
-           // exit();
+            exit();
         }
     }
 
