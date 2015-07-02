@@ -44,7 +44,7 @@ class EmundusViewEvaluation extends JViewLegacy
 	    $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 	    $this->cfnum = JFactory::getApplication()->input->getString('cfnum', null);
 		
-		$filters = @EmundusHelperFiles::resetFilter();
+		//$filters = @EmundusHelperFiles::resetFilter();
 		$this->assignRef('filters', $filters);
 
 

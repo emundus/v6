@@ -110,8 +110,8 @@ class EmundusViewEvaluation extends JViewLegacy
                 $this->assignRef('fnum_assoc', $evaluation->fnum_assoc);
 
 				// reset filter
-				//$filters = @EmundusHelperFiles::resetFilter();
-				//$this->assignRef('filters', $filters);
+				$filters = @EmundusHelperFiles::resetFilter();
+				$this->assignRef('filters', $filters);
 
 				// get applications files
 				$users = $evaluation->getUsers($cfnum);
@@ -256,8 +256,8 @@ class EmundusViewEvaluation extends JViewLegacy
 			$this->assignRef('datas', $datas);
 
 
-			$submitForm = EmundusHelperJavascript::onSubmitForm();
-			$delayAct = EmundusHelperJavascript::delayAct();
+			//$submitForm = EmundusHelperJavascript::onSubmitForm();
+			//$delayAct = EmundusHelperJavascript::delayAct();
 			$this->assignRef('delayAct', $delayAct);
 			$this->assignRef('submitForm', $submitForm);
 		break;

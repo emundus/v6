@@ -168,7 +168,7 @@ class EmundusHelperFiles
         // ONLY FILES LINKED TO MY GROUP
         $programme = count($this->code)>0?$this->code:null;
         //////////////////////////////////////////
-
+//var_dump($programme);
         if (count(@$params['programme']) == 0 || @$params['programme'][0] == '%') {
             $params['programme'] = $programme;
             $filts_details['programme'] = $programme;
@@ -177,7 +177,7 @@ class EmundusHelperFiles
         }
         //$params['published'] = 1;
         JFactory::getSession()->set('filt_params', $params);
-        //var_dump($filts_details);
+//var_dump($params);
 
         return @EmundusHelperFiles::createFilterBlock($filts_details, $filts_options, $tables);
     }
@@ -744,10 +744,10 @@ class EmundusHelperFiles
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
         $files = new EmundusModelFiles();
 
-        $document = JFactory::getDocument();
+        /*$document = JFactory::getDocument();
         $document->addStyleSheet( JURI::base()."media/com_emundus/lib/chosen/chosen.min.css" );
         $document->addScript( JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
-        $document->addScript( JURI::base()."media/com_emundus/lib/chosen/chosen.jquery.min.js" );
+        $document->addScript( JURI::base()."media/com_emundus/lib/chosen/chosen.jquery.min.js" );*/
 
         $session     = JFactory::getSession();
         $filt_params = $session->get('filt_params');

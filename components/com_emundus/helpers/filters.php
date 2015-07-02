@@ -25,71 +25,7 @@ jimport('joomla.application.component.helper');
  * @since 1.5
  */
 class EmundusHelperFilters {
-	
-	/*
-	** @description Clear session and reinit values by default
 
-	function clear() {
-		global $option;
-
-		$mainframe = JFactory::getApplication();
-		
-		$current_user = JFactory::getUser();
-		$menu = JSite::getMenu();
-		$current_menu  = $menu->getActive();
-		$menu_params = $menu->getParams($current_menu->id);
-		
-		$filts_names 	= explode(',', $menu_params->get('em_filters_names'));
-		$filts_values 	= explode(',', $menu_params->get('em_filters_values'));
-		$filts_details 	= array('profile'			=> NULL,
-							   'evaluator'			=> NULL,
-							   'evaluator_group'	=> NULL,
-							   'schoolyear'			=> NULL,
-							   'campaign'			=> NULL,
-							   'programme'			=> NULL,
-							   'missing_doc'		=> NULL,
-							   'complete'			=> NULL,
-							   'finalgrade'			=> NULL,
-							   'validate'			=> NULL,
-							   'spam_suspect'		=> NULL,
-							   'newsletter'			=> NULL,
-							   'profile_users'		=> NULL,
-							   'not_adv_filter'		=> NULL,
-							   'other'				=> NULL);
-		$i = 0;
-		foreach ($filts_names as $filt_name)
-			if (array_key_exists($i, $filts_values))
-				$filts_details[$filt_name] = $filts_values[$i++];
-			else
-				$filts_details[$filt_name] = '';
-		unset($filts_names); unset($filts_values);
-
-		$mainframe->setUserState( $option."filter_order", "" );
-		$mainframe->setUserState( $option."filter_order_Dir", "" );
-		//$mainframe->setUserState( $option."schoolyears", @EmundusHelperFilters::getSchoolyears() );		
-		$mainframe->setUserState( $option."schoolyears", array('%') );
-		//$mainframe->setUserState( $option."campaigns", @EmundusHelperFilters::getCurrentCampaignsID() );
-		$mainframe->setUserState( $option."campaigns", array('%') );
-		$mainframe->setUserState( $option."programmes", array('%') );
-		$mainframe->setUserState( $option."elements", array() );
-		$mainframe->setUserState( $option."elements_values", array() );
-		$mainframe->setUserState( $option."elements_other", array() );
-		$mainframe->setUserState( $option."elements_values_other", array() );
-		$mainframe->setUserState( $option."finalgrade", $filts_details['finalgrade'] );
-		$mainframe->setUserState( $option."s", "" );
-		$mainframe->setUserState( $option."evaluator_group", $filts_details['evaluator_group'] );
-		$mainframe->setUserState( $option."user", $filts_details['evaluator'] );
-		$mainframe->setUserState( $option."profile", $filts_details['profile'] );
-		$mainframe->setUserState( $option."profile_users", $filts_details['profile_users'] );
-		$mainframe->setUserState( $option."missing_doc", $filts_details['missing_doc'] );
-		$mainframe->setUserState( $option."complete", $filts_details['complete'] );
-		$mainframe->setUserState( $option."validate", $filts_details['validate'] );
-		$mainframe->setUserState( $option."newsletter", $filts_details['newsletter'] );
-		$mainframe->setUserState( $option."spam_suspect", $filts_details['spam_suspect'] );
-		$mainframe->setUserState( $option."select_filter", "" );
-		
-		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&Itemid='.JRequest::getCmd( 'Itemid' ));
-	}*/
 	/*
 	* @param 			query results
 	* @param 	array 	values to extract and insert
@@ -555,15 +491,16 @@ class EmundusHelperFilters {
 	** @param array $types Filters options indexed by filters names.
 	** @param array $tables List of the tables contained in "Other filters" dropbox.
 	** @return string HTML to display in page for filter block.
-	*/	
+	*/
+    /*
 	function createFilterBlock($params, $types, $tables){
 		global $option;
 
 		$mainframe = JFactory::getApplication();
-		$document = JFactory::getDocument();
-		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/chosen/chosen.min.css" );
-		$document->addScript( JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
-		$document->addScript( JURI::base()."media/com_emundus/lib/chosen/chosen.jquery.min.js" );
+		//$document = JFactory::getDocument();
+		//$document->addStyleSheet( JURI::base()."media/com_emundus/lib/chosen/chosen.min.css" );
+		//$document->addScript( JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
+		//$document->addScript( JURI::base()."media/com_emundus/lib/chosen/chosen.jquery.min.js" );
 
 		$current_s 				= $mainframe->getUserStateFromRequest(  $option.'s', 's' );
 		$current_profile		= $mainframe->getUserStateFromRequest(  $option.'profile', 'profile', @$params['profile'] );
@@ -807,7 +744,10 @@ class EmundusHelperFilters {
 			
 			foreach($programmeList as $p) { 
 				$programme .= '<option value="'.$p->code.'"';
-				if(!empty($current_programme) && in_array($p->code, $current_programme)) $programme .= ' selected';
+				if(!empty($current_programme) && in_array($p->code, $current_programme)) {
+                    $programme .= ' selected';
+                    JFactory::getSession()->set('filt_params');
+                }
 				$programme .= '>'.$p->label.' - '.$p->code.'</option>'; 
 			}
 			$programme .= '</select>';
@@ -1013,7 +953,7 @@ class EmundusHelperFilters {
 		
 		return $filters;
 	}
-	
+*/
 	function getEmundusFilters()
 	{
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);

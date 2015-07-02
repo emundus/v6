@@ -1355,7 +1355,6 @@ class EmundusControllerFiles extends JControllerLegacy
         $dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'methode'=>$methode,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file );
         $result = array('status' => true, 'json' => $dataresult);
         echo json_encode((object) $result);
-        //var_dump($result);
         exit();
     }
 
@@ -1399,7 +1398,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $files_list = array();
 
 
-        for ($i=$start ; $i<($start+$limit) && $i < $totalfile ; $i++) { //var_dump($fnum);
+        for ($i=$start ; $i<($start+$limit) && $i < $totalfile ; $i++) {
             $fnum = $validFnums[$i];
             if (is_numeric($fnum) && !empty($fnum)) {
                 if ($forms) {
@@ -1425,7 +1424,7 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         $start = $i;
 
-        if (count($files_list) > 0) { //die(var_dump($files_list));
+        if (count($files_list) > 0) {
             // all PDF in one file
             require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
             $pdf = new ConcatPdf();
@@ -1449,7 +1448,6 @@ class EmundusControllerFiles extends JControllerLegacy
                       'file' => $file, 'msg' => JText::_('FILES_ADDED').' : '.$fnum);
             $result = array('status' => true, 'json' => $dataresult);
             echo json_encode((object)$result);
-            //var_dump($result);
             exit();
         } else {
             $dataresult =
@@ -1521,7 +1519,7 @@ class EmundusControllerFiles extends JControllerLegacy
             ->setOperatorType(PHPExcel_Style_Conditional::OPERATOR_EQUAL)
             ->addCondition('50');
         $objConditional3->getStyle()->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        //die(var_dump($nbrow));
+
         $i = 0;
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $objPHPExcel->getActiveSheet()->getStyle('A2:A'.($nbrow+ 1))->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_NUMBER );
@@ -1536,12 +1534,11 @@ class EmundusControllerFiles extends JControllerLegacy
         $i++;
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
         $i++;
-        //var_dump($nbcol);die();
+
         for ($i; $i<$nbcol;$i++) {
             $value = $objPHPExcel->getActiveSheet()->getCellByColumnAndRow($i, 1)->getValue();
-            //var_dump($value);
+
             if ($value=="forms(%)" || $value=="attachment(%)") {
-                //var_dump($colonne_by_id[$i]);
                 $conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i].'1')->getConditionalStyles();
                 array_push($conditionalStyles, $objConditional1);
                 array_push($conditionalStyles, $objConditional2);
@@ -1732,7 +1729,6 @@ class EmundusControllerFiles extends JControllerLegacy
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('CAMPAIGN'));
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $i++;
-//die(var_dump($elements));
         /*		foreach($fnumsArray[0] as $fKey => $fLine)
                 {
                     if($fKey != 'fnum')
@@ -1744,7 +1740,6 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                 }
         */
-//var_dump($fnumsArray);
         foreach($elements as $fKey => $fLine)
         {
             if($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id')

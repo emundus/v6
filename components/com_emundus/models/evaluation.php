@@ -690,7 +690,6 @@ class EmundusModelEvaluation extends JModelList
 		$query = array('q' => '', 'join' => '');
 
 		$params = JFactory::getSession()->get('filt_params');
-		
 		if(!empty($params))
 		{
 			foreach($params as $key => $value)
@@ -1027,8 +1026,7 @@ class EmundusModelEvaluation extends JModelList
 		}
 		$query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eu.lastname," ",eu.firstname) AS evaluator';
 		
-//var_dump($this->_elements);
-		$query .= ' FROM #__emundus_campaign_candidature as c 
+		$query .= ' FROM #__emundus_campaign_candidature as c
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = c.status 
 					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = c.campaign_id 
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
