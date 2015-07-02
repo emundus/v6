@@ -242,7 +242,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             '<input class="em-ex-check" type="checkbox" value="attachment" name="attachment" id="em-ex-attachment" checked/>' +
             '<label for="em-ex-attachment">'+Joomla.JText._('ATTACHMENT_PDF')+'</label> <br/>' +
             '</div>' +
-            '<a class="btn btn-default btn-attach" id="em_generate" href="'+url+'"><?php echo JText::_('GENERATE_PDF') ?></a><div id="attachement_res"></div></div>');
+            '<a class="btn btn-default btn-attach" id="em_generate" href="'+url+' target="_blank"><?php echo JText::_('GENERATE_PDF') ?></a><div id="attachement_res"></div></div>');
             $('#em-modal-actions .modal-footer').hide();
             $('#em-modal-actions .modal-dialog').addClass('modal-lg');
             $('#em-modal-actions .modal').show();
