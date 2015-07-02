@@ -74,10 +74,15 @@ class EmundusHelperFiles
     {
 
         //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-        //require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+
+        $current_user = JFactory::getUser();
+
         $menu = @JSite::getMenu();
         $current_menu  = $menu->getActive();
         $menu_params = $menu->getParams(@$current_menu->id);
+
+        $m_files = new EmundusModelFiles();
 
         if (!JFactory::getSession()->has('filt_params'))
         {
@@ -168,16 +173,20 @@ class EmundusHelperFiles
         // ONLY FILES LINKED TO MY GROUP
         $programme = count($this->code)>0?$this->code:null;
         //////////////////////////////////////////
-//var_dump($programme);
+  //var_dump($params['programme']);
         if (count(@$params['programme']) == 0 || @$params['programme'][0] == '%') {
             $params['programme'] = $programme;
             $filts_details['programme'] = $programme;
         } elseif(count($filts_details['programme']) == 0 || empty($filts_details['programme'])) {
             $filts_details['programme'] = $programme;
         }
-        //$params['published'] = 1;
+        $codes = $m_files->getAssociatedProgrammes($current_user->id);
+        if(count($codes)>0) {
+            $params['programme'] = array_merge($params['programme'], $codes);
+            $filts_details['programme'] = array_merge($filts_details['programme'], $codes);
+        }
+
         JFactory::getSession()->set('filt_params', $params);
-//var_dump($params);
 
         return @EmundusHelperFiles::createFilterBlock($filts_details, $filts_options, $tables);
     }

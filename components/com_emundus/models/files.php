@@ -1431,8 +1431,7 @@ class EmundusModelFiles extends JModelLegacy
         try
         {
             $db = $this->getDbo();
-            //$query = 'insert into #__emundus_users_assoc (user_id, action_id, c, r, u, d, fnum) values';
-            //$value = "";
+
             foreach ($fnums as $fnum)
             {
                 foreach($users as $user)
@@ -1882,7 +1881,8 @@ class EmundusModelFiles extends JModelLegacy
                         FROM #__emundus_campaign_candidature
                         LEFT JOIN #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id
                         LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id
-                        LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training ";
+                        LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
+                        LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jos_emundus_campaign_candidature.fnum ";
             $leftJoin = '';
             if(!isset($lastTab))
             {
@@ -2182,6 +2182,31 @@ class EmundusModelFiles extends JModelLegacy
             $db = $this->getDbo();
             $db->setQuery($query);
             return $db->loadAssocList('fnum', 'uname');
+        }
+        catch(Exception $e)
+        {
+            error_log($e->getMessage(), 0);
+            return false;
+        }
+    }
+
+    /**
+     * @param $user
+     * @return array
+     * get list of programmes for associated files
+     */
+    public function getAssociatedProgrammes($user)
+    {
+        $query = 'select DISTINCT sc.training
+                  from #__emundus_users_assoc as ua
+                  LEFT JOIN #__emundus_campaign_candidature as cc ON cc.fnum=ua.fnum
+                  left join #__emundus_setup_campaigns as sc on sc.id = cc.campaign_id
+                  where ua.user_id='.$user;
+        try
+        {
+            $db = $this->getDbo();
+            $db->setQuery($query);
+            return $db->loadColumn();
         }
         catch(Exception $e)
         {

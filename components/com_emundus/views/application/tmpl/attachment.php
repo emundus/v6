@@ -237,8 +237,10 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             $('#em-modal-actions-title').empty();
             $('#em-modal-actions-title').append('<?php echo JText::_('GENERATE_PDF') ?>');
             $('#em-modal-actions .modal-body').append('<div class="well">' +
-            '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms"/>' +
+            '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms" checked/>' +
             '<label for="em-ex-forms">'+Joomla.JText._('FORMS_PDF')+'</label> <br/>' +
+            '<input class="em-ex-check" type="checkbox" value="attachment" name="attachment" id="em-ex-attachment" checked/>' +
+            '<label for="em-ex-attachment">'+Joomla.JText._('ATTACHMENT_PDF')+'</label> <br/>' +
             '</div>' +
             '<a class="btn btn-default btn-attach" id="em_generate" href="'+url+'"><?php echo JText::_('GENERATE_PDF') ?></a><div id="attachement_res"></div></div>');
             $('#em-modal-actions .modal-footer').hide();

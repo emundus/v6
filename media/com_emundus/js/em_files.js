@@ -1494,7 +1494,7 @@ $(document).ready(function()
                         {
                             var nbprg = 0;
                             $('.modal-body').empty();
-                            $('.btn-success').attr('style', 'display: none !important');
+                            //$('.btn-success').attr('style', 'display: none !important');
                             if ($('#view').val()!="evaluation")
                                 $('.modal-body').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE')+'</h5></div><div class="panel-body"><select name="em-export-methode" id="em-export-methode" style="width: 95%;" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+'</option><option value="1" data-value="1">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN')+'</option></select></div></div>');
                             $('.modal-body').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select name="em-export-prg" id="em-export-prg" style="width: 95%;" class="chzn-select"><option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option></select></div></div>');
@@ -1758,7 +1758,7 @@ $(document).ready(function()
             case 8 :
                 $('#em-modal-actions .modal-body').empty();
                 $('#em-modal-actions .modal-body').append('<div class="well">' +
-                '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms"/>' +
+                '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms" checked/>' +
                 '<label for="em-ex-forms">'+Joomla.JText._('FORMS_PDF')+'</label> <br/>' +
                 '<input class="em-ex-check" type="checkbox" value="attachment" name="attachment" id="em-ex-attachment"/>' +
                 '<label for="em-ex-attachment">'+Joomla.JText._('ATTACHMENT_PDF')+'</label> <br/>' +
@@ -2058,7 +2058,7 @@ $(document).ready(function()
             var checkInput = getUserCheck();
 
             var start = 0;
-            var limit = 5;
+            var limit = 4;
             var forms = 0;
             var attachment = 0;
             var assessment = 0;
@@ -2078,7 +2078,7 @@ $(document).ready(function()
         '<div id="loadingimg"><img src="'+loadingLine+'" alt="loading"/></div>' +
         '<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_CREATE_PDF')+'</p></div>'+
         '</div>');
-        $('.btn-success').attr('style', 'display: none !important');
+        //$('.btn-success').attr('style', 'display: none !important');
 
             $.ajax(
             {
@@ -2230,7 +2230,7 @@ $(document).ready(function()
                 '<div id="loadingimg"><img src="'+loadingLine+'" alt="loading"/></div>' +
                 '<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_CREATE_CSV')+'</p></div>'+
                 '</div>');
-                $('.btn-success').attr('style', 'display: none !important');
+                //$('.btn-success').attr('style', 'display: none !important');
                 $.ajax(
                     {
                         type: 'post',

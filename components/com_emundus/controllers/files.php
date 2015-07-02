@@ -1060,7 +1060,7 @@ class EmundusControllerFiles extends JControllerLegacy
      * @return String json
      */
     public function create_file_csv() {
-        $today = date_default_timezone_get();
+        $today = date("MdYHis");
         $name = md5($today.rand(0,10));
         $name = $name.'.csv';
         $chemin = JPATH_BASE.DS.'tmp'.DS.$name;
@@ -1087,7 +1087,7 @@ class EmundusControllerFiles extends JControllerLegacy
      * @return String json
      */
     public function create_file_pdf() {
-        $today = date_default_timezone_get();
+        $today = date("MdYHis");
         $name = md5($today.rand(0,10));
         $name = $name.'-applications.pdf';
         /*      $path = JPATH_BASE.DS.'tmp'.DS.$name;
