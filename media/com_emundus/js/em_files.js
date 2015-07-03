@@ -32,6 +32,21 @@ function UpdateIframeSize(id) {
     iFrames.style.height =  height + 'px';
 }
 
+// get url param value
+function getUrlParameter(url, sParam)
+{
+    var sPageURL = url;
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
+    }
+}
+
 function search(){
     var inputs = [{
         name: 's',
@@ -2055,22 +2070,30 @@ $(document).ready(function()
        /* if (f.handle === false) {
             f.handle = true;
 */
-            var checkInput = getUserCheck();
-
-            var start = 0;
-            var limit = 4;
-            var forms = 0;
-            var attachment = 0;
-            var assessment = 0;
-            var decision = 0;
-            if($('#em-ex-forms').is(":checked"))
-                forms = 1;
-            if($('#em-ex-attachment').is(":checked"))
-                attachment = 1;
-            if($('#em-ex-assessment').is(":checked"))
-                assessment = 1;
-            if($('#em-ex-decision').is(":checked"))
-                decision = 1;
+        //var checkInput = getUserCheck();
+        var fnum = '';
+        var fnums = '';
+        var url = $(this).attr('href');
+        var fnum = getUrlParameter(url, 'fnum');
+        if(fnum != '')
+            fnums = '{"1":"'+fnum+'"}';
+        else
+            fnums = getUserCheck();
+        var ids = getUrlParameter(url, 'ids');
+        var start = 0;
+        var limit = 4;
+        var forms = 0;
+        var attachment = 0;
+        var assessment = 0;
+        var decision = 0;
+        if($('#em-ex-forms').is(":checked"))
+            forms = 1;
+        if($('#em-ex-attachment').is(":checked"))
+            attachment = 1;
+        if($('#em-ex-assessment').is(":checked"))
+            assessment = 1;
+        if($('#em-ex-decision').is(":checked"))
+            decision = 1;
 
         $('.modal-body').empty();
         $('.modal-body').append('<div>' +
@@ -2083,9 +2106,9 @@ $(document).ready(function()
             $.ajax(
             {
                 type: 'post',
-                url: 'index.php?option=com_emundus&controller=files&task=getfnums_csv',
+                url: 'index.php?option=com_emundus&controller=files&task=getfnums_csv&fnum='+fnum+'&ids='+ids,
                 dataType: 'JSON',
-                data: {fnums: checkInput},
+                data: {fnums: fnums, fnum: fnum, ids: ids},
                 success: function (result) {
                     var totalfile = result.totalfile;
                     if (result.status) {
@@ -2234,7 +2257,7 @@ $(document).ready(function()
                 $.ajax(
                     {
                         type: 'post',
-                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnums_csv',
+                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnums_csv&fnum='+fnum,
                         dataType: 'JSON',
                         data: {fnums: checkInput},
                         success: function (result) {
@@ -2566,8 +2589,8 @@ $(document).ready(function()
                             $('.modal-body').empty();
                             if(result.status)
                             {
-                                var zipUrl = '/index.php?option=com_emundus&controller=files&task=exportzipdoc&ids='
-                                var oneUrl = '/index.php?option=com_emundus&controller=files&task=exportonedoc&ids='
+                                var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids='
+                                var oneUrl = 'index.php?option=com_emundus&controller=files&task=exportonedoc&ids='
                                 var table = "<h3>" +
                                     Joomla.JText._('FILES_GENERATED')+
                                     "</h3>" +

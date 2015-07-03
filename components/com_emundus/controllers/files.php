@@ -1090,19 +1090,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $today = date("MdYHis");
         $name = md5($today.rand(0,10));
         $name = $name.'-applications.pdf';
-        /*      $path = JPATH_BASE.DS.'tmp'.DS.$name;
 
-            require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
-             $pdf = new ConcatPdf();
-
-             $pdf->Output($path, 'F');
-
-             if (!$f = fopen($path, 'w+')){
-                 $result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$path);
-                 echo json_encode((object) $result);
-                 exit();
-             }
-     */
         $result = array('status' => true, 'file' => $name);
         echo json_encode((object) $result);
         exit();
@@ -1112,7 +1100,11 @@ class EmundusControllerFiles extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getVar('fnums', null);
         $fnums = (array) json_decode(stripslashes($fnums));
+        $ids = $jinput->getVar('ids', null);
+        $ids = (array) json_decode(stripslashes($ids));
+
         $model = $this->getModel('Files');
+
         if(!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
         {
             $fnums = $model->getAllFnums();
@@ -1129,7 +1121,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $totalfile = sizeof($validFnums);
         $session = JFactory::getSession();
         $session->set('fnums_export', $validFnums);
-        $result = array('status' => true, 'totalfile'=> $totalfile);
+        $result = array('status' => true, 'totalfile'=> $totalfile, 'ids'=> $ids);
         echo json_encode((object) $result);
         exit();
     }

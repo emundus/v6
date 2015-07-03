@@ -32,7 +32,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             <span class="glyphicon glyphicon-paperclip"></span> 
                 <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
                 <?php if($can_export && count($this->userAttachments) > 0)
-                    echo '<button class="btn btn-default" id="em_export_pdf"  title="'.JText::_('PDF').'" link="/index.php?option=com_emundus&controller=application&task=exportpdf&fnum='.$this->fnum.'&student_id='.$this->student_id.'&ids={ids}">
+                    echo '<button class="btn btn-default" id="em_export_pdf" title="'.JText::_('PDF').'" link="">
                         <span class="glyphicon glyphicon-file"></span>
                     </button>';
                 ?>
@@ -61,10 +61,6 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
 
                     foreach($this->userAttachments as $attachment)
                     {
-                        /*if (EmundusHelperAccess::isExpert($this->_user->id) && $this->expert_document_id == $attachment->attachment_id && $this->_user->email != $attachment->description) {
-                            continue;
-                        }
-                        else {*/
                         $path = $attachment->lbl == "_archive"?EMUNDUS_PATH_REL."archives/".$attachment->filename:EMUNDUS_PATH_REL.$this->student_id.'/'.$attachment->filename;
                         $img_missing = (!file_exists($path))?'<img style="border:0;" src="media/com_emundus/images/icones/agt_update_critical.png" width=20 height=20 title="'.JText::_( 'FILE_NOT_FOUND' ).'"/> ':"";
                         $img_dossier = (is_dir($path))?'<img style="border:0;" src="media/com_emundus/images/icones/dossier.png" width=20 height=20 title="'.JText::_( 'FILE_NOT_FOUND' ).'"/> ':"";
@@ -134,7 +130,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
 </div>
 
 <script type="text/javascript">
-    function getAttachementChecked()
+   function getChecked()
     {
         var checkedInput = new Array();
         $('.em_application_attachments:checked').
@@ -142,6 +138,30 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             {
                 checkedInput.push($(this).val());
             });
+        return checkedInput;
+    }
+
+    function getJsonChecked()
+    {
+        var i=0;
+        var myJSONObject = '{';
+        $('.em_application_attachments:checked').
+            each(function()
+            {
+                myJSONObject += '\"'+i+'\":\"'+$(this).val()+'\",';
+                i=i+1;
+            });
+        myJSONObject = myJSONObject.substr(0, myJSONObject.length-1);
+        myJSONObject += '}';
+        if(myJSONObject.length == 2)
+        {
+            alert('SELECT_FILES');
+            return false;
+        }
+        else
+        {
+            checkedInput = myJSONObject;
+        }
         return checkedInput;
     }
 
@@ -165,8 +185,8 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
     {
         if(e.handle === true) {
             e.handle = false;
-            var checkedInput = getAttachementChecked();
-            if (checkedInput.length > 0) {
+            var checked = getChecked();
+            if (checked.length > 0) {
                 var res = confirm("<?php echo JText::_('CONFIRM_DELETE_SELETED_ATTACHMENTS')?>");
                 if (res) {
                     var url = $(this).attr('link');
@@ -182,7 +202,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                             type: 'post',
                             url: url,
                             dataType: 'json',
-                            data: {ids: JSON.stringify(checkedInput)},
+                            data: {ids: JSON.stringify(checked)},
                             success: function (result) {
                                 $('#em-modal-actions').hide();
 
@@ -221,17 +241,18 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
 
     $(document).on('click', '#em_export_pdf', function()
     {
-        var checkInput = getAttachementChecked();
-        String.prototype.fmt = function (hash) {
+        var checkedInput = getJsonChecked();
+        var checked = getChecked();
+        /*String.prototype.fmt = function (hash) {
             var string = this, key;
             for (key in hash) string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]); return string;
-        }
+        }*/
 
-        checkInput = checkInput.join(',');
-        checkInput = encodeURIComponent(checkInput);
-        var url = $(this).attr('link');
-        url = url.fmt({ids: checkInput});
-        if(checkInput.length > 0)
+        //var url = $(this).attr('link')+'&ids='+encodeURIComponent(JSON.stringify(checkedInput));
+        var url = "index.php?option=com_emundus&controller=application&task=exportpdf&fnum=<?php echo $this->fnum; ?>&student_id=<?php echo $this->student_id; ?>&ids="+checkedInput;
+        //url = url.fmt({ids: checkedInput});
+
+        if(checked.length > 0)
         {
             $('#em-modal-actions .modal-body').empty();
             $('#em-modal-actions-title').empty();
@@ -242,7 +263,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             '<input class="em-ex-check" type="checkbox" value="attachment" name="attachment" id="em-ex-attachment" checked/>' +
             '<label for="em-ex-attachment">'+Joomla.JText._('ATTACHMENT_PDF')+'</label> <br/>' +
             '</div>' +
-            '<a class="btn btn-default btn-attach" id="em_generate" href="'+url+' target="_blank"><?php echo JText::_('GENERATE_PDF') ?></a><div id="attachement_res"></div></div>');
+            '<a class="btn btn-default btn-attach" id="em_generate" href=\''+url+'\' target="_blank"><?php echo JText::_('GENERATE_PDF') ?></a><div id="attachement_res"></div></div>');
             $('#em-modal-actions .modal-footer').hide();
             $('#em-modal-actions .modal-dialog').addClass('modal-lg');
             $('#em-modal-actions .modal').show();
@@ -250,6 +271,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
         }
         else
         {
+            $('.em_application_attachments').prop('checked', false);
             alert("<?php echo JText::_('YOU_MUST_SELECT_ATTACHMENT')?>");
         }
     });

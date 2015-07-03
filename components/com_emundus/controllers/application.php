@@ -65,7 +65,7 @@ class EmundusControllerApplication extends JControllerLegacy
         JArrayHelper::toInteger( $attachments, 0 );
         if (count( $attachments ) == 0) {
             JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
-            $mainframe->redirect($url);
+            //$mainframe->redirect($url);
             exit;
         }
 
@@ -393,7 +393,8 @@ class EmundusControllerApplication extends JControllerLegacy
         $ids = explode(',', $ids);
         $sid = $jinput->getInt('student_id', null);
         $form_post = $jinput->getVar('forms', null);
-        if(EmundusHelperAccess::asAccessAction(8,'c', JFactory::getUser()->id, $fnum))
+
+        if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum))
         {
             $exports = array();
             $tmpArray = array();
@@ -404,11 +405,12 @@ class EmundusControllerApplication extends JControllerLegacy
                 $fnumInfos = $modelFiles->getFnumInfos($fnum);
 
                 $exports[] = EmundusHelperExport::buildFormPDF($fnumInfos, $sid, $fnum, 1);
-
             }
+
             $model = $this->getModel('application');
             $files = $model->getAttachments($ids);
             EmundusHelperExport::getAttchmentPDF($exports, $tmpArray, $files, $sid);
+
             if(!empty($exports))
             {
                 require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
