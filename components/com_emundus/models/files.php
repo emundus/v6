@@ -966,6 +966,18 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getUsers()
     {
+        $limitStart = JFactory::getSession()->get('limitstart');
+        $limit = JFactory::getSession()->get('limit');
+        return $this->getAllUsers($limitStart, $limit);
+    }
+
+    /**
+     * @param $limitStart   int     request start
+     * @param $limi         int     request limit
+     * @return mixed
+     */
+    public function getAllUsers($limitStart=0, $limit=20)
+    {
         $dbo = $this->getDbo();
         $query = 'select jos_emundus_campaign_candidature.fnum, ss.value as status, u.name ';
 
@@ -1033,16 +1045,13 @@ class EmundusModelFiles extends JModelLegacy
             $res = $dbo->loadAssocList();
             $this->_applicants = $res;
 
-            $limit = JFactory::getSession()->get('limitstart');
-
-            $limitStart = JFactory::getSession()->get('limit');
-            if($limitStart > 0)
+            if($limit > 0)
             {
-                $query .= " limit $limit, $limitStart ";
+                $query .= " limit $limitStart, $limit ";
             }
             $dbo->setQuery($query);
             $res = $dbo->loadAssocList();
-            //echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';
+ //echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';
             return $res;
         }
         catch(Exception $e)
@@ -1699,7 +1708,11 @@ class EmundusModelFiles extends JModelLegacy
         try
         {
             $db = $this->getDbo();
-            $query = 'select distinct ga.fnum, u.name, g.title, g.id  from #__emundus_group_assoc  as ga left join #__user_usergroup_map as uum on uum.group_id = ga.group_id left join #__users as u on u.id = uum.user_id left join #__usergroups as g on g.id = ga.group_id where 1 order by ga.fnum asc, g.title';
+            $query = 'select distinct ga.fnum, u.name, g.title, g.id  from #__emundus_group_assoc  as ga
+left join #__user_usergroup_map as uum on uum.group_id = ga.group_id
+left join #__users as u on u.id = uum.user_id
+left join #__usergroups as g on g.id = ga.group_id
+where 1 order by ga.fnum asc, g.title';
             $db->setQuery($query);
             return $db->loadAssocList();
         }
@@ -1874,64 +1887,22 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getAllFnums()
     {
-        try
-        {
-            $db = $this->getDbo();
-            $query = "SELECT jos_emundus_campaign_candidature.fnum
-                        FROM #__emundus_campaign_candidature
-                        LEFT JOIN #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id
-                        LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id
-                        LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
-                        LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jos_emundus_campaign_candidature.fnum ";
-            $leftJoin = '';
-            if(!isset($lastTab))
-            {
-                $lastTab = array(
-                    '#__emundus_campaign_candidature', 'jos_emundus_campaign_candidature',
-                    '#__emundus_setup_campaigns', 'jos_emundus_setup_campaigns',
-                    '#__emundus_setup_programmes', 'jos_emundus_setup_programmes',
-                    '#__users', 'jos_users'
-                );
-            } else {
-                $lastTab[] = '#__emundus_campaign_candidature';
-                $lastTab[] = 'jos_emundus_campaign_candidature';
-                $lastTab[] = '#__emundus_setup_campaigns';
-                $lastTab[] = 'jos_emundus_setup_campaigns';
-                $lastTab[] = '#__emundus_setup_programmes';
-                $lastTab[] = 'jos_emundus_setup_programmes';
-                $lastTab[] = '#__users';
-                $lastTab[] = 'jos_users';
-            }
-            if(count($this->_elements) > 0) {
-                foreach ($this->_elements as $elt)
-                {
-                    if(!in_array($elt->tab_name, $lastTab))
-                    {
-                        $leftJoin .= ' left join ' . $elt->tab_name .  ' on '. $elt->tab_name .'.fnum = jos_emundus_campaign_candidature.fnum ';
-                    }
-                    $lastTab[] = $elt->tab_name;
-                }
-            }
+        include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
+        $userModel = new EmundusModelUsers;
 
-            $q = $this->_buildWhere($lastTab);
-            if (!empty($leftJoin))
-            {
-                $query .= $leftJoin;
-            }
-            $query .= $q['join'];
-            $query .= ' where 1 = 1 ' . $q['q'];
+        $current_user = JFactory::getUser();
 
-            $query .= $this->_buildContentOrderBy();
+        $this->code = $userModel->getUserGroupsProgrammeAssoc($current_user->id);
+        $this->fnum_assoc = $userModel->getApplicantsAssoc($current_user->id);
 
-//die( str_replace('#_', 'jos', $query) );
-            $db->setQuery($query);
+        $files = $this->getAllUsers(0, 0);
+        $fnums = array();
 
-            return $db->loadColumn();
+        foreach($files as $file){
+            $fnums[] = $file['fnum'];
         }
-        catch(Exception $e)
-        {
-            return false;
-        }
+
+        return $fnums;
     }
 
     /*

@@ -1117,6 +1117,7 @@ class EmundusControllerFiles extends JControllerLegacy
         {
             $fnums = $model->getAllFnums();
         }
+
         $validFnums = array();
         foreach($fnums as $fnum)
         {

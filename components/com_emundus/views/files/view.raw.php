@@ -165,7 +165,7 @@ class EmundusViewFiles extends JViewLegacy
 
 			    // get applications files
 			    $users = $this->get('Users');
-
+//var_dump($users); die();
 			    $defaultElements = $this->get('DefaultElements');
 			    $datas = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'status' => JText::_('STATUS')));
 			    $fl = array();

@@ -811,6 +811,102 @@ class EmundusModelUsers extends JModelList
 
     }
 
+    /*
+     * Function to get fnums associated to users groups or user
+     * @param   $action_id  int     Allowed action ID
+     * @param   $crud       array   Array of type access (create, read, update, delete)
+     */
+    public function getFnumsAssoc($action_id, $crud = array())
+    {
+        $current_user = JFactory::getUser();
+        $crud_where = '';
+        foreach($crud as $key=>$value){
+            $crud_where .= ' AND '.$key.'='.$value;
+        }
+
+        try
+        {
+            $db = $this->getDbo();
+            $query = 'SELECT DISTINCT fnum
+						FROM #__emundus_group_assoc
+						WHERE action_id = '.$action_id.' '.$crud_where.' AND group_id IN ('.implode(',', $current_user->groups).')';
+            $db->setQuery($query);
+            $fnum_1 = $db->loadColumn();
+
+            $query = 'SELECT DISTINCT fnum
+						FROM #__emundus_users_assoc
+						WHERE action_id = '.$action_id.' '.$crud_where.' AND user_id = '.$current_user->id;
+            $db->setQuery($query);
+            $fnum_2 = $db->loadColumn();
+
+            return (count($fnum_1>0) && count($fnum_2))?array_merge($fnum_1, $fnum_2):((count($fnum_1)>0)?$fnum_1:$fnum_2);
+        }
+        catch(Exception $e)
+        {
+            throw $e;
+        }
+    }
+
+
+    /*
+     * Function to get fnums associated to group
+     * @param   $group_id   int     Allowed action ID
+     * @param   $action_id  int     Allowed action ID
+     * @param   $crud       array   Array of type access (create, read, update, delete)
+     */
+    public function getFnumsGroupAssoc($group_id, $action_id, $crud = array())
+    {
+        $crud_where = '';
+        foreach($crud as $key=>$value){
+            $crud_where .= ' AND '.$key.'='.$value;
+        }
+
+        try
+        {
+            $db = $this->getDbo();
+            $query = 'SELECT DISTINCT fnum
+						FROM #__emundus_group_assoc
+						WHERE action_id = '.$action_id.' '.$crud_where.' AND group_id ='.$group_id;
+            $db->setQuery($query);
+            $fnum = $db->loadColumn();
+
+            return $fnum;
+        }
+        catch(Exception $e)
+        {
+            throw $e;
+        }
+    }
+
+    /*
+ * Function to get fnums associated to user
+ * @param   $action_id  int     Allowed action ID
+ * @param   $crud       array   Array of type access (create, read, update, delete)
+ */
+    public function getFnumsUserAssoc($action_id, $crud = array())
+    {
+        $current_user = JFactory::getUser();
+        $crud_where = '';
+        foreach($crud as $key=>$value){
+            $crud_where .= ' AND '.$key.'='.$value;
+        }
+
+        try
+        {
+            $db = $this->getDbo();
+            $query = 'SELECT DISTINCT fnum
+						FROM #__emundus_users_assoc
+						WHERE action_id = '.$action_id.' '.$crud_where.' AND user_id = '.$current_user->id;
+            $db->setQuery($query);
+            $fnum = $db->loadColumn();
+
+            return $fnum;
+        }
+        catch(Exception $e)
+        {
+            throw $e;
+        }
+    }
 
     /*
      * Function to get Evaluators Infos for the mailing evaluators
@@ -829,7 +925,7 @@ class EmundusModelUsers extends JModelList
         try
         {
             $db = $this->getDbo();
-            // All manually associated applicatan to user with action evaluation set to create=1
+            // All manually associated applicant to user with action evaluation set to create=1
             $query = 'SELECT DISTINCT u.id, u.name, u.email
 						FROM #__emundus_users_assoc eua 
 						LEFT JOIN #__users u on u.id=eua.user_id 
@@ -875,7 +971,7 @@ class EmundusModelUsers extends JModelList
         }
         catch(Exception $e)
         {
-            throw $e;
+            throw $e->getMessage();
         }
     }
 
@@ -904,7 +1000,7 @@ class EmundusModelUsers extends JModelList
         }
         catch(Exception $e)
         {
-            throw $e;
+            throw $e->getMessage();
         }
     }
 
