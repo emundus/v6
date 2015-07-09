@@ -763,19 +763,24 @@ class EmundusControllerEvaluation extends JControllerLegacy
     }
 */
     function pdf(){
-       /* $user = JFactory::getUser();
-        $student_id = JRequest::getVar('user', null, 'GET', 'none',0);
-        $fnum = JRequest::getVar('fnum', null, 'GET', 'none',0);
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->getString('fnum', null);
+        $student_id = $jinput->getString('student_id', null);
+
+        if( !EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
+            die(JText::_('RESTRICTED_ACCESS'));
+
         $m_profile = $this->getModel('profile');
         $m_campaign = $this->getModel('campaign');
-        //$profile = $model->getProfileByApplicant($student_id);
 
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
             $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
+            $name = $fnum.'-evaluation.pdf';
+            $tmpName = JPATH_BASE.DS.'tmp'.DS.$name;
         }
 
-        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_evaluation_'.$campaign['training'].'.php';
+        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_evaluation'.$campaign['training'].'.php';
 
         if (!file_exists($file)) {
             $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_evaluation.php';
@@ -786,26 +791,22 @@ class EmundusControllerEvaluation extends JControllerLegacy
             chmod(EMUNDUS_PATH_ABS.$student_id, 0755);
         }
 
-        require($file);
-
-        if(EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            pdf_evaluation(!empty($student_id)?$student_id:$user->id, $fnum);
-            exit;
-        } else
-            die(JText::_('ACCESS_DENIED'));
-*/
-        $table = array();
-        EmundusHelperExport::getEvalPDF($table, $fnum);
+        require_once($file);
+        pdf_evaluation(!empty($student_id)?$student_id:$this->_user->id, $fnum, true, null);
+        
         exit();
     }
 
     function pdf_decision(){
-        $user = JFactory::getUser();
-        $student_id = JRequest::getVar('user', null, 'GET', 'none',0);
-        $fnum = JRequest::getVar('fnum', null, 'GET', 'none',0);
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->getString('fnum', null);
+        $student_id = $jinput->getString('student_id', null);
+
+        if( !EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
+            die(JText::_('RESTRICTED_ACCESS'));
+
         $m_profile = $this->getModel('profile');
         $m_campaign = $this->getModel('campaign');
-        //$profile = $model->getProfileByApplicant($student_id);
 
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
@@ -823,14 +824,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
             chmod(EMUNDUS_PATH_ABS.$student_id, 0755);
         }
 
-        require($file);
-
-        if(EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            pdf_decision(!empty($student_id)?$student_id:$user->id, $fnum);
-            exit;
-        } else
-            die(JText::_('ACCESS_DENIED'));
-
+        require_once($file);
+        pdf_decision(!empty($student_id)?$student_id:$this->_user->id, $fnum);
+        
         exit();
     }
 

@@ -39,14 +39,14 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null) {
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 	//require_once(JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 	//require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
-	require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
+	//require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
 	include_once(JPATH_COMPONENT.DS.'models'.DS.'application.php');
 	include_once(JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 	//include_once(JPATH_COMPONENT.DS.'models'.DS.'files.php');
 	include_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
 
 	$m_profile 		= new EmundusModelProfile;
-	$m_users 		= new EmundusModelUsers;
+	//$m_users 		= new EmundusModelUsers;
 	//$menu 			= new EmundusHelperMenu;
 	$application 	= new EmundusModelApplication;
 	//$evaluation 	= new EmundusModelEvaluation;
@@ -55,7 +55,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null) {
 	$db 			= JFactory::getDBO();
 	$app 			= JFactory::getApplication();
 	$config 		= JFactory::getConfig();
-	$eMConfig 		= JComponentHelper::getParams('com_emundus');
+	//$eMConfig 		= JComponentHelper::getParams('com_emundus');
 	//$current_user 	= JFactory::getUser();
 	$user 			= JFactory::getUser($user_id);
 	$fnum 			= empty($fnum)?$user->fnum:$fnum;
@@ -63,19 +63,18 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null) {
 	//$export_pdf = $eMConfig->get('export_pdf');
 	//$user_profile = $m_users->getCurrentUserProfile($user_id);
 	
-	$infos = $m_profile->getFnumDetails($fnum); 
+	$infos = $m_profile->getFnumDetails($fnum);
 	$campaign_id = $infos['campaign_id'];
 
 	// Get form HTML
 	$htmldata = '';
 
-	//$forms = $application->getFormsPDF($user_id, $fnum);
 
 	// Create PDF object
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 	$pdf->SetCreator(PDF_CREATOR);
-	$pdf->SetAuthor('Decision Publique');
-	$pdf->SetTitle('Application Form');
+	$pdf->SetAuthor('eMundus');
+	$pdf->SetTitle('Evaluation');
 
 	// Users informations
 	$query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted
@@ -94,12 +93,12 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null) {
 //die(str_replace("#_", "jos", $query));
 
 	//get logo
-    $template 	= $app->getTemplate(true);
-    $params     = $template->params;
+	$template 	= $app->getTemplate(true);
+	$params     = $template->params;
 
-    $logo   	= json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-    $logo 		= !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
-	
+	$logo   	= json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+	$logo 		= !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+
 	//get title
 	$title = $config->get('sitename');
 	$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
@@ -113,7 +112,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null) {
 	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 	$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 	$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-	$pdf->SetFont('helvetica', '', 8);
+	$pdf->SetFont('helvetica', '', 10);
 	$pdf->AddPage();
 	//$dimensions = $pdf->getPageDimensions();
 	
@@ -131,22 +130,22 @@ $htmldata .=
 <table>
 <tr>
 ';
-if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar))
+if (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar))
 	$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar.'" width="100" align="left" /></td>';
-elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar))
-	$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" align="left" /></td>';
+elseif (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar))
+	$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar.'" width="100" align="left" /></td>';
 $htmldata .= '
 <td>
 
-  <div class="name"><strong>'.@$item->firstname.' '.strtoupper(@$item->lastname).'</strong>, '.@$item->label.' ('.@$item->cb_schoolyear.')</div>';
+  <div class="name"><strong>'.$item->firstname.' '.strtoupper($item->lastname).'</strong>, '.$item->label.' ('.$item->cb_schoolyear.')</div>';
 
 if(isset($item->maiden_name))
-	$htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.@$item->maiden_name.'</div>';
+	$htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
 $date_submitted = !empty($item->date_submitted)?strftime("%d/%m/%Y %H:%M", strtotime($item->date_submitted)):JText::_('NOT_SENT');
 $htmldata .= '
-  <div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</div>
+  <div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>
   <div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
-  <div class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</div>
+  <div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>
   <div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
   <div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y 	%H:%M", time()).'</div>
 </td>
@@ -155,9 +154,7 @@ $htmldata .= '
 </div>';
 /**  END APPLICANT   ****/
 
-	// get evaluations
-	//$users = $evaluation->getUsers($fnum);
-
+	// get evaluation
 	$data = @EmundusHelperFiles::getEvaluation('html', $fnum);
 	foreach ($data as $fnums => $evals) {
 		foreach ($evals as $user => $html) {
@@ -171,8 +168,6 @@ $htmldata .= '
 		$start_page = $pdf->getPage();
 		$pdf->Bookmark($item->lastname.' '.$item->firstname, 0);
 		$pdf->writeHTMLCell(0,'','',$start_y, $htmldata,'B', 1);
-
-		//$htmldata = '';
 	}
 
 	if (is_null($name)) 
@@ -186,6 +181,5 @@ $htmldata .= '
 	}else{
 		$pdf->Output($path, 'F');
 	}
-
 }
 ?>
