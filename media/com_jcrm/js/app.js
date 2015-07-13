@@ -2,7 +2,9 @@
  * Created by yoan on 03/12/14.
  */
 
-var contactApp = angular.module('contactApp', ['ui.bootstrap', 'angularFileUpload', 'ui.utils']);
+var contactApp = angular.module('contactApp', ['ui.bootstrap', 'angularFileUpload', 'ui.utils', 'ui.tinymce']);
+//var contactApp = angular.module('contactApp', ['ui.bootstrap', 'angularFileUpload', 'ui.utils']);
+
 contactApp.factory('jcrmConfig', [function()
 	{
 		'use strict';
@@ -318,41 +320,57 @@ contactApp.directive('chosen', function()
 });
 
 contactApp.directive('contactTinyMce', ['$timeout',
-                                   function ($timeout) {
-	                                   return {
-		                                   restrict: 'E',
-		                                   require: 'ngModel',
-		                                   template: "<textarea id='mail-body' class='form-control'></textarea>", // A template you create as a HTML file (use templateURL) or something else...
-		                                   link: function ($scope, $element, attrs, ngModel)
-		                                   {
+   function ($timeout) {
+       return {
+           restrict: 'E',
+           require: 'ngModel',
+           template: "<form method='post'><textarea id='mail-body' class='form-control' ui-tinymce='tinymceOptions' ng-model='body'></textarea></form>", // A template you create as a HTML file (use templateURL) or something else...
+           link: function ($scope, $element, attrs, ngModel)
+           {
 
-			                                   // Create the editor itself, use TinyMCE in your case
-			                                   tinyMCE.init({
-				                                                mode : "exact",
-				                                                elements: "mail-body",
-				                                                setup : function(ed)
-				                                                {
-					                                                ed.onKeyUp.add(function(ed, l)
-					                                                               {
-						                                                               var newValue = tinyMCE.activeEditor.getContent();
-						                                                               if (!$scope.$$phase)
-						                                                               {
-							                                                                $scope.$apply(function ()
-                                                                                            {
-                                                                                                ngModel.$setViewValue(newValue);
-                                                                                            });
-	                                                                                    }
-                                                                                    }
-				                                                                    )
-				                                                },
-				                                                theme : "simple" });
-			                                   ngModel.$render = function ()
-			                                   {
-				                                   tinyMCE.activeEditor.setContent(ngModel.$viewValue);
-			                                   };
-                                            }
-	                                   };
-                                   }]);
+               // Create the editor itself, use TinyMCE in your case
+               /*tinyMCE.init({
+                    mode : "exact",
+                    elements: "mail-body",
+                    setup : function(edd)
+                    {
+                       edd.onClick.add(function(ed) 
+                       {
+                           var newValue = tinyMCE.activeEditor.getContent();
+                           if (!$scope.$$phase)
+                           {
+                                $scope.$apply(function ()
+                                {
+                                    ngModel.$setViewValue(newValue);
+                                });
+                            }
+                        }
+                        )
+                    },
+                    theme : "simple" });*/
+				 
+               ngModel.$render = function ()
+               {
+                   //tinyMCE.activeEditor.setContent(ngModel.$viewValue);
+                   ngModel.$setViewValue(ngModel.$viewValue);
+               };
+            }
+       };
+   }]);
+
+contactApp.controller('tinymceCtrl', function($scope) {
+  $scope.tinymceOptions = {
+    onChange: function(e) {
+      alert($scope.body);
+    },
+    inline: false,
+    plugins : 'advlist autolink link image lists charmap print preview',
+    skin: 'lightgray',
+    theme : 'modern',
+    mode : "exact",
+    elements: "mail-body"
+  };
+});
 
 contactApp.directive('jcrmScroll', ['jcrmConfig', function(jcrmConfig)
 {

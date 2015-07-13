@@ -180,7 +180,7 @@ class JcrmControllerEmail extends JcrmController {
             $groupList = array();
         $contacts = array_unique(array_merge($contacts, $groupList));
         $mailAdress = $model->getEmailAdr($contacts);
-        if($bodyId != 1)
+        if($bodyId != 1 && $bodyId != -1)
         {
             $userFrom = $model->getEmailFrom($bodyId);
         }
@@ -190,6 +190,7 @@ class JcrmControllerEmail extends JcrmController {
             $userFrom->emailfrom = JFactory::getUser()->email;
             $userFrom->name = JFactory::getUser()->name;
         }
+
         $cpt = 1;
         $fail = 0;
         $tags = array('[FULL_NAME]','[LAST_NAME]', '[FIRST_NAME]', '[EMAIL]', '[PHONE]', '[ORGANISATION]');
@@ -201,6 +202,27 @@ class JcrmControllerEmail extends JcrmController {
             }
 
             $body = str_replace($tags, array($mail['full_name'], $mail['last_name'], $mail['first_name'], $mail['email'], $mail['phone'], $mail['organisation']), $body);
+
+            $sender = array(
+                $userFrom->emailfrom,
+                $userFrom->name
+            );
+            $mailer     = JFactory::getMailer();
+            $mailer->setSender($sender);
+            $mailer->addRecipient($mail['email']);
+            $mailer->setSubject($subject);
+            $mailer->isHTML(true);
+            $mailer->Encoding = 'base64';
+            $mailer->setBody($body);
+//die(var_dump($mailer));
+            $send = $mailer->Send();
+            if ( $send !== true ) {
+                $fail++;
+            } else {
+                $model->addMessage($mail['email'], $subject, $body);
+            }
+            $cpt++;
+/*
             if (JUtility::sendMail($userFrom->emailfrom, $userFrom->name, $mail['email'], $subject, $body, true))
             {
                 $model->addMessage($mail['email'], $subject, $body);
@@ -209,8 +231,9 @@ class JcrmControllerEmail extends JcrmController {
             {
                 $fail++;
             }
-            $cpt++;
+*/        
         }
+
         $status = true;
         if($fail == ($cpt - 1))
         {

@@ -246,6 +246,7 @@ class JcrmModelEmail extends JModelItem {
             {
                 $res->name = JFactory::getUser()->name;
             }
+
             return $res;
 
         }
@@ -264,7 +265,8 @@ class JcrmModelEmail extends JModelItem {
             $query = "select email, full_name, organisation, last_name, first_name, phone
                       from #__jcrm_contacts
                       where id in (".implode(', ', $listId).") and (email not like '')";
-            $dbo->setQuery($query);
+            $dbo->setQuery($query); 
+
             $res = $dbo->loadAssocList();
             return $res;
 
@@ -301,9 +303,10 @@ class JcrmModelEmail extends JModelItem {
         try
         {
             $query = "insert (`user_id`, `email_to`, `state`, `priority`, `subject`, `message`) into #__jcrm_messages
-                      values(".JFactory::getUser()->id.", '".$to."', 0, 0, '".$s."', '".$m."' )";
+                      values(".JFactory::getUser()->id.", '".$to."', 0, 0, ".$dbo->Quote($s).", ".$dbo->Quote($m)." )";
             $dbo->setQuery($query);
             $res = $dbo->execute();
+            //echo str_replace('#_', 'jos', $query);
             return $res;
         }
         catch(Exception $e)

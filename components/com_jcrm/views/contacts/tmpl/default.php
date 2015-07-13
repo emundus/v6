@@ -17,12 +17,14 @@ $document->addStyleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.
 $document->addStyleSheet(JURI::base()."media/com_emundus/lib/chosen/chosen.min.css");
 $document->addScript(JURI::base() . 'media/com_emundus/lib/jquery-1.10.2.min.js');
 $document->addScript(JURI::base()."media/com_emundus/lib/chosen/chosen.jquery.min.js");
+$document->addScript('media/editors/tinymce4/tinymce.min.js');
 $document->addScript('media/com_jcrm/js/angular.js');
+$document->addScript('media/com_jcrm/js/angular-ui-tinymce/tinymce.js');
 $document->addScript('media/com_jcrm/js/ui-bootstrap-tpls-0.12.0.min.js');
 $document->addScript('media/com_jcrm/js/ui-utils.min.js');
 $document->addScript('media/com_jcrm/js/ui-utils-ieshiv.min.js');
 $document->addScript('media/com_jcrm/js/angular-file-upload/angular-file-upload.min.js');
-$document->addScript('media/editors/tinymce/jscripts/tiny_mce/tiny_mce.js');
+
 
 
 $user = JFactory::getUser();

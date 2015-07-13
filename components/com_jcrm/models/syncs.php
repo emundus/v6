@@ -316,6 +316,7 @@ class JcrmModelSyncs extends JModelList
                     $query .= " or ";
                 }
             }
+            $query.= " LIMIT 0,100";
             $dbo->quote($query);
             $dbo->setQuery($query);
 
@@ -356,7 +357,7 @@ class JcrmModelSyncs extends JModelList
     public function getOrga($organisation)
     {
         $dbo = $this->getDbo();
-        $query = "select `id`, `organisation` from #__jcrm_contacts where `type` = 1 and `organisation` like '$organisation'";
+        $query = "select `id`, `organisation` from #__jcrm_contacts where `type` = 1 and `organisation` like ".$dbo->quote($organisation);
         try
         {
             $dbo->setQuery($query);
@@ -380,7 +381,7 @@ class JcrmModelSyncs extends JModelList
         $query = "select $select from $tableName where id = $id";
         try
         {
-            $dbo->setQuery($query);
+            $dbo->setQuery($query); 
             return $dbo->loadAssoc();
         }
         catch(Exception $e)
@@ -445,7 +446,7 @@ class JcrmModelSyncs extends JModelList
     public function getSiblingOrgs($organisation)
     {
         $dbo = $this->getDbo();
-        $query = 'select `id`, `organisation` from #__jcrm_contacts where `type` = 1 and organisation not like ""  and ((SOUNDEX(organisation) = SOUNDEX("'.$organisation.'")) or organisation like "'.$organisation.'%") ';
+        $query = 'select `id`, `organisation` from #__jcrm_contacts where `type` = 1 and organisation not like ""  and ((SOUNDEX(organisation) = SOUNDEX('.$dbo->quote($organisation).')) or organisation like '.$dbo->quote($organisation.'%').') ';
         try
         {
             $dbo->setQuery($query);
