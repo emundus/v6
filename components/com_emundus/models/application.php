@@ -785,10 +785,10 @@ class EmundusModelApplication extends JModelList
                             }
 
                             // TABLEAU DE PLUSIEURS LIGNES
-                        } elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0){
+                        } elseif (($itemg->repeated > 0 || $itemg->repeated_1 > 0) && count($elements)<7){
                             $forms .= '<p><table class="adminlist">
-							  <thead>
-							  <tr> ';
+                              <thead>
+                              <tr> ';
 
                             //-- Entrée du tableau -- */
                             //$nb_lignes = 0;
@@ -805,10 +805,10 @@ class EmundusModelApplication extends JModelList
 
                             if($itemg->group_id == 174)
                                 $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
-										WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
+                                        WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
                             else
                                 $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
-									WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).')';
+                                    WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).')';
                             //$forms .= $query;
                             $this->_db->setQuery($query);
                             $repeated_elements = $this->_db->loadObjectList();
@@ -855,6 +855,72 @@ class EmundusModelApplication extends JModelList
                             $forms .= '</tbody></table></p>';
 
                             // AFFICHAGE EN LIGNE
+                        }elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0) {
+
+                            //-- Entrée du tableau -- */
+                            $t_elt = array();
+                            foreach($elements as &$element) {
+                                $t_elt[] = $element->name;
+                                //$forms .= '<th scope="col">'.$element->label.'</th>';
+                            }
+                            unset($element);
+
+                            $query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id='.$itemg->group_id.' AND table_join_key like "parent_id"';
+                            $this->_db->setQuery($query);
+                            $table = $this->_db->loadResult();
+
+                            if($itemg->group_id == 174)
+                                $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
+                                        WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
+                            else
+                                $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
+                                    WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).')';
+
+                            $this->_db->setQuery($query);
+                            $repeated_elements = $this->_db->loadObjectList();
+                            unset($t_elt);
+
+
+                            // -- Ligne du tableau --
+                            if (count($repeated_elements) > 0) {
+                                $i = 1;
+                                foreach ($repeated_elements as $r_element) {
+                                    $j = 0;
+                                    $forms .= '---- '.$i.' ----';
+                                    foreach ($r_element as $key => $r_elt) {
+                                        if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
+                                            if ($elements[$j]->plugin=='date') {
+                                                $date_params = json_decode($elements[$j]->params);
+                                                $elt = date($date_params->date_form_format, strtotime($r_elt));
+                                            }
+                                            elseif ($elements[$j]->plugin=='birthday' && $r_elt>0) {
+                                                $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
+                                            }
+                                            elseif($elements[$j]->plugin=='databasejoin') {
+                                                $params = json_decode($elements[$j]->params);
+                                                $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
+                                                $from = $params->join_db_name;
+                                                $where = $params->join_key_column.'='.$this->_db->Quote($r_elt);
+                                                $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
+                                                $query = preg_replace('#{thistable}#', $from, $query);
+                                                $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $this->_db->setQuery( $query );
+                                                $elt = $this->_db->loadResult();
+                                            }
+                                            elseif($elements[$j]->plugin=='textarea') 
+                                                $elt = '<br>'.$r_elt;
+                                            else
+                                                $elt = $r_elt;
+
+                                            $forms .= '<p><b><span style="color: #000071;">'.$elements[$j]->label.'</span>: </b>'.$elt.'</p>';
+                                        }
+                                        $j++;
+                                    }
+                                    $i++;
+                                }
+                            }
+
+                            // AFFICHAGE EN LIGNE
                         } else {
                             foreach($elements as $element) {
                                 if(!empty($element->label) && $element->label!=' ') {
@@ -898,9 +964,11 @@ class EmundusModelApplication extends JModelList
                                         $this->_db->setQuery( $query );
                                         $elt = $this->_db->loadResult();
                                     }
+                                    elseif($element->plugin=='textarea')
+                                        $elt = '<br>'.$element->content;
                                     else
                                         $elt = $element->content;
-                                    $forms .= '<b>'.$element->label.': </b>'.$elt.'<br/>';
+                                    $forms .= '<p><span style="color: #000071;"><b>'.$element->label.'</span>: </b>'.$elt.'</p>';
                                 }
                             }
                         }
