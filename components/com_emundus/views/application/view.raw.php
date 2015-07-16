@@ -63,7 +63,8 @@ class EmundusViewApplication extends JViewLegacy
 
 		$jinput = $app->input;
 		$fnum = $jinput->getString('fnum', null);
-		$layout = $jinput->getString('layout', 0);
+        $layout = $jinput->getString('layout', 0);
+        $Itemid = $jinput->get('Itemid', 0);
 		$profiles = new EmundusModelProfile();
 		$fnumInfos = $profiles->getFnumDetails($fnum);
 		$model = $this->getModel('Application');
@@ -154,7 +155,7 @@ class EmundusViewApplication extends JViewLegacy
                 case 'evaluation':
                     if(EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id, $fnum))
                     {
-                        $student = JFactory::getUser(intval($fnumInfos['applicant_id']));
+                        $this->student = JFactory::getUser(intval($fnumInfos['applicant_id']));
                         $evaluation = new EmundusModelEvaluation();
                         $myEval = $evaluation->getEvaluationsFnumUser($fnum, $this->_user->id);
 
@@ -164,14 +165,14 @@ class EmundusViewApplication extends JViewLegacy
                         $form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid='.@$myEval[0]->id.'&student_id='.$student->id;
                         $this->assignRef('form_url_edit', $form_url_edit);
 */
-                        $url_form = '';
+                        $this->url_form = '';
 
                         if(count($myEval) > 0)
                         {
                             if(EmundusHelperAccess::asAccessAction(5, 'u', $this->_user->id, $fnum))
                             {
                                 if(!empty($formid))
-                                    $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid='.$myEval[0]->id.'&student_id='.$student->id;
+                                    $this->url_form = JUri::base().'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid='.$myEval[0]->id.'&student_id='.$this->student->id;
                             }
                         }
                         else
@@ -179,19 +180,19 @@ class EmundusViewApplication extends JViewLegacy
                             if(EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id, $fnum))
                             {
                                 if(!empty($formid))
-                                    $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&rowid=&jos_emundus_evaluations___student_id[value]='.$student->id.'&jos_emundus_evaluations___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_evaluations___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
+                                    $this->url_form = JUri::base().'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&rowid=&jos_emundus_evaluations___student_id[value]='.$this->student->id.'&jos_emundus_evaluations___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_evaluations___fnum[value]='.$fnum.'&student_id='.$this->student->id.'&tmpl=component&iframe=1';
                             }
                         }
                         if(!empty($formid))
-                            $url_evaluation = 'index.php?option=com_emundus&view=evaluation&layout=data&format=raw&Itemid=&cfnum='.$fnum;
+                            $this->url_evaluation = JUri::base().'index.php?option=com_emundus&view=evaluation&layout=data&format=raw&Itemid='.$Itemid.'&cfnum='.$fnum;
                         else
-                            $url_evaluation = '';
+                            $this->url_evaluation = '';
 
-                        $this->assignRef('campaign_id', $fnumInfos['campaign_id']);
-                        $this->assignRef('student', $student);
+                        $this->campaign_id = $fnumInfos['campaign_id'];
+                        //$this->assignRef('student', $student);
                         $this->assignRef('fnum', $fnum);
-                        $this->assignRef('url_evaluation', $url_evaluation);
-                        $this->assignRef('url_form', $url_form);
+                        //$this->assignRef('url_evaluation', $url_evaluation);
+                        //$this->assignRef('url_form', $url_form);
                     }
                     else
                     {

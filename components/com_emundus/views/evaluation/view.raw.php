@@ -47,18 +47,7 @@ class EmundusViewEvaluation extends JViewLegacy
     public function display($tpl = null)
     {
 
-	/*    JHtml::script('jquery-1.10.2.min.js', JURI::base() . 'media/com_emundus/lib/');
-    	JHtml::script('bootstrap.min.js', JURI::base() . 'media/com_emundus/lib/bootstrap-emundus/js/');
-		JHtml::script('chosen.jquery.min.js', JURI::base()."media/com_emundus/lib/chosen/" );
-	    JHTML::script( 'em_files.js', JURI::Base().'media/com_emundus/js/');
-    	JHtml::styleSheet('chosen.min.css', JURI::base()."media/com_emundus/lib/chosen/");
-	    JHtml::stylesheet('bootstrap.min.css', JURI::base() . 'media/com_emundus/lib/bootstrap-emundus/css/');
-	    //JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
-	    //JHTML::stylesheet( 'menu_style.css', JURI::Base().'media/com_emundus/css/' );
-	    JHtml::stylesheet('emundus_files.css', JURI::base() . 'media/com_emundus/css/');
-*/
 	    $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
-		
 
 	    $menu = @JSite::getMenu();
 		$current_menu  = $menu->getActive();
@@ -142,7 +131,7 @@ class EmundusViewEvaluation extends JViewLegacy
 
 				if(!empty($users))
 				{
-					$i = 1;
+					//$i = 1;
 					$taggedFile = $model->getTaggedFile();
 					foreach($columnSupl as $col)
 					{

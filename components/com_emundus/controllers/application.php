@@ -29,7 +29,7 @@ class EmundusControllerApplication extends JControllerLegacy
     /**
      * export ZIP
      */
-
+/*
     public function export_zip() {
         require_once('libraries/emundus/zip.php');
         //$db	= JFactory::getDBO();
@@ -43,7 +43,7 @@ class EmundusControllerApplication extends JControllerLegacy
         zip_file($cid);
         exit;
     }
-
+*/
     /**
      * Delete an applicant attachment(s)
      */
@@ -105,8 +105,8 @@ class EmundusControllerApplication extends JControllerLegacy
 
         if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
 
-        $view = JRequest::getVar('view', null, 'GET', 'none',0);
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        //$view = JRequest::getVar('view', null, 'GET', 'none',0);
+        //$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 
         $id = JRequest::getVar('id', null, 'GET', 'none',0);
 

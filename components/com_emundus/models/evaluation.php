@@ -139,9 +139,10 @@ class EmundusModelEvaluation extends JModelList
 				}
 				elseif ($def_elmt->element_plugin == 'databasejoin') {
 					$attribs = json_decode($def_elmt->element_attribs);
+                    $join_val_column = !empty($attribs->join_val_column)?$attribs->join_val_column:'CONCAT('.str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat).')';
 					if ($group_params->repeat_group_button == 1) {
 						$query = '(
-									select GROUP_CONCAT('.$attribs->join_val_column.' SEPARATOR ", ") 
+									select GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
 									from '.$attribs->join_db_name.' 
 									where '.$attribs->join_db_name.'.'.$attribs->join_key_column.' IN 
 										( select '.$def_elmt->table_join.'.' . $def_elmt->element_name.'
@@ -150,7 +151,7 @@ class EmundusModelEvaluation extends JModelList
 										)
 								  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 					} else
-						$query = '(select '.$attribs->join_val_column.' from '.$attribs->join_db_name.' where '.$attribs->join_db_name.'.'.$attribs->join_key_column.'='.$def_elmt->tab_name . '.' . $def_elmt->element_name.') AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
+						$query = '(select '.$join_val_column.' from '.$attribs->join_db_name.' where '.$attribs->join_db_name.'.'.$attribs->join_key_column.'='.$def_elmt->tab_name . '.' . $def_elmt->element_name.') AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 
 					$this->_elements_default[] = $query;
 					//$this->_elements_default[] = ' (SELECT esc.label FROM jos_emundus_setup_campaigns AS esc WHERE esc.id = jos_emundus_campaign_candidature.campaign_id) as `jos_emundus_campaign_candidature.campaign_id` ';

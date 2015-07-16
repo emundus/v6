@@ -23,7 +23,7 @@ $result = @$_REQUEST['jos_emundus_evaluations___result'][0];
 $campaign_id = $_REQUEST['jos_emundus_evaluations___campaign_id'][0];
 
 if(!empty($result)) {
-	$db =& JFactory::getDBO();
+	$db = JFactory::getDBO();
 	$query = 'SELECT count(id) FROM #__emundus_final_grade WHERE campaign_id='.$campaign_id.' AND student_id='.$aid->id;
 	$db->setQuery( $query );
 	$cpt = $db->loadResult();

@@ -317,6 +317,7 @@ function openFiles(fnum)
 
                     url = menus[m].link.fmt({ fnum: fnum.fnum, applicant_id: sid, campaign_id: cid });
                     url += '&fnum='+fnum.fnum;
+                    url += '&Itemid='+itemId;
                     menuList += '<a href="'+url+'" class="list-group-item" title="'+menus[m].title+'" id="'+menus[m].id+'">';
 
                     if(menus[m].hasSons)

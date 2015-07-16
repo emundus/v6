@@ -57,11 +57,11 @@ JFactory::getSession()->set('application_layout', 'evaluation');
     $('iframe').load(function(){
         $(".holds-iframe").remove();
     }).show();
-    /*
-var url_evaluation = '<?php echo $this->url_evaluation; ?>';
-var url_form = '<?php echo $this->url_form; ?>';
-if (url_evaluation != '') {
-    $.ajax({
+
+    var url_evaluation = '<?php echo $this->url_evaluation; ?>';
+
+    if (url_evaluation != '') {
+        $.ajax({
             type: "GET",
             url: url_evaluation,
             dataType: 'html',
@@ -73,7 +73,11 @@ if (url_evaluation != '') {
                 console.log(jqXHR.responseText);
             }
         });
-}
+    }
+
+    /*
+
+     var url_form = '<?php echo $this->url_form; ?>';
 
 if (url_form != '') {
     $.ajax({

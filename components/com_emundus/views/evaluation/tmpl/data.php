@@ -187,7 +187,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
     }
     $(document).ready(function(){
-        checkurl();
+        //checkurl();
         $('#rt-mainbody-surround').children().addClass('mainemundus');
         $('#rt-main').children().addClass('mainemundus');
         $('#rt-main').children().children().addClass('mainemundus');
