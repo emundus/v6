@@ -2,8 +2,8 @@
 <extension version="3.4" client="site" type="language" method="upgrade">
 	<name>French_fr-FR</name>
 	<tag>fr-FR</tag>
-	<version>3.4.1.2</version>
-	<creationDate>01/04/2015</creationDate>
+	<version>3.4.3.1</version>
+	<creationDate>02/07/2015</creationDate>
 	<author>French translation team : joomla.fr</author>
 	<authorEmail>traduction@joomla.fr</authorEmail>
 	<authorUrl>http://joomla.fr</authorUrl>
@@ -28,6 +28,7 @@
 		<filename>fr-FR.com_wrapper.ini</filename>
 		<filename>fr-FR.files_joomla.sys.ini</filename>
 		<filename>fr-FR.finder_cli.ini</filename>
+		<filename>fr-FR.lib_fof.ini</filename>
 		<filename>fr-FR.lib_fof.sys.ini</filename>
 		<filename>fr-FR.lib_idna_convert.sys.ini</filename>
 		<filename>fr-FR.lib_joomla.ini</filename>
