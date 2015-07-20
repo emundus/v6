@@ -19,7 +19,7 @@ jimport( 'joomla.application.component.view');
  * @package    Emundus
  */
  
-class EmundusViewEvaluation extends JViewLegacy
+class EmundusViewDecision extends JViewLegacy
 {
 	var $_user = null;
 	var $_db = null;
@@ -29,8 +29,7 @@ class EmundusViewEvaluation extends JViewLegacy
 	public function __construct($config = array())
 	{
 		/*require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');*/
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');*/
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
@@ -46,6 +45,8 @@ class EmundusViewEvaluation extends JViewLegacy
 
     public function display($tpl = null)
     {
+        if( !EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) )
+            die( JText::_('RESTRICTED_ACCESS') );
 
 	    $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 
@@ -90,61 +91,60 @@ class EmundusViewEvaluation extends JViewLegacy
 				$params = JComponentHelper::getParams('com_emundus');
 				$evaluators_can_see_other_eval = $params->get('evaluators_can_see_other_eval', 0);
 
-				$evaluation = $this->getModel('Evaluation');
+				$decision = $this->getModel('Decision');
                 $userModel = new EmundusModelUsers();
 
-                $evaluation->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
-                $evaluation->fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
-                $this->assignRef('code', $evaluation->code);
-                $this->assignRef('fnum_assoc', $evaluation->fnum_assoc);
+                $decision->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
+                $decision->fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
+                $this->assignRef('code', $decision->code);
+                $this->assignRef('fnum_assoc', $decision->fnum_assoc);
 
 				// reset filter
 				$filters = @EmundusHelperFiles::resetFilter();
 				$this->assignRef('filters', $filters);
 
 				// get applications files
-				$users = $evaluation->getUsers($cfnum);
+				$users = $decision->getUsers($cfnum);
 
 				// Columns
 				$defaultElements = $this->get('DefaultElements');
 				$datas = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
 				$fl = array();
 
-			    // Get eval crieterion
+			    // Get eval criterion
 				if (count($defaultElements)>0) {
 					foreach ($defaultElements as $key => $elt)
 					{
 						$fl[$elt->tab_name . '.' . $elt->element_name] = $elt->element_label;
 					}
 				}
-				$fl['jos_emundus_evaluations.user'] = JText::_('EVALUATOR');
+				$fl['jos_emundus_final_grade.user'] = JText::_('RECORDED_BY');
 				// merge eval criterion on application files
 			    $datas[0] = array_merge($datas[0], $fl);
 
 			    // get evaluation form ID
-			    $formid = $evaluation->getEvaluationFormByProgramme();
+			    $formid = $decision->getDecisionFormByProgramme();
 			    $this->assignRef('formid', $formid);
 			    $form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
 			    $form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
 			    $this->assignRef('form_url_edit', $form_url_edit);
-			    //$form_url_add  = 'index.php?option=com_fabrik&c=form&view=form&formid=29&tableid=31&rowid=&jos_emundus_evaluations___student_id[value]=2778&jos_emundus_evaluations___campaign_id[value]=55&jos_emundus_evaluations___fnum[value]=2014092516382300000550002778&student_id=2778&tmpl=component&iframe=1';
 
 				if(!empty($users))
 				{
 					//$i = 1;
-					$taggedFile = $evaluation->getTaggedFile();
+					$taggedFile = $decision->getTaggedFile();
 					foreach($columnSupl as $col)
 					{
 						$col = explode('.', $col);
 						switch ($col[0])
 						{
 							case 'photos':
-								$colsSup['photos'] = @EmundusHelperFiles::getPhotos($evaluation, JURI::base());
+								$colsSup['photos'] = @EmundusHelperFiles::getPhotos($decision, JURI::base());
 								$datas[0]['PHOTOS'] = JText::_('PHOTOS');
 								break;
 							case 'evaluators':
 								$datas[0]['EVALUATORS'] = JText::_('EVALUATORS');
-								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $evaluation);
+								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $decision);
 								break;
 						}
 					}

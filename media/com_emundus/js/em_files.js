@@ -1587,7 +1587,7 @@ $(document).ready(function()
                                                             {
                                                                 if(isNaN(parseInt(d)))
                                                                     break;
-                                                                if ($('#view').val()!="evaluation") {
+                                                                if ($('#view').val()!="evaluation" && $('#view').val()!="decision") {
                                                                     item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                                 } else {
                                                                     item += '<li class="em-export-item" id="' + result.defaults[d][0].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d][0].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d][0].element_label + '</strong></span></li>';
@@ -2258,7 +2258,7 @@ $(document).ready(function()
                 $.ajax(
                     {
                         type: 'post',
-                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnums_csv&fnum='+fnum,
+                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnums_csv',
                         dataType: 'JSON',
                         data: {fnums: checkInput},
                         success: function (result) {

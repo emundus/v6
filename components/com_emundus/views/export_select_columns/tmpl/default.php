@@ -25,7 +25,7 @@ foreach($s_elements as $s){
 <style>
     .component-content legend {
          border: 0px;
-         padding: none;
+         padding: 0px;
          margin-left: -6px;
          border-radius: 0px;
          background: inherit;
@@ -63,14 +63,7 @@ foreach($s_elements as $s){
         font-size: 14px;
     }
 </style>
-<form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" >
-    <!--<input type='button' onclick='location.href="index.php?option=com_emundus&view=<?php echo $view;?>&Itemid=<?php echo $itemid; ?>"' value="<?php echo JText::_('RETURN_BACK'); ?>"/>
-	<input type="submit" name="send_elements" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/> 
-	 <input type="submit" name="send_elements_csv" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS_CSV'); ?>"/> -->
-	<input type="hidden" name="option" value="com_emundus"/>
-    <input type="hidden" name="view" value="<?php echo $view; ?>"/>
-    <input type="hidden" name="task" value=""/>
-    <input type="hidden" name="itemid" value="<?php echo $itemid; ?>"/>
+
 	<?php
 		echo '<input type="checkbox" id="emundus_checkall" class="emundusall" data-check=".emunduspage" onClick="javascript:check_all(\'emundus_checkall\')" /> ';
         echo '<label for="emundus_checkall">'.JText::_('SELECT_ALL').'</label>';
@@ -123,9 +116,6 @@ foreach($s_elements as $s){
 		echo '</div></div></div></div>';
 		echo '</div>';
 		?>
-    <!-- <input type="submit" name="send_elements" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/>
-	<input type="submit" name="send_elements_csv" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS_CSV'); ?>"/>  -->
-</form>    
 
 <script>
     function check_all( id )
@@ -202,96 +192,4 @@ foreach($s_elements as $s){
         }
     };
 
-    /*function check_all(box, obj, level) {
-         var checked = document.getElementById(box).checked;
-         var node = document.getElementById(obj);
-
-        // var parent = node.parentNode; //place la variable parent sur le noeud parent de node
-         var childList = node.childNodes; //récupère tous les enfants de node dans un tableau childNodesList
-        // var child1 = node.firstChild; //récupère le premier enfant de node
-        // var childx = node.lastChild; //récupère le dernier enfant de node
-        // var frerePrec = node.previousSibling; //récupère le frère précédent de node (l'enfant précédent du parent de node)
-        // var frereSuiv = node.nextSibling; //récupère le frère suivant
-
-            console.log(childList);
-            if(level == 1) {
-             for (i=1 ; i < childList.length ; i++) {
-                 childList[i].checked = checked;
-                 var itemid = childList[i].id;
-                 console.log(itemid);
-                 if (itemid) {
-                     itemid = itemid.split('_');
-                     itemid = itemid[2];
-                     if (checked) {
-                         var text = $("label[for='emundus_elm_" + itemid + "']").text();
-                         $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><button class="btn btn-danger btn-xs" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
-                     } else {
-                         $('#' + itemid + '-item').remove();
-                     }
-                 }
-             }
-         }
-         if(level == 2) {
-             for (i=1 ; i < childList.length ; i++) {
-                var nodeStr = childList[i].id;
-                if(nodeStr) {
-                    var tabId = nodeStr.split('_');
-                    var toCheck = document.getElementById('emundus_checkall_grp_'+tabId[2]);
-                    toCheck.checked = checked;
-                }
-                var grp = childList[i].childNodes;
-                for (j=1 ; j < grp.length ; j++) {
-                    grp[j].checked = checked;
-                    var itemid = grp[j].id;
-                    console.log(itemid);
-                    if (itemid) {
-                        itemid = itemid.split('_');
-                        itemid = itemid[2];
-                        if (checked) {
-                            var text = $("label[for='emundus_elm_" + itemid + "']").text();
-                            $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><button class="btn btn-danger btn-xs" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
-
-                        } else {
-                            $('#' + itemid + '-item').remove();
-                        }
-                    }
-                }
-             }
-         }
-         if(level == 3) {
-             for (i=0 ; i < childList.length ; i++) {
-                var nodeStr = childList[i].id;
-                if(nodeStr) {
-                    var tabId = nodeStr.split('_');
-                    var toCheck = document.getElementById('emundus_checkall_tbl_'+tabId[2]);
-                    toCheck.checked = checked;
-                }
-                var grp = childList[i].childNodes;
-                for (j=1 ; j < grp.length ; j++) {
-                    var nodeGrpStr = grp[j].id;
-                    if(nodeGrpStr) {
-                        var tabId = nodeGrpStr.split('_');
-                        var toCheck = document.getElementById('emundus_checkall_grp_'+tabId[2]);
-                        toCheck.checked = checked;
-                    }
-                    var elm = grp[j].childNodes;
-                    for (k=1 ; k < elm.length ; k++) {
-                        elm[k].checked = checked;
-                        var itemid = elm[k].id;
-                        if (itemid) {
-                            itemid = itemid.split('_');
-                            itemid = itemid[2];
-                            if (checked) {
-                                var text = $("label[for='emundus_elm_" + itemid + "']").text();
-                                $('#em-export').append('<li class="em-export-item" id="' + itemid + '-item"><button class="btn btn-danger btn-xs" id="' + itemid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
-
-                            } else {
-                                $('#' + itemid + '-item').remove();
-                            }
-                        }
-                    }
-                }
-             }
-         }
-    }*/
 </script>

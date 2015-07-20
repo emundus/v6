@@ -45,7 +45,7 @@ class EmundusViewEvaluation extends JViewLegacy
 	    $this->cfnum = JFactory::getApplication()->input->getString('cfnum', null);
 		
 		//$filters = @EmundusHelperFiles::resetFilter();
-		$this->assignRef('filters', $filters);
+		//$this->assignRef('filters', $filters);
 
 
 		/* Get the values from the state object that were inserted in the model's construct function */
