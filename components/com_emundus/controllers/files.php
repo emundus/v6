@@ -1118,7 +1118,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $validFnums[] = $fnum;
             }
         }
-        $totalfile = sizeof($validFnums);
+        $totalfile = count($validFnums);
         $session = JFactory::getSession();
         $session->set('fnums_export', $validFnums);
         $result = array('status' => true, 'totalfile'=> $totalfile, 'ids'=> $ids);
@@ -1411,7 +1411,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     $files_list[] = EmundusHelperExport::getEvalPDF($fnum);
                 }
                 if ($decision) {
-                    continue;
+                    $files_list[] = EmundusHelperExport::getDecisionPDF($fnum);
                 }
             }
         }

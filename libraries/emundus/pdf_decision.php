@@ -1,36 +1,6 @@
 <?php
-function age($naiss) {
-		@list($annee, $mois, $jour) = preg_split('[-.]', $naiss);
-		$today['mois'] = date('n');
-		$today['jour'] = date('j');
-		$today['annee'] = date('Y');
-		$annees = $today['annee'] - $annee;
-		if ($today['mois'] <= $mois) {
-			if ($mois == $today['mois']) {
-			if ($jour > $today['jour'])
-				$annees--;
-		}
-		else
-			$annees--;
-		}
-		return $annees;
-}
 
-function get_mime_type($filename, $mimePath = '../etc') {
-	   $fileext = substr(strrchr($filename, '.'), 1);
-	   if (empty($fileext)) return (false);
-	   $regex = "/^([\w\+\-\.\/]+)\s+(\w+\s)*($fileext\s)/i";
-	   $lines = file("$mimePath/mime.types");
-	   foreach($lines as $line) {
-	      if (substr($line, 0, 1) == '#') continue; // skip comments
-	      $line = rtrim($line) . " ";
-	      if (!preg_match($regex, $line, $matches)) continue; // no match to the extension
-	      return ($matches[1]);
-	   }
-	   return (false); // no match at all
-} 
-
-function pdf_decision($user_id, $fnum = null, $output = true) {
+function pdf_decision($user_id, $fnum = null, $output = true, $name = null) {
 	jimport( 'joomla.html.parameter' );
 	set_time_limit(0);
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
@@ -175,12 +145,17 @@ $htmldata .= '
 		//$htmldata = '';
 	}
 
-	@chdir('tmp');
-	if($output){
-		$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.'decision.pdf', 'FI');
-	}else{
-		$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.'decision.pdf', 'F');
-	}
+    if (is_null($name))
+        $path = EMUNDUS_PATH_ABS.$item->user_id.DS.'decision.pdf';
+    else
+        $path = $name;
+
+    @chdir('tmp');
+    if($output){
+        $pdf->Output($path, 'FI');
+    }else{
+        $pdf->Output($path, 'F');
+    }
 
 }
 ?>

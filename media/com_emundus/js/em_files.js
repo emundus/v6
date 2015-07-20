@@ -42,7 +42,10 @@ function getUrlParameter(url, sParam)
         var sParameterName = sURLVariables[i].split('=');
         if (sParameterName[0] == sParam)
         {
-            return sParameterName[1];
+            if(typeof(sParameterName[1]) != "undefined")
+                return '';
+            else
+                return sParameterName[1];
         }
     }
 }
@@ -2076,7 +2079,7 @@ $(document).ready(function()
         var fnums = '';
         var url = $(this).attr('href');
         var fnum = getUrlParameter(url, 'fnum');
-        if(fnum != '')
+        if(fnum != '' && typeof(fnum) != "undefined")
             fnums = '{"1":"'+fnum+'"}';
         else
             fnums = getUserCheck();

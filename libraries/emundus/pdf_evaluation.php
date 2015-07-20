@@ -1,34 +1,4 @@
 <?php
-function age($naiss) {
-		@list($annee, $mois, $jour) = preg_split('[-.]', $naiss);
-		$today['mois'] = date('n');
-		$today['jour'] = date('j');
-		$today['annee'] = date('Y');
-		$annees = $today['annee'] - $annee;
-		if ($today['mois'] <= $mois) {
-			if ($mois == $today['mois']) {
-			if ($jour > $today['jour'])
-				$annees--;
-		}
-		else
-			$annees--;
-		}
-		return $annees;
-}
-
-function get_mime_type($filename, $mimePath = '../etc') {
-	   $fileext = substr(strrchr($filename, '.'), 1);
-	   if (empty($fileext)) return (false);
-	   $regex = "/^([\w\+\-\.\/]+)\s+(\w+\s)*($fileext\s)/i";
-	   $lines = file("$mimePath/mime.types");
-	   foreach($lines as $line) {
-	      if (substr($line, 0, 1) == '#') continue; // skip comments
-	      $line = rtrim($line) . " ";
-	      if (!preg_match($regex, $line, $matches)) continue; // no match to the extension
-	      return ($matches[1]);
-	   }
-	   return (false); // no match at all
-} 
 
 function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null) {
 	jimport( 'joomla.html.parameter' );

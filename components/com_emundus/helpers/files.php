@@ -1469,9 +1469,6 @@ class EmundusHelperFiles
         if (!($items = $cache->get($key)))
         {
             // Initialise variables.
-            /*$list		= array();
-            $db			= JFactory::getDbo();*/
-
             $path		= $active->tree;
             $start		= 0;
             $end		= 3;
