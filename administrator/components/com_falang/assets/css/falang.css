@@ -1,0 +1,196 @@
+.icon-16-falang {
+	background: url(../images/icon-16-falang.png);
+}
+#joomfish ul {
+	margin: 0px 0px 0px 0px;
+	padding: 1px 0px 1px 20px;
+	list-style: url(../images/dot.png);
+	border: none;
+}
+
+table.translateparams{
+	width:100%;
+}
+td.translateparams span.editlinktip{
+/*	display:none;*/
+}
+
+#manage_results div {
+	border: 1px solid #dddddd;
+	width: 98%;
+	height: 100%;
+}
+div.icon-48-extension {
+	background: url(../images/icon-48-extension.png) no-repeat left;
+}
+div.icon-48-falang {
+	background: url(../images/icon-48-falang.png) no-repeat left;
+}
+div.icon-48-help {
+	background: url(../images/icon-48-help.png) no-repeat left;
+}
+div.icon-48-info {
+	background: url(../images/icon-48-info.png) no-repeat left;
+}
+div.icon-48-manage {
+	background: url(../images/icon-48-manage.png) no-repeat left;
+}
+div.icon-48-orphan {
+	background: url(../images/icon-48-orphan.png) no-repeat left;
+}
+div.icon-48-plugin {
+	background: url(../images/icon-48-plugin.png) no-repeat left;
+}
+div.icon-48-statistics {
+	background: url(../images/icon-48-statistics.png) no-repeat left;
+}
+div.icon-48-translation {
+	background: url(../images/icon-48-translation.png) no-repeat left;
+}
+
+table.adminform a.toolbar {
+   display: block;
+	white-space: nowrap;
+	border: 1px solid #fbfbfb;
+	padding: 1px 5px;
+	cursor: pointer;
+	text-align: center;
+	width: 32px;
+}
+
+table.adminform a.toolbar:hover {
+	border-left: 1px solid #eee;
+	border-top: 1px solid #eee;
+	border-right: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	text-decoration: none;
+	color: #0B55C4;
+}
+
+
+table.adminform a.toolbar span { 
+	float: none; 
+	width: 32px; 
+	height: 32px; 
+	margin: 0 auto; 
+	display: block;
+}
+
+#adminJFSidebar {vertical-align:top; padding-left:15px;padding-top:55px;width:300px;float:left;}
+#adminJFSidebar .jfSidebarInformation {border: 1px dashed #ccc;padding:0;width:100%;margin-bottom:10px;}
+#adminJFSidebar table thead th { 
+	background:none repeat scroll 0 0 #F0F0F0;
+	border-bottom:1px solid #999999;
+	border-left:1px solid #FFFFFF;
+	color:#666666;
+	text-align:center;
+	padding: 3px 4px 3px 4px;
+}
+div#jfcontent {}
+
+span.update-msg-info{color:green;font-weight: bold;}
+span.update-msg-new{color:red;font-weight: bold;}
+span.update-msg-new a{color:orange;font-style: italic;}
+
+.plaintext{margin-top:5px;float:left}
+
+/* 2.0*/
+/*#toolbar .btn.modal{float: right}*/
+#toolbar .quicktranslate-icon{
+}
+
+button.uptodate{
+    border-top: 2px solid green;
+    border-radius: 0px;
+}
+a.quickjump.uptodate{
+    border-top: 2px solid green;
+    border-radius: 0px;
+}
+
+button.old{
+    border-top: 2px solid orange;
+    border-radius: 0px;
+}
+a.quickjump.old{
+    border-top: 2px solid orange;
+    border-radius: 0px;
+}
+button.notexist{
+    border-top: 2px solid red;
+    border-radius: 0px;
+}
+a.quickjump.notexist{
+    border-top: 2px solid red;
+    border-radius: 0px;
+}
+
+img.quicktranslate-icon{
+    border: 0;
+    vertical-align: top;
+    width: 26px;
+    height: 16px;
+    max-width: none;
+}
+.btn-toolbar span.falang-status{
+	position: absolute;
+	bottom: 5px;
+}
+
+a.quickjump {
+    text-transform: uppercase;
+    margin-right:1px;
+	position: relative;
+}
+
+span.lang-published{
+	background-color:green;
+	width: 5px;
+	height: 5px;
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+}
+span.lang-unpublished{
+	background-color:red;
+	width: 5px;
+	height: 5px;
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+}
+#modal-eye{width: 95%;height: 95%;margin-left: -48%}
+#modal-eye div.modal-body{max-height: none;}
+
+
+/* quickjump */
+
+button .quicktranslate.uptodate{
+	border-bottom: 1px solid #008000;
+}
+button .quicktranslate.incomplete{
+	border-bottom: 1px solid #ffA500;
+}
+button .quicktranslate.notexisting{
+	border-bottom: 1px solid #ff0000;
+}
+button .quicktranslate.published{
+
+}
+button .quicktranslate.unpublished{
+
+}
+
+.btn-wrapper .modal.fade.in{
+	top: 15px;
+}
+.btn-wrapper div.modal{
+    width: 96%;
+	margin-left: -48%;
+}
+
+.itrmodal.modal .modal-body {
+	max-height: none;
+	overflow: visible;
+}
+/* fin quickjump */

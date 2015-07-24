@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<fieldset name="basic" addfieldpath="/administrator/components/com_falang/models/fields"
+		label="COM_FALANG_CONFIG_BASIC_LABEL"
+		description="COM_FALANG_CONFIG_BASIC_DESC">
+
+        <field name="downloadid"
+               type="text" default=""
+               size="30"
+               label="COM_FALANG_CONFIG_BASIC_DOWNLOADID_LABEL"
+               description ="COM_FALANG_CONFIG_BASIC_DOWNLOADID_DESC" />
+        <!-- >>> [FREE] >>> -->
+        <field
+                name="@notice_frontEndEdition"
+                type="plaintext"
+                label="COM_FALANG_FIELD_FRONTENDEDITION_LABEL"
+                description="COM_FALANG_FIELD_FRONTENDEDITION_DESC"
+                default="COM_FALANG_ONLY_PAID"/>
+
+            <field type="plaintext" name="@notice_quickjumpspacer" class="text"
+                   label="COM_FALANG_FIELD_QUICK_JUMP_SPACER_LABEL"
+                   default="COM_FALANG_ONLY_PAID"
+                    />
+        <!-- <<< [FREE] <<< -->
+        
+        <field
+                name="show_list"
+                type="radio"
+                default="1"
+                class="btn-group btn-group-yesno"
+                label="COM_FALANG_FALANGQUICKJUMP_COMPONENT_SHOW_LIST_LABEL"
+                description="COM_FALANG_FALANGQUICKJUMP_COMPONENT_SHOW_LIST_DESC"
+                >
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field
+                name="show_form"
+                type="radio"
+                default="1"
+                class="btn-group btn-group-yesno"
+                label="COM_FALANG_FALANGQUICKJUMP_COMPONENT_SHOW_FORM_LABEL"
+                description="COM_FALANG_FALANGQUICKJUMP_COMPONENT_SHOW_FORM_DESC"
+                >
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+
+        <field
+                name="component_list"
+                type="textarea"
+                class="input-xxlarge"
+                rows="10"
+                cols="60"
+                default="com_menus#menu#id#items,item&#13;&#10;com_content#content#id#default,articles,article&#13;&#10;com_categories#categories#id#default,categories,category&#13;&#10;com_modules#modules#id#default,modules,module&#13;&#10;com_newsfeeds#newsfeeds#id#default,newsfeeds,newsfeed"
+                label="COM_FALANG_FALANGQUICKJUMP_COMPONENT_LIST_LABEL"
+                description="COM_FALANG_FALANGQUICKJUMP_COMPONENT_LIST_DESC"
+                />
+        </fieldset>
+        <fieldset name="translation"
+                  label="COM_FALANG_CONGIG_MANAGE_TRANSLATION"
+                  description="COM_FALANG_CONGIG_MANAGE_TRANSLATION_DESC">
+
+		<field name="storageOfOriginal"
+            type="list"
+            default="md5"
+            label="Store original version as"
+            description="COM_FALANG_CONGIG_MANAGE_TRANSLATION_ORIGINAL_HELP">
+            <option value="md5">MD5 key only</option>
+            <option value="both">MD5 key and clear text</option>
+		</field>
+
+		<field name="showDefaultLanguageAdmin"
+               type="radio"
+               default="0"
+               class="btn-group btn-group-yesno"
+               label="COM_FALANG_CONFIG_ADM_DEFAULT_LANG_LABEL"
+               description="COM_FALANG_CONFIG_ADM_DEFAULT_LANG_DESC">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
+		</field>
+
+		<field name="copyparams"
+               type="radio"
+               default="1"
+               class="btn-group btn-group-yesno"
+               label="COM_FALANG_CONFIG_COPYPARAMS_LABEL"
+               description="COM_FALANG_CONFIG_COPYPARAMS_DESC">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
+		</field>
+
+    </fieldset>
+        <fieldset name="debug"
+		label="COM_FALANG_CONFIG_DEBUG_LABEL"
+		description="COM_FALANG_CONFIG_DEBUG_DESC">
+
+        <field name="debug"
+               type="radio"
+               default="0"
+               class="btn-group btn-group-yesno"
+               label="COM_FALANG_CONFIG_DEBUG_LABEL"
+               description="COM_FALANG_CONFIG_DEBUG_DESC">
+            <option value="0">NO</option>
+            <option value="1">YES</option>
+        </field>
+
+         <field name="qacaching"
+                type="radio"
+                default="0"
+                class="btn-group btn-group-yesno"
+                label="COM_FALANG_CONFIG_QA_CACHING_LABEL"
+                description="COM_FALANG_CONFIG_QA_CACHING_DESC">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
+		</field>
+
+		<field name="qalogging"
+               type="radio"
+               default="0"
+               class="btn-group btn-group-yesno"
+               label="COM_FALANG_CONFIG_QA_LOGGING_LABEL"
+               description="COM_FALANG_CONFIG_QA_LOGGING_DESC">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
+		</field>
+	</fieldset>
+    <fieldset
+        name="permissions"
+        label="JCONFIG_PERMISSIONS_LABEL"
+        description="JCONFIG_PERMISSIONS_DESC"
+        >
+
+        <field
+            name="rules"
+            type="rules"
+            label="JCONFIG_PERMISSIONS_LABEL"
+            class="inputbox"
+            filter="rules"
+            validate="rules"
+            component="com_falang"
+            section="component" />
+    </fieldset>
+</config>
