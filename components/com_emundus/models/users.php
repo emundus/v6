@@ -194,7 +194,14 @@ class EmundusModelUsers extends JModelList
         $query .= ' where 1=1 ';
 
         if(isset($programme) && !empty($programme) && $programme[0] != '%') {
-            $query .= ' AND esc.training IN ("'.implode('","', $programme).'")';
+            $query .= ' AND ( esc.training IN ("'.implode('","', $programme).'")
+                            OR u.id IN (
+                                select _eg.user_id
+                                from #__emundus_groups as _eg
+                                left join #__emundus_setup_groups_repeat_course as _esgr on _esgr.parent_id=_eg.group_id
+                                where _esgr.course IN ("'.implode('","', $programme).'")
+                                )
+                            )';
         }
 
         if($edit==1)
@@ -971,7 +978,7 @@ class EmundusModelUsers extends JModelList
         }
         catch(Exception $e)
         {
-            throw $e->getMessage();
+            return $e->getMessage();
         }
     }
 
@@ -1000,7 +1007,7 @@ class EmundusModelUsers extends JModelList
         }
         catch(Exception $e)
         {
-            throw $e->getMessage();
+            return $e->getMessage();
         }
     }
 

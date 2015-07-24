@@ -157,7 +157,6 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $session->set('filt_params', $params);
 
-
         $session->set('limitstart', 0);
         echo json_encode((object)(array('status' => true)));
         exit();
@@ -2166,7 +2165,6 @@ class EmundusControllerFiles extends JControllerLegacy
                 try
                 {
                     $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
-
                     $tags = $preprocess->getVariables();
                     $idFabrik = array();
                     $setupTags = array();

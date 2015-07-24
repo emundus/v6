@@ -926,7 +926,6 @@ class EmundusModelFiles extends JModelLegacy
      */
     private function _buildSearch($str, $tableAlias = array())
     {
-
         $q = array('q' => '', 'join' => '');
         if (is_numeric($str))
         {
@@ -942,7 +941,7 @@ class EmundusModelFiles extends JModelLegacy
             if(filter_var($str, FILTER_VALIDATE_EMAIL) !== false)
             {
                 //the request is an email
-                $q['q'] .= 'u.email = "'.mysql_real_escape_string($str).'"';
+                $q['q'] .= 'u.email = "'.$str.'"';
                 if (!in_array('jos_users', $tableAlias))
                     $q['join'] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
                 $q['users'] = true;
@@ -950,13 +949,12 @@ class EmundusModelFiles extends JModelLegacy
             }
             else
             {
-                $q['q'] .= ' (ue.lastname LIKE "%' . mysql_real_escape_string($str) . '%" OR ue.firstname LIKE "%' . mysql_real_escape_string($str) . '%" OR u.email LIKE "%' . mysql_real_escape_string($str) . '%" OR u.username LIKE "%' . mysql_real_escape_string($str) . '%" ) ';
+                $q['q'] .= ' (ue.lastname LIKE "%' . ($str) . '%" OR ue.firstname LIKE "%' . ($str) . '%" OR u.email LIKE "%' . ($str) . '%" OR u.username LIKE "%' . ($str) . '%" ) ';
                 if (!in_array('jos_users', $tableAlias))
                     $q['join'] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id';
                 $q['join'] .= ' left join #__emundus_users as ue on ue.user_id = jos_emundus_campaign_candidature.applicant_id ';
                 $q['users'] = true;
                 $q['em_user'] = true;
-
             }
         }
         return $q;
@@ -2533,6 +2531,29 @@ where 1 order by ga.fnum asc, g.title';
     }
 
     /**
+     * Return a date format from php to MySQL.
+     *
+     * @param string $date_format
+     * @return string
+     */
+    public function dateFormatToMysql($date_format){
+        $date_format = str_replace('D', '%D', $date_format);
+        $date_format = str_replace('d', '%d', $date_format);
+        $date_format = str_replace('M', '%M', $date_format);
+        $date_format = str_replace('m', '%m', $date_format);
+        $date_format = str_replace('Y', '%Y', $date_format);
+        $date_format = str_replace('y', '%y', $date_format);
+        $date_format = str_replace('H', '%H', $date_format);
+        $date_format = str_replace('h', '%h', $date_format);
+        $date_format = str_replace('I', '%I', $date_format);
+        $date_format = str_replace('i', '%i', $date_format);
+        $date_format = str_replace('S', '%S', $date_format);
+        $date_format = str_replace('s', '%s', $date_format);
+
+        return $date_format;
+    }
+
+    /**
      * @param $elt
      * @param null $fnums
      * @param $params
@@ -2554,19 +2575,20 @@ where 1 order by ga.fnum asc, g.title';
 
         if($plugin === 'date')
         {
-            $query = 'select GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name.', '.$dbo->quote($params->date_form_format).')  SEPARATOR ", ") as val, , t_origin.fnum ';
+            $date_form_format = $this->dateFormatToMysql($params->date_form_format);
+            $query = 'select GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name.', '.$dbo->quote($date_form_format).')  SEPARATOR ", ") as val, t_origin.fnum ';
         }
         elseif($isDatabaseJoin)
         {
             if($groupRepeat)
             {
-                $query = 'select GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val , t_table.fnum ';
+                $query = 'select GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_table.fnum ';
             }
             else
             {
                 if($isMulti)
                 {
-                    $query = 'select GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val , t_elt.fnum ';
+                    $query = 'select GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_elt.fnum ';
                 }
                 else
                 {
@@ -2576,7 +2598,7 @@ where 1 order by ga.fnum asc, g.title';
         }
         else
         {
-            $query = 'SELECT  GROUP_CONCAT(t_repeat.' . $name.'  SEPARATOR ", ") as val , t_origin.fnum ';
+            $query = 'SELECT  GROUP_CONCAT(t_repeat.' . $name.'  SEPARATOR ", ") as val, t_origin.fnum ';
         }
 
         if($isDatabaseJoin)
@@ -2655,6 +2677,7 @@ where 1 order by ga.fnum asc, g.title';
         $dbo = $this->getDbo();
         if($dateFormat !== null)
         {
+            $dateFormat = $this->dateFormatToMysql($dateFormat);
             $query = "select fnum, DATE_FORMAT({$name}, ".$dbo->quote($dateFormat).") as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
         }
         else

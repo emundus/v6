@@ -26,10 +26,6 @@ class EmundusViewFiles extends JViewLegacy
 
 	public function __construct($config = array())
 	{
-		/*require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');*/
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
@@ -58,7 +54,7 @@ class EmundusViewFiles extends JViewLegacy
 
 		switch  ($layout)
 		{
-			// get accès list for application file
+			// get access list for application file
 			case 'access':
 				$fnums = $app->input->getString('users', null);
 				$fnums_obj = (array) json_decode(stripslashes($fnums)); 

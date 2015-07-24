@@ -65,6 +65,8 @@ foreach($s_elements as $s){
 </style>
 
 	<?php
+    if (count($this->elements)>0) {
+
 		echo '<input type="checkbox" id="emundus_checkall" class="emundusall" data-check=".emunduspage" onClick="javascript:check_all(\'emundus_checkall\')" /> ';
         echo '<label for="emundus_checkall">'.JText::_('SELECT_ALL').'</label>';
         echo '<div id="emundus_elements">';
@@ -115,7 +117,11 @@ foreach($s_elements as $s){
 		}
 		echo '</div></div></div></div>';
 		echo '</div>';
-		?>
+    }
+    else {
+        echo JText::_('NO_FORM_DEFINED');
+    }
+?>
 
 <script>
     function check_all( id )

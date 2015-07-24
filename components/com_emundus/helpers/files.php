@@ -430,18 +430,15 @@ class EmundusHelperFiles
 
     public static function getElements($code = array())
     {
-        $db 		= JFactory::getDBO();
         require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-
-        //$eMConfig 	= JComponentHelper::getParams('com_emundus');
-        //$export_pdf = $eMConfig->get('export_pdf');
 
         $menu 		= new EmundusHelperMenu;
         $user 		= new EmundusModelUsers;
         $profile 	= new EmundusModelProfile;
 
+        $db         = JFactory::getDBO();
         // get all profiles
         $profiles = $user->getApplicantProfiles();
 
@@ -474,6 +471,10 @@ class EmundusHelperFiles
                 }
             }
 
+            if (count($fl) == 0) {
+                return array();
+            }
+
             $query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
                     INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias, joins.table_join, menu.title
                     FROM #__fabrik_elements element';
@@ -498,13 +499,17 @@ class EmundusHelperFiles
             try {
                 $db->setQuery($query);
                 $elements = $db->loadObjectList('id');
-                foreach ($elements as $key => $value) {
-                    $value->id = $key;
-                    $elts[] = $value;
+                $elts = array();
+                if (count($elements)>0) {
+                    foreach ($elements as $key => $value) {
+                        $value->id = $key;
+                        $elts[] = $value;
+                    }
                 }
                 return $elts;
             } catch (Exception $e) {
-                throw new $e->getMessage();
+                echo $e->getMessage();
+                return array();
             }
         } else {
             return array();
