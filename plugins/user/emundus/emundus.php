@@ -304,6 +304,9 @@ class plgUserEmundus extends JPlugin
                 elseif ($current_user->code	== "utc-dfp-dri") {
                     $mainframe->redirect("index.php?option=com_emundus&view=jobs&Itemid=1468");
                 }
+                elseif ($current_user->code	== "csc") {
+                    $mainframe->redirect("index.php?option=com_emundus&view=thesis&Itemid=1470");
+                }
                 else
                     $mainframe->redirect("index.php");
             }

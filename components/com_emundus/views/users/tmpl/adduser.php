@@ -87,69 +87,69 @@
 </form>
 <script type="text/javascript">
 	$(document).ready(function()
-	                  {
-		                  var edit = '<?php echo $this->edit?>';
-		                  $('.em-chosen').chosen({width:'80%'});
+      {
+          var edit = '<?php echo $this->edit?>';
+          $('.em-chosen').chosen({width:'80%'});
 
-		                  if(edit == '1')
-		                  {
-			                  if($('#profiles option:selected').attr('pub') == 1)
-			                  {
-				                  $('.em-hidden-appli-fields').show();
-				                  $('.em-hidden-nonapli-fields').hide();
-			                  }
-			                  else
-			                  {
-				                  $('.em-hidden-nonapli-fields').show();
-				                  $('.em-hidden-appli-fields').hide();
-			                  }
-		                  }
+          if(edit == '1')
+          {
+              if($('#profiles option:selected').attr('pub') == 1)
+              {
+                  $('.em-hidden-appli-fields').show();
+                  $('.em-hidden-nonapli-fields').hide();
+              }
+              else
+              {
+                  $('.em-hidden-nonapli-fields').show();
+                  $('.em-hidden-appli-fields').hide();
+              }
+          }
 
-		                  $(document).on('change', '#profiles', function()
-		                             {
-											if($('#profiles option[value="'+$(this).val()+'"]').attr('pub') == 1)
-											{
-												$('.em-hidden-appli-fields').show();
-												$('.em-hidden-nonapli-fields').hide();
-											}
-			                                else
-											{
-												$('.em-hidden-nonapli-fields').show();
-												$('.em-hidden-appli-fields').hide();
-											}
-		                             })
-		                  $(document).on('blur', '#mail', function()
-		                             {
-			                             var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/;
-			                             if ($(this).val().length == 0 || !re.test($(this).val()))
-			                             {
-				                             $(this).parent('.form-group').addClass('has-error');
-				                             $(this).after('<span class="help-block">'+Joomla.JText._('NOT_A_VALID_EMAIL')+'</span>');
-			                             }
-		                             })
-		                  $(document).on('focus', '#mail', function()
-		                             {
-			                             $(this).parent('.form-group').removeClass('has-error');
-			                             $(this).siblings('.help-block').remove();
-		                             })
+          $(document).on('change', '#profiles', function()
+                     {
+							if($('#profiles option[value="'+$(this).val()+'"]').attr('pub') == 1)
+							{
+								$('.em-hidden-appli-fields').show();
+								$('.em-hidden-nonapli-fields').hide();
+							}
+                            else
+							{
+								$('.em-hidden-nonapli-fields').show();
+								$('.em-hidden-appli-fields').hide();
+							}
+                     })
+          $(document).on('blur', '#mail', function()
+                     {
+                         var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/;
+                         if ($(this).val().length == 0 || !re.test($(this).val()))
+                         {
+                             $(this).parent('.form-group').addClass('has-error');
+                             $(this).after('<span class="help-block">'+Joomla.JText._('NOT_A_VALID_EMAIL')+'</span>');
+                         }
+                     })
+          $(document).on('focus', '#mail', function()
+                     {
+                         $(this).parent('.form-group').removeClass('has-error');
+                         $(this).siblings('.help-block').remove();
+                     })
 
-		                  $(document).on('keyup', '#login', function()
-		                             {
-			                             var re = /^[a-z0-9_@\-\.]*$/;
-			                            if(!re.test($('#login').val()))
-			                            {
-				                            if(!$(this).parent('.form-group').hasClass('has-error'))
-				                            {
-					                            $(this).parent('.form-group').addClass('has-error');
-					                            $(this).after('<span class="help-block">'+Joomla.JText._('NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER')+'</span>');
-				                            }
-			                            }
-			                             else
-			                            {
-				                            $(this).parent('.form-group').removeClass('has-error');
-				                            $(this).siblings('.help-block').remove();
-			                            }
-		                             });
+          $(document).on('keyup', '#login', function()
+                     {
+                         var re = /^[a-z0-9_@\-\.]*$/;
+                        if(!re.test($('#login').val()))
+                        {
+                            if(!$(this).parent('.form-group').hasClass('has-error'))
+                            {
+	                            $(this).parent('.form-group').addClass('has-error');
+	                            $(this).after('<span class="help-block">'+Joomla.JText._('NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER')+'</span>');
+                            }
+                        }
+                         else
+                        {
+                            $(this).parent('.form-group').removeClass('has-error');
+                            $(this).siblings('.help-block').remove();
+                        }
+                     });
 
-					  })
+	  })
 </script>

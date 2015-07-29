@@ -57,7 +57,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 	public function adduser(){
 		// add to jos_emundus_users; jos_users; jos_emundus_groups; jos_users_profiles; jos_users_profiles_history
 		$current_user = JFactory::getUser();
-		$db = JFactory::getDBO();
+		//$db = JFactory::getDBO();
 
 		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) {
 			echo json_encode((object)array('status' => false));
@@ -139,19 +139,38 @@ class EmundusControllerUsers extends JControllerLegacy {
 		 *  */
         $model = $this->getModel('emails');
 		$email = $model->getEmail('new_account');
-		$body = $model->setBody($user, $email->message, null, $password);
 
-		JMail::getInstance()->sendMail($email->emailfrom, $email->name, $user->email, $email->subject, $body, 1);
+        $mailer = JFactory::getMailer();
 
-		$message = array(
-			'user_id_from' => $current_user->id,
-			'user_id_to' => $uid,
-			'subject' => $email->subject,
-			'message' => $body
-		);
-		$model->logEmail($message);
+        $post = array('PASSWORD' => $password);
+        $tags = $model->setTags($user->id, $post, null, $password);
+        $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
 
-		echo json_encode((object)array('status' => true, 'msg' => 'USER_CREATED'));
+        $sender = array(
+            $email->emailfrom,
+            $email->name
+        );
+        $mailer->setSender($sender);
+        $mailer->addRecipient($user->email);
+        $mailer->setSubject($email->subject);
+        $mailer->isHTML(true);
+        $mailer->Encoding = 'base64';
+        $mailer->setBody($body);
+
+        $send = $mailer->Send();
+        if ( $send !== true ) {
+            echo 'Error sending email: ' . $send->__toString(); die();
+        } else {
+            $message = array(
+                'user_id_from' => $current_user->id,
+                'user_id_to' => $uid,
+                'subject' => $email->subject,
+                'message' => $body
+            );
+            $model->logEmail($message);
+        }
+
+		echo json_encode((object)array('status' => true, 'msg' => JText::_('USER_CREATED')));
 		exit;
 	}
 

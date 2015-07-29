@@ -222,7 +222,7 @@ class EmundusModelEmails extends JModelList
         $user = JFactory::getUser($user_id);
 
         $patterns = array(
-            '/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[USERNAME\]/', '/\[USER_ID\]/', '/\[USER_NAME\]/', '/\[USER_EMAIL\]/','/\n/', '/\[USER_USERNAME\]/', '/\[PASSWORD\]/',
+            '/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[USERNAME\]/', '/\[USER_ID\]/', '/\[USER_NAME\]/', '/\[USER_EMAIL\]/', '/\n/', '/\[USER_USERNAME\]/', '/\[PASSWORD\]/',
             '/\[ACTIVATION_URL\]/', '/\[SITE_URL\]/',
             '/\[APPLICANT_ID\]/', '/\[APPLICANT_NAME\]/', '/\[APPLICANT_EMAIL\]/', '/\[APPLICANT_USERNAME\]/', '/\[CURRENT_DATE\]/'
         );
@@ -254,8 +254,8 @@ class EmundusModelEmails extends JModelList
         $tags = $db->loadAssocList();
         $constants = $this->setConstants($user_id, $post, $passwd);
 
-        $patterns = array();
-        $replacements = array();
+        $patterns = $constants['patterns'];
+        $replacements = $constants['replacements'];
         foreach ($tags as $tag) {
             $patterns[] = '/\['.$tag['tag'].'\]/';
             $value = preg_replace($constants['patterns'], $constants['replacements'], $tag['request']);

@@ -191,7 +191,7 @@ class EmundusModelUsers extends JModelList
             $query .= 'LEFT JOIN #__emundus_final_grade AS efg ON u.id = efg.student_id ';
         }
 
-        $query .= ' where 1=1 ';
+        $query .= ' where 1=1 AND u.id != 1 ';
 
         if(isset($programme) && !empty($programme) && $programme[0] != '%') {
             $query .= ' AND ( esc.training IN ("'.implode('","', $programme).'")
@@ -357,7 +357,7 @@ class EmundusModelUsers extends JModelList
         $db = JFactory::getDBO();
         $query = 'SELECT c.id, c.title
 		FROM #__categories as c
-		WHERE c.published=1 AND c.extension like "com_contact" and (note like "associe" or note like "membre") 
+		WHERE c.published=1 AND c.extension like "com_contact" 
 		order by note desc,lft asc';
         $db->setQuery( $query );
         return $db->loadObjectList('id');
