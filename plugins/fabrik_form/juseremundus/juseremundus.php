@@ -621,7 +621,7 @@ class PlgFabrik_FormJUseremundus extends plgFabrik_Form
 				elseif ($params->get('juseremundus_bypass_accountdetails') != 1)
 				{
 					$emailSubject = JText::sprintf('COM_USERS_EMAIL_ACCOUNT_DETAILS', $data['name'], $data['sitename']);
-					$emailBody = JText::sprintf('COM_USERS_EMAIL_REGISTERED_BODY', $data['name'], $data['sitename'], $data['siteurl']);
+					$emailBody = JText::sprintf('COM_USERS_EMAIL_REGISTERED_BODY', $data['name'], $data['sitename'], $data['username'], $data['password_clear'])."\n".$data['siteurl'];
 				}
 
 				// Send the registration email.
@@ -637,7 +637,7 @@ class PlgFabrik_FormJUseremundus extends plgFabrik_Form
 					// Check for an error.
 					if ($return !== true)
 					{
-						$this->setError(FText::_('COM_USERS_REGISTRATION_SEND_MAIL_FAILED'));
+						$this->setError(JText::_('COM_USERS_REGISTRATION_SEND_MAIL_FAILED'));
 
 						// Send a system message to administrators receiving system mails
 						$query = $db->getQuery(true);
