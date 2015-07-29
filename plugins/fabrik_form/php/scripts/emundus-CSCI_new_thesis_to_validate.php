@@ -10,13 +10,10 @@ defined( '_JEXEC' ) or die();
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  * See COPYRIGHT.php for copyright notices and details.
- * @description Envoi automatique d'un email au Referents pour mentionner une nouvelle fiche
+ * @description Envoi automatique d'un email au Directeur de l'école doctoral pour validation du sujet de thèse
  */
 
-
 include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
-//include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
-//include_once(JPATH_BASE.'/components/com_emundus/models/groups.php');
 
 $db = JFactory::getDBO();
 $user =  JFactory::getUser();
@@ -24,12 +21,14 @@ $mailer = JFactory::getMailer();
 
 //$eMConfig = JComponentHelper::getParams('com_emundus');
 
-$referents = JAccess::getUsersByGroup(17);
-$university = $fabrikFormData['etablissement_raw'][0];
+$referents = JAccess::getUsersByGroup(23);
+$university = $fabrikFormData['doctoral_school_raw'][0];
+$titre  =   $fabrikFormData['titre'];
 
-$query ='SELECT eu.firstname, eu.lastname, u.email, u.id 
+$query ='SELECT eu.firstname, eu.lastname, u.email, u.id, c.title
 		 FROM #__users as u 
 		 LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id 
+         LEFT JOIN #__categories as c ON c.id=eu.university_id 
 		 WHERE u.id IN ('.implode(',', $referents).')
          AND eu.university_id = '.$university;
 try {
@@ -43,9 +42,12 @@ if (count($recipients) > 0) {
 
 	$emails = new EmundusModelEmails;
 
-	$post = array();
-	$tags = $emails->setTags($user->id, $post);
-	$email = $emails->getEmail("new_job");
+	$post = array(
+            'UNIVERSITY'    => $referent[0]->title,
+            'THESIS_TITLE'  => $titre
+            );
+	//$tags = $emails->setTags($user->id, $post);
+	$email = $emails->getEmail("new_thesis_to_validate");
 
 	foreach ($recipients as $referent) {
 		$tags = $emails->setTags($referent->id, $post);
