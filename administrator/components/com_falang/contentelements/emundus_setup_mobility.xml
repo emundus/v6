@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<falang type="contentelement">
+  <name>Emundus - Mobility</name>
+  <author>Décision Publique</author>
+  <version>2.0</version>
+  <description>Definition for the emundus mobility table</description>
+  <reference>
+  	<table name="emundus_setup_mobility">
+  		<field type="referenceid" name="id" translate="0">ID</field>
+  		<field type="titletext" name="label" translate="1">Name</field>
+  	</table>
+  </reference>
+</falang>
