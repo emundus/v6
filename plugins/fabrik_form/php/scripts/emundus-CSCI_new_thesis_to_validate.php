@@ -47,7 +47,7 @@ if (count($recipients) > 0) {
             'THESIS_TITLE'  => $titre
             );
 	//$tags = $emails->setTags($user->id, $post);
-	$email = $emails->getEmail("new_thesis_to_validate");
+	$email = $emails->getEmail("csc_new_thesis_to_validate");
 
 	foreach ($recipients as $referent) {
 		$tags = $emails->setTags($referent->id, $post);
