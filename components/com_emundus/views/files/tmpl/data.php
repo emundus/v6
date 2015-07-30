@@ -67,7 +67,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 												echo ($tab[1] + $this->pagination->limitstart);
 												?>
 										</label>
-
+                                    <?php elseif($k == 'status'):?>
+                                        <span class="label label-<?php echo $value->status_class ?>" title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
 									<?php elseif($k == 'fnum'):?>
 										<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" onclick="$.ajaxQ.abortAll();">
 											<span class="glyphicon glyphicon-folder-open" title="<?php echo $value->val ?>">  <?php echo JFactory::getUser((int)substr($value->val, -7))->name; ?></span>

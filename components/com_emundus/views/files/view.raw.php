@@ -241,13 +241,17 @@ class EmundusViewFiles extends JViewLegacy
 							    $userObj->type = 'fnum';
 							    $line['fnum'] = $userObj;
 						    }
-						    elseif ($key == 'name') {
-						    	continue;
-						    }
+                            elseif ($key == 'name') {
+                                continue;
+                            }
+                            elseif ($key == 'status_class') {
+                                continue;
+                            }
 						    else
 						    {
 							    $userObj->val = $value;
 							    $userObj->type = 'text';
+                                $userObj->status_class = $user['status_class'];
 							    $line[$key] = $userObj;
 						    }
 					    }

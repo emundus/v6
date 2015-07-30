@@ -978,7 +978,7 @@ class EmundusModelFiles extends JModelLegacy
     public function getAllUsers($limitStart=0, $limit=20)
     {
         $dbo = $this->getDbo();
-        $query = 'select jos_emundus_campaign_candidature.fnum, ss.value as status, u.name ';
+        $query = 'select jos_emundus_campaign_candidature.fnum, ss.value as status, ss.class as status_class, u.name ';
 
         // prevent double left join on query
         $lastTab = array('#__emundus_campaign_candidature', 'jos_emundus_campaign_candidature',
