@@ -364,19 +364,21 @@ class PlgFabrik_FormJUseremundus extends plgFabrik_Form
 
 		// Initialize some variables
 		$me = JFactory::getUser();
-		$acl = JFactory::getACL();
+		//$acl = JFactory::getACL();
 
-		$siteURL = JURI::base();
+		//$siteURL = JURI::base();
 		$bypassActivation = $params->get('juseremundus_bypass_activation', false);
 		$bypassRegistration = $params->get('juseremundus_bypass_registration', true);
 		$autoLogin = $params->get('juseremundus_auto_login', false);
+        $emailTmpl = $params->get('juseremundus_field_default_email','');
+
 
 		$data = $formModel->formData;
 
 		// Check for request forgeries
 		JSession::checkToken() or jexit('Invalid Token');
-		$option = $input->get('option');
-		$original_id = 0;
+		//$option = $input->get('option');
+		//$original_id = 0;
 
 		if ($params->get('juseremundus_field_userid') != '')
 		{
@@ -583,47 +585,72 @@ class PlgFabrik_FormJUseremundus extends plgFabrik_Form
 
 				$uri = JURI::getInstance();
 				$base = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port'));
+                if($emailTmpl !== '') {
+                    $mail->isHtml(true);
+                    include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+                    $emails = new EmundusModelEmails;
 
-				// Handle account activation/confirmation emails.
-				if ($useractivation == 2 && !$bypassActivation && !$autoLogin)
-				{
-					// Set the link to confirm the user email.
-					$data['activate'] = $base . JRoute::_('index.php?option=com_users&task=registration.activate&token=' . $data['activation'], false);
+                    $post = array(
+                        'FIRSTNAME'     => $data['jos_emundus_users___firstname'],
+                        'LASTNAME'      => $data['jos_emundus_users___lastname']
+                    );
+                    $tags = $emails->setTags($user->id, $post, null, $data['password_clear']);
+                    $email = $emails->getEmail($emailTmpl);
 
-					$emailSubject = JText::sprintf('COM_USERS_EMAIL_ACCOUNT_DETAILS', $data['name'], $data['sitename']);
+                    $data['fromname'] = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
+                    $data['mailfrom'] = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
+                    $emailSubject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
+                    $emailBody = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+                }
+                else {
+                    // Handle account activation/confirmation emails.
+                    if ($useractivation == 2 && !$bypassActivation && !$autoLogin) {
+                        // Set the link to confirm the user email.
+                        $data['activate'] = $base .
+                            JRoute::_('index.php?option=com_users&task=registration.activate&token=' .
+                                $data['activation'], false);
 
-					$emailBody = JText::sprintf('COM_USERS_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY', $data['name'], $data['sitename'],
-						$data['siteurl'] . 'index.php?option=com_users&task=registration.activate&token=' . $data['activation'], $data['siteurl'],
-						$data['username'], $data['password_clear']
-					);
-				}
-				elseif ($useractivation == 1 && !$bypassActivation && !$autoLogin)
-				{
-					// Set the link to activate the user account.
-					$data['activate'] = $base . JRoute::_('index.php?option=com_users&task=registration.activate&token=' . $data['activation'], false);
+                        $emailSubject =
+                            JText::sprintf('COM_USERS_EMAIL_ACCOUNT_DETAILS', $data['name'], $data['sitename']);
 
-					$emailSubject = JText::sprintf('COM_USERS_EMAIL_ACCOUNT_DETAILS', $data['name'], $data['sitename']);
+                        $emailBody =
+                            JText::sprintf('COM_USERS_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY', $data['name'],
+                                $data['sitename'],
+                                $data['siteurl'] . 'index.php?option=com_users&task=registration.activate&token=' .
+                                $data['activation'], $data['siteurl'],
+                                $data['username'], $data['password_clear']
+                            );
+                    } elseif ($useractivation == 1 && !$bypassActivation && !$autoLogin) {
+                        // Set the link to activate the user account.
+                        $data['activate'] = $base .
+                            JRoute::_('index.php?option=com_users&task=registration.activate&token=' .
+                                $data['activation'], false);
 
-					$emailBody = JText::sprintf('COM_USERS_EMAIL_REGISTERED_WITH_ACTIVATION_BODY', $data['name'], $data['sitename'],
-						$data['siteurl'] . 'index.php?option=com_users&task=registration.activate&token=' . $data['activation'], $data['siteurl'],
-						$data['username'], $data['password_clear']
-					);
-				}
-				elseif ($autoLogin)
-				{
-					$emailSubject = JText::sprintf('COM_USERS_EMAIL_ACCOUNT_DETAILS', $data['name'], $data['sitename']);
+                        $emailSubject =
+                            JText::sprintf('COM_USERS_EMAIL_ACCOUNT_DETAILS', $data['name'], $data['sitename']);
 
-					$emailBody = JText::sprintf('PLG_FABRIK_FORM_JUSEREMUNDUS_AUTO_LOGIN_BODY', $data['name'], $data['sitename'],
-						$data['siteurl'],
-						$data['username'], $data['password_clear']
-					);
-				}
-				elseif ($params->get('juseremundus_bypass_accountdetails') != 1)
-				{
-					$emailSubject = JText::sprintf('COM_USERS_EMAIL_ACCOUNT_DETAILS', $data['name'], $data['sitename']);
-					$emailBody = JText::sprintf('COM_USERS_EMAIL_REGISTERED_BODY', $data['name'], $data['sitename'], $data['username'], $data['password_clear'])."\n".$data['siteurl'];
-				}
+                        $emailBody = JText::sprintf('COM_USERS_EMAIL_REGISTERED_WITH_ACTIVATION_BODY', $data['name'],
+                            $data['sitename'],
+                            $data['siteurl'] . 'index.php?option=com_users&task=registration.activate&token=' .
+                            $data['activation'], $data['siteurl'],
+                            $data['username'], $data['password_clear']
+                        );
+                    } elseif ($autoLogin) {
+                        $emailSubject =
+                            JText::sprintf('COM_USERS_EMAIL_ACCOUNT_DETAILS', $data['name'], $data['sitename']);
 
+                        $emailBody = JText::sprintf('PLG_FABRIK_FORM_JUSEREMUNDUS_AUTO_LOGIN_BODY', $data['name'],
+                            $data['sitename'],
+                            $data['siteurl'],
+                            $data['username'], $data['password_clear']
+                        );
+                    } elseif ($params->get('juseremundus_bypass_accountdetails') != 1) {
+                        $emailSubject =
+                            JText::sprintf('COM_USERS_EMAIL_ACCOUNT_DETAILS', $data['name'], $data['sitename']);
+                        $emailBody = JText::sprintf('COM_USERS_EMAIL_REGISTERED_BODY', $data['name'], $data['sitename'],
+                                $data['username'], $data['password_clear']) . "\n" . $data['siteurl'];
+                    }
+                }
 				// Send the registration email.
 				if ($emailSubject !== '')
 				{

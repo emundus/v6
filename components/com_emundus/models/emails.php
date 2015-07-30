@@ -228,7 +228,7 @@ class EmundusModelEmails extends JModelList
         );
         $replacements = array(
             $user->id, $user->name, $user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
-            JURI::base()."index.php?option=com_user&task=activate&activation=".$user->get('activation'), JURI::base(),
+            JURI::base()."index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), JURI::base(),
             $user->id, $user->name, $user->email, $user->username, date("F j, Y")
         );
 

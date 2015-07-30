@@ -132,6 +132,12 @@
 				description="PLG_FABRIK_FORM_JUSEREMUNDUS_DEFAULT_PROFILE_FIELD_DESC"
 				label="PLG_FABRIK_FORM_JUSEREMUNDUS_DEFAULT_PROFILE_FIELD_LABEL"
 				repeat="true" />
+			<field name="juseremundus_field_default_email"
+				type="field"
+				default=""
+				description="PLG_FABRIK_FORM_JUSEREMUNDUS_DEFAULT_EMAIL_FIELD_DESC"
+				label="PLG_FABRIK_FORM_JUSEREMUNDUS_DEFAULT_EMAIL_FIELD_LABEL"
+				repeat="true" />
 
 		</fieldset>
 		
