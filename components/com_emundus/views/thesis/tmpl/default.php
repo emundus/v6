@@ -77,7 +77,7 @@ if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus' . $this->item->
             </tr>
             <tr>
                 <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_THESIS_WEBSITE'); ?></th>
-                <td><?php echo $this->item->website; ?></td>
+                <td><a href="<?php echo $this->item->website; ?>" target="_blank"><?php echo $this->item->website; ?></a></td>
             </tr>
             <tr>
                 <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_THESIS_LABORATORY_DIRECTOR'); ?></th>
