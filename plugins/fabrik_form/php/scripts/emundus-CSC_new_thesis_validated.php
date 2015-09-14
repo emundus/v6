@@ -1,7 +1,7 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1.5: new_job.php 89 2015-02-18 Benjamin Rivalland
+ * @version 1.5: new_thesis_validated.php 89 2015-02-18 Benjamin Rivalland
  * @package Fabrik
  * @copyright Copyright (C) 2015 eMundus. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
@@ -10,7 +10,7 @@ defined( '_JEXEC' ) or die();
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  * See COPYRIGHT.php for copyright notices and details.
- * @description Envoi automatique d'un email au Directeur de l'école doctoral pour validation du sujet de thèse
+ * @description Envoi automatique d'un email au Directeur de thèse pour l'informer de l'état de validation de son sujet
  */
 
 include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
@@ -56,7 +56,7 @@ if($valide == 1) {
                 'TITRE'           => $titre,
                 'LABORATORY_DIRECTOR' => $laboratory_director,
                 'RESEARCH_LABORATORY' => $research_laboratory,
-                'URL_THESIS_PROPOSAL' => JURI::base().'index.php?option=com_thesis&view=subject&id='.$thesis_id
+                'URL_THESIS_PROPOSAL' => JURI::base().'index.php?option=com_emundus&view=thesis&id='.$thesis_id
                 );
         //
     	// email to thesis director
@@ -68,7 +68,7 @@ if($valide == 1) {
         $from      = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
         $from_id   = 62;
         $fromname  = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
-        $recipient = $user->email;
+        $recipient = $recipients[0]->email;
         $subject   = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
         $body      = preg_replace($tags['patterns'], $tags['replacements'], $email->message); 
 

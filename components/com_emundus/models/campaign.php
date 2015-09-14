@@ -117,6 +117,17 @@ class EmundusModelCampaign extends JModelList
 		$this->_db->setQuery( $query );
 		return $this->_db->loadAssoc();
 	}
+
+	static function getLastCampaignByCourse($course)
+	{
+		$db = JFactory::getDBO();
+		
+		$query = 'SELECT esc.* 
+					FROM #__emundus_setup_campaigns AS esc 
+					WHERE published=1 AND esc.training like '.$db->Quote($course).' ORDER BY esc.end_date DESC'; 
+		$db->setQuery( $query );
+		return $db->loadObject();
+	}
 	
 	function getMySubmittedCampaign()
 	{

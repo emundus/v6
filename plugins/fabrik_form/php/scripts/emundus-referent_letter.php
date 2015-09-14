@@ -16,24 +16,24 @@ $baseurl = JURI::root();
 $student_id = $formModel->getElementData('jos_emundus_references___user', false, '');
 $student = JFactory::getUser($student_id[0]);
 $current_user = JFactory::getUser();
-$mailer = JFactory::getMailer();
+
 jimport( 'joomla.utilities.utility' );
 
 $db = JFactory::getDBO();
 
 // Récupération des données du mail
 $query = 'SELECT id, subject, emailfrom, name, message
-				FROM #__emundus_setup_emails
-				WHERE lbl="referent_letter"';
+                FROM #__emundus_setup_emails
+                WHERE lbl="referent_letter"';
 $db->setQuery( $query );
 $db->execute();
 $obj=$db->loadObjectList();
 
 // Récupération de la pièce jointe : modele de lettre
 $query = 'SELECT esp.reference_letter
-				FROM #__emundus_users as eu 
-				LEFT JOIN #__emundus_setup_profiles as esp on esp.id = eu.profile 
-				WHERE eu.user_id = '.$student->id;
+                FROM #__emundus_users as eu 
+                LEFT JOIN #__emundus_setup_profiles as esp on esp.id = eu.profile 
+                WHERE eu.user_id = '.$student->id;
 $db->setQuery( $query );
 $db->execute();
 $obj_letter=$db->loadRowList();
@@ -66,17 +66,17 @@ $db->execute();
 $is_uploaded1=$db->loadResult();
 
 if ($is_uploaded1==0) {
-	$key1 = md5(rand_string(20).time());
-	// 2. MAJ de la table emundus_files_request
-	$query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum) 
-						  VALUES (NOW(), '.$student->id.', "'.$key1.'", "'.$pgitemtitle1.'", '.$student->fnum.')';
-	$db->setQuery( $query );
-	$db->execute();
-	
-	// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-	$link_upload1 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid='.$key1.'&sid='.$student->id;
-	$link_html1 = '<p>Click <a href="'.$link_upload1.'">HERE</a> to upload reference letter<br><br>';
-	$link_html1 .= 'If link does not work, please copy and paste that hyperlink in your browser : <br>'.$link_upload1.'</p>';
+    $key1 = md5(rand_string(20).time());
+    // 2. MAJ de la table emundus_files_request
+    $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum) 
+                          VALUES (NOW(), '.$student->id.', "'.$key1.'", "'.$pgitemtitle1.'", '.$current_user->fnum.')';
+    $db->setQuery( $query );
+    $db->execute();
+    
+    // 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
+    $link_upload1 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid='.$key1.'&sid='.$student->id;
+    $link_html1 = '<p>Click <a href="'.$link_upload1.'">HERE</a> to upload reference letter<br><br>';
+    $link_html1 .= 'If link does not work, please copy and paste that hyperlink in your browser : <br>'.$link_upload1.'</p>';
 } 
 // Reference 2 /////////////////////////////////////////////////////////////
 $pgitemtitle2 = 6; //ID provenant de la table emundus_attachments
@@ -86,17 +86,17 @@ $db->execute();
 $is_uploaded2=$db->loadResult();
 
 if ($is_uploaded2==0) {
-	$key2 = md5(rand_string(20).time());
-	// 2. MAJ de la table emundus_files_request
-	$query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum) 
-						  VALUES (NOW(), '.$student->id.', "'.$key2.'", "'.$pgitemtitle2.'", '.$student->fnum.')';
-	$db->setQuery( $query );
-	$db->execute();
-	
-	// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-	$link_upload2 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid='.$key2.'&sid='.$student->id;
-	$link_html2 = '<p>Click <a href="'.$link_upload2.'">HERE</a> to upload reference letter<br><br>';
-	$link_html2 .= 'If link does not work, please copy and paste that hyperlink in your browser : <br>'.$link_upload2.'</p>';
+    $key2 = md5(rand_string(20).time());
+    // 2. MAJ de la table emundus_files_request
+    $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum) 
+                          VALUES (NOW(), '.$student->id.', "'.$key2.'", "'.$pgitemtitle2.'", '.$current_user->fnum.')';
+    $db->setQuery( $query );
+    $db->execute();
+    
+    // 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
+    $link_upload2 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid='.$key2.'&sid='.$student->id;
+    $link_html2 = '<p>Click <a href="'.$link_upload2.'">HERE</a> to upload reference letter<br><br>';
+    $link_html2 .= 'If link does not work, please copy and paste that hyperlink in your browser : <br>'.$link_upload2.'</p>';
 }
 // Reference 3 /////////////////////////////////////////////////////////////
 $pgitemtitle3 = 21; //ID provenant de la table emundus_attachments
@@ -106,17 +106,17 @@ $db->execute();
 $is_uploaded3=$db->loadResult();
 
 if ($is_uploaded3<2) {
-	$key3 = md5(rand_string(20).time());
-	// 2. MAJ de la table emundus_files_request
-	$query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum) 
-						  VALUES (NOW(), '.$student->id.', "'.$key3.'", "'.$pgitemtitle3.'", '.$student->fnum.')';
-	$db->setQuery( $query );
-	$db->execute();
-	
-	// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-	$link_upload3 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid='.$key3.'&sid='.$student->id;
-	$link_html3 = '<p>Click <a href="'.$link_upload3.'">HERE</a> to upload reference letter<br><br>';
-	$link_html3 .= 'If link does not work, please copy and paste that hyperlink in your browser : <br />'.$link_upload3.'</p>';
+    $key3 = md5(rand_string(20).time());
+    // 2. MAJ de la table emundus_files_request
+    $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum) 
+                          VALUES (NOW(), '.$student->id.', "'.$key3.'", "'.$pgitemtitle3.'", '.$current_user->fnum.')';
+    $db->setQuery( $query );
+    $db->execute();
+    
+    // 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
+    $link_upload3 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid='.$key3.'&sid='.$student->id;
+    $link_html3 = '<p>Click <a href="'.$link_upload3.'">HERE</a> to upload reference letter<br><br>';
+    $link_html3 .= 'If link does not work, please copy and paste that hyperlink in your browser : <br />'.$link_upload3.'</p>';
 }
 // Reference 4 /////////////////////////////////////////////////////////////
 $pgitemtitle4 = 19; //ID provenant de la table emundus_attachments
@@ -126,17 +126,17 @@ $db->execute();
 $is_uploaded4=$db->loadResult();
 
 if ($is_uploaded4<2) {
-	$key4 = md5(rand_string(20).time());
-	// 2. MAJ de la table emundus_files_request
-	$query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum) 
-						  VALUES (NOW(), '.$student->id.', "'.$key4.'", "'.$pgitemtitle4.'", '.$student->fnum.')';
-	$db->setQuery( $query );
-	$db->execute();
-	
-	// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-	$link_upload4 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid='.$key4.'&sid='.$student->id;
-	$link_html4 = '<p>Click <a href="'.$link_upload4.'">HERE</a> to upload reference letter<br><br>';
-	$link_html4 .= 'If link does not work, please copy and paste that hyperlink in your browser : <br />'.$link_upload4.'</p>';
+    $key4 = md5(rand_string(20).time());
+    // 2. MAJ de la table emundus_files_request
+    $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum) 
+                          VALUES (NOW(), '.$student->id.', "'.$key4.'", "'.$pgitemtitle4.'", '.$current_user->fnum.')';
+    $db->setQuery( $query );
+    $db->execute();
+    
+    // 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
+    $link_upload4 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid='.$key4.'&sid='.$student->id;
+    $link_html4 = '<p>Click <a href="'.$link_upload4.'">HERE</a> to upload reference letter<br><br>';
+    $link_html4 .= 'If link does not work, please copy and paste that hyperlink in your browser : <br />'.$link_upload4.'</p>';
 }
 ///////////////////////////////////////////////////////
 
@@ -161,15 +161,15 @@ $replyto = $obj[0]->emailfrom;
 $replytoname = $obj[0]->name;
 
 if ($is_uploaded1==0) {
-	$replacements = array ($student->id, $student->name, $student->email, $link_upload1, $fnum_detail['label']);
-	$body1 = preg_replace($patterns, $replacements, $obj[0]->message);
+    $replacements = array ($student->id, $student->name, $student->email, $link_upload1, $fnum_detail['label']);
+    $body1 = preg_replace($patterns, $replacements, $obj[0]->message);
 
     $config = JFactory::getConfig();
     $sender = array(
         $config->get( $from ),
         $config->get( $fromname )
     );
-
+    $mailer = JFactory::getMailer();
     $mailer->setSender($sender);
     $mailer->addRecipient($recipient[0]);
     $mailer->setSubject($subject);
@@ -192,16 +192,17 @@ if ($is_uploaded1==0) {
         }
     }
 }
-if ($is_uploaded2==0) {
-	$replacements = array ($student->id, $student->name, $student->email, $link_upload2, $fnum_detail['label']);
-	$body2 = preg_replace($patterns, $replacements, $obj[0]->message);
+
+    if ($is_uploaded2==0) {
+    $replacements = array ($student->id, $student->name, $student->email, $link_upload2, $fnum_detail['label']);
+    $body2 = preg_replace($patterns, $replacements, $obj[0]->message);
 
     $config = JFactory::getConfig();
     $sender = array(
         $config->get( $from ),
         $config->get( $fromname )
     );
-
+    $mailer = JFactory::getMailer();
     $mailer->setSender($sender);
     $mailer->addRecipient($recipient[1]);
     $mailer->setSubject($subject);
@@ -225,15 +226,15 @@ if ($is_uploaded2==0) {
     }
 }
 if ($is_uploaded3<2) {
-	$replacements = array ($student->id, $student->name, $student->email, $link_upload3, $fnum_detail['label']);
-	$body3 = preg_replace($patterns, $replacements, $obj[0]->message);
+    $replacements = array ($student->id, $student->name, $student->email, $link_upload3, $fnum_detail['label']);
+    $body3 = preg_replace($patterns, $replacements, $obj[0]->message);
 
     $config = JFactory::getConfig();
     $sender = array(
         $config->get( $from ),
         $config->get( $fromname )
     );
-
+    $mailer = JFactory::getMailer();
     $mailer->setSender($sender);
     $mailer->addRecipient($recipient[2]);
     $mailer->setSubject($subject);
@@ -257,15 +258,15 @@ if ($is_uploaded3<2) {
     }
 }
 if ($is_uploaded4<2) {
-	$replacements = array ($student->id, $student->name, $student->email, $link_upload4, $fnum_detail['label']);
-	$body4 = preg_replace($patterns, $replacements, $obj[0]->message);
+    $replacements = array ($student->id, $student->name, $student->email, $link_upload4, $fnum_detail['label']);
+    $body4 = preg_replace($patterns, $replacements, $obj[0]->message);
 
     $config = JFactory::getConfig();
     $sender = array(
         $config->get( $from ),
         $config->get( $fromname )
     );
-
+    $mailer = JFactory::getMailer();
     $mailer->setSender($sender);
     $mailer->addRecipient($recipient[3]);
     $mailer->setSubject($subject);

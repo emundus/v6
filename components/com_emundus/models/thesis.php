@@ -325,4 +325,22 @@ class EmundusModelThesis extends JModelItem {
             return false;
     }
 
+    /**
+     * Method to get last thesis selected by applicant.
+     *
+     * @param   strinf The fnum of user.
+     *
+     * @return  mixed   Object on success, false on failure.
+     */
+    public function getLastThesisApplied($fnum) {
+        $db = JFactory::getDBO();
+        
+        $query = 'SELECT * 
+                    FROM #__emundus_thesis_candidat AS etc 
+                    LEFT JOIN #__emundus_thesis as et ON et.id=etc.thesis_proposal
+                    WHERE etc.fnum like '.$db->Quote($fnum).' ORDER BY etc.id DESC'; 
+        $db->setQuery( $query );
+        return $db->loadObject();
+    }
+
 }

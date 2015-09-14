@@ -241,7 +241,6 @@ class plgUserEmundus extends JPlugin
         if (!$app->isAdmin()) {
             $current_user	= JFactory::getUser();
             $db		 		= JFactory::getDBO();
-            $mainframe 		=  JFactory::getApplication();
 
             include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
             include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
@@ -253,12 +252,12 @@ class plgUserEmundus extends JPlugin
             $p = $profiles->isProfileUserSet($current_user->id);
             $campaign = $profiles->getCurrentCampaignInfoByApplicant($current_user->id);
             $incomplete = $profiles->getCurrentIncompleteCampaignByApplicant($current_user->id);
-
+/*
             if( count($incomplete) > 0 )
                 $campaign_incomplete = $profiles->getCampaignById($incomplete);
-
+*/
             if( $p['cpt'] == 0 || empty($p['profile']) )
-                $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=102&random=0");
+                $app->redirect("index.php?option=com_fabrik&view=form&formid=102&random=0");
             //$mainframe->redirect("index.php?option=com_emundus&view=campaign");
             else {
 
@@ -296,19 +295,29 @@ class plgUserEmundus extends JPlugin
 
                 }
 
-
-
                 if ($current_user->code	== "pepite") {
-                    $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=164&Itemid=1521&usekey=fnum");
+                    $app->redirect("index.php?option=com_fabrik&view=form&formid=164&Itemid=1521&usekey=fnum");
                 }
                 elseif ($current_user->code	== "utc-dfp-dri") {
-                    $mainframe->redirect("index.php?option=com_emundus&view=jobs&Itemid=1468");
+                    $app->redirect("index.php?option=com_emundus&view=jobs&Itemid=1468");
                 }
                 elseif ($current_user->code	== "csc") {
-                    $mainframe->redirect("index.php?option=com_emundus&view=thesis&Itemid=1470");
+                    include_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
+                    include_once(JPATH_SITE.'/components/com_emundus/models/thesis.php');
+                    // @TODO : if have application for current campaign
+                    // get current campaign_id for programme csc
+                    // get last thesis proposal ID and associated campaign_id selected by applicant
+                    // if current_campaign_id != last_campaign_id applied for csc &&
+                    $current_campaign = EmundusModelCampaign::getLastCampaignByCourse('csc');
+                    $current_thesis_proposal = EmundusModelThesis::getLastThesisApplied($current_user->fnum);
+                    if($current_user->campaign_id != $current_campaign->id || count($current_thesis_proposal)==0) {
+                        $app->redirect("index.php?option=com_emundus&view=thesiss");
+                    } else {
+                        $app->redirect("index.php?option=com_emundus&view=thesis&id=".$current_thesis_proposal->thesis_proposal."&Itemid=1470");
+                    }
                 }
                 else
-                    $mainframe->redirect("index.php");
+                    $app->redirect("index.php");
             }
         }
         return true;

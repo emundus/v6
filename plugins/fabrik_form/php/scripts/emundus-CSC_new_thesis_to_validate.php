@@ -1,7 +1,7 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1.5: new_job.php 89 2015-02-18 Benjamin Rivalland
+ * @version 1.5: new_thesis_to_validate.php 89 2015-02-18 Benjamin Rivalland
  * @package Fabrik
  * @copyright Copyright (C) 2015 eMundus. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
@@ -54,14 +54,14 @@ if (count($recipients) > 0) {
             'TITRE'           => $titre,
             'LABORATORY_DIRECTOR' => $laboratory_director,
             'RESEARCH_LABORATORY' => $research_laboratory,
-            'URL_THESIS_PROPOSAL' => JURI::base().'index.php?option=com_thesis&view=subject&id='.$thesis_id
+            'URL_THESIS_PROPOSAL' => JURI::base().'index.php?option=com_emundus&view=thesis&id='.$thesis_id
             );
     //
 	// email to thesis director
     //
-	$email          = $emails->getEmail("csc_new_thesis");
-    $mailer = JFactory::getMailer();
-    $tags = $emails->setTags($user->id, $post);
+	$email      = $emails->getEmail("csc_new_thesis");
+    $mailer		= JFactory::getMailer();
+    $tags 		= $emails->setTags($user->id, $post);
     // Mail 
     $from      = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
     $from_id   = 62;

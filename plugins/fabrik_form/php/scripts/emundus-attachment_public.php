@@ -21,7 +21,7 @@ $jinput = $mainframe->input;
 $baseurl = JURI::base();
 $db =& JFactory::getDBO();
 $eMConfig = JComponentHelper::getParams('com_emundus');
-alert_new_attachment = $eMConfig->get('alert_new_attachment');
+$alert_new_attachment = $eMConfig->get('alert_new_attachment');
 $mailer = JFactory::getMailer();
 
 $files 	= JRequest::get('FILES');
