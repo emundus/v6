@@ -292,7 +292,6 @@ class plgUserEmundus extends JPlugin
                     $current_user->menutype	 				= $profile["menutype"];
                     $current_user->university_id			= $profile["university_id"];
                     $current_user->applicant				= 0;
-
                 }
 
                 if ($current_user->code	== "pepite") {
@@ -302,19 +301,22 @@ class plgUserEmundus extends JPlugin
                     $app->redirect("index.php?option=com_emundus&view=jobs&Itemid=1468");
                 }
                 elseif ($current_user->code	== "csc") {
+                	$app->redirect("index.php?option=com_content&view=article&id=83&Itemid=1570");
+                	/*
                     include_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
                     include_once(JPATH_SITE.'/components/com_emundus/models/thesis.php');
                     // @TODO : if have application for current campaign
                     // get current campaign_id for programme csc
-                    // get last thesis proposal ID and associated campaign_id selected by applicant
-                    // if current_campaign_id != last_campaign_id applied for csc &&
                     $current_campaign = EmundusModelCampaign::getLastCampaignByCourse('csc');
+                    // get last thesis proposal ID and associated campaign_id selected by applicant
                     $current_thesis_proposal = EmundusModelThesis::getLastThesisApplied($current_user->fnum);
                     if($current_user->campaign_id != $current_campaign->id || count($current_thesis_proposal)==0) {
-                        $app->redirect("index.php?option=com_emundus&view=thesiss");
+                        $app->redirect("index.php?option=com_emundus&view=thesiss&Itemid=1617");
                     } else {
-                        $app->redirect("index.php?option=com_emundus&view=thesis&id=".$current_thesis_proposal->thesis_proposal."&Itemid=1470");
+                        //$app->redirect("index.php?option=com_emundus&view=thesis&id=".$current_thesis_proposal->thesis_proposal."&Itemid=1617");
+                        $app->redirect("index.php?option=com_emundus&view=thesis&id=".$current_thesis_proposal->thesis_proposal."&Itemid=1614");
                     }
+                    */
                 }
                 else
                     $app->redirect("index.php");
