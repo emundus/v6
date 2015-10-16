@@ -2,12 +2,12 @@
 <extension version="1.7" type="plugin" group="system" method="upgrade">
     <name>plg_system_falangdriver</name>
     <author>Stéphane Bouey</author>
-    <creationDate>December 2012</creationDate>
+    <creationDate>October 2012</creationDate>
     <copyright>2011-2015, Faboba</copyright>
     <license>GNU General Public License version 2 or later http://www.gnu.org/licenses/gpl.html</license>
     <authorEmail>stephane.bouey@faboba.com</authorEmail>
     <authorUrl>http://www.faboba.com</authorUrl>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
     <description>PLG_SYSTEM_FALANGDRIVER_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="falangdriver">index.html</filename>

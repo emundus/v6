@@ -21,12 +21,12 @@ defined('_JEXEC') or die('Restricted access');
                     ?>
                 <?php if ($this->updateInfo->hasUpdates) {?>
                         <span class="update-msg-new"><?php echo JText::_('COM_FALANG_CPANEL_OLD_VERSION'); ?>
-                            <a href="index.php?option=com_falang&view=liveupdate"/><?php echo JText::_('COM_FALANG_CPANEL_UPDATE_LINK'); ?></a>
+                            <a href="index.php?option=com_falang&view=liveupdate"><?php echo JText::_('COM_FALANG_CPANEL_UPDATE_LINK'); ?></a>
                         </span>
                      <?php } else { ?>
                     <span class="update-msg-info"><?php echo JText::_('COM_FALANG_CPANEL_LATEST_VERSION'); ?></span>
                      <?php } ?>
-                <div>
+                </div>
                 </td>
         </tr>
         <tr>

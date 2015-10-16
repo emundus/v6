@@ -28,6 +28,7 @@ $select_language_id = $this->select_language_id;
 $user = JFactory::getUser();
 $db = JFactory::getDBO();
 $elementTable = $this->actContentObject->getTable();
+$input = JFactory::getApplication()->input;
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_falang/assets/js/mambojavascript.js');
@@ -45,6 +46,8 @@ $idForm = 'adminForm';
 switch ($elementTable->Name) {
     case 'modules':
         $idForm = 'module-form';
+		//add view-module for widgetkit support
+		$input->set('view','module');
         break;
     case 'banners':
         $idForm = 'banner-form';
@@ -276,7 +279,8 @@ else {
 							$editorFields[] = array( "editor_".$field->Name, "refField_".$field->Name );
 							// parameters : areaname, content, hidden field, width, height, rows, cols
 							//v2.1 fix html encoding display
-							echo $wysiwygeditor->display("refField_".$field->Name,htmlspecialchars($translationContent->value, ENT_COMPAT, 'UTF-8'), '100%','300', '70', '15',false);
+							//v2.1.1 fix extra button due to 2.1 regression
+							echo $wysiwygeditor->display("refField_".$field->Name,htmlspecialchars($translationContent->value, ENT_COMPAT, 'UTF-8'), '100%','300', '70', '15',$field->ebuttons);
 						}  else if( strtolower($field->Type)=='images' ) {
                             $length = ($field->Length>0)?$field->Length:60;
                             $maxLength = ($field->MaxLength>0) ? "maxlength=".$field->MaxLength:"";

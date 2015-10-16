@@ -36,7 +36,7 @@ jQuery(function() {
   } else {
     for(i=0; i<position; i++) {
       tmp = jQuery(tblHead[0].children[0].children[i]).find('a');
-      if (tmp.length > 0 && tmp[0].innerText == Joomla.JText._('JSTATUS')) {
+      if (tmp.length > 0 && tmp.html().trim() == Joomla.JText._('JSTATUS')) {
         position = i;
         break;
       }
@@ -45,7 +45,7 @@ jQuery(function() {
     if (position == jQuery(tblHead[0].children[0]).find('th').length-1) {
       for(i=0; i<position; i++) {
         tmp = jQuery(tblHead[0].children[0].children[i]).find('a');
-        if (tmp.length > 0 && tmp[0].innerText == Joomla.JText._('JGLOBAL_TITLE')) {
+        if (tmp.length > 0 && tmp.html().trim() == Joomla.JText._('JGLOBAL_TITLE')) {
           position = i;
           break;
         }

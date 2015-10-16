@@ -155,8 +155,8 @@ class plgSystemFalangquickjump extends JPlugin
             $result['status'][$language->sef] = $actContentObject->state . '|' .$actContentObject->published;
 
             //free and paid mmust be on 1 line
-            /* >>> [FREE] >>> */$result['link-'.$language->sef] = 'index.php?option=com_falang&task=translate.editfree&tmpl=component&direct=1';/* <<< [FREE] <<< */
             
+            /* >>> [PAID] >>> */$result['link-'.$language->sef] = 'index.php?option=com_falang&task=translate.edit&layout=popup&catid=' . $component[1] .'&cid[]=0|'.$id.'|'.$language->lang_id.'&select_language_id='. $language->lang_id.'&direct=1';/* <<< [PAID] <<< */
 
         }
 
@@ -269,8 +269,8 @@ class plgSystemFalangquickjump extends JPlugin
             $publish = (isset($actContentObject->published) && $actContentObject->published == 1 )?" icon-publish":" icon-unpublish";
 
             //free and paid mmust be on 1 line
-            /* >>> [FREE] >>> */$url = 'index.php?option=com_falang&task=translate.editfree&tmpl=component&direct=1';/* <<< [FREE] <<< */
             
+            /* >>> [PAID] >>> */$url = 'index.php?option=com_falang&task=translate.edit&layout=popup&catid=' . $mapping[1] .'&cid[]=0|'.$id.'|'.$language->lang_id.'&select_language_id='. $language->lang_id.'&direct=1';/* <<< [PAID] <<< */
 
             $bar->appendButton($buttontype, 'falang-quicktranslate-'.$language->lang_id, $language->title, $url, $width, $height,null,null,null,null,$language->image,$class,$publish);
         }
@@ -281,16 +281,17 @@ class plgSystemFalangquickjump extends JPlugin
 
         $input = JFactory::getApplication()->input;
         $option = $input->get('option', false, 'cmd');
+        $view = $input->get('view', false, 'cmd');
 
         //load supported component
-//        $falangManager = FalangManager::getInstance();
-//        $contentElements = $falangManager->getContentElements();
+        //        $falangManager = FalangManager::getInstance();
+        //        $contentElements = $falangManager->getContentElements();
 
-//        $value = array();
-//        foreach ($contentElements as $contentElement) {
-//            $form = $contentElement->_xmlFile->getElementsByTagName('component')->item(0);
-//            if (isset($form)){$value[]= trim($form->textContent);}
-//        }
+        //        $value = array();
+        //        foreach ($contentElements as $contentElement) {
+        //            $form = $contentElement->_xmlFile->getElementsByTagName('component')->item(0);
+        //            if (isset($form)){$value[]= trim($form->textContent);}
+        //        }
 
         jimport('joomla.application.component.helper');
         $params = JComponentHelper::getParams('com_falang');
@@ -302,37 +303,45 @@ class plgSystemFalangquickjump extends JPlugin
         $mapping=null;
         foreach ($components as $component){
             $map = explode("#",$component);
+            $mapviews = explode(',',$map[3]);
+            $mpvcnt = count($mapviews);
+            $proceed = false;
             if (count($map)>=3 && trim($map[0])==$option){
-                if (count($map)>3 && (count($map)-3)%2==0){
-                    $matched=true;
-                    for ($p=0;$p<(count($map)-3)/2;$p++){
-                        $testParam = JRequest::getVar( trim($map[3+$p*2]), '');
-                        if ((strpos(trim($map[4+$p*2]),"!")!==false && strpos(trim($map[4+$p*2]),"!")==0)){
-                            if ($testParam == substr(trim($map[4+$p*2]),1)){
-                                $matched=false;
-                                break;
+                for($xx=0; $xx<$mpvcnt; $xx++){if($mapviews[$xx] == $view){$proceed = true;}}
+                if($proceed == true){
+                    if (count($map)>3 && (count($map)-3)%2==0){
+                        $matched=true;
+                        for ($p=0;$p<(count($map)-3)/2;$p++){
+                            $testParam = JRequest::getVar( trim($map[3+$p*2]), '');
+                            if ((strpos(trim($map[4+$p*2]),"!")!==false && strpos(trim($map[4+$p*2]),"!")==0)){
+                                if ($testParam == substr(trim($map[4+$p*2]),1)){
+                                    $matched=false;
+                                    break;
+                                }
+                            }
+                            else {
+                                if ($testParam != trim($map[4+$p*2])){
+                                    $matched=false;
+                                    break;
+                                }
                             }
                         }
-                        else {
-                            if ($testParam != trim($map[4+$p*2])){
-                                $matched=false;
-                                break;
-                            }
+                        if ($matched) {
+                            $mapping=$map;
+                            break;
                         }
                     }
-                    if ($matched) {
+                    else {
                         $mapping=$map;
                         break;
                     }
-                }
-                else {
-                    $mapping=$map;
-                    break;
+
                 }
             }
         }
         return $mapping;
     }
+
 
     public function getLanguages(){
         $languages	= JLanguageHelper::getLanguages();

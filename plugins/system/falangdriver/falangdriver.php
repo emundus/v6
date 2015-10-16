@@ -59,11 +59,56 @@ class plgSystemFalangdriver extends JPlugin
         //end fix
     }
 
-    //not implemented
     public function buildRule(&$router, &$uri)
     {
+        $lang = $uri->getVar('lang');
+        $default_lang	= JComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+
+        //we build the route for category list article
+        if ($lang != $default_lang && $uri->getVar('id') != null && $uri->getVar('catid') != null) {
+
+            $fManager = FalangManager::getInstance();
+            $id_lang = $fManager->getLanguageID($lang);
+
+            // Make sure we have the id and the alias
+            if (strpos($uri->getVar('id'), ':') > 0)
+            {
+                list($tmp, $id) = explode(':', $uri->getVar('id'), 2);
+                $db = JFactory::getDbo();
+                $dbQuery = $db->getQuery(true)
+                    ->select('fc.value')
+                    ->from('#__falang_content fc')
+                    ->where('fc.reference_id = '.(int)$tmp)
+                    ->where('fc.language_id = '.(int) $id_lang )
+                    ->where('fc.reference_field = \'alias\'')
+                    ->where('fc.reference_table = \'content\'');
+
+                $db->setQuery($dbQuery);
+                $alias = $db->loadResult();
+                $uri->setVar('id',$tmp. ':' . $alias);
+            }
+            // Make sure we have the id and the alias
+            if (strpos($uri->getVar('catid'), ':') > 0)
+            {
+                list($tmp2, $catid) = explode(':', $uri->getVar('catid'), 2);
+
+                $db = JFactory::getDbo();
+                $dbQuery = $db->getQuery(true)
+                    ->select('fc.value')
+                    ->from('#__falang_content fc')
+                    ->where('fc.reference_id = '.(int)$tmp2)
+                    ->where('fc.language_id = '.(int) $id_lang )
+                    ->where('fc.reference_field = \'alias\'')
+                    ->where('fc.reference_table = \'categories\'');
+
+                $db->setQuery($dbQuery);
+                $alias = $db->loadResult();
+                $uri->setVar('catid',$tmp2. ':' . $alias);
+            }
+        }
         return array();
     }
+
 
     public function parseRule(&$router, &$uri) {
         static $done = false;

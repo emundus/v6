@@ -20,7 +20,12 @@ if (!modFaLangHelper::isFalangDriverActive()){
 $headerText	= JString::trim($params->get('header_text'));
 $footerText	= JString::trim($params->get('footer_text'));
 
-
+/* >>> [PAID] >>> */
+$optionsPath = JString::trim($params->get('imagespath'));
+$imagesType = JString::trim($params->get('imagestype','gif'));
+$relativePath = empty($optionsPath)?true:false;
+$imagesPath = empty($optionsPath)?'mod_falang/':$optionsPath;
+/* <<< [PAID] <<< */
 
 $list   = modFaLangHelper::getList($params);
 

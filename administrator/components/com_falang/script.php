@@ -271,6 +271,21 @@ class com_falangInstallerScript
             if(!JFolder::exists($f)) continue;
             JFolder::delete($f);
         }
+
+        //remove joomla 2.X content element
+        if (version_compare(JVERSION,'3.0.0','<')) {
+            $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/tags.xml';
+            if (JFile::exists($f)) {
+                JFile::delete($f);
+            }
+        }
+        //remove joomla 3.X content element
+        if (version_compare(JVERSION,'3.4','>=')) {
+            $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/weblinks.xml';
+            if (JFile::exists($f)) {
+                JFile::delete($f);
+            }
+        }
     }
 
 

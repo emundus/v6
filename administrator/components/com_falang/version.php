@@ -6,9 +6,9 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 class FalangVersion {
-	var $_version	= '2.1.0';
-    var $_versiontype	= 'hacked';
-    var $_date	= '2015/07/14';
+	var $_version	= '2.2.0';
+    var $_versiontype	= 'basic';
+    var $_date	= '2015/10/15';
 	var $_status	= 'Stable';
 	var $_revision	= '';
 	var $_copyyears = '';

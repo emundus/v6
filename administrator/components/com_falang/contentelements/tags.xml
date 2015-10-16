@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<falang type="contentelement">
+  <name>Tags</name>
+  <author>Stéphane Bouey</author>
+  <version>1.0.0</version>
+  <description>Definition for the core tags component</description>
+  <copyright>www.faboba.com</copyright>
+  <reference type="tags">
+  	<table name="tags">
+  		<field type="referenceid" name="id" translate="0">ID</field>
+  		<field type="titletext" name="title"  length="50" maxlength="250" translate="1">Title</field>
+  		<field type="text" name="title"  length="50" maxlength="250" translate="0">Title Alias</field>
+  		<field type="text" name="alias"  length="50" maxlength="250" translate="1" posthandler="filterTitle">Alias</field>
+  		<field type="htmltext" name="description" translate="1" >Description</field>
+  		<field type="text" name="metakey" length="50" maxlength="250" translate="1">Metakey</field>
+  		<field type="textarea" name="metadesc"  rows="5" columns="80" translate="1">Metadesc</field>
+  	</table>
+  	<component>
+  		<form>com_tags#_tags#cid#task#!edit</form>
+  	</component>
+  </reference>
+  <translationfilters>
+      <category>catid</category>
+	  <frontpage>id</frontpage>
+  	  <author>created_user_id</author>
+  	  <keyword>title</keyword>
+  	  <published>published</published>
+  	  <changed>created_time|modified_time</changed>
+  	  <trash>published</trash>
+  	  <archive>published</archive>
+  	  <id>id</id>
+  </translationfilters>
+</falang>
+
