@@ -17,6 +17,7 @@ include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 
 $db = JFactory::getDBO();
 $user =  JFactory::getUser();
+$app = JFactory::getApplication();
 
 //$eMConfig = JComponentHelper::getParams('com_emundus');
 
@@ -83,9 +84,7 @@ if (count($recipients) > 0) {
     $mailer->setBody($body);
 
     $send = $mailer->Send();
-    if ( $send !== true ) {
-        echo '1. Error sending email: ' . $send->__toString(); die();
-    } else {
+    if ( $send ) {
         $message = array(
             'user_id_from' => $from_id,
             'user_id_to' => $referent->id,
@@ -93,6 +92,7 @@ if (count($recipients) > 0) {
             'message' => $body
         );
         $emails->logEmail($message);
+        $app->enqueueMessage(JText::_('EMAIL_SENT'). ' : '.$recipient, 'message');
     }
 
     //
@@ -118,9 +118,9 @@ if (count($recipients) > 0) {
 
     $send = $mailer->Send();
 
-    if ( $send !== true ) {
-        echo '2. Error sending email: ' . $send->__toString(); die();
-    } 
+    if ( $send ) {
+        $app->enqueueMessage(FText::_('EMAIL SENT'). ' : '.$recipient, 'message');
+    }
 
     //
     // email to ED director
@@ -159,9 +159,7 @@ if (count($recipients) > 0) {
         $mailer->setBody($body);
 
         $send = $mailer->Send();
-        if ( $send !== true ) {
-            echo '3. Error sending email: ' . $send->__toString(); die();
-        } else {
+        if ( $send ) {
             $message = array(
                 'user_id_from' => $from_id,
                 'user_id_to' => $referent->id,
@@ -169,10 +167,10 @@ if (count($recipients) > 0) {
                 'message' => $body
             );
             $emails->logEmail($message);
+            $app->enqueueMessage(FText::_('EMAIL SENT'). ' : '.$recipient, 'message');
         }
 	}
 } else {
-    $app = JFactory::getApplication();
     $app->enqueueMessage(FText::_('NO DIRECTOR DECLARED TO VALIDATE YOUR PROPOSAL'), 'error');
 }
 

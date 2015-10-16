@@ -20,7 +20,7 @@ include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 
 $db = JFactory::getDBO();
 $user =  JFactory::getUser();
-$mailer = JFactory::getMailer();
+
 
 //$eMConfig = JComponentHelper::getParams('com_emundus');
 
@@ -48,6 +48,7 @@ if (count($recipients) > 0) {
 	$email = $emails->getEmail("new_job");
 
 	foreach ($recipients as $referent) {
+        $mailer = JFactory::getMailer();
 		$tags = $emails->setTags($referent->id, $post);
 		// Mail 
 		$from = $user->email;
