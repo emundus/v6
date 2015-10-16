@@ -1,53 +1,34 @@
-<?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="2.5.0">
-	<name>Emundus</name>
-	<creationDate>August 2010</creationDate>
-	<author>Decision Publique</author>
-	<authorEmail>emundus@decisionpublique.fr</authorEmail>
-	<authorUrl>http://www.emundus.fr</authorUrl>
-	<version>5.0</version>
-	<description>Decision Publique eMundus application component for Joomla!.</description>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<extension xmlns="http://www.joomla.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" client="site" method="upgrade" type="component" version="2.5" xsi:schemaLocation="http://www.joomla.org extension.xsd ">
+	<name>com_emundus</name>
+	<creationDate>August 2015</creationDate>
+	<author>Benjamin Rivalland</author>
+	<copyright>Copyright (C) 2015 emundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>6.1</version>
+	<description>Online application component for Joomla!.</description>
 
 	<files folder="site">
-		<filename>index.html</filename>
-		<filename>emundus.php</filename>
-		<filename>controller.php</filename>
-		<filename>views/index.html</filename>
-		<filename>views/checklist/index.html</filename>
-		<filename>views/checklist/view.html.php</filename>
-		<filename>views/checklist/tmpl/default.php</filename>
-		<filename>views/checklist/tmpl/index.html</filename>
-		<filename>views/profile/index.html</filename>
-		<filename>views/profile/view.html.php</filename>
-		<filename>views/profile/tmpl/default.php</filename>
-		<filename>views/profile/tmpl/index.html</filename>
-		<filename>views/trombi/index.html</filename>
-		<filename>views/trombi/view.html.php</filename>
-		<filename>views/trombi/tmpl/default.php</filename>
-		<filename>views/trombi/tmpl/index.html</filename>
-		<filename>views/users/index.html</filename>
-		<filename>views/users/view.html.php</filename>
-		<filename>views/users/tmpl/default.php</filename>
-		<filename>views/users/tmpl/index.html</filename>
-		<filename>style/emundus.css</filename>
-		<filename>style/index.html</filename>
-		<filename>style/images/index.html</filename>
-		<filename>style/images/button_cancel.png</filename>
-		<filename>style/images/button_cancel_black.png</filename>
-		<filename>style/images/button_ok.png</filename>
-		<filename>style/images/clean.png</filename>
-		<filename>style/images/error.png</filename>
-		<filename>style/images/filevalid.png</filename>
-		<filename>style/images/printer.png</filename>
-		<filename>style/images/wait.png</filename>
-		<filename>style/images/fail.png</filename>
-		<filename>style/images/graduated.png</filename>
-		<filename>models/checklist.php</filename>
-		<filename>models/profile.php</filename>
-		<filename>models/trombi.php</filename>
-		<filename>models/users.php</filename>
-		<filename>models/index.html</filename>
+		<folder>assets</folder>
+		<folder>controllers</folder>
+		<folder>helpers</folder>
+		<folder>language</folder>
+		<folder>models</folder>
+		<folder>views</folder>
+		<file>controller.php</file>
+		<file>emundus.php</file>
+		<file>index.html</file>
 	</files>
+
+	<media folder="media">
+		<folder>com_emundus/images</folder>
+		<folder>com_emundus/css</folder>
+		<folder>com_emundus/js</folder>
+		<folder>com_emundus/lib</folder>
+		<file>com_emundus/index.html</file>
+	</media>
 
 	<languages folder="language">
 		<language tag="fr-FR">fr-FR.com_emundus.ini</language>
@@ -69,17 +50,32 @@
 	<administration>
 		<menu img="../administrator/components/com_emundus/puce.gif">eMundus</menu>
 		<files folder="admin">
-			<filename>emundus.php</filename>
-			<filename>index.html</filename>
-			<filename>install.sql</filename>
-			<filename>uninstall.sql</filename>
-			<filename>logo.png</filename>
-			<filename>puce.gif</filename>
+			<folder>assets</folder>
+			<folder>controllers</folder>
+			<folder>helpers</folder>
+			<folder>language</folder>
+			<folder>models</folder>
+			<folder>tables</folder>
+			<folder>views</folder>
+			<file>access.xml</file>
+			<file>config.xml</file>
+			<file>controller.php</file>
+			<file>emundus.php</file>
+			<file>emundus.xml</file>
+			<file>index.html</file>
+			<file>router.php</file>
 		</files>
+
 		<languages folder="language">
 			<language tag="fr-FR">fr-FR.com_emundus.ini</language>
 			<language tag="en-GB">en-GB.com_emundus.ini</language>
 		</languages>
 	</administration>
+
+	<!-- START UPDATESERVERS 
+	<updateservers>
+		<server type="collection" name="eMundus61">http://emundus.fr/update/emundus61/package_list.xml</server>
+	</updateservers>
+	-->
 
 </extension>

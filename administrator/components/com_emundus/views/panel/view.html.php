@@ -18,6 +18,16 @@ class EmundusViewPanel extends JViewLegacy
 {
     function display($tpl = null)
     {   
+    	JHTML::stylesheet( 'emundus.css', 'administrator/components/com_emundus/assets/css/' );
+
+		$document = JFactory::getDocument();
+		$document->setTitle(JText::_('COM_EMUNDUS_TITLE') . ' :: ' .JText::_('COM_EMUNDUS_CONTROL_PANEL'));
+		
+		// Set toolbar items for the page
+		JToolBarHelper::title( JText::_('COM_EMUNDUS_TITLE') .' :: '. JText::_( 'COM_EMUNDUS_HEADER' ), 'emundus' );
+		JToolBarHelper::preferences('com_emundus', '580', '750');
+		JToolBarHelper::help( 'screen.cpanel', true);
+
         parent::display($tpl);
     }
 }
