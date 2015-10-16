@@ -30,11 +30,12 @@ class EmundusViewThesiss extends JViewLegacy {
         JHtml::script('jquery-1.10.2.min.js', JURI::base() . 'media/com_emundus/lib/');
         JHtml::script('bootstrap.min.js', JURI::base() . 'media/com_emundus/lib/bootstrap-emundus/js/');
 
-
         $app = JFactory::getApplication();
 
         $this->state = $this->get('State');
         $this->items = $this->get('Items');
+        $applications = $this->get('Applied');
+        $this->thesis_selected = !empty($applications)?true:false;
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_emundus');
         $this->filterForm = $this->get('FilterForm');

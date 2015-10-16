@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -52,9 +52,7 @@ class WFLinkExtension extends WFExtension {
         parent::display();
 
         $document = WFDocument::getInstance();
-        $document->addScript(array('tree', 'link'), 'libraries');
-
-        $document->addStyleSheet(array('tree'), 'libraries');
+        $document->addScript(array('link.full'), 'libraries');
 
         foreach ($this->extensions as $extension) {
             $extension->display();
@@ -72,8 +70,8 @@ class WFLinkExtension extends WFExtension {
 
         return self::$links[$name];
     }
-
-    public function render() {
+    
+    public function getLists() {
         $list = array();
 
         foreach ($this->extensions as $extension) {
@@ -81,6 +79,12 @@ class WFLinkExtension extends WFExtension {
                 $list[] = $extension->getList();
             }
         }
+        
+        return $list;
+    }
+
+    public function render() {
+        $list = $this->getLists();
 
         if (count($list)) {
             $view = $this->getView(array('name' => 'links', 'layout' => 'links'));

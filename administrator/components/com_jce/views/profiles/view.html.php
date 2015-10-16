@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -19,7 +19,7 @@ class WFViewProfiles extends WFView {
         wfimport('admin.models.editor');
         
         $options = array(
-            'editableselects' => array('label' => WFText::_('WF_TOOLS_EDITABLESELECT_LABEL')),
+            'combobox' => array('label' => WFText::_('WF_TOOLS_EDITABLESELECT_LABEL')),
             'extensions' => array(
                 'labels' => array(
                     'type_new' => WFText::_('WF_EXTENSION_MAPPER_TYPE_NEW'),
@@ -210,21 +210,7 @@ class WFViewProfiles extends WFView {
                 JHtml::_('behavior.modal');
 
                 // Load media   
-                $scripts = array(
-                    'profiles.js',
-                    'extensions.js',
-                    'checklist.js',
-                    'styleformat.js',
-                    'fonts.js',
-                    'blockformats.js'
-                );
-                // Load scripts
-                foreach ($scripts as $script) {
-                    $this->addScript(JURI::root(true) . '/administrator/components/com_jce/media/js/' . $script);
-                }
-                
-                $this->addScript(JURI::root(true) . '/components/com_jce/editor/libraries/js/colorpicker.js');
-                $this->addScript(JURI::root(true) . '/components/com_jce/editor/libraries/js/select.js');
+                $this->addScript(JURI::root(true) . '/administrator/components/com_jce/media/js/profile.js');
                 
                 // load styles
                 $this->addStyleSheet(JURI::root(true) . '/administrator/components/com_jce/media/css/profiles.css');
@@ -587,9 +573,6 @@ class WFViewProfiles extends WFView {
                 
                 // get options for various widgets
                 $options = $this->getOptions($params);
-                
-                // set suhosin flag
-                $options['suhosin'] = ini_get('suhosin.post.max_vars') && (int) ini_get('suhosin.post.max_vars') < 1000;
 
                 $this->addScriptDeclaration('jQuery.jce.Profiles.options = ' . json_encode($options) . ';');
 

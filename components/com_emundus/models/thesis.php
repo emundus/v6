@@ -211,7 +211,7 @@ class EmundusModelThesis extends JModelItem {
     public function cancel($user_id, $fnum) {
         $user = JFactory::getUser($user_id);
         $db = JFactory::getDbo();
-
+/*
         $query = 'SELECT * FROM #__emundus_uploads WHERE user_id='.$user->id.' AND fnum like '.$db->Quote($fnum);
         $db->setQuery($query);
         $attachments = $db->loadObjectList();
@@ -221,10 +221,10 @@ class EmundusModelThesis extends JModelItem {
                 unlink(EMUNDUS_PATH_ABS.$attachment->user_id.DS.$attachment->filename);
             }
         }
-
+*/
         try
         {
-            $query = 'DELETE FROM #__emundus_campaign_candidature WHERE fnum like '.$db->Quote($fnum).' AND applicant_id='.$user->id;
+            $query = 'DELETE FROM #__emundus_thesis_candidat WHERE fnum like '.$db->Quote($fnum).' AND user='.$user->id;
             $db->setQuery($query);
             $db->execute();
             return true;
@@ -234,6 +234,7 @@ class EmundusModelThesis extends JModelItem {
             return false;
         }
     }
+
 
     /**
      * Method to apply to a thesis
@@ -249,7 +250,7 @@ class EmundusModelThesis extends JModelItem {
         $db = JFactory::getDbo();
 
         // 0. Get the thesis infos
-        $query = "SELECT * FROM #__emundus_emploi_etudiant WHERE id=$thesis_id";
+        $query = "SELECT * FROM #__emundus_thesis WHERE id=$thesis_id";
         $db->setQuery($query);
         $thesis = $db->loadObject();
         if($thesis->campaign_id>0 && $thesis->state==1 && $thesis->published==1) {
@@ -301,8 +302,8 @@ class EmundusModelThesis extends JModelItem {
                     $values .= "NOW(), $thesis->doctoral_school, $thesis_id, '$fnum'";
                     $query = "INSERT INTO #__emundus_thesis_candidat ($column) VALUES($values)";
                 } else {
-                    $query = "INSERT INTO #__emundus_thesis_candidat (`date_time` ,`user` ,`fnum` ,`doctoral_school` ,`thesis_proposal`)
-                          VALUES(NOW(), $user->id, '$fnum', $thesis->doctoral_school, $thesis_id)";
+                    $query = "INSERT INTO #__emundus_thesis_candidat (`date_time` ,`user` ,`fnum` ,`thesis_proposal`)
+                          VALUES(NOW(), $user->id, $db->Quote($fnum), $thesis_id)";
                 }
 
                 $db->setQuery($query);
@@ -335,9 +336,11 @@ class EmundusModelThesis extends JModelItem {
     public function getLastThesisApplied($fnum) {
         $db = JFactory::getDBO();
         
-        $query = 'SELECT * 
+        $query = 'SELECT etc.*, et.*, eu.*, c.title 
                     FROM #__emundus_thesis_candidat AS etc 
                     LEFT JOIN #__emundus_thesis as et ON et.id=etc.thesis_proposal
+                    LEFT JOIN #__emundus_users as eu ON eu.user_id=et.user
+                    LEFT JOIN #__categories as c on c.id=et.doctoral_school
                     WHERE etc.fnum like '.$db->Quote($fnum).' ORDER BY etc.id DESC'; 
         $db->setQuery( $query );
         return $db->loadObject();

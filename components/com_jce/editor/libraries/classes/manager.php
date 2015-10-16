@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -122,10 +122,10 @@ class WFMediaManager extends WFEditorPlugin {
 
         $filetypes = $this->getParam('extensions', $this->get('_filetypes', 'images=jpg,jpeg,png,gif'));
 
-        $textcase = $this->getParam('editor.websafe_textcase');
+        $textcase = $this->getParam('editor.websafe_textcase', 'any');
 
-        if (!empty($textcase)) {
-            $textcase = array_shift($textcase);
+        if (!empty($textcase) && is_array($textcase)) {
+            $textcase = count($textcase) > 1 ? 'any' : array_shift($textcase);
         }
 
         $config = array(
@@ -137,7 +137,9 @@ class WFMediaManager extends WFEditorPlugin {
                 'chunk_size' => null,
                 'max_size' => $this->getParam('max_size', 1024, '', 'string', false),
                 'validate_mimetype' => $this->getParam('validate_mimetype', 1),
-                'add_random' => $this->getParam('editor.upload_add_random', 0)
+                'add_random' => $this->getParam('editor.upload_add_random', 0),
+                'total_files' => (float) $this->getParam('editor.total_files', 0),
+                'total_size' => (float) $this->getParam('editor.total_size', 0)
             ),
             'folder_tree' => $this->getParam('editor.folder_tree', 1),
             'list_limit' => $this->getParam('editor.list_limit', 'all'),

@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -92,27 +92,34 @@ class WFPacker extends JObject {
     public function pack($minify = true, $gzip = false) {
         $type = $this->getType();
 
+        ob_start();
+
         // Headers
         if ($type == 'javascript') {
-            JResponse::setHeader("Content-type", "application/javascript; charset: UTF-8", true);
+            header("Content-type: application/javascript; charset: UTF-8");
         }
 
         if ($type == 'css') {
-            JResponse::setHeader("Content-type", "text/css; charset: UTF-8", true);
+            header("Content-type: text/css; charset: UTF-8");
         }
 
         // encoding
-        JResponse::setHeader("Vary", "Accept-Encoding", true);
+        header("Vary: Accept-Encoding");
 
         // expires after 48 hours
         $expires = 60 * 60 * 24 * 2;
 
-        JResponse::setHeader("Cache-Control", "maxage=" . $expires);
+        header("Cache-Control: maxage=" . $expires);
 
         // Handle proxies
-        JResponse::setHeader("Expires", gmdate("D, d M Y H:i:s", time() + $expires) . " GMT", true);
+        header("Expires: " . gmdate("D, d M Y H:i:s", time() + $expires) . " GMT");
 
         $files = $this->getFiles();
+
+        $encoding = self::getEncoding();
+
+        $zlib = function_exists('ini_get') && extension_loaded('zlib') && ini_get('zlib.output_compression');
+        $gzip = $gzip && !empty($encoding) && !$zlib && function_exists('gzencode');
 
         $content = $this->getContentStart();
 
@@ -139,15 +146,18 @@ class WFPacker extends JObject {
         $hash = md5($content);
 
         // set etag header
-        JResponse::setHeader("ETag", $hash, true);
-        
-        // set output content
-        JResponse::setBody($content);
+        header("ETag: \"{$hash}\"");
+
+        // Generate GZIP'd content
+        if ($gzip) {
+            header("Content-Encoding: " . $encoding);
+            $content = gzencode($content, 4, FORCE_GZIP);
+        }
 
         // stream to client
-        echo JResponse::toString($gzip);
+        echo $content;
 
-        exit();
+        exit(ob_get_clean());
     }
 
     protected function jsmin($data) {
@@ -180,7 +190,7 @@ class WFPacker extends JObject {
         //$css = preg_replace('/#([a-f0-9])\\1([a-f0-9])\\2([a-f0-9])\\3/i', '#\1\2\3', $css);
 
         require_once(dirname(__FILE__) . '/cssmin.php');
-        $min = new CSSmin();
+        $min = new CSSmin(false);
         $css = $min->run($css);
 
         return trim($css);

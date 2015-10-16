@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -10,6 +10,9 @@
  * other free or open source software licenses.
  */
 defined('_JEXEC') or die('RESTRICTED');
+
+$search = $this->plugin->getSearch('link');
+$links  = $this->plugin->getLinks();
 
 ?>
 <table width="100%">
@@ -23,17 +26,15 @@ defined('_JEXEC') or die('RESTRICTED');
         <td><input id="text" type="text" value="" class="required" /></td>
     </tr>
 </table>
+<?php if ($search->isEnabled() || count($links->getLists())) :?>
 <fieldset>
     <legend><?php echo WFText::_('WF_LABEL_LINKS'); ?></legend>
     <div id="link-options">
-        <?php 
-            if ($this->plugin->getSearch('link')->isEnabled()) :
-                echo $this->plugin->getSearch('link')->render();
-            endif;
-        ?>
-        <?php echo $this->plugin->getLinks()->render(); ?>
+        <?php echo $search->render();?>
+        <?php echo $links->render(); ?>
     </div>
 </fieldset>
+<?php endif;?>
 <h4><?php echo WFText::_('WF_LABEL_ATTRIBUTES'); ?></h4>
 <table>
     <tr id="attributes-anchor">

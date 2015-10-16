@@ -1535,4 +1535,19 @@ class EmundusModelUsers extends JModelList
         return $res;
     }
 
+    /**
+     * @param $uid  int user id
+     * @param $passwd   string  password to set
+     * @return mixed
+     */
+    public function setNewPasswd($uid, $passwd)
+    {
+        $dbo = $this->getDbo();
+        $query = 'UPDATE #__users SET password = '.$dbo->Quote($passwd).' WHERE id='.$uid;
+        $dbo->setQuery($query);
+        return $dbo->execute();
+    }
+
+
+
 }

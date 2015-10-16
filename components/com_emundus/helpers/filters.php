@@ -265,6 +265,8 @@ class EmundusHelperFilters {
 		$db->setQuery( $query );
 		return $db->loadObjectList('id');
 	}
+    
+
 	/**
 	* Get list of elements declared in a list of Fabrik groups
 	* @param 	string 	List of Fabrik groups comma separated

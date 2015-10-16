@@ -1,7 +1,7 @@
-/* JCE Editor - 2.4.6 | 19 January 2015 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2014 Ryan Demmer. All rights reserved | © Copyright, Moxiecode Systems AB | http://www.tinymce.com/license */
+/* JCE Editor - 2.5.8 | 16 September 2015 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2015 Ryan Demmer. All rights reserved | © Copyright, Moxiecode Systems AB | http://www.tinymce.com/license */
 (function(tinymce){var each=tinymce.each;function isAtStart(rng,par){var doc=par.ownerDocument,rng2=doc.createRange(),elm;rng2.setStartBefore(par);rng2.setEnd(rng.endContainer,rng.endOffset);elm=doc.createElement('body');elm.appendChild(rng2.cloneContents());return elm.innerHTML.replace(/<(br|img|object|embed|input|textarea)[^>]*>/gi,'-').replace(/<[^>]+>/g,'').length==0;}
 function getSpanVal(td,name){return parseInt(td.getAttribute(name)||1);}
-function TableGrid(table,dom,selection){var grid,startPos,endPos,selectedCell;buildGrid();selectedCell=dom.getParent(selection.getStart(),'th,td');if(selectedCell){startPos=getPos(selectedCell);endPos=findEndPos();selectedCell=getCell(startPos.x,startPos.y);}
+function TableGrid(table,dom,selection,settings){var grid,startPos,endPos,selectedCell;buildGrid();selectedCell=dom.getParent(selection.getStart(),'th,td');if(selectedCell){startPos=getPos(selectedCell);endPos=findEndPos();selectedCell=getCell(startPos.x,startPos.y);}
 function cloneNode(node,children){node=node.cloneNode(children);node.removeAttribute('id');return node;}
 function buildGrid(){var startY=0;grid=[];each(['thead','tbody','tfoot'],function(part){var rows=dom.select('> '+part+' tr',table);each(rows,function(tr,y){y+=startY;each(dom.select('> td, > th',tr),function(td,x){var x2,y2,rowspan,colspan;if(grid[y]){while(grid[y][x])
 x++;}
@@ -15,10 +15,12 @@ td.setAttribute(name,val,1);}}
 function isCellSelected(cell){return cell&&(dom.hasClass(cell.elm,'mceSelected')||cell==selectedCell);}
 function getSelectedRows(){var rows=[];each(table.rows,function(row){each(row.cells,function(cell){if(dom.hasClass(cell,'mceSelected')||cell==selectedCell.elm){rows.push(row);return false;}});});return rows;}
 function deleteTable(){var rng=dom.createRng();rng.setStartAfter(table);rng.setEndAfter(table);selection.setRng(rng);dom.remove(table);}
-function cloneCell(cell){var formatNode;tinymce.walk(cell,function(node){var curNode;if(node.nodeType==3){each(dom.getParents(node.parentNode,null,cell).reverse(),function(node){node=cloneNode(node,false);if(!formatNode)
+function cloneCell(cell){var formatNode,cloneFormats={};if(settings.table_clone_elements){cloneFormats=tinymce.makeMap((settings.table_clone_elements||'strong em b i span font h1 h2 h3 h4 h5 h6 p div').toUpperCase(),/[ ,]/);}
+tinymce.walk(cell,function(node){var curNode;if(node.nodeType==3){each(dom.getParents(node.parentNode,null,cell).reverse(),function(node){if(!cloneFormats[node.nodeName]){return;}
+node=cloneNode(node,false);if(!formatNode)
 formatNode=curNode=node;else if(curNode)
-curNode.appendChild(node);curNode=node;});if(curNode)
-curNode.innerHTML=tinymce.isIE&&!tinymce.isIE11?'&nbsp;':'<br data-mce-bogus="1" />';return false;}},'childNodes');cell=cloneNode(cell,false);setSpanVal(cell,'rowSpan',1);setSpanVal(cell,'colSpan',1);if(formatNode){cell.appendChild(formatNode);}else{if(!tinymce.isIE||tinymce.isIE11)
+curNode.appendChild(node);curNode=node;});if(curNode){curNode.innerHTML=tinymce.isIE&&!tinymce.isIE11?'&nbsp;':'<br data-mce-bogus="1" />';}
+return false;}},'childNodes');cell=cloneNode(cell,false);setSpanVal(cell,'rowSpan',1);setSpanVal(cell,'colSpan',1);if(formatNode){cell.appendChild(formatNode);}else{if(!tinymce.isIE||tinymce.isIE11)
 cell.innerHTML='<br data-mce-bogus="1" />';}
 return cell;}
 function cleanup(){var rng=dom.createRng();each(dom.select('tr',table),function(tr){if(tr.cells.length==0)
@@ -91,7 +93,7 @@ dom.removeClass(dom.select('td.mceSelected,th.mceSelected'),'mceSelected');for(y
 dom.addClass(grid[y][x].elm,'mceSelected');}}}}
 tinymce.extend(this,{deleteTable:deleteTable,split:split,merge:merge,insertRow:insertRow,insertCol:insertCol,deleteCols:deleteCols,deleteRows:deleteRows,cutRows:cutRows,copyRows:copyRows,pasteRows:pasteRows,getPos:getPos,setStartCell:setStartCell,setEndCell:setEndCell});}
 tinymce.create('tinymce.plugins.TablePlugin',{init:function(ed,url){var winMan,clipboardRows,hasCellSelection=true;this.editor=ed;function createTableGrid(node){var selection=ed.selection,tblElm=ed.dom.getParent(node||selection.getNode(),'table');if(tblElm)
-return new TableGrid(tblElm,ed.dom,selection);}
+return new TableGrid(tblElm,ed.dom,selection,ed.settings);}
 function cleanup(){ed.getBody().style.webkitUserSelect='';if(hasCellSelection){ed.dom.removeClass(ed.dom.select('td.mceSelected,th.mceSelected'),'mceSelected');hasCellSelection=false;}}
 each([['table','table.desc','mceInsertTable',true],['delete_table','table.del','mceTableDelete'],['delete_col','table.delete_col_desc','mceTableDeleteCol'],['delete_row','table.delete_row_desc','mceTableDeleteRow'],['col_after','table.col_after_desc','mceTableInsertColAfter'],['col_before','table.col_before_desc','mceTableInsertColBefore'],['row_after','table.row_after_desc','mceTableInsertRowAfter'],['row_before','table.row_before_desc','mceTableInsertRowBefore'],['row_props','table.row_desc','mceTableRowProps',true],['cell_props','table.cell_desc','mceTableCellProps',true],['split_cells','table.split_cells_desc','mceTableSplitCells',true],['merge_cells','table.merge_cells_desc','mceTableMergeCells',true]],function(c){ed.addButton(c[0],{title:c[1],cmd:c[2],ui:c[3]});});if(!tinymce.isIE){ed.onClick.add(function(ed,e){e=e.target;if(e.nodeName==='TABLE'){ed.selection.select(e);ed.nodeChanged();}});}
 ed.onPreProcess.add(function(ed,args){var nodes,i,node,dom=ed.dom,value;nodes=dom.select('table',args.node);i=nodes.length;while(i--){node=nodes[i];dom.setAttrib(node,'data-mce-style','');if((value=dom.getAttrib(node,'width'))){dom.setStyle(node,'width',value);dom.setAttrib(node,'width','');}

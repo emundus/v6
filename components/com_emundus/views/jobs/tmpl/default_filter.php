@@ -17,7 +17,7 @@ if (isset($data['view']->filterForm))
 //$selected_etablissement = $input->get('filter_etablissement',$this->state->get('filter.etablissement'));
 //echo $form->getInput('filter_etablissement', null, $selected_etablissement);
 
-//filter for domaine
+//filter for domain
 $selected_domaine = $input->get('filter_domaine',$this->state->get('filter.domaine'));
 $domaines = @EmundusHelperFiles::getElementsValuesOther(2262);
 $values = $domaines->sub_values;

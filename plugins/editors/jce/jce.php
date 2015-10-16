@@ -122,7 +122,7 @@ class plgEditorJCE extends JPlugin {
             $id = $name;
         }
 
-        $editor  = '<textarea id="' . $id . '" name="' . $name . '" cols="' . $col . '" rows="' . $row . '" style="width:' . $width . ';height:' . $height . ';" class="wfEditor mce_editable source" wrap="off">' . $content . '</textarea>';
+        $editor = '<textarea id="' . $id . '" name="' . $name . '" cols="' . $col . '" rows="' . $row . '" style="width:' . $width . ';height:' . $height . ';" class="wfEditor mce_editable source" wrap="off">' . $content . '</textarea>';
         $editor .= $this->_displayButtons($id, $buttons, $asset, $author);
 
         return $editor;
@@ -151,14 +151,16 @@ class plgEditorJCE extends JPlugin {
         if (is_array($buttons) || (is_bool($buttons) && $buttons)) {
             $buttons = $this->_subject->getButtons($name, $buttons, $asset, $author);
 
-            if (class_exists('JLayoutHelper')) {
+            $version = new JVersion;
+            // only available in Joomla 3.2+
+            if ($version->isCompatible('3.2')) {
                 // fix for some buttons that do not include the class
-                foreach($buttons as $button) {                    
+                foreach ($buttons as $button) {
                     if (is_object($button)) {
                         if (isset($button->class)) {
-                        	if (preg_match('#\bbtn\b#', $button->class) === false) {
-                        		$button->class .= " btn";
-                        	}
+                            if (preg_match('#\bbtn\b#', $button->class) === false) {
+                                $button->class .= " btn";
+                            }
                         } else {
                             $button->class = "btn";
                         }
@@ -166,33 +168,81 @@ class plgEditorJCE extends JPlugin {
                 }
 
                 $return .= JLayoutHelper::render('joomla.editors.buttons', $buttons);
+                
+            // Joomla 3.0 to 3.4
+            } else if ($version->isCompatible('3.0')) {
+                /*
+                 * This will allow plugins to attach buttons or change the behavior on the fly using AJAX
+                 */
+                $return .= "\n<div id=\"editor-xtd-buttons\" class=\"btn-toolbar pull-left\">\n";
+                $return .= "\n<div class=\"btn-toolbar\">\n";
+
+                foreach ($results as $button) {
+                    /*
+                     * Results should be an object
+                     */
+                    if ($button->get('name')) {
+                        $modal = ($button->get('modal')) ? ' class="modal-button btn"' : null;
+                        $href = ($button->get('link')) ? ' class="btn" href="' . JURI::base() . $button->get('link') . '"' : null;
+                        $onclick = ($button->get('onclick')) ? ' onclick="' . $button->get('onclick') . '"' : 'onclick="IeCursorFix(); return false;"';
+                        $title = ($button->get('title')) ? $button->get('title') : $button->get('text');
+                        $return .= '<a' . $modal . ' title="' . $title . '"' . $href . $onclick . ' rel="' . $button->get('options')
+                                . '"><i class="icon-' . $button->get('name') . '"></i> ' . $button->get('text') . "</a>\n";
+                    }
+                }
+
+                $return .= "</div>\n";
+                $return .= "</div>\n";
             } else {
                 // Load modal popup behavior
                 JHTML::_('behavior.modal', 'a.modal-button');
-                
+
                 /*
                  * This will allow plugins to attach buttons or change the behavior on the fly using AJAX
                  */
                 $return .= "\n<div id=\"editor-xtd-buttons\"";
-                $return .= ">\n";
+                
+                if ($version->isCompatible('3.0')) {
+                    $return .= " class=\"btn-toolbar pull-left\">\n";
+                    $return .= "\n<div class=\"btn-toolbar\">\n";                        
+                } else {
+                    $return .= ">\n";
+                }
 
                 foreach ($buttons as $button) {
                     /*
                      * Results should be an object
                      */
                     if ($button->get('name')) {
-                        $modal = ($button->get('modal')) ? ' class="btn modal-button"' : '';
-                        $href = ($button->get('link')) ? ' class="btn" href="' . JURI::base() . $button->get('link') . '"' : '';
-                        $onclick = ($button->get('onclick')) ? ' onclick="' . $button->get('onclick') . '"' : ' onclick="IeCursorFix(); return false;"';
-                        $title = ($button->get('title')) ? $button->get('title') : $button->get('text');
+                        $modal  = ($button->get('modal')) ? ' class="btn modal-button"' : '';
+                        $href   = ($button->get('link')) ? ' class="btn" href="' . JURI::base() . $button->get('link') . '"' : '';
+                        
+                        $onclick    = ($button->get('onclick')) ? ' onclick="' . $button->get('onclick') . '"' : ' onclick="IeCursorFix(); return false;"';
+                        $title      = ($button->get('title')) ? $button->get('title') : $button->get('text');
 
-                        $return .= '<div class="button2-left"><div class="' . $button->get('name') . '">';
+                        if (!$version->isCompatible('3.0')) {
+                            $return .= '<div class="button2-left"><div class="' . $button->get('name') . '">';
+                        }
+                        
                         $return .= '<a' . $modal . ' title="' . $title . '"' . $href . $onclick . ' rel="' . $button->get('options') . '">';
+                        
+                        // add icon-font class
+                        if ($version->isCompatible('3.0')) {
+                            $return .= '<i class="icon-' . $button->get('name') . '"></i> ';
+                        }
+                        
                         $return .= $button->get('text') . '</a>';
-                        $return .= '</div></div>';
+                        
+                        if (!$version->isCompatible('3.0')) {
+                            $return .= '</div></div>';
+                        }
                     }
                 }
-
+                
+                if ($version->isCompatible('3.0')) {
+                    $return .= "</div>\n";
+                }
+                
                 $return .= "</div>\n";
             }
         }

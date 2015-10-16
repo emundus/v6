@@ -360,4 +360,13 @@
         <row>1</row>
         <editable>0</editable>
     </plugin>
+    <plugin name="hr">
+        <title>WF_HR_TITLE</title>
+        <description>WF_HR_DESC</description>
+        <name>hr</name>
+        <core>1</core>
+        <icon>hr</icon>
+        <row>3</row>
+        <editable>0</editable>
+    </plugin>
 </plugins>

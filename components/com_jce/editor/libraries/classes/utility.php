@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -14,8 +14,7 @@ defined('_JEXEC') or die('RESTRICTED');
 abstract class WFUtility {
 
     public static function getExtension($path) {
-        $dot = strrpos($path, '.') + 1;
-        return substr($path, $dot);
+        return array_pop(explode('.', $path));
     }
 
     public static function stripExtension($path) {
@@ -48,6 +47,11 @@ abstract class WFUtility {
     }
 
     private static function checkCharValue($string) {
+        // null byte check
+        if (strstr($string, "\x00")) {
+            return false;
+        }
+        
         if (preg_match('#([^\w\.\-~\/\\\\\s ])#i', $string, $matches)) {
             foreach ($matches as $match) {
                 // not a safe UTF-8 character
@@ -141,6 +145,13 @@ abstract class WFUtility {
      */
     public static function makeSafe($subject, $mode = 'utf-8', $allowspaces = false, $case = '') {
         $search = array();
+
+        // trim
+        if (is_array($subject)) {
+            $subject = array_map('trim', $subject);
+        } else {
+            $subject = trim($subject);
+        }
 
         // replace spaces with underscore
         if (!$allowspaces) {
@@ -285,6 +296,51 @@ abstract class WFUtility {
         return $value;
     }
 
+    /**
+     * Checks an uploaded for suspicious naming and potential PHP contents which could indicate a hacking attempt.
+     */
+    public static function isSafeFile($file, $options = array()) {
+        if (class_exists('JFilterInput') && method_exists(JFilterInput, 'isSafeFile')) {
+            return JFilterInput::isSafeFile($file, $options);
+        }
+        
+        require_once(dirname(__FILE__) . '/uploadshield.php');
+        
+        return WFUploadShield::isSafeFile($file, $options);
+    }
+    /**
+     * Check file name for extensions
+     * @param type $name
+     * @return boolean
+     */
+    public static function validateFileName($name) {
+        if (empty($name)) {
+            return false;
+        }
+
+        // list of invalid extensions
+        $executable = array(
+            'php', 'php3', 'php4', 'php5', 'js', 'exe', 'phtml', 'java', 'perl', 'py', 'asp', 'dll', 'go', 'ade', 'adp', 'bat', 'chm', 'cmd', 'com', 'cpl', 'hta', 'ins', 'isp',
+            'jse', 'lib', 'mde', 'msc', 'msp', 'mst', 'pif', 'scr', 'sct', 'shb', 'sys', 'vb', 'vbe', 'vbs', 'vxd', 'wsc', 'wsf', 'wsh'
+        );
+        // get file parts, eg: ['image', 'jpg']
+        $parts = explode('.', $name);
+        // reverse so that name is last array item
+        $parts = array_reverse($parts);        
+        // remove name
+        array_pop($parts);
+        // lowercase it
+        array_map('strtolower', $parts);
+
+        // check for extension in file name, eg: image.php.jpg or as extension, eg: image.php
+        foreach($executable as $ext) {
+            if (in_array($ext, $parts)) {
+                return false;
+            }
+        }
+            
+        return true;
+    }
 }
 
 ?>

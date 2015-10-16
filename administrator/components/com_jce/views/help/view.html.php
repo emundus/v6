@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -29,7 +29,7 @@ class WFViewHelp extends WFView {
         require_once(WF_ADMINISTRATOR . '/classes/parameter.php');
 
         $params = new WFParameter($component->params);
-        $url = $params->get('preferences.help.url', 'http://www.joomlacontenteditor.net');
+        $url = $params->get('preferences.help.url', 'https://www.joomlacontenteditor.net');
         $method = $params->get('preferences.help.method', 'reference');
         $pattern = $params->get('preferences.help.pattern', '');
 

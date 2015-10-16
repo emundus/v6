@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -238,8 +238,9 @@ class WFInstallerPlugin extends JObject {
             // remove form profile
             if ($xml->icon) {
                 $plugin = new StdClass();
-                $plugin->name = (string) $xml->plugin;
+                $plugin->name = (string) $xml->attributes()->plugin;
                 $plugin->icon = (string) $xml->icon;
+                $plugin->row  = (int) $xml->attributes()->row;
                 $plugin->path = $this->parent->getPath('extension_root');
 
                 wfimport('admin.models.plugins');

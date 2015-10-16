@@ -360,74 +360,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 			throw new JDatabaseException;
 		}
 	}
-/*
-	public function setfilters()
-	{
-		try
-		{
-			$jinput = JFactory::getApplication()->input;
-			$filterName = $jinput->getString('id', null);
-			$elements = $jinput->getString('elements', null);
-			$multi = $jinput->getString('multi', null);
 
-			if($multi == "true")
-			{
-				$filterval = $jinput->get('val', array(), 'ARRAY');
-			}
-			else
-			{
-				$filterval = $jinput->getString('val', null);
-			}
-
-			$session = JFactory::getSession();
-			$params = $session->get('filt_params');
-var_dump($multi);
-var_dump($elements);
-var_dump($filterName);
-var_dump($filterval);
-
-			if($multi == "true")
-			{
-				$params[$filterName] = $filterval;
-			}
-			else
-			{
-				$vals = (array)json_decode(stripslashes($filterval));
-				if(is_array($vals))
-				{
-					foreach ($vals as $val)
-					{
-						if($val->name == 's')
-						{
-								$params['s'] = $val->value;
-						}
-						else
-						{
-							$params['elements'][$val->name] = $val->value;
-						}
-					}
-
-				}
-				else
-					$params['elements'][$filterName] = $filterval;
-			}
-
-			$session->set('filt_params', $params);
-
-
-			$session->set('limitstart', 0);
-			echo json_encode((object)(array('status' => true)));
-			exit();
-		}
-		catch (Exception $e)
-		{
-			error_log($e->getMessage(), 0);
-			error_log($e->getLine(), 0);
-			error_log($e->getTraceAsString(), 0);
-			throw new JDatabaseException;
-		}
-	}
-*/
 	public function loadfilters()
 	{
 		try
@@ -683,7 +616,7 @@ var_dump($filterval);
 	public function edituser()
 	{
 		$current_user = JFactory::getUser();
-		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id))
+		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::asAccessAction(12, 'u') && !EmundusHelperAccess::asAccessAction(20, 'u'))
 		{
 			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
 			return;
@@ -776,10 +709,86 @@ var_dump($filterval);
 		exit;
 	}
 
+    public function sendpasswd(){
+        include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+
+        $current_user = JFactory::getUser();
+
+        if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) {
+            echo json_encode((object)array('status' => false));
+            exit;
+        }
+        $uid = JFactory::getApplication()->input->getInt('uid', null);
+        $recipient = JFactory::getUser($uid);
+        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?";
+        $passwd = substr( str_shuffle( $chars ), 0, 8);
+        $passwd_md5 = md5($passwd);
+
+        $model = new EmundusModelUsers();
+
+        $res = $model->setNewPasswd($uid, $passwd_md5);
+
+        if(!$res){
+            $msg = JText::_('COM_EMUNDUS_CANNOT_SET_NEW_PASSWORD');
+            echo json_encode((object)array('status' => $res, 'msg' => $msg));
+            exit;
+        } else {
+            $emails = new EmundusModelEmails;
+            $mailer     = JFactory::getMailer();
+            $email = $emails->getEmail("new_account");
+
+            $post = array();
+            $tags = $emails->setTags($uid, $post, null, $passwd);
+
+            $from = $email->emailfrom;
+            $from_id = 62;
+            $fromname =$email->name;
+            $to = $recipient->email;
+            $subject = $email->subject;
+            $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+
+            //$attachment[] = $path_file;
+            //$replyto = $user->email;
+            //$replytoname = $user->name;
+
+            $config = JFactory::getConfig();
+            $sender = array(
+                $config->get( $from ),
+                $config->get( $fromname )
+            );
+
+            $mailer->setSender($sender);
+            $mailer->addRecipient($to);
+            $mailer->setSubject($subject);
+            $mailer->isHTML(true);
+            $mailer->Encoding = 'base64';
+            $mailer->setBody($body);
+
+            $send = $mailer->Send();
+            if ( $send !== true ) {
+                $res = false;
+                $msg = JText::_('COM_EMUNDUS_ERROR_CANNOT_SEND_EMAIL').' : '.$send->__toString();
+            } else {
+                $message = array(
+                    'user_id_from' => $from_id,
+                    'user_id_to' => $recipient->id,
+                    'subject' => $subject,
+                    'message' => $body
+                );
+                $emails->logEmail($message);
+
+                $res = true;
+                $msg = JText::_('COM_EMUNDUS_EMAIL_SENT');
+            }
+        }
+
+        echo json_encode((object)array('status' => $res, 'msg' => $msg));
+        exit;
+
+    }
 	// Edit actions rights for group
 	public function setgrouprights(){
 		$current_user = JFactory::getUser();
-		//$db = JFactory::getDBO();
         $msg ='';
 
 		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) {

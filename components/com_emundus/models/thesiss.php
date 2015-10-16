@@ -133,8 +133,8 @@ class EmundusModelThesiss extends JModelList
         $search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
 
-        $domaine = $app->getUserStateFromRequest($this->context . '.filter.domaine', 'filter_domaine');
-        $this->setState('filter.domaine', $domaine);
+        $doctoral_school = $app->getUserStateFromRequest($this->context . '.filter.doctoral_school', 'doctoral_school');
+        $this->setState('filter.doctoral_school', $doctoral_school);
 
 		// Receive & set filters
 		if ($filters = $app->getUserStateFromRequest($this->context . '.filter', 'filter', array(), 'array'))
@@ -246,16 +246,17 @@ class EmundusModelThesiss extends JModelList
             }
         }
 
-        // Filter by domaine
-        $domaine = $this->getState('filter.domaine');
-        if (!empty($domaine))
+        // Filter by domain
+      /*  $domain = $this->getState('filter.domain');
+        if (!empty($domain))
         {
-            $domaine = $db->Quote($db->escape($domaine, true));
-            $query->where(' a.domain LIKE '.$domaine);
+            $domain = $db->Quote($db->escape($domain, true));
+            $query->where(' a.domain LIKE '.$domain);
         }
-
+*/
 		//Filtering doctoral_school
 		$filter_doctoral_school = $this->state->get("filter.doctoral_school");
+
 		if ($filter_doctoral_school) {
 			$query->where("a.doctoral_school = '".$db->escape($filter_doctoral_school)."'");
 		}
@@ -270,6 +271,31 @@ class EmundusModelThesiss extends JModelList
 //echo $query->dump();
 		return $query;
 	}
+
+    /**
+     * Get applied thesis
+     * @return int  id of the thesis proposal aplied
+     */
+    public function getApplied(){
+        $db = JFactory::getDbo();
+        $current_user = JFactory::getUser();
+        try
+        {
+            $query = "SELECT *
+                      FROM #__emundus_thesis_candidat etc
+                      LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.fnum = etc.fnum
+                      WHERE etc.fnum like \"$current_user->fnum\"
+                      AND ecc.campaign_id = $current_user->campaign_id";
+            $db->setQuery($query);
+//echo str_replace('#_', 'jos', $query);
+            return $db->loadObjectList();
+        }
+        catch(Exception $e)
+        {
+            throw $e;
+            return false;
+        }
+    }
 
 	public function getItems()
 	{

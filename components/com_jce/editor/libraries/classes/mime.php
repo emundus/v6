@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -533,6 +533,7 @@ abstract class WFMimeType {
         'audio/x-pn-realaudio' => 'ram ra',
         'audio/x-pn-realaudio-plugin' => 'rmp',
         'audio/x-wav' => 'wav',
+        'audio/webm' => 'webm',
         'chemical/x-cdx' => 'cdx',
         'chemical/x-cif' => 'cif',
         'chemical/x-cmdf' => 'cmdf',
@@ -644,6 +645,7 @@ abstract class WFMimeType {
         'video/x-ms-wvx' => 'wvx',
         'video/x-msvideo' => 'avi',
         'video/x-sgi-movie' => 'movie',
+        'video/webm' => 'webm',
         'x-conference/x-cooltalk' => 'ice'
     );
 
@@ -699,7 +701,9 @@ abstract class WFMimeType {
             $mime = self::getMime($mimetype);
 
             if ($mime) {
-                return in_array($extension, $mime);
+                if (!in_array($extension, $mime)) {
+                    return false;
+                }
             }
         }
 

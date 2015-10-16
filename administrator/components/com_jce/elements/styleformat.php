@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -22,7 +22,7 @@ class WFElementStyleFormat extends WFElement {
     protected $sections     = array('section','nav','article','aside','h1', 'h2', 'h3', 'h4', 'h5', 'h6','header','footer','address','main');
     protected $grouping     = array('p','pre','blockquote','figure','figcaption','div');
     protected $textlevel    = array('em','strong','small','s','cite','q','dfn','abbr','data','time','code','var','samp','kbd','sub','i','b','u','mark','ruby','rt','rp','bdi','bdo','span','wbr');
-    
+    protected $form         = array('form', 'input', 'button', 'fieldset', 'legend');
     /**
      * Element type
      *
@@ -149,6 +149,14 @@ class WFElementStyleFormat extends WFElement {
         
         $options[] = JHTML::_('select.option',  '</OPTGROUP>');
         
+        $options[] = JHTML::_('select.option',  '<OPTGROUP>', WFText::_('WF_OPTION_FORM_ELEMENTS', 'Form Elements'));
+
+        foreach ($this->form as $item) {
+            $options[] = JHTML::_('select.option', $item, $item);
+        }
+        
+        $options[] = JHTML::_('select.option',  '</OPTGROUP>');
+        
         return $options;
     }
 
@@ -158,6 +166,9 @@ class WFElementStyleFormat extends WFElement {
         if ($key !== "title") {
             $item[] = '<label for="' . $key . '">' . WFText::_('WF_STYLEFORMAT_' . strtoupper($key)) . '</label>';
         }
+        
+        // encode value
+        $value = htmlspecialchars($value);
 
         switch ($key) {
             case 'inline':

@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -48,7 +48,7 @@ class WFModelCpanel extends WFModel {
 
         $feeds = array();
         $options = array(
-            'rssUrl' => 'http://www.joomlacontenteditor.net/news/feed/rss/latest-news?format=feed',
+            'rssUrl' => 'https://www.joomlacontenteditor.net/news/feed/rss/latest-news?format=feed',
             'cache_time' => $params->get('feed_cachetime', 86400)
         );
         
@@ -61,6 +61,9 @@ class WFModelCpanel extends WFModel {
         if (!is_writable(JPATH_BASE . '/cache')) {
             $options['cache_time'] = 0;
         }
+        
+        error_reporting(E_ERROR | E_WARNING | E_PARSE);
+        
         $rss = new SimplePie($options['rssUrl'], JPATH_BASE . '/cache', isset($options['cache_time']) ? $options['cache_time'] : 0);
         $rss->force_feed(true);
         $rss->handle_content_type();

@@ -1,7 +1,19 @@
-/* JCE Editor - 2.4.6 | 19 January 2015 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2014 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
-var TableDialog={settings:{},init:function(){var self=this,ed=tinyMCEPopup.editor,context=tinyMCEPopup.getWindowArg('context','table');this.html5=ed.settings.schema==="html5";if(!this.settings.file_browser){$('input.browser').removeClass('browser');}
+/* JCE Editor - 2.5.8 | 16 September 2015 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2015 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
+(function(tinymce,tinyMCEPopup,$){function convertRGBToHex(col){var re=new RegExp("rgb\\s*\\(\\s*([0-9]+).*,\\s*([0-9]+).*,\\s*([0-9]+).*\\)","gi");var rgb=col.replace(re,"$1,$2,$3").split(',');if(rgb.length==3){r=parseInt(rgb[0]).toString(16);g=parseInt(rgb[1]).toString(16);b=parseInt(rgb[2]).toString(16);r=r.length==1?'0'+r:r;g=g.length==1?'0'+g:g;b=b.length==1?'0'+b:b;return"#"+r+g+b;}
+return col;}
+function convertHexToRGB(col){if(col.indexOf('#')!=-1){col=col.replace(new RegExp('[^0-9A-F]','gi'),'');r=parseInt(col.substring(0,2),16);g=parseInt(col.substring(2,4),16);b=parseInt(col.substring(4,6),16);return"rgb("+r+","+g+","+b+")";}
+return col;}
+function trimSize(size){return size.replace(/([0-9\.]+)(px|%|in|cm|mm|em|ex|pt|pc)/i,'$1$2');}
+function getStyle(elm,attrib,style){var val=tinyMCEPopup.dom.getAttrib(elm,attrib);if(val!='')
+return''+val;if(typeof(style)=='undefined')
+style=attrib;return tinyMCEPopup.dom.getStyle(elm,style);}
+function getCSSSize(size){size=trimSize(size);if(size=="")
+return"";if(/^[0-9]+$/.test(size))
+size+='px';else if(!(/^[0-9\.]+(px|%|in|cm|mm|em|ex|pt|pc)$/i.test(size)))
+return"";return size;}
+var TableDialog={settings:{},init:function(){var self=this,ed=tinyMCEPopup.editor,context=tinyMCEPopup.getWindowArg('context','table');this.html5=ed.settings.schema==="html5-strict";if(!this.settings.file_browser){$('input.browser').removeClass('browser');}
 $.Plugin.init();if(context=='merge'){return this.initMerge();}
-addClassesToList('classlist',"table_styles");if(this.html5){$('#axis, #abbr, #scope, #summary, #char, #charoff, #tframe, #nowrap, #rules, #cellpadding, #cellspacing').each(function(){$(this).add('label[for="'+this.id+'"]').parent().hide();});function styles(v){if(typeof v==="undefined"){return tinyMCEPopup.dom.parseStyle($('#style').val());}
+TinyMCE_Utils.addClassesToList('classlist',"table_styles");if(this.html5){$('#axis, #abbr, #scope, #summary, #char, #charoff, #tframe, #nowrap, #rules, #cellpadding, #cellspacing').each(function(){$(this).add('label[for="'+this.id+'"]').parent().hide();});function styles(v){if(typeof v==="undefined"){return tinyMCEPopup.dom.parseStyle($('#style').val());}
 $('#style').val(tinyMCEPopup.dom.serializeStyle(v));}
 $('#valign').change(function(){var st=styles();st['vertical-align']=$(this).val();styles(st);});$('#align').change(function(){var st=styles(),v=$(this).val();if(v==="center"){st.float="";st['margin-left']=st['margin-right']="auto";}else{st['float']=v;st['margin-left']=st['margin-right']="";}
 styles(st);});$('#border').replaceWith('<input type="checkbox" id="border" />');}
@@ -88,4 +100,4 @@ if(st['background-color']){$('#bgcolor').val(st['background-color']).change();}
 if(st['border-color']){$('#bordercolor').val(st['border-color']).change();}
 if(st['border-spacing']){$('#cellspacing').val(trimSize(st['border-spacing']));}
 if(st['border-collapse']&&st['border-collapse']=='collapse'){$('#cellspacing').val(0);}
-if(st['vertical-align']){$('#valign').val(st['vertical-align']);}},setClasses:function(v){$.Plugin.setClasses(v);},setActionforRowType:function(){var rowtype=$('#rowtype').val();if(rowtype==="tbody"){$('#action').prop('disabled',false);}else{$('#action').val('row').prop('disabled',true);}}};tinyMCEPopup.onInit.add(TableDialog.init,TableDialog);
+if(st['vertical-align']){$('#valign').val(st['vertical-align']);}},setClasses:function(v){$.Plugin.setClasses(v);},setActionforRowType:function(){var rowtype=$('#rowtype').val();if(rowtype==="tbody"){$('#action').prop('disabled',false);}else{$('#action').val('row').prop('disabled',true);}}};tinyMCEPopup.onInit.add(TableDialog.init,TableDialog);window.TableDialog=TableDialog;})(tinymce,tinyMCEPopup,jQuery);

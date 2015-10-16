@@ -428,7 +428,12 @@ class EmundusHelperFiles
         return $current_filter;
     }
 
-    public static function getElements($code = array())
+    /**
+     * @param array $code
+     * @param array $fabrik_elements
+     * @return array
+     */
+    public static function getElements($code = array(), $fabrik_elements = array())
     {
         require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
@@ -484,14 +489,19 @@ class EmundusHelperFiles
                     INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id
                     LEFT JOIN #__fabrik_joins AS joins ON tab.id = joins.list_id AND groupe.id=joins.group_id
                     INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)';
-            $where = 'WHERE tab.published = 1
-                        AND (tab.id IN ( ' . implode(',', $fl) . ' ))
+            $where = 'WHERE tab.published = 1';
+            if( count($fabrik_elements) > 0 ) {
+                $where .= ' AND element.id IN (' . implode(',', $fabrik_elements) . ') ';
+                $order ='';
+            }else {
+                $where .= ' AND (tab.id IN ( ' . implode(',', $fl) . ' ))
                         AND element.published=1
                         AND element.hidden=0
                         AND element.label!=" "
                         AND element.label!=""
                         AND menu.menutype IN ( "' . implode('","', $menutype) . '" )';
-            $order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
+                $order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
+            }
 
             $query .= ' ' . $join . ' ' . $where . ' ' . $order;
             //echo str_replace('#_', 'jos', $query);
@@ -514,6 +524,18 @@ class EmundusHelperFiles
         } else {
             return array();
         }
+    }
+
+    /**
+     * Get Fabrik element by ID
+     * @param 	int 	Fabrik ID ?
+     * @return  Object 	Fabrik element
+     **/
+    function getElementById($element_id){
+        $db = JFactory::getDBO();
+        $query = 'SELECT * FROM #__fabrik_elements element WHERE id='.$element_id;
+        $db->setQuery($query);
+        return $db->loadObject();
     }
 
     public  function getPhotos($model, $baseUrl)
@@ -644,9 +666,9 @@ class EmundusHelperFiles
             elseif($element_name == 'campaign_id')
                 $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name;
             elseif($element_name=='training_id')
-                $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' ORDER BY '.$params->join_db_name.'.date_start ';
+                $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' ORDER BY '.str_replace('{thistable}', $params->join_db_name, $params->join_db_name.'.date_start ');
             else
-                $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' '.$params->database_join_where_sql;
+                $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' '.str_replace('{thistable}', $params->join_db_name, $params->database_join_where_sql);
             $db->setQuery($query);
             $result = $db->loadObjectList();
         } else {
@@ -695,7 +717,7 @@ class EmundusHelperFiles
     ** @param string $elements_values Name for HTML tag.
     ** @return string HTML to display for filters options.
     */
-    public  function setSearchBox($selected, $search_value, $elements_values, $i)
+    public  function setSearchBox($selected, $search_value, $elements_values, $i=0)
     {
         jimport( 'joomla.html.parameter' );
         $current_filter = "";

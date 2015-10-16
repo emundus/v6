@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -45,7 +45,7 @@ class WFViewInstaller extends WFView {
         WFToolbarHelper::help('installer.about');
 
         $options = array(
-            'extensions' => array('zip', 'tar', 'gz', 'gzip', 'tgz', 'tbz2', 'bz2', 'bzip2'),
+            'extensions' => array('zip', 'tar', 'gz'),
             'width' => 300,
             'button' => 'install_button',
             'task' => 'install',

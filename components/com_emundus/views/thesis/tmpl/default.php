@@ -20,7 +20,8 @@ $canEdit = $user->authorise('core.edit', 'com_emundus.' . $this->item->id);
 if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus' . $this->item->id)) {
     $canEdit = $user->id == $this->item->created_by;
 }
-
+$app      = JFactory::getApplication();
+$itemid = $app->getMenu()->getActive()->id;
 ?>
 <?php if ($user->guest): ?>
     <div class="alert alert-warning">
@@ -28,7 +29,10 @@ if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus' . $this->item->
     </div>
 <?php endif; ?>
 <?php if ($this->item) : ?>
-    <h1><?php echo $this->item->titre; ?></h1>
+    <?php if ($user->applicant) : ?>
+        <a class="btn btn-default" href="index.php?option=com_fabrik&view=form&formid=232&previous=<?php echo $this->item->id; ?>&Itemid=<?php echo $itemid; ?>&usekey=fnum&rowid=<?php echo $user->fnum; ?>" role="button"><?php echo JText::_('CHANGE'); ?></a>
+    <?php endif; ?>
+    <h4><?php echo $this->item->titre; ?></h4>
     <div class="item_fields">
         <table class="table">    
             <tr>

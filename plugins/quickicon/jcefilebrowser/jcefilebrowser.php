@@ -1,9 +1,13 @@
 <?php
 
 /**
- * @copyright      Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
- * Copyright (C) 2006 - 2014 Ryan Demmer. All rights reserved
- * @@license@@
+ * @package   	JCE
+ * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
+ * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * JCE is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
  */
 defined('_JEXEC') or die;
 
@@ -16,14 +20,6 @@ defined('_JEXEC') or die;
  */
 class plgQuickiconJcefilebrowser extends JPlugin {
 
-    /**
-     * Constructor
-     *
-     * @param       object  $subject The object to observe
-     * @param       array   $config  An array that holds the plugin configuration
-     *
-     * @since       2.5
-     */
     public function __construct(& $subject, $config) {
         parent::__construct($subject, $config);
 
@@ -37,18 +33,6 @@ class plgQuickiconJcefilebrowser extends JPlugin {
         $this->loadLanguage();
     }
 
-    /**
-     * This method is called when the Quick Icons module is constructing its set
-     * of icons. You can return an array which defines a single icon and it will
-     * be rendered right after the stock Quick Icons.
-     *
-     * @param  $context  The calling context
-     *
-     * @return array A list of icon definition associative arrays, consisting of the
-     * 				 keys link, image, text and access.
-     *
-     * @since       2.5
-     */
     public function onGetIcons($context) {
         @include_once(JPATH_ADMINISTRATOR . '/components/com_jce/models/model.php');
 

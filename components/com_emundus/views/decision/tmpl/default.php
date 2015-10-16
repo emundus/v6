@@ -127,7 +127,7 @@ JHTML::_('behavior.tooltip');
 <script type="text/javascript">
 
 	var itemId = <?php echo $this->itemId;?>;
-	var cfnum = '<?php echo $this->cfnum;?>';
+	var cfnum = '<?php echo @$this->cfnum;?>';
 	var filterName = '<?php echo JText::_('FILTER_NAME');?>';
 	var filterEmpty = '<?php echo JText::_('ALERT_EMPTY_FILTER');?>';
 	var nodelete = '<?php echo JText::_('CAN_NOT_DELETE_FILTER');?>';

@@ -18,7 +18,7 @@ abstract class WFError {
     }
     
     public static function exceptionHandler($exception) {
-        echo "Uncaught exception: " , $exception->getMessage(), "\n";
+        echo "" , $exception->getMessage(), "\n";
     }
 }
 

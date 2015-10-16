@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -152,15 +152,18 @@ class WFModelInstaller extends WFModel {
         // uploaded file
         if ($upload) {
             // check extension
-            if (!preg_match('/\.(zip|tar|gz|gzip|tgz|tbz2|bz2|bzip2)$/i', $file['name'])) {
+            if (!preg_match('/\.(zip|tar|gz)$/i', $file['name'])) {
                 JError::raiseWarning('SOME_ERROR_CODE', WFText::_('WF_INSTALLER_INVALID_FILE'));
                 return false;
             }
 
             $dest = JPath::clean($app->getCfg('tmp_path') . '/' . $file['name']);
             $src = $file['tmp_name'];
+
+            $safeFileOptions = array('php_ext_content_extensions' => array('rar', 'tgz', 'bz2', 'tbz', 'jpa'));
+
             // upload file
-            if (!JFile::upload($src, $dest)) {
+            if (!JFile::upload($src, $dest, false, false, $safeFileOptions)) {
                 JError::raiseWarning('SOME_ERROR_CODE', WFText::_('WF_INSTALLER_UPLOAD_FAILED'));
                 return false;
             }
@@ -179,7 +182,7 @@ class WFModelInstaller extends WFModel {
         JRequest::setVar('install_method', 'install');
 
         // Unpack the package file
-        if (preg_match('/\.(zip|tar|gz|gzip|tgz|tbz2|bz2|bzip2)/i', $dest)) {
+        if (preg_match('/\.(zip|tar|gz)$/i', $dest)) {
             // Make sure that zlib is loaded so that the package can be unpacked
             if (!extension_loaded('zlib')) {
                 JError::raiseWarning('SOME_ERROR_CODE', WFText::_('WF_INSTALLER_WARNINSTALLZLIB'));

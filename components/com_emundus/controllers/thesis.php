@@ -40,8 +40,7 @@ class EmundusControllerThesis extends EmundusController {
         $model = $this->getModel('Thesis', 'EmundusModel');
         $fnum = $model->apply($user->id, $thesisId); 
         if ($fnum) {
-            // Redirect to the edit screen.
-            //$this->setRedirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=205&Itemid=1465&usekey=fnum&rowid='.$user->fnum, false));
+            // Redirect to the selected thesis screen.
             $this->setRedirect(JRoute::_('index.php?option=com_emundus&controller=thesis&task=display&fnum='.$fnum.'&id='.$thesisId.'&Itemid='.$Itemid, false));
             
         } else {
@@ -67,7 +66,7 @@ class EmundusControllerThesis extends EmundusController {
         $app->setUserState('com_emundus.display.thesis.id', $thesisId);
 
         $user->fnum = $fnum;
-        $redirect = 'index.php?option=com_fabrik&view=form&formid=205&Itemid=1465';
+        $redirect = 'index.php?option=com_fabrik&view=form&formid=233&Itemid=1573';
 
         $this->setRedirect(JRoute::_('index.php?option=com_emundus&task=openfile&fnum='.$fnum.'&redirect='.base64_encode($redirect), false));
     }
@@ -93,11 +92,11 @@ class EmundusControllerThesis extends EmundusController {
         $model = $this->getModel('Thesis', 'EmundusModel');
 
         if ($model->cancel($user->id, $fnum))
-            $this->setMessage(JText::_('COM_EMUNDUS_JOBS_DELETED'));
+            $this->setMessage(JText::_('COM_EMUNDUS_THESIS_DELETED'));
         else
             JError::raiseWarning( 100, JText::_('ERROR') );
 
-        $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesiss&Itemid=1468', false));
+        $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesiss&Itemid=1617', false));
     }
     /**
      * Method to check out an item for editing and redirect to the edit form.
