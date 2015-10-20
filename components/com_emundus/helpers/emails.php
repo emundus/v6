@@ -377,7 +377,7 @@ class EmundusHelperEmails
 	
 	function sendGroupEmail(){
 		$current_user = JFactory::getUser();
-        $mailer = JFactory::getMailer();
+        
 
 		if (//!EmundusHelperAccess::asAccessAction(9, 'c')  && 	//email applicant
 			//!EmundusHelperAccess::asAccessAction(15, 'c') &&	//email evaluator
@@ -437,7 +437,7 @@ class EmundusHelperEmails
 		}
 		
 		// setup mail
-		if (!isset($from) || !empty($from)) {
+		if (!isset($from) || empty($from)) {
 			if (isset($current_user->email)) {
 				$from = $current_user->email;
 				$from_id = $current_user->id;
@@ -491,11 +491,11 @@ class EmundusHelperEmails
 
 			if(!empty($user->email)){
 				// mail function
+				$mailer = JFactory::getMailer();
 
-                $config = JFactory::getConfig();
                 $sender = array(
-                    $config->get( $from ),
-                    $config->get( $fromname )
+                    $from,
+                    $fromname
                 );
 
                 $mailer->setSender($sender);
@@ -531,7 +531,7 @@ class EmundusHelperEmails
 	
 	function sendApplicantEmail() {
 		$current_user = JFactory::getUser();
-        $mailer = JFactory::getMailer();
+        
 
 		if (!EmundusHelperAccess::asAccessAction(9, 'c'))	//email applicant
 		{
@@ -598,8 +598,8 @@ class EmundusHelperEmails
         }
 
 		// setup mail
-		if (!isset($from) || !empty($from)) {
-			if (isset($current_user->email)) {
+		if (!isset($from) || empty($from)) {
+			if (isset($current_user->email)) { 
 				$from = $current_user->email;
 				$from_id = $current_user->id;
 				$fromname=$current_user->name;
@@ -623,6 +623,7 @@ class EmundusHelperEmails
 		$nUsers = count( $users );
         $info='';
 		for ($i = 0; $i < $nUsers; $i++) {
+			
             $user = $users[$i];
             if (isset($campaigns_id[$i]) && !empty($campaigns_id[$i])) {
                 $campaign = $model->getCampaignByID($campaigns_id[$i]);
@@ -641,11 +642,11 @@ class EmundusHelperEmails
 
             if (!empty($user->email)) {
                 // mail function
+				$mailer = JFactory::getMailer();
 
-                $config = JFactory::getConfig();
                 $sender = array(
-                    $config->get($from),
-                    $config->get($fromname)
+                    $from,
+                    $fromname
                 );
 
                 $mailer->setSender($sender);
