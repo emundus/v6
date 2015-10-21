@@ -135,6 +135,32 @@ class EmundusController extends JControllerLegacy {
         exit();
     }
 
+    function pdf_thesis(){
+        $user = JFactory::getUser();
+        $student_id = JRequest::getVar('user', null, 'GET', 'none',0);
+        $fnum = JRequest::getVar('fnum', null, 'GET', 'none',0);
+        $rowid = explode('-', JRequest::getVar('rowid', null, 'GET', 'none',0));
+
+        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_thesis.php';
+
+        if (!file_exists($file)) {
+            die(JText::_('FILE_NOT_FOUND'));
+        }
+        if (!file_exists(EMUNDUS_PATH_ABS.$student_id)) {
+            mkdir(EMUNDUS_PATH_ABS.$student_id);
+            chmod(EMUNDUS_PATH_ABS.$student_id, 0755);
+        }
+
+        require_once($file);
+
+        if(EmundusHelperAccess::asPartnerAccessLevel($user->id) || EmundusHelperAccess::isApplicant($user->id)) {
+            application_form_pdf(!empty($student_id)?$student_id:$user->id, $rowid[0], true);
+        } else
+            die(JText::_('ACCESS_DENIED'));
+
+        exit();
+    }
+
     function export_pdf(){
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');

@@ -104,7 +104,7 @@ class EmundusHelperAccess {
 	
 	static function isApplicant($user_id){
 		return (EmundusHelperAccess::check_group($user_id, 2, false) ||
-                EmundusHelperAccess::check_group($user_id, 11, false));
+                EmundusHelperAccess::check_group($user_id, 11, true));
 	}
 	static function isPublic($user_id){
 		return EmundusHelperAccess::check_group($user_id, 1, false);

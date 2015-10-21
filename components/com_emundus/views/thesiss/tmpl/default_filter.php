@@ -39,10 +39,13 @@ if(!empty($option_list))
 <fieldset id="filter-bar">
 	<div class="filter-search fltlft">
 		<?php if ($filters) : ?>
+            <?php
+            echo JText::_('COM_EMUNDUS_SEARCH_BY_KEYWORDS');
+            ?>
             <input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" title="<?php echo JText::_('COM_EMUNDUS_THESIS_SEARCH'); ?>" />
             <span class="glyphicon glyphicon-chevron-right"></span>
             <?php
-            echo JText::_('COM_EMUNDUS_THESIS_ED') . " " . JHTML::_('select.genericlist', $options, 'doctoral_school', 'class="inputbox"', 'value', 'text', $doctoral_school);
+            echo JText::_('COM_EMUNDUS_SEARCH_BY_THESIS_ED') . " " . JHTML::_('select.genericlist', $options, 'doctoral_school', 'class="inputbox"', 'value', 'text', $doctoral_school);
             ?>
             <button type="submit" class="btn btn-primary btn-xs"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
             <button type="button" class="btn btn-warning btn-xs" onclick="document.id('filter_search').value = '';document.id('doctoral_school').value = ''; this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>

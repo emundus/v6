@@ -23,14 +23,14 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	$application = new EmundusModelApplication;
 
 	// Element Fabrik ID list to display in PDF
-	$elts = array(2111, 2112, 2114, 2117, 2133, 2119, 2120, 2121, 2123, 2124, 2125, 2126, 2127);
+	$elts = array(4352, 4353, 4354, 4355, 4356, 4357, 4359, 4360, 4361, 4362, 4363, 4364, 4365, 4366);
 	
-	$options = array('show_list_label' => 0, 'show_form_label' => 0, 'show_group_label' => 0, 'rowid' => $rowid, 'profile_id' => '13');
+	$options = array('show_list_label' => 0, 'show_form_label' => 0, 'show_group_label' => 0, 'rowid' => $rowid, 'profile_id' => '1021');
 
 	$forms = $application->getFormsPDFElts($user_id, $elts, $options);
 
 	// Set title for PDF
-	$title = @EmundusHelperList::getElementsDetailsByID(2113); 
+	$title = @EmundusHelperList::getElementsDetailsByID(4350); 
 
 	$where = 'user='.$user_id;
 	$where .= $options['rowid']>0?' AND id='.$options['rowid']:'';
@@ -48,7 +48,7 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor('www.emundus.fr');
-	$pdf->SetTitle('Fiches emplois étudiants');
+	$pdf->SetTitle(JText::_('COM_EMUNDUS_THESIS_PROPOSAL'));
 	
 	//get logo
 	$app 		= JFactory::getApplication();
@@ -61,7 +61,7 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	//get title
 	//$config = JFactory::getConfig(); 
 	//$title = $config->getValue('config.sitename');
-	$title = 'Emplois étudiants Sorbonne Universités';
+	$title = JText::_('COM_EMUNDUS_THESIS_PROPOSAL');
 	$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
 	unset($logo);
 	unset($title);

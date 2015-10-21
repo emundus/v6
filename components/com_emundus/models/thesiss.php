@@ -194,7 +194,7 @@ class EmundusModelThesiss extends JModelList
 		$query
 			->select(
 				$this->getState(
-					'list.select', 'DISTINCT a.*'
+					'list.select', 'DISTINCT a.*, user.name'
 				)
 			);
 

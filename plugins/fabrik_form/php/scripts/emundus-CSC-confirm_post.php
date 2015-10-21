@@ -186,7 +186,7 @@ if (count($trigger_emails) > 0) {
                 $mailer->Encoding = 'base64';
                 $mailer->setBody($body);
 
-               $send = $mailer->Send();
+                $send = $mailer->Send();
                 if ( $send !== true ) {
                     echo 'Error sending email: ' . $send->__toString();
                     JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
@@ -200,9 +200,10 @@ if (count($trigger_emails) > 0) {
                     $emails->logEmail($message);
                     JLog::add($to.' '.$body, JLog::INFO, 'com_emundus');
                 }
+                
             }
         }
     }
 }
-die();
+
 ?>

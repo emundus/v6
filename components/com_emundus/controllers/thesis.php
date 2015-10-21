@@ -32,6 +32,7 @@ class EmundusControllerThesis extends EmundusController {
         //$previousId = (int) $app->getUserState('com_emundus.edit.thesis.id');
         $thesisId = $app->input->getInt('id', null, 'array');
         $Itemid = $app->input->getInt('Itemid', null, 'int');
+        $tmpl = $app->input->get('tmpl', null, 'CMD');
 
         // Set the user id for the user to edit in the session.
         $app->setUserState('com_emundus.apply.thesis.id', $thesisId);
@@ -40,8 +41,13 @@ class EmundusControllerThesis extends EmundusController {
         $model = $this->getModel('Thesis', 'EmundusModel');
         $fnum = $model->apply($user->id, $thesisId); 
         if ($fnum) {
+            if(is_null($tmpl))
             // Redirect to the selected thesis screen.
-            $this->setRedirect(JRoute::_('index.php?option=com_emundus&controller=thesis&task=display&fnum='.$fnum.'&id='.$thesisId.'&Itemid='.$Itemid, false));
+                $this->setRedirect(JRoute::_('index.php?option=com_emundus&controller=thesis&task=display&fnum='.$fnum.'&id='.$thesisId.'&Itemid='.$Itemid, false));
+            else {
+                $this->setMessage(JText::_('COM_EMUNDUS_THESIS_APPLIED'), 'message');
+                $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesis&tmpl=component&fnum='.$fnum.'&id='.$thesisId.'&Itemid='.$Itemid, false));
+            }
             
         } else {
             JError::raiseWarning( 100, JText::_('ERROR') );

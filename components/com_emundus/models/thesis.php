@@ -46,6 +46,31 @@ class EmundusModelThesis extends JModelItem {
         $this->setState('params', $params);
     }
 
+     /**
+     * Get applied thesis
+     * @return int  id of the thesis proposal aplied
+     */
+    public function getApplied(){
+        $db = JFactory::getDbo();
+        $current_user = JFactory::getUser();
+        try
+        {
+            $query = "SELECT *
+                      FROM #__emundus_thesis_candidat etc
+                      LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.fnum = etc.fnum
+                      WHERE etc.fnum like \"$current_user->fnum\"
+                      AND ecc.campaign_id = $current_user->campaign_id";
+            $db->setQuery($query);
+//echo str_replace('#_', 'jos', $query);
+            return $db->loadObjectList();
+        }
+        catch(Exception $e)
+        {
+            throw $e;
+            return false;
+        }
+    }
+
     /**
      * Method to get an ojbect.
      *
@@ -227,6 +252,15 @@ class EmundusModelThesis extends JModelItem {
             $query = 'DELETE FROM #__emundus_thesis_candidat WHERE fnum like '.$db->Quote($fnum).' AND user='.$user->id;
             $db->setQuery($query);
             $db->execute();
+
+            $query = 'DELETE FROM #__emundus_declaration WHERE fnum like '.$db->Quote($fnum).' AND user='.$user->id;
+            $db->setQuery($query);
+            $db->execute();
+
+            $query = 'DELETE FROM #__emundus_users_assoc WHERE fnum like '.$db->Quote($fnum);
+            $db->setQuery($query);
+            $db->execute();
+
             return true;
         }
         catch(Exception $e)
