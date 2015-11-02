@@ -155,7 +155,11 @@ class EmundusHelperAccess {
 			elseif($canAccess == 0 || $canAccess === null)
 			{
 				$groups = JFactory::getUser()->emGroups;
-				return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
+
+				if (count($groups)>0) 
+					return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
+				else 
+					return false;	
 			}
 			else
 			{

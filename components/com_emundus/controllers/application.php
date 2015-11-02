@@ -316,16 +316,17 @@ class EmundusControllerApplication extends JControllerLegacy
      */
     public function getactionmenu()
     {
-        $user = JFactory::getUser();
+        $user = JFactory::getUser(); 
         if(!EmundusHelperAccess::asPartnerAccessLevel($user->id))
             die(JText::_("ACCESS_DENIED"));
 
         $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->getString('$fnum', null);
+        $fnum = $jinput->get('fnum', null, 'STRING');
 
         $model = $this->getModel('Application');
         $menus = $model->getActionMenu();
         $res = false;
+        
         if(EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum))
         {
             if ($menus !== false)

@@ -132,7 +132,8 @@ if (count($recipients) > 0) {
                         ('.$referent->id.', 9, '.$db->Quote($student->fnum).', 1,1,0,0),
                         ('.$referent->id.', 10, '.$db->Quote($student->fnum).', 1,1,0,0),
                         ('.$referent->id.', 13, '.$db->Quote($student->fnum).', 0,1,1,0),
-                        ('.$referent->id.', 14, '.$db->Quote($student->fnum).', 1,1,1,0)';
+                        ('.$referent->id.', 14, '.$db->Quote($student->fnum).', 1,1,1,0),
+                        ('.$referent->id.', 29, '.$db->Quote($student->fnum).', 1,1,1,1)';
         try {
             $db->setQuery( $query );
             $db->execute();

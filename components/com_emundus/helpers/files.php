@@ -1490,6 +1490,7 @@ class EmundusHelperFiles
         }
         $levels = $user->getAuthorisedViewLevels();
         asort($levels);
+
         $key = 'menu_items'.$params.implode(',', $levels).'.'.$active->id;
         $cache = JFactory::getCache('mod_menu', '');
 
@@ -1589,6 +1590,7 @@ class EmundusHelperFiles
                     $item->anchor_css   = htmlspecialchars($item->params->get('menu-anchor_css', ''), ENT_COMPAT, 'UTF-8', false);
                     $item->anchor_title = htmlspecialchars($item->params->get('menu-anchor_title', ''), ENT_COMPAT, 'UTF-8', false);
                     $item->menu_image   = $item->params->get('menu_image', '') ? htmlspecialchars($item->params->get('menu_image', ''), ENT_COMPAT, 'UTF-8', false) : '';
+    
                 }
 
                 if (isset($items[$lastitem])) {

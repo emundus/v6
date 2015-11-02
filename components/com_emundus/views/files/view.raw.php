@@ -89,19 +89,24 @@ class EmundusViewFiles extends JViewLegacy
 				$display = $app->input->getString('display', 'none'); 
 				$menu = @JSite::getMenu();
 				$current_menu  = $menu->getActive();
-				$params = $menu->getParams($current_menu->id);
-			
-				if($fnum === "0")
-				{
-					$items = @EmundusHelperFiles::getMenuList($params);
-				}
-				else
-				{
-					$items = @EmundusHelperFiles::getMenuList($params, $fnum);
-				}
+				if(isset($current_menu) && !empty($current_menu)) {
+					$params = $menu->getParams($current_menu->id);
+				
+					if($fnum === "0")
+					{
+						$items = @EmundusHelperFiles::getMenuList($params);
+					}
+					else
+					{ 
+						$items = @EmundusHelperFiles::getMenuList($params, $fnum);
+					}
 
-				$this->assignRef('items', $items);
-				$this->assignRef('display', $display);
+					$this->assignRef('items', $items);
+					$this->assignRef('display', $display);
+				} else { 
+					echo JText::_('ERROR_MENU_ID_NOT_FOUND');
+					return false;
+				}
 			break;
 
 			case 'filters':

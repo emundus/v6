@@ -159,7 +159,9 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         $send = $mailer->Send();
         if ( $send !== true ) {
-            echo 'Error sending email: ' . $send->__toString(); die();
+            echo 'Error sending email: ' . $send->__toString(); 
+            echo json_encode((object)array('status' => false, 'msg' => JText::_('EMAIL_NOT_SENT')));
+            exit();
         } else {
             $message = array(
                 'user_id_from' => $current_user->id,

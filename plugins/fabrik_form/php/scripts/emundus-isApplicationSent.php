@@ -41,8 +41,6 @@ if(!EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
     }
 }
 
-
-//$registered = $db->loadResult();
 if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){
 	 $sid = $jinput->get('sid', null, 'ALNUM');
 //	$student = JUser::getInstance($sid);
@@ -56,7 +54,7 @@ else {
 	
 	if ($jinput->get('view') == 'form' && empty($fnum) && !isset($fnum)) {
 		$itemid = $jinput->get('Itemid');
-		// Si l'application Form a �t� envoy�e par le candidat : affichage vue details
+		// Si l'application Form a été envoy�e par le candidat : affichage vue details
 		if($user->candidature_posted > 0 && $user->candidature_incomplete == 0 && $can_edit_until_deadline == 0) {
 			$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
 		} elseif(strtotime(date("Y-m-d H:m:i")) > strtotime($user->end_date) && !in_array($user->id, $applicants) ) {
@@ -66,7 +64,6 @@ else {
 			if (empty($fnum) && !isset($fnum)) {
 				// redirection vers l'enregistrement du dossier
 				$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
-				//$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=user&rowid=-1");
 			}
 		}
 	}

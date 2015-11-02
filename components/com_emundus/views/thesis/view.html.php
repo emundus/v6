@@ -32,8 +32,11 @@ class EmundusViewThesis extends JViewLegacy {
 
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
-        $applications = $this->get('Applied');
-        $this->thesis_selected = !empty($applications)?true:false;
+
+        if( $user->applicant ) 
+            $applications = $this->get('Applied');
+        else
+            $applications = null;
 
         $this->params = $app->getParams('com_emundus');
 

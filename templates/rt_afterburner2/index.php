@@ -171,27 +171,16 @@ $gpreset = str_replace(' ','',strtolower($gantry->get('name')));
                         que vous pouvez exercer en <a href="index.php?option=com_contact&amp;view=contact&amp;id=6:contact-cnil&amp;catid=47&amp;Itemid=139">nous adressant un message en cliquant ici</a>
                     </em>
                     <br>
-                    Sorbonne Universités rassemble des universités et des établissements d’enseignement supérieur et de recherche, reconnus pour leur excellence scientifique et pédagogique.
                 </p>
             </div>
 
           	<section class="logos-area">
                 <div class="holder">
                     <div class="company-logo">
-                        <img src="/images/footer/logo1.png" alt="S">
+                        
                     </div>
                     <ul class="logo-list">
-                        <li><a href="http://www.paris-sorbonne.fr" target="_blank"><img src="/images/footer/logo_paris-sorbonne.png" width="49" height="41" alt="" title="Paris Sorbonne"></a></li>
-                        <li><a href="http://www.upmc.fr" target="_blank"><img src="/images/footer/logo_upmc.png" width="61" height="22" alt="" title="UPMC"></a></li>
-                        <li><a href="http://www.utc.fr" target="_blank"><img src="/images/footer/logo_utc.png" width="66" height="24" alt="" title="UTC"></a></li>
-                        <li><a href="http://www.insead.edu" target="_blank"><img src="/images/footer/logo_insead.png" width="60" height="21" alt="" title="INSEAD"></a></li>
-                        <li><a href="http://www.mnhn.fr" target="_blank"><img src="/images/footer/logo_museum.png" width="82" height="26" alt="" title="MNHN"></a></li>
-                        <li><a href="http://www.pspbb.fr" target="_blank"><img src="/images/footer/logo_pspbb.png" width="68" height="49" alt="" title="PSPBB"></a></li>
-                        <li><a href="http://www.cnrs.fr" target="_blank"><img src="/images/footer/logo_cnrs.png" width="34" height="34" alt="" title="CNRS"></a></li>
-                        <li><a href="http://www.inserm.fr" target="_blank"><img src="/images/footer/logo_inserm.png" width="91" height="26" alt="" title="INSERM"></a></li>
-                        <li><a href="http://www.ird.fr" target="_blank"><img src="/images/footer/logo_ird.png" width="51" height="28" alt="" title="IRD"></a></li>
-                        <li><a href="http://www.inria.fr" target="_blank"><img src="/images/footer/logo_inria.png" width="65" height="24" alt="" title="INRIA"></a></li>
-                        <li><a href="http://www.ciep.fr" target="_blank"><img src="/images/footer/logo_ciep.png" width="22" height="38" alt="" title="CIEP"></a></li>
+                        <li></li>
                     </ul>
                 </div>
 			</section>

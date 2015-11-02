@@ -1231,6 +1231,7 @@ class EmundusModelUsers extends JModelList
                 $db = $this->getDbo();
                 $db->setQuery($query);
                 $userACL =  $db->loadAssocList();
+    
                 if (count($userACL) > 0) {
                     foreach ($userACL as $key => $value)
                     {
@@ -1290,7 +1291,7 @@ class EmundusModelUsers extends JModelList
 		    			FROM #__emundus_users_assoc AS eua
 						WHERE fnum like ".$db->quote($fnum)."  and  eua.user_id = " .$uid;
                 $db->setQuery($query);
-                $userACL =  $db->loadAssocList();
+                $acl =  $db->loadAssocList();
 
                 return $acl;
             }
