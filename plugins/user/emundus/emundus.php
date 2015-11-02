@@ -252,11 +252,8 @@ class plgUserEmundus extends JPlugin
             $p = $profiles->isProfileUserSet($current_user->id);
             $campaign = $profiles->getCurrentCampaignInfoByApplicant($current_user->id);
             $incomplete = $profiles->getCurrentIncompleteCampaignByApplicant($current_user->id);
-/*
-            if( count($incomplete) > 0 )
-                $campaign_incomplete = $profiles->getCampaignById($incomplete);
-*/
-            if( $p['cpt'] == 0 || empty($p['profile']) )
+
+            if( $p['cpt'] == 0 || empty($p['profile']) || !isset($p['profile']) )
                 $app->redirect("index.php?option=com_fabrik&view=form&formid=102&random=0");
             //$mainframe->redirect("index.php?option=com_emundus&view=campaign");
             else {
@@ -268,6 +265,9 @@ class plgUserEmundus extends JPlugin
 
                 if (EmundusHelperAccess::isApplicant($current_user->id)) {
                     $profile        = $profiles->getProfileByCampaign($campaign["id"]);
+
+                    if( empty($p['profile']) || empty($campaign["id"]) || !isset($p['profile']) || !isset($campaign["id"]) )
+                        $app->redirect("index.php?option=com_fabrik&view=form&formid=102&random=0");
 
                     $current_user->profile	 				= $profile["profile_id"];
                     $current_user->profile_label 			= $profile["label"];
