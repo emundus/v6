@@ -332,12 +332,12 @@ class EmundusModelThesis extends JModelItem {
                             $values .= $db->Quote($value).',';
                         }
                     }
-                    $column .= 'date_time, doctoral_school, thesis_proposal, fnum';
-                    $values .= "NOW(), $thesis->doctoral_school, $thesis_id, '$fnum'";
+                    $column .= 'date_time, doctoral_school, thesis_proposal, fnum, thesis_proposal, supervisor_thesis_proposal, supervisor_email_thesis_proposal';
+                    $values .= "NOW(), $thesis->doctoral_school, $thesis_id, '$fnum', '$thesis->thesis_supervisor', '$thesis->thesis_supervisor_email'";
                     $query = "INSERT INTO #__emundus_thesis_candidat ($column) VALUES($values)";
                 } else {
-                    $query = "INSERT INTO #__emundus_thesis_candidat (`date_time` ,`user` ,`fnum` ,`thesis_proposal`)
-                          VALUES(NOW(), $user->id, $db->Quote($fnum), $thesis_id)";
+                    $query = "INSERT INTO #__emundus_thesis_candidat (`date_time` ,`user` ,`fnum` ,`thesis_proposal`, `supervisor_thesis_proposal`, `supervisor_email_thesis_proposal`)
+                          VALUES(NOW(), $user->id, $db->Quote($fnum), $thesis_id, '$thesis->thesis_supervisor', '$thesis->thesis_supervisor_email')";
                 }
 
                 $db->setQuery($query);

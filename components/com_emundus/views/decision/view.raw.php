@@ -191,10 +191,14 @@ class EmundusViewDecision extends JViewLegacy
 								$userObj->type = 'html';
 								$line['evaluator'] = $userObj;
 							}
+							elseif ($key == 'status_class') {
+                                continue;
+                            }
 							else
 							{
 								$userObj->val = $value;
 								$userObj->type = 'text';
+								$userObj->status_class = $user['status_class'];
 								$line[$key] = $userObj;
 							}
 						}

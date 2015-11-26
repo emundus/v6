@@ -86,7 +86,7 @@ $canView = $user->authorise('core.viewthesis', 'com_emundus');
             <b><?php echo JText::_('COM_EMUNDUS_THESIS_NO_RESULT'); ?></b>
         </div>
     <?php else: ?>
-        <table class="front-end-list">
+        <table class="table table-hover">
             <thead>
             <tr>
                 <th class="align-left">
@@ -121,7 +121,7 @@ $canView = $user->authorise('core.viewthesis', 'com_emundus');
                     <?php $canEdit = JFactory::getUser()->id == $item->created_by; ?>
                 <?php endif; ?>
 
-                <tr class="row<?php echo $i % 2; ?>">
+                <tr class="<?php echo $item->student_id == $user->id?$item->class:''; ?>">
                     <td>
                         <?php if (isset($item->checked_out) && $item->checked_out) : ?>
                             <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'thesiss.', $canCheckin); ?>
@@ -139,18 +139,18 @@ $canView = $user->authorise('core.viewthesis', 'com_emundus');
                     </td>
                     <?php if (!$user->guest): ?>
                         <td class="align-left">
-                            <a href = '<?php echo JRoute::_('index.php?option=com_emundus&task=pdf_thesis&user='.$item->user.'&rowid=' . $item->id, false, 2); ?>';" class="glyphicon glyphicon-file" target="_blank"><?php echo JText::_('COM_EMUNDUS_THESIS_PDF'); ?></a>
+                            <a href = '<?php echo JRoute::_('index.php?option=com_emundus&task=pdf_thesis&user='.$item->user.'&rowid=' . $item->id, false, 2); ?>';" class="glyphicon glyphicon-file" target="_blank"><?php echo JText::_('COM_EMUNDUS_THESIS_PDF'); ?></a><br>
                             <?php if ($canEdit || $canDelete): ?>
                                 <?php if ($canEdit): ?>
                                     <button onclick="this.disabled = true; window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&task=pdf_thesis&user='.$item->user.'&rowid=' . $item->id, false, 2); ?>';" class="btn-xs btn-mini" type="button"><?php echo JText::_('COM_EMUNDUS_THESIS_PDF'); ?></button>
                                 <?php endif; ?>
                             <?php else: ?>
                                 <?php if ($item->student_id == $user->id): ?>
-                                    <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&controller=thesis&task=display&fnum='.$item->fnum.'&id=' . $item->id, false, 2); ?>';" class="btn btn-success glyphicon glyphicon-eye-open" type="button"> <?php echo JText::_('COM_EMUNDUS_THESIS_DISPLAY'); ?></button>
+                                    <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&controller=thesis&task=display&fnum='.$item->fnum.'&id=' . $item->id, false, 2); ?>';" class="btn-xs btn-success glyphicon glyphicon-eye-open" type="button"> <?php echo JText::_('COM_EMUNDUS_THESIS_DISPLAY'); ?></button>
                                     <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&controller=thesis&task=cancel&fnum='.$item->fnum.'&id=' . $item->id, false, 2); ?>';" class="btn-xs btn-danger glyphicon glyphicon-trash" type="button"></button>
                                     <span class="label label-<?php echo $item->class; ?>"><?php echo $item->application_status; ?></span>
                                 <?php elseif(!$this->thesis_selected): ?>
-                                    <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&controller=thesis&task=apply&id=' . $item->id, false, 2); ?>';" class="btn btn-info glyphicon glyphicon-circle-arrow-right" type="button"> <?php echo JText::_('COM_EMUNDUS_THESIS_APPLY'); ?></button>
+                                    <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&controller=thesis&task=apply&id=' . $item->id, false, 2); ?>';" class="btn-xs btn-info glyphicon glyphicon-circle-arrow-right" type="button"> <?php echo JText::_('COM_EMUNDUS_THESIS_APPLY'); ?></button>
                                 <?php endif; ?>
                             <?php endif; ?>
                         </td>

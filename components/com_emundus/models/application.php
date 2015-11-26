@@ -1532,4 +1532,26 @@ td {
             throw $e;
         }
     }
+
+    public function getApplications($uid)
+    {
+        $dbo = $this->getDbo();
+        try
+        {
+            $query = 'SELECT ecc.*, esc.*, ess.step, ess.value, ess.class
+                        FROM #__emundus_campaign_candidature AS ecc
+                        LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
+                        LEFT JOIN #__emundus_setup_status AS ess ON ess.step=ecc.status
+                        WHERE ecc.applicant_id ='.$uid.' 
+                        ORDER BY esc.end_date DESC';
+    //echo str_replace('#_', 'jos', $query);
+            $dbo->setQuery($query);
+            $result = $db->loadObjectList();
+            return (array) $result;
+        }
+        catch(Exception $e)
+        {
+            throw $e;
+        }
+    }
 }

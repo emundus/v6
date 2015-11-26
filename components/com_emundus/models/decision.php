@@ -205,43 +205,6 @@ class EmundusModelDecision extends JModelList
 		return $this->_elements;
 	}
 
-	/**
-	 * Get list of evaluation element
-	 * @param 	  int displayed in Fabrik List ; yes=1
-	 * @return    string list of Fabrik element ID used in evaluation form
-
-	public function getEvaluationElements($show_in_list_summary=1, $hidden=0)
-	{
-		$session = JFactory::getSession();
-
-		$jinput = JFactory::getApplication()->input;
-		$fnums = $jinput->getString('cfnums', null);
-
-		if ($session->has('filt_params'))
-		{
-			//var_dump($session->get('filt_params'));
-			$element_id = array();
-			$filt_params = $session->get('filt_params'); 
-			if (count(@$filt_params['programme'])>0) {
-				foreach ($filt_params['programme'] as $value) {
-					$groups = $this->getGroupsEvalByProgramme($value);
-					if (empty($groups)) {
-						$eval_elt_list = array();
-					} else {
-						$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-						if (count($eval_elt_list)>0) { 
-							foreach ($eval_elt_list as $eel) {
-                                if(isset($eel->element_id) && !empty($eel->element_id))
-    								$elements_id[] = $eel->element_id;
-							}
-						}
-					}
-				}
-			}
-		}
-//die(var_dump($elements_id));
-		return @$elements_id;
-	}**/
 
     /**
      * Get list of decision elements
@@ -280,53 +243,7 @@ class EmundusModelDecision extends JModelList
 //die(var_dump($elements_id));
         return @$elements;
     }
-    /**
-     * Get list of ALL evaluation element
-     * @param 	  int displayed in Fabrik List ; yes=1
-     * @param 	  string code of the programme
-     * @return    string list of Fabrik element ID used in evaluation form
 
-    public function getAllEvaluationElements($show_in_list_summary=1, $programme_code)
-    {
-        $session = JFactory::getSession();
-
-        $jinput = JFactory::getApplication()->input;
-        $fnums = $jinput->getString('cfnums', null);
-
-        if ($session->has('filt_params'))
-        {
-            //var_dump($session->get('filt_params'));
-            $elements_id = array();
-            $filt_params = $session->get('filt_params');
-
-            if (count(@$filt_params['programme'])>0) {
-                foreach ($filt_params['programme'] as $value) {
-                    if ($value == $programme_code) {
-                        $groups = $this->getGroupsEvalByProgramme($value);
-                        if (!empty($groups)) {
-                            $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
-                            if (count($eval_elt_list)>0) {
-                                foreach ($eval_elt_list as $eel) {
-                                    $elements_id[] = $eel->element_id;
-                                }
-                            }
-                        }
-                    }
-                }
-            } else{
-                $groups = $this->getGroupsEvalByProgramme($programme_code);
-                if (!empty($groups)) {
-                    $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
-                    if (count($eval_elt_list)>0) {
-                        foreach ($eval_elt_list as $eel) {
-                            $elements_id[] = $eel->element_id;
-                        }
-                    }
-                }
-            }
-        }
-        return @$elements_id;
-    } **/
 
     /**
      * Get list of ALL decision elements
@@ -394,6 +311,7 @@ class EmundusModelDecision extends JModelList
         $can_be_ordering[] = 'jos_emundus_campaign_candidature.status';
         $can_be_ordering[] = 'fnum';
         $can_be_ordering[] = 'status';
+        $can_be_ordering[] = 'c.status';
         $can_be_ordering[] = 'u.name';
         $can_be_ordering[] = 'eta.id_tag';
         $can_be_ordering[] = 'overall';
@@ -1000,7 +918,7 @@ class EmundusModelDecision extends JModelList
 		$evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
 		$current_user = JFactory::getUser();
 
-		$query = 'select c.fnum, ss.value as status, u.name ';
+		$query = 'select c.fnum, ss.value as status, ss.class as status_class, u.name ';
 		// prevent double left join on query 
 		$lastTab = array('#__emundus_setup_status', 'jos_emundus_setup_status', 
 						 '#__emundus_setup_programmes', 'jos_emundus_setup_programmes',
