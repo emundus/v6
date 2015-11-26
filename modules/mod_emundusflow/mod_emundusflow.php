@@ -31,7 +31,7 @@ $application = new EmundusModelApplication;
 if (isset($user->fnum) && !empty($user->fnum)) {
 	$attachments = $application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
 	$forms = $application->getFormsProgress($user->id, $user->profile, $user->fnum);
-
+	$current_application = $application->getApplication($user->fnum);
 	$sent = $checklist->getSent();
 	$confirm_form_url = $checklist->getConfirmUrl(); 
 

@@ -33,6 +33,7 @@ if ($sent>0) {
   </div>
   <div class="ui <?php echo $sent<=0?"disabled red":"active"; ?> step">
     <?php echo $complete; ?>
+    <span class="label label-<?php echo $current_application->class; ?>"> <?php echo $current_application->value; ?></span>
   </div>
   </div>
 </div>
