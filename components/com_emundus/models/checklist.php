@@ -131,10 +131,10 @@ class EmundusModelChecklist extends JModelList
 	function getConfirmUrl()
     {
         $db = JFactory::getDBO();
-        $query = 'SELECT link
-        FROM #__menu 
-        WHERE level=1 AND (menutype = "menu_profile'.$this->_user->profile.'" OR menutype = "menu-profile'.$this->_user->profile.'") 
-        ORDER BY lft DESC';
+        $query = 'SELECT CONCAT(m.link,"&Itemid=", m.id) as link
+        FROM #__emundus_setup_profiles as esp 
+        LEFT JOIN  #__menu as m on m.menutype = esp.menutype
+        WHERE esp.id='.$this->_user->profile.' AND m.published=1 AND m.level=1 ORDER BY m.lft DESC'; 
         $db->setQuery($query); 
         return $db->loadResult();
     }
