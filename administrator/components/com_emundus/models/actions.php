@@ -78,9 +78,9 @@ class EmundusModelActions extends JModelList
 					$overload = $actions;
 				}
 				$canInsert = true;
-				foreach($actions as $aId)
+				foreach($actions as $aid)
 				{
-					$insert .= "({$aId}, {$gid}, 0, 0, 0, 0),";
+					$insert .= "({$aid}, {$gid}, 0, 0, 0, 0),";
 				}
 			}
 		}
@@ -131,10 +131,16 @@ class EmundusModelActions extends JModelList
 			{
 				if(!empty($assocActions))
 				{
-					$canInsert = true;
 					foreach($assocActions as $aid)
 					{
-						$insert .= "({$fnum}, {$aid}, {$uid}, 0, 0, 0, 0),";
+						$user = JFactory::getUser($uid);
+						if ($user->id > 0) {
+							$canInsert = true;
+							$insert .= "({$fnum}, {$aid}, {$uid}, 0, 0, 0, 0),";
+						}
+						else 
+							echo '<hr>'.JText::_('ERROR_USER_ID_NOT_FOUND').' : '.$uid; 
+						
 					}
 				}
 			}

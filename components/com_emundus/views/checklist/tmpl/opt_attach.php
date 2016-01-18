@@ -3,7 +3,7 @@ defined('_JEXEC') or die('Restricted access');
 $user = JFactory::getUser();
 $_db = JFactory::getDBO();
 
-$query='SELECT id, link FROM #__menu WHERE alias like "checklist%" AND menutype like "%'.$user->profile.'"';
+$query='SELECT id, link FROM #__menu WHERE alias like "checklist%" AND menutype like "%'.$user->menutype.'"';
 $_db->setQuery( $query );
 $itemid = $_db->loadAssoc();
 ?>

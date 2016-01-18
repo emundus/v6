@@ -62,7 +62,7 @@ $db->setQuery('SELECT count(id) FROM #__emundus_uploads WHERE fnum like '.$db->Q
 $nb_references=$db->loadResult();
 
 
-if ($nb_references >= 2) {
+if ($nb_references >= 2 || strpos($campaign['training'], "summer") !== false) {
 	$db->setQuery('UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=2 WHERE fnum like '.$db->Quote($student->fnum));
 } else {
 	$db->setQuery('UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=1 WHERE fnum like '.$db->Quote($student->fnum));

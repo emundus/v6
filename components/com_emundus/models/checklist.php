@@ -44,9 +44,9 @@ class EmundusModelChecklist extends JModelList
 
 	function getGreeting(){
 		$query = 'SELECT id, title, text FROM #__emundus_setup_checklist WHERE page = "checklist" ';
-		$note = $this->getResult();
+		$note = 0;//$this->getResult();
 		if($note && is_numeric($note) && $note>1) $this->_need = $note;
-		$query .= 'AND whenneed = '.$this->_need;
+		$query .= 'AND whenneed = '.$this->_need . ' OR whenneed='.$this->_user->status;
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObject();
 	}
@@ -98,9 +98,11 @@ class EmundusModelChecklist extends JModelList
 	}
 
 	function getSent() {
-		$query = 'SELECT COUNT(*) FROM #__emundus_declaration WHERE user = '.$this->_user->id.' AND time_date != "0000-00-00 00:00:00"  AND fnum like '.$this->_db->Quote($this->_user->fnum);
+		$query = 'SELECT submitted 
+					FROM #__emundus_campaign_candidature 
+					WHERE applicant_id = '.$this->_user->id.' AND fnum like '.$this->_db->Quote($this->_user->fnum);
 		$this->_db->setQuery( $query );
-		$res = $this->_db->loadResult();
+		$res = $this->_db->loadResult(); 
 		return $res>0;
 	}
 
@@ -134,7 +136,7 @@ class EmundusModelChecklist extends JModelList
         $query = 'SELECT CONCAT(m.link,"&Itemid=", m.id) as link
         FROM #__emundus_setup_profiles as esp 
         LEFT JOIN  #__menu as m on m.menutype = esp.menutype
-        WHERE esp.id='.$this->_user->profile.' AND m.published=1 AND m.level=1 ORDER BY m.lft DESC'; 
+        WHERE esp.id='.$this->_user->profile.' AND m.published>=0 AND m.level=1 ORDER BY m.lft DESC'; 
         $db->setQuery($query); 
         return $db->loadResult();
     }

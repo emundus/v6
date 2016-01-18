@@ -284,7 +284,8 @@ class plgUserEmundus extends JPlugin
                     $current_user->code						= $profile["training"];
                     $current_user->campaign_id				= $campaign["id"];
                     $current_user->campaign_name			= $profile["label"];
-                    $current_user->fnum						= $campaign["fnum"];
+                    $current_user->fnum                     = $campaign["fnum"];
+                    $current_user->status                   = $campaign["status"];
 
                 } else {
                     $current_user->profile	 				= $profile["profile"];

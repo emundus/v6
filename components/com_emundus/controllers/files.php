@@ -2258,7 +2258,8 @@ class EmundusControllerFiles extends JControllerLegacy
                             {
                                 if(isset($fabrikValues[$id][$fnum]))
                                 {
-                                    $preprocess->setValue($id, $fabrikValues[$id][$fnum]['val']);
+                                	$value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
+                                    $preprocess->setValue($id, $value);
                                 }
                                 else
                                 {

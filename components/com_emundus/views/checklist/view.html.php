@@ -51,11 +51,12 @@ class EmundusViewChecklist extends JViewLegacy
         $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
         $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus_application.css" );
 
-		$forms = $this->get('FormsList');
-		$attachments = $this->get('AttachmentsList');
+		$greeting = $this->get('Greeting');
+		
 		$sent = $this->get('sent');
 		$confirm_form_url = $this->get('ConfirmUrl');
-		$greeting = $this->get('Greeting');
+		$forms = $this->get('FormsList');
+		$attachments = $this->get('AttachmentsList');
 		$need = $this->get('Need');
 		$instructions = $this->get('Instructions');
 		$is_other_campaign = $this->get('isOtherActiveCampaign');

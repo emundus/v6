@@ -622,7 +622,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 	$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 	$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-	$pdf->SetFont('helvetica', '', 8);
+	$pdf->SetFont('helvetica', '', 10);
 	$pdf->AddPage();
 	$dimensions = $pdf->getPageDimensions();
 	

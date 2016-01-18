@@ -678,7 +678,9 @@ class EmundusHelperEmails
                 }
             }
         }
-		$this->setRedirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent&desc=3', JText::_('REPORTS_MAILS_SENT').$info, 'message');
+//		$this->setRedirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent&desc=3', JText::_('REPORTS_MAILS_SENT').$info, 'message');
+		$this->setRedirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent', JText::_('REPORTS_MAILS_SENT').$info, 'message');
+
 	}
 
 }

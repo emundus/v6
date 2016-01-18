@@ -172,6 +172,9 @@ class EmundusViewApplication extends JViewLegacy
 	                            {
 	                                $this->url_form = JUri::base().'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid='.$myEval[0]->id.'&student_id='.$this->student->id;
 	                            }
+	                            elseif (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id, $fnum)) {
+	                                $url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&rowid='.$myEval[0]->id.'&jos_emundus_final_grade___student_id[value]='.$this->student->id.'&jos_emundus_final_grade___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
+	                            }
 	                        }
 	                        else
 	                        {
@@ -179,6 +182,9 @@ class EmundusViewApplication extends JViewLegacy
 	                            {
 	                                if(!empty($formid))
 	                                    $this->url_form = JUri::base().'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&rowid=&jos_emundus_evaluations___student_id[value]='.$this->student->id.'&jos_emundus_evaluations___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_evaluations___fnum[value]='.$fnum.'&student_id='.$this->student->id.'&tmpl=component&iframe=1';
+	                            }
+	                            elseif (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id, $fnum)) {
+	                                $url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&rowid='.$myEval[0]->id.'&jos_emundus_final_grade___student_id[value]='.$this->student->id.'&jos_emundus_final_grade___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
 	                            }
 	                        }
 	                        if(!empty($formid))
@@ -235,6 +241,7 @@ class EmundusViewApplication extends JViewLegacy
 	                            }
 	                        }
 	                    }
+
                         $this->assignRef('campaign_id', $fnumInfos['campaign_id']);
                         $this->assignRef('student', $student);
                         $this->assignRef('fnum', $fnum);

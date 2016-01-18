@@ -65,7 +65,7 @@ else {
 					<?php endif; ?>
 				</dt>
 				<dd>
-					<?php echo ($field->type!='Spacer') ? $field->input : "&#160;";  $this->form->setValue($field->name, $field->group, "rr"); ?>
+					<?php echo ($field->type!='Spacer') ? $field->input : "&#160;";  $this->form->setValue($field->name, $field->group, ""); ?>
 					<div class="em_msg" id="em_msg_<?php echo $field->name; ?>" style="display: inline; border-width: 2px; border-color: #FF0000; color:#FF0000; padding: 5px"></div>
 				</dd>
 			<?php endif;?>

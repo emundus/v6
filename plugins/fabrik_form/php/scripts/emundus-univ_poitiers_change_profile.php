@@ -23,6 +23,8 @@ if (EmundusHelperAccess::isApplicant($current_user->id)) {
 
     $fnum = $fabrikFormData['fnum_raw'];
     $profile = $fabrikFormData['profile_raw'][0];
+    $country = $fabrikFormData['birth_country_raw'][0];
+    $rowid = $fabrikFormData['rowid'];
 
     $query = 'SELECT * 
                 FROM #__emundus_setup_profiles as esp 
@@ -30,6 +32,16 @@ if (EmundusHelperAccess::isApplicant($current_user->id)) {
     try {
         $db->setQuery($query);
         $p = $db->loadObject();
+    } catch (Exception $e) {
+        // catch any database errors.
+    }
+
+    // Set the file number
+    $file_number = strtoupper(substr($country, 0, 2)).$rowid;
+    $query = 'UPDATE #__emundus_personal_detail SET file_number='.$db->Quote($file_number).' WHERE fnum like '.$db->Quote($fnum);
+    try {
+        $db->setQuery($query);
+        $db->execute();
     } catch (Exception $e) {
         // catch any database errors.
     }

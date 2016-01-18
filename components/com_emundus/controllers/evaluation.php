@@ -689,7 +689,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
     {
          //Filters
         $model = $this->getModel('Evaluation');
-        $defaultElements = $model->getEvaluationElementsName();
+        $defaultElements = $model->getEvaluationElementsName(0, 1);
         //var_dump($defaultElements);die();
         $elements = EmundusHelperFilters::getElements();
         $res = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);
@@ -1020,10 +1020,10 @@ class EmundusControllerEvaluation extends JControllerLegacy
             $line=JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('CAMPAIGN')."\t";
             $nbcol = 6;
             foreach ($ordered_elements as $fKey => $fLine) {
-                if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id') {
+                //if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id') {
                     $line .= $fLine->element_label . "\t";
                     $nbcol++;
-                }
+                //}
             }
             foreach ($colsup as $kOpt => $vOpt) {
                 if ($vOpt=="forms" || $vOpt=="attachment") {

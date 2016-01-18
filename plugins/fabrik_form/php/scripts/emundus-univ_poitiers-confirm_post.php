@@ -18,7 +18,6 @@ $student =  JFactory::getUser();
 //$mailer = JFactory::getMailer();
 include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
-include_once(JPATH_BASE.'/components/com_emundus/models/thesis.php');
 //include_once(JPATH_BASE.'/components/com_emundus/models/groups.php');
 jimport('joomla.log.log');
 JLog::addLogger(
@@ -38,8 +37,16 @@ JLog::addLogger(
 $campaigns = new EmundusModelCampaign;
 $campaign = $campaigns->getCampaignByID($student->campaign_id);
 
-$thesiss = new EmundusModelThesis;
-$thesis = $thesiss->getLastThesisApplied($student->fnum);
+// get etablissement_origine & etablissement_accueil
+$query = 'SELECT id, etablissement_accueil, etablissement_origine 
+            FROM #__emundus_personal_detail 
+            WHERE fnum like '.$db->Quote($student->fnum);
+try {
+    $db->setQuery($query);
+    $etablissements = $db->loadObject();
+} catch (Exception $e) {
+    // catch any database errors.
+}
 
 $emails = new EmundusModelEmails;
 
@@ -51,10 +58,7 @@ $post = array(  'FNUM'      => $student->fnum,
                 'CAMPAIGN_END' => $campaign['end_date'],
                 'CAMPAIGN_CODE' => $campaign['training'],
                 'FIRSTNAME' => $student->firstname,
-                'LASTNAME' => strtoupper($student->lastname),
-                'THESIS_PROPOSAL' => $thesis->titre,
-                'THESIS_DIRECTOR' => $thesis->thesis_supervisor,
-                'DOCTORAL_SCHOOL' => $thesis->title
+                'LASTNAME' => strtoupper($student->lastname)
 );
 
 // Apllicant cannot delete this attachments now
@@ -84,77 +88,35 @@ try {
 
 $student->candidature_posted = 1;
 
-// Directeur ED
-$ed_directors = JAccess::getUsersByGroup(23);
+// Evaluators
+$evaluators = JAccess::getUsersByGroup(13);
 $query ='SELECT eu.firstname, eu.lastname, u.email, u.id
          FROM #__users as u
          LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
-         WHERE u.id IN ('.implode(',', $ed_directors).')
-         AND eu.university_id = '.$thesis->doctoral_school;
+         WHERE u.id IN ('.implode(',', $evaluators).') AND (eu.university_id = '.$etablissements->etablissement_accueil.' OR eu.university_id = '.$etablissements->etablissement_origine.')';
 try {
     $db->setQuery($query);
-    $ed_director = $db->loadObjectList();
+    $evaluators = $db->loadObjectList();
 } catch (Exception $e) {
     // catch any database errors.
 }
-
-// Directeur thèse
-$query = 'SELECT et.titre, eu.firstname, eu.lastname, u.email, u.id
-            FROM #__emundus_thesis as et 
-            LEFT JOIN #__users as u ON u.id=et.user 
-            LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
-            WHERE et.id='.$thesis->thesis_proposal;
-try {
-    $db->setQuery($query);
-    $thesis_director = $db->loadObjectList();
-} catch (Exception $e) {
-    // catch any database errors.
-}
-
-$post['THESIS_DIRECTOR_FIRSTNAME'] = $thesis_director[0]->firstname;
-$post['THESIS_DIRECTOR_LASTNAME'] = $thesis_director[0]->lastname;
-
-//$recipients = array_merge($ed_director, $thesis_director);
 
 
 // Ouverture des droits d'accès aux dossiers du candidat pour le Directeur ED et le Directeur de thèse de l'Université correspondante au sujet
-if (count($ed_director) > 0) {
-    foreach ($ed_director as $referent) {
+if (count($evaluators) > 0) {
+    foreach ($evaluators as $referent) {
 
         // Association de l'ID user Referent avec le candidat (#__emundus_groups_eval)
         $query = 'INSERT INTO `#__emundus_users_assoc` (`user_id`, `action_id`, `fnum`, `c`, `r`, `u`, `d`)
                 VALUES  ('.$referent->id.', 1, '.$db->Quote($student->fnum).', 0,1,0,0), 
                         ('.$referent->id.', 4, '.$db->Quote($student->fnum).', 1,1,0,0),
-                        ('.$referent->id.', 5, '.$db->Quote($student->fnum).', 0,1,0,0),
+                        ('.$referent->id.', 5, '.$db->Quote($student->fnum).', 1,1,0,0),
                         ('.$referent->id.', 6, '.$db->Quote($student->fnum).', 1,0,0,0),
                         ('.$referent->id.', 7, '.$db->Quote($student->fnum).', 1,0,0,0),
                         ('.$referent->id.', 8, '.$db->Quote($student->fnum).', 1,0,0,0),
                         ('.$referent->id.', 9, '.$db->Quote($student->fnum).', 1,1,0,0),
                         ('.$referent->id.', 10, '.$db->Quote($student->fnum).', 1,1,0,0),
                         ('.$referent->id.', 29, '.$db->Quote($student->fnum).', 1,1,1,0)';
-        try {
-            $db->setQuery( $query );
-            $db->execute();
-        } catch (Exception $e) {
-            // catch any database errors.
-        }
-        $mail_to[] = $referent->id;
-    }
-}
-if (count($thesis_director) > 0) {
-    foreach ($thesis_director as $referent) {
-
-        // Association de l'ID user Referent avec le candidat (#__emundus_groups_eval)
-        $query = 'INSERT INTO `#__emundus_users_assoc` (`user_id`, `action_id`, `fnum`, `c`, `r`, `u`, `d`)
-                VALUES  ('.$referent->id.', 1, '.$db->Quote($student->fnum).', 0,1,0,0), 
-                        ('.$referent->id.', 4, '.$db->Quote($student->fnum).', 0,1,0,0),
-                        ('.$referent->id.', 5, '.$db->Quote($student->fnum).', 1,1,1,0),
-                        ('.$referent->id.', 6, '.$db->Quote($student->fnum).', 1,0,0,0),
-                        ('.$referent->id.', 7, '.$db->Quote($student->fnum).', 1,0,0,0),
-                        ('.$referent->id.', 8, '.$db->Quote($student->fnum).', 1,0,0,0),
-                        ('.$referent->id.', 9, '.$db->Quote($student->fnum).', 1,1,0,0),
-                        ('.$referent->id.', 10, '.$db->Quote($student->fnum).', 1,1,0,0),
-                        ('.$referent->id.', 29, '.$db->Quote($student->fnum).', 0,1,0,0)';
         try {
             $db->setQuery( $query );
             $db->execute();

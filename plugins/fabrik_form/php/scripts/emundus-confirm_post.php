@@ -109,11 +109,18 @@ if (count($trigger_emails) > 0) {
             $replyto = $from;
             $replytoname = $fromname;
 
-            $config = JFactory::getConfig();
-            $sender = array(
-                $config->get( $from ),
-                $config->get( $fromname )
-            );
+            if (empty($from) || !isset($from)) {
+                    $config = JFactory::getConfig();
+                    $sender = array(
+                        $config->get( $from ),
+                        $config->get( $fromname )
+                    );
+            } else {
+                $sender = array(
+                    $from,
+                    $fromname
+                );
+            }
 
             $mailer->setSender($sender);
             $mailer->addRecipient($to);

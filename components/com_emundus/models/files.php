@@ -1497,7 +1497,7 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getAllStatus()
     {
-        $query = 'select * from #__emundus_setup_status where 1';
+        $query = 'select * from #__emundus_setup_status order by ordering';
         $db = $this->getDbo();
 
         try
@@ -1840,7 +1840,7 @@ where 1 order by ga.fnum asc, g.title';
         try
         {
             $db = $this->getDbo();
-            $query = 'select u.name as applicant_name, u.email as applicant_email, u.username as applicant_email, cc.fnum, sc.id as campaign_id , sc.label as campaign_label, sc.training as campaign_code,  sc.start_date as campaign_start, sc.end_date as campaign_end, sc.year as campaign_year,  jesp.code as training_code, jesp.label as training_programme, cc.applicant_id as applicant_id, jess.value as application_status, group_concat(jesat.label) as application_tags
+            $query = 'select u.name as applicant_name, u.email as applicant_email, u.username as username, cc.fnum, sc.id as campaign_id , sc.label as campaign_label, sc.training as campaign_code,  sc.start_date as campaign_start, sc.end_date as campaign_end, sc.year as campaign_year,  jesp.code as training_code, jesp.label as training_programme, cc.applicant_id as applicant_id, jess.value as application_status, group_concat(jesat.label) as application_tags
                         from jos_emundus_campaign_candidature as cc
                         left join jos_users as u on u.id = cc.applicant_id
                         left join jos_emundus_setup_campaigns as sc on sc.id = cc.campaign_id

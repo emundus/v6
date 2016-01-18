@@ -205,18 +205,7 @@ $gpreset = str_replace(' ','',strtolower($gantry->get('name')));
 	<?php /** End Analytics **/ endif; ?>
 
 </body>
-<script type="text/javascript">
-    var body = document.body,
-        html = document.documentElement;
 
-    var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
-    var component = "<?php echo @$_GET['option'];?>";
-    if (body.offsetHeight < html.clientHeight && html.clientHeight>900 && component!="com_emundus") {
-        document.getElementById('rt-footer').style.position="fixed";
-        document.getElementById('rt-footer').style.bottom=0;
-    }
-
-</script>
 </html>
 <?php
 $gantry->finalize();

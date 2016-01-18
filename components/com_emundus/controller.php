@@ -310,6 +310,7 @@ class EmundusController extends JControllerLegacy {
 
         $profile        = $model->getProfileByCampaign($infos['campaign_id']);
         $campaign       = $model->getCampaignById($infos['campaign_id']);
+        $application    = $model->getFnumDetails($fnum);
 
         $aid->profile       = $profile['profile_id'];
         $aid->profile_label = $profile['label'];
@@ -323,6 +324,7 @@ class EmundusController extends JControllerLegacy {
         $aid->campaign_id   = $infos['campaign_id'];
         $aid->campaign_name = $campaign['label'];
         $aid->fnum          = $fnum;
+        $aid->status        = $application['status'];
 
         JError::raiseNotice('PERIOD', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($aid->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($aid->end_date) )));
         $this->setRedirect($redirect, JText::_('CURRENT_APPLICATION_FILE'). ' : '.$fnum, 'notice');
