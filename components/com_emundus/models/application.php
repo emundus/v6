@@ -299,7 +299,7 @@ class EmundusModelApplication extends JModelList
         return $this->_db->loadAssoc();
     }
 
-    public function getFormsProgress($aid, $pid, $fnum = "0")
+    public function getFormsProgress($aid, $pid = 9, $fnum = "0")
     {
         if(!is_array($fnum))
         {
@@ -359,7 +359,7 @@ class EmundusModelApplication extends JModelList
         }
     }
 
-    public function getAttachmentsProgress($aid, $pid, $fnum = "0")
+    public function getAttachmentsProgress($aid, $pid=9, $fnum = "0")
     {
         if(!is_array($fnum))
         {
@@ -429,8 +429,9 @@ class EmundusModelApplication extends JModelList
     }
 
     // Get form to display in application page layout view
-    public function getForms($aid, $fnum = 0) {
-        $tableuser = @EmundusHelperList::getFormsList($aid, $fnum);
+    public function getForms($aid, $fnum = 0, $pid = 9) {
+        //$tableuser = @EmundusHelperList::getFormsList($aid, $fnum);
+        $tableuser = @EmundusHelperMenu::buildMenuQuery($pid);
 
         $forms = '';
 

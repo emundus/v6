@@ -197,13 +197,21 @@ class EmundusModelProfile extends JModelList
     }
 
 	function getFnumDetails($fnum){
-		$query = 'SELECT ecc.*, esc.*, ess.*
+		$query = 'SELECT ecc.*, esc.*, ess.*, epd.profile as profile_id_form
 					FROM #__emundus_campaign_candidature AS ecc 
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id 
 					LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
+					LEFT JOIN #__emundus_personal_detail as epd on epd.fnum = ecc.fnum
 					WHERE ecc.fnum like '.$this->_db->Quote($fnum); 
-		$this->_db->setQuery( $query );
-		$res = $this->_db->loadAssoc();
+		try
+        {
+            $this->_db->setQuery( $query );
+			$res = $this->_db->loadAssoc();
+        }
+        catch(Exception $e)
+        {
+            throw new $e->getMessage();
+        }
 
 		return $res;
 	}

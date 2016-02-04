@@ -1152,6 +1152,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $model = $this->getModel('Files');
         $modelApp = $this->getModel('Application');
+        $profiles = $this->getModel('Profile');
 
         $session     = JFactory::getSession();
         $fnums = $session->get('fnums_export');
@@ -1193,15 +1194,28 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         foreach ($colsup as $col) {
             $col = explode('.', $col);
+            
             switch ($col[0]) {
                 case "photo":
                     $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($model, JURI::base());
                     break;
                 case "forms":
-                    $colOpt['forms'] = $modelApp->getFormsProgress(null, null, $fnums);
+                    foreach ($fnums as $fnum) {
+                        $fnumInfos = $profiles->getFnumDetails($fnum);
+                        $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+                        $aid = $fnumInfos['applicant_id'];
+                        $formsProgress[$fnum] = $modelApp->getFormsProgress($aid, $pid, $fnum);
+                    }                    
+                    $colOpt['forms'] = $formsProgress;
                     break;
                 case "attachment":
-                    $colOpt['attachment'] = $modelApp->getAttachmentsProgress(null, null, $fnums);
+                    foreach ($fnums as $fnum) {
+                        $fnumInfos = $profiles->getFnumDetails($fnum);
+                        $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+                        $aid = $fnumInfos['applicant_id'];
+                        $attachmentProgress[$fnum] = $modelApp->getAttachmentsProgress($aid, $pid, $fnum);
+                    }
+                    $colOpt['attachment'] = $attachmentProgress;
                     break;
                 case "assessment":
                     $colOpt['assessment'] = @EmundusHelperFiles::getEvaluation('text', $fnums);

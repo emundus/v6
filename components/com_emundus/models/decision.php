@@ -148,7 +148,7 @@ class EmundusModelDecision extends JModelList
 										)
 								  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 					} else
-						$query = '(select '.$join_val_column.' from '.$attribs->join_db_name.' where '.$attribs->join_db_name.'.'.$attribs->join_key_column.'='.$def_elmt->tab_name . '.' . $def_elmt->element_name.') AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
+						$query = '(select DISTINCT '.$join_val_column.' from '.$attribs->join_db_name.' where '.$attribs->join_db_name.'.'.$attribs->join_key_column.'='.$def_elmt->tab_name . '.' . $def_elmt->element_name.') AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 
 					$this->_elements_default[] = $query;
 					//$this->_elements_default[] = ' (SELECT esc.label FROM jos_emundus_setup_campaigns AS esc WHERE esc.id = jos_emundus_campaign_candidature.campaign_id) as `jos_emundus_campaign_candidature.campaign_id` ';

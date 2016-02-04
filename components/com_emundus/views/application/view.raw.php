@@ -284,10 +284,12 @@ class EmundusViewApplication extends JViewLegacy
 				case 'form':
 						if(EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum))
 						{
-							$profile = $profiles->getProfileByCampaign($fnumInfos['campaign_id']);
-							$formsProgress = $model->getFormsProgress($fnumInfos['applicant_id'], $profile['profile_id'], $fnum);
+							$pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+
+							$formsProgress = $model->getFormsProgress($fnumInfos['applicant_id'], $pid, $fnum);
 							$this->assignRef('formsProgress', $formsProgress);
-							$forms = $model->getforms(intval($fnumInfos['applicant_id']), $fnum);
+							
+							$forms = $model->getforms(intval($fnumInfos['applicant_id']), $fnum, $pid);
 							$this->assignRef('forms', $forms);
 						}
 						else

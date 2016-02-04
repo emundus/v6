@@ -151,7 +151,7 @@ class EmundusModelEvaluation extends JModelList
 										)
 								  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 					} else
-						$query = '(select '.$join_val_column.' from '.$attribs->join_db_name.' where '.$attribs->join_db_name.'.'.$attribs->join_key_column.'='.$def_elmt->tab_name . '.' . $def_elmt->element_name.') AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
+						$query = '(select DISTINCT '.$join_val_column.' from '.$attribs->join_db_name.' where '.$attribs->join_db_name.'.'.$attribs->join_key_column.'='.$def_elmt->tab_name . '.' . $def_elmt->element_name.') AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 
 					$this->_elements_default[] = $query;
 					//$this->_elements_default[] = ' (SELECT esc.label FROM jos_emundus_setup_campaigns AS esc WHERE esc.id = jos_emundus_campaign_candidature.campaign_id) as `jos_emundus_campaign_candidature.campaign_id` ';
@@ -392,6 +392,7 @@ class EmundusModelEvaluation extends JModelList
         $can_be_ordering[] = 'jos_emundus_campaign_candidature.status';
         $can_be_ordering[] = 'fnum';
         $can_be_ordering[] = 'status';
+        $can_be_ordering[] = 'c.status';
         $can_be_ordering[] = 'u.name';
         $can_be_ordering[] = 'eta.id_tag';
         $can_be_ordering[] = 'overall';

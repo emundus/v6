@@ -446,6 +446,7 @@ class EmundusHelperFiles
         $db         = JFactory::getDBO();
         // get all profiles
         $profiles = $user->getApplicantProfiles();
+        $plist = array();
 
         if(count($code) == 0) {
             $params = JFactory::getSession()->get('filt_params');
@@ -458,6 +459,9 @@ class EmundusHelperFiles
         } else {
             $plist = $profile->getProfileIDByCourse($code);
         }
+
+        if((count($plist) == 1 && $plist[0] == 1000) || count($plist) == 0 || !$plist)
+            $plist[] = 9;
 
         if ($plist) {
             // get Fabrik list ID for profile_id
