@@ -278,14 +278,14 @@ class plgUserEmundus extends JPlugin
                     $current_user->end_date					= $profile["end_date"];
                     $current_user->candidature_start		= $profile["start_date"];
                     $current_user->candidature_end			= $profile["end_date"];
-                    $current_user->candidature_posted 		= ($profile["date_submitted"] == "0000-00-00 00:00:00" || $profile["date_submitted"] ==0  ||$profile["date_submitted"] == NULL)?0:1;
+                    $current_user->candidature_posted 		= (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] ==0  || @$profile["date_submitted"] == NULL)?0:1;
                     $current_user->candidature_incomplete 	= (count($incomplete)==0)?0:1;
                     $current_user->schoolyear				= $profile["year"];
                     $current_user->code						= $profile["training"];
                     $current_user->campaign_id				= $campaign["id"];
                     $current_user->campaign_name			= $profile["label"];
                     $current_user->fnum                     = $campaign["fnum"];
-                    $current_user->status                   = $campaign["status"];
+                    $current_user->status                   = @$campaign["status"];
 
                 } else {
                     $current_user->profile	 				= $profile["profile"];
@@ -295,32 +295,15 @@ class plgUserEmundus extends JPlugin
                     $current_user->applicant				= 0;
                 }
 
-                if ($current_user->code	== "pepite") {
+                /*if ($current_user->code	== "pepite") {
                     $app->redirect("index.php?option=com_fabrik&view=form&formid=164&Itemid=1521&usekey=fnum");
                 }
-                elseif ($current_user->code	== "utc-dfp-dri") {
+                if ($current_user->code	== "utc-dfp-dri") {
                     $app->redirect("index.php?option=com_emundus&view=jobs&Itemid=1468");
-                }
-                elseif ($current_user->code	== "csc") {
+                }*/
+                if ($current_user->code	== "csc") {
                 	$app->redirect("index.php?option=com_content&view=article&id=83&Itemid=1570");
-                	/*
-                    include_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
-                    include_once(JPATH_SITE.'/components/com_emundus/models/thesis.php');
-                    // @TODO : if have application for current campaign
-                    // get current campaign_id for programme csc
-                    $current_campaign = EmundusModelCampaign::getLastCampaignByCourse('csc');
-                    // get last thesis proposal ID and associated campaign_id selected by applicant
-                    $current_thesis_proposal = EmundusModelThesis::getLastThesisApplied($current_user->fnum);
-                    if($current_user->campaign_id != $current_campaign->id || count($current_thesis_proposal)==0) {
-                        $app->redirect("index.php?option=com_emundus&view=thesiss&Itemid=1617");
-                    } else {
-                        //$app->redirect("index.php?option=com_emundus&view=thesis&id=".$current_thesis_proposal->thesis_proposal."&Itemid=1617");
-                        $app->redirect("index.php?option=com_emundus&view=thesis&id=".$current_thesis_proposal->thesis_proposal."&Itemid=1614");
-                    }
-                    */
                 }
-                else
-                    $app->redirect("index.php");
             }
         }
         return true;

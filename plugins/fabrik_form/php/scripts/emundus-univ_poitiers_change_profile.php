@@ -15,14 +15,24 @@ defined( '_JEXEC' ) or die();
 
 include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
+$app = JFactory::getApplication();
+$db = JFactory::getDBO();
+
 $current_user  = JFactory::getUser();
 
-if (EmundusHelperAccess::isApplicant($current_user->id)) {
-    $app = JFactory::getApplication();
-    $db = JFactory::getDBO();
+$user_id = $fabrikFormData['user_raw'][0];
+$profile = $fabrikFormData['profile_raw'][0];
 
+$query = 'UPDATE #__emundus_users SET profile='.$profile.' WHERE user_id = '.$user_id;
+try {
+    $db->setQuery($query);
+    $db->execute();
+} catch (Exception $e) {
+    // catch any database errors.
+}
+
+if (EmundusHelperAccess::isApplicant($current_user->id)) {   
     $fnum = $fabrikFormData['fnum_raw'];
-    $profile = $fabrikFormData['profile_raw'][0];
     $country = $fabrikFormData['birth_country_raw'][0];
     $rowid = $fabrikFormData['rowid'];
 
@@ -46,10 +56,23 @@ if (EmundusHelperAccess::isApplicant($current_user->id)) {
         // catch any database errors.
     }
 
+    $query = 'UPDATE #__emundus_users SET profile='.$profile.' WHERE user_id = '.$current_user->id;
+    try {
+        $db->setQuery($query);
+        $db->execute();
+    } catch (Exception $e) {
+        // catch any database errors.
+    }
+
     $current_user->menutype = $p->menutype;
     $current_user->profile = $p->id;
 
     $app->redirect("index.php?option=com_emundus&view=checklist&Itemid=1516");
+} else {
+	echo '<script>window.parent.$("html, body").animate({scrollTop : 0}, 300);</script>';
+	die('<h1><img src="'.JURI::Base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>');
 }
+
+
 
 ?>

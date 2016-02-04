@@ -19,7 +19,7 @@ jimport('joomla.plugin.plugin');
  * @subpackage  User.emundus
  * @since       5.0.0
  */
-class plgUserEmundus_univ_poitiers extends JPlugin
+class plgUserEmundus_su_empolois extends JPlugin
 {
     
     /**
@@ -42,36 +42,10 @@ class plgUserEmundus_univ_poitiers extends JPlugin
 
         if (!$app->isAdmin()) {
             $current_user   = JFactory::getUser();
-            $db             = JFactory::getDBO();
 
-            $query = 'SELECT profile FROM #__emundus_personal_detail WHERE fnum like '.$db->Quote($current_user->fnum);
-
-            $db->setQuery( $query );
-            $profile = $db->loadObject();
-
-            if (count($profile) == 0) {
-                $app->redirect("index.php?option=com_fabrik&view=form&formid=138&Itemid=1662&usekey=fnum");
+            if ($current_user->code	== "utc-dfp-dri") {
+                $app->redirect("index.php?option=com_emundus&view=jobs&Itemid=1468");
             } else {
-                $query = 'SELECT * 
-                    FROM #__emundus_setup_profiles as esp 
-                    WHERE esp.id = '.$profile->profile;
-                try {
-                    $db->setQuery($query);
-                    $p = $db->loadObject();
-                } catch (Exception $e) {
-                    // catch any database errors.
-                }
-
-                $query = 'UPDATE #__emundus_users SET profile='.$profile->profile.' WHERE user_id = '.$current_user->id.' AND profile=1000';
-                try {
-                    $db->setQuery($query);
-                    $db->execute();
-                } catch (Exception $e) {
-                    // catch any database errors.
-                }
-
-                $current_user->menutype = $p->menutype;
-                $current_user->profile = $p->id;
                 $app->redirect("index.php");
             }
         } else {
