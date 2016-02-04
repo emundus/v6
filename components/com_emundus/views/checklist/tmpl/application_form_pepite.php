@@ -11,8 +11,8 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 
 $forms = @EmundusHelperMenu::buildMenuQuery($user->profile);
 
-$app = JFactory::getApplication();
-$alias = $app->getMenu()->getActive()->alias;
+/*$app = JFactory::getApplication();
+$alias = $app->getMenu()->getActive()->alias;*/
 ?>
 </ul>
 <?php 
