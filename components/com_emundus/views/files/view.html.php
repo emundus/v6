@@ -43,15 +43,11 @@ class EmundusViewFiles extends JViewLegacy
 		/* Get the values from the state object that were inserted in the model's construct function */
 		$lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
 		$lists['order']     = JFactory::getSession()->get( 'filter_order' );
+		$lists['params']    = JFactory::getSession()->get( 'filt_params' );
 		$this->assignRef('lists', $lists);
 		$this->assignRef('actions', $actions);
 		$pagination = $this->get('Pagination');
 		$this->assignRef('pagination', $pagination);
-
-		//$submitForm = EmundusHelperJavascript::onSubmitForm();
-		//$delayAct = EmundusHelperJavascript::delayAct();
-		//$this->assignRef('delayAct', $delayAct);
-		//$this->assignRef('submitForm', $submitForm);
 		
 		parent::display($tpl);
 	}

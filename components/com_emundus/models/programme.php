@@ -46,5 +46,30 @@ class EmundusModelProgramme extends JModelList
         return json_decode($db->loadResult(), true);
     }
 
+    /**
+     * @param $user
+     * @return array
+     * get list of programmes for associated files
+     */
+    public function getAssociatedProgrammes($user)
+    {
+        $query = 'select DISTINCT sc.training
+                  from #__emundus_users_assoc as ua
+                  LEFT JOIN #__emundus_campaign_candidature as cc ON cc.fnum=ua.fnum
+                  left join #__emundus_setup_campaigns as sc on sc.id = cc.campaign_id
+                  where ua.user_id='.$user;
+        try
+        {
+            $db = $this->getDbo();
+            $db->setQuery($query);
+            return $db->loadColumn();
+        }
+        catch(Exception $e)
+        {
+            error_log($e->getMessage(), 0);
+            return false;
+        }
+    }
+
 }
 ?>
