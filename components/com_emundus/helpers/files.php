@@ -68,11 +68,13 @@ class EmundusHelperFiles
     }
 
     /*
-    ** @description set default filter
+    ** @description Clear session and reinit values by default
     */
-    public  function setDefaultFilter()
-    { 
-        include_once (JPATH_COMPONENT.DS.'models'.DS.'programme.php');
+    public  function resetFilter()
+    {
+
+        //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
         $current_user = JFactory::getUser();
 
@@ -80,7 +82,7 @@ class EmundusHelperFiles
         $current_menu  = $menu->getActive();
         $menu_params = $menu->getParams(@$current_menu->id);
 
-        $m_files = new EmundusModelProgramme();
+        $m_files = new EmundusModelFiles();
 
         if (!JFactory::getSession()->has('filt_params'))
         {
@@ -90,47 +92,47 @@ class EmundusHelperFiles
         $params = JFactory::getSession()->get('filt_params');
 
         //Filters
-        $tables         = explode(',', $menu_params->get('em_tables_id'));
-        $filts_names    = explode(',', $menu_params->get('em_filters_names'));
-        $filts_values   = explode(',', $menu_params->get('em_filters_values'));
-        $filts_types    = explode(',', $menu_params->get('em_filters_options'));
+        $tables 		= explode(',', $menu_params->get('em_tables_id'));
+        $filts_names 	= explode(',', $menu_params->get('em_filters_names'));
+        $filts_values	= explode(',', $menu_params->get('em_filters_values'));
+        $filts_types  	= explode(',', $menu_params->get('em_filters_options'));
 
         // All types of filters
-        $filts_details  = array('profile'           => NULL,
-                                  'evaluator'           => NULL,
-                                  'evaluator_group' => NULL,
-                                  'schoolyear'          => NULL,
-                                  'campaign'            => NULL,
-                                  'programme'           => NULL,
-                                  'missing_doc'     => NULL,
-                                  'complete'            => NULL,
-                                  'finalgrade'          => NULL,
-                                  'validate'            => NULL,
-                                  'other'               => NULL,
-                                  'status'              => NULL,
+        $filts_details 	= array('profile'			=> NULL,
+                                  'evaluator'			=> NULL,
+                                  'evaluator_group'	=> NULL,
+                                  'schoolyear'			=> NULL,
+                                  'campaign'			=> NULL,
+                                  'programme'			=> NULL,
+                                  'missing_doc'		=> NULL,
+                                  'complete'			=> NULL,
+                                  'finalgrade'			=> NULL,
+                                  'validate'			=> NULL,
+                                  'other'				=> NULL,
+                                  'status'				=> NULL,
                                   'published'          => NULL,
-                                  'adv_filter'          => NULL,
-                                  'newsletter'          => NULL,
-                                  'spam_suspect'        => NULL,
-                                  'not_adv_filter'  => NULL);
-        $filts_options  = array('profile'           => NULL,
-                                  'evaluator'           => NULL,
-                                  'evaluator_group' => NULL,
-                                  'schoolyear'          => NULL,
-                                  'campaign'            => NULL,
-                                  'programme'           => NULL,
-                                  'missing_doc'     => NULL,
-                                  'complete'            => NULL,
-                                  'finalgrade'          => NULL,
-                                  'validate'            => NULL,
-                                  'other'               => NULL,
-                                  'status'              => NULL,
+                                  'adv_filter'		    => NULL,
+                                  'newsletter'		    => NULL,
+                                  'spam_suspect'	    => NULL,
+                                  'not_adv_filter' 	=> NULL);
+        $filts_options 	= array('profile'			=> NULL,
+                                  'evaluator'			=> NULL,
+                                  'evaluator_group'	=> NULL,
+                                  'schoolyear'			=> NULL,
+                                  'campaign'			=> NULL,
+                                  'programme'			=> NULL,
+                                  'missing_doc'		=> NULL,
+                                  'complete'			=> NULL,
+                                  'finalgrade'			=> NULL,
+                                  'validate'			=> NULL,
+                                  'other'				=> NULL,
+                                  'status'				=> NULL,
                                   'published'          => NULL,
-                                  'adv_filter'          => NULL,
-                                  'newsletter'          => NULL,
-                                  'spam_suspect'        => NULL,
-                                  'not_adv_filter'      => NULL);
-        /*  $validate_id    = explode(',', $menu_params->get('em_validate_id'));
+                                  'adv_filter'		    => NULL,
+                                  'newsletter'		    => NULL,
+                                  'spam_suspect'	    => NULL,
+                                  'not_adv_filter'	    => NULL);
+        /*	$validate_id  	= explode(',', $menu_params->get('em_validate_id'));
             $columnSupl = explode(',', $menu_params->get('em_actions'));*/
 
         $filter_multi_list = array('schoolyear', 'campaign', 'programme', 'status', 'profile_users');
@@ -179,33 +181,15 @@ class EmundusHelperFiles
             $filts_details['programme'] = $programme;
         }
         $codes = $m_files->getAssociatedProgrammes($current_user->id);
-
         if(count($codes)>0) {
             $params['programme'] = array_merge($params['programme'], $codes);
             $filts_details['programme'] = array_merge($filts_details['programme'], $codes);
         }
 
-        $filters = array();
-        $filters['params'] = $params;
-        $filters['filts_details'] = $filts_details;
-        $filters['filts_options'] = $filts_options;
-        $filters['tables'] = $tables;
+        JFactory::getSession()->set('filt_params', $params);
 
-        return $filters;
+        return @EmundusHelperFiles::createFilterBlock($filts_details, $filts_options, $tables);
     }
-
-    /*
-    ** @description Clear session and reinit values by default
-    */
-    public  function resetFilter()
-    {
-        $filters = @EmundusHelperFiles::setDefaultFilter();
-
-        JFactory::getSession()->set('filt_params', $filters['params']);
-
-        return @EmundusHelperFiles::createFilterBlock($filters['filts_details'], $filters['filts_options'], $filters['tables']);
-    }
-
 
 
     /*
@@ -462,7 +446,6 @@ class EmundusHelperFiles
         $db         = JFactory::getDBO();
         // get all profiles
         $profiles = $user->getApplicantProfiles();
-        $plist = array();
 
         if(count($code) == 0) {
             $params = JFactory::getSession()->get('filt_params');
@@ -475,9 +458,6 @@ class EmundusHelperFiles
         } else {
             $plist = $profile->getProfileIDByCourse($code);
         }
-
-        if((count($plist) == 1 && $plist[0] == 1000) || count($plist) == 0 || !$plist)
-            $plist[] = 9;
 
         if ($plist) {
             // get Fabrik list ID for profile_id

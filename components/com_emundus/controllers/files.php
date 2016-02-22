@@ -1152,7 +1152,6 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $model = $this->getModel('Files');
         $modelApp = $this->getModel('Application');
-        $profiles = $this->getModel('Profile');
 
         $session     = JFactory::getSession();
         $fnums = $session->get('fnums_export');
