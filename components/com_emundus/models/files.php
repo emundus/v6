@@ -1954,44 +1954,40 @@ where 1 order by ga.fnum asc, g.title';
                 }
 
                 if ($params_group->repeat_group_button == 1) {
-                        if ($methode == 1) {
-                            $query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
-                            if(!in_array($elt->table_join, $lastTab)) {
-                                $leftJoinMulti .= ' left join ' . $elt->table_join.' on '. $elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
-                            }
-                            $lastTab[] = $elt->table_join;
+                    if ($methode == 1) {
+                        $query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
+                        if(!in_array($elt->table_join, $lastTab)) {
+                            $leftJoinMulti .= ' left join ' . $elt->table_join.' on '. $elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
                         }
-                        else {
-                            $query .= ', (
-                                        SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.' SEPARATOR ", ")
-                                        FROM '.$elt->table_join.'
-                                        WHERE '.$elt->table_join.'.parent_id='.$tableAlias[$elt->tab_name].'.id
-                                      ) AS '. $elt->table_join.'___'.$elt->element_name;
-                        }
+                        $lastTab[] = $elt->table_join;
                     }
                     else {
-
-                        $select = $tableAlias[$elt->tab_name].'.'.$elt->element_name;
-                        if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
-                            $element_attribs = json_decode($elt->element_attribs);
-                            foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                                $select = 'REPLACE('.$select.', "'.$value.'", "'.$element_attribs->sub_options->sub_labels[$key].'")';
-                            }
-                        }
-                        elseif ($elt->element_plugin == 'databasejoin') {
-                            $element_attribs = json_decode($elt->element_attribs);
-                            $elt_array = json_decode(json_encode($elt), true);
-                            $elt_array['db_table_name'] = $elt_array['tab_name'];
-                            $elt_array['table_join'] = $element_attribs->join_db_name;
-                            $elt_array['name'] = $elt_array['element_name'];
-                            $elt_array['plugin'] = $elt_array['element_plugin'];
-
-                            $value = $this->getFabrikValueRepeat($elt_array, $fnums, $element_attribs, $params_group->repeat_group_button);
-                            $select = 'CONCAT('.$db->Quote(array_values($value)[0]["val"]).')';
-                        }
-
-                        $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
+                        $query .= ', (
+                                    SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.' SEPARATOR ", ")
+                                    FROM '.$elt->table_join.'
+                                    WHERE '.$elt->table_join.'.parent_id='.$tableAlias[$elt->tab_name].'.id
+                                  ) AS '. $elt->table_join.'___'.$elt->element_name;
                     }
+                }
+                else {
+                    $select = $tableAlias[$elt->tab_name].'.'.$elt->element_name;
+                    if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
+                        $element_attribs = json_decode($elt->element_attribs);
+                        foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+                            $select = 'REPLACE('.$select.', "'.$value.'", "'.$element_attribs->sub_options->sub_labels[$key].'")';
+                        }
+                    }
+                    elseif ($elt->element_plugin == 'databasejoin') {
+                        $element_attribs = json_decode($elt->element_attribs);
+                        //$elt_array = json_decode(json_encode($elt), true); /*object to array*/
+
+                        $select = '(SELECT GROUP_CONCAT(t.'.$element_attribs->join_val_column.' SEPARATOR ", ") 
+                            FROM '.$element_attribs->join_db_name.' as t 
+                            WHERE t.'.$element_attribs->join_key_column.'='.$elt_array['db_table_name'].$elt_array['element_name'].')';
+                    }
+
+                    $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
+                }
             }
             $query .= ' from #__emundus_campaign_candidature as c
                         left join #__users as u on u.id = c.applicant_id 
@@ -2630,7 +2626,7 @@ where 1 order by ga.fnum asc, g.title';
         {
             $query .= ' where t_origin.fnum in ("'.implode('","', $fnums).'") group by t_origin.fnum';
         }
- 
+
         try
         {
             $dbo->setQuery($query);
