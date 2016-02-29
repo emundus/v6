@@ -1,12 +1,16 @@
 <?php
 /**
- * @package    eMundus
- * @subpackage Components
- *             components/com_emundus/emundus.php
- * @link       http://www.decisionpublique.fr
- * @license    GNU/GPL
- * @author     Benjamin Rivalland
-*/
+ * Created by eMundus.
+ * User: brivalland
+ * Date: 23/05/14
+ * Time: 11:39
+ * @package        Joomla
+ * @subpackage    eMundus
+ * @link        http://www.emundus.fr
+ * @copyright    Copyright (C) 2006 eMundus. All rights reserved.
+ * @license        GNU/GPL
+ * @author        Benjamin Rivalland
+ */
  
 // no direct access
  
@@ -160,13 +164,19 @@ class EmundusViewFiles extends JViewLegacy
                 $userModel = new EmundusModelUsers();
 
                 $model->code = $userModel->getUserGroupsProgrammeAssoc($current_user->id);
-                $model->fnum_assoc = $userModel->getApplicantsAssoc($current_user->id);
+
+		        // get all fnums manually associated to user
+		        $groups = $userModel->getUserGroups($current_user->id, 'Column');
+        		$fnum_assoc_to_groups = $userModel->getApplicationsAssocToGroups($groups);
+		        $fnum_assoc = $userModel->getApplicantsAssoc($current_user->id);
+		        $model->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
+
                 $this->assignRef('code', $model->code);
                 $this->assignRef('fnum_assoc', $model->fnum_assoc);
 
 			    // get applications files
 			    $users = $this->get('Users');
-//var_dump($users); die();
+
 			    $defaultElements = $this->get('DefaultElements');
 			    $datas = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'status' => JText::_('STATUS')));
 			    $fl = array();
