@@ -95,7 +95,12 @@ class EmundusViewDecision extends JViewLegacy
                 $userModel = new EmundusModelUsers();
 
                 $decision->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
-                $decision->fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
+                //$decision->fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
+                // get all fnums manually associated to user
+		        $groups = $userModel->getUserGroups($this->_user->id, 'Column');
+        		$fnum_assoc_to_groups = $userModel->getApplicationsAssocToGroups($groups);
+		        $fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
+		        $decision->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
                 $this->assignRef('code', $decision->code);
                 $this->assignRef('fnum_assoc', $decision->fnum_assoc);
 

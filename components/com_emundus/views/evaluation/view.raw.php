@@ -94,7 +94,12 @@ class EmundusViewEvaluation extends JViewLegacy
                 $userModel = new EmundusModelUsers();
 
                 $evaluation->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
-                $evaluation->fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
+                //$evaluation->fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
+                // get all fnums manually associated to user
+		        $groups = $userModel->getUserGroups($this->_user->id, 'Column');
+        		$fnum_assoc_to_groups = $userModel->getApplicationsAssocToGroups($groups);
+		        $fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
+		        $evaluation->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
                 $this->assignRef('code', $evaluation->code);
                 $this->assignRef('fnum_assoc', $evaluation->fnum_assoc);
 

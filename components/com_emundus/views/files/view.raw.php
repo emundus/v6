@@ -117,7 +117,13 @@ class EmundusViewFiles extends JViewLegacy
                 $userModel = new EmundusModelUsers();
 
                 $model->code = $userModel->getUserGroupsProgrammeAssoc($current_user->id);
-                $model->fnum_assoc = $userModel->getApplicantsAssoc($current_user->id);
+
+                // get all fnums manually associated to user
+		        $groups = $userModel->getUserGroups($current_user->id, 'Column');
+        		$fnum_assoc_to_groups = $userModel->getApplicationsAssocToGroups($groups);
+		        $fnum_assoc = $userModel->getApplicantsAssoc($current_user->id);
+		        $model->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
+
                 $this->assignRef('code', $model->code);
                 $this->assignRef('fnum_assoc', $model->fnum_assoc);
 
