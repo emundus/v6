@@ -1,5 +1,4 @@
 /.gitignore
-/.htaccess
 /.idea/*
 /administrator/cache/*
 /administrator/components/com_admin/*
