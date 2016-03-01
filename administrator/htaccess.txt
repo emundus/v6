@@ -1,6 +1,6 @@
 AuthName "Private area"
 AuthType Basic
-AuthUserFile "/home/sorbonne/sd/candidature/.htpasswd"
+AuthUserFile "/.htpasswd"
 <Limit GET POST>
 Require valid-user
 </Limit>
