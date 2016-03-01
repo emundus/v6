@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension method="upgrade" type="library" version="1.6">
+	<name>Gantry</name>
+	<libraryname>gantry</libraryname>
+	<description>Gantry Starting Template for Joomla! v4.1.29</description>
+    <creationDate>March 9, 2015</creationDate>
+    <author>RocketTheme, LLC</author>
+    <authorEmail>support@rockettheme.com</authorEmail>
+    <authorUrl>http://www.rockettheme.com</authorUrl>
+    <copyright>(C) 2005 - 2015 RocketTheme, LLC. All rights reserved.</copyright>
+    <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+    <version>4.1.29</version>
+	<files folder=".">
+        <folder>admin</folder>
+        <folder>assets</folder>
+        <folder>images</folder>
+        <folder>classes</folder>
+        <folder>core</folder>
+        <folder>ajax-models</folder>
+        <filename>autoload.php</filename>
+        <filename>gantry.config.php</filename>
+        <folder>libs</folder>
+        <folder>facets</folder>
+        <filename>index.html</filename>
+        <filename>gantry.php</filename>
+        <folder>tmpl</folder>
+        <folder>html</folder>
+        <folder>css</folder>
+        <filename>CREDITS.php</filename>
+        <folder>features</folder>
+        <filename>checksums</filename>
+        <filename>CHANGELOG.php</filename>
+        <folder>js</folder>
+    </files>
+    <!-- Extension Update Specification -->
+	<updateservers>
+		<server name="Gantry Framework Update Site" priority="1" type="extension">http://www.gantry-framework.org/updates/joomla16/gantry.xml</server>
+	</updateservers>
+</extension>
