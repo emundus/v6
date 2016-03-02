@@ -19,7 +19,7 @@ class JoomlaInstallerScript
 	/**
 	 * Method to update Joomla!
 	 *
-	 * @param   JInstallerFile $installer The class calling this method
+	 * @param   JInstallerFile  $installer  The class calling this method
 	 *
 	 * @return void
 	 */
@@ -36,6 +36,10 @@ class JoomlaInstallerScript
 		$this->updateDatabase();
 		$this->clearRadCache();
 		$this->updateAssets();
+
+		// VERY IMPORTANT! THIS METHOD SHOULD BE CALLED LAST, SINCE IT COULD
+		// LOGOUT ALL THE USERS
+		$this->flushSessions();
 	}
 
 	/**
@@ -49,7 +53,7 @@ class JoomlaInstallerScript
 
 		if (strpos($db->name, 'mysql') !== false)
 		{
-			$this->updateDatabaseMySQL();
+			$this->updateDatabaseMysql();
 		}
 
 		$this->uninstallEosPlugin();
@@ -60,7 +64,7 @@ class JoomlaInstallerScript
 	 *
 	 * @return void
 	 */
-	protected function updateDatabaseMySQL()
+	protected function updateDatabaseMysql()
 	{
 		$db = JFactory::getDbo();
 
@@ -1082,6 +1086,8 @@ class JoomlaInstallerScript
 			'/libraries/joomla/registry/format/json.php',
 			'/libraries/joomla/registry/format/php.php',
 			'/libraries/joomla/registry/format/xml.php',
+			// Joomla 3.3.1
+			'/administrator/templates/isis/html/message.php',
 			// Joomla! 3.4
 			'/administrator/components/com_tags/helpers/html/index.html',
 			'/administrator/components/com_tags/models/fields/index.html',
@@ -1472,6 +1478,58 @@ class JoomlaInstallerScript
 
 				return false;
 			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * If we migrated the session from the previous system, flush all the active sessions.
+	 * Otherwise users will be logged in, but not able to do anything since they don't have
+	 * a valid session
+	 *
+	 * @return  boolean
+	 */
+	public function flushSessions()
+	{
+		/**
+		 * The session may have not been started yet (e.g. CLI-based Joomla! update scripts). Let's make sure we do
+		 * have a valid session.
+		 */
+		JFactory::getSession()->restart();
+
+		// If $_SESSION['__default'] is no longer set we do not have a migrated session, therefore we can quit.
+		if (!isset($_SESSION['__default']))
+		{
+			return true;
+		}
+
+		$db = JFactory::getDbo();
+
+		try
+		{
+			switch ($db->name)
+			{
+				// MySQL database, use TRUNCATE (faster, more resilient)
+				case 'pdomysql':
+				case 'mysql':
+				case 'mysqli':
+					$db->truncateTable($db->qn('#__sessions'));
+					break;
+
+				// Non-MySQL databases, use a simple DELETE FROM query
+				default:
+					$query = $db->getQuery(true)
+						->delete($db->qn('#__sessions'));
+					$db->setQuery($query)->execute();
+					break;
+			}
+		}
+		catch (Exception $e)
+		{
+			echo JText::sprintf('JLIB_DATABASE_ERROR_FUNCTION_FAILED', $e->getCode(), $e->getMessage()) . '<br />';
+
+			return false;
 		}
 
 		return true;

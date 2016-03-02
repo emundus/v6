@@ -206,7 +206,7 @@ class JInstaller extends JAdapter
 	 *
 	 * @since   3.1
 	 */
-	public function getRedirectURL()
+	public function getRedirectUrl()
 	{
 		return $this->redirect_url;
 	}
@@ -220,7 +220,7 @@ class JInstaller extends JAdapter
 	 *
 	 * @since   3.1
 	 */
-	public function setRedirectURL($newurl)
+	public function setRedirectUrl($newurl)
 	{
 		$this->redirect_url = $newurl;
 	}
@@ -366,7 +366,7 @@ class JInstaller extends JAdapter
 
 				case 'extension':
 					// Get database connector object
-					$db = $this->getDBO();
+					$db = $this->getDbo();
 					$query = $db->getQuery(true);
 
 					// Remove the entry from the #__extensions table
@@ -2206,6 +2206,7 @@ class JInstaller extends JAdapter
 
 	/**
 	 * Fetches an adapter and adds it to the internal storage if an instance is not set
+	 * while also ensuring its a valid adapter name
 	 *
 	 * @param   string  $name     Name of adapter to return
 	 * @param   array   $options  Adapter options
@@ -2218,17 +2219,14 @@ class JInstaller extends JAdapter
 	 */
 	public function getAdapter($name, $options = array())
 	{
-		$adapter = $this->loadAdapter($name, $options);
+		$this->getAdapters($options);
 
-		if (!array_key_exists($name, $this->_adapters))
+		if (!$this->setAdapter($name, $this->_adapters[$name]))
 		{
-			if (!$this->setAdapter($name, $adapter))
-			{
-				return false;
-			}
+			return false;
 		}
 
-		return $adapter;
+		return $this->_adapters[$name];
 	}
 
 	/**
@@ -2338,7 +2336,7 @@ class JInstaller extends JAdapter
 		// Ensure the adapter type is part of the options array
 		$options['type'] = $adapter;
 
-		return new $class($this, $this->getDBO(), $options);
+		return new $class($this, $this->getDbo(), $options);
 	}
 
 	/**
