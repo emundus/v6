@@ -1,9 +1,10 @@
-/.gitignore
+/.gitignore.*
 /.idea/*
 /cache/*
 /installation/*
 /logs/*
 /tmp/*
+/administrator/cache/*
 /configuration.php
 /index.php
 /joomla.xml
