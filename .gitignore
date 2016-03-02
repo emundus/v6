@@ -1,14 +1,14 @@
 /.gitignore.*
 /.idea/*
+.idea/*
+.idea/workspace.xml
 /cache/*
 /installation/*
 /logs/*
 /tmp/*
+/stats/*
 /administrator/cache/*
 /configuration.php
-/index.php
-/joomla.xml
-/*.txt
 /templates/rt_afterburner2/css-compiled/*
 /images/emundus/files/*
 /images/emundus/letters/*
@@ -21,7 +21,3 @@ media/com_emundus/*.bak
 htaccess.BAK*
 php.ini
 /favicon.ico
-robots.txt.dist
-/stats/*
-.idea/*
-.idea/workspace.xml
