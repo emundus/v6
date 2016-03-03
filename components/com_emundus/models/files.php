@@ -1979,7 +1979,7 @@ where 1 order by ga.fnum asc, g.title';
                     }
                     elseif ($elt->element_plugin == 'databasejoin') {
                         $element_attribs = json_decode($elt->element_attribs);
-                        //$elt_array = json_decode(json_encode($elt), true); /*object to array*/
+                        $elt_array = json_decode(json_encode($elt), true); /*object to array*/
 
                         $select = '(SELECT GROUP_CONCAT(t.'.$element_attribs->join_val_column.' SEPARATOR ", ") 
                             FROM '.$element_attribs->join_db_name.' as t 
