@@ -2,14 +2,14 @@
 <extension version="3.4" client="administrator" type="language" method="upgrade">
 	<name>French_fr-FR</name>
 	<tag>fr-FR</tag>
-	<version>3.4.3.1</version>
-	<creationDate>02/07/2015</creationDate>
+	<version>3.4.7.1</version>
+	<creationDate>22/10/2015</creationDate>
 	<author>French translation team : joomla.fr</author>
 	<authorEmail>traduction@joomla.fr</authorEmail>
 	<authorUrl>http://joomla.fr</authorUrl>
 	<copyright>Copyright (C) 2005 - 2015 Joomla.fr and Open Source Matters, Inc. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-	<description>fr-FRsite language</description>
+	<description>fr-FR_admin language</description>
 	<files>
 		<filename>fr-FR.ini</filename>
 		<filename>fr-FR.com_admin.ini</filename>
