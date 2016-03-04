@@ -699,19 +699,13 @@ class EmundusControllerUsers extends JControllerLegacy {
 			if (is_numeric($user)) {
 
 				$u = JUser::getInstance($user);
-				try{
-					if(!$u->delete())
-					{
-						$res = false;
-						$msg = $u->getError();
-					}
-				}
-				catch(Exception $e)
+			
+				if(!$u->delete())
 				{
 					$res = false;
-					echo json_encode((object)array('status' => $res, 'msg' => $msg));
-					throw new JDatabaseException;
+					$msg = $u->getError();
 				}
+			
 			}
 		}
 		echo json_encode((object)array('status' => $res, 'msg' => $msg));
