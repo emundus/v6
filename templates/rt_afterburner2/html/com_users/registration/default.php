@@ -30,7 +30,7 @@ if (!empty($course) {
 	$campaigns = $campaign->getCampaignsByCourse($course);
 	$campaign_id = $campaigns['id'];
 }
-if(count($campaign_id) == 0 !empty($course) { 
+if(count($campaign_id) == 0 && !empty($course) { 
 	JFactory::getApplication()->enqueueMessage(JText::_('EMUNDUS_NO_CAMPAIGN'), 'error');
 	JLog::add('No available campaign', JLog::ERROR, 'com_emundus');
 }
