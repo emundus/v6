@@ -24,7 +24,7 @@ $jform = $app->getUserState('com_users.registration.data');
 
 $course = JRequest::getVar('course', null, 'GET', null, 0);
 
-if (!empty($course) {
+if (!empty($course)) {
 	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 	$campaign = new EmundusModelCampaign;
 	$campaigns = $campaign->getCampaignsByCourse($course);
