@@ -3,7 +3,7 @@
  * @package    eMundus
  * @subpackage Components
  *             components/com_emundus/emundus.php
- * @link       http://www.decisionpublique.fr
+ * @link       http://www.emundus.fr
  * @license    GNU/GPL
 */
  
@@ -51,7 +51,7 @@ class EmundusViewChecklist extends JViewLegacy
         $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
         $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus_application.css" );
 
-		$greeting = $this->get('Greeting');
+		//$greeting = $this->get('Greeting');
 		
 		$sent = $this->get('sent');
 		$confirm_form_url = $this->get('ConfirmUrl');
@@ -61,8 +61,16 @@ class EmundusViewChecklist extends JViewLegacy
 		$instructions = $this->get('Instructions');
 		$is_other_campaign = $this->get('isOtherActiveCampaign');
 		
-		$this->assignRef('title', $greeting->title);
-		$this->assignRef('text', $greeting->text);
+		if ($need == 0) {
+			$title = JText::_('APPLICATION_COMPLETED_TITLE');
+			$text = JText::_('APPLICATION_COMPLETED_TEXTE');
+		} else {
+			$title = JText::_('APPLICATION_INCOMPLETED_TITLE');
+			$text = JText::_('APPLICATION_INCOMPLETED_TEXTE');
+		}
+
+		$this->assignRef('title', $title);
+		$this->assignRef('text', $text);
 		$this->assignRef('need', $need);
 		$this->assignRef('sent', $sent);
 		$this->assignRef('confirm_form_url', $confirm_form_url);

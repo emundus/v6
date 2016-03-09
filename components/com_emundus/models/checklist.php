@@ -20,6 +20,8 @@ class EmundusModelChecklist extends JModelList
 	var $_user = null;
 	var $_db = null;
 	var $_need = 0;
+	var $_forms = 0;
+	var $_attachments = 0;
 
 	function __construct()
 	{
@@ -46,7 +48,7 @@ class EmundusModelChecklist extends JModelList
 		$query = 'SELECT id, title, text FROM #__emundus_setup_checklist WHERE page = "checklist" ';
 		$note = 0;//$this->getResult();
 		if($note && is_numeric($note) && $note>1) $this->_need = $note;
-		$query .= 'AND whenneed = '.$this->_need . ' OR whenneed='.$this->_user->status;
+		$query .= 'AND (whenneed = '.$this->_need . ' OR whenneed='.$this->_user->status.')';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObject();
 	}
@@ -66,7 +68,10 @@ class EmundusModelChecklist extends JModelList
 			$query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE user = '.$this->_user->id.' AND fnum like '.$this->_db->Quote($this->_user->fnum);
 			$this->_db->setQuery( $query );
 			$form->nb = $this->_db->loadResult();
-			if ($form->nb==0) $this->_need = 1;
+			if ($form->nb==0) {
+				$this->_forms = 1;
+				$this->_need = $this->_attachments=1?1:0;
+			}
 		}
 		return $forms;
 	}
@@ -88,7 +93,10 @@ class EmundusModelChecklist extends JModelList
 				$query = 'SELECT * FROM #__emundus_uploads WHERE user_id = '.$this->_user->id.' AND attachment_id = '.$attachment->id. ' AND fnum like '.$this->_db->Quote($this->_user->fnum);
 				$this->_db->setQuery($query);
 				$attachment->liste = $this->_db->loadObjectList(); // or die($this->_db->getErrorMsg());
-			} elseif($attachment->mandatory==1) $this->_need = 1;
+			} elseif($attachment->mandatory==1) {
+				$this->_attachments = 1;
+				$this->_need = $this->_forms=1?1:0;
+			}
 		}
 		return $attachments;
 	}
