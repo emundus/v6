@@ -63,10 +63,10 @@ class EmundusViewChecklist extends JViewLegacy
 		
 		if ($need == 0) {
 			$title = JText::_('APPLICATION_COMPLETED_TITLE');
-			$text = JText::_('APPLICATION_COMPLETED_TEXTE');
+			$text = JText::_('APPLICATION_COMPLETED_TEXT');
 		} else {
 			$title = JText::_('APPLICATION_INCOMPLETED_TITLE');
-			$text = JText::_('APPLICATION_INCOMPLETED_TEXTE');
+			$text = JText::_('APPLICATION_INCOMPLETED_TEXT');
 		}
 
 		$this->assignRef('title', $title);
