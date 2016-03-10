@@ -17,10 +17,10 @@ defined('_JEXEC') or die('RESTRICTED');
     <td width="20%"><p align="center"><strong><?php echo JText::_("EMUNDUS_COMPONENT"); ?></strong></p>
       <p align="center"><?php echo JText::_("GESTIONNAIRE_CANDIDATURE"); ?></p>
       <p align="center">Version 6.1 - 06/2015</p>
-      <p align="center"><?php echo JText::_("AUTHOR"); ?> 
+      <p align="center"><h4><?php echo JText::_("AUTHOR"); ?> </h4>
         <em>Benjamin Rivalland</em>
       </p>
-      <p align="center"><?php echo JText::_("DEVELOPER"); ?> 
+      <p align="center"><h4><?php echo JText::_("DEVELOPERS"); ?> </h4>
         <em>Benjamin Rivalland</em>,<br />
         <em>Jonas Lerebours</em>,<br>
         <em>Mathilde Guillossou</em>,<br>
@@ -28,7 +28,7 @@ defined('_JEXEC') or die('RESTRICTED');
         <em>Elisabeth Reculé</em>,<br>
         <em>Robin Colet</em>,<br>
         <em>Yohan Durand</em>,<br>
-        <em>Quentin Lagadec </em>,<br>
+        <em>Quentin Lagadec</em><br>
       </p>
     </td>
   </tr>
