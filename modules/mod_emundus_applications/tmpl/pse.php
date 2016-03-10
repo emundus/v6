@@ -1,7 +1,7 @@
 <?php
 /**
  * @package		Joomla.Site
- * @subpackage	mod_emundus_applications
+ * @subpackage	eMundus
  * @copyright Copyright (C) 2015 emundus.fr. All rights reserved.
  * @license		GNU General Public License version 2 or later; see LICENSE.txt
  */

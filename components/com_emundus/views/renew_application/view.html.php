@@ -1,11 +1,9 @@
 <?php
 /**
- * @package    eMundus
- * @subpackage Components
- *             components/com_emundus/renew_application.php
- * @link       http://www.decisionpublique.fr
- * @license    GNU/GPL
- * @author     Benjamin Rivalland
+ * @package    Joomla
+ * @subpackage eMundus
+ * @copyright Copyright (C) 2015 emundus.fr. All rights reserved.
+ * @license   GNU General Public License version 2 or later; see LICENSE.txt
 */
  
 // no direct access
@@ -15,11 +13,12 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport( 'joomla.application.component.view');
  
 /**
- * HTML View class for the Emundus Component
+ * View class to file e new application
  *
- * @package    Emundus
- */
- 
+ * @package     Joomla
+ * @subpackage  eMundus
+ * @since       6.0
+ */ 
 class EmundusViewRenew_application extends JViewLegacy
 {
 	var $_user = null;
@@ -47,6 +46,10 @@ class EmundusViewRenew_application extends JViewLegacy
 		
 		$document = JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
+
+		$eMConfig 					= JComponentHelper::getParams('com_emundus');
+		$applicant_can_renew 		= $eMConfig->get('applicant_can_renew', '0');
+		$this->assignRef('applicant_can_renew', $applicant_can_renew);
 
 		/*$current_user = JFactory::getUser();
 		$statut = $this->get('statut');
