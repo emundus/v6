@@ -7,8 +7,10 @@
  */
 // no direct access
 defined('_JEXEC') or die;
+
+echo $description;
 ?>
-<?php if ($show_add_application && ($position_add_application == 0) || $position_add_application == 2) : ?>
+<?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
   <a class="btn btn-success" href="<?php echo JURI::Base(); ?>index.php?option=com_emundus&view=renew_application"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
 <hr>
 <?php endif; ?>
