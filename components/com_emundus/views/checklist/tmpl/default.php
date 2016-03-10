@@ -37,6 +37,7 @@ if(!$this->sent) : ?>
 </p>
 <?php endif; ?>
 <?php if (count($this->attachments) > 0) :?>
+<form action="index.php?option=com_emundus&task=upload&Itemid=<?php echo $itemid; ?>" class="dropzone"></form>
 <form id="checklistForm" name="checklistForm" onSubmit="return OnSubmitForm();"  method="post" enctype="multipart/form-data">
     <div id="attachment_list">
         <h3><?php echo JText::_('ATTACHMENTS'); ?></h3>

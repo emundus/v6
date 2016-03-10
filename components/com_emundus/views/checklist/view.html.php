@@ -48,7 +48,8 @@ class EmundusViewChecklist extends JViewLegacy
 
 		$document = JFactory::getDocument();
         $document->addScript( JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
-        $document->addScript( JURI::base()."media/com_emundus/lib/dropzone.js" );
+        $document->addScript( JURI::base()."media/com_emundus/lib/dropzone/js/dropzone.js" );
+        $document->addStyleSheet( JURI::base()."media/com_emundus/lib/dropzone/css/dropzone.css" );
         $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
         $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus_application.css" );
 
