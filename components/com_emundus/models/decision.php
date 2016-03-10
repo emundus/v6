@@ -7,9 +7,9 @@
  * @package        Joomla
  * @subpackage    eMundus
  * @link        http://www.emundus.fr
- * @copyright    Copyright (C) 2008 - 2014 Décision Publique. All rights reserved.
+ * @copyright    Copyright (C) 2015 emundus.fr. All rights reserved.
  * @license        GNU/GPL
- * @author        Decision Publique - Yoan Durand
+ * @author        Yoan Durand
  */
 
 // No direct access
@@ -1364,8 +1364,8 @@ class EmundusModelDecision extends JModelList
         }
         catch(Exception $e)
         {
+		    JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
 	}
 

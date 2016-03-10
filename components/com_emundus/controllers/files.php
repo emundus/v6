@@ -1,9 +1,8 @@
 <?php
 /**
- * @package    eMundus
- * @subpackage Components
- *             components/com_emundus/emundus.php
- * @link       http://www.decisionpublique.fr
+ * @package    Joomla
+ * @subpackage eMundus
+ * @link       http://www.emundus.fr
  * @license    GNU/GPL
  * @author     Benjamin Rivalland
  */
@@ -24,8 +23,8 @@ jimport('joomla.application.component.controller');
 /**
  * eMundus Component Controller
  *
- * @package    Joomla.Tutorials
- * @subpackage Components
+ * @package    Joomla
+ * @subpackage eMundus
  */
 //error_reporting(E_ALL);
 /**

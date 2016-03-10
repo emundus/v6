@@ -1,15 +1,12 @@
 <?php
 /**
- * @package    Joomla
- * @subpackage eMundus
- *             components/com_emundus/emundus.php
- * @link       http://www.decisionpublique.fH
- * @license    GNU/GPL
- * @author     Jonas Lerebours - Benjamin Rivalland
+ * @package     Joomla
+ * @subpackage  eMundus
+ * @copyright   Copyright (C) 2015 emundus.fr. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 // No direct access
-
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
@@ -202,17 +199,17 @@ class EmundusController extends JControllerLegacy {
             if (is_numeric($fnum) && !empty($fnum)) {
                 $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post);
             
-				if($doc_post) {
-					$tmpArray = array();
-					$model = $this->getModel('application');
-					$files = $model->getAttachmentsByFnum($fnum);
+                if($doc_post) {
+                    $tmpArray = array();
+                    $model = $this->getModel('application');
+                    $files = $model->getAttachmentsByFnum($fnum);
 
-					EmundusHelperExport::getAttchmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
-				}
-				if($eval_post) {
-					EmundusHelperExport::getEvalPDF($files_list,$fnum);
-				}
-			}
+                    EmundusHelperExport::getAttchmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
+                }
+                if($eval_post) {
+                    EmundusHelperExport::getEvalPDF($files_list,$fnum);
+                }
+            }
         }
 
         // all PDF in one file

@@ -1,12 +1,9 @@
 <?php
 /**
- * Profile Model for eMundus Component
- * 
- * @package    Joomla
- * @subpackage eMundus
- *             components/com_emundus/emundus.php
- * @link       http://www.decisionpublique.fr
- * @license    GNU/GPL
+ * @package     Joomla
+ * @subpackage  eMundus
+ * @copyright   Copyright (C) 2015 emundus.fr. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
  
 // No direct access
@@ -36,8 +33,17 @@ class EmundusModelProfile extends JModelList
 	function getProfile($p)
 	{
 		$query = 'SELECT * FROM #__emundus_setup_profiles WHERE id='.mysql_real_escape_string($p);
-		$this->_db->setQuery( $query );
-		return $this->_db->loadObject();
+		
+		try
+        {
+            $this->_db->setQuery( $query );
+			return $this->_db->loadObject();
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
 	}
 
 	function getProfileByApplicant($aid)
@@ -47,8 +53,17 @@ class EmundusModelProfile extends JModelList
 						FROM #__emundus_users AS eu 
 						LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile 
 						WHERE eu.user_id = '.$aid;
-		$this->_db->setQuery( $query );
-		return $this->_db->loadAssoc();
+		
+		try
+        {
+            $this->_db->setQuery( $query );
+			return $this->_db->loadAssoc();
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
 	}
 	
 	function getAttachments($p)
@@ -57,8 +72,17 @@ class EmundusModelProfile extends JModelList
 					FROM #__emundus_setup_attachments AS attachment
 					LEFT JOIN #__emundus_setup_attachment_profiles AS profile ON profile.attachment_id = attachment.id AND profile.profile_id='.mysql_real_escape_string($p).' 
 					ORDER BY attachment.ordering';
-		$this->_db->setQuery( $query );
-		return $this->_db->loadObjectList();
+		
+		try
+        {
+            $this->_db->setQuery( $query );
+			return $this->_db->loadObjectList();
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
 	}
 	
 	function getForms($p)
@@ -67,46 +91,100 @@ class EmundusModelProfile extends JModelList
 					LEFT JOIN #__menu AS menu ON fbtable.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)
 					AND menu.menutype=(SELECT profile.menutype FROM #__emundus_setup_profiles AS profile WHERE profile.id = '.mysql_real_escape_string($p).')
 					WHERE fbtable.created_by_alias = "form" ORDER BY selected DESC, menu.lft ASC, fbtable.label ASC';
-		$this->_db->setQuery( $query );
-		return $this->_db->loadObjectList();
+		
+		try
+        {
+            $this->_db->setQuery( $query );
+			return $this->_db->loadObjectList();
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
 	}
 	
 	function isProfileUserSet($uid) {
 		$query = 'SELECT count(user_id) as cpt, profile FROM #__emundus_users WHERE user_id = '.$uid. ' GROUP BY user_id';
-		$this->_db->setQuery( $query );
-		$res = $this->_db->loadAssocList();
+		
+		try
+        {
+            $this->_db->setQuery( $query );
+			$res = $this->_db->loadAssocList();
 
-		return $res[0];
+			return $res[0];
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
 	}
 
 	function updateProfile($uid, $campaign) {
 		$query = 'UPDATE #__emundus_users SET profile='.$campaign->profile_id.', schoolyear="'.$campaign->year.'" WHERE user_id='.$uid;
-		$this->_db->setQuery( $query ); 
-		return $this->_db->execute();
+		
+		try
+        {
+            $this->_db->setQuery( $query ); 
+			return $this->_db->execute();
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
 	}
 
 	function getCurrentCampaignByApplicant($uid) {
 		$query = 'SELECT campaign_id FROM #__emundus_campaign_candidature WHERE applicant_id = '.$uid. ' ORDER BY date_time DESC';
-		$this->_db->setQuery( $query );
-		$res = $this->_db->loadResult();
+		
+		try
+        {
+            $this->_db->setQuery( $query );
+			$res = $this->_db->loadResult();
 
-		return $res;
+			return $res;
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
 	}
 
 	function getCurrentIncompleteCampaignByApplicant($uid) {
 		$query = 'SELECT campaign_id FROM #__emundus_campaign_candidature WHERE (submitted=0 OR submitted IS NULL) AND applicant_id = '.$uid. ' ORDER BY date_time DESC';
-		$this->_db->setQuery( $query );
-		$res = $this->_db->loadResult();
 
-		return $res;
+		try
+        {
+			$this->_db->setQuery( $query );
+			$res = $this->_db->loadResult();
+
+			return $res;
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
 	}
 
 	function getCurrentCompleteCampaignByApplicant($uid) {
 		$query = 'SELECT campaign_id FROM #__emundus_campaign_candidature WHERE submitted=1 AND applicant_id = '.$uid. ' ORDER BY date_time DESC';
-		$this->_db->setQuery( $query );
-		$res = $this->_db->loadResult();
+		
+		try
+        {
+			$this->_db->setQuery( $query );
+			$res = $this->_db->loadResult();
 
-		return $res;
+			return $res;
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
 	}
 
 	function getCurrentCampaignInfoByApplicant($uid) {
@@ -115,18 +193,36 @@ class EmundusModelProfile extends JModelList
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON ecc.campaign_id = esc.id
 					LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = esc.profile_id
 					WHERE ecc.applicant_id = '.$uid. ' ORDER BY ecc.date_time DESC';
-		$this->_db->setQuery( $query );
-		$res = $this->_db->loadAssoc();
+		
+		try
+        {
+			$this->_db->setQuery( $query );
+			$res = $this->_db->loadAssoc();
 
-		return $res;
+			return $res;
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
 	}
 
 	function getCampaignById($id) {
 		$query = 'SELECT * FROM  #__emundus_setup_campaigns AS esc WHERE id='.$id;
-		$this->_db->setQuery( $query );
-		$res = $this->_db->loadAssoc();
+		
+		try
+        {
+			$this->_db->setQuery( $query );
+			$res = $this->_db->loadAssoc();
 
-		return $res;
+			return $res;
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
 	}
 
 	function getProfileByCampaign($id) {
@@ -134,9 +230,18 @@ class EmundusModelProfile extends JModelList
 					FROM  #__emundus_setup_profiles AS esp 
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.profile_id = esp.id
 					WHERE esc.id='.$id;
-		$this->_db->setQuery( $query );
-		$res = $this->_db->loadAssoc();
-		return $res;
+		
+		try
+        {
+			$this->_db->setQuery( $query );
+			$res = $this->_db->loadAssoc();
+			return $res;
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
 	}
 
 		/**
@@ -156,7 +261,8 @@ class EmundusModelProfile extends JModelList
 	        }
 	        catch(Exception $e)
 	        {
-	            throw new $e->getMessage();
+	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            	JError::raiseError(500, $e->getMessage());
 	        }
 		} 
 		else 
@@ -187,7 +293,8 @@ class EmundusModelProfile extends JModelList
 	        }
 	        catch(Exception $e)
 	        {
-	            throw new $e->getMessage();
+	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            	JError::raiseError(500, $e->getMessage());
 	        }
         }
         else
@@ -210,10 +317,25 @@ class EmundusModelProfile extends JModelList
         }
         catch(Exception $e)
         {
-            throw new $e->getMessage();
+            $query = 'SELECT ecc.*, esc.*, ess.*
+					FROM #__emundus_campaign_candidature AS ecc 
+					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id 
+					LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
+					LEFT JOIN #__emundus_personal_detail as epd on epd.fnum = ecc.fnum
+					WHERE ecc.fnum like '.$this->_db->Quote($fnum); 
+			try
+	        {
+	            $this->_db->setQuery( $query );
+				$res = $this->_db->loadAssoc();
+	        }
+	        catch(Exception $e)
+	        {
+	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+	            JError::raiseError(500, $e->getMessage());
+	        }
         }
 
-		return $res;
+        return $res;
 	}
 
 	function getCandidatureByFnum($fnum) {
@@ -222,9 +344,18 @@ class EmundusModelProfile extends JModelList
 
 	function isApplicationDeclared($aid) {
 		$query = 'SELECT COUNT(*) FROM #__emundus_declaration WHERE user = '.$aid;
-		$this->_db->setQuery( $query );
-		$res = $this->_db->loadResult();
-		return $res>0?true:false;
+		
+		try
+        {
+			$this->_db->setQuery( $query );
+			$res = $this->_db->loadResult();
+			return $res>0?true:false;
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
 	}
 
 }
