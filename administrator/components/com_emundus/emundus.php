@@ -2,7 +2,7 @@
 /**
 * @package Joomla
 * @subpackage eMundus
-* @copyright Copyright (C) 2012 Benjamin Rivalland. All rights reserved.
+* @copyright Copyright (C) 2015 emundus.fr. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
 */
 
@@ -40,7 +40,7 @@ if (in_array( 'suhosin', get_loaded_extensions()) ) {
 // Require the base controller
 require_once( JPATH_COMPONENT.DS.'controller.php' );
 
-$controllers = explode(',', 'panel, actions, jobs');
+$controllers = explode(',', 'panel, actions');
 if(!JRequest::getWord('controller')){
 	JRequest::setVar( 'controller', $controllers[0] );
 }

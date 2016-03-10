@@ -1,13 +1,10 @@
 ﻿<?php
 /**
- * @package   	eMundus
- * @copyright 	Copyright © 2009-2012 Benjamin Rivalland. All rights reserved.
- * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
- * eMundus is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
- */
+* @package Joomla
+* @subpackage eMundus
+* @copyright Copyright (C) 2015 emundus.fr. All rights reserved.
+* @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
+*/
 
 defined('_JEXEC') or die('RESTRICTED');
 

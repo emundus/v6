@@ -1,12 +1,10 @@
 <?php
-
 /**
- * @version     1.0.0
- * @package     com_emundus
- * @copyright   Copyright (C) 2015. Tous droits réservés.
- * @license     GNU General Public License version 2 ou version ultérieure ; Voir LICENSE.txt
- * @author      emundus <dev@emundus.fr> - http://www.emundus.fr
- */
+* @package Joomla
+* @subpackage eMundus
+* @copyright Copyright (C) 2015 emundus.fr. All rights reserved.
+* @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
+*/
 // No direct access
 defined('_JEXEC') or die;
 

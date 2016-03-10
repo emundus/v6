@@ -1,7 +1,7 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: yoan
- * Date: 28/01/15
- * Time: 16:29
- */
+* @package Joomla
+* @subpackage eMundus
+* @copyright Copyright (C) 2015 emundus.fr. All rights reserved.
+* @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
+*/

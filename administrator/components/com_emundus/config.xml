@@ -79,6 +79,7 @@
 			type="spacer"
 			hr="true"
 			/>
+<!--
 		<field name="reminder" type="text" default="30" label="NUMBER_OF_DAYS_BETWEEN_EACH_REMIND" description="NUMBER_OF_DAYS_BETWEEN_EACH_REMIND_DESC" />
 		<field name="reminder_mail_id" type="text" default="" label="EMAIL_SENT_TO_APPLICANTS" description="EMAIL_SENT_TO_APPLICANTS_DESC" />
 		<field name="particular_remind" type="text" default="14,7,1" label="PARTICULAR_REMIND" description="PARTICULAR_REMIND_DESC" />
@@ -98,10 +99,11 @@
 			hr="true"
 			/>
 		<field name="keyid" type="text" label="Key id for the reminder email" description="REMINDERKEY" /> 
-		<field name="reference_table" type="text" label="Reference table" description="REFERENCE_TABLE" />
-		<field name="reference_field" type="text" label="Reference fiels" description="REFERENCE_FIELD" />
-		<field name="expert_fabrikformid" type="text" default="110" label="Fabrik form ID for expert" description="EXPERT_FIELD" />
-		<field name="expert_document_id" type="text" default="36" label="Document ID to upload in expert Fabrik form" description="EXPERT_DOCUMENT_FIELD" />
+		<field name="reference_table" type="text" label="COM_EMUNDUS_REFERENCE_TABLE" description="COM_EMUNDUS_REFERENCE_TABLE_DESC" />
+		<field name="reference_field" type="text" label="COM_EMUNDUS_REFERENCE_FIELD" description="COM_EMUNDUS_REFERENCE_FIELD_DESC" />
+-->
+		<field name="expert_fabrikformid" type="text" default="110" label="COM_EMUNDUS_EXPERT_FIELD" description="COM_EMUNDUS_EXPERT_FIELD_DESC" />
+		<field name="expert_document_id" type="text" default="36" label="COM_EMUNDUS_EXPERT_DOCUMENT_FIELD" description="COM_EMUNDUS_EXPERT_DOCUMENT_FIELD_DESC" />
     </fieldset>
 
 	<fieldset addfieldpath="/administrator/components/com_emundus/models/fields" label="COM_EMUNDUS_PDF" name="pdf" description="COM_EMUNDUS_PDF_DESC" >

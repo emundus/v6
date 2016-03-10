@@ -1,10 +1,10 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: yoan
- * Date: 28/01/15
- * Time: 16:31
- */
+* @package Joomla
+* @subpackage eMundus
+* @copyright Copyright (C) 2015 emundus.fr. All rights reserved.
+* @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
+*/
 defined('_JEXEC') or die('RESTRICTED');
 
 jimport('joomla.application.component.view');
@@ -22,7 +22,18 @@ class EmundusViewActions extends JViewLegacy
 
 	function display($tpl = null)
 	{
-		if(!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) die(JText::_("ACCESS_DENIED"));
+		if(!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) 
+			die(JText::_("ACCESS_DENIED"));
+
+		JHTML::stylesheet( 'emundus.css', 'administrator/components/com_emundus/assets/css/' );
+
+		$document = JFactory::getDocument();
+		$document->setTitle(JText::_('COM_EMUNDUS_TITLE') . ' :: ' .JText::_('COM_EMUNDUS_CONTROL_PANEL'));
+		
+		// Set toolbar items for the page
+		JToolBarHelper::title( JText::_('COM_EMUNDUS_TITLE') .' :: '. JText::_( 'COM_EMUNDUS_HEADER' ), 'emundus' );
+		JToolBarHelper::preferences('com_emundus', '580', '750');
+		JToolBarHelper::help( 'screen.cpanel', true);
 
 		$model= $this->getModel('Actions');
 
