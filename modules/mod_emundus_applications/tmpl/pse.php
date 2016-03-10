@@ -2,7 +2,7 @@
 /**
  * @package		Joomla.Site
  * @subpackage	mod_emundus_applications
- * @copyright	Copyright (C) 2005 - 2014 Open Source Matters, Inc. All rights reserved.
+ * @copyright Copyright (C) 2015 emundus.fr. All rights reserved.
  * @license		GNU General Public License version 2 or later; see LICENSE.txt
  */
 // no direct access
@@ -34,7 +34,7 @@ echo $description;
  <?php endforeach;  ?>
 </div> 
 <?php endif; ?>
-<?php if ($show_add_application && $position_add_application > 0) : ?>
+<?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
   <a class="btn btn-success" href="<?php echo JURI::Base(); ?>index.php?option=com_emundus&view=renew_application"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
 <hr>
 <?php endif; ?>
