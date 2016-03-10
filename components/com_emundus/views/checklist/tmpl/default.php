@@ -13,10 +13,10 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
         <legend><?php echo $this->need<2?JText::_('CHECKLIST'):JText::_('RESULTS'); ?></legend>
         <div class = "<?php echo $this->need?'checklist'.$this->need:'checklist'.'0'; ?>" id="info_checklist">
             <h2><?php echo $this->title; ?></h2>
-			<?php 
+            <?php 
                 if ($this->sent && count($this->result) == 0) 
                     echo '<h2>'.JText::_('APPLICATION_SENT').'</h2>';
-				else 
+                else 
                     echo $this->text;
     
             if(!$this->need) { 
@@ -31,8 +31,8 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 if(!$this->sent) : ?>
 <p>
 <div id="instructions">
-	<h3><?php echo $this->instructions->title; ?></h3>
-	<?php echo $this->instructions->text; ?>
+    <h3><?php echo $this->instructions->title; ?></h3>
+    <?php echo $this->instructions->text; ?>
 </div>
 </p>
 <?php endif; ?>
@@ -78,15 +78,48 @@ if(!$this->sent) : ?>
                         $div .= '</td>
                         <td>';
                         $div .= empty($item->description)?JText::_('NO_DESC'):$item->description;
-                        $div .= '</td></tr>'; 	
+                        $div .= '</td></tr>';   
                     } 
             if ($attachment->nb<$attachment->nbmax || $user->profile<=4) { 
-                $div .= '<tr><td><input type="hidden" name="attachment[]" value="'.$attachment->id .'"/><input type="hidden" name="label[]" value="'.$attachment->lbl.'"/><input type="file" name="nom[]" size=15%/><br />'.JText::_('SHORT_DESC').'<br /><input type="text" name="description[]" size=35 /></td></tr><tr><td colspan="2"><h6>'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'</h6><em>'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</em></td></tr></tbody><tfoot><tr><td><input class="button" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/></td></tr></tfoot>';
+                $div .= '
+            <tr>
+                <td>
+                <input type="hidden" name="attachment[]" value="'.$attachment->id .'"/><input type="hidden" name="label[]" value="'.$attachment->lbl.'"/>
+                <div class="input-group">
+                    <span class="input-group-btn">
+                        <span class="btn btn-primary btn-file">
+                            '.JText::_('SELECT_FILE_TO_UPLOAD').'<input type="file" name="nom[]" />
+                        </span>
+                        <input type="text" class="form-control" readonly="">
+                    </span>
+                    <input type="text" class="form-control" name="description[]" placeholder="'.JText::_('SHORT_DESC').'" />
+                </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                <h6>'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'</h6><em>'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</em>
+                </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td>
+                <input class="button" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/>
+                </td>
+            </tr>
+            </tfoot>';
             } else { 
-                $div .= '<tr><td colspan="2"><p class="description">'. JText::_('NO_MORE').' '.$attachment->value .'<br />'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</p></td></tr></tbody>';
+                $div .= '
+            <tr>
+                <td colspan="2">
+                <p class="description">'. JText::_('NO_MORE').' '.$attachment->value .'<br />'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</p>
+                </td>
+            </tr>
+            </tbody>';
             }
             $div .='</table></fieldset>'; 
-            if ($attachment->mandatory)	
+            if ($attachment->mandatory) 
                 $attachment_list_mand .= $div;
             else 
                 $attachment_list_opt .= $div;
@@ -105,6 +138,28 @@ if(!$this->sent) : ?>
 <?php endif; ?>
 
 <script>
+$(document).on('change', '.btn-file :file', function() {
+  var input = $(this),
+      numFiles = input.get(0).files ? input.get(0).files.length : 1,
+      label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+  input.trigger('fileselect', [numFiles, label]);
+});
+
+$(document).ready( function() {
+    $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
+        
+        var input = $(this).parents('.input-group').find(':text'),
+            log = numFiles > 1 ? numFiles + ' <?php echo JText::_("FILES_SELECTED"); ?>' : label;
+        
+        if( input.length ) {
+            input.val(log);
+        } else {
+            if( log ) alert(log);
+        }
+        
+    });
+});
+
 $(document).on('click', '.em_form .document', function(f)
 { 
     var id = $(this).attr('id');
@@ -116,16 +171,16 @@ function toggleVisu(baliseId)
   {
   if (document.getElementById && document.getElementById(baliseId) != null)
     {
-	if (document.getElementById(baliseId).style.visibility=='visible')
-		{
-		document.getElementById(baliseId).style.visibility='hidden';
-		document.getElementById(baliseId).style.display='none';
-		}
-	else
-		{
-		document.getElementById(baliseId).style.visibility='visible';
-		document.getElementById(baliseId).style.display='block';
-		}
+    if (document.getElementById(baliseId).style.visibility=='visible')
+        {
+        document.getElementById(baliseId).style.visibility='hidden';
+        document.getElementById(baliseId).style.display='none';
+        }
+    else
+        {
+        document.getElementById(baliseId).style.visibility='visible';
+        document.getElementById(baliseId).style.display='block';
+        }
     }
   }
 /*
@@ -135,18 +190,18 @@ function toggleVisu(baliseId)
 <?php } ?>
 */
 function OnSubmitForm() { 
-	var btn = document.getElementsByName(document.pressed); 
+    var btn = document.getElementsByName(document.pressed); 
     for(i=0 ; i<btn.length ; i++) {
         btn[i].disabled="disabled";
         btn[i].value="<?php echo JText::_('SENDING_ATTACHMENT'); ?>";
     }
-	switch(document.pressed) {
-		case 'sendAttachment': 
-			document.checklistForm.action ="index.php?option=com_emundus&task=upload&Itemid=<?php echo $itemid; ?>" 
-		break;
-		default: return false;
-	}
-	return true;
+    switch(document.pressed) {
+        case 'sendAttachment': 
+            document.checklistForm.action ="index.php?option=com_emundus&task=upload&Itemid=<?php echo $itemid; ?>" 
+        break;
+        default: return false;
+    }
+    return true;
 }
 </script>
 <p></p>
