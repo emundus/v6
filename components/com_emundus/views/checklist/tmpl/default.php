@@ -71,7 +71,7 @@ if(!$this->sent) : ?>
                         } 
                         $div .= '&nbsp;-&nbsp;' ;
                         if($item->can_be_deleted==1) {
-                        $div .= '<a href="?option=com_emundus&task=delete&aid='.$item->id .'&Itemid='.$itemid.'"><img src="media/com_emundus/images/icones/trashcan_full.png"  style="vertical-align:middle" alt="delete"/>'.JText::_('DELETE').'</a>';
+                        $div .= '<a href="?option=com_emundus&task=delete&aid='.$item->id .'&Itemid='.$itemid.'#a'.$attachment->id .'"><img src="media/com_emundus/images/icones/trashcan_full.png"  style="vertical-align:middle" alt="delete"/>'.JText::_('DELETE').'</a>';
                         } 
                         else { 
                         $div .= JText::_('CANT_DELETE'); 
@@ -90,14 +90,12 @@ if(!$this->sent) : ?>
                 <input type="hidden" name="label" value="'.$attachment->lbl.'"/>
                 <div class="input-group">
                     <span class="input-group-btn">
-                        <span class="btn btn-primary btn-file">
-                            '.JText::_('SELECT_FILE_TO_UPLOAD').'<input type="file" name="file" />
-                        </span>
+                          <input type="file" name="file" />
                         <input type="hidden" class="form-control" readonly="">
                     <input type="text" class="form-control" name="description" placeholder="'.JText::_('SHORT_DESC').'" />
-                    
-                    </span>
                     <input class="btn btn-success" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/>
+                    </span>
+                    
                 </div>
                 </form>
                 </td>
