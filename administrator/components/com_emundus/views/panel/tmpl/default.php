@@ -17,8 +17,11 @@ defined('_JEXEC') or die('RESTRICTED');
     <td width="20%"><p align="center"><strong><?php echo JText::_("EMUNDUS_COMPONENT"); ?></strong></p>
       <p align="center"><?php echo JText::_("GESTIONNAIRE_CANDIDATURE"); ?></p>
       <p align="center">Version 6.1 - 06/2015</p>
-      <p align="center"><?php echo JText::_("AUTHOR"); ?> <em>Benjamin Rivalland </em></p>
-      <p align="center"><?php echo JText::_("DEVELOPER"); ?> <em>Benjamin Rivalland (2008-2013)</em>,<br />
+      <p align="center"><?php echo JText::_("AUTHOR"); ?> 
+        <em>Benjamin Rivalland</em>
+      </p>
+      <p align="center"><?php echo JText::_("DEVELOPER"); ?> 
+        <em>Benjamin Rivalland</em>,<br />
         <em>Jonas Lerebours</em>,<br>
         <em>Mathilde Guillossou</em>,<br>
         <em>Riwal Le Buhan</em>,<br>
@@ -26,7 +29,8 @@ defined('_JEXEC') or die('RESTRICTED');
         <em>Robin Colet</em>,<br>
         <em>Yohan Durand</em>,<br>
         <em>Quentin Lagadec </em>,<br>
-      </p></td>
+      </p>
+    </td>
   </tr>
 </table>
 </body></html>
