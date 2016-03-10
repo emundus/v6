@@ -37,8 +37,8 @@ if(!$this->sent) : ?>
 </p>
 <?php endif; ?>
 <?php if (count($this->attachments) > 0) :?>
-<form action="index.php?option=com_emundus&task=upload&Itemid=<?php echo $itemid; ?>" class="dropzone"></form>
-<form id="checklistForm" name="checklistForm" onSubmit="return OnSubmitForm();"  method="post" enctype="multipart/form-data">
+
+<!--<form id="checklistForm" name="checklistForm" onSubmit="return OnSubmitForm();"  method="post" enctype="multipart/form-data">-->
     <div id="attachment_list">
         <h3><?php echo JText::_('ATTACHMENTS'); ?></h3>
         <h4><?php echo JText::_('UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('BYTES'); ?></h4>
@@ -85,16 +85,21 @@ if(!$this->sent) : ?>
                 $div .= '
             <tr>
                 <td>
-                <input type="hidden" name="attachment[]" value="'.$attachment->id .'"/><input type="hidden" name="label[]" value="'.$attachment->lbl.'"/>
+                <form name="checklistForm" action="index.php?option=com_emundus&task=upload&Itemid='.$itemid.'" class="dropzone" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="attachment" value="'.$attachment->id .'"/>
+                <input type="hidden" name="label" value="'.$attachment->lbl.'"/>
                 <div class="input-group">
                     <span class="input-group-btn">
                         <span class="btn btn-primary btn-file">
-                            '.JText::_('SELECT_FILE_TO_UPLOAD').'<input type="file" name="nom[]" />
+                            '.JText::_('SELECT_FILE_TO_UPLOAD').'<input type="file" name="file" />
                         </span>
-                        <input type="text" class="form-control" readonly="">
+                        <input type="hidden" class="form-control" readonly="">
+                    <input type="text" class="form-control" name="description" placeholder="'.JText::_('SHORT_DESC').'" />
+                    
                     </span>
-                    <input type="text" class="form-control" name="description[]" placeholder="'.JText::_('SHORT_DESC').'" />
+                    <input class="btn btn-success" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/>
                 </div>
+                </form>
                 </td>
             </tr>
             <tr>
@@ -106,7 +111,7 @@ if(!$this->sent) : ?>
             <tfoot>
             <tr>
                 <td>
-                <input class="button" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/>
+                
                 </td>
             </tr>
             </tfoot>';
@@ -135,7 +140,7 @@ if(!$this->sent) : ?>
 
         ?>
     </div>
-</form>
+<!--</form>-->
 <?php endif; ?>
 
 <script>

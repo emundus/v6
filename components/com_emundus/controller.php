@@ -332,82 +332,128 @@ class EmundusController extends JControllerLegacy {
         $student_id = JRequest::getVar('sid', null, 'GET', 'none',0);
         $layout = JRequest::getVar('layout', null, 'GET', 'none',0);
         $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-        //die($student_id.' : '.JFactory::getUser()->usertype);
+
         if ($student_id > 0 && JFactory::getUser()->usertype != 'Registered')
             $user = JFactory::getUser($student_id);
         else
             $user = JFactory::getUser();
-        // if($user->get('usertype') != 'Registered') {
-        // $this->setRedirect('index.php?option=com_emundus', JText::_('Only students can access this function.'), 'error');
-        // return;
-        // }
+
         $chemin         = EMUNDUS_PATH_ABS;
         $post           = JRequest::get('post');
         $attachments    = $post['attachment'];
         $descriptions   = $post['description'];
         $labels         = $post['label'];
-        $files          = JRequest::get('files');
-        $files          = $files['nom'];
+ 
+        if (!empty($_FILES)) {
+            $files          = array($_FILES["file"]);
+        } else {
+            JLog::add(JUri::getInstance().' :: USER ID : '.$user->id.' -> empty $_FILES', JLog::ERROR, 'com_emundus');
+            return false;
+        }
 
         //$can_be_deleted = JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
         //$can_be_viewed  = JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
 
-        //$user             = JFactory::getUser();
         $db             = JFactory::getDBO();
         $query          = '';
         $nb = 0;
 
         if(!file_exists(EMUNDUS_PATH_ABS.$user->id)) {
-            if (!mkdir(EMUNDUS_PATH_ABS.$user->id) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html'))
+            if (!mkdir(EMUNDUS_PATH_ABS.$user->id) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html')){
+                JLog::add(JUri::getInstance().' :: USER ID : '.$user->id.' -> Unable to create user file', JLog::ERROR, 'com_emundus');
                 return JError::raiseWarning(500, 'Unable to create user file');
+            }
         }
         chmod(EMUNDUS_PATH_ABS.$user->id, 0755);
 
-        for($i = 0; $i<count($files['name']);$i++) {
-            if (empty($files['name'][$i])) continue;
-            $test = 'SELECT UPPER(allowed_types) FROM #__emundus_setup_attachments WHERE id = '.$attachments[$i];
-            $db->setQuery( $test );
-            $ext = $db->loadResult() or die($db->getErrorMsg());
-            if (strpos($ext, strtoupper(end(explode(".", $files['name'][$i]))))===FALSE) {
-                JFactory::getApplication()->enqueueMessage(JText::_("File ").$files['name'][$i].JText::_(" type is not allowed, please send a doc with type:").$ext."\n", 'error');
-                continue;
+        //for($i = 0; $i<count($files);$i++) {
+        foreach ($files as $key => $file) {
+        
+            if (empty($file['name'])) {
+                JLog::add(JUri::getInstance().' :: USER ID : '.$user->id.' -> try to upload empty file', JLog::ERROR, 'com_emundus');
+                return false;
+            }
+
+            $query_ext = 'SELECT UPPER(allowed_types) FROM #__emundus_setup_attachments WHERE id = '.(int)$attachments;
+            
+            try
+            {
+                $db->setQuery( $query_ext );
+                $ext = $db->loadResult();
+            }
+            catch(Exception $e)
+            {
+                JLog::add(JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                JError::raiseError(500, $e->getMessage());
+            }
+            
+            if (strpos($ext, strtoupper(end(explode(".", $file['name']))))===FALSE) {
+                JFactory::getApplication()->enqueueMessage(JText::_("File ").$file['name'].JText::_(" type is not allowed, please send a doc with type:").$ext."\n", 'error');
+                JLog::add(JUri::getInstance().' :: USER ID : '.$user->id.' -> type is not allowed, please send a doc with type : '.$ext, JLog::ERROR, 'com_emundus');
+                return false;
             }
 
             //size > 0
-            if (($files['size'][$i])==0) {
-                JFactory::getApplication()->enqueueMessage(JText::_("File ").$files['name'][$i].JText::_(" size is not allowed, please check out your filesize")."\n", 'error');
-                continue;
+            if (($file['size'])==0) {
+                JFactory::getApplication()->enqueueMessage(JText::_("File ").$file['name'].JText::_(" size is not allowed, please check out your filesize")."\n", 'error');
+                JLog::add(JUri::getInstance().' :: USER ID : '.$user->id.' -> size is not allowed, please check out your filesize : '.$file['size'], JLog::ERROR, 'com_emundus');
+                return false;
             }
 
-            if (!empty($files['error'][$i])) {
-                switch ($files['error'][$i]) {
+            if (!empty($file['error'])) {
+                JLog::add(JUri::getInstance().' :: USER ID : '.$user->id.' -> file error type : '.$file['error'], JLog::ERROR, 'com_emundus');
+                switch ($file['error']) {
                     case 1:
-                        JFactory::getApplication()->enqueueMessage(JText::_("File ").$files['name'][$i].JText::_(" is bigger than the authorized size!"), 'error');
+                        JFactory::getApplication()->enqueueMessage(JText::_("File ").$file['name'].JText::_(" is bigger than the authorized size!"), 'error');
                         break;
                     case 2:
-                        JFactory::getApplication()->enqueueMessage(JText::_("File ").$files['name'][$i].JText::_(" is too big!\n"), 'error');
+                        JFactory::getApplication()->enqueueMessage(JText::_("File ").$file['name'].JText::_(" is too big!\n"), 'error');
                         break;
                     case 3:
-                        JFactory::getApplication()->enqueueMessage(JText::_("File ").$files['name'][$i].JText::_(" upload has been interrupted.\n"), 'error');
+                        JFactory::getApplication()->enqueueMessage(JText::_("File ").$file['name'].JText::_(" upload has been interrupted.\n"), 'error');
                         break;
                     case 4:
-                        JFactory::getApplication()->enqueueMessage(JText::_("File ").$files['name'][$i].JText::_(" is not correct.\n"), 'error');
+                        JFactory::getApplication()->enqueueMessage(JText::_("File ").$file['name'].JText::_(" is not correct.\n"), 'error');
                         break;
                     default:
                 }
-            } elseif (isset($files['name'][$i])&&($files['error'][$i] == UPLOAD_ERR_OK)) {
+            } elseif (isset($file['name']) && $file['error'] == UPLOAD_ERR_OK) {
                 $paths = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($user->name,ENT_NOQUOTES,'UTF-8'))));
-                $paths .= $labels[$i].rand().'.'.end(explode(".", $files['name'][$i]));
-                if (move_uploaded_file( $files['tmp_name'][$i], $chemin.$user->id.DS.$paths)) {
-                    $can_be_deleted = @$post['can_be_deleted_'.$attachments[$i]]!=''?$post['can_be_deleted_'.$attachments[$i]]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
-                    $can_be_viewed = @$post['can_be_viewed_'.$attachments[$i]]!=''?$post['can_be_viewed_'.$attachments[$i]]:JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
-                    $query .= '('.$user->id.', '.$attachments[$i].', \''.$paths.'\', '.$db->Quote($descriptions[$i]).', '.$can_be_deleted.', '.$can_be_viewed.', '.$user->campaign_id.', "'.$user->fnum.'"),';
+                $paths .= $labels.rand().'.'.end(explode(".", $file['name']));
+                if (move_uploaded_file( $file['tmp_name'], $chemin.$user->id.DS.$paths)) {
+                    $can_be_deleted = @$post['can_be_deleted_'.$attachments]!=''?$post['can_be_deleted_'.$attachments]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
+                    $can_be_viewed = @$post['can_be_viewed_'.$attachments]!=''?$post['can_be_viewed_'.$attachments]:JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
+                    
+                    $query .= '('.$user->id.', '.$attachments.', \''.$paths.'\', '.$db->Quote($descriptions).', '.$can_be_deleted.', '.$can_be_viewed.', '.$user->campaign_id.', "'.$user->fnum.'"),';
                     $nb++;
+                } else{
+                    JLog::add(JUri::getInstance().' :: USER ID : '.$user->id.' -> Cannot move file : '.$file['tmp_name'].' to '.$chemin.$user->id.DS.$paths, JLog::ERROR, 'com_emundus');
                 }
-                if ($labels[$i]=="_photo") {
-                    $checkdouble_query = 'SELECT count(user_id) FROM #__emundus_uploads WHERE attachment_id=(SELECT id FROM #__emundus_setup_attachments WHERE lbl="_photo") AND user_id='.$user->id. ' AND fnum like '.$db->Quote($user->fnum);
-                    $db->setQuery($checkdouble_query);
-                    if ($db->loadResult()) {
+
+                if ($labels=="_photo") {
+
+                    $checkdouble_query = 'SELECT count(user_id) 
+                    FROM #__emundus_uploads 
+                    WHERE attachment_id=
+                            (SELECT id 
+                                FROM #__emundus_setup_attachments 
+                                WHERE lbl="_photo"
+                            ) 
+                            AND user_id='.$user->id. ' 
+                            AND fnum like '.$db->Quote($user->fnum);
+                    
+                    try
+                    {
+                        $db->setQuery($checkdouble_query);
+                        $cpt = $db->loadResult();
+                    }
+                    catch(Exception $e)
+                    {
+                        JLog::add(JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                        JError::raiseError(500, $e->getMessage());
+                    }
+
+                    if ($cpt) {
                         $query = '';
                     } else {
                         $pathToThumbs = EMUNDUS_PATH_ABS.$user->id.DS.$paths;
@@ -445,9 +491,18 @@ class EmundusController extends JControllerLegacy {
         }
         if(!empty($query)) {
             $query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES '.substr($query,0,-1);
-            $db->setQuery( $query );
-            $db->execute() or die($db->getErrorMsg());
-            JFactory::getApplication()->enqueueMessage($nb.($nb>1?' '.JText::_("FILE_BEEN_UPLOADED"):' '.JText::_("FILES_BEEN_UPLOADED")), 'message');
+            
+            try
+            {
+                $db->setQuery( $query );
+                $db->execute();
+                JFactory::getApplication()->enqueueMessage($nb.($nb>1?' '.JText::_("FILE_BEEN_UPLOADED"):' '.JText::_("FILES_BEEN_UPLOADED")), 'message');
+            }
+            catch(Exception $e)
+            {
+                JLog::add(JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                JError::raiseError(500, $e->getMessage());
+            }
         }
         if (isset($layout))
             $this->setRedirect('index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid);
