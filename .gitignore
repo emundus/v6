@@ -21,3 +21,4 @@ media/com_emundus/*.bak
 htaccess.BAK*
 php.ini
 /favicon.ico
+/workspace.xml
