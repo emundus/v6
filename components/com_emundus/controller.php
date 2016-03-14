@@ -560,7 +560,7 @@ class EmundusController extends JControllerLegacy {
                 $aid = $db->insertid();
 
                 if ($format == "raw") {
-                    echo '{"aid":"'.$aid.'", "message":"'.$nb.($nb>1?' '.JText::_("FILES_BEEN_UPLOADED"):' '.JText::_("FILE_BEEN_UPLOADED")).'"}';
+                    echo '{"aid":"'.$aid.'", "message":"'.JText::_('DELETE').'"}';
                 } else {
                     JFactory::getApplication()->enqueueMessage($nb.($nb>1?' '.JText::_("FILES_BEEN_UPLOADED"):' '.JText::_("FILE_BEEN_UPLOADED")), 'message');
                     if (isset($layout))

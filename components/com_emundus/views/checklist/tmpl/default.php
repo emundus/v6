@@ -89,7 +89,6 @@ if(!$this->sent) : ?>
                 $div .= '
             <tr>
                 <td>';
-                //$div .= '<div id="file'.$attachment->id.'"  class="dropzone">';
                 $div .= '<form id="form-a'.$attachment->id.'" name="checklistForm" class="dropzone" action="index.php?option=com_emundus&task=upload&Itemid='.$itemid.'" method="post" enctype="multipart/form-data">';
                 $div .= '<input type="hidden" name="attachment" value="'.$attachment->id .'"/>
                 <input type="hidden" name="label" value="'.$attachment->lbl.'"/>
@@ -186,7 +185,6 @@ Dropzone.options.formA'.$attachment->id.' =  {
 
 </script>';
                 $div .= '</form>';
-                //$div .= '</div>';
                 $div .= '</td>
             </tr>
             <tr>
