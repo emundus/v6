@@ -1982,11 +1982,12 @@ where 1 order by ga.fnum asc, g.title';
                     }
                     elseif ($elt->element_plugin == 'databasejoin') {
                         $element_attribs = json_decode($elt->element_attribs);
-                        $elt_array = json_decode(json_encode($elt), true); /*object to array*/
+                        //$elt_array = json_decode(json_encode($elt), true); /*object to array*/
+                        $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->join_val_column_concat).')':'t.'.$element_attribs->join_val_column;
 
-                        $select = '(SELECT GROUP_CONCAT(t.'.$element_attribs->join_val_column.' SEPARATOR ", ") 
+                        $select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ") 
                             FROM '.$element_attribs->join_db_name.' as t 
-                            WHERE t.'.$element_attribs->join_key_column.'='.$elt_array['db_table_name'].$elt_array['element_name'].')';
+                            WHERE t.'.$element_attribs->join_key_column.'='.$tableAlias[$elt->tab_name].'.'.$elt->element_name.')';
                     }
 
                     $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
@@ -2004,7 +2005,7 @@ where 1 order by ga.fnum asc, g.title';
                 $query .= 'LIMIT ' . $pas . ' OFFSET ' . $start;
             }
 
-            $db->setQuery($query);
+            $db->setQuery($query); 
             return $db->loadAssocList();
         }
         catch(Exception $e)

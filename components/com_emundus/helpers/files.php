@@ -3,7 +3,7 @@
  * @version		$Id: filter.php 14401 2013-03-21 14:10:00Z brivalland $
  * @package		Joomla
  * @subpackage	eMundus
- * @copyright	Copyright (C) 2005 - 2010 Open Source Matters. All rights reserved.
+ * @copyright	Copyright (C) 2015 eMundus. All rights reserved.
  * @license		GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant to the
  * GNU General Public License, and as distributed it includes or is derivative
