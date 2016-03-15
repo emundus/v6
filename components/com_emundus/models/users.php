@@ -1495,6 +1495,8 @@ class EmundusModelUsers extends JModelList
 
     public function getGroupsAcl($gid)
     {
+	  if(count($gid) > 0)
+      {
         try
         {
             if(is_array($gid))
@@ -1520,6 +1522,8 @@ class EmundusModelUsers extends JModelList
             error_log($e->getMessage(), 0);
             return false;
         }
+	  } else
+		return array();
     }
 
     public function getGroupUsers($gid)

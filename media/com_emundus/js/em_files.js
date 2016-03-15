@@ -799,7 +799,7 @@ $(document).ready(function()
         if (e.handle !== true) {
             var id = $(this).attr('id');
             e.handle = true;
-            if (id != 'check' && id != 'checkuser' ) {
+            if (id != 'check' && id != 'checkuser' && id != 'access' ) {
                 tableOrder(id);
             }
 

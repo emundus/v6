@@ -7,7 +7,7 @@
  * @package        Joomla
  * @subpackage    eMundus
  * @link        http://www.emundus.fr
- * @copyright    Copyright (C) 2006 eMundus. All rights reserved.
+ * @copyright    Copyright (C) 2008 - 2014 Décision Publique. All rights reserved.
  * @license        GNU/GPL
  * @author        Benjamin Rivalland
  */
@@ -1023,7 +1023,6 @@ class EmundusModelFiles extends JModelLegacy
         }
         $query .= $q['join'];
         $query .= " where 1=1 ".$q['q'];
-        //echo($query);die();
 
 
         // ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
@@ -1050,7 +1049,7 @@ class EmundusModelFiles extends JModelLegacy
             }
             $dbo->setQuery($query);
             $res = $dbo->loadAssocList();
- //echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';
+//     echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';
             return $res;
         }
         catch(Exception $e)
@@ -1892,7 +1891,11 @@ where 1 order by ga.fnum asc, g.title';
         $current_user = JFactory::getUser();
 
         $this->code = $userModel->getUserGroupsProgrammeAssoc($current_user->id);
-        $this->fnum_assoc = $userModel->getApplicantsAssoc($current_user->id);
+
+        $groups = $userModel->getUserGroups($current_user->id); 
+        $fnum_assoc_to_groups = $userModel->getApplicationsAssocToGroups($groups);
+        $fnum_assoc = $userModel->getApplicantsAssoc($current_user->id);
+        $this->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
 
         $files = $this->getAllUsers(0, 0);
         $fnums = array();
@@ -2006,7 +2009,10 @@ where 1 order by ga.fnum asc, g.title';
         }
         catch(Exception $e)
         {
-            die( str_replace('#_', 'jos', $query) );
+            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+            JLog::add($error, JLog::ERROR, 'com_emundus');
+            JFactory::getApplication()->enqueueMessage($error, 'error');
+            
             return false;
         }
     }

@@ -3,9 +3,9 @@
  * @package    	Joomla
  * @subpackage 	eMundus
  * @link       	http://www.emundus.fr
- * @copyright	Copyright (C) 2008 - 2013 Décision Publique. All rights reserved.
+ * @copyright	Copyright (C) 2015 eMundus. All rights reserved.
  * @license    	GNU/GPL
- * @author     	Decision Publique - Benjamin Rivalland
+ * @author     	eMundus - Benjamin Rivalland
 */
  
 // No direct access

@@ -1,15 +1,11 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: yoan
- * Date: 23/05/14
- * Time: 11:39
- * @package        Joomla
- * @subpackage    eMundus
- * @link        http://www.emundus.fr
- * @copyright    Copyright (C) 2008 - 2014 Décision Publique. All rights reserved.
- * @license        GNU/GPL
- * @author        Decision Publique - Yoan Durand
+ * @package        	Joomla
+ * @subpackage    	eMundus
+ * @link        	http://www.emundus.fr
+ * @copyright    	Copyright (C) 2015 eMundus. All rights reserved.
+ * @license         GNU/GPL
+ * @author        	Benjamin Rivalland - Yoan Durand
  */
 
 // No direct access
@@ -390,6 +386,7 @@ class EmundusModelEvaluation extends JModelList
         $can_be_ordering[] = 'jos_emundus_campaign_candidature.id';
         $can_be_ordering[] = 'jos_emundus_campaign_candidature.fnum';
         $can_be_ordering[] = 'jos_emundus_campaign_candidature.status';
+        $can_be_ordering[] = 'jos_emundus_evaluations.user';
         $can_be_ordering[] = 'fnum';
         $can_be_ordering[] = 'status';
         $can_be_ordering[] = 'c.status';
