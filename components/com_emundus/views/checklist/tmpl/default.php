@@ -58,7 +58,7 @@ if(!$this->sent) : ?>
             } else {
                 $class= 'need_ok';
             }
-            $div = '<fieldset id="a'.$attachment->id.'"><legend class="'.$class.'"><a href="javascript:toggleVisu(\''.$attachment->id .'\')">'.$attachment->value .' [+/-]</a></legend>
+            $div = '<fieldset id="a'.$attachment->id.'"><legend id="l'.$attachment->id.'"><span class="'.$class.'"></span><a href="javascript:toggleVisu(\''.$attachment->id .'\')">'.$attachment->value .' [+/-]</a></legend>
                 <p class="description">'.$attachment->description .'</p>
                 <div class="table-responsive">
                 <table id="'.$attachment->id .'" class="table">';
@@ -68,20 +68,21 @@ if(!$this->sent) : ?>
                     $div .= '<tr>
                         <td>';
                         if($item->can_be_viewed==1) {
-                        $div .= '<a href="'.$chemin.$user->id .'/'.$item->filename .'" target="_blank"><img src="media/com_emundus/images/icones/viewmag_16x16.png" alt="show" style="vertical-align:middle"/>'.JText::_('VIEW').'</a>';
+                        $div .= '<a href="'.$chemin.$user->id .'/'.$item->filename .'" target="_blank"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>'.JText::_('VIEW').'</a>';
                         }
                         else { 
                         $div .= JText::_('CANT_VIEW') ;
                         } 
                         $div .= '&nbsp;-&nbsp;' ;
                         if($item->can_be_deleted==1) {
-                        $div .= '<a href="?option=com_emundus&task=delete&aid='.$item->id .'&Itemid='.$itemid.'#a'.$attachment->id .'"><img src="media/com_emundus/images/icones/trashcan_full.png"  style="vertical-align:middle" alt="delete"/>'.JText::_('DELETE').'</a>';
+                        $div .= '<a href="?option=com_emundus&task=delete&aid='.$item->id .'&Itemid='.$itemid.'#a'.$attachment->id .'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'.JText::_('DELETE').'</a>';
                         } 
                         else { 
                         $div .= JText::_('CANT_DELETE'); 
                         } 
-                        $div .= '</td>
-                        <td>';
+                        $div .= ' | ';
+                        $div .= ($item->timedate);
+                        $div .= ' | ';
                         $div .= empty($item->description)?JText::_('NO_DESC'):$item->description;
                         $div .= '</td></tr>';   
                     } 
@@ -89,6 +90,7 @@ if(!$this->sent) : ?>
                 $div .= '
             <tr>
                 <td>';
+                //$div .= '<div id="file'.$attachment->id.'"  class="dropzone">';
                 $div .= '<form id="form-a'.$attachment->id.'" name="checklistForm" class="dropzone" action="index.php?option=com_emundus&task=upload&Itemid='.$itemid.'" method="post" enctype="multipart/form-data">';
                 $div .= '<input type="hidden" name="attachment" value="'.$attachment->id .'"/>
                 <input type="hidden" name="label" value="'.$attachment->lbl.'"/>
@@ -139,7 +141,15 @@ Dropzone.options.formA'.$attachment->id.' =  {
         // Handle the responseText here. For example, add the text to the preview element:
         var response = JSON.parse(responseText);
         var aid = response["aid"];
-        file.previewTemplate.appendChild(document.createTextNode(response["message"]));
+        file.previewTemplate.appendChild(document.createTextNode(response["message"]+" "));
+
+        if (!response["status"]) {
+            // Remove the file preview.
+            this.removeFile(file);
+        }
+
+        // Change icon on fieldset
+        document.getElementById("l"+'.$attachment->id.').childNodes[0].className = "need_ok";
 
         // Create the remove button
         var removeButton = Dropzone.createElement("<button>X</button>");
@@ -166,7 +176,9 @@ Dropzone.options.formA'.$attachment->id.' =  {
             }),
             success: function(result) {
                 if (result.status) {
-                    alert("'. JText::_('DELETED').'");
+                    // Change icon on fieldset
+                    document.getElementById("l"+'.$attachment->id.').childNodes[0].className = "";
+                    alert("'. JText::_('ATTACHMENT_DELETED').'");
                 }
 
             },
@@ -185,6 +197,7 @@ Dropzone.options.formA'.$attachment->id.' =  {
 
 </script>';
                 $div .= '</form>';
+                //$div .= '</div>';
                 $div .= '</td>
             </tr>
             <tr>

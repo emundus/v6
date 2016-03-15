@@ -233,18 +233,26 @@ class EmundusController extends JControllerLegacy {
         exit();
     }
 
+    /* 
+        Delete document from application file
+    */
     function delete() {
         $student_id = JRequest::getVar('sid', null, 'GET', 'none',0);
         $layout     = JRequest::getVar('layout', null, 'GET', 'none',0);
+        $format     = JRequest::getVar('format', null, 'GET', 'none',0);
         $itemid     = JRequest::getVar('Itemid', null, 'GET', 'none',0);
         $fnum       = JRequest::getVar('fnum', null, 'GET', 'none',0);
         $current_user = JFactory::getUser();
 
-        if ($student_id > 0 && $current_user->usertype != 'Registered')
-            $user = JFactory::getUser($student_id);
-        else {
+        if (EmundusHelperAccess::isApplicant($current_user->id)){
             $user = $current_user;
             $fnum = $user->fnum;
+        } elseif(EmundusHelperAccess::asAccessAction(4, 'd', $current_user->id, $fnum) || 
+                 EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
+            $user = JFactory::getUser($student_id);
+        } else {
+            JError::raiseError(500, JText::_('ACCESS_DENIED'));
+            return false;
         }
 
         if (isset($layout))
@@ -253,39 +261,81 @@ class EmundusController extends JControllerLegacy {
             $url ='index.php?option=com_emundus&view=checklist&Itemid='.$itemid;
 
         $chemin = EMUNDUS_PATH_ABS;
-        //$user     = JFactory::getUser();
         $db     = JFactory::getDBO();
         $id     = JRequest::get('get');
         $id     = $id['aid'];
 
-        //$allowed = array("Super Users", "Administrator", "Editor");
-        $user = JFactory::getUser();
-        $menu=JSite::getMenu()->getActive();
+        $menu = @JSite::getMenu()->getActive();
         $access=!empty($menu)?$menu->access : 0;
-        if (EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
-            $query  = 'SELECT filename FROM #__emundus_uploads WHERE user_id = '.mysql_real_escape_string($user->id).' AND id = '.mysql_real_escape_string($id). ' AND fnum like '.$db->Quote($fnum);
+        if (EmundusHelperAccess::isAllowedAccessLevel($user->id, $access))
+            $query  = 'SELECT filename FROM #__emundus_uploads 
+                        WHERE user_id = '.mysql_real_escape_string($user->id).' AND id = '.mysql_real_escape_string($id). ' AND fnum like '.$db->Quote($fnum);
         else
-            $query  = 'SELECT filename FROM #__emundus_uploads WHERE user_id = '.mysql_real_escape_string($user->id).' AND can_be_deleted = 1 AND id = '.mysql_real_escape_string($id). ' AND fnum like '.$db->Quote($fnum);
-        $db->setQuery( $query );
-        $filename = $db->loadResult();
-        if (empty($filename)) {
-            $this->setRedirect($url, JText::_('Error'), 'error');
-        } elseif (is_file($chemin.$user->id.DS.$filename)) {
-            if (unlink($chemin.$user->id.DS.$filename)) {
-                $query  = 'DELETE FROM #__emundus_uploads WHERE id = '.mysql_real_escape_string($id).' AND user_id = '.mysql_real_escape_string($user->id). ' AND fnum like '.$db->Quote($fnum);
-                $db->setQuery( $query );
-                $db->execute() or die($db->getErrorMsg());
-                if (is_file($chemin.$user->id.DS.'tn_'.$filename)) unlink($chemin.$user->id.DS.'tn_'.$filename);
-                $this->setRedirect($url, JText::_('File has been succesfully deleted'), 'message');
-            } else {
-                $this->setRedirect($url, JText::_('Error occured while deleting file'), 'error');
-            }
-        } else {
-            $query  = 'DELETE FROM #__emundus_uploads WHERE id = '.mysql_real_escape_string($id).' AND user_id = '.mysql_real_escape_string($user->id). ' AND fnum like '.$db->Quote($fnum);
+            $query  = 'SELECT filename FROM #__emundus_uploads 
+                        WHERE user_id = '.mysql_real_escape_string($user->id).' AND can_be_deleted = 1 AND id = '.mysql_real_escape_string($id). ' AND fnum like '.$db->Quote($fnum);
+        
+        try{
             $db->setQuery( $query );
-            $db->execute() or die($db->getErrorMsg());
-            $this->setRedirect($url, JText::_('File was not existing, thanks for checking that your other attachments are correctly uploaded'), 'notice');
+            $filename = $db->loadResult();
+
+            if (empty($filename)) {
+                $message = JText::_('Error : empty file');
+                if ($format == 'raw') {
+                    echo '{"status":false, "message":"'.$message.'"}';
+                    return false;
+                } else
+                    $this->setRedirect($url, $message, 'error');
+
+            } else{
+                try{
+                    $query  = 'DELETE FROM #__emundus_uploads 
+                                WHERE id = '.mysql_real_escape_string($id).' 
+                                AND user_id = '.mysql_real_escape_string($user->id). ' 
+                                AND fnum like '.$db->Quote($fnum);
+                    $db->setQuery( $query );
+                    $db->execute();
+
+                    if (unlink($chemin.$user->id.DS.$filename)) {
+                        if (is_file($chemin.$user->id.DS.'tn_'.$filename)) {
+                            unlink($chemin.$user->id.DS.'tn_'.$filename);                    
+                        }
+                        $message = JText::_('File has been succesfully deleted');
+                        
+                    } else {
+                        $message = JText::_('File was not found on server, thanks for checking that your other attachments are correctly uploaded');
+                    }
+                
+                    if ($format == 'raw') 
+                        echo '{"status":true, "message":"'.$message.'"}';
+                    else 
+                        $this->setRedirect($url, $message, 'message');
+                }
+                catch(Exception $e)
+                {
+                    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                    JLog::add($error, JLog::ERROR, 'com_emundus');
+                    if ($format == "raw") {
+                        echo '{"status":false,"message":"'.$error.'"}';
+                    } else
+                        JError::raiseError(500, $e->getMessage());
+
+                    return false;
+                }
+            }
         }
+        catch(Exception $e)
+        {
+            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+            JLog::add($error, JLog::ERROR, 'com_emundus');
+            if ($format == "raw") {
+                echo '{"aid":"0","status":false,"message":"'.$error.'" }';
+            } else
+                JError::raiseError(500, $e->getMessage());
+
+            return false;
+        }
+
+        return true;
     }
 
     /*
@@ -333,11 +383,19 @@ class EmundusController extends JControllerLegacy {
         $layout = JRequest::getVar('layout', null, 'GET', 'none',0);
         $format = JRequest::getVar('format', null, 'GET', 'none',0);
         $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $fnum   = JRequest::getVar('fnum', null, 'GET', 'none',0);
+        $current_user = JFactory::getUser();
 
-        if ($student_id > 0 && JFactory::getUser()->usertype != 'Registered')
+        if (EmundusHelperAccess::isApplicant($current_user->id)){
+            $user = $current_user;
+            $fnum = $user->fnum;
+        } elseif(EmundusHelperAccess::asAccessAction(4, 'c', $current_user->id, $fnum) || 
+                 EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
             $user = JFactory::getUser($student_id);
-        else
-            $user = JFactory::getUser();
+        } else {
+            JError::raiseError(500, JText::_('ACCESS_DENIED'));
+            return false;
+        }
 
         $chemin         = EMUNDUS_PATH_ABS;
         $post           = JRequest::get('post');
@@ -348,17 +406,14 @@ class EmundusController extends JControllerLegacy {
         if (!empty($_FILES)) {
             $files          = array($_FILES["file"]);
         } else {
-            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> empty $_FILES';
+            $error = JUri::getInstance().' :: USER ID : '.$user->id;
             JLog::add($error, JLog::ERROR, 'com_emundus');
             if ($format == "raw") {
-                echo '{"aid":"0","message":"'.$error.'" }';
+                echo '{"aid":"0","status":false,"message":"'.$error.' -> empty $_FILES" }';
             }
                 
             return false;
         }
-
-        //$can_be_deleted = JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
-        //$can_be_viewed  = JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
 
         $db             = JFactory::getDBO();
         $query          = '';
@@ -369,7 +424,7 @@ class EmundusController extends JControllerLegacy {
                 $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> Unable to create user file';
                 JLog::add($error, JLog::ERROR, 'com_emundus');
                 if ($format == "raw") {
-                    echo '{"aid":"0","message":"'.$error.'" }';
+                    echo '{"aid":"0","status":false,"message":"'.$error.'" }';
                 } else
                     JError::raiseWarning(500, 'Unable to create user file');
                 return false;
@@ -384,42 +439,88 @@ class EmundusController extends JControllerLegacy {
                 $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> try to upload empty file';
                 JLog::add($error, JLog::ERROR, 'com_emundus');
                 if ($format == "raw") {
-                    echo '{"aid":"0","message":"'.$error.'" }';
+                    echo '{"aid":"0","status":false,"message":"'.$error.'" }';
                 } else
                     JFactory::getApplication()->enqueueMessage(JText::_("File empty")."\n", 'error');
                 
                 return false;
             }
-
-            $query_ext = 'SELECT UPPER(allowed_types) FROM #__emundus_setup_attachments WHERE id = '.(int)$attachments;
-            
+   
             try
             {
+                $query_ext = 'SELECT UPPER(allowed_types) as allowed_types, nbmax FROM #__emundus_setup_attachments WHERE id = '.(int)$attachments;
                 $db->setQuery( $query_ext );
-                $ext = $db->loadResult();
+                $attachment = $db->loadAssoc();
+
+                try
+                {
+                    $query_cpt = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id='.$user->id.' AND attachment_id='.(int)$attachments.' AND fnum like '.$db->Quote($fnum);
+                    $db->setQuery( $query_cpt );
+                    $cpt = $db->loadResult();
+
+                    if ($cpt >= $attachment['nbmax']) {
+                        $error = JText::_('MAX_ALLOWED').$attachment['nbmax'];
+                        if ($format == "raw") {
+                            echo '{"aid":"0","status":false,"message":"'.$error.'" }';
+                        } else {
+                            JFactory::getApplication()->enqueueMessage($error, 'error');
+                            if (isset($layout))
+                                $this->setRedirect('index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid.'#a'.$attachments);
+                            else
+                                $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid.'#a'.$attachments);
+                        }
+
+                        return false;
+                    }
+                }
+                catch(Exception $e)
+                {
+                    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                    JLog::add($error, JLog::ERROR, 'com_emundus');
+                    if ($format == "raw") {
+                        echo '{"aid":"0","status":false,"message":"SQL ERROR" }';
+                    } else {
+                        JFactory::getApplication()->enqueueMessage($error, 'error');
+                        if (isset($layout))
+                            $this->setRedirect('index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid.'#a'.$attachments);
+                        else
+                            $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid.'#a'.$attachments);
+                    }
+
+                    return false;
+                }
             }
             catch(Exception $e)
             {
                 $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
                 JLog::add($error, JLog::ERROR, 'com_emundus');
                 if ($format == "raw") {
-                    echo '{"aid":"0","message":"'.$error.'" }';
-                } else
-                    JError::raiseError(500, $e->getMessage());
+                    echo '{"aid":"0","status":false,"message":"SQL ERROR" }';
+                } else {
+                    JFactory::getApplication()->enqueueMessage($error, 'error');
+                    if (isset($layout))
+                        $this->setRedirect('index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid.'#a'.$attachments);
+                    else
+                        $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid.'#a'.$attachments);
+                }
+
                 return false;
             }
             
             $file_array = explode('.', $file['name']);
             $file_ext = end($file_array);
-            $pos = strpos($ext, strtoupper($file_ext));
+            $pos = strpos($attachment['allowed_types'], strtoupper($file_ext));
             if ($pos === false) {
-                $error = JUri::getInstance().' :: USER ID : '.$user->id.' '.$file_ext.' -> type is not allowed, please send a doc with type : '.$ext;
+                $error = JUri::getInstance().' :: USER ID : '.$user->id.' '.$file_ext.' -> type is not allowed, please send a doc with type : '.$attachment['allowed_types'];
                 JLog::add($error, JLog::ERROR, 'com_emundus');
                 if ($format == "raw") {
-                    echo '{"aid":"0","message":"'.$error.'" }';
+                    echo '{"aid":"0","status":false,"message":"'.$error.'" }';
                 } else {
-                    JError::raiseError(500, $e->getMessage());
-                    JFactory::getApplication()->enqueueMessage(JText::_("File ").$file['name'].JText::_(" type is not allowed, please send a doc with type:").$ext."\n", 'error');
+                    JFactory::getApplication()->enqueueMessage($error, 'error');
+                    if (isset($layout))
+                        $this->setRedirect('index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid.'#a'.$attachments);
+                    else
+                        $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid.'#a'.$attachments);
                 }
 
                 return false;
@@ -430,10 +531,15 @@ class EmundusController extends JControllerLegacy {
                 $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> size is not allowed, please check out your filesize : '.$file['size'];
                 JLog::add($error, JLog::ERROR, 'com_emundus');
                 if ($format == "raw") {
-                    echo '{"aid":"0","message":"'.$error.'" }';
-                } else
-                    JFactory::getApplication()->enqueueMessage(JText::_("File ").$file['name'].JText::_(" size is not allowed, please check out your filesize")."\n", 'error');
-                
+                    echo '{"aid":"0","status":false,"message":"'.$error.'" }';
+                } else {
+                    JFactory::getApplication()->enqueueMessage($error, 'error');
+                    if (isset($layout))
+                        $this->setRedirect('index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid.'#a'.$attachments);
+                    else
+                        $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid.'#a'.$attachments);
+                }
+
                 return false;
             }
 
@@ -461,7 +567,13 @@ class EmundusController extends JControllerLegacy {
 
                 JLog::add($error, JLog::ERROR, 'com_emundus');
                 if ($format == "raw") {
-                    echo '{"aid":"0","message":"'.$error.'" }';
+                    echo '{"aid":"0","status":false,"message":"'.$error.'" }';
+                } else {
+                    JFactory::getApplication()->enqueueMessage($error, 'error');
+                    if (isset($layout))
+                        $this->setRedirect('index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid.'#a'.$attachments);
+                    else
+                        $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid.'#a'.$attachments);
                 }
 
                 return false;
@@ -474,15 +586,22 @@ class EmundusController extends JControllerLegacy {
                     $can_be_deleted = @$post['can_be_deleted_'.$attachments]!=''?$post['can_be_deleted_'.$attachments]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
                     $can_be_viewed = @$post['can_be_viewed_'.$attachments]!=''?$post['can_be_viewed_'.$attachments]:JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
                     
-                    $query .= '('.$user->id.', '.$attachments.', \''.$paths.'\', '.$db->Quote($descriptions).', '.$can_be_deleted.', '.$can_be_viewed.', '.$user->campaign_id.', "'.$user->fnum.'"),';
+                    $query .= '('.$user->id.', '.$attachments.', \''.$paths.'\', '.$db->Quote($descriptions).', '.$can_be_deleted.', '.$can_be_viewed.', '.$user->campaign_id.', "'.$fnum.'"),';
                     $nb++;
                 } else{
                     $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> Cannot move file : '.$file['tmp_name'].' to '.$chemin.$user->id.DS.$paths;
                     JLog::add($error, JLog::ERROR, 'com_emundus');
                     if ($format == "raw") {
-                        echo '{"aid":"0","message":"'.$error.'" }';
+                        echo '{"aid":"0","status":false,"message":"'.$error.'" }';
+                    } else {
+                        JFactory::getApplication()->enqueueMessage($error, 'error');
+                        if (isset($layout))
+                            $this->setRedirect('index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid.'#a'.$attachments);
+                        else
+                            $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid.'#a'.$attachments);
                     }
-                    return false;
+
+                return false;
                 }
 
                 if ($labels=="_photo") {
@@ -495,7 +614,7 @@ class EmundusController extends JControllerLegacy {
                                 WHERE lbl="_photo"
                             ) 
                             AND user_id='.$user->id. ' 
-                            AND fnum like '.$db->Quote($user->fnum);
+                            AND fnum like '.$db->Quote($fnum);
                     
                     try
                     {
@@ -507,15 +626,21 @@ class EmundusController extends JControllerLegacy {
                         $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
                         JLog::add($error, JLog::ERROR, 'com_emundus');
                         if ($format == "raw") {
-                            echo '{"aid":"0","message":"'.$error.'" }';
-                        } else
-                            JError::raiseError(500, $e->getMessage());
-                        
+                            echo '{"aid":"0","status":false,"message":"SQL Error" }';
+                        } else {
+                            JFactory::getApplication()->enqueueMessage($error, 'error');
+                            if (isset($layout))
+                                $this->setRedirect('index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid.'#a'.$attachments);
+                            else
+                                $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid.'#a'.$attachments);
+                        }
+
                         return false;
                     }
 
                     if ($cpt) {
                         $query = '';
+                        return false;
                     } else {
                         $pathToThumbs = EMUNDUS_PATH_ABS.$user->id.DS.$paths;
                         $file_src = EMUNDUS_PATH_ABS.$user->id.DS.$paths;
@@ -560,7 +685,7 @@ class EmundusController extends JControllerLegacy {
                 $aid = $db->insertid();
 
                 if ($format == "raw") {
-                    echo '{"aid":"'.$aid.'", "message":"'.JText::_('DELETE').'"}'; 
+                    echo '{"aid":"'.$aid.'","status":true, "message":"'.JText::_('DELETE').'"}';
                 } else {
                     JFactory::getApplication()->enqueueMessage($nb.($nb>1?' '.JText::_("FILES_BEEN_UPLOADED"):' '.JText::_("FILE_BEEN_UPLOADED")), 'message');
                     if (isset($layout))
@@ -574,14 +699,18 @@ class EmundusController extends JControllerLegacy {
                 $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
                 JLog::add($error, JLog::ERROR, 'com_emundus');
                 if ($format == "raw") {
-                    echo '{"aid":"0","message":"'.$error.'" }';
-                } else
-                    JError::raiseError(500, $e->getMessage());
-    
-                return false;
+                    echo '{"aid":"0","status":false,"message":"SQL Error" }';
+                } else {
+                    JFactory::getApplication()->enqueueMessage($error, 'error');
+                    if (isset($layout))
+                        $this->setRedirect('index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid.'#a'.$attachments);
+                    else
+                        $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid.'#a'.$attachments);
+                }
             }
         }
         
+        return true;
     }
 
     /***********************************
