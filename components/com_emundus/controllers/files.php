@@ -522,7 +522,9 @@ class EmundusControllerFiles extends JControllerLegacy
         {
             if(EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum))
             {
-                $validFnums[] = $fnum;
+                if ($fnum != 'em-check-all') {
+                    $validFnums[] = $fnum;
+                }
             }
         }
         unset($fnums);
@@ -1124,6 +1126,38 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
+    public function getfnums() {
+        $jinput = JFactory::getApplication()->input;
+        $fnums = $jinput->getVar('fnums', null);
+        $fnums = (array) json_decode(stripslashes($fnums));
+        $ids = $jinput->getVar('ids', null);
+        $ids = (array) json_decode(stripslashes($ids));
+        $action_id = $jinput->getVar('action_id', null);
+        $crud = $jinput->getVar('crud', null);
+
+        $model = $this->getModel('Files');
+
+        if(!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
+        {
+            $fnums = $model->getAllFnums();
+        }
+
+        $validFnums = array();
+        foreach($fnums as $fnum)
+        {
+            if(EmundusHelperAccess::asAccessAction($action_id, $crud, $this->_user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all')
+            {
+                $validFnums[] = $fnum;
+            }
+        }
+        $totalfile = count($validFnums);
+        $session = JFactory::getSession();
+        $session->set('fnums_export', $validFnums);
+        $result = array('status' => true, 'totalfile'=> $totalfile, 'ids'=> $ids);
+        echo json_encode((object) $result);
+        exit();
+    }
+
     public function getcolumn($elts) {
         return(array) json_decode(stripcslashes($elts));
     }
@@ -1154,7 +1188,10 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $session     = JFactory::getSession();
         $fnums = $session->get('fnums_export');
-
+        if (count($fnums) == 0) {
+            $fnums = array($session->get('application_fnum'));
+        }
+        
         $jinput = JFactory::getApplication()->input;
 
         $file = $jinput->getVar('file', null, 'STRING');
@@ -1378,7 +1415,10 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $session    = JFactory::getSession();
         $fnums_post = $session->get('fnums_export');
-
+        if (count($fnums_post) == 0) {
+            $fnums_post = array($session->get('application_fnum'));
+        }
+        
         $jinput     = JFactory::getApplication()->input;
         $file       = $jinput->getVar('file', null, 'STRING');
         $totalfile  = $jinput->getVar('totalfile', null);
@@ -1407,8 +1447,7 @@ class EmundusControllerFiles extends JControllerLegacy
             if (is_numeric($fnum) && !empty($fnum)) {
                 if ($forms) {
                     $files_list[] =
-                        EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum,
-                            $forms);
+                        EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms);
                 }
                 if ($attachment) {
 
@@ -1733,7 +1772,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('CAMPAIGN'));
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $i++;
-        /*		foreach($fnumsArray[0] as $fKey => $fLine)
+        /*      foreach($fnumsArray[0] as $fKey => $fLine)
                 {
                     if($fKey != 'fnum')
                     {
@@ -1810,8 +1849,8 @@ class EmundusControllerFiles extends JControllerLegacy
                             $rgb='FFFFFF';
                         }
                         $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$col].$line)->applyFromArray(
-                            array('fill' 	=> array('type'		=> PHPExcel_Style_Fill::FILL_SOLID,
-                                                     'color'		=> array('argb' => 'FF'.$rgb)
+                            array('fill'    => array('type'     => PHPExcel_Style_Fill::FILL_SOLID,
+                                                     'color'        => array('argb' => 'FF'.$rgb)
                             ),
                             )
                         );
@@ -1831,8 +1870,8 @@ class EmundusControllerFiles extends JControllerLegacy
                             $rgb='FFFFFF';
                         }
                         $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$col].$line)->applyFromArray(
-                            array('fill' 	=> array('type'		=> PHPExcel_Style_Fill::FILL_SOLID,
-                                                     'color'		=> array('argb' => 'FF'.$rgb)
+                            array('fill'    => array('type'     => PHPExcel_Style_Fill::FILL_SOLID,
+                                                     'color'        => array('argb' => 'FF'.$rgb)
                             ),
                             )
                         );
@@ -1847,7 +1886,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             $eval .= $evaluation;
                             $eval .= chr(10).'______'.chr(10);
                         }
-//						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $line, $vOpt[$fnunLine['fnum']]);
+//                      $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $line, $vOpt[$fnunLine['fnum']]);
                         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $line, $eval);
                         break;
                     case "comment":
@@ -1931,7 +1970,7 @@ class EmundusControllerFiles extends JControllerLegacy
         }
     }
     /*
-    * 	Create a zip file containing all documents attached to application fil number
+    *   Create a zip file containing all documents attached to application fil number
     */
     /**
      * @param $fnums
@@ -1939,8 +1978,8 @@ class EmundusControllerFiles extends JControllerLegacy
      */
     function export_zip($fnums)
     {
-        $view 			= JRequest::getCmd( 'view' );
-        $current_user 	= JFactory::getUser();
+        $view           = JRequest::getCmd( 'view' );
+        $current_user   = JFactory::getUser();
         if ((!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) &&
             $view != 'renew_application'
         )
@@ -2007,7 +2046,7 @@ class EmundusControllerFiles extends JControllerLegacy
     }
 
     /*
-    * 	Create a zip file containing all documents attached to application fil number
+    *   Create a zip file containing all documents attached to application fil number
     */
     /**
      * @param $fnums
@@ -2015,8 +2054,8 @@ class EmundusControllerFiles extends JControllerLegacy
      */
     function export_zip_pcl($fnums)
     {
-        $view 			= JRequest::getCmd( 'view' );
-        $current_user 	= JFactory::getUser();
+        $view           = JRequest::getCmd( 'view' );
+        $current_user   = JFactory::getUser();
         if ((!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) &&
             $view != 'renew_application'
         )
@@ -2074,7 +2113,7 @@ class EmundusControllerFiles extends JControllerLegacy
     }
 
     /*
-    * 	Get evaluation Fabrik formid by fnum
+    *   Get evaluation Fabrik formid by fnum
     */
     /**
      *
@@ -2100,7 +2139,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 
     /*
-    * 	Get my evaluation by fnum
+    *   Get my evaluation by fnum
     */
     /**
      *
@@ -2270,7 +2309,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             {
                                 if(isset($fabrikValues[$id][$fnum]))
                                 {
-                                	$value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
+                                    $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
                                     $preprocess->setValue($id, $value);
                                 }
                                 else
@@ -2403,7 +2442,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $wordPHP = \PhpOffice\PhpWord\IOFactory::load($tmpName); // Read the temp file
                 $xmlWriter = \PhpOffice\PhpWord\IOFactory::createWriter($wordPHP, 'PDF');
 
-			    $xmlWriter->save($tmpName.'.pdf');  // Save to PDF
+                $xmlWriter->save($tmpName.'.pdf');  // Save to PDF
             }
 
             $docs[] = $tmpName.'.pdf';

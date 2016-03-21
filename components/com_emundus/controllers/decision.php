@@ -689,7 +689,7 @@ class EmundusControllerDecision extends JControllerLegacy
     {
          //Filters
         $model = $this->getModel('Decision');
-        $defaultElements = $model->getDecisionElementsName(0);
+        $defaultElements = $model->getDecisionElementsName(0, 1);
         //var_dump($defaultElements);die();
         $elements = EmundusHelperFilters::getElements();
         $res = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);
@@ -945,7 +945,10 @@ class EmundusControllerDecision extends JControllerLegacy
 
         $session     = JFactory::getSession();
         $fnums = $session->get('fnums_export');
-
+		if (count($fnums) == 0) {
+            $fnums = array($session->get('application_fnum'));
+        }
+		
         $jinput = JFactory::getApplication()->input;
 
         $file = $jinput->getVar('file', null, 'STRING');

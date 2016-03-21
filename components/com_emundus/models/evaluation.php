@@ -242,6 +242,11 @@ class EmundusModelEvaluation extends JModelList
 		return @$elements_id;
 	}
 
+	/**
+     * Get list of evaluation elements
+     * @param 	  int displayed in Fabrik List ; yes=1
+     * @return    string list of Fabrik element ID used in evaluation form
+     **/
     public function getEvaluationElementsName($show_in_list_summary=1, $hidden=0)
     {
         $session = JFactory::getSession();
@@ -252,7 +257,7 @@ class EmundusModelEvaluation extends JModelList
         if ($session->has('filt_params'))
         {
             //var_dump($session->get('filt_params'));
-            $element_id = array();
+            //$element_id = array();
             $filt_params = $session->get('filt_params');
             if (count(@$filt_params['programme'])>0) {
                 foreach ($filt_params['programme'] as $value) {

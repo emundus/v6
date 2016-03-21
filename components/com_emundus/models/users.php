@@ -7,7 +7,7 @@
  * @package        Joomla
  * @subpackage    eMundus
  * @link        http://www.emundus.fr
- * @copyright    Copyright (C) 2006 eMundus. All rights reserved.
+ * @copyright    Copyright (C) 2016 eMundus. All rights reserved.
  * @license        GNU/GPL
  * @author        Benjamin Rivalland
  */
@@ -1558,7 +1558,7 @@ class EmundusModelUsers extends JModelList
     public function getUserActionByFnum($aid, $fnum, $uid, $crud)
     {
         $dbo = $this->getDbo();
-        $query = "select ".$crud." from jos_emundus_users_assoc where action_id = ".$aid." and user_id = ".$uid." and fnum like".$dbo->quote($fnum);
+        $query = "select ".$crud." from #__emundus_users_assoc where action_id = ".$aid." and user_id = ".$uid." and fnum like ".$dbo->quote($fnum);
         $dbo->setQuery($query);
         $res = $dbo->loadResult();
         return $res;
@@ -1567,7 +1567,7 @@ class EmundusModelUsers extends JModelList
     public function getGroupActions($gids, $fnum, $aid, $crud)
     {
         $dbo = $this->getDbo();
-        $query = "select ".$crud." from jos_emundus_group_assoc where action_id = ".$aid." and group_id in (".implode(',', $gids).") and fnum like".$dbo->quote($fnum);
+        $query = "select ".$crud." from #__emundus_group_assoc where action_id = ".$aid." and group_id in (".implode(',', $gids).") and fnum like ".$dbo->quote($fnum);
         $dbo->setQuery($query);
         $res = $dbo->loadAssocList();
         return $res;

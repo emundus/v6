@@ -51,9 +51,12 @@ class EmundusViewRenew_application extends JViewLegacy
 		$applicant_can_renew 		= $eMConfig->get('applicant_can_renew', '0');
 		$this->assignRef('applicant_can_renew', $applicant_can_renew);
 
-		/*$current_user = JFactory::getUser();
+		$current_user = JFactory::getUser();
 		$statut = $this->get('statut');
-		$this->assignRef('statut', $statut);*/
+		
+		$this->assignRef('current_user', $current_user);
+		$this->assignRef('statut', $statut);
+
 		parent::display($tpl);
     }
 }

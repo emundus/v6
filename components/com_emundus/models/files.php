@@ -1,15 +1,11 @@
 <?php
 /**
- * Created by eMundus.
- * User: brivalland
- * Date: 23/05/14
- * Time: 11:39
- * @package        Joomla
- * @subpackage    eMundus
- * @link        http://www.emundus.fr
- * @copyright    Copyright (C) 2008 - 2014 Décision Publique. All rights reserved.
- * @license        GNU/GPL
- * @author        Benjamin Rivalland
+ * @package         Joomla
+ * @subpackage      eMundus
+ * @link            http://www.emundus.fr
+ * @copyright       Copyright (C) 2008 - 2014 Décision Publique. All rights reserved.
+ * @license         GNU/GPL
+ * @author          Benjamin Rivalland
  */
 
 // No direct access
@@ -1401,8 +1397,7 @@ class EmundusModelFiles extends JModelLegacy
         try
         {
             $db = $this->getDbo();
-            $query = 'insert into #__emundus_group_assoc (group_id, action_id, c, r, u, d, fnum) values';
-            $value = "";
+
             foreach ($fnums as $fnum)
             {
                 foreach ($actions as $action)
@@ -1410,7 +1405,21 @@ class EmundusModelFiles extends JModelLegacy
                     foreach($groups as $group)
                     {
                         $ac = (array) $action;
-                        $value .= "($group, ".implode(',', $ac).", $fnum),";
+                        
+                        $query = 'SELECT count(id) FROM #__emundus_group_assoc 
+                                    WHERE group_id='.$group.' AND action_id='.$ac['id'].' AND fnum like '.$db->Quote($fnum);
+                        $db->setQuery( $query );
+                        $cpt = $db->loadResult();
+
+                        if($cpt == 0)
+                            $query = 'INSERT INTO #__emundus_group_assoc (group_id, action_id, c, r, u, d, fnum) values ('.$group.', '.implode(',', $ac).', '.$db->Quote($fnum).')';
+                        else
+                            $query = 'UPDATE #__emundus_group_assoc SET c='.$ac['c'].', r='.$ac['r'].', u='.$ac['u'].', d='.$ac['d'].' 
+                                        WHERE group_id='.$group.' AND fnum like '.$db->Quote($fnum).' AND action_id='.$ac['id'];
+
+                        $db->setQuery($query);
+                        $db->execute();
+
                     }
                 }
             }
@@ -1421,8 +1430,12 @@ class EmundusModelFiles extends JModelLegacy
         }
         catch (Exception $e)
         {
+            $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+            JLog::add($error, JLog::ERROR, 'com_emundus');
+
             return false;
         }
+        return true;
     }
 
     /**
@@ -1446,28 +1459,33 @@ class EmundusModelFiles extends JModelLegacy
                     foreach ($actions as $action)
                     {
                         $ac = (array) $action;
-                        //$value .= "($user, ".implode(',', $ac).", $fnum),";
-                        $query = 'insert into #__emundus_users_assoc (user_id, action_id, c, r, u, d, fnum) values ('.$user.', '.implode(',', $ac).', '.$fnum.')';
+                        
+                        $query = 'SELECT count(id) FROM #__emundus_users_assoc 
+                                    WHERE user_id='.$user.' AND action_id='.$ac['id'].' AND fnum like '.$db->Quote($fnum);
+                        $db->setQuery( $query );
+                        $cpt = $db->loadResult();
+
+                        if($cpt == 0)
+                            $query = 'INSERT INTO #__emundus_users_assoc (user_id, action_id, c, r, u, d, fnum) values ('.$user.', '.implode(',', $ac).', '.$db->Quote($fnum).')';
+                        else
+                            $query = 'UPDATE #__emundus_users_assoc SET c='.$ac['c'].', r='.$ac['r'].', u='.$ac['u'].', d='.$ac['d'].' 
+                                        WHERE user_id='.$user.' AND fnum like '.$db->Quote($fnum).' AND action_id='.$ac['id'];
+
                         $db->setQuery($query);
-                        if (!$db->execute()) {
-                            $error = $fnum.' - '.implode(',', $ac).' - '.$user.'<br>';
-                            $query = 'UPDATE #__emundus_users_assoc SET c='.$ac['c'].', r='.$ac['r'].', u='.$ac['u'].', d='.$ac['d'].' WHERE user_id='.$user.' AND fnum like '.$db->Quote($fnum).' AND action_id='.$ac['id'];
-                            $db->setQuery($query);
-                            $db->execute();
-                        }
+                        $db->execute();
                     }
                 }
             }
-            //$query .= rtrim($value, ',');
-            //$db->setQuery($query);
-            return $error;
         }
         catch (Exception $e)
         {
-            error_log($e->getMessage());
-            error_log($query);
+            $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+            JLog::add($error, JLog::ERROR, 'com_emundus');
+
             return false;
         }
+
+        return true;
     }
 
     /**
@@ -1892,7 +1910,7 @@ where 1 order by ga.fnum asc, g.title';
 
         $this->code = $userModel->getUserGroupsProgrammeAssoc($current_user->id);
 
-        $groups = $userModel->getUserGroups($current_user->id); 
+        $groups = $userModel->getUserGroups($current_user->id, 'Column'); 
         $fnum_assoc_to_groups = $userModel->getApplicationsAssocToGroups($groups);
         $fnum_assoc = $userModel->getApplicantsAssoc($current_user->id);
         $this->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);

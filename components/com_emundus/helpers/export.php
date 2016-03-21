@@ -1,9 +1,8 @@
 <?php
 /**
- * @version		$Id: query.php 14401 2010-01-26 14:10:00Z guillossou $
  * @package		Joomla
  * @subpackage	Emundus
- * @copyright	Copyright (C) 2005 - 2010 Open Source Matters. All rights reserved.
+ * @copyright	Copyright (C) 2016 emundus.fr. All rights reserved.
  * @license		GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant to the
  * GNU General Public License, and as distributed it includes or is derivative
@@ -21,7 +20,7 @@ jimport('joomla.application.component.helper');
  *
  * @static
  * @package		Joomla
- * @subpackage	Content
+ * @subpackage	eMundus
  * @since 1.5
  */
  
@@ -152,6 +151,7 @@ class EmundusHelperExport
                 }
 			}
 		}
+		return $exports;
 	}
 
     public static function getEvalPDF($fnum)

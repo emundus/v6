@@ -2110,9 +2110,9 @@ $(document).ready(function()
             $.ajax(
             {
                 type: 'post',
-                url: 'index.php?option=com_emundus&controller=files&task=getfnums_csv&fnum='+fnum+'&ids='+ids,
+                url: 'index.php?option=com_emundus&controller=files&task=getfnums&fnum='+fnum+'&ids='+ids,
                 dataType: 'JSON',
-                data: {fnums: fnums, fnum: fnum, ids: ids},
+                data: {fnums: fnums, fnum: fnum, ids: ids, action_id:8, crud:'c'},
                 success: function (result) {
                     var totalfile = result.totalfile;
                     if (result.status) {
