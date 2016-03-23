@@ -114,11 +114,13 @@ class modEmundusMenuHelper
 					else {
 						$item->flink = JRoute::_($item->flink);
 					}
-
-					$item->title = htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8', false);
+				
+					$item->title        = htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8', false);
 					$item->anchor_css   = htmlspecialchars($item->params->get('menu-anchor_css', ''), ENT_COMPAT, 'UTF-8', false);
 					$item->anchor_title = htmlspecialchars($item->params->get('menu-anchor_title', ''), ENT_COMPAT, 'UTF-8', false);
-					$item->menu_image   = $item->params->get('menu_image', '') ? htmlspecialchars($item->params->get('menu_image', ''), ENT_COMPAT, 'UTF-8', false) : '';
+					$item->anchor_rel = htmlspecialchars($item->params->get('menu-anchor_rel', ''), ENT_COMPAT, 'UTF-8', false);
+					$item->menu_image   = $item->params->get('menu_image', '') ?
+						htmlspecialchars($item->params->get('menu_image', ''), ENT_COMPAT, 'UTF-8', false) : '';
 				}
 
 				if (isset($items[$lastitem])) {
