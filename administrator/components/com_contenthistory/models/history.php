@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  com_contenthistory
  *
- * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -67,7 +67,7 @@ class ContenthistoryModelHistory extends JModelList
 				 * Make sure user has edit privileges for this content item. Note that we use edit permissions
 				 * for the content item, not delete permissions for the content history row.
 				 */
-				$user = JFactory::getUser();
+				$user   = JFactory::getUser();
 				$result = $user->authorise('core.edit', $typeAlias . '.' . (int) $record->ucm_item_id);
 			}
 		}
@@ -316,8 +316,8 @@ class ContenthistoryModelHistory extends JModelList
 			)
 		)
 		->from($db->quoteName('#__ucm_history') . ' AS h')
-		->where($db->quoteName('h.ucm_item_id') . ' = ' . $this->getState('item_id'))
-		->where($db->quoteName('h.ucm_type_id') . ' = ' . $this->getState('type_id'))
+		->where($db->quoteName('h.ucm_item_id') . ' = ' . (int) $this->getState('item_id'))
+		->where($db->quoteName('h.ucm_type_id') . ' = ' . (int) $this->getState('type_id'))
 
 		// Join over the users for the editor
 		->select('uc.name AS editor')

@@ -3,7 +3,7 @@
  * @package     Joomla.Libraries
  * @subpackage  HTML
  *
- * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -756,8 +756,18 @@ abstract class JHtmlBehavior
 		// Include jQuery
 		JHtml::_('jquery.framework');
 
-		$js = "jQuery(function () {if (top == self) {document.documentElement.style.display = 'block'; }" .
-			" else {top.location = self.location; }});";
+		$js = 'jQuery(function () {
+			if (top == self) {
+				document.documentElement.style.display = "block";
+			}
+			else
+			{
+				top.location = self.location;
+			}
+
+			// Firefox fix
+			jQuery("input[autofocus]").focus();
+		})';
 		$document = JFactory::getDocument();
 		$document->addStyleDeclaration('html { display:none }');
 		$document->addScriptDeclaration($js);
@@ -876,11 +886,14 @@ abstract class JHtmlBehavior
 	/**
 	 * Add unobtrusive JavaScript support to keep a tab state.
 	 *
-	 * Note that keeping tab state only works for inner tabs if in accordance with the following example
+	 * Note that keeping tab state only works for inner tabs if in accordance with the following example:
+	 *
+	 * ```
 	 * parent tab = permissions
 	 * child tab = permission-<identifier>
+	 * ```
 	 *
-	 * Each tab header "a" tag also should have a unique href attribute
+	 * Each tab header `<a>` tag also should have a unique href attribute
 	 *
 	 * @return  void
 	 *
