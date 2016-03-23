@@ -49,6 +49,8 @@ var fabrikAdminElement = new Class({
 				}.bind(this));
 			}
 
+			this.watchLabel();
+			this.watchGroup();
 			this.options.jsevents.each(function (opt) {
 				this.addJavascript(opt);
 			}.bind(this));
@@ -56,8 +58,12 @@ var fabrikAdminElement = new Class({
 			this.jsPeriodical = this.iniJsAccordion.periodical(250, this);
 
 			document.id('jform_plugin').addEvent('change', function (e) {
-				this.changePlugin(e);
+				this.changePlugin(e.target.get('value'));
 			}.bind(this));
+
+			if (document.getElement('input[name=name_orig]').value === '') {
+				this.changePlugin('field');
+			}
 
 			document.id('javascriptActions').addEvent('click:relay(a[data-button=removeButton])', function (e, target) {
 				e.stop();
@@ -84,6 +90,47 @@ var fabrikAdminElement = new Class({
 
 	},
 
+	/**
+	 * Automatically fill in the db table name from the label if no
+	 * db table name existed when the form loaded and when the user has not
+	 * edited the db table name.
+	 */
+	watchLabel: function () {
+		this.autoChangeDbName = jQuery('#jform_name').val() === '';
+		jQuery('#jform_label').on('keyup', function (e) {
+			if (this.autoChangeDbName) {
+				var label = jQuery('#jform_label').val().trim().toLowerCase();
+				label = label.replace(/\W+/g, '_');
+				jQuery('#jform_name').val(label);
+			}
+		}.bind(this));
+
+		jQuery('#jform_name').on('keyup', function () {
+			this.autoChangeDbName = false;
+		}.bind(this));
+	},
+
+	/**
+	 * Set the last selected group as a cookie value.
+	 * Then on page load if no group set, set to the cookie value.
+	 */
+	watchGroup: function ()  {
+		var cookieName = 'fabrik_element_group';
+		if (jQuery('#jform_group_id').val() === '') {
+			var keyValue = document.cookie.match('(^|;) ?' + cookieName + '=([^;]*)(;|$)');
+			var val = keyValue ? keyValue[2] : null;
+			jQuery('#jform_group_id').val(val);
+		}
+
+		jQuery('#jform_group_id').on('change', function () {
+			var value = jQuery('#jform_group_id').val();
+			var date = new Date();
+			date.setTime(date.getTime() + (1 * 24 * 60 * 60 * 1000));
+			var expires = "; expires=" + date.toGMTString();
+			document.cookie = cookieName + '=' + encodeURIComponent(value) + expires;
+		})
+	},
+
 	iniJsAccordion: function () {
 		if (this.jsAjaxed === this.options.jsevents.length) {
 			if (this.options.jsevents.length === 1) {
@@ -108,7 +155,7 @@ var fabrikAdminElement = new Class({
 				'id': this.options.id,
 				'task': 'element.getPluginHTML',
 				'format': 'raw',
-				'plugin': e.target.get('value')
+				'plugin': e
 			},
 			'update': document.id('plugin-container'),
 			'onComplete': function (r) {

@@ -1,8 +1,8 @@
 <?php
 /**
- * @version        $Id: gantryregistry.class.php 6306 2013-01-05 05:39:57Z btowles $
+ * @version        $Id: gantryregistry.class.php 30074 2016-03-15 08:01:58Z matias $
  * @author         RocketTheme http://www.rockettheme.com
- * @copyright      Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright      Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license        http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * derived from Joomla with original copyright and license
@@ -92,22 +92,29 @@ class GantryRegistry
 		if ($nodes = explode('.', $path)) {
 			// Initialize the current node to be the registry root.
 			$node = $this->data;
+			$found = false;
 
 			// Traverse the registry to find the correct node for the result.
-			for ($i = 0, $n = count($nodes); $i < $n; $i++) {
-				if (isset($node->$nodes[$i])) {
-					$node = $node->$nodes[$i];
-				} else {
-					break;
+			foreach ($nodes as $n)
+			{
+				if (is_array($node) && isset($node[$n]))
+				{
+					$node = $node[$n];
+					$found = true;
+					continue;
 				}
 
-				if ($i + 1 == $n) {
-					return true;
+				if (!isset($node->{$n}))
+				{
+					return false;
 				}
+
+				$node = $node->{$n};
+				$found = true;
 			}
 		}
 
-		return false;
+		return $found;
 	}
 
 	/**
@@ -125,7 +132,7 @@ class GantryRegistry
 		$result = $default;
 
 		if (!strpos($path, '.')) {
-			return (isset($this->data->$path) && !is_null($this->data->$path)) ? $this->data->$path : $default;
+			return (isset($this->data->{$path}) && !is_null($this->data->{$path})) ? $this->data->{$path} : $default;
 		}
 		// Explode the registry path into an array
 		$nodes = explode('.', $path);
@@ -135,8 +142,8 @@ class GantryRegistry
 		$found = false;
 		// Traverse the registry to find the correct node for the result.
 		foreach ($nodes as $n) {
-			if (is_object($node) && isset($node->$n)) {
-				$node  = $node->$n;
+			if (is_object($node) && isset($node->{$n})) {
+				$node  = $node->{$n};
 				$found = true;
 			} elseif (is_array($node) && array_key_exists($n, $node)) {
 				$node  = $node[$n];
@@ -306,20 +313,54 @@ class GantryRegistry
 		$result = null;
 
 		// Explode the registry path into an array
-		if ($nodes = explode('.', $path)) {
+		if ($nodes = array_values(array_filter(explode('.', $path), 'strlen'))) {
 			// Initialize the current node to be the registry root.
 			$node = $this->data;
 
 			// Traverse the registry to find the correct node for the result.
 			for ($i = 0, $n = count($nodes) - 1; $i < $n; $i++) {
-				if (!isset($node->$nodes[$i]) && ($i != $n)) {
-					$node->$nodes[$i] = new stdClass();
+				if (is_object($node))
+				{
+					if (!isset($node->{$nodes[$i]}) && ($i != $n))
+					{
+						$node->{$nodes[$i]} = new \stdClass;
+					}
+
+					// Pass the child as pointer in case it is an object
+					$node = &$node->{$nodes[$i]};
+
+					continue;
 				}
-				$node = $node->$nodes[$i];
+
+				if (is_array($node))
+				{
+					if (!isset($node[$nodes[$i]]) && ($i != $n))
+					{
+						$node[$nodes[$i]] = new \stdClass;
+					}
+
+					// Pass the child as pointer in case it is an array
+					$node = &$node[$nodes[$i]];
+				}
 			}
 
 			// Get the old value if exists so we can return it
-			$result = $node->$nodes[$i] = $value;
+			switch (true)
+			{
+				case (is_object($node)):
+					$result = $node->{$nodes[$i]} = $value;
+					break;
+
+				case (is_array($node)):
+					$result = $node[$nodes[$i]] = $value;
+					break;
+
+				default:
+					$result = null;
+					break;
+			}
+
+			return $result;
 		}
 
 		return $result;
@@ -388,10 +429,10 @@ class GantryRegistry
 
 		foreach ($data as $k => $v) {
 			if ((is_array($v) && GantryArrayHelper::isAssociative($v)) || is_object($v)) {
-				$parent->$k = new stdClass();
-				$this->bindData($parent->$k, $v);
+				$parent->{$k} = new stdClass();
+				$this->bindData($parent->{$k}, $v);
 			} else {
-				$parent->$k = $v;
+				$parent->{$k} = $v;
 			}
 		}
 	}

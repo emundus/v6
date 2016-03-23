@@ -1,7 +1,9 @@
 <?php
-
 defined('JPATH_BASE') or die;
 
 $d = $displayData;
-echo $d['text'];
 
+foreach ($d->data as $d)
+{
+	echo  '<div style="width:15px;height:15px;background-color:rgb(' . $d . ')"></div>';
+}

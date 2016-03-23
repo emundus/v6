@@ -4,12 +4,14 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\Utilities\ArrayHelper;
 
 jimport('joomla.application.component.model');
 
@@ -20,9 +22,61 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabModel extends JModelLegacy
 {
+	/**
+	 * @var JApplicationCms
+	 */
+	protected $app;
+
+	/**
+	 * @var JUser
+	 */
+	protected $user;
+
+	/**
+	 * @var JDate
+	 */
+	protected $date;
+
+	/**
+	 * App name
+	 *
+	 * @var string
+	 */
+	protected $package = 'fabrik';
+
+	/**
+	 * @var Registry
+	 */
+	protected $config;
+
+	/**
+	 * @var JLanguage
+	 */
+	protected $lang;
+
+	/**
+	 * Constructor
+	 *
+	 * @param   array  $config  An array of configuration options (name, state, dbo, table_path, ignore_request).
+	 *
+	 * @since   3.3.4
+	 * @throws  Exception
+	 */
+	public function __construct($config = array())
+	{
+		$this->app = ArrayHelper::getValue($config, 'app', JFactory::getApplication());
+		$this->user = ArrayHelper::getValue($config, 'user', JFactory::getUser());
+		$this->config = ArrayHelper::getValue($config, 'config', JFactory::getConfig());
+		$this->session = ArrayHelper::getValue($config, 'session', JFactory::getSession());
+		$this->date = ArrayHelper::getValue($config, 'date', JFactory::getDate());
+		$this->lang = ArrayHelper::getValue($config, 'lang', JFactory::getLanguage());
+		$this->package = $this->app->getUserState('com_fabrik.package', 'fabrik');
+
+		parent::__construct($config);
+	}
+
 	/**
 	 * Method to load and return a model object.
 	 *
@@ -30,9 +84,8 @@ class FabModel extends JModelLegacy
 	 * @param   string  $prefix  The class prefix. Optional.
 	 * @param   array   $config  configuration
 	 *
-	 * @return	mixed	Model object or boolean false if failed
+	 * @return	FabTable|false	Model object or boolean false if failed
 	 */
-
 	protected function _createTable($name, $prefix = 'Table', $config = array())
 	{
 		// Clean the model name
@@ -55,7 +108,7 @@ class FabModel extends JModelLegacy
 	 * @param   string  $prefix   The class prefix. Optional.
 	 * @param   array   $options  Configuration array for model. Optional.
 	 *
-	 * @return	object	The table
+	 * @return	JTable	The table
 	 */
 	public function getTable($name = '', $prefix = 'Table', $options = array())
 	{

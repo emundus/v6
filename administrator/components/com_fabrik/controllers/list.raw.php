@@ -4,13 +4,15 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use \Joomla\Registry\Registry;
 
 require_once 'fabcontrollerform.php';
 
@@ -21,7 +23,6 @@ require_once 'fabcontrollerform.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikAdminControllerList extends FabControllerForm
 {
 	/**
@@ -36,7 +37,6 @@ class FabrikAdminControllerList extends FabControllerForm
 	 *
 	 * @return  null
 	 */
-
 	public function ajax_loadTableDropDown()
 	{
 		$app = JFactory::getApplication();
@@ -75,7 +75,6 @@ class FabrikAdminControllerList extends FabControllerForm
 	 *
 	 * @return  null
 	 */
-
 	public function delete()
 	{
 		// Check for request forgeries
@@ -83,26 +82,26 @@ class FabrikAdminControllerList extends FabControllerForm
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
-		$listid = $input->getInt('listid');
-		$model->setId($listid);
+		$listId = $input->getInt('listid');
+		$model->setId($listId);
 		$ids = $input->get('ids', array(), 'array');
-		$limitstart = $input->getInt('limitstart' . $listid);
-		$length = $input->getInt('limit' . $listid);
-		$oldtotal = $model->getTotalRecords();
+		$limitStart = $input->getInt('limitstart' . $listId);
+		$length = $input->getInt('limit' . $listId);
+		$oldTotal = $model->getTotalRecords();
 		$model->deleteRows($ids);
-		$total = $oldtotal - count($ids);
+		$total = $oldTotal - count($ids);
 
-		if ($total >= $limitstart)
+		if ($total >= $limitStart)
 		{
-			$newlimitstart = $limitstart - $length;
+			$newLimitStart = $limitStart - $length;
 
-			if ($newlimitstart < 0)
+			if ($newLimitStart < 0)
 			{
-				$newlimitstart = 0;
+				$newLimitStart = 0;
 			}
 
 			$context = 'com_fabrik.list' . $model->getRenderContext() . '.list.';
-			$app->setUserState($context . 'limitstart' . $listid, $newlimitstart);
+			$app->setUserState($context . 'limitstart' . $listId, $newLimitStart);
 		}
 
 		$input->set('view', 'list');
@@ -116,7 +115,6 @@ class FabrikAdminControllerList extends FabControllerForm
 	 *
 	 * @return  void
 	 */
-
 	public function view($model = null)
 	{
 		$app = JFactory::getApplication();
@@ -128,7 +126,7 @@ class FabrikAdminControllerList extends FabControllerForm
 
 		if (is_null($model))
 		{
-			$cid = JRequest::getInt('listid', $cid);
+			$cid = $app->input->getInt('listid', $cid);
 
 			// Grab the model and set its id
 			$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
@@ -166,7 +164,6 @@ class FabrikAdminControllerList extends FabControllerForm
 	private function bootFromModule($moduleId, &$model)
 	{
 		require_once JPATH_ADMINISTRATOR  . '/modules/mod_fabrik_list/helper.php';
-		$listParams = $model->getParams();
 
 		// Load module parameters
 		$db = JFactory::getDbo();
@@ -174,7 +171,7 @@ class FabrikAdminControllerList extends FabControllerForm
 		$query->select('params')->from('#__modules')->where('id = ' . (int) $moduleId);
 		$db->setQuery($query);
 		$params = $db->loadResult();
-		$params = new JRegistry($params);
+		$params = new Registry($params);
 
 		ModFabrikListHelper::applyParams($params, $model);
 		$model->setRenderContext($moduleId);
@@ -185,7 +182,6 @@ class FabrikAdminControllerList extends FabControllerForm
 	 *
 	 * @return  null
 	 */
-
 	public function order()
 	{
 		// Check for request forgeries
@@ -209,7 +205,6 @@ class FabrikAdminControllerList extends FabControllerForm
 	 *
 	 * @return  null
 	 */
-
 	public function clearfilter()
 	{
 		$app = JFactory::getApplication();
@@ -223,7 +218,6 @@ class FabrikAdminControllerList extends FabControllerForm
 	 *
 	 * @return  null
 	 */
-
 	public function filter()
 	{
 		// Check for request forgeries
@@ -247,7 +241,6 @@ class FabrikAdminControllerList extends FabControllerForm
 	 *
 	 * @return  null
 	 */
-
 	public function elementFilter()
 	{
 		$app = JFactory::getApplication();

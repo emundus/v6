@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.list.download
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -21,7 +21,6 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.download
  * @since       3.0
  */
-
 class PlgFabrik_ListDownload extends PlgFabrik_List
 {
 	/**
@@ -41,11 +40,10 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	/**
 	 * Prep the button if needed
 	 *
-	 * @param   array  &$args  Arguments
+	 * @param   array &$args Arguments
 	 *
 	 * @return  bool;
 	 */
-
 	public function button(&$args)
 	{
 		parent::button($args);
@@ -54,11 +52,22 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	}
 
 	/**
+	 * Get button image
+	 *
+	 * @since   3.1b
+	 *
+	 * @return   string  image
+	 */
+	protected function getImageName()
+	{
+		return 'download';
+	}
+
+	/**
 	 * Get the button label
 	 *
 	 * @return  string
 	 */
-
 	protected function buttonLabel()
 	{
 		return $this->getParams()->get('download_button_label', parent::buttonLabel());
@@ -69,7 +78,6 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	 *
 	 * @return  string
 	 */
-
 	protected function getAclParam()
 	{
 		return 'download_access';
@@ -80,67 +88,76 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	 *
 	 * @return  bool
 	 */
-
 	public function canSelectRows()
 	{
 		return $this->canUse();
 	}
 
 	/**
-	 * Do the plug-in action
-	 *
-	 * @param   array  $opts  Custom options
+	 * Can the plug-in use AJAX
 	 *
 	 * @return  bool
 	 */
+	public function canAJAX()
+	{
+		return false;
+	}
 
+	/**
+	 * Do the plug-in action
+	 *
+	 * @param   array $opts Custom options
+	 *
+	 * @return  bool
+	 */
 	public function process($opts = array())
 	{
-		$params = $this->getParams();
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$model = $this->getModel();
-		$ids = $input->get('ids', array(), 'array');
-		$download_table = $params->get('download_table');
-		$download_fk = $params->get('download_fk');
-		$download_file = $params->get('download_file');
-		$download_width = $params->get('download_width');
+		$params          = $this->getParams();
+		$input           = $this->app->input;
+		$model           = $this->getModel();
+		$ids             = $input->get('ids', array(), 'array');
+		$downloadPdf     = $params->get('download_pdfs', '0') === '1';
+		$downloadTable   = $params->get('download_table');
+		$downloadFk      = $params->get('download_fk');
+		$downloadFile    = $params->get('download_file');
+		$download_width  = $params->get('download_width');
 		$download_height = $params->get('download_height');
-		$download_resize = ($download_width || $download_height) ? true : false;
-		$table = $model->getTable();
-		$filelist = array();
-		$zip_err = '';
+		$downloadResize  = ($download_width || $download_height) ? true : false;
+		$fileList        = array();
+		$zipErr          = '';
 
-		// Check ajax upload file names
-		$formModel = $model->getFormModel();
-		$downloadElement = $formModel->getElement($download_file);
-
-		if ($downloadElement)
+		if ($downloadPdf)
 		{
-			$download_file = $downloadElement->getFullName(true, true);
+			$fileList = $this->getPDFs('ids');
 		}
-
-		if (empty($download_fk) && empty($download_file) && empty($download_table))
+		elseif (empty($downloadFk) && empty($downloadFile) && empty($downloadTable))
 		{
 			return;
 		}
-		elseif (empty($download_fk) && empty($download_table) && !empty($download_file))
+		elseif (empty($downloadFk) && empty($downloadTable) && !empty($downloadFile))
 		{
+			$downloadFiles = explode(',', $downloadFile);
+
 			foreach ($ids AS $id)
 			{
 				$row = $model->getRow($id);
 
-				if (isset($row->$download_file))
+				foreach ($downloadFiles as $dl)
 				{
-					$tmpFiles = explode(GROUPSPLITTER, $row->$download_file);
+					$dl = trim($dl);
 
-					foreach ($tmpFiles as $tmpFile)
+					if (isset($row->$dl) && !empty($row->$dl))
 					{
-						$this_file = JPATH_SITE . '/' . $tmpFile;
+						$tmpFiles = explode(GROUPSPLITTER, $row->$dl);
 
-						if (is_file($this_file))
+						foreach ($tmpFiles as $tmpFile)
 						{
-							$filelist[] = $this_file;
+							$thisFile = JPATH_SITE . '/' . $tmpFile;
+
+							if (JFile::exists($thisFile))
+							{
+								$fileList[] = $thisFile;
+							}
 						}
 					}
 				}
@@ -149,121 +166,133 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 		else
 		{
 			$db = FabrikWorker::getDbo();
-			JArrayHelper::toInteger($ids);
 			$query = $db->getQuery(true);
-			$query->select($db->quoteName($download_file))
-			->from($db->quoteName($download_table))
-			->where($db->quoteName($download_fk) . ' IN (' . implode(',', $ids) . ')');
+			$query->select($db->qn($downloadFile))
+				->from($db->qn($downloadTable))
+				->where($db->qn($downloadFk) . ' IN (' . implode(',', $db->q($ids)) . ')');
 			$db->setQuery($query);
 			$results = $db->loadObjectList();
 
 			foreach ($results AS $result)
 			{
-				$this_file = JPATH_SITE . '/' . $result->$download_file;
+				$thisFile = JPATH_SITE . '/' . $result->$downloadFile;
 
-				if (is_file($this_file))
+				if (is_file($thisFile))
 				{
-					$filelist[] = $this_file;
+					$fileList[] = $thisFile;
 				}
 			}
 		}
 
-		if (!empty($filelist))
+		if (!empty($fileList))
 		{
-			if ($download_resize)
+			if ($downloadResize)
 			{
 				ini_set('max_execution_time', 300);
 				require_once COM_FABRIK_FRONTEND . '/helpers/image.php';
-				$storage = $this->getStorage();
-				$download_image_library = $params->get('download_image_library');
-				$oImage = FabimageHelper::loadLib($download_image_library);
+				$storage              = $this->getStorage();
+				$downloadImageLibrary = $params->get('download_image_library');
+				$oImage               = FabimageHelper::loadLib($downloadImageLibrary);
 				$oImage->setStorage($storage);
 			}
 
-			$zipfile = tempnam(sys_get_temp_dir(), "zip");
-			$zipfile_basename = basename($zipfile);
-			$zip = new ZipArchive;
-			$zipres = $zip->open($zipfile, ZipArchive::OVERWRITE);
+			/**
+			 * $$$ hugh - system tmp dir is sometimes not readable, i.e. on restrictive open_base_dir setups,
+			 * so use J! tmp folder instead.
+			 * $zipFile = tempname(sys_get_temp_dir(), "zip");
+			 */
+			$zipFile         = tempnam($this->config->get('tmp_path'), "zip");
+			$zipFileBasename = basename($zipFile);
+			$zip             = new ZipArchive;
+			$zipRes          = $zip->open($zipFile, ZipArchive::CREATE);
 
-			if ($zipres === true)
+			if ($zipRes === true)
 			{
-				$ziptot = 0;
-				$tmp_files = array();
+				$zipTotal = 0;
+				$tmpFiles = array();
 
-				foreach ($filelist AS $this_file)
+				foreach ($fileList AS $thisFile)
 				{
-					$this_basename = basename($this_file);
+					$thisBaseName = basename($thisFile);
 
-					if ($download_resize && $oImage->getImgType($this_file))
+					if ($downloadResize && $oImage->getImgType($thisFile))
 					{
-						$tmp_file = '/tmp/' . $this_basename;
-						$oImage->resize($download_width, $download_height, $this_file, $tmp_file);
-						$this_file = $tmp_file;
-						$tmp_files[] = $tmp_file;
+						$tmpFile = '/tmp/' . $thisBaseName;
+						$oImage->resize($download_width, $download_height, $thisFile, $tmpFile);
+						$thisFile  = $tmpFile;
+						$tmpFiles[] = $tmpFile;
 					}
 
-					$zipadd = $zip->addFile($this_file, $this_basename);
+					$zipAdd = $zip->addFile($thisFile, $thisBaseName);
 
-					if ($zipadd === true)
+					if ($zipAdd === true)
 					{
-						$ziptot++;
+						$zipTotal++;
 					}
 					else
 					{
-						$zip_err .= FText::_('ZipArchive add error: ' . $zipadd);
+						$zipErr .= FText::_('ZipArchive add error: ' . $zipAdd);
 					}
 				}
 
 				if (!$zip->close())
 				{
-					$zip_err = FText::_('ZipArchive close error') . ($zip->status);
+					$zipErr = FText::_('ZipArchive close error') . ($zip->status);
 				}
 
-				if ($download_resize)
+				if ($downloadResize)
 				{
-					foreach ($tmp_files as $tmp_file)
+					foreach ($tmpFiles as $tmpFile)
 					{
-						$storage->delete($tmp_file);
+						$storage->delete($tmpFile);
 					}
 				}
 
-				if ($ziptot > 0)
+				if ($downloadPdf)
+				{
+					foreach ($fileList as $tmpFile)
+					{
+						JFile::delete($tmpFile);
+					}
+				}
+
+				if ($zipTotal > 0)
 				{
 					// Stream the file to the client
-					$filesize = filesize($zipfile);
+					$fileSize = filesize($zipFile);
 
-					if ($filesize > 0)
+					if ($fileSize > 0)
 					{
-						header("Content-Type: application/zip");
-						header("Content-Length: " . filesize($zipfile));
-						header("Content-Disposition: attachment; filename=\"$zipfile_basename.zip\"");
-						echo file_get_contents($zipfile);
-						JFile::delete($zipfile);
+						header('Content-Type: application/zip');
+						header('Content-Length: ' . filesize($zipFile));
+						header('Content-Disposition: attachment; filename="' . $zipFileBasename . '.zip"');
+						echo file_get_contents($zipFile);
+						JFile::delete($zipFile);
 						exit;
 					}
 					else
 					{
-						$zip_err .= FText::_('ZIP is empty');
+						$zipErr .= FText::_('PLG_FABRIK_LIST_DOWNLOAD_ZIP_EMPTY');
 					}
 				}
 			}
 			else
 			{
-				$zip_err = FText::_('ZipArchive open error: ' . $zipres);
+				$zipErr = FText::_('ZipArchive open error, cannot create file : ' . $zipFile . ' : ' . $zipRes);
 			}
 		}
 		else
 		{
-			$zip_err = "No files to ZIP!";
+			$zipErr = FText::_("PLG_FABRIK_LIST_DOWNLOAD_ZIP_NO_FILES");
 		}
 
-		if (empty($zip_err))
+		if (empty($zipErr))
 		{
 			return true;
 		}
 		else
 		{
-			$this->msg = $zip_err;
+			$this->msg = $zipErr;
 
 			return false;
 		}
@@ -272,11 +301,10 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	/**
 	 * Get the message generated in process()
 	 *
-	 * @param   int  $c  Plugin render order
+	 * @param   int $c Plugin render order
 	 *
 	 * @return  string
 	 */
-
 	public function process_result($c)
 	{
 		return $this->msg;
@@ -285,16 +313,15 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	/**
 	 * Return the javascript to create an instance of the class defined in formJavascriptClass
 	 *
-	 * @param   array  $args  Array [0] => string table's form id to contain plugin
+	 * @param   array $args Array [0] => string table's form id to contain plugin
 	 *
 	 * @return bool
 	 */
-
 	public function onLoadJavascriptInstance($args)
 	{
 		parent::onLoadJavascriptInstance($args);
-		$opts = $this->getElementJSOptions();
-		$opts = json_encode($opts);
+		$opts             = $this->getElementJSOptions();
+		$opts             = json_encode($opts);
 		$this->jsInstance = "new FbListDownload($opts)";
 
 		return true;
@@ -305,17 +332,58 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	 *
 	 * @return  object  Filesystem storage
 	 */
-
 	protected function getStorage()
 	{
 		if (!isset($this->storage))
 		{
-			$params = $this->getParams();
+			$params      = $this->getParams();
 			$storageType = 'filesystemstorage';
 			require_once JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptors/' . $storageType . '.php';
 			$this->storage = new $storageType($params);
 		}
 
 		return $this->storage;
+	}
+
+	/**
+	 * Get the selected records
+	 *
+	 * @param   string $key key
+	 *
+	 * @return    array    pdf file paths
+	 */
+	public function getPDFs($key = 'ids')
+	{
+		$pdfFiles = array();
+		$input    = $this->app->input;
+
+		/** @var FabrikFEModelList $model */
+		$model     = $this->getModel();
+		$formModel = $model->getFormModel();
+		$formId    = $formModel->getId();
+
+		$ids = (array) $input->get($key, array(), 'array');
+
+		foreach ($ids as $rowId)
+		{
+			$p = tempnam($this->config->get('tmp_path'), 'download_');
+
+			if (empty($p))
+			{
+				return false;
+			}
+
+			JFile::delete($p);
+			$p .= '.pdf';
+
+			$url        = COM_FABRIK_LIVESITE . 'index.php?option=com_fabrik&view=details&formid=' . $formId . '&rowid=' . $rowId . '&format=pdf';
+			$pdfContent = file_get_contents($url);
+
+			JFile::write($p, $pdfContent);
+
+			$pdfFiles[] = $p;
+		}
+
+		return $pdfFiles;
 	}
 }

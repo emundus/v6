@@ -4,13 +4,15 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.0
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\Utilities\ArrayHelper;
 
 require_once 'fabcontrolleradmin.php';
 
@@ -21,7 +23,6 @@ require_once 'fabcontrolleradmin.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikAdminControllerCrons extends FabControllerAdmin
 {
 	/**
@@ -38,6 +39,8 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 	 */
 	protected $view_item = 'crons';
 
+	protected $runningId = null;
+
 	/**
 	 * Proxy for getModel.
 	 *
@@ -47,7 +50,6 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 	 *
 	 * @return  J model
 	 */
-
 	public function getModel($name = 'Cron', $prefix = 'FabrikAdminModel', $config = array())
 	{
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
@@ -55,12 +57,27 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 		return $model;
 	}
 
+	public function shutdownHandler()
+	{
+		$id = $this->runningId;
+		if (@is_array($e = @error_get_last())) {
+			$code = isset($e['type']) ? $e['type'] : 0;
+			$msg = isset($e['message']) ? $e['message'] : '';
+			$file = isset($e['file']) ? $e['file'] : '';
+			$line = isset($e['line']) ? $e['line'] : '';
+			if ($code>0) {
+				$this->log->message = "$code,$msg,$file,$line";
+				$this->log->store();
+			}
+		}
+	}
+
+
 	/**
 	 * Run the selected cron plugins
 	 *
 	 * @return  void
 	 */
-
 	public function run()
 	{
 		$mailer = JFactory::getMailer();
@@ -69,7 +86,7 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$cid = $input->get('cid', array(), 'array');
-		JArrayHelper::toInteger($cid);
+		ArrayHelper::toInteger($cid);
 		$cid = implode(',', $cid);
 		$query = $db->getQuery(true);
 		$query->select('*')->from('#__{package}_cron')->where('id IN (' . $cid . ')');
@@ -79,21 +96,23 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
 		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 		$c = 0;
-		$log = FabTable::getInstance('Log', 'FabrikTable');
+		$this->log = FabTable::getInstance('Log', 'FabrikTable');
+
+		register_shutdown_function(array($this, 'shutdownHandler'));
 
 		foreach ($rows as $row)
 		{
 			// Load in the plugin
 			$rowParams = json_decode($row->params);
-			$log->message = '';
-			$log->id = null;
-			$log->referring_url = '';
-			$log->message_type = 'plg.cron.' . $row->plugin;
+			$this->log->message = '';
+			$this->log->id = null;
+			$this->log->referring_url = '';
+			$this->log->message_type = 'plg.cron.' . $row->plugin;
 			$plugin = $pluginManager->getPlugIn($row->plugin, 'cron');
 			$table = FabTable::getInstance('cron', 'FabrikTable');
 			$table->load($row->id);
 			$plugin->setRow($table);
-			$params = $plugin->getParams();
+			$plugin->getParams();
 			$thisListModel = clone ($listModel);
 			$thisAdminListModel = clone ($adminListModel);
 			$tid = (int) $rowParams->table;
@@ -101,28 +120,29 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 			if ($tid !== 0)
 			{
 				$thisListModel->setId($tid);
-				$log->message .= "\n\n$row->plugin\n listid = " . $thisListModel->getId();
+				$this->log->message .= "\n\n$row->plugin\n listid = " . $thisListModel->getId();
 
 				if ($plugin->requiresTableData())
 				{
 					$thisListModel->setLimits(0, 0);
-					$nav = $thisListModel->getPagination(0, 0, 0);
+					$thisListModel->getPagination(0, 0, 0);
 					$data = $thisListModel->getData();
-					$log->message .= "\n" . $thisListModel->buildQuery();
 				}
 			}
 			else
 			{
 				$data = array();
 			}
+
+			$this->runningId = $row->id;
 			// $$$ hugh - added table model param, in case plugin wants to do further table processing
 			$c = $c + $plugin->process($data, $thisListModel, $thisAdminListModel);
 
-			$log->message = $plugin->getLog() . "\n\n" . $log->message;
+			$this->log->message = $plugin->getLog() . "\n\n" . $this->log->message;
 
 			if ($plugin->getParams()->get('log', 0) == 1)
 			{
-				$log->store();
+				$this->log->store();
 			}
 
 			// Email log message
@@ -132,7 +152,7 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 			{
 				$recipient = explode(',', $recipient);
 				$subject = $config->get('sitename') . ': ' . $row->plugin . ' scheduled task';
-				$mailer->sendMail($config->get('mailfrom'), $config->get('fromname'), $recipient, $subject, $log->message, true);
+				$mailer->sendMail($config->get('mailfrom'), $config->get('fromname'), $recipient, $subject, $this->log->message, true);
 			}
 		}
 

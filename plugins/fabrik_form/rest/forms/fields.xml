@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
 	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
-		<fieldset name="plg-form-rest">
+		<fieldset name="plg-form-rest" label="COM_FABRIK_OPTIONS">
 			
 			<field name="username"
 				type="field"
@@ -34,8 +34,8 @@
 				type="text"
 				repeat="true"
 				size="60"
-				description="PLG_REST_PUT_ENDPOINT_DESC"
-				label="PLG_REST_PUT_ENDPOINT_LABEL"/>	
+				description="PLG_FORM_REST_PUT_ENDPOINT_DESC"
+				label="PLG_FORM_REST_PUT_ENDPOINT_LABEL"/>	
 					
 			<field name="xml_parent"
 				type="field"

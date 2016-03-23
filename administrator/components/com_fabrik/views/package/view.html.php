@@ -4,12 +4,14 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\Utilities\ArrayHelper;
 
 jimport('joomla.application.component.view');
 
@@ -91,7 +93,7 @@ class FabrikAdminViewPackage extends JViewLegacy
 		$blocks->list = FArrayHelper::getValue($b, 'list', array());
 		$blocks->visualization = FArrayHelper::getValue($b, 'visualization', array());
 
-		$opts = JArrayHelper::getvalue($canvas, 'options', array());
+		$opts = ArrayHelper::getvalue($canvas, 'options', array());
 		$d = new stdClass;
 		$layout = FArrayHelper::getValue($canvas, 'layout', $d);
 		$document = JFactory::getDocument();
@@ -134,7 +136,7 @@ class FabrikAdminViewPackage extends JViewLegacy
 		$isNew = ($this->item->id == 0);
 		$checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
 		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
-		JToolBarHelper::title($isNew ? FText::_('COM_FABRIK_MANAGER_PACKAGE_NEW') : FText::_('COM_FABRIK_MANAGER_PACKAGE_EDIT') . ' "' . $this->item->label . '"', 'package.png');
+		JToolBarHelper::title($isNew ? FText::_('COM_FABRIK_MANAGER_PACKAGE_NEW') : FText::_('COM_FABRIK_MANAGER_PACKAGE_EDIT') . ' "' . $this->item->label . '"', 'box-add');
 
 		if ($isNew)
 		{

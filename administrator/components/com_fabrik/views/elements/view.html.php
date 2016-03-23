@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.0
  */
@@ -114,7 +114,7 @@ class FabrikAdminViewElements extends JViewLegacy
 	{
 		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
 		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_ELEMENTS'), 'elements.png');
+		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_ELEMENTS'), 'checkbox-unchecked');
 
 		if ($canDo->get('core.create'))
 		{
@@ -243,7 +243,7 @@ class FabrikAdminViewElements extends JViewLegacy
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$input->set('hidemainmenu', true);
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_ELEMENT_CONFIRM_DELETE'), 'element.png');
+		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_ELEMENT_CONFIRM_DELETE'), 'checkbox-unchecked');
 		JToolBarHelper::save('elements.dodelete', 'JTOOLBAR_APPLY');
 		JToolBarHelper::cancel('elements.cancel', 'JTOOLBAR_CANCEL');
 		JToolBarHelper::divider();
@@ -287,7 +287,7 @@ class FabrikAdminViewElements extends JViewLegacy
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$input->set('hidemainmenu', true);
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_ELEMENT_COPY_TO_WHICH_GROUP'), 'element.png');
+		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_ELEMENT_COPY_TO_WHICH_GROUP'), 'checkbox-unchecked');
 		JToolBarHelper::save('element.copy', 'JTOOLBAR_APPLY');
 		JToolBarHelper::cancel('elements.cancel', 'JTOOLBAR_CANCEL');
 		JToolBarHelper::divider();

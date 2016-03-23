@@ -4,8 +4,8 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.form.subscriptions
- * @copyright   Copyright (C) 2005 Fabrik. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
@@ -23,17 +23,14 @@ require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
 
 class FabrikTablePlan extends JTable
 {
-
 	/**
 	 * Constructor
 	 *
-	 * @param   object  $_db  Database Object
+	 * @param   object  &$db  database object
 	 */
 
-	function __construct(&$_db)
+	public function __construct(&$db)
 	{
-		parent::__construct('#__fabrik_subs_plans', 'id', $_db);
+		parent::__construct('#__fabrik_subs_plans', 'id', $db);
 	}
-
 }
-

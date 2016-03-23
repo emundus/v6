@@ -1,6 +1,6 @@
 /*
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 (function(){var a;a=(function(){function b(){this.options_index=0;this.parsed=[];}b.prototype.add_node=function(c){if(c.nodeName==="OPTGROUP"){return this.add_group(c);

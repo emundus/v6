@@ -4,14 +4,19 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.0
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
+$btnLayout  = FabrikHelperHTML::getLayout('fabrik-button');
+$layoutData = (object) array(
+	'class' => 'btn-info fabrik_filter_submit button',
+	'name' => 'filter',
+	'label' => FabrikHelperHTML::icon('icon-filter', FText::_('COM_FABRIK_GO'))
+);
 ?>
 <tr class="fabrik___heading">
 <?php foreach ($this->headings as $key => $heading) :
@@ -41,10 +46,7 @@ defined('_JEXEC') or die('Restricted access');
 		<?php elseif ($key == 'fabrik_actions' && $this->filter_action != 'onchange') :
 			?>
 			<div style="text-align:center">
-				<button class="btn-info btn fabrik_filter_submit button" name="filter" >
-				<i class="icon-filter"></i>
-				<?php echo FText::_('COM_FABRIK_GO');?>
-				</button>
+				<?php echo $btnLayout->render($layoutData); ?>
 			</div>
 		<?php endif;?>
 		</th>

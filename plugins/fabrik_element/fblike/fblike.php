@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.facebooklike
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -57,30 +57,28 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string    $data      elements data
-	 * @param   stdClass  &$thisRow  all the data in the lists current row
+	 * @param   string    $data      Elements data
+	 * @param   stdClass  &$thisRow  All the data in the lists current row
+	 * @param   array     $opts      Rendering options
 	 *
 	 * @return  string	formatted value
 	 */
-
-	public function renderListData($data, stdClass &$thisRow)
+	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
-		$app = JFactory::getApplication();
-
-		if ($app->input->get('format') === 'raw')
+		if ($this->app->input->get('format') === 'raw')
 		{
 			return $data;
 		}
 
+		$input = $this->app->input;
 		$params = $this->getParams();
 		$meta = array();
-		$config = JFactory::getConfig();
 		$ex = $_SERVER['SERVER_PORT'] == 80 ? 'http://' : 'https://';
 
 		// $$$ rob no need to get other meta data as we are linking to the details which contains full meta info on what it is
 		// you are liking
-		$meta['og:url'] = $ex . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-		$meta['og:site_name'] = $config->get('sitename');
+		$meta['og:url'] = $ex . $input->server->getString('SERVER_NAME') . $input->server->getString('REQUEST_URI');
+		$meta['og:site_name'] = $this->config->get('sitename');
 		$meta['fb:admins'] = $params->get('fblike_opengraph_applicationid');
 		$str = FabrikHelperHTML::facebookGraphAPI($params->get('opengraph_applicationid'), $params->get('fblike_locale', 'en_US'), $meta);
 
@@ -92,7 +90,7 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 		{
 			if (!self::$warned)
 			{
-				$app->enqueueMessage('Your list needs to have viewable details records for the FB Like button to work');
+				$this->app->enqueueMessage('Your list needs to have viewable details records for the FB Like button to work');
 				self::$warned = true;
 			}
 
@@ -114,9 +112,9 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 	public function render($data, $repeatCounter = 0)
 	{
 		$params = $this->getParams();
+		$input = $this->app->input;
 		$meta = array();
-		$formModel = $this->getForm();
-		$config = JFactory::getConfig();
+		$formModel = $this->getFormModel();
 		$ex = $_SERVER['SERVER_PORT'] == 80 ? 'http://' : 'https://';
 		$map = array('og:title' => 'fblike_title', 'og:type' => 'fblike_type', 'og:image' => 'fblike_image',
 			'og:description' => 'fblike_description', 'og:street-address' => 'fblike_street_address', 'og:locality' => 'fblike_locality',
@@ -138,7 +136,7 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 
 					if ($k == 'og:image')
 					{
-						$v = $ex . $_SERVER['SERVER_NAME'] . $v;
+						$v = $ex . $input->server->getString('SERVER_NAME') . $v;
 					}
 
 					if ($v !== '')
@@ -164,8 +162,8 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 			}
 		}
 
-		$meta['og:url'] = $ex . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-		$meta['og:site_name'] = $config->get('sitename');
+		$meta['og:url'] = $ex . $input->server->getString('SERVER_NAME') . $input->server->getString('REQUEST_URI');
+		$meta['og:site_name'] = $this->config->get('sitename');
 		$meta['fb:app_id'] = $params->get('fblike_opengraph_applicationid');
 		$str = FabrikHelperHTML::facebookGraphAPI($params->get('fblike_opengraph_applicationid'), $params->get('fblike_locale', 'en_US'), $meta);
 		$url = $params->get('fblike_url');
@@ -183,10 +181,10 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 	 *
 	 * @return string
 	 */
-
 	protected function _render($url)
 	{
 		$params = $this->getParams();
+		$input = $this->app->input;
 
 		if ($url !== '')
 		{
@@ -195,7 +193,7 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 				// $$$ rob doesn't work with sef urls as $url already contains site folder.
 				// $url = COM_FABRIK_LIVESITE.$url;
 				$ex = $_SERVER['SERVER_PORT'] == 80 ? 'http://' : 'https://';
-				$url = $ex . $_SERVER['SERVER_NAME'] . $url;
+				$url = $ex . $input->server->getString('SERVER_NAME') . $url;
 			}
 
 			$href = "href=\"$url\"";
@@ -205,16 +203,17 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 			$href = '';
 		}
 
-		$layout = $params->get('fblike_layout', 'standard');
-		$showfaces = $params->get('fblike_showfaces', 0) == 1 ? 'true' : 'false';
-		$width = $params->get('fblike_width', 300);
-		$action = $params->get('fblike_action', 'like');
-		$font = $params->get('fblike_font', 'arial');
-		$colorscheme = $params->get('fblike_colorscheme', 'light');
-		$str = '<fb:like ' . $href . 'layout="' . $layout . '" show_faces="' . $showfaces . '" width="' . $width . '" action="' . $action
-			. '" font="' . $font . '" colorscheme="' . $colorscheme . '" />';
+		$data = new stdClass;
+		$data->href = $href;
+		$data->layout = $params->get('fblike_layout', 'standard');
+		$data->showfaces = $params->get('fblike_showfaces', 0) == 1 ? 'true' : 'false';
+		$data->width = $params->get('fblike_width', 300);
+		$data->action = $params->get('fblike_action', 'like');
+		$data->font = $params->get('fblike_font', 'arial');
+		$data->colorscheme = $params->get('fblike_colorscheme', 'light');
+		$jLayout = $this->getLayout('form');
 
-		return $str;
+		return $jLayout->render($data);
 	}
 
 	/**
@@ -224,7 +223,6 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
@@ -241,15 +239,13 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 	 *
 	 * @return  null
 	 */
-
 	public function onAjax_rate()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$this->loadMeForAjax();
-		$listid = $input->getInt('listid');
+		$listId = $input->getInt('listid');
 		$list = JModelLegacy::getInstance('list', 'FabrikFEModel');
-		$list->setId($listid);
+		$list->setId($listId);
 		$rowId = $input->get('row_id');
 		$direction = $input->get('direction', '+');
 		$field = $this->getFullName(false, false, false);

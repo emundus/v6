@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -93,7 +93,7 @@ class FabrikAdminViewCrons extends JViewLegacy
 	{
 		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
 		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_CRONS'), 'crons.png');
+		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_CRONS'), 'clock');
 		JToolBarHelper::custom('crons.run', 'upload.png', 'upload_f2.png', 'Run');
 
 		if ($canDo->get('core.create'))

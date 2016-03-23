@@ -1,6 +1,6 @@
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -68,7 +68,7 @@
 
     var WFWindowPopup = {
         init: function(width, height, click) {
-            this.width = parseInt(width);
+            this.width  = parseInt(width);
             this.height = parseInt(height);
             this.click = !!click;
 
@@ -105,7 +105,7 @@
                 }
             }
 
-            win.resizeBy(vw - this.config.width, vh - (this.config.height + oh));
+            win.resizeBy(vw - this.width, vh - (this.height + oh));
 
             this.center();
         },

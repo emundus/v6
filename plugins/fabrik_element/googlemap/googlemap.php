@@ -4,12 +4,14 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.googlemap
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\Utilities\ArrayHelper;
 
 require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
 require_once JPATH_SITE . '/components/com_fabrik/helpers/googlemap.php';
@@ -21,7 +23,6 @@ require_once JPATH_SITE . '/components/com_fabrik/helpers/googlemap.php';
  * @subpackage  Fabrik.element.googlemap
  * @since       3.0
  */
-
 class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 {
 	/**
@@ -39,6 +40,13 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 	protected static $radiusJs = null;
 
 	/**
+	 * Has the OSRef js been loaded
+	 *
+	 * @var bool
+	 */
+	protected static $OSRefJs = null;
+
+	/**
 	 * Determine if we use a google static map
 	 *
 	 * @var bool
@@ -48,13 +56,13 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string    $data      elements data
-	 * @param   stdClass  &$thisRow  all the data in the lists current row
+	 * @param   string    $data      Elements data
+	 * @param   stdClass  &$thisRow  All the data in the lists current row
+	 * @param   array     $opts      Rendering options
 	 *
 	 * @return  string	formatted value
 	 */
-
-	public function renderListData($data, stdClass &$thisRow)
+	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
 		$listModel = $this->getListModel();
 		$params = $this->getParams();
@@ -67,10 +75,10 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		{
 			if ($params->get('fb_gm_staticmap_tableview'))
 			{
-				$d = $this->_staticMap($d, $w, $h, $z, $i, true, JArrayHelper::fromObject($thisRow));
+				$d = $this->_staticMap($d, $w, $h, $z, $i, true, ArrayHelper::fromObject($thisRow));
 			}
 
-			if ($params->get('icon_folder') == '1')
+			if ($params->get('icon_folder') == '1' && ArrayHelper::getValue($opts, 'icon', 1))
 			{
 				// $$$ rob was returning here but that stopped us being able to use links and icons together
 				$d = $this->replaceWithIcons($d, 'list', $listModel->getTmpl());
@@ -82,9 +90,15 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 					$d = $params->get('fb_gm_staticmap_tableview_type_coords', 'num') == 'dms' ? $this->_dmsformat($d) : $this->_microformat($d);
 				}
 			}
+			if (ArrayHelper::getValue($opts, 'rollover', 1))
+			{
+				$d = $this->rollover($d, $thisRow, 'list');
+			}
 
-			$d = $this->rollover($d, $thisRow, 'list');
-			$d = $listModel->_addLink($d, $this, $thisRow, $i);
+			if (ArrayHelper::getValue($opts, 'link', 1))
+			{
+				$d = $listModel->_addLink($d, $this, $thisRow, $i);
+			}
 		}
 
 		return $this->renderListDataFinal($data);
@@ -200,14 +214,37 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 	{
 		if (!isset(self::$geoJs))
 		{
-			$document = JFactory::getDocument();
 			$params = $this->getParams();
 
 			if ($params->get('fb_gm_defaultloc'))
 			{
-				$uri = JURI::getInstance();
-				FabrikHelperHTML::script('components/com_fabrik/libs/geo-location/geo.js');
+				$ext = FabrikHelperHTML::isDebug() ? '.js' : '-min.js';
+				FabrikHelperHTML::script('media/com_fabrik/js/lib/geo-location/geo' . $ext);
 				self::$geoJs = true;
+			}
+		}
+	}
+
+	/**
+	 * JS lib for OSRef
+	 * As different map instances may or may not load this we shouldn't put it in
+	 * formJavascriptClass() but call this code from elementJavascript() instead.
+	 * The files are still only loaded when needed and only once
+	 *
+	 * @return  void
+	 */
+
+	protected function OSRefJs()
+	{
+		if (!isset(self::$OSRefJs))
+		{
+			$params = $this->getParams();
+
+			if ($params->get('fb_gm_latlng_osref'))
+			{
+				$ext = FabrikHelperHTML::isDebug() ? '.js' : '-min.js';
+				FabrikHelperHTML::script('media/com_fabrik/js/lib/jscoord-1.1.1/jscoord-1.1.1' . $ext);
+				self::$OSRefJs = true;
 			}
 		}
 	}
@@ -224,7 +261,6 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 	{
 		if (!isset(self::$radiusJs))
 		{
-			$document = JFactory::getDocument();
 			$params = $this->getParams();
 
 			if ((int) $params->get('fb_gm_radius', '0'))
@@ -234,6 +270,49 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 			}
 		}
 	}
+
+	/**
+	 * Get the class to manage the form element
+	 * to ensure that the file is loaded only once
+	 *
+	 * @param   array   &$srcs   Scripts previously loaded
+	 * @param   string  $script  Script to load once class has loaded
+	 * @param   array   &$shim   Dependant class names to load before loading the class - put in requirejs.config shim
+	 *
+	 * @return void|boolean
+	 */
+	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
+	{
+		$params = $this->getParams();
+		$geocode = $params->get('fb_gm_geocode', '0');
+		$geocode_event = $params->get('fb_gm_geocode_event', 'button');
+
+		$s = new stdClass;
+		$s->deps = array('fab/element');
+
+		if ($geocode !== '0' && $geocode_event === 'change')
+		{
+			$folder = 'media/com_fabrik/js/lib/debounce/';
+			$s->deps[] = $folder . 'jquery.ba-throttle-debounce';
+		}
+
+		if (count($s->deps) > 1)
+		{
+			if (array_key_exists('element/googlemap/googlemap', $shim))
+			{
+				$shim['element/googlemap/googlemap']->deps = array_merge($shim['element/googlemap/googlemap']->deps, $s->deps);
+			}
+			else
+			{
+				$shim['element/googlemap/googlemap'] = $s;
+			}
+		}
+
+		parent::formJavascriptClass($srcs, $script, $shim);
+
+		return false;
+	}
+
 
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
@@ -255,7 +334,9 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		$o = $this->_strToCoords($v, $zoomlevel);
 		$dms = $this->_strToDMS($v);
 		$opts = $this->getElementJSOptions($repeatCounter);
+
 		$this->geoJs();
+		$this->OSRefJs();
 
 		$mapShown = $this->isEditable() || (!$this->isEditable() && $v != '');
 
@@ -269,6 +350,7 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		$opts->scalecontrol = (bool) $params->get('fb_gm_scalecontrol');
 		$opts->maptypecontrol = (bool) $params->get('fb_gm_maptypecontrol');
 		$opts->overviewcontrol = (bool) $params->get('fb_gm_overviewcontrol');
+		$opts->traffic = (bool) $params->get('fb_gm_trafficlayer', '0');
 		$opts->drag = (bool) $formModel->isEditable();
 		$opts->staticmap = $this->_useStaticMap() ? true : false;
 		$opts->maptype = $params->get('fb_gm_maptype');
@@ -277,12 +359,13 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		$opts->latlng = $this->isEditable() ? (bool) $params->get('fb_gm_latlng', false) : false;
 		$opts->sensor = (bool) $params->get('fb_gm_sensor', false);
 		$opts->latlng_dms = $this->isEditable() ? (bool) $params->get('fb_gm_latlng_dms', false) : false;
+		$opts->latlng_osref = $this->isEditable() ? (bool) $params->get('fb_gm_latlng_osref', false) : false;
 		$opts->geocode = $params->get('fb_gm_geocode', '0');
 		$opts->geocode_event = $params->get('fb_gm_geocode_event', 'button');
 		$opts->geocode_fields = array();
 		// geocode_on_load, 0 = no, 1 = new, 2 = edit, 3 = always
 		$geocode_on_load = $params->get('fb_gm_geocode_on_load', '0');
-		$opts->geocode_on_load = $this->isEditable() && 
+		$opts->geocode_on_load = $this->isEditable() &&
 				(
 					($geocode_on_load == 1 && $formModel->isNewRecord())
 					|| ($geocode_on_load == 2 && !$formModel->isNewRecord())
@@ -696,14 +779,30 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		$src .= implode('&', $attribs);
 		$folder = 'cache/com_fabrik/staticmaps/';
 		$file = implode('.', $attribs) . '.png';
-		$src = Fabimage::cacheRemote($src, $folder, $file);
 
-		$id = $tableView ? '' : 'id="' . $id . '"';
-		$str = '<div ' . $id . 'class="gmStaticMap">';
-		$str .= '<img src="' . $src . '" alt="static map" />';
-		$str .= '</div>';
+		// If its not editable and there's no val don't show the map
+		$layout = $this->getLayout('static');
+		$displayData = new stdClass;
 
-		return $str;
+		if (!$tableView || ($tableView && $params->get('fb_gm_staticmap_tableview', '0') === '1'))
+		{
+			$displayData->src = Fabimage::cacheRemote($src, $folder, $file);
+
+			// if cacheImage returned false, probably an issue with permissions on the cache folder, so punt to direct URL
+			if ($displayData->src === false)
+			{
+				$displayData->src = $src;
+			}
+		}
+		else
+		{
+			$displayData->src = $src;
+		}
+
+		$displayData->id = $id;
+		$displayData->view = $tableView ? 'list' : 'details';
+
+		return $layout->render($displayData);
 	}
 
 	/**
@@ -719,12 +818,12 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 	{
 		$id = $this->getHTMLId($repeatCounter);
 		$name = $this->getHTMLName($repeatCounter);
-		$groupModel = $this->getGroupModel();
 		$element = $this->getElement();
 		$val = $this->getValue($data, $repeatCounter);
 		$params = $this->getParams();
 		$w = $params->get('fb_gm_mapwidth');
 		$h = $params->get('fb_gm_mapheight');
+		$str = '';
 
 		if ($this->_useStaticMap())
 		{
@@ -737,65 +836,30 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 				return $this->getHiddenField($name, $data[$name], $id);
 			}
 
-			$str = '<div class="fabrikSubElementContainer" id="' . $id . '">';
-
-			// If its not editable and there's no val don't show the map
-			$geoCodeEvent = $params->get('fb_gm_geocode_event', 'button');
-
 			if ((!$this->isEditable() && $val != '') || $this->isEditable())
 			{
-				if ($this->isEditable() && $params->get('fb_gm_geocode') != '0')
-				{
-					$append = $geoCodeEvent === 'button' ? '' : 'input-append';
-					$str .= '<div style="margin-bottom:5px" class="control-group ' . $append . '">';
-				}
+				$layout = $this->getLayout('form');
+				$layoutData = new stdClass;
+				$layoutData->id = $id;
 
-				if ($this->isEditable() && $params->get('fb_gm_geocode') == 1)
-				{
-					$str .= '<input type="text" class="geocode_input inputbox" />';
-				}
+				$coords = FabrikString::mapStrToCoords($val);
+				$layoutData->coords = $coords->coords;
+				$layoutData->geoCodeEvent = $params->get('fb_gm_geocode_event', 'button');
+				$layoutData->geocode = $params->get('fb_gm_geocode');
+				$layoutData->editable = $this->isEditable();
+				$layoutData->width = $w;
+				$layoutData->height = $h;
+				$layoutData->name = $name;
+				$layoutData->label = $element->label;
+				$layoutData->value = htmlspecialchars($val, ENT_QUOTES);
+				$layoutData->dms = $this->_strToDMS($val);
+				$layoutData->osref = "";
+				$layoutData->staticmap = $params->get('fb_gm_staticmap');
+				$layoutData->showdms = $params->get('fb_gm_latlng_dms');
+				$layoutData->showlatlng = $params->get('fb_gm_latlng');
+				$layoutData->showosref = $params->get('fb_gm_latlng_osref');
 
-				if ($params->get('fb_gm_geocode') != '0' && $geoCodeEvent == 'button' && $this->isEditable())
-				{
-					$str .= '<button class="button btn btn-info geocode" type="button">' . FText::_('PLG_ELEMENT_GOOGLE_MAP_GEOCODE') . '</button>';
-				}
-
-				if ($this->isEditable() && $params->get('fb_gm_geocode') != '0')
-				{
-					$str .= '</div>';
-				}
-				// Allow for 100% width
-				if ($w !== '')
-				{
-					$w = 'width:' . $w;
-					$w .= !strstr($w, '%') ? 'px; ' : '; ';
-				}
-
-				$str .= '<div class="map" style="' . $w . 'height:' . $h . 'px"></div>';
-				$str .= '<input type="hidden" class="fabrikinput" name="' . $name . '" value="' . htmlspecialchars($val, ENT_QUOTES) . '" />';
-
-				if (($this->isEditable() || $params->get('fb_gm_staticmap') == '2') && $params->get('fb_gm_latlng') == '1')
-				{
-					$arrloc = explode(',', $val);
-					$arrloc[0] = str_replace("(", "", $arrloc[0]);
-					$arrloc_strict = explode(":", $arrloc[1]);
-					$arrloc[1] = array_key_exists(1, $arrloc) ? str_replace(")", "", array_shift($arrloc_strict)) : '';
-					$edit = $this->isEditable() ? '' : 'disabled="true"';
-					$str .= '<div class="coord" style="margin-top:5px;">
-					<input ' . $edit . ' size="23" value="' . $arrloc[0] . ' ° N" style="margin-right:5px" class="inputbox lat"/>
-					<input ' . $edit . ' size="23" value="' . $arrloc[1] . ' ° E"  class="inputbox lng"/></div>';
-				}
-
-				if (($this->isEditable() || $params->get('fb_gm_staticmap') == '2') && $params->get('fb_gm_latlng_dms') == '1')
-				{
-					$dms = $this->_strToDMS($val);
-					$edit = $this->isEditable() ? '' : 'disabled="true"';
-					$str .= '<div class="coord" style="margin-top:5px;">
-					<input ' . $edit . ' size=\"23\" value="' . $dms->coords[0] . '" style="margin-right:5px" class="latdms"/>
-					<input ' . $edit . ' size=\"23\" value="' . $dms->coords[1] . '"  class="lngdms"/></div>';
-				}
-
-				$str .= '</div>';
+				return $layout->render($layoutData);
 			}
 			else
 			{
@@ -806,7 +870,7 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 			 * $$$ hugh - not sure why we still do this.  If they want to show lat/lng details, they can use the
 			 * gm_latlng option.  Problem with showing this is we never change it, so it's misleading.
 			 */
-			
+
 			// $str .= $this->_microformat($val);
 
 			return $str;
@@ -830,8 +894,8 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		$listModel = $this->getlistModel();
 		$table = $listModel->getTable();
 		$fullElName = FArrayHelper::getValue($opts, 'alias', $dbtable . '___' . $this->element->name);
-		$dbtable = $db->quoteName($dbtable);
-		$str = $dbtable . '.' . $db->quoteName($this->element->name) . ' AS ' . $db->quoteName($fullElName);
+		$dbtable = $db->qn($dbtable);
+		$str = $dbtable . '.' . $db->qn($this->element->name) . ' AS ' . $db->qn($fullElName);
 
 		if ($table->db_primary_key == $fullElName)
 		{
@@ -841,10 +905,10 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		else
 		{
 			$aFields[] = $str;
-			$aAsFields[] = $db->quoteName($fullElName);
+			$aAsFields[] = $db->qn($fullElName);
 			$rawName = $fullElName . '_raw';
-			$aFields[] = $dbtable . '.' . $db->quoteName($this->element->name) . ' AS ' . $db->quoteName($rawName);
-			$aAsFields[] = $db->quoteName($rawName);
+			$aFields[] = $dbtable . '.' . $db->qn($this->element->name) . ' AS ' . $db->qn($rawName);
+			$aAsFields[] = $db->qn($rawName);
 		}
 	}
 

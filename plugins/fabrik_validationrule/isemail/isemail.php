@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.isemail
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -21,7 +21,6 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.isemail
  * @since       3.0
  */
-
 class PlgFabrik_ValidationruleIsEmail extends PlgFabrik_Validationrule
 {
 	/**
@@ -39,19 +38,19 @@ class PlgFabrik_ValidationruleIsEmail extends PlgFabrik_Validationrule
 	 *
 	 * @return  bool  true if validation passes, false if fails
 	 */
-
 	public function validate($data, $repeatCounter)
 	{
 		$email = $data;
 
-		// Could be a dropdown with multivalues
+		// Could be a drop-down with multi-values
 		if (is_array($email))
 		{
 			$email = implode('', $email);
 		}
 
 		// Decode as it can be posted via ajax
-		$email = urldecode($email);
+		// (but first % encode any + characters, as urldecode() will turn + into space)
+		$email = urldecode(str_replace('+', '%2B', $email));
 		$params = $this->getParams();
 		$allow_empty = $params->get('isemail-allow_empty');
 
@@ -70,7 +69,6 @@ class PlgFabrik_ValidationruleIsEmail extends PlgFabrik_Validationrule
 	 *
 	 * @return  bool
 	 */
-
 	protected function allowEmpty()
 	{
 		$params = $this->getParams();

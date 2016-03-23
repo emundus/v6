@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.openprovider
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -24,7 +24,6 @@ require_once JPATH_SITE . '/plugins/fabrik_validationrule/openprovider/libs/api.
  * @subpackage  Fabrik.validationrule.openprovider
  * @since       3.0
  */
-
 class PlgFabrik_ValidationruleOpenprovider extends PlgFabrik_Validationrule
 {
 	/**
@@ -42,7 +41,6 @@ class PlgFabrik_ValidationruleOpenprovider extends PlgFabrik_Validationrule
 	 *
 	 * @return  bool  true if validation passes, false if fails
 	 */
-
 	public function validate($data, $repeatCounter)
 	{
 		$params = $this->getParams();

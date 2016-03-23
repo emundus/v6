@@ -1,8 +1,8 @@
 <?php
 /**
- * @version                                        $Id: gantryflatfile.class.php 6533 2013-01-15 16:03:26Z btowles $
+ * @version                                        $Id: gantryflatfile.class.php 29297 2015-12-15 18:55:51Z djamil $
  * @author                                         RocketTheme http://www.rockettheme.com
- * @copyright                                      Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright                                      Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license                                        http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Original Copyright Below
@@ -56,7 +56,7 @@ if (!defined('GANTRY_FLATFILE')) {
 		/**
 		 * Create a new column object
 		 */
-		function Column($index, $type)
+		function __construct($index, $type)
 		{
 			$this->index = $index;
 			$this->type  = $type;
@@ -66,7 +66,7 @@ if (!defined('GANTRY_FLATFILE')) {
 	/** EXPERIMENTAL: Represent a column that is a foreign key.  Used for temporarily building tables array */
 	class JoinColumn
 	{
-		function JoinColumn($index, $tablename, $columnname)
+		function __construct($index, $tablename, $columnname)
 		{
 			$this->index      = $index;
 			$this->tablename  = $tablename;
@@ -191,7 +191,7 @@ if (!defined('GANTRY_FLATFILE')) {
 		 */
 		var $datadir;
 
-		function Flatfile()
+		function __construct()
 		{
 			$this->schemata = array();
 		}
@@ -559,7 +559,7 @@ if (!defined('GANTRY_FLATFILE')) {
 		 *
 		 * @param WhereClause $whereclause The WhereClause object to negate
 		 */
-		function NotWhere($whereclause)
+		function __construct($whereclause)
 		{
 			$this->clause = $whereclause;
 		}
@@ -615,7 +615,7 @@ if (!defined('GANTRY_FLATFILE')) {
 		 *                                 STRING_COMPARISON (default), NUMERIC COMPARISON or INTEGER_COMPARISON
 		 *
 		 */
-		function SimpleWhereClause($field, $operator, $value, $compare_type = DEFAULT_COMPARISON)
+		function __construct($field, $operator, $value, $compare_type = DEFAULT_COMPARISON)
 		{
 			$this->field        = $field;
 			$this->operator     = $operator;
@@ -662,7 +662,7 @@ if (!defined('GANTRY_FLATFILE')) {
 		 *                          wildcard, and is case insensitve.  e.g. 'test%' will match 'TESTS' and 'Testing'
 		 */
 
-		function LikeWhereClause($field, $value)
+		function __construct($field, $value)
 		{
 			$this->field  = $field;
 			$this->regexp = '/^' . str_replace('%', '.*', preg_quote($value)) . '$/i';
@@ -699,7 +699,7 @@ if (!defined('GANTRY_FLATFILE')) {
 		 * @param array  $list         List of items
 		 * @param string $compare_type Comparison type, string by default.
 		 */
-		function ListWhereClause($field, $list, $compare_type = DEFAULT_COMPARISON)
+		function __construct($field, $list, $compare_type = DEFAULT_COMPARISON)
 		{
 			$this->list      = $list;
 			$this->field     = (int)$field;
@@ -774,7 +774,7 @@ if (!defined('GANTRY_FLATFILE')) {
 		 *
 		 * @param WhereClause $whereClause,... optional unlimited list of WhereClause objects to be added
 		 */
-		function OrWhereClause()
+		function __construct()
 		{
 			$this->clauses = func_get_args();
 		}
@@ -805,7 +805,7 @@ if (!defined('GANTRY_FLATFILE')) {
 		 *
 		 * @param WhereClause $whereClause,... optional unlimited list of WhereClause objects to be added
 		 */
-		function AndWhereClause()
+		function __construct()
 		{
 			$this->clauses = func_get_args();
 		}
@@ -842,7 +842,7 @@ if (!defined('GANTRY_FLATFILE')) {
 		 * @param int $compareAs    Comparison type: DEFAULT_COMPARISON, STRING_COMPARISON, INTEGER_COMPARISION,
 		 *                          or NUMERIC_COMPARISON, or the name of a user defined function that you want to use for doing the comparison.
 		 */
-		function OrderBy($field, $orderType, $compareAs = DEFAULT_COMPARISON)
+		function __construct($field, $orderType, $compareAs = DEFAULT_COMPARISON)
 		{
 			$this->field     = $field;
 			$this->orderType = $orderType;
@@ -870,7 +870,7 @@ if (!defined('GANTRY_FLATFILE')) {
 		 * @param mixed $orderBy      An OrderBy object or an array of them
 		 * @param array $rowSchema    Option row schema
 		 */
-		function Orderer($orderBy, $rowSchema = null)
+		function __construct($orderBy, $rowSchema = null)
 		{
 			if (!is_array($orderBy)) $orderBy = array($orderBy);
 			if ($rowSchema) {

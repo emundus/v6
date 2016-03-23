@@ -4,12 +4,14 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use \Joomla\Registry\Registry;
 
 jimport('joomla.application.component.model');
 
@@ -20,7 +22,6 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikFEModelJoin extends FabModel
 {
 	/**
@@ -52,13 +53,18 @@ class FabrikFEModelJoin extends FabModel
 	protected $isView = null;
 
 	/**
+	 * Params
+	 *
+	 * @var string
+	 */
+	public $params = null;
+	/**
 	 * Set the join id
 	 *
 	 * @param   int  $id  join id
 	 *
 	 * @return  void
 	 */
-
 	public function setId($id)
 	{
 		$this->id = $id;
@@ -69,7 +75,6 @@ class FabrikFEModelJoin extends FabModel
 	 *
 	 * @return  int  join id
 	 */
-
 	public function getId()
 	{
 		return $this->id;
@@ -82,7 +87,6 @@ class FabrikFEModelJoin extends FabModel
 	 *
 	 * @return  void
 	 */
-
 	public function setData($data)
 	{
 		$this->data = $data;
@@ -91,9 +95,8 @@ class FabrikFEModelJoin extends FabModel
 	/**
 	 * Get Join
 	 *
-	 * @return  FabTable
+	 * @return  FabrikTableJoin
 	 */
-
 	public function getJoin()
 	{
 		if (!isset($this->join))
@@ -122,13 +125,12 @@ class FabrikFEModelJoin extends FabModel
 	 *
 	 * @return  void
 	 */
-
 	private function paramsType(&$join)
 	{
 		if (is_string($join->params))
 		{
 			$join->params = trim($join->params) == '' ? '{"type": ""}' : $join->params;
-			$join->params = new JRegistry($join->params);
+			$join->params = new Registry($join->params);
 		}
 
 		// Set a default join alias - normally overwritten in listModel::_makeJoinAliases();
@@ -140,7 +142,6 @@ class FabrikFEModelJoin extends FabModel
 	 *
 	 * @return  void
 	 */
-
 	public function clearJoin()
 	{
 		unset($this->join);
@@ -154,12 +155,10 @@ class FabrikFEModelJoin extends FabModel
 	 *
 	 * @return  FabTable  join
 	 */
-
 	public function getJoinFromKey($key, $id)
 	{
 		if (!isset($this->join))
 		{
-			$db = FabrikWorker::getDbo(true);
 			$this->join = FabTable::getInstance('join', 'FabrikTable');
 			$this->join->load(array($key => $id));
 			$this->paramsType($this->join);
@@ -175,7 +174,6 @@ class FabrikFEModelJoin extends FabModel
 	 *
 	 * @return  string
 	 */
-
 	public function getForeignID($glue = '___')
 	{
 		$join = $this->getJoin();
@@ -192,7 +190,6 @@ class FabrikFEModelJoin extends FabModel
 	 *
 	 * @return string
 	 */
-
 	public function getForeignKey($glue = '___')
 	{
 		$join = $this->getJoin();
@@ -208,7 +205,6 @@ class FabrikFEModelJoin extends FabModel
 	 *
 	 * @return string
 	 */
-
 	public function getPrimaryKey($glue = '___')
 	{
 		$join = $this->getJoin();
@@ -224,7 +220,6 @@ class FabrikFEModelJoin extends FabModel
 	 *
 	 * @return string
 	 */
-
 	public function getJoinedToTablePk($glue = '___')
 	{
 		$join = $this->getJoin();
@@ -239,7 +234,6 @@ class FabrikFEModelJoin extends FabModel
 	 *
 	 * @return  void
 	 */
-
 	public function setElementId($id)
 	{
 		$this->join->element_id = $id;
@@ -253,7 +247,6 @@ class FabrikFEModelJoin extends FabModel
 	 *
 	 * @return void/JError
 	 */
-
 	public function deleteAll($groupId)
 	{
 		$db = FabrikWorker::getDbo(true);
@@ -281,7 +274,6 @@ class FabrikFEModelJoin extends FabModel
 	 *
 	 * @return  bool
 	 */
-
 	public function save($source)
 	{
 		if (!$this->bind($source))
@@ -310,7 +302,6 @@ class FabrikFEModelJoin extends FabModel
 	 *
 	 * @return  bool	true if table is a view
 	 */
-
 	public function isView()
 	{
 		$join = $this->getJoin();

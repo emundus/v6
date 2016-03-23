@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: tips.php 3122 2012-09-03 19:08:47Z djamil $
+ * @version   $Id: tips.php 30069 2016-03-08 17:45:33Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 defined('GANTRY_VERSION') or die();
@@ -44,7 +44,7 @@ class GantryFormFieldTips extends GantryFormField
 
 		if ($tabname != "overview") {
 			$output = new stdClass;
-			$output->$tabname = new stdClass;
+			$output->{$tabname} = new stdClass;
 			for ($i = 0; $i < $count; $i++) {
 				$tip_title = ($xml->tip[$i]['label']);
 				$tip_id    = (isset($xml->tip[$i]['id'])) ? $xml->tip[$i]['id'] : false;
@@ -52,7 +52,7 @@ class GantryFormFieldTips extends GantryFormField
 				if ($tip_id){
 					$tip_id = str_replace('-', '_', $tip_id);
 
-					$output->$tabname->$tip_id = array(
+					$output->{$tabname}->{$tip_id} = array(
 						'title' => (string)$tip_title,
 						'content' => strip_tags((string)$xml->tip[$i])
 					);

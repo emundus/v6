@@ -14,7 +14,7 @@ JHtml::_('behavior.caption');
 
 ?>
 
-<section class="blog-featured<?php echo $this->pageclass_sfx;?>" itemscope itemtype="http://schema.org/Blog">
+<section class="blog-featured <?php echo $this->pageclass_sfx;?>" itemscope itemtype="http://schema.org/Blog">
 <?php if ( $this->params->get('show_page_heading') != 0) : ?>
 	<h1>
 	<?php echo $this->escape($this->params->get('page_heading')); ?>

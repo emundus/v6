@@ -50,10 +50,24 @@ var fabriktablesElement = new Class({
 		}
 		this.loader = document.id(this.el.id + '_loader');
 
+		var self = this;
+		
+		if (this.cnn.hasClass('chzn-done')) {
+			jQuery('#' + this.cnn.id).on('change', function (event) {
+				document.id(self.cnn).fireEvent('change', new Event.Mock(document.id(self.cnn), 'change'));				
+			});	
+		}
+
 		this.cnn.addEvent('change', function (e) {
 			this.updateMe(e);
 		}.bind(this));
 
+		if (this.el.hasClass('chzn-done')) {
+			jQuery('#' + this.el.id).on('change', function (event) {
+				document.id(self.el.id).fireEvent('change', new Event.Mock(document.id(self.el.id), 'change'));				
+			});	
+		}
+		
 		this.el.addEvent('change', function (e) {
 			this.updateElements(e);
 		}.bind(this));
@@ -108,6 +122,9 @@ var fabriktablesElement = new Class({
 						}.bind(this));
 						if (this.loader) {
 							this.loader.hide();
+						}
+						if (this.el.hasClass('chzn-done')) {
+							jQuery("#" + this.el.id).trigger("liszt:updated");
 						}
 						this.updateElements();
 					}

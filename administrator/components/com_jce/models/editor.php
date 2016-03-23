@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -1114,6 +1114,16 @@ class WFModelEditor extends WFModelBase {
                         $content = WF_EDITOR_PLUGINS . '/' . $plugin . '/css/content.css';
                         if (JFile::exists($content)) {
                             $files[] = $content;
+                        }
+                    }
+                } else if ($context == 'preview') {
+                    $files = array();
+                    $files[] = WF_EDITOR_PLUGINS . '/preview/css/preview.css';
+                    // get template stylesheets
+                    $styles = self::getStyleSheetsList(true);
+                    foreach ($styles as $style) {
+                        if (JFile::exists($style)) {
+                            $files[] = $style;
                         }
                     }
                 } else {

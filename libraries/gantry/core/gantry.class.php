@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: gantry.class.php 20298 2014-04-08 14:19:00Z btowles $
+ * @version   $Id: gantry.class.php 30069 2016-03-08 17:45:33Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Gantry uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system
@@ -420,7 +420,7 @@ class Gantry
 			$this->_parts_cached = true;
 
 			foreach ($parts as $part => $value) {
-				$this->$part = $value;
+				$this->{$part} = $value;
 			}
 		}
 
@@ -499,7 +499,7 @@ class Gantry
 			if (!$this->_parts_cached) {
 				$parts_cache = array();
 				foreach ($this->_parts_to_cache as $part) {
-					$parts_cache[$part] = $this->$part;
+					$parts_cache[$part] = $this->{$part};
 				}
 				if ($parts_cache) {
 					$cache->set($this->cacheKey('parts'), $parts_cache);
@@ -1724,12 +1724,12 @@ class Gantry
 		foreach ($this->_config_vars as $config_var_name => $class_var_name) {
 			$default_config_var_name = 'gantry_default_' . $config_var_name;
 			if (isset($$default_config_var_name)) {
-				$this->$class_var_name = $$default_config_var_name;
+				$this->{$class_var_name} = $$default_config_var_name;
 				$this->__cacheables[]  = $class_var_name;
 			}
 			$template_config_var_name = 'gantry_' . $config_var_name;
 			if (isset($$template_config_var_name)) {
-				$this->$class_var_name = $$template_config_var_name;
+				$this->{$class_var_name} = $$template_config_var_name;
 				$this->__cacheables[]  = $class_var_name;
 			}
 		}

@@ -4,12 +4,14 @@
  *
  * @package     Joomla
  * @subpackage  Form
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
 
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
 
@@ -42,7 +44,7 @@ class JFormFieldUploadsize extends JFormField
 	protected function _return_bytes($val)
 	{
 		$val = trim($val);
-		$last = JString::strtolower(JString::substr($val, -1));
+		$last = String::strtolower(String::substr($val, -1));
 
 		if ($last == 'g')
 		{

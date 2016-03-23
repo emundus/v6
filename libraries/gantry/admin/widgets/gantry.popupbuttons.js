@@ -1,6 +1,6 @@
 /*
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 ((function(){var a=this.G4PopupButtons=new Class({Implements:[Options,Events],options:{data:"g4"},initialize:function(b){this.setOptions(b);this.active=null;

@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.timestamp
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -20,7 +20,6 @@ require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
  * @subpackage  Fabrik.element.timestamp
  * @since       3.0
  */
-
 class PlgFabrik_ElementTimestamp extends PlgFabrik_Element
 {
 	/**
@@ -39,27 +38,12 @@ class PlgFabrik_ElementTimestamp extends PlgFabrik_Element
 	protected $recordInDatabase = false;
 
 	/**
-	 * Get the element's HTML label
-	 *
-	 * @param   int     $repeatCounter  Group repeat counter
-	 * @param   string  $tmpl           Form template
-	 *
-	 * @return  string  label
-	 */
-
-	public function getLabel($repeatCounter, $tmpl = '')
-	{
-		return '';
-	}
-
-	/**
 	 * Set/get if element should record its data in the database
 	 *
 	 * @deprecated - not used
 	 *
 	 * @return bool
 	 */
-
 	public function setIsRecordedInDatabase()
 	{
 		$this->recordInDatabase = false;
@@ -73,38 +57,40 @@ class PlgFabrik_ElementTimestamp extends PlgFabrik_Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
-		$name = $this->getHTMLName($repeatCounter);
-		$id = $this->getHTMLId($repeatCounter);
 		$date = JFactory::getDate();
-		$config = JFactory::getConfig();
-		$tz = new DateTimeZone($config->get('offset'));
+		$tz = new DateTimeZone($this->config->get('offset'));
 		$date->setTimezone($tz);
 		$params = $this->getParams();
-		$gmt_or_local = $params->get('gmt_or_local');
-		$gmt_or_local += 0;
+		$gmtOrLocal = $params->get('gmt_or_local');
+		$gmtOrLocal += 0;
 
-		return '<input name="' . $name . '" id="' . $id . '" type="hidden" value="' . $date->toSql($gmt_or_local) . '" />';
+		$layout = $this->getLayout('form');
+		$layoutData = new stdClass;
+		$layoutData->id =  $this->getHTMLId($repeatCounter);;
+		$layoutData->name = $this->getHTMLName($repeatCounter);;
+		$layoutData->value = $date->toSql($gmtOrLocal);
+
+		return $layout->render($layoutData);
 	}
 
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string    $data      elements data
-	 * @param   stdClass  &$thisRow  all the data in the lists current row
+	 * @param   string    $data      Elements data
+	 * @param   stdClass  &$thisRow  All the data in the lists current row
+	 * @param   array     $opts      Rendering options
 	 *
 	 * @return  string	formatted value
 	 */
-
-	public function renderListData($data, stdClass &$thisRow)
+	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
 		$params = $this->getParams();
 		$tz_offset = $params->get('gmt_or_local', '0') == '0';
 		$data = JHTML::_('date', $data, FText::_($params->get('timestamp_format', 'DATE_FORMAT_LC2')), $tz_offset);
 
-		return parent::renderListData($data, $thisRow);
+		return parent::renderListData($data, $thisRow, $opts);
 	}
 
 	/**
@@ -112,7 +98,6 @@ class PlgFabrik_ElementTimestamp extends PlgFabrik_Element
 	 *
 	 * @return  string  db field type
 	 */
-
 	public function getFieldDescription()
 	{
 		$params = $this->getParams();
@@ -137,7 +122,6 @@ class PlgFabrik_ElementTimestamp extends PlgFabrik_Element
 	 *
 	 * @return  bool
 	 */
-
 	public function isHidden()
 	{
 		return true;

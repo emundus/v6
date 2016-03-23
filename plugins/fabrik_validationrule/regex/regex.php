@@ -4,12 +4,14 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.regex
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use \Joomla\Registry\Registry;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
@@ -21,7 +23,6 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.regex
  * @since       3.0
  */
-
 class PlgFabrik_ValidationruleRegex extends PlgFabrik_Validationrule
 {
 	/**
@@ -39,19 +40,18 @@ class PlgFabrik_ValidationruleRegex extends PlgFabrik_Validationrule
 	 *
 	 * @return  bool  true if validation passes, false if fails
 	 */
-
 	public function validate($data, $repeatCounter)
 	{
-		// For multiselect elements
+		// For multi-select elements
 		if (is_array($data))
 		{
 			$data = implode('', $data);
 		}
 
 		$params = $this->getParams();
-		$domatch = $params->get('regex-match');
+		$doMatch = $params->get('regex-match');
 
-		if ($domatch)
+		if ($doMatch)
 		{
 			$matches = array();
 			$v = $params->get('regex-expression');
@@ -73,13 +73,12 @@ class PlgFabrik_ValidationruleRegex extends PlgFabrik_Validationrule
 	 *
 	 * @return  string	original or replaced data
 	 */
-
 	public function replace($data, $repeatCounter)
 	{
 		$params = $this->getParams();
-		$domatch = $params->get('regex-match');
+		$doMatch = $params->get('regex-match');
 
-		if (!$domatch)
+		if (!$doMatch)
 		{
 			$v = $params->get($this->pluginName . '-expression');
 			$v = trim($v);
@@ -99,11 +98,10 @@ class PlgFabrik_ValidationruleRegex extends PlgFabrik_Validationrule
 	 *
 	 * @return  string
 	 */
-
 	public function iconImage()
 	{
 		$plugin = JPluginHelper::getPlugin('fabrik_validationrule', $this->pluginName);
-		$globalParams = new JRegistry($plugin->params);
+		$globalParams = new Registry($plugin->params);
 		$default = $globalParams->get('icon', 'star');
 		$params = $this->getParams();
 

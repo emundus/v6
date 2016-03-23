@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik.helpers
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -133,6 +133,16 @@ class FabrikPDFHelper
 				print_r($errors);
 				echo "</pre>";
 				exit;
+			}
+			//Create the full path via general str_replace
+			else
+			{
+				$uri = JUri::getInstance();
+				$base = $uri->getScheme() . '://' . $uri->getHost();
+				$data = str_replace('href="/', 'href="'.$base.'/', $data);
+				$data = str_replace('src="/', 'src="'.$base.'/', $data);
+				$data = str_replace("href='/", "href='".$base.'/', $data);
+				$data = str_replace("src='/", "src='".$base.'/', $data);
 			}
 		}
 	}

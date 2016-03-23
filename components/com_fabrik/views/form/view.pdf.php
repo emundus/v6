@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -21,32 +21,31 @@ require_once JPATH_SITE . '/components/com_fabrik/views/form/view.base.php';
  * @subpackage  Fabrik
  * @since       3.0.6
  */
-
 class FabrikViewForm extends FabrikViewFormBase
 {
 	/**
 	 * Main setup routine for displaying the form/detail view
 	 *
-	 * @param   string  $tpl  template
+	 * @param   string $tpl template
 	 *
 	 * @return  void
 	 */
-
 	public function display($tpl = null)
 	{
 		if (!JFolder::exists(COM_FABRIK_BASE . '/libraries/dompdf'))
 		{
 			throw new RuntimeException('Please install the dompdf library', 404);
-
-			return;
 		}
 
 		if (parent::display($tpl) !== false)
 		{
-			$document = JFactory::getDocument();
-			$model = $this->getModel();
-			$params = $model->getParams();
-			$size = $params->get('pdf_size', 'A4');
+			/** @var JDocumentpdf $document */
+			$document = $this->doc;
+
+			/** @var FabrikFEModelList $model */
+			$model       = $this->getModel();
+			$params      = $model->getParams();
+			$size        = $params->get('pdf_size', 'A4');
 			$orientation = $params->get('pdf_orientation', 'portrait');
 			$document->setPaper($size, $orientation);
 			$this->output();
@@ -56,19 +55,24 @@ class FabrikViewForm extends FabrikViewFormBase
 	/**
 	 * Set the page title
 	 *
-	 * @param   object  $w        parent worker
-	 * @param   object  &$params  parameters
-	 * @param   object  $model    form model
+	 * @param   object $w       parent worker
+	 * @param   object &$params parameters
 	 *
 	 * @return  void
 	 */
-
-	protected function setTitle($w, &$params, $model)
+	protected function setTitle($w, &$params)
 	{
-		parent::setTitle($w, $params, $model);
+		parent::setTitle($w, $params);
+
+		$model = $this->getModel();
 
 		// Set the download file name based on the document title
-		$document = JFactory::getDocument();
-		$document->setName($document->getTitle() . '-' . $model->getRowId());
+
+		$layout                 = FabrikHelperHTML::getLayout('form.fabrik-pdf-title');
+		$displayData         = new stdClass;
+		$displayData->doc	= $this->doc;
+		$displayData->model	= $this->getModel();
+
+		$this->doc->setName($layout->render($displayData));
 	}
 }

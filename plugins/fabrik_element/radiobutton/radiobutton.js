@@ -5,7 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-window.FbRadio = new Class({
+FbRadio = new Class({
 	Extends: FbElementList,
 
 	options: {
@@ -15,7 +15,7 @@ window.FbRadio = new Class({
 	type: 'radio', // sub element type
 
 	initialize: function (element, options) {
-		this.plugin = 'fabrikradiobutton';
+		this.setPlugin('fabrikradiobutton');
 		this.parent(element, options);
 		this.btnGroup();
 	},
@@ -183,5 +183,10 @@ window.FbRadio = new Class({
 		}
 		this.parent(c);
 		this.btnGroup();
+	},
+	
+	getChangeEvent: function () {
+		return this.options.changeEvent;
 	}
+	
 });

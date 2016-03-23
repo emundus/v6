@@ -4,14 +4,14 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.digsig
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \Joomla\Utilities\ArrayHelper;
+use Joomla\Utilities\ArrayHelper;
 
 jimport('joomla.application.component.model');
 
@@ -59,34 +59,37 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 		$digsig_width  = $params->get('digsig_form_width', '400');
 		$digsig_height = $params->get('digsig_form_height', '150');
 		$val           = $this->getValue($data, $repeatCounter);
+
+		if (is_array($val))
+		{
+			$val = json_encode($val);
+		}
+
 		$basePath      = COM_FABRIK_BASE . '/plugins/fabrik_element/digsig/layouts/';
-		$layoutData    = array();
-		$app           = JFactory::getApplication();
-		$input         = $app->input;
+		$layoutData    = new stdClass;
+		$input         = $this->app->input;
 		$format        = $input->get('format');
 
-		$layoutData['id']            = $id;
-		$layoutData['digsig_width']  = $digsig_width;
-		$layoutData['digsig_height'] = $digsig_height;
-		$layoutData['sig_id']        = $sig_id;
-		$layoutData['name']          = $name;
-		$layoutData['val']           = $val;
-		$listModel                   = $this->getListModel();
-		$pk                          = $listModel->getTable()->db_primary_key;
-		$pk                          = FabrikString::safeColNameToArrayKey($pk);
+		$layoutData->id            = $id;
+		$layoutData->digsig_width  = $digsig_width;
+		$layoutData->digsig_height = $digsig_height;
+		$layoutData->sig_id        = $sig_id;
+		$layoutData->name          = $name;
+		$layoutData->val           = $val;
+		$listModel                 = $this->getListModel();
+		$pk                        = $listModel->getPrimaryKey(true);
 
 		if (!$this->isEditable())
 		{
 			if ($format === 'pdf')
 			{
-				$package   = $app->getUserState('com_fabrik.package', 'fabrik');
 				$formModel = $this->getFormModel();
 				$formId    = $formModel->getId();
 				$rowId     = ArrayHelper::getValue($data, $pk);
 				$elementId = $this->getId();
 
-				$layoutData['link'] = COM_FABRIK_LIVESITE
-					. 'index.php?option=com_' . $package . '&amp;task=plugin.pluginAjax&amp;plugin=digsig&amp;method=ajax_signature_to_image&amp;'
+				$layoutData->link = COM_FABRIK_LIVESITE
+					. 'index.php?option=com_' . $this->package . '&amp;task=plugin.pluginAjax&amp;plugin=digsig&amp;method=ajax_signature_to_image&amp;'
 					. 'format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
 
 				$layout = new JLayoutFile('fabrik-element-digsig-details-pdf', $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
@@ -108,36 +111,68 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string   $data     Elements data
-	 * @param   stdClass &$thisRow All the data in the lists current row
+	 * @param   string    $data      Elements data
+	 * @param   stdClass  &$thisRow  All the data in the lists current row
+	 * @param   array     $opts      Rendering options
 	 *
-	 * @return  string    Formatted value
+	 * @return  string	formatted value
 	 */
-
-	public function renderListData($data, stdClass &$thisRow)
+	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
-		if ($data === '' || empty($data))
+		if ($this->dataConsideredEmpty($data, 0))
 		{
 			return '';
 		}
 
-		$params        = $this->getParams();
-		$digsig_width  = $params->get('digsig_list_width', '200');
-		$digsig_height = $params->get('digsig_list_height', '75');
-		$app           = JFactory::getApplication();
-		$package       = $app->getUserState('com_fabrik.package', 'fabrik');
-		$formModel     = $this->getFormModel();
-		$formid        = $formModel->getId();
-		$rowid         = $thisRow->__pk_val;
-		$elementid     = $this->getId();
+		$data = $this->toImage($thisRow->__pk_val);
+
+		return parent::renderListData($data, $thisRow, $opts);
+	}
+
+	/**
+	 * Use JLayouts to render an image representation of the signature.
+	 * Used in getEmail, and list views.
+	 *
+	 * @param   mixed $rowId Row id
+	 *
+	 * @throws Exception
+	 *
+	 * @return string
+	 */
+	private function toImage($rowId)
+	{
+		$params    = $this->getParams();
+		$formModel = $this->getFormModel();
+		$formId    = $formModel->getId();
+		$elementId = $this->getId();
 
 		$link = COM_FABRIK_LIVESITE
-			. 'index.php?option=com_' . $package . '&amp;task=plugin.pluginAjax&amp;plugin=digsig&amp;method=ajax_signature_to_image&amp;'
-			. 'format=raw&amp;element_id=' . $elementid . '&amp;formid=' . $formid . '&amp;rowid=' . $rowid . '&amp;repeatcount=0';
+			. 'index.php?option=com_' . $this->package . '&amp;task=plugin.pluginAjax&amp;plugin=digsig&amp;method=ajax_signature_to_image&amp;'
+			. 'format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
 
-		$data = '<img src="' . $link . '" width="' . $digsig_width . '" height="' . $digsig_height . '"/>';
+		$layoutData         = new stdClass;
+		$layoutData->width  = $params->get('digsig_list_width', '200');
+		$layoutData->height = $params->get('digsig_list_height', '75');;
+		$layoutData->src = $link;
+		$layout          = $this->getLayout('image');
 
-		return parent::renderListData($data, $thisRow);
+		return $layout->render($layoutData);
+	}
+
+	/**
+	 * Turn form value into email formatted value
+	 *
+	 * @param   mixed $value         Element value
+	 * @param   array $data          Form data
+	 * @param   int   $repeatCounter Group repeat counter
+	 *
+	 * @return  string  email formatted value
+	 */
+	protected function getIndEmailValue($value, $data = array(), $repeatCounter = 0)
+	{
+		$rowId = ArrayHelper::getValue($data, '__pk_val');
+
+		return $this->toImage($rowId);
 	}
 
 	/**
@@ -147,41 +182,39 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	 */
 	public function onAjax_signature_to_image()
 	{
-		$app   = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$this->setId($input->getInt('element_id'));
 		$this->loadMeForAjax();
 		$this->getElement();
 		$params        = $this->getParams();
 		$digsig_width  = (int) $params->get('digsig_list_width', '200');
 		$digsig_height = (int) $params->get('digsig_list_height', '75');
-		$lang          = JFactory::getLanguage();
-		$lang->load('com_fabrik.plg.element.fabrikdigsig', JPATH_ADMINISTRATOR);
+		$this->lang->load('com_fabrik.plg.element.fabrikdigsig', JPATH_ADMINISTRATOR);
 		$url = 'index.php';
 
 		if (!$this->canView())
 		{
-			$app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_PERMISSION'));
-			$app->redirect($url);
+			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_PERMISSION'));
+			$this->app->redirect($url);
 			exit;
 		}
 
-		$rowid = $input->get('rowid', '', 'string');
+		$rowId = $input->get('rowid', '', 'string');
 
-		if (empty($rowid))
+		if (empty($rowId))
 		{
-			$app->enqueueMessage(FText::_('PLG_ELEMENT_FDIGSIG_NO_SUCH_FILE'));
-			$app->redirect($url);
+			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_FDIGSIG_NO_SUCH_FILE'));
+			$this->app->redirect($url);
 			exit;
 		}
 
-		$listModel   = $this->getListModel();
-		$row         = $listModel->getRow($rowid, false);
+		$listModel = $this->getListModel();
+		$row       = $listModel->getRow($rowId, false);
 
 		if (empty($row))
 		{
-			$app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
-			$app->redirect($url);
+			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
+			$this->app->redirect($url);
 			exit;
 		}
 
@@ -191,12 +224,12 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 		$opts        = array(
 			'imageSize' => array($digsig_width, $digsig_height)
 		);
-		$filecontent = sigJsonToImage($json_sig, $opts);
+		$fileContent = sigJsonToImage($json_sig, $opts);
 
-		if (!empty($filecontent))
+		if (!empty($fileContent))
 		{
 			ob_start();
-			imagepng($filecontent);
+			imagepng($fileContent);
 			$img = ob_get_contents();
 			ob_end_clean();
 
@@ -218,8 +251,8 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 		}
 		else
 		{
-			$app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
-			$app->redirect($url);
+			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
+			$this->app->redirect($url);
 			exit;
 		}
 	}
@@ -250,14 +283,20 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id          = $this->getHTMLId($repeatCounter);
 		$sig_id      = $id . '_sig';
 		$opts        = $this->getElementJSOptions($repeatCounter);
 		$data        = $this->getFormModel()->data;
-		$opts->value = htmlspecialchars_decode($this->getValue($data, $repeatCounter));
+		$opts->value = $this->getValue($data, $repeatCounter);
+
+		if (is_array($opts->value))
+		{
+			$opts->value = json_encode($opts->value);
+		}
+
+		$opts->value = htmlspecialchars_decode($opts->value);
 
 		if (empty($opts->value))
 		{
@@ -279,7 +318,6 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	 *
 	 * @return void
 	 */
-
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
 		$s       = new stdClass;
@@ -307,6 +345,31 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	}
 
 	/**
+	 * Is the element consider to be empty for purposes of rendering on the form,
+	 * i.e. for assigning classes, etc.  Can be overridden by individual elements.
+	 *
+	 * @param   array  $data           Data to test against
+	 * @param   int    $repeatCounter  Repeat group #
+	 *
+	 * @return  bool
+	 */
+
+	public function dataConsideredEmpty($data, $repeatCounter)
+	{
+		$data = (array) $data;
+
+		foreach ($data as $d)
+		{
+			if ($d != '' && $d != '[]' && $d != '[""]')
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Is the element considered to be empty for purposes of validation
 	 * Used in isempty validation rule.
 	 *
@@ -315,7 +378,6 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	 *
 	 * @return  bool
 	 */
-
 	public function dataConsideredEmptyForValidation($data, $repeatCounter)
 	{
 		$data = (array) $data;

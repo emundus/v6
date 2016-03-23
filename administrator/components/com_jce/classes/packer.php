@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -89,6 +89,12 @@ class WFPacker extends JObject {
         return $encoding;
     }
 
+    /**
+     * Pack and output content based on type
+     * @param bool|true $minify
+     * @param bool|false $gzip
+     * Contains some code from libraries/joomla/cache/controller/page.php - Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+     */
     public function pack($minify = true, $gzip = false) {
         $type = $this->getType();
 
@@ -106,13 +112,8 @@ class WFPacker extends JObject {
         // encoding
         header("Vary: Accept-Encoding");
 
-        // expires after 48 hours
-        $expires = 60 * 60 * 24 * 2;
-
-        header("Cache-Control: maxage=" . $expires);
-
-        // Handle proxies
-        header("Expires: " . gmdate("D, d M Y H:i:s", time() + $expires) . " GMT");
+        // cache control
+        header("Cache-Control: max-age=0,no-cache");
 
         $files = $this->getFiles();
 
@@ -142,11 +143,24 @@ class WFPacker extends JObject {
 
         $content .= $this->getContentEnd();
 
+        // trim content
+        $content = trim($content);
+
         // get content hash
-        $hash = md5($content);
+        $hash = md5(implode(" ", array_map('basename', $files)) . $content);
+
+        // check for sent etag against hash
+        if (!headers_sent() && isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
+            $etag = stripslashes($_SERVER['HTTP_IF_NONE_MATCH']);
+
+            if ($etag && $etag === $hash) {
+                header('HTTP/1.x 304 Not Modified', true);
+                exit(ob_get_clean());
+            }
+        }
 
         // set etag header
-        header("ETag: \"{$hash}\"");
+        header("ETag: " . $hash);
 
         // Generate GZIP'd content
         if ($gzip) {

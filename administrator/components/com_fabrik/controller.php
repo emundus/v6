@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -34,7 +34,6 @@ class FabrikAdminController extends JControllerLegacy
 
 	public function display($cachable = false, $urlparams = false)
 	{
-		$app = JFactory::getApplication();
 		$this->default_view = 'home';
 		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
 		parent::display();

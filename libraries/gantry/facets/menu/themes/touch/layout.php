@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: layout.php 2325 2012-08-13 17:46:48Z btowles $
+ * @version   $Id: layout.php 27813 2015-03-17 14:12:00Z james $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Rockettheme Gantry Template uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system
@@ -21,7 +21,7 @@ if (!defined('modRokNavMenuShowItems')) {
 		<?php if (count($item->_children) > 0 && $item->parent != 1): ?>
 			<small class="menucount"><?php echo count($item->_children); ?></small>
 			<?php endif; ?>
-		<a <?php if ($item->hasLinkClasses()): ?>class="<?php echo $item->getLinkClasses();?>"<?php endif;?> <?php if ($item->hasLink()): ?>href="<?php echo $item->getLink();?>"<?php endif;?> <?php if (isset($item->target)): ?>target="<?php echo $item->target;?>"<?php endif;?> <?php if (isset($item->onclick)): ?>onclick="<?php echo $item->onclick;?>"<?php endif;?><?php if ($item->hasLinkAttribs()): ?> <?php echo $item->getLinkAttribs(); ?><?php endif;?>>
+		<a <?php if ($item->hasLinkClasses()): ?>class="<?php echo $item->getLinkClasses();?>"<?php endif;?> <?php if ($item->hasLink()): ?>href="<?php echo $item->getLink();?>"<?php endif;?> <?php if (isset($item->nav)): ?>target="<?php echo $item->nav;?>"<?php endif;?> <?php if (isset($item->onclick)): ?>onclick="<?php echo $item->onclick;?>"<?php endif;?><?php if ($item->hasLinkAttribs()): ?> <?php echo $item->getLinkAttribs(); ?><?php endif;?>>
 			<?php if (isset($item->image)): ?><img alt="<?php echo $item->alias;?>" src="<?php echo $item->image;?>"/><?php endif; ?>
 			<span <?php if ($item->hasSpanClasses()): ?>class="<?php echo $item->getSpanClasses();?>"<?php endif; ?>><?php echo $item->title;?></span>
 		</a>
@@ -51,7 +51,7 @@ if (!defined('modRokNavMenuShowItems')) {
 				<?php if (count($item->_children) > 0 && (!$item->parent && $item->parent != 1)): ?>
 					<small class="menucount"><?php echo count($item->_children); ?></small>
 					<?php endif; ?>
-				<a <?php if ($item->hasLinkClasses()): ?>class="<?php echo $item->getLinkClasses();?>"<?php endif;?> <?php if ($item->hasLink()): ?>href="<?php echo $item->getLink();?>"<?php endif;?> <?php if (isset($item->target)): ?>target="<?php echo $item->target;?>"<?php endif;?> <?php if (isset($item->onclick)): ?>onclick="<?php echo $item->onclick;?>"<?php endif;?><?php if ($item->hasLinkAttribs()): ?> <?php echo $item->getLinkAttribs(); ?><?php endif;?>>
+				<a <?php if ($item->hasLinkClasses()): ?>class="<?php echo $item->getLinkClasses();?>"<?php endif;?> <?php if ($item->hasLink()): ?>href="<?php echo $item->getLink();?>"<?php endif;?> <?php if (isset($item->nav)): ?>target="<?php echo $item->nav;?>"<?php endif;?> <?php if (isset($item->onclick)): ?>onclick="<?php echo $item->onclick;?>"<?php endif;?><?php if ($item->hasLinkAttribs()): ?> <?php echo $item->getLinkAttribs(); ?><?php endif;?>>
 					<?php if (isset($item->image)): ?><img alt="<?php echo $item->alias;?>" src="<?php echo $item->image;?>"/><?php endif; ?>
 					<span <?php if ($item->hasSpanClasses()): ?>class="<?php echo $item->getSpanClasses();?>"<?php endif; ?>><?php echo $item->title;?></span>
 				</a>

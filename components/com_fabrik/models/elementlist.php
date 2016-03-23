@@ -4,12 +4,15 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
 
 jimport('joomla.application.component.model');
 jimport('joomla.filesystem.file');
@@ -20,7 +23,6 @@ jimport('joomla.filesystem.file');
  * @package  Fabrik
  * @since    3.0
  */
-
 class PlgFabrik_ElementList extends PlgFabrik_Element
 {
 	/**
@@ -68,7 +70,6 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return  string	Text to add to the browser's title
 	 */
-
 	public function getTitlePart($data, $repeatCounter = 0, $opts = array())
 	{
 		$val = $this->getValue($data, $repeatCounter, $opts);
@@ -98,7 +99,6 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return  array  Initially selected values
 	 */
-
 	public function getSubInitialSelection()
 	{
 		$params = $this->getParams();
@@ -117,7 +117,6 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return  bool
 	 */
-
 	public function dataConsideredEmpty($data, $repeatCounter)
 	{
 		$data = (array) $data;
@@ -140,7 +139,6 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return mixed
 	 */
-
 	public function getDefaultValue($data = array())
 	{
 		$params = $this->getParams();
@@ -165,12 +163,11 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 * Builds an array containing the filters value and condition
 	 *
 	 * @param   string  $value      Initial value
-	 * @param   string  $condition  Intial $condition
+	 * @param   string  $condition  Initial $condition
 	 * @param   string  $eval       How the value should be handled
 	 *
 	 * @return  array	(value condition)
 	 */
-
 	public function getFilterValue($value, $condition, $eval)
 	{
 		if (is_array($value))
@@ -200,66 +197,16 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return  string	sql query part e,g, "key = value"
 	 */
-
 	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
 	{
 		$element = $this->getElement();
-		$db = JFactory::getDbo();
-		$condition = JString::strtoupper($condition);
+		$condition = String::strtoupper($condition);
 		$this->encryptFieldName($key);
 		$glue = 'OR';
 
 		if ($element->filter_type == 'checkbox' || $element->filter_type == 'multiselect')
 		{
-			$str = array();
-
-			if ($condition === 'NOT IN')
-			{
-				$partialComparison = ' NOT LIKE ';
-				$comparison = ' <> ';
-				$glue = ' AND ';
-			}
-			else
-			{
-				$partialComparison = ' LIKE ';
-				$comparison = ' = ';
-				$glue = ' OR ';
-			}
-
-			switch ($condition)
-			{
-				case 'IN':
-				case 'NOT IN':
-					/**
-					 * Split out 1,2,3 into an array to iterate over.
-					 * It's a string if pre-filter, array if element filter
-					 */
-					if (!is_array($originalValue))
-					{
-						$originalValue = explode(',', $originalValue);
-					}
-
-					foreach ($originalValue as &$v)
-					{
-						$v = trim($v);
-						$v = FabrikString::ltrimword($v, '"');
-						$v = FabrikString::ltrimword($v, "'");
-						$v = FabrikString::rtrimword($v, '"');
-						$v = FabrikString::rtrimword($v, "'");
-					}
-					break;
-				default:
-					$originalValue = (array) $originalValue;
-					break;
-			}
-
-			foreach ($originalValue as $v2)
-			{
-				$v2 = str_replace("/", "\\\\/", $v2);
-				$str[] = '(' . $key . $partialComparison . $db->quote('%"' . $v2 . '"%') . $glue . $key . $comparison . $db->quote($v2) . ') ';
-			}
-
-			$str = '(' . implode($glue, $str) . ')';
+			$str = $this->filterQueryMultiValues($key, $condition, $originalValue);
 		}
 		else
 		{
@@ -284,8 +231,8 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 					$condition2 = $condition == '=' ? 'LIKE' : 'NOT LIKE';
 					$glue = $condition == '=' ? 'OR' : 'AND';
 					$db = FabrikWorker::getDbo();
-					$str = "($key $condition $value " . " $glue $key $condition2 " . $db->quote('["' . $originalValue . '"%') . " $glue $key $condition2 "
-					. $db->quote('%"' . $originalValue . '"%') . " $glue $key $condition2 " . $db->quote('%"' . $originalValue . '"]') . ")";
+					$str = "($key $condition $value " . " $glue $key $condition2 " . $db->q('["' . $originalValue . '"%') . " $glue $key $condition2 "
+					. $db->q('%"' . $originalValue . '"%') . " $glue $key $condition2 " . $db->q('%"' . $originalValue . '"]') . ")";
 					break;
 				default:
 					$str = " $key $condition $value ";
@@ -297,6 +244,67 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	}
 
 	/**
+	 * @param $key
+	 * @param $condition
+	 * @param $originalValue
+	 *
+	 * @return string
+	 */
+	protected function filterQueryMultiValues ($key, $condition, $originalValue)
+	{
+		$str = array();
+
+		if ($condition === 'NOT IN')
+		{
+			$partialComparison = ' NOT LIKE ';
+			$comparison = ' <> ';
+			$glue = ' AND ';
+		}
+		else
+		{
+			$partialComparison = ' LIKE ';
+			$comparison = ' = ';
+			$glue = ' OR ';
+		}
+
+		switch ($condition)
+		{
+			case 'IN':
+			case 'NOT IN':
+				/**
+				 * Split out 1,2,3 into an array to iterate over.
+				 * It's a string if pre-filter, array if element filter
+				 */
+				if (!is_array($originalValue))
+				{
+					$originalValue = explode(',', $originalValue);
+				}
+
+				foreach ($originalValue as &$v)
+				{
+					$v = trim($v);
+					$v = FabrikString::ltrimword($v, '"');
+					$v = FabrikString::ltrimword($v, "'");
+					$v = FabrikString::rtrimword($v, '"');
+					$v = FabrikString::rtrimword($v, "'");
+				}
+				break;
+			default:
+				$originalValue = (array) $originalValue;
+				break;
+		}
+
+		foreach ($originalValue as $v2)
+		{
+			$v2 = str_replace("/", "\\\\/", $v2);
+			$str[] = '(' . $key . $partialComparison . $this->_db->q('%"' . $v2 . '"%') . $glue . $key .
+				$comparison . $this->_db->q($v2) . ') ';
+		}
+
+		return '(' . implode($glue, $str) . ')';
+	}
+
+	/**
 	 * Get the filter name
 	 *
 	 * @param   int   $counter  Filter order
@@ -304,7 +312,6 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return  string
 	 */
-
 	protected function filterName($counter = 0, $normal = true)
 	{
 		$element = $this->getElement();
@@ -332,17 +339,14 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return  string	Filter HTML
 	 */
-
 	public function getFilter($counter = 0, $normal = true)
 	{
 		$element = $this->getElement();
 		$values = $this->getSubOptionValues();
 		$default = $this->getDefaultFilterVal($normal, $counter);
+		$this->filterDisplayValues = array($default);
 		$elName = $this->getFullName(true, false);
-		$htmlid = $this->getHTMLId() . 'value';
-		$listModel = $this->getListModel();
 		$params = $this->getParams();
-		$class = $this->filterClass();
 		$v = $this->filterName($counter, $normal);
 
 		if (in_array($element->filter_type, array('range', 'dropdown', '', 'checkbox', 'multiselect')))
@@ -351,8 +355,10 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 
 			if ($params->get('filter_groupby') != -1)
 			{
-				JArrayHelper::sortObjects($rows, $params->get('filter_groupby', 'text'));
+				ArrayHelper::sortObjects($rows, $params->get('filter_groupby', 'text'));
 			}
+
+			$this->getFilterDisplayValues($default, $rows);
 
 			if (!in_array('', $values) && !in_array($element->filter_type, array('checkbox', 'multiselect')))
 			{
@@ -360,22 +366,18 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 			}
 		}
 
-		$attribs = 'class="' . $class . '" size="1" ';
-		$size = $params->get('filter_length', 20);
 		$return = array();
 
 		switch ($element->filter_type)
 		{
 			case 'range':
+
 				if (!is_array($default))
 				{
 					$default = array('', '');
 				}
 
-				$return[] = JHTML::_('select.genericlist', $rows, $v . '[]', $attribs, 'value', 'text', $default[0],
-					$element->name . "_filter_range_0");
-				$return[] = JHTML::_('select.genericlist', $rows, $v . '[]', $attribs, 'value', 'text', $default[1],
-					$element->name . "_filter_range_1");
+				$this->rangedFilterFields($default, $return, $rows, $v, 'list');
 				break;
 			case 'checkbox':
 				$return[] = $this->checkboxFilter($rows, $default, $v);
@@ -383,31 +385,15 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 			case 'dropdown':
 			case 'multiselect':
 			default:
-				$size = $element->filter_type === 'multiselect' ? 'multiple="multiple" size="7"' : 'size="1"';
-				$attribs = 'class="' . $class . '" ' . $size;
-				$v = $element->filter_type === 'multiselect' ? $v . '[]' : $v;
-				$return[] = JHTML::_('select.genericlist', $rows, $v, $attribs, 'value', 'text', $default, $htmlid);
+				$return[] = $this->selectFilter($rows, $default, $v);
 				break;
 
 			case 'field':
-				if (get_magic_quotes_gpc())
-				{
-					$default = stripslashes($default);
-				}
-
-				$default = htmlspecialchars($default);
-				$return[] = '<input type="text" name="' . $v . '" class="' . $class . '" size="' . $size . '" value="' . $default . '" id="'
-					. $htmlid . '" />';
+				$return[] = $this->singleFilter($default, $v);
 				break;
 
 			case 'hidden':
-				if (get_magic_quotes_gpc())
-				{
-					$default = stripslashes($default);
-				}
-
-				$default = htmlspecialchars($default);
-				$return[] = '<input type="hidden" name="' . $v . '" class="' . $class . '" value="' . $default . '" id="' . $htmlid . '" />';
+				$return[] = $this->singleFilter($default, $v, 'hidden');
 				break;
 
 			case 'auto-complete':
@@ -431,7 +417,6 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return  array  HTML ids to watch for validation
 	 */
-
 	public function getValidationWatchElements($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
@@ -449,14 +434,15 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return  string  Email formatted value
 	 */
-
 	protected function getIndEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
 		$params = $this->getParams();
 		$split_str = $params->get('options_split_str', '');
-		$element = $this->getElement();
-		$values = $this->getSubOptionValues();
-		$labels = $this->getSubOptionLabels();
+
+		// Pass in data - otherwise if using multiple plugins of the same type the plugin order gets messed
+		// up. Occurs for drop-down element using php eval options.
+		$values = $this->getSubOptionValues($data);
+		$labels = $this->getSubOptionLabels($data);
 		$aLabels = array();
 
 		if (is_string($value))
@@ -502,7 +488,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	}
 
 	/**
-	 * Used by radio and dropdown elements to get a dropdown list of their unique
+	 * Used by radio and drop-down elements to get a drop-down list of their unique
 	 * unique values OR all options - based on filter_build_method
 	 *
 	 * @param   bool    $normal     Do we render as a normal filter or as an advanced search filter
@@ -513,7 +499,6 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return  array  Text/value objects
 	 */
-
 	public function filterValueList($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
 	{
 		$rows = parent::filterValueList($normal, $tableName, $label, $id, $incjoin);
@@ -524,7 +509,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	}
 
 	/**
-	 * Cache method to populate autocomplete options
+	 * Cache method to populate auto-complete options
 	 *
 	 * @param   plgFabrik_Element  $elementModel  Element model
 	 * @param   string             $search        Search string
@@ -534,11 +519,9 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return string  Json encoded search results
 	 */
-
 	public static function cacheAutoCompleteOptions($elementModel, $search, $opts = array())
 	{
 		$app = JFactory::getApplication();
-		$listModel = $elementModel->getListModel();
 		$label = FArrayHelper::getValue($opts, 'label', '');
 		$rows = $elementModel->filterValueList(true, '', $label);
 		$v = $app->input->get('value', '', 'string');
@@ -546,7 +529,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 		// Search for every word separately in the result rather than the single string (of multiple words)
 		$regex  = "/(?=.*" .
 			implode(")(?=.*",
-				array_filter(explode(" ", addslashes($v)))
+				array_filter(explode(" ", preg_quote($v, '/')))
 			) . ").*/i";
 		$start = count($rows) - 1;
 
@@ -572,7 +555,6 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return  bool
 	 */
-
 	protected function isMultiple()
 	{
 		$params = $this->getParams();
@@ -597,19 +579,17 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @param   string    $data      Elements data
 	 * @param   stdClass  &$thisRow  All the data in the lists current row
+	 * @param   array     $opts      Rendering options
 	 *
 	 * @return  string	formatted value
 	 */
-
-	public function renderListData($data, stdClass &$thisRow)
+	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
-		$element = $this->getElement();
 		$params = $this->getParams();
 		$listModel = $this->getListModel();
 		$multiple = $this->isMultiple();
 		$mergeGroupRepeat = ($this->getGroup()->canRepeat() && $this->getListModel()->mergeJoinedData());
-		$sLabels = array();
-		$useIcon = $params->get('icon_folder', 0);
+		$useIcon = $params->get('icon_folder', 0) && ArrayHelper::getValue($opts, 'icon', 1);
 
 		// Give priority to raw value icons (podion)
 		$raw = $this->isJoin() ? $this->getFullName(true, false) . '_raw' : $this->getFullName(true, false) . '_id';
@@ -640,9 +620,9 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 		foreach ($gdata as $i => $d)
 		{
 			$lis = array();
-			$vals = is_array($d) ? $d : FabrikWorker::JSONtoData($d, true);
+			$values = is_array($d) ? $d : FabrikWorker::JSONtoData($d, true);
 
-			foreach ($vals as $tmpVal)
+			foreach ($values as $tmpVal)
 			{
 				$l = $useIcon ? $this->replaceWithIcons($tmpVal, 'list', $listModel->getTmpl()) : $tmpVal;
 
@@ -662,8 +642,14 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 
 				if ($this->renderWithHTML)
 				{
-					$l = $this->rollover($l, $thisRow, 'list');
-					$l = $listModel->_addLink($l, $this, $thisRow, $i);
+					if (ArrayHelper::getValue($opts, 'rollover', 1))
+					{
+						$l = $this->rollover($l, $thisRow, 'list');
+					}
+					if (ArrayHelper::getValue($opts, 'link', 1))
+					{
+						$l = $listModel->_addLink($l, $this, $thisRow, $i);
+					}
 				}
 
 				if (trim($l) !== '')
@@ -689,16 +675,16 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 			}
 		}
 
-		$consdenced = array();
+		$condensed = array();
 
 		if ($condense)
 		{
 			foreach ($uls as $ul)
 			{
-				$consdenced[] = $ul[0];
+				$condensed[] = $ul[0];
 			}
 
-			return $addHtml ? '<ul class="fabrikRepeatData"><li>' . implode('</li><li>', $consdenced) . '</li></ul>' : implode(' ', $consdenced);
+			return $addHtml ? '<ul class="fabrikRepeatData"><li>' . implode('</li><li>', $condensed) . '</li></ul>' : implode(' ', $condensed);
 		}
 		else
 		{
@@ -726,7 +712,6 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return  string	Formatted value
 	 */
-
 	public function renderListData_csv($data, &$thisRow)
 	{
 		$this->renderWithHTML = false;
@@ -756,12 +741,10 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return  string	Elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$name = $this->getHTMLName($repeatCounter);
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$id = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
 		$values = $this->getSubOptionValues();
@@ -852,16 +835,17 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 			$optionsPerRow = 1;
 		}
 
-		$classes = $this->labelClasses();
+		$classes = $this->gridClasses();
+		$dataAttributes = $this->dataAttributes();
 		$buttonGroup = $this->buttonGroup();
-		$grid = FabrikHelperHTML::grid($values, $labels, $selected, $name, $this->inputType, $elBeforeLabel, $optionsPerRow, $classes, $buttonGroup);
+		$grid = FabrikHelperHTML::grid($values, $labels, $selected, $name, $this->inputType, $elBeforeLabel, $optionsPerRow, $classes, $buttonGroup, $dataAttributes);
 		array_unshift($grid, '<div class="fabrikSubElementContainer" id="' . $id . '">');
 		$grid[] = '</div><!-- close subElementContainer -->';
 
 		if ($params->get('allow_frontend_addto', false))
 		{
-			$onlylabel = $params->get('allowadd-onlylabel');
-			$grid[] = $this->getAddOptionFields($repeatCounter, $onlylabel);
+			$onlyLabel = $params->get('allowadd-onlylabel');
+			$grid[] = $this->getAddOptionFields($repeatCounter, $onlyLabel);
 		}
 
 		return implode("\n", $grid);
@@ -874,7 +858,6 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return  bool
 	 */
-
 	protected function buttonGroup()
 	{
 		$params = $this->getParams();
@@ -883,12 +866,22 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	}
 
 	/**
-	 * Get classes to assign to the label
+	 * Get classes to assign to the grid
+	 * An array of arrays of class names, keyed as 'container', 'label' or 'input',
 	 *
 	 * @return  array
 	 */
+	protected function gridClasses()
+	{
+		return array();
+	}
 
-	protected function labelClasses()
+	/**
+	 * Get data attributes to assign to the container
+	 *
+	 * @return  array
+	 */
+	protected function dataAttributes()
 	{
 		return array();
 	}
@@ -898,7 +891,6 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return  bool
 	 */
-
 	protected function getElementBeforeLabel()
 	{
 		return (bool) $this->getParams()->get('radio_element_before_label', true);
@@ -912,7 +904,6 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return  string  Element name inside data array
 	 */
-
 	protected function getValueFullName($opts)
 	{
 		return $this->getFullName(true, false);
@@ -927,7 +918,6 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return  string	value
 	 */
-
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
 		$v = parent::getValue($data, $repeatCounter, $opts);
@@ -941,11 +931,10 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	}
 
 	/**
-	 * Is the dropdowns cnn the same as the main Joomla db
+	 * Is the drop-downs cnn the same as the main Joomla db
 	 *
 	 * @return  bool
 	 */
-
 	protected function inJDb()
 	{
 		return $this->getlistModel()->inJDb();
@@ -958,9 +947,8 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 * @param   array  &$data          Data to store
 	 * @param   int    $repeatCounter  Repeat group index
 	 *
-	 * @return  void
+	 * @return  bool
 	 */
-
 	public function onStoreRow(&$data, $repeatCounter = 0)
 	{
 		if (!parent::onStoreRow($data, $repeatCounter))
@@ -1022,7 +1010,6 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return void
 	 */
-
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
 		$ext = FabrikHelperHTML::isDebug() ? '.js' : '-min.js';
@@ -1040,10 +1027,10 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	}
 
 	/**
-	 * used by elements with suboptions
+	 * used by elements with sub-options
 	 *
 	 * $$$ hugh - started working on adding this to elementlist, as we need to handle
-	 * JSON-ified options for multiselect elements, which the main element model getLabelForValue()
+	 * JSON-ified options for multi-select elements, which the main element model getLabelForValue()
 	 * doesn't do.  But I need to sort out how this gets handled in rendering as well.
 	 *
 	 * @param   string  $v             Value
@@ -1054,15 +1041,6 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 
 	public function notreadyyet_getLabelForValue($v, $defaultLabel = '')
 	{
-		/**
-		 * $$$ hugh - only needed getParent when we weren't saving changes to parent params to child
-		 * which we should now be doing ... and getParent() causes an extra table lookup for every child
-		 * element on the form.
-		 * $element = $this->getParent();
-		 */
-		$element = $this->getElement();
-		$params = $this->getParams();
-		$values = $this->getSubOptionValues();
 		$labels = $this->getSubOptionLabels();
 		$multiple = $this->isMultiple();
 		$vals = is_array($v) ? $v : FabrikWorker::JSONtoData($v, true);
@@ -1092,7 +1070,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 		}
 
 		/**
-		 * $$$ rob if we allow adding to the dropdown but not recording
+		 * $$$ rob if we allow adding to the drop-down but not recording
 		 * then there will be no $key set to revert to the $val instead
 		 */
 		/*

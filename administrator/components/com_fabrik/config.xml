@@ -2,6 +2,11 @@
 <config>
 	<fieldset label="COM_FABRIK_GLOBAL" name="global">
 
+		<field name="fabrik_product_key"
+		       type="text"
+		       description="COM_FABRIK_FIELD_PRODUCT_KEY_DESC"
+		       label="COM_FABRIK_FIELD_PRODUCT_KEY_LABEL" />
+
 		<field name="enable_big_selects"
 			class="radio btn-group"
 			type="radio"
@@ -26,7 +31,7 @@
 			type="text"
 			label="COM_FABRIK_GOOGLE_BUSINESS_SIGNATURE_LABEL"
 			description="COM_FABRIK_GOOGLE_BUSINESS_SIGNATURE_DESC" />
-			
+
 		<field name="unpublish_clones"
 			type="radio"
 			default="0"
@@ -34,7 +39,17 @@
 			description="COM_FABRIK_UNPUBLISH_CLONES_DESC"
 			label="COM_FABRIK_UNPUBLISH_CLONES_LABEL">
 				<option value="0">JNO</option>
-				<option value="1">JYES</option>	
+				<option value="1">JYES</option>
+		</field>
+
+		<field name="allow_user_defines"
+			class="radio btn-group"
+			type="radio"
+			default="0"
+			label="COM_FABRIK_FIELD_ALLOW_USER_DEFINES_LABEL"
+			description="COM_FABRIK_FIELD_ALLOW_USER_DEFINES_DESC">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
 		</field>
 
 	</fieldset>
@@ -106,6 +121,12 @@
 				<option value="floating">COM_FABRIK_FIELD_ACTION_METHOD_FLOATING</option>
 				<option value="dropdown">COM_FABRIK_FIELD_ACTION_METHOD_DROPDOWN</option>
 		</field>
+
+		<field name="csv_delimiter"
+		       type="text"
+		       default=""
+		       description="COM_FABRIK_FIELD_CSV_DELIMITER_OVERRIDE_DESC"
+		       label="COM_FABRIK_FIELD_CSV_DELIMITER_OVERRIDE_LABEL" />
 
 	</fieldset>
 
@@ -229,6 +250,20 @@
 
 	</fieldset>
 
+	<fieldset label="COM_FABRIK_LABELS" name="labels">
+        	<field name="format_labels"
+            		type="radio"
+            		default="0"
+            		description="COM_FABRIK_LABELS_DESC"
+            		label="COM_FABRIK_LABELS_LABEL">
+                		<option value="0">COM_FABRIK_LABELS_DEFAULT</option>
+                		<option value="1">COM_FABRIK_LABELS_LOWERCASE</option>
+                		<option value="2">COM_FABRIK_LABELS_UCWORDS</option>
+                		<option value="3">COM_FABRIK_LABELS_CAPFIRST</option>
+                		<option value="4">COM_FABRIK_LABELS_CAPS</option>
+        	</field>
+    	</fieldset>
+
 	<fieldset label="COM_FABRIK_FORMS" name="forms">
 
 		<field name="spoofcheck_on_formsubmission"
@@ -292,17 +327,24 @@
 			description="COM_FABRIK_FIELD_ERROR_ICON_DESC"
 			label="COM_FABRIK_FIELD_ERROR_ICON_LABEL" />
 
-			<field name="advanced_behavior"
-				type="radio"
-				default="0"
-				class="btn-group"
-				label="PLG_ELEMENT_DROPDOWN_ADVANCED_BEHAVIOR_LABEL"
-				description="PLG_ELEMENT_DROPDOWN_ADVANCED_BEHAVIOR_DESC" >
-					<option value="0">JNO</option>
-					<option value="1">PLG_ELEMENT_DROPDOWN_ADVANCED_BEHAVIOR_PER_ELEMENT</option>
-					<option value="2">JYES</option>
-			</field>
-			
+		<field name="advanced_behavior"
+			type="radio"
+			default="0"
+			class="btn-group"
+			label="COM_FABRIK_DROPDOWN_JQUERY_CHOSEN_GLOBAL_LABEL"
+			description="COM_FABRIK_DROPDOWN_JQUERY_CHOSEN_GLOBAL_DESC" >
+				<option value="0">JNO</option>
+				<option value="1">COM_FABRIK_DROPDOWN_JQUERY_CHOSEN_PER_ELEMENT</option>
+				<!--<option value="2">JYES</option>-->
+		</field>
+
+		<field name="advanced_behavior_options"
+			type="text"
+			menu="hide"
+			default="{}"
+			description="COM_FABRIK_DROPDOWN_JQUERY_CHOSEN_OPTIONS_DESC"
+			label="COM_FABRIK_DROPDOWN_JQUERY_CHOSEN_OPTIONS_LABEL" />
+
 	</fieldset>
 
 	<fieldset label="COM_FABRIK_JAVASCRIPT" name="javascript">
@@ -387,7 +429,7 @@
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 		</field>
-		
+
 		<field name="autocomplete_min_trigger_chars"
 			size="3"
 			default="1"
@@ -399,7 +441,7 @@
 			default=""
 			description="COM_FABRIK_REQUIREJS_BASE_URI_DESC"
 			label="COM_FABRIK_REQUIREJS_BASE_URI_LABEL" />
-		
+
 	</fieldset>
 
 	<fieldset label="COM_FABRIK_DEBUGGING" name="debug">
@@ -505,6 +547,12 @@
 
 	</fieldset>
 
+	<fieldset label="COM_FABRIK_OAI" name="oai">
+		<field name="oai_repository_identifier"
+		       ptype="text"
+		       label="COM_FABRIK_FIELD_OAI_REPOSITORY_IDENTIFIER_LABEL"
+		       description="COM_FABRIK_FIELD_OAI_REPOSITORY_IDENTIFIER_DESC" />
+	</fieldset>
 	<fieldset description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL" name="permissions">
 
 		<field name="rules"

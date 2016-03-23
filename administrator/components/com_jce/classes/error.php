@@ -16,9 +16,19 @@ abstract class WFError {
                 break;
         }
     }
-    
+
     public static function exceptionHandler($exception) {
-        echo "" , $exception->getMessage(), "\n";
+        if (defined('JCE_REQUEST')) {
+            echo json_encode(array(
+                'error' => array(
+                    'code' => $exception->getCode(),
+                    'text' => $exception->getMessage()
+                )
+            ));
+        } else {
+            echo "" , $exception->getMessage(), "\n";
+        }
+        return false;
     }
 }
 

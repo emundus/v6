@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.list.email
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 ?>
 <form method="post" enctype="multipart/form-data" action="<?php echo JURI::base();?>index.php" name="emailtable" id="emailtable">
 	<div class="alert alert-info">
-		<i class="icon-envelope"></i> <?php echo JText::plural('PLG_LIST_EMAIL_N_RECORDS', $this->recordcount) ?>
+		<?php echo FabrikHelperHTML::icon('icon-envelope'); ?> <?php echo JText::plural('PLG_LIST_EMAIL_N_RECORDS', $this->recordcount) ?>
 	</div>
 	<?php
 	if ($this->showToField)
@@ -33,8 +33,8 @@ defined('_JEXEC') or die('Restricted access');
 	?>
 	<label>
 		<?php echo FText::_('PLG_LIST_EMAIL_SUBJECT') ?><br />
-		<input class="inputbox fabrikinput span12" type="text" name="subject" id="subject" value="<?php echo $this->subject?>" size="50" />
 	</label>
+		<input class="inputbox fabrikinput span12" type="text" name="subject" id="subject" value="<?php echo $this->subject?>" size="50" />
 	<?php
 	}
 	?>

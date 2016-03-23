@@ -4,12 +4,15 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
+use \Joomla\Utilities\ArrayHelper;
 
 jimport('joomla.application.component.model');
 
@@ -20,8 +23,7 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik
  * @since       3.0
  */
-
-class FabrikFEModelCSVExport
+class FabrikFEModelCSVExport extends FabModel
 {
 	/**
 	 * Number of records to output at a time
@@ -38,69 +40,80 @@ class FabrikFEModelCSVExport
 	public $outPutFormat = 'csv';
 
 	/**
+	 * Cell delimiter
+	 *
+	 * @var string
+	 */
+	protected $delimiter = ';';
+
+	/**
+	 * @var FabrikFEModelList
+	 */
+	public $model;
+
+	/**
 	 * Get csv export step
 	 *
-	 * @return  string  export step
+	 * @return  integer  Export step
 	 */
-
 	public function getStep()
 	{
-		return $this->model->getParams()->get('csv_export_step', $this->step);
+		return (int) $this->model->getParams()->get('csv_export_step', $this->step);
 	}
 
 	/**
-	 * Write the file
+	 * Write the current batch section of the CSV file
 	 *
-	 * @param   int  $total  total # of records
+	 * @param   int  $total       Total # of records
+	 * @param   bool $canDownload Can we also download the file (at end of export)
 	 *
 	 * @return  null
 	 */
-
-	public function writeFile($total)
+	public function writeFile($total, $canDownload = false)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		// F3 turn off error reporting as this is an ajax call
 		error_reporting(0);
 		jimport('joomla.filesystem.file');
-		$start = $input->getInt('start', 0);
-		$filename = $this->getFileName();
-		$filepath = $this->getFilePath();
-		$str = '';
+		$start    = $input->getInt('start', 0);
+		$filePath = $this->getFilePath();
+		$str      = '';
 
-		if (JFile::exists($filepath))
+		if (JFile::exists($filePath))
 		{
 			if ($start === 0)
 			{
-				JFile::delete($filepath);
+				JFile::delete($filePath);
 			}
 			else
 			{
-				$str = file_get_contents($filepath);
+				$str = file_get_contents($filePath);
 			}
 		}
 		else
 		{
 			// Fabrik3 odd cant pass 2nd param by reference if we try to write '' so assign it to $tmp first
 			$tmp = '';
-			$ok = JFile::write($filepath, $tmp);
+			$ok  = JFile::write($filePath, $tmp);
 
 			if (!$ok)
 			{
-				$this->reportWriteError($filepath);
+				$this->reportWriteError($filePath);
 				exit;
 			}
 
-			$str = '';
+			// with UTF8 Excel needs BOM
+			$str = ( $input->get('excel') == 1 && $this->getEncoding() == 'UTF-8' ) ? "\xEF\xBB\xBF" : '';
 		}
 
-		$session = JFactory::getSession();
 		$table = $this->model->getTable();
 		$this->model->render();
 		$this->removePkVal();
 		$this->outPutFormat = $input->get('excel') == 1 ? 'excel' : 'csv';
-		$this->delimiter = $this->outPutFormat == 'excel' ? COM_FABRIK_EXCEL_CSV_DELIMITER : COM_FABRIK_CSV_DELIMITER;
+		$config             = JComponentHelper::getParams('com_fabrik');
+		$this->delimiter    = $this->outPutFormat == 'excel' ? COM_FABRIK_EXCEL_CSV_DELIMITER : COM_FABRIK_CSV_DELIMITER;
+		$this->delimiter    = $config->get('csv_delimiter', $this->delimiter);
 
 		if ($start === 0)
 		{
@@ -109,8 +122,8 @@ class FabrikFEModelCSVExport
 			if (empty($headings))
 			{
 				$url = $input->server->get('HTTP_REFERER', '');
-				$app->enqueueMessage(FText::_('No data to export'));
-				$app->redirect($url);
+				$this->app->enqueueMessage(FText::_('No data to export'));
+				$this->app->redirect($url);
 
 				return;
 			}
@@ -118,28 +131,29 @@ class FabrikFEModelCSVExport
 			$str .= implode($headings, $this->delimiter) . "\n";
 		}
 
-		$incRaw = $input->get('incraw', true);
-		$incData = $input->get('inctabledata', true);
-		$data = $this->model->getData();
+		$incRaw       = $input->get('incraw', true);
+		$incData      = $input->get('inctabledata', true);
+		$data         = $this->model->getData();
 		$exportFormat = $this->model->getParams()->get('csvfullname');
-		$shortkey = FabrikString::shortColName($table->db_primary_key);
+		$shortKey     = FabrikString::shortColName($table->db_primary_key);
+		$a            = array();
 
 		foreach ($data as $group)
 		{
 			foreach ($group as $row)
 			{
-				$a = JArrayHelper::fromObject($row);
+				$a = ArrayHelper::fromObject($row);
 
 				if ($exportFormat == 1)
 				{
-					unset($a[$shortkey]);
+					unset($a[$shortKey]);
 				}
 
 				if (!$incRaw)
 				{
 					foreach ($a as $key => $val)
 					{
-						if (substr($key, JString::strlen($key) - 4, JString::strlen($key)) == '_raw')
+						if (substr($key, String::strlen($key) - 4, String::strlen($key)) == '_raw')
 						{
 							unset($a[$key]);
 						}
@@ -150,7 +164,7 @@ class FabrikFEModelCSVExport
 				{
 					foreach ($a as $key => $val)
 					{
-						if (substr($key, JString::strlen($key) - 4, JString::strlen($key)) != '_raw')
+						if (substr($key, String::strlen($key) - 4, String::strlen($key)) != '_raw')
 						{
 							unset($a[$key]);
 						}
@@ -179,17 +193,17 @@ class FabrikFEModelCSVExport
 					array_unshift($a, ' ');
 				}
 
-				$this->carriageReutrnFix($a);
-				$str .= implode($this->delimiter, array_map(array($this, "quote"), array_values($a)));
+				$this->carriageReturnFix($a);
+				$str .= implode($this->delimiter, array_map(array($this, 'quote'), array_values($a)));
 				$str .= "\n";
 			}
 		}
 
-		$res = new stdClass;
-		$res->total = $total;
-		$res->count = $start + $this->getStep();
-		$res->file = JFile::getName($filepath);
-		$res->limitStart = $start;
+		$res              = new stdClass;
+		$res->total       = $total;
+		$res->count       = $start + $this->getStep();
+		$res->file        = basename($filePath);
+		$res->limitStart  = $start;
 		$res->limitLength = $this->getStep();
 
 		if ($res->count >= $res->total)
@@ -198,43 +212,44 @@ class FabrikFEModelCSVExport
 		}
 
 		error_reporting(0);
-		$ok = JFile::write($filepath, $str);
+		$ok = JFile::write($filePath, $str);
 
 		if (!$ok)
 		{
-			$this->reportWriteError($filepath);
+			$this->reportWriteError($filePath);
 			exit;
 		}
 		else
 		{
-			echo json_encode($res);
+			if (!$canDownload)
+			{
+				echo json_encode($res);
+			}
 		}
 	}
 
 	/**
 	 * Report a error writing the file
 	 *
-	 * @param   string  $filepath  file path we were trying to write to
+	 * @param   string $filePath file path we were trying to write to
 	 *
 	 * @return  null
 	 */
-
-	protected function reportWriteError($filepath)
+	protected function reportWriteError($filePath)
 	{
-		$o = new stdClass;
-		$o->err = 'cant write file ' . $filepath;
+		$o      = new stdClass;
+		$o->err = 'cant write file ' . $filePath;
 		echo json_encode($o);
 	}
 
 	/**
 	 * Fix carriage returns
 	 *
-	 * @param   object  &$row  csv line of data to fix
+	 * @param   object|array &$row Csv line of data to fix
 	 *
 	 * @return  null
 	 */
-
-	private function carriageReutrnFix(&$row)
+	private function carriageReturnFix(&$row)
 	{
 		$newline = $this->model->getParams()->get('newline_csv_export', 'nl');
 
@@ -281,12 +296,10 @@ class FabrikFEModelCSVExport
 	 *
 	 * @return  string  filename
 	 */
-
 	private function getFileName()
 	{
-		$app = JFactory::getApplication();
-		$this->model->setId($app->input->getInt('listid'));
-		$table = $this->model->getTable();
+		$this->model->setId($this->app->input->getInt('listid'));
+		$table    = $this->model->getTable();
 		$filename = $table->db_table_name . '-export.csv';
 
 		return $filename;
@@ -297,34 +310,35 @@ class FabrikFEModelCSVExport
 	 *
 	 * @return  string  path
 	 */
-
 	private function getFilePath()
 	{
-		$config = JFactory::getConfig();
-
-		return $config->get('tmp_path') . '/' . $this->getFileName();
+		return $this->config->get('tmp_path') . '/' . $this->getFileName();
 	}
 
 	/**
-	 * Start the download of the completed csv file
-	 *
-	 * @return null
+	 * Write the final csv file
 	 */
-
-	public function downloadFile()
+	public function writeCSVFile()
 	{
-		// To prevent long file from getting cut off from     //max_execution_time
-		error_reporting(0);
-		@set_time_limit(0);
-		jimport('joomla.filesystem.file');
-		$filename = $this->getFileName();
-		$filepath = $this->getFilePath();
-		$document = JFactory::getDocument();
-		$document->setMimeEncoding('application/zip');
+		$filePath = $this->getFilePath();
+		$str      = $this->getCSVContent();
+		JFile::delete($filePath);
+		echo $str;
+		exit;
+	}
 
-		if (JFile::exists($filepath))
+	/**
+	 * Get the final CSV content
+	 *
+	 * @return bool
+	 */
+	protected function getCSVContent()
+	{
+		$filePath = $this->getFilePath();
+
+		if (JFile::exists($filePath))
 		{
-			$str = file_get_contents($filepath);
+			$str = file_get_contents($filePath);
 		}
 		else
 		{
@@ -332,23 +346,42 @@ class FabrikFEModelCSVExport
 			return false;
 		}
 
-		JResponse::clearHeaders();
+		return $str;
+	}
+
+	/**
+	 * Start the download of the completed csv file
+	 *
+	 * @return null
+	 */
+	public function downloadFile()
+	{
+		// To prevent long file from getting cut off from     //max_execution_time
+		//error_reporting(0);
+		@set_time_limit(0);
+		jimport('joomla.filesystem.file');
+		$filename = $this->getFileName();
+		$filePath = $this->getFilePath();
+		$document = JFactory::getDocument();
+		$document->setMimeEncoding('application/zip');
+		$str = $this->getCSVContent();
+		$this->app->clearHeaders();
 		$encoding = $this->getEncoding();
 
 		// Set the response to indicate a file download
-		JResponse::setHeader('Content-Type', 'application/zip');
-		JResponse::setHeader('Content-Disposition', "attachment;filename=\"" . $filename . "\"");
+		$this->app->setHeader('Content-Type', 'application/zip');
+		$this->app->setHeader('Content-Disposition', "attachment;filename=\"" . $filename . "\"");
 
 		// Xls formatting for accents
 		if ($this->outPutFormat == 'excel')
 		{
-			JResponse::setHeader('Content-Type', 'application/vnd.ms-excel');
+			$this->app->setHeader('Content-Type', 'application/vnd.ms-excel');
 		}
 
-		JResponse::setHeader('charset', $encoding);
-		JResponse::setBody($str);
-		echo JResponse::toString(false);
-		JFile::delete($filepath);
+		$this->app->setHeader('charset', $encoding);
+		$this->app->setBody($str);
+		echo $this->app->toString(false);
+		JFile::delete($filePath);
 
 		// $$$ rob 21/02/2012 - need to exit otherwise Chrome give 349 download error
 		exit;
@@ -357,39 +390,37 @@ class FabrikFEModelCSVExport
 	/**
 	 * Add calculations
 	 *
-	 * @param   array   $a     of field elements $a
-	 * @param   string  &$str  to out put as csv file $str
+	 * @param   array  $a    of field elements $a
+	 * @param   string &$str to out put as csv file $str
 	 *
 	 * @return  null
 	 */
-
 	protected function addCalculations($a, &$str)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		if ($input->get('inccalcs') == 1)
 		{
-			$incRaw = $input->get('incraw', true);
-			$calkeys = array('sums', 'avgs', 'medians', 'count');
+			$incRaw  = $input->get('incraw', true);
+			$calKeys = array('sums', 'avgs', 'medians', 'count');
 
-			foreach ($calkeys as $calkey)
+			foreach ($calKeys as $calKey)
 			{
-				$aCalcs[$calkey] = array_fill(0, count($a) + 1, ' ');
-				$aCalcs[$calkey][0] = $calkey;
-				$calcs = $this->model->getCalculations();
+				$calculations[$calKey]    = array_fill(0, count($a) + 1, ' ');
+				$calculations[$calKey][0] = $calKey;
+				$calcs                    = $this->model->getCalculations();
 
-				foreach ($calcs[$calkey] as $key => $cal)
+				foreach ($calcs[$calKey] as $key => $cal)
 				{
-					$x = 0;
+					$x     = 0;
 					$found = false;
 
 					// $$$rob if grouped data and calc split then get the formatted string as $cal['calc] wont exist below
-					foreach ($a as $akey => $aval)
+					foreach ($a as $aKey => $aVal)
 					{
-						if (trim($akey) == trim($key) && $x != 0)
+						if (trim($aKey) == trim($key) && $x != 0)
 						{
-							$json = $calcs[$calkey][$akey . '_obj'];
+							$json = $calcs[$calKey][$aKey . '_obj'];
 							unset($json['']);
 
 							if (count($json) == 1)
@@ -407,9 +438,9 @@ class FabrikFEModelCSVExport
 
 					$x = 0;
 
-					foreach ($a as $akey => $aval)
+					foreach ($a as $aKey => $aVal)
 					{
-						if ($akey == JString::substr($key, 0, JString::strlen($key) - 4) && $x != 0)
+						if ($aKey == String::substr($key, 0, String::strlen($key) - 4) && $x != 0)
 						{
 							$found = true;
 							break;
@@ -422,26 +453,26 @@ class FabrikFEModelCSVExport
 					{
 						if (array_key_exists('calc', $cal))
 						{
-							$aCalcs[$calkey][$x] = $cal['calc']->value;
+							$calculations[$calKey][$x] = $cal['calc']->value;
 
 							if ($incRaw)
 							{
-								$aCalcs[$calkey][$x + 1] = $cal['calc']->value;
+								$calculations[$calKey][$x + 1] = $cal['calc']->value;
 							}
 						}
 						else
 						{
-							$aCalcs[$calkey][$x] = $default;
+							$calculations[$calKey][$x] = $default;
 
 							if ($incRaw)
 							{
-								$aCalcs[$calkey][$x + 1] = $default;
+								$calculations[$calKey][$x + 1] = $default;
 							}
 						}
 					}
 				}
 
-				$str .= implode($this->delimiter, array_map(array($this, "quote"), $aCalcs[$calkey]));
+				$str .= implode($this->delimiter, array_map(array($this, 'quote'), $calculations[$calKey]));
 				$str .= "\n";
 			}
 		}
@@ -450,11 +481,10 @@ class FabrikFEModelCSVExport
 	/**
 	 * Quote a string
 	 *
-	 * @param   string  $n  string to quote
+	 * @param   string $n string to quote
 	 *
 	 * @return  string
 	 */
-
 	protected function quote($n)
 	{
 		$n = '"' . str_replace('"', '""', $n) . '"';
@@ -484,12 +514,11 @@ class FabrikFEModelCSVExport
 	 *
 	 * @return string
 	 */
-
 	protected function getEncoding()
 	{
-		$params = $this->model->getParams();
+		$params          = $this->model->getParams();
 		$defaultEncoding = $this->outPutFormat == 'excel' ? 'UTF-16LE' : 'UTF-8';
-		$csvEncoding = $params->get('csv_encoding', '');
+		$csvEncoding     = $params->get('csv_encoding', '');
 
 		if ($csvEncoding === '')
 		{
@@ -502,40 +531,37 @@ class FabrikFEModelCSVExport
 	/**
 	 * Get the headings for the csv file
 	 *
-	 * @return  array	heading labels
+	 * @return  array    heading labels
 	 */
-
 	public function getHeadings()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$w = new FabrikWorker;
-		$table = $this->model->getTable();
-		$params = $this->model->getParams();
-		$hformat = $params->get('csvfullname');
-		$data = $this->model->getData();
-		$headings = array();
-		$g = current($data);
+		$input         = $this->app->input;
+		$w             = new FabrikWorker;
+		$table         = $this->model->getTable();
+		$params        = $this->model->getParams();
+		$headingFormat = $params->get('csvfullname');
+		$data          = $this->model->getData();
+		$g             = current($data);
 
 		if (empty($g))
 		{
 			return $g;
 		}
 
-		$r = current($g);
+		$r         = current($g);
 		$formModel = $this->model->getFormModel();
-		$groups = $formModel->getGroupsHiarachy();
-		$h = array();
+		$groups    = $formModel->getGroupsHiarachy();
+		$h         = array();
 
 		if (!is_object($r))
 		{
 			return new stdClass;
 		}
 
-		$incRaw = $input->get('incraw', true);
+		$incRaw  = $input->get('incraw', true);
 		$incData = $input->get('inctabledata', true);
 
-		$shortkey = FabrikString::shortColName($table->db_primary_key);
+		$shortKey = FabrikString::shortColName($table->db_primary_key);
 
 		foreach ($r as $heading => $value)
 		{
@@ -547,14 +573,14 @@ class FabrikFEModelCSVExport
 
 				foreach ($elementModels as $elementModel)
 				{
-					$element = $elementModel->getElement();
-					$fullname = $elementModel->getFullName(true, false);
+					$element  = $elementModel->getElement();
+					$fullName = $elementModel->getFullName(true, false);
 
-					if ($fullname == $heading || $fullname . '_raw' == $heading)
+					if ($fullName == $heading || $fullName . '_raw' == $heading)
 					{
 						$found = true;
 
-						switch ($hformat)
+						switch ($headingFormat)
 						{
 							default:
 							case '0':
@@ -574,12 +600,12 @@ class FabrikFEModelCSVExport
 						 */
 						$n = $w->parseMessageForPlaceHolder($n, array());
 
-						if ($fullname . '_raw' == $heading)
+						if ($fullName . '_raw' == $heading)
 						{
 							$n .= '_raw';
 						}
 
-						if ($incData && JString::substr($n, JString::strlen($n) - 4, JString::strlen($n)) !== '_raw')
+						if ($incData && String::substr($n, String::strlen($n) - 4, String::strlen($n)) !== '_raw')
 						{
 							if (!in_array($n, $h))
 							{
@@ -592,7 +618,7 @@ class FabrikFEModelCSVExport
 							}
 						}
 
-						if ($incRaw && JString::substr($n, JString::strlen($n) - 4, strlen($n)) == '_raw')
+						if ($incRaw && String::substr($n, String::strlen($n) - 4, strlen($n)) == '_raw')
 						{
 							if (!in_array($n, $h))
 							{
@@ -610,10 +636,10 @@ class FabrikFEModelCSVExport
 
 			if (!$found)
 			{
-				if (!(JString::substr($heading, JString::strlen($heading) - 4, JString::strlen($heading)) == '_raw' && !$incRaw))
+				if (!(String::substr($heading, String::strlen($heading) - 4, String::strlen($heading)) == '_raw' && !$incRaw))
 				{
 					// Stop id getting added to tables when exported with full element name key
-					if ($hformat != 1 && $heading != $shortkey)
+					if ($headingFormat != 1 && $heading != $shortKey)
 					{
 						$h[] = $heading;
 					}
@@ -634,20 +660,19 @@ class FabrikFEModelCSVExport
 	/**
 	 * Get unique heading
 	 *
-	 * @param   string  $n  Key
-	 * @param   array   $h  Search
+	 * @param   string $n Key
+	 * @param   array  $h Search
 	 *
 	 * @return  string
 	 */
-
 	protected function uniqueHeading($n, $h)
 	{
-		$c = 1;
+		$c    = 1;
 		$newN = $n . '_' . $c;
 
 		while (in_array($newN, $h))
 		{
-			$c ++;
+			$c++;
 			$newN = $n . '_' . $c;
 		}
 
@@ -659,7 +684,6 @@ class FabrikFEModelCSVExport
 	 *
 	 * @return  null
 	 */
-
 	protected function removePkVal()
 	{
 		$data = $this->model->getData();

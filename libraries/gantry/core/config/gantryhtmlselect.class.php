@@ -1,8 +1,8 @@
 <?php
 /**
- * @version        $Id: gantryhtmlselect.class.php 2325 2012-08-13 17:46:48Z btowles $
+ * @version        $Id: gantryhtmlselect.class.php 30069 2016-03-08 17:45:33Z matias $
  * @author         RocketTheme http://www.rockettheme.com
- * @copyright      Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright      Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license        http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * derived from Joomla with original copyright and license
@@ -202,13 +202,13 @@ abstract class GantryHtmlSelect
 				}
 			} elseif (is_object($group)) {
 				// Sub-list is in a property of an object
-				$subList = $group->$options['group.items'];
+				$subList = $group->{$options['group.items']};
 				$noGroup = false;
-				if (isset($group->$options['group.label'])) {
-					$label = $group->$options['group.label'];
+				if (isset($group->{$options['group.label']})) {
+					$label = $group->{$options['group.label']};
 				}
-				if (isset($options['group.id']) && isset($group->$options['group.id'])) {
-					$id = $group->$options['group.id'];
+				if (isset($options['group.id']) && isset($group->{$options['group.id']})) {
+					$id = $group->{$options['group.id']};
 				}
 			} else {
 				//TODO handle error
@@ -288,8 +288,8 @@ abstract class GantryHtmlSelect
 	public static function optgroup($text, $optKey = 'value', $optText = 'text')
 	{
 		$obj           = new stdClass;
-		$obj->$optKey  = '<OPTGROUP>';
-		$obj->$optText = $text;
+		$obj->{$optKey}  = '<OPTGROUP>';
+		$obj->{$optText} = $text;
 		return $obj;
 	}
 
@@ -343,8 +343,8 @@ abstract class GantryHtmlSelect
 			$options['disable']     = $disable;
 		}
 		$obj                          = new stdClass();
-		$obj->$options['option.key']  = $value;
-		$obj->$options['option.text'] = trim($text) ? $text : $value;
+		$obj->{$options['option.key']}  = $value;
+		$obj->{$options['option.text']} = trim($text) ? $text : $value;
 
 		/*
 		 * If a label is provided, save it. If no label is provided and there is
@@ -353,19 +353,19 @@ abstract class GantryHtmlSelect
 		$hasProperty = $options['option.label'] !== null;
 		if (isset($options['label'])) {
 			$labelProperty       = $hasProperty ? $options['option.label'] : 'label';
-			$obj->$labelProperty = $options['label'];
+			$obj->{$labelProperty} = $options['label'];
 		} elseif ($hasProperty) {
-			$obj->$options['option.label'] = '';
+			$obj->{$options['option.label']} = '';
 		}
 
 		// Set attributes only if there is a property and a value
 		if ($options['attr'] !== null) {
-			$obj->$options['option.attr'] = $options['attr'];
+			$obj->{$options['option.attr']} = $options['attr'];
 		}
 
 		// Set disable only if it has a property and a value
 		if ($options['disable'] !== null) {
-			$obj->$options['option.disable'] = $options['disable'];
+			$obj->{$options['option.disable']} = $options['disable'];
 		}
 		return $obj;
 	}
@@ -455,18 +455,18 @@ abstract class GantryHtmlSelect
 					$extra .= ' disabled="disabled"';
 				}
 			} elseif (is_object($element)) {
-				$key  = $options['option.key'] === null ? $elementKey : $element->$options['option.key'];
-				$text = $element->$options['option.text'];
-				if (isset($element->$options['option.attr'])) {
-					$attr = $element->$options['option.attr'];
+				$key  = $options['option.key'] === null ? $elementKey : $element->{$options['option.key']};
+				$text = $element->{$options['option.text']};
+				if (isset($element->{$options['option.attr']})) {
+					$attr = $element->{$options['option.attr']};
 				}
-				if (isset($element->$options['option.id'])) {
-					$id = $element->$options['option.id'];
+				if (isset($element->{$options['option.id']})) {
+					$id = $element->{$options['option.id']};
 				}
-				if (isset($element->$options['option.label'])) {
-					$label = $element->$options['option.label'];
+				if (isset($element->{$options['option.label']})) {
+					$label = $element->{$options['option.label']};
 				}
-				if (isset($element->$options['option.disable']) && $element->$options['option.disable']) {
+				if (isset($element->{$options['option.disable']}) && $element->{$options['option.disable']}) {
 					$extra .= ' disabled="disabled"';
 				}
 			} else {
@@ -511,7 +511,7 @@ abstract class GantryHtmlSelect
 				$extra = ($id ? ' id="' . $id . '"' : '') . ($label ? ' label="' . $label . '"' : '') . ($attr ? ' ' . $attr : '') . $extra;
 				if (is_array($options['list.select'])) {
 					foreach ($options['list.select'] as $val) {
-						$key2 = is_object($val) ? $val->$options['option.key'] : $val;
+						$key2 = is_object($val) ? $val->{$options['option.key']} : $val;
 						if ($key == $key2) {
 							$extra .= ' selected="selected"';
 							break;
@@ -557,15 +557,15 @@ abstract class GantryHtmlSelect
 		$id_text = $idtag ? $idtag : $name;
 
 		foreach ($data as $ind => $obj) {
-			$k  = $obj->$optKey;
-			$t  = $translate ? JText::_($obj->$optText) : $obj->$optText;
+			$k  = $obj->{$optKey};
+			$t  = $translate ? JText::_($obj->{$optText}) : $obj->{$optText};
 			$id = (isset($obj->id) ? $obj->id : null);
 
 			$extra = '';
 			$extra .= $id ? ' id="' . $obj->id . '"' : '';
 			if (is_array($selected)) {
 				foreach ($selected as $val) {
-					$k2 = is_object($val) ? $val->$optKey : $val;
+					$k2 = is_object($val) ? $val->{$optKey} : $val;
 					if ($k == $k2) {
 						$extra .= ' selected="selected"';
 						break;
@@ -574,7 +574,7 @@ abstract class GantryHtmlSelect
 			} else {
 				$extra .= ((string)$k == (string)$selected ? ' checked="checked"' : '');
 			}
-			$html .= "\n\t" . '<input type="radio" name="' . $name . '"' . ' id="' . $id_text . $k . '" value="' . $k . '"' . ' ' . $extra . ' ' . $attribs . '/>' . "\n\t" . '<label for="' . $id_text . $k . '" id="' . $id_text . $k . '-lbl" class="radiobtn_' . strtolower($obj->$optText) . '">' . $t . '</label>';
+			$html .= "\n\t" . '<input type="radio" name="' . $name . '"' . ' id="' . $id_text . $k . '" value="' . $k . '"' . ' ' . $extra . ' ' . $attribs . '/>' . "\n\t" . '<label for="' . $id_text . $k . '" id="' . $id_text . $k . '-lbl" class="radiobtn_' . strtolower($obj->{$optText}) . '">' . $t . '</label>';
 		}
 		$html .= "\n";
 		return $html;

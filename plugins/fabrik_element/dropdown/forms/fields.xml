@@ -8,7 +8,8 @@
 
 			<field name="sub_options"
 				type="suboptions"
-				label="COM_FABRIK_SUBOPTIONS" />
+				label="COM_FABRIK_SUBOPTIONS"
+				description="PLG_ELEMENT_DROPDOWN_SUBOPTIONS_DESC" />
 
 			<field name="multiple"
 				type="radio"
@@ -98,8 +99,8 @@
 				type="radio"
 				default="0"
 				class="btn-group"
-				label="PLG_ELEMENT_DROPDOWN_ADVANCED_BEHAVIOR_LABEL"
-				description="PLG_ELEMENT_DROPDOWN_ADVANCED_BEHAVIOR_DESC" >
+				label="PLG_ELEMENT_DROPDOWN_JQUERY_CHOSEN_LABEL"
+				description="PLG_ELEMENT_DROPDOWN_JQUERY_CHOSEN_DESC" >
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 			</field>

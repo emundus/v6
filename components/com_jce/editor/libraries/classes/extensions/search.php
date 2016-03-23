@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -60,7 +60,9 @@ class WFSearchExtension extends WFExtension {
         parent::display();
     }
 
-    public function getView($layout) {        
-        return parent::getView(array('name' => 'search', 'layout' => $layout));
+    public function getView($options = array()) {
+        $options['name'] = 'search';
+
+        return parent::getView($options);
     }
 }

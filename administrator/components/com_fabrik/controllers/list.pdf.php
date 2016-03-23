@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -34,7 +34,6 @@ class FabrikAdminControllerList extends FabControllerForm
 	 *
 	 * @return  void
 	 */
-
 	public function view()
 	{
 		$app = JFactory::getApplication();
@@ -56,7 +55,7 @@ class FabrikAdminControllerList extends FabControllerForm
 
 		// Set the layout
 		$view->setLayout($viewLayout);
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_LISTS'), 'lists.png');
+		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_LISTS'), 'list');
 		$view->display();
 	}
 }

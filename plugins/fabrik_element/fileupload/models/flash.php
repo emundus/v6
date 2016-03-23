@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.fileupload
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -18,8 +18,7 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik.element.fileupload
  * @since       3.0
  */
-
-class FlashRender
+class FlashRenderModel extends FabModel
 {
 	/**
 	 * Render output
@@ -38,7 +37,6 @@ class FlashRender
 	 *
 	 * @return  void
 	 */
-
 	public function renderListData(&$model, &$params, $file, $thisRow)
 	{
 		$this->render($model, $params, $file);
@@ -53,7 +51,6 @@ class FlashRender
 	 *
 	 * @return  void
 	 */
-
 	public function render(&$model, &$params, $file)
 	{
 		$fbConfig = JComponentHelper::getParams('com_fabrik');
@@ -62,7 +59,7 @@ class FlashRender
 		require_once COM_FABRIK_FRONTEND . '/libs/getid3/getid3/getid3.lib.php';
 
 		getid3_lib::IncludeDependency(COM_FABRIK_FRONTEND . '/libs/getid3/getid3/extension.cache.mysql.php', __FILE__, true);
-		$config = JFactory::getConfig();
+		$config = $this->config;
 		$host = $config->get('host');
 		$database = $config->get('db');
 		$username = $config->get('user');
@@ -91,12 +88,16 @@ class FlashRender
 			$h = 600;
 		}
 
-		// $$$ hugh - if they've enabled thumbnails, for Flash content we'll take that to mean they don't
-		// want to play the content inline in the table, and use mediabox (if available) to open it instead.
-		if (!$model->inDetailedView && $fbConfig->get('use_mediabox', true) && $params->get('make_thumbnail', false))
-		{
-			$element = $model->getElement();
+		$layout = $model->getLayout('flash');
+		$displayData = new stdClass;
+		$displayData->useThumbs = !$model->inDetailedView && $fbConfig->get('use_mediabox', true) && $params->get('make_thumbnail', false);
+		$displayData->width = $w;
+		$displayData->height = $h;
+		$displayData->inDetailedView = $model->inDetailedView;
+		$displayData->file = $file;
 
+		if ($displayData->useThumbs)
+		{
 			// @TODO - work out how to do thumbnails
 			$thumb_dir = $params->get('thumb_dir');
 
@@ -129,26 +130,11 @@ class FlashRender
 			}
 
 			$file = str_replace("\\", "/", COM_FABRIK_LIVESITE . $file);
-			$this->output .= "<a href='$file' rel='lightbox[flash $w $h]'><img src='$thumb_file' alt='Full Size'></a>";
+			$displayData->thumb = $thumb_file;
+			$displayData->file = $file;
 		}
-		elseif ($model->inDetailedView)
-		{
-			$file = str_replace("\\", "/", COM_FABRIK_LIVESITE . $file);
-			$this->output = "<object width=\"$w\" height=\"$h\">
-				<param name=\"movie\" value=\"$file\">
-				<embed src=\"$file\" width=\"$w\" height=\"$h\">
-				</embed>
-				</object>";
-		}
-		else
-		{
-			$file = str_replace("\\", "/", COM_FABRIK_LIVESITE . $file);
-			$this->output = "<object width=\"$w\" height=\"$h\">
-				<param name=\"movie\" value=\"$file\">
-				<embed src=\"$file\" width=\"$w\" height=\"$h\">
-				</embed>
-				</object>";
-		}
+
+		$this->output = $layout->render($displayData);
 	}
 
 	/**
@@ -162,7 +148,6 @@ class FlashRender
 	 *
 	 * @return  string  HTML
 	 */
-
 	public function renderCarousel($id = 'carousel', $data = array(), $model = null, $params = null, $thisRow = null)
 	{
 		$rendered = '';

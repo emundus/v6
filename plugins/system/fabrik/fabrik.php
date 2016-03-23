@@ -5,7 +5,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  System
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -22,7 +22,6 @@ jimport('joomla.filesystem.file');
  * @subpackage  System
  * @since       3.0
  */
-
 class PlgSystemFabrik extends JPlugin
 {
 	/**
@@ -32,23 +31,28 @@ class PlgSystemFabrik extends JPlugin
 	 * because func_get_args ( void ) returns a copy of all passed arguments NOT references.
 	 * This causes problems with cross-referencing necessary for the observer design pattern.
 	 *
-	 * @param   object  &$subject  The object to observe
-	 * @param   array   $config    An array that holds the plugin configuration
+	 * @param   object &$subject The object to observe
+	 * @param   array  $config   An array that holds the plugin configuration
 	 *
-	 * @since	1.0
+	 * @since    1.0
 	 */
-
 	public function plgSystemFabrik(&$subject, $config)
 	{
+		// Could be component was uninstalled but not the plugin
+		if (!JFile::exists(JPATH_SITE . '/components/com_fabrik/helpers/file.php'))
+		{
+			return;
+		}
+
 		/**
 		 * Moved these from defines.php to here, to fix an issue with Kunena.  Kunena imports the J!
 		 * JForm class in their system plugin, in the class constructor  So if we wait till onAfterInitialize
 		 * to do this, we blow up.  So, import them here, and make sure the Fabrik plugin has a lower ordering
 		 * than Kunena's.  We might want to set our default to -1.
 		 */
-		$app = JFactory::getApplication();
+		$app     = JFactory::getApplication();
 		$version = new JVersion;
-		$base = 'components.com_fabrik.classes.' . str_replace('.', '', $version->RELEASE);
+		$base    = 'components.com_fabrik.classes.' . str_replace('.', '', $version->RELEASE);
 
 		// Test if Kunena is loaded - if so notify admins
 		if (class_exists('KunenaAccess'))
@@ -84,7 +88,6 @@ class PlgSystemFabrik extends JPlugin
 	 *
 	 * @return string
 	 */
-
 	public static function js()
 	{
 		/**
@@ -94,9 +97,9 @@ class PlgSystemFabrik extends JPlugin
 		 *  For now leave the code in, just short circuit it.  Rip it out after making sure this doesn't have
 		 *  any unforeseen side effects.
 		 */
-		return self::buildJs();;
+		return self::buildJs();
 	}
-	
+
 	/**
 	 * Clear session js store
 	 *
@@ -116,14 +119,13 @@ class PlgSystemFabrik extends JPlugin
 	 *
 	 * @return string
 	 */
-
 	public static function buildJs()
 	{
 		$session = JFactory::getSession();
-		$config = $session->get('fabrik.js.config', array());
-		$config = implode("\n", $config);
+		$config  = (array) $session->get('fabrik.js.config', array());
+		$config  = implode("\n", $config);
 
-		$js = $session->get('fabrik.js.scripts', array());
+		$js = (array) $session->get('fabrik.js.scripts', array());
 		$js = implode("\n", $js);
 
 		if ($config . $js !== '')
@@ -137,10 +139,10 @@ class PlgSystemFabrik extends JPlugin
 			 * scripts were loaded, Fabrik had loaded requires js, and conflicts occurred.
 			 */
 			$jsAssetBaseURI = FabrikHelperHTML::getJSAssetBaseURI();
-			$rjs = $jsAssetBaseURI . 'media/com_fabrik/js/lib/require/require.js';
-			$script = '<script>
+			$rjs            = $jsAssetBaseURI . 'media/com_fabrik/js/lib/require/require.js';
+			$script         = '<script>
             setTimeout(function(){
-				 jQuery.getScript( "' . $rjs. '", function() {
+				 jQuery.getScript( "' . $rjs . '", function() {
 				' . "\n" . $config . "\n" . $js . "\n" . '
 			});
 			 }, 600);
@@ -160,7 +162,6 @@ class PlgSystemFabrik extends JPlugin
 	 *
 	 * @return  void
 	 */
-
 	public function onAfterRender()
 	{
 		// Could be component was uninstalled but not the plugin
@@ -169,13 +170,13 @@ class PlgSystemFabrik extends JPlugin
 			return;
 		}
 
-		$app = JFactory::getApplication();
+		$app    = JFactory::getApplication();
 		$script = self::js();
 		self::clearJs();
 
-		$version = new JVersion;
+		$version           = new JVersion;
 		$lessThanThreeFour = version_compare($version->RELEASE, '3.4', '<');
-		$content = $lessThanThreeFour ? JResponse::getBody() : $app->getBody();
+		$content           = $lessThanThreeFour ? JResponse::getBody() : $app->getBody();
 
 		if (!stristr($content, '</body>'))
 		{
@@ -196,13 +197,22 @@ class PlgSystemFabrik extends JPlugin
 	 *
 	 * @return  void
 	 */
-
 	public function onAfterInitialise()
 	{
 		jimport('joomla.filesystem.file');
-		$p = JPATH_SITE . '/plugins/system/fabrik/';
-		$defines = JFile::exists($p . 'user_defines.php') ? $p . 'user_defines.php' : $p . 'defines.php';
+
+		/**
+		 * Added allow_user_defines to global config, defaulting to No, so even if a user_defines.php is present
+		 * it won't get used unless this option is specifically set.  Did this because it looks like a user_defines.php
+		 * managed to creep in to a release ZIP at some point, so some people unknowingly have one, which started causing
+		 * issues after we added some more includes to defines.php.
+		 */
+		$fbConfig         = JComponentHelper::getParams('com_fabrik');
+		$allowUserDefines = $fbConfig->get('allow_user_defines', '0') === '1';
+		$p                = JPATH_SITE . '/plugins/system/fabrik/';
+		$defines          = $allowUserDefines && JFile::exists($p . 'user_defines.php') ? $p . 'user_defines.php' : $p . 'defines.php';
 		require_once $defines;
+
 		$this->setBigSelects();
 	}
 
@@ -213,12 +223,11 @@ class PlgSystemFabrik extends JPlugin
 	 *
 	 * @return  void
 	 */
-
 	protected function setBigSelects()
 	{
-		$fbConfig = JComponentHelper::getParams('com_fabrik');
+		$fbConfig   = JComponentHelper::getParams('com_fabrik');
 		$bigSelects = $fbConfig->get('enable_big_selects', 0);
-		$db = JFactory::getDbo();
+		$db         = JFactory::getDbo();
 
 		if ($bigSelects)
 		{
@@ -241,18 +250,18 @@ class PlgSystemFabrik extends JPlugin
 	 * used in a common display routine: href, title, section, created, text,
 	 * browsernav
 	 *
-	 * @param   string     $text      Target search string
-	 * @param   JRegistry  $params    Search plugin params
-	 * @param   string     $phrase    Matching option, exact|any|all
-	 * @param   string     $ordering  Option, newest|oldest|popular|alpha|category
+	 * @param   string    $text     Target search string
+	 * @param   JRegistry $params   Search plugin params
+	 * @param   string    $phrase   Matching option, exact|any|all
+	 * @param   string    $ordering Option, newest|oldest|popular|alpha|category
 	 *
 	 * @return  array
 	 */
-
 	public static function onDoContentSearch($text, $params, $phrase = '', $ordering = '')
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$app      = JFactory::getApplication();
+		$package  = $app->getUserState('com_fabrik.package', 'fabrik');
+		$fbConfig = JComponentHelper::getParams('com_fabrik');
 
 		if (defined('COM_FABRIK_SEARCH_RUN'))
 		{
@@ -268,8 +277,9 @@ class PlgSystemFabrik extends JPlugin
 		require_once JPATH_SITE . '/components/com_content/helpers/route.php';
 
 		// Load plugin params info
-		$limit = $params->def('search_limit', 50);
-		$text = trim($text);
+		//$limit = $params->def('search_limit', 50);
+		$limit = $params->get('search_limit', 50);
+		$text  = trim($text);
 
 		if ($text == '')
 		{
@@ -291,7 +301,7 @@ class PlgSystemFabrik extends JPlugin
 				break;
 
 			case 'category':
-				$order = 'b.title ASC, a.title ASC';
+				$order  = 'b.title ASC, a.title ASC';
 				$morder = 'a.title ASC';
 				break;
 
@@ -309,22 +319,22 @@ class PlgSystemFabrik extends JPlugin
 		$query->select('id')->from('#__{package}_lists')->where('published = 1');
 		$db->setQuery($query);
 
-		$list = array();
-		$ids = $db->loadColumn();
+		$list    = array();
+		$ids     = $db->loadColumn();
 		$section = $params->get('search_section_heading');
-		$urls = array();
+		$urls    = array();
 
 		// $$$ rob remove previous search results?
 		$input->set('resetfilters', 1);
 
 		// Ensure search doesn't go over memory limits
-		$memory = ini_get('memory_limit');
-		$memory = (int) FabrikString::rtrimword($memory, 'M') * 1000000;
-		$usage = array();
+		$memory    = ini_get('memory_limit');
+		$memory    = (int) FabrikString::rtrimword($memory, 'M') * 1000000;
+		$usage     = array();
 		$memSafety = 0;
 
 		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
-		$app = JFactory::getApplication();
+		$app       = JFactory::getApplication();
 
 		foreach ($ids as $id)
 		{
@@ -334,8 +344,6 @@ class PlgSystemFabrik extends JPlugin
 			// $$$ geros - http://fabrikar.com/forums/showthread.php?t=21134&page=2
 			$key = 'com_' . $package . '.list' . $id . '.filter.searchall';
 			$app->setUserState($key, null);
-
-			$used = memory_get_usage();
 			$usage[] = memory_get_usage();
 
 			if (count($usage) > 2)
@@ -344,7 +352,8 @@ class PlgSystemFabrik extends JPlugin
 
 				if ($diff + $usage[count($usage) - 1] > $memory - $memSafety)
 				{
-					$app->enqueueMessage('Some records were not searched due to memory limitations');
+					$msg = FText::_('PLG_FABRIK_SYSTEM_SEARCH_MEMORY_LIMIT');
+					$app->enqueueMessage($msg);
 					break;
 				}
 			}
@@ -361,14 +370,21 @@ class PlgSystemFabrik extends JPlugin
 			}
 
 			$filterModel = $listModel->getFilterModel();
-			$requestKey = $filterModel->getSearchAllRequestKey();
+			$requestKey  = $filterModel->getSearchAllRequestKey();
 
 			// Set the request variable that fabrik uses to search all records
 			$input->set($requestKey, $text, 'post');
 
-			$table = $listModel->getTable();
-			$fabrikDb = $listModel->getDb();
+			$table  = $listModel->getTable();
 			$params = $listModel->getParams();
+
+			/*
+			 * $$$ hugh - added 4/12/2015, if user doesn't have view list and view details, no searchee
+			 */
+			if (!$listModel->canView() || !$listModel->canViewDetails())
+			{
+				continue;
+			}
 
 			// Test for swap too boolean mode
 			$mode = $input->get('searchphrase', '') === 'all' ? 0 : 1;
@@ -385,29 +401,36 @@ class PlgSystemFabrik extends JPlugin
 			// Set the table search mode to OR - this will search ALL fields with the search term
 			$params->set('search-mode', 'OR');
 
-			$allrows = $listModel->getData();
+			/**
+			 * Disable pagination limits.
+			 * For now, use filter_list_max limit, just to prevent totally unconstrained queries,
+			 * might add seperate config setting for global search max at some point.
+			 */
+			$listModel->setLimits(0, $fbConfig->get('filter_list_max', 100));
+
+			$allRows      = $listModel->getData();
 			$elementModel = $listModel->getFormModel()->getElement($params->get('search_description', $table->label), true);
-			$descname = is_object($elementModel) ? $elementModel->getFullName() : '';
+			$descName     = is_object($elementModel) ? $elementModel->getFullName() : '';
 
 			$elementModel = $listModel->getFormModel()->getElement($params->get('search_title', 0), true);
-			$title = is_object($elementModel) ? $elementModel->getFullName() : '';
+			$title        = is_object($elementModel) ? $elementModel->getFullName() : '';
 
 			/**
 			 * $$$ hugh - added date element ... always use raw, as anything that isn't in
 			 * standard MySQL format will cause a fatal error in J!'s search code when it does the JDate create
 			 */
 			$elementModel = $listModel->getFormModel()->getElement($params->get('search_date', 0), true);
-			$date_element = is_object($elementModel) ? $elementModel->getFullName() : '';
+			$dateElement  = is_object($elementModel) ? $elementModel->getFullName() : '';
 
-			if (!empty($date_element))
+			if (!empty($dateElement))
 			{
-				$date_element .= '_raw';
+				$dateElement .= '_raw';
 			}
 
 			$aAllowedList = array();
-			$pk = $table->db_primary_key;
+			$pk           = $table->db_primary_key;
 
-			foreach ($allrows as $group)
+			foreach ($allRows as $group)
 			{
 				foreach ($group as $oData)
 				{
@@ -425,8 +448,12 @@ class PlgSystemFabrik extends JPlugin
 					if (!in_array($href, $urls))
 					{
 						$limit--;
+						if ($limit < 0)
+						{
+							continue;
+						}
 						$urls[] = $href;
-						$o = new stdClass;
+						$o      = new stdClass;
 
 						if (isset($oData->$title))
 						{
@@ -437,14 +464,14 @@ class PlgSystemFabrik extends JPlugin
 							$o->title = $table->label;
 						}
 
-						$o->_pkey = $table->db_primary_key;
+						$o->_pkey   = $table->db_primary_key;
 						$o->section = $section;
-						$o->href = $href;
+						$o->href    = $href;
 
 						// Need to make sure it's a valid date in MySQL format, otherwise J!'s code will pitch a fatal error
-						if (isset($oData->$date_element) && FabrikString::isMySQLDate($oData->$date_element))
+						if (isset($oData->$dateElement) && FabrikString::isMySQLDate($oData->$dateElement))
 						{
-							$o->created = $oData->$date_element;
+							$o->created = $oData->$dateElement;
 						}
 						else
 						{
@@ -453,16 +480,17 @@ class PlgSystemFabrik extends JPlugin
 
 						$o->browsernav = 2;
 
-						if (isset($oData->$descname))
+						if (isset($oData->$descName))
 						{
-							$o->text = $oData->$descname;
+							$o->text = $oData->$descName;
 						}
 						else
 						{
 							$o->text = '';
 						}
 
-						$o->title = strip_tags($o->title);
+						$o->title       = strip_tags($o->title);
+						$o->title       = html_entity_decode($o->title);
 						$aAllowedList[] = $o;
 					}
 				}
@@ -480,7 +508,79 @@ class PlgSystemFabrik extends JPlugin
 				$allList = array_merge($allList, $li);
 			}
 		}
+		if ($limit < 0)
+		{
+			$language = JFactory::getLanguage();
+			$language->load('plg_system_fabrik', JPATH_SITE . '/plugins/system/fabrik');
+			$msg = FText::_('PLG_FABRIK_SYSTEM_SEARCH_LIMIT');
+			$app->enqueueMessage($msg);
+		}
 
 		return $allList;
+	}
+
+	/**
+	 * If a form or details view has set a canonical link - removed any J created links
+	 *
+	 * @throws Exception
+	 */
+	public function onAfterDispatch()
+	{
+		$doc     = JFactory::getDocument();
+		$session = JFactory::getSession();
+		$package = JFactory::getApplication()->getUserState('com_fabrik.package', 'fabrik');
+
+		if (isset($doc->_links) && $session->get('fabrik.clearCanonical'))
+		{
+			$session->clear('fabrik.clearCanonical');
+
+			foreach ($doc->_links as $k => $link)
+			{
+				if ($link['relation'] == 'canonical' && !strstr($k, $package))
+				{
+					unset($doc->_links[$k]);
+					break;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Global config has been saved.
+	 * Check the product key and if it exists create an update site entry
+	 * Update server XML manifest generated from update/premium.php
+	 *
+	 * @param string          $option
+	 * @param JTableExtension $data
+	 */
+	function onExtensionAfterSave($option, $data)
+	{
+		if ($option !== 'com_config.component')
+		{
+			return;
+		}
+
+		if ($data->get('name') !== 'com_fabrik')
+		{
+			return;
+		}
+
+		$props      = $data->getProperties();
+		$params     = new JRegistry($props['params']);
+		$productKey = $params->get('fabrik_product_key', '');
+
+		if ($productKey === '')
+		{
+			return;
+		}
+
+		$table = JTable::getInstance('Updatesite');
+		$table->load(array('name' => 'Fabrik - Premium'));
+		$table->save(array(
+			'type' => 'collection',
+			'name' => 'Fabrik - Premium',
+			'enabled' => 1,
+			'location' => 'http://localhost:81/fabrik31x/public_html/update/premium.php?productKey=' . $productKey
+		));
 	}
 }

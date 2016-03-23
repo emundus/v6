@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -76,7 +76,7 @@ class WFLinkPlugin extends WFEditorPlugin {
         // add link scripts last
         $document->addScript(array('link'), 'plugins');
     }
-    
+
     public function getLinks() {
 
         static $links;
@@ -87,7 +87,7 @@ class WFLinkPlugin extends WFEditorPlugin {
 
         return $links;
     }
-    
+
     public function getSearch($type = 'link') {
         static $search;
 
@@ -102,7 +102,7 @@ class WFLinkPlugin extends WFEditorPlugin {
         return $search[$type];
     }
 
-    public function getSettings() {
+    public function getSettings($settings = array()) {
         $profile = $this->getProfile();
 
         $settings = array(

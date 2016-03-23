@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<extension group="fabrik_element" method="upgrade" type="plugin" version="30">
+<extension group="fabrik_element" method="upgrade" type="plugin" version="3">
 	<name>plg_fabrik_element_date</name>
 	<author>Rob Clayburn</author>
-	<creationDate>April 2015</creationDate>
-	<copyright>Copyright (C) 2005-2015 fabrikar.com - All rights reserved.</copyright>
+	<creationDate>January 2016</creationDate>
+	<copyright>Copyright (C) 2005-2016 fabrikar.com - All rights reserved.</copyright>
 	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
 	<authorEmail>rob@pollen-8.co.uk</authorEmail>
 	<authorUrl>www.fabrikar.com</authorUrl>
-	<version>3.3.2</version>
+	<version>3.4.2</version>
 	<help url="PLG_ELEMENT_DATE_HELP_SERVER"/>
 	<description>PLG_ELEMENT_DATE_DESCRIPTION</description>
 	<files>
@@ -19,5 +19,6 @@
 		<filename>filter-min.js</filename>
 		<folder>forms</folder>
 		<folder>language</folder>
+		<folder>layouts</folder>
 	</files>
 </extension>

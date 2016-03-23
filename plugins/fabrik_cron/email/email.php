@@ -4,12 +4,14 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.cron.email
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\Utilities\ArrayHelper;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
@@ -21,7 +23,6 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
  * @subpackage  Fabrik.cron.email
  * @since       3.0
  */
-
 class PlgFabrik_Cronemail extends PlgFabrik_Cron
 {
 	/**
@@ -32,7 +33,6 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 	 *
 	 * @return  bool can use or not
 	 */
-
 	public function canUse($location = null, $event = null)
 	{
 		return true;
@@ -45,10 +45,8 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 	 *
 	 * @return  int  number of records updated
 	 */
-
 	public function process(&$data)
 	{
-		$app = JFactory::getApplication();
 		jimport('joomla.mail.helper');
 		$params = $this->getParams();
 		$msg = $params->get('message');
@@ -56,8 +54,8 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 		$to = explode(',', $params->get('to'));
 
 		$w = new FabrikWorker;
-		$MailFrom = $app->getCfg('mailfrom');
-		$FromName = $app->getCfg('fromname');
+		($params->get('cronemail_return', '') != '') ? $MailFrom = $params->get('cronemail_return') : $MailFrom = $this->app->get('mailfrom');
+		($params->get('cronemail_from', '') != '') ? $FromName = $params->get('cronemail_from') : $FromName = $this->app->get('fromname');
 		$subject = $params->get('subject', 'Fabrik cron job');
 		$eval = $params->get('cronemail-eval');
 		$condition = $params->get('cronemail_condition', '');
@@ -80,33 +78,37 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 						}
 					}
 
-					$row = JArrayHelper::fromObject($row);
+					$row = ArrayHelper::fromObject($row);
 
-					foreach ($to as $thisto)
+					foreach ($to as $thisTo)
 					{
-						$thisto = $w->parseMessageForPlaceHolder($thisto, $row);
+						$thisTo = $w->parseMessageForPlaceHolder($thisTo, $row);
 
-						if (FabrikWorker::isEmail($thisto))
+						if (FabrikWorker::isEmail($thisTo))
 						{
-							$thismsg = $w->parseMessageForPlaceHolder($msg, $row);
+							$thisMsg = $w->parseMessageForPlaceHolder($msg, $row);
 
 							if ($eval)
 							{
-								$thismsg = eval($thismsg);
+								$thisMsg = eval($thisMsg);
 							}
 
-							$thissubject = $w->parseMessageForPlaceHolder($subject, $row);
+							$thisSubject = $w->parseMessageForPlaceHolder($subject, $row);
 							$mail = JFactory::getMailer();
-							$res = $mail->sendMail($MailFrom, $FromName, $thisto, $thissubject, $thismsg, true);
+							$res = $mail->sendMail($MailFrom, $FromName, $thisTo, $thisSubject, $thisMsg, true);
 
 							if (!$res)
 							{
-								$this->log .= "\n failed sending to $thisto";
+								$this->log .= "\n failed sending to $thisTo";
+							}
+							else
+							{
+								$this->log .= "\n sent to $thisTo";
 							}
 						}
 						else
 						{
-							$this->log .= "\n $thisto is not an email address";
+							$this->log .= "\n $thisTo is not an email address";
 						}
 					}
 
@@ -120,10 +122,10 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 		if (!empty($updates) && trim($field) != '')
 		{
 			// Do any update found
+			/** @var FabrikFEModelList $listModel */
 			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 			$listModel->setId($params->get('table'));
 			$table = $listModel->getTable();
-			$connection = $params->get('connection');
 			$field = $params->get('cronemail-updatefield');
 			$value = $params->get('cronemail-updatefield-value');
 

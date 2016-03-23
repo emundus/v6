@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.internalid
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -39,8 +39,6 @@ class PlgFabrik_ElementInternalid extends PlgFabrik_Element
 
 	public function render($data, $repeatCounter = 0)
 	{
-		$name = $this->getHTMLName($repeatCounter);
-		$id = $this->getHTMLId($repeatCounter);
 		$element = $this->getElement();
 		$value = $this->getValue($data, $repeatCounter);
 		$value = stripslashes($value);
@@ -50,7 +48,14 @@ class PlgFabrik_ElementInternalid extends PlgFabrik_Element
 			return ($element->hidden == '1') ? "<!-- " . $value . " -->" : $value;
 		}
 
-		return $this->getHiddenField($name, $value, $id, 'fabrikinput inputbox hidden');
+		$layout = $this->getLayout('form');
+		$layoutData = new stdClass;
+		$layoutData->name = $this->getHTMLName($repeatCounter);;
+		$layoutData->id = $this->getHTMLId($repeatCounter);;
+		$layoutData->value = htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
+		$layoutData->class = 'fabrikinput inputbox hidden';
+
+		return $layout->render($layoutData);
 	}
 
 	/**
@@ -92,12 +97,13 @@ class PlgFabrik_ElementInternalid extends PlgFabrik_Element
 	}
 
 	/**
-	 * Load a new set of default properties and params for the element
+	 * load a new set of default properties and params for the element
 	 *
-	 * @return  object	element (id = 0)
+	 * @param   array $properties Default props
+	 *
+	 * @return  FabrikTableElement	element (id = 0)
 	 */
-
-	public function getDefaultProperties()
+	public function getDefaultProperties($properties = array())
 	{
 		$item = parent::getDefaultProperties();
 		$item->primary_key = true;

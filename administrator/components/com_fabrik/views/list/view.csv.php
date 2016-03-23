@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -35,8 +35,6 @@ class FabrikAdminViewList extends JViewLegacy
 		$session = JFactory::getSession();
 		$app = JFactory::getApplication();
 		$input = $app->input;
-
-		// JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
 		$exporter = JModelLegacy::getInstance('Csvexport', 'FabrikFEModel');
 		$model = JModelLegacy::getInstance('list', 'FabrikFEModel');
 		$model->setId($input->getInt('listid'));
@@ -61,7 +59,7 @@ class FabrikAdminViewList extends JViewLegacy
 
 		$start = $input->getInt('start', 0);
 
-		if ($start <= $total)
+		if ($start < $total)
 		{
 			$exporter->writeFile($total);
 		}

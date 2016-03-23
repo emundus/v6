@@ -4,12 +4,14 @@
  *
  * @package     Joomla
  * @subpackage  Form
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\Utilities\ArrayHelper;
 
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
 
@@ -49,7 +51,7 @@ class JFormFieldSuboptions extends JFormField
 		$default->sub_values = array();
 		$default->sub_labels = array();
 		$default->sub_initial_selection = array();
-		$opts = $this->value == '' ? $default : JArrayHelper::toObject($this->value);
+		$opts = $this->value == '' ? $default : ArrayHelper::toObject($this->value);
 		$j3 = FabrikWorker::j3();
 
 		if ($j3)
@@ -75,6 +77,7 @@ class JFormFieldSuboptions extends JFormField
 
 		$opts->id = $this->id;
 		$opts->j3 = $j3;
+		$opts->defaultMax = (int) $this->getAttribute('default_max', 0);
 		$opts = json_encode($opts);
 		$script[] = "window.addEvent('domready', function () {";
 		$script[] = "\tnew Suboptions('$this->name', $opts);";

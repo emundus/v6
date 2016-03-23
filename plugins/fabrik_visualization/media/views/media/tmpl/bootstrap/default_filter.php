@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.media
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -25,7 +25,7 @@ if ($this->showFilters) :
 	  		<th><?php echo $table ?></th>
 	  		<th style="text-align:right">
 	  			<a href="#" class="clearFilters">
-	  				<i class="icon-refresh"></i> <?php echo FText::_('COM_FABRIK_CLEAR'); ?>
+				    <?php echo FabrikHelperHTML::icon('icon-refresh'); ?> <?php echo FText::_('COM_FABRIK_CLEAR'); ?>
 	  			</a>
 	  		</th>
 	  	</tr>
@@ -35,7 +35,7 @@ if ($this->showFilters) :
 	  	<tr>
 	  		<th colspan="2" style="text-align:right;">
 	  			<button type="submit" class="btn btn-primary">
-	  				<i class="icon-filter"></i> <?php echo FText::_('COM_FABRIK_GO') ?>
+				    <?php echo FabrikHelperHTML::icon('icon-filter'); ?> <?php echo FText::_('COM_FABRIK_GO') ?>
 	  			</button>
 	  		</th>
 	  	</tr>

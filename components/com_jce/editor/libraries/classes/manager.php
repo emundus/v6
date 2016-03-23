@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -136,10 +136,11 @@ class WFMediaManager extends WFEditorPlugin {
                 'runtimes' => $this->getParam('editor.upload_runtimes', array('html5', 'flash', 'silverlight', 'html4'), '', 'array', false),
                 'chunk_size' => null,
                 'max_size' => $this->getParam('max_size', 1024, '', 'string', false),
-                'validate_mimetype' => $this->getParam('validate_mimetype', 1),
-                'add_random' => $this->getParam('editor.upload_add_random', 0),
+                'validate_mimetype' => (int) $this->getParam('validate_mimetype', 1),
+                'add_random' => (int) $this->getParam('editor.upload_add_random', 0),
                 'total_files' => (float) $this->getParam('editor.total_files', 0),
-                'total_size' => (float) $this->getParam('editor.total_size', 0)
+                'total_size' => (float) $this->getParam('editor.total_size', 0),
+                'remove_exif' => (int) $this->getParam('editor.upload_remove_exif', 0)
             ),
             'folder_tree' => $this->getParam('editor.folder_tree', 1),
             'list_limit' => $this->getParam('editor.list_limit', 'all'),

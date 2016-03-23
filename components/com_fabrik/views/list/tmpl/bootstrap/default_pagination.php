@@ -4,7 +4,7 @@
  *
  * @package		Joomla.Administrator
  * @subpackage	Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -97,14 +97,18 @@ function fabrik_pagination_list_footer($list, $paginator)
 }
 */
 
-
-function fabrik_pagination_item_active(&$item, $listid)
+if (!function_exists('fabrik_pagination_item_active'))
 {
-	return '<a title="' . $item->text . '" href="' . $item->link . '">' . $item->text . '</a>';
+	function fabrik_pagination_item_active(&$item, $listid)
+	{
+		return '<a title="' . $item->text . '" href="' . $item->link . '">' . $item->text . '</a>';
+	}
 }
 
-function fabrik_pagination_item_inactive(&$item)
+if (!function_exists('fabrik_pagination_item_inactive'))
 {
-	return '<a href="#">' . $item->text . '</a>';
+	function fabrik_pagination_item_inactive(&$item)
+	{
+		return '<a href="#">' . $item->text . '</a>';
+	}
 }
-

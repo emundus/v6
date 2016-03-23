@@ -1,6 +1,6 @@
 /*
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 (function(a2,aB){var w,af,o=a2.document,aI=a2.location,d=a2.navigator,bg=a2.jQuery,I=a2.$,am=Array.prototype.push,a4=Array.prototype.slice,aK=Array.prototype.indexOf,z=Object.prototype.toString,V=Object.prototype.hasOwnProperty,aO=String.prototype.trim,bG=function(e,bZ){return new bG.fn.init(e,bZ,w);

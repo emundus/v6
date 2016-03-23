@@ -19,13 +19,19 @@ var FbDatabasejoin = new Class({
 		'listid': 0,
 		'listRef': '',
 		'joinId': 0,
-		'isJoin': false
+		'isJoin': false,
+		'canRepeat': false,
+		'fullName': '',
+		'show_please_select': false,
+		'allowadd': false,
+		'autoCompleteOpts': null,
+		'observe': null
 	},
 
 	initialize: function (element, options) {
 		this.activePopUp = false;
 		this.activeSelect = false;
-		this.plugin = 'databasejoin';
+		this.setPlugin('databasejoin');
 		this.parent(element, options);
 		this.init();
 	},
@@ -35,25 +41,29 @@ var FbDatabasejoin = new Class({
 			var b = c.getElement('.toggle-addoption');
 
 			// If duplicated remove old events
+						
+			b.removeEvent('click', this.watchAddEvent);
 
-			b.removeEvent('click', function (e) {
-				this.start(e);
-			}.bind(this));
+			this.watchAddEvent = this.start.bind(this);
 
-			b.addEvent('click', function (e) {
-				this.start(e);
-			}.bind(this));
+			b.addEvent('click', this.watchAddEvent);
 		}
 	},
 
 	/**
-	 * Add option via a popup form. Opens a window with the releated form
+	 * Add option via a popup form. Opens a window with the related form
 	 * inside
+	 * @param {Event} e
+	 * @param {bool} force
 	 */
 	start: function (e, force) {
 		if (!this.options.editable) {
 			return;
 		}
+
+		var visible, destroy,
+			c = this.getContainer();
+
 		force = force ? true : false;
 
 		// First time loading - auto close the hidden loaded popup.
@@ -69,7 +79,7 @@ var FbDatabasejoin = new Class({
 			};
 
 			// @FIXME - if set to true, then click addrow, click select rows, click add row => can't submit the form
-			// if set to false then theres an issue with loading data in repeat groups: see window.close()
+			// if set to false then there's an issue with loading data in repeat groups: see window.close()
 			//destroy = true;
 			visible = true;
 			this.activePopUp = true;
@@ -80,12 +90,12 @@ var FbDatabasejoin = new Class({
 		if (force === false && (this.options.popupform === 0 || this.options.allowadd === false)) {
 			return;
 		}
-		c = this.getContainer();
+
 		if (typeOf(this.element) === 'null' || typeOf(c) === 'null') {
 			return;
 		}
-		var a = c.getElement('.toggle-addoption');
-		var url = typeOf(a) === 'null' ? e.target.get('href') : a.get('href');
+		var a = c.getElement('.toggle-addoption'),
+			url = typeOf(a) === 'null' ? e.target.get('href') : a.get('href');
 
 
 		var id = this.element.id + '-popupwin';
@@ -117,29 +127,58 @@ var FbDatabasejoin = new Class({
 		}
 		return this.parent();
 	},
+	
+	/**
+	 * Removes an option from the db join element
+	 * 
+	 * @param {string} v Option value
+	 * @return  void
+	 */
+	removeOption: function (v, sel)
+	{
+		var el = document.id(this.element.id);
+		switch (this.options.displayType) {
+		case 'dropdown':
+		/* falls through */
+		case 'multilist':
+			var sel = typeOf(this.options.value) === 'array' ? this.options.value : Array.from(this.options.value);
+			options = el.options;
+			for (i=0; i < options.length; i++) {
+				if (options[i].value === v) {
+					el.remove(i);
+					if (sel) {
+						el.selectedIndex = 0;
+					}
+					if (this.options.advanced)
+					{
+						jQuery("#" + this.element.id).trigger("liszt:updated");
+					}
+					break;
+				}
+			}
+			break;
+		}
+	},
+
 
 	/**
-	 * Adds an option to the db join element, for dropdowns and radio buttons
+	 * Adds an option to the db join element, for drop-downs and radio buttons
 	 * (where only one selection is possible from a visible list of options)
 	 * the new option is only selected if its value = this.options.value
 	 *
-	 * @param	string	value               Option value
-	 * @param	string	label               Option label
-	 * @param   bool    autoCompleteUpdate  Should the autocomplete element set its current label/value to the option
+	 * @param {string} v Option value
+	 * @param {string} l Option label
+	 * @param {bool} autoCompleteUpdate  Should the auto-complete element set its current label/value to the option
 	 * being added - set to false in updateFromServer if not the active element.
 	 *
 	 * @return  void
 	 */
-
 	addOption: function (v, l, autoCompleteUpdate)
 	{
-		//debugger;
 		l = Encoder.htmlDecode(l);
 		autoCompleteUpdate = typeof(autoCompleteUpdate) !== 'undefined' ? autoCompleteUpdate : true;
-		var opt, selected, chxed, last, subOpts = [], injectWhere, labelfield;
-		if (v === '') {
-			// return;
-		}
+		var opt, selected, labelField;
+
 		switch (this.options.displayType) {
 		case 'dropdown':
 		/* falls through */
@@ -155,83 +194,74 @@ var FbDatabasejoin = new Class({
 			break;
 		case 'auto-complete':
 			if (autoCompleteUpdate) {
-				labelfield = this.element.getParent('.fabrikElement').getElement('input[name*=-auto-complete]');
+				labelField = this.element.getParent('.fabrikElement').getElement('input[name*=-auto-complete]');
 				this.element.value = v;
-				labelfield.value = l;
+				labelField.value = l;
 			}
 			break;
 		case 'checkbox':
-			sel = typeOf(this.options.value) === 'array' ? this.options.value : Array.from(this.options.value);
-			chxed = sel.contains(v) ? true : false;
-
-			subOpts = this.element.getElements('> .fabrik_subelement');
 			opt = this.getCheckboxTmplNode().clone();
-			var i = opt.getElement('input');
-			if (this.options.canRepeat) {
-				i.name = this.options.fullName + '[' + this.options.repeatCounter + '][' + subOpts.length + ']';
-			} else {
-				i.name = this.options.fullName + '[' + subOpts.length + ']';
-			}
-
-			opt.getElement('span').set('html', l);
-			opt.getElement('input').set('value', v);
-			last = subOpts.length === 0 ? this.element : subOpts.getLast();
-			injectWhere = subOpts.length === 0 ? 'bottom' : 'after';
-			opt.inject(last, injectWhere);
-			opt.getElement('input').checked = chxed;
-
+			var rowOpt = jQuery(Fabrik.jLayouts['fabrik-element-' + this.getPlugin() + '-form-rowopts'])[0];
+			this._addOption(opt, l, v, rowOpt);
 			break;
 		case 'radio':
 		/* falls through */
 		default:
-			// Not working in cdd in repeat group.
-			//var name = this.options.element + '[]';
-			var name;
-			if (this.options.canRepeat) {
-				name = this.options.fullName + '[' + this.options.repeatCounter + '][]';
-			} else {
-				name = this.options.fullName + '[]';
-			}
-
-			chxed = (v === this.options.value) ? true : false;
-			opt = new Element('div', {
-				'class': 'fabrik_subelement'
-			}).adopt(new Element('label').adopt([new Element('input', {
-				'class': 'fabrikinput',
-				'type': 'radio',
-				'checked': true,
-				'name': name,
-				'value': v
-			}), new Element('span').set('html', l)]));
-			subOpts = this.element.getElements('> .fabrik_subelement');
-			last = subOpts.length === 0 ? this.element : subOpts.getLast();
-			injectWhere = subOpts.length === 0 ? 'bottom' : 'after';
-			opt.inject(last, injectWhere);
+			var opt = jQuery(Fabrik.jLayouts['fabrik-element-' + this.getPlugin() + '-form-radio' + '_' + this.strElement])[0];
+			var rowOpt = jQuery(Fabrik.jLayouts['fabrik-element-' + this.getPlugin() + '-form-rowopts'])[0];
+			this._addOption(opt, l, v, rowOpt, null);
 			break;
 		}
 	},
 
 	/**
-	 * As cdd elements clear out the sub options before repopulating we need
-	 * to grab a copy of one of the checkboxes to use as a template node when recreating
-	 * the list
+	 * Adds an option to radio or checkbox
 	 *
-	 * @deprecated
+	 * @param {object}  opt    DOM object layout for the option 
+	 * @param {string}  v      Option value
+	 * @param {string}  l      Option label
+	 * @param {object}  rowOpt DOM object layout for the option row container 
 	 *
-	 * @return  dom node .fabrik_subelement (hidden id checkbox containing fk value)
+	 * @return  void
 	 */
-	getCheckboxIDTmplNode: function () {
-		if (!this.chxTmplIDNode && this.options.displayType === 'checkbox')
-		{
-			var chxs = this.element.getElements('.fabrikHide > .fabrik_subelement');
-			if (chxs.length === 0) {
-				this.chxTmplIDNode = this.element.getElement('.chxTmplIDNode').getChildren()[0].clone();
-				this.element.getElement('.chxTmplIDNode').destroy();
-			} else {
-				this.chxTmplIDNode = chxs.getLast().clone();
-			}
+	_addOption: function (opt, l, v, rowOpt) {
+		var sel = typeOf(this.options.value) === 'array' ? this.options.value : Array.from(this.options.value),
+			i = opt.getElement('input'),
+			subOpts = this.getSubOptions(),
+			subOptsRows = this.getSubOptsRow(),
+			checked = sel.contains(v) ? true : false,
+			nameIterator = this.options.displayType === 'radio' ? '' : subOpts.length;
+
+		if (this.options.canRepeat) {
+			i.name = this.options.fullName + '[' + this.options.repeatCounter + '][' + nameIterator + ']';
+		} else {
+			i.name = this.options.fullName + '[' + nameIterator + ']';
 		}
-		return this.chxTmplIDNode;
+
+		// stuff the value and label into the opt
+		opt.getElement('span').set('html', l);
+		opt.getElement('input').set('value', v);
+		
+		// if no row containers yet, inject one
+		if (subOptsRows.length === 0) {
+			rowOpt.inject(this.element, 'bottom')
+		}
+
+		// get the last row container
+		var lastRow = jQuery(this.element).children('div[data-role=fabrik-rowopts]').last()[0];
+		// get the opts in the last container
+		var lastRowOpts = jQuery(lastRow).children('div[data-role=suboption]');
+		
+		// if last row is full, inject another one
+		if (lastRowOpts.length >= this.options.optsPerRow) {
+			rowOpt.inject(this.element, 'bottom');
+			lastRow = jQuery(this.element).children('div[data-role=fabrik-rowopts]').last()[0];
+		}
+
+		// inject the new opt into the last row
+		opt.inject(lastRow, 'bottom');
+		// check it
+		opt.getElement('input').checked = checked;
 	},
 
 	hasSubElements: function () {
@@ -247,31 +277,60 @@ var FbDatabasejoin = new Class({
 	 * to grab a copy of one of the checkboxes to use as a template node when recreating
 	 * the list
 	 *
-	 * @return  dom node .fabrik_subelement (visible checkbox)
+	 * @return  dom node(visible checkbox)
 	 */
 	getCheckboxTmplNode: function () {
-		if (!this.chxTmplNode && this.options.displayType === 'checkbox')
-		{
-			var chxs = this.element.getElements('> .fabrik_subelement');
-			if (chxs.length === 0) {
-				this.chxTmplNode = this.element.getElement('.chxTmplNode').getChildren()[0].clone();
-				this.element.getElement('.chxTmplNode').destroy();
-			} else {
-				this.chxTmplNode = chxs.getLast().clone();
+		if (Fabrik.bootstrapped) {
+			this.chxTmplNode = jQuery(Fabrik.jLayouts['fabrik-element-' + this.getPlugin() + '-form-checkbox' + '_' + this.strElement])[0];
+			if (!this.chxTmplNode && this.options.displayType === 'checkbox')
+			{
+				var chxs = this.element.getElements('> .fabrik_subelement');
+				if (chxs.length === 0) {
+					this.chxTmplNode = this.element.getElement('.chxTmplNode').getChildren()[0].clone();
+					this.element.getElement('.chxTmplNode').destroy();
+				} else {
+					this.chxTmplNode = chxs.getLast().clone();
+				}
 			}
-
 		}
+
+		return this.chxTmplNode;
+	},
+	
+	/**
+	 * As cdd elements clear out the sub options before repopulating we need
+	 * to grab a copy of one of the checkboxes to use as a template node when recreating
+	 * the list
+	 *
+	 * @return  dom node(visible checkbox)
+	 */
+	getCheckboxRowOptsNode: function () {
+		if (Fabrik.bootstrapped) {
+			this.chxTmplNode = jQuery(Fabrik.jLayouts['fabrik-element-' + this.getPlugin() + '-form-rowopts'])[0];
+		} else {
+			if (!this.chxTmplNode && this.options.displayType === 'checkbox')
+			{
+				var chxs = this.element.getElements('> .fabrik_subelement');
+				if (chxs.length === 0) {
+					this.chxTmplNode = this.element.getElement('.chxTmplNode').getChildren()[0].clone();
+					this.element.getElement('.chxTmplNode').destroy();
+				} else {
+					this.chxTmplNode = chxs.getLast().clone();
+				}
+			}
+		}
+
 		return this.chxTmplNode;
 	},
 
 	/**
-	 * Send an ajax request to requery the element options and update the element if new options found
+	 * Send an ajax request to re-query the element options and update the element if new options found
 	 *
-	 * @param	string	(optional) additional value to get the updated value for (used in select)
+	 * @param {string} v (optional) additional value to get the updated value for (used in select)
 	 */
-
 	updateFromServer: function (v)
 	{
+		var formdata = this.form.getFormElementData();
 		var data = {
 				'option': 'com_fabrik',
 				'format': 'raw',
@@ -281,10 +340,15 @@ var FbDatabasejoin = new Class({
 				'element_id': this.options.id,
 				'formid': this.options.formid
 			};
+		data = Object.append(formdata, data);
+
 		// $$$ hugh - don't think we need to fetch values if auto-complete
 		// and v is empty, otherwise we'll just fetch every row in the target table,
-		// and do thing with it in onComplete?
+		// and do nothing with it in onComplete?  So just set it blank now.
 		if (this.options.displayType === 'auto-complete' && v === '') {
+			this.addOption('', '', true);
+			this.element.fireEvent('change', new Event.Mock(this.element, 'change'));
+			this.element.fireEvent('blur', new Event.Mock(this.element, 'blur'));
 			return;
 		}
 		if (v) {
@@ -293,47 +357,88 @@ var FbDatabasejoin = new Class({
 			// Joined elements strElement isnt right so use fullName as well
 			data[this.options.fullName + '_raw'] = v;
 		}
+		
+		Fabrik.loader.start(this.element.getParent(), Joomla.JText._('COM_FABRIK_LOADING'));
+
 		new Request.JSON({url: '',
 			method: 'post',
 			'data': data,
 			onSuccess: function (json) {
-				var sel, existingValues = this.getOptionValues();
+				Fabrik.loader.stop(this.element.getParent());
+				var sel, changed = false, existingValues = this.getOptionValues();
 
 				// If duplicating an element in a repeat group when its auto-complete we dont want to update its value
 				if (this.options.displayType === 'auto-complete' && v === '' && existingValues.length === 0) {
 					return;
 				}
+				
+				jsonValues = [];
 				json.each(function (o) {
+					jsonValues.push(o.value);
 					if (!existingValues.contains(o.value) && typeOf(o.value) !== 'null') {
 						sel = this.options.value === o.value;
 						this.addOption(o.value, o.text, sel);
-						this.element.fireEvent('change', new Event.Mock(this.element, 'change'));
-						this.element.fireEvent('blur', new Event.Mock(this.element, 'blur'));
+						changed = true;
 					}
 				}.bind(this));
+				
+				existingValues.each(function (ev) {
+					if (!jsonValues.contains(ev)) {
+						sel = this.options.value === ev;
+						this.removeOption(ev, sel);
+						changed = true;
+					}
+				}.bind(this));
+				
+				if (changed) {
+					this.element.fireEvent('change', new Event.Mock(this.element, 'change'));
+					this.element.fireEvent('blur', new Event.Mock(this.element, 'blur'));
+				}
+				
 				this.activePopUp = false;
 			}.bind(this)
 		}).post();
 	},
 
-	getOptionValues: function () {
+	getSubOptions: function () {
 		var o;
-		var values = [];
 		switch (this.options.displayType) {
-		case 'dropdown':
-		/* falls through */
-		case 'multilist':
-			o = this.element.getElements('option');
-			break;
-		case 'checkbox':
-			o = this.element.getElements('.fabrik_subelement input[type=checkbox]');
-			break;
-		case 'radio':
-		/* falls through */
-		default:
-			o = this.element.getElements('.fabrik_subelement input[type=radio]');
-			break;
+			case 'dropdown':
+			/* falls through */
+			case 'multilist':
+				o = this.element.getElements('option');
+				break;
+			case 'checkbox':
+				o = this.element.getElements('[data-role=suboption] input[type=checkbox]');
+				break;
+			case 'radio':
+			/* falls through */
+			default:
+				o = this.element.getElements('[data-role=suboption] input[type=radio]');
+				break;
 		}
+		return o;
+	},
+	
+	getSubOptsRow: function () {
+		var o;
+		switch (this.options.displayType) {
+			case 'dropdown':
+			case 'multilist':
+			default:
+				break;
+			case 'checkbox':
+			case 'radio':
+				o = this.element.getElements('[data-role=fabrik-rowopts]');
+				break;
+		}
+		return o;
+		
+	},
+
+	getOptionValues: function () {
+		var o = this.getSubOptions(),
+		values = [];
 		o.each(function (o) {
 			values.push(o.get('value'));
 		});
@@ -341,16 +446,13 @@ var FbDatabasejoin = new Class({
 	},
 
 	appendInfo: function (data) {
-		var rowid = data.rowid;
-		var formid = this.options.formid;
-		var key = this.options.key;
-		var label = this.options.label;
-		var url = 'index.php?option=com_fabrik&view=form&format=raw';
-		var post = {
+		var rowId = data.rowid,
+			url = 'index.php?option=com_fabrik&view=form&format=raw',
+			post = {
 			'formid': this.options.popupform,
-			'rowid': rowid
+			'rowid': rowId
 		};
-		var myajax = new Request.JSON({url: url,
+		new Request.JSON({url: url,
 			'data': post,
 			onSuccess: function (r) {
 				var v = r.data[this.options.key];
@@ -394,7 +496,7 @@ var FbDatabasejoin = new Class({
 				if (typeOf(this.element) === 'null') {
 					return;
 				}
-				// $$$ hugh - fire change blur event, so things like autofill will pick up change
+				// $$$ hugh - fire change blur event, so things like auto-fill will pick up change
 				this.element.fireEvent('change', new Event.Mock(this.element, 'change'));
 				this.element.fireEvent('blur', new Event.Mock(this.element, 'blur'));
 			}.bind(this)
@@ -402,6 +504,7 @@ var FbDatabasejoin = new Class({
 	},
 
 	watchSelect: function () {
+		var c, winId;
 		if (c = this.getContainer()) {
 			var sel = c.getElement('.toggle-selectoption');
 			if (typeOf(sel) !== 'null') {
@@ -411,15 +514,15 @@ var FbDatabasejoin = new Class({
 				Fabrik.addEvent('fabrik.list.row.selected', function (json) {
 					if (this.options.listid.toInt() === json.listid.toInt() && this.activeSelect) {
 						this.update(json.rowid);
-						var winid = this.element.id + '-popupwin-select';
-						if (Fabrik.Windows[winid]) {
-							Fabrik.Windows[winid].close();
+						winId = this.element.id + '-popupwin-select';
+						if (Fabrik.Windows[winId]) {
+							Fabrik.Windows[winId].close();
 						}
 					}
 				}.bind(this));
 
 				// Used for auto-completes in repeating groups to stop all fields updating when a record
-				// is selcted
+				// is selected
 				this.unactiveFn = function () {
 					this.activeSelect = false;
 				}.bind(this);
@@ -481,7 +584,7 @@ var FbDatabasejoin = new Class({
 				win.fitToContent();
 			}
 		};
-		var mywin = Fabrik.getWindow(this.windowopts);
+		Fabrik.getWindow(this.windowopts);
 	},
 
 	/**
@@ -512,7 +615,9 @@ var FbDatabasejoin = new Class({
 			if (val === '') {
 				return;
 			}
-			val = JSON.decode(val);
+			if (typeOf(val) === 'string') {
+				val = JSON.decode(val);
+			}
 			var h = this.form.getFormData();
 			if (typeOf(h) === 'object') {
 				h = $H(h);
@@ -556,11 +661,14 @@ var FbDatabasejoin = new Class({
 					if (typeOf(val) === 'string') {
 						val = val === '' ? [] : JSON.decode(val);
 					}
+					if (typeOf(val) !== 'array') {
+						val = [val];
+					}
 					this._getSubElements();
 					this.subElements.each(function (el) {
 						var chx = false;
 						val.each(function (v) {
-							if (v === el.value) {
+							if (v.toString() === el.value) {
 								chx = true;
 							}
 						}.bind(this));
@@ -570,8 +678,12 @@ var FbDatabasejoin = new Class({
 			}
 		}
 		this.options.value = val;
+		if (this.options.advanced)
+		{
+			jQuery("#" + this.element.id).trigger("liszt:updated");
+		}
 	},
-	
+
 	/**
 	 * $$$ hugh - testing being able to set a dropdown join by label rather than value,
 	 * needed in corner cases like reverse geocoding in the map element, where (say) the
@@ -583,7 +695,7 @@ var FbDatabasejoin = new Class({
 		if (typeOf(this.element) === 'null') {
 			return;
 		}
-		// If it's not editable or not a dropdown, just punt to a normal update()
+		// If it's not editable or not a drop-down, just punt to a normal update()
 		if (!this.options.editable || this.options.displayType !== 'dropdown') {
 			this.update(label);
 		}
@@ -688,17 +800,6 @@ var FbDatabasejoin = new Class({
 	},
 
 	/**
-	 * Sets the element key used in Fabrik.blocks.form_X.formElements
-	 *
-	 * @since   3.0.7
-	 *
-	 * @deprecated since 3.1rc1
-	 * @return  string
-	 */
-	/*getFormElementsKey: function (elId) {
-	},*/
-
-	/**
 	 * Used to find element when form clones a group
 	 * WYSIWYG text editor needs to return something specific as options.element has to use name
 	 * and not id.
@@ -741,20 +842,63 @@ var FbDatabasejoin = new Class({
 		document.id(f.id).value = '';
 		new FbAutocomplete(this.element.id, this.options.autoCompleteOpts);
 	},
+	
+	watchObserve: function () {
+		this.options.observe.each(function (o) {
+			if (o === '') {
+				return;
+			}
+			if (this.form.formElements[o]) {
+				this.form.formElements[o].addNewEventAux(this.form.formElements[o].getChangeEvent(), function (e) {
+					this.updateFromServer();
+				}.bind(this));
+			}
+			else {
+				var o2;
+				if (this.options.canRepeat) {
+					o2 = o + '_' + this.options.repeatCounter;
+					if (this.form.formElements[o2]) {
+						this.form.formElements[o2].addNewEventAux(this.form.formElements[o2].getChangeEvent(), function (e) {
+							this.updateFromServer();
+						}.bind(this));
+					}
+				}
+				else {
+					this.form.repeatGroupMarkers.each(function (v, k) {
+						o2 = '';
+						for (v2 = 0; v2 < v; v2++) {
+							o2 = 'join___' + this.form.options.group_join_ids[k] + '___' + o + '_' + v2;
+							if (this.form.formElements[o2]) {
+								// $$$ hugh - think we can add this one as sticky ...
+								this.form.formElements[o2].addNewEvent(this.form.formElements[o2].getChangeEvent(), function (e) {
+									this.updateFromServer();
+								}.bind(this));
+							}
+						}
+					}.bind(this));
+				}
+			}
+		}.bind(this));
+	},
+	
+	attachedToForm : function () {
+		if (this.options.editable) {
+			this.watchObserve();
+		}
+	},
 
 	init: function () {
-
 		// Could be in a popup add record form, in which case we don't want to ini on a main page load
 		if (typeOf(this.element) === 'null') {
 			return;
 		}
 		if (this.options.editable) {
 			this.getCheckboxTmplNode();
-			//this.getCheckboxIDTmplNode();
 		}
-
+		
 		// If users can add records to the database join drop down
 		if (this.options.allowadd === true && this.options.editable !== false) {
+			this.watchAddEvent = this.start.bind(this);
 			this.watchAdd();
 			Fabrik.addEvent('fabrik.form.submitted', function (form, json) {
 
@@ -768,9 +912,9 @@ var FbDatabasejoin = new Class({
 					// rob previously we we doing appendInfo() but that didnt get the concat labels for the database join
 					if (this.options.displayType === 'auto-complete') {
 
-						// Need to get v if autocomplete and updating from posted popup form as we only want to get ONE
+						// Need to get v if auto-complete and updating from posted popup form as we only want to get ONE
 						// option back inside update();
-						var myajax = new Request.JSON({
+						new Request.JSON({
 							'url': 'index.php?option=com_fabrik&view=form&format=raw',
 							'data': {
 								'formid': this.options.popupform,
@@ -813,7 +957,9 @@ var FbDatabasejoin = new Class({
 		default:
 			if (this.element) {
 				this.element.addEvent(action, function (e) {
-					e.stop();
+					if (e) {
+						e.stop();
+					}
 					(typeOf(js) === 'function') ? js.delay(0, this, this) : eval(js);
 				}.bind(this));
 			}
@@ -823,7 +969,7 @@ var FbDatabasejoin = new Class({
 		case 'radio':
 			this._getSubElements();
 			this.subElements.each(function (el) {
-				el.addEvent(action, function (e) {
+				el.addEvent(action, function () {
 					(typeOf(js) === 'function') ? js.delay(0, this, this) : eval(js);
 				}.bind(this));
 			}.bind(this));
@@ -832,13 +978,17 @@ var FbDatabasejoin = new Class({
 			var f = this.getAutoCompleteLabelField();
 			if (typeOf(f) !== 'null') {
 				f.addEvent(action, function (e) {
-					e.stop();
+					if (e) {
+						e.stop();
+					}
 					(typeOf(js) === 'function') ? js.delay(700, this, this) : eval(js);
 				}.bind(this));
 			}
 			if (this.element) {
 				this.element.addEvent(action, function (e) {
-					e.stop();
+					if (e) {
+						e.stop();
+					}
 					(typeOf(js) === 'function') ? js.delay(0, this, this) : eval(js);
 				}.bind(this));
 			}
@@ -855,5 +1005,15 @@ var FbDatabasejoin = new Class({
 			}
 		}
 		return this.parent(delIndex);
+	},
+
+	/**
+	 * When a form/details view is updating its own data, then should we use the raw data or the html?
+	 * Raw is used for cdd/db join elements
+	 *
+	 * @returns {boolean}
+	 */
+	updateUsingRaw: function () {
+		return true;
 	}
 });

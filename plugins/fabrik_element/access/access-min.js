@@ -1,1 +1,2 @@
-var FbAccess=new Class({Extends:FbElement,initialize:function(b,a){this.plugin="fabrikaccess";this.parent(b,a)}});
+/*! Fabrik */
+var FbAccess=new Class({Extends:FbElement,initialize:function(a,b){this.setPlugin("fabrikaccess"),this.parent(a,b)}});

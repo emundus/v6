@@ -1,6 +1,6 @@
 /*
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 var GantryGradient={init:function(){var a=$$(".gradient-preview");a.each(function(b){new Element("div").set("text","Sorry. Gradient previews can be seen only on WebKit and Gecko based browsers.").inject(b.addClass("error"));

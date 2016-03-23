@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -11,5 +11,5 @@
  */
 require_once(dirname( __FILE__ ).'/classes/browser.php');
 
-$plugin = new WFFileBrowserPlugin();//::getInstance();
+$plugin = new WFFileBrowserPlugin();
 $plugin->execute();

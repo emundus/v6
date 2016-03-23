@@ -1,12 +1,20 @@
+/**
+ * Form Comment
+ *
+ * @copyright: Copyright (C) 2005-2015, fabrikar.com - All rights reserved.
+ * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
+ */
+
 var FabrikComment = new Class({
-	
+
 	Implements: [Options, Events],
-	
+
 	getOptions: function () {
 		return {
 			'formid': 0,
 			'rowid': 0,
-			'label': ''
+			'label': '',
+			'wysiwyg': false
 		};
 	},
 
@@ -22,7 +30,7 @@ var FabrikComment = new Class({
 		this.spinner = new Spinner('fabrik-comments', {'message': 'loading'});
 		this.ajax = {};
 		this.ajax.deleteComment = new Request({
-			'url': '', 
+			'url': '',
 			'method': 'get',
 			'data': {
 				'option': 'com_fabrik',
@@ -39,7 +47,7 @@ var FabrikComment = new Class({
 			}.bind(this)
 		});
 		this.ajax.updateComment = new Request({
-			'url': '', 
+			'url': '',
 			'method': 'post',
 			'data': {
 				'option': 'com_fabrik',
@@ -78,17 +86,17 @@ var FabrikComment = new Class({
 		// For update
 		this.spinner.hide();
 		this.watchInput();
-		this.updateDigg();
+		this.updateThumbs();
 	},
 
 	// ***************************//
 	// CAN THE LIST BE ADDED TO //
 	// ***************************//
 
-	watchInput : function () {
+	watchInput: function () {
 
 		this.ajax.addComment = new Request({
-			'url': 'index.php', 
+			'url': 'index.php',
 			'method': 'get',
 			'data': {
 				'option': 'com_fabrik',
@@ -101,16 +109,16 @@ var FabrikComment = new Class({
 				'rowid': this.options.rowid,
 				'label': this.options.label
 			},
-			
+
 			'onSuccess': function (r) {
 				this.ajaxComplete(r);
 			}.bind(this),
-			
+
 			'onError': function (text, error) {
 				fconsole(text + ": " + error);
 				this.spinner.hide();
 			}.bind(this),
-			
+
 			'onFailure': function (xhr) {
 				alert(xhr.statusText);
 				this.spinner.hide();
@@ -125,7 +133,7 @@ var FabrikComment = new Class({
 			f.getElement('button.submit').addEvent('click', function (e) {
 				this.doInput(e);
 			}.bind(this));
-			
+
 			input.addEvent('click', function (e) {
 				this.testInput(e);
 			}.bind(this));
@@ -138,11 +146,11 @@ var FabrikComment = new Class({
 			e.target.value = '';
 		}
 	},
-	
-	updateDigg: function () {
-		if (typeOf(this.digg) !== 'null') {
-			this.digg.removeEvents();
-			this.digg.addEvents();
+
+	updateThumbs: function () {
+		if (typeOf(this.thumbs) !== 'null') {
+			this.thumbs.removeEvents();
+			this.thumbs.addEvents();
 		}
 	},
 
@@ -158,7 +166,7 @@ var FabrikComment = new Class({
 				this.currentLi = this.element.getElement('ul');
 			}
 		} else {
-			this.currentLi = replyform.findUp('li');
+			this.currentLi = replyform.getParent('li');
 		}
 
 		if (e.type === 'keydown') {
@@ -167,6 +175,13 @@ var FabrikComment = new Class({
 				return;
 			}
 		}
+		
+		if (this.options.wysiwyg) {
+			if (typeof tinyMCE !== 'undefined') {
+				tinyMCE.triggerSave();
+			}
+		}
+		
 		var v = replyform.getElement('textarea').get('value');
 		e.stop();
 		if (v === '') {
@@ -174,7 +189,7 @@ var FabrikComment = new Class({
 			alert(Joomla.JText._('PLG_FORM_COMMENT_PLEASE_ENTER_A_COMMENT_BEFORE_POSTING'));
 			return;
 		}
-		
+
 		var name = replyform.getElement('input[name=name]');
 		if (name) {
 			var namestr = name.get('value');
@@ -186,9 +201,11 @@ var FabrikComment = new Class({
 			this.ajax.addComment.options.data.name = namestr;
 		}
 
-		var comment_plugin_notify = replyform.getElements('input[name^=comment-plugin-notify]').filter(function (i) {
+		var notify = replyform.getElements('input[name^=notify]').filter(function (i) {
 			return i.checked;
 		});
+
+		this.ajax.addComment.options.data.notify = notify.length > 0 ? notify[0].get('value') : '0';
 
 		var email = replyform.getElement('input[name=email]');
 		if (email) {
@@ -210,22 +227,22 @@ var FabrikComment = new Class({
 		if (replyform.getElement('select[name=rating]')) {
 			this.ajax.addComment.options.data.rating = replyform.getElement('select[name=rating]').get('value');
 		}
-		if (replyform.getElement('input[name^=annonymous]')) {
-			var sel = replyform.getElements('input[name^=annonymous]').filter(function (i) {
+		if (replyform.getElement('input[name^=anonymous]')) {
+			var sel = replyform.getElements('input[name^=anonymous]').filter(function (i) {
 				return i.checked === true;
 			});
-			this.ajax.addComment.options.data.annonymous = sel[0].get('value');
+			this.ajax.addComment.options.data.anonymous = sel[0].get('value');
 		}
 
 		this.ajax.addComment.options.data.reply_to = replyto;
 		this.ajax.addComment.options.data.comment = v;
 		this.ajax.addComment.send();
-		this.element.getElement('textarea').value = '';
+		replyform.getElement('textarea').value = '';
 	},
 
 	saveComment : function (div) {
 		var id = div.getParent('.comment').id.replace('comment-', '');
-		
+
 		this.ajax.updateComment.options.data.comment_id = id;
 		// @TODO causing an error when saving inline edit
 		/*if (typeOf(comment_plugin_notify) !== 'null') {
@@ -247,20 +264,25 @@ var FabrikComment = new Class({
 				commentform = a.getParent('.comment').getElement('.replyform');
 			}
 			if (typeOf(commentform) !== 'null') {
-				var li = a.getParent('.comment').findUp('li');
-				if (window.ie) {
-					fx = new Fx.Slide(commentform, 'opacity', {
-						duration : 5000
-					});
-
-				} else {
-					if (this.fx.toggleForms.has(li.id)) {
-						fx = this.fx.toggleForms.get(li.id);
-					} else {
+				if (this.options.wysiwyg) {
+					fx = commentform;
+				}
+				else {
+					var li = a.getParent('.comment').getParent('li');
+					if (window.ie) {
 						fx = new Fx.Slide(commentform, 'opacity', {
 							duration : 5000
 						});
-						this.fx.toggleForms.set(li.id, fx);
+	
+					} else {
+						if (this.fx.toggleForms.has(li.id)) {
+							fx = this.fx.toggleForms.get(li.id);
+						} else {
+							fx = new Fx.Slide(commentform, 'opacity', {
+								duration : 5000
+							});
+							this.fx.toggleForms.set(li.id, fx);
+						}
 					}
 				}
 
@@ -277,7 +299,7 @@ var FabrikComment = new Class({
 			a.addEvent('click', function (e) {
 				this.ajax.deleteComment.options.data.comment_id = e.target.getParent('.comment').id.replace('comment-', '');
 				this.ajax.deleteComment.send();
-				this.updateDigg();
+				this.updateThumbs();
 				e.stop();
 			}.bind(this));
 		}.bind(this));

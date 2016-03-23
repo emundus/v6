@@ -23,6 +23,7 @@ var FbAutocomplete = new Class({
 		onSelection: Class.empty,
 		autoLoadSingleResult: true,
 		minTriggerChars: 1,
+		debounceDelay: 500,
 		storeMatchedResultsOnly: false // Only store a value if selected from picklist
 	},
 
@@ -45,9 +46,21 @@ var FbAutocomplete = new Class({
 				return;
 			}
 			this.getInputElement().setProperty('autocomplete', 'off');
+			
+			/*
 			this.getInputElement().addEvent('keyup', function (e) {
 				this.search(e);
 			}.bind(this));
+			*/
+			
+			/**
+			 * Using a 3rd party jQuery lib to 'debounce' the input, so the search doesn't fire until
+			 * the user has stopped typing for more than X ms
+			 */
+			var that = this;
+			jQuery(document).on('keyup', jQuery.debounce(this.options.debounceDelay, function(e) {
+				that.search(e);
+			}))
 
 			this.getInputElement().addEvent('blur', function (e) {
 				if (this.options.storeMatchedResultsOnly) {
@@ -62,11 +75,15 @@ var FbAutocomplete = new Class({
 	},
 
 	search: function (e) {
+		/**
+		 * NOTE that because we use a jQuery event to trigger this, e is a jQuery event, so keyCode
+		 * instead of code, and e.preventDefault() instead of e.stop()
+		 */ 
 		if (!this.isMinTriggerlength()) {
 			return;
 		}
-		if (e.key === 'tab' || e.key === 'enter') {
-			e.stop();
+		if (e.keyCode === 'tab' || e.keyCode === 'enter') {
+			e.preventDefault();
 			this.closeMenu();
 			if (this.ajax) {
 				this.ajax.cancel();
@@ -164,14 +181,14 @@ var FbAutocomplete = new Class({
 
 	populateMenu: function (data) {
 		// $$$ hugh - added decoding of things like &amp; in the text strings
-		var li, a;
+		var li, a, form, elModel, blurEvent, pair;
 		data.map(function (item, index) {
 			item.text = Encoder.htmlDecode(item.text);
 			return item;
 		});
 		this.data = data;
-		var max = this.getListMax();
-		var ul = this.menu;
+		var max = this.getListMax(),
+			ul = this.menu;
 		ul.empty();
 		if (data.length === 1 && this.options.autoLoadSingleResult) {
 			this.element.value = data[0].value;
@@ -181,9 +198,13 @@ var FbAutocomplete = new Class({
 			this.fireEvent('selection', [this, this.element.value]);
 			// $$$ hugh - need to fire change event, in case it's something like a join element
 			// with a CDD that watches it.
-			var elModel = Fabrik.getBlock(this.options.formRef).formElements.get(this.element.id);
-			var blurEvent = elModel.getBlurEvent();
-			this.element.fireEvent(blurEvent, new Event.Mock(this.element, blurEvent), 700);
+			form = Fabrik.getBlock(this.options.formRef);
+			if (form !== false) {
+				elModel = form.formElements.get(this.element.id);
+				blurEvent = elModel.getBlurEvent();
+				this.element.fireEvent(blurEvent, new Event.Mock(this.element, blurEvent), 700);
+			}
+
 			// $$$ hugh - fire a Fabrik event, just for good luck.  :)
 			Fabrik.fireEvent('fabrik.autocomplete.selected', [this, this.element.value]);
 			return false;
@@ -193,7 +214,7 @@ var FbAutocomplete = new Class({
 			li.inject(ul);
 		}
 		for (var i = 0; i < max; i ++) {
-			var pair = data[i];
+			pair = data[i];
 			a = new Element('a', {'href': '#', 'data-value': pair.value, tabindex: '-1'}).set('text', pair.text);
 			li = new Element('li').adopt(a);
 			li.inject(ul);
@@ -231,11 +252,10 @@ var FbAutocomplete = new Class({
 	closeMenu: function () {
 		if (this.shown) {
 			this.shown = false;
-			this.menu.hide();
+			// some templates seem to need a jQuery hide, something to do with webkit
+			jQuery(this.menu).hide();
 			this.selected = -1;
-			document.removeEvent('click', function (e) {
-				this.doTestMenuClose(e);
-			}.bind(this));
+			document.removeEvent('click', this.doCloseEvent);
 		}
 	},
 
@@ -244,9 +264,8 @@ var FbAutocomplete = new Class({
 			if (this.isMinTriggerlength()) {
 				this.menu.show();
 				this.shown = true;
-				document.addEvent('click', function (e) {
-					this.doTestMenuClose(e);
-				}.bind(this));
+				this.doCloseEvent = this.doTestMenuClose.bind(this);
+				document.addEvent('click', this.doCloseEvent);
 				this.selected = 0;
 				this.highlight();
 			}
@@ -257,7 +276,7 @@ var FbAutocomplete = new Class({
 		var v = this.getInputElement().get('value');
 		return v.length >= this.options.minTriggerChars;
 	},
-	
+
 	doTestMenuClose: function () {
 		if (!this.mouseinsde) {
 			this.closeMenu();

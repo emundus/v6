@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -21,13 +21,12 @@ require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
  * @since       3.0
  * @deprecated  not used?
  */
-
 class FabrikTableValidationrule extends FabTable
 {
 	/**
 	 * Constructor
 	 *
-	 * @param   object  &$db  database object
+	 * @param   JDatabaseDriver  &$db  database object
 	 */
 
 	public function __construct(&$db)

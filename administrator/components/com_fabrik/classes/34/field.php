@@ -9,6 +9,8 @@
 
 defined('JPATH_PLATFORM') or die;
 
+use Joomla\String\String;
+
 /**
  * Abstract Form Field class for the Joomla Platform.
  *
@@ -339,11 +341,11 @@ abstract class JFormField
 
 			if ($parts[0] == 'J')
 			{
-				$this->type = JString::ucfirst($parts[count($parts) - 1], '_');
+				$this->type = String::ucfirst($parts[count($parts) - 1], '_');
 			}
 			else
 			{
-				$this->type = JString::ucfirst($parts[0], '_') . JString::ucfirst($parts[count($parts) - 1], '_');
+				$this->type = String::ucfirst($parts[0], '_') . String::ucfirst($parts[count($parts) - 1], '_');
 			}
 		}
 	}
@@ -719,7 +721,7 @@ abstract class JFormField
 
 		// Get the label text from the XML element, defaulting to the element name.
 		$text = $this->element['label'] ? (string) $this->element['label'] : (string) $this->element['name'];
-		$text = $this->translateLabel ? FText::_($text) : $text;
+		$text = $this->translateLabel ? JText::_($text) : $text;
 
 		// Forcing the Alias field to display the tip below
 		$position = $this->element['name'] == 'alias' ? ' data-placement="bottom" ' : '';

@@ -4,12 +4,14 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.php
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use \Joomla\Registry\Registry;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
@@ -21,7 +23,6 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.php
  * @since       3.0
  */
-
 class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
 {
 	/**
@@ -39,19 +40,18 @@ class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
 	 *
 	 * @return  bool  true if validation passes, false if fails
 	 */
-
 	public function validate($data, $repeatCounter = 0)
 	{
-		// For multiselect elements
+		// For multi-select elements
 		if (is_array($data))
 		{
 			$data = implode('', $data);
 		}
 
 		$params = $this->getParams();
-		$domatch = $params->get('php-match');
+		$doMatch = $params->get('php-match');
 
-		if ($domatch)
+		if ($doMatch)
 		{
 			return $this->_eval($data, $repeatCounter);
 		}
@@ -68,13 +68,12 @@ class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
 	 *
 	 * @return  string	original or replaced data
 	 */
-
 	public function replace($data, $repeatCounter = 0)
 	{
 		$params = $this->getParams();
-		$domatch = $params->get('php-match');
+		$doMatch = $params->get('php-match');
 
-		if (!$domatch)
+		if (!$doMatch)
 		{
 			return $this->_eval($data, $repeatCounter);
 		}
@@ -109,10 +108,10 @@ class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
 		 * $$$ hugh - moved the $trigger_error() into a helper func
 		 */
 		FabrikWorker::clearEval();
-		$retval = @eval($phpCode);
-		FabrikWorker::logEval($retval, 'Caught exception on php validation of ' . $elementModel->getFullName(true, false) . ': %s');
+		$return = @eval($phpCode);
+		FabrikWorker::logEval($return, 'Caught exception on php validation of ' . $elementModel->getFullName(true, false) . ': %s');
 
-		return $retval;
+		return $return;
 	}
 
 	/**
@@ -122,11 +121,10 @@ class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
 	 *
 	 * @return  string
 	 */
-
 	public function iconImage()
 	{
 		$plugin = JPluginHelper::getPlugin('fabrik_validationrule', $this->pluginName);
-		$globalParams = new JRegistry($plugin->params);
+		$globalParams = new Registry($plugin->params);
 		$default = $globalParams->get('icon', 'star');
 		$params = $this->getParams();
 

@@ -4,9 +4,12 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.form.paypal
- * @copyright   Copyright (C) 2005 Fabrik. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
+
+// No direct access
+defined('_JEXEC') or die('Restricted access');
 
 /*
  * In the PayPal form plugin settings, you can select a PHP script to use for custom IPN processing.
@@ -50,7 +53,7 @@
 class fabrikPayPalIPN {
 
 	/*
-	* Called at end of submission handling, just before the form plugin sets up the redirect to PayPal
+	* checkOpts is Called at end of submission handling, just before the form plugin sets up the redirect to PayPal
 	* Allows you to check / add / remove / modify any of the query string options being sent to PayPal
 	* Also gives you a last chance to bail out and not do the redirect to PayPal, by returning false
 	* (and probably using one of the J! API's to put up a notification of why!)
@@ -59,15 +62,19 @@ class fabrikPayPalIPN {
 		return true;
 	}
 
+	/**
+	 * Standard payment handlers.
+	 */
+
 	function payment_status_Completed($listModel, $request, &$set_list, &$err_msg) {
             return 'ok';
 	}
 
 	function payment_status_Pending($listModel, $request, &$set_list, &$err_msg) {
-		global $mainframe;
-        $MailFrom = $mainframe->getCfg('mailfrom');
-        $FromName = $mainframe->getCfg('fromname');
-        $SiteName = $mainframe->getCfg('sitename');
+		$config = JFactory::getConfig();
+        $MailFrom = $config->get('mailfrom');
+        $FromName = $config->get('fromname');
+        $SiteName = $config->get('sitename');
 
 		$payer_email = $request['payer_email'];
 		$receiver_email = $request['receiver_email'];
@@ -79,12 +86,15 @@ class fabrikPayPalIPN {
         $msgbuyer = 'Your payment on %s is pending. (Paypal transaction ID: %s)<br /><br />%s';
         $msgbuyer = sprintf($msgbuyer, $SiteName, $txn_id, $SiteName);
         $msgbuyer = html_entity_decode($msgbuyer, ENT_QUOTES);
-        JUtility::sendMail( $MailFrom, $FromName, $payer_email, $subject, $msgbuyer, true);
+
+        $mail = JFactory::getMailer();
+        $res = $mail->sendMail($MailFrom, $FromName, $payer_email, $subject, $msgbuyer, true);
 
         $msgseller = 'Payment pending on %s. (Paypal transaction ID: %s)<br /><br />%s';
         $msgseller = sprintf($msgseller, $SiteName, $txn_id, $SiteName);
         $msgseller = html_entity_decode($msgseller, ENT_QUOTES);
-        JUtility::sendMail( $MailFrom, $FromName, $receiver_email, $subject, $msgseller, true);
+        $mail = JFactory::getMailer();
+        $res = $mail->sendMail($MailFrom, $FromName, $payer_email, $subject, $msgseller, true);
 		return 'ok';
 	}
 
@@ -103,6 +113,18 @@ class fabrikPayPalIPN {
 	function txn_type_web_accept($listModel, $request, &$set_list, &$err_msg) {
 		return 'ok';
 	}
+
+	/**
+	 *
+	 * Subscription transactions.  Note that the only txn_type the main plugin handles is _payment, which is processed
+	 * as a normal payment, including saving the (optional) subscr_id in your table, and any modifications you make to $set_list
+	 * will be handled.
+	 *
+	 * If you need to process any of the other events, you MUST provide the "IPN Subscription ID Element" in the plugin's settings,
+	 * as this is the only way you can identify the row, because txn_id is not supplied with anything but the initial subscr_payment,
+	 * and you must handle any updating of the database you need done.  The subscr_id will be in $request.  No further processing will
+	 * be done by the main plugin for anything other than subscr_payment, so changing $set_list will have no effect.
+	 */
 
 	function txn_type_subscr_signup($listModel, $request, &$set_list, &$err_msg) {
 		return 'ok';
@@ -130,4 +152,3 @@ class fabrikPayPalIPN {
 
 }
 
-?>

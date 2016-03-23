@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.timer
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -42,17 +42,6 @@ class PlgFabrik_ElementTimer extends PlgFabrik_Element
 	protected $fieldDesc = 'TIME';
 
 	/**
-	 * Determines if the element can contain data used in sending receipts,
-	 * e.g. fabrikfield returns true
-	 *
-	 * @return  bool
-	 */
-	public function isReceiptElement()
-	{
-		return true;
-	}
-
-	/**
 	 * Draws the html form element
 	 *
 	 * @param   array  $data           to pre-populate element with
@@ -86,16 +75,17 @@ class PlgFabrik_ElementTimer extends PlgFabrik_Element
 		}
 
 		$layout = $this->getLayout('form');
-		$data['id'] = $id;
-		$data['type'] = $element->hidden ? 'hidden' : 'text';
-		$data['name'] = $name;
-		$data['value'] = $value;
-		$data['size'] = $size;
-		$data['elementError'] = $this->elementError;
-		$data['icon'] = $params->get('icon', 'icon-clock');
-		$data['timerReadOnly'] = $params->get('timer_readonly');
+		$layoutData = new stdClass;
+		$layoutData->id = $id;
+		$layoutData->type = $element->hidden ? 'hidden' : 'text';
+		$layoutData->name = $name;
+		$layoutData->value = $value;
+		$layoutData->size = $size;
+		$layoutData->elementError = $this->elementError;
+		$layoutData->icon = $params->get('icon', 'icon-clock');
+		$layoutData->timerReadOnly = $params->get('timer_readonly');
 
-		return $layout->render($data);
+		return $layout->render($layoutData);
 	}
 
 	/**
@@ -159,7 +149,7 @@ class PlgFabrik_ElementTimer extends PlgFabrik_Element
 		$name = $this->getFullName(false, false);
 
 		return "SELECT DATE_FORMAT(FROM_UNIXTIME(AVG(UNIX_TIMESTAMP($name))), '%H:%i:%s') AS value, $label FROM " .
-		$db->quoteName($table->db_table_name) . " $joinSQL $whereSQL";
+		$db->qn($table->db_table_name) . " $joinSQL $whereSQL";
 	}
 
 	/**
@@ -181,7 +171,7 @@ class PlgFabrik_ElementTimer extends PlgFabrik_Element
 		$name = $this->getFullName(false, false);
 
 		return "SELECT DATE_FORMAT(FROM_UNIXTIME((UNIX_TIMESTAMP($name))), '%H:%i:%s') AS value, $label FROM
-		" . $db->quoteName($table->db_table_name) . " $joinSQL $whereSQL";
+		" . $db->qn($table->db_table_name) . " $joinSQL $whereSQL";
 	}
 
 	/**

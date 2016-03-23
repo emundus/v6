@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -30,8 +30,8 @@ endif;
 ?>
 <?php if ($this->tablePicker != '') { ?>
 	<div style="text-align:right"><?php echo FText::_('COM_FABRIK_LIST') ?>: <?php echo $this->tablePicker; ?></div>
-<?php } ?>
-<?php if ($this->getModel()->getParams()->get('show-title', 1)) {?>
+<?php }
+if ($this->showTitle == 1) { ?>
 	<h1><?php echo $this->table->label;?></h1>
 <?php }?>
 
@@ -44,7 +44,7 @@ if ($this->hasButtons):
 endif;
 
 if ($this->showFilters) {
-	echo $this->loadTemplate('filter');
+	echo $this->layoutFilters();
 }
 ?>
 
@@ -57,17 +57,13 @@ if ($this->showFilters) {
 
 	<?php
 	$gCounter = 0;
-	foreach ($this->rows as $groupedby => $group) :?>
+	foreach ($this->rows as $groupedBy => $group) :?>
 	<?php
 	if ($this->isGrouped) :
+		$imgProps = array('alt' => FText::_('COM_FABRIK_TOGGLE'), 'data-role' => 'toggle', 'data-expand-icon' => 'fa fa-arrow-down', 'data-collapse-icon' => 'fa fa-arrow-right');
 	?>
 	<div class="fabrik_groupheading">
-		<a href="#" class="toggle">
-			<?php echo FabrikHelperHTML::image('orderasc.png', 'list', $this->tmpl, FText::_('COM_FABRIK_TOGGLE'));?>
-			<span class="groupTitle">
-				<?php echo $this->grouptemplates[$groupedby]; ?> ( <?php echo count($group)?> )
-			</span>
-		</a>
+		<?php echo $this->layoutGroupHeading($groupedBy, $group); ?>
 	</div>
 	<?php
 	endif;

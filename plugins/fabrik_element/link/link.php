@@ -4,12 +4,15 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.link
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
 
 /**
  * Plugin element to render two fields to capture a link (url/label)
@@ -38,13 +41,13 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string    $data      elements data
-	 * @param   stdClass  &$thisRow  all the data in the lists current row
+	 * @param   string    $data      Elements data
+	 * @param   stdClass  &$thisRow  All the data in the lists current row
+	 * @param   array     $opts      Rendering options
 	 *
 	 * @return  string	formatted value
 	 */
-
-	public function renderListData($data, stdClass &$thisRow)
+	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
 		$listModel = $this->getlistModel();
 		$params = $this->getParams();
@@ -68,7 +71,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 			{
 				for ($i = 0; $i < count($data); $i++)
 				{
-					$data[$i] = JArrayHelper::fromObject($data[$i]);
+					$data[$i] = ArrayHelper::fromObject($data[$i]);
 					$data[$i] = $this->_renderListData($data[$i], $thisRow);
 				}
 			}
@@ -76,7 +79,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 
 		$data = json_encode($data);
 
-		return parent::renderListData($data, $thisRow);
+		return parent::renderListData($data, $thisRow, $opts);
 	}
 
 	/**
@@ -110,17 +113,17 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 
 			$href = trim($data['link']);
 			$lbl = trim($data['label']);
-			$href = $w->parseMessageForPlaceHolder(urldecode($href), JArrayHelper::fromObject($thisRow));
+			$href = $w->parseMessageForPlaceHolder(urldecode($href), ArrayHelper::fromObject($thisRow));
 
-			if (JString::strtolower($href) == 'http://' || JString::strtolower($href) == 'https://')
+			if (String::strtolower($href) == 'http://' || String::strtolower($href) == 'https://')
 			{
 				// Treat some default values as empty
 				$href = '';
 			}
 			else if (strlen($href) > 0 && substr($href, 0, 1) != "/"
-				&& substr(JString::strtolower($href), 0, 7) != 'http://'
-				&& substr(JString::strtolower($href), 0, 8) != 'https://'
-				&& substr(JString::strtolower($href), 0, 6) != 'ftp://'
+				&& substr(String::strtolower($href), 0, 7) != 'http://'
+				&& substr(String::strtolower($href), 0, 8) != 'https://'
+				&& substr(String::strtolower($href), 0, 6) != 'ftp://'
 				)
 			{
 					$href = 'http://' . $href;
@@ -151,7 +154,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 			}
 
 			$w = new FabrikWorker;
-			$aRow = JArrayHelper::fromObject($thisRow);
+			$aRow = ArrayHelper::fromObject($thisRow);
 			$link = $listModel->parseMessageForRowHolder($link, $aRow);
 
 			return $link;
@@ -211,7 +214,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 				 */
 				if (array_key_exists(0, $value) && is_object($value[0]))
 				{
-					$value = JArrayHelper::fromObject($value[0]);
+					$value = ArrayHelper::fromObject($value[0]);
 				}
 				elseif (array_key_exists(0, $value))
 				{
@@ -253,26 +256,30 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 		$labelname = FabrikString::rtrimword($name, '[]') . '[label]';
 		$linkname = FabrikString::rtrimword($name, '[]') . '[link]';
 
-		$html = array();
 		$bits['name'] = $labelname;
 		$bits['placeholder'] = FText::_('PLG_ELEMENT_LINK_LABEL');
 		$bits['value'] = $value['label'];
 		$bits['class'] .= ' fabrikSubElement';
 		unset($bits['id']);
 
-		$html[] = '<div class="fabrikSubElementContainer" id="' . $id . '">';
-		$html[] = $this->buildInput('input', $bits);
+		$layout = $this->getLayout('form');
+		$layoutData = new stdClass;
+		$layoutData->id = $id;
+		$layoutData->name = $name;
+		$layoutData->linkAttributes = $bits;
+
 		$bits['placeholder'] = FText::_('PLG_ELEMENT_LINK_URL');
 		$bits['name'] = $linkname;
 		$bits['value'] = FArrayHelper::getValue($value, 'link');
+
 		if (is_a($bits['value'], 'stdClass'))
 		{
 			$bits['value'] = $bits['value']->{0};
 		}
-		$html[] = $this->buildInput('input', $bits);
-		$html[] = '</div>';
 
-		return implode("\n", $html);
+		$layoutData->labelAttributes = $bits;
+
+		return $layout->render($layoutData);
 	}
 
 	/**
@@ -319,7 +326,6 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 		* not sure if we really want to do it here, or only when rendering?
 		* $$$ hugh - quit normalizing links.
 		*/
-		$return = '';
 		$params = $this->getParams();
 
 		if (is_array($val))
@@ -346,8 +352,6 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 							$v['link'] = (string) $bitly->shorten($v['link']);
 						}
 					}
-					/*$return .= implode(GROUPSPLITTER2, $v);
-					$return .= GROUPSPLITTER;*/
 				}
 				else
 				{
@@ -372,8 +376,6 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 			{
 				return $val;
 			}
-
-			$return = $val;
 		}
 
 		$return = json_encode($val);
@@ -419,8 +421,6 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 
 	public function getValuesToEncrypt(&$values, $data, $c)
 	{
-		//$data = (array) json_decode($this->getValue($data, $c));
-		
 		$name = $this->getFullName(true, false);
 		$group = $this->getGroup();
 

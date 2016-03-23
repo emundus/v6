@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -64,6 +64,7 @@ class FabrikAdminViewPlugin extends JViewLegacy
 		$model->setState('id', $input->getInt('id', 0));
 		$model->setState('plugin_published', $input->get('plugin_published'));
 		$model->setState('show_icon', $input->get('show_icon'));
+		$model->setState('must_validate', $input->get('must_validate'));
 		$model->setState('validate_in', $input->get('validate_in'));
 		$model->setState('validation_on', $input->get('validation_on'));
 	}

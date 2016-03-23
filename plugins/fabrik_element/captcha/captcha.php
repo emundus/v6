@@ -4,14 +4,14 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.captcha
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/recaptcha-php-1.11/recaptchalib.php';
+use Joomla\String\String;
 
 /**
  * Plugin element to captcha
@@ -20,43 +20,27 @@ require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/recaptcha-php-1.
  * @subpackage  Fabrik.element.captcha
  * @since       3.0
  */
-
 class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 {
 	protected $font = 'monofont.ttf';
 
 	/**
-	 * Determines if the element can contain data used in sending receipts,
-	 * e.g. fabrikfield returns true
-	 *
-	 * @deprecated - not used
-	 *
-	 * @return  bool
-	 */
-
-	public function isReceiptElement()
-	{
-		return true;
-	}
-
-	/**
 	 * Generate captcha text
 	 *
-	 * @param   int  $characters  number of characters to generate
+	 * @param   int $characters number of characters to generate
 	 *
 	 * @return  string captcha text
 	 */
-
 	protected function _generateCode($characters)
 	{
 		// List all possible characters, similar looking characters and vowels have been removed
 		$possible = '23456789bcdfghjkmnpqrstvwxyz';
-		$code = '';
-		$i = 0;
+		$code     = '';
+		$i        = 0;
 
 		while ($i < $characters)
 		{
-			$code .= JString::substr($possible, mt_rand(0, JString::strlen($possible) - 1), 1);
+			$code .= String::substr($possible, mt_rand(0, String::strlen($possible) - 1), 1);
 			$i++;
 		}
 
@@ -66,18 +50,16 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 	/**
 	 * Get the element's HTML label
 	 *
-	 * @param   int     $repeatCounter  group repeat counter
-	 * @param   string  $tmpl           form template
+	 * @param   int    $repeatCounter group repeat counter
+	 * @param   string $tmpl          form template
 	 *
 	 * @return  string  label
 	 */
-
 	public function getLabel($repeatCounter, $tmpl = '')
 	{
-		$user = JFactory::getUser();
 		$params = $this->getParams();
 
-		if ($user->id != 0)
+		if ($this->user->id != 0)
 		{
 			if ($params->get('captcha-showloggedin', 0) == 0)
 			{
@@ -93,13 +75,11 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 	 *
 	 * @return  bool
 	 */
-
 	public function isHidden()
 	{
-		$user = JFactory::getUser();
 		$params = $this->getParams();
 
-		if ($user->id != 0)
+		if ($this->user->get('id') != 0)
 		{
 			if ($params->get('captcha-showloggedin', 0) == 0)
 			{
@@ -114,11 +94,10 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 	 * Check user can view the read only element OR view in list view
 	 * $$$ rob 14/03/2012 always returns false now - cant see a need to show it in the details / list view
 	 *
-	 * @param   string  $view  View list/form @since 3.0.7
+	 * @param   string $view View list/form @since 3.0.7
 	 *
 	 * @return  bool  can view or not
 	 */
-
 	public function canView($view = 'form')
 	{
 		return false;
@@ -127,18 +106,16 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 	/**
 	 * Check if the user can use the active element
 	 *
-	 * @param   string  $location  To trigger plugin on
-	 * @param   string  $event     To trigger plugin on
+	 * @param   string $location To trigger plugin on
+	 * @param   string $event    To trigger plugin on
 	 *
 	 * @return  bool can use or not
 	 */
-
 	public function canUse($location = null, $event = null)
 	{
-		$user = JFactory::getUser();
 		$params = $this->getParams();
 
-		if ($user->id != 0)
+		if ($this->user->get('id') != 0)
 		{
 			if ($params->get('captcha-showloggedin', 0) == 0)
 			{
@@ -150,25 +127,70 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 	}
 
 	/**
+	 * Gets the challenge HTML (AJAX version).
+	 * This is called from the browser, and the resulting reCAPTCHA HTML widget
+	 * is embedded within the HTML form it was called from.
+	 *
+	 * @param string  $id      the HTML id for the div
+	 * @param string  $pubkey  A public key for reCAPTCHA
+	 * @param string  $theme   Theme to use, default red
+	 * @param string  $lang    Language to use, default en
+	 * @param string  $error   The error given by reCAPTCHA (optional, default is null)
+	 * @param boolean $use_ssl Should the request be made over ssl? (optional, default is false)
+	 *
+	 * @return string - The HTML to be embedded in the user's form.
+	 */
+	function fabrik_recaptcha_get_html($id, $pubkey, $theme = "red", $lang = "en", $error = null, $use_ssl = false)
+	{
+		if ($pubkey == null || $pubkey == '')
+		{
+			die ("To use reCAPTCHA you must get an API key from <a href='https://www.google.com/recaptcha/admin/create'>https://www.google.com/recaptcha/admin/create</a>");
+		}
+
+		if ($use_ssl)
+		{
+			$server = RECAPTCHA_API_SECURE_SERVER;
+		}
+		else
+		{
+			$server = RECAPTCHA_API_SERVER;
+		}
+
+		//$str = '<script type="text/javascript" src="' . $server . '/js/recaptcha_ajax.js"></script> ';
+		$str      = '  <div id="' . $id . '"></div> ';
+		$document = JFactory::getDocument();
+		$document->addScript($server . '/js/recaptcha_ajax.js');
+		FabrikHelperHTML::addScriptDeclaration(
+			'window.addEvent("fabrik.loaded", function() {
+			Recaptcha.create(
+				"' . $pubkey . '",
+	    		"' . $id . '",
+	    		{
+	    			theme: "' . $theme . '",
+					lang : "' . $lang . '"
+				}
+			);
+		});'
+		);
+
+		return $str;
+	}
+
+	/**
 	 * Draws the html form element
 	 *
-	 * @param   array  $data           to pre-populate element with
-	 * @param   int    $repeatCounter  repeat group counter
+	 * @param   array $data          to pre-populate element with
+	 * @param   int   $repeatCounter repeat group counter
 	 *
-	 * @return  string	elements html
+	 * @return  string    elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$session = JFactory::getSession();
-		$name = $this->getHTMLName($repeatCounter);
-		$id = $this->getHTMLId($repeatCounter);
+		$name    = $this->getHTMLName($repeatCounter);
+		$id      = $this->getHTMLId($repeatCounter);
 		$element = $this->getElement();
-		$params = $this->getParams();
-		$user = JFactory::getUser();
-		$value = $this->getValue($data, $repeatCounter);
+		$params  = $this->getParams();
+		$value   = $this->getValue($data, $repeatCounter);
 
 		if (!$this->isEditable())
 		{
@@ -184,28 +206,33 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 
 		if ($params->get('captcha-method') == 'recaptcha')
 		{
+			if (!function_exists('_recaptcha_qsencode'))
+			{
+				require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/recaptcha-php-1.11/recaptchalib.php';
+			}
+
 			$publickey = $params->get('recaptcha_publickey');
 
 			// $$$tom added lang & theme options
 			$theme = $params->get('recaptcha_theme', 'red');
-			$lang = JString::strtolower($params->get('recaptcha_lang', 'en'));
+			$lang  = String::strtolower($params->get('recaptcha_lang', 'en'));
 			$error = null;
 
-			if ($user->id != 0 && $params->get('captcha-showloggedin', 0) == false)
+			if ($this->user->get('id') != 0 && $params->get('captcha-showloggedin', 0) == false)
 			{
 				return '<input class="inputbox text" type="hidden" name="' . $name . '" id="' . $id . '" value="" />';
 			}
 			else
 			{
 				$browser = JBrowser::getInstance();
-				$ssl = $browser->isSSLConnection();
+				$ssl     = $browser->isSSLConnection();
 
-				return fabrik_recaptcha_get_html($id, $publickey, $theme, $lang, $error, $ssl);
+				return $this->fabrik_recaptcha_get_html($id, $publickey, $theme, $lang, $error, $ssl);
 			}
 		}
 		elseif ($params->get('captcha-method') == 'playthru')
 		{
-			if ($user->id != 0 && $params->get('captcha-showloggedin', 0) == false)
+			if ($this->user->get('id') != 0 && $params->get('captcha-showloggedin', 0) == false)
 			{
 				return '<input class="inputbox text" type="hidden" name="' . $name . '" id="' . $id . '" value="" />';
 			}
@@ -221,6 +248,16 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 
 			return $ayah->getPublisherHTML();
 		}
+		elseif ($params->get('captcha-method') == 'nocaptcha')
+		{
+			$layout                = $this->getLayout('nocaptcha');
+			$displayData           = new stdClass;
+			$displayData->id       = $id;
+			$displayData->name     = $name;
+			$displayData->site_key = $params->get('recaptcha_publickey');
+
+			return $layout->render($displayData);
+		}
 		else
 		{
 			if (!function_exists('imagettfbbox'))
@@ -228,38 +265,35 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 				throw new RuntimeException(FText::_('PLG_FABRIK_ELEMENT_CAPTCHA_STANDARD_TTF_ERROR'));
 			}
 
-			$str = array();
-			$size = $element->width;
-			$fontsize = $params->get('captcha-font-size', 22);
-			$angle = $params->get('captcha-angle', 0);
-			$padding = $params->get('captcha-padding', 10);
+			$size       = $element->width;
+			$fontSize   = $params->get('captcha-font-size', 22);
+			$angle      = $params->get('captcha-angle', 0);
+			$padding    = $params->get('captcha-padding', 10);
 			$characters = $params->get('captcha-chars', 6);
-			$code = $this->_generateCode($characters);
+			$code       = $this->_generateCode($characters);
 
 			// $$$ hugh - code that generates image now in image.php
-			$session->set('com_' . $package . '.element.captcha.security_code', $code);
-
-			// ***** e-kinst
+			$this->session->set('com_' . $this->package . '.element.captcha.security_code', $code);
 
 			// Additional plugin params with validation
-			$noise_color = $params->get('captcha-noise-color', '0000FF');
+			$noiseColor = $params->get('captcha-noise-color', '0000FF');
 
 			// '0000FF' again if we have param value but it's invalid
-			$noise_color = $this->_getRGBcolor($noise_color, '0000FF');
-			$text_color = $params->get('captcha-text-color', '0000FF');
-			$text_color = $this->_getRGBcolor($text_color, '0000FF');
-			$bg_color = $params->get('captcha-bg', 'FFFFFF');
-			$bg_color = $this->_getRGBcolor($bg_color, 'FFFFFF');
+			$noiseColor = $this->_getRGBcolor($noiseColor, '0000FF');
+			$textColor  = $params->get('captcha-text-color', '0000FF');
+			$textColor  = $this->_getRGBcolor($textColor, '0000FF');
+			$bgColor    = $params->get('captcha-bg', 'FFFFFF');
+			$bgColor    = $this->_getRGBcolor($bgColor, 'FFFFFF');
 
 			// Let's keep all params in relatively safe place not only captcha value
 			// Felixkat - Add
-			$session->set('com_' . $package . '.element.captcha.fontsize', $fontsize);
-			$session->set('com_' . $package . '.element.captcha.angle', $angle);
-			$session->set('com_' . $package . '.element.captcha.padding', $padding);
-			$session->set('com_' . $package . '.element.captcha.noise_color', $noise_color);
-			$session->set('com_' . $package . '.element.captcha.text_color', $text_color);
-			$session->set('com_' . $package . '.element.captcha.bg_color', $bg_color);
-			$session->set('com_' . $package . '.element.captcha.font', $this->font);
+			$this->session->set('com_' . $this->package . '.element.captcha.fontsize', $fontSize);
+			$this->session->set('com_' . $this->package . '.element.captcha.angle', $angle);
+			$this->session->set('com_' . $this->package . '.element.captcha.padding', $padding);
+			$this->session->set('com_' . $this->package . '.element.captcha.noise_color', $noiseColor);
+			$this->session->set('com_' . $this->package . '.element.captcha.text_color', $textColor);
+			$this->session->set('com_' . $this->package . '.element.captcha.bg_color', $bgColor);
+			$this->session->set('com_' . $this->package . '.element.captcha.font', $this->font);
 
 			$type = $params->get('password') == '1' ? 'password' : 'text';
 
@@ -273,36 +307,35 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 				$type = 'hidden';
 			}
 
-			$layout = $this->getLayout('form');
-			$data = array();
-			$data['id'] = $id;
-			$data['name'] = $name;
+			$layout            = $this->getLayout('form');
+			$displayData       = new stdClass;
+			$displayData->id   = $id;
+			$displayData->name = $name;
 
 			// $$$ hugh - changed from static image path to using simple image.php script, to get round IE caching images
-			$data['url'] = COM_FABRIK_LIVESITE . 'plugins/fabrik_element/captcha/image.php?foo=' . rand();
-			$data['type'] = $type;
-			$data['size'] = $size;
+			//$displayData->url = COM_FABRIK_LIVESITE . 'plugins/fabrik_element/captcha/image.php?foo=' . rand();
 
-			return $layout->render($data);
+			// Changed to relative path as some sites were on site.com and loading from www.site.com (thus sessions different)
+			$displayData->url  = JRoute::_('plugins/fabrik_element/captcha/image.php?foo=' . rand());
+			$displayData->type = $type;
+			$displayData->size = $size;
+
+			return $layout->render($displayData);
 		}
 	}
 
 	/**
 	 * Internal element validation
 	 *
-	 * @param   array  $data           form data
-	 * @param   int    $repeatCounter  repeat group counter
+	 * @param   array $data          form data
+	 * @param   int   $repeatCounter repeat group counter
 	 *
 	 * @return bool
 	 */
-
 	public function validate($data, $repeatCounter = 0)
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input  = $this->app->input;
 
 		if (!$this->canUse())
 		{
@@ -311,15 +344,56 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 
 		if ($params->get('captcha-method') == 'recaptcha')
 		{
-			$privatekey = $params->get('recaptcha_privatekey');
+			if (!function_exists('_recaptcha_qsencode'))
+			{
+				require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/recaptcha-php-1.11/recaptchalib.php';
+			}
+
+			$privateKey = $params->get('recaptcha_privatekey');
 
 			if ($input->get('recaptcha_response_field'))
 			{
 				$challenge = $input->get('recaptcha_challenge_field');
-				$response = $input->get('recaptcha_response_field');
-				$resp = recaptcha_check_answer($privatekey, $_SERVER["REMOTE_ADDR"], $challenge, $response);
+				$response  = $input->get('recaptcha_response_field');
+				$resp      = recaptcha_check_answer($privateKey, FabrikString::filteredIp(), $challenge, $response);
 
 				return ($resp->is_valid) ? true : false;
+			}
+
+			return false;
+		}
+		elseif ($params->get('captcha-method') == 'nocaptcha')
+		{
+			if ($input->get('g-recaptcha-response'))
+			{
+				require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/ReCaptcha/ReCaptcha.php';
+				require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/ReCaptcha/RequestMethod.php';
+				require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/ReCaptcha/RequestMethod/Post.php';
+				require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/ReCaptcha/RequestParameters.php';
+				require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/ReCaptcha/Response.php';
+
+				$privateKey = $params->get('recaptcha_privatekey');
+				$noCaptcha  = new \ReCaptcha\ReCaptcha($privateKey);
+				$response   = $input->get('g-recaptcha-response');
+				$server     = $input->server->get('REMOTE_ADDR');
+				$resp       = $noCaptcha->verify($response, $server);
+
+				if ($resp->isSuccess())
+				{
+					return true;
+				}
+				else
+				{
+					if (FabrikHelperHTML::isDebug())
+					{
+						$msg = "noCaptcha error: ";
+						foreach ($resp->getErrorCodes() as $code) {
+							$msg .= '<tt>' . $code . '</tt> ';
+						}
+						$this->app->enqueueMessage($msg);
+					}
+					return false;
+				}
 			}
 
 			return false;
@@ -340,10 +414,8 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 		else
 		{
 			$this->getParams();
-			$elName = $this->getFullName(true, false);
-			$session = JFactory::getSession();
 
-			if ($session->get('com_' . $package . '.element.captcha.security_code', null) != $data)
+			if ($this->session->get('com_' . $this->package . '.element.captcha.security_code', null) != $data)
 			{
 				return false;
 			}
@@ -357,7 +429,6 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 	 *
 	 * @return  string
 	 */
-
 	public function getValidationErr()
 	{
 		return FText::_('PLG_ELEMENT_CAPTCHA_FAILED');
@@ -366,13 +437,11 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 	/**
 	 * Determine if the element should run its validation plugins on form submission
 	 *
-	 * @return  bool	default true
+	 * @return  bool    default true
 	 */
 
 	public function mustValidate()
 	{
-		$params = $this->getParams();
-
 		if (!$this->canUse() && !$this->canView())
 		{
 			return false;
@@ -384,18 +453,15 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  Repeat group counter
+	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
-		$user = JFactory::getUser();
-
-		if ($user->id == 0)
+		if ($this->user->get('id') == 0)
 		{
-			$id = $this->getHTMLId($repeatCounter);
+			$id   = $this->getHTMLId($repeatCounter);
 			$opts = $this->getElementJSOptions($repeatCounter);
 
 			return array('FbCaptcha', $id, $opts);
@@ -407,13 +473,12 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 	/**
 	 * Used to format the data when shown in the form's email
 	 *
-	 * @param   mixed  $value          element's data
-	 * @param   array  $data           form records data
-	 * @param   int    $repeatCounter  repeat group counter
+	 * @param   mixed $value         element's data
+	 * @param   array $data          form records data
+	 * @param   int   $repeatCounter repeat group counter
 	 *
-	 * @return  string	formatted value
+	 * @return  string    formatted value
 	 */
-
 	public function getEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
 		return "";
@@ -422,16 +487,15 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 	/**
 	 * $$$ e-kinst Convert a hex colour to RGB
 	 *
-	 * @param   string  $hexColor  3- or 6-digits hex color with optional leading '#'
-	 * @param   string  $default   default hex color if first param invalid
+	 * @param   string $hexColor 3- or 6-digits hex color with optional leading '#'
+	 * @param   string $default  default hex color if first param invalid
 	 *
-	 * @return  string 	as 'R+G+B' where R,G,B are decimal
+	 * @return  string    as 'R+G+B' where R,G,B are decimal
 	 */
-
 	private function _getRGBcolor($hexColor, $default = 'FF0000')
 	{
 		$regex = '/^#?(([\da-f])([\da-f])([\da-f])|([\da-f]{2})([\da-f]{2})([\da-f]{2}))$/i';
-		$rgb = array();
+		$rgb   = array();
 
 		if (!preg_match($regex, $hexColor, $rgb))
 		{
@@ -452,7 +516,7 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 
 		for ($i = 0; $i < 3; $i++)
 		{
-			if (JString::strlen($rgb[$i]) == 1)
+			if (String::strlen($rgb[$i]) == 1)
 			{
 				$rgb[$i] .= $rgb[$i];
 			}

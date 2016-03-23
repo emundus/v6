@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -20,48 +20,93 @@ require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikViewList extends FabrikViewListBase
 {
 	/**
+	 * Tabbed content
+	 *
+	 * @var array
+	 */
+	public $tabs = array();
+
+	/**
 	 * Display the template
 	 *
-	 * @param   sting  $tpl  template
+	 * @param   string  $tpl  Template
 	 *
 	 * @return void
 	 */
-
 	public function display($tpl = null)
 	{
 		if (parent::display($tpl) !== false)
 		{
+			/** @var FabrikFEModelList $model */
 			$model = $this->getModel();
 			$this->tabs = $model->loadTabs();
-			$app = JFactory::getApplication();
 
-			if (!$app->isAdmin() && isset($this->params))
+			if (!$this->app->isAdmin() && isset($this->params))
 			{
-				$this->state = $this->get('State');
-				$stateparams = $this->state->get('params');
-				$this->document = JFactory::getDocument();
+				/** @var JObject $state */
+				$state = $model->getState();
+				$stateParams = $state->get('params');
 
-				if ($stateparams->get('menu-meta_description'))
+				if ($stateParams->get('menu-meta_description'))
 				{
-					$this->document->setDescription($stateparams->get('menu-meta_description'));
+					$this->doc->setDescription($stateParams->get('menu-meta_description'));
 				}
 
-				if ($stateparams->get('menu-meta_keywords'))
+				if ($stateParams->get('menu-meta_keywords'))
 				{
-					$this->document->setMetadata('keywords', $stateparams->get('menu-meta_keywords'));
+					$this->doc->setMetadata('keywords', $stateParams->get('menu-meta_keywords'));
 				}
 
-				if ($stateparams->get('robots'))
+				if ($stateParams->get('robots'))
 				{
-					$this->document->setMetadata('robots', $stateparams->get('robots'));
+					$this->doc->setMetadata('robots', $stateParams->get('robots'));
 				}
 			}
 
 			$this->output();
 		}
+	}
+
+	/**
+	 * Render the group by heading as a JLayout list.fabrik-group-by-heading
+	 *
+	 * @param   string  $groupedBy  Group by key for $this->grouptemplates
+	 * @param   array   $group      Group data
+	 *
+	 * @return string
+	 */
+	public function layoutGroupHeading($groupedBy, $group)
+	{
+		$displayData = new stdClass;
+		$displayData->emptyDataMessage = $this->emptyDataMessage;
+		$displayData->tmpl = $this->tmpl;
+		$displayData->title = $this->grouptemplates[$groupedBy];
+		$displayData->count = count($group);
+		$layout = FabrikHelperHTML::getLayout('list.fabrik-group-by-heading');
+
+		return $layout->render($displayData);
+	}
+
+	/**
+	 * Create and render layout of the list's filters
+	 *
+	 * @return string
+	 */
+	public function layoutFilters()
+	{
+		$displayData = new stdClass;
+		$displayData->filterMode = $this->filterMode;
+		$displayData->toggleFilters = $this->toggleFilters;
+		$displayData->filterCols = $this->filterCols;
+		$displayData->showClearFilters = $this->showClearFilters;
+		$displayData->filters = $this->filters;
+		$displayData->filter_action = $this->filter_action;
+		$layoutFile =  $this->filterMode === 5 ? 'fabrik-filters-modal' : 'fabrik-filters';
+		$layout = FabrikHelperHTML::getLayout('list.' . $layoutFile);
+
+		return $layout->render($displayData);
 	}
 }

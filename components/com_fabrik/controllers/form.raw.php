@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -23,7 +23,6 @@ jimport('joomla.application.component.controller');
  * @deprecated? Don't think this is used, code seems out of date, certainly for process anyway - redirect urls are
  * for Fabrik 2 !
  */
-
 class FabrikControllerForm extends JControllerLegacy
 {
 	/**
@@ -38,13 +37,12 @@ class FabrikControllerForm extends JControllerLegacy
 	 *
 	 * @return  null
 	 */
-
 	public function display()
 	{
 		$app = JFactory::getApplication();
+		$session = JFactory::getSession();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
 		$input = $app->input;
 		$viewName = $input->get('view', 'form');
 		$modelName = $viewName;
@@ -80,7 +78,6 @@ class FabrikControllerForm extends JControllerLegacy
 
 		// Display the view
 		$view->error = $this->getError();
-		$user = JFactory::getUser();
 
 		// Only allow cached pages for users not logged in.
 		return $view->display();
@@ -102,13 +99,12 @@ class FabrikControllerForm extends JControllerLegacy
 	 *
 	 * @return  null
 	 */
-
 	public function process()
 	{
 		$app = JFactory::getApplication();
+		$session = JFactory::getSession();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
 		$input = $app->input;
 		$viewName = $input->get('view', 'form');
 		$viewType = $document->getType();
@@ -225,6 +221,7 @@ class FabrikControllerForm extends JControllerLegacy
 	protected function makeRedirect(&$model, $msg = null)
 	{
 		$app = JFactory::getApplication();
+		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
 		$formId = $input->getInt('formid');
 		$listId = $input->getInt('listid');
@@ -260,7 +257,7 @@ class FabrikControllerForm extends JControllerLegacy
 				if ($this->isMambot)
 				{
 					// Return to the same page
-					$url = FArrayHelper::getValue($_SERVER, 'REQUEST_URI', 'index.php');
+					$url = filter_var(ArrayHelper::getValue($_SERVER, 'REQUEST_URI', 'index.php'), FILTER_SANITIZE_URL);
 				}
 				else
 				{
@@ -268,11 +265,11 @@ class FabrikControllerForm extends JControllerLegacy
 					$url = $input->get('fabrik_referrer', 'index.php', 'string');
 				}
 
-				$Itemid = FabrikWorker::itemId();
+				$itemId = FabrikWorker::itemId();
 
 				if ($url == '')
 				{
-					$url = 'index.php?option=com_' . $option . '&Itemid=' . $Itemid;
+					$url = 'index.php?option=com_' . $package . '&Itemid=' . $itemId;
 				}
 			}
 

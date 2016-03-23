@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: gantryjson.class.php 15716 2013-11-18 00:40:25Z rhuk $
+ * @version   $Id: gantryjson.class.php 30069 2016-03-08 17:45:33Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Gantry uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system
@@ -234,7 +234,7 @@ class GantryJSON
 				$tmp = array();
 				if (is_object($result)) {
 					foreach ($params as $key => $value) {
-						$result->$key = $value;
+						$result->{$key} = $value;
 					}
 				} else {
 					$result = get_object_vars($params);
@@ -309,12 +309,14 @@ class GantryJSON
 				$result = $class ? new $class : array();
 				++$pos;
 				while ($encode{$pos} !== '}') {
-					$tmp = GantryJSON::_decodeString($encode, ++$pos);
-					++$pos;
+					$pos++;
+					$tmp = GantryJSON::_decodeString($encode, $pos);
 					if ($class) {
-						$result->$tmp = GantryJSON::_decode($encode, ++$pos, $slen, $class);
+						$pos++;
+						$result->{$tmp} = GantryJSON::_decode($encode, $pos, $slen, $class);
 					} else {
-						$result[$tmp] = GantryJSON::_decode($encode, ++$pos, $slen, $class);
+						$pos++;
+						$result[$tmp] = GantryJSON::_decode($encode, $pos, $slen, $class);
 					}
 					if ($encode{$pos} === ',') {
 						++$pos;
@@ -336,8 +338,9 @@ class GantryJSON
 			default :
 				$result = null;
 				$tmp    = '';
-				preg_replace('/^(\-)?([0-9]+)(\.[0-9]+)?([eE]\+[0-9]+)?/e', '$tmp = "\\1\\2\\3\\4"', substr($encode, $pos));
-				if ($tmp !== '') {
+				$tmp = preg_replace('/^(\-)?([0-9]+)(\.[0-9]+)?([eE]\+[0-9]+)?/', '"\\1\\2\\3\\4"', substr($encode, $pos));
+
+				if ($tmp && $tmp !== '') {
 					$pos += strlen($tmp);
 					$nint   = intval($tmp);
 					$nfloat = floatval($tmp);

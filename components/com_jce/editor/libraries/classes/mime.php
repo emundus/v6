@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -46,7 +46,7 @@ abstract class WFMimeType {
         'application/mbox' => 'mbox',
         'application/mediaservercontrol+xml' => 'mscml',
         'application/mp4' => 'mp4s',
-        'application/msword' => 'doc dot ppt xls docx pptx ppsx xlsx sldx potx xltx dotx',
+        'application/msword' => 'doc dot ppt xls docx pptx ppsx xlsx sldx potx xltx dotx xlsm',
         'application/mxf' => 'mxf',
         'application/octet-stream' => 'bin dms lha lrf lzh so iso dmg dist distz pkg bpk dump elc deploy',
         'application/oda' => 'oda',
@@ -265,7 +265,7 @@ abstract class WFMimeType {
         'application/vnd.mozilla.xul+xml' => 'xul',
         'application/vnd.ms-artgalry' => 'cil',
         'application/vnd.ms-cab-compressed' => 'cab',
-        'application/vnd.ms-excel' => 'xls xlm xla xlc xlt xlw xlsx',
+        'application/vnd.ms-excel' => 'xls xlm xla xlc xlt xlw xlsx xlsm',
         'application/vnd.ms-excel.addin.macroenabled.12' => 'xlam',
         'application/vnd.ms-excel.sheet.binary.macroenabled.12' => 'xlsb',
         'application/vnd.ms-excel.sheet.macroenabled.12' => 'xlsm',
@@ -369,8 +369,7 @@ abstract class WFMimeType {
         'application/vnd.stardivision.draw' => 'sda',
         'application/vnd.stardivision.impress' => 'sdd',
         'application/vnd.stardivision.math' => 'smf',
-        'application/vnd.stardivision.writer' => 'sdw',
-        'application/vnd.stardivision.writer' => 'vor',
+        'application/vnd.stardivision.writer' => 'sdw vor',
         'application/vnd.stardivision.writer-global' => 'sgl',
         'application/vnd.sun.xml.calc' => 'sxc',
         'application/vnd.sun.xml.calc.template' => 'stc',
@@ -590,7 +589,7 @@ abstract class WFMimeType {
         'text/css' => 'css',
         'text/csv' => 'csv',
         'text/html' => 'html htm',
-        'text/plain' => 'txt text conf def list log in',
+        'text/plain' => 'txt text conf def list log in csv',
         'text/prs.lines.tag' => 'dsc',
         'text/richtext' => 'rtx',
         'text/sgml' => 'sgml sgm',
@@ -658,11 +657,11 @@ abstract class WFMimeType {
     }
 
     /**
-     * 
+     *
      * Get the mime type from the $mimes array
      * @access	private
      * @param 	string $type
-     * @return	string 
+     * @return	string
      */
     private static function getMime($type) {
         // get mimetype array

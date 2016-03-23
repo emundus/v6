@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -20,7 +20,6 @@ require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikViewList extends FabrikViewListBase
 {
 	/**
@@ -30,13 +29,14 @@ class FabrikViewList extends FabrikViewListBase
 	 *
 	 * @return  mixed  A string if successful, otherwise a JError object.
 	 */
-
 	public function display($tpl = null)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$session = JFactory::getSession();
+		$input = $this->app->input;
+
+		/** @var FabrikFEModelCSVExport $exporter */
 		$exporter = JModelLegacy::getInstance('Csvexport', 'FabrikFEModel');
+
+		/** @var FabrikFEModelList $model */
 		$model = JModelLegacy::getInstance('list', 'FabrikFEModel');
 		$model->setId($input->getInt('listid'));
 
@@ -48,7 +48,8 @@ class FabrikViewList extends FabrikViewListBase
 		$model->setOutPutFormat('csv');
 		$exporter->model = $model;
 		$input->set('limitstart' . $model->getId(), $input->getInt('start', 0));
-		$input->set('limit' . $model->getId(), $exporter->getStep());
+		$limit = $exporter->getStep();
+		$input->set('limit' . $model->getId(), $limit);
 
 		// $$$ rob moved here from csvimport::getHeadings as we need to do this before we get
 		// the list total
@@ -69,21 +70,21 @@ class FabrikViewList extends FabrikViewListBase
 		// If we are asking for a new export - clear previous total as list may be filtered differently
 		if ($start === 0)
 		{
-			$session->clear($key);
+			$this->session->clear($key);
 		}
 
-		if (!$session->has($key))
+		if (!$this->session->has($key))
 		{
 			// Only get the total if not set - otherwise causes memory issues when we downloading
 			$total = $model->getTotalRecords();
-			$session->set($key, $total);
+			$this->session->set($key, $total);
 		}
 		else
 		{
-			$total = $session->get($key);
+			$total = $this->session->get($key);
 		}
 
-		if ($start <= $total)
+		if ($start < $total)
 		{
 			if ((int) $total === 0)
 			{
@@ -94,17 +95,39 @@ class FabrikViewList extends FabrikViewListBase
 				return;
 			}
 
-			$exporter->writeFile($total);
+			$download = (bool) $input->getInt('download', true);
+			$canDownload = ($start + $limit >= $total) && $download;
+			$exporter->writeFile($total, $canDownload);
+
+			if ($canDownload)
+			{
+				$this->download($model, $exporter, $key);
+			}
 		}
 		else
 		{
-			$input->set('limitstart' . $model->getId(), 0);
-
-			// Remove the total from the session
-			$session->clear($key);
-			$exporter->downloadFile();
+			$this->download($model, $exporter, $key);
 		}
 
 		return;
+	}
+
+	/**
+     * Start the download process
+     *
+	 * @param   FabrikFEModelList       $model
+	 * @param   FabrikFEModelCSVExport  $exporter
+	 * @param   string                  $key
+	 *
+	 * @throws Exception
+	 */
+	protected function download($model, $exporter, $key)
+	{
+		$input = $this->app->input;
+		$input->set('limitstart' . $model->getId(), 0);
+
+		// Remove the total from the session
+		$this->session->clear($key);
+		$exporter->downloadFile();
 	}
 }

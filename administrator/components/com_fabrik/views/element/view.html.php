@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -145,7 +145,7 @@ class FabrikAdminViewElement extends JViewLegacy
 
 	protected function addConfirmToolbar()
 	{
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_ELEMENT_EDIT'), 'element.png');
+		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_ELEMENT_EDIT'), 'checkbox-unchecked');
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$input->set('hidemainmenu', true);
@@ -172,7 +172,7 @@ class FabrikAdminViewElement extends JViewLegacy
 		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
 		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
 		$title = $isNew ? FText::_('COM_FABRIK_MANAGER_ELEMENT_NEW') : FText::_('COM_FABRIK_MANAGER_ELEMENT_EDIT') . ' "' . $this->item->name . '"';
-		JToolBarHelper::title($title, 'element.png');
+		JToolBarHelper::title($title, 'checkbox-unchecked');
 
 		if ($isNew)
 		{

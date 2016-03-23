@@ -4,13 +4,15 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.0
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use \Joomla\Registry\Registry;
 
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('behavior.tooltip');
@@ -128,7 +130,7 @@ window.addEvent('domready', function () {
 		<tbody>
 		<?php foreach ($this->items as $i => $item) :
 			$ordering	= ($listOrder == 'e.ordering');
-			$params = new JRegistry($item->params);
+			$params = new Registry($item->params);
 			$link = JRoute::_('index.php?option=com_fabrik&task=element.edit&id='.(int) $item->id);
 			$canCreate	= $user->authorise('core.create',		'com_fabrik.element.'.$item->group_id);
 			$canEdit	= $user->authorise('core.edit',			'com_fabrik.element.'.$item->group_id);

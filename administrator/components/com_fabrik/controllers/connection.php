@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -22,7 +22,6 @@ require_once 'fabcontrollerform.php';
  * @subpackage  Fabrik
  * @since       1.6
  */
-
 class FabrikAdminControllerConnection extends FabControllerForm
 {
 	/**
@@ -33,11 +32,10 @@ class FabrikAdminControllerConnection extends FabControllerForm
 	protected $text_prefix = 'COM_FABRIK_CONNECTION';
 
 	/**
-	 * Trys to connection to the database
+	 * Tries to connection to the database
 	 *
 	 * @return string connection message
 	 */
-
 	public function test()
 	{
 		JSession::checkToken() or die('Invalid Token');

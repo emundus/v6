@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
@@ -21,7 +21,6 @@ jimport('joomla.application.component.controllerform');
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikAdminControllerDetails extends JControllerForm
 {
 	/**
@@ -36,7 +35,6 @@ class FabrikAdminControllerDetails extends JControllerForm
 	 *
 	 * @return  void
 	 */
-
 	public function view()
 	{
 		$document = JFactory::getDocument();
@@ -56,7 +54,7 @@ class FabrikAdminControllerDetails extends JControllerForm
 		$view->setLayout($viewLayout);
 
 		// @TODO check for cached version
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_FORMS'), 'forms.png');
+		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_FORMS'), 'file-2');
 
 		$view->display();
 		FabrikAdminHelper::addSubmenu($input->getWord('view', 'lists'));

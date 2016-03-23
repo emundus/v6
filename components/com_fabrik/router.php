@@ -4,16 +4,18 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \Joomla\Utilities\ArrayHelper;
+
 /**
  * if using file extensions sef and htaccess :
- * you need to edit yout .htaccess file to:
+ * you need to edit your .htaccess file to:
  *
  * RewriteCond %{REQUEST_URI} (/|\.csv|\.php|\.html|\.htm|\.feed|\.pdf|\.raw|/[^.]*)$  [NC]
  *
@@ -28,7 +30,6 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @return  array url
  */
-
 function fabrikBuildRoute(&$query)
 {
 	$segments = array();
@@ -47,9 +48,7 @@ function fabrikBuildRoute(&$query)
 	}
 
 	// Are we dealing with a view that is attached to a menu item https://github.com/Fabrik/fabrik/issues/498?
-	$hasMenu = ($menuItem instanceof stdClass) && isset($query['view'])
-	&& array_key_exists('view', $menuItem->query) && $menuItem->query['view'] == $query['view']
-		&& isset($query['id'])  && isset($menuItem->query['id']) && $menuItem->query['id'] == intval($query['id']);
+	$hasMenu = _fabrikRouteMatchesMenuItem($query, $menuItem);
 
 	if ($hasMenu)
 	{
@@ -67,6 +66,10 @@ function fabrikBuildRoute(&$query)
 
 		unset($query['id']);
 
+		if (isset($query['listid']))
+		{
+			unset($query['listid']);
+		}
 		return $segments;
 	}
 
@@ -176,6 +179,47 @@ function fabrikBuildRoute(&$query)
 }
 
 /**
+ * Ascertain is the route that is being parsed is the same as the menu item desginated in
+ * its Itemid value.
+ *
+ * @param $query
+ * @param $menuItem
+ *
+ * @return bool
+ */
+function _fabrikRouteMatchesMenuItem($query, $menuItem)
+{
+	if (!$menuItem instanceof stdClass || !isset($query['view']))
+	{
+		return false;
+	}
+	$queryView = ArrayHelper::getValue($query, 'view');
+	$menuView = ArrayHelper::getValue($menuItem->query, 'view');
+
+	if ($queryView !== $menuView)
+	{
+		return false;
+	}
+	unset($query['Itemid']);
+
+	switch ($queryView)
+	{
+		case 'list':
+			if (!isset($query['listid']))
+			{
+				$query['listid'] = $query['id'];
+				unset($query['id']);
+			}
+
+			break;
+	}
+
+	return $query === $menuItem->query;
+
+	return true;
+}
+
+/**
  * parse route
  *
  * @param   array  $segments  url
@@ -187,11 +231,6 @@ function fabrikParseRoute($segments)
 {
 	// $vars are what Joomla then uses for its $_REQUEST array
 	$vars = array();
-
-	// Get the active menu item
-	$app = JFactory::getApplication();
-	$menu = $app->getMenu();
-	$item = $menu->getActive();
 	$view = $segments[0];
 
 	if (strstr($view, '.'))
@@ -200,30 +239,39 @@ function fabrikParseRoute($segments)
 		$view = array_shift($view);
 	}
 
-	// View (controller not passed into segments)
+	/**
+	 * View (controller not passed into segments)
+	 *
+	 * $$$ hugh - don't use FArrayHelper::getValue() here, use original ArrayHelper.  Don't ask.
+	 * Well, since you asked, some users are reporting issues with the helper not having been
+	 * loaded (some bizarre 3rd party system plugin doing funky things), and since we don't need
+	 * what our wrapper does for this simple usage ... yes, we could specifically load our helper here,
+	 * and (dear reader) if you wanna do that be my guest.
+	 */
+
 	switch ($view)
 	{
 		case 'form':
 		case 'details':
 		case 'emailform':
 			$vars['view'] = $segments[0];
-			$vars['formid'] = FArrayHelper::getValue($segments, 1, 0);
-			$vars['rowid'] = FArrayHelper::getValue($segments, 2, '');
-			$vars['format'] = FArrayHelper::getValue($segments, 3, 'html');
+			$vars['formid'] = ArrayHelper::getValue($segments, 1, 0);
+			$vars['rowid'] = ArrayHelper::getValue($segments, 2, '');
+			$vars['format'] = ArrayHelper::getValue($segments, 3, 'html');
 			break;
 		case 'table':
 		case 'list':
-			$vars['view'] = FArrayHelper::getValue($segments, 0, '');
-			$vars['listid'] = FArrayHelper::getValue($segments, 1, 0);
+			$vars['view'] = ArrayHelper::getValue($segments, 0, '');
+			$vars['listid'] = ArrayHelper::getValue($segments, 1, 0);
 			break;
 		case 'import':
 			$vars['view'] = 'import';
-			$vars['listid'] = FArrayHelper::getValue($segments, 1, 0);
-			$vars['filetype'] = FArrayHelper::getValue($segments, 2, 0);
+			$vars['listid'] = ArrayHelper::getValue($segments, 1, 0);
+			$vars['filetype'] = ArrayHelper::getValue($segments, 2, 0);
 			break;
 		case 'visualization':
-			$vars['id'] = FArrayHelper::getValue($segments, 1, 0);
-			$vars['format'] = FArrayHelper::getValue($segments, 2, 'html');
+			$vars['id'] = ArrayHelper::getValue($segments, 1, 0);
+			$vars['format'] = ArrayHelper::getValue($segments, 2, 'html');
 			break;
 		default:
 			break;

@@ -4,12 +4,14 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
 
 jimport('joomla.application.component.model');
 
@@ -20,7 +22,6 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik
  * @since       3.0.5
  */
-
 abstract class FabrikWebService
 {
 	/**
@@ -56,7 +57,7 @@ abstract class FabrikWebService
 		if (empty(self::$instances[$signature]))
 		{
 			// Derive the class name from the driver.
-			$class = 'FabrikWebService' . JString::ucfirst($options['driver']);
+			$class = 'FabrikWebService' . String::ucfirst($options['driver']);
 
 			// If the class doesn't exist, let's look for it and register it.
 			if (!class_exists($class))
@@ -214,6 +215,7 @@ abstract class FabrikWebService
 		$formModel = $listModel->getFormModel();
 		$db = $listModel->getDb();
 		$item = $listModel->getTable();
+
 		$query = $db->getQuery(true);
 		$query->select($item->db_primary_key . ' AS id, ' . $fk)->from($item->db_table_name);
 		$db->setQuery($query);
@@ -221,6 +223,8 @@ abstract class FabrikWebService
 		$formModel->getGroupsHiarachy();
 		$this->updateCount = 0;
 		$this->addedCount = 0;
+		$primaryKey = FabrikString::shortColName($item->db_primary_key);
+		$primaryKey = str_replace("`", "", $primaryKey);
 
 		foreach ($data as $row)
 		{
@@ -251,7 +255,11 @@ abstract class FabrikWebService
 				$this->updateCount++;
 			}
 
+
+			$row[$primaryKey] = $pk;
+
 			$listModel->storeRow($row, $pk);
+
 		}
 	}
 

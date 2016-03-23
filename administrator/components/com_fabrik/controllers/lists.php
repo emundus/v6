@@ -4,13 +4,15 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\Utilities\ArrayHelper;
 
 require_once 'fabcontrolleradmin.php';
 
@@ -21,7 +23,6 @@ require_once 'fabcontrolleradmin.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikAdminControllerLists extends FabControllerAdmin
 {
 	/**
@@ -45,7 +46,7 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 	 * @param   string  $prefix  The class prefix. Optional.
 	 * @param   array   $config  Configuration array for model. Optional.
 	 *
-	 * @return  object  The model.
+	 * @return  JModelLegacy  The model.
 	 *
 	 * @since   12.2
 	 */
@@ -61,11 +62,9 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 	 *
 	 * @return  null
 	 */
-
 	public function publish()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$cid = $input->get('cid', array(), 'array');
 		$data = array('publish' => 1, 'unpublish' => 0, 'archive' => 2, 'trash' => -2, 'report' => -3);
 		$task = $this->getTask();
@@ -73,21 +72,20 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 
 		if (empty($cid))
 		{
-			JError::raiseWarning(500, FText::_($this->text_prefix . '_NO_ITEM_SELECTED'));
+			$this->setMessage(FText::_($this->text_prefix . '_NO_ITEM_SELECTED'), 'error');
 		}
 		else
 		{
 			// Make sure the item ids are integers
-			JArrayHelper::toInteger($cid);
+			ArrayHelper::toInteger($cid);
 			$model = $this->getModel('Form', 'FabrikAdminModel');
-			$formids = $model->swapListToFormIds($cid);
+			$formIds = $model->swapListToFormIds($cid);
 
 			// Publish the items.
-			$formKeys = array();
 
-			if (!$model->publish($formids, $value))
+			if (!$model->publish($formIds, $value))
 			{
-				JError::raiseWarning(500, $model->getError());
+				$this->setMessage($model->getError(), 'error');
 			}
 			else
 			{
@@ -96,23 +94,23 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 
 				if (is_object($groupModel))
 				{
-					$groupids = $groupModel->swapFormToGroupIds($formids);
+					$groupIds = $groupModel->swapFormToGroupIds($formIds);
 
-					if (!empty($groupids))
+					if (!empty($groupIds))
 					{
-						if ($groupModel->publish($groupids, $value) === false)
+						if ($groupModel->publish($groupIds, $value) === false)
 						{
-							JError::raiseWarning(500, $groupModel->getError());
+							$this->setMessage($groupModel->getError(), 'error');
 						}
 						else
 						{
 							// Publish the elements
 							$elementModel = $this->getModel('Element');
-							$elementIds = $elementModel->swapGroupToElementIds($groupids);
+							$elementIds = $elementModel->swapGroupToElementIds($groupIds);
 
 							if (!$elementModel->publish($elementIds, $value))
 							{
-								JError::raiseWarning(500, $elementModel->getError());
+								$this->setMessage($elementModel->getError(), 'error');
 							}
 						}
 					}
@@ -130,7 +128,6 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 	 *
 	 * @return  null
 	 */
-
 	public function delete()
 	{
 		$listsModel = $this->getModel('lists');

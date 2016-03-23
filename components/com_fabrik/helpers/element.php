@@ -4,12 +4,15 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik.helpers
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
 
 /**
  * Element Helper class
@@ -68,13 +71,13 @@ class FabrikHelperElement
 	}
 
 	/**
-	 * Short cut for getting the element's filter value
+	 * Short cut for getting the element's filter value, or false if no value
 	 *
 	 * @param   int  $elementId  Element id
 	 *
 	 * @since   3.0.7
 	 *
-	 * @return  string
+	 * @return  mixed
 	 */
 
 	public static function filterValue($elementId)
@@ -83,12 +86,12 @@ class FabrikHelperElement
 		$pluginManager = FabrikWorker::getPluginManager();
 		$model = $pluginManager->getElementPlugin($elementId);
 		$listModel = $model->getListModel();
-		$listid = $listModel->getId();
-		$key = 'com_fabrik.list' . $listid . '_com_fabrik_' . $listid . '.filter';
-		$filters = JArrayHelper::fromObject($app->getUserState($key));
+		$listId = $listModel->getId();
+		$key = 'com_fabrik.list' . $listId . '_com_fabrik_' . $listId . '.filter';
+		$filters = ArrayHelper::fromObject($app->getUserState($key));
 		$elementIds = (array) FArrayHelper::getValue($filters, 'elementid', array());
 		$index = array_search($elementId, $elementIds);
-		$value = $filters['value'][$index];
+		$value = $index === false ? false : FArrayHelper::getValue($filters['value'], $index, false);
 
 		return $value;
 	}
@@ -126,9 +129,9 @@ class FabrikHelperElement
 	public static function findElementFromJoinKeys($model, $key)
 	{
 		// Search on fullname fullname_id and fullname___params
-		$lookups = array($key, substr($key, 0, JString::strlen($key) - 3), substr($key, 0, JString::strlen($key) - 9));
+		$lookUps = array($key, substr($key, 0, String::strlen($key) - 3), substr($key, 0, String::strlen($key) - 9));
 
-		foreach ($lookups as $lookup)
+		foreach ($lookUps as $lookup)
 		{
 			$elementModel = $model->getElement($lookup);
 

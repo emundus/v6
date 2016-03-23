@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Form
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -20,7 +20,6 @@ JFormHelper::loadFieldClass('groupedlist');
  * @subpackage  Form
  * @since       3.1
  */
-
 class JFormFieldGroupElements extends JFormFieldGroupedList
 {
 	/**
@@ -36,7 +35,6 @@ class JFormFieldGroupElements extends JFormFieldGroupedList
 	 *
 	 * @return  array  The field option objects as a nested array in groups.
 	 */
-
 	protected function getGroups()
 	{
 		$app = JFactory::getApplication();

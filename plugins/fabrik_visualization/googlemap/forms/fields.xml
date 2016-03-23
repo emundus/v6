@@ -175,6 +175,19 @@
 				table="params_googlemap_table" />
 
 			<field
+				name="fb_gm_iconimage2_path"
+				type="list"
+				default="media"
+				label="PLG_VISUALIZATION_GOOGLEMAP_DATA_ICON_PATH_LABEL"
+				description="PLG_VISUALIZATION_GOOGLEMAP_DATA_ICON_PATH_DESC">
+					<option value="media">PLG_VISUALIZATION_GOOGLEMAP_DATA_ICON_PATH_MEDIA_RELATIVE</option>
+					<option value="jroot">PLG_VISUALIZATION_GOOGLEMAP_DATA_ICON_PATH_JOOMLA_RELATIVE</option>
+					<option value="absolute">PLG_VISUALIZATION_GOOGLEMAP_DATA_ICON_PATH_FULL_PATH</option>
+					<option value="url">PLG_VISUALIZATION_GOOGLEMAP_DATA_ICON_PATH_URL</option>
+					<option value="img">PLG_VISUALIZATION_GOOGLEMAP_DATA_ICON_PATH_IMG</option>			
+			</field>
+			
+			<field
 				name="fb_gm_icon_letter"
 				type="text"
 				class="input-mini"
@@ -298,6 +311,7 @@
 					<option value="G_NORMAL_MAP">Normal</option>
 					<option value="G_SATELLITE_MAP">Satelite</option>
 					<option value="G_HYBRID_MAP">Hybrid</option>
+					<option value="G_TERRAIN_MAP">Terrain</option>
 			</field>
 
 			<field
@@ -399,6 +413,16 @@
 				description="PLG_VISUALIZATION_GOOGLEMAP_ZOOMLEVEL_DESC"
 				label="PLG_VISUALIZATION_GOOGLEMAP_ZOOMLEVEL_LABEL" />
 
+			<field name="fb_gm_trafficlayer"
+				type="radio"
+				default="0"
+				class="btn-group"
+				description="PLG_VISUALIZATION_GOOGLEMAP_TRAFFIC_LAYER_DESC"
+				label="PLG_VISUALIZATION_GOOGLEMAP_TRAFFIC_LAYER_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+			
 			<field
 				name="fb_gm_center"
 				type="radio"

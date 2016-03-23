@@ -5,7 +5,7 @@
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.time
  * @author      Jaanus Nurmoja <email@notknown.com>
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -47,12 +47,10 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 
 	public function render($data, $repeatCounter = 0)
 	{
-		$db = JFactory::getDbo();
 		$name = $this->getHTMLName($repeatCounter);
 		$id = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
 		$element = $this->getElement();
-		$bits = array();
 		/*
 		 * $$$ rob - not sure why we are setting $data to the form's data
 		 * but in table view when getting read only filter value from url filter this
@@ -156,31 +154,22 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 				$secs[] = JHTML::_('select.option', $i);
 			}
 
-			$errorCSS = $this->elementError != '' ? " elementErrorHighlight" : '';
-			$advancedClass = $this->getAdvancedSelectClass();
+			$layout = $this->getLayout('form');
+			$layoutData = new stdClass;
+			$layoutData->id = $id;
+			$layoutData->name = $name;
+			$layoutData->advancedClass = $this->getAdvancedSelectClass();
+			$layoutData->errorCss = $this->elementError != '' ? " elementErrorHighlight" : '';;
+			$layoutData->format = $fd;
+			$layoutData->sep = $sep;
+			$layoutData->hours = $hours;
+			$layoutData->mins = $mins;
+			$layoutData->secs = $secs;
+			$layoutData->hourValue = $hourvalue;
+			$layoutData->minValue = $minvalue;
+			$layoutData->secValue = $secvalue;
 
-			$attribs = 'class="input-small fabrikinput inputbox ' . $advancedClass . ' ' . $errorCSS . '"';
-			$str = array();
-			$str[] = '<div class="fabrikSubElementContainer" id="' . $id . '">';
-
-			// $name already suffixed with [] as element hasSubElements = true
-			if ($fd != 'i:s')
-			{
-				$str[] = JHTML::_('select.genericlist', $hours, preg_replace('#(\[\])$#', '[0]', $name), $attribs, 'value', 'text', $hourvalue) . ' '
-						. $sep;
-			}
-
-			$str[] = JHTML::_('select.genericlist', $mins, preg_replace('#(\[\])$#', '[1]', $name), $attribs, 'value', 'text', $minvalue);
-
-			if ($fd != 'H:i')
-			{
-				$str[] = $sep . ' '
-						. JHTML::_('select.genericlist', $secs, preg_replace('#(\[\])$#', '[2]', $name), $attribs, 'value', 'text', $secvalue);
-			}
-
-			$str[] = '</div>';
-
-			return implode("\n", $str);
+			return $layout->render($layoutData);
 		}
 	}
 
@@ -263,7 +252,7 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 
 		return 'SELECT SUM(substr(' . $name . ' FROM 1 FOR 2) * 60 * 60 + substr(' . $name . ' FROM 4 FOR 2) * 60
 			+ substr(' . $name . ' FROM 7 FOR 2))  AS value, ' . $label . ' FROM '
-				. $db->quoteName($table->db_table_name) . ' ' . $joinSQL . ' ' . $whereSQL;
+				. $db->qn($table->db_table_name) . ' ' . $joinSQL . ' ' . $whereSQL;
 	}
 
 	/**
@@ -344,15 +333,14 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string    $data      elements data
-	 * @param   stdClass  &$thisRow  all the data in the lists current row
+	 * @param   string    $data      Elements data
+	 * @param   stdClass  &$thisRow  All the data in the lists current row
+	 * @param   array     $opts      Rendering options
 	 *
 	 * @return  string	formatted value
 	 */
-
-	public function renderListData($data, stdClass &$thisRow)
+	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
-		$db = FabrikWorker::getDbo();
 		$params = $this->getParams();
 		$groupModel = $this->getGroup();
 		/*
@@ -408,7 +396,7 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 
 		$data = json_encode($format);
 
-		return parent::renderListData($data, $thisRow);
+		return parent::renderListData($data, $thisRow, $opts);
 	}
 
 	/**

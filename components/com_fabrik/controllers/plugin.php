@@ -4,12 +4,15 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
+use \Joomla\Utilities\ArrayHelper;
 
 jimport('joomla.application.component.controller');
 
@@ -21,7 +24,6 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik
  * @since       1.5
  */
-
 class FabrikControllerPlugin extends JControllerLegacy
 {
 	/**
@@ -66,10 +68,10 @@ class FabrikControllerPlugin extends JControllerLegacy
 
 		if (substr($method, 0, 2) !== 'on')
 		{
-			$method = 'on' . JString::ucfirst($method);
+			$method = 'on' . String::ucfirst($method);
 		}
 
-		$dispatcher = JDispatcher::getInstance();
+		$dispatcher = JEventDispatcher::getInstance();
 		$dispatcher->trigger($method);
 	}
 
@@ -78,7 +80,6 @@ class FabrikControllerPlugin extends JControllerLegacy
 	 *
 	 * @return  null
 	 */
-
 	public function userAjax()
 	{
 		$db = FabrikWorker::getDbo();
@@ -101,14 +102,13 @@ class FabrikControllerPlugin extends JControllerLegacy
 	 *
 	 * @return  null
 	 */
-
 	public function doCron(&$pluginManager)
 	{
 		$db = FabrikWorker::getDbo();
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$cid = $input->get('element_id', array(), 'array');
-		JArrayHelper::toInteger($cid);
+		ArrayHelper::toInteger($cid);
 
 		if (empty($cid))
 		{
@@ -131,6 +131,7 @@ class FabrikControllerPlugin extends JControllerLegacy
 		foreach ($rows as $row)
 		{
 			// Load in the plugin
+			/** @var PlgFabrik_Cron $plugin */
 			$plugin = $pluginManager->getPlugIn($row->plugin, 'cron');
 			$plugin->setId($row->id);
 			$params = $plugin->getParams();

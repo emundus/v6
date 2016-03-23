@@ -4,13 +4,15 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.0
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
 
 $app = JFactory::getApplication();
 $input = $app->input;
@@ -43,7 +45,7 @@ $jform = $input->get('jform', array(), 'array');
 				$heading = trim($this->newHeadings[$i]);
 				$sample = '';
 				foreach ($this->headings as $sKey => $sVal) :
-					if(JString::strtolower($heading) == JString::strtolower($sVal)) :
+					if(String::strtolower($heading) == String::strtolower($sVal)) :
 						$sample = $this->sample[$sKey];
 					endif;
 				endforeach;

@@ -4,12 +4,14 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
 
 /**
  * Abstract Storage adaptor for Fabrik file upload element
@@ -18,7 +20,6 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 abstract class FabrikStorageAdaptor
 {
 	/**
@@ -31,9 +32,8 @@ abstract class FabrikStorageAdaptor
 	/**
 	 * Constructor
 	 *
-	 * @param   JRegistry  &$params  Options
+	 * @param   Registry  &$params  Options
 	 */
-
 	public function __construct(&$params)
 	{
 		$this->params = $params;
@@ -42,9 +42,8 @@ abstract class FabrikStorageAdaptor
 	/**
 	 * Get params
 	 *
-	 * @return  JRegistry
+	 * @return  Registry
 	 */
-
 	public function &getParams()
 	{
 		return $this->params;
@@ -55,7 +54,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return  string
 	 */
-
 	public function getUploadedFilePath()
 	{
 		return $this->uploadedFilePath;
@@ -65,11 +63,11 @@ abstract class FabrikStorageAdaptor
 	 * Does a file exist
 	 *
 	 * @param   string  $filepath  File path to test
+	 * @param   bool    $prependRoot  also test with root prepended
 	 *
 	 * @return bool
 	 */
-
-	public abstract function exists($filepath);
+	public abstract function exists($filepath, $prependRoot = true);
 
 	/**
 	 * Does a folder exist
@@ -78,7 +76,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return bool
 	 */
-
 	public abstract function folderExists($path);
 
 	/**
@@ -89,7 +86,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return bool
 	 */
-
 	public abstract function createFolder($path, $mode = 0755);
 
 	/**
@@ -100,7 +96,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return  void
 	 */
-
 	public abstract function write($file, $buffer);
 
 	/**
@@ -110,7 +105,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return  mixed  Returns file contents or boolean False if failed
 	 */
-
 	public abstract function read($filepath);
 
 	/**
@@ -120,7 +114,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return  string  cleaned path
 	 */
-
 	public abstract function clean($path);
 
 	/**
@@ -131,7 +124,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return  string  cleaned name
 	 */
-
 	public abstract function cleanName($filename, $repeatCounter);
 
 	/**
@@ -141,7 +133,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return  void
 	 */
-
 	public abstract function delete($filepath);
 
 	/**
@@ -152,7 +143,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return  boolean True on success
 	 */
-
 	public abstract function upload($tmpFile, $filepath);
 
 	/**
@@ -162,7 +152,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return  string
 	 */
-
 	public abstract function setPermissions($filepath);
 
 	/**
@@ -172,7 +161,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return string  path
 	 */
-
 	public function urlToPath($url)
 	{
 		return $url;
@@ -185,7 +173,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return  void
 	 */
-
 	public function finalFilePathParse(&$filepath)
 	{
 	}
@@ -197,7 +184,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return  string  url
 	 */
-
 	public function pathToURL($path)
 	{
 		$path = str_replace(COM_FABRIK_BASE, '', $path);
@@ -219,7 +205,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return  mixed JError|void
 	 */
-
 	public function makeRecursiveFolders($folderPath, $mode = 0755)
 	{
 		if (!JFolder::exists($folderPath))
@@ -238,7 +223,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return  string
 	 */
-
 	public abstract function getFullPath($filepath);
 
 	/**
@@ -249,7 +233,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return  string
 	 */
-
 	public function preRenderPath($filepath)
 	{
 		return $filepath;
@@ -262,7 +245,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return  bool
 	 */
-
 	public function appendServerPath()
 	{
 		return true;
@@ -277,7 +259,6 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return void
 	 */
-
 	protected function randomizeName(&$filename)
 	{
 		$params = $this->getParams();
@@ -297,7 +278,7 @@ abstract class FabrikStorageAdaptor
 
 			while ($i < $length)
 			{
-				$char = JString::substr($possible, mt_rand(0, JString::strlen($possible) - 1), 1);
+				$char = String::substr($possible, mt_rand(0, String::strlen($possible) - 1), 1);
 				$key .= $char;
 				$i++;
 			}

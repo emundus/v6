@@ -4,12 +4,14 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.radiolist
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
 
 /**
  * Plugin element to a series of radio buttons
@@ -86,6 +88,7 @@ class PlgFabrik_ElementRadiobutton extends PlgFabrik_ElementList
 		$opts->defaultVal = $this->getDefaultValue($data);
 		$opts->data = empty($arVals) ? array() : array_combine($arVals, $arTxt);
 		$opts->allowadd = $params->get('allow_frontend_addtoradio', false) ? true : false;
+		$opts->changeEvent = $this->getChangeEvent();
 		JText::script('PLG_ELEMENT_RADIO_ENTER_VALUE_LABEL');
 
 		return array('FbRadio', $id, $opts);
@@ -129,7 +132,7 @@ class PlgFabrik_ElementRadiobutton extends PlgFabrik_ElementList
 		{
 			if (is_string($value))
 			{
-				if (JString::strtolower($labels[$i]) == JString::strtolower($value))
+				if (String::strtolower($labels[$i]) == String::strtolower($value))
 				{
 					$val = $values[$i];
 
@@ -138,11 +141,11 @@ class PlgFabrik_ElementRadiobutton extends PlgFabrik_ElementList
 			}
 			else
 			{
-				if (in_array(JString::strtolower($labels[$i]), $value))
+				if (in_array(String::strtolower($labels[$i]), $value))
 				{
 					foreach ($value as &$v)
 					{
-						if (JString::strtolower($labels[$i]) == JString::strtolower($v))
+						if (String::strtolower($labels[$i]) == String::strtolower($v))
 						{
 							$v = $values[$i];
 						}
@@ -233,4 +236,56 @@ class PlgFabrik_ElementRadiobutton extends PlgFabrik_ElementList
 
 		return $v;
 	}
+
+	/**
+	 * Return JS event required to trigger a 'change', this is overriding default element model.
+	 * When in BS mode with button-grp, needs to be 'click'.
+	 *
+	 * @return  string
+	 */
+
+	public function getChangeEvent()
+	{
+		return $this->buttonGroup() ? 'click' : 'change';
+	}
+
+	/**
+	 * Get classes to assign to the grid
+	 * An array of arrays of class names, keyed as 'container', 'label' or 'input',
+	 *
+	 * @return  array
+	 */
+	protected function gridClasses()
+	{
+		if ($this->buttonGroup())
+		{
+			return array(
+				'label' => array('btn-default'),
+				'container' => array('btn-radio')
+			);
+		}
+		else
+		{
+			return array();
+		}
+	}
+
+	/**
+	 * Get data attributes to assign to the container
+	 *
+	 * @return  array
+	 */
+	protected function dataAttributes()
+	{
+		if ($this->buttonGroup())
+		{
+			return array('data-toggle="buttons"');
+		}
+		else
+		{
+			return array();
+		}
+	}
+
+
 }

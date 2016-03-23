@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.viewlevel
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -18,7 +18,6 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik.element.viewlevel
  * @since       3.0.6
  */
-
 class PlgFabrik_ElementViewlevel extends PlgFabrik_ElementList
 {
 	/**
@@ -50,19 +49,18 @@ class PlgFabrik_ElementViewlevel extends PlgFabrik_ElementList
 	 *
 	 * @return  string	Elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
-		$name = $this->getHTMLName($repeatCounter);
+		$htmlName = $this->getHTMLName($repeatCounter);
+		$name = $this->getFullName(true, false);
 		$id = $this->getHTMLId($repeatCounter);
-		$user = JFactory::getUser();
-		$selected = $user->getAuthorisedViewLevels();
+		$selected = $this->user->getAuthorisedViewLevels();
 		arsort($selected);
 		$selected = array_shift($selected);
 
 		if (isset($data[$name]))
 		{
-			$selected = !is_array($data[$name]) ? explode(',', $data[$name]) : $selected = $data[$name];
+			$selected = !is_array($data[$name]) ? explode(',', $data[$name]) : $data[$name];
 		}
 
 		if (!$this->isEditable())
@@ -74,7 +72,14 @@ class PlgFabrik_ElementViewlevel extends PlgFabrik_ElementList
 
 		$options = array();
 
-		return JHtml::_('access.level', $name, $selected, 'class="inputbox" size="6"', $options, $id);
+		$layout = $this->getLayout('form');
+		$layoutData = new stdClass;
+		$layoutData->name = $htmlName;
+		$layoutData->selected = $selected;
+		$layoutData->options = $options;
+		$layoutData->id = $id;
+
+		return $layout->render($layoutData);
 	}
 
 	/**
@@ -84,7 +89,6 @@ class PlgFabrik_ElementViewlevel extends PlgFabrik_ElementList
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
@@ -98,15 +102,14 @@ class PlgFabrik_ElementViewlevel extends PlgFabrik_ElementList
 	 *
 	 * @return  array
 	 */
-
 	private function allOpts()
 	{
 		if (!isset($this->allOpts))
 		{
-			$db = JFactory::getDbo();
+			$db = $this->_db;
 			$query = $db->getQuery(true);
 			$query->select('id, title');
-			$query->from($db->quoteName('#__viewlevels'));
+			$query->from($db->qn('#__viewlevels'));
 			$db->setQuery($query);
 			$this->allOpts = $db->loadObjectList('id');
 		}
@@ -117,10 +120,13 @@ class PlgFabrik_ElementViewlevel extends PlgFabrik_ElementList
 	/**
 	 * Get sub option values
 	 *
+	 * @param   array  $data  Form data. If submitting a form, we want to use that form's data and not
+	 *                        re-query the form Model for its data as with multiple plugins of the same type
+	 *                        this was getting the plugin params out of sync.
+	 *
 	 * @return  array
 	 */
-
-	protected function getSubOptionValues()
+	protected function getSubOptionValues($data = array())
 	{
 		$opts = $this->allOpts();
 		$return = array();
@@ -136,10 +142,13 @@ class PlgFabrik_ElementViewlevel extends PlgFabrik_ElementList
 	/**
 	 * Get sub option labels
 	 *
+	 * @param   array  $data  Form data. If submitting a form, we want to use that form's data and not
+	 *                        re-query the form Model for its data as with multiple plugins of the same type
+	 *                        this was getting the plugin params out of sync.
+	 *
 	 * @return  array
 	 */
-
-	protected function getSubOptionLabels()
+	protected function getSubOptionLabels($data = array())
 	{
 		$opts = $this->allOpts();
 		$return = array();

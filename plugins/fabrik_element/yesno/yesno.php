@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.yesno
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -21,7 +21,6 @@ require_once JPATH_SITE . '/plugins/fabrik_element/radiobutton/radiobutton.php';
  * @subpackage  Fabrik.element.yesno
  * @since       3.0
  */
-
 class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 {
 	/**
@@ -45,7 +44,6 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	 *
 	 * @return mixed
 	 */
-
 	public function getDefaultValue($data = array())
 	{
 		if (!isset($this->default))
@@ -60,36 +58,37 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string  $data      Elements data
-	 * @param   object  &$thisRow  All the data in the lists current row
+	 * @param   string    $data      Elements data
+	 * @param   stdClass  &$thisRow  All the data in the lists current row
+	 * @param   array     $opts      Rendering options
 	 *
 	 * @return  string	formatted value
 	 */
-
-	public function renderListData($data, stdClass &$thisRow)
+	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
 		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/yesno/images/', 'image', 'list', false);
 
 		// Check if the data is in csv format, if so then the element is a multi drop down
 		$raw = $this->getFullName(true, false) . '_raw';
-		$displayData = array('value' => $thisRow->$raw, 'tmpl' => @$this->tmpl);
+		$displayData = new stdClass;
+		$displayData->value = $thisRow->$raw;
+		$displayData->tmpl = @$this->tmpl;
 		$basePath = JPATH_ROOT . '/plugins/fabrik_element/yesno/layouts';
 		$layout = new FabrikLayoutFile('fabrik_element_yesno_list', $basePath);
-		$layout->addIncludePaths(JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts');
+		$layout->addIncludePaths(JPATH_THEMES . '/' . $this->app->getTemplate() . '/html/layouts');
 
 		return $layout->render($displayData);
 	}
 
 	/**
 	 * Shows the data formatted for the table view with format = pdf
-	 * note pdf lib doesn't support transparent pngs hence this func
+	 * note pdf lib doesn't support transparent PNGs hence this func
 	 *
 	 * @param   string  $data     Cell data
 	 * @param   object  $thisRow  Row data
 	 *
 	 * @return string formatted value
 	 */
-
 	public function renderListData_pdf($data, $thisRow)
 	{
 		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/yesno/images/', 'image', 'list', false);
@@ -101,13 +100,13 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 		{
 			$icon = $j3 ? 'checkmark.png' : '1_8bit.png';
 
-			return FabrikHelperHTML::image($icon, 'list', $this->tmpl, array('alt' => FText::_('JYES')));
+			return FabrikHelperHTML::image($icon, 'list', @$this->tmpl, array('alt' => FText::_('JYES')));
 		}
 		else
 		{
 			$icon = $j3 ? 'remove.png' : '0_8bit.png';
 
-			return FabrikHelperHTML::image($icon, 'list', $this->tmpl, array('alt' => FText::_('JNO')));
+			return FabrikHelperHTML::image($icon, 'list', @$this->tmpl, array('alt' => FText::_('JNO')));
 		}
 	}
 
@@ -119,12 +118,11 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData_csv($data, &$thisRow)
 	{
 	    $raw = $this->getFullName(true, false) . '_raw';
-	    $rawdata = $thisRow->$raw;
-	    $data = (bool)$rawdata ? FText::_('JYES') : FText::_('JNO');
+	    $rawData = $thisRow->$raw;
+	    $data = (bool) $rawData ? FText::_('JYES') : FText::_('JNO');
 
 	    return $data;
 	}
@@ -132,10 +130,13 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	/**
 	 * Get sub option values
 	 *
+	 * @param   array  $data  Form data. If submitting a form, we want to use that form's data and not
+	 *                        re-query the form Model for its data as with multiple plugins of the same type
+	 *                        this was getting the plugin params out of sync.
+	 *
 	 * @return  array
 	 */
-
-	protected function getSubOptionValues()
+	protected function getSubOptionValues($data = array())
 	{
 		return array(0, 1);
 	}
@@ -143,10 +144,13 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	/**
 	 * Get sub option labels
 	 *
+	 * @param   array  $data  Form data. If submitting a form, we want to use that form's data and not
+	 *                        re-query the form Model for its data as with multiple plugins of the same type
+	 *                        this was getting the plugin params out of sync.
+	 *
 	 * @return  array
 	 */
-
-	protected function getSubOptionLabels()
+	protected function getSubOptionLabels($data = array())
 	{
 		return array(FText::_('JNO'), FText::_('JYES'));
 	}
@@ -158,10 +162,8 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	 *
 	 * @return  null
 	 */
-
 	protected function reapplyFilterLabels(&$rows)
 	{
-		$element = $this->getElement();
 		$values = $this->getSubOptionValues();
 		$labels = $this->getSubOptionLabels();
 
@@ -191,7 +193,6 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	 *
 	 * @return void
 	 */
-
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
 		$s = new stdClass;
@@ -213,13 +214,15 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	 *
 	 * @return  string  read only value
 	 */
-
 	protected function getReadOnlyOutput($value, $label)
 	{
-		$displayData = array('value' => $value, 'tmpl' => @$this->tmpl);
+		$displayData = new stdClass;
+		$displayData->value = $value;
+		$displayData->tmpl = @$this->tmpl;
+		$displayData->format = $this->app->input->get('format', '');;
 		$basePath = JPATH_ROOT . '/plugins/fabrik_element/yesno/layouts';
 		$layout = new FabrikLayoutFile('fabrik_element_yesno_details', $basePath);
-		$layout->addIncludePaths(JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts');
+		$layout->addIncludePaths(JPATH_THEMES . '/' . $this->app->getTemplate() . '/html/layouts');
 
 		return $layout->render($displayData);
 	}
@@ -232,7 +235,6 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$params = $this->getParams();
@@ -248,7 +250,6 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	 *
 	 * @return  bool
 	 */
-
 	protected function buttonGroup()
 	{
 		$params = $this->getParams();
@@ -264,7 +265,6 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
@@ -283,29 +283,27 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	 *
 	 * @return  string	Filter html
 	 */
-
 	public function getFilter($counter = 0, $normal = true)
 	{
 		$listModel = $this->getlistModel();
-		$table = $listModel->getTable();
 		$elName = $this->getFullName(true, false);
-		$htmlid = $this->getHTMLId() . 'value';
 		$elName = FabrikString::safeColName($elName);
 		$v = 'fabrik___filter[list_' . $listModel->getRenderContext() . '][value]';
 		$v .= ($normal) ? '[' . $counter . ']' : '[]';
 		$default = $this->getDefaultFilterVal($normal, $counter);
 		$rows = $this->filterValueList($normal);
+		$this->getFilterDisplayValues($default, $rows);
+
 		$return = array();
 		$element = $this->getElement();
-		$class = $this->filterClass();
 
 		if ($element->filter_type == 'hidden')
 		{
-			$return[] = '<input type="text" name="' . $v . '" class="' . $class . '" value="' . $default . '" id="' . $htmlid . '" />';
+			$return[] = $this->singleFilter($default, $v, 'hidden');
 		}
 		else
 		{
-			$return[] = JHTML::_('select.genericlist', $rows, $v, 'class="' . $class . '" size="1" ', 'value', 'text', $default, $htmlid);
+			$return[] = $this->selectFilter($rows, $default, $v);
 		}
 
 		if ($normal)
@@ -332,7 +330,6 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	 *
 	 * @return  array	filter value and labels
 	 */
-
 	protected function filterValueList_Exact($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
 	{
 		$o = new stdClass;
@@ -371,7 +368,6 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	 *
 	 * @return  array	filter value and labels
 	 */
-
 	protected function filterValueList_All($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
 	{
 		$rows = array(JHTML::_('select.option', '', $this->filterSelectLabel()), JHTML::_('select.option', '0', FText::_('JNO')),
@@ -385,7 +381,6 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	 *
 	 * @return  string	=, begins or contains
 	 */
-
 	protected function getFilterCondition()
 	{
 		return '=';
@@ -400,7 +395,6 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	 *
 	 * @return  void
 	 */
-
 	public function onStoreRow(&$data, $repeatCounter = 0)
 	{
 		if (!parent::onStoreRow($data, $repeatCounter))
@@ -409,23 +403,23 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 		}
 
 		$value = $this->getValue($data, $repeatCounter);
-		
+
 		if ($value == '1')
 		{
 			$params = $this->getParams();
 			$toggle = (bool) $params->get('toggle_others', false);
-	
+
 			if ($toggle === false)
 			{
 				return;
 			}
-	
+
 			$listModel = $this->getListModel();
-	
+
 			$name = $this->getElement()->name;
 			$db = $listModel->getDb();
 			$query = $db->getQuery(true);
-	
+
 			if ($this->isJoin())
 			{
 				$joinModel = $this->getJoinModel();
@@ -433,44 +427,67 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 			}
 			else
 			{
-				$pk = $listModel->getTable()->db_primary_key;
+				$pk = $listModel->getPrimaryKey();
 			}
-	
+
 			$shortPk = FabrikString::shortColName($pk);
-			$rowid = FArrayHelper::getValue($data, $shortPk, null);
-			
+			$rowId = FArrayHelper::getValue($data, $shortPk, null);
+
 			$query->update($this->actualTableName())->set($name . ' = 0');
-			
-			if (!empty($rowid))
+
+			if (!empty($rowId))
 			{
-				$query->where($pk . ' <> ' . $rowid);
+				$query->where($pk . ' <> ' . $rowId);
 			}
-			
+
 			$toggle_where = $params->get('toggle_where', '');
 			FabrikString::ltrimiword($toggle_where, 'where');
-			
+
 			if (!empty($toggle_where))
 			{
 				$w = new FabrikWorker;
 				$toggle_where = $w->parseMessageForPlaceHolder($toggle_where);
 				$query->where($toggle_where);
 			}
-			
+
 			$db->setQuery($query);
 			$db->execute();
 		}
 	}
-	
+
 	/**
 	 * Return JS event required to trigger a 'change', this is overriding default element model.
 	 * When in BS mode with button-grp, needs to be 'click'.
 	 *
 	 * @return  string
 	 */
-	
 	public function getChangeEvent()
 	{
 		return $this->buttonGroup() ? 'click' : 'change';
 	}
-	
+
+	/**
+	 * Get classes to assign to the grid
+	 * An array of arrays of class names, keyed as 'container', 'label' or 'input',
+	 *
+	 * @return  array
+	 */
+	protected function gridClasses()
+	{
+		return array(
+			'label' => array('btn-default'),
+			'container' => array('btn-radio')
+		);
+	}
+
+	/**
+	 * Get data attributes to assign to the container
+	 *
+	 * @return  array
+	 */
+	protected function dataAttributes()
+	{
+		return array('data-toggle="buttons"');
+	}
+
 }

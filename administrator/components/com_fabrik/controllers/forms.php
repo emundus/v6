@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -41,13 +41,13 @@ class FabrikAdminControllerForms extends FabControllerAdmin
 	 *
 	 * @param   string  $name    Model name
 	 * @param   string  $prefix  Model prefix
+	 * @param   array   $config  Configuration array for model. Optional.
 	 *
 	 * @since	1.6
 	 *
-	 * @return  model
+	 * @return  JModel
 	 */
-
-	public function &getModel($name = 'Form', $prefix = 'FabrikAdminModel')
+	public function &getModel($name = 'Form', $prefix = 'FabrikAdminModel', $config = array())
 	{
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 
@@ -59,7 +59,6 @@ class FabrikAdminControllerForms extends FabControllerAdmin
 	 *
 	 * @return  null
 	 */
-
 	public function updateDatabase()
 	{
 		// Check for request forgeries
@@ -74,18 +73,16 @@ class FabrikAdminControllerForms extends FabControllerAdmin
 	 *
 	 * @return  null
 	 */
-
 	public function listview()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$cid = $input->get('cid', array(0), 'array');
 		$cid = $cid[0];
-		$db = JFactory::getDbo(true);
+		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('id')->from('#__fabrik_lists')->where('form_id = ' . (int) $cid);
 		$db->setQuery($query);
-		$listid = $db->loadResult();
-		$this->setRedirect('index.php?option=com_fabrik&task=list.view&listid=' . $listid);
+		$listId = $db->loadResult();
+		$this->setRedirect('index.php?option=com_fabrik&task=list.view&listid=' . $listId);
 	}
 }

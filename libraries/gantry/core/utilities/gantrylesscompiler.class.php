@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: gantrylesscompiler.class.php 8061 2013-03-03 00:08:14Z btowles $
+ * @version   $Id: gantrylesscompiler.class.php 30069 2016-03-08 17:45:33Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 defined('GANTRY_VERSION') or die();
@@ -1429,7 +1429,7 @@ class GantryLessCompiler {
 		// type based operators
 		$fname = "op_${ltype}_${rtype}";
 		if (is_callable(array($this, $fname))) {
-			$out = $this->$fname($op, $left, $right);
+			$out = $this->{$fname}($op, $left, $right);
 			if (!is_null($out)) return $out;
 		}
 
@@ -3181,7 +3181,7 @@ class GantryLessCompiler_Parser {
 	protected function genericList(&$out, $parseItem, $delim="", $flatten=true) {
 		$s = $this->seek();
 		$items = array();
-		while ($this->$parseItem($value)) {
+		while ($this->{$parseItem}($value)) {
 			$items[] = $value;
 			if ($delim) {
 				if (!$this->literal($delim)) break;

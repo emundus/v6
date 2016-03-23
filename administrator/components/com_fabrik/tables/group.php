@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -20,7 +20,6 @@ require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikTableGroup extends FabTable
 {
 	/**
@@ -29,12 +28,22 @@ class FabrikTableGroup extends FabTable
 	 */
 	public $join_id = null;
 
+	public $is_join = false;
+
+	public $params = '';
+
+	public $id = null;
+
+	public $name = '';
+
+	public $label = '';
+
+	public $css = '';
 	/**
 	 * Constructor
 	 *
-	 * @param   object  &$db  database object
+	 * @param   JDatabaseDriver  &$db  database object
 	 */
-
 	public function __construct(&$db)
 	{
 		parent::__construct('#__{package}_groups', 'id', $db);
@@ -45,7 +54,6 @@ class FabrikTableGroup extends FabTable
 	 *
 	 * @return  bool
 	 */
-
 	public function check()
 	{
 		if (trim($this->name) == '')
@@ -68,7 +76,6 @@ class FabrikTableGroup extends FabTable
 	 *
 	 * @return  boolean  True if successful. False if row not found or on error (internal error state set in that case).
 	 */
-
 	public function load($keys = null, $reset = true)
 	{
 		if (empty($keys))
@@ -103,7 +110,7 @@ class FabrikTableGroup extends FabTable
 
 		foreach ($keys as $field => $value)
 		{
-			$query->where($db->quoteName('#__{package}_groups') . '.' . $db->quoteName($field) . ' = ' . $db->quote($value));
+			$query->where($db->qn('#__{package}_groups') . '.' . $db->qn($field) . ' = ' . $db->q($value));
 		}
 
 		$query->where(" (( element_id = 0 OR is_join = 0) OR element_id IS NULL)");
@@ -131,7 +138,6 @@ class FabrikTableGroup extends FabTable
 	 *
 	 * @return  boolean  True on success.
 	 */
-
 	public function store($updateNulls = false)
 	{
 		unset($this->join_id);

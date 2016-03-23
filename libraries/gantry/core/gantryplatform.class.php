@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: gantryplatform.class.php 6306 2013-01-05 05:39:57Z btowles $
+ * @version   $Id: gantryplatform.class.php 30069 2016-03-08 17:45:33Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Gantry uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system
@@ -117,7 +117,7 @@ class GantryPlatform
 	protected function unsuportedInfo()
 	{
 		foreach (get_object_vars($this) as $var_name => $var_value) {
-			if (null == $var_value) $this->$var_name = "unsupported";
+			if (null == $var_value) $this->{$var_name} = "unsupported";
 		}
 	}
 

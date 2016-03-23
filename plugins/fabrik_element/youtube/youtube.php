@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.youtube
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -22,7 +22,6 @@ require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
  * @subpackage  Fabrik.element.youtube
  * @since       3.0
  */
-
 class PlgFabrik_ElementYoutube extends PlgFabrik_Element
 {
 	protected $pluginName = 'youtube';
@@ -32,11 +31,11 @@ class PlgFabrik_ElementYoutube extends PlgFabrik_Element
 	 *
 	 * @param   string    $data      Elements data
 	 * @param   stdClass  &$thisRow  All the data in the lists current row
+	 * @param   array     $opts      Rendering options
 	 *
 	 * @return  string	formatted value
 	 */
-
-	public function renderListData($data, stdClass &$thisRow)
+	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
 		return $this->constructVideoPlayer($data, 'list');
 	}
@@ -46,20 +45,7 @@ class PlgFabrik_ElementYoutube extends PlgFabrik_Element
 	 *
 	 * @return  bool
 	 */
-
 	public function requiresLightBox()
-	{
-		return true;
-	}
-
-	/**
-	 * Determines if the element can contain data used in sending receipts,
-	 * e.g. fabrikfield returns true
-	 *
-	 * @return  bool
-	 */
-
-	public function isReceiptElement()
 	{
 		return true;
 	}
@@ -72,11 +58,9 @@ class PlgFabrik_ElementYoutube extends PlgFabrik_Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$params = $this->getParams();
 		$element = $this->getElement();
 		$data = $this->getFormModel()->data;
@@ -103,15 +87,15 @@ class PlgFabrik_ElementYoutube extends PlgFabrik_Element
 			}
 
 			$layout = $this->getLayout('form');
-			$data['id'] = $id;
-			$data['name'] = $name;
-			$data['class'] = $class;;
-			$data['size'] = $params->get('width');
-			$data['maxlength'] = 255;
+			$layoutData = new stdClass;
+			$layoutData->id = $id;
+			$layoutData->name = $name;
+			$layoutData->class = $class;
+			$layoutData->value = $value;
+			$layoutData->size = $params->get('width');
+			$layoutData->maxlength = 255;
 
-			return $layout->render($data);
-
-			return $str;
+			return $layout->render($layoutData);
 		}
 		else
 		{
@@ -127,7 +111,6 @@ class PlgFabrik_ElementYoutube extends PlgFabrik_Element
 	 *
 	 * @return string
 	 */
-
 	private function constructVideoPlayer($value, $mode = 'form')
 	{
 		$params = $this->getParams();
@@ -214,41 +197,28 @@ class PlgFabrik_ElementYoutube extends PlgFabrik_Element
 						$dlink = $params->get('text_link') != null ? $params->get('text_link') : 'Watch Video';
 					}
 
-					/*if ($params->get('target_link') == 1)
-					{
-						$object_vid = '<a href="' . $url . $vid . '" target="blank">' . $dlink . '</a>';
-					}
-					elseif ($params->get('target_link') == 2)
-					{
-						$element = $this->getElement();
-						$object_vid = "<a href='" . $url . $vid . "' rel='lightbox[social " . $width . " " . $height . "]' title='" . $element->label
-							. "'>" . $dlink . "</a>";
-					}
-					else
-					{
-						$object_vid = '<a href="' . $url . $vid . '">' . $dlink . '</a>';
-					}*/
 					$element = $this->getElement();
-					$data = array();
-					$data['link'] = $params->get('target_link');
-					$data['value'] = $url . $vid;
-					$data['width'] = $width;
-					$data['height'] = $height;
-					$data['title'] = $element->label;
-					$data['label'] = $dlink;
+					$layoutData = new stdClass;
+					$layoutData->link = $params->get('target_link');
+					$layoutData->value = $url . $vid;
+					$layoutData->width = $width;
+					$layoutData->height = $height;
+					$layoutData->title = $element->label;
+					$layoutData->label = $dlink;
 					$layout = $this->getLayout('list');
-					return $layout->render($data);
+
+					return $layout->render($layoutData);
 				}
 			}
 			else
 			{
 				$layout = $this->getLayout('detail');
-				$data = array();
-				$data['width'] = $width;
-				$data['height'] = $height;
-				$data['value'] = $url . $vid . '&hl=en&fs=1' . $rel;
+				$layoutData = new stdClass;
+				$layoutData->width = $width;
+				$layoutData->height = $height;
+				$layoutData->value = $url . $vid . '&hl=en&fs=1' . $rel;
 
-				return $layout->render($data);
+				return $layout->render($layoutData);
 			}
 		}
 		else
@@ -266,7 +236,6 @@ class PlgFabrik_ElementYoutube extends PlgFabrik_Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
@@ -280,7 +249,6 @@ class PlgFabrik_ElementYoutube extends PlgFabrik_Element
 	 *
 	 * @return  string  db field type
 	 */
-
 	public function getFieldDescription()
 	{
 		$p = $this->getParams();
@@ -290,8 +258,8 @@ class PlgFabrik_ElementYoutube extends PlgFabrik_Element
 			return 'BLOB';
 		}
 
-		$objtype = "VARCHAR(" . $p->get('maxlength', 255) . ")";
+		$objType = 'VARCHAR(' . $p->get('maxlength', 255) . ')';
 
-		return $objtype;
+		return $objType;
 	}
 }

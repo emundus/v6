@@ -4,13 +4,15 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\Utilities\ArrayHelper;
 
 require_once 'fabcontrollerform.php';
 
@@ -21,18 +23,18 @@ require_once 'fabcontrollerform.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikAdminControllerList extends FabControllerForm
 {
 	/**
 	 * The prefix to use with controller messages.
 	 *
-	 * @var	string
+	 * @var    string
 	 */
 	protected $text_prefix = 'COM_FABRIK_LIST';
 
 	/**
 	 * Used from content plugin when caching turned on to ensure correct element rendered)
+	 *
 	 * @var int
 	 */
 	protected $cacheId = 0;
@@ -40,13 +42,12 @@ class FabrikAdminControllerList extends FabControllerForm
 	/**
 	 * Method to edit an existing record.
 	 *
-	 * @param   string  $key     The name of the primary key of the URL variable.
-	 * @param   string  $urlVar  The name of the URL variable if different from the primary key
-	 * (sometimes required to avoid router collisions).
+	 * @param   string $key    The name of the primary key of the URL variable.
+	 * @param   string $urlVar The name of the URL variable if different from the primary key
+	 *                         (sometimes required to avoid router collisions).
 	 *
 	 * @return  boolean  True if access level check and checkout passes, false otherwise.
 	 */
-
 	public function edit($key = null, $urlVar = null)
 	{
 		$model = $this->getModel('connections');
@@ -62,26 +63,26 @@ class FabrikAdminControllerList extends FabControllerForm
 	/**
 	 * Set up a confirmation screen asking about renaming the list you want to copy
 	 *
+	 * @throws Exception
+	 *
 	 * @return mixed notice or null
 	 */
-
 	public function copy()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$cid = $input->get('cid', array(0), 'array');
+		$input = $this->input;
+		$cid   = $input->get('cid', array(0), 'array');
 		$model = JModelLegacy::getInstance('list', 'FabrikFEModel');
 
 		if (count($cid) > 0)
 		{
 			$viewType = JFactory::getDocument()->getType();
-			$view = $this->getView($this->view_item, $viewType, '');
+			$view     = $this->getView($this->view_item, $viewType, '');
 			$view->setModel($model, true);
 			$view->confirmCopy('confirm_copy');
 		}
 		else
 		{
-			return JError::raiseWarning(500, FText::_('NO ITEMS SELECTED'));
+			throw new Exception(FText::_('NO ITEMS SELECTED'));
 		}
 	}
 
@@ -90,34 +91,30 @@ class FabrikAdminControllerList extends FabControllerForm
 	 *
 	 * @return  null
 	 */
-
 	public function doCopy()
 	{
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$model = $this->getModel();
 		$model->copy();
-		$ntext = $this->text_prefix . '_N_ITEMS_COPIED';
-		$this->setMessage(JText::plural($ntext, count($input->get('cid', array(), 'array'))));
+		$nText = $this->text_prefix . '_N_ITEMS_COPIED';
+		$this->setMessage(JText::plural($nText, count($input->get('cid', array(), 'array'))));
 		$this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false));
 	}
 
 	/**
 	 * Show the lists data in the admin
 	 *
-	 * @param   object  $model  list model
+	 * @param   object $model list model
 	 *
 	 * @return  null
 	 */
-
 	public function view($model = null)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$cid = $input->get('cid', array(0), 'array');
-		$cid = $cid[0];
+		$input = $this->input;
+		$cid   = $input->get('cid', array(0), 'array');
+		$cid   = $cid[0];
 
 		if (is_null($model))
 		{
@@ -128,27 +125,24 @@ class FabrikAdminControllerList extends FabControllerForm
 			$model->setState('list.id', $cid);
 		}
 
-		$app = JFactory::getApplication();
-		$input = $app->input;
-
 		$viewType = JFactory::getDocument()->getType();
 
 		// Use the front end renderer to show the table
 		$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
 		$viewLayout = $input->getWord('layout', 'default');
-		$view = $this->getView($this->view_item, $viewType, 'FabrikView');
+		$view       = $this->getView($this->view_item, $viewType, 'FabrikView');
 		$view->setModel($model, true);
 
 		// Set the layout
 		$view->setLayout($viewLayout);
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_LISTS'), 'lists.png');
+		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_LISTS'), 'list');
 
 		// Build unique cache id on url, post and user id
-		$user = JFactory::getUser();
-		$uri = JURI::getInstance();
-		$uri = $uri->toString(array('path', 'query'));
-		$cacheid = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
-		$cache = JFactory::getCache('com_fabrik', 'view');
+		$user    = JFactory::getUser();
+		$uri     = JURI::getInstance();
+		$uri     = $uri->toString(array('path', 'query'));
+		$cacheId = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
+		$cache   = JFactory::getCache('com_fabrik', 'view');
 
 		if (in_array($input->get('format'), array('raw', 'csv', 'pdf', 'json', 'fabrikfeed')))
 		{
@@ -156,7 +150,7 @@ class FabrikAdminControllerList extends FabControllerForm
 		}
 		else
 		{
-			$cache->get($view, 'display', $cacheid);
+			$cache->get($view, 'display', $cacheId);
 		}
 
 		FabrikAdminHelper::addSubmenu($input->getWord('view', 'lists'));
@@ -170,15 +164,14 @@ class FabrikAdminControllerList extends FabControllerForm
 	public function showLinkedElements()
 	{
 		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$cid = $input->get('cid', array(0), 'array');
-		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$input    = $this->input;
+		$cid      = $input->get('cid', array(0), 'array');
+		$model    = JModelLegacy::getInstance('List', 'FabrikFEModel');
 		$model->setState('list.id', $cid[0]);
-		$formModel = $model->getFormModel();
-		$viewType = $document->getType();
+		$formModel  = $model->getFormModel();
+		$viewType   = $document->getType();
 		$viewLayout = $input->getWord('layout', 'linked_elements');
-		$view = $this->getView($this->view_item, $viewType, '');
+		$view       = $this->getView($this->view_item, $viewType, '');
 		$view->setModel($model, true);
 		$view->setModel($formModel);
 
@@ -186,16 +179,6 @@ class FabrikAdminControllerList extends FabControllerForm
 		$view->setLayout($viewLayout);
 		$view->showLinkedElements();
 	}
-
-	/**
-	 * actally delete the requested lists forms etc
-	 * // $$$ rob refractored to FabControllerAdmin
-	 */
-
-	/*public function dodelete()
-	 {
-	}
-	 */
 
 	/**
 	 * Order the lists
@@ -207,10 +190,9 @@ class FabrikAdminControllerList extends FabControllerForm
 	{
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
-		$id = $input->getInt('listid');
+		$id    = $input->getInt('listid');
 		$model->setId($id);
 		$input->set('cid', $id);
 		$model->setOrderByAndDir();
@@ -226,11 +208,9 @@ class FabrikAdminControllerList extends FabControllerForm
 	 *
 	 * @return  null
 	 */
-
 	public function clearfilter()
 	{
-		$app = JFactory::getApplication();
-		$app->enqueueMessage(FText::_('COM_FABRIK_FILTERS_CLEARED'));
+		$this->app->enqueueMessage(FText::_('COM_FABRIK_FILTERS_CLEARED'));
 		$this->filter();
 	}
 
@@ -239,15 +219,13 @@ class FabrikAdminControllerList extends FabControllerForm
 	 *
 	 * @return  void
 	 */
-
 	public function filter()
 	{
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
-		$id = $input->get('listid');
+		$id    = $input->get('listid');
 		$model->setId($id);
 		$input->set('cid', $id);
 		$request = $model->getRequestData();
@@ -262,36 +240,34 @@ class FabrikAdminControllerList extends FabControllerForm
 	 *
 	 * @return  null
 	 */
-
 	public function delete()
 	{
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
-		$listid = $input->getInt('listid');
-		$model->setId($listid);
-		$ids = $input->get('ids', array(), 'array');
-		$limitstart = $input->getInt('limitstart' . $listid);
-		$length = $input->getInt('limit' . $listid);
-		$oldtotal = $model->getTotalRecords();
-		$ok = $model->deleteRows($ids);
-		$total = $oldtotal - count($ids);
-		$ref = 'index.php?option=com_fabrik&task=list.view&cid=' . $listid;
+		$input  = $this->input;
+		$model  = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$listId = $input->getInt('listid');
+		$model->setId($listId);
+		$ids        = $input->get('ids', array(), 'array');
+		$limitStart = $input->getInt('limitstart' . $listId);
+		$length     = $input->getInt('limit' . $listId);
+		$oldTotal   = $model->getTotalRecords();
+		$ok         = $model->deleteRows($ids);
+		$total      = $oldTotal - count($ids);
+		$ref        = 'index.php?option=com_fabrik&task=list.view&cid=' . $listId;
 
-		if ($total >= $limitstart)
+		if ($total >= $limitStart)
 		{
-			$newlimitstart = $limitstart - $length;
+			$newLimitStart = $limitStart - $length;
 
-			if ($newlimitstart < 0)
+			if ($newLimitStart < 0)
 			{
-				$newlimitstart = 0;
+				$newLimitStart = 0;
 			}
 
-			$ref = str_replace('limitstart' . $listid . '=' . $limitstart, 'limitstart' . $listid . '=' . $newlimitstart, $ref);
+			$ref     = str_replace('limitstart' . $listId . '=' . $limitStart, 'limitstart' . $listId . '=' . $newLimitStart, $ref);
 			$context = 'com_fabrik.list' . $model->getRenderContext() . '.list.';
-			$app->setUserState($context . 'limitstart' . $listid, $newlimitstart);
+			$this->app->setUserState($context . 'limitstart' . $listId, $newLimitStart);
 		}
 
 		if ($input->get('format') == 'raw')
@@ -302,8 +278,8 @@ class FabrikAdminControllerList extends FabControllerForm
 		else
 		{
 			$msg = $ok ? count($ids) . ' ' . FText::_('COM_FABRIK_RECORDS_DELETED') : '';
-			$app->enqueueMessage($msg);
-			$app->redirect($ref);
+			$this->app->enqueueMessage($msg);
+			$this->app->redirect($ref);
 		}
 	}
 
@@ -312,15 +288,13 @@ class FabrikAdminControllerList extends FabControllerForm
 	 *
 	 * @return  null
 	 */
-
 	public function doempty()
 	{
 		$model = $this->getModel('list', 'FabrikFEModel');
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$model->truncate();
-		$listid = $input->getInt('listid');
-		$ref = $input->get('fabrik_referrer', 'index.php?option=com_fabrik&view=list&cid=' . $listid, 'string');
+		$listId = $input->getInt('listid');
+		$ref    = $input->get('fabrik_referrer', 'index.php?option=com_fabrik&view=list&cid=' . $listId, 'string');
 		$this->setRedirect($ref);
 	}
 
@@ -329,13 +303,11 @@ class FabrikAdminControllerList extends FabControllerForm
 	 *
 	 * @return  null
 	 */
-
 	public function doPlugin()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$cid = $input->get('cid', array(0), 'array');
-		$cid = $cid[0];
+		$input = $this->input;
+		$cid   = $input->get('cid', array(0), 'array');
+		$cid   = $cid[0];
 		$model = $this->getModel('list', 'FabrikFEModel');
 		$model->setId($input->getInt('listid', $cid));
 
@@ -347,7 +319,7 @@ class FabrikAdminControllerList extends FabControllerForm
 		// If showing n tables in article page then ensure that only activated table runs its plugin
 		if ($input->getInt('id') == $model->get('id') || $input->get('origid', '', 'string') == '')
 		{
-			$msgs = $model->processPlugin();
+			$messages = $model->processPlugin();
 
 			if ($input->get('format') == 'raw')
 			{
@@ -355,15 +327,57 @@ class FabrikAdminControllerList extends FabControllerForm
 			}
 			else
 			{
-				foreach ($msgs as $msg)
+				foreach ($messages as $msg)
 				{
-					$app->enqueueMessage($msg);
+					$this->app->enqueueMessage($msg);
 				}
 			}
 		}
 
 		$format = $input->get('fromat', 'html');
-		$ref = 'index.php?option=com_fabrik&task=list.view&listid=' . $model->getId() . '&format=' . $format;
-		$app->redirect($ref);
+		$ref    = 'index.php?option=com_fabrik&task=list.view&listid=' . $model->getId() . '&format=' . $format;
+		$this->app->redirect($ref);
+	}
+
+	/**
+	 * Method to save a record or if a new list show the 'select content type' form.
+	 *
+	 * @param   string $key    The name of the primary key of the URL variable.
+	 * @param   string $urlVar The name of the URL variable if different from the primary key (sometimes required to
+	 *                         avoid router collisions).
+	 *
+	 * @return  boolean  True if successful, false otherwise.
+	 */
+	public function save($key = null, $urlVar = null)
+	{
+		$data = (array) $this->input->post->get('jform', array(), 'array');
+
+		if ((int) $data['id'] === 0 && ArrayHelper::getValue($data, 'db_table_name', '') === '')
+		{
+			$viewType = JFactory::getDocument()->getType();
+			$model    = JModelLegacy::getInstance('List', 'FabrikAdminModel');
+
+			$view = $this->getView($this->view_item, $viewType, '');
+			$view->setModel($model, true);
+			$view->selectContentType('select_content_type');
+
+			return true;
+		}
+
+		parent::save($key, $urlVar);
+	}
+
+	/**
+	 * Method to always save a list.
+	 *
+	 * @param   string $key    The name of the primary key of the URL variable.
+	 * @param   string $urlVar The name of the URL variable if different from the primary key (sometimes required to
+	 *                         avoid router collisions).
+	 *
+	 * @return  boolean  True if successful, false otherwise.
+	 */
+	public function doSave($key = null, $urlVar = null)
+	{
+		return parent::save($key, $urlVar);
 	}
 }

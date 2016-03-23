@@ -4,12 +4,14 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use \Joomla\Registry\Registry;
 
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
 
@@ -26,9 +28,8 @@ class FabrikTableCron extends FabTable
 	/**
 	 * Constructor
 	 *
-	 * @param   object  &$db  database object
+	 * @param   JDatabaseDriver  &$db  database object
 	 */
-
 	public function __construct(&$db)
 	{
 		parent::__construct('#__{package}_cron', 'id', $db);
@@ -42,12 +43,11 @@ class FabrikTableCron extends FabTable
 	 *
 	 * @return  boolean  True on success.
 	 */
-
 	public function bind($src, $ignore = array())
 	{
 		if (isset($src['params']) && is_array($src['params']))
 		{
-			$registry = new JRegistry;
+			$registry = new Registry;
 			$registry->loadArray($src['params']);
 			$src['params'] = (string) $registry;
 		}

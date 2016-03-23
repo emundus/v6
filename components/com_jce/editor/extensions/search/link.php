@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -107,7 +107,7 @@ class WFLinkSearchExtension extends WFSearchExtension {
         $lists['searchphrase'] = JHtml::_('select.radiolist', $searchphrases, 'searchphrase', '', 'value', 'text', 'all');
 
 
-        $view = $this->getView('search');
+        $view = $this->getView(array('layout' => 'search'));
 
         $view->assign('searchareas', self::getAreas());
         $view->assign('lists', $lists);
@@ -117,15 +117,15 @@ class WFLinkSearchExtension extends WFSearchExtension {
     /**
      * Process search
      * @param type $query Search query
-     * @return array Rerach Results 
-     * 
+     * @return array Rerach Results
+     *
      * This method uses portions of SearchController::search from components/com_search/controller.php
      * @copyright Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
      */
     public function doSearch($query) {
         $wf     = WFEditorPlugin::getInstance();
         $filter = JFilterInput::getInstance();
-        
+
         if (!class_exists('JSite')) {
             // Load JSite class
             JLoader::register('JSite', JPATH_SITE . '/includes/application.php');
@@ -133,13 +133,13 @@ class WFLinkSearchExtension extends WFSearchExtension {
 
         $app    = JApplication::getInstance('site');
         $router = $app->getRouter('site');
-        
+
         // get SearchHelper
         require_once(JPATH_ADMINISTRATOR . '/components/com_search/helpers/search.php');
 
         // get router mode
         $sef = (int) $wf->getParam('search.link.sef_url', 0);
-        
+
         // set router off so a raw url is returned by the Search plugin
         if ($router) {
             $router->setMode(0);
@@ -226,16 +226,16 @@ class WFLinkSearchExtension extends WFSearchExtension {
             if (strpos($row->href, JURI::base(true)) !== false) {
                 $row->href = substr_replace($row->href, '', 0, strlen(JURI::base(true)) + 1);
             }
-            
+
             // convert to SEF
             if ($router && $sef) {
                 $router->setMode(1);
-                
+
                 $url        = str_replace('&amp;', '&', $row->href);
-                
+
                 $uri        = $router->build($url);
                 $url        = $uri->toString();
-                
+
                 $row->href  = str_replace('/administrator/', '/', $url);
             }
 

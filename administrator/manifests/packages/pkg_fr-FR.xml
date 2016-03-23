@@ -1,23 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension type="package" version="3.4" method="upgrade">
+<extension type="package" version="3.5" method="upgrade">
 	<name>French_fr-FR</name>
 	<packagename>fr-FR</packagename>
-	<version>3.4.7.1</version>
-	<creationDate>22/10/2015</creationDate>
+	<version>3.5.0.1</version>
+	<creationDate>09/03/2016</creationDate>
 	<author>French translation team : joomla.fr</author>
 	<authorEmail>traduction@joomla.fr</authorEmail>
 	<authorUrl>http://joomla.fr</authorUrl>
-	<copyright>Copyright (C) 2005 - 2015 Joomla.fr and Open Source Matters, Inc. All rights reserved.</copyright>
+	<copyright>Copyright (C) 2005 - 2016 Joomla.fr and Open Source Matters, Inc. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<url></url>
 	<packager></packager>
 	<packagerurl></packagerurl>
 	<description><![CDATA[<div style="text-align:left;">
-
-<h3>Joomla! 3.4.7 Full French (fr-FR) Language Package - Version 3.4.7.1</h3>
-
-<h3>Paquet de langue Joomla! 3.4.7 français (fr-FR) complet - Version 3.4.7.1</h3>
-
+<h3>Joomla! 3.5.0 Full French (fr-FR) Language Package - Version 3.5.0.1</h3>
+<h3>Paquet de langue Joomla! 3.5.0 français (fr-FR) complet - Version 3.5.0.1</h3>
 </div>]]></description>
 	<files>
 		<file type="language" client="site" id="fr-FR">site_fr-FR.zip</file>

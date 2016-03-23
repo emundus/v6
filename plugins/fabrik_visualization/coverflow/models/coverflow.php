@@ -4,12 +4,14 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.coverflow
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
 
 jimport('joomla.application.component.model');
 
@@ -22,7 +24,6 @@ require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
  * @subpackage  Fabrik.visualization.coverflow
  * @since       3.0
  */
-
 class FabrikModelCoverflow extends FabrikFEModelVisualization
 {
 	/**
@@ -34,28 +35,23 @@ class FabrikModelCoverflow extends FabrikFEModelVisualization
 
 	public function render()
 	{
-		$app = JFactory::getApplication();
 		$params = $this->getParams();
-		$config = JFactory::getConfig();
 		$document = JFactory::getDocument();
-		$w = new FabrikWorker;
-
 		$document->addScript("http://api.simile-widgets.org/runway/1.0/runway-api.js");
 		$c = 0;
 		$images = (array) $params->get('coverflow_image');
 		$titles = (array) $params->get('coverflow_title');
 		$subtitles = (array) $params->get('coverflow_subtitle');
 
-		$config = JFactory::getConfig();
-		$listids = (array) $params->get('coverflow_table');
-		$eventdata = array();
+		$listIds = (array) $params->get('coverflow_table');
+		$eventData = array();
 
-		foreach ($listids as $listid)
+		foreach ($listIds as $listId)
 		{
 			$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
-			$listModel->setId($listid);
+			$listModel->setId($listId);
 			$list = $listModel->getTable();
-			$nav = $listModel->getPagination(0, 0, 0);
+			$listModel->getPagination(0, 0, 0);
 			$image = $images[$c];
 			$title = $titles[$c];
 			$subtitle = $subtitles[$c];
@@ -65,8 +61,6 @@ class FabrikModelCoverflow extends FabrikFEModelVisualization
 			{
 				$elements = $listModel->getElements();
 				$imageElement = FArrayHelper::getValue($elements, FabrikString::safeColName($image));
-				$action = $app->isAdmin() ? "task" : "view";
-				$nextview = $listModel->canEdit() ? "form" : "details";
 
 				foreach ($data as $group)
 				{
@@ -82,8 +76,8 @@ class FabrikModelCoverflow extends FabrikFEModelVisualization
 								{
 									case 'FabrikModelFabrikImage':
 										$rootFolder = $imageElement->getParams()->get('selectImage_root_folder');
-										$rootFolder = JString::ltrim($rootFolder, '/');
-										$rootFolder = JString::rtrim($rootFolder, '/');
+										$rootFolder = String::ltrim($rootFolder, '/');
+										$rootFolder = String::rtrim($rootFolder, '/');
 										$event->image = COM_FABRIK_LIVESITE . 'images/stories/' . $rootFolder . '/' . $row->{$image . '_raw'};
 										break;
 									default:
@@ -98,7 +92,7 @@ class FabrikModelCoverflow extends FabrikFEModelVisualization
 
 							$event->title = $title === '' ? '' : (string) strip_tags($row->$title);
 							$event->subtitle = $subtitle === '' ? '' : (string) strip_tags($row->$subtitle);
-							$eventdata[] = $event;
+							$eventData[] = $event;
 						}
 					}
 				}
@@ -107,7 +101,7 @@ class FabrikModelCoverflow extends FabrikFEModelVisualization
 			$c++;
 		}
 
-		$json = json_encode($eventdata);
+		$json = json_encode($eventData);
 		$str = "var coverflow = new FbVisCoverflow($json);";
 		$srcs = FabrikHelperHTML::framework();
 		$srcs[] = $this->srcBase . 'coverflow/coverflow.js';
@@ -119,7 +113,6 @@ class FabrikModelCoverflow extends FabrikFEModelVisualization
 	 *
 	 * @return  void
 	 */
-
 	protected function setListIds()
 	{
 		if (!isset($this->listids))

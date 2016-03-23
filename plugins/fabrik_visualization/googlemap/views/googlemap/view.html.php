@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.googlemap
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -38,7 +38,6 @@ class FabrikViewGooglemap extends JViewLegacy
 		$j3 = FabrikWorker::j3();
 		$srcs = FabrikHelperHTML::framework();
 		FabrikHelperHTML::slimbox();
-		$document = JFactory::getDocument();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$model = $this->getModel();
 		$model->setId($input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0))));
@@ -61,11 +60,10 @@ class FabrikViewGooglemap extends JViewLegacy
 		$srcs[] = 'media/com_fabrik/js/list-plugin.js';
 		$srcs[] = 'media/com_fabrik/js/listfilter.js';
 
-		$uri = JURI::getInstance();
-
 		if ($params->get('fb_gm_center') == 'userslocation')
 		{
-			$srcs[] = 'components/com_fabrik/libs/geo-location/geo.js';
+			$ext = FabrikHelperHTML::isDebug() ? '.js' : '-min.js';
+			FabrikHelperHTML::script('media/com_fabrik/js/lib/geo-location/geo' . $ext);
 		}
 
 		$model->getPluginJsClasses($srcs);
@@ -109,7 +107,7 @@ class FabrikViewGooglemap extends JViewLegacy
 			$template = null;
 		}
 
-		// Assign plugin js to viz so we can then run clearFilters() 
+		// Assign plugin js to viz so we can then run clearFilters()
 		$aObjs = $model->getPluginJsObjects();
 
 		if (!empty($aObjs))

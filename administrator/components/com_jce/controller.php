@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -170,8 +170,7 @@ class WFController extends WFControllerBase {
         $params = new WFParameter($component->params);
 
         $theme = $params->get('preferences.theme', 'jce');
-        $site_path = JPATH_COMPONENT_SITE . '/editor/libraries/css';
-        $admin_path = JPATH_COMPONENT_ADMINISTRATOR . '/media/css';
+        $site_path = JPATH_SITE . '/component/com_jce/editor/libraries/css';
 
         // Load styles
         $styles = array();
@@ -311,10 +310,12 @@ class WFController extends WFControllerBase {
         $input = (array) $input;
 
         foreach ($input as $k => $v) {
-            if (is_array($v)) {
-                $input[$k] = $this->cleanInput($v, $method);
-            } else {
-                $input[$k] = $filter->clean($v, $method);
+            if (!empty($v)) {
+                if (is_array($v)) {
+                    $input[$k] = $this->cleanInput($v, $method);
+                } else {
+                    $input[$k] = $filter->clean($v, $method);
+                }
             }
         }
 

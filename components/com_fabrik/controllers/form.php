@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -21,7 +21,6 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik
  * @since       1.5
  */
-
 class FabrikControllerForm extends JControllerLegacy
 {
 	/**
@@ -39,17 +38,21 @@ class FabrikControllerForm extends JControllerLegacy
 	public $cacheId = 0;
 
 	/**
+	 * @var boolean
+	 */
+	protected $baseRedirect = false;
+
+	/**
 	 * Magic method to convert the object to a string gracefully.
 	 *
 	 * $$$ hugh - added 08/05/2012.  No idea what's going on, but I had to add this to stop
-	 * the classname 'FabrikControllerForm' being output at the bottom of the form, when rendered
+	 * the class name 'FabrikControllerForm' being output at the bottom of the form, when rendered
 	 * through a Fabrik form module.  See:
 	 *
 	 * https://github.com/Fabrik/fabrik/issues/398
 	 *
 	 * @return  string  empty string.
 	 */
-
 	public function __toString()
 	{
 		return '';
@@ -62,7 +65,6 @@ class FabrikControllerForm extends JControllerLegacy
 	 *
 	 * @return  null
 	 */
-
 	public function inlineedit()
 	{
 		$model = JModelLegacy::getInstance('FormInlineEdit', 'FabrikFEModel');
@@ -75,15 +77,13 @@ class FabrikControllerForm extends JControllerLegacy
 	 * @param   boolean  $cachable   If true, the view output will be cached - NOTE not actually used to control caching!!!
 	 * @param   array    $urlparams  An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
 	 *
-	 * @return  JController  A JController object to support chaining.
+	 * @return  JController|void  A JController object to support chaining.
 	 */
-
 	public function display($cachable = false, $urlparams = array())
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$session = JFactory::getSession();
 		$document = JFactory::getDocument();
 		$viewName = $input->get('view', 'form');
 		$modelName = $viewName;
@@ -99,6 +99,7 @@ class FabrikControllerForm extends JControllerLegacy
 		$view = $this->getView($viewName, $viewType);
 
 		// Push a model into the view (may have been set in content plugin already)
+		/** @var FabrikFEModelForm $model */
 		$model = !isset($this->_model) ? $this->getModel($modelName, 'FabrikFEModel') : $this->_model;
 		$model->isMambot = $this->isMambot;
 		$model->packageId = $app->input->getInt('packageId');
@@ -152,10 +153,10 @@ class FabrikControllerForm extends JControllerLegacy
 		{
 			$uri = JURI::getInstance();
 			$uri = $uri->toString(array('path', 'query'));
-			$cacheid = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
+			$cacheId = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
 			$cache = JFactory::getCache('com_' . $package, 'view');
 			ob_start();
-			$cache->get($view, 'display', $cacheid);
+			$cache->get($view, 'display', $cacheId);
 			$contents = ob_get_contents();
 			ob_end_clean();
 
@@ -175,14 +176,12 @@ class FabrikControllerForm extends JControllerLegacy
 	 *
 	 * @return  null
 	 */
-
 	public function process()
 	{
 		$profiler = JProfiler::getInstance('Application');
 		JDEBUG ? $profiler->mark('controller process: start') : null;
 
 		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
 
 		if ($input->get('format', '') == 'raw')
@@ -193,6 +192,7 @@ class FabrikControllerForm extends JControllerLegacy
 		$viewName = $input->get('view', 'form');
 		$view = $this->getView($viewName, JFactory::getDocument()->getType());
 
+		/** @var FabrikFEModelForm $model */
 		if ($model = $this->getModel('form', 'FabrikFEModel'))
 		{
 			$view->setModel($model, true);
@@ -201,7 +201,6 @@ class FabrikControllerForm extends JControllerLegacy
 		$model->setId($input->getInt('formid', 0));
 		$model->packageId = $input->getInt('packageId');
 		$this->isMambot = $input->get('isMambot', 0);
-		$form = $model->getForm();
 		$model->rowId = $input->get('rowid', '', 'string');
 
 		/**
@@ -240,7 +239,7 @@ class FabrikControllerForm extends JControllerLegacy
 		catch (Exception $e)
 		{
 			$model->errors['process_error'] = true;
-			JError::raiseWarning(500, $e->getMessage());
+			$app->enqueueMessage($e->getMessage(), 'error');
 		}
 
 		if ($input->getInt('elid', 0) !== 0)
@@ -359,8 +358,8 @@ class FabrikControllerForm extends JControllerLegacy
 	/**
 	 * Handle the view error
 	 *
-	 * @param   JView   $view   View
-	 * @param   JModel  $model  Form Model
+	 * @param   JViewLegacy        $view   View
+	 * @param   FabrikFEModelForm  $model  Form Model
 	 *
 	 * @since   3.1b
 	 *
@@ -369,7 +368,6 @@ class FabrikControllerForm extends JControllerLegacy
 	protected function handleError($view, $model)
 	{
 		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
 		$validated = false;
 
@@ -379,7 +377,7 @@ class FabrikControllerForm extends JControllerLegacy
 			if ($input->getInt('elid', 0) !== 0)
 			{
 				// Inline edit
-				$eMsgs = array();
+				$messages = array();
 				$errs = $model->getErrors();
 
 				// Only raise errors for fields that are present in the inline edit plugin
@@ -390,14 +388,14 @@ class FabrikControllerForm extends JControllerLegacy
 					if (in_array($errorKey, $toValidate) && count($e[0]) > 0)
 					{
 						array_walk_recursive($e, array('FabrikString', 'forHtml'));
-						$eMsgs[] = count($e[0]) === 1 ? '<li>' . $e[0][0] . '</li>' : '<ul><li>' . implode('</li><li>', $e[0]) . '</ul>';
+						$messages[] = count($e[0]) === 1 ? '<li>' . $e[0][0] . '</li>' : '<ul><li>' . implode('</li><li>', $e[0]) . '</ul>';
 					}
 				}
 
-				if (!empty($eMsgs))
+				if (!empty($messages))
 				{
-					$eMsgs = '<ul>' . implode('</li><li>', $eMsgs) . '</ul>';
-					header('HTTP/1.1 500 ' . FText::_('COM_FABRIK_FAILED_VALIDATION') . $eMsgs);
+					$messages = '<ul>' . implode('</li><li>', $messages) . '</ul>';
+					header('HTTP/1.1 500 ' . FText::_('COM_FABRIK_FAILED_VALIDATION') . $messages);
 					jexit();
 				}
 				else
@@ -456,7 +454,6 @@ class FabrikControllerForm extends JControllerLegacy
 	 *
 	 * @return  string  redirect message
 	 */
-
 	protected function getRedirectMessage($model)
 	{
 		return $model->getRedirectMessage();
@@ -465,8 +462,8 @@ class FabrikControllerForm extends JControllerLegacy
 	/**
 	 * Get redirect URL
 	 *
-	 * @param   object  $model       form model
-	 * @param   bool    $incSession  set url in session?
+	 * @param   FabrikFEModelForm  $model       Form model
+	 * @param   bool               $incSession  Set url in session?
 	 *
 	 * @since 3.0
 	 *
@@ -474,7 +471,6 @@ class FabrikControllerForm extends JControllerLegacy
 	 *
 	 * @return   string  redirect url
 	 */
-
 	protected function getRedirectURL($model, $incSession = true)
 	{
 		$res = $model->getRedirectURL($incSession, $this->isMambot);
@@ -488,11 +484,12 @@ class FabrikControllerForm extends JControllerLegacy
 	 *
 	 * @return  null
 	 */
-
 	public function ajax_validate()
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
+
+		/** @var FabrikFEModelForm $model */
 		$model = $this->getModel('form', 'FabrikFEModel');
 		$model->setId($input->getInt('formid', 0));
 		$model->getForm();
@@ -510,7 +507,6 @@ class FabrikControllerForm extends JControllerLegacy
 	 *
 	 * @return  null
 	 */
-
 	public function savepage()
 	{
 		$app = JFactory::getApplication();
@@ -527,7 +523,6 @@ class FabrikControllerForm extends JControllerLegacy
 	 *
 	 * @return  null
 	 */
-
 	public function removeSession()
 	{
 		$app = JFactory::getApplication();
@@ -544,7 +539,6 @@ class FabrikControllerForm extends JControllerLegacy
 	 *
 	 * @return  null
 	 */
-
 	public function paginate()
 	{
 		$app = JFactory::getApplication();
@@ -560,7 +554,6 @@ class FabrikControllerForm extends JControllerLegacy
 	 *
 	 * @return  null
 	 */
-
 	public function delete()
 	{
 		// Check for request forgeries
@@ -571,37 +564,35 @@ class FabrikControllerForm extends JControllerLegacy
 		$model = $this->getModel('list', 'FabrikFEModel');
 		$ids = array($input->get('rowid', 0));
 
-		$listid = $input->getInt('listid');
-		$limitstart = $input->getInt('limitstart' . $listid);
-		$length = $input->getInt('limit' . $listid);
+		$listId = $input->getInt('listid');
+		$limitStart = $input->getInt('limitstart' . $listId);
+		$length = $input->getInt('limit' . $listId);
 
-		$oldtotal = $model->getTotalRecords();
-		$model->setId($listid);
+		$oldTotal = $model->getTotalRecords();
+		$model->setId($listId);
 		$ok = $model->deleteRows($ids);
 
-		$total = $oldtotal - count($ids);
+		$total = $oldTotal - count($ids);
 
-		$ref = $input->get('fabrik_referrer', 'index.php?option=com_' . $package . '&view=list&listid=' . $listid, 'string');
+		$ref = $input->get('fabrik_referrer', 'index.php?option=com_' . $package . '&view=list&listid=' . $listId, 'string');
 
-		if ($total >= $limitstart)
+		if ($total >= $limitStart)
 		{
-			$newlimitstart = $limitstart - $length;
+			$newLimitStart = $limitStart - $length;
 
-			if ($newlimitstart < 0)
+			if ($newLimitStart < 0)
 			{
-				$newlimitstart = 0;
+				$newLimitStart = 0;
 			}
 
-			$ref = str_replace("limitstart$listid=$limitstart", "limitstart$listid=$newlimitstart", $ref);
-			$app = JFactory::getApplication();
+			$ref = str_replace("limitstart$listId=$limitStart", "limitstart$listId=$newLimitStart", $ref);
 			$context = 'com_' . $package . '.list.' . $model->getRenderContext() . '.';
-			$app->setUserState($context . 'limitstart', $newlimitstart);
+			$app->setUserState($context . 'limitstart', $newLimitStart);
 		}
 
 		if ($input->get('format') == 'raw')
 		{
-			$input->set('view', 'list');
-			$this->display();
+			$app->redirect('index.php?option=com_fabrik&view=list&listid=' . $listId . '&format=raw');
 		}
 		else
 		{

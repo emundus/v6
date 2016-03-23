@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: gantryjformfieldaccessor.class.php 6615 2013-01-18 22:32:08Z btowles $
+ * @version   $Id: gantryjformfieldaccessor.class.php 30069 2016-03-08 17:45:33Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -19,7 +19,7 @@ class GantryJFormFieldAccessor extends JFormField
 	{
 		$vars = get_object_vars($field);
 		foreach ($vars as $var_name => $var_value) {
-			$this->$var_name = $var_value;
+			$this->{$var_name} = $var_value;
 		}
 	}
 

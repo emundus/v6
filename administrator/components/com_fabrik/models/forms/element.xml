@@ -8,6 +8,12 @@
 			type="hidden"
 			filter="unset" />
 
+		<field name="label"
+		       type="textorwysiwyg"
+		       description="COM_FABRIK_FIELD_ELEMENT_LABEL_DESC"
+		       label="COM_FABRIK_FIELD_ELEMENT_LABEL_LABEL"
+		       size="35" />
+
 		<field name="name"
 			type="text"
 			description="COM_FABRIK_FIELD_ELEMENT_NAME_DESC"
@@ -15,15 +21,10 @@
 			required="true"
 			size="35" />
 
-		<field name="label"
-			type="textorwysiwyg"
-			description="COM_FABRIK_FIELD_ELEMENT_LABEL_DESC"
-			label="COM_FABRIK_FIELD_ELEMENT_LABEL_LABEL"
-			size="35" />
-
 		<field name="plugin"
 			type="pluginlist"
 			plugin="fabrik_element"
+			   default="field"
 			description="COM_FABRIK_FIELD_ELEMENT_PLUGIN_DESC"
 			label="COM_FABRIK_FIELD_ELEMENT_PLUGIN_LABEL"
 			required="true" />
@@ -209,7 +210,7 @@
 				default="input-medium"
 				description="COM_FABRIK_FIELD_FILTER_CLASS_DESC"
 				label="COM_FABRIK_FIELD_FILTER_CLASS_LABEL" />
-				
+
 			<field name="filter_responsive_class"
 				type="list"
 				default=""
@@ -248,6 +249,15 @@
 				description="COM_FABRIK_FIELD_CUSTOM_LINK_DESC"
 				label="COM_FABRIK_FIELD_CUSTOM_LINK_LABEL"
 				rows="1"/>
+
+			<field name="custom_link_target"
+				type="list"
+				default=""
+				description="COM_FABRIK_FIELD_CUSTOM_LINK_TARGET_DESC"
+				label="COM_FABRIK_FIELD_CUSTOM_LINK_TARGET_LABEL">
+					<option value="">COM_FABRIK_FIELD_CUSTOM_LINK_TARGET_DEFAULT</option>
+					<option value="_blank">COM_FABRIK_FIELD_CUSTOM_LINK_TARGET_BLANK</option>
+			</field>
 
 			<field name="custom_link_indetails"
 				type="radio"
@@ -605,7 +615,7 @@
 				<field name="labelindetails"
 					type="radio"
 					class="btn-group"
-					default="1"
+					default="0"
 					description="COM_FABRIK_FIELD_TIPS_IN_DETAILED_VIEW_DESC"
 					label="COM_FABRIK_FIELD_TIPS_IN_DETAILED_VIEW_LABEL">
 						<option value="0">JNO</option>
@@ -638,6 +648,11 @@
 						default="1"
 						label="COM_FABRIK_ELEMENT_EDIT_ACCESS_LABEL"
 						description="COM_FABRIK_ELEMENT_EDIT_ACCESS_DESC" />
+
+					<field name="edit_access_user"
+						type="listfields"
+						label="COM_FABRIK_OR_USE_VALUE_LABEL"
+						description="COM_FABRIK_EDIT_OR_USE_VALUE_DESC" />
 
 					<field name="view_access"
 						type="accesslevel"

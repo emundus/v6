@@ -4,12 +4,16 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
+use \Joomla\Registry\Registry;
+use Joomla\Utilities\ArrayHelper;
 
 jimport('joomla.application.component.model');
 
@@ -21,7 +25,6 @@ require_once JPATH_SITE . '/components/com_fabrik/models/plugin.php';
  * @package  Fabrik
  * @since    3.0
  */
-
 class PlgFabrik_Validationrule extends FabrikPlugin
 {
 	/**
@@ -34,7 +37,7 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 	/**
 	 * Validation rule's element model
 	 *
-	 * @var JModel
+	 * @var PlgFabrik_Element
 	 */
 	public $elementModel = null;
 
@@ -53,7 +56,6 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 	 *
 	 * @return  bool  true if validation passes, false if fails
 	 */
-
 	public function validate($data, $repeatCounter)
 	{
 		return true;
@@ -68,7 +70,6 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 	 *
 	 * @return  string	original or replaced data
 	 */
-
 	public function replace($data, $repeatCounter)
 	{
 		return $data;
@@ -83,7 +84,6 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 	 *
 	 * @return  bool	apply validation
 	 */
-
 	public function shouldValidate($data, $repeatCounter = 0)
 	{
 		if (!$this->shouldValidateIn())
@@ -105,8 +105,32 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 		}
 
 		$w = new FabrikWorker;
-		$condition = trim($w->parseMessageForPlaceHolder($condition));
-		$formModel = $this->elementModel->getFormModel();
+		$groupModel = $this->elementModel->getGroupModel();
+		$inRepeat = $groupModel->canRepeat();
+
+		if ($inRepeat)
+		{
+			// Replace repeat data array with current repeatCounter value to ensure placeholders work.
+			// E.g. return {'table___field}' == '1';
+			$f = JFilterInput::getInstance();
+			$post = $f->clean($_REQUEST, 'array');
+			$groupElements = $groupModel->getMyElements();
+
+			foreach ($groupElements as $element)
+			{
+				$name = $element->getFullName(true, false);
+				$elementData = ArrayHelper::getValue($post, $name, array());
+				$post[$name] = ArrayHelper::getValue($elementData, $repeatCounter, '');
+				$rawData = ArrayHelper::getValue($post, $name . '_raw', array());
+				$post[$name . '_raw'] = ArrayHelper::getValue($rawData, $repeatCounter, '');
+			}
+		}
+		else
+		{
+			$post = null;
+		}
+
+		$condition = trim($w->parseMessageForPlaceHolder($condition, $post));
 		$res = @eval($condition);
 
 		if (is_null($res))
@@ -125,12 +149,9 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 	protected function shouldValidateIn()
 	{
 		$params = $this->getParams();
-		$name = $this->elementModel->getFullName();
-
-		$app = JFactory::getApplication();
 		$in = $params->get('validate_in', 'both');
 
-		$admin = $app->isAdmin();
+		$admin = $this->app->isAdmin();
 
 		if ($in === 'both')
 		{
@@ -158,21 +179,20 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 	protected function shouldValidateOn()
 	{
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
 		$on = $params->get('validation_on', 'both');
-		$rowid = $this->elementModel->getFormModel()->getRowId();
+		$rowId = $this->elementModel->getFormModel()->getRowId();
 
 		if ($on === 'both')
 		{
 			return true;
 		}
 
-		if ($rowid === '' && $on === 'new')
+		if ($rowId === '' && $on === 'new')
 		{
 			return true;
 		}
 
-		if ($rowid !== '' && $on === 'edit')
+		if ($rowId !== '' && $on === 'edit')
 		{
 			return true;
 		}
@@ -185,7 +205,6 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 	 *
 	 * @return  string
 	 */
-
 	public function getMessage()
 	{
 		if (isset($this->errorMsg))
@@ -215,7 +234,6 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 	 *
 	 * @return  void
 	 */
-
 	public function setMessage($msg)
 	{
 		$this->errorMsg = $msg;
@@ -232,11 +250,10 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 	 *
 	 * @return  string
 	 */
-
 	public function getIcon($c = 0, $tmpl = '')
 	{
 		$name = $this->elementModel->validator->getIcon($c);
-		$i = FabrikHelperHTML::image($name, 'form', $tmpl, array('class' => $this->pluginName));
+		FabrikHelperHTML::image($name, 'form', $tmpl, array('class' => $this->pluginName));
 	}
 
 	/**
@@ -246,7 +263,6 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 	 *
 	 * @return  string
 	 */
-
 	public function iconImage()
 	{
 		$plugin = JPluginHelper::getPlugin('fabrik_validationrule', $this->pluginName);
@@ -269,7 +285,7 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 		}
 		*/
 
-		$params = new JRegistry($plugin->params);
+		$params = new Registry($plugin->params);
 
 		return $params->get('icon', 'star');
 	}
@@ -282,7 +298,6 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 	 *
 	 * @return  string
 	 */
-
 	public function getHoverText($c = null, $tmpl = '')
 	{
 		$name = $this->elementModel->validator->getIcon($c);
@@ -296,7 +311,6 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 	 *
 	 * @return  string	label
 	 */
-
 	protected function getLabel()
 	{
 		$params = $this->getParams();
@@ -309,11 +323,11 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 
 		if ($this->allowEmpty())
 		{
-			return FText::_('PLG_VALIDATIONRULE_' . JString::strtoupper($this->pluginName) . '_ALLOWEMPTY_LABEL');
+			return FText::_('PLG_VALIDATIONRULE_' . String::strtoupper($this->pluginName) . '_ALLOWEMPTY_LABEL');
 		}
 		else
 		{
-			return FText::_('PLG_VALIDATIONRULE_' . JString::strtoupper($this->pluginName) . '_LABEL');
+			return FText::_('PLG_VALIDATIONRULE_' . String::strtoupper($this->pluginName) . '_LABEL');
 		}
 	}
 
@@ -323,9 +337,15 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 	 *
 	 * @return  bool
 	 */
-
 	protected function allowEmpty()
 	{
 		return false;
+	}
+
+	/**
+	 * Attach js validation code - runs in addition to the main validation code.
+	 */
+	public function js()
+	{
 	}
 }

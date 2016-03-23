@@ -4,13 +4,15 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.0
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\Utilities\ArrayHelper;
 
 require_once 'fabmodeladmin.php';
 
@@ -21,7 +23,6 @@ require_once 'fabmodeladmin.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikAdminModelConnection extends FabModelAdmin
 {
 	/**
@@ -40,7 +41,6 @@ class FabrikAdminModelConnection extends FabModelAdmin
 	 *
 	 * @return  JTable  A database object
 	 */
-
 	public function getTable($type = 'Connection', $prefix = 'FabrikTable', $config = array())
 	{
 		/**
@@ -61,7 +61,6 @@ class FabrikAdminModelConnection extends FabModelAdmin
 	 *
 	 * @return  mixed	A JForm object on success, false on failure
 	 */
-
 	public function getForm($data = array(), $loadData = true)
 	{
 		// Get the form.
@@ -80,11 +79,10 @@ class FabrikAdminModelConnection extends FabModelAdmin
 	 *
 	 * @return  mixed	The data for the form.
 	 */
-
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = JFactory::getApplication()->getUserState('com_fabrik.edit.connection.data', array());
+		$data = $this->app->getUserState('com_fabrik.edit.connection.data', array());
 
 		if (empty($data))
 		{
@@ -101,7 +99,6 @@ class FabrikAdminModelConnection extends FabModelAdmin
 	 *
 	 * @return  boolean	 True on success.
 	 */
-
 	public function setDefault($id)
 	{
 		$db = FabrikWorker::getDbo(true);
@@ -124,23 +121,18 @@ class FabrikAdminModelConnection extends FabModelAdmin
 	 *
 	 * @return  null
 	 */
-
 	public function checkDefault(&$item)
 	{
-		$table = $this->getTable();
-		$app = JFactory::getApplication();
-
 		if ($item->id == 1)
 		{
-			$app->enqueueMessage(FText::_('COM_FABRIK_ORIGINAL_CONNECTION'));
+			$this->app->enqueueMessage(FText::_('COM_FABRIK_ORIGINAL_CONNECTION'));
 
 			if (!$this->matchesDefault($item))
 			{
-				$config = JFactory::getConfig();
-				$item->host = $config->get('host');
-				$item->user = $config->get('user');
-				$item->password = $config->get('password');
-				$item->database = $config->get('db');
+				$item->host = $this->config->get('host');
+				$item->user = $this->config->get('user');
+				$item->password = $this->config->get('password');
+				$item->database = $this->config->get('db');
 				JError::raiseWarning(E_WARNING, FText::_('COM_FABRIK_YOU_MUST_SAVE_THIS_CNN'));
 			}
 		}
@@ -153,10 +145,9 @@ class FabrikAdminModelConnection extends FabModelAdmin
 	 *
 	 * @return  bool  matches or not
 	 */
-
 	protected function matchesDefault($item)
 	{
-		$config = JFactory::getConfig();
+		$config = $this->config;
 		$crypt = FabrikWorker::getCrypt();
 		$pwMatch = $config->get('password') == $item->password || $crypt->encrypt($config->get('password')) == $item->password;
 
@@ -172,10 +163,8 @@ class FabrikAdminModelConnection extends FabModelAdmin
 	 *
 	 * @return  boolean  True on success, False on error.
 	 */
-
 	public function save($data)
 	{
-		$session = JFactory::getSession();
 		$model = JModelLegacy::getInstance('Connection', 'FabrikFEModel');
 		$model->setId($data['id']);
 		$crypt = FabrikWorker::getCrypt();
@@ -188,14 +177,14 @@ class FabrikAdminModelConnection extends FabModelAdmin
 		// $$$ Felikat - Not sure what you were testing but it broke stuff!
 		// unset($data['password']);
 
-		$options = $model->getConnectionOptions(JArrayHelper::toObject($data));
+		$options = $model->getConnectionOptions(ArrayHelper::toObject($data));
 		$db = $model->getDriverInstance($options);
 		$key = 'fabrik.connection.' . $data['id'];
 		/**
 		 * erm yeah will remove the session connection for the admin user, but not any other user whose already using the site
 		 * would need to clear out the session table i think - but that would then log out all users.
 		 */
-		$session->clear($key);
+		$this->session->clear($key);
 
 		return parent::save($data);
 	}
@@ -212,7 +201,6 @@ class FabrikAdminModelConnection extends FabModelAdmin
 	 *
 	 * @return  mixed  Array of filtered data if valid, false otherwise.
 	 */
-
 	public function validate($form, $data, $group = null)
 	{
 		if ($data['password'] !== $data['passwordConf'])

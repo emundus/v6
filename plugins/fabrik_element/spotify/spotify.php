@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.spotify
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -22,7 +22,6 @@ require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
  * @subpackage  Fabrik.element.spotify
  * @since       3.0
  */
-
 class PlgFabrik_ElementSpotify extends PlgFabrik_Element
 {
 	protected $pluginName = 'spotify';
@@ -30,13 +29,13 @@ class PlgFabrik_ElementSpotify extends PlgFabrik_Element
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string  $data      Elements data
-	 * @param   object  &$thisRow  All the data in the lists current row
+	 * @param   string    $data      Elements data
+	 * @param   stdClass  &$thisRow  All the data in the lists current row
+	 * @param   array     $opts      Rendering options
 	 *
 	 * @return  string	formatted value
 	 */
-
-	public function renderListData($data, stdClass &$thisRow)
+	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
 		return $this->constructPlayer($data, 'list');
 	}
@@ -49,11 +48,9 @@ class PlgFabrik_ElementSpotify extends PlgFabrik_Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$params = $this->getParams();
 		$element = $this->getElement();
 		$data = $this->getFormModel()->data;
@@ -64,7 +61,7 @@ class PlgFabrik_ElementSpotify extends PlgFabrik_Element
 			$name = $this->getHTMLName($repeatCounter);
 			$id = $this->getHTMLId($repeatCounter);
 			$size = $params->get('width');
-			$maxlength = 255;
+			$maxLength = 255;
 			$bits = array();
 			$type = "text";
 
@@ -86,17 +83,13 @@ class PlgFabrik_ElementSpotify extends PlgFabrik_Element
 			// Stop "'s from breaking the content out of the field.
 			$bits['value'] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 			$bits['size'] = $size;
-			$bits['maxlength'] = $maxlength;
-			$str = "<input ";
+			$bits['maxlength'] = $maxLength;
 
-			foreach ($bits as $key => $val)
-			{
-				$str .= $key . ' = "' . $val . '" ';
-			}
+			$layout = $this->getLayout('form');
+			$layoutData = new stdClass;
+			$layoutData->attributes = $bits;
 
-			$str .= " />\n";
-
-			return $str;
+			return $layout->render($layoutData);
 		}
 		else
 		{
@@ -112,7 +105,6 @@ class PlgFabrik_ElementSpotify extends PlgFabrik_Element
 	 *
 	 * @return string
 	 */
-
 	private function constructPlayer($value, $mode = 'form')
 	{
 		$params = $this->getParams();
@@ -133,9 +125,11 @@ class PlgFabrik_ElementSpotify extends PlgFabrik_Element
 		$opts[] = 'width="' . $width . '"';
 		$opts[] = 'height="' . $height . '"';
 
-		$player = '<iframe ' . implode(' ', $opts) . ' frameborder="0" allowtransparency="true"></iframe>';
+		$layout = $this->getLayout('player');
+		$layoutData = new stdClass;
+		$layoutData->attributes = $opts;
 
-		return $player;
+		return $layout->render($layoutData);
 	}
 
 	/**
@@ -145,7 +139,6 @@ class PlgFabrik_ElementSpotify extends PlgFabrik_Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
@@ -153,5 +146,4 @@ class PlgFabrik_ElementSpotify extends PlgFabrik_Element
 
 		return array('FbSpotify', $id, $opts);
 	}
-
 }

@@ -2,12 +2,15 @@
 /**
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.form.article
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -19,28 +22,31 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.article
  * @since       3.0
  */
-
 class PlgFabrik_FormArticle extends PlgFabrik_Form
 {
 	/**
 	 * Images
+	 *
 	 * @var object
 	 */
 	public $images = null;
 
 	/**
-	 * Create articles - needed to be before store as we are altering the metastore element's data
+	 * Create articles - needed to be before store as we are altering the meta-store element's data
 	 *
-	 * @return	bool
+	 * @return    bool
 	 */
-
 	public function onAfterProcess()
 	{
-		$formModel = $this->getModel();
-		$params = $this->getParams();
+		/** @var FabrikFEModelForm $formModel */
+		$formModel  = $this->getModel();
+		$params     = $this->getParams();
 		$this->data = $this->getProcessData();
 
-		if (!$this->shouldProcess('article_conditon', null))
+		// We need this for $formModel->getElementData() to work
+		$formModel->formData = $this->data;
+
+		if (!$this->shouldProcess('article_conditon', $this->data, $params))
 		{
 			return;
 		}
@@ -49,7 +55,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 
 		if ($catElement = $formModel->getElement($params->get('categories_element'), true))
 		{
-			$cat = $catElement->getFullName() . '_raw';
+			$cat        = $catElement->getFullName() . '_raw';
 			$categories = (array) FArrayHelper::getValue($this->data, $cat);
 			$this->mapCategoryChanges($categories, $store);
 		}
@@ -60,8 +66,8 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 
 		foreach ($categories as $category)
 		{
-			$id = isset($store->$category) ? $store->$category : null;
-			$item = $this->saveAritcle($id, $category);
+			$id               = isset($store->$category) ? $store->$category : null;
+			$item             = $this->saveArticle($id, $category);
 			$store->$category = $item->id;
 		}
 
@@ -75,30 +81,34 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	 * property to $store with the existing article id. Not tested if say for example the category element
 	 * is a multi-select
 	 *
-	 * @param   array   $categories  Categories selected by the user
-	 * @param   object  &$store      Previously stored categoryid->articleid map
+	 * @param   array  $categories Categories selected by the user
+	 * @param   object &$store     Previously stored categoryid->articleid map
 	 *
 	 * @return  object  $store
 	 */
 	protected function mapCategoryChanges($categories, &$store)
 	{
-		$defaultAricleId = null;
+		$defaultArticleId = null;
 
 		if (!empty($categories))
 		{
-			foreach ($store as $catid => $articleId)
+			foreach ($store as $catId => $articleId)
 			{
-				if (!in_array($catid, $categories))
+				if (!in_array($catId, $categories))
 				{
 					// We've swapped categories for an existing article
-					$defaultAricleId = $articleId;
+					$defaultArticleId = $articleId;
 				}
 			}
+
 			foreach ($categories as $category)
 			{
 				if (!isset($store->$category))
 				{
-					$store->$category = $defaultAricleId;
+					if ($category !== '')
+					{
+						$store->$category = $defaultArticleId;
+					}
 				}
 			}
 		}
@@ -109,62 +119,67 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	/**
 	 * Save article
 	 *
-	 * @param   int  $id     Article Id
-	 * @param   int  $catid  Category Id
+	 * @param   int $id    Article Id
+	 * @param   int $catId Category Id
 	 *
 	 * @return JTable
 	 */
-	protected function saveAritcle($id, $catid)
+	protected function saveArticle($id, $catId)
 	{
 		$dispatcher = JEventDispatcher::getInstance();
 		// Include the content plugins for the on save events.
 		JPluginHelper::importPlugin('content');
 
-		$params = $this->getParams();
-		$user = JFactory::getUser();
-		$data = array('articletext' => $this->buildContent(), 'catid' => $catid, 'state' => 1, 'language' => '*');
-		$attribs = array('title' => '', 'publish_up' => '', 'publish_down' => '', 'featured' => '0', 'state' => '1', 'metadesc' => '', 'metakey' => '', 'tags' => '');
+		$params     = $this->getParams();
+		$data       = array('articletext' => $this->buildContent(), 'catid' => $catId, 'state' => 1, 'language' => '*');
+		$attributes = array(
+			'title' => '',
+			'publish_up' => '',
+			'publish_down' => '',
+			'featured' => '0',
+			'state' => '1',
+			'metadesc' => '',
+			'metakey' => '',
+			'tags' => ''
+		);
 
 		$data['images'] = json_encode($this->images());
 
 		$isNew = is_null($id) ? true : false;
-		
+
 		if ($isNew)
 		{
-			$data['created'] = JFactory::getDate()->toSql();
-			$attribs['created_by'] = $user->get('id');
+			$data['created']          = $this->date->toSql();
+			$attributes['created_by'] = $this->user->get('id');
 		}
 		else
 		{
-			$data['modified'] = JFactory::getDate()->toSql();
-			$data['modified_by'] = $user->get('id');
+			$data['modified']    = $this->date->toSql();
+			$data['modified_by'] = $this->user->get('id');
 		}
 
-		foreach ($attribs as $attrib => $default)
+		foreach ($attributes as $attribute => $default)
 		{
-			$elementId = (int) $params->get($attrib);
-			$data[$attrib] = $this->findElementData($elementId, $default);
+			$elementId        = (int) $params->get($attribute);
+			$data[$attribute] = $this->findElementData($elementId, $default);
 		}
 
 		$data['tags'] = (array) $data['tags'];
 
-
-		$this->generateNewTitle($id, $catid, $data);
+		$this->generateNewTitle($id, $catId, $data);
 
 		if (!$isNew)
 		{
-			$readmore = 'index.php?option=com_content&view=article&id=' . $id;
-			$data['articletext'] = str_replace('{readmore}', $readmore, $data['articletext']);
+			$readMore            = 'index.php?option=com_content&view=article&id=' . $id;
+			$data['articletext'] = str_replace('{readmore}', $readMore, $data['articletext']);
 		}
-
 
 		$item = JTable::getInstance('Content');
 		$item->load($id);
 		$item->bind($data);
 
-
 		// Trigger the onContentBeforeSave event.
-		$result = $dispatcher->trigger('onContentBeforeSave', array('com_content.article', $item, $isNew));
+		$dispatcher->trigger('onContentBeforeSave', array('com_content.article', $item, $isNew));
 
 		$item->store();
 
@@ -172,11 +187,10 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		 * Featured is handled by the admin content model, when you are saving in ADMIN
 		 * Otherwise we've had to hack over the admin featured() method into this plugin for the front end
 		 */
-		
-		$version = new JVersion;
+
 		JTable::addIncludePath(COM_FABRIK_BASE . 'administrator/components/com_content/tables');
 
-		if (JFactory::getApplication()->isAdmin())
+		if ($this->app->isAdmin())
 		{
 			JModelLegacy::addIncludePath(COM_FABRIK_BASE . 'administrator/components/com_content/models');
 			$articleModel = JModelLegacy::getInstance('Article', 'ContentModel');
@@ -188,13 +202,13 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		}
 
 		// Trigger the onContentAfterSave event.
-		$result = $dispatcher->trigger('onContentAfterSave', array('com_content.article', $item, $isNew));
+		$dispatcher->trigger('onContentAfterSave', array('com_content.article', $item, $isNew));
 
 		// New record - need to re-save with {readmore} replacement
 		if ($isNew && strstr($data['articletext'], '{readmore}'))
 		{
-			$readmore = 'index.php?option=com_content&view=article&id=' . $item->id;
-			$data['articletext'] = str_replace('{readmore}', $readmore, $data['articletext']);
+			$readMore            = 'index.php?option=com_content&view=article&id=' . $item->id;
+			$data['articletext'] = str_replace('{readmore}', $readMore, $data['articletext']);
 			$item->bind($data);
 			$item->store();
 		}
@@ -204,7 +218,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 			$cache = JFactory::getCache('com_content');
 			$cache->clean($id);
 		}
-		
+
 		return $item;
 	}
 
@@ -221,12 +235,13 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	{
 		// Sanitize the ids.
 		$pks = (array) $pks;
-		JArrayHelper::toInteger($pks);
-		$db = JFactory::getDbo();
+		ArrayHelper::toInteger($pks);
+		$db = $this->_db;
 
 		if (empty($pks))
 		{
 			$this->setError(JText::_('COM_CONTENT_NO_ITEM_SELECTED'));
+
 			return false;
 		}
 
@@ -235,7 +250,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		try
 		{
 			$query = $db->getQuery(true)
-				->update($db->quoteName('#__content'))
+				->update($db->qn('#__content'))
 				->set('featured = ' . (int) $value)
 				->where('id IN (' . implode(',', $pks) . ')');
 			$db->setQuery($query);
@@ -246,7 +261,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 				// Adjust the mapping table.
 				// Clear the existing features settings.
 				$query = $db->getQuery(true)
-					->delete($db->quoteName('#__content_frontpage'))
+					->delete($db->qn('#__content_frontpage'))
 					->where('content_id IN (' . implode(',', $pks) . ')');
 				$db->setQuery($query);
 				$db->execute();
@@ -261,32 +276,32 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 				//echo $query;
 				$db->setQuery($query);
 
-				$old_featured = $db->loadColumn();
+				$oldFeatured = $db->loadColumn();
 
 				// we diff the arrays to get a list of the articles that are newly featured
-				$new_featured = array_diff($pks, $old_featured);
+				$newFeatured = array_diff($pks, $oldFeatured);
 
 				// Featuring.
 				$tuples = array();
-				foreach ($new_featured as $pk)
+				foreach ($newFeatured as $pk)
 				{
 					$tuples[] = $pk . ', 0';
 				}
 				if (count($tuples))
 				{
 					$columns = array('content_id', 'ordering');
-					$query = $db->getQuery(true)
-						->insert($db->quoteName('#__content_frontpage'))
-						->columns($db->quoteName($columns))
+					$query   = $db->getQuery(true)
+						->insert($db->qn('#__content_frontpage'))
+						->columns($db->qn($columns))
 						->values($tuples);
 					$db->setQuery($query);
 					$db->execute();
 				}
 			}
-		}
-		catch (Exception $e)
+		} catch (Exception $e)
 		{
 			$this->setError($e->getMessage());
+
 			return false;
 		}
 
@@ -300,15 +315,16 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	/**
 	 * Get the element data from the Fabrik form
 	 *
-	 * @param   int     $elementId  Element id
-	 * @param   string  $default    Default value
+	 * @param   int    $elementId Element id
+	 * @param   string $default   Default value
 	 *
 	 * @return mixed
 	 */
 	protected function findElementData($elementId, $default = '')
 	{
+		/** @var FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
-		$value = '';
+		$value     = '';
 
 		if ($elementId === 0)
 		{
@@ -318,11 +334,22 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		if ($elementModel = $formModel->getElement($elementId, true))
 		{
 			$fullName = $elementModel->getFullName(true, false);
-			$value = $formModel->getElementData($fullName, false, $default, 0);
+			$value    = $formModel->getElementData($fullName, true, $default);
 
 			if (is_array($value) && count($value) === 1)
 			{
 				$value = array_shift($value);
+			}
+
+			// Dates need to have date element tz options applied
+			if (is_a($elementModel, 'PlgFabrik_ElementDate'))
+			{
+				if (is_array($value) && array_key_exists('date', $value))
+				{
+					$value = $value['date'];
+				}
+
+				$value = $elementModel->storeDatabaseFormat($value, array());
 			}
 		}
 
@@ -342,10 +369,12 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		}
 
 		$params = $this->getParams();
+
+		/** @var FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
-		$introImg = $params->get('image_intro', '');
-		$fullImg = $params->get('image_full', '');
-		$img = new stdClass;
+		$introImg  = $params->get('image_intro', '');
+		$fullImg   = $params->get('image_full', '');
+		$img       = new stdClass;
 
 		if ($introImg !== '')
 		{
@@ -354,17 +383,17 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 
 			if ($file !== '')
 			{
-				$img->image_intro = str_replace('\\', '/', $file);
-				$img->image_intro = FabrikString::ltrimword($img->image_intro, '/');
-				$img->float_intro = '';
-				$img->image_intro_alt = '';
+				$img->image_intro         = str_replace('\\', '/', $file);
+				$img->image_intro         = FabrikString::ltrimword($img->image_intro, '/');
+				$img->float_intro         = '';
+				$img->image_intro_alt     = '';
 				$img->image_intro_caption = '';
 
 				$elementModel = $formModel->getElement($introImg, true);
 
 				if (get_class($elementModel) === 'PlgFabrik_ElementFileupload')
 				{
-					$name = $elementModel->getFullName(true, false);
+					$name       = $elementModel->getFullName(true, false);
 					$img->$name = $placeholder;
 				}
 			}
@@ -377,17 +406,17 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 
 			if ($file !== '')
 			{
-				$img->image_fulltext = str_replace('\\', '/', $file);
-				$img->image_fulltext = FabrikString::ltrimword($img->image_fulltext, '/');
-				$img->float_fulltext = '';
-				$img->image_fulltext_alt = '';
+				$img->image_fulltext         = str_replace('\\', '/', $file);
+				$img->image_fulltext         = FabrikString::ltrimword($img->image_fulltext, '/');
+				$img->float_fulltext         = '';
+				$img->image_fulltext_alt     = '';
 				$img->image_fulltext_caption = '';
 
 				$elementModel = $formModel->getElement($fullImg, true);
 
 				if (get_class($elementModel) === 'PlgFabrik_ElementFileupload')
 				{
-					$name = $elementModel->getFullName(true, false);
+					$name       = $elementModel->getFullName(true, false);
 					$img->$name = $placeholder;
 				}
 			}
@@ -397,13 +426,13 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 
 		foreach ($uploads as $upload)
 		{
-			$name = $upload->getFullName(true, false);
+			$name      = $upload->getFullName(true, false);
 			$shortName = $upload->getElement()->name;
-			$size = $params->get('image_full_size', 'thumb');
+			$size      = $params->get('image_full_size', 'thumb');
 
 			list($file, $placeholder) = $this->setImage($upload->getElement()->id, $size);
 
-			$img->$name = $placeholder;
+			$img->$name      = $placeholder;
 			$img->$shortName = $placeholder;
 		}
 
@@ -415,8 +444,8 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	/**
 	 * Get thumb/cropped/full image paths
 	 *
-	 * @param   int     $elementId  Element id
-	 * @param   string  $size       Type of file to find (cropped/thumb/full)
+	 * @param   int    $elementId Element id
+	 * @param   string $size      Type of file to find (cropped/thumb/full)
 	 *
 	 * @return  array   ($image, $placeholder)
 	 */
@@ -438,19 +467,22 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 			}
 		}
 
-		$formModel = $this->getModel();
+		/** @var FabrikFEModelForm $formModel */
+		$formModel    = $this->getModel();
+
+		/** @var PlgFabrik_ElementFileupload $elementModel */
 		$elementModel = $formModel->getElement($elementId, true);
 
 		if (get_class($elementModel) === 'PlgFabrik_ElementFileupload')
 		{
-			$name = $elementModel->getHTMLName();
+			$name        = $elementModel->getHTMLName();
 			$data[$name] = $file;
 			$elementModel->setEditable(false);
 			$placeholder = $elementModel->render($data);
 
 			$storage = $elementModel->getStorage();
-			$file = $storage->clean(JPATH_SITE . '/' . $file);
-			$file = $storage->pathToURL($file);
+			$file    = $storage->clean(JPATH_SITE . '/' . $file);
+			$file    = $storage->pathToURL($file);
 
 			switch ($size)
 			{
@@ -462,8 +494,8 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 					break;
 			}
 
-			$file = $storage->urlToPath($file);
-			$file = str_replace(JPATH_SITE, '', $file);
+			$file  = $storage->urlToPath($file);
+			$file  = str_replace(JPATH_SITE, '', $file);
 			$first = substr($file, 0, 1);
 
 			if ($first === '\\' || $first == '/')
@@ -478,30 +510,48 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	/**
 	 * Method to change the title & alias.
 	 *
-	 * @param   integer  $id     Article id
-	 * @param   integer  $catid  The id of the category.
-	 * @param   array    &$data  The row data.
+	 * @param   integer $id    Article id
+	 * @param   integer $catId The id of the category.
+	 * @param   array   &$data The row data.
 	 *
-	 * @return	null
+	 * @return    null
 	 */
-	protected function generateNewTitle($id, $catid, &$data)
+	protected function generateNewTitle($id, $catId, &$data)
 	{
-		// If its an existing article don't edit name
-		if ((int) $id !== 0)
+		$table         = JTable::getInstance('Content');
+		$alias         = JApplication::stringURLSafe(JStringNormalise::toDashSeparated($data['title']));
+		$data['alias'] = $alias;
+		$title         = $data['title'];
+		$titles        = array();
+		$aliases       = array();
+
+		// Test even if an existing article, we then remove that article title from the $titles array.
+		// Means that changing an existing Fabrik title to an existing article title
+		// should increment the Joomla article title.
+		while ($table->load(array('alias' => $alias, 'catid' => $catId)))
 		{
-			$data['alias'] = JApplication::stringURLSafe(JStringNormalise::toDashSeparated($data['title']));
-			return;
+			$title                      = String::increment($title);
+			$titles[$table->get('id')]  = $title;
+			$alias                      = String::increment($alias, 'dash');
+			$aliases[$table->get('id')] = $alias;
 		}
 
-		$table = JTable::getInstance('Content');
-		$alias = JApplication::stringURLSafe(JStringNormalise::toDashSeparated($data['title']));
+		unset($titles[$id]);
+		unset($aliases[$id]);
+		$title = empty($titles) ? $data['title'] : array_pop($titles);
+		$alias = empty($aliases) ? $data['alias'] : array_pop($aliases);
 
-		$title = $data['title'];
-
-		while ($table->load(array('alias' => $alias, 'catid' => $catid)))
+		// Update the Fabrik record's title if the article alias changes..
+		if ($title <> $data['title'])
 		{
-			$title = JString::increment($title);
-			$alias = JString::increment($alias, 'dash');
+			/** @var FabrikFEModelForm $formModel */
+			$formModel  = $this->getModel();
+			$listModel  = $formModel->getListModel();
+			$pkName     = $listModel->getPrimaryKey(true);
+			$pk         = ArrayHelper::getValue($this->data, $pkName);
+			$titleField = $formModel->getElement($this->getParams()->get('title'), true);
+			$titleField = $titleField->getFullName(false, false);
+			$listModel->updateRows(array($pk), $titleField, $title);
 		}
 
 		$data['title'] = $title;
@@ -511,25 +561,26 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	/**
 	 * Update the form model with the new meta store data
 	 *
-	 * @param   object  $store  Meta store (categoryid => articleid)
+	 * @param   object $store Meta store (categoryid => articleid)
 	 *
 	 * @return  null
 	 */
 	protected function setMetaStore($store)
 	{
+		/** @var FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
-		$params = $this->getParams();
+		$params    = $this->getParams();
 
 		if ($elementModel = $formModel->getElement($params->get('meta_store'), true))
 		{
-			$key = $elementModel->getElement()->name;
-			$val = json_encode($store);
+			$key       = $elementModel->getElement()->name;
+			$val       = json_encode($store);
 			$listModel = $formModel->getListModel();
 
 			// Ensure we store to the main db table
 			$listModel->clearTable();
 
-			$rowId = JFactory::getApplication()->input->getString('rowid');
+			$rowId = $this->app->input->getString('rowid');
 			$listModel->storeCell($rowId, $key, $val);
 		}
 		else
@@ -545,19 +596,25 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	 */
 	protected function metaStore()
 	{
+		/** @var FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
-		$params = $this->getParams();
+		$params    = $this->getParams();
 		$metaStore = new stdClass;
 
 		if ($elementModel = $formModel->getElement($params->get('meta_store'), true))
 		{
-			$fullName = $elementModel->getFullName(true, false);
-			$metaStore = $formModel->getElementData($fullName);
+			$fullName  = $elementModel->getFullName(true, false);
+			$metaStore = $formModel->getElementData($fullName . '_raw', false, $this->data[$fullName]);
 			$metaStore = json_decode($metaStore);
 		}
 		else
 		{
 			throw new RuntimeException('metaStore: No meta store element found for element id ' . $params->get('meta_store'));
+		}
+
+		if (!is_object($metaStore))
+		{
+			$metaStore = new stdClass;
 		}
 
 		return $metaStore;
@@ -566,18 +623,18 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	/**
 	 * Run from list model when deleting rows
 	 *
-	 * @param   array  &$groups  List data for deletion
+	 * @param   array &$groups List data for deletion
 	 *
-	 * @return	bool
+	 * @return    bool
 	 */
-
 	public function onDeleteRowsForm(&$groups)
 	{
-		$formModel = $this->getModel();
-		$params = $this->getParams();
+		/** @var FabrikFEModelForm $formModel */
+		$formModel  = $this->getModel();
+		$params     = $this->getParams();
 		$deleteMode = $params->get('delete_mode', 'DELETE');
-		$item = JTable::getInstance('Content');
-		$userId = JFactory::getUser()->get('id');
+		$item       = JTable::getInstance('Content');
+		$userId     = $this->user->get('id');
 
 		if ($elementModel = $formModel->getElement($params->get('meta_store'), true))
 		{
@@ -593,9 +650,9 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 
 						if (is_object($store))
 						{
-							$store = JArrayHelper::fromObject($store);
+							$store = ArrayHelper::fromObject($store);
 
-							foreach ($store as $catid => $articleId)
+							foreach ($store as $catId => $articleId)
 							{
 								switch ($deleteMode)
 								{
@@ -603,7 +660,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 										$item->delete($articleId);
 										break;
 									case 'UNPUBLISH':
-										$ok = $item->publish(array($articleId), 0, $userId);
+										$item->publish(array($articleId), 0, $userId);
 										break;
 									case 'TRASH':
 										$item->publish(array($articleId), -2, $userId);
@@ -628,21 +685,19 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	 */
 	protected function buildContent()
 	{
-		$images = $this->images();
-		$formModel = $this->getModel();
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$params = $this->getParams();
-		$template = JPath::clean(JPATH_SITE . '/plugins/fabrik_form/article/tmpl/' . $params->get('template', ''));
+		$images          = $this->images();
+		$formModel       = $this->getModel();
+		$input           = $this->app->input;
+		$params          = $this->getParams();
+		$template        = JPath::clean(JPATH_SITE . '/plugins/fabrik_form/article/tmpl/' . $params->get('template', ''));
 		$contentTemplate = $params->get('template_content');
-		$content = $contentTemplate != '' ? $this->_getConentTemplate($contentTemplate) : '';
+		$content         = $contentTemplate != '' ? $this->_getContentTemplate($contentTemplate) : '';
 		$messageTemplate = '';
 
 		if (JFile::exists($template))
 		{
 			$messageTemplate = JFile::getExt($template) == 'php' ? $this->_getPHPTemplateEmail($template) : $this
-			->_getTemplateEmail($template);
+				->_getTemplateEmail($template);
 
 			if ($content !== '')
 			{
@@ -664,23 +719,23 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 
 		$message = stripslashes($message);
 
-		$editURL = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&amp;view=form&amp;formid=' . $formModel->get('id') . '&amp;rowid='
+		$editURL  = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $this->package . '&amp;view=form&amp;formid=' . $formModel->get('id') . '&amp;rowid='
 			. $input->get('rowid', '', 'string');
-		$viewURL = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&amp;view=details&amp;formid=' . $formModel->get('id') . '&amp;rowid='
+		$viewURL  = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $this->package . '&amp;view=details&amp;formid=' . $formModel->get('id') . '&amp;rowid='
 			. $input->get('rowid', '', 'string');
-		$editlink = '<a href="' . $editURL . '">' . FText::_('EDIT') . '</a>';
-		$viewlink = '<a href="' . $viewURL . '">' . FText::_('VIEW') . '</a>';
-		$message = str_replace('{fabrik_editlink}', $editlink, $message);
-		$message = str_replace('{fabrik_viewlink}', $viewlink, $message);
-		$message = str_replace('{fabrik_editurl}', $editURL, $message);
-		$message = str_replace('{fabrik_viewurl}', $viewURL, $message);
+		$editLink = '<a href="' . $editURL . '">' . FText::_('EDIT') . '</a>';
+		$viewLink = '<a href="' . $viewURL . '">' . FText::_('VIEW') . '</a>';
+		$message  = str_replace('{fabrik_editlink}', $editLink, $message);
+		$message  = str_replace('{fabrik_viewlink}', $viewLink, $message);
+		$message  = str_replace('{fabrik_editurl}', $editURL, $message);
+		$message  = str_replace('{fabrik_viewurl}', $viewURL, $message);
 
 		foreach ($images as $key => $val)
 		{
 			$this->data[$key] = $val;
 		}
 
-		$w = new FabrikWorker;
+		$w      = new FabrikWorker;
 		$output = $w->parseMessageForPlaceholder($message, $this->data, true);
 
 		return $output;
@@ -689,18 +744,17 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	/**
 	 * Use a php template for advanced email templates, particularly for forms with repeat group data
 	 *
-	 * @param   string  $tmpl  Path to template
+	 * @param   string $tmpl Path to template
 	 *
 	 * @return string email message
 	 */
-
 	protected function _getPHPTemplateEmail($tmpl)
 	{
 		$emailData = $this->data;
 
 		// Start capturing output into a buffer
 		ob_start();
-		$result = require $tmpl;
+		$result  = require $tmpl;
 		$message = ob_get_contents();
 		ob_end_clean();
 
@@ -715,11 +769,10 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	/**
 	 * Template email handling routine, called if email template specified
 	 *
-	 * @param   string  $template  path to template
+	 * @param   string $template path to template
 	 *
-	 * @return  string	email message
+	 * @return  string    email message
 	 */
-
 	protected function _getTemplateEmail($template)
 	{
 		return file_get_contents($template);
@@ -728,20 +781,17 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	/**
 	 * Get content item template
 	 *
-	 * @param   int  $contentTemplate  Joomla article ID to load
+	 * @param   int $contentTemplate Joomla article ID to load
 	 *
 	 * @return  string  content item html (translated with Joomfish if installed)
 	 */
-
-	protected function _getConentTemplate($contentTemplate)
+	protected function _getContentTemplate($contentTemplate)
 	{
-		$app = JFactory::getApplication();
-
-		if ($app->isAdmin())
+		if ($this->app->isAdmin())
 		{
-			$db = JFactory::getDbo();
+			$db    = $this->_db;
 			$query = $db->getQuery(true);
-			$query->select('introtext, ' . $db->quoteName('fulltext'))->from('#__content')->where('id = ' . (int) $contentTemplate);
+			$query->select('introtext, ' . $db->qn('fulltext'))->from('#__content')->where('id = ' . (int) $contentTemplate);
 			$db->setQuery($query);
 			$res = $db->loadObject();
 		}
@@ -749,7 +799,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		{
 			JModelLegacy::addIncludePath(COM_FABRIK_BASE . 'components/com_content/models');
 			$articleModel = JModelLegacy::getInstance('Article', 'ContentModel');
-			$res = $articleModel->getItem($contentTemplate);
+			$res          = $articleModel->getItem($contentTemplate);
 		}
 
 		if ($res->fulltext !== '')
@@ -758,5 +808,56 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		}
 
 		return $res->introtext . ' ' . $res->fulltext;
+	}
+
+	/**
+	 * Before the record is stored, this plugin will see if it should process
+	 * and if so store the form data in the session.
+	 *
+	 * @return  bool  Should the form model continue to save
+	 */
+	public function onBeforeStore()
+	{
+		/** @var FabrikFEModelForm $formModel */
+		$formModel  = $this->getModel();
+		$params     = $this->getParams();
+		$this->data = $this->getProcessData();
+
+		if ($catElement = $formModel->getElement($params->get('categories_element'), true))
+		{
+			$catName    = $catElement->getFullName();
+			$cat        = $catName . '_raw';
+			$categories = (array) FArrayHelper::getValue($this->data, $cat);
+
+			if (empty($categories) || is_array($categories) && $categories[0] === '')
+			{
+				$this->raiseError($formModel->errors, $catName, FText::_('PLG_FABRIK_FORM_ARTICLE_ERR_NO_CATEGORY'));
+
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Raise an error - depends on whether you are in admin or not as to what to do
+	 *
+	 * @param   array  &$err  Form models error array
+	 * @param   string $field Name
+	 * @param   string $msg   Message
+	 *
+	 * @return  void
+	 */
+	protected function raiseError(&$err, $field, $msg)
+	{
+		if ($this->app->isAdmin())
+		{
+			$this->app->enqueueMessage($msg, 'notice');
+		}
+		else
+		{
+			$err[$field][0][] = $msg;
+		}
 	}
 }

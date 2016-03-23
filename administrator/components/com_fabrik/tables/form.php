@@ -4,12 +4,14 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use \Joomla\Registry\Registry;
 
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
 
@@ -20,15 +22,23 @@ require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikTableForm extends FabTable
 {
 	/**
+	 * @var string
+	 */
+	public $db_table_name = '';
+
+	/**
+	 * @var int
+	 */
+	public $connection_id;
+
+	/**
 	 * Constructor
 	 *
-	 * @param   object  &$db  database object
+	 * @param   JDatabaseDriver  &$db  database object
 	 */
-
 	public function __construct(&$db)
 	{
 		parent::__construct('#__{package}_forms', 'id', $db);
@@ -44,17 +54,16 @@ class FabrikTableForm extends FabTable
 	 *
 	 * @return  boolean  True on success.
 	 */
-
 	public function bind($src, $ignore = array())
 	{
 		if (isset($src['params']) && is_array($src['params']))
 		{
-			$registry = new JRegistry;
+			$registry = new Registry;
 			$registry->loadArray($src['params']);
 			$src['params'] = (string) $registry;
 		}
 
-		// Neded for form edit view where we see the database table anme and connection id
+		// Needed for form edit view where we see the database table anme and connection id
 		if (array_key_exists('db_table_name', $src))
 		{
 			$this->db_table_name = $src['db_table_name'];
@@ -79,7 +88,6 @@ class FabrikTableForm extends FabTable
 	 *
 	 * @return  boolean  True on success.
 	 */
-
 	public function store($updateNulls = false)
 	{
 		// We don't want these to be stored - generates an sql error
@@ -99,7 +107,6 @@ class FabrikTableForm extends FabTable
 	 *
 	 * @return  boolean  True if successful. False if row not found or on error (internal error state set in that case).
 	 */
-
 	public function load($keys = null, $reset = true)
 	{
 		if (empty($keys))
@@ -143,7 +150,7 @@ class FabrikTableForm extends FabTable
 				return false;
 			}
 			// Add the search tuple to the query.
-			$query->where($this->_db->quoteName($this->_tbl) . '.' . $this->_db->quoteName($field) . ' = ' . $this->_db->quote($value));
+			$query->where($this->_db->qn($this->_tbl) . '.' . $this->_db->qn($field) . ' = ' . $this->_db->q($value));
 		}
 
 		$query->join('LEFT', '#__{package}_lists AS l ON l.form_id = ' . $this->_tbl . '.id');

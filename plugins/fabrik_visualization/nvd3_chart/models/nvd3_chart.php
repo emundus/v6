@@ -4,12 +4,14 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.nvd3_chart
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\Utilities\ArrayHelper;
 
 jimport('joomla.application.component.model');
 
@@ -128,13 +130,13 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 
 			$this->data      = new stdClass;
 			$this->data->key = 'todo2';
-			$db              = JFactory::getDbo();
+			$db              = $this->_db;
 			$query           = $db->getQuery(true);
 
 			$tbl   = $params->get('tbl', '');
 			$value = $params->get('value_field');
 			$label = $params->get('label_field');
-			$query->select($label . ' AS label, ' . $value . ' AS value')->from($tbl);
+			$query->select($db->qn($label) . ' AS label, ' . $db->qn($value) . ' AS value')->from($tbl);
 			$db->setQuery($query);
 			$this->data->values = $db->loadObjectList();
 			$this->data         = array($this->data);
@@ -316,7 +318,8 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 		if ($split !== '')
 		{
 			// Split the data out into one line per group of data
-			$rows = JArrayHelper::pivot($rows, 'key');
+			$rows = ArrayHelper::pivot($rows, 'key');
+
 			foreach ($rows as $key => $row)
 			{
 				// Single item after pivot is an object - wrap inside an array
@@ -403,17 +406,17 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 
 		$db    = FabrikWorker::getDbo(false, $params->get('conn_id'));
 		$query = $db->getQuery(true);
-		$query->select($labelColumns)->from($table);
+		$query->select($db->qn($labelColumns))->from($table);
 
 		if ($split !== '')
 		{
-			$query->select($split . ' AS ' . $db->qn('key'));
+			$query->select($db->qn($split) . ' AS ' . $db->qn('key'));
 		}
 		else
 		{
 			if ($params->get('data_mode') == 0)
 			{
-				$query->select('date AS ' . $db->qn('key'));
+				$query->select($db->qn('date') . ' AS ' . $db->qn('key'));
 			}
 		}
 

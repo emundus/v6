@@ -4,9 +4,11 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.slideshow
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
+
+use Joomla\String\String;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -58,8 +60,6 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 	public function getPlaylist()
 	{
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$mediaElement = $params->get('media_media_elementList');
 		$mediaElement .= '_raw';
 		$titleElement = $params->get('media_title_elementList', '');
@@ -89,10 +89,10 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 		$listModel->render();
 		$alldata = $listModel->getData();
 		$document = JFactory::getDocument();
-		$retstr = "<?xml version=\"1.0\" encoding=\"" . $document->_charset . "\"?>\n";
-		$retstr .= "<playlist version=\"1\" xmlns = \"http://xspf.org/ns/0/\">\n";
-		$retstr .= "	<title>" . $list->label . "</title>\n";
-		$retstr .= "	<trackList>\n";
+		$str = "<?xml version=\"1.0\" encoding=\"" . $document->_charset . "\"?>\n";
+		$str .= "<playlist version=\"1\" xmlns = \"http://xspf.org/ns/0/\">\n";
+		$str .= "	<title>" . $list->label . "</title>\n";
+		$str .= "	<trackList>\n";
 
 		foreach ($alldata as $data)
 		{
@@ -111,15 +111,15 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 				}
 
 				$location = str_replace('\\', '/', $location);
-				$location = JString::ltrim($location, '/');
+				$location = String::ltrim($location, '/');
 				$location = COM_FABRIK_LIVESITE . $location;
-				$retstr .= "		<track>\n";
-				$retstr .= "			<location>" . $location . "</location>\n";
+				$str .= "		<track>\n";
+				$str .= "			<location>" . $location . "</location>\n";
 
 				if (!empty($titleElement))
 				{
 					$title = $row->$titleElement;
-					$retstr .= "			<title>" . $title . "</title>\n";
+					$str .= "			<title>" . $title . "</title>\n";
 				}
 
 				if (!empty($imageElement))
@@ -129,37 +129,37 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 					if (!empty($image))
 					{
 						$image = str_replace('\\', '/', $image);
-						$image = JString::ltrim($image, '/');
+						$image = String::ltrim($image, '/');
 						$image = COM_FABRIK_LIVESITE . $image;
-						$retstr .= "			<image>" . $image . "</image>\n";
+						$str .= "			<image>" . $image . "</image>\n";
 					}
 				}
 
 				if (!empty($noteElement))
 				{
 					$note = $row->$noteElement;
-					$retstr .= "			<annotation>" . $note . "</annotation>\n";
+					$str .= "			<annotation>" . $note . "</annotation>\n";
 				}
 
 				if (!empty($infoElement))
 				{
 					$link = $row->$titleElement;
-					$retstr .= "			<info>" . $link . "</info>\n";
+					$str .= "			<info>" . $link . "</info>\n";
 				}
 				else
 				{
-					$link = JRoute::_('index.php?option=com_' . $package . '&view=form&formid=' . $form->getId() . '&rowid=' . $row->__pk_val);
-					$retstr .= "			<info>" . $link . "</info>\n";
+					$link = JRoute::_('index.php?option=com_' . $this->package . '&view=form&formid=' . $form->getId() . '&rowid=' . $row->__pk_val);
+					$str .= "			<info>" . $link . "</info>\n";
 				}
 
-				$retstr .= "		</track>\n";
+				$str .= "		</track>\n";
 			}
 		}
 
-		$retstr .= "	</trackList>\n";
-		$retstr .= "</playlist>\n";
+		$str .= "	</trackList>\n";
+		$str .= "</playlist>\n";
 
-		return $retstr;
+		return $str;
 	}
 
 	/**
@@ -173,13 +173,22 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 		$params = $this->getParams();
 		$listModel = $this->getSlideListModel();
 		$table = $listModel->getTable();
-		$nav = $listModel->getPagination(0, 0, 0);
-		$listModel->render();
+		$listModel->getPagination(0, 0, 0);
+		//$listModel->render();
 		$alldata = $listModel->getData();
 
 		$slideElement = $this->getSlideElement();
 
-		$slideshow_viz_file = $params->get('slideshow_viz_file', '') . '_raw';
+		$slideshow_viz_file = $params->get('slideshow_viz_file', '');
+
+		/**
+		 * For AJAX upload, paths will be in non-raw, joined by GROUPSPLITTER,
+		 * with the join ID's being in the non raw.  For simple uploads, we need
+		 * unformatted simple path from _raw.
+		 */
+		//$slideshow_viz_file .= $slideElement->isJoin() ? '' : '_raw';
+		$slideshow_viz_file_raw = $slideshow_viz_file . '_raw';
+
 		$slideshow_viz_caption = $params->get('slideshow_viz_caption', '');
 
 		$js_opts = new stdClass;
@@ -188,50 +197,41 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 		{
 			foreach ($data as $pic)
 			{
-				if (!isset($pic->$slideshow_viz_file))
+				if (!isset($pic->$slideshow_viz_file) && !isset($pic->$slideshow_viz_file_raw))
 				{
-					throw new InvalidArgumentException($params->get('slideshow_viz_file', '') . ' not found - is it set to show in the list view?');
+					//throw new InvalidArgumentException($params->get('slideshow_viz_file', '') . ' not found - is it set to show in the list view?');
+					continue;
 				}
 
-				$pic->$slideshow_viz_file = str_replace("\\", "/", $pic->$slideshow_viz_file);
+				$picData = '';
+
+				if (!$slideElement->isJoin())
+				{
+					$picData = $pic->$slideshow_viz_file_raw;
+				}
+				else
+				{
+					$picData = $pic->$slideshow_viz_file;
+				}
+
+				$picData = str_replace("\\", "/", $picData);
 				$pic_opts = array();
 
-				if (isset($pic->$slideshow_viz_caption))
+				if (!empty($slideshow_viz_caption) && isset($pic->$slideshow_viz_caption))
 				{
 					// Force it to a string for json_encode
 					$pic_opts['caption'] = $pic->$slideshow_viz_caption . ' ';
 				}
 
-				if ($slideElement->isJoin())
-				{
-					/*
-					 * For ajax multi uploads we need to get the src from the image html itself
-					 * and add all the images to the js options class
-					 */
-					$el = $params->get('slideshow_viz_file', '');
-					$ok = new SimpleXMLElement($pic->$el);
-					$imgs = $ok->xpath('//img');
-					$as = $ok->xpath('//a');
 
-					for ($i = 0; $i < count($as); $i++)
-					{
-						if ($params->get('slideshow_viz_thumbnails', false))
-						{
-							$small = (string) FArrayHelper::getValue($imgs[$i], 'src');
-							$small = str_replace(COM_FABRIK_LIVESITE, '', $small);
-							$pic_opts['thumbnail'] = $small;
-						}
-
-						$large = (string) $as[$i]['href'];
-						$large = str_replace(COM_FABRIK_LIVESITE, '', $large);
-						$pic_opts['href'] = $large;
-						$js_opts->$large = $pic_opts;
-					}
-				}
-				else
+				/**
+				 * AJAX uploads will (hopefully!) have been CONCAT'ed into the parent element
+				 * with the //..*..// group splitter.
+				 */
+				foreach (explode(GROUPSPLITTER, $picData) as $path)
 				{
-					$tmp = json_decode($pic->$slideshow_viz_file);
-					$k = $tmp == false ? $pic->$slideshow_viz_file : $tmp[0];
+					$tmp = json_decode($path);
+					$k = $tmp == false ? $path : $tmp[0];
 					$pic_opts['href'] = $slideElement->getStorage()->getFileUrl($k, 0);
 					$this->addThumbOpts($pic_opts);
 

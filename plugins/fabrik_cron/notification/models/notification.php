@@ -3,12 +3,15 @@
  * Fabrik Notification Model
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.cron.notification
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
 
 jimport('joomla.application.component.model');
 
@@ -19,15 +22,13 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik.cron.notification
  * @since       3.0
  */
-
-class FabrikModelNotification extends JModelLegacy
+class FabrikModelNotification extends FabModel
 {
 	/**
 	 * Get the current logged in users notifications
 	 *
 	 * @return array
 	 */
-
 	public function getUserNotifications()
 	{
 		$rows = $this->getRows();
@@ -46,18 +47,18 @@ class FabrikModelNotification extends JModelLegacy
 			 * {observer_name, creator_name, event, record url
 			 * dear %s, %s has %s on %s
 			 */
-			list($listid, $formid, $rowid) = explode('.', $row->reference);
+			list($listId, $formId, $rowId) = explode('.', $row->reference);
 
-			$listModel->setId($listid);
-			$data = $listModel->getRow($rowid);
-			$row->url = JRoute::_('index.php?option=com_fabrik&view=details&listid=' . $listid . '&formid=' . $formid . '&rowid=' . $rowid);
+			$listModel->setId($listId);
+			$data = $listModel->getRow($rowId);
+			$row->url = JRoute::_('index.php?option=com_fabrik&view=details&listid=' . $listId . '&formid=' . $formId . '&rowid=' . $rowId);
 			$row->title = $row->url;
 
 			foreach ($data as $key => $value)
 			{
 				$key = explode('___', $key);
 				$key = array_pop($key);
-				$k = JString::strtolower($key);
+				$k = String::strtolower($key);
 
 				if ($k == 'title')
 				{
@@ -74,13 +75,11 @@ class FabrikModelNotification extends JModelLegacy
 	 *
 	 * @return  array
 	 */
-
 	protected function getRows()
 	{
-		$user = JFactory::getUser();
 		$db = FabrikWorker::getDbo();
 		$query = $db->getQuery(true);
-		$query->select('*')->from('#__{package}_notification')->where('user_id = ' . (int) $user->get('id'));
+		$query->select('*')->from('#__{package}_notification')->where('user_id = ' . (int) $this->user->get('id'));
 		$db->setQuery($query);
 
 		return $db->loadObjectList();
@@ -91,14 +90,12 @@ class FabrikModelNotification extends JModelLegacy
 	 *
 	 * @return  void
 	 */
-
 	public function delete()
 	{
 		// Check for request forgeries
 		JSessoin::checkToken() or die('Invalid Token');
-		$app = JFactory::getApplication();
-		$ids = $app->input->get('cid', array());
-		JArrayHelper::toInteger($ids);
+		$ids = $this->app->input->get('cid', array());
+		ArrayHelper::toInteger($ids);
 
 		if (empty($ids))
 		{
@@ -117,15 +114,13 @@ class FabrikModelNotification extends JModelLegacy
 	 *
 	 * @return  bool
 	 */
-
 	public function loadLang()
 	{
-		$lang = JFactory::getLanguage();
 		$client = JApplicationHelper::getClientInfo(0);
 		$langFile = 'plg_fabrik_cron_notification';
 		$langPath = $client->path . '/plugins/fabrik_cron/notification';
 
-		return $lang->load($langFile, $langPath, null, false, false) || $lang->load($langFile, $langPath, $lang->getDefault(), false, false);
+		return $this->lang->load($langFile, $langPath, null, false, false) || $this->lang->load($langFile, $langPath, $this->lang->getDefault(), false, false);
 	}
 
 	/**
@@ -133,11 +128,8 @@ class FabrikModelNotification extends JModelLegacy
 	 *
 	 * @return number
 	 */
-
 	public function getId()
 	{
-		$app = JFactory::getApplication();
-
-		return $app->input->getInt('id');
+		return $this->app->input->getInt('id');
 	}
 }

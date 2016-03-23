@@ -4,13 +4,15 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\Utilities\ArrayHelper;
 
 jimport('joomla.application.component.controllerform');
 
@@ -21,9 +23,15 @@ jimport('joomla.application.component.controllerform');
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabControllerForm extends JControllerForm
 {
+	/**
+	 * JApplication
+	 *
+	 * @var JApplicationCms
+	 */
+	protected $app;
+
 	/**
 	 * Option
 	 *
@@ -32,28 +40,42 @@ class FabControllerForm extends JControllerForm
 	protected $option = 'com_fabrik';
 
 	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     JControllerLegacy
+	 * @since   12.2
+	 * @throws  Exception
+	 */
+	public function __construct($config = array())
+	{
+		$this->app = ArrayHelper::getValue($config, 'app', JFactory::getApplication());
+		parent::__construct($config);
+	}
+	/**
 	 * Copy items
+	 *
+	 * @throws Exception
 	 *
 	 * @return  null
 	 */
-
 	public function copy()
 	{
 		$model = $this->getModel();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$cid = $input->get('cid', array(), 'array');
 
 		if (empty($cid))
 		{
-			JError::raiseWarning(500, FText::_($this->text_prefix . '_NO_ITEM_SELECTED'));
+			throw new Exception(FText::_($this->text_prefix . '_NO_ITEM_SELECTED'));
 		}
 		else
 		{
 			if ($model->copy())
 			{
-				$ntext = $this->text_prefix . '_N_ITEMS_COPIED';
-				$this->setMessage(JText::plural($ntext, count($cid)));
+				$nText = $this->text_prefix . '_N_ITEMS_COPIED';
+				$this->setMessage(JText::plural($nText, count($cid)));
 			}
 		}
 
@@ -73,7 +95,6 @@ class FabControllerForm extends JControllerForm
 	 *
 	 * @return  boolean  True if access level check and checkout passes, false otherwise.
 	 */
-
 	public function edit($key = null, $urlVar = null)
 	{
 		$this->option = 'com_fabrik';

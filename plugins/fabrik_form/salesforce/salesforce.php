@@ -4,12 +4,14 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.form.salesforce
- * @copyright   Copyright (C) 2005 Fabrik. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-// Check to ensure this file is included in Joomla!
-defined('_JEXEC') or die();
+// No direct access
+defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -24,7 +26,6 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
 class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 {
-
 	/**
 	 * Build the Salesforce.com API client
 	 *
@@ -46,23 +47,22 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 		// Process of logging on and getting a salesforce.com session
 		$client = new SforcePartnerClient;
 		$client->createConnection($wsdl);
+
 		return $client;
 	}
 
 	/**
 	 * Sets up HTML to be injected into the form's bottom
 	 *
-	 * @param   object  $params     params
-	 * @param   object  $formModel  form model
+	 * @throws Exception
 	 *
 	 * @return void
 	 */
-
-	public function getBottomContent($params, $formModel)
+	public function getBottomContent()
 	{
 		if (!class_exists('SoapClient'))
 		{
-			JError::raiseWarning(E_WARNING, Jtext::_('PLG_FORM_SALESFORCE_ERR_SOAP_NOT_INSTALLED'));
+			throw new Exception(FText::_('PLG_FORM_SALESFORCE_ERR_SOAP_NOT_INSTALLED'));
 		}
 	}
 
@@ -70,17 +70,16 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 	 * Run right at the end of the form processing
 	 * form needs to be set to record in database for this to hook to be called
 	 *
-	 * @param   object  $params      plugin params
-	 * @param   object  &$formModel  form model
-	 *
 	 * @return	bool
 	 */
-
-	public function onAfterProcess($params, &$formModel)
+	public function onAfterProcess()
 	{
 		@ini_set("soap.wsdl_cache_enabled", "0");
 
+		/** @var FabrikFEModelForm $formModel */
+		$formModel = $this->getModel();
 		$client = $this->client();
+		$params = $this->getParams();
 		$userName = $params->get('salesforce_username');
 		$password = $params->get('salesforce_password');
 		$token = $params->get('salesforce_token');
@@ -95,21 +94,24 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 		foreach ($fields as $f)
 		{
 			$name = $f->name;
-			foreach ($formModel->_fullFormData as $key => $val)
+
+			foreach ($formModel->fullFormData as $key => $val)
 			{
 				if (is_array($val))
 				{
 					$val = implode(';', $val);
 				}
+
 				$key = array_pop(explode('___', $key));
-				if (JString::strtolower($key) == JString::strtolower($name) && JString::strtolower($name) != 'id')
+
+				if (String::strtolower($key) == String::strtolower($name) && String::strtolower($name) != 'id')
 				{
 					$submission[$name] = $val;
 				}
 				else
 				{
 					// Check custom fields
-					if (JString::strtolower($key . '__c') == JString::strtolower($name) && JString::strtolower($name) != 'id')
+					if (String::strtolower($key . '__c') == String::strtolower($name) && String::strtolower($name) != 'id')
 					{
 						$submission[$name] = $val;
 					}
@@ -117,12 +119,14 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 			}
 		}
 
-		$key = FabrikString::safeColNameToArrayKey($formModel->getlistModel()->getTable()->db_primary_key);
-		$customkey = $params->get('salesforce_customid') . '__c';
+		$key = $formModel->getlistModel()->getPrimaryKey(true);
+		$customKey = $params->get('salesforce_customid') . '__c';
+
 		if ($params->get('salesforce_allowupsert', 0))
 		{
-			$submission[$customkey] = $formModel->_fullFormData[$key];
+			$submission[$customKey] = $formModel->fullFormData[$key];
 		}
+
 		$sObjects = array();
 		$sObject = new sObject;
 
@@ -130,24 +134,25 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 		$sObject->type = $updateObject;
 		$sObject->fields = $submission;
 		array_push($sObjects, $sObject);
-		$app = JFactory::getApplication();
+
 		if ($params->get('salesforce_allowupsert', 0))
 		{
-			$result = $this->upsert($client, $sObjects, $customkey);
+			$result = $this->upsert($client, $sObjects, $customKey);
 		}
 		else
 		{
 			$result = $this->insert($client, $sObjects);
 		}
+
 		if ($result->success == 1)
 		{
 			if ($result->created == '' && $params->get('salesforce_allowupsert', 0))
 			{
-				$app->enqueueMessage(JText::sprintf(SALESFORCE_UPDATED, $updateObject));
+				$this->app->enqueueMessage(JText::sprintf(SALESFORCE_UPDATED, $updateObject));
 			}
 			else
 			{
-				$app->enqueueMessage(JText::sprintf(SALESFORCE_CREATED, $updateObject));
+				$this->app->enqueueMessage(JText::sprintf(SALESFORCE_CREATED, $updateObject));
 			}
 		}
 		else
@@ -158,12 +163,12 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 				{
 					foreach ($result->errors as $error)
 					{
-						JError::raiseWarning(500, JText::_('SALESFORCE_ERR') . $errors->message);
+						JError::raiseWarning(500, FText::_('SALESFORCE_ERR') . $error->message);
 					}
 				}
 				else
 				{
-					JError::raiseWarning(500, JText::_('SALESFORCE_ERR') . $result->errors->message);
+					JError::raiseWarning(500, FText::_('SALESFORCE_ERR') . $result->errors->message);
 				}
 			}
 			else
@@ -176,7 +181,7 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 	/**
 	 * Update or insert an object
 	 *
-	 * @param   object  $client    Salesforce cleint
+	 * @param   object  $client    Salesforce client
 	 * @param   array   $sObjects  array of sObjects
 	 * @param   string  $key       External Id
 	 *
@@ -189,6 +194,7 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 		{
 			// The upsert process
 			$results = $client->upsert($key, $sObjects);
+
 			return $results;
 		}
 		catch (exception $e)
@@ -202,13 +208,13 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 	}
 
 	/**
-	* Insert an object
-	*
-	* @param   object  $client    Salesforce cleint
-	* @param   array   $sObjects  array of sObjects
-	*
-	* @return  mixed  UpsertResult or error
-	*/
+	 * Insert an object
+	 *
+	 * @param   object  $client    Salesforce client
+	 * @param   array   $sObjects  array of sObjects
+	 *
+	 * @return  mixed  UpsertResult or error
+	 */
 
 	protected function insert($client, $sObjects)
 	{
@@ -216,6 +222,7 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 		{
 			// The create process
 			$results = $client->create($sObjects);
+
 			return $results;
 		}
 		catch (exception $e)
@@ -227,5 +234,4 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 			return $e;
 		}
 	}
-
 }

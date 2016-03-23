@@ -4,13 +4,15 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
 
 jimport('joomla.application.component.controller');
 
@@ -22,7 +24,6 @@ require_once 'fabcontrollerform.php';
  * @package  Fabrik
  * @since    3.0
  */
-
 class FabrikAdminControllerPlugin extends FabControllerForm
 {
 	/**
@@ -32,7 +33,6 @@ class FabrikAdminControllerPlugin extends FabControllerForm
 	 *
 	 * @return  void
 	 */
-
 	public function pluginAjax()
 	{
 		$app = JFactory::getApplication();
@@ -52,10 +52,10 @@ class FabrikAdminControllerPlugin extends FabControllerForm
 
 		if (substr($method, 0, 2) !== 'on')
 		{
-			$method = 'on' . JString::ucfirst($method);
+			$method = 'on' . String::ucfirst($method);
 		}
 
-		$dispatcher = JDispatcher::getInstance();
+		$dispatcher = JEventDispatcher::getInstance();
 		$dispatcher->trigger($method);
 
 		return;
@@ -66,7 +66,6 @@ class FabrikAdminControllerPlugin extends FabControllerForm
 	 *
 	 * @return  void
 	 */
-
 	public function userAjax()
 	{
 		$db = FabrikWorker::getDbo();

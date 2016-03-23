@@ -3,7 +3,7 @@
  * Fabrik JS-Periodical - run JS every x ms
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.jsperiodical
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -25,38 +25,26 @@ class PlgFabrik_ElementJSPeriodical extends PlgFabrik_Element
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string    $data      elements data
-	 * @param   stdClass  &$thisRow  all the data in the lists current row
+	 * @param   string    $data      Elements data
+	 * @param   stdClass  &$thisRow  All the data in the lists current row
+	 * @param   array     $opts      Rendering options
 	 *
 	 * @return  string	formatted value
 	 */
-
-	public function renderListData($data, stdClass &$thisRow)
+	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
 		$params = $this->getParams();
 		$format = $params->get('text_format_string');
+		$format_blank = $params->get('field_format_string_blank', true);
 
-		if ($format != '')
+		if ($format != '' && ($format_blank || $d != ''))
 		{
 			$str = sprintf($format, $data);
+			// ToDo - No idea why eval is here but not in similar code in field.php (Sophist)
 			$data = eval($str);
 		}
 
-		return parent::renderListData($data, $thisRow);
-	}
-
-	/**
-	 * Determines if the element can contain data used in sending receipts,
-	 * e.g. fabrikfield returns true
-	 *
-	 * @deprecated - not used
-	 *
-	 * @return  bool
-	 */
-
-	public function isReceiptElement()
-	{
-		return true;
+		return parent::renderListData($data, $thisRow, $opts);
 	}
 
 	/**
@@ -70,27 +58,14 @@ class PlgFabrik_ElementJSPeriodical extends PlgFabrik_Element
 
 	public function render($data, $repeatCounter = 0)
 	{
-		$element = $this->getElement();
-		$value = $this->getValue($data, $repeatCounter);
-		$type = $element->hidden == '1' ? 'hidden' : 'text';
+		$layout = $this->getLayout('form');
+		$layoutData = new stdClass;
+		$layoutData->attributes = $this->inputProperties($repeatCounter);;
+		$layoutData->value = $this->getValue($data, $repeatCounter);;
+		$layoutData->isEditable = $this->isEditable();
+		$layoutData->hidden = $this->getElement()->hidden  == '1';
 
-		if (!$this->isEditable())
-		{
-			if ($element->hidden == '1')
-			{
-				return "<!--" . $value . "-->";
-			}
-			else
-			{
-				return $value;
-			}
-		}
-
-		$bits = $this->inputProperties($repeatCounter);
-		$bits['value'] = $value;
-		$str = $this->buildInput('input', $bits);
-
-		return $str;
+		return $layout->render($layoutData);
 	}
 
 	/**

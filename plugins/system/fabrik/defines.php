@@ -1,11 +1,11 @@
 <?php
 /**
  * Any of these defines can be overwritten by copying this file to
- * components/com_fabrik/user_defines.php
+ * plugins/system/fabrik/user_defines.php
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -63,6 +63,7 @@ require_once COM_FABRIK_FRONTEND . '/helpers/string.php';
 require_once COM_FABRIK_FRONTEND . '/models/plugin.php';
 require_once COM_FABRIK_FRONTEND . '/models/element.php';
 require_once COM_FABRIK_FRONTEND . '/models/elementlist.php';
+require_once COM_FABRIK_FRONTEND . '/views/FabrikView.php';
 
 if ($app->isAdmin())
 {

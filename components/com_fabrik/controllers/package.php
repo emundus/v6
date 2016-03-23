@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -19,7 +19,6 @@ jimport('joomla.application.component.controller');
  * @package  Fabrik
  * @since    3.0
  */
-
 class FabrikControllerPackage extends JControllerLegacy
 {
 	/**
@@ -37,7 +36,6 @@ class FabrikControllerPackage extends JControllerLegacy
 	 *
 	 * @return  JController  A JController object to support chaining.
 	 */
-
 	public function display($cachable = false, $urlparams = false)
 	{
 		$document = JFactory::getDocument();

@@ -1,6 +1,6 @@
 /*
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 ((function(){var a=this.MooRainbow=new Class({Implements:[Options,Events],options:{data:"moorainbow",startColor:"#f00",transparency:1,activeForm:"hsb",forms:{rgb:["red","green","blue"],hsb:["hue","saturation","brightness"]},defaults:{relative:null,position:"right",offset:{x:10,y:0}},onChange:function(d,c){if(!c){return;

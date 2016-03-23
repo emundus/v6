@@ -15,8 +15,8 @@ var FbCascadingdropdown = new Class({
 	Extends: FbDatabasejoin,
 	initialize: function (element, options) {
 		this.ignoreAjax = false;
+		this.setPlugin('cascadingdropdown');
 		this.parent(element, options);
-		this.plugin = 'cascadingdropdown';
 		if (document.id(this.options.watch)) {
 			/**
 			 * In order to be able to remove specific change event functions when we clone
@@ -24,7 +24,6 @@ var FbCascadingdropdown = new Class({
 			 */
 			this.doChangeEvent = this.doChange.bind(this);
 			document.id(this.options.watch).addEvent(this.options.watchChangeEvent, this.doChangeEvent);
-			//document.id(this.options.watch).addEvent('change', this.doChangeEvent);
 		}
 		if (this.options.showDesc === true) {
 			this.element.addEvent('change', function (e) {
@@ -37,7 +36,7 @@ var FbCascadingdropdown = new Class({
 	},
 
 	attachedToForm: function ()
-	{		
+	{
 		// $$$ rob have to call update here otherwise all options can be shown
 		//use this method as getValue on el wont work if el readonly
 		// $$$ hugh - only do this if not editing an existing row, see ticket #725
@@ -66,7 +65,7 @@ var FbCascadingdropdown = new Class({
 
 	/**
 	 * Change
-	 * @param   v          Value of observered element
+	 * @param   v          Value of observed element
 	 * @param   triggerid  Observed element's HTML id
 	 */
 	change: function (v, triggerid)
@@ -118,11 +117,10 @@ var FbCascadingdropdown = new Class({
 			this.spinner.hide();
 		}.bind(this),
 		onSuccess: function (json) {
-			var origvalue = this.options.def,
+			var origValue = this.getValue(),
 			updateField,
 			c;
 			this.spinner.hide();
-			this.setValue(this.getValue());
 
 			json = JSON.decode(json);
 			if (this.options.editable) {
@@ -145,13 +143,13 @@ var FbCascadingdropdown = new Class({
 						item.text = item.text.replace(/\n/g, '<br />');
 						new Element('div').set('html', item.text).inject(this.element);
 					} else {
-						updateField = (item.value !== '' && item.value === this.getValue()) || singleResult;
+						updateField = (item.value !== '' && item.value === origValue) || singleResult;
 						this.addOption(item.value, item.text, updateField);
 					}
 
 					if (this.options.showDesc === true && item.description) {
-						var classname = this.options.showPleaseSelect ? 'notice description-' + (k) : 'notice description-' + (k - 1);
-						new Element('div', {styles: {display: 'none'}, 'class': classname}).set('html', item.description).inject(c);
+						var className = this.options.showPleaseSelect ? 'notice description-' + (k) : 'notice description-' + (k - 1);
+						new Element('div', {styles: {display: 'none'}, 'class': className}).set('html', item.description).inject(c);
 					}
 				}.bind(this));
 			} else {
@@ -160,7 +158,7 @@ var FbCascadingdropdown = new Class({
 					if (this.options.editable === false) {
 						new Element('div').set('text', item.text).inject(this.element);
 					} else {
-						updateField = (item.value !== '' && item.value === this.getValue()) || singleResult;
+						updateField = (item.value !== '' && item.value === origValue) || singleResult;
 						this.addOption(item.value, item.text, updateField);
 						new Element('option', {'value': item.value, 'selected': 'selected'}).set('text', item.text).inject(this.element);
 					}
@@ -171,7 +169,7 @@ var FbCascadingdropdown = new Class({
 			//this.element.disabled = (this.element.options.length === 1 ? true : false);
 			if (this.options.editable && this.options.displayType === 'dropdown') {
 				if (this.element.options.length === 1) {
-					// SELECTS DONT HAVE READONLY PROPERTIES
+					// SELECTS DON'T HAVE READONLY PROPERTIES
 					//this.element.setProperty('readonly', true);
 					this.element.addClass('readonly');
 				} else {
@@ -192,6 +190,10 @@ var FbCascadingdropdown = new Class({
 				this.ingoreShowDesc = false;
 			}
 			this.ignoreAjax = false;
+
+			var newV = [this.getValue()];
+			this.setValue(newV);
+
 			Fabrik.fireEvent('fabrik.cdd.update', this);
 		}.bind(this),
 		'onFailure': function (xhr) {
@@ -206,7 +208,8 @@ var FbCascadingdropdown = new Class({
 		case 'radio':
 			/* falls through */
 		case 'checkbox':
-			this.getContainer().getElements('.fabrik_subelement').destroy();
+			this.getContainer().getElements('*[data-role="suboption"]').destroy();
+			this.getContainer().getElements('*[data-role="fabrik-rowopts"]').destroy();
 			break;
 		case 'dropdown':
 			/* falls through */
@@ -244,7 +247,7 @@ var FbCascadingdropdown = new Class({
 				 * being updated on a change.  This issue only surfaced when we changed this code to use
 				 * a bound function, so it actually started removing the event, which it never did before
 				 * when we referenced an inline function().
-				 * 
+				 *
 				 * Update ... if the watched element is in the repeat group, we do want to remove it,
 				 * but if the watch is on the main form, we don't.  In other words, if the watch is on the main
 				 * form, then every CDD in this repeat is watching it.  If it's in the repeat group, then each repeat
@@ -252,18 +255,16 @@ var FbCascadingdropdown = new Class({
 				 */
 				if (this.options.watchInSameGroup) {
 					document.id(this.options.watch).removeEvent(this.options.watchChangeEvent, this.doChangeEvent);
-					//document.id(this.options.watch).removeEvent('change', this.doChangeEvent);
 				}
 				this.doChangeEvent = this.doChange.bind(this);
 				document.id(this.options.watch).addEvent(this.options.watchChangeEvent, this.doChangeEvent);
-				//document.id(this.options.watch).addEvent('change', this.doChangeEvent);
 			}
 
 		}
 		if (this.options.watchInSameGroup === true) {
 			this.element.empty();
 			// Set ingoreAjax so that the ajax event that is fired when the element is added to the form manager
-			// does not update the newly cloned dropdown
+			// does not update the newly cloned drop-down
 			this.ignoreAjax = true;
 		}
 		if (this.options.showDesc === true) {
@@ -275,7 +276,7 @@ var FbCascadingdropdown = new Class({
 	},
 
 	/**
-	 * Update auto-complete fields id and create new autocompleter object for duplicated element
+	 * Update auto-complete fields id and create new auto-completer object for duplicated element
 	 */
 	cloneAutoComplete: function () {
 		var f = this.getAutoCompleteLabelField();
@@ -289,18 +290,19 @@ var FbCascadingdropdown = new Class({
 		if (this.ingoreShowDesc === true) {
 			return;
 		}
-		var v = document.id(e.target).selectedIndex;
-		var c = this.getContainer().getElement('.dbjoin-description');
-		var show = c.getElement('.description-' + v);
+		var v = document.id(e.target).selectedIndex,
+			c = this.getContainer().getElement('.dbjoin-description'),
+			show = c.getElement('.description-' + v),
+			myFx;
 		c.getElements('.notice').each(function (d) {
 			if (d === show) {
-				var myfx = new Fx.Style(show, 'opacity', {
+				myFx = new Fx.Style(show, 'opacity', {
 					duration: 400,
 					transition: Fx.Transitions.linear
 				});
-				myfx.set(0);
+				myFx.set(0);
 				d.show();
-				myfx.start(0, 1);
+				myFx.start(0, 1);
 			} else {
 				d.hide();
 			}

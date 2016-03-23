@@ -1,6 +1,6 @@
 /*
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 var GantryMoreArticles=new Class({Implements:[Options],options:{leadings:2,moreText:"more articles",url:""},initialize:function(b){this.setOptions(b);this.wrapper=document.getElements(".rt-blog .items-row")||document.getElement(".rt-teaser-articles")||document.getElement(".rt-leading-articles");

@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.fileupload
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -18,8 +18,7 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik.element.fileupload
  * @since       3.0
  */
-
-class AudioRender
+class AudioRenderModel extends FabModel
 {
 	/**
 	 * Render output
@@ -38,7 +37,6 @@ class AudioRender
 	 *
 	 * @return  void
 	 */
-
 	public function renderListData(&$model, &$params, $file, $thisRow)
 	{
 		$this->render($model, $params, $file);
@@ -53,48 +51,13 @@ class AudioRender
 	 *
 	 * @return  void
 	 */
-
 	public function render(&$model, &$params, $file)
 	{
-		$file = str_replace("\\", "/", COM_FABRIK_LIVESITE . $file);
-		//$this->output = "<embed src=\"$file\" autostart=\"false\" playcount=\"true\" loop=\"false\" height=\"50\" width=\"200\"  type=\"audio/mpeg\" />";
-		
-		/**
-		 * Theoretically this should make sure browsers that support HTML 5 use it, if no HTML5 then IE will use 'object'
-		 * and everything else will use 'embed'.  Trying to make sure nothing does autoplay, but FF is being difficult!
-		 */
-		
-		$this->output = '
-<audio src="' . $file . '"  controls>
-<!--[if !ie]> -->
-	<object data="' . $file . '"
-      type="audio/x-mpeg">
-		<param name="autoplay"
-       		value="false" />
-		<param name="width"
-       		value="140" />
-		<param name="height"
-       		value="40" />
-		<param name="controller"
-       		value="true" />
-		<param name="autostart"
-       		value="0" />
-		Oops!
-	</object>
-<!--<![endif]-->
-<!--[if ie]>	
-	<embed
-		src="' . $file . '"
-		autostart="false"
-		playcount="true"
-		loop="false"
-		height="50"
-		width="200"
-		type="audio/mpeg"
-	/>
-<![endif]-->
-</audio>
-		';
+		$layout = $model->getLayout('audio');
+		$displayData = new stdClass;
+		$displayData->file = str_replace("\\", "/", COM_FABRIK_LIVESITE . $file);
+
+		$this->output = $layout->render($displayData);
 	}
 
 	/**
@@ -108,7 +71,6 @@ class AudioRender
 	 *
 	 * @return  string  HTML
 	 */
-
 	public function renderCarousel($id = 'carousel', $data = array(), $model = null, $params = null, $thisRow = null)
 	{
 		$rendered = '';
@@ -119,8 +81,8 @@ class AudioRender
 			$rendered = '
 			<div id="' . $id . '"></div>
 			';
-			$app = JFactory::getApplication();
-			$input = $app->input;
+			$input = $this->app->input;
+
 			if ($input->get('format') != 'raw')
 			{
 				$js = '

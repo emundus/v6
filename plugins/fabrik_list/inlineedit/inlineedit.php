@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.list.inlineedit
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -21,7 +21,6 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.inlineedit
  * @since       3.0
  */
-
 class PlgFabrik_ListInlineedit extends PlgFabrik_List
 {
 	/**
@@ -36,7 +35,6 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 	 *
 	 * @return  string
 	 */
-
 	protected function getAclParam()
 	{
 		return 'inline_access';
@@ -47,7 +45,6 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 	 *
 	 * @return  bool
 	 */
-
 	public function canSelectRows()
 	{
 		return false;
@@ -61,7 +58,6 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 	 *
 	 * @return  object  shim
 	 */
-
 	public function requireJSShim_result()
 	{
 		$deps = new stdClass;
@@ -91,7 +87,6 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 	 *
 	 * @return  mixed  string or array
 	 */
-
 	public function loadJavascriptClass_result()
 	{
 		$ext = FabrikHelperHTML::isDebug() ? '.js' : '-min.js';
@@ -107,7 +102,6 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 	 *
 	 * @return  array (element js files (not used), array of element names, require js shim setup files)
 	 */
-
 	protected function loadElementJS()
 	{
 		if (!empty($this->elementJs))
@@ -116,8 +110,7 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 		}
 
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 		$listModel->setId($input->getInt('listid'));
 		$elements = $listModel->getElements('safecolname');
@@ -197,27 +190,22 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 	 *
 	 * @return bool
 	 */
-
 	public function onLoadJavascriptInstance($args)
 	{
 		parent::onLoadJavascriptInstance($args);
 		$model = $this->getModel();
 		$params = $this->getParams();
-		$j3 = FabrikWorker::j3();
 		list($srcs, $els, $shim) = $this->loadElementJS();
 		$opts = $this->getElementJSOptions();
 		$opts->elements = $els;
 		$opts->formid = $model->getFormModel()->getId();
 		$opts->focusClass = 'focusClass';
-        $opts->iconeClass = 'icon-pencil';
-        $opts->iconeHtml = '<i class="icon-pencil"></i>';
 		$opts->editEvent = $params->get('inline_edit_event', 'dblclick');
 		$opts->tabSave = $params->get('inline_tab_save', false);
 		$opts->showCancel = $params->get('inline_show_cancel', true);
 		$opts->showSave = (bool) $params->get('inline_show_save', true);
 		$opts->loadFirst = (bool) $params->get('inline_load_first', false);
 		$opts = json_encode($opts);
-		$formid = 'list_' + $model->getFormModel()->getForm()->id;
 		$this->jsInstance = "new FbListInlineEdit($opts)";
 
 		return true;

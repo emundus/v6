@@ -105,7 +105,7 @@ class DOMEvent {
 	public $data = null;
 	public function __construct($data) {
 		foreach($data as $k => $v) {
-			$this->$k = $v;
+			$this->{$k} = $v;
 		}
 		if (! $this->timeStamp)
 			$this->timeStamp = time();
@@ -1232,7 +1232,7 @@ class phpQueryObject
 				return $this->size();
 			break;
 			default:
-				return $this->$attr;
+				return $this->{$attr};
 		}
 	}
 	/**

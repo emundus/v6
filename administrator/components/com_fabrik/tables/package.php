@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -18,13 +18,12 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikTablePackage extends JTable
 {
 	/**
 	 * Constructor
 	 *
-	 * @param   object  &$db  database object
+	 * @param   JDatabaseDriver  &$db  database object
 	 */
 
 	public function __construct(&$db)

@@ -1,8 +1,8 @@
 <?php
 /**
- * @version        $Id: ini.php 2325 2012-08-13 17:46:48Z btowles $
+ * @version        $Id: ini.php 30069 2016-03-08 17:45:33Z matias $
  * @author         RocketTheme http://www.rockettheme.com
- * @copyright      Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright      Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license        http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * derived from Joomla with original copyright and license
@@ -114,7 +114,7 @@ class GantryRegistryFormatINI extends GantryRegistryFormat
 				// If we are processing sections and the line is a section add the object and continue.
 				if (($line[0] == '[') && ($line[$length - 1] == ']')) {
 					$section       = substr($line, 1, $length - 2);
-					$obj->$section = new stdClass();
+					$obj->{$section} = new stdClass();
 					continue;
 				}
 			} else if ($line{0} == '[') {
@@ -164,9 +164,9 @@ class GantryRegistryFormatINI extends GantryRegistryFormat
 
 			// If a section is set add the key/value to the section, otherwise top level.
 			if ($section) {
-				$obj->$section->$key = $value;
+				$obj->{$section}->{$key} = $value;
 			} else {
-				$obj->$key = $value;
+				$obj->{$key} = $value;
 			}
 		}
 

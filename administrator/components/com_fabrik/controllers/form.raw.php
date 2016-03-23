@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
@@ -43,7 +43,6 @@ class FabrikAdminControllerForm extends JControllerForm
 	 *
 	 * @return  void
 	 */
-
 	public function inlineedit()
 	{
 		$model = JModelLegacy::getInstance('FormInlineEdit', 'FabrikFEModel');
@@ -55,16 +54,11 @@ class FabrikAdminControllerForm extends JControllerForm
 	 *
 	 * @return  void
 	 */
-
 	public function process()
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
-		$input = $app->input;
 		$viewName = $input->get('view', 'form');
-		$viewType = $document->getType();
 
 		// For now lets route this to the html view.
 		$view = $this->getView($viewName, 'html');
@@ -136,7 +130,8 @@ class FabrikAdminControllerForm extends JControllerForm
 			{
 				if ($this->isMambot)
 				{
-					$input->post->set('fabrik_referrer', FArrayHelper::getValue($_SERVER, 'HTTP_REFERER', ''));
+					$referrer = filter_var(FArrayHelper::getValue($_SERVER, 'HTTP_REFERER', ''), FILTER_SANITIZE_URL);
+					$input->post->set('fabrik_referrer', $referrer);
 
 					/**
 					 * $$$ hugh - testing way of preserving form values after validation fails with form plugin
@@ -188,10 +183,68 @@ class FabrikAdminControllerForm extends JControllerForm
 
 		if ($input->getInt('packageId', 0) !== 0)
 		{
-			$rowid = $input->getString('rowid', '', 'string');
-			echo json_encode(array('msg' => $msg, 'rowid' => $rowid));
+			$rowId = $input->getString('rowid', '', 'string');
+			echo json_encode(array('msg' => $msg, 'rowid' => $rowId));
 
 			return;
+		}
+
+		// @todo -should get handed off to the json view to do this
+		if ($input->getInt('fabrik_ajax') == 1)
+		{
+			// $$$ hugh - adding some options for what to do with redirect when in content plugin
+			// Should probably do this elsewhere, but for now ...
+			$redirect_opts = array(
+					'msg' => $msg,
+					'url' => $url,
+					'baseRedirect' => $this->baseRedirect,
+					'rowid' => $input->get('rowid', '', 'string'),
+					'suppressMsg' => !$model->showSuccessMsg()
+			);
+
+			if (!$this->baseRedirect && $this->isMambot)
+			{
+				$session = JFactory::getSession();
+				$context = $model->getRedirectContext();
+				$redirect_opts['redirect_how'] = $session->get($context . 'redirect_content_how', 'popup');
+				$redirect_opts['width'] = (int) $session->get($context . 'redirect_content_popup_width', '300');
+				$redirect_opts['height'] = (int) $session->get($context . 'redirect_content_popup_height', '300');
+				$redirect_opts['x_offset'] = (int) $session->get($context . 'redirect_content_popup_x_offset', '0');
+				$redirect_opts['y_offset'] = (int) $session->get($context . 'redirect_content_popup_y_offset', '0');
+				$redirect_opts['title'] = $session->get($context . 'redirect_content_popup_title', '');
+				$redirect_opts['reset_form'] = $session->get($context . 'redirect_content_reset_form', '1') == '1';
+			}
+			elseif (!$this->baseRedirect && !$this->isMambot)
+			{
+				/**
+				 * $$$ hugh - I think this case only happens when we're a popup form from a list
+				 * in which case I don't think "popup" is realy a valid option.  Anyway, need to set something,
+				 * so for now just do the same as we do for isMambot, but default redirect_how to 'samepage'
+				 */
+				$session = JFactory::getSession();
+				$context = $model->getRedirectContext();
+				$redirect_opts['redirect_how'] = $session->get($context . 'redirect_content_how', 'samepage');
+				$redirect_opts['width'] = (int) $session->get($context . 'redirect_content_popup_width', '300');
+				$redirect_opts['height'] = (int) $session->get($context . 'redirect_content_popup_height', '300');
+				$redirect_opts['x_offset'] = (int) $session->get($context . 'redirect_content_popup_x_offset', '0');
+				$redirect_opts['y_offset'] = (int) $session->get($context . 'redirect_content_popup_y_offset', '0');
+				$redirect_opts['title'] = $session->get($context . 'redirect_content_popup_title', '');
+				$redirect_opts['reset_form'] = $session->get($context . 'redirect_content_reset_form', '1') == '1';
+
+			}
+			elseif ($this->isMambot)
+			{
+				// $$$ hugh - special case to allow custom code to specify that
+				// the form should not be cleared after a failed AJAX submit
+				$session = JFactory::getSession();
+				$context = 'com_fabrik.form.' . $model->get('id') . '.redirect.';
+				$redirect_opts['reset_form'] = $session->get($context . 'redirect_content_reset_form', '1') == '1';
+			}
+			// Let form.js handle the redirect logic
+			echo json_encode($redirect_opts);
+
+			// Stop require.js being added to output
+			exit;
 		}
 
 		if ($input->get('format') == 'raw')
@@ -214,7 +267,6 @@ class FabrikAdminControllerForm extends JControllerForm
 	 * @deprecated - since 3.0.6 not used
 	 * @return  null
 	 */
-
 	protected function makeRedirect($model, $msg = null)
 	{
 		$app = JFactory::getApplication();
@@ -243,7 +295,6 @@ class FabrikAdminControllerForm extends JControllerForm
 	 *
 	 * @return  null
 	 */
-
 	public function ajax_validate()
 	{
 		$app = JFactory::getApplication();

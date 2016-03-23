@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -34,15 +34,26 @@ final class WFFileBrowserPlugin extends WFMediaManager {
         } else {
             $browser->setFileTypes('images=jpg,jpeg,png,gif');
         }
-        
+
         $filter = JRequest::getString('filter');
 
         if ($filter) {
-            if ($filter === "images") {
-                $browser->setFileTypes('images=jpg,jpeg,png,gif');
+            if ($filter === 'images') {
+                $filetypes = 'images=jpg,jpeg,png,gif';
+            } else if ($filter === 'media') {
+                $filetypes = 'windowsmedia=avi,wmv,wm,asf,asx,wmx,wvx;quicktime=mov,qt,mpg,mpeg,m4a;flash=swf;shockwave=dcr;real=rm,ra,ram;divx=divx;video=mp4,ogv,ogg,webm,flv,f4v;audio=mp3,ogg,wav;silverlight=xap';
+            } else if ($filter === 'html') {
+                $filetypes = 'html=html,htm,txt';
             } else {
-                $browser->setFileTypes('files=' . JRequest::getString('filter'));
+                // custom filter list, eg: jpg,jpeg,png,pdf
+                if (strpos($filter, ',') !== false) {
+                  $filetypes = 'files=' . $filter;
+                } else {
+                  $filetypes = $this->get('_filetypes');
+                }
             }
+
+            $browser->setFileTypes($filetypes);
         }
         // remove insert button
         $browser->removeButton('file', 'insert');
@@ -57,12 +68,12 @@ final class WFFileBrowserPlugin extends WFMediaManager {
 
         $document = WFDocument::getInstance();
         $settings = $this->getSettings();
-        
+
         $document->addScript(array('browser'), 'plugins');
 
         if ($document->get('standalone') == 1) {
             $document->addScript(array('browser'), 'component');
-            
+
             $element = JRequest::getCmd('element', JRequest::getCmd('fieldid', ''));
 
             $options = array(
@@ -80,14 +91,6 @@ final class WFFileBrowserPlugin extends WFMediaManager {
             $document->addScriptDeclaration('BrowserDialog.settings=' . json_encode($settings) . ';');
         }
     }
-
-    /**
-     * @see WFMediaManager::getSettings()
-     */
-    function getSettings() {
-        return parent::getSettings();
-    }
-
 }
 
 ?>

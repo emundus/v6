@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.button
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -18,7 +18,6 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik.element.button
  * @since       3.0
  */
-
 class PlgFabrik_ElementButton extends PlgFabrik_Element
 {
 	/**
@@ -29,7 +28,6 @@ class PlgFabrik_ElementButton extends PlgFabrik_Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$name = $this->getHTMLName($repeatCounter);
@@ -38,30 +36,19 @@ class PlgFabrik_ElementButton extends PlgFabrik_Element
 		$params = $this->getParams();
 		$class = $params->get('bootstrap_class', '') . ' fabrikinput button btn';
 		$icon = $params->get('bootstrap_icon', '');
+		$type = $params->get('button_type', 'button');
 
 		$layout = $this->getLayout('form');
-		$data = array();
-		$data['class'] = $class;
-		$data['id'] = $id;
-		$data['name'] = $name;
-		$data['label'] = $element->label;
-		$data['icon'] = $icon;
+		$displayData = new stdClass;
+		$displayData->class = $class;
+		$displayData->id = $id;
+		$displayData->name = $name;
+		$displayData->label = $element->label;
+		$displayData->icon = $icon;
+		$displayData->type = $type;
 
-		return $layout->render($data);
-	}
 
-	/**
-	 * Get the element's HTML label
-	 *
-	 * @param   int     $repeatCounter  group repeat counter
-	 * @param   string  $tmpl           form template
-	 *
-	 * @return  string  label
-	 */
-
-	public function getLabel($repeatCounter, $tmpl = '')
-	{
-		return '';
+		return $layout->render($displayData);
 	}
 
 	/**
@@ -71,7 +58,6 @@ class PlgFabrik_ElementButton extends PlgFabrik_Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
@@ -89,7 +75,6 @@ class PlgFabrik_ElementButton extends PlgFabrik_Element
 	 *
 	 * @return  array  html ids to watch for validation
 	 */
-
 	public function getValidationWatchElements($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);

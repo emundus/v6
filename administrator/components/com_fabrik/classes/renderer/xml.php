@@ -4,11 +4,13 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
 
 /**
  * Not used i think!
@@ -76,7 +78,7 @@ class JDocumentRendererXml extends JDocumentRenderer
 
 				foreach ($collection as $key => $val)
 				{
-					if (substr($key, 0, 1) !== '_' && JString::substr($key, 0, 6) !== 'fabrik' && $key !== 'slug')
+					if (substr($key, 0, 1) !== '_' && String::substr($key, 0, 6) !== 'fabrik' && $key !== 'slug')
 					{
 						$xml .= "\t\t<$key>" . htmlspecialchars($val, ENT_COMPAT, 'UTF-8') . "</$key>\n";
 					}

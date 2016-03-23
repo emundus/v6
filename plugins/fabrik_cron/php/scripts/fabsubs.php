@@ -3,7 +3,7 @@
 defined('_JEXEC') or die();
 
 error_reporting(E_ALL);
-echo "here";exit;
+
 jimport('joomla.mail.helper');
 //JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabsubs/tables');
 //require_once JPATH_ROOT . '/fabrik_plugins/form/paypal/scripts/fabrikar_subs.php';
@@ -21,7 +21,6 @@ CASE
    FROM #__fabrik_subs_cron_emails WHERE event_type = 'auto_renewal'");
 $auto_renewal_mails = $db->loadObjectList('emailday');
 echo $db->getQuery();
-echo "<pre>";print_r($auto_renewal_mails);exit;
 
 $db->setQuery("SELECT *,
 CASE

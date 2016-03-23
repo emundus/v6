@@ -3,7 +3,7 @@
  * Fabrik Package MySQL driver
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -30,10 +30,8 @@ class JDatabaseDriverMySQL_Fab extends JDatabaseDriverMysql
 	 * This function replaces a string identifier <var>$prefix</var> with the
 	 * string held is the <var>_table_prefix</var> class variable.
 	 *
-	 * @param   string  $sql     The SQL query
-	 * @param   string  $prefix  The common table prefix
-	 *
-	 * @return  string
+	 * @param   string  $sql    The SQL query
+	 * @param   string  $prefx  The common table prefix
 	 */
 	public function replacePrefix($sql, $prefix = '#__')
 	{

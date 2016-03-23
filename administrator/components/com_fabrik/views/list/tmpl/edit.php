@@ -4,13 +4,15 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.0
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
 
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHTML::stylesheet('administrator/components/com_fabrik/views/fabrikadmin.css');
@@ -80,7 +82,7 @@ foreach ($panels as $panel) {
 				<?php foreach ($panel['fieldset'] as $fieldset) :
 					foreach ($this->form->getFieldset($fieldset) as $field) :?>
 					<li>
-					<?php if (JString::strtolower($field->type) != 'hidden') {
+					<?php if (String::strtolower($field->type) != 'hidden') {
 							echo $field->label;
 						} ?>
 						<?php echo $field->input; ?>

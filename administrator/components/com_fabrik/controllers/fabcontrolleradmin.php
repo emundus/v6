@@ -4,7 +4,7 @@
  * items, along with call to model to perform additional
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
@@ -21,7 +21,6 @@ jimport('joomla.application.component.controlleradmin');
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabControllerAdmin extends JControllerAdmin
 {
 	/**
@@ -29,7 +28,6 @@ class FabControllerAdmin extends JControllerAdmin
 	 *
 	 * @var string
 	 */
-
 	public $option = 'com_fabrik';
 
 	/**
@@ -37,7 +35,6 @@ class FabControllerAdmin extends JControllerAdmin
 	 *
 	 * @return null
 	 */
-
 	public function dodelete()
 	{
 		parent::delete();

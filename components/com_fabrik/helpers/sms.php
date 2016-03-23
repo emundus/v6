@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik.helpers
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -35,6 +35,7 @@ class FabrikSMS
 
 	public static function doRequest($method, $url, $vars, $auth = '', $callback = false)
 	{
+		$app = JFactory::getApplication();
 		if (!function_exists('curl_init'))
 		{
 			throw new RuntimeException(FText::_('COM_FABRIK_ERR_CURL_NOT_INSTALLED'));
@@ -45,7 +46,7 @@ class FabrikSMS
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_HEADER, 1);
-		curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+		curl_setopt($ch, CURLOPT_USERAGENT, $app->input->server->getString('HTTP_USER_AGENT'));
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');

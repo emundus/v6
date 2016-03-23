@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.cron.notification
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -30,7 +30,6 @@ class FabrikControllerCroncronnotification extends JControllerLegacy
 	 *
 	 * @return  void
 	 */
-
 	public function display()
 	{
 		$document = JFactory::getDocument();
@@ -58,7 +57,6 @@ class FabrikControllerCroncronnotification extends JControllerLegacy
 	 *
 	 * @return false
 	 */
-
 	public function delete()
 	{
 		$model = $this->getModel('cronnotification');

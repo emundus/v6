@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -14,11 +14,11 @@ defined('_JEXEC') or die('RESTRICTED');
 require_once (WF_EDITOR_LIBRARIES . '/classes/plugin.php');
 
 class WFTablesPlugin extends WFEditorPlugin {
-    
+
     public function __construct() {
         parent::__construct(array('colorpicker' => true));
     }
-    
+
     public function getContext() {
         return JRequest::getWord('context', 'table');
     }
@@ -49,7 +49,7 @@ class WFTablesPlugin extends WFEditorPlugin {
         }
     }
 
-    public function getSettings() {
+    public function getSettings($settings = array()) {
         $profile = $this->getProfile();
 
         $settings = array(
@@ -58,15 +58,6 @@ class WFTablesPlugin extends WFEditorPlugin {
 
         return parent::getSettings($settings);
     }
-
-    /**
-     * Get default parameters
-     * @return string parameters
-     */
-    public function getDefaults() {        
-        return parent::getDefaults(array());
-    }
-
 }
 
 ?>

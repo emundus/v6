@@ -4,12 +4,14 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use \Joomla\Registry\Registry;
 
 jimport('joomla.application.component.modelitem');
 
@@ -20,7 +22,6 @@ jimport('joomla.application.component.modelitem');
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikFEModelPackage extends FabModel
 {
 	/**
@@ -51,7 +52,6 @@ class FabrikFEModelPackage extends FabModel
 	 *
 	 * @return  void
 	 */
-
 	public function setId($id)
 	{
 		// Set new package ID
@@ -149,7 +149,7 @@ class FabrikFEModelPackage extends FabModel
 				}
 
 				// Convert parameter fields to objects.
-				$registry = new JRegistry;
+				$registry = new Registry;
 				$registry->loadJSON($data->params);
 				$data->params = clone $this->getState('params');
 				$data->params->merge($registry);
@@ -171,7 +171,6 @@ class FabrikFEModelPackage extends FabModel
 	 *
 	 * @return  object connection tables
 	 */
-
 	public function &getPackage()
 	{
 		if (!isset($this->package))
@@ -191,7 +190,6 @@ class FabrikFEModelPackage extends FabModel
 	 *
 	 * @return  void
 	 */
-
 	public function render()
 	{
 		// Test stuff needs to be assigned in admin
@@ -205,7 +203,6 @@ class FabrikFEModelPackage extends FabModel
 	 *
 	 * @return  array
 	 */
-
 	protected function loadTables()
 	{
 		if ($this->package->tables != '')
@@ -232,7 +229,6 @@ class FabrikFEModelPackage extends FabModel
 	 *
 	 * @return  void
 	 */
-
 	public function publish($state)
 	{
 		foreach ($this->tables as $oTable)
@@ -252,7 +248,7 @@ class FabrikFEModelPackage extends FabModel
  * @since       3.0
  */
 
-class FabrikPackageMenu extends JModel
+class FabrikPackageMenu extends JModelLegacy
 {
 	/**
 	 * Method to set the  id
@@ -261,7 +257,6 @@ class FabrikPackageMenu extends JModel
 	 *
 	 * @return  void
 	 */
-
 	public function setId($id)
 	{
 		// Set new form ID
@@ -273,7 +268,6 @@ class FabrikPackageMenu extends JModel
 	 *
 	 * @return string
 	 */
-
 	public function render()
 	{
 		return "menu items to go here";

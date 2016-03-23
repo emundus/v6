@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.list.email
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -22,7 +22,6 @@ require_once COM_FABRIK_FRONTEND . '/helpers/params.php';
  * @subpackage  Fabrik.list.email
  * @since       3.0
  */
-
 class FabrikControllerListemail extends JControllerLegacy
 {
 	/**
@@ -40,7 +39,6 @@ class FabrikControllerListemail extends JControllerLegacy
 	 *
 	 * @return null
 	 */
-
 	public function display($cachable = false, $urlparams = array())
 	{
 		echo "display";
@@ -52,7 +50,6 @@ class FabrikControllerListemail extends JControllerLegacy
 	 *
 	 * @return string html
 	 */
-
 	public function popupwin()
 	{
 		$app = JFactory::getApplication();
@@ -91,7 +88,6 @@ class FabrikControllerListemail extends JControllerLegacy
 	 *
 	 * @return  void
 	 */
-
 	public function doemail()
 	{
 		$app = JFactory::getApplication();

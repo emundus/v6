@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <install version="2.0" type="plugin" plugin="fontcolor" core="1" editable="1">
     <name>WF_FONTCOLOR_TITLE</name>
-    <version>2.5.8</version>
-    <creationDate>16 September 2015</creationDate>
+    <version>2.5.15</version>
+    <creationDate>10 March 2016</creationDate>
     <author>Ryan Demmer</author>
     <authorEmail>info@joomlacontenteditor.net</authorEmail>
     <authorUrl>http://www.joomlacontenteditor.net/</authorUrl>
@@ -11,8 +11,8 @@
     <description>WF_FONTCOLOR_DESC</description>
     <icon>forecolor,backcolor</icon>
     <params group="standard">
-        <param name="foreground_color" type="text" class="color" size="10" default="#000000" label="WF_FONTCOLOR_FORECOLOR" description="WF_FONTCOLOR_FORECOLOR_DESC"/>
-        <param name="background_color" type="text" class="color" size="10" default="#000000" label="WF_FONTCOLOR_BACKCOLOR" description="WF_FONTCOLOR_BACKCOLOR_DESC"/>
+        <param name="foreground_color" type="text" class="color" size="10" default="#000000" label="WF_FORECOLOR_TITLE" description="WF_FONTCOLOR_DESC"/>
+        <param name="background_color" type="text" class="color" size="10" default="#000000" label="WF_BACKCOLOR_TITLE" description="WF_BACKCOLOR_DESC"/>
     </params>
     <params group="buttons">
         <param name="buttons" class="checklist buttonlist" type="list" multiple="multiple" default="forecolor,backcolor" label="WF_PARAM_BUTTONS" description="WF_PARAM_BUTTONS_DESC">

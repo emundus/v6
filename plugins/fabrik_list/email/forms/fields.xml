@@ -20,18 +20,15 @@
 				repeat="true"
 				size="30"
 			/>
-			
-			<field default="0"
-				class="btn-group"
-				description="PLG_LIST_EMAIL_SEND_FROM_USER_DESC"
-				label="PLG_LIST_EMAIL_SEND_FROM_USER_LABEL"
-				name="emailtable_from_user"
-				repeat="true"
-				type="radio">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-			</field>
-			
+
+			<field name="list_email_image_name"
+				type="text"
+				default="envelope"
+				description="PLG_LIST_EMAIL_IMAGE_DESC"
+				label="PLG_LIST_EMAIL_IMAGE_LABEL"
+				repeat="true" size="20"
+			/>
+							
 			<field name="emailtable_condition"
 				type="fabrikeditor"
 				description="PLG_LIST_EMAIL_CONDITION_DESC"
@@ -48,10 +45,56 @@
 					<option value="1">JYES</option>	
 			</field>
 			
+			<field name="checkall"
+				type="radio"
+				class="btn-group"
+				default="0"
+				label="PLG_LIST_EMAIL_CHECKALL_LABEL"
+				description="PLG_LIST_EMAIL_CHECKALL_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>	
+			</field>
+			
+		</fieldset>
+
+		<fieldset name="plg-list-email-sending" label="PLG_LIST_EMAIL_SENDING">
+			<field default="0"
+			       class="btn-group"
+			       description="PLG_LIST_EMAIL_SEND_FROM_USER_DESC"
+			       label="PLG_LIST_EMAIL_SEND_FROM_USER_LABEL"
+			       name="emailtable_from_user"
+			       repeat="true"
+			       type="radio">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field name="email_from"
+			       type="text"
+			       description="PLG_LIST_EMAIL_FROM_DESC"
+			       label="PLG_LIST_EMAIL_FROM_LABEL"
+			       repeat="true" />
+
+			<field name="email_reply_to"
+			       type="text"
+			       description="PLG_LIST_EMAIL_REPLY_TO_DESC"
+			       label="PLG_LIST_EMAIL_REPLY_TO_LABEL"
+			       repeat="true" />
 		</fieldset>
 
 		<fieldset name="plg-list-email-mail" label="PLG_LIST_EMAIL_MAIL">
 
+			<field name="emailtable_email_or_sms"
+				label="PLG_LIST_EMAIL_SMS_SEND_LABEL"
+				description="PLG_LIST_EMAIL_SMS_SEND_DESC"
+				type="list"
+				default="email"
+				repeat="true"
+			>
+				<option value="email">PLG_LIST_EMAIL_SMS_OR_EMAIL_EMAIL</option>
+				<option value="sms">PLG_LIST_EMAIL_SMS_OR_EMAIL_SMS</option>
+			</field>
+			
 			<field name="emailtable_to_how"
 				type="list"
 				default="multi"
@@ -259,5 +302,43 @@
 					type="text"
 				/>
 		</fieldset>
+		
+		<fieldset name="plg-list-email-sms"  label="PLG_FABRIK_LIST_EMAIL_SMS">
+		
+			<field description="PLG_LIST_EMAIL_SMS_GATEWAY_DESC"
+			       directory="components/com_fabrik/helpers/sms_gateways"
+			       hide_default="true"
+			       hide_none="true"
+			       label="PLG_LIST_EMAIL_SMS_GATEWAY_LABEL"
+			       name="emailtable_sms_gateway"
+			       repeat="true"
+			       type="filelist"/>
+
+			<field default=""
+			       label="PLG_LIST_EMAIL_SMS_USERNAME_LABEL"
+			       name="emailtable_sms_username"
+			       description="PLG_LIST_EMAIL_SMS_USERNAME_DESC"
+			       repeat="true"
+			       size="30"
+			       type="text"/>
+
+			<field default=""
+			       label="PLG_LIST_EMAIL_SMS_PASSWORD_LABEL"
+			       description="PLG_LIST_EMAIL_SMS_PASSWORD_DESC"
+			       name="emailtable_sms_password"
+			       repeat="true"
+			       size="30"
+			       type="text"/>
+
+			<field default=""
+			       description="PLG_LIST_EMAIL_SMS_SENDERS_MOBILE_NUM_DESC"
+			       label="PLG_LIST_EMAIL_SMS_SENDERS_MOBILE_NUM_LABEL"
+			       name="emailtable_sms_from"
+			       repeat="true"
+			       size="30"
+			       type="text"/>
+
+		</fieldset>
+		
 	</fields>
 </form>

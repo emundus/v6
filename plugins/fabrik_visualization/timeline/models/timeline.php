@@ -4,12 +4,15 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.timeline
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
 
 jimport('joomla.application.component.model');
 
@@ -22,7 +25,6 @@ require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
  * @subpackage  Fabrik.visualization.timeline
  * @since       3.0
  */
-
 class FabrikModelTimeline extends FabrikFEModelVisualization
 {
 	/**
@@ -37,25 +39,21 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	 *
 	 * @return  string  json encoded event list
 	 */
-
 	public function onAjax_getEvents()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$params = $this->getParams();
 		$lists = $params->get('timeline_table', array());
-		$session = JFactory::getSession();
-
 		$key = 'com_fabrik.timeline.total.' . $input->getInt('visualizationid');
 
-		if (!$session->has($key))
+		if (!$this->session->has($key))
 		{
 			$totals = $this->getTotal();
-			$session->set($key, $totals);
+			$this->session->set($key, $totals);
 		}
 		else
 		{
-			$totals = $session->get($key);
+			$totals = $this->session->get($key);
 		}
 
 		$currentList = $input->getInt('currentList', 0);
@@ -142,7 +140,6 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	 *
 	 * @return  void
 	 */
-
 	protected function endAjax_getEvents(&$res)
 	{
 		$this->clearSession();
@@ -159,14 +156,11 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	 *
 	 * @return  array of events
 	 */
-
 	protected function jsonEvents($listId, $total, $start, $c)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$params = $this->getParams();
-		$document = JFactory::getDocument();
-		$timeZone = new DateTimeZone(JFactory::getConfig()->get('offset'));
+		$timeZone = new DateTimeZone($this->config->get('offset'));
 		$w = new FabrikWorker;
 		jimport('string.normalise');
 		$templates = (array) $params->get('timeline_detailtemplate', array());
@@ -232,7 +226,7 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 					foreach ($group as $row)
 					{
 						$event = new stdClass;
-						$html = $w->parseMessageForPlaceHolder($template, JArrayHelper::fromObject($row), false, true);
+						$html = $w->parseMessageForPlaceHolder($template, ArrayHelper::fromObject($row), false, true);
 
 						if ($eval)
 						{
@@ -306,22 +300,20 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	 *
 	 * @return  array of ints keyed on list id
 	 */
-
 	protected function getTotal()
 	{
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
 		$lists = $params->get('timeline_table', array());
 		$totals = array();
-		$where = $app->input->get('where', array(), 'array');
+		$where = $this->app->input->get('where', array(), 'array');
 
-		foreach ($lists as $listid)
+		foreach ($lists as $listId)
 		{
-			$where = FArrayHelper::getValue($where, $listid, '');
+			$where = FArrayHelper::getValue($where, $listId, '');
 			$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
-			$listModel->setId($listid);
+			$listModel->setId($listId);
 			$listModel->setPluginQueryWhere('timeline', $where);
-			$totals[$listid] = $listModel->getTotalRecords();
+			$totals[$listId] = $listModel->getTotalRecords();
 		}
 
 		return $totals;
@@ -332,14 +324,11 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	 *
 	 * @return  void
 	 */
-
 	protected function clearSession()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$session = JFactory::getSession();
+		$input = $this->app->input;
 		$key = 'com_fabrik.timeline.total.' . $input->getInt('visualizationid');
-		$session->clear($key);
+		$this->session->clear($key);
 	}
 
 	/**
@@ -348,14 +337,11 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	 *
 	 * @return  string  js ini
 	 */
-
 	public function render()
 	{
-		$app = JFactory::getApplication();
 		$params = $this->getParams();
 		$document = JFactory::getDocument();
 		$this->clearSession();
-		$w = new FabrikWorker;
 		jimport('string.normalise');
 
 		// The simile jQuery autodetect and load code is broken as it tests for $ (for which mootools gives a false positive) so include
@@ -381,16 +367,16 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 		$json = json_encode($json);
 		$options = new stdClass;
 		$options->id = $this->getId();
-		$options->listRef = 'list' . $lists[0] . '_' . $app->scope . '_' . $lists[0];
+		$options->listRef = 'list' . $lists[0] . '_' . $this->app->scope . '_' . $lists[0];
 		$options->step = $this->step;
-		$options->admin = (bool) $app->isAdmin();
+		$options->admin = (bool) $this->app->isAdmin();
 		$options->dateFormat = $params->get('timeline_date_format', '%c');
 		$options->orientation = $params->get('timeline_orientation', 'horizontal');
 		$options->currentList = $lists[0];
 
-		$urlfilters = new stdClass;
-		$urlfilters->where = $this->buildQueryWhere();
-		$options->urlfilters = $urlfilters;
+		$urlFilters = new stdClass;
+		$urlFilters->where = $this->buildQueryWhere();
+		$options->urlfilters = $urlFilters;
 
 		$options = json_encode($options);
 		$ref = $this->getJSRenderContext();
@@ -423,11 +409,11 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 		$input = preg_replace('#^[\d\.]*#', '', $input);
 
 		// Lowercase the first character.
-		$first = JString::substr($input, 0, 1);
-		$first = JString::strtolower($first);
+		$first = String::substr($input, 0, 1);
+		$first = String::strtolower($first);
 
 		// Replace the first character with the lowercase character.
-		$input = JString::substr_replace($input, $first, 0, 1);
+		$input = String::substr_replace($input, $first, 0, 1);
 
 		return $input;
 	}
@@ -441,33 +427,30 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	 *
 	 * @return  string  url
 	 */
-
 	protected function getLinkURL($listModel, $row, $c)
 	{
 		$w = new FabrikWorker;
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$params = $this->getParams();
 		$customLink = (array) $params->get('timeline_customlink');
 		$customLink = FArrayHelper::getValue($customLink, $c, '');
 
 		if ($customLink !== '')
 		{
-			$url = @ $w->parseMessageForPlaceHolder($customLink, JArrayHelper::fromObject($row), false, true);
+			$url = @ $w->parseMessageForPlaceHolder($customLink, ArrayHelper::fromObject($row), false, true);
 			$url = str_replace('{rowid}', $row->__pk_val, $url);
 		}
 		else
 		{
-			$nextview = $listModel->canEdit() ? "form" : "details";
+			$nextView = $listModel->canEdit() ? "form" : "details";
 			$table = $listModel->getTable();
 
-			if ($app->isAdmin())
+			if ($this->app->isAdmin())
 			{
-				$url = 'index.php?option=com_fabrik&task=' . $nextview . '.view&formid=' . $table->form_id . '&rowid=' . $row->__pk_val;
+				$url = 'index.php?option=com_fabrik&task=' . $nextView . '.view&formid=' . $table->form_id . '&rowid=' . $row->__pk_val;
 			}
 			else
 			{
-				$url = 'index.php?option=com_' . $package . '&view=' . $nextview . '&formid=' . $table->form_id . '&rowid=' . $row->__pk_val
+				$url = 'index.php?option=com_' . $this->package . '&view=' . $nextView . '&formid=' . $table->form_id . '&rowid=' . $row->__pk_val
 				. '&listid=' . $listModel->getId();
 			}
 		}
@@ -480,7 +463,6 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	 *
 	 * @return  array  band info
 	 */
-
 	protected function getBandInfo()
 	{
 		$params = $this->getParams();
@@ -525,7 +507,6 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	 *
 	 * @return  void
 	 */
-
 	public function setListIds()
 	{
 		if (!isset($this->listids))

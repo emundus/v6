@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -115,7 +115,7 @@ class FabrikAdminViewCron extends JViewLegacy
 		$checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
 		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
 		$title = $isNew ? FText::_('COM_FABRIK_MANAGER_CRON_NEW') : FText::_('COM_FABRIK_MANAGER_CRON_EDIT') . ' "' . $this->item->label . '"';
-		JToolBarHelper::title($title, 'cron.png');
+		JToolBarHelper::title($title, 'clock');
 
 		if ($isNew)
 		{

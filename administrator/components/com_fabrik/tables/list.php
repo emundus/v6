@@ -4,12 +4,15 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\Registry\Registry;
+use Joomla\Utilities\ArrayHelper;
 
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
 
@@ -20,15 +23,13 @@ require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikTableList extends FabTable
 {
 	/**
 	 * Constructor
 	 *
-	 * @param   object  &$db  database object
+	 * @param   JDatabaseDriver  &$db  database object
 	 */
-
 	public function __construct(&$db)
 	{
 		parent::__construct('#__{package}_lists', 'id', $db);
@@ -44,7 +45,6 @@ class FabrikTableList extends FabTable
 	 *
 	 * @return  boolean  True on success.
 	 */
-
 	public function bind($src, $ignore = array())
 	{
 		// Bind the rules.
@@ -57,7 +57,7 @@ class FabrikTableList extends FabTable
 		// Covert the params to a json object if its set as an array
 		if (isset($src['params']) && is_array($src['params']))
 		{
-			$registry = new JRegistry;
+			$registry = new Registry;
 			$registry->loadArray($src['params']);
 			$src['params'] = (string) $registry;
 		}
@@ -72,7 +72,6 @@ class FabrikTableList extends FabTable
 	 *
 	 * @return	string
 	 */
-
 	protected function _getAssetName()
 	{
 		$k = $this->_tbl_key;
@@ -85,7 +84,6 @@ class FabrikTableList extends FabTable
 	 *
 	 * @return	string
 	 */
-
 	protected function _getAssetTitle()
 	{
 		return $this->label;
@@ -101,7 +99,6 @@ class FabrikTableList extends FabTable
 	 *
 	 * @return  boolean  True if successful. False if row not found or on error (internal error state set in that case).
 	 */
-
 	public function load($keys = null, $reset = true)
 	{
 		if (empty($keys))
@@ -169,7 +166,6 @@ class FabrikTableList extends FabTable
 	 *
 	 * @return  boolean  True on success.
 	 */
-
 	public function delete($pk = null)
 	{
 		if (!parent::delete())
@@ -178,7 +174,7 @@ class FabrikTableList extends FabTable
 		}
 
 		$pk = (array) $pk;
-		JArrayHelper::toInteger($pk);
+		ArrayHelper::toInteger($pk);
 
 		if (empty($pk))
 		{

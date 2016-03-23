@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: positions.php 6554 2013-01-16 04:37:28Z steph $
+ * @version   $Id: positions.php 30069 2016-03-08 17:45:33Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 defined('GANTRY_VERSION') or die();
@@ -83,7 +83,7 @@ class GantryFormFieldPositions extends GantryFormField
 		$this->keyName = '';
 		if ($this->type == 'custom') {
 			$tmpName       = str_replace("Position", "Schemas", $this->element['name']);
-			$tmpSchema     = $this->$tmpName;
+			$tmpSchema     = $this->{$tmpName};
 			$this->keyName = key($tmpSchema[1][0]);
 		}
 
@@ -292,7 +292,7 @@ class GantryFormFieldPositions extends GantryFormField
 		$results = "{";
 		$keysref = "{";
 
-		foreach ($this->$name as $key => $set) {
+		foreach ($this->{$name} as $key => $set) {
 			$results .= "'$key': [";
 			$keysref .= "'$key': [";
 

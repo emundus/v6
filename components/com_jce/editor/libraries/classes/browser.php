@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -48,7 +48,8 @@ class WFFileBrowser extends JObject {
                 'validate_mimetype' => 1,
                 'add_random' => 0,
                 'total_files' => 0,
-                'total_size' => 0
+                'total_size' => 0,
+                'remove_exif' => 0
             ),
             'folder_tree' => 1,
             'list_limit' => 'all',
@@ -823,29 +824,30 @@ class WFFileBrowser extends JObject {
 
     private function validateUploadedFile($file) {
         // check the POST data array
-        if (empty($file)) {
-            throw new InvalidArgumentException('INVALID UPLOAD DATA');
-        }
-        // tmp name must exist
-        if (empty($file['tmp_name'])) {
-            throw new InvalidArgumentException('INVALID UPLOAD DATA');
+        if (empty($file) || empty($file['tmp_name'])) {
+            throw new InvalidArgumentException('Upload Failed: No data');
         }
 
         // check for tmp_name and is valid uploaded file
         if (!is_uploaded_file($file['tmp_name'])) {
             @unlink($file['tmp_name']);
-
-            throw new InvalidArgumentException('INVALID UPLOAD DATA');
+            throw new InvalidArgumentException('Upload Failed: Not an uploaded file');
         }
-        
+
+        $upload = $this->get('upload');
+
+        // remove exif data
+        if (!empty($upload['remove_exif']) && preg_match('#\.(jpg|jpeg|png)$#i', $file['name'])) {
+            if (WFUtility::removeExifData($file['tmp_name']) === false) {
+                @unlink($file['tmp_name']);
+                throw new InvalidArgumentException(WFText::_('WF_MANAGER_UPLOAD_EXIF_REMOVE_ERROR'));
+            }
+        }
+
+        // check file for various issues
         if (WFUtility::isSafeFile($file) !== true) {
             @unlink($file['tmp_name']);
-            throw new InvalidArgumentException('INVALID UPLOAD DATA');
-        }
-        
-        if (WFUtility::validateFileName($file['name']) === false) {
-            @unlink($file['tmp_name']);
-            throw new InvalidArgumentException('INVALID UPLOAD DATA');
+            throw new InvalidArgumentException('Upload Failed: Invalid file');
         }
 
         // get extension
@@ -859,26 +861,16 @@ class WFFileBrowser extends JObject {
             throw new InvalidArgumentException(WFText::_('WF_MANAGER_UPLOAD_INVALID_EXT_ERROR'));
         }
 
-        // validate image
-        if (preg_match('#\.(jpeg|jpg|jpe|png|gif|wbmp|bmp|tiff|tif|webp|psd|swc|iff|jpc|jp2|jpx|jb2|xbm|ico|xcf|odg)$#i', $file['name'])) {
-            if (@getimagesize($file['tmp_name']) === false) {
-                @unlink($file['tmp_name']);
+        $size = round(filesize($file['tmp_name']) / 1024);
 
-                throw new InvalidArgumentException('INVALID IMAGE FILE');
-            }
-        }
-
-        $upload = $this->get('upload');
-        $size   = round(filesize($file['tmp_name']) / 1024);
-        
         if (empty($upload['max_size'])) {
             $upload['max_size'] = 1024;
         }
-        
+
         // validate size
         if ($size > (int) $upload['max_size']) {
             @unlink($file['tmp_name']);
-            
+
             throw new InvalidArgumentException(WFText::sprintf('WF_MANAGER_UPLOAD_SIZE_ERROR', $file['name'], $size, $upload['max_size']));
         }
 
@@ -888,23 +880,7 @@ class WFFileBrowser extends JObject {
 
             if (WFMimeType::check($file['name'], $file['tmp_name']) === false) {
                 @unlink($file['tmp_name']);
-
-                throw new InvalidArgumentException('INVALID MIME TYPE');
-            }
-        }
-
-        // check for html tags in files (IE XSS bug)
-        if (!preg_match('#\.(htm|html|xml|txt)$#i', $file['name'])) {
-            $data = JFile::read($file['tmp_name'], false, 256);
-            $tags = 'a,abbr,acronym,address,area,b,base,bdo,big,blockquote,body,br,button,caption,cite,code,col,colgroup,dd,del,dfn,div,dl,dt,em,fieldset,form,h1,h2,h3,h4,h5,h6,head,hr,html,i,img,input,ins,kbd,label,legend,li,link,map,meta,noscript,object,ol,optgroup,option,p,param,pre,q,samp,script,select,small,span,strong,style,sub,sup,table,tbody,td,textarea,tfoot,th,thead,title,tr,tt,ul,var';
-
-            foreach (explode(',', $tags) as $tag) {
-                // check for tag eg: <body> or <body
-                if (stripos($data, '<' . $tag . '>') !== false || stripos($data, '<' . $tag . ' ') !== false) {
-                    @unlink($file['tmp_name']);
-
-                    throw new InvalidArgumentException('INVALID TAG IN FILE');
-                }
+                throw new InvalidArgumentException(WFText::_('WF_MANAGER_UPLOAD_MIME_ERROR'));
             }
         }
     }
@@ -917,14 +893,14 @@ class WFFileBrowser extends JObject {
         // Check for request forgeries
         WFToken::checkToken() or die();
 
-        // check for feature access	
+        // check for feature access
         if (!$this->checkFeature('upload')) {
             JError::raiseError(403, 'Access to this resource is restricted');
         }
 
         $filesystem = $this->getFileSystem();
         jimport('joomla.filesystem.file');
-        
+
         header('Content-Type: text/json;charset=UTF-8');
         header("Expires: Wed, 4 Apr 1984 13:00:00 GMT");
         header("Last-Modified: " . gmdate("D, d M_Y H:i:s") . " GMT");
@@ -938,24 +914,30 @@ class WFFileBrowser extends JObject {
         // validate file data
         $this->validateUploadedFile($file);
 
-        $wf = WFEditor::getInstance();
-
         // get file name
-        $name = JRequest::getVar('name', $file['name']);
-        
-        // decode name
+        $name = (string) JRequest::getVar('name', $file['name']);
+
+        // decode
         $name = rawurldecode($name);
-        
+
         // check name
         if (WFUtility::validateFileName($name) === false) {
-            throw new InvalidArgumentException('INVALID FILE NAME');
+            throw new InvalidArgumentException('Upload Failed: The file name contains an invalid extension.');
         }
-        
+
         // check file name
         WFUtility::checkPath($name);
-        
+
         // get extension from file name
         $ext = WFUtility::getExtension($file['name']);
+
+        // trim extension
+        $ext = trim($ext);
+
+        // check extension exists
+        if (empty($ext) || $ext === $file['name']) {
+            throw new InvalidArgumentException('Upload Failed: The file name does not contain a valid extension.');
+        }
 
         // strip extension
         $name = WFUtility::stripExtension($name);
@@ -964,26 +946,26 @@ class WFFileBrowser extends JObject {
 
         // check name
         if (WFUtility::validateFileName($name) === false) {
-            throw new InvalidArgumentException('INVALID FILE NAME');
+            throw new InvalidArgumentException('Upload Failed: The file name contains an invalid extension.');
         }
 
         // target directory
-        $dir = JRequest::getVar('upload-dir');
-        // deocode directory
+        $dir = (string) JRequest::getVar('upload-dir');
+        // decode
         $dir = rawurldecode($dir);
         // check destination path
         WFUtility::checkPath($dir);
 
         $upload = $this->get('upload');
 
-        // Check file number limits        
+        // Check file number limits
         if (!empty($upload['total_files'])) {
             if ($filesystem->countFiles($dir, true) > $upload['total_files']) {
                 throw new InvalidArgumentException(WFText::_('WF_MANAGER_FILE_LIMIT_ERROR'));
             }
         }
 
-        // Check total file size limit        
+        // Check total file size limit
         if (!empty($upload['total_size'])) {
             $size = $filesystem->getTotalSize($dir);
 
@@ -1034,18 +1016,14 @@ class WFFileBrowser extends JObject {
 
             if ($result instanceof WFFileSystemResult) {
                 if ($result->state === true) {
+                    $name = basename($result->path);
 
-                    $path = $result->path;
-                    // get root dir eg: JPATH_SITE
-                    $root = substr($filesystem->getBaseDir(), 0, -(strlen($filesystem->getRootDir())));
+                    if (empty($result->url)) {
+                        $result->url = WFUtility::makePath($filesystem->getRootDir(), WFUtility::makePath($dir, $name));
+                    }
 
-                    // get relative path
-                    $relative = substr($path, strlen($root));
-                    // clean
-                    $relative = WFUtility::cleanPath($relative, '/');
-
-                    $this->setResult($this->fireEvent('onUpload', array($result->path, $relative)));
-                    $this->setResult(basename($result->path), 'files');
+                    $this->setResult($this->fireEvent('onUpload', array($result->path, $result->url)));
+                    $this->setResult($name, 'files');
                 } else {
                     $this->setResult($result->message, 'error');
                 }
@@ -1061,19 +1039,20 @@ class WFFileBrowser extends JObject {
      * @return string $error on failure.
      */
     public function deleteItem($items) {
-        // check for feature access	
+        // check for feature access
         if (!$this->checkFeature('delete', 'folder') && !$this->checkFeature('delete', 'file')) {
             JError::raiseError(403, 'Access to this resource is restricted');
         }
 
         $filesystem = $this->getFileSystem();
-        $items = explode(",", rawurldecode($items));
+
+        $items = explode(",", rawurldecode((string) $items));
 
         foreach ($items as $item) {
-            // decode
-            $item = rawurldecode($item);
+            // decode and cast as string
+            $item = (string) rawurldecode($item);
 
-            // check path	
+            // check path
             WFUtility::checkPath($item);
 
             if ($filesystem->is_file($item)) {
@@ -1112,24 +1091,24 @@ class WFFileBrowser extends JObject {
      * @return string $error
      */
     public function renameItem() {
-        // check for feature access	
+        // check for feature access
         if (!$this->checkFeature('rename', 'folder') && !$this->checkFeature('rename', 'file')) {
             JError::raiseError(403, 'Access to this resource is restricted');
         }
 
         $args = func_get_args();
 
-        $source = array_shift($args);
-        $destination = array_shift($args);
+        $source       = (string) array_shift($args);
+        $destination  = (string) array_shift($args);
 
-        $source = rawurldecode($source);
-        $destination = rawurldecode($destination);
+        $source       = rawurldecode($source);
+        $destination  = rawurldecode($destination);
 
         WFUtility::checkPath($source);
         WFUtility::checkPath($destination);
 
         // check for extension in destination name
-        if (WFUtility::validateFileName($destination) === false) {
+        if ($destination !== "" && WFUtility::validateFileName($destination) === false) {
             JError::raiseError(403, 'INVALID FILE NAME');
         }
 
@@ -1169,29 +1148,29 @@ class WFFileBrowser extends JObject {
      * @return string $error on failure
      */
     public function copyItem($items, $destination) {
-        // check for feature access	
+        // check for feature access
         if (!$this->checkFeature('move', 'folder') && !$this->checkFeature('move', 'file')) {
             JError::raiseError(403, 'Access to this resource is restricted');
         }
 
         $filesystem = $this->getFileSystem();
 
-        $items = explode(",", rawurldecode($items));
+        $items = explode(",", rawurldecode((string) $items));
 
         // decode
-        $destination = rawurldecode($destination);
+        $destination = rawurldecode(strval($destination));
 
         // check destination path
         WFUtility::checkPath($destination);
-        
+
         // check for extension in destination name
-        if (WFUtility::validateFileName($destination) === false) {
+        if ($destination !== "" && WFUtility::validateFileName($destination) === false) {
             JError::raiseError(403, 'INVALID PATH NAME');
         }
 
         foreach ($items as $item) {
             // decode
-            $item = rawurldecode($item);
+            $item = (string) rawurldecode($item);
 
             // check source path
             WFUtility::checkPath($item);
@@ -1231,29 +1210,29 @@ class WFFileBrowser extends JObject {
      * @return string $error on failure
      */
     public function moveItem($items, $destination) {
-        // check for feature access	
+        // check for feature access
         if (!$this->checkFeature('move', 'folder') && !$this->checkFeature('move', 'file')) {
             JError::raiseError(403, 'Access to this resource is restricted');
         }
 
         $filesystem = $this->getFileSystem();
 
-        $items = explode(",", rawurldecode($items));
+        $items = explode(",", rawurldecode((string) $items));
 
-        // decode
-        $destination = rawurldecode($destination);
+        // decode and cast as string
+        $destination = rawurldecode(strval($destination));
 
         // check destination path
         WFUtility::checkPath($destination);
 
         // check for extension in destination name
-        if (WFUtility::validateFileName($destination) === false) {
+        if ($destination !== "" && WFUtility::validateFileName($destination) === false) {
             JError::raiseError(403, 'INVALID PATH NAME');
         }
 
         foreach ($items as $item) {
             // decode
-            $item = rawurldecode($item);
+            $item = (string) rawurldecode($item);
             // check source path
             WFUtility::checkPath($item);
 
@@ -1298,17 +1277,17 @@ class WFFileBrowser extends JObject {
 
         $args = func_get_args();
 
-        $dir = array_shift($args);
-        $new = array_shift($args);
+        $dir = (string) array_shift($args);
+        $new = (string) array_shift($args);
 
-        // decode
+        // decode and cast as string
         $dir = rawurldecode($dir);
         $new = rawurldecode($new);
 
         $filesystem = $this->getFileSystem();
-        
+
         $name = WFUtility::makeSafe($new, $this->get('websafe_mode'), $this->get('websafe_spaces'), $this->get('websafe_textcase'));
-                
+
         // check for extension in destination name
         if (WFUtility::validateFileName($name) === false) {
             JError::raiseError(403, 'INVALID FOLDER NAME');

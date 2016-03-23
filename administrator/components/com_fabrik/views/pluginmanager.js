@@ -50,9 +50,21 @@ var PluginManager = new Class({
 					});
 					target.toggleClass('pane-toggler-down');
 				});
+
+				this.watchDescriptions(pluginArea);
 			}
 		}.bind(this));
 
+	},
+
+	watchDescriptions: function (pluginArea) {
+		pluginArea.addEvent('keyup:relay(input[name*=plugin_description])', function (e, target) {
+			var container = target.getParent('.actionContainer'),
+				title = container.getElement('.pluginTitle'),
+				plugin = container.getElement('select[name*=plugin]').getValue(),
+				desc = target.getValue();
+			title.set('text', plugin + ': ' + desc);
+		});
 	},
 
 	iniAccordion: function () {
@@ -99,10 +111,11 @@ var PluginManager = new Class({
 	},
 
 	addTop: function (plugin) {
-		var published, show_icon, validate_in, validation_on;
+		var published, show_icon, validate_in, validation_on, must_validate;
 		if (typeOf(plugin) === 'string') {
 			published = 1;
 			show_icon = false;
+			must_validate = false;
 			plugin = plugin ? plugin : '';
 			validate_in = '';
 			validation_on = '';
@@ -110,6 +123,7 @@ var PluginManager = new Class({
 			// Validation plugins
 			published = plugin ? plugin.published : 1;
 			show_icon = plugin ? plugin.show_icon : 1;
+			must_validate = plugin ? plugin.must_validate : 0;
 			validate_in = plugin ? plugin.validate_in : 'both';
 			validation_on = plugin ? plugin.validation_on : 'both';
 			plugin = plugin ? plugin.plugin : '';
@@ -141,6 +155,7 @@ var PluginManager = new Class({
 				'plugin': plugin,
 				'plugin_published': published,
 				'show_icon': show_icon,
+				'must_validate': must_validate,
 				'validate_in': validate_in,
 				'validation_on': validation_on,
 				'c': this.topTotal,
@@ -253,7 +268,14 @@ var PluginManager = new Class({
 				}
 			}.bind(this),
 			onSuccess: function () {
-				document.id('plugins').getElements('.actionContainer')[c].getElement('span.pluginTitle').set('text', plugin);
+				var container = document.id('plugins').getElements('.actionContainer')[c];
+				var title = container.getElement('span.pluginTitle'),
+					heading = plugin,
+					desc = container.getElement('input[name*=plugin_description]');
+				if (desc) {
+					heading += ': ' + desc.getValue();
+				}
+				title.set('text', heading);
 				this.pluginTotal++;
 				this.updateBootStrap();
 				FabrikAdmin.reTip();

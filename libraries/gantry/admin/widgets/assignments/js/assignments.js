@@ -1,6 +1,6 @@
 /*
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 Gantry.Assignments={opacity:{overlay:0.7,label:0.5},init:function(){Gantry.Assignments.overlays();},overlays:function(){var a=new Element("div",{"class":"inherit-overlay"});

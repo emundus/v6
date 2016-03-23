@@ -4,13 +4,15 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.0
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\Utilities\ArrayHelper;
 
 JHtml::_('behavior.tooltip');
 FabrikHelperHTML::formvalidation();
@@ -43,7 +45,7 @@ window.addEvent('domready', function () {
 	<?php
 	$id	= $input->getInt('listid', 0); // from list data view in admin
 	$cid = $input->getVar('cid', array(0), 'array');// from list of lists checkbox selection
-	JArrayHelper::toInteger($cid);
+	ArrayHelper::toInteger($cid);
 	if ($id === 0) :
 		$id = $cid[0];
 	endif;

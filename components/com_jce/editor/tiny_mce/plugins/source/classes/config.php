@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -17,7 +17,7 @@ class WFSourcePluginConfig {
         $settings['source_higlight'] = $wf->getParam('source.highlight', 1, 1, 'boolean');
         $settings['source_numbers'] = $wf->getParam('source.numbers', 1, 1, 'boolean');
         $settings['source_wrap'] = $wf->getParam('source.wrap', 1, 1, 'boolean');
-        $settings['source_format'] = $wf->getParam('source.foramt', 1, 1, 'boolean');
+        $settings['source_format'] = $wf->getParam('source.format', 1, 1, 'boolean');
         $settings['source_tag_closing'] = $wf->getParam('source.tag_closing', 1, 1, 'boolean');
         //$settings['source_selection_match'] = $wf->getParam('source.selection_match', 1, 1, 'boolean');
         

@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.form.redirect
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -24,26 +24,29 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
 class PlgFabrik_FormRedirect extends PlgFabrik_Form
 {
+	/*
+	 * Cache the navIds for "save and next" so we don't run the queries twice
+	 *
+	 * @var  object
+	 */
+	private $navIds = null;
+
 	/**
 	 * Process the plugin, called after form is submitted
 	 *
 	 * @return  bool
 	 */
-
 	public function onLastProcess()
 	{
 		$formModel = $this->getModel();
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$session = JFactory::getSession();
 		$context = $formModel->getRedirectContext();
 
 		// Get existing session params
-		$surl = (array) $session->get($context . 'url', array());
-		$stitle = (array) $session->get($context . 'title', array());
-		$smsg = (array) $session->get($context . 'msg', array());
-		$sshowsystemmsg = (array) $session->get($context . 'showsystemmsg', array());
+		$surl = (array) $this->session->get($context . 'url', array());
+		$stitle = (array) $this->session->get($context . 'title', array());
+		$smsg = (array) $this->session->get($context . 'msg', array());
+		$sshowsystemmsg = (array) $this->session->get($context . 'showsystemmsg', array());
 
 		$this->formModel = $formModel;
 		$w = new FabrikWorker;
@@ -52,6 +55,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 		$this->data = $this->getProcessData();
 
 		$this->data['append_jump_url'] = $params->get('append_jump_url');
+		$this->data['save_and_next'] = $params->get('save_and_next', '0');
 		$this->data['save_in_session'] = $params->get('save_insession');
 		$this->data['jump_page'] = $w->parseMessageForPlaceHolder($params->get('jump_page'), $this->data);
 		$this->data['thanks_message'] = $w->parseMessageForPlaceHolder($params->get('thanks_message'), $this->data);
@@ -64,17 +68,36 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 			unset($smsg[$this->renderOrder]);
 			unset($sshowsystemmsg[$this->renderOrder]);
 
-			$session->set($context . 'url', $surl);
-			$session->set($context . 'title', $stitle);
-			$session->set($context . 'msg', $smsg);
-			$session->set($context . 'showsystemmsg', $sshowsystemmsg);
+			$this->session->set($context . 'url', $surl);
+			$this->session->set($context . 'title', $stitle);
+			$this->session->set($context . 'msg', $smsg);
+			$this->session->set($context . 'showsystemmsg', $sshowsystemmsg);
 
 			return true;
 		}
 
 		$this->_storeInSession();
 		$sshowsystemmsg[$this->renderOrder] = true;
-		$session->set($context . 'showsystemmsg', $sshowsystemmsg);
+		$this->session->set($context . 'showsystemmsg', $sshowsystemmsg);
+
+		if ($this->data['save_and_next'] === '1')
+		{
+			$navIds = $this->getNavIds();
+			$next_rowid = $navIds->next == $navIds->last ? '' : '&rowid=' . $navIds->next;
+			$itemId = FabrikWorker::itemId();
+
+			if ($this->app->isAdmin())
+			{
+				$url = 'index.php?option=com_' . $this->package . '&task=form.view&formid=' . $form->id . $keyIdentifier;
+			}
+			else
+			{
+				$url = 'index.php?option=com_' . $this->package . '&view=form&Itemid=' . $itemId . '&formid=' . $form->id  . '&listid=' . $formModel->getListModel()->getId();
+			}
+
+			$url .= $next_rowid;
+			$this->data['jump_page'] = JRoute::_($url);
+		}
 
 		if ($this->data['jump_page'] != '')
 		{
@@ -82,31 +105,31 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 
 			// 3.0 ajax/module redirect logic handled in form controller not in plugin
 			$surl[$this->renderOrder] = $this->data['jump_page'];
-			$session->set($context . 'url', $surl);
-			$session->set($context . 'redirect_content_how', $params->get('redirect_content_how', 'popup'));
-			$session->set($context . 'redirect_content_popup_width', $params->get('redirect_content_popup_width', '300'));
-			$session->set($context . 'redirect_content_popup_height', $params->get('redirect_content_popup_height', '300'));
-			$session->set($context . 'redirect_content_popup_x_offset', $params->get('redirect_content_popup_x_offset', '0'));
-			$session->set($context . 'redirect_content_popup_y_offset', $params->get('redirect_content_popup_y_offset', '0'));
-			$session->set($context . 'redirect_content_popup_title', $params->get('redirect_content_popup_title', ''));
-			$session->set($context . 'redirect_content_popup_reset_form', $params->get('redirect_content_popup_reset_form', '1'));
+			$this->session->set($context . 'url', $surl);
+			$this->session->set($context . 'redirect_content_how', $params->get('redirect_content_how', 'popup'));
+			$this->session->set($context . 'redirect_content_popup_width', $params->get('redirect_content_popup_width', '300'));
+			$this->session->set($context . 'redirect_content_popup_height', $params->get('redirect_content_popup_height', '300'));
+			$this->session->set($context . 'redirect_content_popup_x_offset', $params->get('redirect_content_popup_x_offset', '0'));
+			$this->session->set($context . 'redirect_content_popup_y_offset', $params->get('redirect_content_popup_y_offset', '0'));
+			$this->session->set($context . 'redirect_content_popup_title', $params->get('redirect_content_popup_title', ''));
+			$this->session->set($context . 'redirect_content_popup_reset_form', $params->get('redirect_content_popup_reset_form', '1'));
 		}
 		else
 		{
 			$msg = $this->data['thanks_message'];
 
 			// Redirect not working in admin.
-			if (!$app->isAdmin())
+			if (!$this->app->isAdmin())
 			{
 				$sshowsystemmsg[$this->renderOrder] = false;
-				$session->set($context . 'showsystemmsg', $sshowsystemmsg);
+				$this->session->set($context . 'showsystemmsg', $sshowsystemmsg);
 
 				$stitle[$this->renderOrder] = $form->label;
-				$session->set($context . 'title', $stitle);
+				$this->session->set($context . 'title', $stitle);
 
 
-				$surl[$this->renderOrder] = 'index.php?option=com_' . $package . '&view=plugin&g=form&plugin=redirect&method=displayThanks&task=pluginAjax';
-				$session->set($context . 'url', $surl);
+				$surl[$this->renderOrder] = 'index.php?option=com_' . $this->package . '&view=plugin&g=form&plugin=redirect&method=displayThanks&task=pluginAjax';
+				$this->session->set($context . 'url', $surl);
 			}
 		}
 
@@ -115,7 +138,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 		// Don't display system message if thanks is empty
 		if (FArrayHelper::getValue($this->data, 'thanks_message', '') !== '')
 		{
-			$session->set($context . 'msg', $smsg);
+			$this->session->set($context . 'msg', $smsg);
 		}
 
 		return true;
@@ -127,7 +150,6 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	 *
 	 * @return  void
 	 */
-
 	public function onDisplayThanks()
 	{
 		$this->displayThanks();
@@ -142,18 +164,14 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	 *
 	 * @return  void
 	 */
-
 	protected function displayThanks($title = '', $message = '')
 	{
-		$session = JFactory::getSession();
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$input = $app->input;
-		$formdata = $session->get('com_' . $package . '.form.data');
-		$context = 'com_' . $package . '.form.' . $formdata['formid'] . '.redirect.';
-		$title = (array) $session->get($context . 'title', $title);
+		$input = $this->app->input;
+		$formdata = $this->session->get('com_' . $this->package . '.form.data');
+		$context = 'com_' . $this->package . '.form.' . $formdata['formid'] . '.redirect.';
+		$title = (array) $this->session->get($context . 'title', $title);
 		$title = array_shift($title);
-		$message = $session->get($context . 'msg', $message);
+		$message = $this->session->get($context . 'msg', $message);
 
 		if ($input->get('fabrik_ajax'))
 		{
@@ -184,11 +202,9 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	 *
 	 * @return bool
 	 */
-
 	public function customProcessResult($method)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$formModel = $this->getModel();
 
 		// If we are applying the form don't run redirect
@@ -235,7 +251,6 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	 *
 	 * @return new jump page
 	 */
-
 	protected function buildJumpPage()
 	{
 		/* $$$rob - I've tested the issue reported in rev 1268
@@ -279,8 +294,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 			}
 		}
 
-		$app = JFactory::getApplication();
-		$isMabmot = $app->input->get('isMambot', false);
+		$isMabmot = $this->app->input->get('isMambot', false);
 
 		if ($isMabmot)
 		{
@@ -308,7 +322,6 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	 *
 	 * @return  void
 	 */
-
 	protected function _appendQS(&$queryvars, $key, $val, $appendEmpty = true)
 	{
 		if (is_array($val))
@@ -345,17 +358,15 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	 *
 	 * @return void
 	 */
-
 	protected function _storeInSession()
 	{
+		/** @var FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$listModel = $formModel->getlistModel();
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$input = $this->app->input;
 		$store = array();
 
-		$pk = FabrikString::safeColNameToArrayKey($listModel->getTable()->db_primary_key);
+		$pk = $listModel->getPrimaryKey(true);
 
 		if ($this->data['save_in_session'] == '1')
 		{
@@ -433,16 +444,16 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 			}
 
 			// Set registry search form entries
-			$key = 'com_' . $package . '.searchform';
+			$key = 'com_' . $this->package . '.searchform';
 			$id = $formModel->get('id');
 
 			// Check for special fabrik_list_filter_all element!
 			$searchAll = $input->get($listModel->getTable()->db_table_name . '___fabrik_list_filter_all');
 
-			$app->setUserState($key . '.form' . $id . '.searchall', $searchAll);
-			$app->setUserState($key . '.form' . $id . '.filters', $store);
+			$this->app->setUserState($key . '.form' . $id . '.searchall', $searchAll);
+			$this->app->setUserState($key . '.form' . $id . '.filters', $store);
 
-			$app->setUserState($key. '.fromForm', $id);
+			$this->app->setUserState($key. '.fromForm', $id);
 		}
 	}
 
@@ -453,7 +464,6 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	 *
 	 * @return bool true if you should redirect, false ignores redirect
 	 */
-
 	protected function shouldRedirect($params)
 	{
 		// If we are applying the form don't run redirect
@@ -462,6 +472,69 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 			return false;
 		}
 
-		return $this->shouldProcess('redirect_conditon');
+		/**
+		 * If noredirect QS present and non 0, don't redirect.
+		 * Used by things like frontend add option on joins to squash any redirection on the join's form.
+		 */
+		if (FArrayHelper::getValue($this->formModel->formData, 'noredirect', 0) !== 0)
+		{
+			return false;
+		}
+
+		$params = $this->getParams();
+		return $this->shouldProcess('redirect_conditon', null, $params);
+	}
+
+	/**
+	 * Get the first last, prev and next record ids
+	 *
+	 * @return  object
+	 */
+	protected function getNavIds()
+	{
+		if (isset($this->navIds))
+		{
+			return $this->navIds;
+		}
+
+		$formModel = $this->getModel();
+		$listModel = $formModel->getListModel();
+		$listModel->filters = null;
+		$filterModel = $listModel->getFilterModel();
+		$filterModel->destroyRequest();
+		$this->app->input->set('view', 'list');
+		$listref = $listModel->getId() . '_com_' . $this->package . '_' . $listModel->getId();
+		$this->app->input->set('listref', $listref);
+		$table = $listModel->getTable();
+		$db = $listModel->getDb();
+		$query = $db->getQuery(true);
+
+		// As we are selecting on primary key we can select all rows - 3000 records load in 0.014 seconds
+		$query->select($table->db_primary_key)->from($table->db_table_name);
+		$query = $listModel->buildQueryJoin($query);
+		$query = $listModel->buildQueryWhere(true, $query);
+		$query = $listModel->buildQueryOrder($query);
+
+		foreach ($listModel->orderEls as $orderName)
+		{
+			$orderName = FabrikString::safeColNameToArrayKey($orderName);
+			$query->select(FabrikString::safeColName($orderName) . ' AS ' . $orderName);
+		}
+
+		$db->setQuery($query);
+		$rows = $db->loadColumn();
+		$keys = array_flip($rows);
+		$o = new stdClass;
+		$o->index = FArrayHelper::getValue($keys, $formModel->getRowId(), 0);
+		$o->first = $rows[0];
+		$o->lastKey = count($rows) - 1;
+		$o->last = $rows[$o->lastKey];
+		$o->next = $o->index + 1 > $o->lastKey ? $o->lastKey : $rows[$o->index + 1];
+		$o->prev = $o->index - 1 < 0 ? 0 : $rows[$o->index - 1];
+		$this->navIds = $o;
+
+		$this->app->input->set('view','form');
+
+		return $this->navIds;
 	}
 }

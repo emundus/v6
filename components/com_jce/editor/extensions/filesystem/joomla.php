@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -565,100 +565,21 @@ class WFJoomlaFileSystem extends WFFileSystem {
         // get suffix
         $suffix = WFFileBrowser::getFileSuffix();
 
-        switch ($method) {
-            case 'multipart' :
-                if ($conflict == 'unique') {
-                    // get extension
-                    $extension = JFile::getExt($name);
-                    // get name without extension
-                    $name = JFile::stripExt($name);
+        if ($conflict == 'unique') {
+            // get extension
+            $extension = JFile::getExt($name);
+            // get name without extension
+            $name = JFile::stripExt($name);
 
-                    while (JFile::exists($dest)) {
-                        $name .= $suffix;
-                        $dest = WFUtility::makePath($path, $name . '.' . $extension);
-                    }
-                }
+            while (JFile::exists($dest)) {
+                $name .= $suffix;
+                $dest = WFUtility::makePath($path, $name . '.' . $extension);
+            }
+        }
 
-                if (JFile::upload($src, $dest)) {
-                    $result->state = true;
-                    $result->path = $dest;
-                }
-
-                break;
-            case 'multipart-chunking' :
-                if ($safe_mode || !is_writable(dirname($dest))) {
-                    $result->message = WFText::_('WF_MANAGER_UPLOAD_NOSUPPORT');
-                    $result->code = 103;
-                } else {
-                    if ($chunk == 0 && $overwrite) {
-                        // get extension
-                        $extension = JFile::getExt($name);
-                        // get name without extension
-                        $name = JFile::stripExt($name);
-
-                        // make unique file name
-                        while (JFile::exists($dest)) {
-                            $name .= $suffix;
-                            $dest = WFUtility::makePath($path, $name . '.' . $extension);
-                        }
-                    }
-
-                    $out = fopen($dest, $chunk == 0 ? "wb" : "ab");
-
-                    if ($out) {
-                        // Read binary input stream and append it to temp file
-                        $in = fopen($src, "rb");
-
-                        if ($in) {
-                            while ($buff = fread($in, 4096)) {
-                                fwrite($out, $buff);
-                            }
-
-                            fclose($in);
-                            fclose($out);
-                            @unlink($src);
-
-                            $result->state = true;
-
-                            if ($chunk == $chunks - 1) {
-                                if (is_file($dest)) {
-                                    $result->path = $dest;
-                                }
-                            }
-                        } else {
-                            $result->code = 102;
-                            $result->message = 'UPLOAD_INPUT_STREAM_ERROR';
-                        }
-                    } else {
-                        $result->code = 102;
-                        $result->message = 'UPLOAD_OUTPUT_STREAM_ERROR';
-                    }
-                }
-                break;
-            case 'stream' :
-                if ($safe_mode || !is_writable(dirname($dest))) {
-                    $result->message = WFText::_('WF_MANAGER_UPLOAD_NOSUPPORT');
-                } else {
-                    // Open destination file
-                    $out = fopen($dest, $chunk == 0 ? "wb" : "ab");
-
-                    if ($out) {
-                        // Read binary input stream and append it to temp file
-                        $in = fopen("php://input", "rb");
-
-                        if ($in) {
-                            while ($buff = fread($in, 4096)) {
-                                fwrite($out, $buff);
-                            }
-
-                            if (fclose($out) && is_file($dest)) {
-                                $result->state = true;
-                                $result->path = $dest;
-                            }
-                        }
-                    }
-                }
-                break;
+        if (JFile::upload($src, $dest, false, true)) {
+            $result->state = true;
+            $result->path = $dest;
         }
 
         return $result;

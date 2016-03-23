@@ -4,12 +4,14 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\String\String;
 
 jimport('joomla.application.component.view');
 
@@ -91,7 +93,7 @@ class FabrikAdminViewemailform extends JViewLegacy
 		{
 			foreach ($badStrings as $v2)
 			{
-				if (JString::strpos($v, $v2) !== false)
+				if (String::strpos($v, $v2) !== false)
 				{
 					throw new RuntimeException(FText::_('JERROR_ALERTNOAUTHOR'), 500);
 				}

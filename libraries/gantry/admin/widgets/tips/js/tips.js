@@ -1,6 +1,6 @@
 /*
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 var GantryTips={init:function(){var a=document.getElements(".gantrytips");if(!a){return;}a.each(function(c,e){var d=c.getElements(".gantrytips-controller .gantrytips-left, .gantrytips-controller .gantrytips-right");

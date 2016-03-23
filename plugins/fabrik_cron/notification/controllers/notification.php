@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.cron.notification
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -22,8 +22,7 @@ require_once COM_FABRIK_FRONTEND . '/helpers/params.php';
  * @subpackage  Fabrik.cron.notification
  * @since       3.0
  */
-
-class FabrikControllerCroncronnotification extends JController
+class FabrikControllerCroncronnotification extends JControllerLegacy
 {
 	/**
 	 * Display the view
@@ -33,7 +32,6 @@ class FabrikControllerCroncronnotification extends JController
 	 *
 	 * @return  JController  A JController object to support chaining.
 	 */
-
 	public function display($cachable = false, $urlparams = false)
 	{
 		$document = JFactory::getDocument();
@@ -61,7 +59,6 @@ class FabrikControllerCroncronnotification extends JController
 	 *
 	 * @return  void
 	 */
-
 	public function delete()
 	{
 		$model = $this->getModel('cronnotification');

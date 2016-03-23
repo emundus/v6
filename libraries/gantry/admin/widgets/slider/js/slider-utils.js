@@ -1,6 +1,6 @@
 /*
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 var GantrySliders={add:function(h,d,b,g){var c=h.replace(/-/,"_"),e=document.id(c+"-wrapper").getElement(".slider"),a=document.id(c+"-wrapper").getElement(".knob"),f=document.id(h);

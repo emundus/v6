@@ -1,6 +1,6 @@
 /*
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 ((function(){var a=new Class({Implements:[Options,Events,Chain],options:{duration:3000,position:"upperRight",container:null,bodyFx:null,itemFx:null,margin:{x:10,y:10},offset:10,className:"roar",onShow:function(){},onHide:function(){},onRender:function(){}},initialize:function(b){this.setOptions(b);

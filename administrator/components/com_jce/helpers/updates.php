@@ -5,7 +5,7 @@
  * @copyright  Copyright (c) 2010-2013 Nicholas K. Dionysopoulos / AkeebaBackup.com
  * @copyright  Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
  * @license    GNU LGPLv3 or later <http://www.gnu.org/copyleft/lesser.html>
- * 
+ *
  * Based on the LiveUpdateDownloadHelper class from Akeeba LiveUpdate
  */
 defined('_JEXEC') or die();
@@ -20,10 +20,10 @@ class UpdatesHelper {
 
         if (file_exists($cacert)) {
             @curl_setopt($ch, CURLOPT_CAINFO, $cacert);
-            
+
             return true;
         }
-        
+
         return false;
     }
 
@@ -31,8 +31,8 @@ class UpdatesHelper {
      * Fetches update information from the server using cURL or fopen
      * @param   string $url     The URL to check
      * @param   string $data    Data to send via POST
-     * 
-     * @return  mixed  Result string on success, false on failure 
+     *
+     * @return  mixed  Result string on success, false on failure
      */
     public function check($url, $data) {
         $result = false;
@@ -48,6 +48,8 @@ class UpdatesHelper {
             curl_setopt($ch, CURLOPT_ENCODING, 'gzip');
             curl_setopt($ch, CURLOPT_TIMEOUT, 30);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            // needed to display errors
+            curl_setopt($ch, CURLOPT_FAILONERROR, true);
             // The @ sign allows the next line to fail if open_basedir is set or if safe mode is enabled
             @curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
             @curl_setopt($ch, CURLOPT_MAXREDIRS, 20);
@@ -62,7 +64,16 @@ class UpdatesHelper {
 
             // file download
             if ($result === false) {
-                return array('error' => 'CURL ERROR : ' . curl_errno($ch) . ' - ' . curl_error($ch));
+                $error  = curl_error($ch);
+                $num    = (int) curl_errno($ch);
+
+                if (!$error && $num === 7) {
+                  $error = 'Failed to connect() to host or proxy';
+                }
+
+                curl_close($ch);
+
+                return array('error' => 'CURL ERROR : ' . $num . ' - ' . $error);
             }
 
             curl_close($ch);

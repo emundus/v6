@@ -1,8 +1,8 @@
 <?php
 /**
- * @version        $Id: gantryarrayhelper.class.php 6491 2013-01-15 02:25:56Z btowles $
+ * @version        $Id: gantryarrayhelper.class.php 30069 2016-03-08 17:45:33Z matias $
  * @author         RocketTheme http://www.rockettheme.com
- * @copyright      Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright      Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license        http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * derived from Joomla with original copyright and license
@@ -66,9 +66,9 @@ class GantryArrayHelper
 			$obj = new $class();
 			foreach ($array as $k => $v) {
 				if (is_array($v)) {
-					$obj->$k = GantryArrayHelper::toObject($v, $class);
+					$obj->{$k} = GantryArrayHelper::toObject($v, $class);
 				} else {
-					$obj->$k = $v;
+					$obj->{$k} = $v;
 				}
 			}
 		}
@@ -152,8 +152,8 @@ class GantryArrayHelper
 				$item = & $array[$i];
 				if (is_array($item) && isset ($item[$index])) {
 					$result[] = $item[$index];
-				} elseif (is_object($item) && isset ($item->$index)) {
-					$result[] = $item->$index;
+				} elseif (is_object($item) && isset ($item->{$index})) {
+					$result[] = $item->{$index};
 				}
 				// else ignore the entry
 			}
@@ -295,10 +295,10 @@ class GantryArrayHelper
 			if (array_key_exists($i, $params['direction'])) {
 				$direction = $params['direction'][$i];
 			}
-			if ($a->$params['key'][$i] > $b->$params['key'][$i]) {
+			if ($a->{$params['key'][$i]} > $b->{$params['key'][$i]}) {
 				return $direction;
 			}
-			if ($a->$params['key'][$i] < $b->$params['key'][$i]) {
+			if ($a->{$params['key'][$i]} < $b->{$params['key'][$i]}) {
 				return -1 * $direction;
 			}
 		}

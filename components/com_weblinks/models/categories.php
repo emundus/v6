@@ -1,33 +1,33 @@
 <?php
 /**
- * @copyright	Copyright (C) 2005 - 2014 Open Source Matters, Inc. All rights reserved.
- * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ * @package     Joomla.Site
+ * @subpackage  com_weblinks
+ *
+ * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.modellist');
-
 /**
  * This models supports retrieving lists of article categories.
  *
- * @package		Joomla.Site
- * @subpackage	com_weblinks
- * @since		1.6
+ * @since  1.6
  */
 class WeblinksModelCategories extends JModelList
 {
 	/**
-	 * Model context string.
+	 * Context string for the model type.  This is used to handle uniqueness
+	 * when dealing with the getStoreId() method and caching data structures.
 	 *
-	 * @var		string
+	 * @var  string
 	 */
-	public $_context = 'com_weblinks.categories';
+	protected $context = 'com_weblinks.categories';
 
 	/**
 	 * The category context (allows other extensions to derived from this model).
 	 *
-	 * @var		string
+	 * @var  string
 	 */
 	protected $_extension = 'com_weblinks';
 
@@ -40,7 +40,7 @@ class WeblinksModelCategories extends JModelList
 	 *
 	 * Note. Calling getState in this method will result in recursion.
 	 *
-	 * @since	1.6
+	 * @since   1.6
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
@@ -48,7 +48,7 @@ class WeblinksModelCategories extends JModelList
 		$this->setState('filter.extension', $this->_extension);
 
 		// Get the parent id if defined.
-		$parentId = JRequest::getInt('id');
+		$parentId = $app->input->getInt('id');
 		$this->setState('filter.parentId', $parentId);
 
 		$params = $app->getParams();
@@ -65,9 +65,9 @@ class WeblinksModelCategories extends JModelList
 	 * different modules that might need different sets of data or different
 	 * ordering requirements.
 	 *
-	 * @param	string		$id	A prefix for the store id.
+	 * @param   string  $id	A prefix for the store id.
 	 *
-	 * @return	string		A store id.
+	 * @return  string  A store id.
 	 */
 	protected function getStoreId($id = '')
 	{
@@ -87,24 +87,29 @@ class WeblinksModelCategories extends JModelList
 	 */
 	public function getItems()
 	{
-		if(!count($this->_items))
+		if (!count($this->_items))
 		{
 			$app = JFactory::getApplication();
 			$menu = $app->getMenu();
 			$active = $menu->getActive();
-			$params = new JRegistry();
-			if($active)
+			$params = new JRegistry;
+
+			if ($active)
 			{
 				$params->loadString($active->params);
 			}
+
 			$options = array();
 			$options['countItems'] = $params->get('show_cat_num_links', 1) || !$params->get('show_empty_categories_cat', 0);
 			$categories = JCategories::getInstance('Weblinks', $options);
 			$this->_parent = $categories->get($this->getState('filter.parentId', 'root'));
-			if(is_object($this->_parent))
+
+			if (is_object($this->_parent))
 			{
 				$this->_items = $this->_parent->getChildren();
-			} else {
+			}
+			else
+			{
 				$this->_items = false;
 			}
 		}
@@ -114,7 +119,7 @@ class WeblinksModelCategories extends JModelList
 
 	public function getParent()
 	{
-		if(!is_object($this->_parent))
+		if (!is_object($this->_parent))
 		{
 			$this->getItems();
 		}
