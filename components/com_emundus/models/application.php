@@ -487,8 +487,9 @@ class EmundusModelApplication extends JModelList
                                 try {
                                     $this->_db->setQuery( $query );
                                     $res = $this->_db->loadRow();
-                                    $iteme->content = $res[1];
-                                    $iteme->content_id = $res[0];
+
+                                    $iteme->content = @$res[1];
+                                    $iteme->content_id = @$res[0];
                                     
                                     if ($iteme->plugin == 'databasejoin') {
                                         $params = json_decode($iteme->params);
@@ -499,8 +500,8 @@ class EmundusModelApplication extends JModelList
                                             try {
                                                 $this->_db->setQuery( $query );
                                                 $res = $this->_db->loadRow();
-                                                $iteme->content = $res[1];
-                                                $iteme->content_id = $res[0];
+                                                $iteme->content = @$res[1];
+                                                $iteme->content_id = @$res[0];
                                             } catch (Exception $e) {
                                                 echo $e->getMessage();
                                             }
