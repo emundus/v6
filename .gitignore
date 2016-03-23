@@ -8,6 +8,7 @@
 /tmp/*
 /stats/*
 /administrator/cache/*
+/administrator/cache/GantryAdmin/*
 /configuration.php
 /templates/rt_afterburner2/css-compiled/*
 /images/emundus/files/*
