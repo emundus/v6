@@ -11,8 +11,6 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
-
 jimport('joomla.application.component.model');
 jimport('joomla.filesystem.file');
 
@@ -294,7 +292,7 @@ class FabrikFEModelPluginmanager extends FabModel
 			$group = 'list';
 		}
 
-		$group = String::strtolower($group);
+		$group = JString::strtolower($group);
 		/* $$$ rob ONLY import the actual plugin you need otherwise ALL $group plugins are loaded regardless of whether they
 		* are used or not memory changes:
 		* Application 0.322 seconds (+0.081); 22.92 MB (+3.054) - pluginmanager: form email imported
@@ -326,11 +324,21 @@ class FabrikFEModelPluginmanager extends FabModel
 			}
 		}
 
-		$class = 'plgFabrik_' . String::ucfirst($group) . String::ucfirst($className);
+		$class = 'plgFabrik_' . JString::ucfirst($group) . JString::ucfirst($className);
 		$conf = array();
-		$conf['name'] = String::strtolower($className);
-		$conf['type'] = String::strtolower('fabrik_' . $group);
-		$plugIn = new $class($dispatcher, $conf);
+		$conf['name'] = JString::strtolower($className);
+		$conf['type'] = JString::strtolower('fabrik_' . $group);
+
+		if (class_exists($class))
+		{
+			$plugIn = new $class($dispatcher, $conf);
+		}
+		else
+		{
+			// Allow for namespaced plugins
+			$class = 'Fabrik\\Plugins\\' . JString::ucfirst($group) . '\\' . JString::ucfirst($className);
+			$plugIn = new $class($dispatcher, $conf);
+		}
 
 		// Needed for viz
 		$client = JApplicationHelper::getClientInfo(0);
@@ -406,11 +414,17 @@ class FabrikFEModelPluginmanager extends FabModel
 			$query = $db->getQuery(true);
 			$select = '*, e.name AS name, e.id AS id, e.published AS published, e.label AS label,'
 			. 'e.plugin, e.params AS params, e.access AS access, e.ordering AS ordering';
+
+			/**
+			 * Changed this code to use two separate queries, rather than joining #__extensions on the
+			 * plugin name, as the J! 3.5 release changed collation of J! table, and this breaks the
+			 * for some sites with older MySQL or non-standard collation
+			 */
+
+			// build list of plugins used on this form ...
 			$query->select($select);
 			$query->from('#__{package}_elements AS e');
-			$query->join('INNER', '#__extensions AS p ON p.element = e.plugin');
 			$query->where('group_id IN (' . implode(',', $groupIds) . ')');
-			$query->where('p.folder = "fabrik_element"');
 
 			// Ignore trashed elements
 			$query->where('e.published != -2');
@@ -419,6 +433,16 @@ class FabrikFEModelPluginmanager extends FabModel
 
 			$elements = $db->loadObjectList();
 
+			// now build list of all available Fabrik plugins ...
+			$query->clear();
+			$query
+				->select('element')
+				->from('#__extensions')
+				->where('folder = "fabrik_element"')
+				->where('enabled = "1"', 'AND');
+			$db->setQuery($query);
+			$extensions = $db->loadObjectList('element');
+
 			// Don't assign the elements into Joomla's main dispatcher as this causes out of memory errors in J1.6rc1
 			$dispatcher = new JDispatcher;
 			$groupModels = $form->getGroups();
@@ -426,10 +450,26 @@ class FabrikFEModelPluginmanager extends FabModel
 
 			foreach ($elements as $element)
 			{
+				// see if this plugin has been uninstalled or unpubished in J!
+				if (!array_key_exists($element->plugin, $extensions))
+				{
+					continue;
+				}
+
 				JDEBUG ? $profiler->mark('pluginmanager:getFormPlugins:' . $element->id . '' . $element->plugin) : null;
 				require_once JPATH_PLUGINS . '/fabrik_element/' . $element->plugin . '/' . $element->plugin . '.php';
 				$class = 'PlgFabrik_Element' . $element->plugin;
-				$pluginModel = new $class($dispatcher, array());
+
+				if (class_exists($class))
+				{
+					$pluginModel = new $class($dispatcher, array());
+				}
+				else
+				{
+					// Allow for namespaced plugins
+					$class = 'Fabrik\\Plugins\\' . JString::ucfirst($group) . '\\' . JString::ucfirst($element->plugin);
+					$pluginModel = new $class($dispatcher, array());
+				}
 
 				if (!is_object($pluginModel))
 				{

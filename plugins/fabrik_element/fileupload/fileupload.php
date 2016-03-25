@@ -11,7 +11,6 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
 use Joomla\Utilities\ArrayHelper;
 
 require_once COM_FABRIK_FRONTEND . '/helpers/image.php';
@@ -261,7 +260,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$value = $this->checkForSingleCropValue($value);
 
 		// Repeat_image_repeat_image___params
-		$rawValues = count($value) == 0 ? array() : array_fill(0, count($value), 0);
+		$rawValues = count($value) == 0 ? array() : FArrayHelper::array_fill(0, count($value), 0);
 		$fileData = $this->getFormModel()->data;
 		$rawKey = $this->getFullName(true, false) . '_raw';
 		$rawValues = FArrayHelper::getValue($fileData, $rawKey, $rawValues);
@@ -713,7 +712,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	{
 		// $render loaded in required file.
 		$render = null;
-		$ext = String::strtolower(JFile::getExt($file));
+		$ext = JString::strtolower(JFile::getExt($file));
 
 		if (JFile::exists(JPATH_ROOT . '/plugins/fabrik_element/fileupload/element/custom/' . $ext . '.php'))
 		{
@@ -843,11 +842,12 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			$displayData = new stdClass;
 			$displayData->canDownload = $canDownload;
 			$displayData->title = $title;
+			$displayData->file = $data;
 			$displayData->noAccessImage = COM_FABRIK_LIVESITE . 'media/com_fabrik/images/' . $params->get('fu_download_noaccess_image');
 			$displayData->downloadImg = ($downloadImg && JFile::exists('media/com_fabrik/images/' . $downloadImg)) ? COM_FABRIK_LIVESITE . 'media/com_fabrik/images/' . $downloadImg : '';
 			$displayData->href =  COM_FABRIK_LIVESITE
 				. 'index.php?option=com_' . $this->package . '&amp;task=plugin.pluginAjax&amp;plugin=fileupload&amp;method=ajax_download&amp;format=raw&amp;element_id='
-				. $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=' . $i;;
+				. $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0&ajaxIndex=' . $i;
 
 			return $layout->render($displayData);
 		}
@@ -1046,7 +1046,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			return true;
 		}
 
-		$curr_f_ext = String::strtolower(JFile::getExt($myFileName));
+		$curr_f_ext = JString::strtolower(JFile::getExt($myFileName));
 		array_walk($aFileTypes, create_function('&$v', '$v = Joomla\String\String::strtolower($v);'));
 
 		return in_array($curr_f_ext, $aFileTypes);
@@ -1853,7 +1853,6 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		if (!$storage->upload($tmpFile, $filePath))
 		{
 			$uploader->moveError = true;
-			$this->setError(100, JText::sprintf('PLG_ELEMENT_FILEUPLOAD_UPLOAD_ERR', $tmpFile, $filePath));
 
 			return;
 		}
@@ -1974,7 +1973,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			$params = $this->getParams();
 			$storageType = JFilterInput::getInstance()->clean($params->get('fileupload_storage_type', 'filesystemstorage'), 'CMD');
 			require_once JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptors/' . $storageType . '.php';
-			$storageClass = String::ucfirst($storageType);
+			$storageClass = JString::ucfirst($storageType);
 			$this->storage = new $storageClass($params);
 		}
 
@@ -2135,9 +2134,9 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		{
 			$links = array();
 
-			foreach ($values as $v)
+			foreach ($values as $k => $v)
 			{
-				$links[] = $this->downloadLink($v, $data, $repeatCounter);
+				$links[] = $this->downloadLink($v, $data, $repeatCounter, $k);
 			}
 
 			return count($links) < 2 ? implode("\n", $links) : '<ul class="fabrikRepeatData"><li>' . implode('</li><li>', $links) . '</li></ul>';
@@ -2174,7 +2173,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 						$v != ''
 						&& (
 							$storage->exists(COM_FABRIK_BASE . $v)
-							|| String::substr($v, 0, 4) == 'http')
+							|| JString::substr($v, 0, 4) == 'http')
 						)
 					)
 				{
@@ -2364,10 +2363,11 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	 * @param   string  $value          File path
 	 * @param   array   $data           Row
 	 * @param   int     $repeatCounter  Repeat counter
+	 * @param   int     $ajaxIndex          Index of AJAX
 	 *
 	 * @return	string	Download link
 	 */
-	protected function downloadLink($value, $data, $repeatCounter = 0)
+	protected function downloadLink($value, $data, $repeatCounter = 0, $ajaxIndex)
 	{
 		$input = $this->app->input;
 		$params = $this->getParams();
@@ -2402,6 +2402,8 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			$title_name = str_replace('.', '___', $params->get('fu_title_element'));
 		}
 
+		$fileName = '';
+
 		if (is_array($formModel->data))
 		{
 			if (array_key_exists($title_name, $formModel->data))
@@ -2413,6 +2415,8 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 					$title = FArrayHelper::getValue($titles, $repeatCounter, $title);
 				}
 			}
+
+			$fileName = FArrayHelper::getValue($formModel->data, $this->getFullName(true, false), '');
 		}
 
 		$downloadImg = $params->get('fu_download_access_image');
@@ -2421,11 +2425,13 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$displayData = new stdClass;
 		$displayData->canDownload = $canDownload;
 		$displayData->title = $title;
+		$displayData->file = $fileName;
+		$displayData->ajaxIndex = $ajaxIndex;
 		$displayData->noAccessImage = COM_FABRIK_LIVESITE . 'media/com_fabrik/images/' . $params->get('fu_download_noaccess_image');
 		$displayData->downloadImg = ($downloadImg && JFile::exists('media/com_fabrik/images/' . $downloadImg)) ? COM_FABRIK_LIVESITE . 'media/com_fabrik/images/' . $downloadImg : '';
 		$displayData->href = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $this->package
 			. '&task=plugin.pluginAjax&plugin=fileupload&method=ajax_download&format=raw&element_id='
-			. $elementId . '&formid=' . $formId . '&rowid=' . $rowId . '&repeatcount=' . $repeatCounter;
+			. $elementId . '&formid=' . $formId . '&rowid=' . $rowId . '&repeatcount=' . $repeatCounter . '&ajaxIndex=' . $ajaxIndex;
 
 
 		return $layout->render($displayData);
@@ -2481,7 +2487,6 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	public function onAjax_upload()
 	{
 		$input = $this->app->input;
-		$this->loadMeForAjax();
 
 		/*
 		 * Got this warning on fabrikar.com - not sure why set testing with errors off:
@@ -2527,6 +2532,15 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 				'size' => $_FILES['file']['size']
 			);
 			$filePath = $this->_processIndUpload($file, '', 0);
+
+			if (empty($filePath))
+			{
+				$o->error = FText::_('PLG_ELEMENT_FILEUPLOAD_UPLOAD_ERR');
+				echo json_encode($o);
+
+				return;
+			}
+
 			$uri = $this->getStorage()->pathToURL($filePath);
 			$o->filepath = $filePath;
 			$o->uri = $uri;
@@ -2778,7 +2792,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	protected function _return_bytes($val)
 	{
 		$val = trim($val);
-		$last = String::strtolower(substr($val, -1));
+		$last = JString::strtolower(substr($val, -1));
 
 		if ($last == 'g')
 		{
@@ -2916,6 +2930,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$this->lang->load('com_fabrik.plg.element.fabrikfileupload', JPATH_ADMINISTRATOR);
 		$rowId = $input->get('rowid', '', 'string');
 		$repeatCount = $input->getInt('repeatcount', 0);
+		$ajaxIndex = $input->getInt('ajaxIndex', 0);
 		$listModel = $this->getListModel();
 		$row = $listModel->getRow($rowId, false, true);
 
@@ -2965,7 +2980,13 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$filePath = $row->$elName;
 		$filePath = FabrikWorker::JSONtoData($filePath, false);
 		$filePath = is_object($filePath) ? FArrayHelper::fromObject($filePath) : (array)$filePath;
-		$filePath = FArrayHelper::getValue($filePath, $repeatCount);
+
+		if ($this->getGroupModel()->canRepeat())
+		{
+			$filePath = FArrayHelper::getValue($filePath, $repeatCount);
+		}
+
+		$filePath = FArrayHelper::getValue($filePath, $ajaxIndex);
 		$filePath = $storage->getFullPath($filePath);
 		$fileContent = $storage->read($filePath);
 

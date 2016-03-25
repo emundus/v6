@@ -14,7 +14,8 @@
 // Check to ensure this file is within the rest of the framework
 defined('JPATH_BASE') or die();
 
-require_once JPATH_LIBRARIES . '/joomla/document/html/html.php';
+
+file_exists(JPATH_LIBRARIES . '/joomla/document/html/html.php') && require_once JPATH_LIBRARIES . '/joomla/document/html/html.php';
 require_once JPATH_SITE . '/components/com_fabrik/helpers/pdf.php';
 
 /**
@@ -137,6 +138,13 @@ class JDocumentpdf extends JDocumentHTML
 		$pdf = $this->engine;
 		$data = parent::render();
 		FabrikPDFHelper::fullPaths($data);
+
+		/**
+		 * I think we need this to handle some HTML entities when rendering otherlanguages (like Polish),
+		 * but haven't tested it much
+		 */
+		$data = mb_convert_encoding($data,'HTML-ENTITIES','UTF-8');
+
 		$pdf->load_html($data);
 		$config = JComponentHelper::getParams('com_fabrik');
 
