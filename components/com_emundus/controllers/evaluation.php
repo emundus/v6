@@ -690,7 +690,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $model = $this->getModel('Evaluation');
         $defaultElements = $model->getEvaluationElementsName(0, 1);
         //var_dump($defaultElements);die();
-        $elements = EmundusHelperFilters::getElements();
+        $elements = EmundusHelperFiles::getElements();
         $res = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);
         echo json_encode((object)$res);
         exit;
