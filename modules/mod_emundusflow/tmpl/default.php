@@ -22,17 +22,17 @@ if ($sent>0) {
 }
 ?>
 <div class="ui tablet stackable steps">
-  <div class="<?php echo ($view=="form")?"active":""; ?><?php echo $step_form; ?> step">
+  <div class="<?php echo ($view=="form")?"active":""; ?> <?php echo $step_form; ?> step">
   	<i class="large text file outline icon"></i>
   	<div class="content">
     	<div class="description"><?php echo  $forms.'% '.JText::_('FORM_FILLED'); ?></div>
     </div>
   </div>
-  <div class="<?php echo ($view=="checklist")?"active":""; ?><?php echo $step_attachment; ?> step">
+  <div class="<?php echo ($view=="checklist")?"active":""; ?> <?php echo $step_attachment; ?> step">
   	<i class="large attach outline icon"></i>
     <?php echo  $attachments.'% '.JText::_('ATTACHMENT_SENT'); ?>
   </div>
-  <div class="<?php echo ($option=="com_hikashop")?"active":""; ?><?php echo $step_paiement; ?> step">
+  <div class="<?php echo ($option=="com_hikashop")?"active":""; ?> <?php echo $step_paiement; ?> step">
   	<i class="large payment outline icon"></i>
     <?php echo  JText::_('APPLICATION_PAID'); ?>
   </div>
