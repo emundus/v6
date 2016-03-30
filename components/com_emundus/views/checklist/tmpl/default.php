@@ -17,7 +17,7 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
             <h2><?php echo $this->title; ?></h2>
             <?php 
                 if ($this->sent && count($this->result) == 0) 
-                    echo '<h2>'.JText::_('APPLICATION_SENT').'</h2>';
+                    echo '<h3>'.JText::_('APPLICATION_SENT').'</h3>';
                 else 
                     echo $this->text;
     
@@ -96,7 +96,7 @@ if(!$this->sent) : ?>
                 <input type="hidden" name="label" value="'.$attachment->lbl.'"/>
                 <div class="input-group">
                     <span class="input-group-btn">
-                        <input type="file" name="file" />
+                        <input type="file" name="file" style="opacity:1;font-size:20px" />
                         <input type="hidden" class="form-control" readonly="">
                     <div class="col-sm-5"><input type="text" class="form-control" name="description" placeholder="'.JText::_('SHORT_DESC').'" /></div>
                     <input class="btn btn-success" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/>
