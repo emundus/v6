@@ -14,7 +14,7 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
     <fieldset>
         <legend><?php echo $this->need<2?JText::_('CHECKLIST'):JText::_('RESULTS'); ?></legend>
         <div class = "<?php echo $this->need?'checklist'.$this->need:'checklist'.'0'; ?>" id="info_checklist">
-            <h2><?php echo $this->title; ?></h2>
+            <h3><?php echo $this->title; ?></h3>
             <?php 
                 if ($this->sent && count($this->result) == 0) 
                     echo '<h3>'.JText::_('APPLICATION_SENT').'</h3>';
@@ -23,8 +23,8 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
     
             if(!$this->need) { 
             ?>
-                    <h2><a href="<?php echo $this->sent?'index.php?option=com_emundus&task=pdf':$this->confirm_form_url; ?>" class="<?php echo $this->sent?'appsent':'sent'; ?>" target="<?php echo $this->sent?'_blank':''; ?>"><?php echo $this->sent?JText::_('PRINT_APPLICATION'):JText::_('SEND_APPLICATION'); ?></a>
-                    </h2>
+                    <h3><a href="<?php echo $this->sent?'index.php?option=com_emundus&task=pdf':$this->confirm_form_url; ?>" class="<?php echo $this->sent?'appsent':'sent'; ?>" target="<?php echo $this->sent?'_blank':''; ?>"><?php echo $this->sent?JText::_('PRINT_APPLICATION'):JText::_('SEND_APPLICATION'); ?></a>
+                    </h3>
                 <?php } ?>
         </div>
     </fieldset>
