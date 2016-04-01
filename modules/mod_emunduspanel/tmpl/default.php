@@ -7,16 +7,13 @@ if (!empty($tab)) {
 <fieldset>
 	<?php
     if(isset($user->profile) && $user->profile>0) {
-      /*  $name = $user->profile;
-        $query='SELECT label,id FROM #__emundus_setup_profiles WHERE id ='.$name;
-        $db->setQuery($query);
-        $label = $db->loadResult();*/
+
         $title = $user->profile_label;
         //$title = strlen($user->campaign_name)>3?$user->campaign_name:$user->profile_label;
         if($show_profile_link == 1)
-        	echo '<a href="index.php?option=com_users&view=profile&layout=edit"><h2>'.$title. ' <span class="icon-cog"></span></h2></a>';
+        	echo '<a href="index.php?option=com_users&view=profile&layout=edit"><legend>'.$title. ' <span class="icon-cog"></span></legend></a>';
         else
-        	echo '<h2>'.$title.'</h2>';
+        	echo '<legend>'.$title.'</legend>';
     }
     
     ?>
@@ -39,22 +36,9 @@ if (!empty($tab)) {
         }
 		$j++;
     } 
-     echo '</div>';
-    echo '</div>';
-	/* // Apply again
-	$query='SELECT count(id) as cpt FROM #__emundus_setup_campaigns 
-			WHERE id NOT IN (
-				select campaign_id FROM #__emundus_campaign_candidature WHERE applicant_id='.$user->id.'
-			)';
-	$db->setQuery($query);
-	$cpt = $db->loadResult();
-
-	if (@$user->applicant == 1 && @$user->candidature_posted == 1 && @$user->candidature_incomplete == 0 && $cpt > 0 && $applicant_can_renew) {
-		$str = '<a href="index.php?option=com_emundus&view=renew_application"><img src="'.JURI::Base().'media/com_emundus/images/icones/renew.png" /></a>';
-		$str .= '<br/><a class="text" href="'.JURI::Base().'index.php?option=com_emundus&view=renew_application">'.JText::_('RENEW_APPLICATION').'</a>';
-		echo '<td align="center">'.$str.'</td>';
-	}
-	*/
-    ?>
+   	?>
+    </div>
+    </div>
+    
 </fieldset>
 <?php } ?>
