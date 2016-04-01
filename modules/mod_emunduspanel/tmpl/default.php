@@ -4,7 +4,7 @@ JHTML::stylesheet( 'emundus.css', JURI::Base().'modules/mod_emunduspanel/style/'
 
 if (!empty($tab)) {
 ?>
-<fieldset>
+<fieldset class="ui existing segment">
 	<?php
     if(isset($user->profile) && $user->profile>0) {
 

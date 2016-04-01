@@ -2,11 +2,6 @@
 defined('_JEXEC') or die('Restricted access'); 
 
 
-if($show_programme) {
-?>
-	<h3> <?php echo $user->campaign_name; ?> <?php echo @$renew; ?></h3>
-<?php 
-}
 $renew='';
 $step_form = $forms<100?'':'completed';
 $step_attachment = $attachments<100?'':'completed';
@@ -25,6 +20,7 @@ if ($sent>0) {
   <div class="<?php echo ($view=="form")?"active":""; ?> <?php echo $step_form; ?> step">
   	<i class="large text file outline icon"></i>
   	<div class="content">
+  		<div class="title"><?php echo ($show_programme==1)?$user->campaign_name.' '.@$renew:''; ?></div>
     	<div class="description"><?php echo  $forms.'% '.JText::_('FORM_FILLED'); ?></div>
     </div>
   </div>
