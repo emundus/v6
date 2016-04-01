@@ -831,6 +831,7 @@ Layout helpers
 .sourcecoast input[type="radio"],
 .sourcecoast input[type="checkbox"] {
   width: auto;
+  z-index: 10000;
 }
 .sourcecoast select,
 .sourcecoast input[type="file"] {
