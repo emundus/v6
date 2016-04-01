@@ -16,11 +16,13 @@ if ($sent>0) {
 	$complete =  '<a href="'.$confirm_form_url.'&usekey=fnum&rowid='.$user->fnum.'" title="'.JText::_('APPLICATION_NOT_SENT').'">'.JText::_('APPLICATION_NOT_SENT').'</a>';
 }
 ?>
-<div class="ui tablet stackable steps">
+<div class="ui attached segment">
+  <p><?php echo ($show_programme==1)?$user->campaign_name.' '.@$renew:''; ?></p>
+</div>
+<div class="ui tablet stackable bottom attached steps">
   <div class="<?php echo ($view=="form")?"active":""; ?> <?php echo $step_form; ?> step">
   	<i class="large text file outline icon"></i>
   	<div class="content">
-  		<div class="title"><?php echo ($show_programme==1)?$user->campaign_name.' '.@$renew:''; ?></div>
     	<div class="description"><?php echo  $forms.'% '.JText::_('FORM_FILLED'); ?></div>
     </div>
   </div>
