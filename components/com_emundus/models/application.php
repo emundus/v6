@@ -40,12 +40,12 @@ class EmundusModelApplication extends JModelList
     public function getApplicantInfos($aid, $param)
     {
         $query = 'SELECT '.implode(",", $param).'
-				FROM #__users
-				LEFT JOIN #__emundus_users ON #__emundus_users.user_id=#__users.id
-				LEFT JOIN #__emundus_personal_detail ON #__emundus_personal_detail.user=#__users.id
-				LEFT JOIN #__emundus_setup_profiles ON #__emundus_setup_profiles.id=#__emundus_users.profile
-				LEFT JOIN #__emundus_uploads ON (#__emundus_uploads.user_id=#__users.id AND #__emundus_uploads.attachment_id=10)
-				WHERE #__users.id='.$aid;
+                FROM #__users
+                LEFT JOIN #__emundus_users ON #__emundus_users.user_id=#__users.id
+                LEFT JOIN #__emundus_personal_detail ON #__emundus_personal_detail.user=#__users.id
+                LEFT JOIN #__emundus_setup_profiles ON #__emundus_setup_profiles.id=#__emundus_users.profile
+                LEFT JOIN #__emundus_uploads ON (#__emundus_uploads.user_id=#__users.id AND #__emundus_uploads.attachment_id=10)
+                WHERE #__users.id='.$aid;
         $this->_db->setQuery( $query );
         $infos =  $this->_db->loadAssoc();
 
@@ -60,12 +60,12 @@ class EmundusModelApplication extends JModelList
         }
 
         $query = 'SELECT '.implode(",", $select).'
-				FROM #__users as u
-				LEFT JOIN #__emundus_users ON #__emundus_users.user_id=u.id
-				LEFT JOIN #__emundus_personal_detail ON #__emundus_personal_detail.user=u.id
-				LEFT JOIN #__emundus_setup_profiles ON #__emundus_setup_profiles.id=#__emundus_users.profile
-				LEFT JOIN #__emundus_uploads ON (#__emundus_uploads.user_id=u.id AND #__emundus_uploads.attachment_id=10)
-				WHERE u.id='.$aid;
+                FROM #__users as u
+                LEFT JOIN #__emundus_users ON #__emundus_users.user_id=u.id
+                LEFT JOIN #__emundus_personal_detail ON #__emundus_personal_detail.user=u.id
+                LEFT JOIN #__emundus_setup_profiles ON #__emundus_setup_profiles.id=#__emundus_users.profile
+                LEFT JOIN #__emundus_uploads ON (#__emundus_uploads.user_id=u.id AND #__emundus_uploads.attachment_id=10)
+                WHERE u.id='.$aid;
         $this->_db->setQuery( $query );
         $values =  $this->_db->loadAssoc();
 
@@ -81,24 +81,24 @@ class EmundusModelApplication extends JModelList
         if($cid === null)
         {
             $query = 'SELECT esc.*, ecc.date_submitted, ecc.submitted, ecc.id as campaign_candidature_id, efg.result_sent, efg.date_result_sent, efg.final_grade, ecc.fnum, ess.class, ess.value as step
-			FROM #__emundus_users eu
-			LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.applicant_id=eu.user_id
-			LEFT JOIN #__emundus_setup_campaigns esc ON ecc.campaign_id=esc.id
-			LEFT JOIN #__emundus_final_grade efg ON efg.campaign_id=esc.id AND efg.student_id=eu.user_id
-			LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
-			WHERE eu.user_id="'.$id.'" and ecc.published = 1';
+            FROM #__emundus_users eu
+            LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.applicant_id=eu.user_id
+            LEFT JOIN #__emundus_setup_campaigns esc ON ecc.campaign_id=esc.id
+            LEFT JOIN #__emundus_final_grade efg ON efg.campaign_id=esc.id AND efg.student_id=eu.user_id
+            LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
+            WHERE eu.user_id="'.$id.'" and ecc.published = 1';
             $this->_db->setQuery( $query );
             return $this->_db->loadObjectList();
         }
         else
         {
             $query = 'SELECT esc.*, ecc.date_submitted, ecc.submitted, ecc.id as campaign_candidature_id, efg.result_sent, efg.date_result_sent, efg.final_grade, ecc.fnum, ess.class, ess.value as step
-			FROM #__emundus_users eu
-			LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.applicant_id=eu.user_id
-			LEFT JOIN #__emundus_setup_campaigns esc ON ecc.campaign_id=esc.id
-			LEFT JOIN #__emundus_final_grade efg ON efg.campaign_id=esc.id AND efg.student_id=eu.user_id
-			LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
-			WHERE eu.user_id="'.$id.'" and ecc.published = 1 and esc.id = '.$cid;
+            FROM #__emundus_users eu
+            LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.applicant_id=eu.user_id
+            LEFT JOIN #__emundus_setup_campaigns esc ON ecc.campaign_id=esc.id
+            LEFT JOIN #__emundus_final_grade efg ON efg.campaign_id=esc.id AND efg.student_id=eu.user_id
+            LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
+            WHERE eu.user_id="'.$id.'" and ecc.published = 1 and esc.id = '.$cid;
             $this->_db->setQuery( $query );
             return $this->_db->loadObject();
         }
@@ -107,12 +107,12 @@ class EmundusModelApplication extends JModelList
     public function getCampaignByFnum($fnum)
     {
         $query = 'SELECT esc.*, ecc.date_submitted, ecc.submitted, ecc.id as campaign_candidature_id, efg.result_sent, efg.date_result_sent, efg.final_grade, ecc.fnum, ess.class, ess.value as step
-			FROM #__emundus_users eu
-			LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.applicant_id=eu.user_id
-			LEFT JOIN #__emundus_setup_campaigns esc ON ecc.campaign_id=esc.id
-			LEFT JOIN #__emundus_final_grade efg ON efg.campaign_id=esc.id AND efg.student_id=eu.user_id
-			LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
-			WHERE ecc.fnum like '.$fnum;
+            FROM #__emundus_users eu
+            LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.applicant_id=eu.user_id
+            LEFT JOIN #__emundus_setup_campaigns esc ON ecc.campaign_id=esc.id
+            LEFT JOIN #__emundus_final_grade efg ON efg.campaign_id=esc.id AND efg.student_id=eu.user_id
+            LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
+            WHERE ecc.fnum like '.$fnum;
 
         $this->_db->setQuery( $query );
 
@@ -124,7 +124,7 @@ class EmundusModelApplication extends JModelList
         $query = 'SELECT eu.id AS aid, esa.*, eu.filename, eu.description, eu.timedate, esc.label as campaign_label, esc.year, esc.training
             FROM #__emundus_uploads AS eu
             LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
-			LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
+            LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
             WHERE eu.user_id = '.$id;'
             ORDER BY esa.ordering';
         $this->_db->setQuery( $query );
@@ -140,14 +140,14 @@ class EmundusModelApplication extends JModelList
             $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, esc.label as campaign_label, esc.year, esc.training
             FROM #__emundus_uploads AS eu
             LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
-			LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
+            LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
             WHERE eu.fnum like '.$this->_db->Quote($fnum).' AND (eu.attachment_id != '.$expert_document_id.')
             ORDER BY esa.ordering, eu.timedate ASC';
         } else {
             $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, esc.label as campaign_label, esc.year, esc.training
             FROM #__emundus_uploads AS eu
             LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
-			LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
+            LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
             WHERE eu.fnum like '.$this->_db->Quote($fnum).' 
             ORDER BY esa.ordering, eu.timedate ASC';
         }
@@ -159,10 +159,10 @@ class EmundusModelApplication extends JModelList
     public function getUsersComments($id){
 
         $query = 'SELECT ec.id, ec.comment_body as comment, ec.reason, ec.date, u.name
-				FROM #__emundus_comments ec 
-				LEFT JOIN #__users u ON u.id = ec.user_id 
-				WHERE ec.applicant_id ="'.$id.'" 
-				ORDER BY ec.date DESC ';
+                FROM #__emundus_comments ec 
+                LEFT JOIN #__users u ON u.id = ec.user_id 
+                WHERE ec.applicant_id ="'.$id.'" 
+                ORDER BY ec.date DESC ';
         $this->_db->setQuery( $query );
         // echo str_replace ('#_', 'jos', $query);
         return $this->_db->loadObjectList();
@@ -185,10 +185,10 @@ class EmundusModelApplication extends JModelList
     public function getFileComments($fnum){
 
         $query = 'SELECT ec.id, ec.comment_body as comment, ec.reason, ec.fnum, ec.user_id, ec.date, u.name
-				FROM #__emundus_comments ec 
-				LEFT JOIN #__users u ON u.id = ec.user_id 
-				WHERE ec.fnum like '.$this->_db->Quote($fnum).' 
-				ORDER BY ec.date ASC ';
+                FROM #__emundus_comments ec 
+                LEFT JOIN #__users u ON u.id = ec.user_id 
+                WHERE ec.fnum like '.$this->_db->Quote($fnum).' 
+                ORDER BY ec.date ASC ';
         $this->_db->setQuery( $query );
         // echo str_replace ('#_', 'jos', $query);
         return $this->_db->loadObjectList();
@@ -218,7 +218,7 @@ class EmundusModelApplication extends JModelList
     public function addComment($row)
     {
         $query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum)
-				VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.date("Y.m.d H:i:s").'",'.$this->_db->Quote($row['comment_body']).','.$this->_db->Quote(@$row['fnum']).')';
+                VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.date("Y.m.d H:i:s").'",'.$this->_db->Quote($row['comment_body']).','.$this->_db->Quote(@$row['fnum']).')';
         $this->_db->setQuery( $query );
         try
         {
@@ -326,14 +326,14 @@ class EmundusModelApplication extends JModelList
             foreach($fnum as $f)
             {
                 $query = 'SELECT esc.*
-					FROM #__emundus_campaign_candidature AS esc
-					WHERE esc.fnum like '.$this->_db->Quote($f);
+                    FROM #__emundus_campaign_candidature AS esc
+                    WHERE esc.fnum like '.$this->_db->Quote($f);
                 $this->_db->setQuery( $query );
                 $fInfo = $this->_db->loadAssoc();
                 $query = 'SELECT esp.*, esc.*
-					FROM  #__emundus_setup_profiles AS esp
-					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.profile_id = esp.id
-					WHERE esc.id='.$fInfo['campaign_id'];
+                    FROM  #__emundus_setup_profiles AS esp
+                    LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.profile_id = esp.id
+                    WHERE esc.id='.$fInfo['campaign_id'];
                 $this->_db->setQuery( $query );
                 $pid = $this->_db->loadAssoc();
                 $forms = @EmundusHelperMenu::buildMenuQuery($pid['profile_id']);
@@ -364,9 +364,9 @@ class EmundusModelApplication extends JModelList
         if(!is_array($fnum))
         {
             $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
-				FROM #__emundus_setup_attachment_profiles AS profiles
-				LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$aid.' AND uploads.fnum like '.$this->_db->Quote($fnum).'
-				WHERE profiles.profile_id = '.$pid.' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
+                FROM #__emundus_setup_attachment_profiles AS profiles
+                LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$aid.' AND uploads.fnum like '.$this->_db->Quote($fnum).'
+                WHERE profiles.profile_id = '.$pid.' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
             $this->_db->setQuery($query);
             return floor($this->_db->loadResult());
         }
@@ -376,21 +376,21 @@ class EmundusModelApplication extends JModelList
             foreach($fnum as $f)
             {
                 $query = 'SELECT esc.*
-					FROM #__emundus_campaign_candidature AS esc
-					WHERE esc.fnum like '.$this->_db->Quote($f);
+                    FROM #__emundus_campaign_candidature AS esc
+                    WHERE esc.fnum like '.$this->_db->Quote($f);
                 $this->_db->setQuery( $query );
                 $fInfo = $this->_db->loadAssoc();
                 $query = 'SELECT esp.*, esc.*
-					FROM  #__emundus_setup_profiles AS esp
-					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.profile_id = esp.id
-					WHERE esc.id='.$fInfo['campaign_id'];
+                    FROM  #__emundus_setup_profiles AS esp
+                    LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.profile_id = esp.id
+                    WHERE esc.id='.$fInfo['campaign_id'];
                 $this->_db->setQuery( $query );
                 $pid = $this->_db->loadAssoc();
 
                 $query = 'SELECT 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id)
-				FROM #__emundus_setup_attachment_profiles AS profiles
-				LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($f).'
-				WHERE profiles.profile_id = '.$pid['profile_id'].' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
+                FROM #__emundus_setup_attachment_profiles AS profiles
+                LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($f).'
+                WHERE profiles.profile_id = '.$pid['profile_id'].' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
                 $this->_db->setQuery($query);
                 $result[$f] = floor($this->_db->loadResult());
             }
@@ -401,9 +401,9 @@ class EmundusModelApplication extends JModelList
     public function getLogged ($aid) {
         $user = JFactory::getUser();
         $query = 'SELECT s.time, s.client_id, u.id, u.name, u.username
-					FROM #__session AS s
-					LEFT JOIN #__users AS u on s.userid = u.id 
-					WHERE u.id = "'.$aid.'"';
+                    FROM #__session AS s
+                    LEFT JOIN #__users AS u on s.userid = u.id 
+                    WHERE u.id = "'.$aid.'"';
         $this->_db->setQuery($query);
         $results = $this->_db->loadObjectList();
 
@@ -458,10 +458,10 @@ class EmundusModelApplication extends JModelList
                 $forms .= '</h3>';
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
-							FROM #__fabrik_formgroup ff, #__fabrik_groups fg
-							WHERE ff.group_id = fg.id AND
-								  ff.form_id = "'.$itemt->form_id.'" 
-							ORDER BY ff.ordering';
+                            FROM #__fabrik_formgroup ff, #__fabrik_groups fg
+                            WHERE ff.group_id = fg.id AND
+                                  ff.form_id = "'.$itemt->form_id.'" 
+                            ORDER BY ff.ordering';
                 $this->_db->setQuery( $query );
                 $groupes = $this->_db->loadObjectList();
 
@@ -469,11 +469,11 @@ class EmundusModelApplication extends JModelList
                 foreach($groupes as $keyg => $itemg) {
                     // liste des items par groupe
                     $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
-								FROM #__fabrik_elements fe
-								WHERE fe.published=1 AND 
-									  fe.hidden=0 AND 
-									  fe.group_id = "'.$itemg->group_id.'" 
-								ORDER BY fe.ordering';
+                                FROM #__fabrik_elements fe
+                                WHERE fe.published=1 AND 
+                                      fe.hidden=0 AND 
+                                      fe.group_id = "'.$itemg->group_id.'" 
+                                ORDER BY fe.ordering';
                     $this->_db->setQuery( $query );
                     $elements = $this->_db->loadObjectList();
                     if(count($elements)>0) {
@@ -546,8 +546,8 @@ class EmundusModelApplication extends JModelList
                             // TABLEAU DE PLUSIEURS LIGNES
                         } elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0){
                             $forms .= '<table class="table table-bordered table-striped">
-							  <thead>
-							  <tr> ';
+                              <thead>
+                              <tr> ';
 
                             //-- Entrée du tableau -- */
                             //$nb_lignes = 0;
@@ -564,10 +564,10 @@ class EmundusModelApplication extends JModelList
 
                             if($itemg->group_id == 174)
                                 $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
-										WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
+                                        WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
                             else
                                 $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
-									WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).')';
+                                    WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).')';
                             //$forms .= $query;
                             $this->_db->setQuery($query);
                             $repeated_elements = $this->_db->loadObjectList();
@@ -682,26 +682,26 @@ class EmundusModelApplication extends JModelList
 
 
     // @description  generate HTML to send to PDF librairie
-    // @param	int applicant user id
-    // @param	int fnum application file number
-    // @return 	string HTML to send to PDF librairie
+    // @param   int applicant user id
+    // @param   int fnum application file number
+    // @return  string HTML to send to PDF librairie
     function getFormsPDF($aid, $fnum=0) {
         $tableuser = @EmundusHelperList::getFormsList($aid, $fnum);
 
         $forms = "<style>
-					table{
-						border-spacing: 1px;
-						background-color: #f2f2f2;
-						width: 100%;
-					} 
-					th {
-					    border-spacing: 1px; color: #666666;
-					}
-					td {
-						border-spacing: 1px;
-					    background-color: #FFFFFF;
-					}
-					</style>";
+                    table{
+                        border-spacing: 1px;
+                        background-color: #f2f2f2;
+                        width: 100%;
+                    } 
+                    th {
+                        border-spacing: 1px; color: #666666;
+                    }
+                    td {
+                        border-spacing: 1px;
+                        background-color: #FFFFFF;
+                    }
+                    </style>";
         if(isset($tableuser)) {
             foreach($tableuser as $key => $itemt) {
                 $forms .= '<br><br>';
@@ -716,10 +716,10 @@ class EmundusModelApplication extends JModelList
                 $forms .= '</h3>';
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
-							FROM #__fabrik_formgroup ff, #__fabrik_groups fg
-							WHERE ff.group_id = fg.id AND
-								  ff.form_id = "'.$itemt->form_id.'" 
-							ORDER BY ff.ordering';
+                            FROM #__fabrik_formgroup ff, #__fabrik_groups fg
+                            WHERE ff.group_id = fg.id AND
+                                  ff.form_id = "'.$itemt->form_id.'" 
+                            ORDER BY ff.ordering';
                 $this->_db->setQuery( $query );
                 $groupes = $this->_db->loadObjectList();
 
@@ -728,11 +728,11 @@ class EmundusModelApplication extends JModelList
 
                     // liste des items par groupe
                     $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
-								FROM #__fabrik_elements fe
-								WHERE fe.published=1 AND 
-									  fe.hidden=0 AND 
-									  fe.group_id = "'.$itemg->group_id.'" 
-								ORDER BY fe.ordering';
+                                FROM #__fabrik_elements fe
+                                WHERE fe.published=1 AND 
+                                      fe.hidden=0 AND 
+                                      fe.group_id = "'.$itemg->group_id.'" 
+                                ORDER BY fe.ordering';
                     $this->_db->setQuery( $query );
                     $elements = $this->_db->loadObjectList();
                     if(count($elements)>0) {
@@ -988,15 +988,15 @@ class EmundusModelApplication extends JModelList
 
         $forms = "<style>
 table{
-	border-spacing: 1px;
-	background-color: #f2f2f2;
-	width: 100%;
+    border-spacing: 1px;
+    background-color: #f2f2f2;
+    width: 100%;
 } 
 th {
     border-spacing: 1px; color: #666666;
 }
 td {
-	border-spacing: 1px;
+    border-spacing: 1px;
     background-color: #FFFFFF;
 }
 </style>";
@@ -1006,10 +1006,10 @@ td {
                 $forms .= ($options['show_list_label']==1)?'<h2>'.$itemt->label.'</h2>':'';
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
-							FROM #__fabrik_formgroup ff, #__fabrik_groups fg
-							WHERE ff.group_id = fg.id AND
-								  ff.form_id = "'.$itemt->form_id.'" 
-							ORDER BY ff.ordering';
+                            FROM #__fabrik_formgroup ff, #__fabrik_groups fg
+                            WHERE ff.group_id = fg.id AND
+                                  ff.form_id = "'.$itemt->form_id.'" 
+                            ORDER BY ff.ordering';
                 $this->_db->setQuery( $query );
                 $groupes = $this->_db->loadObjectList();
 
@@ -1017,12 +1017,12 @@ td {
                 foreach($groupes as $keyg => $itemg) {
                     // liste des items par groupe
                     $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
-								FROM #__fabrik_elements fe
-								WHERE fe.published=1 AND 
-									  fe.hidden=0 AND 
-									  fe.group_id = "'.$itemg->group_id.'" AND 
-									  fe.id IN ('.implode(',', $elts).')
-								ORDER BY fe.ordering';
+                                FROM #__fabrik_elements fe
+                                WHERE fe.published=1 AND 
+                                      fe.hidden=0 AND 
+                                      fe.group_id = "'.$itemg->group_id.'" AND 
+                                      fe.id IN ('.implode(',', $elts).')
+                                ORDER BY fe.ordering';
                     $this->_db->setQuery( $query );
                     $elements = $this->_db->loadObjectList();
                     if(count($elements)>0) {
@@ -1051,8 +1051,8 @@ td {
                             // TABLEAU DE PLUSIEURS LIGNES
                         } elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0){
                             $forms .= '<p><table class="adminlist">
-							  <thead>
-							  <tr> ';
+                              <thead>
+                              <tr> ';
 
                             //-- Entrée du tableau -- */
                             //$nb_lignes = 0;
@@ -1069,10 +1069,10 @@ td {
 
                             if($itemg->group_id == 174)
                                 $query = 'SELECT '.implode(",", $t_elt).', id FROM '.$table.'
-										WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.') OR applicant_id='.$aid;
+                                        WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.') OR applicant_id='.$aid;
                             else
                                 $query = 'SELECT '.implode(",", $t_elt).', id FROM '.$table.'
-									WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.')';
+                                    WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.')';
                             //$forms .= $query;
                             $this->_db->setQuery($query);
                             $repeated_elements = $this->_db->loadObjectList();
@@ -1171,18 +1171,18 @@ td {
 
     public function getEmail($user_id){
         $query = 'SELECT *
-		FROM #__messages as email
-		LEFT JOIN #__users as user ON user.id=email.user_id_from 
-		LEFT JOIN #__emundus_users as eu ON eu.user_id=user.id
-		WHERE email.user_id_to ='.$user_id.' ORDER BY `date_time` DESC';
+        FROM #__messages as email
+        LEFT JOIN #__users as user ON user.id=email.user_id_from 
+        LEFT JOIN #__emundus_users as eu ON eu.user_id=user.id
+        WHERE email.user_id_to ='.$user_id.' ORDER BY `date_time` DESC';
         $this->_db->setQuery($query);
         $results['to'] = $this->_db->loadObjectList('message_id');
 
         $query = 'SELECT *
-		FROM #__messages as email
-		LEFT JOIN #__users as user ON user.id=email.user_id_to 
-		LEFT JOIN #__emundus_users as eu ON eu.user_id=user.id 
-		WHERE email.user_id_from ='.$user_id.' ORDER BY `date_time` DESC';
+        FROM #__messages as email
+        LEFT JOIN #__users as user ON user.id=email.user_id_to 
+        LEFT JOIN #__emundus_users as eu ON eu.user_id=user.id 
+        WHERE email.user_id_from ='.$user_id.' ORDER BY `date_time` DESC';
         $this->_db->setQuery($query);
         $results['from'] = $this->_db->loadObjectList('message_id');
 
@@ -1199,9 +1199,9 @@ td {
             $grUser = $juser->getAuthorisedViewLevels();
 
             $query = 'SELECT m.id, m.title, m.link, m.lft, m.rgt, m.note
-						FROM #__menu as m 
-						WHERE m.published=1 AND m.menutype = "application" and m.access in ('.implode(',', $grUser).')
-						ORDER BY m.lft';
+                        FROM #__menu as m 
+                        WHERE m.published=1 AND m.menutype = "application" and m.access in ('.implode(',', $grUser).')
+                        ORDER BY m.lft';
 
             $db->setQuery($query);
             return $db->loadAssocList();
@@ -1259,13 +1259,13 @@ td {
     public function getAccessFnum($fnum)
     {
         $query = "SELECT jecc.fnum, jesg.label as gname, jea.*, jesa.label as aname FROM #__emundus_campaign_candidature as jecc
-                 	LEFT JOIN #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
-  					LEFT JOIN #__emundus_setup_programmes as jesp on jesp.code = jesc.training
-				  	LEFT JOIN #__emundus_setup_groups_repeat_course as jesgrc on jesgrc.course = jesp.code
-				  	LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jesgrc.parent_id
-				  	LEFT JOIN #__emundus_acl as jea on jea.group_id = jesg.id
-				  	LEFT JOIN #__emundus_setup_actions as jesa on jesa.id = jea.action_id
-				  	WHERE jecc.fnum like '".$fnum."' and jesa.status = 1 order by jecc.fnum, jea.group_id, jea.action_id";
+                    LEFT JOIN #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
+                    LEFT JOIN #__emundus_setup_programmes as jesp on jesp.code = jesc.training
+                    LEFT JOIN #__emundus_setup_groups_repeat_course as jesgrc on jesgrc.course = jesp.code
+                    LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jesgrc.parent_id
+                    LEFT JOIN #__emundus_acl as jea on jea.group_id = jesg.id
+                    LEFT JOIN #__emundus_setup_actions as jesa on jesa.id = jea.action_id
+                    WHERE jecc.fnum like '".$fnum."' and jesa.status = 1 order by jecc.fnum, jea.group_id, jea.action_id";
 
         try
         {
@@ -1285,9 +1285,9 @@ td {
                 $access['groups'][$r['group_id']]['actions'][$r['action_id']]['d'] = $r['d'];
             }
             $query = "SELECT jega.* , jesg.label as gname, jesa.label as aname FROM #__emundus_group_assoc as jega
-					  LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jega.group_id
-					  LEFT JOIN #__emundus_setup_actions as jesa ON jesa.id = jega.action_id
-					  WHERE  jega.fnum like ".$db->quote($fnum)." and jesa.status = 1 ORDER BY jega.fnum, jega.group_id, jega.action_id";
+                      LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jega.group_id
+                      LEFT JOIN #__emundus_setup_actions as jesa ON jesa.id = jega.action_id
+                      WHERE  jega.fnum like ".$db->quote($fnum)." and jesa.status = 1 ORDER BY jega.fnum, jega.group_id, jega.action_id";
             $db->setQuery($query);
             $res = $db->loadAssocList();
             foreach($res as $r)
@@ -1314,11 +1314,11 @@ td {
             }
 
             $query = "SELECT jeua.*, ju.name as uname, jesa.label as aname
-						FROM #__emundus_users_assoc as jeua
-  						LEFT JOIN #__users as ju on ju.id = jeua.user_id
-  						LEFT JOIN	#__emundus_setup_actions as jesa on jesa.id = jeua.action_id
+                        FROM #__emundus_users_assoc as jeua
+                        LEFT JOIN #__users as ju on ju.id = jeua.user_id
+                        LEFT JOIN   #__emundus_setup_actions as jesa on jesa.id = jeua.action_id
                         where  jeua.fnum like '".$fnum."' and jesa.status = 1
-						ORDER BY jeua.fnum, jeua.user_id, jeua.action_id";
+                        ORDER BY jeua.fnum, jeua.user_id, jeua.action_id";
             $db->setQuery($query);
             $res = $db->loadAssocList();
             foreach($res as $r)
@@ -1455,11 +1455,11 @@ td {
     {
         $dbo = $this->getDbo();
         $actionQuery = "select jea.c, jea.r, jea.u, jea.d from #__emundus_acl as jea left join #__emundus_groups as jeg on jeg.group_id = jea.group_id
-		where jea.action_id = {$aid}  and jeg.user_id  = {$uid}";
+        where jea.action_id = {$aid}  and jeg.user_id  = {$uid}";
         $dbo->setQuery($actionQuery);
         $actions = $dbo->loadAssoc();
         $actionQuery = "select jega.c, jega.r, jega.u, jega.d from #__emundus_group_assoc as jega left join #__emundus_groups as jeg on jeg.group_id = jega.group_id
-		where jega.action_id = {$aid} and jeg.user_id  = {$uid} and jega.fnum like {$dbo->quote($fnum)}";
+        where jega.action_id = {$aid} and jeg.user_id  = {$uid} and jega.fnum like {$dbo->quote($fnum)}";
         $dbo->setQuery($actionQuery);
         $actionAssoc = $dbo->loadAssoc();
         if(!empty($actionAssoc))
@@ -1589,14 +1589,14 @@ td {
         $dbo = $this->getDbo();
         try
         {
-            $query = 'SELECT ho.*, hu.user_id
+            $query = 'SELECT ho.*, hu.user_cms_id
                         FROM #__hikashop_order ho
                         LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                        WHERE hu.user_id='.$fnumInfos['applicant_id'].' 
+                        WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].' 
                         AND ho.order_status like "confirmed"  
                         AND ho.order_created >= '.strtotime($fnumInfos['start_date']).' 
                         AND ho.order_created <= '.strtotime($fnumInfos['end_date']);
-    //echo str_replace('#_', 'jos', $query);
+//echo str_replace('#_', 'jos', $query);
             $dbo->setQuery($query);
             $result = $dbo->loadObject();
             return $result;
