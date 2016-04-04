@@ -1589,9 +1589,10 @@ td {
         $dbo = $this->getDbo();
         try
         {
-            $query = 'SELECT *
+            $query = 'SELECT ho.*
                         FROM #__hikashop_order ho
-                        WHERE ho.order_user_id='.$fnumInfos['applicant_id'].' 
+                        LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                        WHERE hu.user_id='.$fnumInfos['applicant_id'].' 
                         AND ho.order_status like "confirmed"  
                         AND ho.order_created >= '.strtotime($fnumInfos['start_date']).' 
                         AND ho.order_created <= '.strtotime($fnumInfos['end_date']);
