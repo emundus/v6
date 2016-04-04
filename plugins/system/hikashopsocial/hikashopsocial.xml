@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="1.5" method="upgrade" group="system">
+	<name>System - Hikashop Social Plugin</name>
+	<creationDate>25 février 2016</creationDate>
+	<version>2.6.1</version>
+	<author>Hikashop</author>
+	<authorEmail>dev@hikashop.com</authorEmail>
+	<authorUrl>http://www.hikashop.com</authorUrl>
+	<copyright>(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>This plugin enables you to add a Facebook "like" button and a Twitter button</description>
+	<files>
+		<filename plugin="hikashopsocial">hikashopsocial.php</filename>
+	</files>
+	<params addpath="/components/com_hikashop/params">
+		<param name="display_fb" type="radio" default="1" label="HIKA_DISPLAY_FACEBOOK_BUTTON" description="DISPLAY_FACEBOOK_BUTTON">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</param>
+		<param name="display_twitter" type="radio" default="1" label="HIKA_DISPLAY_TWITTER_BUTTON" description="DISPLAY_TWITTER_BUTTON">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</param>
+		<param name="display_google" type="radio" default="1" label="HIKA_DISPLAY_GOOGLE_BUTTON" description="DISPLAY_GOOGLE_BUTTON">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</param>
+		<param name="display_pinterest" type="radio" default="1" label="HIKA_DISPLAY_PINTEREST_BUTTON" description="DISPLAY_PINTEREST_BUTTON">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</param>
+		<param name="display_addThis" type="radio" default="1" label="HIKA_DISPLAY_ADDTHIS_BUTTON" description="DISPLAY_ADDTHIS_BUTTON">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</param>
+		<param name="position" type="list" default="0" label="HIKA_SOCIAL_BUTTON_POSITION" description="SOCIAL_BUTTON_POSITION">
+			<option value="0">Left</option>
+			<option value="1">Right</option>
+		</param>
+		<param name="width" type="text" default="0" label="PRODUCT_WIDTH" description="SOCIAL_WIDTH_DIV" />
+		<param name="@spacer" type="spacer" default="" label="" description="" />
+		<param name="fb_tag" type="radio" default="xfbml" label="HIKA_SOCIAL_TAG_TYPE" description="SOCIAL_TAG_TYPE">
+			<option value="xfbml">XFBML</option>
+			<option value="ifram">IFRAME</option>
+		</param>
+		<param name="fb_style" type="list" default="0" label="HIKA_FACEBOOK_DISPLAY_STYLE" description="FACEBOOK_DISPLAY_STYLE">
+			<option value="0">Standard</option>
+			<option value="1">Button count</option>
+			<option value="2">Box count</option>
+			<option value="3">Button</option>
+		</param>
+		<param name="fb_faces" type="radio" default="1" label="HIKA_SHOW_FACEBOOK_FACES" description="SHOW_FACEBOOK_FACES">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</param>
+		<param name="fb_send" type="radio" default="0" label="HIKA_SHOW_SEND_BUTTON" description="SHOW_SEND_BUTTON">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</param>
+		<param name="fb_verb" type="list" default="0" label="HIKA_VERB_TO_DISPLAY" description="VERB_TO_DISPLAY">
+			<option value="0">Like</option>
+			<option value="1">Recommend</option>
+		</param>
+		<param name="fb_theme" type="list" default="0" label="HIKA_COLOR_THEME" description="COLOR_THEME">
+			<option value="0">Light</option>
+			<option value="1">Dark</option>
+		</param>
+		<param name="fb_font" type="list" default="0" label="HIKA_FACEBOOK_BUTTON_FONT" description="FACEBOOK_BUTTON_FONT">
+			<option value="0">Arial</option>
+			<option value="1">Lucida grande</option>
+			<option value="2">segoe ui</option>
+			<option value="3">Tahoma</option>
+			<option value="4">Trebuchet ms</option>
+			<option value="5">Verdana</option>
+		</param>
+		<param name="fb_type" type="list" default="0" label="PRODUCT_TYPE" description="SOCIAL_PRODUCT_TYPE">
+			<option value="0">Product</option>
+			<option value="1">Album</option>
+			<option value="2">Book</option>
+			<option value="3">Company</option>
+			<option value="4">Drink</option>
+			<option value="5">Game</option>
+			<option value="6">Movie</option>
+			<option value="7">Song</option>
+		</param>
+		<param name="admin" type="text" default="" label="HIKA_FACEBOOK_ADMIN" description="FACEBOOK_ADMIN" />
+		<param name="@spacer" type="spacer" default="" label="" description="" />
+		<param name="twitter_count" type="list" default="0" label="HIKA_TWITTER_COUNT_DISPLAY" description="TWITTER_COUNT_DISPLAY">
+			<option value="0">Horizontal</option>
+			<option value="1">Vertical</option>
+			<option value="2">None</option>
+		</param>
+		<param name="twitter_text" type="text" default="" label="HIKA_TWEET_TEXT" description="TWEET_TEXT" />
+		<param name="twitter_mention" type="text" default="" label="HIKA_MENTION_TO" description="MENTION_TO" />
+		<param name="@spacer" type="spacer" default="" label="" description="" />
+		<param name="google_size" type="list" default="0" label="HIKA_GOOGLE_BUTTON_SIZE" description="GOOGLE_BUTTON_SIZE">
+			<option value="0">Standard</option>
+			<option value="1">Small</option>
+			<option value="2">Medium</option>
+			<option value="3">Tall</option>
+		</param>
+		<param name="google_count" type="radio" default="1" label="HIKA_SHOW_GOOGLE_COUNT" description="SHOW_GOOGLE_COUNT">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</param>
+		<param name="@spacer" type="spacer" default="" label="" description="" />
+		<param name="pinterest_display" type="list" default="0" label="HIKA_PINTEREST_COUNT_DISPLAY" description="PINTEREST_COUNT_DISPLAY">
+			<option value="0">Horizontal</option>
+			<option value="1">Vertical</option>
+			<option value="2">None</option>
+		</param>
+		<param name="@spacer" type="spacer" default="" label="" description="" />
+		<param name="addThis_display" type="list" default="0" label="HIKA_ADDTHIS_DISPLAY" description="ADDTHIS_DISPLAY">
+			<option value="0">Compact</option>
+			<option value="1">Big</option>
+			<option value="2">Count</option>
+		</param>
+		<param name="services_exclude" type="text" default="" label="HIKA_SOCIAL_SERVICES_EXCLUDE" description="SOCIAL_SERVICES_EXCLUDE" />
+	</params>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="display_fb" type="radio" default="1" label="HIKA_DISPLAY_FACEBOOK_BUTTON" description="DISPLAY_FACEBOOK_BUTTON" class="btn-group btn-group-yesno">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="display_twitter" type="radio" default="1" label="HIKA_DISPLAY_TWITTER_BUTTON" description="DISPLAY_TWITTER_BUTTON" class="btn-group btn-group-yesno">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="display_google" type="radio" default="1" label="HIKA_DISPLAY_GOOGLE_BUTTON" description="DISPLAY_GOOGLE_BUTTON" class="btn-group btn-group-yesno">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="display_pinterest" type="radio" default="1" label="HIKA_DISPLAY_PINTEREST_BUTTON" description="DISPLAY_PINTEREST_BUTTON" class="btn-group btn-group-yesno">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="display_addThis" type="radio" default="1" label="HIKA_DISPLAY_ADDTHIS_BUTTON" description="DISPLAY_ADDTHIS_BUTTON" class="btn-group btn-group-yesno">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="position" type="list" default="0" label="HIKA_SOCIAL_BUTTON_POSITION" description="SOCIAL_BUTTON_POSITION">
+					<option value="0">Left</option>
+					<option value="1">Right</option>
+				</field>
+				<field name="width" type="text" default="0" label="PRODUCT_WIDTH" description="SOCIAL_WIDTH_DIV" />
+				<field name="spacer1" type="spacer"	hr="true"/>
+				<field name="fb_tag" type="radio" default="xfbml" label="HIKA_SOCIAL_TAG_TYPE" description="SOCIAL_TAG_TYPE">
+					<option value="xfbml">XFBML</option>
+					<option value="iframe">IFRAME</option>
+				</field>
+				<field name="fb_style" type="list" default="0" label="HIKA_FACEBOOK_DISPLAY_STYLE" description="FACEBOOK_DISPLAY_STYLE">
+					<option value="0">Standard</option>
+					<option value="1">Button count</option>
+					<option value="2">Box count</option>
+					<option value="3">Button</option>
+				</field>
+				<field name="fb_faces" type="radio" default="1" label="HIKA_SHOW_FACEBOOK_FACES" description="SHOW_FACEBOOK_FACES" class="btn-group btn-group-yesno">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="fb_send" type="radio" default="0" label="HIKA_SHOW_SEND_BUTTON" description="SHOW_SEND_BUTTON" class="btn-group btn-group-yesno">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="fb_verb" type="list" default="0" label="HIKA_VERB_TO_DISPLAY" description="VERB_TO_DISPLAY">
+					<option value="0">Like</option>
+					<option value="1">Recommend</option>
+				</field>
+				<field name="fb_theme" type="list" default="0" label="HIKA_COLOR_THEME" description="COLOR_THEME">
+					<option value="0">Light</option>
+					<option value="1">Dark</option>
+				</field>
+				<field name="fb_font" type="list" default="0" label="HIKA_FACEBOOK_BUTTON_FONT" description="FACEBOOK_BUTTON_FONT">
+					<option value="0">Arial</option>
+					<option value="1">Lucida grande</option>
+					<option value="2">segoe ui</option>
+					<option value="3">Tahoma</option>
+					<option value="4">Trebuchet ms</option>
+					<option value="5">Verdana</option>
+				</field>
+				<field name="fb_type" type="list" default="0" label="PRODUCT_TYPE" description="SOCIAL_PRODUCT_TYPE">
+					<option value="0">Product</option>
+					<option value="1">Album</option>
+					<option value="2">Book</option>
+					<option value="3">Company</option>
+					<option value="4">Drink</option>
+					<option value="5">Game</option>
+					<option value="6">Movie</option>
+					<option value="7">Song</option>
+				</field>
+				<field name="admin" type="text" default="" label="HIKA_FACEBOOK_ADMIN" description="FACEBOOK_ADMIN" />
+				<field name="spacer2" type="spacer"	hr="true"/>
+				<field name="twitter_count" type="list" default="0" label="HIKA_TWITTER_COUNT_DISPLAY" description="TWITTER_COUNT_DISPLAY">
+					<option value="0">Horizontal</option>
+					<option value="1">Vertical</option>
+					<option value="2">None</option>
+				</field>
+				<field name="twitter_text" type="text" default="" label="HIKA_TWEET_TEXT" description="TWEET_TEXT" />
+				<field name="twitter_mention" type="text" default="" label="HIKA_MENTION_TO" description="MENTION_TO" />
+				<field name="spacer3" type="spacer"	hr="true"/>
+				<field name="google_size" type="list" default="0" label="HIKA_GOOGLE_BUTTON_SIZE" description="GOOGLE_BUTTON_SIZE">
+					<option value="0">Standard</option>
+					<option value="1">Small</option>
+					<option value="2">Medium</option>
+					<option value="3">Tall</option>
+				</field>
+				<field name="google_count" type="radio" default="1" label="HIKA_SHOW_GOOGLE_COUNT" description="SHOW_GOOGLE_COUNT" class="btn-group btn-group-yesno">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="spacer4" type="spacer"	hr="true"/>
+				<field name="pinterest_display" type="list" default="0" label="HIKA_PINTEREST_COUNT_DISPLAY" description="PINTEREST_COUNT_DISPLAY">
+					<option value="0">Horizontal</option>
+					<option value="1">Vertical</option>
+					<option value="2">None</option>
+				</field>
+				<field name="spacer5" type="spacer"	hr="true"/>
+				<field name="addThis_display" type="list" default="0" label="HIKA_ADDTHIS_DISPLAY" description="ADDTHIS_DISPLAY">
+					<option value="0">Compact</option>
+					<option value="1">Big</option>
+					<option value="2">Count</option>
+				</field>
+				<field name="services_exclude" type="text" default="" label="HIKA_SOCIAL_SERVICES_EXCLUDE" description="SOCIAL_SERVICES_EXCLUDE" />
+			</fieldset>
+		</fields>
+	</config>
+</extension>
