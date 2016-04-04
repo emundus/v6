@@ -1,13 +1,13 @@
 <?php
 /**
- * Users Model for eMundus Component
+ * Application Model for eMundus Component
  *
- * @package    eMundus
- * @subpackage Components
+ * @package    Joomla
+ * @subpackage eMundus
  *             components/com_emundus/emundus.php
- * @link       http://www.decisionpublique.fr
+ * @link       http://www.emundus.fr
  * @license    GNU/GPL
- * @author     Jonas Lerebours
+ * @author     Benjamin Rivalland
  */
 
 // No direct access
@@ -1576,6 +1576,35 @@ td {
         catch(Exception $e)
         {
             throw $e;
+        }
+    }
+
+    /**
+     * Return the order for current fnum. If an order with confirmed status is found for funum campaign period, then return the order
+     * @param $fnumInfos
+     * @return bool|mixed
+     */
+    public function getHikashopOrder($fnumInfos)
+    {
+        $dbo = $this->getDbo();
+        try
+        {
+            $query = 'SELECT *
+                        FROM #__hikashop_order ho
+                        WHERE ho.order_user_id='.$fnumInfos['applicant_id'].' 
+                        AND ho.order_status like "confirmed"  
+                        AND ho.order_created >= '.strtotime($fnumInfos['start_date']).' 
+                        AND ho.order_created <= '.strtotime($fnumInfos['end_date']);
+    //echo str_replace('#_', 'jos', $query);
+            $dbo->setQuery($query);
+            $result = $dbo->loadObject();
+            return $result;
+        }
+        catch (Exception $e)
+        {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
         }
     }
 }

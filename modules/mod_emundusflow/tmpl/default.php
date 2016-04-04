@@ -28,12 +28,20 @@ if ($sent>0) {
   </div>
   <div class="<?php echo ($view=="checklist")?"active":""; ?> <?php echo $step_attachment; ?> step">
   	<i class="large attach outline icon"></i>
-    <?php echo  $attachments.'% '.JText::_('ATTACHMENT_SENT'); ?>
+    <div class="content">
+      <div class="description"><?php echo  $attachments.'% '.JText::_('ATTACHMENT_SENT'); ?></div>
+    </div>
   </div>
+
+<?php if ($application_fees == 1) { ?>
   <div class="<?php echo ($option=="com_hikashop")?"active":""; ?> <?php echo $step_paiement; ?> step">
   	<i class="large payment outline icon"></i>
-    <?php echo  JText::_('APPLICATION_PAID'); ?>
+    <div class="content">
+      <div class="description"><?php echo  $paid>0?JText::_('APPLICATION_PAID'):JText::_('APPLICATION_NOT_PAID'); ?></div>
+      <div class="description"><?php echo  $paid>0?'':'<a href="index.php?option=com_hikashop&ctrl=product&task=updatecart&quantity=1&checkout=1&product_id=1" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>'; ?></div>
+    </div>
   </div>
+<?php } ?>
   <div class="<?php echo $step_sent; ?> step">
   	<i class="large time outline icon"></i>
   	<div class="content">
