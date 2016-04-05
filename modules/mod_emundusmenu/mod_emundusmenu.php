@@ -14,7 +14,7 @@ require_once dirname(__FILE__).'/helper.php';
 
 $user	= JFactory::getUser();
 $list = array();
-if (isset($user->menutype))
+if (isset($user->menutype) && empty($user->fnum))
 	$list	= modEmundusMenuHelper::getList($params);
 $app	= JFactory::getApplication();
 $menu	= $app->getMenu();
