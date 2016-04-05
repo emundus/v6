@@ -1,6 +1,6 @@
 <?php
 /**
-* @version		$Id: mod_emundusflow.php 7692 2007-06-08 20:41:29Z tcp $
+* @version		$Id: mod_emundusflow.php
 * @package		Joomla
 * @copyright	Copyright (C) 2016 emundus.fr. All rights reserved.
 * @license		GNU/GPL, see LICENSE.php
@@ -34,7 +34,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$db = JFactory::getDBO();
 
 	$params = JComponentHelper::getParams('com_emundus');
-	$applicant_can_renew = $params->get('applicant_can_renew');
+	$applicant_can_renew = $params->get('applicant_can_renew', 0);
 	$show_programme = $params->get('show_programme', 1);
 	$application_fees  = $params->get('application_fees', 0);
 

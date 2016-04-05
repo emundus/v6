@@ -12,12 +12,11 @@ defined('_JEXEC') or die;
 // Include the syndicate functions only once
 require_once dirname(__FILE__).'/helper.php';
 
-$params = JComponentHelper::getParams('com_emundus');
 $display_applicant_menu = $params->get('display_applicant_menu', 1);
 
 $user	= JFactory::getUser();
 
-if (!empty($user->fnum) && $display_applicant_menu==0) 
+if (!empty($user->fnum) && $display_applicant_menu==0)
 	return;
 
 if (isset($user->menutype)) {

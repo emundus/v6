@@ -24,6 +24,10 @@
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
+				<field name="display_applicant_menu" menu="hide" type="list" default="1" label="COM_EMUNDUS_DISPLAY_MENU" description="COM_EMUNDUS_DISPLAY_MENU_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
 				<field name="menu_style" type="list" default="list" label="Menu Style" 		description="The menu style">
 					<option value="list">List</option>
 					<option value="vert_indent">Legacy - Vertical</option>
