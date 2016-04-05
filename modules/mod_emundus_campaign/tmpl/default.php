@@ -72,7 +72,7 @@ if ($locallang == "fr-FR") {
                             <div class="rt-grid-12 campaignbymonth">
                             <div class="rt-grid-12">
                                 <div class="position-me">
-                                    <div class="rotate-me">
+                                    <div class="rotate-me <?php echo $mod_em_campaign_class; ?>">
                                         <p><?php echo ucfirst(utf8_encode($month)); ?></p>
                                     </div>
                                 </div>
@@ -80,7 +80,7 @@ if ($locallang == "fr-FR") {
                             <div class="rt-grid-12">
                         <?php } ?>
                         <div class="rt-grid-12 campaignright">
-                            <div class="rt-grid-9 campaigntext">
+                            <div class="rt-grid-9 campaigntext <?php echo $mod_em_campaign_class; ?>">
                                 <h4><a href="index.php?option=com_emundus&view=programme&id=<?php echo $resul->id ?><?php if($resul->apply_online==1) {echo "&Itemid=".$mod_em_campaign_itemid;} else {echo "&Itemid=".$mod_em_campaign_itemid2;} ?>"><?php echo $resul->label; ?></a></h4>
                                 <p>
                                     <?php
@@ -95,7 +95,7 @@ if ($locallang == "fr-FR") {
                                     ?>
                                 </p>
                             </div>
-                            <div class="rt-grid-3 campaingapply">
+                            <div class="rt-grid-3 campaingapply <?php echo $mod_em_campaign_class; ?>">
                                 <div class="campaingapplycontent">
                                     <fieldset class="apply-now-small">
                                         <legend>
@@ -148,7 +148,7 @@ if ($locallang == "fr-FR") {
                             <div class="rt-grid-12 campaignbymonth">
                             <div class="rt-grid-12">
                                 <div class="position-me">
-                                    <div class="rotate-me">
+                                    <div class="rotate-me <?php echo $mod_em_campaign_class; ?>">
                                         <p><?php echo ucfirst(utf8_encode($month)); ?></p>
                                     </div>
                                 </div>
@@ -156,7 +156,7 @@ if ($locallang == "fr-FR") {
                             <div class="rt-grid-12">
                         <?php } ?>
                         <div class="rt-grid-12 campaignright">
-                            <div class="rt-grid-9 campaigntext">
+                            <div class="rt-grid-9 campaigntext <?php echo $mod_em_campaign_class; ?>">
                                 <h4><a href="index.php?option=com_emundus&view=programme&id=<?php echo $resul->id ?><?php if($resul->apply_online==1) {echo "&Itemid=".$mod_em_campaign_itemid;} else {echo "&Itemid=".$mod_em_campaign_itemid2;} ?>"><?php echo $resul->label; ?></a></h4>
                                 <p>
                                     <?php
@@ -171,7 +171,7 @@ if ($locallang == "fr-FR") {
                                     ?>
                                 </p>
                             </div>
-                            <div class="rt-grid-3 campaingapply">
+                            <div class="rt-grid-3 campaingapply <?php echo $mod_em_campaign_class; ?>">
                                 <div class="campaingapplycontent">
                                     <fieldset class="apply-now-small">
                                         <legend>
@@ -218,7 +218,7 @@ if ($locallang == "fr-FR") {
                             <div class="rt-grid-12 campaignbymonth">
                             <div class="rt-grid-12">
                                 <div class="position-me">
-                                    <div class="rotate-me">
+                                    <div class="rotate-me <?php echo $mod_em_campaign_class; ?>">
                                         <p><?php echo ucfirst(utf8_encode($month)); ?></p>
                                     </div>
                                 </div>
@@ -226,7 +226,7 @@ if ($locallang == "fr-FR") {
                             <div class="rt-grid-12">
                         <?php } ?>
                         <div class="rt-grid-12 campaignright">
-                            <div class="rt-grid-9 campaigntext">
+                            <div class="rt-grid-9 campaigntext <?php echo $mod_em_campaign_class; ?>">
                                 <h4><a href="index.php?option=com_emundus&view=programme&id=<?php echo $resul->id ?><?php if($resul->apply_online==1) {echo "&Itemid=".$mod_em_campaign_itemid;} else {echo "&Itemid=".$mod_em_campaign_itemid2;} ?>"><?php echo $resul->label; ?></a></h4>
                                 <p>
                                     <?php
@@ -241,7 +241,7 @@ if ($locallang == "fr-FR") {
                                     ?>
                                 </p>
                             </div>
-                            <div class="rt-grid-3 campaingapply">
+                            <div class="rt-grid-3 campaingapply <?php echo $mod_em_campaign_class; ?>">
                                 <div class="campaingapplycontent">
                                     <fieldset class="apply-now-small">
                                         <legend>
@@ -287,7 +287,7 @@ if ($locallang == "fr-FR") {
                             <div class="rt-grid-12 campaignbymonth">
                             <div class="rt-grid-12">
                                 <div class="position-me">
-                                    <div class="rotate-me">
+                                    <div class="rotate-me <?php echo $mod_em_campaign_class; ?>">
                                         <p><?php echo ucfirst(utf8_encode($month)); ?></p>
                                     </div>
                                 </div>
@@ -295,7 +295,7 @@ if ($locallang == "fr-FR") {
                             <div class="rt-grid-12">
                         <?php } ?>
                         <div class="rt-grid-12 campaignright">
-                            <div class="rt-grid-9 campaigntext">
+                            <div class="rt-grid-9 campaigntext <?php echo $mod_em_campaign_class; ?>">
                                 <h4><a href="index.php?option=com_emundus&view=programme&id=<?php echo $resul->id ?><?php if($resul->apply_online==1) {echo "&Itemid=".$mod_em_campaign_itemid;} else {echo "&Itemid=".$mod_em_campaign_itemid2;} ?>"><?php echo $resul->label; ?></a></h4>
                                 <p>
                                     <?php
@@ -310,7 +310,7 @@ if ($locallang == "fr-FR") {
                                     ?>
                                 </p>
                             </div>
-                            <div class="rt-grid-3 campaingapply">
+                            <div class="rt-grid-3 campaingapply <?php echo $mod_em_campaign_class; ?>">
                                 <div class="campaingapplycontent">
                                     <fieldset class="apply-now-small">
                                         <legend>
