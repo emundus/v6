@@ -33,7 +33,7 @@ if ($sent>0) {
     </div>
   </div>
 
-<?php if ($application_fees == 1) { ?>
+<?php if ($application_fee == 1) { ?>
   <div class="<?php echo ($option=="com_hikashop")?"active":""; ?> <?php echo $step_paiement; ?> step">
   	<i class="large payment outline icon"></i>
     <div class="content">

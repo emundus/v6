@@ -36,14 +36,16 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$params = JComponentHelper::getParams('com_emundus');
 	$applicant_can_renew = $params->get('applicant_can_renew', 0);
 	$show_programme = $params->get('show_programme', 1);
-	$application_fees  = $params->get('application_fees', 0);
+	$application_fee  = $params->get('application_fee', 0);
 
 	$checklist = new EmundusModelChecklist;
 	$application = new EmundusModelApplication;
 	//$files = new EmundusModelFiles;
 
 	$fnumInfos = EmundusModelFiles::getFnumInfos($user->fnum);
-	$paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
+	if ($application_fee == 1) {
+		$paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
+	}
 	$attachments = $application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
 	$forms = $application->getFormsProgress($user->id, $user->profile, $user->fnum);
 	$current_application = $application->getApplication($user->fnum);

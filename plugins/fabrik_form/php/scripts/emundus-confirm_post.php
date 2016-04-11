@@ -15,7 +15,7 @@ defined( '_JEXEC' ) or die();
 
 $db = JFactory::getDBO();
 $student =  JFactory::getUser();
-//$mailer = JFactory::getMailer();
+
 include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
 //include_once(JPATH_BASE.'/components/com_emundus/models/groups.php');
@@ -23,7 +23,7 @@ jimport('joomla.log.log');
 JLog::addLogger(
     array(
         // Sets file name
-        'text_file' => 'com_emundus.email.php'
+        'text_file' => 'com_emundus.fabrikPhpPlugin.php'
     ),
     // Sets messages of all log levels to be sent to the file
     JLog::ALL,
@@ -33,8 +33,9 @@ JLog::addLogger(
     array('com_emundus')
 );
 
-//$eMConfig = JComponentHelper::getParams('com_emundus');
-//$alert_new_applicant = $eMConfig->get('alert_new_applicant');
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', 0);
+$application_fee = $eMConfig->get('application_fee', 0);
 
 // get current applicant course
 $campaigns = new EmundusModelCampaign;
@@ -53,15 +54,17 @@ $post = array(  'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($campaign[
                 'CAMPAIGN_CODE' => $campaign['training']
 );
 
-// Apllicant cannot delete this attachments now
-$query = 'UPDATE #__emundus_uploads SET can_be_deleted = 0 WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
-$db->setQuery( $query );
-try {
-    $db->execute();
-} catch (Exception $e) {
-    // catch any database errors.
+// Applicant cannot delete this attachments now
+if (!$can_edit_until_deadline) {
+    $query = 'UPDATE #__emundus_uploads SET can_be_deleted = 0 WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
+    $db->setQuery( $query );
+    try {
+        $db->execute();
+    } catch (Exception $e) {
+        // catch any database errors.
+        JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+    }
 }
-
 // Insert data in #__emundus_campaign_candidature
 $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=1 WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
@@ -69,6 +72,7 @@ try {
     $db->execute();
 } catch (Exception $e) {
     // catch any database errors.
+    JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 }
 $query = 'UPDATE #__emundus_declaration SET time_date=NOW() WHERE user='.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
@@ -76,6 +80,7 @@ try {
     $db->execute();
 } catch (Exception $e) {
     // catch any database errors.
+    JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 }
 
 $student->candidature_posted = 1;
@@ -86,7 +91,7 @@ $step = 1;
 $code = array($student->code);
 $to_applicant = '0, 1';
 $trigger_emails = $emails->getEmailTrigger($step, $code, $to_applicant);
-//var_dump($trigger_emails); die();
+
 if (count($trigger_emails) > 0) {
 
     foreach ($trigger_emails as $key => $trigger_email) {
@@ -133,7 +138,6 @@ if (count($trigger_emails) > 0) {
             if ( $send !== true ) {
                 echo 'Error sending email: ' . $send->__toString();
                 JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-                die();
             } else {
                 $message = array(
                     'user_id_from' => $from_id,
@@ -142,10 +146,20 @@ if (count($trigger_emails) > 0) {
                     'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
                 );
                 $emails->logEmail($message);
-                JLog::add($to.' '.$body, JLog::INFO, 'com_emundus');
+                //JLog::add($to.' '.$body, JLog::INFO, 'com_emundus');
             }
         }
     }
+}
+if ($application_fee == 1) {
+    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+    $application = new EmundusModelApplication;
+
+    if (count($application->getHikashopOrder($fnumInfos)) > 0) {
+        $link = JRoute::_('index.php?option=com_hikashop&ctrl=product&task=updatecart&quantity=1&checkout=1&product_id=1');
+        header('Location: '.$link);
+    }
+    
 }
 
 ?>
