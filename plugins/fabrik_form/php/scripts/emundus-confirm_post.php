@@ -161,8 +161,6 @@ if ($application_fee == 1) {
     }
     
 }
-echo "==>".$application_fee;
-echo "<hr>";
-echo "==>".$application->getHikashopOrder($student->fnum);
-die();
+
+
 ?>
