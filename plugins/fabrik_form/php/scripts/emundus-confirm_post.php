@@ -155,11 +155,14 @@ if ($application_fee == 1) {
     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
     $application = new EmundusModelApplication;
 
-    if (count($application->getHikashopOrder($fnumInfos)) > 0) {
+    if (count($application->getHikashopOrder($student->fnum)) > 0) {
         $link = JRoute::_('index.php?option=com_hikashop&ctrl=product&task=updatecart&quantity=1&checkout=1&product_id=1');
         header('Location: '.$link);
     }
     
 }
-
+echo "==>".$application_fee;
+echo "<hr>";
+echo "==>".$application->getHikashopOrder($student->fnum);
+die();
 ?>
