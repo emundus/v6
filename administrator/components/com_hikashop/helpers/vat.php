@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,15 +11,15 @@ defined('_JEXEC') or die('Restricted access');
 class hikashopVatHelper{
 	function isValid(&$vat){
 
-		$class = hikashop_get('class.zone');
-		$zone = $class->get(@$vat->address_country);
+		$zoneClass = hikashop_get('class.zone');
+		$zone = $zoneClass->get(@$vat->address_country);
 		if(empty($zone->zone_code_2) || !in_array($zone->zone_code_2,array('AT','BE','BG','CY','CZ','DK','EE','EL','DE','PT','GR','ES','FI','HR','HU','LU','MT','SI',
 		'FR','GB','IE','IT','LV','LT','NL','PL','SK','RO','SE'))){
 			return true;
 		}
 
 		if($zone->zone_code_2=='ES' && !empty($vat->address_state)){
-			$statezone = $class->get(@$vat->address_state);
+			$statezone = $zoneClass->get(@$vat->address_state);
 			if($statezone->zone_code_3=='GC' || $statezone->zone_code_3=='TF'){
 				return true;
 			}
@@ -208,7 +208,7 @@ class hikashopVatHelper{
 			}
 			if ($result === false || empty($result) || !$result->valid ) {
 				$app = JFactory::getApplication();
-				if($_REQUEST['tmpl']=='component'){
+				if(@$_REQUEST['tmpl']=='component'){
 					hikashop_display($this->message,'error');
 				}else{
 					$app->enqueueMessage($this->message);
@@ -218,7 +218,7 @@ class hikashopVatHelper{
 		}else{
 			$app = JFactory::getApplication();
 			$this->message = JText::_('SOAP_EXTENSION_NOT_FOUND');
-			if($_REQUEST['tmpl']=='component'){
+			if(@$_REQUEST['tmpl']=='component'){
 				hikashop_display($this->message,'error');
 			}else{
 				$app->enqueueMessage($this->message);

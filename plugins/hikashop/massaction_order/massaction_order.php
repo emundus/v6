@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -206,16 +206,17 @@ class plgHikashopMassaction_order extends JPlugin
 			}
 		}else{
 			$db = JFactory::getDBO();
-			$operator = (empty($filter['type']) || $filter['type'] == 'IN') ? ' = ' : ' != ';
-			$query->leftjoin['user'] = hikashop_table('user'). ' as hk_user ON hk_user.user_id = hk_order.order_user_id';
-			$query->leftjoin['joomla_user'] = hikashop_table('users',false). ' as joomla_user ON joomla_user.id = hk_user.user_cms_id';
 			if(!HIKASHOP_J16){
-				$query->leftjoin['core_acl_aro_groups'] = hikashop_table('core_acl_aro_groups',false). ' as core_acl_aro_groups ON core_acl_aro_groups.value = joomla_user.usertype';
-				$query->where[] = 'core_acl_aro_groups.id'.' '.$operator.' '.(int)$filter['group'];
+				$db->setQuery('SELECT user.id FROM '.hikashop_table('users',false).' AS user LEFT JOIN '.hikashop_table('core_acl_aro_groups',false).' AS group ON user.gid = group.name WHERE group.id = '.(int)$filter['group']);
 			}else{
-				$query->leftjoin['user_usergroup_map'] = hikashop_table('user_usergroup_map',false). ' as user_usergroup_map ON user_usergroup_map.user_id = joomla_user.id';
-				$query->where[] = 'user_usergroup_map.group_id'.' '.$operator.' '.(int)$filter['group'];
+				$db->setQuery('SELECT user_id FROM '.hikashop_table('user_usergroup_map',false).'  WHERE group_id = '.(int)$filter['group']);
 			}
+			if(!HIKASHOP_J25)
+				$users = $db->loadResultArray();
+			else
+				$users = $db->loadColumn();
+			if(!empty($users))
+				$query->where[] = 'hk_user.user_cms_id'.' '.$filter['type'].' ('.implode(',',$users).')';
 		}
 	}
 	function onCountOrderMassFilteraccessLevel(&$query,$filter,$num){

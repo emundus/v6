@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,8 +11,8 @@ defined('_JEXEC') or die('Restricted access');
 class hikashopShippingClass extends hikashopClass {
 	var $tables = array('shipping');
 	var $pkeys = array('shipping_id');
-	var $deleteToggle = array('shipping'=>array('shipping_type','shipping_id'));
-	var $toggle = array('shipping_published'=>'shipping_id');
+	var $deleteToggle = array('shipping' => array('shipping_type', 'shipping_id'));
+	var $toggle = array('shipping_published' => 'shipping_id');
 
 	function save(&$element, $reorder = true) {
 		JPluginHelper::importPlugin('hikashop');
@@ -449,8 +449,8 @@ class hikashopShippingClass extends hikashopClass {
 			$real_products = new stdClass();
 			$real_products->products = array();
 
-			$volumeClass = hikashop_get('helper.volume');
-			$weightClass = hikashop_get('helper.weight');
+			$volumeHelper = hikashop_get('helper.volume');
+			$weightHelper = hikashop_get('helper.weight');
 
 			foreach($order->products as $k => $row) {
 				if(!empty($products) && !isset($products[$k]))
@@ -503,7 +503,7 @@ class hikashopShippingClass extends hikashopClass {
 							$row->product_total_volume = $row->product_volume * $row->cart_product_quantity;
 							$row->product_total_volume_orig = $row->product_total_volume;
 							$row->product_dimension_unit_orig = $row->product_dimension_unit;
-							$row->product_total_volume = $volumeClass->convert($row->product_total_volume, $row->product_dimension_unit);
+							$row->product_total_volume = $volumeHelper->convert($row->product_total_volume, $row->product_dimension_unit);
 							$row->product_dimension_unit = $order->volume_unit;
 						}
 
@@ -512,11 +512,12 @@ class hikashopShippingClass extends hikashopClass {
 
 					if(bccomp($row->product_weight, 0, 5)) {
 
-						if($row->product_weight_unit != $order->weight_unit) {
+						$order_weight_unit = isset($order->weight_unit) ? $order->weight_unit : @$order->weight['unit'];
+						if($row->product_weight_unit != $order_weight_unit) {
 							$row->product_weight_orig = $row->product_weight;
 							$row->product_weight_unit_orig = $row->product_weight_unit;
-							$row->product_weight = $weightClass->convert($row->product_weight, $row->product_weight_unit);
-							$row->product_weight_unit = $order->weight_unit;
+							$row->product_weight = $weightHelper->convert($row->product_weight, $row->product_weight_unit);
+							$row->product_weight_unit = $order_weight_unit;
 						}
 
 						$order->shipping_prices[$key]->weight += $row->product_weight * $row->cart_product_quantity;
@@ -641,7 +642,7 @@ class hikashopShippingClass extends hikashopClass {
 			$shipping_ids = explode('-', $shipping_id, 2);
 			$shipping = $this->get($shipping_ids[0]);
 			if(!empty($shipping->shipping_params) && is_string($shipping->shipping_params))
-				$shipping->shipping_params = unserialize($shipping->shipping_params);
+				$shipping->shipping_params = hikashop_unserialize($shipping->shipping_params);
 			$shippingMethod = hikashop_import('hikashopshipping', $shipping_method);
 			$methods = $shippingMethod->shippingMethods($shipping);
 			unset($shippingMethod);
@@ -748,7 +749,7 @@ class hikashopShippingClass extends hikashopClass {
 
 		foreach($rows as &$row) {
 			if(!empty($row->shipping_params) && is_string($row->shipping_params))
-				$row->plugin_params = unserialize($row->shipping_params);
+				$row->plugin_params = hikashop_unserialize($row->shipping_params);
 
 			$row->col_display_price = '';
 			if(bccomp($row->shipping_price, 0, 3)) {

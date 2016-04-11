@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -58,6 +58,17 @@ window.orderMgr.selectProduct = function(el) {
 	<thead>
 		<tr>
 			<th class="hikashop_order_item_name_title title"><?php echo JText::_('PRODUCT'); ?></th>
+<?php
+	if(hikashop_level(2)){
+		$itemFields = $this->fieldsClass->getFields('display:field_product_order_form=1',$product,'product');
+		if(!empty($itemFields)) {
+				foreach($itemFields as $field){
+				$namekey = $field->field_namekey;
+				echo '<th class="hikashop_order_product_'.$namekey.'">'.$this->fieldsClass->getFieldName($field).'</th>';
+			}
+		}
+	}
+?>
 			<th class="hikashop_order_item_price_title title"><?php echo JText::_('UNIT_PRICE'); ?></th>
 			<th class="hikashop_order_item_files_title title"><?php echo JText::_('HIKA_FILES'); ?></th>
 			<th class="hikashop_order_item_quantity_title title"><?php echo JText::_('PRODUCT_QUANTITY'); ?></th>
@@ -113,6 +124,25 @@ foreach($this->order->products as $k => $product) {
 					}
 				}?></p>
 			</td>
+			<p class="hikashop_order_product_custom_product_fields">
+			<?php
+				if(hikashop_level(2)){
+					$itemFields = $this->fieldsClass->getFields('display:field_product_order_form=1',$product,'product');
+					if(!empty($itemFields)) {
+						foreach($itemFields as $field){
+							$namekey = $field->field_namekey;
+							$productData = @$this->products[$product->product_id];
+			?>
+					<td class="hikashop_order_product_name_value<?php echo $td_class; ?>"><?php
+							echo '<p class="hikashop_order_product_'.$namekey.'">'.$this->fieldsClass->show($field,$productData->$namekey).'</p>';
+			?>
+					</td>
+			<?php
+						}
+					}
+				}
+			?>
+			</p>
 			<td class="hikashop_order_item_price_value"><?php
 				echo $this->currencyHelper->format($product->order_product_price, $this->order->order_currency_id);
 				if(bccomp($product->order_product_tax,0,5)) {

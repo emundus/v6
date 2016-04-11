@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -17,7 +17,7 @@ $productClass = hikashop_get('class.product');
 $fieldsClass = hikashop_get('class.field');
 if(hikashop_level(2)) {
 	$null = null;
-	$itemFields = $fieldsClass->getFields('frontcomp',$null,'item');
+	$itemFields = $fieldsClass->getFields('display:field_item_order_creation_notification=1',$null,'item');
 }
 
 global $Itemid;
@@ -378,7 +378,7 @@ ob_start();
 
 	$sep = '';
 	if(hikashop_level(2)) {
-		$fields = $fieldsClass->getFields('frontcomp',$data,'order','');
+		$fields = $fieldsClass->getFields('display:field_order_creation_notification=1',$data,'order','');
 		foreach($fields as $fieldName => $oneExtraField) {
 			if(isset($data->$fieldName) && !isset($data->cart->$fieldName))
 				$data->cart->$fieldName = $data->$fieldName;
@@ -405,7 +405,7 @@ if(!empty($data->cart->billing_address) && !empty($data->cart->fields)){
 }
 if(!empty($data->cart->override_shipping_address)) {
 	$vars['SHIPPING_ADDRESS'] =  $data->cart->override_shipping_address;
-} elseif(!empty($data->order_shipping_id) && !empty($data->cart->shipping_address) && !empty($data->cart->fields)) {
+} elseif(!empty($data->cart->order_shipping_id) && !empty($data->cart->shipping_address) && !empty($data->cart->fields)) {
 	$vars['SHIPPING_ADDRESS'] = $addressClass->displayAddress($data->cart->fields,$data->cart->shipping_address,$view);
 } else {
 	$vars['SHIPPING_ADDRESS'] = $vars['BILLING_ADDRESS'];

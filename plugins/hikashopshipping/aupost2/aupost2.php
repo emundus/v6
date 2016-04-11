@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -196,7 +196,7 @@ class plgHikashopshippingAupost2 extends hikashopShippingPlugin {
 		$i=0;
 
 		if(isset($rate->shipping_params->shipping_group) && $rate->shipping_params->shipping_group) {
-			$packages = $this->getOrderPackage($order, array('weight_unit' => 'kg', 'volume_unit' => 'cm', 'limit' => $limit, 'required_dimensions' => array('w','x','y','z')));
+			$packages = $this->getOrderPackage($order, array('weight_unit' => 'g', 'volume_unit' => 'mm', 'limit' => $limit, 'required_dimensions' => array('w','x','y','z')));
 
 			if(empty($packages))
 				return true;
@@ -280,7 +280,7 @@ class plgHikashopshippingAupost2 extends hikashopShippingPlugin {
 			}
 		} else {
 			$limit['unit'] = 1;
-			$packages = $this->getOrderPackage($order, array('weight_unit' => 'kg', 'volume_unit' => 'cm', 'limit' => $limit, 'required_dimensions' => array('w','x','y','z')));
+			$packages = $this->getOrderPackage($order, array('weight_unit' => 'g', 'volume_unit' => 'mm', 'limit' => $limit, 'required_dimensions' => array('w','x','y','z')));
 
 			if(empty($packages))
 				return true;

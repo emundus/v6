@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -21,8 +21,8 @@ class CharacteristicController extends hikashopController{
 	}
 
 	function addcharacteristic(){
-		$class = hikashop_get('class.characteristic');
-		$status = $class->saveForm();
+		$characteristicClass = hikashop_get('class.characteristic');
+		$status = $characteristicClass->saveForm();
 		JRequest::setVar('cid',$status);
 		JRequest::setVar( 'layout', 'addcharacteristic'  );
 		return parent::display();

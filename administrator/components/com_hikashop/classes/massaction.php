@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -28,12 +28,12 @@ class hikashopMassactionClass extends hikashopClass{
 		$this->_retreiveData($element,'action');
 
 
-		$class = hikashop_get('helper.translation');
-		$class->getTranslations($element);
+		$translationHelper = hikashop_get('helper.translation');
+		$translationHelper->getTranslations($element);
 
 		$result = $this->save($element);
 		if($result){
-			$class->handleTranslations('massaction',$result,$element);
+			$translationHelper->handleTranslations('massaction',$result,$element);
 			JRequest::setVar( 'cid', $result);
 		}
 		return $result;
@@ -550,6 +550,7 @@ class hikashopMassactionClass extends hikashopClass{
 				}
 				foreach($element as $key=>$charac){
 					if($key === 'characteristic'){
+						$characteristicClass = hikashop_get('class.characteristic');
 						foreach($charac as $elem){
 							if(isset($elem->characteristic_parent_id) && $elem->characteristic_parent_id === '0' && isset($params->types[$elem->characteristic_value])){
 								$var_name = $elem->characteristic_value;
@@ -562,8 +563,7 @@ class hikashopMassactionClass extends hikashopClass{
 								if(!is_object($params->types[$column])) $params->types[$column] = new stdClass();
 								$params->types[$column]->type = 'characteristic';
 							}else if(!empty($elem->characteristic_parent_id) && !isset($characteristics[$elem->characteristic_parent_id])){
-								$class = hikashop_get('class.characteristic');
-								$parentData = $class->get($elem->characteristic_parent_id);
+								$parentData = $characteristicClass->get($elem->characteristic_parent_id);
 								if(!empty($parentData)){
 									$var_name = $parentData->characteristic_value;
 									$characteristics[$elem->characteristic_parent_id] = $var_name;
@@ -1063,12 +1063,12 @@ class hikashopMassactionClass extends hikashopClass{
 				switch($type->type){
 					case 'price':
 						if($element->$column->currency != '0' && JRequest::getVar('from_task','displayResults') == 'displayResults'){
-							$currency = hikashop_get('class.currency');
+							$currencyClass = hikashop_get('class.currency');
 							if(!isset($element->$column->currency)){
 								$config = hikashop_config();
 								$element->$column->currency = $config->get('main_currency');
 							}
-							$square = $currency->format($element->$column->value,$element->$column->currency);
+							$square = $currencyClass->format($element->$column->value,$element->$column->currency);
 						}elseif(isset($element->$column->value)){
 							$square = $element->$column->value;
 						}
@@ -1121,8 +1121,8 @@ class hikashopMassactionClass extends hikashopClass{
 						if($element->$column == '0'){
 							$square = '0';
 						}else{
-							$currency = hikashop_get('class.currency');
-							$data = $currency->get($element->$column);
+							$currencyClass = hikashop_get('class.currency');
+							$data = $currencyClass->get($element->$column);
 							$square = $data->currency_code;
 						}
 						break;
@@ -1514,14 +1514,28 @@ class hikashopMassactionClass extends hikashopClass{
 			$productColumns = $db->getTableColumns(hikashop_table('product'));
 			$priceColumns = $db->getTableColumns(hikashop_table('price'));
 		}
+
+		if(!HIKASHOP_J25) {
+			$tmp = $db->getTableFields(hikashop_table('file'));
+			$fileColumns = reset($tmp);
+			unset($tmp);
+		} else {
+			$fileColumns = $db->getTableColumns(hikashop_table('file'));
+		}
+		$filesColumns = array();
+		$imagesColumns = array();
+		foreach($fileColumns as $fileColumn => $type){
+			$filesColumns[] = str_replace('file_','files_',$fileColumn);
+			$imagesColumns[] = str_replace('file_','images_',$fileColumn);
+		}
+
 		$db->setQuery('SELECT characteristic_value FROM '.hikashop_table('characteristic').' WHERE characteristic_parent_id = 0');
 		$characteristicColumns = $db->loadResultArray();
 		$categoryColumns = array('categories_ordering','parent_category','categories_image','categories');
-		$otherColumns = array('files','images','related','options','price_value_with_tax');
+		$otherColumns = array('related','options','price_value_with_tax');
 		if(!is_array($characteristicColumns)) $characteristicColumns = array($characteristicColumns);
-		$mergedColumns = array_merge(array_keys($productColumns),array_keys($priceColumns),$categoryColumns,$characteristicColumns,$otherColumns);
+		$mergedColumns = array_merge(array_keys($productColumns),array_keys($priceColumns),$categoryColumns,$characteristicColumns,$otherColumns,$filesColumns,$imagesColumns);
 		$wrongColumns = array_diff($columns,$mergedColumns);
-
 
 		if(!empty($wrongColumns) && $check){
 			if(!$check)$app->enqueueMessage('WRONG_COLUMNS','error');
@@ -1561,6 +1575,7 @@ class hikashopMassactionClass extends hikashopClass{
 					$newProduct->$field = preg_replace('#^[\'" ]{1}(.*)[\'" ]{1}$#','$1',$value);
 				}
 			}
+
 			$pool[$key] = new stdClass();
 			if(isset($newProduct->product_id)){
 				$pool[$key]->product_id = $newProduct->product_id;
@@ -1571,10 +1586,10 @@ class hikashopMassactionClass extends hikashopClass{
 			if(!isset($pool[$key]->product_id) && !isset($pool[$key]->product_code)){
 				continue;
 			}
-			if(!isset($pool[$key]->product_code)){
+			if(empty($pool[$key]->product_code)){
 				$missingCodes[] = $pool[$key]->product_id;
 			}
-			if(!isset($pool[$key]->product_id)){
+			if(empty($pool[$key]->product_id)){
 				$missingIds[] = $pool[$key]->product_code;
 			}
 		}
@@ -1584,13 +1599,16 @@ class hikashopMassactionClass extends hikashopClass{
 			$db->setQuery('SELECT * FROM '.hikashop_table('product').' WHERE product_id IN ('.implode(',',$missingCodes).')');
 			$missingCodes = $db->loadObjectList();
 		}
+
 		if(!empty($missingIds)){
 			$db->setQuery('SELECT * FROM '.hikashop_table('product').' WHERE product_code IN ('.implode(',',$db->quote($missingIds)).')');
 			$missingIds = $db->loadObjectList();
 		}
 
+		$ids = array();
 		$errorcount = 0;
 		$importProducts = array();
+		$toCreateProducts = array();
 		foreach($importLines as $key => $importLine){
 			$product = $this->getProduct($importLines, $key, $numberColumns, $separator);
 
@@ -1619,22 +1637,128 @@ class hikashopMassactionClass extends hikashopClass{
 				}
 			}
 
-			if(empty($newProduct->product_code) || empty($newProduct->product_id)){
-				$errorcount++;
-				if($errorcount<20){
-					if(isset($importLine[$key-1]))$app->enqueueMessage(JText::sprintf('IMPORT_ERRORLINE',$importLines[$key-1]).' '.JText::_('PRODUCT_NOT_FOUND'),'notice');
+			if((empty($newProduct->product_id) && !isset($element['add'])) || (empty($newProduct->product_code) && empty($newProduct->product_id))){
+				if($errorcount<20 && isset($importLine[$key-1])){
+					$app->enqueueMessage(JText::sprintf('IMPORT_ERRORLINE',$importLines[$key-1]).' '.JText::_('PRODUCT_NOT_FOUND'),'notice');
+					$errorcount++;
 				}elseif($errorcount == 20){
 					$app->enqueueMessage('...','notice');
 				}
-			}else{
+			}
+
+			if(!empty($newProduct->product_code) && !empty($newProduct->product_id)){
 				$importProducts[$newProduct->product_id] = $newProduct;
 				$ids[] = $newProduct->product_id;
+			}elseif(!empty($newProduct->product_code) && isset($element['add'])){
+				unset($newProduct->product_id);
+				$toCreateProducts[$key] = $newProduct;
+			}
+			unset($newProduct);
+		}
+
+		$codes = array();
+		foreach($importProducts as $importProduct){
+			$codes[$importProduct->product_id] = $db->quote($importProduct->product_code);
+		}
+
+		$db->setQuery('SELECT product_id, product_code FROM '.hikashop_table('product').' WHERE product_id IN('.implode(',', $ids).') OR product_code IN('.implode(',', $codes).') GROUP BY product_code');
+		if(!HIKASHOP_J25){
+			$existingProducts = $db->loadResultArray();
+		} else {
+			$existingProducts = $db->loadAssocList('product_id');
+		}
+
+		$ids = array();
+		foreach($importProducts as $key => $importProduct){
+			$importProduct->existing = false;
+			foreach($existingProducts as $existingProduct){
+				if($importProduct->product_code == $existingProduct['product_code']){
+					$importProduct->product_id = $existingProduct['product_id'];
+					$importProduct->existing = true;
+				}
+				if($importProduct->product_id == $existingProduct['product_id']){
+					$importProduct->existing = true;
+				}
+			}
+			if(!$importProduct->existing){
+				unset($importProduct->existing);
+				unset($importProduct->product_id);
+				array_push($toCreateProducts,$importProduct);
+				unset($importProducts[$key]);
+			}else{
+				$ids[$importProduct->product_id] = $importProduct->product_id;
+				$importProducts[$importProduct->product_id] = $importProduct;
 			}
 		}
+		unset($importProduct);
+
+		$duplicateds = array_diff_key($importProducts,$ids);
+		foreach($duplicateds as $k => $duplicated){
+			unset($importProducts[$k]);
+		}
+
 		$data->ids = $ids;
 		$data->elements = $importProducts;
+		$data->newProducts = $toCreateProducts;
 
 		return $data;
+	}
+
+	function updateFiles($element, $id, $file_type = 'file'){
+		$config = hikashop_config();
+		$db = JFactory::getDBO();
+		$csvSeparator = $config->get('csv_separator',';');
+
+		if($file_type == 'file'){
+			$regEx = $file_type.'s_';
+		}elseif($file_type == 'image'){
+			$file_type = 'product';
+			$regEx = $file_type.'s_';
+		}
+
+		$db->setQuery('DELETE FROM '.hikashop_table('file').' WHERE file_type = '.$db->quote($file_type).' AND file_ref_id = '.(int)$id);
+		$db->query();
+
+		$columns = array();
+		$nbFiles = 0;
+		foreach($element as $k => $v){
+			if(!preg_match('/'.$regEx.'/U',$k))
+				continue;
+			else
+				$columns[] = str_replace($regEx,'file_',$k);
+
+			$tmpValues = explode($csvSeparator,$v);
+			if($nbFiles < count($tmpValues))
+				$nbFiles = count($tmpValues);
+		}
+
+		$emptyType = false;
+		if(!in_array('file_type',$columns)){
+			$emptyType = true;
+			array_push($columns,'file_type');
+		}
+
+		$values = array();
+		foreach($element as $k => $v){
+			if(!preg_match('/'.$regEx.'/U',$k))
+				continue;
+
+			$tmpValues = explode($csvSeparator,$v);
+			for($j = 0; $j <$nbFiles; $j++){
+				$values[$j][$k] = $db->quote($tmpValues[$j]);
+			}
+		}
+
+		$sqlVals = array();
+		foreach($values as $j => $value){
+			$sqlVals[$j] = implode(',',$value);
+			if($emptyType)
+				$sqlVals[$j] .= ','.$file_type;
+		}
+
+		$db->setQuery('REPLACE INTO '.hikashop_table('file').' ('.implode(',',$columns).') VALUES ('.implode('),(',$sqlVals).')');
+		$success = $db->query();
+		return $success;
 	}
 
 	function getProduct($importLines, $key, $numberColumns, $separator){
@@ -1796,7 +1920,7 @@ class hikashopMassactionClass extends hikashopClass{
 							continue;
 						}
 						if(!in_array($string, $queryTables)){
-							$queryTables[] = 'hk_'.$string;
+							$queryTables[] = 'hk_'.$string['table'];
 						}
 						$type = 'column';
 					}elseif(isset($string['column']) && $type == 'column'){
@@ -2353,18 +2477,18 @@ class hikashopMassactionClass extends hikashopClass{
 
 	function _exportCSV($params){
 		$config =& hikashop_config();
-		$export = hikashop_get('helper.spreadsheet');
+		$spreadsheetHelper = hikashop_get('helper.spreadsheet');
 		switch($params->formatExport){
 			case 'csv':
 				$format = $config->get('export_format','csv');
 				$separator = $config->get('csv_separator',';');
 				$force_quote = $config->get('csv_force_quote',1);
 				$decimal_separator = $config->get('csv_decimal_separator','.');
-				$export->init($format, 'hikashop_export', $separator, $force_quote, $decimal_separator);
+				$spreadsheetHelper->init($format, 'hikashop_export', $separator, $force_quote, $decimal_separator);
 				break;
 			case 'xls':
 				$format = 'xls';
-				$export->init($format, 'hikashop_export',';',true);
+				$spreadsheetHelper->init($format, 'hikashop_export',';',true);
 				break;
 		}
 		if(!empty($params->action)){
@@ -2380,7 +2504,7 @@ class hikashopMassactionClass extends hikashopClass{
 					$row[] = $column;
 				}
 			}
-			$export->writeLine($row);
+			$spreadsheetHelper->writeLine($row);
 		}
 
 		JRequest::setVar('from_task','exportCsv');
@@ -2423,13 +2547,13 @@ class hikashopMassactionClass extends hikashopClass{
 						}
 					}
 				}
-				$export->writeLine($row);
+				$spreadsheetHelper->writeLine($row);
 			}
 		}
 		if(empty($params->path)){
-			$export->send();
+			$spreadsheetHelper->send();
 		}else{
-			$file = hikashop_get('class.file');
+			$fileClass = hikashop_get('class.file');
 			$name = '';
 
 			$path = explode(DS,$params->path);
@@ -2439,21 +2563,24 @@ class hikashopMassactionClass extends hikashopClass{
 			$uploadFolder = rtrim(JPath::clean(html_entity_decode($params->path)), DS.' ').DS;
 			if(!preg_match('#^([A-Z]:)?/.*#',$uploadFolder)) {
 				if(!$uploadFolder[0]=='/' || !is_dir($uploadFolder)) {
-					$uploadFolder = JPath::clean($file->getPath('file').trim($uploadFolder, DS.' ').DS);
+					$uploadFolder = JPath::clean($fileClass->getPath('file').trim($uploadFolder, DS.' ').DS);
 				}
 			}
 			if(strstr($name,'.')){
-				$data = $export->get();
+				$data = $spreadsheetHelper->get();
 				JFile::write($uploadFolder.$name, $data);
 			}
 		}
 	}
 
 	function setExportPaths($path){
-		if(preg_match('#{time}#',$path))
+		$withTime = false;
+		if(preg_match('#{time}#',$path)){
+			$withTime = true;
 			$path = str_replace('{time}',hikashop_getDate(time()),$path);
+		}
 
-		$path = str_replace(' ','_',trim($path));
+		$path = str_replace(array(' ',':'),array('_','-'),trim($path));
 
 		$oServerUrl = str_replace('administrator','',getcwd());
 		$webUrl = JURI::root();
@@ -2477,11 +2604,23 @@ class hikashopMassactionClass extends hikashopClass{
 			$webUrl = str_replace('\\','/',$webUrl.$path);
 		}
 
-		if(strstr($oServerUrl,'/'))
+		if(strpos($oServerUrl,'/') !== false)
 			$serverUrl = str_replace('\\','/',$serverUrl);
 		else
 			$serverUrl = str_replace('/','\\',$serverUrl);
 		$webUrl = str_replace('\\','/',$webUrl);
+
+		if($withTime && file_exists($path)){
+			$path_parts = pathinfo($path);
+			for($i = 1; $i > 0; $i++){
+				$tmpPath = str_replace('.'.$path_parts['extension'],'',$path);
+				if(!file_exists($tmpPath.'('.$i.')')){
+					$webUrl = str_replace('.'.$path_parts['extension'],'',$webUrl).'('.$i.').'.$path_parts['extension'];
+					$serverUrl = str_replace('.'.$path_parts['extension'],'',$serverUrl).'('.$i.').'.$path_parts['extension'];
+					break;
+				}
+			}
+		}
 
 		return array('server'=>$serverUrl, 'web'=>$webUrl);
 	}

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashoppayment">
 	<name>Hikashop PayJunction Payment Plugin</name>
-	<creationDate>25 février 2016</creationDate>
-	<version>2.6.1</version>
-	<author>Hikashop</author>
+	<creationDate>11 avril 2016</creationDate>
+	<version>2.6.2</version>
+	<author>Obsidev</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
 	<copyright>(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.</copyright>

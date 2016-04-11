@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1180,8 +1180,8 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 		$data['address_country'] = 'vmc.country_3_code';
 		$sql1 = 'INSERT IGNORE INTO `#__hikashop_address` (`'.implode('`,`',array_keys($data)).'`) '.
 				'SELECT '.implode(',',$data).' FROM `'.$this->vmprefix.'virtuemart_userinfos` AS vmui '.
-				"INNER JOIN `".$this->vmprefix."virtuemart_states` vms ON vmui.virtuemart_state_id = vms.virtuemart_state_id ".
-				"INNER JOIN `".$this->vmprefix."virtuemart_countries` vmc ON vmui.virtuemart_country_id = vmc.virtuemart_country_id ".
+				"LEFT JOIN `".$this->vmprefix."virtuemart_states` vms ON vmui.virtuemart_state_id = vms.virtuemart_state_id ".
+				"LEFT JOIN `".$this->vmprefix."virtuemart_countries` vmc ON vmui.virtuemart_country_id = vmc.virtuemart_country_id ".
 				'INNER JOIN `#__hikashop_user` AS hku ON vmui.virtuemart_user_id = hku.user_cms_id '.
 				'WHERE vmui.virtuemart_user_id > '.$this->options->last_vm_user.' ORDER BY vmui.virtuemart_user_id ASC;';
 

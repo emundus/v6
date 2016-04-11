@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -42,11 +42,11 @@ class hikashopCharacteristicClass extends hikashopClass{
 	}
 
 	function save(&$element){
-		$class = hikashop_get('helper.translation');
-		$class->getTranslations($element);
+		$translationHelper = hikashop_get('helper.translation');
+		$translationHelper->getTranslations($element);
 		$status = parent::save($element);
 		if($status){
-			$class->handleTranslations('characteristic',$status,$element);
+			$translationHelper->handleTranslations('characteristic',$status,$element);
 		}
 		return $status;
 	}

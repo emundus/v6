@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -66,7 +66,7 @@ class plgHikashoppaymentCreditcard extends hikashopPaymentPlugin
 	function onHistoryDisplay(&$histories){
 		foreach($histories as $k => $history){
 			if($history->history_payment_method == $this->name && !empty($history->history_data)){
-				$data = unserialize(base64_decode($history->history_data));
+				$data = hikashop_unserialize(base64_decode($history->history_data));
 				$string='';
 				if(!empty($data->cc_type)){
 					$string.= JText::_('CARD_TYPE').': '.$data->cc_type.'<br />';

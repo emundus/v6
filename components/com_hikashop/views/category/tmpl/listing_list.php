@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -100,9 +100,6 @@ switch($this->params->get('child_display_type')){
 			foreach($this->rows as $k => $row) {
 				if($only_if_products && $row->number_of_products < 1)
 					continue;
-				if($this->params->get('number_of_products', 0)) {
-					$row->category_name .= ' (' . $row->number_of_products . ')';
-				}
 
 				$found = 0;
 				if($in_hikashop_context) {
@@ -290,8 +287,6 @@ switch($this->params->get('child_display_type')){
 			foreach($this->rows as $k => $row) {
 				if($only_if_products && $row->number_of_products < 1)
 					continue;
-				if($this->params->get('number_of_products', 0))
-					$row->category_name .= ' (' . $row->number_of_products . ')';
 
 				$link = $this->getLink($row);
 				$class = ($cid == $row->category_id) ? ' current active' : '';
@@ -372,11 +367,37 @@ switch($this->params->get('child_display_type')){
 				}
 
 				$toOpen = false;
-				if($row->category_id == hikashop_getCid())
+
+				$cid = hikashop_getCid();
+
+				if(JRequest::getVar('ctrl','category') == 'product' && JRequest::getVar('task','listing') == 'show'){
+					$productClass = hikashop_get('class.product');
+					$cid = $productClass->getCategories(hikashop_getCid());
+				}
+
+				if(!HIKASHOP_J30){
+					$menuClass = hikashop_get('class.menus');
+					$menuData = $menuClass->get($this->params->get('itemid',0));
+					if(@$menuData->hikashop_params['content_type']=='product' && isset($menuData->hikashop_params['selectparentlisting']))
+						$cid = $menuData->hikashop_params['selectparentlisting'];
+				}else{
+					$app = JFactory::getApplication();
+					$menuItem = $app->getMenu()->getActive();
+					if(is_object($menuItem)){
+						$hkParams = $menuItem->params->get('hk_product',false);
+						if(isset($hkParams->category))
+							$cid = $hkParams->category;
+					}
+				}
+				if(!is_array($cid))
+					$cid = array($cid);
+
+				if(in_array($row->category_id,$cid))
 					$toOpen = true;
+
 				if(!empty($row->childs)) {
 					foreach($row->childs as $child) {
-						if($child->category_id == hikashop_getCid())
+						if(in_array($child->category_id,$cid))
 							$toOpen = true;
 					}
 				}

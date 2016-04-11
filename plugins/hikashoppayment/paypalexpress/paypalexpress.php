@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,7 +20,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 		'apipassword' => array("API_PASSWORD",'input'),
 		'apisignature' => array("API_SIGNATURE",'input'),
 		'apiversion' => array("API_VERSION",'input'),
-		'notification' => array('ALLOW_NOTIFICATIONS_FROM_X', 'boolean','0'),
+		'notification' => array('ALLOW_NOTIFICATIONS_FROM_X', 'boolean','1'),
 		'landingpage' => array('Express Checkout as guest by default', 'boolean','0'),
 		'cartdetail' => array('SEND_CART_DETAIL', 'boolean','0'),
 		'displaycheckout' => array('DISPLAY_BUTTON_CHECKOUT', 'boolean','0'),
@@ -144,7 +144,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 					$amountCalculated += $p->cart_product_quantity*round($unit->price_value,2);
 					$productprice += round($unit->price_value,2);
 					$item = array(
-						'L_PAYMENTREQUEST_0_NAME'.$i => strip_tags($p->product_name),
+						'L_PAYMENTREQUEST_0_NAME'.$i => substr(strip_tags($p->product_name), 0, 126),
 						'L_PAYMENTREQUEST_0_NUMBER'.$i => $p->product_id,
 						'L_PAYMENTREQUEST_0_AMT'.$i =>$productprice,
 						'L_PAYMENTREQUEST_0_QTY'.$i => $p->cart_product_quantity,
@@ -464,7 +464,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 				$max = 0;
 				foreach($methods as $k => $method) {
 					if(!empty($method->payment_params)){
-						$methods[$k]->payment_params = @unserialize($method->payment_params);
+						$methods[$k]->payment_params = @hikashop_unserialize($method->payment_params);
 					}
 					$methods[$k]->enabled = true;
 					if(empty($method->ordering)) {

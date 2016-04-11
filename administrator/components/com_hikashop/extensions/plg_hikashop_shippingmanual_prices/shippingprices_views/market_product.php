@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -25,7 +25,7 @@ defined('_JEXEC') or die('Restricted access');
 $i = 0;
 $previous_shipping_id = -1;
 foreach($shippings as &$shipping) {
-	$shipping->shipping_params = unserialize($shipping->shipping_params);
+	$shipping->shipping_params = hikashop_unserialize($shipping->shipping_params);
 
 	$shipping_data = $shipping->shipping_name . ' - ' . $currencyHelper->displayPrices(array($shipping), 'shipping_price', 'shipping_currency_id');
 	if(isset($shipping->shipping_params->shipping_percentage) && bccomp($shipping->shipping_params->shipping_percentage,0,3)) {

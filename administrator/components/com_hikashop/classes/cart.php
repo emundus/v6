@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -951,7 +951,6 @@ class hikashopCartClass extends hikashopClass {
 						$discount_before_tax = (int)$config->get('discount_before_tax',0);
 						$currencyClass->getPrices($parent,$ids,$currency_id,$main_currency,$zone_id,$discount_before_tax);
 						$productClass->checkVariant($product,$parent);
-
 					}
 					switch($limiter->limit_type) {
 						case 'quantity':

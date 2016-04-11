@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -26,11 +26,11 @@ class hikashopBannerClass extends hikashopClass{
 				$element->$column = strip_tags($element->$column);
 			}
 		}
-		$class = hikashop_get('helper.translation');
-		$class->getTranslations($element);
+		$translationHelper = hikashop_get('helper.translation');
+		$translationHelper->getTranslations($element);
 		$result = $this->save($element);
 		if($result){
-			$class->handleTranslations('banner',$result,$element);
+			$translationHelper->handleTranslations('banner',$result,$element);
 		}
 		return $result;
 	}
@@ -43,11 +43,11 @@ class hikashopBannerClass extends hikashopClass{
 		}
 		if(empty($element->banner_id)){
 			$element->banner_id = $status;
-			$orderClass = hikashop_get('helper.order');
-			$orderClass->pkey = 'banner_id';
-			$orderClass->table = 'banner';
-			$orderClass->orderingMap = 'banner_ordering';
-			$orderClass->reOrder();
+			$orderHelper = hikashop_get('helper.order');
+			$orderHelper->pkey = 'banner_id';
+			$orderHelper->table = 'banner';
+			$orderHelper->orderingMap = 'banner_ordering';
+			$orderHelper->reOrder();
 		}
 		return $status;
 	}

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -110,9 +110,9 @@ class PluginsController extends hikashopController {
 		$pluginClass = hikashop_get('class.'.$type);
 		$element = $pluginClass->get($cid);
 		if(!empty($element->$id_field)){
-			$class = hikashop_get('helper.translation');
-			$class->getTranslations($element);
-			$class->handleTranslations($type,$element->$id_field,$element);
+			$translationHelper = hikashop_get('helper.translation');
+			$translationHelper->getTranslations($element);
+			$translationHelper->handleTranslations($type,$element->$id_field,$element);
 		}
 		$document= JFactory::getDocument();
 		$document->addScriptDeclaration('window.top.hikashop.closeBox();');
@@ -201,7 +201,7 @@ class PluginsController extends hikashopController {
 			foreach($formData[$this->plugin_type] as $column => $value){
 				hikashop_secureField($column);
 				if(is_array($value)){
-					if($column == $params_name){
+					if($column == $params_name) {
 						$element->$params_name = new stdClass();
 						foreach($formData[$this->plugin_type][$column] as $key=>$val){
 							hikashop_secureField($key);
@@ -217,11 +217,17 @@ class PluginsController extends hikashopController {
 								$element->$params_name->$key = strip_tags($val);
 							}
 						}
-					}elseif($column=='payment_shipping_methods' || $column=='payment_currency' || $column=='shipping_currency'){
+					} elseif(in_array($column, array('payment_shipping_methods', 'payment_currency', 'shipping_currency'))) {
 						$element->$column = array();
 						foreach($formData[$this->plugin_type][$column] as $key=>$val){
 							$element->{$column}[(int)$key] = strip_tags($val);
 						}
+					} elseif($column == 'payment_images') {
+						$element->$column = array();
+						foreach($formData[$this->plugin_type][$column] as $key=>$val){
+							$element->{$column}[(int)$key] = strip_tags($val);
+						}
+						$element->$column = implode(',', $element->$column);
 					}
 				}else{
 					$element->$column = strip_tags($value);

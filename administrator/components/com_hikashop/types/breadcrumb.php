@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,8 +10,8 @@ defined('_JEXEC') or die('Restricted access');
 ?><?php
 class hikashopBreadcrumbType{
 	function display($map,$value,$type=''){
-		$class = hikashop_get('class.category');
-		$mainCategories = $class->getParents($value);
+		$categoryClass = hikashop_get('class.category');
+		$mainCategories = $categoryClass->getParents($value);
 		$mainHTML = array();
 		$ids = array();
 		if(!empty($mainCategories)){
@@ -21,9 +21,10 @@ class hikashopBreadcrumbType{
 
 			$where=array();
 			if(!empty($type)){
-				$where = array(' a.category_type IN ('.$class->database->Quote($type).',\'root\')');
+				$db = JFactory::getDBO();
+				$where = array(' a.category_type IN ('.$db->Quote($type).',\'root\')');
 			}
-			$childs = $class->loadAllWithTrans($ids,false,$where,' ORDER BY a.category_name ASC');
+			$childs = $categoryClass->loadAllWithTrans($ids,false,$where,' ORDER BY a.category_name ASC');
 
 			foreach($mainCategories as $k => $mainCategory){
 				$values = array();

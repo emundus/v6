@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -29,7 +29,7 @@ class JFormFieldHikashopmodule extends JFormField{
 					$cid = hikashop_getCID();
 				foreach($config->values as $name => $values){
 					if(preg_match('#menu_[0-9]#',$name)){
-						$params = unserialize(base64_decode($values->config_value));
+						$params = hikashop_unserialize(base64_decode($values->config_value));
 						$modules = array();
 						if(isset($params['modules']))
 							$modules = explode(',',$params['modules']);

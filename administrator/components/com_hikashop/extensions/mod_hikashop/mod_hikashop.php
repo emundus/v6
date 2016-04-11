@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -66,5 +66,9 @@ foreach(get_object_vars($module) as $k => $v){
 		$params->set($k,$v);
 	}
 }
+
+if($moduleClass->restrictedModule($params) === false)
+	return;
+
 $html = trim(hikashop_getLayout($type,'listing',$params,$js));
 require(JModuleHelper::getLayoutPath('mod_hikashop'));

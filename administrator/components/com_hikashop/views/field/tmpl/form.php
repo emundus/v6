@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -307,6 +307,7 @@ defined('_JEXEC') or die('Restricted access');
 				<?php echo JHTML::_('hikaselect.booleanlist', "field_options[readonly]" , '',@$this->field->field_options['readonly']); ?>
 			</td>
 		</tr>
+		<?php if(!empty($this->field->field_table) && $this->field->field_table=='product' || $this->field->field_table=='category'){ ?>
 		<tr id="fieldopt_translatable">
 			<td class="key">
 				<?php echo JText::_( 'HIKA_TRANSLATABLE' ); ?>
@@ -315,6 +316,7 @@ defined('_JEXEC') or die('Restricted access');
 				<?php echo JHTML::_('hikaselect.booleanlist', "field_options[translatable]" , '',@$this->field->field_options['translatable']); ?>
 			</td>
 		</tr>
+		<?php } ?>
 
 <?php
 	if(!empty($this->fieldtype->externalOptions)) {
@@ -412,9 +414,16 @@ defined('_JEXEC') or die('Restricted access');
 		</tr>
 <?php }?>
 	</table>
-	<fieldset class="adminform">
+	<?php
+		$fieldsetDisplay = 'style="display:none"';
+		if(in_array($this->field->field_table,array("address","user","category","contact","entry"))){
+		$fieldsetDisplay = '';}
+	?>
+	<fieldset <?php echo $fieldsetDisplay; ?>id="display_field" class="adminform">
 		<legend><?php echo JText::_('DISPLAY'); ?></legend>
 		<table class="paramlist admintable table">
+
+
 			<tr>
 				<td class="key"><?php echo JText::_( 'DISPLAY_FRONTCOMP' ); ?></td>
 				<td><?php echo JHTML::_('hikaselect.booleanlist', "data[field][field_frontcomp]" , '',@$this->field->field_frontcomp); ?></td>
@@ -427,6 +436,21 @@ defined('_JEXEC') or die('Restricted access');
 				<td class="key"><?php echo JText::_( 'DISPLAY_BACKEND_LISTING' ); ?></td>
 				<td><?php echo JHTML::_('hikaselect.booleanlist', "data[field][field_backend_listing]" , '',@$this->field->field_backend_listing); ?></td>
 			</tr>
+			</table>
+	</fieldset>
+
+
+	<?php
+		$fieldsetDisplay = 'style="display:none"';
+		if(in_array($this->field->field_table,array("order","item","product"))){
+		$fieldsetDisplay = '';}
+	?>
+	<fieldset <?php echo $fieldsetDisplay; ?>id="display_field_options" class="adminform">
+		<legend><?php echo JText::_('DISPLAY'); ?></legend>
+		<?php if(empty($this->field->field_table))
+			  	  echo JText::_( 'SAVE_THE_FIELD_FIRST_BEFORE' );
+		?>
+		<table class="paramlist admintable table">
 			<?php
 			if(!empty($this->displayOptions)) {
 				if(!empty($this->field->field_display) && is_string($this->field->field_display)) {
@@ -458,6 +482,13 @@ defined('_JEXEC') or die('Restricted access');
 						$displayOptionTitle = JText::_($displayOptionName);
 			?>
 			<tr>
+			<?php if(!isset($this->field->field_display->$displayOptionName)){
+						if(!isset($this->field->field_display)){
+							$this->field->field_display = new stdClass();
+						}
+						@$this->field->field_display->$displayOptionName = '1';
+					}
+			?>
 				<td class="key"><?php echo $displayOptionTitle; ?></td>
 				<td><?php echo JHTML::_('hikaselect.booleanlist', 'field_display['.$displayOptionName.']' , '', @$this->field->field_display->$displayOptionName); ?></td>
 			</tr>

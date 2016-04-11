@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,7 +16,7 @@ $imageHelper = hikashop_get('helper.image');
 if(hikashop_level(2)) {
 	$fieldsClass = hikashop_get('class.field');
 	$null = null;
-	$itemFields = $fieldsClass->getFields('frontcomp',$null,'item');
+	$itemFields = $fieldsClass->getFields('display:field_item_payment_notification=1',$null,'item');
 }
 
 global $Itemid;
@@ -350,7 +350,7 @@ ob_start();
 
 	$sep = '';
 	if(hikashop_level(2)) {
-		$fields = $fieldsClass->getFields('frontcomp',$data,'order','');
+		$fields = $fieldsClass->getFields('display:field_order_payment_notification=1',$data,'order','');
 		foreach($fields as $fieldName => $oneExtraField) {
 			if(empty($data->cart->$fieldName))
 				continue;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -145,8 +145,28 @@ foreach($products as $product) {
 			<?php
 				$params->set('price_with_tax',$config->get('price_with_tax',1));
 				$params->set('add_to_cart',1);
+				$scripts_already = count($doc->_scripts);
+				$css_already = count($doc->_styleSheets);
 				$add_to_cart = hikashop_getLayout('product','add_to_cart_listing',$params,$js);
 				echo $add_to_cart;
+
+				foreach($doc->_scripts as $script => $v) {
+					if($scripts_already){
+						$scripts_already--;
+						continue;
+					}
+					echo '<script src="'.$script.'" type="text/javascript"></script>';
+				}
+				foreach($doc->_styleSheets as $css => $v) {
+					if($css_already){
+						$css_already--;
+						continue;
+					}
+					echo '<style type="text/css">'."\r\n@import url(".$css.");\r\n".'</style>';
+				}
+				foreach($doc->_script as $script) {
+					echo '<script type="text/javascript">'."\r\n".$script."\r\n".'</script>';
+				}
 			?>
 			</span>
 			<!-- EO ADD TO CART BUTTON AREA --><?php

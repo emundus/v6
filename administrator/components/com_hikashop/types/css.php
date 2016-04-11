@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,7 +24,7 @@ class hikashopCssType{
 	function display($map,$value){
 		$this->load();
 		if(count($this->values) == 1 && $this->type == 'style') {
-			return '<a target="_blank" href="'.HIKASHOP_REDIRECT.'hikashop-styles'.'">'.hikashop_tooltip(JText::_('STYLE_TOOLTIP_TEXT'), JText::_('STYLE_TOOLTIP_TITLE'), '', JText::_('STYLE_HIKASHOP')).'</a>';
+			return '<input type="hidden" value="" name="'.$map.'"/><a target="_blank" href="'.HIKASHOP_REDIRECT.'hikashop-styles'.'">'.hikashop_tooltip(JText::_('STYLE_TOOLTIP_TEXT'), JText::_('STYLE_TOOLTIP_TITLE'), '', JText::_('STYLE_HIKASHOP')).'</a>';
 		}
 		$js = ' onchange="updateCSSLink(\''.$this->type.'\',\''.$this->type.'\',this.value);"';
 		$aStyle = empty($value) ? ' style="display:none"' : '';
@@ -32,8 +32,8 @@ class hikashopCssType{
 		$config =& hikashop_config();
 		$manage = hikashop_isAllowed($config->get('acl_config_manage','all'));
 		if($manage){
-			$popup = hikashop_get('helper.popup');
-			$html .= $popup->display(
+			$popupHelper = hikashop_get('helper.popup');
+			$html .= $popupHelper->display(
 				'<img src="'. HIKASHOP_IMAGES.'edit.png" alt="'.JText::_('HIKA_EDIT').'"/>',
 				'CSS',
 				'\''.'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=config&amp;task=css&amp;file='.$this->type.'_\'+document.getElementById(\''.$this->type.'_choice'.'\').value+\'&amp;var='.$this->type.'\'',

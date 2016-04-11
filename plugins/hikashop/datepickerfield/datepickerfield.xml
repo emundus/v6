@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="hikashop" method="upgrade">
 	<name>HikaShop: Date Picker Custom Field</name>
-	<creationDate>25 février 2016</creationDate>
-	<version>2.6.1</version>
+	<creationDate>11 avril 2016</creationDate>
+	<version>2.6.2</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@obsidev.com</authorEmail>
 	<authorUrl>http://www.obsidev.com</authorUrl>
@@ -15,14 +15,14 @@
 	</files>
 	<params addpath="/components/com_hikashop/params">
 		<param name="time_shift" type="radio" default="0" label="HIKA_DATEPICKER_SET_HOUR" description="DATEPICKER_SET_HOUR">
-			<option value="0">No</option><option value="1">Yes</option>
+			<option value="0">HIKASHOP_NO</option><option value="1">HIKASHOP_YES</option>
 		</param>
 	</params>
 	<config>
 		<fields name="params" addfieldpath="/components/com_hikashop/fields">
 			<fieldset name="basic">
 				<field name="time_shift" type="radio" default="0" label="HIKA_DATEPICKER_SET_HOUR" description="DATEPICKER_SET_HOUR" class="btn-group btn-group-yesno">
-					<option value="0">No</option><option value="1">Yes</option>
+					<option value="0">HIKASHOP_NO</option><option value="1">HIKASHOP_YES</option>
 				</field>
 			</fieldset>
 		</fields>

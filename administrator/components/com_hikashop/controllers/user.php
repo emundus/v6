@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -86,7 +86,7 @@ class UserController extends hikashopController{
 		$oldData = null;
 
 		if(!empty($_REQUEST['address']['address_id'])){
-			$oldData = $class->get($_REQUEST['address']['address_id']);
+			$oldData = $addressClass->get($_REQUEST['address']['address_id']);
 		}
 		$fieldClass = hikashop_get('class.field');
 		$addressData = $fieldClass->getInput('address',$oldData);
@@ -146,10 +146,10 @@ class UserController extends hikashopController{
 	function pay_confirm(){
 		$user_id = hikashop_getCID('user_id');
 		if(!empty($user_id)){
-			$class = hikashop_get('class.user');
-			$user = $class->get($user_id);
+			$userClass = hikashop_get('class.user');
+			$user = $userClass->get($user_id);
 			if(!empty($user)){
-				$class->loadPartnerData($user);
+				$userClass->loadPartnerData($user);
 				if(bccomp($user->accumulated['currenttotal'],0,5)){
 					$method = JRequest::getCmd('pay_method');
 					$pay = JRequest::getInt('pay',0);

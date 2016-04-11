@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -29,8 +29,8 @@ class OrderViewOrder extends hikashopView{
 
 	function listing(){
 		$app = JFactory::getApplication();
-		$fieldsClass = hikashop_get('class.field');
-		$fields = $fieldsClass->getData('backend_listing','order',false);
+		$fieldsClass = hikashop_get('class.field');$null=null;
+		$fields =  @$fieldsClass->getFields('display:field_order_listing=1', $null, 'order');
 		$popup = (JRequest::getString('tmpl') === 'component');
 		$pageInfo = new stdClass();
 		$pageInfo->filter = new stdClass();
@@ -163,7 +163,7 @@ class OrderViewOrder extends hikashopView{
 			$filters = '';
 		}
 		$query = ' FROM '.hikashop_table('order').' AS b LEFT JOIN '.hikashop_table('address').' AS d ON b.order_billing_address_id=d.address_id LEFT JOIN '.hikashop_table('user').' AS a ON b.order_user_id=a.user_id LEFT JOIN '.hikashop_table('users',false).' AS c ON a.user_cms_id=c.id '.implode(' ', $tables).' '.$filters.$order;
-		$database->setQuery('SELECT a.*,b.*,c.*,IFNULL(c.name,CONCAT_WS(\' \',d.address_firstname,d.address_middle_name,d.address_lastname)) AS hikashop_name '.$query,(int)$pageInfo->limit->start,(int)$pageInfo->limit->value);
+		$database->setQuery('SELECT a.*,b.*,c.*,d.*'.$query,(int)$pageInfo->limit->start,(int)$pageInfo->limit->value);
 		$rows = $database->loadObjectList();
 
 		if(!empty($pageInfo->search)){
@@ -234,10 +234,15 @@ class OrderViewOrder extends hikashopView{
 			$order = $class->loadFullOrder($order_id,true);
 
 			if(hikashop_level(2)){
-				$fields['order'] = $fieldsClass->getFields('backend',$order,'order');
+				$task = JRequest::getCmd('task', '');
+				if($task == 'edit')
+					$fields['order'] = $fieldsClass->getFields('display:field_order_edit_fields=1',$order,'order');
+				else
+					$fields['order'] = $fieldsClass->getFields('display:field_order_form=1',$order,'order');
+
 				$null = null;
 				$fields['entry'] = $fieldsClass->getFields('backend_listing',$null,'entry');
-				$fields['item'] = $fieldsClass->getFields('backend_listing',$null,'item');
+				$fields['item'] = $fieldsClass->getFields('display:field_item_order_form=1',$null,'item');
 			}
 			$task='edit';
 
@@ -315,6 +320,13 @@ class OrderViewOrder extends hikashopView{
 		$this->assignRef('order',$order);
 		$this->assignRef('fields',$fields);
 		$this->assignRef('fieldsClass',$fieldsClass);
+
+			$products_ids = array();
+			$productClass = hikashop_get('class.product');
+			foreach($order->products as $item) { $products_ids[] = $item->product_id; }
+			$productClass->getProducts($products_ids);
+			$products =& $productClass->all_products;
+		$this->assignRef('products',$products);
 
 		$user_id = JRequest::getInt('user_id',0);
 		if(!empty($user_id)){
@@ -429,7 +441,7 @@ class OrderViewOrder extends hikashopView{
 			$class = hikashop_get('class.order');
 			$order = $class->loadNotification($order_id);
 			if(hikashop_level(2)){
-				$fields['order'] = $fieldsClass->getFields('backend',$order,'order');
+				$fields['order'] = $fieldsClass->getFields('display:field_order_edit_fields=1',$order,'order');
 			}
 		}else{
 			$order = new stdClass();
@@ -718,8 +730,6 @@ class OrderViewOrder extends hikashopView{
 		if(!empty($order_id)){
 			$class = hikashop_get('class.order');
 			$order = $class->loadFullOrder($order_id);
-			$null = null;
-			$fields['item'] = $fieldsClass->getFields('backend_listing',$null,'item');
 			$task='edit';
 		}else{
 			$order = new stdClass();
@@ -734,6 +744,14 @@ class OrderViewOrder extends hikashopView{
 		$this->assignRef('element',$order);
 		$this->assignRef('order',$order);
 		$this->assignRef('fields',$fields);
+
+			$products_ids = array();
+			$productClass = hikashop_get('class.product');
+			foreach($order->products as $item) { $products_ids[] = $item->product_id; }
+			$productClass->getProducts($products_ids);
+			$products =& $productClass->all_products;
+		$this->assignRef('products',$products);
+
 
 		if(!empty($order->order_payment_id)){
 			$pluginsPayment = hikashop_get('type.plugins');
@@ -823,7 +841,7 @@ class OrderViewOrder extends hikashopView{
 		$fieldsClass = hikashop_get('class.field');
 		$this->assignRef('fieldsClass',$fieldsClass);
 		$null=null;
-		$extraFields['item'] = $fieldsClass->getFields('backend',$null,'item','user&task=state');
+		$extraFields['item'] = $fieldsClass->getFields('display:field_item_edit_product_order=1',$null,'item','user&task=state');
 		$this->assignRef('extraFields',$extraFields);
 		$ratesType = hikashop_get('type.rates');
 		$this->assignRef('ratesType',$ratesType);
@@ -1270,7 +1288,7 @@ class OrderViewOrder extends hikashopView{
 
 		if(hikashop_level(2)) {
 			$null = null;
-			$this->fields['item'] = $this->fieldsClass->getFields('backend',$null,'item','user&task=state');
+			$this->fields['item'] = $this->fieldsClass->getFields('display:field_item_edit_product_order=1',$null,'item','user&task=state');
 		}
 	}
 

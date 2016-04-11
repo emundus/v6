@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -574,7 +574,7 @@ window.hikashop.ready( function() {
 			$order = ' ORDER BY RAND()';
 		}
 		$select2='';
-		if(hikashop_level(2) && JRequest::getVar('hikashop_front_end_main',0) && JRequest::getVar('task','listing')!='show'){
+		if(hikashop_level(2) && JRequest::getVar('hikashop_front_end_main',0) && JRequest::getVar('task','listing') != 'show') {
 			foreach($this->filters as $uniqueFitler){
 				$this->filterClass->addFilter($uniqueFitler, $filters,$select,$select2, $a, $b, $on, $order, $this, $this->params->get('main_div_name'));
 			}
@@ -747,7 +747,7 @@ window.hikashop.ready( function() {
 			}
 
 			if(hikashop_level(2) && $this->params->get('display_custom_item_fields', 0)) {
-				$itemFields = $this->fieldsClass->getFields('frontcomp', $rows, 'item', 'checkout&task=state');
+				$itemFields = $this->fieldsClass->getFields('display:field_item_product_listing=1', $rows, 'item', 'checkout&task=state');
 				if(!empty($itemFields)) {
 					$cats = $this->fieldsClass->getCategories('item', $rows);
 
@@ -757,8 +757,10 @@ window.hikashop.ready( function() {
 							if(is_string($itemField->$k) && strpos($itemField->$k, ',') !== false) {
 								$itemField->$k = explode(',', trim($itemField->$k, ','));
 								JArrayHelper::toInteger($itemField->$k);
-							} else if(!is_array($itemField->$k) && !empty($itemField->$k))
+							} else if(!is_array($itemField->$k) && !empty($itemField->$k) && is_numeric($itemField->$k))
 								$itemField->$k = array( (int)$itemField->$k );
+							else
+								$itemField->$k = array();
 						}
 
 						$item_cats = array();
@@ -798,7 +800,9 @@ window.hikashop.ready( function() {
 							}
 							if(empty($itemField->field_products) && empty($itemField->field_categories))
 								$row->itemFields[$itemField->field_namekey] =& $itemField;
+
 						}
+
 						unset($row);
 						unset($prod_cats);
 					}
@@ -1036,6 +1040,8 @@ window.hikashop.ready( function() {
 			}
 			ksort($o);
 			foreach($o as $k) {
+				if(!isset($in[$k]))
+					continue;
 				$cur = $in[$k];
 				$out[] = $cur;
 				unset($in[$k]);
@@ -1180,7 +1186,7 @@ window.hikashop.ready( function() {
 			}
 		}
 
-		$filters = array('product_parent_id IN ('.implode(',',$ids).')');
+		$filters = array('product_parent_id IN ('.implode(',',$ids).')','product_published=1');
 		hikashop_addACLFilters($filters,'product_access');
 		$query = 'SELECT * FROM '.hikashop_table('product').' WHERE '.implode(' AND ',$filters);
 		$database->setQuery($query);
@@ -1262,11 +1268,11 @@ window.hikashop.ready( function() {
 		$currencyClass->getPrices($element,$ids,$currency_id,$main_currency,$zone_id,$discount_before_tax);
 
 		$fieldsClass = hikashop_get('class.field');
-		$fields = $fieldsClass->getFields('frontcomp',$element,'product','checkout&task=state');
+		$fields = $fieldsClass->getFields('display:field_product_show=1',$element,'product','checkout&task=state');
 		$this->assignRef('fieldsClass',$fieldsClass);
 		$this->assignRef('fields',$fields);
 		if(hikashop_level(2)) {
-			$itemFields = $fieldsClass->getFields('frontcomp', $element, 'item', 'checkout&task=state');
+			$itemFields = $fieldsClass->getFields('display:field_item_product_show=1', $element, 'item', 'checkout&task=state');
 			$null = array();
 			$fieldsClass->addJS($null,$null,$null);
 			$fieldsClass->jsToggle($itemFields,$element, 0);
@@ -1717,7 +1723,7 @@ window.hikashop.ready( function() {
 				$productClass->save($prod,true);
 			}
 
-			$f = $fieldsClass->getFields('frontcomp',$element,'product','checkout&task=state');
+			$f = $fieldsClass->getFields('display:field_product_compare=1',$element,'product','checkout&task=state');
 			$fields[$element->product_id] =& $f;
 			foreach($f as $i => $v) {
 				$fields[0][$i] = $v;
@@ -2089,7 +2095,7 @@ window.hikashop.ready( function() {
 			$fieldsClass = hikashop_get('class.field');
 			$this->assignRef('fieldsClass',$fieldsClass);
 
-			$itemFields = $fieldsClass->getFields('frontcomp', $null, 'item', 'checkout&task=state');
+			$itemFields = $fieldsClass->getFields('display:field_item_product_cart=1', $null, 'item', 'checkout&task=state');
 			$this->assignRef('itemFields', $itemFields);
 		}
 
@@ -2230,7 +2236,7 @@ function checkFields(){
 			send = false;
 		}else{
 			email.value = email.value.replace(/ /g,\"\");
-			var filter = /^([a-z0-9_'&\.\-\+])+\@(([a-z0-9\-])+\.)+([a-z0-9]{2,10})+$/i;
+			var filter = /^([a-z0-9_'&\.\-\+])+\@(([a-z0-9\-])+\.)+([a-z0-9]{2,14})+$/i;
 			if(!email || !filter.test(email.value)){
 				email.className = email.className.replace('hikashop_red_border','') + ' hikashop_red_border';
 				return false;

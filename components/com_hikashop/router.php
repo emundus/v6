@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -259,11 +259,11 @@ function hikashop_retrieve_url_id(&$vars,$name){
 
 		$db = JFactory::getDBO();
 		$config =& hikashop_config();
+		$translationHelper = hikashop_get('helper.translation');
 
-		$class = hikashop_get('helper.translation');
-		if($class->isMulti()){
+		if($translationHelper->isMulti()){
 			$trans_table = 'jf_content';
-			if($class->falang){
+			if($translationHelper->falang){
 				$trans_table = 'falang_content';
 			}
 			$db->setQuery('SELECT reference_id FROM '.hikashop_table($trans_table,false).' WHERE reference_table='.$db->Quote('hikashop_'.$type).' AND reference_field='.$db->Quote($type.'_alias').' AND value = '.$db->Quote(str_replace(':','-',$name)));
@@ -282,12 +282,10 @@ function hikashop_retrieve_url_id(&$vars,$name){
 			return true;
 		}
 
-
 		$name_regex = '^ *p?'.str_replace(array('-',':'),'.+',$name).' *$';
-		$class = hikashop_get('helper.translation');
-		if($class->isMulti()){
+		if($translationHelper->isMulti()){
 			$trans_table = 'jf_content';
-			if($class->falang){
+			if($translationHelper->falang){
 				$trans_table = 'falang_content';
 			}
 			$db->setQuery('SELECT reference_id FROM '.hikashop_table($trans_table,false).' WHERE reference_table='.$db->Quote('hikashop_'.$type).' AND ((reference_field='.$db->Quote($type.'_alias').' AND (value = '.$db->Quote(str_replace(':','-',$name)).' OR value REGEXP '.$db->Quote($name_regex).')) OR (reference_field='.$db->Quote($type.'_name').' AND value REGEXP '.$db->Quote($name_regex).'))');

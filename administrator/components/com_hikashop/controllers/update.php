@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -163,7 +163,7 @@ class updateController extends HikashopBridgeController {
 
 		$db->setQuery('SELECT `config_value` FROM '.hikashop_table('config').' WHERE `config_namekey` = "default_params"');
 		$oldDefaultParams = $db->loadResult();
-		$oldDefaultParams = unserialize(base64_decode($oldDefaultParams));
+		$oldDefaultParams = hikashop_unserialize(base64_decode($oldDefaultParams));
 		$oldDefaultParams['layout_type'] = preg_replace('#listing_#','',$layoutType);
 		$defaultParams = base64_encode(serialize($oldDefaultParams));
 		if($addressCountry == 'country_United_States_of_America_223')

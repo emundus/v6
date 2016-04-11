@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,7 +23,7 @@ class plgHikashoppaymentAlertpay extends hikashopPaymentPlugin
 		'security_code' => array('IPN_SECURITY_CODE', 'input'),
 		'status_url' => array('STATUS_URL','html',''),
 		'address_type' => array('PAYPAL_ADDRESS_TYPE', 'address'),
-		'notification' => array('ALLOW_NOTIFICATIONS_FROM_X', 'boolean','0'),
+		'notification' => array('ALLOW_NOTIFICATIONS_FROM_X', 'boolean','1'),
 		'debug' => array('DEBUG', 'boolean','0'),
 		'cancel_url' => array('CANCEL_URL', 'input'),
 		'return_url' => array('RETURN_URL', 'input'),

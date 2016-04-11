@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -45,9 +45,9 @@ class plgHikashoppaymentCardSave extends hikashopPaymentPlugin
 	);
 
 	var $errorResultText = array(
-		00 => 'transaction successful',
-		02 => 'card referred',
-		05 => 'card declined',
+		0 => 'transaction successful',
+		2 => 'card referred',
+		5 => 'card declined',
 		20 => 'duplicate transaction',
 		30 => 'exception',
 		99 => 'unknown error'

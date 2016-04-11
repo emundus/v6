@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -27,7 +27,7 @@ defined('_JEXEC') or die('Restricted access');
 $i = 0;
 $previous_shipping_id = -1;
 foreach($shippings as &$shipping) {
-	$shipping->shipping_params = unserialize($shipping->shipping_params);
+	$shipping->shipping_params = hikashop_unserialize($shipping->shipping_params);
 
 	$shipping_data = $shipping->shipping_name . ' - ' . $currencyHelper->displayPrices(array($shipping), 'shipping_price', 'shipping_currency_id');
 	if(isset($shipping->shipping_params->shipping_percentage) && bccomp($shipping->shipping_params->shipping_percentage,0,3)) {
@@ -59,7 +59,7 @@ foreach($shippings as &$shipping) {
 
 	if($previous_shipping_id != $shipping->shipping_id) {
 		echo "\r\n".'<tr class="hikashop_shipping_price_category"><td colspan="5">'.$shipping_data.'</td><td align="center">'.
-			'<a href="#" onclick="return hikashop_addline_shippingprice(this,'.$shipping->shipping_id.',\''.str_replace(array('"',"'"),array('&quot;','\\\''),$shipping->shipping_name).'\',\''.$shipping->currency_symbol.'\');"><img src="'.HIKASHOP_IMAGES.'add.png" alt="+"/></a>'.
+			'<a href="#" onclick="return hikashop_addline_shippingprice(this,'.$shipping->shipping_id.',\''.str_replace(array('"',"'"),array('&quot;','\\\''),$shipping->shipping_name).'\',\''.$shipping->currency_symbol.'\',\''.$product->product_type.'\');"><img src="'.HIKASHOP_IMAGES.'add.png" alt="+"/></a>'.
 			'</td></tr>';
 	}
 	$previous_shipping_id = $shipping->shipping_id;
@@ -92,7 +92,7 @@ foreach($shippings as &$shipping) {
 	unset($shipping);
 }
 ?>
-		<tr id="hikashop_shipping_price_tpl_line" style="display:none">
+		<tr id="hikashop_shipping_price_tpl_line_<?php echo $product->product_type;?>" style="display:none">
 			<td><input type="hidden" name="{field_id}" value="{shipping_id}"/></td>
 			<td><input type="text" name="{field_qty}" value="" size="3"/></td>
 			<td style="text-align:center"><input id="shipping_prices_value_{cpt}" type="text" name="{field_value}" value="" size="7"/> {currency}</td>
@@ -105,8 +105,8 @@ foreach($shippings as &$shipping) {
 <input type="hidden" name="shipping_prices[init]" value=""/>
 <script type="text/javascript">
 var hikashop_shippingprice_cpt = <?php echo $i; ?>;
-function hikashop_addline_shippingprice(el,id,name,currency) {
-	var d = document, tplLine = d.getElementById("hikashop_shipping_price_tpl_line"),
+function hikashop_addline_shippingprice(el,id,name,currency,product_type) {
+	var d = document, tplLine = d.getElementById("hikashop_shipping_price_tpl_line_" + product_type),
 		tableUser = tplLine.parentNode,
 		htmlblocks = {
 			cpt: hikashop_shippingprice_cpt,

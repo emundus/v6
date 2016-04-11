@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -120,7 +120,13 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 				$vars['TAXAMT'] = round($tax+$order->order_shipping_tax+$order->order_payment_tax-$order->order_discount_tax,(int)$this->currency->currency_locale['int_frac_digits']);
 			}
 			if(!empty($order->cart->coupon)){
-				$vars["SHIPDISCAMT"] = round($order->order_discount_price,(int)$this->currency->currency_locale['int_frac_digits']);
+				$discount = - round($order->order_discount_price,(int)$this->currency->currency_locale['int_frac_digits']);
+				$vars["L_NAME".$i] = JText::_('HIKASHOP_COUPON');
+				$vars["L_NUMBER".$i] = 'coupon';
+				$vars["L_AMT".$i] = $discount;
+				$vars["L_QTY".$i] = 1;
+				$vars["L_TAXAMT".$i] = 0;
+				$i++;
 			}
 
 			if(!empty($order->order_payment_price) && bccomp($order->order_payment_price,0,5)){
@@ -203,8 +209,8 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 						'notified' => (int)@$this->payment_params->send_notification,
 						'data' => 'PayPal transaction id: ' .$ret['TRANSACTIONID'],
 					);
-					$this->modifyOrder($order, $this->payment_params->verified_status, $history, true);
-
+					$this->modifyOrder($order, $this->payment_params->verified_status, $history, false);
+					$this->transaction_id = $ret['TRANSACTIONID'];
 				} else {
 					$message = 'Error';
 					if(!empty($ret['ERRORCODE'])){
@@ -236,10 +242,36 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 		return true;
 	}
 
+	 function onAfterOrderCreate(&$order, &$do) {
+	 	$this->loadOrderData($order);
+		$this->loadPaymentParams($order);
+		if($this->app->isAdmin())
+			return true;
+		if(empty($order->order_payment_method) || $order->order_payment_method != $this->name)
+			return true;
+		if(empty($this->payment_params))
+			return false;
+
+
+		if(!empty($this->transaction_id)){
+			$email = new stdClass();
+			$email->subject = JText::sprintf('PAYMENT_NOTIFICATION_FOR_ORDER','PayPal Pro','SUCCESS',$order->order_number);
+			$url = HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=order&task=listing';
+			$order_text = "\r\n".JText::sprintf('NOTIFICATION_OF_ORDER_ON_WEBSITE',$order->order_number,HIKASHOP_LIVE);
+			$order_text .= "\r\n".str_replace('<br/>',"\r\n",JText::sprintf('ACCESS_ORDER_WITH_LINK',$url));
+			$body = str_replace('<br/>',"\r\n",JText::sprintf('PAYMENT_NOTIFICATION_STATUS','PayPal Pro','SUCCESS')).' '.JText::sprintf('ORDER_STATUS_CHANGED',$order->order_status)."\r\n\r\n".$order_text;
+			$email->body = $body;
+
+			$this->modifyOrder($order,$order->order_status,false,$email);
+
+			$class = hikashop_get('class.cart');
+			$class->cleanCartFromSession();
+		}
+	 }
+
 	function onAfterOrderConfirm(&$order,&$methods,$method_id){
-
+		parent::onAfterOrderConfirm($order,$methods,$method_id);
 		return $this->showPage('thanks');
-
 	}
 
 	function onPaymentConfiguration(&$element){

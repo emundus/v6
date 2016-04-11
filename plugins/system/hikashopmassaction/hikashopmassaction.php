@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -27,7 +27,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 		}
 	}
 
-	function onMassactionTableTriggersLoad(&$table,&$triggers,&$triggers_html,&$loadedData){
+	function onMassactionTableTriggersLoad(&$table, &$triggers, &$triggers_html, &$loadedData) {
 		switch($table->table){
 			case 'product':
 				$triggers['onBeforeProductCreate']=JText::_('BEFORE_A_PRODUCT_IS_CREATED');
@@ -139,16 +139,20 @@ class plgSystemHikashopmassaction extends JPlugin {
 						$typeIn2 = ' selected="selected" ';
 						$typeIn1 = '';
 					}
-					$checked = '';
+					$checkedSave = '';
 					if(isset($data['save']))
-						$checked = 'checked="checked"';
+						$checkedSave = 'checked="checked"';
+					$checkedAdd = '';
+					if(isset($data['add']))
+						$checkedAdd = 'checked="checked"';
 
 					$output = '<select class="chzn-done not-processed" name="filter['.$table->table.']['.$key.'][csvImport][type]" onchange="countresults(\''.$table->table.'\','.$key.')"><option value="in" '.$typeIn1.'>'.JText::_('IN_CSV').'</option><option value="out" '.$typeIn2.'>'.JText::_('NOT_IN_CSV').'</option></select>';
 					$output .= '<select class="chzn-done not-processed" name="filter['.$table->table.']['.$key.'][csvImport][pathType]" id="productfilter'.$key.'csvImport_pathType" onchange="hikashop_switchmode(this,'.$key.');"><option value="upload">'.JText::_('HIKA_FILE_MODE_UPLOAD').'</option><option value="path" selected="selected">'.JText::_('HIKA_FILE_MODE_PATH').'</option></select>';
 					$output .= '<span id="productfilter'.$key.'csvImport_path"><input onchange="countresults(\''.$table->table.'\','.$key.')" type="input" value="'.$data['path'].'" size="50" id="productfilter'.$key.'csvImport_path_value" name="filter['.$table->table.']['.$key.'][csvImport][path]"/><input type="button" value="'.JText::_('VERIFY_FILE').'" onclick="hikashop_verifycsvcolumns('.$key.');"/></span>';
 					$output .= '<span id="productfilter'.$key.'csvImport_upload" style="display: none;"><input onchange="countresults(\''.$table->table.'\','.$key.')" type="file" size="50" id="productfilter'.$key.'csvImport_upload" name="filter_'.$table->table.'_'.$key.'_csvImport_upload"/>';
 					$output .= '<span id="productfilter'.$key.'csvImport_txt">'.JText::sprintf('MAX_UPLOAD',(hikashop_bytes(ini_get('upload_max_filesize')) > hikashop_bytes(ini_get('post_max_size'))) ? ini_get('post_max_size') : ini_get('upload_max_filesize')).'</span></span>';
-					$output .= '<br/><input type="checkbox" value="1" id="importCsvSave" name="filter['.$table->table.']['.$key.'][csvImport][save]" '.$checked.'/><label for="importCsvSave">'.JText::_('SAVE_ON_CSV_IMPORT_MASSACTION').'</label>';
+					$output .= '<br/><input type="checkbox" value="1" id="importCsvSave" name="filter['.$table->table.']['.$key.'][csvImport][save]" '.$checkedSave.'/><label for="importCsvSave">'.JText::_('SAVE_ON_CSV_IMPORT_MASSACTION').'</label>';
+					$output .= '<br/><input type="checkbox" value="1" id="importCsvAdd" name="filter['.$table->table.']['.$key.'][csvImport][add]" '.$checkedAdd.'/><label for="importCsvAdd">'.JText::_('ADD_ON_CSV_IMPORT_MASSACTION').'</label>';
 					$output .= '<div id="productfilter'.$key.'csvImport_verify"></div>';
 
 					$filters_html[$value->name] = $massactionClass->initDefaultDiv($value, $key, $type, $table->table, $loadedData, $output);
@@ -522,7 +526,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 					$value->type = $table->table;
 					if(!isset($value->data['value'])) $value->data['value'] = $table->table.'_id';
 
-					if(version_compare(JVERSION,'3.0','<')){
+					if(version_compare(JVERSION,'3.0','<')) {
 						$fieldsTable = $db->getTableFields('#__hikashop_'.$table->table);
 						$fields = reset($fieldsTable);
 					} else {

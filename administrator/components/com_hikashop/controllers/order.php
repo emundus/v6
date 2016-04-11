@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -46,9 +46,9 @@ class OrderController extends hikashopController {
 
 	function neworder(){
 		$null = new stdClass();
-		$class = hikashop_get('class.order');
-		$class->sendEmailAfterOrderCreation = false;
-		if($class->save($null)){
+		$orderClass = hikashop_get('class.order');
+		$orderClass->sendEmailAfterOrderCreation = false;
+		if($orderClass->save($null)){
 			$this->_terminate($null,1);
 		}else{
 			$this->listing();
@@ -345,9 +345,9 @@ class OrderController extends hikashopController {
 	function savemail(){
 		$element = $this->_cleanOrder();
 		if(!empty($element->mail)){
-			$class = hikashop_get('class.mail');
-			$class->sendMail($element->mail);
-			if(!$class->mail_success){
+			$mailClass = hikashop_get('class.mail');
+			$mailClass->sendMail($element->mail);
+			if(!$mailClass->mail_success){
 				return true;
 			}
 		}
@@ -372,29 +372,28 @@ class OrderController extends hikashopController {
 
 	function saveaddress(){
 		$result = false;
-		$class = hikashop_get('class.address');
+		$addressClass = hikashop_get('class.address');
 		$oldData = null;
 
 		if(!empty($_REQUEST['address']['address_id'])){
-			$oldData = $class->get($_REQUEST['address']['address_id']);
+			$oldData = $addressClass->get($_REQUEST['address']['address_id']);
 		}
 
-		$fieldsClass = hikashop_get('class.field');
-		$address = $fieldsClass->getInput('address',$oldData);
+		$fieldClass = hikashop_get('class.field');
+		$address = $fieldClass->getInput('address',$oldData);
 		if(empty($address)){
 			return false;
 		}
 		$element = $this->_cleanOrder();
 
-
 		if(!empty($element->order_id)){
 			$type = JRequest::getCmd('type');
-			$result = $class->save($address,$element->order_id,$type);
+			$result = $addressClass->save($address,$element->order_id,$type);
 			if($result){
 				$name = 'order_'.$type.'_address_id';
 				$element->$name = $result;
-				$class = hikashop_get('class.order');
-				$result = $class->save($element);
+				$orderClass = hikashop_get('class.order');
+				$result = $orderClass->save($element);
 				if($result){
 					$this->_terminate($element);
 				}
@@ -405,13 +404,13 @@ class OrderController extends hikashopController {
 	function remove_history_data(){
 		$history_id = JRequest::getInt( 'history_id', 0);
 		if($history_id){
-			$class = hikashop_get('class.history');
-			$history = $class->get($history_id);
+			$historyClass = hikashop_get('class.history');
+			$history = $historyClass->get($history_id);
 			if($history){
 				$newHistoryObj = new stdClass();
 				$newHistoryObj->history_id = $history_id;
 				$newHistoryObj->history_data = '';
-				$class->save($newHistoryObj);
+				$historyClass->save($newHistoryObj);
 			}
 			JRequest::setVar( 'order_id', $history->history_order_id );
 			return $this->edit();
@@ -435,7 +434,7 @@ class OrderController extends hikashopController {
 	function _cleanOrder(){
 		$element = new stdClass();
 		$formData = JRequest::getVar('data', array(), '', 'array');
-		$fieldsClass = hikashop_get('class.field');
+		$fieldClass = hikashop_get('class.field');
 		$old = null; //$fieldsClass->get($formData['order']['product']['order_product_id']);
 
 		foreach($formData['order'] as $column => $value){
@@ -443,7 +442,7 @@ class OrderController extends hikashopController {
 			if($column == 'product') {
 				$formData['item'] = $formData['order']['product'];
 				JRequest::setVar('data', $formData);
-				$fieldsClass->getInput('item',$old,false);
+				$fieldClass->getInput('item',$old,false);
 				$element->product = $_SESSION['hikashop_item_data'];
 			} elseif(in_array($column,array('history','mail'))){
 				$element->$column = new stdClass();
@@ -474,11 +473,11 @@ class OrderController extends hikashopController {
 		$app = JFactory::getApplication();
 		if(!empty($element->order_id)){
 			$order_id = $element->order_id;
-			$class = hikashop_get('class.order');
+			$orderClass = hikashop_get('class.order');
 			if($data == 'fields'){
-				$field = hikashop_get('class.field');
-				$old = $class->get($element->order_id);
-				$element = $field->getInput('order',$old,false);
+				$fieldClass = hikashop_get('class.field');
+				$old = $orderClass->get($element->order_id);
+				$element = $fieldClass->getInput('order',$old,false);
 				if($element === false) {
 					$app->enqueueMessage(JText::sprintf('PLEASE_FILL_THE_FIELD', JText::_('REQUIRED')), 'error');
 				} else if(empty($element)) {
@@ -489,10 +488,10 @@ class OrderController extends hikashopController {
 			}
 
 			if(!empty($element)) {
-				$result = $class->save($element);
+				$result = $orderClass->save($element);
 			}
 		}
-		if($result && $class->mail_success){
+		if($result && $orderClass->mail_success){
 			$this->_terminate($element,$type);
 		}
 
@@ -540,9 +539,9 @@ class OrderController extends hikashopController {
 		$orders = JRequest::getVar( 'cid', array(), '', 'array' );
 		$result = true;
 		if(!empty($orders)){
-			$class = hikashop_get('class.order');
+			$orderClass = hikashop_get('class.order');
 			foreach($orders as $order){
-				if(!$class->copyOrder($order)){
+				if(!$orderClass->copyOrder($order)){
 					$result=false;
 				}
 			}
@@ -581,10 +580,10 @@ class OrderController extends hikashopController {
 		if(!in_array($task, $this->subtasks))
 			return false;
 
-		$class = hikashop_get('class.order');
-		if( $class === null )
+		$orderClass = hikashop_get('class.order');
+		if( $orderClass === null )
 			return false;
-		$status = $class->saveForm($task);
+		$status = $orderClass->saveForm($task);
 		if($status) {
 			JRequest::setVar('cid', $status);
 			JRequest::setVar('fail', null);
@@ -643,10 +642,10 @@ class OrderController extends hikashopController {
 	}
 
 	public function customer_save() {
-		$class = hikashop_get('class.order');
-		if( $class === null )
+		$orderClass = hikashop_get('class.order');
+		if( $orderClass === null )
 			return false;
-		$status = $class->saveForm('customer');
+		$status = $orderClass->saveForm('customer');
 		if($status) {
 			JRequest::setVar('cid', $status);
 			JRequest::setVar('fail', null);

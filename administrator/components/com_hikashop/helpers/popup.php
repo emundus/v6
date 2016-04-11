@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -263,7 +263,7 @@ window.localPage.createBox = function(el,href,options) {
 		if(!empty($id) && !$isOnclick)
 			$onClick = ' onclick="return window.hikashop.openBox(this);"';
 
-		$html = '<a '.$a.$onClick.' id="'.$id.'" href="'.$url.'" data-hk-popup="vex" data-vex="{x:'.$params['width'].', y:'.$params['height'].'}">';
+		$html = '<a rel="nofollow" '.$a.$onClick.' id="'.$id.'" href="'.$url.'" data-hk-popup="vex" data-vex="{x:'.$params['width'].', y:'.$params['height'].'}">';
 		if($params['type'] == 'button')
 			$html .= '<button class="btn" onclick="return false">';
 		$html .= $text;

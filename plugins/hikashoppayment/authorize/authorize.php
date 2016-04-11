@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -19,7 +19,7 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		'transaction_key' => array('AUTHORIZE_TRANSACTION_KEY', 'input'),
 		'md5_hash' => array('AUTHORIZE_MD5_HASH', 'input'),
 		'capture' => array('INSTANTCAPTURE', 'boolean','1'),
-		'notification' => array('ALLOW_NOTIFICATIONS_FROM_X', 'boolean','0'),
+		'notification' => array('ALLOW_NOTIFICATIONS_FROM_X', 'boolean','1'),
 		'details' => array('SEND_DETAILS_OF_ORDER', 'boolean','1'),
 		'api' => array('API', 'list',array(
 			'sim' => 'SIM',
@@ -40,6 +40,11 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 	);
 
 	var $debugData = array();
+
+	function  __construct(&$subject, $config){
+		parent::__construct($subject, $config);
+		$this->pluginConfig['notification'][0] =  JText::sprintf('ALLOW_NOTIFICATIONS_FROM_X','Authorize.net');
+	}
 
 	function needCC(&$method) {
 		if(@$method->payment_params->api=='aim'){
@@ -165,7 +170,6 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 					$email->body = $body;
 
 					$this->modifyOrder($order,$order->order_status,false,$email);
-
 					break;
 				case 4:
 					$email = new stdClass();
@@ -180,6 +184,8 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 
 					break;
 			}
+			$class = hikashop_get('class.cart');
+			$class->cleanCartFromSession();
 		}
 	}
 
@@ -370,7 +376,9 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		$order_text = "\r\n".JText::sprintf('NOTIFICATION_OF_ORDER_ON_WEBSITE',$dbOrder->order_number,HIKASHOP_LIVE);
 		$order_text .= "\r\n".str_replace('<br/>',"\r\n",JText::sprintf('ACCESS_ORDER_WITH_LINK',$url));
 
-		if (strcasecmp(@$vars['x_MD5_Hash'],$vars['x_MD5_Hash_calculated'])!=0) {
+		$vars['x_MD5_Hash'] = strtoupper(@$vars['x_MD5_Hash']);
+
+		if ($vars['x_MD5_Hash'] != $vars['x_MD5_Hash_calculated']) {
 
 			$email = new stdClass();
 			$email->subject = JText::sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER','Authorize.net').'invalid response';
@@ -433,6 +441,9 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 	 		$order_text = @$vars['x_response_reason_text']."\r\n\r\n".$order_text;
 	 		$vars['payment_status']='Pending';
 	 	}
+
+		if($dbOrder->order_status == $order_status)
+			return true;
 
 	 	$config =& hikashop_config();
 		if($config->get('order_confirmed_status','confirmed') == $order_status){

@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    2.6.1
+ * @version    2.6.2
  * @author     hikashop.com
  * @copyright  (C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -201,7 +201,7 @@ td.key {
 	width: 100px;
 }
 
-.hikashop_orderadditional_history textarea{
+.hikashop_orderadditional_history textarea, .hikashop_orderadditional_usermsg textarea{
 	width:100%;
 }
 
@@ -2677,4 +2677,27 @@ label.btn-default-lbl{
 
 #category_field td{
 	width: 100%;
+}
+
+.listing_item_quantity_fields .hikashop_product_listing_input{
+	width: 14px;
+}
+.listing_item_quantity_fields .add-on.hikashop_product_listing_input_buttons{
+	padding-top: 1px;
+	height: 21px;
+}
+.hikashop_product_listing_input_plus, .hikashop_product_listing_input_minus{
+	height: 12px;
+	line-height: 12px;
+	cursor: pointer;
+}
+
+
+td.hikashop_order_item_files_value,
+td.hikashop_order_item_quantity_value,
+td.hikashop_order_item_price_value,
+td.hikashop_order_item_total_price_value,
+td.hikashop_order_product_name_value,
+td.hikashop_order_item_name_value {
+    text-align: center;
 }

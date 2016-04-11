@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -45,7 +45,7 @@ defined('_JEXEC') or die('Restricted access');
 							<?php echo JText::_( 'START_DATE' ); ?>
 						</td>
 						<td>
-							<?php echo JHTML::_('calendar', (@$this->element->badge_start?hikashop_getDate(@$this->element->badge_start,'%d %B %Y %H:%M'):''), 'data[badge][badge_start]','badge_start','%Y-%m-%d %H:%M',array('size'=>'20')); ?>
+							<?php echo JHTML::_('calendar', (@$this->element->badge_start?hikashop_getDate(@$this->element->badge_start,'%Y-%m-%d %H:%M'):''), 'data[badge][badge_start]','badge_start','%Y-%m-%d %H:%M',array('size'=>'20')); ?>
 						</td>
 					</tr>
 					<tr>

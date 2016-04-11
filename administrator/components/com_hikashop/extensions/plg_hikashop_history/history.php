@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,7 +10,7 @@ defined('_JEXEC') or die('Restricted access');
 ?><?php
 class plgHikashopHistory extends JPlugin
 {
-	function plgHikashopHistory(&$subject, $config){
+	function __construct(&$subject, $config){
 		parent::__construct($subject, $config);
 		if(!isset($this->params)){
 			$plugin = JPluginHelper::getPlugin('hikashop', 'history');
@@ -41,7 +41,7 @@ class plgHikashopHistory extends JPlugin
 			}
 			$history->history_new_status = $order->order_status;
 			if(!empty($order->history)){
-				foreach(get_object_vars($order->history) as $k => $v){
+				foreach($order->history as $k => $v){
 					$history->$k = $v;
 				}
 			}

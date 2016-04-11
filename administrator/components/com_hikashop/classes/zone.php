@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -348,20 +348,11 @@ class hikashopZoneClass extends hikashopClass{
 
 			$zone_key = $options['zone_key'];
 
-			if($type == 'namekey') {
-				$query = 'SELECT z.* '.
+			$query = 'SELECT z.* '.
 					' FROM '.hikashop_table('zone').' as z '.
 					' INNER JOIN ' . hikashop_table('zone_link') . ' as zl ON z.zone_namekey = zl.zone_child_namekey '.
-					' WHERE z.zone_published = 1 AND zl.zone_parent_namekey = ' . $db->Quote($zone_key).
+					' WHERE z.zone_published = 1 AND zl.'.$parent_column.' = ' . $db->Quote($zone_key).
 					' ORDER BY z.zone_name_english';
-			} else {
-				$query = 'SELECT z.* '.
-					' FROM '.hikashop_table('zone').' as z '.
-					' INNER JOIN ' . hikashop_table('zone_link') . ' as zl ON z.zone_namekey = zl.zone_child_namekey '.
-					' LEFT JOIN ' . hikashop_table('zone') . ' AS zp ON zp.zone_namekey = zl.zone_parent_namekey '.
-					' WHERE z.zone_published = 1 AND zp.zone_id = ' . $db->Quote($zone_key).
-					' ORDER BY z.zone_name_english';
-			}
 		}
 
 		$db->setQuery($query);

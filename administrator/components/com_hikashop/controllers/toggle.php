@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -75,14 +75,14 @@ class ToggleController extends HikashopBridgeController {
 				$value = $db->loadResult();
 			}
 		}
-		$toggleClass = hikashop_get('helper.toggle');
+		$toggleHelper = hikashop_get('helper.toggle');
 		$extra = JRequest::getVar('extra',array(),'','array');
 		if(!empty($extra)){
 			foreach($extra as $key => $val){
 				$extra[$key] = urldecode($val);
 			}
 		}
-		echo $toggleClass->toggle(JRequest::getCmd('task',''),$value,$controllerName,$extra);
+		echo $toggleHelper->toggle(JRequest::getCmd('task',''),$value,$controllerName,$extra);
 		exit;
 	}
 
@@ -197,7 +197,7 @@ class ToggleController extends HikashopBridgeController {
 		$toRemove = preg_replace('#.*_#','',$value);
 		$config = hikashop_config();
 		$confValue = $config->get($namekey);
-		$confValue = unserialize($confValue);
+		$confValue = hikashop_unserialize($confValue);
 		foreach($confValue as $k => $result){
 			if((int)$k == (int)$toRemove)
 				unset($confValue[$k]);

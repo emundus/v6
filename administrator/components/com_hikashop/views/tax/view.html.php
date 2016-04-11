@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -152,7 +152,7 @@ class TaxViewTax extends hikashopView{
 
 		if(count($orders_taxes)){
 			foreach($orders_taxes as $k => $v){
-				$orders_taxes[$k]->order_tax_info = unserialize($v->order_tax_info);
+				$orders_taxes[$k]->order_tax_info = hikashop_unserialize($v->order_tax_info);
 				$info =& $orders_taxes[$k]->order_tax_info;
 				if(!$info) continue;
 				foreach($info as $k2 => $taxes_info){

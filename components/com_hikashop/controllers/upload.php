@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -124,9 +124,9 @@ class uploadController extends hikashopController {
 
 		$output = '[]';
 		if($ret !== false && empty($ret->error)) {
-			$helperImage = null;
+			$imageHelper = null;
 			if($type == 'image') {
-				$helperImage = hikashop_get('helper.image');
+				$imageHelper = hikashop_get('helper.image');
 			}
 
 			$out = array();
@@ -153,7 +153,7 @@ class uploadController extends hikashopController {
 				$js = '';
 
 				if($type == 'image') {
-					$img = $helperImage->getThumbnail($file->file_path, array(100, 100), array('default' => true));
+					$img = $imageHelper->getThumbnail($file->file_path, array(100, 100), array('default' => true));
 					$r->thumbnail_url = $img->url;
 
 					$params = new stdClass();
@@ -242,7 +242,7 @@ class uploadController extends hikashopController {
 
 		$output = '[]';
 		if(!empty($filesData)) {
-			$helperImage = hikashop_get('helper.image');
+			$imageHelper = hikashop_get('helper.image');
 			$ret = array();
 			$out = array();
 			foreach($filesData as $filename) {
@@ -336,9 +336,9 @@ class uploadController extends hikashopController {
 		$uploadHelper = hikashop_get('helper.upload');
 		$ret = $uploadHelper->process($options);
 		if($ret !== false && empty($ret->error) && empty($ret->partial)) {
-			$helperImage = null;
+			$imageHelper = null;
 			if($type == 'image') {
-				$helperImage = hikashop_get('helper.image');
+				$imageHelper = hikashop_get('helper.image');
 			}
 
 			$file = new stdClass();
@@ -365,7 +365,7 @@ class uploadController extends hikashopController {
 
 				}
 
-				$img = $helperImage->getThumbnail($file->file_path, array(100, 100), array('default' => true));
+				$img = $imageHelper->getThumbnail($file->file_path, array(100, 100), array('default' => true));
 				$ret->thumbnail_url = $img->url;
 
 				$params = new stdClass();

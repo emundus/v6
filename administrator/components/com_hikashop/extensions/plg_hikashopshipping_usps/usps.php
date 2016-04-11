@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -147,19 +147,6 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 				}
 
 				if(!in_array($rate->shipping_zone_namekey,$zones)) {
-					$messages['no_shipping_to_your_zone'] = JText::_('NO_SHIPPING_TO_YOUR_ZONE');
-					continue;
-				}
-
-				$db = JFactory::getDBO();
-				if(is_array($order->shipping_address->address_country)) {
-					$address_country = reset($order->shipping_address->address_country);
-				} else {
-					$address_country = $order->shipping_address->address_country;
-				}
-				$db->setQuery('SELECT * FROM '.hikashop_table('zone').' WHERE zone_namekey='.$db->Quote($address_country));
-				$zone = $db->loadObject();
-				if($zone->zone_code_3 != 'USA') {
 					$messages['no_shipping_to_your_zone'] = JText::_('NO_SHIPPING_TO_YOUR_ZONE');
 					continue;
 				}

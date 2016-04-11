@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -170,8 +170,7 @@ class hikashopDiscountClass extends hikashopClass{
 
 		$dispatcher->trigger( 'onBeforeCouponCheck', array( &$coupon, &$total, &$zones, &$products, &$display_error, &$error_message, &$do) );
 		if($do){
-			$user = hikashop_get('class.user');
-			$currency = hikashop_get('class.currency');
+			$currencyClass = hikashop_get('class.currency');
 			if(empty($coupon)) {
 				$error_message = JText::_('COUPON_NOT_VALID');
 			} elseif($coupon->discount_start > time()) {
@@ -189,8 +188,12 @@ class hikashopDiscountClass extends hikashopClass{
 						$db = JFactory::getDBO();
 						$config =& hikashop_config();
 						$cancelled_order_status = explode(',', $config->get('cancelled_order_status'));
-						$cancelled_order_status = "'".implode("','",$cancelled_order_status)."'";
-						$query = 'SELECT COUNT(order_id) AS already_used FROM '.hikashop_table('order').' WHERE order_user_id='.(int)$user_id.' AND order_status NOT IN ('.$cancelled_order_status.') AND order_discount_code='.$db->Quote($coupon->discount_code).' GROUP BY order_id';
+						foreach($cancelled_order_status as &$order_status){
+							$order_status = $db->quote($order_status);
+						}
+						unset($order_status);
+
+						$query = 'SELECT COUNT(order_id) AS already_used FROM '.hikashop_table('order').' WHERE order_user_id='.(int)$user_id.' AND order_status NOT IN ('.implode(',',$cancelled_order_status).') AND order_discount_code='.$db->quote($coupon->discount_code);
 						$db->setQuery($query);
 						$already_used = $db->loadResult();
 						if($coupon->discount_quota_per_user<=$already_used){
@@ -201,8 +204,8 @@ class hikashopDiscountClass extends hikashopClass{
 				if(empty($error_message) && $coupon->discount_zone_id) {
 					if(!is_array($coupon->discount_zone_id))
 						$coupon->discount_zone_id = explode(',',$coupon->discount_zone_id);
-					$class = hikashop_get('class.zone');
-					$zone = $class->getZones($coupon->discount_zone_id,'zone_namekey','zone_namekey',true);
+					$zoneClass = hikashop_get('class.zone');
+					$zone = $zoneClass->getZones($coupon->discount_zone_id,'zone_namekey','zone_namekey',true);
 					if($zone && !count(array_intersect($zone,$zones))){
 						$error_message = JText::_('COUPON_NOT_AVAILABLE_IN_YOUR_ZONE');
 					}
@@ -301,7 +304,7 @@ class hikashopDiscountClass extends hikashopClass{
 
 				if(empty($error_message) && bccomp($coupon->discount_minimum_order, 0, 5)) {
 
-					$currency->convertCoupon($coupon, $total->prices[0]->price_currency_id);
+					$currencyClass->convertCoupon($coupon, $total->prices[0]->price_currency_id);
 					$config =& hikashop_config();
 					$discount_before_tax = $config->get('discount_before_tax');
 					$var = 'price_value_with_tax';
@@ -318,7 +321,7 @@ class hikashopDiscountClass extends hikashopClass{
 					}
 
 					if($coupon->discount_minimum_order > $total_amount) {
-						$error_message = JText::sprintf('ORDER_NOT_EXPENSIVE_ENOUGH_FOR_COUPON',$currency->format($coupon->discount_minimum_order,$coupon->discount_currency_id));
+						$error_message = JText::sprintf('ORDER_NOT_EXPENSIVE_ENOUGH_FOR_COUPON',$currencyClass->format($coupon->discount_minimum_order,$coupon->discount_currency_id));
 					}
 				}
 
@@ -340,8 +343,8 @@ class hikashopDiscountClass extends hikashopClass{
 		$dispatcher->trigger('onAfterCouponCheck', array(&$coupon, &$total, &$zones, &$products, &$display_error, &$error_message, &$do));
 
 		if(!empty($error_message)) {
-			$class = hikashop_get('class.cart');
-			$class->update('',0,0,'coupon');
+			$cartClass = hikashop_get('class.cart');
+			$cartClass->update('',0,0,'coupon');
 			if($display_error) {
 				JRequest::setVar('coupon_error_message',$error_message);
 			}
@@ -351,7 +354,7 @@ class hikashopDiscountClass extends hikashopClass{
 		JRequest::setVar('coupon_error_message','');
 
 		if($do) {
-			$currency->convertCoupon($coupon, $total->prices[0]->price_currency_id);
+			$currencyClass->convertCoupon($coupon, $total->prices[0]->price_currency_id);
 
 			if(!HIKASHOP_PHP5){
 				$coupon->total = $total;
@@ -367,10 +370,10 @@ class hikashopDiscountClass extends hikashopClass{
 			switch (@$coupon->discount_coupon_nodoubling) {
 				case 1:
 				case 2:
-					$coupon = $this->addCoupon($coupon, $products, $currency, $coupon->discount_coupon_nodoubling);
+					$coupon = $this->addCoupon($coupon, $products, $currencyClass, $coupon->discount_coupon_nodoubling);
 					break;
 				default:
-					$currency->addCoupon($coupon->total,$coupon, $products, $id);
+					$currencyClass->addCoupon($coupon->total,$coupon, $products, $id);
 					break;
 			}
 		}
@@ -462,7 +465,7 @@ class hikashopDiscountClass extends hikashopClass{
 	}
 
 
-	function addCoupon(&$coupon1, &$products, &$currency, $discountmode) {
+	function addCoupon(&$coupon1, &$products, &$currencyClass, $discountmode) {
 		$totaldiscount=0.0;
 		$totaldiscount_with_tax=0.0;
 		$totalprice=0.0;
@@ -494,12 +497,12 @@ class hikashopDiscountClass extends hikashopClass{
 		}
 
 		if (!bccomp($totaldiscount_with_tax, 0, 5) || !bccomp($totaldiscount, 0, 5)) {
-			$currency->addCoupon($coupon1->total,$coupon1);
+			$currencyClass->addCoupon($coupon1->total,$coupon1);
 			return $coupon1;
 		}
 
 		if (bccomp($coupon1->discount_flat_amount, 0, 5) && $totalnondiscount >= $coupon1->discount_flat_amount) {
-			$currency->addCoupon($coupon1->total,$coupon1);
+			$currencyClass->addCoupon($coupon1->total,$coupon1);
 			return $coupon1;
 		}
 
@@ -514,7 +517,7 @@ class hikashopDiscountClass extends hikashopClass{
 				$coupon2->total->prices[0]->price_value_with_tax = $totalprice_with_tax;
 				$coupon2->total->prices[0]->price_value = $totalprice;
 
-				$currency->addCoupon($coupon2->total,$coupon2);
+				$currencyClass->addCoupon($coupon2->total,$coupon2);
 
 				$coupon2->total->prices[0]->price_value_without_discount_with_tax -= $totaldiscount_with_tax;
 				$coupon2->total->prices[0]->price_value_without_discount -= $totaldiscount;
@@ -534,7 +537,7 @@ class hikashopDiscountClass extends hikashopClass{
 				$total->prices[0]->price_value_with_tax = $totalnondiscount_with_tax;
 				$total->prices[0]->price_value = $totalnondiscount;
 				$total->prices[0]->taxes = array();
-				$currency->addCoupon($total,$coupon2);
+				$currencyClass->addCoupon($total,$coupon2);
 				break;
 		}
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,7 +9,7 @@
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 class hikashopCartHelper{
-	function hikashopCartHelper(){
+	function __construct(){
 		static $done = false;
 		static $override = false;
 		if(!$done){
@@ -208,7 +208,7 @@ class hikashopCartHelper{
 			}else{
 				$baseUrl.='?';
 			}
-			if($redirect=='ask_user' || hikashop_loadUser() == null){
+			if($redirect=='ask_user' || $config->get('enable_wishlist') && hikashop_loadUser() == null){
 				JHTML::_('behavior.modal');
 				if($needNotice && JRequest::getVar('tmpl','')!='component'){
 					if($this->override && function_exists('hikashop_popup_render')){

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,7 +10,7 @@ defined('_JEXEC') or die('Restricted access');
 ?><?php
 class hikashopUpdateHelper{
 	var $db;
-	function hikashopUpdateHelper(){
+	function __construct(){
 		$this->db = JFactory::getDBO();
 		jimport('joomla.filesystem.folder');
 		jimport('joomla.filesystem.file');
@@ -509,6 +509,10 @@ class hikashopUpdateHelper{
 			'hikashop_product.xml' => array(
 				'type' => 'product',
 				'name' => 'Product %s'
+			),
+			'hikashop_category.xml' => array(
+				'type' => 'category',
+				'name' => 'Category %s'
 			)
 		);
 		if(empty($types[$file])) {

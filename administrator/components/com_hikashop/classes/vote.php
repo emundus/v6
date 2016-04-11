@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -273,7 +273,7 @@ class hikashopVoteClass extends hikashopClass {
 		}
 
 		if($element->vote_rating == 0)
-			return false;
+			return true;
 
 		if($element->vote_type == 'product') {
 			$newValues = $this->updateAverage($element, $oldElement, $data);
@@ -378,7 +378,7 @@ class hikashopVoteClass extends hikashopClass {
 			if($column!='vote_comment'){
 				$element->$column = strip_tags($element->$column);
 			}
-		}
+		}		
 		$result = $this->save($element);
 		return $result;
 	}

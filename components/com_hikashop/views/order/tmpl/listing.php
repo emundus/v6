@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -140,10 +140,15 @@ defined('_JEXEC') or die('Restricted access');
 
 									if(is_array($rowPayments) && !empty($rowPayments)){
 										$paymentvalues = array();
+										if(!in_array($row->order_payment_id,array_keys($rowPayments))){
+											$paymentvalues[] = JHTML::_('select.option', $row->order_payment_method.'_'.$row->order_payment_id , $row->order_payment_method);
+										}
+
 										foreach($rowPayments as $paymentId => $paymentMethod){
 											$paymentvalues[] = JHTML::_('select.option', $paymentMethod->payment_type.'_'.$paymentMethod->payment_id , $paymentMethod->payment_name);
 										}
-										echo JHTML::_('select.genericlist', $paymentvalues, 'new_payment_method', ' class="inputbox" size="1"', 'value', 'text', '', 'new_payment_method'.$row->order_id);
+
+										echo JHTML::_('select.genericlist' ,$paymentvalues ,'new_payment_method' ,' class="inputbox" size="1"' , 'value', 'text', $row->order_payment_method.'_'.$row->order_payment_id, 'new_payment_method'.$row->order_id);
 									}
 								}else{
 									$text = JText::sprintf('PAY_WITH_X',$this->payment->getName($row->order_payment_method,$row->order_payment_id));

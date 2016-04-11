@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="system" method="upgrade">
 	<name>User - HikaShop</name>
-	<creationDate>25 février 2016</creationDate>
-	<version>2.6.1</version>
+	<creationDate>11 avril 2016</creationDate>
+	<version>2.6.2</version>
 	<author>HikaShop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
@@ -14,16 +14,16 @@
 	</files>
 	<params addpath="/components/com_hikashop/params">
 		<param name="fields_on_user_profile" type="radio" default="1" label="HIKA_DISPLAY_CUSTOM_USER_FIELDS" description="DISPLAY_CUSTOM_USER_FIELDS">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
 	</params>
 	<config>
 		<fields name="params" addfieldpath="/components/com_hikashop/fields">
 			<fieldset name="basic">
 				<field name="fields_on_user_profile" type="radio" default="1" label="HIKA_DISPLAY_CUSTOM_USER_FIELDS" description="DISPLAY_CUSTOM_USER_FIELDS" class="btn-group btn-group-yesno">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
 				</field>
 			</fieldset>
 		</fields>

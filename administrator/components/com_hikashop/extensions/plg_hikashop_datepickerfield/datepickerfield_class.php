@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -12,7 +12,7 @@ class fieldOpt_datepicker_options {
 	public function show($value) {
 		if(!empty($value)) {
 			if(is_string($value))
-				$value = unserialize($value);
+				$value = hikashop_unserialize($value);
 		} else {
 			$value = array();
 		}
@@ -290,7 +290,7 @@ hkjQuery(function() {
 		}
 
 		if(is_string($field->field_options)) {
-			$field->field_options = unserialize($field->field_options);
+			$field->field_options = hikashop_unserialize($field->field_options);
 		}
 		$format = @$field->field_options['format'];
 		if(strpos($format, '%') !== false) {
@@ -320,7 +320,7 @@ hkjQuery(function() {
 		$id = $this->prefix . @$field->field_namekey . $this->suffix;
 
 		$default_value = $field->field_default;
-		if(!empty($value) && !empty($default_value) && !empty($datepicker_options['today']) && ((int)$value == (int)$default_value)) {
+		if(!empty($value) && !empty($default_value) && !empty($datepicker_options['today']) && $test && ((int)$value == (int)$default_value)) {
 			$value = null;
 		}
 
@@ -332,7 +332,7 @@ hkjQuery(function() {
 		$datepicker_options = @$field->field_options['datepicker_options'];
 		if(!empty($datepicker_options)) {
 			if(is_string($datepicker_options))
-				$datepicker_options = unserialize($datepicker_options);
+				$datepicker_options = hikashop_unserialize($datepicker_options);
 		} else {
 			$datepicker_options = array();
 		}
@@ -414,6 +414,8 @@ hkjQuery(function() {
 
 		if(!empty($datepicker_options['monday_first']))
 			$dateOptions[] = 'firstDay:1';
+		else
+			$dateOptions[] = 'firstDay:0';
 
 		if(!empty($datepicker_options['change_month']))
 			$dateOptions[] = 'changeMonth:true';
@@ -708,7 +710,7 @@ hkjQuery(function() {
 		$datepicker_options = @$fullField->field_options['datepicker_options'];
 		if(!empty($datepicker_options)) {
 			if(is_string($datepicker_options))
-				$datepicker_options = unserialize($datepicker_options);
+				$datepicker_options = hikashop_unserialize($datepicker_options);
 		} else {
 			$datepicker_options = array();
 		}

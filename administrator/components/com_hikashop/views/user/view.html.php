@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -125,7 +125,7 @@ class UserViewUser extends hikashopView {
 		$fieldsClass->handleZoneListing($fields, $rows);
 		foreach($rows as $k => $row) {
 			if(!empty($row->user_params))
-				$rows[$k]->user_params = unserialize($row->user_params);
+				$rows[$k]->user_params = hikashop_unserialize($row->user_params);
 		}
 
 		if(!empty($pageInfo->search)) {
@@ -521,7 +521,7 @@ class UserViewUser extends hikashopView {
 			$url_link = JRoute::_('index.php?option=com_users&task=user.edit&id='.$user->user_cms_id );
 			$email_link = hikashop_completeLink('order&task=mail&user_id='.$user_id,true);
 		}
-		$history_link = empty($this->user->user_email) ? '' : hikashop_completeLink('email_log&search='.$this->user->user_email);
+		$history_link = empty($this->user->user_email) ? '' : hikashop_completeLink('email_history&search='.$this->user->user_email);
 		$this->toolbar = array(
 			array('name' => 'link', 'icon' => 'upload', 'alt' => JText::_('JOOMLA_USER_OPTIONS'), 'url' => $url_link,'display'=>!empty($user->user_cms_id)),
 			array('name' => 'popup', 'icon' => 'send', 'alt' => JText::_('HIKA_EMAIL'), 'url' => $email_link,'display'=>!empty($user_id)),

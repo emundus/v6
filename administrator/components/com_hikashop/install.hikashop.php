@@ -16,7 +16,7 @@ function com_install(){
 }
 class hikashopInstall{
 	var $level = 'Starter';
-	var $version = '2.6.1';
+	var $version = '2.6.2';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';
@@ -104,7 +104,7 @@ class hikashopInstall{
 			$this->db->setQuery("UPDATE #__hikashop_config SET `config_value` = 'media/com_hikashop/upload/safe/logs/report_".$rand.".log',`config_default` = 'media/com_hikashop/upload/safe/logs/report_".$rand.".log' WHERE `config_namekey` IN ('cron_savepath','payment_log_file') ");
 			try{$this->db->query();}catch(Exception $e){}
 
-			$updateClass = hikashop_get('helper.update');
+			$updateHelper = hikashop_get('helper.update');
 			$removeFiles = array(
 				HIKASHOP_FRONT.'css'.DS.'backend_default.css',
 				HIKASHOP_FRONT.'css'.DS.'frontend_default.css',
@@ -136,7 +136,7 @@ class hikashopInstall{
 
 			foreach($fromFolders as $i => $oneFolder){
 				if(!is_dir($oneFolder)) continue;
-				if(is_dir($toFolders[$i]) || !@rename($oneFolder,$toFolders[$i])) $updateClass->copyFolder($oneFolder,$toFolders[$i]);
+				if(is_dir($toFolders[$i]) || !@rename($oneFolder,$toFolders[$i])) $updateHelper->copyFolder($oneFolder,$toFolders[$i]);
 			}
 
 			$deleteFolders = array(
@@ -239,8 +239,8 @@ class hikashopInstall{
 			$manufacturer = new stdClass();
 			$manufacturer->category_type = 'manufacturer';
 			$manufacturer->category_name = 'manufacturer';
-			$class = hikashop_get('class.category');
-			$class->save($manufacturer);
+			$categoryClass = hikashop_get('class.category');
+			$categoryClass->save($manufacturer);
 		}
 
 		if(version_compare($this->fromVersion,'1.5.3','<')){
@@ -273,15 +273,15 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_limit` (
 			$this->databaseHelper->addColumns("order_product","`order_product_option_parent_id` INT UNSIGNED DEFAULT 0");
 			$this->databaseHelper->addColumns("taxation","`taxation_access` VARCHAR( 255 ) NOT NULL DEFAULT 'all'");
 
-			$class = hikashop_get('class.category');
+			$categoryClass = hikashop_get('class.category');
 			$tax = new stdClass();
 			$tax->category_type = 'tax';
 			$tax->category_parent_id = 'tax';
-			$class->getMainElement($tax->category_parent_id);
+			$categoryClass->getMainElement($tax->category_parent_id);
 			$tax->category_name = 'Default tax category';
 			$tax->category_namekey = 'default_tax';
 			$tax->category_depth = 2;
-			$class->save($tax);
+			$categoryClass->save($tax);
 		}
 		if(version_compare($this->fromVersion,'1.5.4','<')){
 			$this->db->setQuery("
@@ -625,6 +625,15 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			$this->databaseHelper->addColumns("badge","`badge_access` varchar(255) NOT NULL DEFAULT 'all';");
 		}
 
+		if(version_compare($this->fromVersion, '2.6.2', '<')) {
+			$this->db->setQuery("UPDATE `#__hikashop_field` SET `field_display`= CONCAT(';field_product_show=',`field_frontcomp`,';field_product_compare=',`field_frontcomp`,';field_product_form=',`field_backend`,';field_product_invoice=',`field_backend`,';field_product_shipping_invoice=',`field_backend`,';field_product_order_form=',`field_backend`,';field_product_backend_cart_details=',`field_backend`,';field_product_order_notification=',`field_backend`,';field_product_listing=',`field_backend_listing`,';') WHERE `field_table` LIKE 'product';");
+			try{$this->db->query();}catch(Exception $e){}
+			$this->db->setQuery("UPDATE `#__hikashop_field` SET `field_display`= CONCAT(';field_order_show=',`field_frontcomp`,';field_order_checkout=',`field_frontcomp`,';field_order_invoice=',`field_backend`,';field_order_shipping_invoice=',`field_backend`,';field_order_form=',`field_backend`,';field_order_edit_fields=',`field_backend`,';field_order_notification=',`field_backend`,';field_order_status_notification=',`field_backend`,';field_order_creation_notification=',`field_backend`,';field_order_admin_notification=',`field_backend`,';field_order_payment_notification=',`field_backend`,';field_order_listing=',`field_backend_listing`,';') WHERE `field_table` LIKE 'order';");
+			try{$this->db->query();}catch(Exception $e){}
+			$this->db->setQuery("UPDATE `#__hikashop_field` SET `field_display`= CONCAT(';field_item_show_cart=',`field_frontcomp`,';field_item_checkout=',`field_frontcomp`,';field_item_order=',`field_frontcomp`,';field_item_product_listing=',`field_frontcomp`,';field_item_product_show=',`field_frontcomp`,';field_item_product_cart=',`field_frontcomp`,';field_item_order_form=',`field_backend`,';field_item_invoice=',`field_backend`,';field_item_shipping_invoice=',`field_backend`,';field_item_edit_product_order=',`field_backend`,';field_item_backend_cart_details=',`field_backend`,';field_item_order_notification=',`field_backend`,';field_item_order_status_notification=',`field_backend`,';field_item_order_creation_notification=',`field_backend`,';field_item_order_admin_notification=',`field_backend`,';field_item_payment_notification=',`field_backend`,';') WHERE `field_table` LIKE 'item';");
+			try{$this->db->query();}catch(Exception $e){}
+		}
+
 	}
 
 	function addPref(){
@@ -678,7 +687,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 		$allPref['notification_refuse'] = '';
 		$allPref['bootstrap_design'] = '0';
 		$allPref['characteristics_values_sorting']='ordering';
-		$allPref['popup_mode'] = 'mootools';
+		$allPref['popup_mode'] = 'vex';
 		$allPref['force_canonical_urls'] = '0';
 
 
@@ -892,7 +901,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 
 			if(version_compare(JVERSION,'3.0','>=')){
 				foreach($params as $param){
-					$param->params = '{"hikashopmodule":'.json_encode(unserialize($param->params)).'}';
+					$param->params = '{"hikashopmodule":'.json_encode(hikashop_unserialize($param->params)).'}';
 					$query = 'UPDATE `#__modules` SET params = '.$this->db->quote($param->params).' WHERE id = '.(int)$param->id;
 					$this->db->setQuery($query);
 					$this->db->query();
@@ -983,10 +992,10 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 				if($menuId){
 					if($element->alias == 'hikashop-menu-for-brands-listing'){
 						$this->menuid->brands = $menuId;
-						$categoryOptions = 'a:38:{s:10:"show_image";s:1:"0";s:16:"show_description";s:1:"1";s:11:"layout_type";s:7:"inherit";s:7:"columns";s:1:"3";s:5:"limit";s:2:"21";s:6:"random";s:1:"0";s:9:"order_dir";s:3:"ASC";s:11:"filter_type";s:1:"0";s:19:"selectparentlisting";s:1:"2";s:7:"modules";s:0:"";s:15:"use_module_name";s:1:"0";s:13:"product_order";s:8:"ordering";s:15:"recently_viewed";s:1:"0";s:11:"add_to_cart";s:1:"1";s:20:"link_to_product_page";s:1:"1";s:17:"show_vote_product";s:1:"0";s:10:"show_price";s:1:"1";s:14:"price_with_tax";s:1:"3";s:19:"show_original_price";s:1:"1";s:13:"show_discount";s:1:"1";s:18:"price_display_type";s:8:"cheapest";s:14:"category_order";s:17:"category_ordering";s:18:"child_display_type";s:7:"nochild";s:11:"child_limit";s:0:"";s:18:"number_of_products";s:1:"0";s:16:"only_if_products";s:1:"0";s:11:"image_width";s:0:"";s:12:"image_height";s:0:"";s:20:"div_item_layout_type";s:9:"img_title";s:11:"pane_height";s:0:"";s:16:"background_color";s:0:"";s:6:"margin";s:0:"";s:14:"border_visible";s:2:"-1";s:15:"rounded_corners";s:2:"-1";s:11:"text_center";s:2:"-1";s:13:"ul_class_name";s:0:"";s:12:"content_type";s:12:"manufacturer";s:15:"enable_carousel";s:1:"0";}';
+						$categoryOptions = 'a:38:{s:10:"show_image";s:1:"0";s:16:"show_description";s:1:"1";s:11:"layout_type";s:7:"inherit";s:7:"columns";s:1:"3";s:5:"limit";s:2:"21";s:6:"random";s:1:"0";s:9:"order_dir";s:3:"ASC";s:11:"filter_type";s:1:"0";s:19:"selectparentlisting";s:2:"10";s:7:"modules";s:0:"";s:15:"use_module_name";s:1:"0";s:13:"product_order";s:8:"ordering";s:15:"recently_viewed";s:1:"0";s:11:"add_to_cart";s:1:"1";s:20:"link_to_product_page";s:1:"1";s:17:"show_vote_product";s:1:"0";s:10:"show_price";s:1:"1";s:14:"price_with_tax";s:1:"3";s:19:"show_original_price";s:1:"1";s:13:"show_discount";s:1:"1";s:18:"price_display_type";s:8:"cheapest";s:14:"category_order";s:17:"category_ordering";s:18:"child_display_type";s:7:"nochild";s:11:"child_limit";s:0:"";s:18:"number_of_products";s:1:"0";s:16:"only_if_products";s:1:"0";s:11:"image_width";s:0:"";s:12:"image_height";s:0:"";s:20:"div_item_layout_type";s:9:"img_title";s:11:"pane_height";s:0:"";s:16:"background_color";s:0:"";s:6:"margin";s:0:"";s:14:"border_visible";s:2:"-1";s:15:"rounded_corners";s:2:"-1";s:11:"text_center";s:2:"-1";s:13:"ul_class_name";s:0:"";s:12:"content_type";s:12:"manufacturer";s:15:"enable_carousel";s:1:"0";}';
 						if(version_compare(JVERSION,'3.0','>=')){
-							$menuParams = '{"hk_category":'.json_encode(unserialize($categoryOptions));
-							$menuParams .= ',"hk_product":'.json_encode(unserialize($productOptions)).'}';
+							$menuParams = '{"hk_category":'.json_encode(hikashop_unserialize($categoryOptions));
+							$menuParams .= ',"hk_product":'.json_encode(hikashop_unserialize($productOptions)).'}';
 						}else{
 							$moduleOtpions = base64_encode($categoryOptions);
 							$query = "UPDATE `#__hikashop_config` SET `config_value`=".$this->db->quote($moduleOtpions)." WHERE `config_namekey`= 'menu_".$menuId."' ";
@@ -999,8 +1008,8 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 						$this->menuid->categories = $menuId;
 						$categoryOptions = 'a:32:{s:12:"content_type";s:7:"product";s:11:"layout_type";s:7:"inherit";s:7:"columns";i:3;s:5:"limit";s:2:"21";s:9:"order_dir";s:3:"ASC";s:11:"filter_type";s:1:"0";s:19:"selectparentlisting";s:1:"2";s:15:"moduleclass_sfx";s:0:"";s:7:"modules";s:0:"";s:19:"content_synchronize";s:1:"1";s:15:"use_module_name";s:1:"0";s:13:"product_order";s:8:"ordering";s:6:"random";i:0;s:19:"product_synchronize";s:1:"1";s:10:"show_price";s:1:"1";s:14:"price_with_tax";s:1:"1";s:19:"show_original_price";s:1:"1";s:13:"show_discount";s:1:"1";s:18:"price_display_type";s:8:"cheapest";s:14:"category_order";s:17:"category_ordering";s:18:"child_display_type";s:7:"nochild";s:11:"child_limit";s:0:"";s:20:"div_item_layout_type";s:9:"img_title";s:17:"div_custom_fields";s:0:"";s:6:"height";s:3:"150";s:16:"background_color";s:0:"";s:6:"margin";s:0:"";s:15:"rounded_corners";s:2:"-1";s:11:"text_center";s:2:"-1";s:24:"links_on_main_categories";s:1:"0";s:20:"link_to_product_page";s:1:"1";s:15:"enable_carousel";s:1:"0";}';
 						if(version_compare(JVERSION,'3.0','>=')){
-							$menuParams = '{"hk_category":'.json_encode(unserialize($categoryOptions));
-							$menuParams .= ',"hk_product":'.json_encode(unserialize($productOptions)).'}';
+							$menuParams = '{"hk_category":'.json_encode(hikashop_unserialize($categoryOptions));
+							$menuParams .= ',"hk_product":'.json_encode(hikashop_unserialize($productOptions)).'}';
 						}else{
 							$moduleOtpions = base64_encode($categoryOptions);
 							$query = "UPDATE `#__hikashop_config` SET `config_value`=".$this->db->quote($moduleOtpions)." WHERE `config_namekey`= 'menu_".$menuId."' ";
@@ -1012,7 +1021,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 					}elseif($element->alias == 'hikashop-menu-for-products-listing'){
 						$productOptions = 'a:32:{s:12:"content_type";s:7:"product";s:11:"layout_type";s:7:"inherit";s:7:"columns";i:3;s:5:"limit";s:2:"21";s:9:"order_dir";s:3:"ASC";s:11:"filter_type";s:1:"1";s:19:"selectparentlisting";s:1:"2";s:15:"moduleclass_sfx";s:0:"";s:7:"modules";s:0:"";s:19:"content_synchronize";s:1:"1";s:15:"use_module_name";s:1:"0";s:13:"product_order";s:8:"ordering";s:6:"random";i:0;s:19:"product_synchronize";s:1:"1";s:10:"show_price";s:1:"1";s:14:"price_with_tax";s:1:"1";s:19:"show_original_price";s:1:"1";s:13:"show_discount";s:1:"1";s:18:"price_display_type";s:8:"cheapest";s:14:"category_order";s:17:"category_ordering";s:18:"child_display_type";s:7:"nochild";s:11:"child_limit";s:0:"";s:20:"div_item_layout_type";s:9:"img_title";s:17:"div_custom_fields";s:0:"";s:6:"height";s:3:"150";s:16:"background_color";s:0:"";s:6:"margin";s:0:"";s:15:"rounded_corners";s:2:"-1";s:11:"text_center";s:2:"-1";s:24:"links_on_main_categories";s:1:"0";s:20:"link_to_product_page";s:1:"1";s:15:"enable_carousel";s:1:"0";}';
 						if(version_compare(JVERSION,'3.0','>=')){
-							$menuParams = '{"hk_product":'.json_encode(unserialize($productOptions)).'}';
+							$menuParams = '{"hk_product":'.json_encode(hikashop_unserialize($productOptions)).'}';
 						}else{
 							$moduleOtpions = base64_encode($productOptions);
 							$query = "UPDATE `#__hikashop_config` SET `config_value`=".$this->db->quote($moduleOtpions)." WHERE `config_namekey`= 'menu_".$menuId."' ";

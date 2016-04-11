@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -228,8 +228,8 @@ class hikashopFileClass extends hikashopClass {
 			foreach($oldEntries as $old){
 				$elements[]=$old->file_id;
 			}
-			$class = hikashop_get('helper.translation');
-			$class->deleteTranslations('file',$elements);
+			$translationHelper = hikashop_get('helper.translation');
+			$translationHelper->deleteTranslations('file',$elements);
 		}
 	}
 
@@ -575,8 +575,8 @@ class hikashopFileClass extends hikashopClass {
 					}
 					break;
 				case 'item':
-					$class = hikashop_get('class.cart');
-					$products = $class->get();
+					$cartClass = hikashop_get('class.cart');
+					$products = $cartClass->get();
 					if(!empty($products)){
 						foreach( $products as $product ){
 							if(@$product->$field_namekey==$name){

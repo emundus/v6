@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -44,7 +44,7 @@ class ConfigController extends hikashopController{
 		}
 		$app = JFactory::getApplication();
 		JRequest::checkToken() || die( 'Invalid Token' );
-		$image = hikashop_get('class.file');
+		$imageClass = hikashop_get('class.file');
 		$source = is_array($_POST['config'])?'POST':'REQUEST'; //to avoid strange bugs on some web servers where the config array might be only in one of the two global variable :/
 		$formData = JRequest::getVar( 'config', array(), $source, 'array' );
 		$aclcats = JRequest::getVar( 'aclcat', array(), '', 'array' );
@@ -81,15 +81,15 @@ class ConfigController extends hikashopController{
 	 		$db->setQuery("DELETE FROM `#__hikashop_config` WHERE `config_namekey` LIKE 'acl_".implode("%' OR `config_namekey` LIKE 'acl_",$deleteAclCats)."%'");
 	 		$db->query();
 	 	}
-		$ids = $image->storeFiles('default_image',0);
+		$ids = $imageClass->storeFiles('default_image',0);
 		if(!empty($ids)){
-			$data = $image->get($ids[0]);
+			$data = $imageClass->get($ids[0]);
 			$formData['default_image']=$data->file_path;
 		}
 		if(hikashop_level(2)){
-			$ids = $image->storeFiles('watermark',0,'watermark');
+			$ids = $imageClass->storeFiles('watermark',0,'watermark');
 			if(!empty($ids)){
-				$data = $image->get($ids[0]);
+				$data = $imageClass->get($ids[0]);
 				$formData['watermark']=$data->file_path;
 			}
 		}

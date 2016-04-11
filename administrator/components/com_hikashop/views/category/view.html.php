@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -329,6 +329,12 @@ class CategoryViewCategory extends hikashopView
 			$transHelper->load('hikashop_category',@$element->category_id,$element,$language_id);
 			$this->assignRef('transHelper',$transHelper);
 		}
+
+		$fieldsClass = hikashop_get('class.field');
+		$fields = $fieldsClass->getFields('backend', $element, 'category', 'field&task=state');
+		$this->assignRef('fieldsClass', $fieldsClass);
+		$this->assignRef('fields', $fields);
+
 		$this->assignRef('translation',$translation);
 		$editor = hikashop_get('helper.editor');
 		$editor->name = 'category_description';

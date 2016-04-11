@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -102,7 +102,7 @@ class hikashopPluginsClass extends hikashopClass {
 		$params = $type.'_params';
 		foreach($methods as $k => $el) {
 			if(!empty($el->$params))
-				$methods[$k]->$params = @unserialize($el->$params);
+				$methods[$k]->$params = @hikashop_unserialize($el->$params);
 		}
 	}
 
@@ -177,6 +177,7 @@ class hikashopPluginsClass extends hikashopClass {
 				$element->params = $handler->objectToString($element->params);
 			}
 		}
+
 		return parent::save($element);
 	}
 

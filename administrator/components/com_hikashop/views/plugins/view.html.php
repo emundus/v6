@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -321,7 +321,7 @@ class PluginsViewPlugins extends hikashopView{
 			$params_name = $this->plugin_type.'_params';
 			foreach($elements as $k => $el) {
 				if(!empty($el->$params_name)) {
-					$elements[$k]->$params_name = unserialize($el->$params_name);
+					$elements[$k]->$params_name = hikashop_unserialize($el->$params_name);
 				}
 			}
 		}

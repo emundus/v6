@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -123,7 +123,7 @@ class ProductViewProduct extends hikashopView
 		}
 		$categories=array('originals'=>$cat_ids,'parents'=>$parent_cat_ids);
 
-		$fields = $fieldsClass->getData('backend_listing','product',false,$categories);
+		$fields = @$fieldsClass->getFields('display:field_product_listing=1', $categories, 'product');
 		$this->assignRef('fields',$fields);
 
 		$this->assignRef('fieldsClass',$fieldsClass);
@@ -655,7 +655,7 @@ class ProductViewProduct extends hikashopView
 
 	function _addCustom(&$element){
 		$fieldsClass = hikashop_get('class.field');
-		$fields = $fieldsClass->getFields('',$element,'product','field&task=state');
+		$fields = $fieldsClass->getFields('display:field_product_form=1',$element,'product','field&task=state');
 		$null=array();
 		$fieldsClass->addJS($null,$null,$null);
 		$fieldsClass->jsToggle($fields,$element,0);
@@ -727,20 +727,29 @@ class ProductViewProduct extends hikashopView
 		$currencyClass = hikashop_get('class.currency');
 		$zone_id = hikashop_getZone();
 		$ids = array();
+		$parents = array();
 		foreach($rows as $row){
 			$ids[]=(int)$row->product_id;
+			if(!empty($row->product_parent_id)) $parents[(int)$row->product_parent_id] = (int)$row->product_parent_id;
 		}
 		$query = 'SELECT * FROM '.hikashop_table('price').' WHERE price_product_id IN ('.implode(',',$ids).')';
 		$database = JFactory::getDBO();
 		$database->setQuery($query);
 		$prices = $database->loadObjectList();
+		if(!empty($parents)){
+			$query = 'SELECT product_id, product_tax_id FROM '.hikashop_table('product').' WHERE product_id IN ('.implode(',',$parents).')';
+			$database->setQuery($query);
+			$parents_tax_id = $database->loadObjectList('product_id');
+		}
 		if(!empty($prices)){
 			foreach($rows as $k => $row){
 				foreach($prices as $price){
 					if($price->price_product_id==$row->product_id){
 						if(!isset($row->prices)) $row->prices=array();
-						$rows[$k]->prices[$price->price_min_quantity]=$price;
-						$rows[$k]->prices[$price->price_min_quantity]->price_value_with_tax = $currencyClass->getTaxedPrice($price->price_value,$zone_id,$row->product_tax_id);
+						$rows[$k]->prices[$price->price_min_quantity.'_'.$price->price_access.'_'.$price->price_currency_id]=$price;
+						if(!empty($row->product_parent_id))
+							$row->product_tax_id = @$parents_tax_id[$row->product_parent_id]->product_tax_id;
+						$rows[$k]->prices[$price->price_min_quantity.'_'.$price->price_access.'_'.$price->price_currency_id]->price_value_with_tax = $currencyClass->getTaxedPrice($price->price_value,$zone_id,$row->product_tax_id);
 					}
 				}
 			}
@@ -1554,6 +1563,12 @@ class ProductViewProduct extends hikashopView
 
 					$app->enqueueMessage('Your product used a characteristic which has been deleted. The product has been repair but it is possible that you have some duplicate variants.', 'error');
 				}
+
+				$i = 0;
+				foreach($product->characteristics as &$c) {
+					$c->sort_value = $i++;
+				}
+				unset($c);
 			}
 
 			if(!empty($product->variants)) {
@@ -1598,7 +1613,13 @@ class ProductViewProduct extends hikashopView
 					$value->id = $d->characteristic_id;
 					$value->value = $d->characteristic_value;
 					$product->variants[$ppid]->characteristics[$pcid] = $value;
+
+					if(!isset($product->variants[$ppid]->sorting_value))
+						$product->variants[$ppid]->sorting_value = array();
+					$i = (int)$product->characteristics[ (int)$d->characteristic_parent_id ]->sort_value;
+					$product->variants[$ppid]->sorting_value[ $i ] = (int)$d->characteristic_ordering;
 				}
+				usort($product->variants, array(&$this, 'variantSortingCallback'));
 			} else {
 				$query = 'SELECT * FROM '.hikashop_table('price').' WHERE price_product_id = ' . (int)$product_id;
 				$db->setQuery($query);
@@ -1773,7 +1794,7 @@ class ProductViewProduct extends hikashopView
 		}
 
 		$fieldsClass = hikashop_get('class.field');
-		$fields = $fieldsClass->getFields('backend', $product, 'product', 'field&task=state');
+		$fields = $fieldsClass->getFields('display:field_product_form=1', $product, 'product', 'field&task=state');
 		$null = array();
 		$fieldsClass->addJS($null, $null, $null);
 		$fieldsClass->jsToggle($fields, $product, 0);
@@ -1808,6 +1829,16 @@ class ProductViewProduct extends hikashopView
 		$this->assignRef('cancel_action', $cancel_action);
 		$cancel_url = JRequest::getCmd('cancel_url', '');
 		$this->assignRef('cancel_url', $cancel_url);
+	}
+
+	public function variantSortingCallback($a, $b) {
+		ksort($a->sorting_value);
+		foreach($a->sorting_value as $k => $aSort){
+			if($a->sorting_value[$k] == $b->sorting_value[$k])
+				continue;
+			return ($a->sorting_value[$k] < $b->sorting_value[$k]) ? -1 : 1;
+		}
+		return 0;
 	}
 
 	public function form_variants() {
@@ -1851,12 +1882,13 @@ class ProductViewProduct extends hikashopView
 				$query = 'SELECT * FROM '.hikashop_table('price').' WHERE price_product_id IN (' . (int)$product_id . ',' . implode(',', $variant_ids).')';
 				$db->setQuery($query);
 				$prices = $db->loadObjectList();
-
+				$zone_id = hikashop_getZone();
 				foreach($prices as $price) {
 					$ppid = (int)$price->price_product_id;
 					if(isset($product->variants[$ppid])) {
 						if(empty($product->variants[$ppid]->prices))
 							$product->variants[$ppid]->prices = array();
+						$price->price_value_with_tax = $this->currencyClass->getTaxedPrice($price->price_value,$zone_id,$product->product_tax_id);
 						$product->variants[$ppid]->prices[] = $price;
 					}
 				}
@@ -2042,7 +2074,7 @@ class ProductViewProduct extends hikashopView
 
 		$fieldsClass = hikashop_get('class.field');
 		$fieldsClass->prefix = 'variant_'.time().'_';
-		$fields = $fieldsClass->getFields('backend', $product, 'product', 'field&task=state');
+		$fields = $fieldsClass->getFields('display:field_product_form=1', $product, 'product', 'field&task=state');
 		$null = array();
 		$fieldsClass->addJS($null, $null, $null);
 		$fieldsClass->jsToggle($fields, $product, 0, $fieldsClass->prefix);
@@ -2159,7 +2191,7 @@ class ProductViewProduct extends hikashopView
 		$this->assignRef('product', $product);
 
 		$fieldsClass = hikashop_get('class.field');
-		$fields = $fieldsClass->getFields('backend', $product, 'product', 'field&task=state');
+		$fields = $fieldsClass->getFields('display:field_product_form=1', $product, 'product', 'field&task=state');
 		$this->assignRef('fieldsClass', $fieldsClass);
 		$this->assignRef('fields', $fields);
 

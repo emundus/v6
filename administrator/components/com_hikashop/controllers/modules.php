@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -52,7 +52,7 @@ class ModulesController extends hikashopController{
 		$params = new hikaParameter();
 		$params->set('id',JRequest::getVar('id','product'));
 		$params->set('name',JRequest::getVar('id','product'));
-		$value = unserialize(JRequest::getVar('value'));
+		$value = hikashop_unserialize(JRequest::getVar('value')); // TODO : See to improve the security :)
 		$value['content_type'] = JRequest::getVar('content_type','product');
 		if($value['content_type'] == 'manufacturer')
 			$value['content_type'] = 'category';

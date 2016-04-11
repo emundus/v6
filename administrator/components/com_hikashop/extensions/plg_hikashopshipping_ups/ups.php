@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -67,7 +67,7 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 	function shippingMethods(&$main){
 		$methods = array();
 		if(!empty($main->shipping_params->methodsList)){
-			$main->shipping_params->methods=unserialize($main->shipping_params->methodsList);
+			$main->shipping_params->methods=hikashop_unserialize($main->shipping_params->methodsList);
 		}
 		if(!empty($main->shipping_params->methods)){
 			foreach($main->shipping_params->methods as $method){
@@ -127,7 +127,7 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 				continue;
 			}
 
-			$rate->shipping_params->warehouses = unserialize($rate->shipping_params->warehousesList);
+			$rate->shipping_params->warehouses = hikashop_unserialize($rate->shipping_params->warehousesList);
 			foreach($rate->shipping_params->warehouses as $warehouse) {
 				if(!empty($warehouse->country) && empty($warehouse->zone) || $warehouse->zone == '-' || in_array($warehouse->zone, $zones))
 					$usableWarehouses[] = $warehouse;
@@ -147,7 +147,7 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 				continue;
 			}
 
-			$rate->shipping_params->methods = unserialize($rate->shipping_params->methodsList);
+			$rate->shipping_params->methods = hikashop_unserialize($rate->shipping_params->methodsList);
 
 			$this->freight = false;
 			$this->classicMethod = false;
@@ -275,10 +275,10 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 		$elements = array($element);
 		$key = key($elements);
 		if(!empty($elements[$key]->shipping_params->warehousesList)){
-			$elements[$key]->shipping_params->warehouse = unserialize($elements[$key]->shipping_params->warehousesList);
+			$elements[$key]->shipping_params->warehouse = hikashop_unserialize($elements[$key]->shipping_params->warehousesList);
 		}
 		if(!empty($elements[$key]->shipping_params->methodsList)){
-			$elements[$key]->shipping_params->methods = unserialize($elements[$key]->shipping_params->methodsList);
+			$elements[$key]->shipping_params->methods = hikashop_unserialize($elements[$key]->shipping_params->methodsList);
 		}
 		$js = '
 function deleteRow(divName,inputName,rowName){

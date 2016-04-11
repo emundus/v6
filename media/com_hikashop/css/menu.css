@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    2.6.1
+ * @version    2.6.2
  * @author     hikashop.com
  * @copyright  (C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -38,26 +38,26 @@
 	background-color:#377D9F;
 	-webkit-border-top-left-radius:5px;
 	   -moz-border-top-left-radius:5px;
-	        border-top-left-radius:5px;
+			border-top-left-radius:5px;
 	-webkit-border-top-right-radius:5px;
 	   -moz-border-top-right-radius:5px;
-	        border-top-right-radius:5px;
+			border-top-right-radius:5px;
 }
 #hikashop_menu > ul > li.sel {
 	-webkit-border-bottom-left-radius:5px;
 	   -moz-border-bottom-left-radius:5px;
-	        border-bottom-left-radius:5px;
+			border-bottom-left-radius:5px;
 	-webkit-border-bottom-right-radius:5px;
 	   -moz-border-bottom-right-radius:5px;
-	        border-bottom-right-radius:5px;
+			border-bottom-right-radius:5px;
 }
 #hikashop_menu > ul > li.sel:hover {
 	-webkit-border-bottom-left-radius:0px;
 	   -moz-border-bottom-left-radius:0px;
-	        border-bottom-left-radius:0px;
+			border-bottom-left-radius:0px;
 	-webkit-border-bottom-right-radius:0px;
 	   -moz-border-bottom-right-radius:0px;
-	        border-bottom-right-radius:0px;
+			border-bottom-right-radius:0px;
 }
 #hikashop_menu > ul > li > a:focus, #hikashop_menu > ul > li:hover > a, #hikashop_menu > ul > li.sel > a {
 	color:#ffffff;

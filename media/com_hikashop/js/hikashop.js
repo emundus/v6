@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    2.6.1
+ * @version    2.6.2
  * @author     hikashop.com
  * @copyright  (C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -713,7 +713,11 @@
 			if(!dest) return false;
 			for(var k = 0; k < tabs.length; k++) {
 				if(!tabs[k] || tabs[k].nodeName.toLowerCase() != 'li') continue;
-				var l = tabs[k].childNodes[0], lr = l.getAttribute('rel');
+				var i = 0, l = tabs[k].childNodes[i], lr = null;
+				while(l.nodeName.toLowerCase() != 'a' && i < tabs[k].childNodes.length)
+					l = tabs[k].childNodes[++i];
+				if(l.nodeName.toLowerCase() == 'a')
+					lr = l.getAttribute('rel');
 				if(!lr || lr.substring(0,4) != 'tab:') continue;
 				var lid = lr.substring(4);
 				if(lid == current) continue;
@@ -1041,6 +1045,8 @@ function hikashopCheckField(elementToCheck, type, i, elementName, form) {
 }
 
 window.hikashop.ready(function(){
+	if(window.hikaVotes && typeOf(initVote) == 'function')
+		initVote();
 	window.hikashop.checkConsistency();
 });
 if(window.jQuery && typeof(jQuery.noConflict) == "function" && !window.hkjQuery) {

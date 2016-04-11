@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,7 +20,7 @@ class plgHikashopMassaction_category extends JPlugin
 		$externalValues[] = $obj;
 	}
 
-	function plgHikashopMassaction_category(&$subject, $config){
+	function __construct(&$subject, $config){
 		parent::__construct($subject, $config);
 		$this->massaction = hikashop_get('class.massaction');
 		$this->massaction->datecolumns = array( 'category_created',

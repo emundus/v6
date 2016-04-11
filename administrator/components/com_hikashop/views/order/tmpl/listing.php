@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -139,19 +139,23 @@ defined('_JEXEC') or die('Restricted access');
 					</td>
 					<td class="hikashop_order_customer_value">
 						<?php
-						 echo $row->hikashop_name;
-						 if(!empty($row->username)){
-						 	echo ' ( '.$row->username.' )';
-						 }
-						 echo '<br/>';
-						 if(!empty($row->user_id)){
-							 $url = hikashop_completeLink('user&task=edit&cid[]='.$row->user_id);
-							 $config =& hikashop_config();
-							 if(hikashop_isAllowed($config->get('acl_user_manage','all'))) echo $row->user_email.'<a href="'.$url.$target.'"><img src="'.HIKASHOP_IMAGES.'edit.png" alt="edit"/></a>';
-						 }elseif(!empty($row->user_email)){
-						 	echo $row->user_email;
-						 }
-						 ?>
+						if(empty($row->address_firstname) && empty($row->address_lastname)){
+							echo $row->name;
+						}else{
+							echo $row->address_firstname.' '.$row->address_middle_name.' '.$row->address_lastname;
+						}
+						if(!empty($row->username)){
+							echo ' ( '.$row->username.' )';
+						}
+						echo '<br/>';
+						if(!empty($row->user_id)){
+							$url = hikashop_completeLink('user&task=edit&cid[]='.$row->user_id);
+							$config =& hikashop_config();
+							if(hikashop_isAllowed($config->get('acl_user_manage','all'))) echo $row->user_email.'<a href="'.$url.$target.'"><img src="'.HIKASHOP_IMAGES.'edit.png" alt="edit"/></a>';
+						}elseif(!empty($row->user_email)){
+							echo $row->user_email;
+						}
+						?>
 					</td>
 					<td class="hikashop_order_payment_value">
 						<?php if(!empty($row->order_payment_method)){

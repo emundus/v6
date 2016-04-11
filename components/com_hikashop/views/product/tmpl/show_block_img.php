@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -34,7 +34,7 @@ if(!empty($this->variant_name)) {
 
 			if (!$this->config->get('thumbnail')) {
 				if(!empty ($this->element->images)){
-					echo '<img src="' . $this->image->uploadFolder_url . $image->file_path . '" alt="' . $image->file_name . '" id="hikashop_main_image" style="margin-top:10px;margin-bottom:10px;display:inline-block;vertical-align:middle" />';
+					echo '<img src="' . $this->image->uploadFolder_url . $image->file_path . '" alt="' . $image->file_name . '" id="hikashop_main_image" itemprop="image" style="margin-top:10px;margin-bottom:10px;display:inline-block;vertical-align:middle" />';
 				}
 			} else {
 				$style = '';
@@ -55,7 +55,7 @@ if(!empty($this->variant_name)) {
 						<div style="position:relative;text-align:center;clear:both;<?php if(!empty($divWidth)){ echo 'width:'.$divWidth.'px;'; } ?>margin: auto;" class="hikashop_product_main_image_subdiv">
 						<?php
 							if($this->image->override) {
-								echo $this->image->display(@$image->file_path,true,@$image->file_name,'id="hikashop_main_image'.$variant_name.'" style="margin-top:10px;margin-bottom:10px;display:inline-block;vertical-align:middle"','id="hikashop_main_image_link"', $width,  $height);
+								echo $this->image->display(@$image->file_path,true,@$image->file_name,'id="hikashop_main_image'.$variant_name.'" itemprop="image" style="margin-top:10px;margin-bottom:10px;display:inline-block;vertical-align:middle"','id="hikashop_main_image_link"', $width,  $height);
 							} else {
 								if(empty($this->popup))
 									$this->popup = hikashop_get('helper.popup');
@@ -66,7 +66,7 @@ if(!empty($this->variant_name)) {
 									if (!empty ($this->element->images) && count($this->element->images) > 1) {
 										$attr .= 'onclick="return window.localPage.openImage(\'hikashop_main_image'.$variant_name.'\', \''.$variant_name.'\', event);"';
 									}
-									$html = '<img id="hikashop_main_image'.$variant_name.'" style="margin-top:10px;margin-bottom:10px;display:inline-block;vertical-align:middle" title="'.$this->escape(@$image->file_description).'" alt="'.$this->escape(@$image->file_name).'" src="'.$img->url.'"/>';
+									$html = '<img id="hikashop_main_image'.$variant_name.'" itemprop="image" style="margin-top:10px;margin-bottom:10px;display:inline-block;vertical-align:middle" title="'.$this->escape(@$image->file_description).'" alt="'.$this->escape(@$image->file_name).'" src="'.$img->url.'"/>';
 									if(!empty($this->element->badges))
 										$html .= $this->classbadge->placeBadges($this->image, $this->element->badges, '0', '0',false);
 

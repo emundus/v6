@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -25,18 +25,19 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 			$extra_filters = ' AND a.shipping_vendor_id IN (-1, 0, ' . (int)$vendor . ') ';
 
 		$db = JFactory::getDBO();
-		$query = 'SELECT b.*, a.*, c.currency_symbol FROM ' . hikashop_table('shipping') . ' AS a LEFT JOIN '.
-			hikashop_table('shipping_price').' AS b ON a.shipping_id = b.shipping_id AND b.shipping_price_ref_id = '.$product_id.' INNER JOIN '.
-			hikashop_table('currency').' AS c ON c.currency_id = a.shipping_currency_id '.
-			'WHERE a.shipping_params LIKE '.
-			$db->Quote('%s:20:"shipping_per_product";s:1:"1"%') . ' AND (b.shipping_price_ref_id IS NULL OR (b.shipping_price_ref_id = ' . $product_id . ' AND b.shipping_price_ref_type = \'product\')) '.
-			$extra_filters.
-			'ORDER BY a.shipping_id, b.shipping_price_min_quantity';
+		$query = 'SELECT b.*, a.*, c.currency_symbol FROM ' . hikashop_table('shipping') . ' AS a '.
+		' LEFT JOIN '.hikashop_table('shipping_price').' AS b ON a.shipping_id = b.shipping_id AND b.shipping_price_ref_id = '.$product_id.
+		' INNER JOIN '. hikashop_table('currency').' AS c ON c.currency_id = a.shipping_currency_id '.
+		' WHERE (a.shipping_params LIKE \'%' . hikashop_getEscaped('s:20:"shipping_per_product";s:1:"1"') . '%\' OR a.shipping_params LIKE \'%' . hikashop_getEscaped('s:20:"shipping_per_product";i:1') . '%\') '.
+		' AND (b.shipping_price_ref_id IS NULL OR (b.shipping_price_ref_id = ' . $product_id . ' AND b.shipping_price_ref_type = \'product\')) '.
+		$extra_filters.
+		'ORDER BY a.shipping_id, b.shipping_price_min_quantity';
+
 		$db->setQuery($query);
 		$shippings = $db->loadObjectList();
 		$temp_shipping = new stdClass();
 		foreach($shippings as $key => $shipping) {
-			$temp_shipping = unserialize($shipping->shipping_params);
+			$temp_shipping = hikashop_unserialize($shipping->shipping_params);
 
 			if(!empty($temp_shipping->shipping_vendor_filter) && !empty($temp_shipping->shipping_warehouse_filter))
 				$temp_shipping->shipping_warehouse_filter = substr($temp_shipping->shipping_warehouse_filter, 0, 1);
@@ -208,7 +209,6 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 			}
 		}
 
-
 		if(!empty($toRemove)) {
 			$db->setQuery('DELETE FROM ' . hikashop_table('shipping_price') . ' WHERE shipping_price_ref_id = ' . $product->product_id . ' AND shipping_price_ref_type = \'product\' AND shipping_price_id IN ('.implode(',',$toRemove).')');
 			$db->query();
@@ -217,5 +217,105 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 			$db->setQuery('INSERT IGNORE INTO ' . hikashop_table('shipping_price') . ' (`shipping_id`,`shipping_price_ref_id`,`shipping_price_ref_type`,`shipping_price_min_quantity`,`shipping_price_value`,`shipping_fee_value`) VALUES ('.implode('),(',$toInsert).')');
 			$db->query();
 		}
+	}
+	function onHikaShopBeforeDisplayView (&$view) {
+		if (!isset($view->element->product_id) )
+			return;
+
+		$ctrl = @$view->ctrl;
+		$task = $view->getLayout();
+
+		if($ctrl != "product" || $task != 'show')
+			return;
+
+		if(empty($plugin->params['displayOnFrontend'] ) )
+			return;
+
+		$shippings = $this->_getShippings($view->element);
+		$shipPrices = @$view->element->prices;
+
+		$pluginsClass = hikashop_get('class.plugins');
+		$plugin = $pluginsClass->getByName('hikashop','shippingmanual_prices');
+
+		if(!isset($plugin->params['position'] ) )
+			$plugin->params['position'] = 'rightMiddle';
+		if(!isset($plugin->params['DisplayMinQtity'] ) )
+			$plugin->params['DisplayMinQtity'] = 1;
+
+		$position = $plugin->params['position'];
+		$display = $plugin->params['DisplayMinQtity'];
+
+
+		ob_start();
+
+		if (!empty ($shippings) && (is_array($shippings) ) ) {
+
+			$shipData = array();
+			foreach ($shippings as $v) {
+
+				if ($v->shipping_published == 0)
+					continue;
+
+				$arrayKey = $v->shipping_name . ' ' . $v->shipping_price_id;
+				$shipData[$arrayKey] = array();
+
+				$shipParams = unserialize($v->shipping_params);
+
+				if ( ($v->shipping_price_min_quantity > 1 ) && (isset($v->shipping_price_min_quantity) ) ) {
+					$shipData[$arrayKey]['minQtity'] = $v->shipping_price_min_quantity;
+
+					$total = ($v->shipping_price_min_quantity * $v->shipping_price_value) + $v->shipping_fee_value + $v->shipping_price;
+				} else {
+					$shipData[$arrayKey]['minQtity'] = 0;
+
+					$total = $v->shipping_price_value + $v->shipping_fee_value + $v->shipping_price;
+				}
+
+				$shipData[$arrayKey]['price'] = $view->currencyHelper->format($total,$v->shipping_currency_id);
+
+				if ($shipParams->shipping_percentage != 0) {
+
+					$prdctPrice = 0;
+					if(!empty($shipPrices)){
+						foreach ($shipPrices as $v1) {
+							$prdctPrice = $v1->price_value_with_tax;
+
+							if ($v1->price_min_quantity == 0) {
+								break;
+							}
+						}
+					}
+
+					$MainPrice = ($prdctPrice * $shipParams->shipping_percentage) / 100;
+
+					$shipData[$arrayKey]['percent'] = (int)$shipParams->shipping_percentage;
+
+					if ( ($v->shipping_price_min_quantity > 1 ) && (isset($v->shipping_price_min_quantity) ) ) {
+						$shipData[$arrayKey]['minQtity'] = $v->shipping_price_min_quantity;
+
+						$total = ($v->shipping_price_min_quantity * $v->shipping_price_value) + $v->shipping_fee_value + ($v->shipping_price_min_quantity * $MainPrice);
+					} else {
+						$shipData[$arrayKey]['minQtity'] = 0;
+
+						$total = $v->shipping_price_value + $v->shipping_fee_value + $MainPrice;
+					}
+
+					$shipData[$arrayKey]['price'] = $view->currencyHelper->format($view->currencyHelper->round($total),$v->shipping_currency_id);
+				}
+
+				$shipData[$arrayKey]['name'] = $v->shipping_name;
+			}
+
+			include dirname(__FILE__).DS.'shippingprices_views'.DS.'frontend_product.php';
+		}
+
+		$data = ob_get_clean();
+
+		if(!isset($view->element->extraData))
+			$view->element->extraData = new stdClass();
+
+		if(!isset($view->element->extraData->$position))
+			$view->element->extraData->$position = array();
+		array_push($view->element->extraData->$position, $data);
 	}
 }

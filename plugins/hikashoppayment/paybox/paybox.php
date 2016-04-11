@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -225,7 +225,7 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 		$element->payment_description = 'You can pay by credit card using this payment method';
 		$element->payment_images = 'MasterCard,VISA,Credit_card,American_Express';
 
-		$element->payment_params->ips = '195.101.99.76;194.2.122.158;195.25.7.166';
+		$element->payment_params->ips = '';
 		$element->payment_params->force_card = 1;
 
 		$element->payment_params->invalid_status = 'cancelled';

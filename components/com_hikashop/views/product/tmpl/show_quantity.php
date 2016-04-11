@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,8 +9,8 @@
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 $i = $this->params->get('i');
-$min_quantity = $this->params->get('min_quantity');
-$max_quantity = $this->params->get('max_quantity');
+$min_quantity = ($this->params->get('min_quantity'))?$this->params->get('min_quantity'):1;
+$max_quantity = $this->params->get('max_quantity','0');
 $html = $this->params->get('html');
 
 $qLayout = JRequest::getVar('quantitylayout','show_default');
@@ -43,9 +43,7 @@ switch($qLayout){
 		break;
 
 	case 'show_select':
-		if($min_quantity == 0)
-			$min_quantity = 1;
-		if($max_quantity == 0)
+		if(!$max_quantity)
 			$max_quantity = (int)$min_quantity * 15;
 ?>
 		<div class="hikashop_product_quantity_div hikashop_product_quantity_input_div_select">
@@ -53,6 +51,37 @@ switch($qLayout){
 				<?php
 				for($j = $min_quantity; $j <= $max_quantity; $j += $min_quantity){
 					echo '<option value="'.$j.'">'.$j.'</option>';
+				}
+				?>
+			</select>
+			<input id="hikashop_product_quantity_field_<?php echo $i; ?>" type="hidden" value="<?php echo JRequest::getInt('quantity',$min_quantity); ?>" class="hikashop_product_quantity_field" name="quantity" onchange="hikashopCheckQuantityChange('hikashop_product_quantity_field_<?php echo $i; ?>',<?php echo $max_quantity; ?>,<?php echo $min_quantity; ?>);" />
+		</div>
+		<div class="hikashop_product_quantity_div hikashop_product_quantity_add_to_cart_div hikashop_product_quantity_add_to_cart_div_select">
+			<?php echo $html; ?>
+		</div>
+<?php
+		break;
+
+	case 'show_select_price':
+		if(!$max_quantity)
+			$max_quantity = (int)$min_quantity * 15;
+?>
+		<div class="hikashop_product_quantity_div hikashop_product_quantity_input_div_select">
+			<select id="hikashop_product_quantity_select_<?php echo $i; ?>" onchange="var id = this.id.replace('select','field'); document.getElementById(id).value = this.value;">
+				<?php
+				$pricesSet = array();
+				foreach($this->row->prices as $price){
+					if($price->price_min_quantity == 0)
+						$price->price_min_quantity = 1;
+					if(in_array($price->price_min_quantity,$pricesSet) || $price->price_min_quantity < $min_quantity || $price->price_min_quantity > $max_quantity)
+						continue;
+					$pricesSet[] = $price->price_min_quantity;
+					echo '<option value="'.$price->price_min_quantity.'">'.$price->price_min_quantity.'</option>';
+				}
+				if(empty($pricesSet)){
+					for($j = $min_quantity; $j <= $max_quantity; $j += $min_quantity){
+						echo '<option value="'.$j.'">'.$j.'</option>';
+					}
 				}
 				?>
 			</select>

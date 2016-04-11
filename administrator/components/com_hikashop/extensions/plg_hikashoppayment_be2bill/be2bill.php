@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -18,7 +18,7 @@ class plgHikashoppaymentBe2Bill extends hikashopPaymentPlugin
 	var $pluginConfig = array(
 		'identifier' => array("Identifier",'input'),
 		'password' => array("HIKA_PASSWORD",'input'),
-		'notification' => array('ALLOW_NOTIFICATIONS_FROM_X', 'boolean','0'),
+		'notification' => array('ALLOW_NOTIFICATIONS_FROM_X', 'boolean','1'),
 		'payment_url' => array("Payment URL",'input'),
 		'debug' => array('DEBUG', 'boolean','0'),
 		'cancel_url' => array('CANCEL_URL_DEFINE','html',''),

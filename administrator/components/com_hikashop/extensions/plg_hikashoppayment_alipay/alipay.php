@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,7 +32,7 @@ class plgHikashoppaymentAlipay extends hikashopPaymentPlugin
 		'server_to_server' => array('Server to Server', 'boolean','0'),
 		'charge_and_ship' => array('Charge And Ship', 'boolean','0'),
 		'debug' => array('DEBUG', 'boolean','0'),
-		'notification' => array('ALLOW_NOTIFICATIONS_FROM_X', 'boolean','0'),
+		'notification' => array('ALLOW_NOTIFICATIONS_FROM_X', 'boolean','1'),
 		'invalid_status' => array('INVALID_STATUS', 'orderstatus'),
 		'verified_status' => array('VERIFIED_STATUS', 'orderstatus')
 	);
@@ -215,6 +215,7 @@ class plgHikashoppaymentAlipay extends hikashopPaymentPlugin
 		}
 		$sign = $alipay->_sign($params);
 		if($this->payment_params->debug){
+			$this->writeToLog("\n sign_params : \n".print_r($params,true)."\n\n\n");
 			$this->writeToLog("\n sign1 : \n".print_r($sign,true)."\n\n\n");
 			$this->writeToLog("\n sign2 : \n".print_r($_POST['sign'],true)."\n\n\n");
 		}
@@ -329,7 +330,20 @@ class alipay {
 
 	function _sign($params) {
 		$params_str = '';
+		$sign_exclude = array(
+			'option',
+			'task',
+			'tmpl',
+			'Itemid',
+			'ctrl',
+			'hikashop_payment_notification_plugin',
+			'notif_payment',
+			'lang'
+		);
+
 		foreach($params as $key => $value) {
+			if(in_array($key, $sign_exclude))
+				continue;
 			if($params_str == '') {
 				$params_str = "$key=$value";
 			} else {

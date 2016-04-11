@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,8 +23,8 @@ class hikashopWarehouseClass extends hikashopClass {
 			hikashop_secureField($column);
 			$element->$column = $safeHtmlFilter->clean(strip_tags($value), 'string');
 		}
-		$class = hikashop_get('helper.translation');
-		$class->getTranslations($element);
+		$translationHelper = hikashop_get('helper.translation');
+		$translationHelper->getTranslations($element);
 		$status = $this->save($element);
 
 		return $status;
@@ -35,11 +35,11 @@ class hikashopWarehouseClass extends hikashopClass {
 		$element->warehouse_modified=time();
 		if($isNew) {
 			$element->warehouse_created=$element->warehouse_modified;
-			$orderClass = hikashop_get('helper.order');
-			$orderClass->pkey = 'warehouse_id';
-			$orderClass->table = 'warehouse';
-			$orderClass->orderingMap = 'warehouse_ordering';
-			$orderClass->reOrder();
+			$orderHelper = hikashop_get('helper.order');
+			$orderHelper->pkey = 'warehouse_id';
+			$orderHelper->table = 'warehouse';
+			$orderHelper->orderingMap = 'warehouse_ordering';
+			$orderHelper->reOrder();
 		}
 		$status = parent::save($element);
 		if(!$status) {

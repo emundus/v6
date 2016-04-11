@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -64,12 +64,12 @@ class ProductController extends hikashopController {
 
 	function save_translation(){
 		$product_id = hikashop_getCID('product_id');
-		$class = hikashop_get('class.product');
-		$element = $class->get($product_id);
+		$productClass = hikashop_get('class.product');
+		$element = $productClass->get($product_id);
 		if(!empty($element->product_id)){
-			$class = hikashop_get('helper.translation');
-			$class->getTranslations($element);
-			$class->handleTranslations('product',$element->product_id,$element);
+			$translationHelper = hikashop_get('helper.translation');
+			$translationHelper->getTranslations($element);
+			$translationHelper->handleTranslations('product',$element->product_id,$element);
 		}
 		$document= JFactory::getDocument();
 		$document->addScriptDeclaration('window.top.hikashop.closeBox();');
@@ -113,9 +113,9 @@ class ProductController extends hikashopController {
 		$products = JRequest::getVar('cid', array(), '', 'array');
 		$result = true;
 		if(!empty($products)) {
-			$helper = hikashop_get('helper.import');
+			$importHelper = hikashop_get('helper.import');
 			foreach($products as $product) {
-				if(!$helper->copyProduct($product))
+				if(!$importHelper->copyProduct($product))
 					$result = false;
 			}
 		}
@@ -280,8 +280,8 @@ class ProductController extends hikashopController {
 		$app = JFactory::getApplication();
 		$this->groupVal = $app->getUserStateFromRequest( HIKASHOP_COMPONENT.'.product.filter_id','filter_id',0,'string');
 		if(!is_numeric($this->groupVal)){
-			$class = hikashop_get('class.category');
-			$class->getMainElement($this->groupVal);
+			$categoryClass = hikashop_get('class.category');
+			$categoryClass->getMainElement($this->groupVal);
 		}
 	}
 
@@ -348,7 +348,7 @@ class ProductController extends hikashopController {
 		if(!empty($formData['filemode']))
 			$filemode = $formData['filemode'];
 
-		$class = hikashop_get('class.file');
+		$fileClass = hikashop_get('class.file');
 		JRequest::setVar('cid', 0);
 		switch($filemode) {
 			case 'path':
@@ -405,7 +405,7 @@ class ProductController extends hikashopController {
 			case 'upload':
 			default:
 				if(empty($file->file_id)) {
-					$ids = $class->storeFiles($file->file_type,$file->file_ref_id);
+					$ids = $fileClass->storeFiles($file->file_type,$file->file_ref_id);
 					if(is_array($ids)&&!empty($ids)) {
 						$file->file_id = array_shift($ids);
 						if(isset($file->file_path))
@@ -435,7 +435,7 @@ class ProductController extends hikashopController {
 		if(!$do)
 			return false;
 
-		$status = $class->save($file);
+		$status = $fileClass->save($file);
 		if(empty($file->file_id)) {
 			$file->file_id = $status;
 		}
@@ -655,6 +655,9 @@ class ProductController extends hikashopController {
 	}
 
 	function getTree() {
+		while(ob_get_level())
+			@ob_end_clean();
+
 		$category_id = JRequest::getInt('category_id', 0);
 		$displayFormat = JRequest::getVar('displayFormat', '');
 		$search = JRequest::getVar('search', null);

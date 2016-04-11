@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -53,16 +53,16 @@ class plgHikashoppaymentHSBC extends hikashopPaymentPlugin
 	);
 
 	var $errorCpiResultText = array(
-		00 => 'The CPI result code was invalid.',
-		01 => 'The user cancelled the transaction.',
-		02 => 'The processor declined the transaction for an unknown reason.',
-		03 => 'The transaction was declined because of a problem with the card. For example, an invalid card number or expiration date was specified.',
-		04 => 'The processor did not return a response.',
-		05 => 'The amount specified in the transactino was either too high or too low for the processor.',
-		06 => 'The specified currency is not supported by either the processor or the card.',
-		07 => 'The order is invalid because the order ID is a duplicated.',
-		08 => 'The transaction was rejected by FraudShield.',
-		09 => 'The transaction was placed in Review state by FraudShield.',
+		0 => 'The CPI result code was invalid.',
+		1 => 'The user cancelled the transaction.',
+		2 => 'The processor declined the transaction for an unknown reason.',
+		3 => 'The transaction was declined because of a problem with the card. For example, an invalid card number or expiration date was specified.',
+		4 => 'The processor did not return a response.',
+		5 => 'The amount specified in the transactino was either too high or too low for the processor.',
+		6 => 'The specified currency is not supported by either the processor or the card.',
+		7 => 'The order is invalid because the order ID is a duplicated.',
+		8 => 'The transaction was rejected by FraudShield.',
+		9 => 'The transaction was placed in Review state by FraudShield.',
 		10 => 'The transaction failed becaause of invalid input data.',
 		11 => 'The transaction failed because the CPI was configured incorrectly.',
 		12 => 'The transaction failed because the Storefront was configured incorrectly.',

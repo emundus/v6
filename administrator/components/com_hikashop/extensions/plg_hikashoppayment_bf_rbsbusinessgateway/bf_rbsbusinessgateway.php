@@ -38,7 +38,7 @@ class plgHikashoppaymentbf_rbsbusinessgateway extends hikashopPaymentPlugin
 		),
 		'fixContact' => array('Fix Contact', 'boolean','0'),
 		'hideContact' => array('Hide Contact', 'boolean','0'),
-		'notification' => array('ALLOW_NOTIFICATIONS_FROM_X', 'boolean','0'),
+		'notification' => array('ALLOW_NOTIFICATIONS_FROM_X', 'boolean','1'),
 		'debug' => array('DEBUG', 'boolean','0'),
 		'showVars' => array('Show Parameters', 'boolean','0'),
 		'testMode' => array('Test Mode', 'boolean','0'),
@@ -48,6 +48,7 @@ class plgHikashoppaymentbf_rbsbusinessgateway extends hikashopPaymentPlugin
 		'invalid_status' => array('INVALID_STATUS', 'orderstatus'),
 		'pending_status' => array('PENDING_STATUS', 'orderstatus'),
 		'verified_status' => array('VERIFIED_STATUS', 'orderstatus'),
+		'return_url' => array('RETURN_URL', 'input'),
 		'cancel_url' => array('Cancel URL', 'input'),
 		'redirect_button' => array('Redirect to Worldpay Button', 'big-textarea')
 	);

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -336,7 +336,7 @@ class plgHikashoppaymentAtos extends hikashopPaymentPlugin
 
 		if (( $code == "" ) && ( $error == "" ) ){
 			echo $message['error_response'];
-			echo $message['response_not_fount']. $path_bin."\n";
+			echo $message['response_not_found']. $path_bin."\n";
 		}
 		else if ( $code != 0 ){
 			echo $message['api_error'];
@@ -379,7 +379,7 @@ class plgHikashoppaymentAtos extends hikashopPaymentPlugin
 		);
 
 		if(!empty($vars['caddie'])) {
-			$arrayCaddie = unserialize(base64_decode($vars['caddie']));
+			$arrayCaddie = hikashop_unserialize(base64_decode($vars['caddie']));
 		}
 		$dbOder = null;
 		if(!empty($arrayCaddie)) {
@@ -444,7 +444,7 @@ class plgHikashoppaymentAtos extends hikashopPaymentPlugin
 				$vars['message']=$message['invalid_transaction'];
 			}elseif($vars['status']==13){
 				$vars['message']=$message['invalid_amount'];
-			}elseif($vars['status']==05 || $vars['status']==02 || $vars['status']==03 || $vars['status']==04){
+			}elseif($vars['status']==5 || $vars['status']==2 || $vars['status']==3 || $vars['status']==4){
 				$vars['message']=$message['refused_payment'];
 			}elseif($vars['status']==14){
 				$vars['message']=$message['invalid_card_number'];
@@ -857,7 +857,7 @@ include(\'index.php\');
 		$query = 'SELECT * FROM '.hikashop_table('payment').' WHERE payment_type=\'atos\'';
 		$db->setQuery($query);
 		$paymentData = $db->loadObject();
-		$paymentData->payment_params = unserialize($paymentData->payment_params);
+		$paymentData->payment_params = hikashop_unserialize($paymentData->payment_params);
 		return $paymentData;
 	}
 
@@ -866,7 +866,7 @@ include(\'index.php\');
 
 		$app = JFactory::getApplication();
 		if(!preg_match('#^([A-Z]:)?/.*#',$path)){
-			if(!$path[0]=='/' || !is_dir($path)){
+			if($path[0] != '/' || !is_dir($path)){
 				$pathClean = JPath::clean(HIKASHOP_ROOT.DS.trim($path,DS.' ').DS);
 			}
 		}

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -28,18 +28,67 @@ class userController extends hikashopController{
 	}
 
 	function register() {
-		if(empty($_REQUEST['data'])){
+		if(empty($_REQUEST['data'])) {
 			return $this->form();
 		}
 		$class = hikashop_get('class.user');
 		$status = $class->register($this,'user');
-		if($status){
+
+		if(!empty($status)) {
+			$config =& hikashop_config();
+			$simplified = $config->get('simplified_registration', 0);
+
+			if($simplified != 2){
+				$usersConfig = JComponentHelper::getParams('com_users');
+				$useractivation = $usersConfig->get('useractivation');
+				if($useractivation == 0) {
+					$this->_login($class->registerData->username, $class->registerData->password);
+				}
+			}
+
 			$app = JFactory::getApplication();
 			$app->enqueueMessage(JText::sprintf('THANK_YOU_FOR_REGISTERING',HIKASHOP_LIVE));
-			JRequest::setVar( 'layout', 'after_register'  );
+			JRequest::setVar('layout', 'after_register');
 			return parent::display();
+
 		}
 		$this->form();
+	}
+
+	function _login($user='',$pass='',$checkToken=true){
+		$options = array();
+		$options['remember'] = JRequest::getBool('remember', false);
+		$options['return'] = false;
+		$credentials = array();
+		if(empty($user)){
+			$credentials['username'] = JRequest::getVar('username', '', 'request', 'username');
+		}else{
+			$credentials['username'] = $user;
+		}
+		if(empty($pass)){
+			$credentials['password'] = JRequest::getString('passwd', '', 'request', JREQUEST_ALLOWRAW);
+		}else{
+			$credentials['password'] = $pass;
+		}
+
+		$mainframe = JFactory::getApplication();
+		$error = $mainframe->login($credentials, $options);
+
+		$user = JFactory::getUser();
+
+		if(JError::isError($error) || $user->guest){
+			return false;
+		}
+
+		$class = hikashop_get('class.user');
+		$user_id = $class->getID($user->get('id'));
+
+		if($user_id){
+			$app = JFactory::getApplication();
+			$app->setUserState( HIKASHOP_COMPONENT.'.user_id',$user_id );
+		}
+		return true;
+
 	}
 
 	function cpanel() {

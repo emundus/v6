@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -255,7 +255,7 @@ defined('_JEXEC') or die('Restricted access');
 					$i++;
 					$varName=strtolower($method['name']);
 					$varName=str_replace(' ','_', $varName);
-					$selMethods = unserialize(@$this->element->shipping_params->methodsList);
+					$selMethods = hikashop_unserialize(@$this->element->shipping_params->methodsList);
 
 				?>
 				<input name="data[shipping_methods][<?php echo $varName;?>][name]" type="checkbox" value="<?php echo $varName;?>" <?php echo (!empty($selMethods[$varName])?'checked="checked"':''); ?>/><?php echo $method['name'].' ('.@$method['countries'].')'; ?><br/>

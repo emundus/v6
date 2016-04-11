@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="1.5" method="upgrade" group="system">
 	<name>Hikashop no SSL outside checkout Plugin</name>
-	<creationDate>25 février 2016</creationDate>
-	<version>2.6.1</version>
+	<creationDate>11 avril 2016</creationDate>
+	<version>2.6.2</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
@@ -12,9 +12,20 @@
 	<files>
 		<filename plugin="nossloutsidecheckout">nossloutsidecheckout.php</filename>
 	</files>
-	<params/>
+	<params addpath="/components/com_hikashop/params">
+		<param type="radio" default="303" description="Redirection status" label="Redirection status" name="status">
+			<option value="301">301</option>
+			<option value="303">303</option>
+		</param>
+	</params>
 	<config>
 		<fields name="params" addfieldpath="/components/com_hikashop/fields">
+			<fieldset name="basic">
+				<field type="radio" default="303" description="Redirection status" label="Redirection status" name="status">
+					<option value="301">301</option>
+					<option value="303">303</option>
+				</field>
+			</fieldset>
 		</fields>
 	</config>
 </extension>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -83,8 +83,10 @@ if(!isset($this->element['layout_type']))
 		<!-- Extra part (Carousel options & ...) -->
 		<div class="hkc-xl-12 hk-container hikashop_menu_block hikashop_menu_edit_extra" data-type="<?php echo $this->type; ?>" data-display-tab="div">
 		<?php
-			$this->setLayout('options_product_extra');
-			echo $this->loadTemplate();
+			if(@$this->element['enable_carousel']){
+				$this->setLayout('options_product_extra');
+				echo $this->loadTemplate();
+			}
 		?>
 		</div>
 <?php
@@ -185,6 +187,15 @@ $js .="
 		var cRow = hkjQuery('input[name=\''+name+'[rows]\']').val();
 		hkjQuery('input[name=\''+name+'[limit]\']').val(parseInt(cRow) * parseInt(cCol));
 		window.optionMgr.fillSelector(cCol,cRow,name);
+	});
+	hkjQuery('.listing_item_quantity_fields .hikashop_product_listing_input_button').click(function(){
+		var ref = hkjQuery(this).attr('data-ref'),
+		inc = hkjQuery(this).attr('data-inc');
+		if(inc == 'plus'){
+			hkjQuery('input[name=\''+ref+'\']').val(parseInt(hkjQuery('input[name=\''+ref+'\']').val()) + 1).trigger('change');
+		}else if(parseInt(hkjQuery('input[name=\''+ref+'\']').val()) > 1){
+			hkjQuery('input[name=\''+ref+'\']').val(parseInt(hkjQuery('input[name=\''+ref+'\']').val()) - 1).trigger('change');
+		}
 	});
 	hkjQuery('.listing_item_quantity_selector div').mouseover(function(){
 		var classes = hkjQuery(this).attr('class').split(' ');

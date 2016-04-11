@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,7 +10,7 @@ defined('_JEXEC') or die('Restricted access');
 ?><div class="hika_toolbar">
 	<div class="hika_toolbar_btn hika_btn_32">
 		<div class="hika_toolbar_right">
-			<div class="btn"><a href="#save" onclick="return window.hikashop.submitform('save','hikashop_order_product_form');"><span class="btnIcon icon-32-apply"></span><span class="btnName">Save</span></a></div>
+			<div class="btn"><a href="#save" onclick="return window.hikashop.submitform('save','hikashop_order_product_form');"><span class="btnIcon icon-32-apply"></span><span class="btnName"><?php echo JText::_('HIKA_SAVE'); ?></span></a></div>
 		</div>
 		<div style="clear:right"></div>
 	</div>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -109,7 +109,14 @@ class plgSystemHikashopuser extends JPlugin {
 		$formData = JRequest::getVar('data', array(), '', 'array');
 		$in_checkout=!empty($_REQUEST['option']) && $_REQUEST['option'] == 'com_hikashop' && !empty($_REQUEST['ctrl']) && $_REQUEST['option'] == 'checkout';
 		if(!empty($formData) && !empty($formData['user']) && !$in_checkout) {
-			$oldUser = $userClass->get($hikaUser->user_id);
+
+			$display = $this->params->get('fields_on_user_profile');
+			if(is_null($display))
+				$display = 1;
+			if(empty($display) || $display=='0')
+				return;
+
+			$oldUser = null;
 			$fieldsClass = hikashop_get('class.field');
 			$element = $fieldsClass->getInput('user', $oldUser);
 			if(!empty($element)){

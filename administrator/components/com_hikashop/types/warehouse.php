@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -89,7 +89,7 @@ window.localPage.fieldRemWarehouse = function(el, name) {
 		$this->initJs();
 
 		$warehouseClass = hikashop_get('class.warehouse');
-		$popup = hikashop_get('helper.popup');
+		$popupHelper = hikashop_get('helper.popup');
 
 		$name = str_replace(array('][','[',']'), '_', $map);
 		$warehouse_id = (int)$value;
@@ -107,7 +107,7 @@ window.localPage.fieldRemWarehouse = function(el, name) {
 
 		$ret = '<span id="'.$name.'_span_id">'.$warehouse_display_name.'</span>' .
 			'<input type="hidden" id="'.$name.'_input_id" name="'.$map.'" value="'.$warehouse_id.'"/> '.
-			$popup->display(
+			$popupHelper->display(
 				'<img src="'.HIKASHOP_IMAGES.'edit.png" style="vertical-align:middle;"/>',
 				'WAREHOUSE_SELECTION',
 				hikashop_completeLink('warehouse&task=selection&single=true', true),

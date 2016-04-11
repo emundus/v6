@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -98,6 +98,8 @@ if($in_hikashop_context) {
 	}
 }
 
+$columns = (int)$this->params->get('columns');
+if(empty($columns) || $columns<1) $columns = 1;
 
 
 if(!empty($this->rows)){
@@ -112,8 +114,14 @@ if(!empty($this->rows)){
 		<input type="hidden" name="filter_order_Dir_<?php echo $this->params->get('main_div_name').$this->category_selected;?>" value="<?php echo $this->pageInfo->filter->order->dir; ?>" />
 		<?php echo JHTML::_( 'form.token' ); ?>
 	</form>
-	<?php } ?>
-	<div class="hikashop_subcategories" data-consistencyheight=".hikashop_subcontainer">
+	<?php }
+
+	$attributes = '';
+	if($columns>1 && $this->params->get('consistencyheight',1)){
+		$attributes .= 'data-consistencyheight=".hikashop_subcontainer"';
+	}
+	?>
+	<div class="hikashop_subcategories" <?php echo $attributes; ?>>
 	<?php
 
 	if($enableCarousel){
@@ -121,9 +129,6 @@ if(!empty($this->rows)){
 		echo $this->loadTemplate();
 	}
 	else{
-
-		$columns = (int)$this->params->get('columns');
-		if(empty($columns) || $columns<1) $columns = 1;
 		$width = (int)(100/$columns)-1;
 		$current_column = 1;
 		$current_row = 1;
@@ -135,6 +140,8 @@ if(!empty($this->rows)){
 		$only_if_products = $this->params->get('only_if_products',0);
 
 		if(HIKASHOP_RESPONSIVE) {
+			$span = 1;
+			$row_fluid = 12;
 			switch($columns) {
 				case 12:
 				case 6:

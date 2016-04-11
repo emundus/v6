@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    2.6.1
+ * @version    2.6.2
  * @author     hikashop.com
  * @copyright  (C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -196,9 +196,10 @@ span.hikashop_product_price_full{
 .hikashop_checkout_cart table{border-collapse:collapse}
 .hikashop_checkout_cart td{padding:10px}
 .hikashop_checkout_cart thead tr{font-weight:bold; font-size:12px; color:#555555}
-.hikashop_checkout_cart thead th{border-bottom:1px solid #ddd;  padding: 5px 10px;}
+.hikashop_checkout_cart thead th{border-bottom:1px solid #ddd; padding: 5px 10px;}
 .hikashop_checkout_cart tfoot td{padding:5px 10px 5px 5px; text-align:right}
 .hikashop_checkout_cart hr{background-color:#ddd}
+#hikashop_checkout_terms label{display: inline;}
 
 .table th.hikashop_cart_product_price_title, .table th.hikashop_cart_product_quantity_title, .table th.hikashop_cart_product_total_title{text-align:right}
 .table th.hikashop_cart_product_quantity_title{text-align:center}
@@ -1792,7 +1793,7 @@ div.modal-body iframe {
 	.hikashop_cpanel_icon_table {
 		width: auto !important;
 	}
-	#hikashop_filter_main {
+	.hikashop_filter_main {
 		width: 100% !important;
 	}
 }
@@ -2919,4 +2920,13 @@ label.btn-default{
 }
 label.btn-default-lbl{
 	font-weight: bold;
+}
+.hikashop_vote_tooltip{
+	display: block;
+}
+.hikashop_vote_tooltip_label{
+	font-weight: bold;
+}
+.hikashop_fade_effect .hikashop_product_image{
+	background-color: #fff;
 }

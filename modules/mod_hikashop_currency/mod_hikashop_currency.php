@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -14,6 +14,10 @@ if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'
 	echo 'This module can not work without the Hikashop Component';
 	return;
 };
+
+$moduleClass = hikashop_get('class.modules');
+if($moduleClass->restrictedModule($params) === false)
+	return;
 
 $mode_noform = $params->get('mode_noform', 0);
 $currency = hikashop_get('type.currency');

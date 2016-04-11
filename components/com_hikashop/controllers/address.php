@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -151,7 +151,7 @@ class addressController extends hikashopController{
 		$oldData = null;
 		$already = @$_REQUEST['address']['address_id'];
 		if(!empty($already)){
-			$oldData = $class->get($already);
+			$oldData = $addressClass->get($already);
 		}
 		$addressData = $fieldClass->getInput('address',$oldData);
 		$ok = true;
@@ -211,13 +211,13 @@ class addressController extends hikashopController{
 			$app->setUserState(HIKASHOP_COMPONENT.'.payment_method', '');
 			$app->setUserState(HIKASHOP_COMPONENT.'.payment_id', 0);
 			if(!$already){
-				$controller = hikashop_get('controller.checkout');
-				$cart = $controller->initCart();
-				$controller->update_cart = true;
+				$checkoutController = hikashop_get('controller.checkout');
+				$cart = $checkoutController->initCart();
+				$checkoutController->update_cart = true;
 				if($cart->has_shipping){
-					$controller->before_shipping(true);
+					$checkoutController->before_shipping(true);
 				}
-				$controller->before_payment(true);
+				$checkoutController->before_payment(true);
 			}
 			$url = hikashop_completeLink('checkout&task=step&step='.JRequest::getInt('step',0).$url,false,true);
 		}else{

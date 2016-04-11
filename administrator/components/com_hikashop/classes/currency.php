@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -109,8 +109,8 @@ class hikashopCurrencyClass extends hikashopClass{
 					$type = 'company_without_vat_number';
 				}
 				if(!empty($address->address_vat)){
-					$vat = hikashop_get('helper.vat');
-					if($vat->isValid($address)) $type = 'company_with_vat_number';
+					$vatHelper = hikashop_get('helper.vat');
+					if($vatHelper->isValid($address)) $type = 'company_with_vat_number';
 				}
 			}
 			$taxType=$type;
@@ -2388,7 +2388,7 @@ class hikashopCurrencyClass extends hikashopClass{
 					'mon_grouping' => array('3')
 				);
 		} elseif(is_string($element->currency_locale)) {
-			$element->currency_locale = unserialize($element->currency_locale);
+			$element->currency_locale = hikashop_unserialize($element->currency_locale);
 			if(!empty($element->currency_locale['mon_grouping'])) {
 				$element->currency_locale['mon_grouping'] = explode(',', $element->currency_locale['mon_grouping']);
 			}

@@ -2,7 +2,7 @@
 <extension version="2.5" type="plugin" group="hikashop" method="upgrade">
 	<name>Hikashop TaxCloud Plugin</name>
 	<creationDate>December 2013</creationDate>
-	<version>2.6.1</version>
+	<version>2.6.2</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@obsidev.com</authorEmail>
 	<authorUrl>http://www.obsidev.com</authorUrl>
@@ -29,8 +29,8 @@
 		<param name="origin_zip5" type="text" default="" label="TAXCLOUD_ZIP_5" description=""/>
 		<param name="check_address" type="plugintrigger" default="check_address" label="CHECK_ADDRESS" description="TAXCLOUD_CHECK_ADDRESS" />
 		<param name="use_origin_address_when_override" type="radio" default="1" label="HIKA_USE_ORIGIN_ADDRESS_ON_OVERRIDE" description="USE_ORIGIN_ADDRESS_ON_OVERRIDE">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
 		<param type="spacer" label="TIC" />
 		<param name="default_tic" type="text" default="" label="DEFAULT_TIC_ID" description=""/>
@@ -55,8 +55,8 @@
 				<field name="origin_zip5" type="text" default="" label="TAXCLOUD_ZIP_5" description=""/>
 				<field name="check_address" type="plugintrigger" default="check_address" label="CHECK_ADDRESS" description="TAXCLOUD_CHECK_ADDRESS" />
 				<field name="use_origin_address_when_override" type="radio" default="1" label="HIKA_USE_ORIGIN_ADDRESS_ON_OVERRIDE" description="USE_ORIGIN_ADDRESS_ON_OVERRIDE" class="btn-group btn-group-yesno">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
 				</field>
 				<field type="spacer" label="TIC" />
 				<field name="default_tic" type="text" default="" label="DEFAULT_TIC_ID" description=""/>

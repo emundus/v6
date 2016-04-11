@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -40,8 +40,8 @@ class hikashopBadgeClass extends hikashopClass {
 		if(!empty($element->badge_end)){
 			$element->badge_end = hikashop_getTime($element->badge_end);
 		}
-		$class = hikashop_get('class.file');
-		$element->badge_image=$class->saveFile();
+		$fileClass = hikashop_get('class.file');
+		$element->badge_image = $fileClass->saveFile();
 		if(empty($element->badge_image))
 			unset($element->badge_image);
 		$status = $this->save($element);
@@ -230,11 +230,11 @@ class hikashopBadgeClass extends hikashopClass {
 		}
 		if($isNew) {
 			$element->badge_id = $status;
-			$orderClass = hikashop_get('helper.order');
-			$orderClass->pkey = 'badge_id';
-			$orderClass->table = 'badge';
-			$orderClass->orderingMap = 'badge_ordering';
-			$orderClass->reOrder();
+			$orderHelper = hikashop_get('helper.order');
+			$orderHelper->pkey = 'badge_id';
+			$orderHelper->table = 'badge';
+			$orderHelper->orderingMap = 'badge_ordering';
+			$orderHelper->reOrder();
 		}
 		return $status;
 	}

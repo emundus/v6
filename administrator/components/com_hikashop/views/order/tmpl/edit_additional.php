@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,8 +10,8 @@ defined('_JEXEC') or die('Restricted access');
 ?><div class="hika_toolbar">
 	<div class="hika_toolbar_btn hika_btn_32">
 		<div class="hika_toolbar_right">
-			<div class="btn"><a href="#save" onclick="document.getElementById('hikashop_order_notify').value = 1;return window.hikashop.submitform('save','hikashop_order_additional_form');"><span class="btnIcon icon-32-apply"></span><span class="btnName">Save & Notify</span></a></div>
-			<div class="btn"><a href="#save" onclick="return window.hikashop.submitform('save','hikashop_order_additional_form');"><span class="btnIcon icon-32-apply"></span><span class="btnName">Save</span></a></div>
+			<div class="btn"><a href="#save" onclick="document.getElementById('hikashop_order_notify').value = 1;return window.hikashop.submitform('save','hikashop_order_additional_form');"><span class="btnIcon icon-32-apply"></span><span class="btnName"><?php echo JText::_('HIKA_SAVE_AND_NOTIFY'); ?></span></a></div>
+			<div class="btn"><a href="#save" onclick="return window.hikashop.submitform('save','hikashop_order_additional_form');"><span class="btnIcon icon-32-apply"></span><span class="btnName"><?php echo JText::_('HIKA_SAVE'); ?></span></a></div>
 		</div>
 		<div style="clear:right"></div>
 	</div>
@@ -141,21 +141,29 @@ defined('_JEXEC') or die('Restricted access');
 				echo $this->order->order_payment_method;
 			?></span></dd>
 <?php }
-
-	if(!empty($this->order->additional)) {
+	if(!empty($this->order->additional)) { ?>
+<input type="hidden" name="data[order][additional]" value="1"/>
+<?php	
 		foreach($this->order->additional as $additional) {
-?>
-		<dt class="hikashop_order_additional_additional"><label><?php echo JText::_($additional->order_product_name); ?></label></dt>
-		<dd class="hikashop_order_additional_additional"><span><?php
+?><?php
 			if(!empty($additional->order_product_price)) {
 				$additional->order_product_price = (float)$additional->order_product_price;
 			}
 			if(!empty($additional->order_product_price) || empty($additional->order_product_options)) {
-				echo $this->currencyHelper->format($additional->order_product_price, $this->order->order_currency_id);
+				$name = 'order_product_price';
+				$value = $additional->order_product_price;
 			} else {
-				echo $additional->order_product_options;
+				$name = 'order_product_options';
+				$value = $additional->order_product_options;
 			}
-		?></span></dd>
+		?>
+		<dt class="hikashop_order_additional_additional"><label><?php echo JText::_($additional->order_product_name); ?></label></dt>
+		<dd class="hikashop_order_additional_additional"><span>
+			<input type="text" name="data[order][product][<?php echo $additional->order_product_name; ?>][<?php echo $name; ?>]" value="<?php echo $value; ?>"/>
+			<input type="hidden" name="data[order][product][<?php echo $additional->order_product_name; ?>][order_product_id]" value="<?php echo $additional->order_product_id; ?>"/>
+			<input type="hidden" name="data[order][product][<?php echo $additional->order_product_name; ?>][order_product_code]" value="order additional"/>
+			<input type="hidden" name="data[order][product][<?php echo $additional->order_product_name; ?>][order_product_quantity]" value="0"/>
+		</span></dd>
 <?php
 		}
 	}

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -59,7 +59,7 @@ if(!$this->config->get('ajax_add_to_cart', 0) || ($this->config->get('show_quant
 	}
 }
 
-$showFree = ($this->config->get('display_add_to_wishlist_for_free_products', 1) || (!$this->config->get('display_add_to_wishlist_for_free_products', 1) && $this->row->prices[0]->price_value != '0'));
+$showFree = ($this->config->get('display_add_to_wishlist_for_free_products', 1) || (!$this->config->get('display_add_to_wishlist_for_free_products', 1) && !empty($this->row->prices) && $this->row->prices[0]->price_value != '0'));
 
 if($end_date && $end_date < time()) {
 ?>
@@ -97,11 +97,14 @@ if($end_date && $end_date < time()) {
 	if($this->row->product_quantity == -1) {
 ?>
 	<div class="hikashop_product_stock"><?php
+
+		echo '<span style="display: none" itemprop="availability" itemscope itemtype="http://schema.org/InStock">in stock</span>';
+
 		if(!empty($this->row->has_options)) {
 			if($this->params->get('add_to_cart',1))
 				echo $this->cart->displayButton(JText::_('CHOOSE_OPTIONS'), 'choose_options', $this->params, hikashop_contentLink('product&task=show&product_id='.$this->row->product_id.'&name='.$this->row->alias.$url_itemid.$this->category_pathway,$this->row),'window.location = \''.str_replace("'","\'",hikashop_contentLink('product&task=show&product_id='.$this->row->product_id.'&name='.$this->row->alias.$url_itemid.$this->category_pathway,$this->row)).'\';return false;', '');
 		} else {
-			if($this->params->get('add_to_cart',1)) {
+			if($this->params->get('add_to_cart', 1)) {
 				echo $this->cart->displayButton(JText::_('ADD_TO_CART'), 'add', $this->params, $url, $this->ajax, '', $max, $min);
 				$btnType = 'wish';
 			}
@@ -121,7 +124,8 @@ if($end_date && $end_date < time()) {
 		else
 			$text = JText::sprintf('X_ITEMS_IN_STOCK', $this->row->product_quantity);
 
-		echo '<span class="hikashop_product_stock_count">'.$text.'<br/></span>';
+		echo '<span class="hikashop_product_stock_count">'.$text.'<br/></span>'
+			. '<span style="display: none" itemprop="availability" itemscope itemtype="http://schema.org/InStock">in stock</span>';
 
 		if($config->get('button_style', 'normal') == 'css')
 			echo '<br />';
@@ -148,6 +152,8 @@ if($end_date && $end_date < time()) {
 ?>
 	<div class="hikashop_product_no_stock">
 <?php
+		echo '<span style="display: none" itemprop="availability" itemscope itemtype="http://schema.org/InStock">Out of stock</span>';
+
 		echo JText::_('NO_STOCK').'<br/>';
 		$waitlist = $this->config->get('product_waitlist', 0);
 		if(hikashop_level(1) && ($waitlist == 2 || ($waitlist == 1 && (!empty($this->row->main->product_waitlist) || !empty($this->row->product_waitlist))))) {

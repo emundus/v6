@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -46,7 +46,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 	function shippingMethods(&$main){
 		$methods = array();
 		if(!empty($main->shipping_params->methodsList)){
-			$main->shipping_params->methods=unserialize($main->shipping_params->methodsList);
+			$main->shipping_params->methods=hikashop_unserialize($main->shipping_params->methodsList);
 		}
 		if(!empty($main->shipping_params->methods)){
 			foreach($main->shipping_params->methods as $method){
@@ -82,7 +82,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 				$messages['no_shipping_methods_configured'] = 'No shipping methods configured in the FedEx shipping plugin options';
 				continue;
 			}
-			$rate->shipping_params->methods = unserialize($rate->shipping_params->methodsList);
+			$rate->shipping_params->methods = hikashop_unserialize($rate->shipping_params->methodsList);
 			if($order->weight <= 0 || ($order->volume <= 0 && @$rate->shipping_params->use_dimensions == 1))
 				continue;
 
@@ -333,6 +333,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 			$data['length']=0;
 			$data['width']=0;
 			$data['price']=0;
+
 			foreach($order->products as $product){
 				if($product->product_parent_id==0){
 					if(isset($product->variants)){
@@ -363,11 +364,11 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 						$data['price']+=$product->prices[0]->price_value_with_tax*$product->cart_product_quantity;
 					}
 				}
+				if(($this->freight==true && $this->classicMethod==false) || ($heavyProduct==true && $this->freight==true))
+					$data['XMLpackage'].=$this->_createPackage($data, $product, $rate, $order );
+				else
+					$data['XMLpackage'].=$this->_createPackage($data, $product, $rate, $order, true );
 			}
-			if(($this->freight==true && $this->classicMethod==false) || ($heavyProduct==true && $this->freight==true))
-				$data['XMLpackage'].=$this->_createPackage($data, $product, $rate, $order );
-			else
-				$data['XMLpackage'].=$this->_createPackage($data, $product, $rate, $order, true );
 
 			$usableMethods=$this->_FEDEXrequestMethods($data,$rate);
 			return $usableMethods;
@@ -911,8 +912,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 
 	function addPackageLineItem($pkg_values){
 		$packageLineItem[] = array();
-		$ct = count($pkg_values);
-		$x = 1;
+		$x = 0;
 		foreach($pkg_values as $pkg) {
 			if($pkg['PackageWeight']['UnitOfMeasurement']['Code'] == "LBS"){
 				$uom = "LB";
@@ -928,9 +928,9 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 				);
 			}
 
-			$packageLineItem = array(
-				'SequenceNumber'=>$x,
-				'GroupPackageCount'=>$ct,
+			$packageLineItem[$x] = array(
+				'SequenceNumber'=>$x+1,
+				'GroupPackageCount'=>1,
 				'Weight' => array(
 					'Value' => $pkg['PackageWeight']['Weight'],
 					'Units' => $uom

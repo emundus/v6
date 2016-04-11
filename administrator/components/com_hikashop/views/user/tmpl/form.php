@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -81,13 +81,13 @@ defined('_JEXEC') or die('Restricted access');
 						}
 						if(!empty($this->fields['user'])){
 							foreach($this->fields['user'] as $fieldName => $oneExtraField) {
-							$onWhat='onchange'; if($oneExtraField->field_type=='radio') $onWhat='onclick'; ?>
+								$onWhat='onchange'; if($oneExtraField->field_type=='radio') $onWhat='onclick'; ?>
 								<tr id="hikashop_user_<?php echo $oneExtraField->field_namekey; ?>">
 									<td class="key">
 										<?php echo $this->fieldsClass->getFieldName($oneExtraField);?>
 									</td>
 									<td>
-										<?php echo $this->fieldsClass->display($oneExtraField,$this->user->$fieldName,'data[user]['.$fieldName.']', false, '', false, $this->fields['user'],$this->user); ?>
+										<?php echo $this->fieldsClass->display($oneExtraField,$this->user->$fieldName,'data[user]['.$fieldName.']', false, 			' '.$onWhat.'="hikashopToggleFields(this.value,\''.$fieldName.'\',\'user\',0);"', false, $this->fields['user'],$this->user); ?>
 									</td>
 								</tr>
 							<?php

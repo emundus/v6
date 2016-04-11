@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -282,6 +282,7 @@ class hikashopOrder_productClass extends hikashopClass {
 			unset($product->no_update_qty);
 			$update_quantities = false;
 		}
+
 		if($update_quantities && (isset($product->change) || ((empty($old) && !empty($product->product_id)) || (!empty($old->product_id) && $old->order_product_quantity != $product->order_product_quantity)))) {
 			$k = $product->order_product_quantity;
 			if(!empty($old)){
@@ -330,7 +331,7 @@ class hikashopOrder_productClass extends hikashopClass {
 			$product->order_product_tax_info = serialize($product->order_product_tax_info);
 		}
 
-		if(empty($product->order_product_quantity)){
+		if(empty($product->order_product_quantity) && @$product->order_product_code != 'order additional'){
 			return $this->delete($product->order_product_id);
 		}
 		if(isset($product->change)) unset($product->change);

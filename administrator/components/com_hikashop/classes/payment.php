@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -407,7 +407,7 @@ class hikashopPaymentClass extends hikashopClass{
 
 		foreach($rows as &$row) {
 			if(!empty($row->payment_params) && is_string($row->payment_params))
-				$row->plugin_params = unserialize($row->payment_params);
+				$row->plugin_params = hikashop_unserialize($row->payment_params);
 
 			$row->col_display_price = '';
 			if(bccomp($row->payment_price, 0, 3)) {

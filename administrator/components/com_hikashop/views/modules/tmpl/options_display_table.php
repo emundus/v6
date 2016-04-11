@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -33,7 +33,13 @@ defined('_JEXEC') or die('Restricted access');
 	?>
 					</div>
 					<div class="listing_item_quantity_fields" data-list-type="table">
-						<input type="text" name="<?php echo $this->name; ?>[rows]" value="<?php echo $rowsNb; ?>">
+						<div class="input-append">
+							<input type="text" class="hikashop_product_listing_input" name="<?php echo $this->name; ?>[rows]" value="<?php echo $rowsNb; ?>">
+							<div class="add-on hikashop_product_listing_input_buttons">
+								<div class="hikashop_product_listing_input_button hikashop_product_listing_input_plus" data-ref="<?php echo $this->name; ?>[rows]" data-inc="plus">+</div>
+								<div class="hikashop_product_listing_input_button hikashop_product_listing_input_minus" data-ref="<?php echo $this->name; ?>[rows]" data-inc="minus">&ndash;</div>
+							</div>
+						</div>
 					</div>
 				</dd>
 			</dl>

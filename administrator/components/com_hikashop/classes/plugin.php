@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -17,7 +17,7 @@ class hikashopPluginClass extends hikashopClass {
 	function get($id, $default = '') {
 		$result = parent::get($id);
 		if(!empty($result->plugin_params))
-			$result->plugin_params = unserialize($result->plugin_params);
+			$result->plugin_params = hikashop_unserialize($result->plugin_params);
 		return $result;
 	}
 
@@ -43,12 +43,12 @@ class hikashopPluginClass extends hikashopClass {
 		if($status && empty($element->plugin_id)) {
 			$element->plugin_id = $status;
 			if($reorder) {
-				$orderClass = hikashop_get('helper.order');
-				$orderClass->pkey = 'plugin_id';
-				$orderClass->table = 'plugin';
-				$orderClass->groupVal = $element->plugin_type;
-				$orderClass->orderingMap = 'plugin_ordering';
-				$orderClass->reOrder();
+				$orderHelper = hikashop_get('helper.order');
+				$orderHelper->pkey = 'plugin_id';
+				$orderHelper->table = 'plugin';
+				$orderHelper->groupVal = $element->plugin_type;
+				$orderHelper->orderingMap = 'plugin_ordering';
+				$orderHelper->reOrder();
 			}
 		}
 
@@ -66,5 +66,50 @@ class hikashopPluginClass extends hikashopClass {
 			$db->query();
 		}
 		return $status;
+	}
+
+	public function &getNameboxData($typeConfig, &$fullLoad, $mode, $value, $search, $options) {
+		$ret = array(
+			0 => array(),
+			1 => array()
+		);
+
+		if(isset($typeConfig['params']['type']) && $typeConfig['params']['type'] == 'images') {
+			$image_type = @$options['type'];
+			if(!in_array($image_type, array('shipping', 'payment')))
+				return $ret;
+
+			$path = HIKASHOP_MEDIA.'images'.DS.$image_type.DS;
+			jimport('joomla.filesystem.folder');
+			$images = JFolder::files($path);
+			$rows = array();
+			foreach($images as $image){
+				$parts = explode('.',$image);
+				$row = new stdClass();
+				$row->ext = array_pop($parts);
+				if(!in_array(strtolower($row->ext), array('gif','png','jpg','jpeg','svg')))
+					continue;
+				$row->id = implode($parts);
+				$row->image_name = str_replace('_', ' ', $row->id);
+				$row->image_file = $image;
+				$row->image_url = '<img src="'.HIKASHOP_IMAGES .$image_type.'/'. $row->image_file.'" />';
+				$rows[$row->id] = $row;
+			}
+
+			if(!empty($value)) {
+				if(is_string($value))
+					$value = explode(',', $value);
+
+				foreach($value as $v) {
+					if(isset($rows[$v]))
+						$ret[1][$v] = $rows[$v];
+				}
+			}
+
+			if(!empty($rows))
+				$ret[0] = $rows;
+		}
+
+		return $ret;
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -41,6 +41,8 @@ if(!empty($this->rows)){
 	$this->image->main_thumbnail_y=$height;
 	$this->image->main_thumbnail_x=$width;
 }
+$columns = (int)$this->params->get('columns');
+if(empty($columns) || $columns<1) $columns = 1;
 
 if((!empty($this->rows) || !$this->module || JRequest::getVar('hikashop_front_end_main',0)) && $this->pageInfo->elements->total){
 	$pagination = $this->config->get('pagination','bottom');
@@ -58,8 +60,12 @@ if((!empty($this->rows) || !$this->module || JRequest::getVar('hikashop_front_en
 	</form>
 <?php
 	}
+	$attributes = '';
+	if($columns>1 && $this->params->get('consistencyheight',1)){
+		$attributes .= 'data-consistencyheight=".hikashop_subcontainer"';
+	}
 ?>
-	<div class="hikashop_products" data-consistencyheight=".hikashop_subcontainer">
+	<div class="hikashop_products" <?php echo $attributes; ?>>
 <?php
 
 	if(!empty($this->rows)){
@@ -75,13 +81,13 @@ if((!empty($this->rows) || !$this->module || JRequest::getVar('hikashop_front_en
 		}
 		else
 		{
-			$columns = (int)$this->params->get('columns');
-			if(empty($columns) || $columns<1) $columns = 1;
 			$width = (int)(100/$columns)-1;
 			$current_column = 1;
 			$current_row = 1;
 
 			if(HIKASHOP_RESPONSIVE) {
+				$span = 1;
+				$row_fluid = 12;
 				switch($columns) {
 					case 12:
 					case 6:

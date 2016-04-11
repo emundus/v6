@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -182,15 +182,21 @@ $config = hikashop_config();
 <?php
 	$k=0;
 	$group = $this->config->get('group_options',0);
+	$productClass = hikashop_get('class.product');
 	foreach($this->order->products as $product) {
 		if($group && $product->order_product_option_parent_id)
 			continue;
 ?>
 							<tr class="row<?php echo $k;?>">
 								<td class="hikashop_order_item_name_value">
-<?php if($this->invoice_type=='order' && !empty($product->product_id)) { ?>
-									<a class="hikashop_order_product_link" href="<?php echo hikashop_contentLink('product&task=show&cid='.$product->product_id.$url_itemid,$product); ?>">
-<?php } ?>
+<?php
+		if($this->invoice_type=='order' && !empty($product->product_id)) {
+			$prodData = $productClass->get($product->product_id);
+?>
+									<a class="hikashop_order_product_link" href="<?php echo hikashop_contentLink('product&task=show&cid='.$product->product_id.$url_itemid,$prodData); ?>">
+<?php
+		}
+?>
 										<p class="hikashop_order_product_name">
 											<?php echo $product->order_product_name; ?>
 											<?php if($this->config->get('show_code')) { ?>
@@ -222,14 +228,17 @@ $config = hikashop_config();
 <?php } ?>
 									<p class="hikashop_order_product_custom_item_fields">
 <?php
-		if(hikashop_level(2) && !empty($this->fields['item'])) {
-			foreach($this->fields['item'] as $field) {
-				$namekey = $field->field_namekey;
-				if(!empty($product->$namekey) && strlen($product->$namekey)) {
-					echo '<p class="hikashop_order_item_'.$namekey.'">' .
-						$this->fieldsClass->getFieldName($field) . ': ' .
-						$this->fieldsClass->show($field,$product->$namekey) .
-						'</p>';
+		if(hikashop_level(2)){
+			$itemFields = $this->fieldsClass->getFields('display:field_item_order=1',$product,'item');
+			if(!empty($itemFields)) {
+				foreach($itemFields as $field) {
+					$namekey = $field->field_namekey;
+					if(!empty($product->$namekey) && strlen($product->$namekey)) {
+						echo '<p class="hikashop_order_item_'.$namekey.'">' .
+							$this->fieldsClass->getFieldName($field) . ': ' .
+							$this->fieldsClass->show($field,$product->$namekey) .
+							'</p>';
+					}
 				}
 			}
 		}

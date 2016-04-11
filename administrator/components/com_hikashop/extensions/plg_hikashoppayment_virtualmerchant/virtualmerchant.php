@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -80,6 +80,9 @@ class plgHikashoppaymentVirtualmerchant extends hikashopPaymentPlugin
 
 		if(!empty($this->payment_params->multi_currency))
 			$vars .= '<ssl_transaction_currency>'.$this->currency->currency_code.'</ssl_transaction_currency>';
+
+		if(!empty($order->order_ip))
+			$vars .= '<ssl_cardholder_ip>'.$order->order_ip.'</ssl_cardholder_ip>';
 
 		if($this->payment_params->use_avs) {
 			$addr1 = @$order->cart->billing_address->address_street;

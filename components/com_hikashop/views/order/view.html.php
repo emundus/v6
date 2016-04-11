@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -240,8 +240,10 @@ class OrderViewOrder extends hikashopView{
 		if(hikashop_level(2)){
 			$null = null;
 			$fields['entry'] = $fieldsClass->getFields('frontcomp',$null,'entry');
-			$fields['item'] = $fieldsClass->getFields('frontcomp',$null,'item');
-			$fields['order'] = $fieldsClass->getFields('',$null,'order');
+			if($type=='invoice')
+				$fields['order'] = $fieldsClass->getFields('display:field_order_invoice=1',$null,'order');
+			else
+				$fields['order'] = $fieldsClass->getFields('display:field_order_show=1',$null,'order');
 		}
 		$this->assignRef('fields',$fields);
 		return $order;
@@ -253,7 +255,7 @@ class OrderViewOrder extends hikashopView{
 			$shipping_ids = explode('-', $shipping_id, 2);
 			$shipping = $this->shippingClass->get($shipping_ids[0]);
 			if(!empty($shipping->shipping_params) && is_string($shipping->shipping_params))
-				$shipping->shipping_params = unserialize($shipping->shipping_params);
+				$shipping->shipping_params = hikashop_unserialize($shipping->shipping_params);
 			$shippingMethod = hikashop_import('hikashopshipping', $shipping_method);
 			$methods = $shippingMethod->shippingMethods($shipping);
 

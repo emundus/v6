@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -52,7 +52,7 @@ class hikashopUserClass extends hikashopClass {
 		$user = $this->database->loadObject();
 
 		if(!empty($user->user_params)) {
-			$user->user_params = unserialize($user->user_params);
+			$user->user_params = hikashop_unserialize($user->user_params);
 		} elseif(!empty($user)) {
 			$user->user_params = new stdClass();
 		}
@@ -164,9 +164,9 @@ class hikashopUserClass extends hikashopClass {
 						$geo->geolocation_ref_id = $element->user_id;
 						$geo->geolocation_type = 'user';
 						$geo->geolocation_ip = $element->user_created_ip;
-						$class = hikashop_get('class.geolocation');
-						$class->params =& $params;
-						$class->save($geo);
+						$geolocationClass = hikashop_get('class.geolocation');
+						$geolocationClass->params =& $params;
+						$geolocationClass->save($geo);
 					}
 				}
 			}
@@ -277,11 +277,11 @@ class hikashopUserClass extends hikashopClass {
 				if(empty($hasOrders)){
 					$result = parent::delete($el);
 					if($result){
-						$address = hikashop_get('class.address');
-						$addresses = $address->loadUserAddresses($el);
+						$addressClass = hikashop_get('class.address');
+						$addresses = $addressClass->loadUserAddresses($el);
 
 						foreach($addresses as $id => $data){
-							$address->delete($id);
+							$addressClass->delete($id);
 						}
 					}
 				}else{

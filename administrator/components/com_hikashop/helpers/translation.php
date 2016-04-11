@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -12,7 +12,7 @@ class hikashopTranslationHelper {
 	var $languages = array();
 	var $falang = false;
 
-	function hikashopTranslationHelper(){
+	function __construct(){
 		$this->database = JFactory::getDBO();
 		$app = JFactory::getApplication();
 		if(version_compare(JVERSION,'1.6','<')){
@@ -384,7 +384,7 @@ class hikashopTranslationHelper {
 		$dirs = JFolder::folders( $path );
 		$edit_image = HIKASHOP_IMAGES.'icons/icon-16-edit.png';
 		$new_image = HIKASHOP_IMAGES.'icons/icon-16-new.png';
-		$popup = hikashop_get('helper.popup');
+		$popupHelper = hikashop_get('helper.popup');
 
 		foreach ($dirs as $dir){
 			$xmlFiles = JFolder::files( $path.DS.$dir, '^([-_A-Za-z]*)\.xml$' );
@@ -399,7 +399,7 @@ class hikashopTranslationHelper {
 			$languageFile = reset($languageFiles);
 
 			if(!empty($languageFile)){
-				$oneLanguage->edit = $popup->display(
+				$oneLanguage->edit = $popupHelper->display(
 					'<img id="image'.$oneLanguage->language.'" src="'. $edit_image.'" alt="'.JText::_('EDIT_LANGUAGE_FILE').'"/>',
 					'EDIT_LANGUAGE_FILE',
 					'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=config&amp;task=language&amp;code='.$oneLanguage->language,
@@ -407,7 +407,7 @@ class hikashopTranslationHelper {
 					760, 480, '', '', 'link'
 				);
 			}else{
-				$oneLanguage->edit = $popup->display(
+				$oneLanguage->edit = $popupHelper->display(
 					'<img id="image'.$oneLanguage->language.'" src="'. $new_image.'" alt="'.JText::_('ADD_LANGUAGE_FILE').'"/>',
 					'ADD_LANGUAGE_FILE',
 					'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=config&amp;task=language&amp;code='.$oneLanguage->language,

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -15,7 +15,7 @@ class hikashopConfigClass extends hikashopClass{
 		$this->database->setQuery($query);
 		$this->values = $this->database->loadObjectList('config_namekey');
 		if(!empty($this->values['default_params']->config_value)){
-			$this->values['default_params']->config_value = unserialize(base64_decode($this->values['default_params']->config_value));
+			$this->values['default_params']->config_value = hikashop_unserialize(base64_decode($this->values['default_params']->config_value));
 		}
 	}
 
@@ -33,7 +33,7 @@ class hikashopConfigClass extends hikashopClass{
 
 		if(isset($this->values[$namekey])){
 			if(preg_match('#^(menu_|params_)[0-9]+$#',$namekey) && !empty($this->values[$namekey]->config_value) && is_string($this->values[$namekey]->config_value)){
-				$this->values[$namekey]->config_value = unserialize(base64_decode($this->values[$namekey]->config_value));
+				$this->values[$namekey]->config_value = hikashop_unserialize(base64_decode($this->values[$namekey]->config_value));
 			}
 			if($namekey=='main_currency'){
 				return $this->_checkMainCurrency($this->values[$namekey]->config_value);

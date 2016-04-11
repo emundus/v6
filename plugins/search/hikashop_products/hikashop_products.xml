@@ -2,8 +2,8 @@
 <extension version="2.5" type="plugin" group="search" method="upgrade">
 	<name>Search - Hikashop Products</name>
 	<author>Hikari Software</author>
-	<creationDate>25 février 2016</creationDate>
-	<version>2.6.1</version>
+	<creationDate>11 avril 2016</creationDate>
+	<version>2.6.2</version>
 	<copyright>(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<authorEmail>enquiry@hikashop.com</authorEmail>
@@ -16,20 +16,20 @@
 		<param name="search_limit" type="text" size="5" default="50" label="SEARCH_LIMIT" description="HIKA_SEARCH_LIMIT"/>
 		<param name="item_id" type="text" size="5" default="" label="ITEMID" description="HIKA_ITEMID"/>
 		<param name="full_path" type="radio" default="1" label="FULL_BREADCRUMB_PATH" description="HIKA_FULL_BREADCRUMB_PATH">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
 		<param name="out_of_stock_display" type="radio" default="1" label="OUT_OF_STOCK_PRODUCTS" description="HIKA_OUT_OF_STOCK_PRODUCTS">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
 		<param name="new_page" type="radio" default="1" label="NEW_PAGE" description="HIKA_NEW_PAGE">
-			<option value="2">No</option>
-			<option value="1">Yes</option>
+			<option value="2">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
 		<param name="variants" type="radio" default="0" label="HIKA_SEARCH_VARIANTS" description="HIKA_SEARCH_VARIANTS">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
 		<param name="fields" type="searchfields" default="product_name,product_description" label="HIKASHOP_CHECKOUT_FIELDS" description="HIKA_FIELDS" />
 	</params>
@@ -57,8 +57,8 @@
 					label="FULL_BREADCRUMB_PATH"
 					description="HIKA_FULL_BREADCRUMB_PATH"
 					class="btn-group btn-group-yesno">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
 				</field>
 				<field
 					name="out_of_stock_display"
@@ -67,8 +67,8 @@
 					label="OUT_OF_STOCK_PRODUCTS"
 					description="HIKA_OUT_OF_STOCK_PRODUCTS"
 					class="btn-group btn-group-yesno">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
 				</field>
 				<field
 					name="new_page"
@@ -77,12 +77,12 @@
 					label="NEW_PAGE"
 					description="HIKA_NEW_PAGE"
 					class="btn-group btn-group-yesno">
-					<option value="2">No</option>
-					<option value="1">Yes</option>
+					<option value="2">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
 				</field>
 				<field name="variants" type="radio" default="0" label="HIKA_SEARCH_VARIANTS" description="HIKA_SEARCH_VARIANTS" class="btn-group btn-group-yesno">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
 				</field>
 				<field name="fields" type="searchfields" default="product_name,product_description" label="HIKASHOP_CHECKOUT_FIELDS" description="HIKA_FIELDS" />
 			</fieldset>

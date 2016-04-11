@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -88,15 +88,22 @@ if(!empty($this->plugin->pluginView)) {
 					<td class="key"><?php
 						echo JText::_( 'HIKA_IMAGES' );
 					?></td>
-					<td>
-						<input type="text" id="plugin_images" name="data[<?php echo $type;?>][<?php echo $type;?>_images]" value="<?php echo @$this->element->$plugin_images; ?>" /><?php
-						echo $this->popup->display(
-							'<img src="'. HIKASHOP_IMAGES.'edit.png" alt="'.JText::_('HIKA_EDIT').'"/>',
-							'HIKA_IMAGES',
-							'\''.hikashop_completeLink('plugins&task=selectimages&type='.$type,true).'&values=\'+document.getElementById(\'plugin_images\').value',
-							'plugin_images_link',
-							760, 480, '', '', 'link',true
-						);
+					<td><?php
+					if(empty($this->nameboxType))
+						$this->nameboxType = hikashop_get('type.namebox');
+
+					echo $this->nameboxType->display(
+						'data['.$type.']['. $type .'_images]',
+						@$this->element->$plugin_images,
+						hikashopNameboxType::NAMEBOX_MULTIPLE,
+						'plugin_images',
+						array(
+							'delete' => true,
+							'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
+							'type' => $type
+						)
+					);
+
 					?></td>
 				</tr>
 <?php

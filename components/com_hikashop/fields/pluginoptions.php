@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -18,8 +18,8 @@ class JFormFieldPluginoptions extends JFormField{
 			return 'This plugin can not work without the Hikashop Component';
 		}
 		$id = JRequest::getInt('extension_id');
-		$plugins = hikashop_get('class.plugins');
-		$plugin = $plugins->get($id);
+		$pluginsClass = hikashop_get('class.plugins');
+		$plugin = $pluginsClass->get($id);
 		$name = @$plugin->element;
 		if(@$plugin->folder=='hikashopshipping'){
 			$group = 'shipping';

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -25,15 +25,15 @@ class translationHikashop_product_categoryFilter extends translationFilter
 		if (isset($this->filter_value) && strlen($this->filter_value) > 0  && $this->filter_value!=$this->filterNullValue){
 			$db = JFactory::getDBO();
 			$query = 'SELECT pc.product_id FROM #__hikashop_product_category AS pc WHERE pc.category_id='.$this->filter_value;
-		$db->setQuery($query);
-		$product_ids = $db->loadObjectList();
+			$db->setQuery($query);
+			$product_ids = $db->loadObjectList();
 
-		$idstring = '';
-		foreach($product_ids as $product_id){
-			if (strlen($idstring)>0) $idstring.=',';
-			$idstring.=$product_id->product_id;
-		}
-		$filter = "c.product_id IN($idstring)";
+			$idstring = '';
+			foreach($product_ids as $product_id){
+				if (strlen($idstring)>0) $idstring.=',';
+				$idstring.=$product_id->product_id;
+			}
+			$filter = "c.product_id IN($idstring)";
 		}
 		return $filter;
 	}

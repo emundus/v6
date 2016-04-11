@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -107,6 +107,33 @@ defined('_JEXEC') or die('Restricted access');
 							<?php if ($this->config->get('show_code')) { $colspan++; ?>
 								<th class="title" ><?php echo JText::_('CART_PRODUCT_CODE'); ?></th>
 							<?php } ?>
+
+							<?php
+							if($this->invoice_type=='full'){
+								if(hikashop_level(2)){
+									$itemFields = $this->fieldsClass->getFields('display:field_product_invoice=1',$product,'product');
+									if(!empty($itemFields)) {
+										foreach($itemFields as $field){
+											$namekey = $field->field_namekey;
+											?>
+											<th class="title" ><?php echo $this->fieldsClass->getFieldName($field);?></th>
+											<?php
+										}
+									}
+								}
+							}elseif(hikashop_level(2)){
+								$itemFields = $this->fieldsClass->getFields('display:field_product_shipping_invoice=1',$product,'product');
+								if(!empty($itemFields)) {
+									foreach($itemFields as $field){
+										$namekey = $field->field_namekey;
+										?>
+										<th class="title" ><?php echo $this->fieldsClass->getFieldName($field);?></th>
+										<?php
+									}
+								}
+							}
+							?>
+
 								<?php if($this->invoice_type=='full'){?>
 								<th class="title">
 									<?php echo JText::_('UNIT_PRICE'); ?>
@@ -151,14 +178,62 @@ defined('_JEXEC') or die('Restricted access');
 												}
 											}
 										}
-
-										if(hikashop_level(2) && !empty($this->fields['item'])){
-											foreach($this->fields['item'] as $field){
-												$namekey = $field->field_namekey;
-												if(empty($product->$namekey) && !strlen($product->$namekey)){
-													continue;
+										if($this->invoice_type=='full'){
+											if(hikashop_level(2)){
+												$itemFields = $this->fieldsClass->getFields('display:field_item_invoice=1',$product,'item');
+												if(!empty($itemFields)) {
+													foreach($itemFields as $field){
+														$namekey = $field->field_namekey;
+														if(empty($product->$namekey) && !strlen($product->$namekey)){
+															continue;
+														}
+														echo '<p class="hikashop_order_item_'.$namekey.'">'.$this->fieldsClass->getFieldName($field).': '.$this->fieldsClass->show($field,$product->$namekey).'</p>';
+													}
 												}
-												echo '<p class="hikashop_order_item_'.$namekey.'">'.$this->fieldsClass->getFieldName($field).': '.$this->fieldsClass->show($field,$product->$namekey).'</p>';
+											}
+										}
+										elseif(hikashop_level(2)){
+											$itemFields = $this->fieldsClass->getFields('display:field_item_shipping_invoice=1',$product,'item');
+											if(!empty($itemFields)) {
+												foreach($itemFields as $field){
+													$namekey = $field->field_namekey;
+													if(empty($product->$namekey) && !strlen($product->$namekey)){
+														continue;
+													}
+													echo '<p class="hikashop_order_item_'.$namekey.'">'.$this->fieldsClass->getFieldName($field).': '.$this->fieldsClass->show($field,$product->$namekey).'</p>';
+												}
+											}
+										}
+										if($this->invoice_type=='full'){
+											if(hikashop_level(2)){
+												$itemFields = $this->fieldsClass->getFields('display:field_product_invoice=1',$product,'product');
+												if(!empty($itemFields)) {
+													foreach($itemFields as $field){
+														$namekey = $field->field_namekey;
+														$productData = @$this->products[$product->product_id];
+														?>
+														<td>
+														<?php echo  '<p class="hikashop_order_product_'.$namekey.'">'.$this->fieldsClass->show($field,$productData->$namekey).'</p>';
+														?>
+														</td>
+													<?php
+													}
+												}
+											}
+										}
+										elseif(hikashop_level(2)){
+											$itemFields = $this->fieldsClass->getFields('display:field_product_shipping_invoice=1',$product,'product');
+											if(!empty($itemFields)) {
+												foreach($itemFields as $field){
+													$namekey = $field->field_namekey;
+													$productData = @$this->products[$product->product_id];
+													?>
+													<td>
+													<?php echo  '<p class="hikashop_order_product_'.$namekey.'">'.$this->fieldsClass->show($field,$productData->$namekey).'</p>';
+													?>
+													</td>
+												<?php
+												}
 											}
 										}
 										if($group){
@@ -381,7 +456,7 @@ defined('_JEXEC') or die('Restricted access');
 		<?php if($this->invoice_type=='full'){
 
 			$fieldsClass = hikashop_get('class.field');
-			$fields = $fieldsClass->getFields('backend',$this->order,'order');
+			$fields = $fieldsClass->getFields('display:field_order_invoice=1',$this->order,'order');
 			if(!empty($fields)){ ?>
 		<tr>
 			<td>
@@ -423,7 +498,35 @@ defined('_JEXEC') or die('Restricted access');
 			}?>
 			</td>
 		</tr>
-		<?php } ?>
+		<?php }else{
+			$fieldsClass = hikashop_get('class.field');
+			$fields = $fieldsClass->getFields('display:field_order_shipping_invoice=1',$this->order,'order');
+			if(!empty($fields)){ ?>
+		<tr>
+			<td>
+				<fieldset class="hikashop_order_custom_fields_fieldset">
+					<legend><?php echo JText::_('ADDITIONAL_INFORMATION'); ?></legend>
+					<table class="hikashop_order_custom_fields_table adminlist" cellpadding="1" width="100%">
+						<?php foreach($fields as $fieldName => $oneExtraField) {
+						?>
+							<tr class="hikashop_order_custom_field_<?php echo $fieldName;?>_line">
+								<td class="key">
+									<?php echo $this->fieldsClass->getFieldName($oneExtraField);?>
+								</td>
+								<td>
+									<?php echo $this->fieldsClass->show($oneExtraField,@$this->order->$fieldName); ?>
+								</td>
+							</tr>
+						<?php
+					}?>
+					</table>
+				</fieldset>
+			</td>
+		</tr>
+		<?php
+			}
+		}
+		?>
 <?php
 	JPluginHelper::importPlugin('hikashop');
 	$dispatcher = JDispatcher::getInstance();

@@ -2,8 +2,8 @@
 <extension method="upgrade" version="2.5" type="plugin" group="hikashoppayment">
 	<name>Hikashop SOFORT Payment Plugin</name>
 	<author>LG Solutions</author>
-	<creationDate>25 février 2016</creationDate>
-	<version>2.6.1</version>
+	<creationDate>11 avril 2016</creationDate>
+	<version>2.6.2</version>
 	<copyright>(C) 2013 LG solutions. All rights reserved.</copyright>
 	<license>GNU/GPL</license>
 	<authorEmail>info@lgsolutions.be</authorEmail>

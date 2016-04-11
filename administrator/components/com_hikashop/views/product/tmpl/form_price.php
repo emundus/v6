@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -81,7 +81,7 @@ if(!empty($this->product->prices)) {
 		if(!$acls['currency']) {
 			$currency = (!empty($price->price_currency_id) && isset($this->currencies[$price->price_currency_id])) ? $this->currencies[$price->price_currency_id] : $this->default_currency;
 			if(is_string($currency->currency_locale))
-				$currency->currency_locale = unserialize($currency->currency_locale);
+				$currency->currency_locale = hikashop_unserialize($currency->currency_locale);
 			if($currency->currency_locale['p_cs_precedes']) {
 				$pre_price .= $currency->currency_symbol;
 				if($currency->currency_locale['p_sep_by_space'])
@@ -222,7 +222,7 @@ window.productMgr.cpt['<?php echo $form_key; ?>'] = <?php echo count(@$this->pro
 
 	$currency = empty($price->price_currency_id) ? $this->default_currency : $this->currencies[$price->price_currency_id];
 	if(is_string($currency->currency_locale))
-		$currency->currency_locale = unserialize($currency->currency_locale);
+		$currency->currency_locale = hikashop_unserialize($currency->currency_locale);
 	if($currency->currency_locale['p_cs_precedes']) {
 		$pre_price .= $currency->currency_symbol;
 		if($currency->currency_locale['p_sep_by_space'])

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -65,19 +65,21 @@ if(!empty($this->product)) {
 		foreach ($this->contactFields as $fieldName => $oneExtraField) {
 			$itemData = @$formData->$fieldName;
 			?>
-			<dt id="hikashop_contact_item_name_<?php echo $oneExtraField->field_id;?>" class="hikashop_contact_item_name">
-				<label for="data[contact][<?php echo $oneExtraField->field_namekey; ?>]">
-					<?php echo $this->fieldsClass->getFieldName($oneExtraField);?>
-				</label>
-			</dt>
-			<dd id="hikashop_contact_item_value_<?php echo $oneExtraField->field_id;?>" class="hikasho_contact_item_value"><?php
-					$onWhat='onchange';
-					if($oneExtraField->field_type=='radio')
-						$onWhat='onclick';
-					$oneExtraField->product_id = JRequest::getInt('cid');
-					echo $this->fieldsClass->display($oneExtraField,$itemData,'data[contact]['.$oneExtraField->field_namekey.']',false,' '.$onWhat.'="hikashopToggleFields(this.value,\''.$fieldName.'\',\'contact\',0);"');
-				?>
-			</dd>
+			<div id="hikashop_contact_<?php echo $oneExtraField->field_namekey; ?>">
+				<dt id="hikashop_contact_item_name_<?php echo $oneExtraField->field_id;?>" class="hikashop_contact_item_name">
+					<label for="data[contact][<?php echo $oneExtraField->field_namekey; ?>]">
+						<?php echo $this->fieldsClass->getFieldName($oneExtraField);?>
+					</label>
+				</dt>
+				<dd id="hikashop_contact_item_value_<?php echo $oneExtraField->field_id;?>" class="hikasho_contact_item_value"><?php
+						$onWhat='onchange';
+						if($oneExtraField->field_type=='radio')
+							$onWhat='onclick';
+						$oneExtraField->product_id = JRequest::getInt('cid');
+						echo $this->fieldsClass->display($oneExtraField,$itemData,'data[contact]['.$oneExtraField->field_namekey.']',false,' '.$onWhat.'="hikashopToggleFields(this.value,\''.$fieldName.'\',\'contact\',0);"');
+					?>
+				</dd>
+			</div>
 		<?php
 		}
 	}

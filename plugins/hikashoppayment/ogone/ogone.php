@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -135,7 +135,7 @@ class plgHikashoppaymentOgone extends hikashopPaymentPlugin
 		}
 
 		if(!empty($order->order_payment_params) && is_string($order->order_payment_params))
-			$order->order_payment_params = unserialize($order->order_payment_params);
+			$order->order_payment_params = hikashop_unserialize($order->order_payment_params);
 		if(isset($order->order_payment_params->need_authorization)) {
 			$vars['OPERATION'] = 'RES';
 		}
@@ -260,7 +260,7 @@ class plgHikashoppaymentOgone extends hikashopPaymentPlugin
 
 		$payment_params = @$dbOrder->order_payment_params;
 		if(!empty($payment_params) && is_string($payment_params))
-			$payment_params = unserialize($payment_params);
+			$payment_params = hikashop_unserialize($payment_params);
 
 		$payment_params->payment_value = $dbOrder->order_full_price;
 

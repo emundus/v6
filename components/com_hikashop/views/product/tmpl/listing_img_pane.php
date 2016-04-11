@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,26 +10,25 @@ defined('_JEXEC') or die('Restricted access');
 ?><?php
 $height=$this->image->main_thumbnail_y;
 $width=$this->image->main_thumbnail_x;
-$duration=$this->params->get('product_effect_duration');
-if(empty($duration)){ $duration=400; }
-
-$pane_percent_height=$this->params->get('pane_height');
+$mainDivName = $this->params->get('main_div_name','');
 $link = hikashop_contentLink('product&task=show&cid='.$this->row->product_id.'&name='.$this->row->alias.$this->itemid.$this->category_pathway,$this);
 $htmlLink="";
 $cursor="";
 if($this->params->get('link_to_product_page',1)){
-	$htmlLink='onclick = "window.location.href = \''.$link.'\'';
+	$htmlLink='onclick = "window.location.href = \''.$link.'\'"';
 	$cursor="cursor:pointer;";
 }
+$paneHeight='';
+if(!empty($this->params->get('pane_height','')))
+	$paneHeight='height:'.$this->params->get('pane_height').'px;';
 
 if(!empty($this->row->extraData->top)) { echo implode("\r\n",$this->row->extraData->top); }
 ?>
-<div id="window_<?php echo $this->row->product_id; ?>" style="margin: auto; <?php echo $cursor; ?> height:<?php echo $height; ?>px; width:<?php echo $width; ?>px; overflow:hidden; position:relative" <?php echo $htmlLink; ?>" >
- 	<div id="product_<?php echo $this->row->product_id; ?>" style="height:<?php echo $height; ?>px; width:<?php echo $width; ?>px;">
-
+<div class="hk_img_pane_window" id="div_<?php echo $mainDivName.'_'.$this->row->product_id; ?>" <?php echo $htmlLink; ?> >
+ 	<div class="hk_img_pane_product">
 		<!-- PRODUCT IMG -->
-		<div style="height:<?php echo $height;?>px;text-align:center;clear:both;" class="hikashop_product_image">
-			<div style="position:relative;text-align:center;clear:both;width:<?php echo $width;?>px;margin: auto;" class="hikashop_product_image_subdiv">
+		<div class="hikashop_product_image">
+			<div class="hikashop_product_image_subdiv">
 			<?php if($this->params->get('link_to_product_page',1)){ ?>
 				<a href="<?php echo $link;?>" title="<?php echo $this->escape($this->row->product_name); ?>">
 			<?php }
@@ -51,13 +50,7 @@ if(!empty($this->row->extraData->top)) { echo implode("\r\n",$this->row->extraDa
 			</div>
 		</div>
 		<!-- EO PRODUCT IMG -->
-		<?php
-			$paneHeight='';
-			if(!empty($pane_percent_height)){
-				 $paneHeight='height:'.$pane_percent_height.'px;';
-			}
-		?>
-		<div class="hikashop_img_pane_panel" style="width:<?php echo $width; ?>px; <?php echo $paneHeight; ?>">
+		<div class="hikashop_img_pane_panel">
 			<!-- PRODUCT NAME -->
 			<span class="hikashop_product_name">
 					<?php if($this->params->get('link_to_product_page',1)){ ?>
@@ -129,4 +122,41 @@ if(!empty($this->row->extraData->top)) { echo implode("\r\n",$this->row->extraDa
 		</div>
 	</div>
 </div>
-<?php if(!empty($this->row->extraData->bottom)) { echo implode("\r\n",$this->row->extraData->bottom); } ?>
+<?php
+if(!empty($this->row->extraData->bottom)) { echo implode("\r\n",$this->row->extraData->bottom); }
+
+if($this->rows[0]->product_id == $this->row->product_id){
+?>
+<style>
+	#<?php echo $mainDivName; ?> .hk_img_pane_window{
+		margin: auto;
+		height:<?php echo $height; ?>px;
+		width:<?php echo $width; ?>px;
+		<?php echo $cursor; ?>
+		overflow:hidden;
+		position:relative;
+	}
+	#<?php echo $mainDivName; ?> .hk_img_pane_product{
+		height:<?php echo $height; ?>px;
+		width:<?php echo $width; ?>px;
+	}
+	#<?php echo $mainDivName; ?> .hikashop_img_pane_panel{
+		width:<?php echo $width; ?>px;
+		<?php echo $paneHeight; ?>
+	}
+	#<?php echo $mainDivName; ?> .hikashop_product_image{
+		height:<?php echo $height;?>px;
+		text-align:center;
+		clear:both;
+	}
+	#<?php echo $mainDivName; ?> .hikashop_product_image_subdiv{
+		position:relative;
+		text-align:center;
+		clear:both;
+		width:<?php echo $width;?>px;
+		margin: auto;
+	}
+</style>
+<?php
+}
+?>

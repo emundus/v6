@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -251,6 +251,7 @@ window.localPage.imagepopupmode = function(el) {
 						<input name="config[default_params][moduleclass_sfx]" type="text" value="<?php echo @$this->default_params['moduleclass_sfx'];?>" />
 					</td>
 				</tr>
+<?php if(!HIKASHOP_J30){ ?>
 				<tr>
 					<td class="key"><?php echo JText::_('MODULES_TO_DISPLAY_UNDER_MAIN_ZONE');?></td>
 					<td>
@@ -266,6 +267,7 @@ window.localPage.imagepopupmode = function(el) {
 						?>
 					</td>
 				</tr>
+<?php } ?>
 				<tr>
 					<td class="key"><?php echo JText::_('SYNCHRO_WITH_ITEM');?></td>
 					<td><?php
@@ -356,7 +358,7 @@ window.localPage.imagepopupmode = function(el) {
 				<tr>
 					<td class="key"><?php echo JText::_('QUANTITY_LAYOUT_ON_PRODUCT_PAGE');?></td>
 					<td>
-						<?php echo $this->quantityDisplayType->display('config[product_quantity_display]' , @$this->config->get('product_quantity_display')); ?>
+						<?php echo $this->quantityDisplayType->display('config[product_quantity_display]' , @$this->config->get('product_quantity_display','show_default')); ?>
 					</td>
 				</tr>
 				<tr>

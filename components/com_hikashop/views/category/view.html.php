@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -86,11 +86,13 @@ class CategoryViewCategory extends HikaShopView {
 		$content_type = $this->params->get('content_type');
 		if($content_type=='manufacturer'){
 			$category_type = 'manufacturer';
-			$id = JRequest::getInt("cid");
-			$class = hikashop_get('class.category');
-			$new_id = 'manufacturer';
-			$class->getMainElement($new_id);
-			$this->params->set('selectparentlisting',$new_id);
+			if(!HIKASHOP_J30 || (HIKASHOP_J30 && !$this->params->get('selectparentlisting',false))){
+				$id = JRequest::getInt("cid");
+				$class = hikashop_get('class.category');
+				$new_id = 'manufacturer';
+				$class->getMainElement($new_id);
+				$this->params->set('selectparentlisting',$new_id);
+			}
 		}else{
 			$category_type = 'product';
 		}
@@ -438,8 +440,19 @@ class CategoryViewCategory extends HikaShopView {
 			foreach($submenus as $submenu){
 				$menu = $menus->getItem($submenu->itemid);
 				if(!empty($menu) && !empty($menu->link) && strpos($menu->link,'option='.HIKASHOP_COMPONENT)!==false && (strpos($menu->link,'view=category')!==false || strpos($menu->link,'view=')===false || strpos($menu->link,'view=product')!==false)){
-					$params = $config->get( 'menu_'.$submenu->itemid );
-					if(!empty($params) && $params['selectparentlisting']==$cid->category_id){
+					$parent = 0;
+					if(HIKASHOP_J30){
+						$params = $menu->params->get('hk_category',false);
+						if($params && isset($params->category))
+							$parent = $params->category;
+					}
+					if(!$parent){
+						$params = $config->get( 'menu_'.$submenu->itemid );
+						if(isset($params['selectparentlisting']))
+							$parent = $params['selectparentlisting'];
+					}
+
+					if(!empty($params) && $parent == $cid->category_id){
 						return JRoute::_('index.php?option=com_hikashop&Itemid='.$submenu->itemid);
 					}
 				}

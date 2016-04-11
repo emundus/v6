@@ -1,13 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><?php
+?>
+<?php
 
 class FieldViewField extends hikashopView{
 
@@ -72,6 +73,18 @@ class FieldViewField extends hikashopView{
 			}else{
 				document.getElementById(\'category_field\').style.display = \'none\';
 			}
+
+			if(value=="address" || value=="user" || value=="category" || value=="contact" || value=="entry"){
+				document.getElementById(\'display_field\').style.display = "";
+			}else{
+				document.getElementById(\'display_field\').style.display = \'none\';
+			}
+
+			if(value=="product" || value=="item" || value=="order"){
+				document.getElementById(\'display_field_options\').style.display = "";
+			}else{
+				document.getElementById(\'display_field_options\').style.display = \'none\';
+			}
 		}';
 
 		$doc->addScriptDeclaration($script);
@@ -96,7 +109,55 @@ class FieldViewField extends hikashopView{
 		$allowType = hikashop_get('type.allow');
 		$this->assignRef('allowType',$allowType);
 
-		$displayOptions = array();
+		if($field->field_table == 'product'){
+			$displayOptions = array(
+				array('name'=>'field_product_show'),
+				array('name'=>'field_product_compare'),
+				array('name'=>'field_product_listing'),
+				array('name'=>'field_product_form'),
+				array('name'=>'field_product_invoice'),
+				array('name'=>'field_product_shipping_invoice'),
+				array('name'=>'field_product_order_form'),
+				array('name'=>'field_product_backend_cart_details'),
+				array('name'=>'field_product_order_notification')
+			);
+		}
+		if($field->field_table == 'item'){
+			$displayOptions = array(
+				array('name'=>'field_item_show_cart'),
+				array('name'=>'field_item_backend_cart_details'),
+				array('name'=>'field_item_checkout'),
+				array('name'=>'field_item_order'),
+				array('name'=>'field_item_product_listing'),
+				array('name'=>'field_item_product_show'),
+				array('name'=>'field_item_product_cart'),
+				array('name'=>'field_item_order_form'),
+				array('name'=>'field_item_invoice'),
+				array('name'=>'field_item_shipping_invoice'),
+				array('name'=>'field_item_edit_product_order'),
+				array('name'=>'field_item_order_notification'),
+				array('name'=>'field_item_order_status_notification'),
+				array('name'=>'field_item_order_creation_notification'),
+				array('name'=>'field_item_order_admin_notification'),
+				array('name'=>'field_item_payment_notification')
+			);
+		}
+		if($field->field_table == 'order'){
+			$displayOptions = array(
+				array('name'=>'field_order_invoice'),
+				array('name'=>'field_order_shipping_invoice'),
+				array('name'=>'field_order_show'),
+				array('name'=>'field_order_checkout'),
+				array('name'=>'field_order_listing'),
+				array('name'=>'field_order_form'),
+				array('name'=>'field_order_edit_fields'),
+				array('name'=>'field_order_notification'),
+				array('name'=>'field_order_status_notification'),
+				array('name'=>'field_order_creation_notification'),
+				array('name'=>'field_order_admin_notification'),
+				array('name'=>'field_order_payment_notification')
+			);
+		}
 		$this->assignRef('displayOptions',$displayOptions);
 
 		if(hikashop_level(1)){

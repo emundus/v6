@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -222,7 +222,6 @@ class userViewUser extends HikaShopView {
 		$extraFields['user'] = $fieldsClass->getFields('frontcomp',$user,'user');
 
 		$config =& hikashop_config();
-		$this->assignRef('user',$user);
 
 		$simplified_reg = $config->get('simplified_registration',1);
 		$this->assignRef('config',$config);
@@ -234,11 +233,13 @@ class userViewUser extends HikaShopView {
 		$null=array();
 		$fieldsClass->addJS($null,$null,$null);
 		$fieldsClass->jsToggle($extraFields['user'],$user,0);
+		$this->assignRef('user',$user);
 
 		$values = array('user'=>$user);
 
 		if($config->get('address_on_registration',1)){
 			$extraFields['address'] = $fieldsClass->getFields('frontcomp',$address,'address');
+
 			$fieldsClass->jsToggle($extraFields['address'],$address,0);
 			$this->assignRef('address',$address);
 			$values['address']=$address;

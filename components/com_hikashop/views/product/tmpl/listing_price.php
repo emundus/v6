@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -127,7 +127,8 @@ if(isset($this->row->product_msrp) && @$this->row->product_msrp > 0.0 && JReques
 				}
 			}
 
-			echo '<span class="'.implode(' ',$classes).'">';
+			echo '<span class="'.implode(' ',$classes).'" itemprop="price" content="'. $price->price_value_with_tax .'">';
+
 			if($this->params->get('price_with_tax')){
 				echo $this->currencyHelper->format(@$price->price_value_with_tax,$price->price_currency_id);
 			}
@@ -195,5 +196,6 @@ if(isset($this->row->product_msrp) && @$this->row->product_msrp > 0.0 && JReques
 			$i++;
 		}
 		echo JText::_('PRICE_END');
+
 	}
 	?></span>

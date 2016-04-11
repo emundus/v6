@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -488,7 +488,7 @@ $this->params->set('show_quantity_field', 0);
 			if($row->product_parent_id != 0 && isset($row->main_product_quantity_layout))
 				$row->product_quantity_layout = $row->main_product_quantity_layout;
 			if($this->element->cart_id == $session->cart_id && $this->params->get('from','display') != 'module') {
-				if($row->product_quantity_layout == 'show_select' || (empty($this->row->product_quantity_layout) && $this->config->get('product_quantity_display', '') == 'show_select')) {
+				if($row->product_quantity_layout == 'show_select' || (empty($this->row->product_quantity_layout) && $this->config->get('product_quantity_display', 'show_default') == 'show_select')) {
 					$min_quantity = $row->product_min_per_order;
 					$max_quantity = $row->product_max_per_order;
 					if($min_quantity == 0)
@@ -522,7 +522,7 @@ $this->params->set('show_quantity_field', 0);
 						</div>
 <?php
 			} else {
-				if($row->product_quantity_layout == 'show_select' || (empty($row->product_quantity_layout) && $this->config->get('product_quantity_display', '') == 'show_select')) {
+				if($row->product_quantity_layout == 'show_select' || (empty($row->product_quantity_layout) && $this->config->get('product_quantity_display', 'show_default') == 'show_select')) {
 					$min_quantity = $row->product_min_per_order;
 					$max_quantity = $row->product_max_per_order;
 					if($min_quantity == 0)

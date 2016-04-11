@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -86,9 +86,9 @@ class hikashopModulesClass extends hikashopClass{
 				$element[$column] = $safeHtmlFilter->clean(strip_tags($value), 'string');
 			}
 			if(empty($element['selectparentlisting'])){
-				$cat = hikashop_get('class.category');
+				$categoryClass = hikashop_get('class.category');
 				$mainProductCategory = 'product';
-				$cat->getMainElement($mainProductCategory);
+				$categoryClass->getMainElement($mainProductCategory);
 				$element['selectparentlisting']=$mainProductCategory;
 			}
 		}
@@ -166,5 +166,41 @@ class hikashopModulesClass extends hikashopClass{
 			}
 		}
 		return $result;
+	}
+
+	function restrictedModule($params) {
+		$display = $params->get('display_on_product_page', false);
+		if($display === false)
+			return true;
+
+		$option = JRequest::getVar('option', ''); // com_hikashop
+		$ctrl = JRequest::getVar('ctrl', ''); // product, category, checkout
+		$task = JRequest::getVar('task', ''); // show, listing, compare, ...
+
+		if($option != 'com_hikashop')
+			return true;
+
+		if(!in_array($ctrl, array('product', 'category', 'checkout')))
+			return true;
+
+		if(in_array($ctrl, array('product', 'category'))) {
+			if(!in_array($task, array('show', 'listing', 'compare')))
+				return true;
+
+			if($task == 'show' && $ctrl == 'product' && (int)$params->get('display_on_product_page', 1) == 0)
+				return false;
+			if($task == 'listing' && $ctrl == 'product' && (int)$params->get('display_on_product_listing_page', 1) == 0)
+				return false;
+
+			if($task == 'compare' && $ctrl == 'product' && (int)$params->get('display_on_product_compare_page', 1) == 0)
+				return false;
+			if($task == 'listing' && $ctrl == 'category' && (int)$params->get('display_on_category_listing_page', 1) == 0)
+				return false;
+		}
+		if($ctrl == 'checkout' && (int)$params->get('display_on_checkout_page', 1) == 0) {
+				return false;
+		}
+
+		return true;
 	}
 }

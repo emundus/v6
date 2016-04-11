@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -208,7 +208,7 @@ function hikashopCheckMethods() {
 			$fieldsClass = hikashop_get('class.field');
 			$this->assignRef('fieldsClass',$fieldsClass);
 			$null = null;
-			$this->extraFields['item'] = $fieldsClass->getFields('frontcomp',$null,'item');
+			$this->extraFields['item'] = $fieldsClass->getFields('display:field_item_checkout=1',$null,'item');
 			$this->assignRef('extraFields',$this->extraFields);
 		}
 	}
@@ -445,7 +445,7 @@ function displayRegistration(el)
 			$this->assignRef('fieldsClass',$fieldsClass);
 			$cart = $this->initCart();
 			$order->products =& $cart->products;
-			$this->extraFields['order'] = $fieldsClass->getFields('frontcomp',$order,'order');
+			$this->extraFields['order'] = $fieldsClass->getFields('display:field_order_checkout=1',$order,'order');
 			$this->assignRef('extraFields',$this->extraFields);
 
 			$null=array();

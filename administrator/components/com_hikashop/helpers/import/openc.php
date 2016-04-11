@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.1
+ * @version	2.6.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -417,7 +417,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 
 		$data = array(
 			'tax_namekey' => "CONCAT('OPENC_TAX_', octr.tax_rate_id)",
-			'tax_rate' => 'octr.rate'
+			'tax_rate' => 'octr.rate/100'
 		);
 
 		$sql = 'INSERT IGNORE INTO `'.$this->hikaDatabaseName.'`.`#__hikashop_tax` (`'.implode('`,`',array_keys($data)).'`) '.
@@ -974,7 +974,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 		'LEFT JOIN `'.$this->hikaDatabaseName.'`.`#__hikashop_openc_prod` AS hkp ON ocp.product_id = hkp.openc_id '.
 		'WHERE hkp.hk_id IS NULL ORDER BY ocp.product_id ASC;';
 
-		$this->db->setQuery("SHOW COLUMNS FROM `".$this->opencDatabase."`.`'.$this->opencPrefix.'product` LIKE 'hika_sku';");
+		$this->db->setQuery('SHOW COLUMNS FROM `'.$this->opencDatabase.'`.`'.$this->opencPrefix.'product` LIKE \'hika_sku\';');
 		$data = $this->db->loadObjectList();
 		if (empty($data))
 		{
@@ -1200,7 +1200,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			'address_fax' => 'occu.fax',
 			'address_state' => 'hkzsta.zone_namekey',
 			'address_country' => 'hkzcou.zone_namekey',
-			'address_published' => 4
+			'address_published' => 1
 		);
 
 		$sql1 = 'INSERT IGNORE INTO `'.$this->hikaDatabaseName.'`.`#__hikashop_address` (`'.implode('`,`',array_keys($data)).'`) '.
@@ -1208,8 +1208,8 @@ class hikashopImportopencHelper extends hikashopImportHelper
 				'INNER JOIN `'.$this->opencDatabase.'`.`'.$this->opencPrefix.'address` AS oca ON occu.customer_id = oca.customer_id '.
 				'INNER JOIN `'.$this->hikaDatabaseName.'`.`#__hikashop_openc_customer` hkoccu ON oca.customer_id = hkoccu.openc_customer_id '.
 				'INNER JOIN `'.$this->hikaDatabaseName.'`.`#__hikashop_user` AS hku ON hkoccu.hk_customer_cms_id = hku.user_cms_id '.
-				'INNER JOIN `'.$this->opencDatabase.'`.`'.$this->opencPrefix.'country` AS occ ON oca.country_id = occ.country_id '.
-				'INNER JOIN `'.$this->opencDatabase.'`.`'.$this->opencPrefix.'zone` AS ocz ON oca.zone_id = ocz.zone_id '.
+				'LEFT JOIN `'.$this->opencDatabase.'`.`'.$this->opencPrefix.'country` AS occ ON oca.country_id = occ.country_id '.
+				'LEFT JOIN `'.$this->opencDatabase.'`.`'.$this->opencPrefix.'zone` AS ocz ON oca.zone_id = ocz.zone_id '.
 				'LEFT JOIN `'.$this->hikaDatabaseName.'`.`#__hikashop_zone` AS  hkzcou ON occ.iso_code_3 = hkzcou.zone_code_3 AND hkzcou.zone_type=\'country\' '.
 				'INNER JOIN `'.$this->hikaDatabaseName.'`.`#__hikashop_zone_link` AS hkzl ON hkzcou.zone_namekey = hkzl.zone_parent_namekey '.
 				'INNER JOIN `'.$this->hikaDatabaseName.'`.`#__hikashop_zone` AS  hkzsta ON ocz.code = hkzsta.zone_code_3 AND hkzsta.zone_type=\'state\' AND hkzsta.zone_namekey = hkzl.zone_child_namekey '.
@@ -1263,7 +1263,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 				}
 				$d = array(
 					$i,
-					$this->db->quote($data->lastname),
+					$this->db->quote($data->firstname.' '.$data->lastname),
 					$this->db->quote($data->username),
 					$this->db->quote($data->email),
 					"CONCAT(".$this->db->quote(@$data->password).",':',".$this->db->quote(@$data->salt).")",
@@ -1326,7 +1326,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			'order_openc_id' => 'oco.order_id',
 			'order_user_id' => 'hkusr.user_id',
 			'order_status' => 'hkc.category_name',
-			'order_created' => 'oco.date_added',
+			'order_created' => 'UNIX_TIMESTAMP(oco.date_added)',
 			'order_ip' => 'oco.ip',
 			'order_currency_id' => 'hkcur.currency_id',
 			'order_shipping_price' => "''", //?
@@ -1335,7 +1335,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			'order_payment_id' => 0,
 			'order_payment_method' => 'oco.payment_method',
 			'order_full_price' => 'ocot.value',
-			'order_modified' => 'oco.date_modified',
+			'order_modified' => 'UNIX_TIMESTAMP(oco.date_modified)',
 			'order_partner_id' => 0,
 			'order_partner_price' => 0,
 			'order_partner_paid' => 0,
@@ -1616,7 +1616,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			'discount_quota_per_user' => 'uses_customer',
 			'discount_published' => 'status',
 			'discount_code' => 'code',
-			'discount_currency_id' => $main_currency,
+			'discount_currency_id' => $this->db->Quote($main_currency),
 			'discount_flat_amount' => "case when type = 'F' then discount else 0 end",
 			'discount_percent_amount' => "case when type = 'P' then discount else 0 end",
 			'discount_quota' => '0'
