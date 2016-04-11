@@ -17,7 +17,7 @@ class WFStyleselectPluginConfig {
         $wf = WFEditor::getInstance();
 
         $custom_styles      = json_decode($wf->getParam('styleselect.custom_styles', $wf->getParam('editor.custom_styles', '')));
-        $include            = (array) $wf->getParam('styleselect.styles', array('stylesheet', 'custom')); 
+        $include            = (array) $wf->getParam('styleselect.styles', array('stylesheet', 'custom'));
 
         if (!empty($custom_styles) && in_array('custom', $include)) {
             // Styles list (legacy)
@@ -26,7 +26,7 @@ class WFStyleselectPluginConfig {
             if (!empty($theme_advanced_styles)) {
                 $settings['theme_advanced_styles'] = $theme_advanced_styles;
             }
-            
+
             $styles = array();
 
             $blocks = array('section', 'nav', 'article', 'aside', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'footer', 'address', 'main', 'p', 'pre', 'blockquote', 'figure', 'figcaption', 'div');
@@ -35,30 +35,27 @@ class WFStyleselectPluginConfig {
                 if (isset($style->styles)) {
                     $style->styles = self::cleanJSON($style->styles);
                 }
-                
+
                 if (isset($style->attributes)) {
                     $style->attributes = self::cleanJSON($style->attributes, " ", "=");
                 }
 
-                if (isset($style->element)) {
-                    if (in_array($style->element, $blocks)) {
-                        $style->block = $style->element;
-                    } else {
-                        $style->inline = $style->element;
-                    }
-                    // remove
-                    $style->remove = "all";
-
-                    $selector[] = $style->element;
-
-                    unset($style->element);
-                } else {
+                if (!isset($style->element)) {
                     $style->element = 'span';
 
                     if (!isset($style->selector)) {
                         $style->selector = '*';
                     }
                 }
+
+                if (in_array($style->element, $blocks)) {
+                    $style->block = $style->element;
+                } else {
+                    $style->inline = $style->element;
+                }
+
+                // remove
+                $style->remove = "all";
 
                 $styles[] = $style;
             }
@@ -67,7 +64,7 @@ class WFStyleselectPluginConfig {
                 $settings['style_formats'] = htmlentities(json_encode($styles), ENT_NOQUOTES, "UTF-8");
             }
         }
-        
+
         // set this value false if stylesheet not included
         if (in_array('stylesheet', $include) === false) {
             $settings['styleselect_stylesheet'] = false;

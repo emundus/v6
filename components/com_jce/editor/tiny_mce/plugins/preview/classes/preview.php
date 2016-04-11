@@ -25,7 +25,7 @@ class WFPreviewPlugin extends WFEditorPlugin {
         parent::__construct();
 
         $request = WFRequest::getInstance();
-        // Setup plugin XHR callback functions 
+        // Setup plugin XHR callback functions
         $request->setRequest(array($this, 'showPreview'));
 
         $this->execute();
@@ -60,18 +60,18 @@ class WFPreviewPlugin extends WFEditorPlugin {
         $data = preg_replace(array('#<!DOCTYPE([^>]+)>#i', '#<(head|title|meta)([^>]*)>([\w\W]+)<\/1>#i', '#<\/?(html|body)([^>]*)>#i'), '', rawurldecode($data));
 
         $component = WFExtensionHelper::getComponent($component_id);
-        
+
         // create params registry object
         $params = new JRegistry();
-        
+
         // create empty params string
         if (!isset($component->params)) {
             $component->params = '';
         }
-        
+
         // process attribs (com_content etc.)
         if ($component->attribs) {
-            $params->loadString($component->attribs); 
+            $params->loadString($component->attribs);
         } else {
             if (class_exists('JParameter')) {
                 $params = new JParameter($component->params);
@@ -87,18 +87,20 @@ class WFPreviewPlugin extends WFEditorPlugin {
         $article->parameters = new JRegistry();
         $article->text = $data;
 
-        $limitstart = 0;
-        JPluginHelper::importPlugin('content');
+        // allow this to be skipped as some plugins can cause FATAL errors.
+        if ((bool) $this->getParam('process_content', 1)) {
+          $limitstart = 0;
+          JPluginHelper::importPlugin('content');
 
-        require_once(JPATH_SITE . '/components/com_content/helpers/route.php');
+          require_once(JPATH_SITE . '/components/com_content/helpers/route.php');
 
-        // set error reporting to error only
-        error_reporting(E_ERROR);
+          // set error reporting to error only
+          error_reporting(E_ERROR);
 
-        $dispatcher->trigger('onPrepareContent', array(& $article, & $params, $limitstart));
+          $dispatcher->trigger('onPrepareContent', array(& $article, & $params, $limitstart));
+        }
 
         $this->processURLS($article);
-
         return $article->text;
     }
 

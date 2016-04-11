@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
-<install version="2.0" type="plugin" plugin="preview" core="1" editable="0">
+<install version="2.0" type="plugin" plugin="preview" core="1" editable="1">
 	<name>WF_PREVIEW_TITLE</name>
-	<version>2.5.15</version>
-	<creationDate>10 March 2016</creationDate>
+	<version>2.5.16</version>
+	<creationDate>08 April 2016</creationDate>
 	<author>Ryan Demmer</author>
 	<authorEmail>info@joomlacontenteditor.net</authorEmail>
 	<authorUrl>http://www.joomlacontenteditor.net/</authorUrl>
@@ -10,7 +10,12 @@
 	<license>GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html</license>
 	<description>WF_PREVIEW_DESC</description>
 	<icon>preview</icon>
-	<params></params>
+	<params group="standard">
+		<param name="process_content" type="radio" default="1" label="WF_PREVIEW_PARAM_PROCESS_CONTENT" description="WF_PREVIEW_PARAM_PROCESS_CONTENT_DESC">
+				<option value="1">WF_OPTION_YES</option>
+				<option value="0">WF_OPTION_NO</option>
+		</param>
+	</params>
 	<help>
 		<topic key="preview.about" title="WF_PREVIEW_HELP_ABOUT" />
 	</help>

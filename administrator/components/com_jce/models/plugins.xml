@@ -239,7 +239,7 @@
         <title>WF_PREVIEW_TITLE</title>
         <description>WF_PREVIEW_DESC</description>
         <icon>preview</icon>
-        <editable>0</editable>
+        <editable>1</editable>
         <row>3</row>
         <core>1</core>
     </plugin>

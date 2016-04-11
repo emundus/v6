@@ -19,7 +19,8 @@ $view = JRequest::getCmd('view');
 // get task
 $task = JRequest::getCmd('task');
 
-if ($task === "plugin") {
+// Die on invalid variable combination
+if (empty($view) && $task === "plugin") {
     die('RESTRICTED');
 }
 
