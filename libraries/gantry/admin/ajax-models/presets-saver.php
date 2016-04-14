@@ -1,17 +1,15 @@
 <?php
 /**
- * @version   $Id: presets-saver.php 2451 2012-08-16 23:17:15Z btowles $
+ * @version   $Id: presets-saver.php 30234 2016-03-30 07:30:17Z matias $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  */
 defined('GANTRY_VERSION') or die();
-gantry_import('core.gantryjson');
 
 /** @var $gantry Gantry */
 global $gantry;
-
 
 $file   = $gantry->custom_presets_file;
 $action = $_POST['action'];
@@ -21,11 +19,11 @@ $action = $_POST['action'];
 if ($action == 'add') {
 	$jsonstring = stripslashes($_POST['presets-data']);
 
-	$data = GantryJSON::decode($jsonstring, false);
+	$data = json_decode($jsonstring, true);
 
 	foreach ($data['presets'] as &$preset) {
 		foreach ($preset as $key => &$value) {
-			if (GantryJSON::isJson($value)) {
+			if (json_decode($value, true) !== null) {
 				$value = str_replace(chr(34), chr(39), $value);
 			}
 		}

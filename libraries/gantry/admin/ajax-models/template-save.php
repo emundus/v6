@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: template-save.php 6328 2013-01-07 17:00:21Z btowles $
+ * @version   $Id: template-save.php 30234 2016-03-30 07:30:17Z matias $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -14,7 +14,6 @@ defined('JPATH_BASE') or die();
 		global $gantry;
 
 $action = JFactory::getApplication()->input->getString('action');
-gantry_import('core.gantryjson');
 
 
 switch ($action) {

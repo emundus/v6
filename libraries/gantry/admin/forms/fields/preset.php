@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: preset.php 2946 2012-08-31 19:30:28Z btowles $
+ * @version   $Id: preset.php 30234 2016-03-30 07:30:17Z matias $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -46,7 +46,6 @@ class GantryFormFieldPreset extends GantryFormField
 		}
 
 		if (!defined('GANTRY_PRESET')) {
-			gantry_import('core.gantryjson');
 
 			$template_path_parts =explode('/', $gantry->templatePath);
 			$this->template = end($template_path_parts);
@@ -55,7 +54,7 @@ class GantryFormFieldPreset extends GantryFormField
 			$gantry->addInlineScript('var Presets = {};var PresetsKeys = {};');
 
 			if (isset($gantry->customPresets[$name])) {
-				$gantry->addInlineScript('var CustomPresets = ' . GantryJSON::encode($gantry->customPresets[$name]) . ';');
+				$gantry->addInlineScript('var CustomPresets = ' . json_encode($gantry->customPresets[$name]) . ';');
 			} else {
 				$gantry->addInlineScript('var CustomPresets = {};');
 			}

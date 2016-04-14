@@ -126,7 +126,7 @@ class GantryCache
 			$this->cache->addDriver('frontend', new JoomlaCacheDriver($this->group, $this->lifetime));
 		} elseif ($admin) {
 			// TODO get lifetime for backend cache
-			$this->group = self::ADMIN_GROUP_NAME . '-4.1.30';
+			$this->group = self::ADMIN_GROUP_NAME . '-4.1.31';
 			$this->cache->addDriver('admin', new JoomlaCacheDriver($this->group, self::ADMIN_LIFETIME));
 		}
 	}

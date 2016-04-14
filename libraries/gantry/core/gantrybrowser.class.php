@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: gantrybrowser.class.php 30069 2016-03-08 17:45:33Z matias $
+ * @version   $Id: gantrybrowser.class.php 30238 2016-03-31 18:06:40Z matias $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -88,7 +88,7 @@ class GantryBrowser
 	 */
 	public function __construct()
 	{
-		$this->user_agent = $_SERVER['HTTP_USER_AGENT'];
+		$this->user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : "unknown";
 		$this->checkPlatform();
 		$this->checkBrowser();
 		$this->checkEngine();
@@ -102,25 +102,14 @@ class GantryBrowser
 	 */
 	protected function checkPlatform()
 	{
-		if (preg_match("/iPhone/", $this->user_agent) || preg_match("/iPod/", $this->user_agent)) {
-			$this->platform = "iphone";
-		} elseif (preg_match("/iPad/", $this->user_agent)) {
-			$this->platform = "ipad";
-		} elseif (preg_match("/Android/", $this->user_agent)) {
-			$this->platform = "android";
-		} elseif (preg_match("/Mobile/i", $this->user_agent)) {
-			$this->platform = "mobile";
-		} elseif (preg_match("/win/i", $this->user_agent)) {
-			$this->platform = "win";
-		} elseif (preg_match("/mac/i", $this->user_agent)) {
-			$this->platform = "mac";
-		} elseif (preg_match("/linux/i", $this->user_agent)) {
-			$this->platform = "linux";
-		} else {
-			$this->platform = "unknown";
+		preg_match('/(CrOS|Tizen|iPhone|iPod|iPad|Android|Mobile|Windows(\ Phone)?|win|Silk|mac|linux|BlackBerry|X11|(New\ )?Nintendo\ (WiiU?|3?DS)|Xbox(\ One))/i', $this->user_agent, $matches);
+
+		if (isset($matches[0]))
+		{
+			return $this->platform = strtolower($matches[0]);
 		}
 
-		return $this->platform;
+		return $this->platform = 'unknown';
 	}
 
 	/**
@@ -128,27 +117,15 @@ class GantryBrowser
 	 */
 	protected function checkEngine()
 	{
-		switch ($this->name) {
-			case 'ie':
-				$this->engine = 'trident';
-				break;
-			case 'minefield':
-			case 'firefox':
-				$this->engine = 'gecko';
-				break;
-			case 'android':
-			case 'ipad':
-			case 'iphone':
-			case 'chrome':
-			case 'safari':
-				$this->engine = 'webkit';
-				break;
-			case 'opera':
-				$this->engine = 'presto';
-				break;
-			default:
-				$this->engine = 'unknown';
-				break;
+		preg_match('/(trident|dillo|blink|edgehtml|gecko|goanna|khtml|martha|netsurf|presto|prince|robin|servo|tkhtml|webkit)/i', $this->user_agent, $matches);
+
+		if (isset($matches[0]))
+		{
+			$this->engine = strtolower($matches[0]);
+		}
+		else
+		{
+			$this->engine = 'unknown';
 		}
 	}
 
@@ -158,37 +135,110 @@ class GantryBrowser
 	protected function checkBrowser()
 	{
 		// IE
-		if (preg_match('/msie/i', $this->user_agent) && !preg_match('/opera/i', $this->user_agent)) {
+		if (preg_match('/msie/i', $this->user_agent) && !preg_match('/opera/i', $this->user_agent))
+		{
 			$result        = explode(' ', stristr(str_replace(';', ' ', $this->user_agent), 'msie'));
 			$this->name    = 'ie';
-			$this->version = $result[1];
+			//wrap version check in an if statement and check platform token is greater than windows NT 6.1
+			if (isset ($result[1]) && preg_match('/windows nt 6[\.1-9]{0,}/i', $this->user_agent))
+			{
+				$version       = explode(' ', $result[1]);
+				//double check if the user agent claims to be IE 7 on Win 7 or above, then force min IE8
+				if ($version[0] = 7)
+				{
+					$this->	version = '8';
+				}
+				else
+				{
+					$this->version = $version[0];
+				}
+			}
+			elseif (isset ($result[1]) && preg_match('/windows nt [0-5]{0,}[\.0-9]{0,}/i', $this->user_agent))
+			{
+				$version       = explode(' ', $result[1]);
+				$this->version = $version[0];
+			}
+			else
+			{
+				$this->version = 'unknown';
+			}
 
 		}
 		//IE 11+
-		elseif (preg_match('#Trident\/.*rv:([0-9]{1,}[\.0-9]{0,})#i',$this->user_agent,$matches)) {
+		elseif (preg_match('#Trident\/.*rv:([0-9]{1,}[\.0-9]{0,})#i',$this->user_agent,$matches))
+		{
 			$this->name    = 'ie';
-			$this->version = $matches[1];
+			//wrap version check in an if statement and check platform token is greater than windows NT 6.1
+			if (isset ($matches[1]) && preg_match('/windows nt 6[\.1-9]{0,}/i', $this->user_agent))
+			{
+				$version       = explode(' ', $matches[1]);
+				$this->version = $version[0];
+			}
+			elseif (isset ($result[1]) && preg_match('/windows nt [0-5]{0,}[\.0-9]{0,}/i', $this->user_agent))
+			{
+				$version       = explode(' ', $result[1]);
+				$this->version = $version[0];
+			}
+			else
+			{
+				$this->version = 'unknown';
+			}
 		}
-		 // Firefox
-		elseif (preg_match('/Firefox/', $this->user_agent)) {
+		//Edge
+		elseif (preg_match('#Edge\/.*rv:([0-9]{1,}[\.0-9]{0,})#i',$this->user_agent,$matches))
+		{
+			$this->name    = 'edge';
+			//wrap version check in an if statement and check platform token is greater than windows NT 10.0
+			if (isset ($matches[1]) && preg_match('/windows nt 10[\.0-9]{0,}/i', $this->user_agent))
+			{
+				$version       = explode(' ', $matches[1]);
+				$this->version = $version[0];
+			}
+			elseif (isset ($result[1]) && preg_match('/windows nt [0-9]{0,}[\.0-9]{0,}/i', $this->user_agent))
+			{
+				$version       = explode(' ', $result[1]);
+				$this->version = $version[0];
+			}
+			else
+			{
+				$this->version = 'unknown';
+			}
+		}
+		// if user agent could be identified as MS Word.
+		elseif (preg_match('/(\bWord\b|ms-office|MSOffice|Microsoft Office|sms-office|office)/i', $this->user_agent))
+		{
+			$result        = explode('/', stristr($this->user_agent, 'Microsoft Office'));
+			$version       = explode(' ', $result[1]);
+			$this->name    = 'office';
+			$this->version = $version[0];
+		}
+		// Firefox
+		elseif (preg_match('/Firefox/', $this->user_agent))
+		{
 			$result        = explode('/', stristr($this->user_agent, 'Firefox'));
 			$version       = explode(' ', $result[1]);
 			$this->name    = 'firefox';
 			$this->version = $version[0];
-		} // Minefield
-		elseif (preg_match('/Minefield/', $this->user_agent)) {
+		}
+		// Minefield
+		elseif (preg_match('/Minefield/', $this->user_agent))
+		{
 			$result        = explode('/', stristr($this->user_agent, 'Minefield'));
 			$version       = explode(' ', $result[1]);
 			$this->name    = 'minefield';
 			$this->version = $version[0];
-		} // Chrome
-		elseif (preg_match('/Chrome/', $this->user_agent)) {
+		}
+		// Chrome
+		elseif (preg_match('/Chrome/', $this->user_agent))
+		{
 			$result        = explode('/', stristr($this->user_agent, 'Chrome'));
 			$version       = explode(' ', $result[1]);
 			$this->name    = 'chrome';
 			$this->version = $version[0];
-		} //Safari
-		elseif (preg_match('/Safari/', $this->user_agent) && !preg_match('/iPhone/', $this->user_agent) && !preg_match('/iPod/', $this->user_agent) && !preg_match('/iPad/', $this->user_agent)) {
+		}
+		//Safari
+		elseif (preg_match('/Safari/', $this->user_agent) && !preg_match('/iPhone/', $this->user_agent) && !preg_match('/iPod/', $this->user_agent) && !preg_match('/iPad/', $this->user_agent))
+		{
 			$result     = explode('/', stristr($this->user_agent, 'Version'));
 			$this->name = 'safari';
 			if (isset ($result[1])) {
@@ -197,22 +247,41 @@ class GantryBrowser
 			} else {
 				$this->version = 'unknown';
 			}
-		} // Opera
-		elseif (preg_match('/opera/i', $this->user_agent)) {
+		}
+		// Opera
+		elseif (preg_match('/opera/i', $this->user_agent))
+		{
 			$result = stristr($this->user_agent, 'opera');
 
-			if (preg_match('/\//', $result)) {
+			if (preg_match('/\//', $result))
+			{
 				$result        = explode('/', $result);
 				$version       = explode(' ', $result[1]);
 				$this->name    = 'opera';
 				$this->version = $version[0];
-			} else {
+			}
+			else
+			{
 				$version       = explode(' ', stristr($result, 'opera'));
 				$this->name    = 'opera';
 				$this->version = $version[1];
 			}
-		} // iPhone/iPod
-		elseif (preg_match('/iPhone/', $this->user_agent) || preg_match('/iPod/', $this->user_agent)) {
+		}
+		// iPod
+		elseif (preg_match('/iPod/', $this->user_agent))
+		{
+			$result     = explode('/', stristr($this->user_agent, 'Version'));
+			$this->name = 'ipod';
+			if (isset ($result[1])) {
+				$version       = explode(' ', $result[1]);
+				$this->version = $version[0];
+			} else {
+				$this->version = 'unknown';
+			}
+		}
+		// iPhone
+		elseif (preg_match('/iPhone/', $this->user_agent))
+		{
 			$result     = explode('/', stristr($this->user_agent, 'Version'));
 			$this->name = 'iphone';
 			if (isset ($result[1])) {
@@ -221,27 +290,38 @@ class GantryBrowser
 			} else {
 				$this->version = 'unknown';
 			}
-		} // iPad
-		elseif (preg_match('/iPad/', $this->user_agent)) {
+		}
+		// iPad
+		elseif (preg_match('/iPad/', $this->user_agent))
+		{
 			$result     = explode('/', stristr($this->user_agent, 'Version'));
 			$this->name = 'ipad';
 			if (isset ($result[1])) {
 				$version       = explode(' ', $result[1]);
 				$this->version = $version[0];
-			} else {
+			}
+			else
+			{
 				$this->version = 'unknown';
 			}
-		} // Android
-		elseif (preg_match('/Android/', $this->user_agent)) {
+		}
+		// Android
+		elseif (preg_match('/Android/', $this->user_agent))
+		{
 			$result     = explode('/', stristr($this->user_agent, 'Version'));
 			$this->name = 'android';
-			if (isset ($result[1])) {
+			if (isset ($result[1]))
+			{
 				$version       = explode(' ', $result[1]);
 				$this->version = $version[0];
-			} else {
+			}
+			else
+			{
 				$this->version = "unknown";
 			}
-		} else {
+		}
+		else
+		{
 			$this->name    = "unknown";
 			$this->version = "unknown";
 		}
@@ -277,9 +357,11 @@ class GantryBrowser
 		$ext        = substr($file, strrpos($file, '.'));
 		$path       = ($keep_path) ? dirname($file) . '/' : '';
 		$filename   = basename($file, $ext);
-		foreach ($this->_checks as $suffix) {
+		foreach ($this->_checks as $suffix)
+		{
 			$checkfiles[] = $path . $filename . $suffix . $ext;
 		}
+
 		return $checkfiles;
 	}
 

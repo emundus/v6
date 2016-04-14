@@ -5,7 +5,7 @@ defined('_JEXEC') or die('Restricted access');
 $renew='';
 $step_form = $forms<100?'':'completed';
 $step_attachment = $attachments<100?'':'completed';
-$step_paiement = $paid==0?'':'completed';;
+$step_paiement = @$paid==0?'':'completed';;
 $step_sent = '';
 if ($sent>0) {
 	$step_sent = 'completed';

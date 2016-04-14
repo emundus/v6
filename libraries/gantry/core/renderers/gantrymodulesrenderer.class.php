@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: gantrymodulesrenderer.class.php 2437 2012-08-16 17:38:53Z btowles $
+ * @version   $Id: gantrymodulesrenderer.class.php 30226 2016-03-29 12:24:07Z matias $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -20,6 +20,11 @@ class GantryModulesRenderer
 	{
 		/** @var $gantry Gantry */
 		global $gantry;
+
+		$document = JFactory::getDocument();
+		if (!$document instanceof JDocumentHtml) {
+			return '';
+		}
 
 		if (array_key_exists($positionStub, $gantry->_aliases)) {
 			return GantryModulesRenderer::display($gantry->_aliases[$positionStub], $layout, $chrome, $gridsize, $pattern);
