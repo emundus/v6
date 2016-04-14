@@ -19,8 +19,8 @@ $user	= JFactory::getUser();
 if (!empty($user->fnum) && $display_applicant_menu==0)
 	return;
 
-if (isset($user->menutype)) {
-	$list = array();
+$list = array();
+if (isset($user->menutype)) {	
 	$list	= modEmundusMenuHelper::getList($params);
 }
 $app	= JFactory::getApplication();

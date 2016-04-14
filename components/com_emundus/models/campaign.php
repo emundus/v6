@@ -55,7 +55,9 @@ class EmundusModelCampaign extends JModelList
 	} 
 	
 	function _buildQuery(){
-		$query = 'SELECT id, label, year, description, start_date, end_date FROM #__emundus_setup_campaigns WHERE published = 1 AND NOW()>=start_date AND NOW()<=end_date';
+		$query = 'SELECT id, label, year, description, start_date, end_date 
+		FROM #__emundus_setup_campaigns 
+		WHERE published = 1 AND NOW()>=start_date AND NOW()<=end_date';
 		return $query;
 	}
 	
@@ -165,7 +167,8 @@ class EmundusModelCampaign extends JModelList
 
 	function setSelectedCampaign($cid, $aid)
 	{
-		$query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `campaign_id`, `fnum`) VALUES ('.$aid.', '.$cid.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
+		$query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `campaign_id`, `fnum`) 
+		VALUES ('.$aid.', '.$cid.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
 		$this->_db->setQuery( $query );
 		try {
 			$this->_db->Query();

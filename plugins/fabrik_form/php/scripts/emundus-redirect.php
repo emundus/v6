@@ -57,7 +57,7 @@ if (EmundusHelperAccess::asApplicantAccessLevel($user->id)){
 	$db->setQuery( $query );
 	$db->execute();
 
-	$link = 'index.php?option=com_fabrik&view=form&formid='.$formid.'&usekey=fnum&rowid='.$fnum;
+	$link = JRoute::_('index.php?option=com_fabrik&view=form&formid='.$formid.'&usekey=fnum&rowid='.$fnum);
 	//$link = "index.php?option=com_emundus&view=application&sid=".$sid.'&fnum='.$fnum;
 }
 

@@ -254,7 +254,7 @@ class plgUserEmundus extends JPlugin
             $incomplete = $profiles->getCurrentIncompleteCampaignByApplicant($current_user->id);
 
             if( $p['cpt'] == 0 || empty($p['profile']) || !isset($p['profile']) )
-                $app->redirect("index.php?option=com_fabrik&view=form&formid=102&random=0");
+                $app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
             //$mainframe->redirect("index.php?option=com_emundus&view=campaign");
             else {
 
@@ -267,7 +267,7 @@ class plgUserEmundus extends JPlugin
                     $profile        = $profiles->getProfileByCampaign($campaign["id"]);
 
                     if( empty($p['profile']) || empty($campaign["id"]) || !isset($p['profile']) || !isset($campaign["id"]) )
-                        $app->redirect("index.php?option=com_fabrik&view=form&formid=102&random=0");
+                        $app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
 
                     $current_user->profile	 				= $profile["profile_id"];
                     $current_user->profile_label 			= $profile["label"];
@@ -285,6 +285,7 @@ class plgUserEmundus extends JPlugin
                     $current_user->campaign_id				= $campaign["id"];
                     $current_user->campaign_name			= $profile["label"];
                     $current_user->fnum                     = $campaign["fnum"];
+                    $current_user->fnums                    = $profiles->getApplicantFnums($current_user->id, null, $profile["start_date"], $profile["end_date"]);
                     $current_user->status                   = @$campaign["status"];
 
                 } else {
@@ -306,6 +307,7 @@ class plgUserEmundus extends JPlugin
                 }
             }
         }
+
         return true;
     }
 

@@ -358,5 +358,37 @@ class EmundusModelProfile extends JModelList
         }
 	}
 
+
+    /**
+     * Get fnums for applicants
+     * @param int $aid               Applicant ID
+     * @param int $submitted         Submitted application
+     * @param date $start_date       campaigns as started after
+     * @param date $end_date         campaigns as ended before
+     * @return array
+     * @throws Exception
+     */
+    public function getApplicantFnums($aid, $submitted = null, $start_date = null, $end_date = null){
+        $db = JFactory::getDBO();
+
+        $query = 'SELECT ecc.*, esc.label, esc.start_date, esc.end_date, esc.training, esc.year, esc.profile_id
+                    FROM #__emundus_campaign_candidature as ecc 
+                    LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id 
+                    WHERE ecc.published=1 AND ecc.applicant_id='.$aid;
+        $query .= (!empty($submitted))?' AND ecc.submitted='.$submitted:'';
+        $query .= (!empty($start_date))?' AND esc.start_date<='.$db->Quote($start_date):'';
+        $query .= (!empty($end_date))?' AND esc.end_date>='.$db->Quote($end_date):'';
+
+        try
+        {
+            $db->setQuery($query);
+            return $db->loadObjectList('fnum');
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: fct : getAttachmentsById :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+    }
+
 }
 ?>

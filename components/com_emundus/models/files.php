@@ -2706,4 +2706,5 @@ where 1 order by ga.fnum asc, g.title';
         $db->setQuery( $query );
         return $db->loadAssocList('step');
     }
+
 }
