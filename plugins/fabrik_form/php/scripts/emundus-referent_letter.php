@@ -1,9 +1,9 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1: referent_letter.php 89 2008-10-13 Benjamin Rivalland
+ * @version 1: referent_letter.php 89 2016-04-18 Benjamin Rivalland
  * @package Fabrik
- * @copyright Copyright (C) 2008 Décision Publique. All rights reserved.
+ * @copyright Copyright (C) 2016 emundus.fr. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -145,6 +145,7 @@ $patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[UPLOAD_URL\]/', 
 // Mail 
 $from = $obj[0]->emailfrom;
 $fromname =$obj[0]->name;
+$sender = array($from, $fromname);
 
 $from_id = $obj[0]->id;
 $recipient[] = $_REQUEST['jos_emundus_references___Email_1'];
@@ -152,24 +153,25 @@ $recipient[] = $_REQUEST['jos_emundus_references___Email_2'];
 $recipient[] = $_REQUEST['jos_emundus_references___Email_3'];
 $recipient[] = $_REQUEST['jos_emundus_references___Email_4'];
 
+
 $subject = $obj[0]->subject;
 $mode = 1;
 //$cc = $user->email;
 //$bcc = $user->email;
-$attachment[] = JPATH_BASE.str_replace("\\", "/", $obj_letter[0][0]);
-//die(print_r($obj_letter[0][0]));
+$attachment = array();
+if (!empty($obj_letter[0][0])) {
+    $attachment[] = JPATH_BASE.str_replace("\\", "/", $obj_letter[0][0]);
+}
+
+
 $replyto = $obj[0]->emailfrom;
 $replytoname = $obj[0]->name;
+
 
 if ($is_uploaded1==0 && !empty($recipient[0])) {
     $replacements = array ($student->id, $student->name, $student->email, $link_upload1, $fnum_detail['label']);
     $body1 = preg_replace($patterns, $replacements, $obj[0]->message);
-
-    $config = JFactory::getConfig();
-    $sender = array(
-        $config->get( $from ),
-        $config->get( $fromname )
-    );
+    
     $mailer = JFactory::getMailer();
     $mailer->setSender($sender);
     $mailer->addRecipient($recipient[0]);
@@ -198,11 +200,6 @@ if ($is_uploaded1==0 && !empty($recipient[0])) {
     $replacements = array ($student->id, $student->name, $student->email, $link_upload2, $fnum_detail['label']);
     $body2 = preg_replace($patterns, $replacements, $obj[0]->message);
 
-    $config = JFactory::getConfig();
-    $sender = array(
-        $config->get( $from ),
-        $config->get( $fromname )
-    );
     $mailer = JFactory::getMailer();
     $mailer->setSender($sender);
     $mailer->addRecipient($recipient[1]);
@@ -230,11 +227,6 @@ if ($is_uploaded3<2 && !empty($recipient[2])) {
     $replacements = array ($student->id, $student->name, $student->email, $link_upload3, $fnum_detail['label']);
     $body3 = preg_replace($patterns, $replacements, $obj[0]->message);
 
-    $config = JFactory::getConfig();
-    $sender = array(
-        $config->get( $from ),
-        $config->get( $fromname )
-    );
     $mailer = JFactory::getMailer();
     $mailer->setSender($sender);
     $mailer->addRecipient($recipient[2]);
@@ -262,11 +254,6 @@ if ($is_uploaded4<2 && !empty($recipient[3])) {
     $replacements = array ($student->id, $student->name, $student->email, $link_upload4, $fnum_detail['label']);
     $body4 = preg_replace($patterns, $replacements, $obj[0]->message);
 
-    $config = JFactory::getConfig();
-    $sender = array(
-        $config->get( $from ),
-        $config->get( $fromname )
-    );
     $mailer = JFactory::getMailer();
     $mailer->setSender($sender);
     $mailer->addRecipient($recipient[3]);

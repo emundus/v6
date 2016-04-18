@@ -1,9 +1,9 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1: emundus-redirect.php 89 2014-07-01 Benjamin Rivalland
+ * @version 1: emundus-redirect.php 89 2015-07-01 Benjamin Rivalland
  * @package Fabrik
- * @copyright Copyright (C) 2008 D�cision Publique. All rights reserved.
+ * @copyright Copyright (C) 2016 emundus.fr. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
