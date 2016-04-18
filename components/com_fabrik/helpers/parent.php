@@ -842,8 +842,8 @@ class FabrikWorker
 					}
 					elseif (is_array($val))
 					{
-						$msg = str_replace('{$' . $prefix . '->' . $key . '}', implode(',', $val), $msg);
-						$msg = str_replace('{$' . $prefix . '-&gt;' . $key . '}', implode(',', $val), $msg);
+						//$msg = str_replace('{$' . $prefix . '->' . $key . '}', implode(',', $val), $msg);
+						//$msg = str_replace('{$' . $prefix . '-&gt;' . $key . '}', implode(',', $val), $msg);
 					}
 				}
 			}
