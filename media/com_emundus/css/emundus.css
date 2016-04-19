@@ -229,6 +229,7 @@ p.description  {
 }
 .checklist1 {
 	background: url(../images/icones/error.png) 0 0 no-repeat;
+	background-position-x: right;
 }
 .checklist0  {
 	background: url(../images/icones/clean.png) 0 0 no-repeat;
