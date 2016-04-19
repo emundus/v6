@@ -11,7 +11,19 @@ defined('_JEXEC') or die;
 
 // Include the syndicate functions only once
 require_once dirname(__FILE__).'/helper.php';
+// needed when default top menu is missing
+global $gantry;
+$gantry->addLess('menu.less', 'menu.css', 1, array('menustyle'=>$gantry->get('menustyle','light'), 'menuHoverColor'=>$gantry->get('linkcolor'), 'menuDropBack'=>$gantry->get('accentcolor')));
+$gantry->addLess('menu-responsive.less', 'menu-responsive.css', 1, array('menustyle'=>$gantry->get('menustyle','light'), 'menuHoverColor'=>$gantry->get('linkcolor'), 'menuDropBack'=>$gantry->get('accentcolor')));
 
+/*
+$document = JFactory::getDocument();
+$files = glob('templates/rt_afterburner2/css-compiled/menu*.{css}', GLOB_BRACE);
+
+foreach($files as $file) {
+  	$document->addStyleSheet( JURI::base().$file );
+}
+*/
 $display_applicant_menu = $params->get('display_applicant_menu', 1);
 
 $user	= JFactory::getUser();

@@ -13,14 +13,17 @@
 
 // no direct access
 defined('_JEXEC') or die('Restricted access');
-//JHTML::stylesheet( 'emundus.css', JURI::Base().'modules/mod_emunduspanel/style/' );
 
 $document = JFactory::getDocument();
 $document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
+// overide css
+if (!empty($params->get('header_class', ''))) {
+	$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$params->get('header_class', '').".css" );
+}
+
 $db	= JFactory::getDBO();
-
-
 $user = JFactory::getUser();
+
 if(isset($user->menutype)) $user_menutype = $user->menutype;
 else $user_menutype = 'mainmenu';
 $folder = $params->get('folder', '');

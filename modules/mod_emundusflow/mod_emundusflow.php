@@ -25,7 +25,10 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
 	$document = JFactory::getDocument();
 	$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
-
+	// overide css
+	if (!empty($params->get('header_class', ''))) {
+		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$params->get('header_class', '').".css" );
+	}
 	$jinput = JFactory::getApplication()->input;
 	$option = $jinput->get('option');
 	$view = $jinput->get('view');
