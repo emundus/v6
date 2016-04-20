@@ -22,6 +22,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	//require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 	//require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	//require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+	JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
 	
 	$db = JFactory::getDBO();
 	$document = JFactory::getDocument();
@@ -75,13 +76,6 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 				$optional_documents[] = $document;
 		}
 	}
-
-	//$attachments = $application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
-	//$forms = $application->getFormsProgress($user->id, $user->profile, $user->fnum);
-	//$current_application = $application->getApplication($user->fnum);
-	//$sent = $checklist->getSent();
-	//$confirm_form_url = $checklist->getConfirmUrl();
-	
 
 	require(JModuleHelper::getLayoutPath('mod_emundus_checklist'));
 }
