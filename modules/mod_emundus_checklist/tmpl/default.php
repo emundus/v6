@@ -1,6 +1,4 @@
 <?php 
-JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
-
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 

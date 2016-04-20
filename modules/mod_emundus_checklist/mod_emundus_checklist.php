@@ -30,6 +30,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	if (!empty($params->get('header_class', ''))) {
 		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$params->get('header_class', '').".css" );
 	}
+	$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
+	
 	$app = JFactory::getApplication();
 	$jinput = $app->input;
 	$option = $jinput->get('option');
