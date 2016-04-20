@@ -26,7 +26,7 @@ if (!empty($tab)) {
         if ($j>$l) {
             break;
         } else {
-            echo '<div class="four wide column element_home_emundus">' . $t . '</div>';
+            echo '<div class="six wide column element_home_emundus">' . $t . '</div>';
         }
         $j++;
     } 
