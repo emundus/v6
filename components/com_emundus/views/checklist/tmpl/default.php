@@ -1,5 +1,3 @@
-<script>//Dropzone.autoDiscover = false;</script>
-
 <?php 
 JHTML::_('behavior.modal'); 
 JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );

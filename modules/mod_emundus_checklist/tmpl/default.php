@@ -1,6 +1,9 @@
-<?php // no direct access
-defined('_JEXEC') or die('Restricted access');
+<?php 
 JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
+
+// no direct access
+defined('_JEXEC') or die('Restricted access');
+
 // FORMS
 if ($show_forms == 1) {
 
