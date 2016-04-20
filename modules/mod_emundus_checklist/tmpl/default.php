@@ -18,7 +18,7 @@ if ($show_forms == 1) {
       $class = $need.$active;
       $endlink= '</a>';
     ?>
-        <li id="mlf'.$form->id.'" class="em_module <?php echo $class; ?>"><div class="em_form"><?php echo $link.$form->title.$endlink; ?></div></li>
+        <li id="mlf<?php echo $form->id; ?>" class="em_module <?php echo $class; ?>"><div class="em_form"><?php echo $link.$form->title.$endlink; ?></div></li>
     <?php 
     }
     echo '</ul>';
@@ -44,7 +44,7 @@ if ($show_mandatory_documents == 1) {
       $class = $need.$active;
       $endlink= '</a>';
     ?>
-        <li id="ml'.$attachment->_id.'" class="em_module <?php echo $class; ?>"><div class="em_form"><?php echo $link.$attachment->value.$endlink; ?></div></li>
+        <li id="ml<?php echo $attachment->_id; ?>" class="em_module <?php echo $class; ?>"><div class="em_form"><?php echo $link.$attachment->value.$endlink; ?></div></li>
     <?php 
     }
     echo '</ul>';
@@ -70,7 +70,7 @@ if ($show_optional_documents == 1) {
       $class = $need.$active;
       $endlink= '</a>';
     ?>
-        <li id="ml'.$attachment->_id.'" class="em_module <?php echo $class; ?>"><div class="em_form"><?php echo $link.$attachment->value.$endlink; ?></div></li>
+        <li id="ml<?php echo $attachment->_id; ?>" class="em_module <?php echo $class; ?>"><div class="em_form"><?php echo $link.$attachment->value.$endlink; ?></div></li>
     <?php 
     }
     echo '</ul>';
