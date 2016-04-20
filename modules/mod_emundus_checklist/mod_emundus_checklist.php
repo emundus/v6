@@ -22,7 +22,6 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	//require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 	//require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	//require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-	JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
 	
 	$db = JFactory::getDBO();
 	$document = JFactory::getDocument();
