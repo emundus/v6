@@ -32,6 +32,17 @@
 					<option
 						value="1">JYes</option>
 				</field>
+				<field
+					name="show_start_link"
+					type="radio"
+					default="0"
+					label="MOD_EMUNDUSPANEL_START_LINK_LABEL"
+					description="MOD_EMUNDUSPANEL_START_LINK_DESC">
+					<option
+						value="0">JNo</option>
+					<option
+						value="1">JYes</option>
+				</field>
 				<field name="@spacer" type="spacer" default="&lt;b&gt;Folder to find pictures&lt;b&gt;" label="" description="" />
 				<field name="folder" type="text" default="media/com_emundus/images/icones/" label="Enter the folder for all pictures" description="" size="60" />	
 		

@@ -29,6 +29,7 @@ if(isset($user->menutype)) $user_menutype = $user->menutype;
 else $user_menutype = 'mainmenu';
 $folder = $params->get('folder', '');
 $show_profile_link = $params->get('show_profile_link', 1);
+$show_start_link = $params->get('show_start_link', 1);
 $text = $params->get($user_menutype, '');
 $img = $params->get($user_menutype.'_img', '');
 $is_text = $params->get($user_menutype.'_text', '');

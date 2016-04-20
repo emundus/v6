@@ -11,9 +11,11 @@ if (!empty($tab)) {
         $title = $user->profile_label;
 
         if($show_profile_link == 1)
-            echo '<legend>'.$title.' '.$btn_profile.' '.$btn_start.'</legend>';
-        else
-            echo '<legend>'.$title.'</legend>';
+            $title .= ' '.$btn_profile;
+        if($show_start_link == 1)
+            $title .= ' '.$btn_start;
+        
+        echo '<legend>'.$title.'</legend>';
     }
     
     ?>
