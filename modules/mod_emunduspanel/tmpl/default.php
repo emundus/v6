@@ -1,6 +1,5 @@
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access'); 
-JHTML::stylesheet( 'emundus.css', JURI::Base().'modules/mod_emunduspanel/style/' );
 
 if (!empty($tab)) {
 ?>
@@ -18,27 +17,20 @@ if (!empty($tab)) {
     }
     
     ?>
-    <div class="emundus_home_page" ><div class="rt-grid-9">
+    <div class="ui grid">
     <?php 
     $i=1; $j=1;$k=0;
     $l = (@$user->candidature_posted == 1 && @$user->candidature_incomplete == 0 ) ? 2 : '999';
-    //die(print_r($user));
 
     foreach ($tab as $t){ 
         if ($j>$l) {
             break;
         } else {
-            echo '<div class="rt-grid-3 element_home_emundus">' . $t . '</div>';
-            $k++;
-            if ($k > 2) {
-                echo '</div><div class="rt-grid-9">';
-                $k=0;
-            }
+            echo '<div class="four wide column element_home_emundus">' . $t . '</div>';
         }
         $j++;
     } 
     ?>
-    </div>
     </div>
     
 </fieldset>
