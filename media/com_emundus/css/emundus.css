@@ -7,59 +7,16 @@
 .bold {font-weight:bold;}
 .green{
 	background-color:#AEE3BE;
-	background-image: -moz-linear-gradient(center top , #FFFFFF, #AEE3BE);
-	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #AEE3BE), color-stop(1, #AEE3BE));
-	background:-moz-linear-gradient(top, #FFFFFF 5%, #AEE3BE 100%);
-	background:-webkit-linear-gradient(top, #FFFFFF 5%, #AEE3BE 100%);
-	background:-o-linear-gradient(top, #FFFFFF 5%, #AEE3BE 100%);
-	background:-ms-linear-gradient(top, #FFFFFF 5%, #AEE3BE 100%);
-	background:linear-gradient(to bottom, #FFFFFF 5%, #AEE3BE 100%);
-
-	-moz-border-radius:7px;
-	-webkit-border-radius:7px;
-	border-radius:7px;
 }
 .orange{
 	background-color:#FC0;
-	background-image: -moz-linear-gradient(center top , #FFFFFF, #FC0);
-	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #FC0), color-stop(1, #FC0));
-	background:-moz-linear-gradient(top, #FFFFFF 5%, #FC0 100%);
-	background:-webkit-linear-gradient(top, #FFFFFF 5%, #FC0 100%);
-	background:-o-linear-gradient(top, #FFFFFF 5%, #FC0 100%);
-	background:-ms-linear-gradient(top, #FFFFFF 5%, #FC0 100%);
-	background:linear-gradient(to bottom, #FFFFFF 5%, #FC0 100%);
 
-	-moz-border-radius:7px;
-	-webkit-border-radius:7px;
-	border-radius:7px;
 }
 .red{
 	background-color:#FFA8A8;
-	background-image: -moz-linear-gradient(center top , #FFFFFF, #FFA8A8);
-	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #FFA8A8), color-stop(1, #FFA8A8));
-	background:-moz-linear-gradient(top, #FFFFFF 5%, #FFA8A8 100%);
-	background:-webkit-linear-gradient(top, #FFFFFF 5%, #FFA8A8 100%);
-	background:-o-linear-gradient(top, #FFFFFF 5%, #FFA8A8 100%);
-	background:-ms-linear-gradient(top, #FFFFFF 5%, #FFA8A8 100%);
-	background:linear-gradient(to bottom, #FFFFFF 5%, #FFA8A8 100%);
-
-	-moz-border-radius:7px;
-	-webkit-border-radius:7px;
-	border-radius:7px;
 }
 .blue{
 	background-color:#09F;
-	background-image: -moz-linear-gradient(center top , #FFFFFF, #09F);
-	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #09F), color-stop(1, #09F));
-	background:-moz-linear-gradient(top, #FFFFFF 5%, #09F 100%);
-	background:-webkit-linear-gradient(top, #FFFFFF 5%, #09F 100%);
-	background:-o-linear-gradient(top, #FFFFFF 5%, #09F 100%);
-	background:-ms-linear-gradient(top, #FFFFFF 5%, #09F 100%);
-	background:linear-gradient(to bottom, #FFFFFF 5%, #09F 100%);
-
-	-moz-border-radius:7px;
-	-webkit-border-radius:7px;
-	border-radius:7px;
 }
 input[name="search_button"]{
 	background-color:#90CBF7;
