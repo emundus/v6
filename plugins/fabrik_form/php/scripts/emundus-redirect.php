@@ -13,6 +13,183 @@ defined( '_JEXEC' ) or die();
  * @description Redirection et chainage des formulaires suivant le profile de l'utilisateur
  */
 
+
+/********************************************
+ * 
+ * Duplicate data on each applicant file for current campaigns
+ */
+jimport('joomla.log.log');
+JLog::addLogger(
+    array(
+        // Sets file name
+        'text_file' => 'com_emundus.duplicate.php'
+    ),
+    JLog::ALL,
+    array('com_emundus')
+);
+//echo "<pre>";print_r($data);echo "<hr>";
+
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$copy_application_form = $eMConfig->get('copy_application_form', 0);
+
+$user 	= JFactory::getUser();
+$db 	= JFactory::getDBO();
+
+if ($copy_application_form == 1 && isset($user->fnum)) {
+	// Get some form definition
+	$table = explode('___', key($data));
+	$table_name = $table[0];
+	$table_key = $table[1];
+	$table_key_value = array_values($data)[0];
+	$fnums = $user->fnums;
+	unset($fnums[$user->fnum]);
+
+	$fabrik_repeat_group = array();
+	if (!empty($data['fabrik_repeat_group'])) {
+		foreach ($data['fabrik_repeat_group'] as $key => $value) {
+			$fabrik_repeat_group[] = $key;
+		}
+	}
+	// only repeated groups
+	$fabrik_group_rowids = array();
+	if (!empty($data['fabrik_group_rowids'])) {
+		foreach ($data['fabrik_group_rowids'] as $key => $value) {
+			$fabrik_group_rowids[] = $key;
+		}
+	}
+	// get columns
+	$query = 'SELECT id, name, group_id
+				FROM #__fabrik_elements 
+				WHERE published=1 AND group_id IN ('.implode(',', $fabrik_repeat_group).') AND name not in ("id", "user", "fnum", "parent_id")';
+	$db->setQuery( $query );
+	$elements = $db->loadAssocList('id');
+
+	// construction of our data structure
+	$bdd_def = array();
+	foreach ($elements as $key => $element) {
+		if (in_array($element['group_id'], $fabrik_group_rowids)) {
+			$key = $table_name.'_'.$element['group_id'].'_repeat';
+		} else {
+			$key = $table_name;
+		}
+		$bdd_def[$key]['elements'][] = $element['name'];
+		$bdd_def[$key]['values'][] = $data[$key.'___'.$element['name'].'_raw'];
+		$bdd_def[$key]['update'][] = '`'.$element['name'].'` = '.$db->Quote($data[$key.'___'.$element['name'].'_raw']);
+	}
+	// Is that a new insertion ?
+	if (isset($data['usekey_newrecord']) && $data['usekey_newrecord']==1) {
+		// Parent table
+		$data = implode(',', $db->Quote($bdd_def[$table_name]['values']));
+
+		foreach ($fnums as $key => $fnum) {
+			$query = 'INSERT INTO `'.$table_name.'` ('.implode(',', $bdd_def[$table_name]['elements']).', fnum, user) VALUES ';
+			$query .= '('.$data.', '.$db->Quote($key).', '.$user->id.')';
+		
+			$db->setQuery( $query );
+			try {
+			    $db->execute();
+			    $parent_id[] = $db->insertid();
+			} catch (Exception $e) {
+			    $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+				JLog::add($error, JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		$query = '';
+		unset($bdd_def[$table_name]);
+		// Joined table (with repeated group)
+		foreach ($bdd_def as $key => $bdd) {
+			$query = 'INSERT INTO `'.$key.'` ('.implode(',', $bdd['elements']).', parent_id) VALUES ';
+			foreach ($parent_id as $i => $parent) {	
+				
+				for($i=0 ; $i < count($bdd['values'][0]) ; $i++) {
+					$data = array();
+					foreach ($bdd['values'] as $key => $v) {
+						$data[] = $v[$i];
+					}
+					$values[] = '('.implode(',', $db->Quote($data)).', '.$parent.')';
+				}
+		
+				
+			}
+			$query .= implode(',', $values);
+			$db->setQuery( $query );
+			try {
+			    $res = $db->execute();
+			} catch (Exception $e) {
+			    $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+		        JLog::add($error, JLog::ERROR, 'com_emundus');
+			}
+		}
+	} else {
+		// Parent table
+		$updated_fnum = array();
+		foreach ($fnums as $key => $fnum) {	
+			$query = 'UPDATE `'.$table_name.'` SET ';
+			$query .= implode(',', $bdd_def[$table_name]['update']);
+			$query .= ' WHERE fnum like '.$db->Quote($key);
+			$db->setQuery( $query );
+			try {
+echo "<hr>";
+var_dump($query);
+			    $res = $db->execute();
+			    $updated_fnum[] = $key;
+			} catch (Exception $e) {
+			    $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+		        JLog::add($error, JLog::ERROR, 'com_emundus');
+			}
+		}
+
+	}		
+	// Joined table (with repeat group)
+	if (count($updated_fnum) > 0) {
+		$query = 'SELECT id FROM `'.$table_name.'` WHERE fnum IN ('.implode(',', $db->Quote($updated_fnum)).')';
+		$db->setQuery( $query );
+		$parent_id = $db->loadColumn();
+	}
+	
+	//********//
+	unset($bdd_def[$table_name]);
+	foreach ($bdd_def as $key => $bdd) {
+		$query = 'DELETE FROM `'.$key.'` WHERE parent_id IN ('.implode(',', $parent_id).')';
+		$db->setQuery( $query );
+		try {
+			var_dump($query);
+		    $res = $db->execute();
+		} catch (Exception $e) {
+		    $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+	        JLog::add($error, JLog::ERROR, 'com_emundus');
+		}
+
+		$query = 'INSERT INTO `'.$key.'` ('.implode(',', $bdd['elements']).', parent_id) VALUES ';
+		foreach ($parent_id as $i => $parent) {	
+			
+			for($i=0 ; $i < count($bdd['values'][0]) ; $i++) {
+				$data = array();
+				foreach ($bdd['values'] as $key => $v) {
+					$data[] = $v[$i];
+				}
+				$values[] = '('.implode(',', $db->Quote($data)).', '.$parent.')';
+			}
+	
+			
+		}
+		$query .= implode(',', $values);
+		$db->setQuery( $query );
+		try {
+		    $res = $db->execute();
+		} catch (Exception $e) {
+		    $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+	        JLog::add($error, JLog::ERROR, 'com_emundus');
+		}
+	}
+}
+
+
+/*
+ * REDIRECTION ONCE DUPLICATION IS DONE
+*/
+
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
 $user 	=  JFactory::getUser();

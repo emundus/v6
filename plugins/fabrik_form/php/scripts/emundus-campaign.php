@@ -47,6 +47,7 @@ $user_profile = JUserHelper::getProfile($user->id)->emundus_profile;
 
 $schoolyear = $campaign[0]['year'];
 $profile = $campaign[0]['profile_id'];
+$applicant_profile = $mprofile->getProfileByApplicant($user->id);
 $firstname = ucfirst($user_profile['firstname']);
 $lastname = ucfirst($user_profile['lastname']);
 $registerDate = $db->Quote($user->registerDate);
@@ -96,6 +97,7 @@ $user->candidature_incomplete 	= 1;
 $user->schoolyear			= $schoolyear;
 $user->campaign_id			= $campaign_id[0];
 $user->fnum 				= $fnum;
+$user->fnums				= $mprofile->getApplicantFnums($user->id, null, $applicant_profile["start_date"], $applicant_profile["end_date"]);
 $user->start_date 			= $candidature_start;
 $user->end_date 			= $candidature_end;
 $user->campaign_name 		= $campaign_label;
