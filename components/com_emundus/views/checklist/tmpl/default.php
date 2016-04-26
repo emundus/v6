@@ -73,7 +73,7 @@ if(!$this->sent) : ?>
                         } 
                         $div .= '&nbsp;-&nbsp;' ;
                         if($item->can_be_deleted==1) {
-                        $div .= '<a href="?option=com_emundus&task=delete&aid='.$item->id .'&Itemid='.$itemid.'#a'.$attachment->id .'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'.JText::_('DELETE').'</a>';
+                        $div .= '<a href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->uid.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'.JText::_('DELETE').'</a>';
                         } 
                         else { 
                         $div .= JText::_('CANT_DELETE'); 
@@ -88,8 +88,7 @@ if(!$this->sent) : ?>
                 $div .= '
             <tr>
                 <td>';
-                //$div .= '<div id="file'.$attachment->id.'"  class="dropzone">';
-                $div .= '<form id="form-a'.$attachment->id.'" name="checklistForm" class="dropzone" action="index.php?option=com_emundus&task=upload&Itemid='.$itemid.'" method="post" enctype="multipart/form-data">';
+                $div .= '<form id="form-a'.$attachment->id.'" name="checklistForm" class="dropzone" action="'.JRoute::_('index.php?option=com_emundus&task=upload&Itemid='.$itemid).'" method="post" enctype="multipart/form-data">';
                 $div .= '<input type="hidden" name="attachment" value="'.$attachment->id .'"/>
                 <input type="hidden" name="label" value="'.$attachment->lbl.'"/>
                 <div class="input-group">
@@ -109,7 +108,7 @@ Dropzone.options.formA'.$attachment->id.' =  {
     maxFilesize: maxFilesize.substr(0, maxFilesize.length-1), // MB
     dictDefaultMessage: "'.JText::_('COM_EMUNDUS_UPLOAD_DROP_FILE_OR_CLICK').'",
     dictInvalidFileType: "'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'",
-    url: "index.php?option=com_emundus&task=upload&Itemid='.$itemid.'&format=raw",
+    url: "'.JRoute::_('index.php?option=com_emundus&task=upload&Itemid='.$itemid.'&format=raw').'",
 
     accept: function(file, done) {
         var sFileName = file.name;
@@ -138,7 +137,7 @@ Dropzone.options.formA'.$attachment->id.' =  {
       this.on("success", function(file, responseText) {
         // Handle the responseText here. For example, add the text to the preview element:
         var response = JSON.parse(responseText);
-        var aid = response["aid"];
+        var id = response["id"];
         file.previewTemplate.appendChild(document.createTextNode(response["message"]+" "));
 
         if (!response["status"]) {
@@ -169,7 +168,7 @@ Dropzone.options.formA'.$attachment->id.' =  {
           $.ajax({
             type: "GET",
             dataType: "json",
-            url: "index.php?option=com_emundus&task=delete&aid="+aid+"&Itemid='.$itemid.'&format=raw",
+            url: "'.JRoute::_('index.php?option=com_emundus&task=delete&uid="+id+"&aid='.$attachment->id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'&format=raw').'",
             data: ({
                 format: "raw"
             }),
@@ -184,7 +183,6 @@ Dropzone.options.formA'.$attachment->id.' =  {
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText);
             }
-
           });
         });
         // Add the button to the file preview element.
@@ -193,7 +191,6 @@ Dropzone.options.formA'.$attachment->id.' =  {
 
     }
 }; 
-
 </script>';
                 $div .= '</form>';
                 //$div .= '</div>';

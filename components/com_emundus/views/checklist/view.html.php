@@ -14,9 +14,9 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport( 'joomla.application.component.view');
  
 /**
- * HTML View class for the HelloWorld Component
+ * HTML View class for the eMundus Component
  *
- * @package    HelloWorld
+ * @package    eMundus
  */
  
 class EmundusViewChecklist extends JViewLegacy
@@ -81,10 +81,7 @@ class EmundusViewChecklist extends JViewLegacy
 		$this->assignRef('instructions', $instructions);
 		$this->assignRef('is_other_campaign', $is_other_campaign);
 
-		/*$evaluation =  &$this->getModel('evaluation');
-		$evaluation->getEvalColumns();
-		$this->assignRef('evaluation', $evaluation);*/
-		
+	
 		$result = $this->get('Result');
 		$this->assignRef('result', $result);
 	

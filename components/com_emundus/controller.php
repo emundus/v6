@@ -237,46 +237,54 @@ class EmundusController extends JControllerLegacy {
         Delete document from application file
     */
     function delete() {
-        $student_id = JRequest::getVar('sid', null, 'GET', 'none',0);
-        $layout     = JRequest::getVar('layout', null, 'GET', 'none',0);
-        $format     = JRequest::getVar('format', null, 'GET', 'none',0);
-        $itemid     = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-        $fnum       = JRequest::getVar('fnum', null, 'GET', 'none',0);
-        $current_user = JFactory::getUser();
+        $student_id    = JRequest::getVar('sid', null, 'GET', 'none',0);
+        $upload_id     = JRequest::getVar('uid', null, 'GET', 'none',0);
+        $attachment_id = JRequest::getVar('aid', null, 'GET', 'none',0);
+        $duplicate     = JRequest::getVar('duplicate', null, 'GET', 'none',0);
+        $nb            = JRequest::getVar('nb', null, 'GET', 'none',0);
+        $layout        = JRequest::getVar('layout', null, 'GET', 'none',0);
+        $format        = JRequest::getVar('format', null, 'GET', 'none',0);
+        $itemid        = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $fnum          = JRequest::getVar('fnum', null, 'GET', 'none',0);
+        $current_user  = JFactory::getUser();
 
         if (EmundusHelperAccess::isApplicant($current_user->id)){
             $user = $current_user;
             $fnum = $user->fnum;
+            if ($duplicate == 1 && $nb == 1) {
+               $fnums = implode(',', $db->Quote($users->fnums));
+               $where = ' AND eu.attachment_id='.$attachment_id;
+            } else {
+                $fnums = $db->Quote($fnum);
+                $where = ' AND eu.id='.$upload_id;
+            }
+            
         } elseif(EmundusHelperAccess::asAccessAction(4, 'd', $current_user->id, $fnum) || 
                  EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
             $user = JFactory::getUser($student_id);
+            $fnums = $db->Quote($fnum);
         } else {
             JError::raiseError(500, JText::_('ACCESS_DENIED'));
             return false;
         }
 
-        if (isset($layout))
-            $url = 'index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid;
-        else
-            $url ='index.php?option=com_emundus&view=checklist&Itemid='.$itemid;
-
         $chemin = EMUNDUS_PATH_ABS;
         $db     = JFactory::getDBO();
-        $id     = JRequest::get('get');
-        $id     = $id['aid'];
 
-        $menu = @JSite::getMenu()->getActive();
-        $access=!empty($menu)?$menu->access : 0;
-        if (EmundusHelperAccess::isAllowedAccessLevel($user->id, $access))
-            $query  = 'SELECT filename FROM #__emundus_uploads 
-                        WHERE user_id = '.mysql_real_escape_string($user->id).' AND id = '.mysql_real_escape_string($id). ' AND fnum like '.$db->Quote($fnum);
+        if (isset($layout))
+            $url = JRoute::_('index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid);
         else
-            $query  = 'SELECT filename FROM #__emundus_uploads 
-                        WHERE user_id = '.mysql_real_escape_string($user->id).' AND can_be_deleted = 1 AND id = '.mysql_real_escape_string($id). ' AND fnum like '.$db->Quote($fnum);
+            $url = JRoute::_('index.php?option=com_emundus&view=checklist&Itemid='.$itemid);
+
+
+        $query  = 'SELECT eu.filename 
+                    FROM #__emundus_uploads AS eu
+                    WHERE eu.user_id = '.mysql_real_escape_string($user->id).' 
+                    AND eu.fnum IN ('.$fnums.') '.$where;
         
         try{
             $db->setQuery( $query );
-            $filename = $db->loadResult();
+            $filename = $db->loadColumn();
 
             if (empty($filename)) {
                 $message = JText::_('Error : empty file');
@@ -289,7 +297,7 @@ class EmundusController extends JControllerLegacy {
             } else{
                 try{
                     $query  = 'DELETE FROM #__emundus_uploads 
-                                WHERE id = '.mysql_real_escape_string($id).' 
+                                WHERE id = '.mysql_real_escape_string($upload_id).' 
                                 AND user_id = '.mysql_real_escape_string($user->id). ' 
                                 AND fnum like '.$db->Quote($fnum);
                     $db->setQuery( $query );
@@ -299,10 +307,10 @@ class EmundusController extends JControllerLegacy {
                         if (is_file($chemin.$user->id.DS.'tn_'.$filename)) {
                             unlink($chemin.$user->id.DS.'tn_'.$filename);                    
                         }
-                        $message = JText::_('File has been succesfully deleted');
+                        $message = JText::_('ATTACHMENT_DELETED').' : '.$filename;
                         
                     } else {
-                        $message = JText::_('File was not found on server, thanks for checking that your other attachments are correctly uploaded');
+                        $message = JText::_('FILE_NOT_FOUND').' : '.$filename;
                     }
                 
                     if ($format == 'raw') 
@@ -682,16 +690,16 @@ class EmundusController extends JControllerLegacy {
             {
                 $db->setQuery( $query );
                 $db->execute();
-                $aid = $db->insertid();
+                $id = $db->insertid();
 
                 if ($format == "raw") {
-                    echo '{"aid":"'.$aid.'","status":true, "message":"'.JText::_('DELETE').'"}';
+                    echo '{"id":"'.$id.'","status":true, "message":"'.JText::_('DELETE').'"}';
                 } else {
                     JFactory::getApplication()->enqueueMessage($nb.($nb>1?' '.JText::_("FILES_BEEN_UPLOADED"):' '.JText::_("FILE_BEEN_UPLOADED")), 'message');
                     if (isset($layout))
-                        $this->setRedirect('index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid.'#a'.$attachments);
+                        $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid.'#a'.$attachments));
                     else
-                        $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid.'#a'.$attachments);
+                        $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=checklist&Itemid='.$itemid.'#a'.$attachments));
                 }
             }
             catch(Exception $e)
@@ -703,9 +711,9 @@ class EmundusController extends JControllerLegacy {
                 } else {
                     JFactory::getApplication()->enqueueMessage($error, 'error');
                     if (isset($layout))
-                        $this->setRedirect('index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid.'#a'.$attachments);
+                        $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid.'#a'.$attachments));
                     else
-                        $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid.'#a'.$attachments);
+                        $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=checklist&Itemid='.$itemid.'#a'.$attachments));
                 }
             }
         }
@@ -719,7 +727,7 @@ class EmundusController extends JControllerLegacy {
     function updateprofile() {
         $user = JFactory::getUser();
         if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
-            $this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
+            $this->setRedirect(JRoute::_('index.php'), JText::_('Only administrator can access this function.'), 'error');
             return;
         }
         $attachment_id = JRequest::getVar('aid', $default=null, $hash= 'POST', $type= 'array', $mask=0);
