@@ -15,24 +15,40 @@ defined( '_JEXEC' ) or die();
 
 include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
-$app = JFactory::getApplication();
-$db = JFactory::getDBO();
+$app            = JFactory::getApplication();
+$db             = JFactory::getDBO();
 
-$current_user  = JFactory::getUser();
+$current_user   = JFactory::getUser();
 
 $user_id = $fabrikFormData['user_raw'][0];
 $profile = $fabrikFormData['profile_raw'][0];
+$fnum = $fabrikFormData['fnum_raw'];
 
-$query = 'UPDATE #__emundus_users SET profile='.$profile.' WHERE user_id = '.$user_id;
-try {
-    $db->setQuery($query);
-    $db->execute();
-} catch (Exception $e) {
-    // catch any database errors.
+$sid            = $app->input->get('sid');
+
+if (!EmundusHelperAccess::isApplicant($current_user->id)) { 
+    $query = 'UPDATE #__emundus_users SET profile='.$profile.' WHERE user_id = '.$sid;
+    try {
+        $db->setQuery($query);
+        $db->execute();
+    } catch (Exception $e) {
+        // catch any database errors.
+    }
+
+    $table = explode('___', key($data));
+    $table_name = $table[0];
+    $table_key = $table[1];
+    $query = 'UPDATE '.$table_name.' SET user='.$sid.' WHERE fnum like '.$db->Quote($fnum);
+    try {
+        $db->setQuery($query);
+        $db->execute();
+    } catch (Exception $e) {
+        // catch any database errors.
+    }
 }
 
-if (EmundusHelperAccess::isApplicant($current_user->id)) {   
-    $fnum = $fabrikFormData['fnum_raw'];
+if (EmundusHelperAccess::isApplicant($current_user->id)) {  
+
     $country = $fabrikFormData['birth_country_raw'][0];
     $rowid = $fabrikFormData['rowid'];
 
