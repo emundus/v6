@@ -19,9 +19,9 @@ echo $description;
   <?php foreach($applications as $application) : ?>
   <div class="row" id="row<?php echo $application->fnum; ?>">
     <div class="col-xs-6 col-md-4">
-      <p class="<?php echo $header_class; ?>">
+      <a href="<?php echo JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'; ?>">
         <?php echo $application->label; ?>
-      </p> 
+      </a> 
     </div>
 
     <div class="col-xs-6 col-md-4">

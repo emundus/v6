@@ -33,8 +33,6 @@ $Itemid 					= $app->input->getInt('Itemid', null, 'int');
 $eMConfig 					= JComponentHelper::getParams('com_emundus');
 $applicant_can_renew 		= $eMConfig->get('applicant_can_renew', '0');
 
-$header_class 				= $params->get('header_class', '');
-
 $description		 		= $params->get('description', '');
 $show_add_application 		= $params->get('show_add_application', 1);
 $position_add_application 	= (int)$params->get('position_add_application', 0);
@@ -42,6 +40,7 @@ $position_add_application 	= (int)$params->get('position_add_application', 0);
 $applications		= modemundusApplicationsHelper::getApplications($params);
 $linknames 			= $params->get('linknames', 0);
 $moduleclass_sfx 	= htmlspecialchars($params->get('moduleclass_sfx'));
+$header_class 		= $params->get('header_class', '');
 $user 				= JFactory::getUser();
 
 $m_application 		= new EmundusModelApplication;
