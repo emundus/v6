@@ -247,16 +247,18 @@ class EmundusController extends JControllerLegacy {
         $itemid        = JRequest::getVar('Itemid', null, 'GET', 'none',0);
         $fnum          = JRequest::getVar('fnum', null, 'GET', 'none',0);
         $current_user  = JFactory::getUser();
+        $chemin = EMUNDUS_PATH_ABS;
+        $db     = JFactory::getDBO();
 
         if (EmundusHelperAccess::isApplicant($current_user->id)){
             $user = $current_user;
             $fnum = $user->fnum;
             if ($duplicate == 1 && $nb == 1) {
-               $fnums = implode(',', $db->Quote($users->fnums));
-               $where = ' AND eu.attachment_id='.$attachment_id;
+               $fnums = implode(',', $db->Quote(array_keys($user->fnums)));
+               $where = ' AND attachment_id='.$attachment_id;
             } else {
                 $fnums = $db->Quote($fnum);
-                $where = ' AND eu.id='.$upload_id;
+                $where = ' AND id='.$upload_id;
             }
             
         } elseif(EmundusHelperAccess::asAccessAction(4, 'd', $current_user->id, $fnum) || 
@@ -268,25 +270,22 @@ class EmundusController extends JControllerLegacy {
             return false;
         }
 
-        $chemin = EMUNDUS_PATH_ABS;
-        $db     = JFactory::getDBO();
-
         if (isset($layout))
-            $url = JRoute::_('index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid);
+            $url = 'index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid;
         else
-            $url = JRoute::_('index.php?option=com_emundus&view=checklist&Itemid='.$itemid);
+            $url = 'index.php?option=com_emundus&view=checklist&Itemid='.$itemid;
 
 
-        $query  = 'SELECT eu.filename 
-                    FROM #__emundus_uploads AS eu
-                    WHERE eu.user_id = '.mysql_real_escape_string($user->id).' 
-                    AND eu.fnum IN ('.$fnums.') '.$where;
-        
+        $query  = 'SELECT id, filename 
+                    FROM #__emundus_uploads
+                    WHERE user_id = '.mysql_real_escape_string($user->id).' 
+                    AND fnum IN ('.$fnums.') '.$where;
+
         try{
             $db->setQuery( $query );
-            $filename = $db->loadColumn();
-
-            if (empty($filename)) {
+            $files = $db->loadAssocList();
+  
+            if (count($files) == 0) {
                 $message = JText::_('Error : empty file');
                 if ($format == 'raw') {
                     echo '{"status":false, "message":"'.$message.'"}';
@@ -296,23 +295,31 @@ class EmundusController extends JControllerLegacy {
 
             } else{
                 try{
-                    $query  = 'DELETE FROM #__emundus_uploads 
-                                WHERE id = '.mysql_real_escape_string($upload_id).' 
+                    
+                    $file_id = array();
+                    $message = '';
+
+                    foreach ($files as $file) {
+                        $file_id[] = $file['id'];
+
+                        if (unlink($chemin.$user->id.DS.$file['filename'])) {
+                            if (is_file($chemin.$user->id.DS.'tn_'.$file['filename'])) {
+                                unlink($chemin.$user->id.DS.'tn_'.$file['filename']);                    
+                            }
+                            $message .= JText::_('ATTACHMENT_DELETED').' : '.$file['filename'].'. ';
+                            
+                        } else {
+                            $message .= JText::_('FILE_NOT_FOUND').' : '.$file['filename'].'. ';
+                        }
+                    }
+
+                    $query  = 'DELETE FROM #__emundus_uploads
+                                WHERE id IN ('.implode(',', $file_id).') 
                                 AND user_id = '.mysql_real_escape_string($user->id). ' 
-                                AND fnum like '.$db->Quote($fnum);
+                                AND fnum IN ('.$fnums.')';
                     $db->setQuery( $query );
                     $db->execute();
 
-                    if (unlink($chemin.$user->id.DS.$filename)) {
-                        if (is_file($chemin.$user->id.DS.'tn_'.$filename)) {
-                            unlink($chemin.$user->id.DS.'tn_'.$filename);                    
-                        }
-                        $message = JText::_('ATTACHMENT_DELETED').' : '.$filename;
-                        
-                    } else {
-                        $message = JText::_('FILE_NOT_FOUND').' : '.$filename;
-                    }
-                
                     if ($format == 'raw') 
                         echo '{"status":true, "message":"'.$message.'"}';
                     else 

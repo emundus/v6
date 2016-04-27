@@ -73,7 +73,7 @@ if(!$this->sent) : ?>
                         } 
                         $div .= '&nbsp;-&nbsp;' ;
                         if($item->can_be_deleted==1) {
-                        $div .= '<a href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->uid.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'.JText::_('DELETE').'</a>';
+                        $div .= '<a href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'.JText::_('DELETE').'</a>';
                         } 
                         else { 
                         $div .= JText::_('CANT_DELETE'); 
@@ -108,7 +108,7 @@ Dropzone.options.formA'.$attachment->id.' =  {
     maxFilesize: maxFilesize.substr(0, maxFilesize.length-1), // MB
     dictDefaultMessage: "'.JText::_('COM_EMUNDUS_UPLOAD_DROP_FILE_OR_CLICK').'",
     dictInvalidFileType: "'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'",
-    url: "'.JRoute::_('index.php?option=com_emundus&task=upload&Itemid='.$itemid.'&format=raw').'",
+    url: "index.php?option=com_emundus&task=upload&Itemid='.$itemid.'&format=raw",
 
     accept: function(file, done) {
         var sFileName = file.name;
@@ -168,7 +168,7 @@ Dropzone.options.formA'.$attachment->id.' =  {
           $.ajax({
             type: "GET",
             dataType: "json",
-            url: "'.JRoute::_('index.php?option=com_emundus&task=delete&uid="+id+"&aid='.$attachment->id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'&format=raw').'",
+            url: "index.php?option=com_emundus&task=delete&uid="+id+"&aid='.$attachment->id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'&format=raw",
             data: ({
                 format: "raw"
             }),
@@ -176,6 +176,7 @@ Dropzone.options.formA'.$attachment->id.' =  {
                 if (result.status) {
                     // Change icon on fieldset
                     document.getElementById("l"+'.$attachment->id.').childNodes[0].className = "";
+                    document.getElementById("ml"+'.$attachment->id.').className = "";
                     alert("'. JText::_('ATTACHMENT_DELETED').'");
                 }
 
