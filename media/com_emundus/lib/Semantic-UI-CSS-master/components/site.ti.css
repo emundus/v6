@@ -118,7 +118,10 @@ a:active {
   color: #e8450f;
   text-decoration: none;
 }
-
+.em_module a {
+  color: #000;
+  text-decoration: none;
+}
 
 /*******************************
           Highlighting
