@@ -3,7 +3,7 @@ defined('_JEXEC') or die('Restricted access');
 
 if (!empty($tab)) {
 ?>
-<div class="emundus_home_page">
+<div class="emundus_home_page" id="em-panel">
 <fieldset class="ui existing segment">
     <?php
     if(isset($user->profile) && $user->profile>0) {
