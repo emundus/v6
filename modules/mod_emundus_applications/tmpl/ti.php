@@ -16,41 +16,56 @@ echo $description;
 <?php endif; ?>
 <?php if (!empty($applications)) : ?>
 <div class="<?php echo $moduleclass_sfx ?>"> 
-<div class="ui internally celled grid">
+  <?php foreach($applications as $application) : ?>
+  <div class="row" id="row<?php echo $application->fnum; ?>">
+    <div class="col-xs-6 col-md-4">
+      <p class="<?php echo $header_class; ?>">
+        <?php echo $application->label; ?>
+      </p> 
+    </div>
 
- <?php foreach($applications as $application) : ?>
-  <div class="row">
-    <div class="three wide column">
-    <a href="<?php echo JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid; ?>" class="list-group-item<?php echo ($application->fnum == @$user->fnum)?'-active':''; ?>">
-        <?php echo $application->label; ?><span class="label label-<?php echo $application->class; ?>"> <?php echo $application->value; ?></span>
-    </a> 
+    <div class="col-xs-6 col-md-4">
+      <p>
+        <?php echo JText::_('FILE_NUMBER'); ?> : <i><?php echo $application->fnum; ?></i>
+      </p>
+      <a class="btn btn-warning" href="<?php echo JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'; ?>"  role="button">
+          <?php echo JText::_('OPEN_APPLICATION'); ?>
+      </a>
     </div>
-    <div class="ten wide column">
-      <p>OPEN</p>
-    </div>
-    <div class="three wide column">
-      <?php if($progress>=100 && $application->status==0) : ?>
-          <a class="btn btn-mini" href="<?php echo $confirm_form_url; ?>&usekey=fnum&rowid=<?php echo $user->fnum; ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
-        <?php endif; ?>
+
+    <div class="col-xs-6 col-md-4">
+      <?php echo JText::_('STATUS'); ?> : 
+      <span class="label label-<?php echo $application->class; ?>"> 
+        <?php echo $application->value; ?>
+      </span>
+      <section class="container" style="width:150px">
+        <div id="file<?php echo $application->fnum; ?>"></div>
+        <script>
+          $( document ).ready(function() { // 6,32 5,38 2,34
+              $("#file<?php echo $application->fnum; ?>").circliful({
+                  animation: 1,
+                  animationStep: 5,
+                  foregroundBorderWidth: 15,
+                  backgroundBorderWidth: 15,
+                  percent: <?php echo $progress; ?>,
+                  textStyle: 'font-size: 12px;',
+                  textColor: '#000',
+                  foregroundColor:'#EA5012'
+              });
+          });
+      </script>
+    </section>
+
+    <?php if($progress>=100 && $application->status==0) : ?>
+        <a class="btn btn-mini" href="<?php echo $confirm_form_url; ?>&usekey=fnum&rowid=<?php echo $user->fnum; ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
+    <?php endif; ?>
     </div>
   </div>
-  <a href="<?php echo JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid; ?>" class="list-group-item<?php echo ($application->fnum == @$user->fnum)?'-active':''; ?>">
-    <b class="list-group-item-heading">
-      <span class="label label-<?php echo $application->class; ?>"> <?php echo $application->value; ?></span> 
-      <?php if($application->fnum == @$user->fnum) : ?>
-        <span class="badge <?php echo($progress>=100)?'badge-success':'badge-inverse'; ?>"><?php echo $progress; ?>%</span>
-        <?php if($progress>=100 && $application->status==0) : ?>
-          <a class="btn btn-mini" href="<?php echo $confirm_form_url; ?>&usekey=fnum&rowid=<?php echo $user->fnum; ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
-        <?php endif; ?>
-      <?php endif; ?>
-      <?php echo $application->label; ?>
-    </b>
-    <p class="list-group-item-text <?php echo ($application->fnum == @$user->fnum)?'label-success':''; ?>"><span class="badge <?php echo ($application->fnum == @$user->fnum)?'badge-success':''; ?>"><?php echo $application->fnum; ?></span></p>
-  </a><hr>
- <?php endforeach;  ?>
-</div> 
-</div> 
+  <hr>
+  <?php endforeach;  ?>
+ </div> 
 <?php endif; ?>
+
 <?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
   <a class="btn btn-success" href="<?php echo JURI::Base(); ?>index.php?option=com_emundus&view=renew_application"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
 <hr>

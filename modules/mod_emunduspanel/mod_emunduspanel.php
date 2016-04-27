@@ -67,7 +67,7 @@ if (!empty($t__)) {
 	if (count($res > 0)) {
 		$tab = array();
 
-		echo '<div class="emundus_home_page">';
+		echo '<div class="emundus_home_page" id="em-panel">';
 		$j = 0;
 		foreach($res as $r){
 			$menu_params = json_decode($r->params, true);
