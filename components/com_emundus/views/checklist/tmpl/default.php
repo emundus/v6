@@ -88,12 +88,13 @@ if(!$this->sent) : ?>
                 $div .= '
             <tr>
                 <td>';
-                $div .= '<form id="form-a'.$attachment->id.'" name="checklistForm" class="dropzone" action="'.JRoute::_('index.php?option=com_emundus&task=upload&Itemid='.$itemid).'" method="post" enctype="multipart/form-data">';
-                $div .= '<input type="hidden" name="attachment" value="'.$attachment->id .'"/>
+                $div .= '<form id="form-a'.$attachment->id.'" name="checklistForm" class="dropzone" action="'.JRoute::_('index.php?option=com_emundus&task=upload&duplicate='.$attachment->duplicate.'&Itemid='.$itemid).'" method="post" enctype="multipart/form-data">';
+                $div .= '<input type="hidden" name="attachment" value="'.$attachment->id.'"/>
+                <input type="hidden" name="duplicate" value="'.$attachment->duplicate.'"/>
                 <input type="hidden" name="label" value="'.$attachment->lbl.'"/>
                 <div class="input-group">
                     <span class="input-group-btn">
-                        <input type="file" name="file" style="opacity:1;font-size:20px" />
+                        <input type="file" name="file" style="opacity:1;font-size:18px;margin-left: 15px;" />
                         <input type="hidden" class="form-control" readonly="">
                     <div class="col-sm-5"><input type="text" class="form-control" name="description" placeholder="'.JText::_('SHORT_DESC').'" /></div>
                     <input class="btn btn-success" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/>
@@ -108,7 +109,7 @@ Dropzone.options.formA'.$attachment->id.' =  {
     maxFilesize: maxFilesize.substr(0, maxFilesize.length-1), // MB
     dictDefaultMessage: "'.JText::_('COM_EMUNDUS_UPLOAD_DROP_FILE_OR_CLICK').'",
     dictInvalidFileType: "'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'",
-    url: "index.php?option=com_emundus&task=upload&Itemid='.$itemid.'&format=raw",
+    url: "index.php?option=com_emundus&task=upload&duplicate='.$attachment->duplicate.'&Itemid='.$itemid.'&format=raw",
 
     accept: function(file, done) {
         var sFileName = file.name;
@@ -290,7 +291,7 @@ function OnSubmitForm() {
     }
     switch(document.pressed) {
         case 'sendAttachment': 
-            document.checklistForm.action ="index.php?option=com_emundus&task=upload&Itemid=<?php echo $itemid; ?>" 
+            document.checklistForm.action ="index.php?option=com_emundus&task=upload&duplicate=<?php echo $duplicate; ?>&Itemid=<?php echo $itemid; ?>" 
         break;
         default: return false;
     }
