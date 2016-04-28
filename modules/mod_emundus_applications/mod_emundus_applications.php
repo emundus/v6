@@ -36,6 +36,12 @@ $applicant_can_renew 		= $eMConfig->get('applicant_can_renew', '0');
 $description		 		= $params->get('description', '');
 $show_add_application 		= $params->get('show_add_application', 1);
 $position_add_application 	= (int)$params->get('position_add_application', 0);
+$show_progress 				= $params->get('show_progress', 1);
+$show_progress_forms 		= $params->get('show_progress_forms', 0);
+$show_progress_documents 	= $params->get('show_progress_documents', 0);
+$show_progress_color 		= $params->get('show_progress_color', '#EA5012');
+$show_progress_color_forms 	= $params->get('show_progress_color_forms', '#EA5012');
+$show_progress_documents 	= $params->get('show_progress_documents', '#EA5012');
 
 $applications		= modemundusApplicationsHelper::getApplications($params);
 $linknames 			= $params->get('linknames', 0);

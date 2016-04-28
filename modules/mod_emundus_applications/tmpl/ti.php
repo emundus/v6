@@ -39,6 +39,7 @@ echo $description;
         <?php echo $application->value; ?>
       </span>
       <section class="container" style="width:150px; float: left;">
+      <?php if ($show_progress == 1) : ?>
         <div id="file<?php echo $application->fnum; ?>"></div>
         <script type="text/javascript">
           $( document ).ready(function() { 
@@ -50,26 +51,13 @@ echo $description;
                   percent: <?php echo (int)(($forms[$application->fnum]+$attachments[$application->fnum]))/2; ?>,
                   textStyle: 'font-size: 12px;',
                   textColor: '#000',
-                  foregroundColor:'#EA5012'
+                  foregroundColor:'<?php echo $show_progress_color; ?>'
               });
           });
         </script>
-        <div id="documents<?php echo $application->fnum; ?>"></div>
-        <script type="text/javascript">
-          $( document ).ready(function() { 
-              $("#documents<?php echo $application->fnum; ?>").circliful({
-                  animation: 1,
-                  animationStep: 5,
-                  foregroundBorderWidth: 15,
-                  backgroundBorderWidth: 15,
-                  percent: <?php echo (int)($attachments[$application->fnum]); ?>,
-                  text: '<?php echo JText::_("DOCUMENTS"); ?>',
-                  textStyle: 'font-size: 12px;',
-                  textColor: '#000',
-                  foregroundColor:'#EA5012'
-              });
-          });
-        </script>
+      <?php endif; ?>
+
+      <?php if ($show_progress_forms == 1) : ?>
         <div id="forms<?php echo $application->fnum; ?>"></div>
         <script type="text/javascript">
           $( document ).ready(function() { 
@@ -82,10 +70,30 @@ echo $description;
                   text: '<?php echo JText::_("FORMS"); ?>',
                   textStyle: 'font-size: 12px;',
                   textColor: '#000',
-                  foregroundColor:'#EA5012'
+                  foregroundColor:'<?php echo $show_progress_color_forms; ?>'
               });
           });
       </script>
+      <?php endif; ?>
+
+      <?php if ($show_progress_documents == 1) : ?>
+        <div id="documents<?php echo $application->fnum; ?>"></div>
+        <script type="text/javascript">
+          $( document ).ready(function() { 
+              $("#documents<?php echo $application->fnum; ?>").circliful({
+                  animation: 1,
+                  animationStep: 5,
+                  foregroundBorderWidth: 15,
+                  backgroundBorderWidth: 15,
+                  percent: <?php echo (int)($attachments[$application->fnum]); ?>,
+                  text: '<?php echo JText::_("DOCUMENTS"); ?>',
+                  textStyle: 'font-size: 12px;',
+                  textColor: '#000',
+                  foregroundColor:'<?php echo $show_progress_color_documents; ?>'
+              });
+          });
+        </script>
+      <?php endif; ?>
     </section>
 
     <?php if($progress>=100 && $application->status==0) : ?>
