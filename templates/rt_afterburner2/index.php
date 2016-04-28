@@ -175,22 +175,13 @@ $gpreset = str_replace(' ','',strtolower($gantry->get('name')));
             </div>
 
           	<section class="logos-area">
-                <div class="holder">
-                    <div class="company-logo">
-                        
-                    </div>
-                    <ul class="logo-list">
-                        <li></li>
-                    </ul>
-                </div>
+          		<div class="rt-container">
+					<?php echo $gantry->displayModules('footer','standard','standard'); ?>
+					<div class="clear"></div>
+				</div>
 			</section>
-            <p style="color: #000000;float: right;">Logiciel <em><a target="_blank" title="Your open source candidatures management" href="http://www.emundus.fr">eMundus®</a></em></p>
+            <p style="color:#000000;float:right;">Logiciel <em><a target="_blank" title="Your open source candidatures management" href="http://www.emundus.fr">eMundus®</a></em></p>
         </footer>
-  </div>
-		<div class="rt-container">
-			<?php //echo $gantry->displayModules('footer','standard','standard'); ?>
-			<div class="clear"></div>
-		</div>
 	
 	<?php /** End Footer **/ endif; ?>
 
