@@ -1,7 +1,7 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1: attachement_public.php 89 2008-10-13 Benjamin Rivalland
+ * @version 1: attachment_public.php 89 2008-10-13 Benjamin Rivalland
  * @package Fabrik
  * @copyright Copyright (C) 2008 Décision Publique. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
@@ -149,11 +149,9 @@ $mode = 1;
 $replyto = $obj->emailfrom;
 $replytoname = $obj->name;
 
-$config = JFactory::getConfig();
-$sender = array(
-    $config->get( $from ),
-    $config->get( $fromname )
-);
+$from = $obj->emailfrom;
+$fromname =$obj->name;
+$sender = array($from, $fromname);
 
 $mailer->setSender($sender);
 $mailer->addRecipient($recipient);

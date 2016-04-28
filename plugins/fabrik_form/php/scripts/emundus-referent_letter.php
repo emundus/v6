@@ -1,9 +1,9 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1: referent_letter.php 89 2016-04-18 Benjamin Rivalland
+ * @version 1: referent_letter.php 89 2008-10-13 Benjamin Rivalland
  * @package Fabrik
- * @copyright Copyright (C) 2016 emundus.fr. All rights reserved.
+ * @copyright Copyright (C) 2008 Décision Publique. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -14,8 +14,12 @@ defined( '_JEXEC' ) or die();
  */
 $baseurl = JURI::root();
 $student_id = $formModel->getElementData('jos_emundus_references___user', false, '');
+$fnum = $formModel->getElementData('jos_emundus_references___fnum', false, '');
 $student = JFactory::getUser($student_id[0]);
 $current_user = JFactory::getUser();
+if (empty($current_user->fnum) || !isset($current_user->fnum)) {
+    $current_user->fnum = $fnum;
+}
 
 jimport( 'joomla.utilities.utility' );
 
@@ -184,8 +188,9 @@ if ($is_uploaded1==0 && !empty($recipient[0])) {
     unset($replacements);
     $send = $mailer->Send();
     if ( $send !== true ) {
-        echo 'Error sending email: ' . $send->__toString(); die();
+        JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_NOT_SENT').' : '.$recipient[0].' '.$send->__toString(), 'error');
     } else {
+        JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_SENT').' : '.$recipient[0], 'message');
         $sql = 'INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) VALUES (62, -1, "'.$subject.'", "'.$db->quote($body1).'", NOW())';
         $db->setQuery( $sql );
         try {
@@ -212,8 +217,9 @@ if ($is_uploaded1==0 && !empty($recipient[0])) {
     unset($replacements);
     $send = $mailer->Send();
     if ( $send !== true ) {
-        echo 'Error sending email: ' . $send->__toString(); die();
+        JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_NOT_SENT').' : '.$recipient[1].' '.$send->__toString(), 'error');
     } else {
+        JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_SENT').' : '.$recipient[1], 'message');
         $sql = 'INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) VALUES (62, -1, "'.$subject.'", "'.$db->quote($body2).'", NOW())';
         $db->setQuery( $sql );
         try {
@@ -239,8 +245,9 @@ if ($is_uploaded3<2 && !empty($recipient[2])) {
     unset($replacements);
     $send = $mailer->Send();
     if ( $send !== true ) {
-        echo 'Error sending email: ' . $send->__toString(); die();
+        JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_NOT_SENT').' : '.$recipient[2].' '.$send->__toString(), 'error');
     } else {
+        JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_SENT').' : '.$recipient[2], 'message');
         $sql = 'INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) VALUES (62, -1, "'.$subject.'", "'.$db->quote($body3).'", NOW())';
         $db->setQuery( $sql );
         try {
@@ -266,8 +273,9 @@ if ($is_uploaded4<2 && !empty($recipient[3])) {
     unset($replacements);
     $send = $mailer->Send();
     if ( $send !== true ) {
-        echo 'Error sending email: ' . $send->__toString(); die();
+        JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_NOT_SENT').' : '.$recipient[3].' '.$send->__toString(), 'error');
     } else {
+        JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_SENT').' : '.$recipient[3], 'message');
         $sql = 'INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) VALUES (62, -1, "'.$subject.'", "'.$db->quote($body4).'", NOW())';
         $db->setQuery( $sql );
         try {
