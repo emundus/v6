@@ -40,16 +40,15 @@ $position_add_application 	= (int)$params->get('position_add_application', 0);
 $applications		= modemundusApplicationsHelper::getApplications($params);
 $linknames 			= $params->get('linknames', 0);
 $moduleclass_sfx 	= htmlspecialchars($params->get('moduleclass_sfx'));
-$header_class 		= $params->get('header_class', '');
 $user 				= JFactory::getUser();
 
 $m_application 		= new EmundusModelApplication;
 $checklist 			= new EmundusModelChecklist;
 
 if (isset($user->fnum) && !empty($user->fnum)) {
-	$attachments 		= $m_application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
-	$forms 				= $m_application->getFormsProgress($user->id, $user->profile, $user->fnum);
-	$progress 			= ($attachments + $forms)/2;
+	$attachments 		= $m_application->getAttachmentsProgress($user->id, $user->profile, array_keys($applications));
+	$forms 				= $m_application->getFormsProgress($user->id, $user->profile, array_keys($applications));
+
 	$confirm_form_url 	= $checklist->getConfirmUrl(); 
 }
 

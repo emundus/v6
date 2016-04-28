@@ -19,7 +19,7 @@ echo $description;
   <?php foreach($applications as $application) : ?>
   <div class="row" id="row<?php echo $application->fnum; ?>">
     <div class="col-xs-6 col-md-4">
-      <a href="<?php echo JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'; ?>">
+      <p class="">
         <?php echo $application->label; ?>
       </a> 
     </div>
@@ -38,16 +38,48 @@ echo $description;
       <span class="label label-<?php echo $application->class; ?>"> 
         <?php echo $application->value; ?>
       </span>
-      <section class="container" style="width:150px">
+      <section class="container" style="width:150px; float: left;">
         <div id="file<?php echo $application->fnum; ?>"></div>
-        <script>
-          $( document ).ready(function() { // 6,32 5,38 2,34
+        <script type="text/javascript">
+          $( document ).ready(function() { 
               $("#file<?php echo $application->fnum; ?>").circliful({
                   animation: 1,
                   animationStep: 5,
                   foregroundBorderWidth: 15,
                   backgroundBorderWidth: 15,
-                  percent: <?php echo $progress; ?>,
+                  percent: <?php echo (int)(($forms[$application->fnum]+$attachments[$application->fnum]))/2; ?>,
+                  textStyle: 'font-size: 12px;',
+                  textColor: '#000',
+                  foregroundColor:'#EA5012'
+              });
+          });
+        </script>
+        <div id="documents<?php echo $application->fnum; ?>"></div>
+        <script type="text/javascript">
+          $( document ).ready(function() { 
+              $("#documents<?php echo $application->fnum; ?>").circliful({
+                  animation: 1,
+                  animationStep: 5,
+                  foregroundBorderWidth: 15,
+                  backgroundBorderWidth: 15,
+                  percent: <?php echo (int)($attachments[$application->fnum]); ?>,
+                  text: '<?php echo JText::_("DOCUMENTS"); ?>',
+                  textStyle: 'font-size: 12px;',
+                  textColor: '#000',
+                  foregroundColor:'#EA5012'
+              });
+          });
+        </script>
+        <div id="forms<?php echo $application->fnum; ?>"></div>
+        <script type="text/javascript">
+          $( document ).ready(function() { 
+              $("#forms<?php echo $application->fnum; ?>").circliful({
+                  animation: 1,
+                  animationStep: 5,
+                  foregroundBorderWidth: 15,
+                  backgroundBorderWidth: 15,
+                  percent: <?php echo (int)($forms[$application->fnum]); ?>,
+                  text: '<?php echo JText::_("FORMS"); ?>',
                   textStyle: 'font-size: 12px;',
                   textColor: '#000',
                   foregroundColor:'#EA5012'

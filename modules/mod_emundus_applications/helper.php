@@ -25,7 +25,7 @@ class modemundusApplicationsHelper
 					ORDER BY esc.end_date DESC';
 //echo str_replace('#_', 'jos', $query);
 		$db->setQuery($query);
-		$result = $db->loadObjectList();
+		$result = $db->loadObjectList('fnum');
 		return (array) $result;
 	}
 }
