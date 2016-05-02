@@ -108,40 +108,44 @@ class  plgSystemEmundus_period extends JPlugin
         if ( !$app->isAdmin() ) {
             $ametys_integration = $eMConfig->get('ametys_integration', 0);
             $ametys_url = $eMConfig->get('ametys_url', '');
-var_dump($user->guest);
+
             if ($ametys_integration == 1 && $user->guest && !empty($ametys_url)) {
-                $app->redirect( $ametys_url );
-                var_dump($ametys_integration);
-var_dump($ametys_url);
-die();
-            } else {
                 $jinput = $app->input;
                 $token = $jinput->get('token');
-                // @TODO : 
-                // Construct the DB connexion to Ametys local DB
-                $conn = $this->getConnections('ametys');
-                $option = array(); //prevent problems
-     
-                $option['driver']   = 'mysql';              // Database driver name
-                $option['host']     = $conn['host'];         // Database host name
-                $option['user']     = $conn['user'];         // User for database authentication
-                $option['password'] = $conn['password'];     // Password for database authentication
-                $option['database'] = $conn['database'];      // Database name
-                $option['prefix']   = '';                    // Database prefix (may be empty)
-                 
-                $db = JDatabaseDriver::getInstance( $option );
+                
+                if(!empty($token)){
+                    // @TODO : 
+                    // Construct the DB connexion to Ametys local DB
+                    $conn = $this->getConnections('ametys');
+                    $option = array(); //prevent problems
+         
+                    $option['driver']   = 'mysql';              // Database driver name
+                    $option['host']     = $conn['host'];         // Database host name
+                    $option['user']     = $conn['user'];         // User for database authentication
+                    $option['password'] = $conn['password'];     // Password for database authentication
+                    $option['database'] = $conn['database'];      // Database name
+                    $option['prefix']   = '';                    // Database prefix (may be empty)
+                     
+                    $db_ext = JDatabaseDriver::getInstance( $option );
 
-                // 1. select user data from Ametyd BDD
-                $query = 'SELECT * 
-                            FROM Users_CandidateToken as uct 
-                            LEFT JOIN  Users as u on u.email=uct.email 
-                            WHERE uct.token like "'.$token.'"';
-                //$db->setQuery( $query );
-                //$user_tmp = $db->loadAssoc();
-    var_dump($user_tmp); die();
-                // 2. check if user exist in emundus BDD
-                // 2.1 if user exist in emundus then login 
-                // 2.2 else create user and login
+                    // 1. select user data from Ametyd BDD
+                    $query = 'SELECT * 
+                                FROM Users_CandidateToken as uct 
+                                LEFT JOIN  Users as u on u.email=uct.email 
+                                WHERE uct.token like "'.$token.'"';
+         var_dump($db_ext);
+        var_dump($query);
+                    $db_ext->setQuery( $query );
+                    $user_tmp = $db_ext->loadAssoc();
+
+        var_dump($user_tmp); die();
+                    // 2. check if user exist in emundus BDD
+                    // 2.1 if user exist in emundus then login 
+                    // 2.2 else create user and login
+
+                } else {
+                    $app->redirect( $ametys_url );
+                }
             }
         }
  ////////////////////////////////////////////////////////////////////////////////////////////  
