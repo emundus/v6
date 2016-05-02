@@ -391,7 +391,7 @@ class EmundusController extends JControllerLegacy {
         $aid->fnum          = $fnum;
         $aid->status        = $application['status'];
 
-        JError::raiseNotice('PERIOD', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($aid->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($aid->end_date) )));
+        //JError::raiseNotice('PERIOD', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($aid->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($aid->end_date) )));
         $this->setRedirect($redirect, JText::_('CURRENT_APPLICATION_FILE'). ' : '.$fnum, 'notice');
     }
 
