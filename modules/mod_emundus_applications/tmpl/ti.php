@@ -20,15 +20,18 @@ echo $description;
   <div class="row" id="row<?php echo $application->fnum; ?>">
     <div class="col-xs-6 col-md-4">
       <p class="">
-        <?php echo $application->label; ?>
-      </a> 
+        <a href="<?php echo JRoute::_(JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>" >
+          <?php
+            echo ($application->fnum == $user->fnum)?'<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> <b>'.$application->label.'</b>':$application->label;
+          ?>
+        </a> 
     </div>
 
     <div class="col-xs-6 col-md-4">
       <p>
         <?php echo JText::_('FILE_NUMBER'); ?> : <i><?php echo $application->fnum; ?></i>
       </p>
-      <a class="btn btn-warning" href="<?php echo JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'; ?>"  role="button">
+      <a class="btn btn-warning" href="<?php echo JRoute::_(JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>"  role="button">
           <?php echo JText::_('OPEN_APPLICATION'); ?>
       </a>
     </div>

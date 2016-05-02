@@ -61,7 +61,7 @@ if ($copy_application_form == 1 && isset($user->fnum)) {
 			$fabrik_group_rowids_key[$key] = $db->loadColumn();
 		}
 	}
-var_dump($fabrik_group_rowids_key); 
+
 //////////////////////////////
 	// Only if other application files found
 	if (count($fnums) > 0) {
@@ -180,7 +180,7 @@ var_dump($fabrik_group_rowids_key);
 		}
 	}
 }
-die();
+
 
 /*
  * REDIRECTION ONCE DUPLICATION IS DONE

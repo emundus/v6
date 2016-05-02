@@ -50,7 +50,6 @@ if(is_array($text) && !empty($text)){
 
 $btn_profile = '<button class="circular ui icon button"><a href="'.JRoute::_('index.php?option=com_users&view=profile&layout=edit').'"><i class="user icon"></i>'.JText::_('PROFILE').'</a></button>';
 
-
 if (!empty($t__)) { 
 	
 	/*if($user_menutype == 'mainmenu')
@@ -95,7 +94,7 @@ if (!empty($t__)) {
 	$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id, m.params
               FROM #__menu m
               WHERE published=1
-              AND menutype="'.$user_menutype.'"
+              AND menutype like "'.$user_menutype.'"
               AND m.link <> ""
               AND m.link <> "#"
               ORDER BY m.parent_id DESC, m.lft, m.level, m.menutype, m.id ASC';
@@ -104,7 +103,6 @@ if (!empty($t__)) {
 	if (count($res > 0)) {
 		$tab = array();
 		$tab_temp = array();
-
 
 		if($user->applicant == 1)
 			$btn_start = '<button class="circular ui icon button"><a href="'.JRoute::_($res[0]->link.'&Itemid='.$res[0]->id).'"><i class="right arrow icon"></i>'.JText::_('START').'</a></button>';
@@ -126,7 +124,7 @@ if (!empty($t__)) {
 			}
 			
 			$str = '<a href="'.JRoute::_($r->link.'&Itemid='.$r->id).'">'.$glyphicon.$icon.' <br />'.$r->title.'</a>';
-			//$str .= '<br/><a class="text" href="'.$r->link.'&Itemid='.$r->id.'">'.$r->title.'</a>';
+
 			$tab[] = $str;
 		}
 		$col = count($tab);
