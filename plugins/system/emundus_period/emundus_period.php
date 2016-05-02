@@ -42,6 +42,54 @@ class  plgSystemEmundus_period extends JPlugin
         $this->loadLanguage( );
     }
 
+    /**
+     * Gets object of connections
+     *
+     * @return  array  of connection tables id, description
+     */
+    public function getConnections($description)
+    {
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+        $query->select('*, id AS value, description AS text')->from('#__fabrik_connections')->where('published = 1 and description like "'.$description.'"');
+        $db->setQuery($query);
+        $connections = $db->loadObjectList();
+
+        foreach ($connections as &$cnn)
+        {
+            $this->decryptPw($cnn);
+        }
+
+        return $connections;
+    }
+
+    /**
+     * Decrypt once a connection password - if its params->encryptedPw option is true
+     *
+     * @param   JTable  &FabrikTableConnection  Connection
+     *
+     * @since   3.1rc1
+     *
+     * @return  void
+     */
+    protected function decryptPw(&$cnn)
+    {
+        if (isset($cnn->decrypted) && $cnn->decrypted)
+        {
+            return;
+        }
+
+        $crypt = EmundusHelperAccess::getCrypt();
+        $params = json_decode($cnn->params);
+
+        if (is_object($params) && $params->encryptedPw == true)
+        {
+            $cnn->password = $crypt->decrypt($cnn->password);
+            $cnn->decrypted = true;
+        }
+    }
+
+
     function onAfterInitialise() {
         include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
@@ -50,6 +98,34 @@ class  plgSystemEmundus_period extends JPlugin
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
+        $ametys_integration = $eMConfig->get('ametys_integration', 0);
+        $ametys_url = $eMConfig->get('ametys_url', '');
+
+        if ($ametys_integration == 1 && $user->guest && !empty($ametys_url)) {
+            $app->redirect( $ametys_url );
+        } else {
+            $jinput = $mainframe->input;
+            $token = $jinput->get('token');
+            // @TODO : 
+            // Construct the DB connexion to Ametys local DB
+    var_dump($this->getConnections('ametys'))
+            $option = array(); //prevent problems
+ 
+            $option['driver']   = 'mysql';            // Database driver name
+            $option['host']     = 'db.myhost.com';    // Database host name
+            $option['user']     = 'fredbloggs';       // User for database authentication
+            $option['password'] = 's9(39s£h[%dkFd';   // Password for database authentication
+            $option['database'] = 'bigdatabase';      // Database name
+            $option['prefix']   = 'abc_';             // Database prefix (may be empty)
+             
+            $db = JDatabaseDriver::getInstance( $option );
+            // 1. select user data from Ametyd BDD
+            // 2. check if user exist in emundus BDD
+            // 2.1 if user exist in emundus then login 
+            // 2.2 else create user and login
+        }
+
+
         // Global variables
         define('EMUNDUS_PATH_ABS', JPATH_ROOT.DS.$applicant_files_path);
         define('EMUNDUS_PATH_REL', $applicant_files_path);
@@ -57,7 +133,7 @@ class  plgSystemEmundus_period extends JPlugin
 
         if ( !$app->isAdmin() && isset($user->id) && !empty($user->id) && EmundusHelperAccess::isApplicant($user->id) ) {
             $id_applicants 	= $eMConfig->get('id_applicants', '0');
-            $applicants 	= explode(',',$id_applicants);
+            $applicants 	= explode(',', $id_applicants);
             $r 				= JRequest::getVar('r', null, 'GET', 'none',0);
 
             $baseurl = JURI::base();

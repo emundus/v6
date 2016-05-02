@@ -215,4 +215,22 @@ class EmundusHelperAccess {
 			return false;
 		}
 	}
+
+	public static function getCrypt()
+	{
+		jimport('joomla.crypt.crypt');
+		jimport('joomla.crypt.key');
+		$config = JFactory::getConfig();
+		$secret = $config->get('secret', '');
+
+		if (trim($secret) == '')
+		{
+			throw new RuntimeException('You must supply a secret code in your Joomla configuration.php file');
+		}
+
+		$key   = new JCryptKey('simple', $secret, $secret);
+		$crypt = new JCrypt(new JCryptCipherSimple, $key);
+
+		return $crypt;
+	}
 }
