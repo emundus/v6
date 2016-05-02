@@ -104,7 +104,7 @@ class  plgSystemEmundus_period extends JPlugin
         if ($ametys_integration == 1 && $user->guest && !empty($ametys_url)) {
             $app->redirect( $ametys_url );
         } else {
-            $jinput = $mainframe->input;
+            $jinput = $app->input;
             $token = $jinput->get('token');
             // @TODO : 
             // Construct the DB connexion to Ametys local DB
