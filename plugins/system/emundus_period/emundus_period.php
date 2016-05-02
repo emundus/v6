@@ -98,48 +98,51 @@ class  plgSystemEmundus_period extends JPlugin
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
-        $ametys_integration = $eMConfig->get('ametys_integration', 0);
-        $ametys_url = $eMConfig->get('ametys_url', '');
-
-        if ($ametys_integration == 1 && $user->guest && !empty($ametys_url)) {
-            $app->redirect( $ametys_url );
-        } else {
-            $jinput = $app->input;
-            $token = $jinput->get('token');
-            // @TODO : 
-            // Construct the DB connexion to Ametys local DB
-            $conn = $this->getConnections('ametys');
-            $option = array(); //prevent problems
- 
-            $option['driver']   = 'mysql';              // Database driver name
-            $option['host']     = $con['host'];         // Database host name
-            $option['user']     = $con['user'];         // User for database authentication
-            $option['password'] = $con['password'];     // Password for database authentication
-            $option['database'] = $con['database'];      // Database name
-            $option['prefix']   = '';                    // Database prefix (may be empty)
-             
-            $db = JDatabaseDriver::getInstance( $option );
-
-            // 1. select user data from Ametyd BDD
-            $query = 'SELECT * 
-                        FROM Users_CandidateToken as uct 
-                        LEFT JOIN  Users as u on u.email=uct.email 
-                        WHERE uct.token like "'.$token.'"';
-            $db->setQuery( $query );
-            $user_tmp = $db->loadAssoc();
-var_dump($user_tmp); die();
-            // 2. check if user exist in emundus BDD
-            // 2.1 if user exist in emundus then login 
-            // 2.2 else create user and login
-        }
-
-
+        
         // Global variables
         define('EMUNDUS_PATH_ABS', JPATH_ROOT.DS.$applicant_files_path);
         define('EMUNDUS_PATH_REL', $applicant_files_path);
         define('EMUNDUS_PHOTO_AID', 10);
 
         if ( !$app->isAdmin() && isset($user->id) && !empty($user->id) && EmundusHelperAccess::isApplicant($user->id) ) {
+
+/************ AMETYS INTEGRATION ****///////////////////////
+            $ametys_integration = $eMConfig->get('ametys_integration', 0);
+            $ametys_url = $eMConfig->get('ametys_url', '');
+
+            if ($ametys_integration == 1 && $user->guest && !empty($ametys_url)) {
+                $app->redirect( $ametys_url );
+            } else {
+                $jinput = $app->input;
+                $token = $jinput->get('token');
+                // @TODO : 
+                // Construct the DB connexion to Ametys local DB
+                $conn = $this->getConnections('ametys');
+                $option = array(); //prevent problems
+     
+                $option['driver']   = 'mysql';              // Database driver name
+                $option['host']     = $con['host'];         // Database host name
+                $option['user']     = $con['user'];         // User for database authentication
+                $option['password'] = $con['password'];     // Password for database authentication
+                $option['database'] = $con['database'];      // Database name
+                $option['prefix']   = '';                    // Database prefix (may be empty)
+                 
+                $db = JDatabaseDriver::getInstance( $option );
+
+                // 1. select user data from Ametyd BDD
+                $query = 'SELECT * 
+                            FROM Users_CandidateToken as uct 
+                            LEFT JOIN  Users as u on u.email=uct.email 
+                            WHERE uct.token like "'.$token.'"';
+                //$db->setQuery( $query );
+                //$user_tmp = $db->loadAssoc();
+    var_dump($user_tmp); die();
+                // 2. check if user exist in emundus BDD
+                // 2.1 if user exist in emundus then login 
+                // 2.2 else create user and login
+            }
+
+ ////////////////////////////////////////////////////////////////////////////////////////////       
             $id_applicants 	= $eMConfig->get('id_applicants', '0');
             $applicants 	= explode(',', $id_applicants);
             $r 				= JRequest::getVar('r', null, 'GET', 'none',0);
