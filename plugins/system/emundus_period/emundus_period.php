@@ -108,7 +108,8 @@ class  plgSystemEmundus_period extends JPlugin
             $token = $jinput->get('token');
             // @TODO : 
             // Construct the DB connexion to Ametys local DB
-    var_dump($this->getConnections('ametys'))
+    var_dump($this->getConnections('ametys'));
+    die();
             $option = array(); //prevent problems
  
             $option['driver']   = 'mysql';            // Database driver name
