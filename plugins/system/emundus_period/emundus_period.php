@@ -109,7 +109,9 @@ class  plgSystemEmundus_period extends JPlugin
 /************ AMETYS INTEGRATION ****///////////////////////
             $ametys_integration = $eMConfig->get('ametys_integration', 0);
             $ametys_url = $eMConfig->get('ametys_url', '');
-
+var_dump($ametys_integration);
+var_dump($ametys_url);
+die();
             if ($ametys_integration == 1 && $user->guest && !empty($ametys_url)) {
                 $app->redirect( $ametys_url );
             } else {
@@ -121,10 +123,10 @@ class  plgSystemEmundus_period extends JPlugin
                 $option = array(); //prevent problems
      
                 $option['driver']   = 'mysql';              // Database driver name
-                $option['host']     = $con['host'];         // Database host name
-                $option['user']     = $con['user'];         // User for database authentication
-                $option['password'] = $con['password'];     // Password for database authentication
-                $option['database'] = $con['database'];      // Database name
+                $option['host']     = $conn['host'];         // Database host name
+                $option['user']     = $conn['user'];         // User for database authentication
+                $option['password'] = $conn['password'];     // Password for database authentication
+                $option['database'] = $conn['database'];      // Database name
                 $option['prefix']   = '';                    // Database prefix (may be empty)
                  
                 $db = JDatabaseDriver::getInstance( $option );
