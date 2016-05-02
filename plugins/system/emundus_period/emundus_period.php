@@ -104,12 +104,11 @@ class  plgSystemEmundus_period extends JPlugin
         define('EMUNDUS_PATH_REL', $applicant_files_path);
         define('EMUNDUS_PHOTO_AID', 10);
 
-        if ( !$app->isAdmin() && isset($user->id) && !empty($user->id) && EmundusHelperAccess::isApplicant($user->id) ) {
-
 /************ AMETYS INTEGRATION ****///////////////////////
+        if ( !$app->isAdmin() ) {
             $ametys_integration = $eMConfig->get('ametys_integration', 0);
             $ametys_url = $eMConfig->get('ametys_url', '');
-
+var_dump($user->guest);
             if ($ametys_integration == 1 && $user->guest && !empty($ametys_url)) {
                 $app->redirect( $ametys_url );
                 var_dump($ametys_integration);
@@ -144,8 +143,12 @@ die();
                 // 2.1 if user exist in emundus then login 
                 // 2.2 else create user and login
             }
+        }
+ ////////////////////////////////////////////////////////////////////////////////////////////  
 
- ////////////////////////////////////////////////////////////////////////////////////////////       
+
+        if ( !$app->isAdmin() && isset($user->id) && !empty($user->id) && EmundusHelperAccess::isApplicant($user->id) ) {
+     
             $id_applicants 	= $eMConfig->get('id_applicants', '0');
             $applicants 	= explode(',', $id_applicants);
             $r 				= JRequest::getVar('r', null, 'GET', 'none',0);
