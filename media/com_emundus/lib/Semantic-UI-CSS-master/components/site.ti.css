@@ -53,19 +53,21 @@ h5 {
 }
 h1 {
   min-height: 1rem;
-  font-size: 2rem;
+  font-size: 24px;
+  color: #c1272d;
 }
 h2 {
-  font-size: 1.714rem;
+  font-size: 21px;
+  color: #1a1a1a;
 }
 h3 {
-  font-size: 1.28rem;
+  font-size: 19px;
 }
 h4 {
-  font-size: 1.071rem;
+  font-size: 17px;
 }
 h5 {
-  font-size: 1rem;
+  font-size: 15px;
 }
 h1:first-child,
 h2:first-child,
@@ -90,6 +92,9 @@ h5:last-child {
 p {
   margin: 0em 0em 1em;
   line-height: 1.4285em;
+  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  color: #666666;
 }
 p:first-child {
   margin-top: 0em;
@@ -103,7 +108,7 @@ p:last-child {
 --------------------*/
 
 a {
-  color: #000;
+  color: #333333;
   text-decoration: none;
 }
 a:hover {
@@ -111,7 +116,7 @@ a:hover {
   text-decoration: none;
 }
 a:visited {
-  color: #000;
+  color: #333333;
   text-decoration: none;
 }
 a:active {
@@ -119,7 +124,7 @@ a:active {
   text-decoration: none;
 }
 .em_module a {
-  color: #000;
+  color: #333333;
   text-decoration: none;
 }
 
@@ -169,4 +174,6 @@ input::selection {
 /*******************************
          Site Overrides
 *******************************/
-
+i.huge.icon, i.huge.icons {
+    font-size: 3em;
+}

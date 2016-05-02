@@ -34,6 +34,9 @@ echo $description;
       <a class="btn btn-warning" href="<?php echo JRoute::_(JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>"  role="button">
           <?php echo JText::_('OPEN_APPLICATION'); ?>
       </a>
+      <?php if((int)($attachments[$application->fnum])>=100 && $application->status==0 && $application->fnum==$user->fnum) : ?>
+        <a class="btn btn-mini" href="<?php echo $confirm_form_url; ?>&usekey=fnum&rowid=<?php echo $user->fnum; ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
+      <?php endif; ?>
     </div>
 
     <div class="col-xs-6 col-md-4">
@@ -98,10 +101,6 @@ echo $description;
         </script>
       <?php endif; ?>
     </section>
-
-    <?php if($progress>=100 && $application->status==0) : ?>
-        <a class="btn btn-mini" href="<?php echo $confirm_form_url; ?>&usekey=fnum&rowid=<?php echo $user->fnum; ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
-    <?php endif; ?>
     </div>
   </div>
   <hr>

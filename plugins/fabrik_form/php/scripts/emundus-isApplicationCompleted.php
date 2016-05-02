@@ -20,17 +20,32 @@ $itemid = $jinput->get('Itemid');
 if ($jinput->get('view') == 'form') {
 	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
 	$user = JFactory::getUser();
-	
-	//if($user->get('usertype') != "Registered") return;
+
+	$params = JComponentHelper::getParams('com_emundus');
+	$application_fee  = $params->get('application_fee', 0);
 
 	$application = new EmundusModelApplication;
+	
+	if ($application_fee == 1) {
+		$fnumInfos = EmundusModelFiles::getFnumInfos($user->fnum);
+		if ($application_fee == 1) {
+			$paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
+
+			if (!$paid)
+				$mainframe->redirect( JRoute::_("index.php?option=com_hikashop&ctrl=product&task=updatecart&quantity=1&checkout=1&product_id=1"));
+		}
+	}
+
+	
 	$attachments = $application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
 	$forms = $application->getFormsProgress($user->id, $user->profile, $user->fnum);
 
 	if($attachments < 100 || $forms < 100 ){
-		$mainframe->redirect( "index.php?option=com_emundus&view=checklist&Itemid=".$itemid,JText::_('INCOMPLETE_APPLICATION'));
+		$mainframe->redirect( JRoute::_("index.php?option=com_emundus&view=checklist&Itemid=".$itemid), JText::_('INCOMPLETE_APPLICATION'));
 	}
 }
 

@@ -292,7 +292,7 @@ tr.hikashop_checkout_payment_ccinfo td {
 
 a.hikashop_cart_button, a.hikashop_compare_button, .hikashop_cart_input_button{
 	text-decoration:none;
-	color: #777777 !important;
+	color: #777777;
 	cursor: pointer;
 	display: inline-block;
 	line-height: 18px;
