@@ -112,43 +112,91 @@ class  plgSystemEmundus_period extends JPlugin
             if ($ametys_integration == 1 && $user->guest && !empty($ametys_url)) {
                 $jinput = $app->input;
                 $token = $jinput->get('token');
-                
+
                 if(!empty($token)){
-                    // @TODO : 
+                    // @TODO :
                     // Construct the DB connexion to Ametys local DB
                     $conn = $this->getConnections('ametys');
                     $option = array(); //prevent problems
-         
+
                     $option['driver']   = 'mysql';              // Database driver name
-                    $option['host']     = $conn['host'];         // Database host name
-                    $option['user']     = $conn['user'];         // User for database authentication
-                    $option['password'] = $conn['password'];     // Password for database authentication
-                    $option['database'] = $conn['database'];      // Database name
+                    $option['host']     = $conn[0]->host;         // Database host name
+                    $option['user']     = $conn[0]->user;         // User for database authentication
+                    $option['password'] = $conn[0]->password;     // Password for database authentication
+                    $option['database'] = $conn[0]->database;      // Database name
                     $option['prefix']   = '';                    // Database prefix (may be empty)
-                     
+
                     $db_ext = JDatabaseDriver::getInstance( $option );
 
-                    // 1. select user data from Ametyd BDD
-                    $query = 'SELECT * 
-                                FROM Users_CandidateToken as uct 
-                                LEFT JOIN  Users as u on u.email=uct.email 
+// 1. select user data from Ametyd BDD
+                    $query = 'SELECT *
+                                FROM Users_CandidateToken as uct
+                                LEFT JOIN  Users as u on u.email=uct.login
                                 WHERE uct.token like "'.$token.'"';
-         var_dump($db_ext);
-        var_dump($query);
                     $db_ext->setQuery( $query );
                     $user_tmp = $db_ext->loadAssoc();
 
-        var_dump($user_tmp); die();
-                    // 2. check if user exist in emundus BDD
-                    // 2.1 if user exist in emundus then login 
-                    // 2.2 else create user and login
+                    if (count($user_tmp) > 0) {
+// 2. check if user exist in emundus BDD
+                        $db =  JFactory::getDBO();
 
+                        $query = 'SELECT *
+                                FROM #_users
+                                WHERE email like "'.$user_tmp['login'].'"';
+                        $db->setQuery( $query );
+                        $user_joomla = $db->loadObject();
+
+                        if($result->id) {
+// 2.1 if user exist in emundus then login
+                            $jUser = JFactory::getUser($result->id);
+                            //$userarray = array();
+                            //$userarray['username'] = $jUser->username;
+                            //$userarray['password'] = $jUser->password;
+                            //$app->login($userarray);              
+
+                            $instance = $jUser;     
+                            $instance->set('guest', 0);
+
+                            // Register the needed session variables
+
+                            $session->set('user', $jUser);
+
+
+                            // Check to see the the session already exists.                        
+                            $app->checkSession();
+
+                            // Update the user related fields for the Joomla sessions table.
+                            $db->setQuery(
+                                    'UPDATE '.$db->nameQuote('#__session') .
+                                    ' SET '.$db->nameQuote('guest').' = '.$db->quote($instance->get('guest')).',' .
+                                    '   '.$db->nameQuote('username').' = '.$db->quote($instance->get('username')).',' .
+                                    '   '.$db->nameQuote('userid').' = '.(int) $instance->get('id') .
+                                    ' WHERE '.$db->nameQuote('session_id').' = '.$db->quote($session->getId())
+                            );
+                            $db->query();
+
+                            // Hit the user last visit field
+                            $instance->setLastVisit();          
+
+                            //return true;
+
+                            $app->redirect('index.php');
+                    }
+
+                    else {
+                // 2.2 else create user and login
+                        break;
+                        }
+                    } else {
+                        $app->redirect( $ametys_url );
+                    }         
                 } else {
                     $app->redirect( $ametys_url );
                 }
             }
         }
- ////////////////////////////////////////////////////////////////////////////////////////////  
+ ////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
         if ( !$app->isAdmin() && isset($user->id) && !empty($user->id) && EmundusHelperAccess::isApplicant($user->id) ) {
@@ -158,7 +206,7 @@ class  plgSystemEmundus_period extends JPlugin
             $r 				= JRequest::getVar('r', null, 'GET', 'none',0);
 
             $baseurl = JURI::base();
-            $db =  JFactory::getDBO();
+            
             $app = JFactory::getApplication();
 
             $id = JRequest::getVar('id', null, 'GET', 'none',0);
