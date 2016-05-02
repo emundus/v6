@@ -109,11 +109,12 @@ class  plgSystemEmundus_period extends JPlugin
 /************ AMETYS INTEGRATION ****///////////////////////
             $ametys_integration = $eMConfig->get('ametys_integration', 0);
             $ametys_url = $eMConfig->get('ametys_url', '');
-var_dump($ametys_integration);
-var_dump($ametys_url);
-die();
+
             if ($ametys_integration == 1 && $user->guest && !empty($ametys_url)) {
                 $app->redirect( $ametys_url );
+                var_dump($ametys_integration);
+var_dump($ametys_url);
+die();
             } else {
                 $jinput = $app->input;
                 $token = $jinput->get('token');
