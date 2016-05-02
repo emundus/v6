@@ -108,19 +108,26 @@ class  plgSystemEmundus_period extends JPlugin
             $token = $jinput->get('token');
             // @TODO : 
             // Construct the DB connexion to Ametys local DB
-    var_dump($this->getConnections('ametys'));
-    die();
+            $conn = $this->getConnections('ametys');
             $option = array(); //prevent problems
  
-            $option['driver']   = 'mysql';            // Database driver name
-            $option['host']     = 'db.myhost.com';    // Database host name
-            $option['user']     = 'fredbloggs';       // User for database authentication
-            $option['password'] = 's9(39s£h[%dkFd';   // Password for database authentication
-            $option['database'] = 'bigdatabase';      // Database name
-            $option['prefix']   = 'abc_';             // Database prefix (may be empty)
+            $option['driver']   = 'mysql';              // Database driver name
+            $option['host']     = $con['host'];         // Database host name
+            $option['user']     = $con['user'];         // User for database authentication
+            $option['password'] = $con['password'];     // Password for database authentication
+            $option['database'] = $con['database'];      // Database name
+            $option['prefix']   = '';                    // Database prefix (may be empty)
              
             $db = JDatabaseDriver::getInstance( $option );
+
             // 1. select user data from Ametyd BDD
+            $query = 'SELECT * 
+                        FROM Users_CandidateToken as uct 
+                        LEFT JOIN  Users as u on u.email=uct.email 
+                        WHERE uct.token like "'.$token.'"';
+            $db->setQuery( $query );
+            $user_tmp = $db->loadAssoc();
+var_dump($user_tmp); die();
             // 2. check if user exist in emundus BDD
             // 2.1 if user exist in emundus then login 
             // 2.2 else create user and login
