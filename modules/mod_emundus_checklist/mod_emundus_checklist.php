@@ -27,8 +27,9 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$document = JFactory::getDocument();
 	$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
 	// overide css
-	if (!empty($params->get('header_class', ''))) {
-		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$params->get('header_class', '').".css" );
+	$header_class = $params->get('header_class', '');
+	if (!empty($header_class)) {
+		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$header_class.".css" );
 	}
 	$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 	
