@@ -103,7 +103,7 @@ p:last-child {
 --------------------*/
 
 a {
-  color: #e8450f;
+  color: #000;
   text-decoration: none;
 }
 a:hover {
@@ -111,7 +111,7 @@ a:hover {
   text-decoration: none;
 }
 a:visited {
-  color: #e8450f;
+  color: #000;
   text-decoration: none;
 }
 a:active {
