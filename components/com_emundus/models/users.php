@@ -771,6 +771,43 @@ class EmundusModelUsers extends JModelList
         return $db->loadColumn();
     }
 
+    public function login($uid) {
+        $app     = JFactory::getApplication();
+        $db      = JFactory::getDBO();
+        $session = JFactory::getSession();
+        $jUser   = JFactory::getUser($uid);
+
+        //$userarray = array();
+        //$userarray['username'] = $jUser->username;
+        //$userarray['password'] = $jUser->password;
+        //$app->login($userarray);              
+
+        $instance = $jUser;     
+        $instance->set('guest', 0);
+
+        // Register the needed session variables
+        $session->set('user', $jUser);
+
+        // Check to see the the session already exists.                        
+        $app->checkSession();
+
+        // Update the user related fields for the Joomla sessions table.
+        $query = 'UPDATE #__session
+                    SET guest='.$db->quote($instance->get('guest')).',
+                        username = '.$db->quote($instance->get('username')).',
+                        userid = '.(int) $instance->get('id').' 
+                        WHERE session_id like '.$db->quote($session->getId());
+        $db->setQuery($query);
+        $db->query();
+
+        // Hit the user last visit field
+        $instance->setLastVisit(); 
+
+        return $jUser;
+
+    }
+
+
     /**
      *
      * PLAIN LOGIN
