@@ -1,11 +1,11 @@
 <?php
 /**
- * @package    	Joomla
- * @subpackage 	eMundus
- * @link      	http://www.emundus.fr
- * @copyright	Copyright (C) 2008 - 2013 Décision Publique. All rights reserved.
- * @license		GNU General Public License version 2 or later; see LICENSE.txt
- * @author    	Decision Publique - Benjamin Rivalland
+ * @package     Joomla
+ * @subpackage  eMundus
+ * @link        http://www.emundus.fr
+ * @copyright   Copyright (C) 2008 - 2013 Décision Publique. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @author      Decision Publique - Benjamin Rivalland
  */
 
 // No direct access
@@ -15,9 +15,9 @@ jimport('joomla.plugin.plugin');
 /**
  * Joomla User plugin
  *
- * @package		Joomla.Plugin
- * @subpackage	User.emundus
- * @since		5.0.0
+ * @package     Joomla.Plugin
+ * @subpackage  User.emundus
+ * @since       5.0.0
  */
 class plgUserEmundus extends JPlugin
 {
@@ -26,12 +26,12 @@ class plgUserEmundus extends JPlugin
      *
      * Method is called after user data is deleted from the database
      *
-     * @param	array		$user	Holds the user data
-     * @param	boolean		$succes	True if user was succesfully stored in the database
-     * @param	string		$msg	Message
+     * @param   array       $user   Holds the user data
+     * @param   boolean     $succes True if user was succesfully stored in the database
+     * @param   string      $msg    Message
      *
-     * @return	boolean
-     * @since	1.6
+     * @return  boolean
+     * @since   1.6
      */
     public function onUserAfterDelete($user, $succes, $msg)
     {
@@ -90,23 +90,23 @@ class plgUserEmundus extends JPlugin
      *
      * This method sends a registration email to new users created in the backend.
      *
-     * @param	array		$user		Holds the new user data.
-     * @param	boolean		$isnew		True if a new user is stored.
-     * @param	boolean		$success	True if user was succesfully stored in the database.
-     * @param	string		$msg		Message.
+     * @param   array       $user       Holds the new user data.
+     * @param   boolean     $isnew      True if a new user is stored.
+     * @param   boolean     $success    True if user was succesfully stored in the database.
+     * @param   string      $msg        Message.
      *
-     * @return	void
-     * @since	1.6
+     * @return  void
+     * @since   1.6
      */
     public function onUserAfterSave($user, $isnew, $success, $msg)
     {
         // Initialise variables.
-        $jinput 		= JFactory::getApplication()->input;
+        $jinput         = JFactory::getApplication()->input;
 
-        $details 		= $jinput->post->get('jform', null, 'none');
-        $app 			= JFactory::getApplication();
-        $config			= JFactory::getConfig();
-        $mail_to_user 	= $this->params->get('mail_to_user', 1);
+        $details        = $jinput->post->get('jform', null, 'none');
+        $app            = JFactory::getApplication();
+        $config         = JFactory::getConfig();
+        $mail_to_user   = $this->params->get('mail_to_user', 1);
         $db = JFactory::getDBO();
 
         if( count($details) > 0 ) {
@@ -121,14 +121,14 @@ class plgUserEmundus extends JPlugin
             $group = @isset($details['emundus_profile']['group'])?$details['emundus_profile']['group']:@$details['group'];
 
             if ($isnew) {
-                // @TODO	Suck in the frontend registration emails here as well. Job for a rainy day.
+                // @TODO    Suck in the frontend registration emails here as well. Job for a rainy day.
 
                 // Update name and fistname from #__users
                 $db->setQuery(' UPDATE #__users SET name="'.strtoupper($lastname).' '.ucfirst($firstname).'",
-								usertype = (SELECT u.title FROM #__usergroups AS u
-												LEFT JOIN #__user_usergroup_map AS uum ON u.id=uum.group_id
-												WHERE uum.user_id='.$user['id'].' ORDER BY uum.group_id DESC LIMIT 1) 
-								WHERE id='.$user['id']);
+                                usertype = (SELECT u.title FROM #__usergroups AS u
+                                                LEFT JOIN #__user_usergroup_map AS uum ON u.id=uum.group_id
+                                                WHERE uum.user_id='.$user['id'].' ORDER BY uum.group_id DESC LIMIT 1) 
+                                WHERE id='.$user['id']);
                 try {
                     $db->Query();
                 } catch (Exception $e) {
@@ -223,11 +223,11 @@ class plgUserEmundus extends JPlugin
     /**
      * This method should handle any login logic and report back to the subject
      *
-     * @param	array	$user		Holds the user data
-     * @param	array	$options	Array holding options (remember, autoregister, group)
+     * @param   array   $user       Holds the user data
+     * @param   array   $options    Array holding options (remember, autoregister, group)
      *
-     * @return	boolean	True on success
-     * @since	1.5
+     * @return  boolean True on success
+     * @since   1.5
      */
     public function onUserLogin($user, $options = array())
     {
@@ -236,11 +236,11 @@ class plgUserEmundus extends JPlugin
         // The most common use of this routine would be logging the user into a third party application
         // In this example the boolean variable $success would be set to true if the login routine succeeds
         // ThirdPartyApp::loginUser($user['username'], $user['password']);
-        $app 			= JFactory::getApplication();
+        $app            = JFactory::getApplication();
 
         if (!$app->isAdmin()) {
-            $current_user	= JFactory::getUser();
-            $db		 		= JFactory::getDBO();
+            $current_user   = JFactory::getUser();
+            $db             = JFactory::getDBO();
 
             include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
             include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
@@ -253,15 +253,15 @@ class plgUserEmundus extends JPlugin
             $campaign = $profiles->getCurrentCampaignInfoByApplicant($current_user->id);
             $incomplete = $profiles->getCurrentIncompleteCampaignByApplicant($current_user->id);
 
-            if( $p['cpt'] == 0 || empty($p['profile']) || !isset($p['profile']) )
+            if( $p['cpt'] == 0 || empty($p['profile']) || !isset($p['profile']) || empty($campaign))
                 $app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
             //$mainframe->redirect("index.php?option=com_emundus&view=campaign");
             else {
 
                 $profile = $profiles->getProfileByApplicant($current_user->id);
-                $current_user->firstname 				= $profile["firstname"];
-                $current_user->lastname	 				= strtoupper($profile["lastname"]);
-                $current_user->emGroups					= array_keys($users->getUserGroups($current_user->id));
+                $current_user->firstname                = $profile["firstname"];
+                $current_user->lastname                 = strtoupper($profile["lastname"]);
+                $current_user->emGroups                 = array_keys($users->getUserGroups($current_user->id));
 
                 if (EmundusHelperAccess::isApplicant($current_user->id)) {
                     $profile        = $profiles->getProfileByCampaign($campaign["id"]);
@@ -269,41 +269,41 @@ class plgUserEmundus extends JPlugin
                     if( empty($p['profile']) || empty($campaign["id"]) || !isset($p['profile']) || !isset($campaign["id"]) )
                         $app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
 
-                    $current_user->profile	 				= $profile["profile_id"];
-                    $current_user->profile_label 			= $profile["label"];
-                    $current_user->menutype	 				= $profile["menutype"];
-                    $current_user->university_id			= null;
-                    $current_user->applicant				= 1;
-                    $current_user->start_date				= $profile["start_date"];
-                    $current_user->end_date					= $profile["end_date"];
-                    $current_user->candidature_start		= $profile["start_date"];
-                    $current_user->candidature_end			= $profile["end_date"];
-                    $current_user->candidature_posted 		= (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] ==0  || @$profile["date_submitted"] == NULL)?0:1;
-                    $current_user->candidature_incomplete 	= (count($incomplete)==0)?0:1;
-                    $current_user->schoolyear				= $profile["year"];
-                    $current_user->code						= $profile["training"];
-                    $current_user->campaign_id				= $campaign["id"];
-                    $current_user->campaign_name			= $profile["label"];
+                    $current_user->profile                  = $profile["profile_id"];
+                    $current_user->profile_label            = $profile["label"];
+                    $current_user->menutype                 = $profile["menutype"];
+                    $current_user->university_id            = null;
+                    $current_user->applicant                = 1;
+                    $current_user->start_date               = $profile["start_date"];
+                    $current_user->end_date                 = $profile["end_date"];
+                    $current_user->candidature_start        = $profile["start_date"];
+                    $current_user->candidature_end          = $profile["end_date"];
+                    $current_user->candidature_posted       = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] ==0  || @$profile["date_submitted"] == NULL)?0:1;
+                    $current_user->candidature_incomplete   = (count($incomplete)==0)?0:1;
+                    $current_user->schoolyear               = $profile["year"];
+                    $current_user->code                     = $profile["training"];
+                    $current_user->campaign_id              = $campaign["id"];
+                    $current_user->campaign_name            = $profile["label"];
                     $current_user->fnum                     = $campaign["fnum"];
                     $current_user->fnums                    = $profiles->getApplicantFnums($current_user->id, null, $profile["start_date"], $profile["end_date"]);
                     $current_user->status                   = @$campaign["status"];
 
                 } else {
-                    $current_user->profile	 				= $profile["profile"];
-                    $current_user->profile_label 			= $profile["profile_label"];
-                    $current_user->menutype	 				= $profile["menutype"];
-                    $current_user->university_id			= $profile["university_id"];
-                    $current_user->applicant				= 0;
+                    $current_user->profile                  = $profile["profile"];
+                    $current_user->profile_label            = $profile["profile_label"];
+                    $current_user->menutype                 = $profile["menutype"];
+                    $current_user->university_id            = $profile["university_id"];
+                    $current_user->applicant                = 0;
                 }
 
-                /*if ($current_user->code	== "pepite") {
+                /*if ($current_user->code   == "pepite") {
                     $app->redirect("index.php?option=com_fabrik&view=form&formid=164&Itemid=1521&usekey=fnum");
                 }
-                if ($current_user->code	== "utc-dfp-dri") {
+                if ($current_user->code == "utc-dfp-dri") {
                     $app->redirect("index.php?option=com_emundus&view=jobs&Itemid=1468");
                 }*/
-                if ($current_user->code	== "csc") {
-                	$app->redirect("index.php?option=com_content&view=article&id=83&Itemid=1570");
+                if ($current_user->code == "csc") {
+                    $app->redirect("index.php?option=com_content&view=article&id=83&Itemid=1570");
                 }
             }
         }
@@ -314,17 +314,17 @@ class plgUserEmundus extends JPlugin
     /**
      * This method should handle any logout logic and report back to the subject
      *
-     * @param	array	$user		Holds the user data.
-     * @param	array	$options	Array holding options (client, ...).
+     * @param   array   $user       Holds the user data.
+     * @param   array   $options    Array holding options (client, ...).
      *
-     * @return	object	True on success
-     * @since	1.5
+     * @return  object  True on success
+     * @since   1.5
      */
     public function onUserLogout($user, $options = array())
     {
-        $my 		= JFactory::getUser();
-        $session 	= JFactory::getSession();
-        $app 		= JFactory::getApplication();
+        $my         = JFactory::getUser();
+        $session    = JFactory::getSession();
+        $app        = JFactory::getApplication();
 
         include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
 
@@ -371,11 +371,11 @@ class plgUserEmundus extends JPlugin
      *
      * If options['autoregister'] is true, if the user doesn't exist yet he will be created
      *
-     * @param	array	$user		Holds the user data.
-     * @param	array	$options	Array holding options (remember, autoregister, group).
+     * @param   array   $user       Holds the user data.
+     * @param   array   $options    Array holding options (remember, autoregister, group).
      *
-     * @return	object	A JUser object
-     * @since	1.5
+     * @return  object  A JUser object
+     * @since   1.5
      */
     protected function _getUser($user, $options = array())
     {
@@ -387,19 +387,19 @@ class plgUserEmundus extends JPlugin
 
         //TODO : move this out of the plugin
         jimport('joomla.application.component.helper');
-        $config	= JComponentHelper::getParams('com_users');
+        $config = JComponentHelper::getParams('com_users');
         // Default to Registered.
         $defaultUserGroup = $config->get('new_usertype', 2);
 
         $acl = JFactory::getACL();
 
-        $instance->set('id'			, 0);
-        $instance->set('name'			, $user['fullname']);
-        $instance->set('username'		, $user['username']);
-        $instance->set('password_clear'	, $user['password_clear']);
-        $instance->set('email'			, $user['email']);	// Result should contain an email (check)
-        $instance->set('usertype'		, 'deprecated');
-        $instance->set('groups'		, array($defaultUserGroup));
+        $instance->set('id'         , 0);
+        $instance->set('name'           , $user['fullname']);
+        $instance->set('username'       , $user['username']);
+        $instance->set('password_clear' , $user['password_clear']);
+        $instance->set('email'          , $user['email']);  // Result should contain an email (check)
+        $instance->set('usertype'       , 'deprecated');
+        $instance->set('groups'     , array($defaultUserGroup));
 
         //If autoregister is set let's register the user
         $autoregister = isset($options['autoregister']) ? $options['autoregister'] :  $this->params->get('autoregister', 1);
