@@ -11,6 +11,7 @@
 /administrator/cache/GantryAdmin/*
 /configuration.php
 /templates/rt_afterburner2/css-compiled/*
+/templates/rt_afterburner2/css/rt_afterburner2-custom.css
 /images/emundus/files/*
 /images/emundus/letters/*
 /image/logo.png
