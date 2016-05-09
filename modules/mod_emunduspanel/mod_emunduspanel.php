@@ -106,7 +106,7 @@ if (!empty($t__)) {
 		$tab_temp = array();
 
 		if($user->applicant == 1)
-			$btn_start = '<button class="circular ui icon button"><a href="'.JRoute::_($res[0]->link.'&Itemid='.$res[0]->id).'"><i class="right arrow icon"></i>'.JText::_('START').'</a></button>';
+			$btn_start = '<a class="btn btn-warning" role="button" href="'.JRoute::_($res[0]->link.'&Itemid='.$res[0]->id).'"><i class="right arrow icon"></i>'.JText::_('START').'</a>';
 		else
 			$btn_start = '';
 
