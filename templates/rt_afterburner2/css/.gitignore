@@ -1,1 +1,6 @@
+*
+!.gitignore
+!index.html
+!master-ie8.css
+!master-ie9.css
 rt_afterburner2-custom.css
