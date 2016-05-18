@@ -236,15 +236,18 @@ class plgUserEmundus extends JPlugin
         // The most common use of this routine would be logging the user into a third party application
         // In this example the boolean variable $success would be set to true if the login routine succeeds
         // ThirdPartyApp::loginUser($user['username'], $user['password']);
+        
+        include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
+        include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
+
         $app            = JFactory::getApplication();
+        $current_user   = JFactory::getUser();
 
         if (!$app->isAdmin()) {
-            $current_user   = JFactory::getUser();
+            
             $db             = JFactory::getDBO();
 
             include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
-            include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
-            include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
             $profiles = new EmundusModelProfile;
             $users = new EmundusModelUsers;
@@ -252,8 +255,8 @@ class plgUserEmundus extends JPlugin
             $p = $profiles->isProfileUserSet($current_user->id);
             $campaign = $profiles->getCurrentCampaignInfoByApplicant($current_user->id);
             $incomplete = $profiles->getCurrentIncompleteCampaignByApplicant($current_user->id);
-
-            if( $p['cpt'] == 0 || empty($p['profile']) || !isset($p['profile']) || empty($campaign))
+            
+            if( ($p['cpt'] == 0 || empty($p['profile']) || !isset($p['profile']) || empty($campaign)) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id) ) 
                 $app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
             //$mainframe->redirect("index.php?option=com_emundus&view=campaign");
             else {
@@ -296,18 +299,12 @@ class plgUserEmundus extends JPlugin
                     $current_user->applicant                = 0;
                 }
 
-                /*if ($current_user->code   == "pepite") {
-                    $app->redirect("index.php?option=com_fabrik&view=form&formid=164&Itemid=1521&usekey=fnum");
-                }
-                if ($current_user->code == "utc-dfp-dri") {
-                    $app->redirect("index.php?option=com_emundus&view=jobs&Itemid=1468");
-                }*/
                 if ($current_user->code == "csc") {
                     $app->redirect("index.php?option=com_content&view=article&id=83&Itemid=1570");
                 }
             }
-        }
-
+        } 
+        
         return true;
     }
 
