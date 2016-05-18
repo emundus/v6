@@ -121,7 +121,7 @@ class  plgSystemEmundus_ametys extends JPlugin
                     $db_ext = JDatabaseDriver::getInstance( $option );
 
 // 1. select user data from Ametyd BDD
-                    $query = 'SELECT *  
+                    $query = 'SELECT uct.*,  u.firstname, u.lastname, u.email, u.password
                                 FROM `Users_CandidateToken` as uct
                                 LEFT JOIN  `FOUsers` as u on u.email=uct.login
                                 WHERE uct.token like '.$db_ext->quote($token);
@@ -136,25 +136,27 @@ class  plgSystemEmundus_ametys extends JPlugin
 
                         $query = 'SELECT *
                                 FROM `#__users`
-                                WHERE email like '.$db->quote($user_tmp['email']);
+                                WHERE email like '.$db->quote($user_tmp['login']);
                         $db->setQuery( $query );
                         $user_joomla = $db->loadObject();
 
-                        if($user_joomla->id) {
-// 2.1 if user exist in emundus then login                   
-                            // login user
-                            $user = $m_users->login($user_joomla->id);
+                        if(isset($user_joomla->id) && !empty($user_joomla->id)) { 
+// 2.1 if user exist in emundus then login                            
+                           
                             // delete TOKEN
                             $query = 'DELETE  
                                 FROM `Users_CandidateToken` 
-                                WHERE login like '.$db_ext->quote($user_tmp['email']);
+                                WHERE login like '.$db_ext->quote($user_tmp['login']);
                             $db_ext->setQuery( $query );
                             $db_ext->execute();
+
+                             // login user
+                            $user = $m_users->login($user_joomla->id);
 
                             //return true;
                             $app->redirect('index.php');
                         } 
-                        else {
+                        else { 
 // 2.2 else 
 // 2.2.1 : get selected programmes
 // 2.2.2 : create user 
