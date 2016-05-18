@@ -67,6 +67,11 @@ if (!empty($t__)) {
 	if (count($res > 0)) {
 		$tab = array();
 
+		if($user->applicant == 1)
+			$btn_start = '<a class="btn btn-warning" role="button" href="'.JRoute::_($res[0]->link.'&Itemid='.$res[0]->id).'"><i class="right arrow icon"></i>'.JText::_('START').'</a>';
+		else
+			$btn_start = '';
+
 		echo '<div class="emundus_home_page" id="em-panel">';
 		$j = 0;
 		foreach($res as $r){
