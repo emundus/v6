@@ -135,7 +135,9 @@ class EmundusModelEvaluation extends JModelList
 				}
 				elseif ($def_elmt->element_plugin == 'databasejoin') {
 					$attribs = json_decode($def_elmt->element_attribs);
-                    $join_val_column = !empty($attribs->join_val_column)?$attribs->join_val_column:'CONCAT('.str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat).')';
+                    //$join_val_column = !empty($attribs->join_val_column)?$attribs->join_val_column:'CONCAT('.str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat).')';
+					$join_val_column = (!empty($attribs->join_val_column_concat) && $attribs->join_val_column_concat!='')?'CONCAT('.$attribs->join_val_column_concat.')':$attribs->join_val_column;
+
 					if ($group_params->repeat_group_button == 1) {
 						$query = '(
 									select GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")

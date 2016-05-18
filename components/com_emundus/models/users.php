@@ -15,7 +15,7 @@
 // No direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport( 'joomla.application.component.model' );
-require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
 
 class EmundusModelUsers extends JModelList
 {
@@ -777,7 +777,7 @@ class EmundusModelUsers extends JModelList
         $session = JFactory::getSession();
         $jUser   = JFactory::getUser($uid);
 
-        //$userarray = array();
+       // $userarray = array();
         //$userarray['username'] = $jUser->username;
         //$userarray['password'] = $jUser->password;
         //$app->login($userarray);              
@@ -802,6 +802,11 @@ class EmundusModelUsers extends JModelList
 
         // Hit the user last visit field
         $instance->setLastVisit(); 
+
+        // Trigger OnUserLogin
+        JPluginHelper::importPlugin('user', 'emundus');
+        $dispatcher = JEventDispatcher::getInstance();
+        $results = $dispatcher->trigger( 'onUserLogin', $instance );
 
         return $jUser;
 
@@ -1532,7 +1537,7 @@ class EmundusModelUsers extends JModelList
 
     public function getGroupsAcl($gid)
     {
-	  if(count($gid) > 0)
+      if(count($gid) > 0)
       {
         try
         {
@@ -1559,8 +1564,8 @@ class EmundusModelUsers extends JModelList
             error_log($e->getMessage(), 0);
             return false;
         }
-	  } else
-		return array();
+      } else
+        return array();
     }
 
     public function getGroupUsers($gid)
