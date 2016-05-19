@@ -34,7 +34,24 @@ class EmundusViewAmetys extends JViewLegacy
     	// translation to load in javacript file ; /media/com_emundus/em_files.js
     	// put it in com_emundus/emundus.php
 
-	    $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
+    	$current_user = JFactory::getUser();
+		if( !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id) )
+			die( JText::_('RESTRICTED_ACCESS') );
+
+		$document = JFactory::getDocument();
+		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
+		// overide css
+		$menu = @JSite::getMenu();
+        $current_menu = $menu->getActive();
+        $menu_params = $menu->getParams($current_menu->id);
+
+		$page_heading = $menu_params->get('page_heading', '');
+		$pageclass_sfx = $menu_params->get('pageclass_sfx', '');
+		if (!empty($page_heading)) {
+			$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$page_heading.".css" );
+		}
+
+	    $this->itemId = $current_menu->id;
 	    $this->task = JFactory::getApplication()->input->getInt('task', null);
 	    $this->token = JFactory::getApplication()->input->getInt('token', null);
 		

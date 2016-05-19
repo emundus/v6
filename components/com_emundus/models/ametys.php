@@ -288,7 +288,8 @@ class EmundusModelAmetys extends JModelLegacy
      */
     public function getProgrammes()
     {
-        $query = 'SELECT * FROM ODF_export_program where content_language like "fr"';
+        $query = 'SELECT id_ODF_export_program, presentation, cdmCode, title, programWebSiteUrl, ects, distanceLearning, registrationStart, registrationDeadline, catalog
+                  FROM ODF_export_program where content_language like "fr"';
 
         try
         {

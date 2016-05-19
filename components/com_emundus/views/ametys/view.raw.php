@@ -39,45 +39,35 @@ class EmundusViewAmetys extends JViewLegacy
 
     public function display($tpl = null)
     {
-    	$current_user = JFactory::getUser();	
+    	$current_user = JFactory::getUser();
+		if( !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id) )
+			die( JText::_('RESTRICTED_ACCESS') );
+
+		$document = JFactory::getDocument();
+		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
+		// overide css
+		$menu = @JSite::getMenu();
+        $current_menu = $menu->getActive();
+        $menu_params = $menu->getParams($current_menu->id);
+
+		$pageclass_sfx = $menu_params->get('pageclass_sfx', '');
+		if (!empty($pageclass_sfx)) {
+			$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$pageclass_sfx.".css" );
+		}
+
 	   	$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_emundus');
 
-	    $this->itemId = $app->input->getInt('Itemid', null);
-	    $this->cfnum = $app->input->getString('cfnum', null);
+	    $this->itemId = $current_menu->id;
 	    $layout = $app->input->getString('layout', null);
+
 	    $model = $this->getModel('Ametys');
 
 		switch  ($layout)
 		{
-			// get access list for application file
-			case 'access':
-				$fnums = $app->input->getString('users', null);
-				$fnums_obj = (array) json_decode(stripslashes($fnums)); 
-
-			    if(@$fnums_obj[0] == 'all')
-					$fnums = $model->getAllFnums();
-			    else {
-			        $fnums = array();
-			        foreach ($fnums_obj as $key => $value) {
-			        	$fnums[] = @$value->fnum;
-			        }
-			    }
-
-			    $groupFnum = $model->getGroupsByFnums($fnums);
-			    $evalFnum = $model->getAssessorsByFnums($fnums);
-				$users = $model->getFnumsInfos($fnums);
-			    $evalGroups = $model->getEvalGroups();
-			    $actions = $model->getAllActions();
-			    $actions_evaluators = json_decode($default_actions);
-
-			    $this->assignRef('groups', $evalGroups['groups']);
-			    $this->assignRef('groupFnum', $groupFnum);
-			    $this->assignRef('evalFnum', $evalFnum);
-			    $this->assignRef('users', $users);
-			    $this->assignRef('evals', $evalGroups['users']);
-			    $this->assignRef('actions', $actions);
-			    $this->assignRef('actions_evaluators', $actions_evaluators);
+			// get Form Campaign
+			case 'campaign':
+				
 			break;
 
 			// get list of application files
@@ -88,11 +78,6 @@ class EmundusViewAmetys extends JViewLegacy
 
 		    break;
 	    }
-
 		parent::display($tpl);
-
 	}
-
 }
-
-
