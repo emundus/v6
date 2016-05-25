@@ -1,13 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
+hikashop_loadJsLib('tooltip');
 if( isset($this->display_form) && $this->display_form ) {
 	global $Itemid;
 	$order_id = JRequest::getInt('order_id',0);
@@ -61,8 +62,7 @@ if( isset($this->display_form) && $this->display_form ) {
 		</tr>
 <?php if(!empty($this->method->ask_ccv)){ ?>
 		<tr>
-			<td style="text-align:right"><label for="hikashop_credit_card_CCV_<?php echo $this->method->payment_type.'_'.$this->method->payment_id;?>"><?php echo JHTML::tooltip(JText::_('CVC_TOOLTIP_TEXT'), JText::_('CVC_TOOLTIP_TITLE'),
-			'', JText::_('CARD_VALIDATION_CODE')); ?></label></td>
+			<td style="text-align:right"><label for="hikashop_credit_card_CCV_<?php echo $this->method->payment_type.'_'.$this->method->payment_id;?>" data-original-title="<?php echo JText::_('CVC_TOOLTIP_TEXT'); ?>" data-toggle="hk-tooltip"><?php echo JText::_('CARD_VALIDATION_CODE'); ?></label></td>
 			<td><span class="hikashop_credit_ccv"><?php echo str_repeat("X", strlen($cc_CCV));?></span></td>
 		</tr>
 <?php } ?>
@@ -101,8 +101,7 @@ if( isset($this->display_form) && $this->display_form ) {
 		</tr>
 <?php if(!empty($this->method->ask_ccv)){ ?>
 		<tr>
-			<td style="text-align:right"><label for="hikashop_credit_card_CCV_<?php echo $this->method->payment_type.'_'.$this->method->payment_id;?>"><?php echo JHTML::tooltip(JText::_('CVC_TOOLTIP_TEXT'), JText::_('CVC_TOOLTIP_TITLE'),
-			'', JText::_('CARD_VALIDATION_CODE')); ?></label></td>
+			<td style="text-align:right"><label for="hikashop_credit_card_CCV_<?php echo $this->method->payment_type.'_'.$this->method->payment_id;?>" data-original-title="<?php echo JText::_('CVC_TOOLTIP_TEXT'); ?>" data-toggle="hk-tooltip"><?php echo JText::_('CARD_VALIDATION_CODE'); ?></label></td>
 			<td><input type="text" autocomplete="off" style="text-align: center;" id="hikashop_credit_card_CCV_<?php echo $this->method->payment_type.'_'.$this->method->payment_id;?>" name="hikashop_credit_card_CCV[<?php echo $this->method->payment_type.'_'.$this->method->payment_id;?>]" maxlength="4" size="4" value="" /></td>
 		</tr>
 <?php } ?>

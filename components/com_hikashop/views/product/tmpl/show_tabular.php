@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -40,34 +40,32 @@ foreach ($this->fields as $fieldName => $oneExtraField) {
 }
 
 ?>
-<div itemprop="Product" itemscope itemtype="http://schema.org/Product">
-	<div id="hikashop_product_top_part" class="hikashop_product_top_part">
-	<?php if(!empty($this->element->extraData->topBegin)) { echo implode("\r\n",$this->element->extraData->topBegin); } ?>
-		<h1>
-			<span id="hikashop_product_name_main" class="hikashop_product_name_main" itemprop="name">
+<div id="hikashop_product_top_part" class="hikashop_product_top_part">
+<?php if(!empty($this->element->extraData->topBegin)) { echo implode("\r\n",$this->element->extraData->topBegin); } ?>
+	<h1>
+		<span id="hikashop_product_name_main" class="hikashop_product_name_main" itemprop="name">
+			<?php
+			if (hikashop_getCID('product_id')!=$this->element->product_id && isset ($this->element->main->product_name))
+				echo $this->element->main->product_name;
+			else
+				echo $this->element->product_name;
+			?>
+		</span>
+		<?php if ($this->config->get('show_code')) { ?>
+		<span id="hikashop_product_code_main" class="hikashop_product_code_main" itemprop="sku">
+			<span id="hikashop_product_code_main" class="hikashop_product_code_main">
 				<?php
-				if (hikashop_getCID('product_id')!=$this->element->product_id && isset ($this->element->main->product_name))
-					echo $this->element->main->product_name;
-				else
-					echo $this->element->product_name;
+				echo $this->element->product_code;
 				?>
 			</span>
-			<?php if ($this->config->get('show_code')) { ?>
-			<span id="hikashop_product_code_main" class="hikashop_product_code_main" itemprop="model">
-				<span id="hikashop_product_code_main" class="hikashop_product_code_main">
-					<?php
-					echo $this->element->product_code;
-					?>
-				</span>
-			</span>
-			<?php } ?>
-		</h1>
-	<?php if(!empty($this->element->extraData->topEnd)) { echo implode("\r\n",$this->element->extraData->topEnd); } ?>
-		<?php
-		$this->setLayout('show_block_social');
-		echo $this->loadTemplate();
-			?>
-	</div>
+		</span>
+		<?php } ?>
+	</h1>
+<?php if(!empty($this->element->extraData->topEnd)) { echo implode("\r\n",$this->element->extraData->topEnd); } ?>
+	<?php
+	$this->setLayout('show_block_social');
+	echo $this->loadTemplate();
+		?>
 </div>
 <?php if(HIKASHOP_RESPONSIVE){ ?>
 	<div class="<?php echo HK_GRID_ROW; ?>">
@@ -79,7 +77,6 @@ foreach ($this->fields as $fieldName => $oneExtraField) {
 	$this->row = & $this->element;
 	$this->setLayout('show_block_img');
 	echo $this->loadTemplate();
-	$imgMicroData = $this->loadTemplate();
 	?>
 	<div id="hikashop_product_description_main_mini" class="hikashop_product_description_main_mini">
 		<?php
@@ -98,26 +95,24 @@ foreach ($this->fields as $fieldName => $oneExtraField) {
 	if(!empty($this->element->extraData->rightBegin))
 		echo implode("\r\n",$this->element->extraData->rightBegin);
 	?>
-	<div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-		<span id="hikashop_product_price_main" class="hikashop_product_price_main">
-			<?php
-			if ($this->params->get('show_price')) {
-				$this->row = & $this->element;
-				$this->setLayout('listing_price');
-				echo $this->loadTemplate();
+	<span id="hikashop_product_price_main" class="hikashop_product_price_main" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+		<?php
+		if ($this->params->get('show_price')) {
+			$this->row = & $this->element;
+			$this->setLayout('listing_price');
+			echo $this->loadTemplate();
 
-				$CurrId = hikashop_getCurrency();
-				$null = null;
-				$currency = $this->currencyHelper->getCurrencies($CurrId, $null);
-				$CurrCode = $currency[$CurrId]->currency_code;
+			$CurrId = hikashop_getCurrency();
+			$null = null;
+			$currency = $this->currencyHelper->getCurrencies($CurrId, $null);
+			$CurrCode = $currency[$CurrId]->currency_code;
 
-			?>
-				<span style="display: none;" itemprop="priceCurrency"><?php echo $CurrCode; ?></span>
-			<?php
-			}
-			?>
-		</span><br />
-	</div>
+		?>
+			<meta itemprop="priceCurrency" content="<?php echo $CurrCode; ?>" />
+		<?php
+		}
+		?>
+	</span><br />
 	<div id="hikashop_product_vote_mini" class="hikashop_product_vote_mini">
 		<?php
 		if($this->params->get('show_vote_product') == '-1'){
@@ -244,14 +239,10 @@ foreach ($this->fields as $fieldName => $oneExtraField) {
 			echo implode("\r\n",$this->element->extraData->bottomBegin);
 		?>
 		<div class="hikashop_tabs_content" id="hikashop_show_tabular_description">
-			<div itemprop="thing" itemscope itemtype="https://schema.org/Thing">
-				<div id="hikashop_product_description_main" class="hikashop_product_description_main" itemprop="description">
-					<?php
-					echo JHTML::_('content.prepare',preg_replace('#<hr *id="system-readmore" */>#i','',$this->element->product_description));
-					?>
-				</div>
-					<!-- Add image for Micro Data here -->
-				<span style="display: none;"><?php echo $imgMicroData; ?></span>
+			<div id="hikashop_product_description_main" class="hikashop_product_description_main" itemprop="description">
+				<?php
+				echo JHTML::_('content.prepare',preg_replace('#<hr *id="system-readmore" */>#i','',$this->element->product_description));
+				?>
 			</div>
 			<span id="hikashop_product_url_main" class="hikashop_product_url_main">
 				<?php

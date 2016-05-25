@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    2.6.2
+ * @version    2.6.3
  * @author     hikashop.com
  * @copyright  (C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -18,9 +18,7 @@ hikaVote.setOptions = function(opts) {
 };
 hikaVote.updateVote = function(type, ref_id, value, tooltip) {
 	for(var i = window.hikaVotes.length - 1; i >= 0; i--) {
-		if(window.hikaVotes[i].type != type)
-			continue;
-		if(window.hikaVotes[i].ref_id != ref_id)
+		if(window.hikaVotes[i].type != type || window.hikaVotes[i].ref_id != ref_id)
 			continue;
 		window.hikaVotes[i].setRating(value, tooltip);
 	}
@@ -57,16 +55,19 @@ hikaVote.vote = function(val, from){
 		el = d.getElementById("hikashop_vote_status_"+parseInt(ref_id));
 	}
 
-	var type = infos.getAttribute("data-votetype"), comment_task = 0;
-	if(hikaVote.options.both == '1' || (val == 0 && infos.id == "hikashop_vote_rating_id")) {
-		comment_task = 1;
-	}
-
-	var hikashop_vote_comment = "", pseudo_comment = 0, email_comment = 0;
+	var hikashop_vote_comment = "", pseudo_comment = 0, email_comment = 0, recaptcha_comment = '';
 	if(d.getElementById("hikashop_vote_comment")) {
 		hikashop_vote_comment = d.getElementById("hikashop_vote_comment").value;
 		pseudo_comment = d.getElementById("pseudo_comment").value;
 		email_comment = d.getElementById("email_comment").value;
+		if(d.getElementById("g-recaptcha-response")){
+			recaptcha_comment = d.getElementById("g-recaptcha-response").value;
+		}
+	}
+
+	var type = infos.getAttribute("data-votetype"), comment_task = 0;
+	if(hikaVote.options.both == '1' || hikashop_vote_comment != '' || (val == 0 && infos.id == "hikashop_vote_rating_id")) {
+		comment_task = 1;
 	}
 
 	data = "vote_type=" + encodeURIComponent(type) + "&hikashop_vote_type=vote" +
@@ -74,7 +75,8 @@ hikaVote.vote = function(val, from){
 		"&hikashop_vote=" + parseInt(val) +
 		"&hikashop_vote_comment=" + encodeURIComponent(hikashop_vote_comment) +
 		"&email_comment=" + encodeURIComponent(email_comment) +
-		"&pseudo_comment=" + encodeURIComponent(pseudo_comment);
+		"&pseudo_comment=" + encodeURIComponent(pseudo_comment) +
+		"&recaptcha_comment=" + encodeURIComponent(recaptcha_comment);
 	window.Oby.xRequest(hikaVote.options.urls.save, {mode: "POST", data: data}, function(xhr) {
 		response = window.Oby.evalJSON(xhr.response);
 		if(response.error) {
@@ -407,7 +409,8 @@ var initVote = function(){
 			type : el.getAttribute("data-votetype"),
 			ref_id : el.getAttribute("data-ref"),
 		});
-		window.hikaVotes.push(r);
+		if(r.container)
+			window.hikaVotes.push(r);
 	}
 	el = d.getElementById('hikashop_vote_rating_id');
 	if(el) el.value = '0';

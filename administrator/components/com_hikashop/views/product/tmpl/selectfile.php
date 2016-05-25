@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -143,7 +143,9 @@ defined('_JEXEC') or die('Restricted access');
 	<div class="clr"></div>
 	<input type="hidden" name="data[file][file_type]" value="file" />
 	<input type="hidden" name="data[file][file_ref_id]" value="<?php echo JRequest::getInt('product_id'); ?>" />
-	<input type="hidden" name="cid[]" value="<?php echo @$this->cid; ?>" />
+	<input type="hidden" name="cid" value="<?php echo @$this->cid; ?>" />
+	<input type="hidden" name="file_id" value="<?php echo @$this->cid; ?>" />
+	<input type="hidden" name="pid" value="<?php echo JRequest::getInt('pid'); ?>" />
 	<input type="hidden" name="id" value="<?php echo JRequest::getInt('id');?>" />
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 	<input type="hidden" name="tmpl" value="component" />

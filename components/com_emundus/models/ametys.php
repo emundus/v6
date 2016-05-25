@@ -294,7 +294,7 @@ class EmundusModelAmetys extends JModelLegacy
         try
         {
             $this->dbAmetys->setQuery($query);
-            return $this->dbAmetys->loadAssocList();
+            return $this->dbAmetys->loadAssocList('cdmCode');
         }
         catch(Exception $e)
         {

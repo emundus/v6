@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -45,7 +45,7 @@ if($address_selector == 1) {
 		{CONTENT}
 	</div>
 	<div class="" style="margin-top:6px;">
-		<a class="btn btn-success" href="#newAddress" onclick="return window.localPage.switchAddr(0, '<?php echo $this->type; ?>');"><?php echo JText::_('HIKA_NEW'); ?></a>
+		<a class="btn btn-success" href="#newAddress" onclick="return window.localPage.switchAddr(0, '<?php echo $this->type; ?>', <?php echo (int)$current; ?>);"><?php echo JText::_('HIKA_NEW'); ?></a>
 	</div>
 <?php
 }
@@ -60,7 +60,7 @@ if($address_selector == 2) {
 		}
 	}
 	$values[] = JHTML::_('select.option', 0, JText::_('HIKASHOP_NEW_ADDRESS_ITEM'));
-	echo JHTML::_('select.genericlist', $values, 'hikashop_address_'.$this->type, 'class="hikashop_field_dropdown" onchange="window.localPage.switchAddr(this, \''.$this->type.'\');"', 'value', 'text', $current, 'hikashop_checkout_address_'.$this->type.'_selector');
+	echo JHTML::_('select.genericlist', $values, 'hikashop_address_'.$this->type, 'class="hikashop_field_dropdown" onchange="window.localPage.switchAddr(this, \''.$this->type.'\','.(int)$current.');"', 'value', 'text', $current, 'hikashop_checkout_address_'.$this->type.'_selector');
 ?><div id="hikashop_checkout_selected_<?php echo $this->type; ?>_address">
 <?php
 	if(isset($this->addresses[$current]))
@@ -102,9 +102,11 @@ if(!$hikashop_address_select_once) {
 ?>
 <script type="text/javascript">
 if(!window.localPage) window.localPage = {};
-window.localPage.switchAddr = function(el, type) {
+window.localPage.currentsAddr = {};
+window.localPage.switchAddr = function(el, type, old) {
 	var d = document, w = window, o = w.Oby, target = d.getElementById('hikashop_checkout_selected_' + type + '_address');
 	if(el === 0 || el.value == '0') {
+		window.localPage.currentsAddr[type] = old;
 		if(target)
 			target.innerHTML = '';
 		var dest = d.getElementById('hikashop_checkout_' + type + '_address_zone'),
@@ -115,13 +117,15 @@ window.localPage.switchAddr = function(el, type) {
 		return;
 	}
 <?php if($config->get('auto_submit_methods', 1)) { ?>
-	el.form.submit();
-<?php } else { ?>
+	if(old === undefined || (old !== undefined && old !== 'reset')) {
+		el.form.submit();
+		return;
+	}
+<?php }?>
 	if(!target)
 		return;
 	var url = '<?php echo hikashop_completeLink('address&task=show&cid={CID}&address_type={TYPE}&fid=hikashop_checkout_{TYPE}_address_zone', true, true); ?>'.replace(/\{CID\}/g, el.value).replace(/\{TYPE\}/g, type);
 	o.xRequest(url, {update:target});
-<?php } ?>
 }
 window.Oby.registerAjax('hikashop_address_changed', function(params) {
 	if(!params || !params.type)
@@ -130,7 +134,8 @@ window.Oby.registerAjax('hikashop_address_changed', function(params) {
 	var d = document,
 		other_type = (params.type == 'billing') ? 'shipping' : 'billing',
 		el_show = d.getElementById('hikashop_checkout_'+params.type+'_address_selection'),
-		el_edit = d.getElementById('hikashop_checkout_'+params.type+'_address_zone');
+		el_edit = d.getElementById('hikashop_checkout_'+params.type+'_address_zone'),
+		el_sel = d.getElementById('hikashop_checkout_address_'+params.type+'_selector');
 
 	var radios = document.getElementsByName("checkout_'+params.type+'_address_radio");
 	var selected = false;
@@ -146,16 +151,20 @@ window.Oby.registerAjax('hikashop_address_changed', function(params) {
 		el_show.style.display = 'none';
 		el_edit.style.display = '';
 		return;
-	}else if(params.type=='shipping' && (!selected || d.getElementById('hikashop_shipping_methods') || d.getElementById('hikashop_payment_methods') || d.getElementById('hikashop_checkout_cart') )){
+	}else if(params.cid == 0 && params.task == 'show' && window.localPage.currentsAddr[params.type]) {
+		if(el_sel) {
+			el_sel.value = window.localPage.currentsAddr[params.type];
+			window.localPage.switchAddr(el_sel, params.type, 'reset');
+		}
+	}else if(params.type=='shipping' && params.task == 'save' && (!selected || d.getElementById('hikashop_shipping_methods') || d.getElementById('hikashop_payment_methods') || d.getElementById('hikashop_checkout_cart') )){
 		d.forms['hikashop_checkout_form'].submit();
-	}else if(params.type=='billing' && (!d.getElementById('hikashop_checkout_shipping_address') || (d.getElementById('same_address') && d.getElementById('same_address').checked) || !selected) && (d.getElementById('hikashop_shipping_methods') || d.getElementById('hikashop_payment_methods') || d.getElementById('hikashop_checkout_cart') )){
+	}else if(window.localPage.currentsAddr[params.type] == params.cid && params.cid != 0 && params.type=='billing' && (!d.getElementById('hikashop_checkout_shipping_address') || (d.getElementById('same_address') && d.getElementById('same_address').checked) || !selected) && (d.getElementById('hikashop_shipping_methods') || d.getElementById('hikashop_payment_methods') || d.getElementById('hikashop_checkout_cart') )){
 		window.location.reload();
 	}
 	if(el_edit.children.length == 0)
 		return;
 
 	var el_cur = d.getElementById('hikashop_checkout_selected_'+params.type+'_address'),
-		el_sel = d.getElementById('hikashop_checkout_address_'+params.type+'_selector');
 		content = el_edit.firstChild.innerHTML,
 		reg = new RegExp(params.type, 'g');
 
@@ -200,6 +209,9 @@ window.Oby.registerAjax('hikashop_address_changed', function(params) {
 			}
 			if(ot_sel.options[ot_sel.selectedIndex].value == params.cid)
 				ot_cur.innerHTML = content.replace(reg, other_type);
+		}
+		if(params.type=='billing' && params.task == 'save' && (!d.getElementById('hikashop_checkout_shipping_address') || (d.getElementById('same_address') && d.getElementById('same_address').checked) || !selected) && (d.getElementById('hikashop_shipping_methods') || d.getElementById('hikashop_payment_methods') || d.getElementById('hikashop_checkout_cart') )){
+			d.forms['hikashop_checkout_form'].submit();
 		}
 	} else if(!el_sel || !el_cur) {
 		var target_id = params.previous_cid || params.cid,

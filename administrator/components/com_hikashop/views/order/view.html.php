@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -321,11 +321,19 @@ class OrderViewOrder extends hikashopView{
 		$this->assignRef('fields',$fields);
 		$this->assignRef('fieldsClass',$fieldsClass);
 
+		$products = array();
+		if(!empty($order->products)){
 			$products_ids = array();
 			$productClass = hikashop_get('class.product');
-			foreach($order->products as $item) { $products_ids[] = $item->product_id; }
-			$productClass->getProducts($products_ids);
-			$products =& $productClass->all_products;
+			foreach($order->products as $item) {
+				if($item->product_id)
+					$products_ids[] = $item->product_id;
+			}
+			if(count($products_ids)){
+				$productClass->getProducts($products_ids);
+				$products =& $productClass->all_products;
+			}
+		}
 		$this->assignRef('products',$products);
 
 		$user_id = JRequest::getInt('user_id',0);
@@ -745,11 +753,20 @@ class OrderViewOrder extends hikashopView{
 		$this->assignRef('order',$order);
 		$this->assignRef('fields',$fields);
 
+
+		$products = array();
+		if(!empty($order->products)){
 			$products_ids = array();
 			$productClass = hikashop_get('class.product');
-			foreach($order->products as $item) { $products_ids[] = $item->product_id; }
-			$productClass->getProducts($products_ids);
-			$products =& $productClass->all_products;
+			foreach($order->products as $item) {
+				if($item->product_id)
+					$products_ids[] = $item->product_id;
+			}
+			if(count($products_ids)){
+				$productClass->getProducts($products_ids);
+				$products =& $productClass->all_products;
+			}
+		}
 		$this->assignRef('products',$products);
 
 

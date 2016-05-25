@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -39,7 +39,29 @@ if(!empty($this->rows)){
 					<th class="hikashop_product_name title" align="center">
 						<?php echo JText::_( 'PRODUCT' );?>
 					</th>
+					<?php if(hikashop_level(2)){
+							if(!empty($this->productFields)) {
+								$usefulFields = array();
+								foreach ($this->productFields as $field) {
+									$fieldname = $field->field_namekey;
+									foreach($this->rows as $product){
+										if(!empty($product->$fieldname)){
+											$usefulFields[] = $field;
+											break;
+										}
+									}
+								}
+								$productFields = $usefulFields;
 
+								if(!empty($this->productFields)) {
+									foreach($this->productFields as $field){?>
+									<th class="hikashop_product_field title" align="center">
+										<?php echo $this->fieldsClass->getFieldName($field); ?>
+									</th>
+							<?php	}
+								}
+							}
+						}?>
 					<?php if ($this->config->get('show_code')) { $columns++;?>
 						<th class="hikashop_product_code title" align="center">
 							<?php echo JText::_( 'PRODUCT_CODE' ); ?>
@@ -163,6 +185,23 @@ if(!empty($this->rows)){
 							<?php } ?>
 						</td>
 					<?php } ?>
+					<?php
+						if(hikashop_level(2)){
+							if(!empty($this->fields)) {
+								foreach($this->fields as $field){
+									$namekey = $field->field_namekey;
+									?>
+									<td>
+									<?php
+									if(!empty($this->row->$namekey))
+										echo  '<p class="hikashop_product_field'.$namekey.'">'.$this->fieldsClass->show($field,$this->row->$namekey).'</p>';
+									?>
+									</td>
+								<?php
+								}
+							}
+						}
+					?>
 					<?php if($this->params->get('show_vote_product')){ ?>
 						<td class="hikashop_product_vote_row">
 							<?php

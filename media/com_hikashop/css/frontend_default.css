@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    2.6.2
+ * @version    2.6.3
  * @author     hikashop.com
  * @copyright  (C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -292,7 +292,7 @@ tr.hikashop_checkout_payment_ccinfo td {
 
 a.hikashop_cart_button, a.hikashop_compare_button, .hikashop_cart_input_button{
 	text-decoration:none;
-	color: #777777;
+	color: #777777 !important;
 	cursor: pointer;
 	display: inline-block;
 	line-height: 18px;

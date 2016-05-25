@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -213,6 +213,18 @@ class VoteViewvote extends HikaShopView {
 			$hikashop_vote_score = $db->loadObject();
 			$hikashop_vote_average_score = $hikashop_vote_score->vendor_average_score;
 			$hikashop_vote_total_vote = $hikashop_vote_score->vendor_total_vote;
+
+			if((int)$scores->vendor_average_score == 0){
+				$db = JFactory::getDBO();
+				$query = 'SELECT AVG(v.vote_rating) AS average, COUNT(v.vote_id) AS total FROM '.hikashop_table('vote').' AS v '.
+					' WHERE vote_ref_id = ' . (int)$hikashop_vote_ref_id .' AND vote_type = ' . $db->Quote($type_item).' AND v.vote_rating != 0';
+				$db->setQuery($query);
+				$data = $db->loadObject();
+				if($data->total != 0){
+					$hikashop_vote_average_score = $data->average;
+					$hikashop_vote_total_vote = $data->total;
+				}
+			}
 		}else{
 			$query = 'SELECT product_average_score, product_total_vote FROM ' . hikashop_table('product') . ' WHERE product_id = ' . (int) $hikashop_vote_ref_id;
 			$db->setQuery($query);
@@ -309,6 +321,18 @@ class VoteViewvote extends HikaShopView {
 			$scores = $db->loadObject();
 			$hikashop_vote_average_score = $scores->vendor_average_score;
 			$hikashop_vote_total_vote = $scores->vendor_total_vote;
+
+			if((int)$scores->vendor_average_score == 0){
+				$db = JFactory::getDBO();
+				$query = 'SELECT AVG(v.vote_rating) AS average, COUNT(v.vote_id) AS total FROM '.hikashop_table('vote').' AS v '.
+					' WHERE vote_ref_id = ' . (int)$hikashop_vote_ref_id .' AND vote_type = ' . $db->Quote($type_item).' AND v.vote_rating != 0';
+				$db->setQuery($query);
+				$data = $db->loadObject();
+				if($data->total != 0){
+					$hikashop_vote_average_score = $data->average;
+					$hikashop_vote_total_vote = $data->total;
+				}
+			}
 		}else{
 			$query = 'SELECT product_average_score, product_total_vote FROM '.hikashop_table('product').' WHERE product_id = '.(int)$hikashop_vote_ref_id;
 			$db->setQuery($query);

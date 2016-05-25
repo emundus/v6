@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,6 +24,7 @@ class VoteController extends hikashopController {
 	}
 
 	function save() {
+		$config = hikashop_config();
 		$voteClass = hikashop_get('class.vote');
 		if(!count($_POST)){
 			$app = JFactory::getApplication();
@@ -49,6 +50,14 @@ class VoteController extends hikashopController {
 			$element->vote_rating = JRequest::getVar('hikashop_vote', 0, 'default', 'int');
 			$element->vote_comment = JRequest::getVar('hikashop_vote_comment','','','string',JREQUEST_ALLOWRAW); // JRequest::getVar('hikashop_vote_comment', 0, 'default', 'string', 0);
 			$element->vote_comment = urldecode($element->vote_comment);
+
+			$captcha = JRequest::getVar('recaptcha_comment', '', '', 'string', JREQUEST_ALLOWRAW);
+			if(!empty($captcha))
+				$element->recaptchaResponse = $captcha;
+
+			if($config->get('enable_status_vote','nothing') != 'both' && !empty($element->vote_comment))
+				$element->vote_rating = 0;
+
 			$voteClass->save($element);
 		}
 		$return = array();

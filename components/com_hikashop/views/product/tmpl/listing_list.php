@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -97,6 +97,25 @@ if((!empty($this->rows) || !$this->module || JRequest::getVar('hikashop_front_en
 					</a>
 <?php
 			}
+
+
+			if(!empty($this->productFields)) {
+				foreach ($this->productFields as $fieldName => $oneExtraField) {
+					if(!empty($this->row->$fieldName) || (isset($this->row->$fieldName) && $this->row->$fieldName === '0')) {
+			?>
+					<dl class="hikashop_product_custom_<?php echo $oneExtraField->field_namekey;?>_line">
+						<dt class="hikashop_product_custom_name">
+							<?php echo $this->fieldsClass->getFieldName($oneExtraField);?>
+						</dt>
+						<dd class="hikashop_product_custom_value">
+							<?php echo $this->fieldsClass->show($oneExtraField,$this->row->$fieldName); ?>
+						</dd>
+					</dl>
+			<?php
+					}
+				}
+			}
+
 
 			if($this->params->get('show_vote_product')){
 				$this->setLayout('listing_vote');

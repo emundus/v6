@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -336,9 +336,9 @@ class hikashopProductClass extends hikashopClass{
 
 		$this->db->setQuery('SELECT field.* FROM '.hikashop_table('field').' as field WHERE field.field_table = '.$this->db->Quote('product').' ORDER BY field.`field_ordering` ASC');
 		$all_fields = $this->db->loadObjectList('field_namekey');
-		$edit_fields = hikashop_acl('product/variant/customfields');
+		$edit_fields = hikashop_acl('product/edit/customfields');
 		foreach($all_fields as $fieldname => $field) {
-			if(!$edit_fields || empty($field->field_published) || empty($field->field_display)) { // (strpos($field->field_display, ';vendor_product_edit=1') === false) ) {
+			if(!$edit_fields || empty($field->field_published) || (empty($field->field_backend) && strpos($field->field_display, ';field_product_form=1') === false) ) { // (strpos($field->field_display, ';vendor_product_edit=1') === false) ) {
 				unset($product->$fieldname);
 			}
 		}
@@ -700,7 +700,7 @@ class hikashopProductClass extends hikashopClass{
 
 
 		}
-		$product = $fieldClass->getInput('variant', $oldProduct, true, 'data', false, 'field_display');
+		$product = $fieldClass->getInput('variant', $oldProduct, true, 'data', false, 'all');
 		if(empty($product))
 			return false;
 
@@ -708,7 +708,7 @@ class hikashopProductClass extends hikashopClass{
 		$all_fields = $this->db->loadObjectList('field_namekey');
 		$edit_fields = hikashop_acl('product/variant/customfields');
 		foreach($all_fields as $fieldname => $field) {
-			if(!$edit_fields || empty($field->field_published) || empty($field->field_display) ) {
+			if(!$edit_fields || empty($field->field_published) || (empty($field->field_backend) && strpos($field->field_display, ';field_product_form=1') === false) ) {
 				unset($product->$fieldname);
 			}
 		}
@@ -1502,7 +1502,7 @@ class hikashopProductClass extends hikashopClass{
 		$config = JFactory::getConfig();
 		if(!$config->get('unicodeslugs')){
 			$lang = JFactory::getLanguage();
-			$element->alias = $lang->transliterate($element->alias);
+			$element->alias = str_replace(',','-',$lang->transliterate($element->alias));
 		}
 		$app = JFactory::getApplication();
 		if(method_exists($app,'stringURLSafe')){

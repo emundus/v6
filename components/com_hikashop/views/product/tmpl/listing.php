@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -92,18 +92,21 @@ window.hikashop.ready( function() {
 <?php }
 
 ob_start();
+$titleType='h1';
 if(version_compare(JVERSION,'1.6','<')){
-	$title = 'show_page_title';
+	$title = $this->params->get('show_page_title');
+}elseif($this->module){
+	$title = $this->params->get('showtitle');
+	$titleType='h2';
 }else{
-	$title = 'show_page_heading';
-}
-$titleType = 'h1';
-if($this->module){
-	$title = 'showtitle';
-	$titleType = 'h2';
+	$title = (string) $this->params->get('show_page_heading');
+	if($title===''){
+		$params = JComponentHelper::getParams( 'com_menus' );
+		$title = $params->get('show_page_heading');
+	}
 }
 
-if($this->params->get($title) && JRequest::getVar('hikashop_front_end_main',0) && (!$this->module || $this->pageInfo->elements->total)){
+if($title && JRequest::getVar('hikashop_front_end_main',0) && (!$this->module || $this->pageInfo->elements->total)){
 	$name = $this->params->get('page_title');
 	if($this->module){
 		$name = $this->params->get('title');

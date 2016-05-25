@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -124,17 +124,25 @@ defined('_JEXEC') or die('Restricted access');
 						<?php }else{ $row->field_ordering; } ?>
 					</td>
 					<td align="center">
+					<?php if($row->field_table=='product' || $row->field_table=='item' || $row->field_table=='order'){
+							echo '--';
+						}else{?>
 						<?php if($this->manage){ ?>
 							<span id="<?php echo $frontcompid ?>" class="loading"><?php echo $this->toggleClass->toggle($frontcompid,(int) $row->field_frontcomp,'field') ?></span>
 						<?php }else{ echo $this->toggleClass->display('activate',$row->field_frontcomp); } ?>
+					<?php } ?>
 					</td>
 					<td align="center">
+					<?php if($row->field_table=='product' || $row->field_table=='item' || $row->field_table=='order'){
+							echo '--';
+						}else{?>
 						<?php if($this->manage){ ?>
 							<span id="<?php echo $backendid ?>" class="loading"><?php echo $this->toggleClass->toggle($backendid,(int) $row->field_backend,'field') ?></span>
 						<?php }else{ echo $this->toggleClass->display('activate',$row->field_backend); } ?>
+					<?php } ?>
 					</td>
 					<td align="center">
-						<?php if($row->field_table=='address'){
+						<?php if($row->field_table=='address' || $row->field_table=='product' || $row->field_table=='item' || $row->field_table=='order'){
 							echo '--';
 						}else{?>
 							<?php if($this->manage){ ?>

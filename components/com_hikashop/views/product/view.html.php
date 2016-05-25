@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -265,7 +265,7 @@ window.hikashop.ready( function() {
 			}
 			$recently_viewed = (int)$this->params->get('recently_viewed',0);
 			if($synchro) {
-				if(JRequest::getString('option','') == HIKASHOP_COMPONENT && JRequest::getString('ctrl', 'category') == 'product') {
+				if(JRequest::getString('option','') == HIKASHOP_COMPONENT && JRequest::getString('ctrl', 'category') == 'product' && JRequest::getString('task', 'listing') == 'show') {
 					$product_synchronize = (int)$this->params->get('product_synchronize',0);
 					if($product_synchronize) {
 						$product_id = hikashop_getCID('product_id');
@@ -311,14 +311,13 @@ window.hikashop.ready( function() {
 									} else {
 										$pageInfo->filter->cid = $database->loadColumn();
 									}
-
 								} else {
 									$pageInfo->filter->cid = array($pathway);
 								}
 							}
 						}
 					}
-				} elseif(JRequest::getString('option','') == HIKASHOP_COMPONENT && JRequest::getString('ctrl', 'category') == 'category') {
+				} elseif(JRequest::getString('option','') == HIKASHOP_COMPONENT && in_array(JRequest::getString('ctrl', 'category'),array('category','product')) && JRequest::getString('task', 'listing') == 'listing') {
 					$pageInfo->filter->cid = JRequest::getInt("cid",$this->params->get('selectparentlisting'));
 					$is_synchronized = true;
 				} else {
@@ -745,6 +744,9 @@ window.hikashop.ready( function() {
 					$this->badgeClass->loadBadges($rows[$k]);
 				}
 			}
+
+			$productFields = $this->fieldsClass->getFields("display:field_product_frontend_listing=1",$rows,'product');
+			$this->assignRef('productFields', $productFields);
 
 			if(hikashop_level(2) && $this->params->get('display_custom_item_fields', 0)) {
 				$itemFields = $this->fieldsClass->getFields('display:field_item_product_listing=1', $rows, 'item', 'checkout&task=state');

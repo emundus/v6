@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -397,7 +397,7 @@ class hikashopOrderClass extends hikashopClass{
 							}
 							if(!empty($user_email)) {
 								if(HIKASHOP_J30){
-									$mail->mailer->addReplyTo($mail->cleanText($user_email),$user_name);
+									$mail->mailer->addReplyTo($user_email,$user_name);
 								}else{
 									$mail->mailer->addReplyTo(array($user_email,$user_name));
 								}
@@ -522,6 +522,7 @@ class hikashopOrderClass extends hikashopClass{
 		$order = clone($oldOrder);
 		$order->history = new stdClass();
 		$data = JRequest::getVar('data', array(), '', 'array');
+		$validTasksForCustomFields = array('customfields', 'additional');
 
 		if(empty($order_id) || empty($order->order_id)) {
 			$this->sendEmailAfterOrderCreation = false;
@@ -676,6 +677,7 @@ class hikashopOrderClass extends hikashopClass{
 			if(isset($data['order']['additional'])) {
 				$task = 'products';
 				$data['products'] = '1';
+				$validTasksForCustomFields[] = $task;
 				$do = true;
 			}
 
@@ -687,11 +689,10 @@ class hikashopOrderClass extends hikashopClass{
 		}
 
 		$currentTask = 'customfields';
-		$validTasks = array('customfields', 'additional');
-		if( (empty($task) || in_array($task, $validTasks)) && !empty($data[$currentTask]) ) {
+		if( (empty($task) || in_array($task, $validTasksForCustomFields)) && !empty($data[$currentTask]) ) {
 
 			$old = null;
-			$orderFields = $fieldsClass->getInput(array('orderfields','order'), $old, true, 'data', false, 'field_display');
+			$orderFields = $fieldsClass->getInput(array('orderfields','order'), $old, true, 'data', false, 'display:field_order_form');
 			if(!empty($orderFields)) {
 				$do = true;
 				foreach($orderFields as $key => $value) {

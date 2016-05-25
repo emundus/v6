@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -120,6 +120,7 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 				$tax = 0;
 				$config = & hikashop_config();
 				$group = $config->get('group_options', 0);
+				$subtotal = 0;
 				foreach ($order->cart->products as $product) {
 					if ($group && $product->order_product_option_parent_id)
 						continue;

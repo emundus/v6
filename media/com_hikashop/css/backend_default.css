@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    2.6.2
+ * @version    2.6.3
  * @author     hikashop.com
  * @copyright  (C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -2692,12 +2692,3 @@ label.btn-default-lbl{
 	cursor: pointer;
 }
 
-
-td.hikashop_order_item_files_value,
-td.hikashop_order_item_quantity_value,
-td.hikashop_order_item_price_value,
-td.hikashop_order_item_total_price_value,
-td.hikashop_order_product_name_value,
-td.hikashop_order_item_name_value {
-    text-align: center;
-}

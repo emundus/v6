@@ -73,4 +73,35 @@ JHTML::_('behavior.tooltip');
 	        }
 	    })
 	}
+
+	function syncEmundusProgramme()
+	{ 
+		//$('#em-content').empty();
+		//$('#em-sync i').attr('class','circular massive refresh loading icon');
+	    $.ajax({
+	        type:'get',
+	        url:'index.php?option=com_emundus&controller=programme&task=getprogrammes&Itemid=',
+	        dataType:'json',
+	        success: function(result)
+	        { 
+	        	var msg  = result.msg;
+	            var data = result.data;
+	            if (result.status)
+	            {
+	                
+	               return data;
+	            } 
+	            else {
+	            	return false;
+	            }
+
+	            //$('#em-content').append(data);
+	            //$('#em-sync i').attr('class','circular massive refresh link icon');
+	        },
+	        error: function (jqXHR, textStatus, errorThrown)
+	        {
+	            console.log(jqXHR.responseText);
+	        }
+	    })
+	}
 </script>

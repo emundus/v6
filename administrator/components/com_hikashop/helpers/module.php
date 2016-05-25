@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -204,19 +204,21 @@ class hikashopModuleHelper{
 				$obj->params->set('title',$menu->title);
 			}
 
-			$productParams = $menu->params->get('hk_product',false);
-			if($productParams && !isset($productParams->selectparentlisting) && isset($productParams->category)){
-				$productParams->selectparentlisting = $productParams->category;
-				$menu->params->set('hk_product',$productParams);
-				$menu->params->set('selectparentlisting',$productParams->selectparentlisting);
-				$menu->params->set('content_type','product');
-			}
-			$categoryParams = $menu->params->get('hk_category',false);
-			if($categoryParams && !isset($categoryParams->selectparentlisting) && isset($categoryParams->category)){
-				$categoryParams->selectparentlisting = $categoryParams->category;
-				$menu->params->set('hk_category',$categoryParams);
-				$menu->params->set('selectparentlisting',$categoryParams->selectparentlisting);
-				$menu->params->set('content_type','category');
+			if(HIKASHOP_J30){
+				$productParams = $menu->params->get('hk_product',false);
+				if($productParams && !isset($productParams->selectparentlisting) && isset($productParams->category)){
+					$productParams->selectparentlisting = $productParams->category;
+					$menu->params->set('hk_product',$productParams);
+					$menu->params->set('selectparentlisting',$productParams->selectparentlisting);
+					$menu->params->set('content_type','product');
+				}
+				$categoryParams = $menu->params->get('hk_category',false);
+				if($categoryParams && !isset($categoryParams->selectparentlisting) && isset($categoryParams->category)){
+					$categoryParams->selectparentlisting = $categoryParams->category;
+					$menu->params->set('hk_category',$categoryParams);
+					$menu->params->set('selectparentlisting',$categoryParams->selectparentlisting);
+					$menu->params->set('content_type','category');
+				}
 			}
 		}else{
 			$params ='';

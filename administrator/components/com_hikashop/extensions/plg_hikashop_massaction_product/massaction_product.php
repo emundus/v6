@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -827,8 +827,7 @@ class plgHikashopMassaction_product extends JPlugin
 				for($i = 0; $i < $c; $i++){
 					$offset = $max * $i;
 					$id = array_slice($ids, $offset, $max);
-					$deleteQuery = $deleteQuery . implode(',',$id) .')';
-					$db->setQuery($deleteQuery);
+					$db->setQuery($deleteQuery . implode(',',$id) .')');
 					$db->query();
 				}
 			}else{
@@ -883,8 +882,7 @@ class plgHikashopMassaction_product extends JPlugin
 					for($i = 0; $i < $c; $i++){
 						$offset = $max * $i;
 						$id = array_slice($deleteIds, $offset, $max);
-						$deleteQuery = $deleteQuery . implode(',',$id) .')';
-						$db->setQuery($deleteQuery);
+						$db->setQuery($deleteQuery . implode(',',$id) .')');
 						$db->query();
 					}
 				}else{
@@ -899,8 +897,7 @@ class plgHikashopMassaction_product extends JPlugin
 					for($i = 0; $i < $c; $i++){
 						$offset = $max * $i;
 						$id = array_slice($insertValues, $offset, $max);
-						$insertQuery = $insertQuery . implode(',',$id);
-						$db->setQuery($insertQuery);
+						$db->setQuery($insertQuery . implode(',',$id));
 						$db->query();
 					}
 				}else{

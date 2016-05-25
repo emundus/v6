@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -97,9 +97,7 @@ a:visited{cursor:pointer;color:#2d9cbb;text-decoration:none;border:none;}
 <table class="w550" border="0" cellspacing="0" cellpadding="0" width="550" style="margin-top:10px;margin-bottom:10px;font-family: Arial, Helvetica, sans-serif;font-size:12px;line-height:18px;">
 	<tr>
 		<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:left;color:#1c8faf !important;font-size:12px;font-weight:bold;">{TXT:PRODUCT_NAME}</td>
-		<!--{START:PRODUCT_CUSTOM_FIELDS_TITLE}-->
-			<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right;color:#1c8faf !important;font-size:12px;font-weight:bold;">{LINEVAR:CUSTOMFIELD_NAME}</td>
-		<!--{END:PRODUCT_CUSTOM_FIELDS_TITLE}-->
+		{TXT:CUSTOMFIELD_NAME}
 		<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right;color:#1c8faf !important;font-size:12px;font-weight:bold;">{TXT:PRODUCT_PRICE}</td>
 		<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right;color:#1c8faf !important;font-size:12px;font-weight:bold;">{TXT:PRODUCT_QUANTITY}</td>
 		<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right;color:#1c8faf !important;font-size:12px;font-weight:bold;">{TXT:PRODUCT_TOTAL}</td>
@@ -112,9 +110,7 @@ a:visited{cursor:pointer;color:#2d9cbb;text-decoration:none;border:none;}
 			{LINEVAR:PRODUCT_DOWNLOAD}
 			{LINEVAR:PRODUCT_DETAILS}
 		</td>
-		<!--{START:PRODUCT_CUSTOM_FIELDS}-->
-			<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right">{LINEVAR:CUSTOMFIELD_VALUE}</td>
-		<!--{END:PRODUCT_CUSTOM_FIELDS}-->
+		{LINEVAR:CUSTOMFIELD_VALUE}
 		<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right">{LINEVAR:PRODUCT_PRICE}</td>
 		<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right">{LINEVAR:PRODUCT_QUANTITY}</td>
 		<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right">{LINEVAR:PRODUCT_TOTAL}</td>

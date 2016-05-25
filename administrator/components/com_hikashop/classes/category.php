@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -62,7 +62,7 @@ class hikashopCategoryClass extends hikashopClass {
 		$jconfig = JFactory::getConfig();
 		if(!$jconfig->get('unicodeslugs')) {
 			$lang = JFactory::getLanguage();
-			$element->alias = $lang->transliterate($element->alias);
+			$element->alias = str_replace(',','-',$lang->transliterate($element->alias));
 		}
 
 		$app = JFactory::getApplication();
@@ -967,6 +967,8 @@ class hikashopCategoryClass extends hikashopClass {
 				foreach($value as $v){
 					if(isset($ret[0][$v])){
 						$ret[1][$v] = $ret[0][$v];
+					}elseif(!empty($v)){
+						$ret[1][$v] = $v;
 					}
 				}
 				return $ret;

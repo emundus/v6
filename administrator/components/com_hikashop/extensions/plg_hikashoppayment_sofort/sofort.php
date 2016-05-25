@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -60,7 +60,6 @@ class plgHikashoppaymentSofort extends hikashopPaymentPlugin
 		$Sofort->setAmount($amount,$this->currency->currency_code);
 		$Sofort->setReason($order_text);
 		$Sofort->addUserVariable($order->order_id);
-		$Sofort->setSofortrechnungOrderId($order->order_id);
 		$Sofort->addUserVariable($method_id);
 		$Sofort->setSuccessUrl($return_url);
 		$Sofort->setAbortUrl($cancel_url);

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -82,10 +82,25 @@ if(@$this->element['small_cart'])
 		</dl>
 		<dl class="hika_options">
 			<dt class="hikashop_option_name">
+				<?php echo JText::_('HIDE_CART');?>
+			</dt>
+			<dd class="hikashop_option_value">
+				<?php
+					echo JHTML::_('hikaselect.radiolist',  $this->arr1, $this->name.'[hide_cart]', 'data-control="hideCart"', 'value', 'text', @$this->element['hide_cart']);
+				?>
+			</dd>
+		</dl>
+<?php
+		$style1 = '';
+		if(@$this->element['hide_cart'] != "1")
+			$style1='display: none;';
+?>
+		<dl class="hika_options" data-part="msg" style="<?php echo $style1; ?>">
+			<dt class="hikashop_option_name">
 				<?php echo hikashop_tooltip(JText::sprintf('HIKA_EMPTY_MESSAGE_DESC', $this->type), '', '', JText::_('HIKA_EMPTY_MESSAGE'), '', 0);?>
 			</dt>
 			<dd class="hikashop_option_value">
-				<input name="<?php echo $this->name;?>[msg]" type="text" value="<?php echo @$this->element['msg'];?>" />
+				<input name="<?php echo $this->name;?>[msg]" id="custommsg" type="text" value="<?php echo @$this->element['msg'];?>"/>
 			</dd>
 		</dl>
 		<?php
@@ -107,12 +122,21 @@ if(@$this->element['small_cart'])
 <?php
 $js = "
 window.hikashop.ready(function(){
+
 	hkjQuery('[data-control=\'mini_cart\']').change(function(){
 		if(hkjQuery(this).val() == '0' || hkjQuery(this).val() == '-1')
 			hkjQuery('[data-part=\'mini_cart\']').show();
 		else
 			hkjQuery('[data-part=\'mini_cart\']').hide();
 	});
+
+	hkjQuery('[data-control=\'hideCart\']').change(function(){
+		if(hkjQuery(this).val() == '1')
+			hkjQuery('[data-part=\'msg\']').show();
+		else
+			hkjQuery('[data-part=\'msg\']').hide();
+	});
+
 });
 ";
 $doc = JFactory::getDocument();

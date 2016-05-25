@@ -1,19 +1,21 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class hikashopAddressClass extends hikashopClass{
+class hikashopAddressClass extends hikashopClass {
 	var $tables = array('address');
 	var $pkeys = array('address_id');
 
-	function getByUser($user_id){
-		$query = 'SELECT a.* FROM '.hikashop_table('address').' AS a WHERE a.address_user_id='.(int)$user_id.' and a.address_published=1 ORDER BY a.address_default DESC, a.address_id DESC';
+	function getByUser($user_id) {
+		$query = 'SELECT a.* FROM '.hikashop_table('address').' AS a '.
+			' WHERE a.address_user_id = '.(int)$user_id.' and a.address_published = 1 '.
+			' ORDER BY a.address_default DESC, a.address_id DESC';
 		$this->database->setQuery($query);
 		return $this->database->loadObjectList('address_id');
 	}
@@ -111,36 +113,40 @@ class hikashopAddressClass extends hikashopClass{
 		}
 	}
 
-	function displayAddress(&$fields,&$address,$view='address',$text=false){
+	function displayAddress(&$fields, &$address, $view = 'address', $text = false) {
 		$params = new HikaParameter('');
-		if(HIKASHOP_J25) $params->set('address',$address);
+		if(HIKASHOP_J25)
+			$params->set('address', $address);
+
 		$js = '';
 		$fieldsClass = hikashop_get('class.field');
-		$html = ''.hikashop_getLayout($view,'address_template',$params,$js);
-		if(!empty($fields)){
-			foreach($fields as $field){
+		$html = '' . hikashop_getLayout($view, 'address_template', $params, $js);
+		if(!empty($fields)) {
+			foreach($fields as $field) {
 				$fieldname = $field->field_namekey;
-				if(!empty($address->$fieldname)) $html = str_replace('{'.$fieldname.'}',$fieldsClass->show($field,$address->$fieldname),$html);
+				if(!empty($address->$fieldname))
+					$html = str_replace('{'.$fieldname.'}', $fieldsClass->show($field,$address->$fieldname), $html);
 			}
 		}
-		$html = str_replace("\n\n","\n",trim(str_replace("\r\n","\n", trim(preg_replace('#{(?:(?!}).)*}#i','',$html))),"\n"));
-		if(!$text){
-			$html = str_replace("\n","<br/>\n",$html);
+
+		$html = str_replace("\n\n", "\n", trim(str_replace("\r\n","\n", trim(preg_replace('#{(?:(?!}).)*}#i', '', $html))), "\n"));
+		if(!$text) {
+			$html = str_replace("\n", "<br/>\n", $html);
 		}
 		return $html;
 	}
 
-	function loadUserAddresses($user_id){
+	function loadUserAddresses($user_id) {
 		static $addresses = array();
-		if(!isset($addresses[$user_id])){
-			$query = 'SELECT a.* FROM '.hikashop_table('address').' AS a WHERE a.address_user_id='.(int)$user_id.' and a.address_published=1 ORDER BY a.address_default DESC, a.address_id DESC';
+		if(!isset($addresses[$user_id])) {
+			$query = 'SELECT a.* FROM '.hikashop_table('address').' AS a WHERE a.address_user_id = '.(int)$user_id.' and a.address_published = 1 ORDER BY a.address_default DESC, a.address_id DESC';
 			$this->database->setQuery($query);
 			$addresses[$user_id] = $this->database->loadObjectList('address_id');
 		}
 		return $addresses[$user_id];
 	}
 
-	function _getParents(&$zones,&$addresses,&$fields){
+	function _getParents(&$zones, &$addresses, &$fields) {
 		$namekeys = array();
 		foreach($zones as $zone){
 			$namekeys[]=$this->database->Quote($zone);
@@ -173,7 +179,7 @@ class hikashopAddressClass extends hikashopClass{
 
 	}
 
-	function save(&$addressData,$order_id=0,$type='shipping'){
+	function save(&$addressData, $order_id = 0, $type = 'shipping') {
 		$new = true;
 		if(!empty($addressData->address_id)){
 			$new = false;
@@ -186,9 +192,9 @@ class hikashopAddressClass extends hikashopClass{
 			}
 
 			$app = JFactory::getApplication();
-			if(!$app->isAdmin()){
+			if(!$app->isAdmin()) {
 				$user_id = hikashop_loadUser();
-				if($user_id!=$oldData->address_user_id || !$oldData->address_published){
+				if($user_id != $oldData->address_user_id || !$oldData->address_published) {
 					unset($addressData->address_id);
 					$new = true;
 				}
@@ -196,7 +202,7 @@ class hikashopAddressClass extends hikashopClass{
 
 			$orderClass = hikashop_get('class.order');
 
-			if(!empty($addressData->address_id) && ($oldData->address_published!=0||$order_id) && $orderClass->addressUsed($addressData->address_id,$order_id,$type)){
+			if(!empty($addressData->address_id) && ($oldData->address_published != 0 || $order_id) && $orderClass->addressUsed($addressData->address_id, $order_id, $type)) {
 				unset($addressData->address_id);
 				$new = true;
 				$oldData->address_published=0;
@@ -303,7 +309,7 @@ class hikashopAddressClass extends hikashopClass{
 		return $ret;
 	}
 
-	function delete(&$elements,$order=false){
+	function delete(&$elements, $order = false) {
 		$elements = (int)$elements;
 
 		JPluginHelper::importPlugin( 'hikashop' );
@@ -352,9 +358,9 @@ class hikashopAddressClass extends hikashopClass{
 		return $status;
 	}
 
-	function _checkVat(&$vatData){
+	function _checkVat(&$vatData) {
 		$vatHelper = hikashop_get('helper.vat');
-		if(!$vatHelper->isValid($vatData)){
+		if(!$vatHelper->isValid($vatData)) {
 			$this->message = @$vatHelper->message;
 			return false;
 		}

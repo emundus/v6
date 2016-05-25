@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -317,8 +317,11 @@ class ProductController extends hikashopController {
 	}
 
 	function addfile(){
-		$this->_saveFile();
-		JRequest::setVar('layout', 'addfile');
+		$ret = $this->_saveFile();
+		if($ret)
+			JRequest::setVar('layout', 'addfile');
+		else
+			JRequest::setVar('layout', 'selectfile');
 		return parent::display();
 	}
 
@@ -343,21 +346,38 @@ class ProductController extends hikashopController {
 			hikashop_secureField($column);
 			$file->$column = strip_tags($value);
 		}
+		unset($file->file_path);
 
 		$filemode = 'upload';
 		if(!empty($formData['filemode']))
 			$filemode = $formData['filemode'];
+		if(!empty($file->file_id))
+			$filemode = null;
 
 		$fileClass = hikashop_get('class.file');
 		JRequest::setVar('cid', 0);
+
 		switch($filemode) {
+			case 'upload':
+				if(empty($file->file_id)) {
+					$ids = $fileClass->storeFiles($file->file_type,$file->file_ref_id);
+					if(is_array($ids)&&!empty($ids)) {
+						$file->file_id = array_shift($ids);
+						if(isset($file->file_path))
+							unset($file->file_path);
+					} else
+						return false;
+				}
+				break;
+
 			case 'path':
-				$file->file_path = $formData['filepath'];
+			default:
+				if(isset($formData['filepath']))
+					$file->file_path = trim($formData['filepath']);
+				if(isset($formData['file']['file_path']))
+					$file->file_path = trim($formData['file']['file_path']);
 
-				if(strpos($file->file_path, '..') !== false)
-					return false;
-
-				if(substr($file->file_path,0,7)=='http://' || substr($file->file_path,0,8)=='https://') {
+				if(empty($file->file_id) && (substr($file->file_path, 0, 7) == 'http://' || substr($file->file_path, 0, 8) == 'https://')) {
 					$parts = explode('/',$file->file_path);
 					$name = array_pop($parts);
 					$config =& hikashop_config();
@@ -382,38 +402,47 @@ class ProductController extends hikashopController {
 					}
 
 					$file->file_path = $name;
+				}
+				break;
+		}
+
+		if(isset($file->file_path)) {
+			$app = JFactory::getApplication();
+			if(strpos($file->file_path, '..') !== false) {
+				$app->enqueueMessage('Invalid data', 'error');
+				return false;
+			}
+
+			$firstChar = substr($file->file_path, 0, 1);
+			$isVirtual = in_array($firstChar, array('#', '@'));
+			$isLink = (substr($file->file_path, 0, 7) == 'http://' || substr($file->file_path, 0, 8) == 'https://');
+
+			if(!$isLink && !$isVirtual) {
+				$app = JFactory::getApplication();
+				$config = hikashop_config();
+
+				if($firstChar == '/' || preg_match('#:[\/\\\]{1}#', $file->file_path)) {
+					$clean_filename = JPath::clean($file->file_path);
+					$secure_path = $config->get('uploadsecurefolder');
+
+					if((JPATH_ROOT != '') && strpos($clean_filename, JPath::clean(JPATH_ROOT)) !== 0 && strpos($clean_filename, JPath::clean($secure_path)) !== 0) {
+						$app->enqueueMessage('The file path you entered is an absolute path but it is outside of your upload folder: '.JPath::clean($secure_path), 'error');
+						return false;
+					}
+
+					if(!file_exists($file->file_path)) {
+						$app->enqueueMessage('The file path you entered is an absolute path but it doesn\'t exist.', 'error');
+						return false;
+					}
 				} else {
-					$firstChar = substr($file->file_path, 0, 1);
-					if($firstChar == '/' || preg_match('#:[\/\\\]{1}#', $file->file_path)) {
-						$app = JFactory::getApplication();
-						if(!file_exists($file->file_path)) {
-							$app->enqueueMessage('The file path you entered is an absolute path but it doesn\'t exist.');
-							return false;
-						}
-
-						$config = hikashop_config();
-						$clean_filename = JPath::clean($file->file_path);
-						$secure_path = $config->get('uploadsecurefolder');
-
-						if((JPATH_ROOT != '') && strpos($clean_filename, JPath::clean(JPATH_ROOT)) !== 0 && strpos($clean_filename, JPath::clean($secure_path)) !== 0) {
-							$app->enqueueMessage('The file path you entered is an absolute path but it is outside of your upload folder: '.JPath::clean($secure_path));
-							return false;
-						}
+					$secure_path = $config->get('uploadsecurefolder');
+					$clean_filename = JPath::clean($secure_path . '/' . $file->file_path);
+					if(!JFile::exists($clean_filename) && (JPATH_ROOT == '' || !JFile::exists(JPATH_ROOT . DS . $clean_filename))) {
+						$app->enqueueMessage('File does not exists', 'error');
+						return false;
 					}
 				}
-				break;
-			case 'upload':
-			default:
-				if(empty($file->file_id)) {
-					$ids = $fileClass->storeFiles($file->file_type,$file->file_ref_id);
-					if(is_array($ids)&&!empty($ids)) {
-						$file->file_id = array_shift($ids);
-						if(isset($file->file_path))
-							unset($file->file_path);
-					} else
-						return false;
-				}
-				break;
+			}
 		}
 
 		if(isset($file->file_ref_id) && empty($file->file_ref_id))
@@ -434,6 +463,10 @@ class ProductController extends hikashopController {
 
 		if(!$do)
 			return false;
+
+		if(empty($file->file_path) && empty($file->file_id)) {
+			return false;
+		}
 
 		$status = $fileClass->save($file);
 		if(empty($file->file_id)) {

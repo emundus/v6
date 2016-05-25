@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -78,8 +78,8 @@ if(!empty($file_path)){
 	}
 }
 $this->newSizes = new stdClass();
-$this->newSizes->height=$height;
-$this->newSizes->width=$width;
+$this->newSizes->height = $this->height = $height;
+$this->newSizes->width = $this->width = $width;
 $this->image->main_thumbnail_y=$height;
 $this->image->main_thumbnail_x=$width;
 

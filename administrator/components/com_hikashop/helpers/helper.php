@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,7 +24,7 @@ define('HIKASHOP_J30',version_compare($jversion,'3.0.0','>=') ? true : false);
 
 define('HIKASHOP_PHP5',version_compare(PHP_VERSION,'5.0.0', '>=') ? true : false);
 
-define('HIKASHOP_VERSION', '2.6.2');
+define('HIKASHOP_VERSION', '2.6.3');
 
 class hikashop{
 	function getDate($time = 0,$format = '%d %B %Y %H:%M'){ return hikashop_getDate($time,$format); }
@@ -681,7 +681,7 @@ function hikashop_absoluteURL($text){
 function hikashop_disallowUrlRedirect($url){
 	$url = str_replace(array('http://www.','https://www.','https://'), array('http://','http://','http://'),strtolower($url));
 	$live = str_replace(array('http://www.','https://www.','https://'), array('http://','http://','http://'),strtolower(HIKASHOP_LIVE));
-	if(strpos($url,$live)!==0 && preg_match('#^http://.*#',$url)) return true;
+	if(strpos($url,$live)!==0 && strpos(urldecode($url),$live)!==0 && preg_match('#^http://.*#',$url)) return true;
 	jimport('joomla.filter.filterinput');
 	$safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
 	if($safeHtmlFilter->clean($url,'string') != $url) return true;
@@ -1026,7 +1026,7 @@ function hikashop_footer(){
 		$link.='?partner_id='.$aff;
 	}
 	$text = '<!--  HikaShop Component powered by '.$link.' -->
-	<!-- version '.$config->get('level').' : '.$config->get('version').' [1604111119] -->';
+	<!-- version '.$config->get('level').' : '.$config->get('version').' [1605191518] -->';
 	if(!$config->get('show_footer',true)) return $text;
 	$text .= '<div class="hikashop_footer" style="text-align:center" align="center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 	$app= JFactory::getApplication();
@@ -2745,7 +2745,7 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 	function writeToLog($data = null) {
 		$dbg = ($data === null) ? ob_get_clean() : $data;
 		if(!empty($dbg)) {
-			$dbg = '-- ' . date('m.d.y H:i:s') . ' --'. (empty($this->name) ? ('['.$this->name.']') : '') . "\r\n" . $dbg;
+			$dbg = '-- ' . date('m.d.y H:i:s') . ' --'. (!empty($this->name) ? ('['.$this->name.']') : '') . "\r\n" . $dbg;
 
 			jimport('joomla.filesystem.file');
 			$config = hikashop_config();

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,7 +23,13 @@ if(empty($this->row->has_options) && ($this->row->product_quantity == -1 || $thi
 			$itemFields = $this->fieldsClass->getFields('display:field_item_product_listing=1', $this->row, 'item', 'checkout&task=state');
 	}
 
-	if(!empty($itemFields) && !$this->params->get('display_custom_item_fields', 0)) {
+	$display_custom_item_fields = $this->params->get('display_custom_item_fields', 0);
+	if($display_custom_item_fields == -1){
+		$default_params = $this->config->get('default_params');
+		$display_custom_item_fields = @$default_params['display_custom_item_fields'];
+	}
+
+	if(!empty($itemFields) && !$display_custom_item_fields) {
 		$this->row->has_options = true;
 		$itemFields = array();
 	}

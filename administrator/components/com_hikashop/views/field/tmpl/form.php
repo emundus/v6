@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -414,16 +414,17 @@ defined('_JEXEC') or die('Restricted access');
 		</tr>
 <?php }?>
 	</table>
-	<?php
-		$fieldsetDisplay = 'style="display:none"';
-		if(in_array($this->field->field_table,array("address","user","category","contact","entry"))){
-		$fieldsetDisplay = '';}
-	?>
+<?php
+	$fieldsetDisplay = (!empty($this->displayOptions) || !in_array($this->field->field_table, array('item', 'product', 'order')) ? '' : 'style="display:none" ');
+
+	if(!empty($this->field->field_id)) {
+?>
 	<fieldset <?php echo $fieldsetDisplay; ?>id="display_field" class="adminform">
 		<legend><?php echo JText::_('DISPLAY'); ?></legend>
 		<table class="paramlist admintable table">
-
-
+<?php
+		if(!in_array($this->field->field_table, array('item', 'product', 'order'))) {
+?>
 			<tr>
 				<td class="key"><?php echo JText::_( 'DISPLAY_FRONTCOMP' ); ?></td>
 				<td><?php echo JHTML::_('hikaselect.booleanlist', "data[field][field_frontcomp]" , '',@$this->field->field_frontcomp); ?></td>
@@ -436,22 +437,9 @@ defined('_JEXEC') or die('Restricted access');
 				<td class="key"><?php echo JText::_( 'DISPLAY_BACKEND_LISTING' ); ?></td>
 				<td><?php echo JHTML::_('hikaselect.booleanlist', "data[field][field_backend_listing]" , '',@$this->field->field_backend_listing); ?></td>
 			</tr>
-			</table>
-	</fieldset>
+<?php
+		}
 
-
-	<?php
-		$fieldsetDisplay = 'style="display:none"';
-		if(in_array($this->field->field_table,array("order","item","product"))){
-		$fieldsetDisplay = '';}
-	?>
-	<fieldset <?php echo $fieldsetDisplay; ?>id="display_field_options" class="adminform">
-		<legend><?php echo JText::_('DISPLAY'); ?></legend>
-		<?php if(empty($this->field->field_table))
-			  	  echo JText::_( 'SAVE_THE_FIELD_FIRST_BEFORE' );
-		?>
-		<table class="paramlist admintable table">
-			<?php
 			if(!empty($this->displayOptions)) {
 				if(!empty($this->field->field_display) && is_string($this->field->field_display)) {
 					$fields_display = explode(';', trim($this->field->field_display, ';'));
@@ -480,32 +468,44 @@ defined('_JEXEC') or die('Restricted access');
 
 					if(empty($displayOptionTitle))
 						$displayOptionTitle = JText::_($displayOptionName);
-			?>
+?>
 			<tr>
-			<?php if(!isset($this->field->field_display->$displayOptionName)){
-						if(!isset($this->field->field_display)){
-							$this->field->field_display = new stdClass();
-						}
-						@$this->field->field_display->$displayOptionName = '1';
-					}
-			?>
+<?php
+				if(!isset($this->field->field_display)) {
+					$this->field->field_display = new stdClass();
+				}
+				if(!isset($this->field->field_display->$displayOptionName)) {
+					$this->field->field_display->$displayOptionName = '1';
+				}
+?>
 				<td class="key"><?php echo $displayOptionTitle; ?></td>
 				<td><?php echo JHTML::_('hikaselect.booleanlist', 'field_display['.$displayOptionName.']' , '', @$this->field->field_display->$displayOptionName); ?></td>
 			</tr>
-			<?php
-				}
+<?php
 			}
-			?>
+		}
+?>
 		</table>
 	</fieldset>
-	<?php
+<?php
+	} else {
+?>
+	<fieldset class="adminform">
+		<legend><?php echo JText::_('DISPLAY'); ?></legend>
+		<?php echo JText::_( 'SAVE_THE_FIELD_FIRST_BEFORE' );?>
+		<input type="hidden" name="data[field][field_frontcomp]" value="<?php echo (int)@$this->field->field_frontcomp; ?>" />
+		<input type="hidden" name="data[field][field_backend]" value="<?php echo (int)@$this->field->field_backend; ?>" />
+		<input type="hidden" name="data[field][field_backend_listing]" value="<?php echo (int)@$this->field->field_backend_listing; ?>" />
+	</fieldset>
+<?php
+	}
+
 		$fieldsetDisplay = 'style="display:none"';
 		if(in_array($this->field->field_table,array("product","item","category","contact","order"))) {
 			$fieldsetDisplay = '';
 		}
-	?>
+?>
 	<fieldset <?php echo $fieldsetDisplay; ?> id="category_field" class="adminform">
-
 		<table class="paramlist admintable table">
 			<tr>
 				<td class="key">

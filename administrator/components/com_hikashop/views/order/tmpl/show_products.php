@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -59,12 +59,26 @@ window.orderMgr.selectProduct = function(el) {
 		<tr>
 			<th class="hikashop_order_item_name_title title"><?php echo JText::_('PRODUCT'); ?></th>
 <?php
+	$null = null;
 	if(hikashop_level(2)){
-		$itemFields = $this->fieldsClass->getFields('display:field_product_order_form=1',$product,'product');
-		if(!empty($itemFields)) {
-				foreach($itemFields as $field){
-				$namekey = $field->field_namekey;
-				echo '<th class="hikashop_order_product_'.$namekey.'">'.$this->fieldsClass->getFieldName($field).'</th>';
+		$productFields = $this->fieldsClass->getFields('display:field_product_order_form=1',$null,'product');
+		if(!empty($productFields)) {
+			$usefulFields = array();
+			foreach($productFields as $field){
+				$fieldname = $field->field_namekey;
+				foreach($this->products as $product){
+					if(!empty($product->$fieldname)){
+						$usefulFields[] = $field;
+						break;
+					}
+				}
+			}
+			$productFields = $usefulFields;
+
+			if(!empty($productFields)) {
+				foreach($productFields as $field){
+					echo '<th class="hikashop_order_product_'.$fieldname.'">'.$this->fieldsClass->getFieldName($field).'</th>';
+				}
 			}
 		}
 	}
@@ -127,17 +141,17 @@ foreach($this->order->products as $k => $product) {
 			<p class="hikashop_order_product_custom_product_fields">
 			<?php
 				if(hikashop_level(2)){
-					$itemFields = $this->fieldsClass->getFields('display:field_product_order_form=1',$product,'product');
-					if(!empty($itemFields)) {
-						foreach($itemFields as $field){
+					if(!empty($productFields)) {
+						foreach($productFields as $field){
 							$namekey = $field->field_namekey;
 							$productData = @$this->products[$product->product_id];
-			?>
-					<td class="hikashop_order_product_name_value<?php echo $td_class; ?>"><?php
-							echo '<p class="hikashop_order_product_'.$namekey.'">'.$this->fieldsClass->show($field,$productData->$namekey).'</p>';
-			?>
-					</td>
-			<?php
+							?>
+							<td class="hikashop_order_product_name_value<?php echo $td_class; ?>"><?php
+							if(!empty($productData->$namekey))
+								echo '<p class="hikashop_order_product_'.$namekey.'">'.$this->fieldsClass->show($field,$productData->$namekey).'</p>';
+							?>
+							</td>
+						<?php
 						}
 					}
 				}

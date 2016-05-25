@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -142,6 +142,9 @@ class hikashopFieldClass extends hikashopClass {
 				$checkProductFields[] = $itemKey;
 			}
 			if(!empty($checkProductFields)) {
+				$config = hikashop_config();
+				$empty_product_field_values_means_all = (int)$config->get('empty_product_field_values_means_all', 1);
+
 				$null = null;
 				$productFields = $this->getData('backend', 'product');
 				foreach($checkProductFields as $key) {
@@ -152,8 +155,10 @@ class hikashopFieldClass extends hikashopClass {
 					if(!empty($productField->field_frontcomp))
 						continue;
 
-					if(empty($data->$product_key)) {
+					if(empty($data->$product_key) && $empty_product_field_values_means_all) {
 						$fields[$key]->field_value = $productField->field_value;
+					} elseif(empty($data->$product_key)) {
+						unset($fields[$key]);
 					} else {
 						$product_data = explode(',', $data->$product_key);
 						$field_data = explode("\n", $productField->field_value);
@@ -1256,6 +1261,10 @@ function hikashopToggleFields(new_value, namekey, field_type, id, prefix) {
 			foreach($fieldDisplay as $k => $v) {
 				$field->field_display .= $k . '=' . (int)$v . ';';
 			}
+		}
+
+		if(in_array($field->field_table,array('order','product'))){
+			$field->field_backend = 1;
 		}
 
 		$fieldValues = JRequest::getVar('field_values', array(), '', 'array' );

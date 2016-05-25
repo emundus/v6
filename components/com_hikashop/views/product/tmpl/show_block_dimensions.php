@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -62,6 +62,7 @@ if($this->config->get('manufacturer_display', 0) && !empty($this->element->produ
 			$Itemid = $menuClass->loadAMenuItemId('','');
 		}
 		$categoryClass->addAlias($manufacturer);
-		echo JText::_('MANUFACTURER').': '.'<a href="'.hikashop_contentLink('category&task=listing&cid='.$manufacturer->category_id.'&name='.$manufacturer->alias.'&Itemid='.$Itemid,$manufacturer).'" itemprop="brand" itemscope itemtype="http://schema.org/brand">'.$manufacturer->category_name.'</a>';
+		echo JText::_('MANUFACTURER').': '.'<a href="'.hikashop_contentLink('category&task=listing&cid='.$manufacturer->category_id.'&name='.$manufacturer->alias.'&Itemid='.$Itemid,$manufacturer).'">'.$manufacturer->category_name.'</a>';
+		echo "<span style='display:none;' itemprop='brand'>". $manufacturer->category_name ."</span>";
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,7 +32,9 @@ $delete_url = 'address&task=delete&subtask='.$this->type.'&cid='.$this->address_
 	} else {
 ?>		<div class="hika_edit">
 			<a href="<?php echo hikashop_completeLink($save_url, true);?>" onclick="return window.hikashop.form(this,'<?php echo $this->fieldset_id; ?>');"><img src="<?php echo HIKASHOP_IMAGES; ?>ok.png" alt=""/><span><?php echo JText::_('HIKA_SAVE'); ?></span></a>
-			<a href="<?php echo hikashop_completeLink($show_url, true);?>" onclick="return window.hikashop.get(this,'<?php echo $this->fieldset_id; ?>');"><img src="<?php echo HIKASHOP_IMAGES; ?>cancel.png" alt=""/><span><?php echo JText::_('HIKA_CANCEL'); ?></span></a>
+			<?php if(!empty($this->address_id) || !empty($this->addresses)){ ?>
+				<a href="<?php echo hikashop_completeLink($show_url, true);?>" onclick="return window.hikashop.get(this,'<?php echo $this->fieldset_id; ?>');"><img src="<?php echo HIKASHOP_IMAGES; ?>cancel.png" alt=""/><span><?php echo JText::_('HIKA_CANCEL'); ?></span></a>
+			<?php } ?>
 		</div>
 <?php
 	}
@@ -143,8 +145,9 @@ if(JRequest::getVar('tmpl', '') == 'component') {
 	if(empty($this->addressClass))
 		$this->addressClass = hikashop_get('class.address');
 	$miniFormat = $this->addressClass->miniFormat($this->address);
+	$task = JRequest::getCmd('task', '');
 ?>
-window.Oby.fireAjax('hikashop_address_changed',{'type':'<?php echo $this->type; ?>','edit':<?php echo $this->edit?'1':'0'; ?>,'cid':<?php echo $this->address_id; ?>,'miniFormat':'<?php echo str_replace('\'','\\\'', $miniFormat); ?>'<?php
+window.Oby.fireAjax('hikashop_address_changed',{'type':'<?php echo $this->type; ?>','edit':<?php echo $this->edit?'1':'0'; ?>,'cid':<?php echo $this->address_id; ?>,'task':'<?php echo $task; ?>','miniFormat':'<?php echo str_replace('\'','\\\'', $miniFormat); ?>'<?php
 	$previous_id = JRequest::getVar('previous_cid', null);
 	if((!empty($previous_id) || $previous_id === 0) && is_int($previous_id))
 		echo ',\'previous_cid\':' . $previous_id;

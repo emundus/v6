@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -98,6 +98,7 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		$request = curl_init($this->payment_params->url);
 		curl_setopt($request, CURLOPT_HEADER, 0);
 		curl_setopt($request, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($request, CURLOPT_POST, true);
 		curl_setopt($request, CURLOPT_POSTFIELDS, $post_string);
 		curl_setopt($request, CURLOPT_SSL_VERIFYPEER, FALSE);
 		$post_response = curl_exec($request);

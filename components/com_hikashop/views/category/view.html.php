@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -324,7 +324,6 @@ class CategoryViewCategory extends HikaShopView {
 				}
 			}
 		}
-		$this->assignRef('rows',$rows);
 
 		$this->assignRef('modules',$this->modules);
 		$image=hikashop_get('helper.image');
@@ -411,6 +410,12 @@ class CategoryViewCategory extends HikaShopView {
 		$this->assignRef('menu_id',$menu_id);
 		$this->assignRef('params',$this->params);
 
+		foreach($rows as &$row){
+			$row->link = $this->getLink($row);
+		}
+		unset($row);
+
+		$this->assignRef('rows',$rows);
 	}
 
 	function getLink($cid,$alias=''){

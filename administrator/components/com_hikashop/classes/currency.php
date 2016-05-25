@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -104,7 +104,7 @@ class hikashopCurrencyClass extends hikashopClass{
 			$shipping_address=$app->getUserState( HIKASHOP_COMPONENT.'.'.$config->get('tax_zone_type','shipping').'_address',0);
 			if(!empty($shipping_address)){
 				$addressClass = hikashop_get('class.address');
-				$address = $addressClass->get($shipping_address);
+				$address = is_object($shipping_address) ? $shipping_address : $addressClass->get($shipping_address);
 				if(!empty($address->address_company)){
 					$type = 'company_without_vat_number';
 				}

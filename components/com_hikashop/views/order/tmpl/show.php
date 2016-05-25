@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -22,9 +22,9 @@ $config = hikashop_config();
 		<h1>
 <?php
 	if($this->invoice_type == 'order' || empty($this->element->order_invoice_number)) {
-		echo JText::_('HIKASHOP_ORDER').':'.$this->element->order_number;
+		echo JText::_('HIKASHOP_ORDER').': '.$this->element->order_number;
 	} else {
-		echo JText::_('INVOICE').':'.$this->element->order_invoice_number;
+		echo JText::_('INVOICE').': '.$this->element->order_invoice_number;
 	}
 ?>
 		</h1>

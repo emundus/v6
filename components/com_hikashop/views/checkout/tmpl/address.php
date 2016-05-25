@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -73,7 +73,7 @@ if($this->identified) {
 					if($nb_addresses==1){
 						$address = reset($this->addresses);
 						if(!empty($address_selector)) {
-							$onclick='if(!this.checked) { window.localPage.switchAddr(0, \'shipping\'); } '.$onclick;
+							$onclick='if(!this.checked) { window.localPage.switchAddr(0, \'shipping\', '.(int)$this->shipping_address.'); } '.$onclick;
 						}else{
 							$onclick='if(!this.checked) { hikashopEditAddress(document.getElementById(\'hikashop_checkout_shipping_address_edit_'.$address->address_id.'\'),1,false); } '.$onclick;
 						}

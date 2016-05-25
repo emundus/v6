@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -13,8 +13,8 @@ $app = JFactory::getApplication();
 $config = hikashop_config();
 $orderClass = hikashop_get('class.order');
 $imageHelper = hikashop_get('helper.image');
+$fieldsClass = hikashop_get('class.field');
 if(hikashop_level(2)) {
-	$fieldsClass = hikashop_get('class.field');
 	$null = null;
 	$itemFields = $fieldsClass->getFields('display:field_item_payment_notification=1',$null,'item');
 }
@@ -84,7 +84,31 @@ $templates = array();
 
 $cartProducts = array();
 $cartFooters = array();
-{
+if(!empty($data->cart->products)){
+
+	$null = null;
+	$fields = $fieldsClass->getFields('display:field_product_payment_notification=1',$null,'product');
+	if(!empty($fields)){
+		$product_customfields = array();
+		$usefulFields = array();
+		foreach($fields as $field){
+			$namekey = $field->field_namekey;
+			foreach($productClass->all_products as $product){
+				if(!empty($product->$namekey)){
+					$usefulFields[] = $field;
+					break;
+				}
+			}
+		}
+		$fields = $usefulFields;
+	}
+	$texts['CUSTOMFIELD_NAME'] = '';
+	if(!empty($fields)){
+		foreach($fields as $field){
+			$texts['CUSTOMFIELD_NAME'].='<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:left;color:#1c8faf !important;font-size:12px;font-weight:bold;">'.$fieldsClass->getFieldName($field).'</td>';
+		}
+	}
+
 	$group = $config->get('group_options',0);
 	$subtotal = 0;
 	foreach($data->cart->products as $item) {
@@ -135,6 +159,17 @@ $cartFooters = array();
 				$t .= '<p>'.$fieldsClass->getFieldName($field).': '.$fieldsClass->show($field,$item->$namekey,'user_email').'</p>';
 			}
 		}
+
+		if(!empty($fields)){
+			$cartProduct['CUSTOMFIELD_VALUE'] = '';
+			foreach($fields as $field){
+				$namekey = $field->field_namekey;
+				$productData = @$productClass->all_products[$item->product_id];
+				$cartProduct['CUSTOMFIELD_VALUE'] .= '<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right">'.(empty($productData->$namekey)?'':$fieldsClass->show($field,$productData->$namekey)).'</td>';
+			}
+		}
+
+
 		if($group){
 			foreach($data->cart->products as $j => $optionElement){
 				if($optionElement->order_product_option_parent_id != $item->order_product_id) continue;

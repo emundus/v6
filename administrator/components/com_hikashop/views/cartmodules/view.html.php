@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -38,6 +38,16 @@ class CartmodulesViewCartmodules extends hikashopView{
 		$this->arr[0]->class = 'btn-primary';
 		$this->arr[1]->class = 'btn-success';
 		$this->arr[2]->class = 'btn-danger';
+
+		$this->arr1 = array(
+			JHTML::_('select.option',  '0', JText::_( 'HIKA_DEFAULT' ) ),
+			JHTML::_('select.option',  '1', JText::_( 'HIKA_CUSTOM' ) ),
+			JHTML::_('select.option',  '2', JText::_( 'HIKA_HIDE' ) ),
+		);
+		$this->arr1[0]->class = 'btn-primary';
+		$this->arr1[1]->class = 'btn-success';
+		$this->arr1[2]->class = 'btn-danger';
+
 
 		$this->type = 'cart';
 		if(preg_match('/wishlist/',$this->name))

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -656,50 +656,52 @@ class hikashopUpdateHelper{
 			$this->db->setQuery($query);
 			$parentData = $this->db->loadObject();
 
-			$parent = $parentData->id;
-			$query = 'SELECT id FROM `#__menu` WHERE `parent_id`='.(int)$parent;
-			$this->db->setQuery($query);
-			if(!HIKASHOP_J25){
-				$submenu = $this->db->loadResultArray();
-			} else {
-				$submenu = $this->db->loadColumn();
+			if(!empty($parentData)) {
+				$parent = $parentData->id;
+				$query = 'SELECT id FROM `#__menu` WHERE `parent_id`='.(int)$parent;
+				$this->db->setQuery($query);
+				if(!HIKASHOP_J25){
+					$submenu = $this->db->loadResultArray();
+				} else {
+					$submenu = $this->db->loadColumn();
+				}
+				$old = count($submenu);
+
+				$query = 'DELETE FROM `#__menu` WHERE `parent_id`='.(int)$parent;
+				$this->db->setQuery($query);
+				$this->db->query();
+
+				$query = 'UPDATE `#__menu` SET `rgt`=`rgt`-'.($old*2).' WHERE `rgt` >= '.(int)$parentData->rgt;
+				$this->db->setQuery($query);
+				$this->db->query();
+
+				$query = 'UPDATE `#__menu` SET `rgt`=`rgt`+16 WHERE `rgt` >= '.(int)$parentData->rgt;
+				$this->db->setQuery($query);
+				$this->db->query();
+
+				$query = 'UPDATE `#__menu` SET `lft`=`lft`+16 WHERE `lft` > '.(int)$parentData->lft;
+				$this->db->setQuery($query);
+				$this->db->query();
+
+				$left = $parentData->lft;
+				$cid = $parentData->component_id;
+				$query  = "INSERT IGNORE INTO `#__menu` (`type`,`link`,`menutype`,`img`,`alias`,`title`,`client_id`,`parent_id`,`level`,`language`,`lft`,`rgt`,`component_id`) VALUES
+('component','index.php?option=com_hikashop&ctrl=product','menu','./templates/bluestork/images/menu/icon-16-article.png','Products','Products',1,".(int)$parent.",2,'*',".($left+1).",".($left+2).",".$cid."),
+('component','index.php?option=com_hikashop&ctrl=category&filter_id=product','menu','./templates/bluestork/images/menu/icon-16-category.png','Categories','Categories',1,".(int)$parent.",2,'*',".($left+3).",".($left+4).",".$cid."),
+('component','index.php?option=com_hikashop&ctrl=user&filter_partner=0','menu','./templates/bluestork/images/menu/icon-16-user.png','Users','Users',1,".(int)$parent.",2,'*',".($left+5).",".($left+6).",".$cid."),
+('component','index.php?option=com_hikashop&ctrl=order&order_type=sale&filter_partner=0','menu','./templates/bluestork/images/menu/icon-16-content.png','Orders','Orders',1,".(int)$parent.",2,'*',".($left+7).",".($left+8).",".$cid."),
+('component','index.php?option=com_hikashop&ctrl=config','menu','./templates/bluestork/images/menu/icon-16-config.png','Configuration','Configuration',1,".(int)$parent.",2,'*',".($left+9).",".($left+10).",".$cid."),
+('component','index.php?option=com_hikashop&ctrl=discount','menu','./templates/bluestork/images/menu/icon-16-default.png','Discounts','Discounts',1,".(int)$parent.",2,'*',".($left+11).",".($left+12).",".$cid."),
+('component','index.php?option=com_hikashop&ctrl=documentation','menu','./templates/bluestork/images/menu/icon-16-help.png','Help','Help',1,".(int)$parent.",2,'*',".($left+13).",".($left+14).",".$cid."),
+('component','index.php?option=com_hikashop&ctrl=update','menu','./templates/bluestork/images/menu/icon-16-help-jrd.png','Update / About','Update / About',1,".(int)$parent.",2,'*',".($left+15).",".($left+16).",".$cid.");
+";
+				$this->db->setQuery($query);
+				$this->db->query();
+
+				$query = 'UPDATE '.hikashop_table('menu',false).' SET component_id = '.$cid.' WHERE menutype = '.$this->db->quote('hikashop_default');
+				$this->db->setQuery($query);
+				$this->db->query();
 			}
-			$old = count($submenu);
-
-			$query = 'DELETE FROM `#__menu` WHERE `parent_id`='.(int)$parent;
-			$this->db->setQuery($query);
-			$this->db->query();
-
-			$query = 'UPDATE `#__menu` SET `rgt`=`rgt`-'.($old*2).' WHERE `rgt`>='.$parentData->rgt;
-			$this->db->setQuery($query);
-			$this->db->query();
-
-			$query = 'UPDATE `#__menu` SET `rgt`=`rgt`+16 WHERE `rgt`>='.$parentData->rgt;
-			$this->db->setQuery($query);
-			$this->db->query();
-
-			$query = 'UPDATE `#__menu` SET `lft`=`lft`+16 WHERE `lft`>'.$parentData->lft;
-			$this->db->setQuery($query);
-			$this->db->query();
-
-			$left = $parentData->lft;
-			$cid = $parentData->component_id;
-			$query  = "INSERT IGNORE INTO `#__menu` (`type`,`link`,`menutype`,`img`,`alias`,`title`,`client_id`,`parent_id`,`level`,`language`,`lft`,`rgt`,`component_id`) VALUES
-			('component','index.php?option=com_hikashop&ctrl=product','menu','./templates/bluestork/images/menu/icon-16-article.png','Products','Products',1,".(int)$parent.",2,'*',".($left+1).",".($left+2).",".$cid."),
-			('component','index.php?option=com_hikashop&ctrl=category&filter_id=product','menu','./templates/bluestork/images/menu/icon-16-category.png','Categories','Categories',1,".(int)$parent.",2,'*',".($left+3).",".($left+4).",".$cid."),
-			('component','index.php?option=com_hikashop&ctrl=user&filter_partner=0','menu','./templates/bluestork/images/menu/icon-16-user.png','Users','Users',1,".(int)$parent.",2,'*',".($left+5).",".($left+6).",".$cid."),
-			('component','index.php?option=com_hikashop&ctrl=order&order_type=sale&filter_partner=0','menu','./templates/bluestork/images/menu/icon-16-content.png','Orders','Orders',1,".(int)$parent.",2,'*',".($left+7).",".($left+8).",".$cid."),
-			('component','index.php?option=com_hikashop&ctrl=config','menu','./templates/bluestork/images/menu/icon-16-config.png','Configuration','Configuration',1,".(int)$parent.",2,'*',".($left+9).",".($left+10).",".$cid."),
-			('component','index.php?option=com_hikashop&ctrl=discount','menu','./templates/bluestork/images/menu/icon-16-default.png','Discounts','Discounts',1,".(int)$parent.",2,'*',".($left+11).",".($left+12).",".$cid."),
-			('component','index.php?option=com_hikashop&ctrl=documentation','menu','./templates/bluestork/images/menu/icon-16-help.png','Help','Help',1,".(int)$parent.",2,'*',".($left+13).",".($left+14).",".$cid."),
-			('component','index.php?option=com_hikashop&ctrl=update','menu','./templates/bluestork/images/menu/icon-16-help-jrd.png','Update / About','Update / About',1,".(int)$parent.",2,'*',".($left+15).",".($left+16).",".$cid.");
-			";
-			$this->db->setQuery($query);
-			$this->db->query();
-
-			$query = 'UPDATE '.hikashop_table('menu',false).' SET component_id = '.$cid.' WHERE menutype = '.$this->db->quote('hikashop_default');
-			$this->db->setQuery($query);
-			$this->db->query();
 		}
 
 		$query = 'INSERT IGNORE INTO `#__hikashop_user` (`user_email`,`user_cms_id`,`user_created`) SELECT `email`, `id`,'.time().' FROM `#__users`';

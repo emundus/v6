@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,8 +9,9 @@
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 class hikashopProductslotType {
+	private $values = null;
 
-	function load(){
+	public function load() {
 		$this->values = array(
 			'show' => array(
 				'topBegin',
@@ -30,10 +31,13 @@ class hikashopProductslotType {
 				'bottom'
 			)
 		);
+		return $this->values;
 	}
 
-	function display($map, $value, $type = 'show') {
-		$this->load();
+	public function display($map, $value, $type = 'show') {
+		if(empty($this->values))
+			$this->load();
+
 		if(!isset($this->values[$type])) {
 			$type = 'show';
 		}

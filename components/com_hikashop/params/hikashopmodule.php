@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -21,7 +21,7 @@ class JElementHikashopmodule extends JElement{
 		$id = hikashop_getCID('id');
 		if(!empty($id)){
 			$app = JFactory::getApplication();
-			if($app->isAmdin()){
+			if($app->isAdmin()){
 				$link = JRoute::_('index.php?option=com_hikashop&ctrl=modules&task=edit&cid[]='.$id);
 			}else{
 				$link = JURI::base().'administrator/index.php?option=com_hikashop&ctrl=modules&task=edit&cid[]='.$id;

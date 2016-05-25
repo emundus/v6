@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -340,6 +340,10 @@ class plgHikashopMassaction_order extends JPlugin
 		if(preg_match('/order_product/',$action['type'])) $alias = array('order_product');
 		$queryTables = array($current);
 		$possibleTables = array($current, 'order_product');
+
+		if(!in_array($alias[0],$possibleTables))
+			$alias[0] = 'order';
+
 		if(!isset($this->massaction))$this->massaction = hikashop_get('class.massaction');
 		$value = $this->massaction->updateValuesSecure($action,$possibleTables,$queryTables);
 		JArrayHelper::toInteger($ids);
@@ -585,13 +589,14 @@ class plgHikashopMassaction_order extends JPlugin
 	}
 
 	function onBeforeOrderUpdate(&$order,&$do){
+		$o = clone $order;
 		if(!empty($order->old)){
 			foreach($order->old as $key => $value) {
-				if(!isset($order->$key))
-					$order->$key = $value;
+				if(!isset($o->$key))
+					$o->$key = $value;
 			}
 		}
-		$orders = array($order);
+		$orders = array($o);
 		$this->massaction->trigger('onBeforeOrderUpdate',$orders);
 	}
 

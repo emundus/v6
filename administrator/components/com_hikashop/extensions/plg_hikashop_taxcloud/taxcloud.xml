@@ -2,7 +2,7 @@
 <extension version="2.5" type="plugin" group="hikashop" method="upgrade">
 	<name>Hikashop TaxCloud Plugin</name>
 	<creationDate>December 2013</creationDate>
-	<version>2.6.2</version>
+	<version>2.6.3</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@obsidev.com</authorEmail>
 	<authorUrl>http://www.obsidev.com</authorUrl>

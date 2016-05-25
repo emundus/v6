@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -295,10 +295,29 @@ class ConfigController extends hikashopController{
 		$logFile = @file_get_contents($reportPath);
 		if(empty($logFile)){
 			hikashop_display(JText::_('EMPTY_LOG').' '.$reportPath,'info');
-		}else{
-			echo nl2br($logFile);
+		} else {
+			$logFile = trim($logFile);
+
+			if(strpos($logFile, '<pre') !== false) {
+				$tmp = str_replace(array("\r\n","\r","\n"), "\x02", $logFile);
+				$pre = array();
+				if(preg_match_all('#<pre\s?(.*)>(.*)</pre>#Ui', $tmp, $pre)) {
+					foreach($pre[0] as $p) {
+						$n = str_replace("\x02", "\r\n", $p);
+						$tmp = str_replace($p, $n, $tmp);
+						unset($n);
+					}
+					unset($p);
+					unset($pre);
+				}
+				$ret = str_replace("\x02", "<br/>\r\n", $tmp);
+			} else
+				$ret = nl2br($logFile);
+
+			echo $ret;
 		}
 	}
+
 	function seereport(){
 		$config =& hikashop_config();
 		$path = trim(html_entity_decode($config->get('cron_savepath')));

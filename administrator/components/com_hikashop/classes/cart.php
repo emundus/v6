@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -237,7 +237,7 @@ class hikashopCartClass extends hikashopClass {
 		$jConfig = JFactory::getConfig();
 		if(!$jConfig->get('unicodeslugs')){
 			$lang = JFactory::getLanguage();
-			$alias = $lang->transliterate($alias);
+			$alias = str_replace(',','-',$lang->transliterate($alias));
 		}
 		$app = JFactory::getApplication();
 		if(method_exists($app,'stringURLSafe')){
@@ -344,7 +344,8 @@ class hikashopCartClass extends hikashopClass {
 		if(!empty($entries) && in_array($type, array('product', 'item')))
 			return false;
 
-		$cart = $this->initCart();
+		if($add || !$app->isAdmin())
+			$cart = $this->initCart();
 
 		JRequest::setVar('new_'.$cart_id, $cart->cart_id);
 		JPluginHelper::importPlugin('hikashop');

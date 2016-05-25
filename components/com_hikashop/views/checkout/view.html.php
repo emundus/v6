@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -520,7 +520,10 @@ function displayRegistration(el)
 		$this->assignRef('fieldsClass',$fieldsClass);
 		$identified = (bool)$user_id;
 		$this->assignRef('identified',$identified);
-		JHTML::_('behavior.modal');
+		$config = hikashop_config();
+		$address_selector = (int)$config->get('checkout_address_selector', 0);
+		if(empty($address_selector))
+			JHTML::_('behavior.modal');
 
 		$billing_address = $app->getUserState( HIKASHOP_COMPONENT.'.billing_address' );
 
@@ -791,7 +794,7 @@ ccHikaErrors [5] = '".JText::_('CREDIT_CARD_EXPIRED')."';
 			$doc = JFactory::getDocument();
 		}
 		$doc->addScriptDeclaration("\n<!--\n".$js."\n//-->\n");
-		JHTML::_('behavior.tooltip');
+
 		$this->_getImagesName('payment');
 
 		$currencyClass = hikashop_get('class.currency');
@@ -929,6 +932,5 @@ ccHikaErrors [5] = '".JText::_('CREDIT_CARD_EXPIRED')."';
 			$doc = JFactory::getDocument();
 		}
 		$doc->addScriptDeclaration("\n<!--\n".$js."\n//-->\n");
-		JHTML::_('behavior.tooltip');
 	}
 }

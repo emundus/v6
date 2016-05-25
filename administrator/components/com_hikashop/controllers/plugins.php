@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -198,6 +198,10 @@ class PluginsController extends hikashopController {
 		if(!empty($formData[$this->plugin_type])) {
 			$plugin_id = $this->plugin_type.'_id';
 			$element->$plugin_id = $id;
+			if(in_array($this->plugin_type, array('payment','shipping'))){
+				$plugin_images = $this->plugin_type.'_images';
+				$element->$plugin_images = '';
+			}
 			foreach($formData[$this->plugin_type] as $column => $value){
 				hikashop_secureField($column);
 				if(is_array($value)){
@@ -222,7 +226,7 @@ class PluginsController extends hikashopController {
 						foreach($formData[$this->plugin_type][$column] as $key=>$val){
 							$element->{$column}[(int)$key] = strip_tags($val);
 						}
-					} elseif($column == 'payment_images') {
+					} elseif(in_array($column, array('payment_images','shipping_images'))) {
 						$element->$column = array();
 						foreach($formData[$this->plugin_type][$column] as $key=>$val){
 							$element->{$column}[(int)$key] = strip_tags($val);

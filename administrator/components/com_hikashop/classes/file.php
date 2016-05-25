@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -114,7 +114,7 @@ class hikashopFileClass extends hikashopClass {
 								$keepEntries = $this->database->loadColumn();
 							}
 							foreach($oldEntries as $old) {
-								if((empty($keepFiles) || !in_array($old,$keepFiles)) && JFile::exists($uploadPath . $old))
+								if((empty($keepEntries) || !in_array($old,$keepEntries)) && JFile::exists($uploadPath . $old))
 									JFile::delete($uploadPath . $old);
 							}
 						}

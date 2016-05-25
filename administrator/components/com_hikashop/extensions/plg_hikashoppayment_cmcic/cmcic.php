@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -58,7 +58,7 @@ class plgHikashoppaymentCmcic extends hikashopPaymentPlugin {
 		$notify_url = $httpsHikashop.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment=cmcic&tmpl=component&orderId='.$order->order_id.'&lang='.$this->locale;
 		$return_url = $httpsHikashop.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment=cmcic&tmpl=component&cmcic_return=1&orderId='.$order->order_id.'&lang='.$this->locale;
 
-		$localeCM = 'FR';
+		$localeCM = 'EN';
 		if( in_array($this->locale, array('fr','en','de','it','es','nl','pt')) ) {
 			$localCM = strtoupper($this->locale);
 		}

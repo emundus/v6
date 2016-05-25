@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -109,26 +109,32 @@ defined('_JEXEC') or die('Restricted access');
 							<?php } ?>
 
 							<?php
+							$null = null;
+							$type = 'display:field_product_shipping_invoice=1';
 							if($this->invoice_type=='full'){
-								if(hikashop_level(2)){
-									$itemFields = $this->fieldsClass->getFields('display:field_product_invoice=1',$product,'product');
-									if(!empty($itemFields)) {
-										foreach($itemFields as $field){
-											$namekey = $field->field_namekey;
+								$type = 'display:field_product_invoice=1';
+							}
+							if(hikashop_level(2)){
+								$productFields = $this->fieldsClass->getFields($type,$null,'product');
+								if(!empty($productFields)) {
+									$usefulFields = array();
+									foreach($productFields as $field){
+										$fieldname = $field->field_namekey;
+										foreach($this->products as $product){
+											if(!empty($product->$fieldname)){
+												$usefulFields[] = $field;
+												break;
+											}
+										}
+									}
+									$productFields = $usefulFields;
+
+									if(!empty($productFields)) {
+										foreach($productFields as $field){
 											?>
 											<th class="title" ><?php echo $this->fieldsClass->getFieldName($field);?></th>
 											<?php
 										}
-									}
-								}
-							}elseif(hikashop_level(2)){
-								$itemFields = $this->fieldsClass->getFields('display:field_product_shipping_invoice=1',$product,'product');
-								if(!empty($itemFields)) {
-									foreach($itemFields as $field){
-										$namekey = $field->field_namekey;
-										?>
-										<th class="title" ><?php echo $this->fieldsClass->getFieldName($field);?></th>
-										<?php
 									}
 								}
 							}
@@ -178,22 +184,13 @@ defined('_JEXEC') or die('Restricted access');
 												}
 											}
 										}
+
+										$item_type = 'display:field_item_shipping_invoice=1';
 										if($this->invoice_type=='full'){
-											if(hikashop_level(2)){
-												$itemFields = $this->fieldsClass->getFields('display:field_item_invoice=1',$product,'item');
-												if(!empty($itemFields)) {
-													foreach($itemFields as $field){
-														$namekey = $field->field_namekey;
-														if(empty($product->$namekey) && !strlen($product->$namekey)){
-															continue;
-														}
-														echo '<p class="hikashop_order_item_'.$namekey.'">'.$this->fieldsClass->getFieldName($field).': '.$this->fieldsClass->show($field,$product->$namekey).'</p>';
-													}
-												}
-											}
+											$item_type = 'display:field_item_invoice=1';
 										}
-										elseif(hikashop_level(2)){
-											$itemFields = $this->fieldsClass->getFields('display:field_item_shipping_invoice=1',$product,'item');
+										if(hikashop_level(2)){
+											$itemFields = $this->fieldsClass->getFields($item_type,$product,'item');
 											if(!empty($itemFields)) {
 												foreach($itemFields as $field){
 													$namekey = $field->field_namekey;
@@ -204,38 +201,24 @@ defined('_JEXEC') or die('Restricted access');
 												}
 											}
 										}
-										if($this->invoice_type=='full'){
-											if(hikashop_level(2)){
-												$itemFields = $this->fieldsClass->getFields('display:field_product_invoice=1',$product,'product');
-												if(!empty($itemFields)) {
-													foreach($itemFields as $field){
-														$namekey = $field->field_namekey;
-														$productData = @$this->products[$product->product_id];
-														?>
-														<td>
-														<?php echo  '<p class="hikashop_order_product_'.$namekey.'">'.$this->fieldsClass->show($field,$productData->$namekey).'</p>';
-														?>
-														</td>
-													<?php
-													}
-												}
-											}
-										}
-										elseif(hikashop_level(2)){
-											$itemFields = $this->fieldsClass->getFields('display:field_product_shipping_invoice=1',$product,'product');
-											if(!empty($itemFields)) {
-												foreach($itemFields as $field){
+
+										if(hikashop_level(2)){
+											if(!empty($productFields)) {
+												foreach($productFields as $field){
 													$namekey = $field->field_namekey;
 													$productData = @$this->products[$product->product_id];
 													?>
 													<td>
-													<?php echo  '<p class="hikashop_order_product_'.$namekey.'">'.$this->fieldsClass->show($field,$productData->$namekey).'</p>';
+													<?php
+													if(!empty($productData->$namekey))
+														echo  '<p class="hikashop_order_product_'.$namekey.'">'.$this->fieldsClass->show($field,$productData->$namekey).'</p>';
 													?>
 													</td>
 												<?php
 												}
 											}
 										}
+
 										if($group){
 											foreach($this->order->products as $j => $optionElement){
 												if($optionElement->order_product_option_parent_id != $product->order_product_id) continue;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -78,7 +78,7 @@ class addressViewAddress extends HikaShopView {
 		$this->assignRef('fieldsClass', $fieldsClass);
 
 		$edit = false;
-		if(JRequest::getVar('edition', false) === true) {
+		if(JRequest::getVar('edition', false)) {
 			$edit = true;
 		}
 		if(isset($this->params->edit))
@@ -87,8 +87,8 @@ class addressViewAddress extends HikaShopView {
 
 		$user_id = hikashop_loadUser();
 		$address = new stdClass();
+		$addressClass = hikashop_get('class.address');
 		if(!empty($address_id)) {
-			$addressClass = hikashop_get('class.address');
 			$address = $addressClass->get($address_id);
 			if($address->address_user_id != $user_id) {
 				$address = new stdClass();
@@ -108,6 +108,10 @@ class addressViewAddress extends HikaShopView {
 					$name = substr($name, $pos + 1);
 				}
 				$address->address_lastname = $name;
+			}
+			if($edit){
+				$addresses = $addressClass->loadUserAddresses($user_id);
+				$this->assignRef('addresses', $addresses);
 			}
 		}
 		$this->assignRef('address', $address);

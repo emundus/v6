@@ -5,7 +5,7 @@
  * @package    eMundus
  * @subpackage Components
  *             components/com_emundus/emundus.php
- * @link       http://www.decisionpublique.fr
+ * @link       http://www.emundus.fr
  * @license    GNU/GPL
  */
 
@@ -63,6 +63,27 @@ class EmundusModelProgramme extends JModelList
             $db = $this->getDbo();
             $db->setQuery($query);
             return $db->loadColumn();
+        }
+        catch(Exception $e)
+        {
+            error_log($e->getMessage(), 0);
+            return false;
+        }
+    }
+
+    /**
+     * @return array
+     * get list of declared programmes
+     */
+    public function getProgrammes()
+    {
+        $query = 'select *
+                  from #__emundus_setup_programmes';
+        try
+        {
+            $db = $this->getDbo();
+            $db->setQuery($query);
+            return $db->loadAssocList('code');
         }
         catch(Exception $e)
         {

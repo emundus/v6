@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -34,13 +34,13 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 		if(empty($elt->vote_comment))
 			continue;
 ?>
-<table class="hika_comment_listing" style="width:100%;">
+<table itemprop="review" itemscope itemtype="http://schema.org/Review" class="hika_comment_listing" style="width:100%;">
 	<tr>
-		<td class="hika_comment_listing_name">
+		<td class="hika_comment_listing_name" itemprop="author" itemscope itemtype="http://schema.org/Person">
 <?php if ($elt->vote_pseudo == '0') { ?>
-			<span class="hika_vote_listing_username"><?php echo $elt->username; ?> </span>
+			<span itemprop="name" class="hika_vote_listing_username"><?php echo $elt->username; ?> </span>
 <?php } else { ?>
-			<span class="hika_vote_listing_username" ><?php echo $elt->vote_pseudo; ?></span>
+			<span itemprop="name" class="hika_vote_listing_username" ><?php echo $elt->vote_pseudo; ?></span>
 <?php } ?>
 		</td>
 		<td class="hika_comment_listing_stars"><?php
@@ -57,11 +57,17 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 				for($j=0; $j < $nb_star_empty; $j++ ){
 					?><span class="hika_comment_listing_empty_stars" ></span><?php
 				}
-			}
-		}
-		?></td>
+			} ?>
+			<span style="display:none;" itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
+				<span itemprop="bestRating"><?php echo $nb_star_config; ?></span>
+				<span itemprop="worstRating">1</span>
+				<span itemprop="ratingValue"><?php echo $nb_star_vote; ?></span>
+			</span>
+		<?php } ?>
+		</td>
 		<td>
-			<div class="hika_comment_listing_notification" id="<?php echo $elt->vote_id; ?>"><?php
+			<div class="hika_comment_listing_notification" id="<?php echo $elt->vote_id; ?>">
+		<?php
 		if($elt->total_vote_useful != 0){
 			if($elt->vote_useful == 0) {
 				$hika_useful = $elt->total_vote_useful / 2;
@@ -80,7 +86,7 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 		} else {
 			$hika_useless = 0;
 			$hika_useful  = 0;
-			if($row->useful_style == 'helpful' && $row->useful_rating == 1) {
+			if($row->useful_style == 'helpful' && $row->useful_rating == 1 && $elt->vote_user_id != hikashop_loadUser() && $elt->vote_user_id != hikashop_getIP()) {
 				echo JText::_('HIKASHOP_NO_USEFUL');
 			}
 		}
@@ -139,7 +145,7 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 <?php } ?>
 	<tr>
 		<td colspan="8">
-			<div id="<?php echo $i++; ?>" class="hika_comment_listing_content"><?php echo $elt->vote_comment; ?></div>
+			<div id="<?php echo $i++; ?>" itemprop="reviewBody" class="hika_comment_listing_content"><?php echo $elt->vote_comment; ?></div>
 		</td>
 	</tr>
 	<tr>

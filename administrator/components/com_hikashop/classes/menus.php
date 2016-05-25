@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -193,9 +193,18 @@ class hikashopMenusClass extends hikashopClass{
 			$filters = array(
 				'a.type=\'component\'',
 				'a.published=1',
-				'b.title IS NOT NULL',
-				'( a.access=1 OR  a.access=5 )'
+				'b.title IS NOT NULL'
 			);
+
+
+			if(HIKASHOP_J25){
+				$user = JFactory::getUser();
+				$accesses = JAccess::getAuthorisedViewLevels(@$user->id);
+				if(!empty($accesses)){
+					$filters[]='a.access IN ('.implode(',',$accesses).')';
+				}
+			}
+
 			if(HIKASHOP_J25){
 				$filters[] = 'a.client_id=0';
 			}
@@ -243,10 +252,14 @@ class hikashopMenusClass extends hikashopClass{
 
 				foreach($cache[$view.'.'.$layout] as $current_id){
 
-					$menuItem = $app->getMenu()->getItem($current_id);
-					$categoryParams = $menuItem->params->get('hk_category');
-					if((isset($categoryParams->content_type) && $categoryParams->content_type == 'manufacturer') || (isset($categoryParams->category) && $categoryParams->category == $brandId))
-						return $current_id;
+					if(HIKASHOP_J30){
+						$menuItem = $app->getMenu()->getItem($current_id);
+						$categoryParams = new stdClass();
+						if(isset($menuItem->params))
+							$categoryParams = $menuItem->params->get('hk_category');
+						if((isset($categoryParams->content_type) && $categoryParams->content_type == 'manufacturer') || (isset($categoryParams->category) && $categoryParams->category == $brandId))
+							return $current_id;
+					}
 
 					$options = $config->get('menu_'.$current_id,null);
 					if (isset($options['content_type']) && $options['content_type'] == $view) {

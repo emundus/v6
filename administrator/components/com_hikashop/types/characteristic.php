@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	2.6.3
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -163,7 +163,7 @@ class hikashopCharacteristicType {
 							for($i=0;$i<=$size;$i++){
 								$space.='&nbsp;&nbsp;';
 							}
-							$html='<table class="hikashop_product_characteristic_chooser"><tr><td></td><td>'.$space.@$secondCharacteristic->characteristic_value.'</td></tr><tr><td>'.$firstCharacteristic->characteristic_value.'</td><td>'.$html.'</td></table>';
+							$html='<table class="hikashop_product_characteristic_chooser"><tr><td></td><td class="hikashop_charactersitic_name">'.$space.@$secondCharacteristic->characteristic_value.'</td></tr><tr><td class="hikashop_charactersitic_name">'.$firstCharacteristic->characteristic_value.'</td><td>'.$html.'</td></table>';
 						}
 						break;
 					}
@@ -233,7 +233,7 @@ class hikashopCharacteristicType {
 			$map = 'hikashop_product_characteristic['.$characteristic_id.']';
 			$id = 'hikashop_product_characteristic_'.$characteristic_id;
 		}else{
-			$id = $map;
+			$id = $characteristic_id = $map;
 		}
 
 		$this->values = array();
