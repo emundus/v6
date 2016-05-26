@@ -17,7 +17,7 @@ JHTML::_('behavior.tooltip');
 
 <div class="ui grid">
   <div class="five wide column">
-  	<a href="#" onClick="syncAmetysProgramme();" id="em-sync">
+  	<a href="#" onClick="sync();" id="em-sync">
   		<i class="circular massive refresh link icon"></i> <?php echo JText::_('COM_EMUNDUS_SYNC_AMETYS_PROGRAMMES'); ?> 
   	</a>
   </div>
@@ -59,14 +59,13 @@ JHTML::_('behavior.tooltip');
 
 	                    $('#em-content').append(data[d].title);
 	                    $('#em-content').append(" [" + data[d].cdmCode + "]");
-	                    $('#em-content').append("<br>");
-	                    
+	                    $('#em-content').append("<br>");   
 	                }
 	            }
 
-	            $('#em-content').append(data);
 	            $('#em-sync i').attr('class','circular massive refresh link icon');
-	        },
+	        }, 
+	        async: false, 
 	        error: function (jqXHR, textStatus, errorThrown)
 	        {
 	            console.log(jqXHR.responseText);
@@ -78,7 +77,7 @@ JHTML::_('behavior.tooltip');
 	{ 
 		//$('#em-content').empty();
 		//$('#em-sync i').attr('class','circular massive refresh loading icon');
-	    $.ajax({
+		var result = $.ajax({
 	        type:'get',
 	        url:'index.php?option=com_emundus&controller=programme&task=getprogrammes&Itemid=',
 	        dataType:'json',
@@ -88,11 +87,20 @@ JHTML::_('behavior.tooltip');
 	            var data = result.data;
 	            if (result.status)
 	            {
-	                
-	               return data;
+	               for (var d in data)
+	                {
+	                    if (typeof(data[d].code)  == "undefined" || typeof(data[d].label) == "undefined")
+	                        break;
+
+	                    $('#em-content').append(data[d].label);
+	                    $('#em-content').append(" [" + data[d].code + "]");
+	                    $('#em-content').append("<br>");
+	                    
+	                }
 	            } 
 	            else {
-	            	return false;
+	            	$('#em-content').append("<hr>");
+	            	$('#em-content').append(Joomla.JText._("COM_EMUNDUS_CANNOT_RETRIEVE_EMUNDUS_PROGRAMME_LIST"));
 	            }
 
 	            //$('#em-content').append(data);
@@ -102,6 +110,117 @@ JHTML::_('behavior.tooltip');
 	        {
 	            console.log(jqXHR.responseText);
 	        }
-	    })
+	    });
+		return result;
+	}
+
+	function sync(){
+		$('#em-content').empty();
+		$('#em-sync i').attr('class','circular massive refresh loading icon');
+
+		var programme = {};
+
+		$.when(
+
+			$.get('index.php?option=com_emundus&controller=ametys&task=getprogrammes&Itemid=', function(ametys){
+				$('#em-content').append("<hr>");
+				$('#em-content').append(Joomla.JText._("COM_EMUNDUS_RETRIEVE_AMETYS_STORED_PROGRAMMES"));
+				programme.ametys = ametys;
+			}),
+
+			$.get('index.php?option=com_emundus&controller=programme&task=getprogrammes&Itemid=', function(emundus){
+				$('#em-content').append("<hr>");
+				$('#em-content').append(Joomla.JText._("COM_EMUNDUS_RETRIEVE_EMUNDUS_STORED_PROGRAMMES"));
+				programme.emundus = emundus;
+			})
+
+		).done(function(ametys, emundus) {
+			var ametys = JSON.parse(programme.ametys);
+			var emundus = JSON.parse(programme.emundus);
+
+            if (emundus.status && ametys.status) {
+	           var ametysData = ametys.data;
+	           var emundusData = emundus.data;
+			   var data_to_add = new Array();
+               var stored = false;
+			  
+			   $('#em-content').append("<hr>");
+			   $('#em-content').append(Joomla.JText._("COM_EMUNDUS_COMPARE_DATA"));
+			   $('#em-content').append("<hr>");
+			   $('#em-content').append(Joomla.JText._("COM_EMUNDUS_DATA_TO_ADD"));
+			   $('#em-content').append(" : <br>");
+
+               for (var d in ametysData) {
+                    if (typeof(ametysData[d].cdmCode)  == "undefined" || typeof(ametysData[d].title) == "undefined")
+                        break;
+               	
+               		stored = false;
+               		for (var e in emundusData) {
+
+               			if (emundusData[e].code == ametysData[d].cdmCode) {
+               				stored = true;
+               			}
+               		}  		
+               		
+               		if (!stored) {
+               			// convert Ametys database definition to emundus database definition
+               			var emData = new Object();
+               			
+               			emData.code = ametysData[d].cdmCode;
+               			emData.label = ametysData[d].title;
+               			emData.notes = ametysData[d].presentation;
+               			emData.published = 1;
+               			emData.programmes = ametysData[d].catalog;
+               			emData.synthesis = "<?php echo $this->ametys_sync_default_synthesis; ?>";
+               			emData.fabrik_group_id = "<?php echo $this->ametys_sync_default_eval; ?>";
+               			emData.fabrik_decision_group_id = "<?php echo $this->ametys_sync_default_decision; ?>";
+               			emData.apply_online = 1;
+               			emData.ordering = d;
+               			emData.url = ametysData[d].programWebSiteUrl;
+
+               			data_to_add.push(emData);
+               			$('#em-content').append("<i class='add circle icon'></i> ");
+	                    $('#em-content').append(emData.label);
+	                    $('#em-content').append(" [" + emData.code + "]");
+	                    $('#em-content').append("<br>");
+	                }
+                }
+
+                if (data_to_add.length > 0) {
+					$('#em-content').append("<hr>");
+					$('#em-content').append(Joomla.JText._("COM_EMUNDUS_ADD_DATA"));
+
+					$.ajax({
+				        type:'POST',
+				        url:'index.php?option=com_emundus&controller=programme&task=addprogrammes&Itemid=',
+				        dataType:'json',
+				        data: {data : data_to_add},
+				        success: function(result)
+				        { 
+				        	if (result.status)
+				            {
+					           	$('#em-content').append("<hr>");
+					        	$('#em-content').append(Joomla.JText._("COM_EMUNDUS_SYNC_DONE"));				            
+				            }
+				        }, 
+				        error: function (jqXHR, textStatus, errorThrown)
+				        {
+				        	$('#em-content').append("<hr>");
+					        $('#em-content').append(Joomla.JText._("COM_EMUNDUS_SYNC_FAILED"));	
+				            console.log(jqXHR.responseText);
+				        }
+				    })
+                } else {
+                	$('#em-content').append("<hr>");
+					$('#em-content').append(Joomla.JText._("COM_EMUNDUS_NO_SYNC_NEEDED"));
+                }
+
+	        	$('#em-sync i').attr('class','circular massive refresh link icon');
+            }
+            else {
+            	$('#em-content').append("<hr>");
+            	$('#em-content').append(Joomla.JText._("COM_EMUNDUS_CANNOT_RETRIEVE_EMUNDUS_PROGRAMME_LIST"));
+            }
+		});
 	}
 </script>

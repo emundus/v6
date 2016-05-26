@@ -132,6 +132,19 @@ JText::script('GENERATE_PDF');
 //view application layout share
 JText::script('COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');
 
+
+//view ametys
+JText::script('COM_EMUNDUS_CANNOT_RETRIEVE_EMUNDUS_PROGRAMME_LIST');
+JText::script('COM_EMUNDUS_RETRIEVE_AMETYS_STORED_PROGRAMMES');
+JText::script('COM_EMUNDUS_RETRIEVE_EMUNDUS_STORED_PROGRAMMES');
+JText::script('COM_EMUNDUS_COMPARE_DATA');
+JText::script('COM_EMUNDUS_ADD_DATA');
+JText::script('COM_EMUNDUS_SYNC_DONE');
+JText::script('COM_EMUNDUS_NO_SYNC_NEEDED');
+JText::script('COM_EMUNDUS_CANNOT_RETRIEVE_EMUNDUS_PROGRAMME_LIST');
+JText::script('COM_EMUNDUS_DATA_TO_ADD');
+JText::script('COM_EMUNDUS_SYNC_FAILED');
+
 JHtml::script(JURI::base() . 'media/com_emundus/lib/jquery-1.10.2.min.js');
 JHtml::script(JURI::base() . 'media/com_emundus/lib/jquery-ui-1.8.18.min.js');
 JHtml::script(JURI::base() . 'media/com_emundus/lib/jquery.doubleScroll.js' );
@@ -165,10 +178,10 @@ $name = $app->input->get('view', '', 'WORD');
 if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name == 'job' || $name == 'thesiss' || $name == 'thesis')) {
     $controller->execute($app->input->get('task', '', 'WORD'));
 } elseif ($user->guest && $name != 'emailalert' && $name !='programme') {
-	$controller->setRedirect('index.php', JText::_("ACCESS_DENIED"), 'error');
+    $controller->setRedirect('index.php', JText::_("ACCESS_DENIED"), 'error');
 } else { 
-	// Perform the Request task
-	$controller->execute( $app->input->get('task', '', 'WORD') );
+    // Perform the Request task
+    $controller->execute( $app->input->get('task', '', 'WORD') );
 }
 // Redirect if set by the controller
 $controller->redirect();

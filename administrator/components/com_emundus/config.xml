@@ -118,12 +118,16 @@
         <field name="export_pdf" type="text" size="60" default="" label="Select items for the pdf export"/>
 	</fieldset>
 -->	
-	<fieldset label="COM_EMUNDUS_INTEGRATION" name="evaluators" description="COM_EMUNDUS_INTEGRATION_DESC">
+
+	<fieldset label="COM_EMUNDUS_INTEGRATION" name="ametys" description="COM_EMUNDUS_INTEGRATION_DESC">
 		<field name="ametys_integration" menu="hide" type="list" default="0" label="COM_EMUNDUS_AMETYS" description="COM_EMUNDUS_AMETYS_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
 		<field name="ametys_url" type="text" default="36" label="COM_EMUNDUS_AMETYS_URL" description="COM_EMUNDUS_AMETYS_URL_DESC" />
+		<field name="ametys_sync_default_eval" type="text" default="229,230,231" label="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_EVAL_GROUPS" description="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_EVAL_GROUPS_DESC" />
+		<field name="ametys_sync_default_decision" type="text" default="56" label="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_DECISION_GROUPS" description="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_DECISION_GROUPS_DESC" />
+		<field name="ametys_sync_default_synthesis" type="editor" default="[APPLICANT_NAME]" label="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_SYNTHESIS" description="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_DECISION_SYNTHESIS_DESC" />
 	</fieldset>
 	<fieldset 
         name="permissions"

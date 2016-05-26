@@ -38,6 +38,13 @@ class EmundusViewAmetys extends JViewLegacy
 		if( !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id) )
 			die( JText::_('RESTRICTED_ACCESS') );
 
+		$app = JFactory::getApplication();
+		$params = JComponentHelper::getParams('com_emundus');
+		$ametys_sync_default_eval = $params->get('ametys_sync_default_eval', null);
+		$ametys_sync_default_decision = $params->get('ametys_sync_default_decision', null);
+		$this->assignRef('ametys_sync_default_eval', $ametys_sync_default_eval);
+		$this->assignRef('ametys_sync_default_decision', $ametys_sync_default_decision);
+
 		$document = JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
 		// overide css
@@ -52,8 +59,8 @@ class EmundusViewAmetys extends JViewLegacy
 		}
 
 	    $this->itemId = $current_menu->id;
-	    $this->task = JFactory::getApplication()->input->getInt('task', null);
-	    $this->token = JFactory::getApplication()->input->getInt('token', null);
+	    $this->task   = $app->input->getInt('task', null);
+	    $this->token  = $app->input->getInt('token', null);
 		
 		parent::display($tpl);
 	}

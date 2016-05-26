@@ -1,11 +1,11 @@
 <?php
 /**
- * @package    	Joomla
- * @subpackage 	eMundus
- * @link       	http://www.emundus.fr
- * @copyright	Copyright (C) 2016 eMundus. All rights reserved.
- * @license    	GNU/GPL
- * @author     	Benjamin Rivalland
+ * @package     Joomla
+ * @subpackage  eMundus
+ * @link        http://www.emundus.fr
+ * @copyright   Copyright (C) 2016 eMundus. All rights reserved.
+ * @license     GNU/GPL
+ * @author      Benjamin Rivalland
  */
 
 // No direct access
@@ -59,6 +59,32 @@ class EmundusControllerProgramme extends JControllerLegacy {
                 $tab = array('status' => 1, 'msg' => JText::_('PROGRAMMES_RETRIEVED'), 'data' => $programmes);
             else
                 $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMMES'), 'data' => $programmes);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function addprogrammes(){ 
+        $user = JFactory::getUser();
+        $view = JRequest::getVar('view', null, 'GET', 'none',0);
+        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $data = JRequest::getVar('data', null, 'POST', 'none',0);
+
+        $model = $this->getModel('programme');   
+
+        if( !EmundusHelperAccess::asCoordinatorAccessLevel($user->id) )
+        {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        }
+        else
+        {
+            $result = $model->addProgrammes($data);
+
+            if($result === true)
+                $tab = array('status' => 1, 'msg' => JText::_('PROGRAMMES_ADDED'), 'data' => $result);
+            else
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_PROGRAMMES'), 'data' => $result);
         }
         echo json_encode((object)$tab);
         exit;
