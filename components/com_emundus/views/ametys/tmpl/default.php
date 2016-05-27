@@ -18,17 +18,17 @@ JHTML::_('behavior.tooltip');
 <div class="ui grid">
   <div class="five wide column">
   	<a href="#" onClick="sync();" id="em-sync">
-  		<i class="circular massive refresh link icon"></i> <?php echo JText::_('COM_EMUNDUS_SYNC_AMETYS_PROGRAMMES'); ?> 
+  		<i class="circular big refresh link icon"></i> <?php echo JText::_('COM_EMUNDUS_SYNC_AMETYS_PROGRAMMES'); ?> 
   	</a>
   </div>
   <div class="five wide column">
-  	<a href="#" id="em-new-campaign">
-  		<i class="circular massive add circle link icon"></i> <?php echo JText::_('COM_EMUNDUS_DECLARE_NEW_CAMPAIGN'); ?> 
+  	<a href="#" onClick="getFormCampaign();" id="em-new-campaign">
+  		<i class="circular big add circle link icon"></i> <?php echo JText::_('COM_EMUNDUS_DECLARE_NEW_CAMPAIGN'); ?> 
   	</a>
   </div>
   <div class="five wide column">
   	<a href="#" id="em-ametys-cart">
-  		<i class="circular massive in cart link icon"></i> <?php echo JText::_('COM_EMUNDUS_DISPLAY_AMETYS_CART'); ?> 
+  		<i class="circular big in cart link icon"></i> <?php echo JText::_('COM_EMUNDUS_DISPLAY_AMETYS_CART'); ?> 
   	</a>
   </div>
   <div class="sixteen wide column">
@@ -37,10 +37,31 @@ JHTML::_('behavior.tooltip');
 </div>
 
 <script type="text/javascript">
+
+	function getFormCampaign()
+	{ 
+		$('#em-content').empty();
+		$('#em-new-campaign i').attr('class','circular big add circle loading icon');
+	    $.ajax({
+	        type:'get',
+	        url:'index.php?option=com_emundus&view=ametys&layout=formcampaign&format=raw&Itemid=',
+	        dataType:'html',
+	        success: function(result)
+	        { 
+	        	$('#em-new-campaign i').attr('class','circular big add circle link icon');
+	        	$('#em-content').append(result);          
+	        }, 
+	        error: function (jqXHR, textStatus, errorThrown)
+	        {
+	            console.log(jqXHR.responseText);
+	        }
+	    })
+	}
+
 	function syncAmetysProgramme()
 	{ 
 		$('#em-content').empty();
-		$('#em-sync i').attr('class','circular massive refresh loading icon');
+		$('#em-sync i').attr('class','circular big refresh loading icon');
 	    $.ajax({
 	        type:'get',
 	        url:'index.php?option=com_emundus&controller=ametys&task=getprogrammes&Itemid=',
@@ -63,9 +84,8 @@ JHTML::_('behavior.tooltip');
 	                }
 	            }
 
-	            $('#em-sync i').attr('class','circular massive refresh link icon');
+	            $('#em-sync i').attr('class','circular big refresh link icon');
 	        }, 
-	        async: false, 
 	        error: function (jqXHR, textStatus, errorThrown)
 	        {
 	            console.log(jqXHR.responseText);
@@ -75,8 +95,6 @@ JHTML::_('behavior.tooltip');
 
 	function syncEmundusProgramme()
 	{ 
-		//$('#em-content').empty();
-		//$('#em-sync i').attr('class','circular massive refresh loading icon');
 		var result = $.ajax({
 	        type:'get',
 	        url:'index.php?option=com_emundus&controller=programme&task=getprogrammes&Itemid=',
@@ -102,9 +120,6 @@ JHTML::_('behavior.tooltip');
 	            	$('#em-content').append("<hr>");
 	            	$('#em-content').append(Joomla.JText._("COM_EMUNDUS_CANNOT_RETRIEVE_EMUNDUS_PROGRAMME_LIST"));
 	            }
-
-	            //$('#em-content').append(data);
-	            //$('#em-sync i').attr('class','circular massive refresh link icon');
 	        },
 	        error: function (jqXHR, textStatus, errorThrown)
 	        {
@@ -116,7 +131,7 @@ JHTML::_('behavior.tooltip');
 
 	function sync(){
 		$('#em-content').empty();
-		$('#em-sync i').attr('class','circular massive refresh loading icon');
+		$('#em-sync i').attr('class','circular big refresh loading icon');
 
 		var programme = {};
 
@@ -205,8 +220,6 @@ JHTML::_('behavior.tooltip');
 				        }, 
 				        error: function (jqXHR, textStatus, errorThrown)
 				        {
-				        	$('#em-content').append("<hr>");
-					        $('#em-content').append(Joomla.JText._("COM_EMUNDUS_SYNC_FAILED"));	
 				            console.log(jqXHR.responseText);
 				        }
 				    })
@@ -215,7 +228,7 @@ JHTML::_('behavior.tooltip');
 					$('#em-content').append(Joomla.JText._("COM_EMUNDUS_NO_SYNC_NEEDED"));
                 }
 
-	        	$('#em-sync i').attr('class','circular massive refresh link icon');
+	        	$('#em-sync i').attr('class','circular big refresh link icon');
             }
             else {
             	$('#em-content').append("<hr>");

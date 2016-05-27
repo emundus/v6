@@ -46,6 +46,20 @@ class EmundusModelProfile extends JModelList
         }
 	}
 
+	/**
+     * @return mixed
+     */
+    public function getApplicantsProfiles()
+    {
+        $db = JFactory::getDBO();
+        $query = 'SELECT * 
+        			FROM #__emundus_setup_profiles esp
+                 	WHERE esp.published=1 
+                  	ORDER BY esp.label';
+        $db->setQuery($query);
+        return $db->loadObjectList();
+    }
+
 	function getProfileByApplicant($aid)
 	{
 		$query = 'SELECT eu.firstname, eu.lastname, eu.profile, eu.university_id, 

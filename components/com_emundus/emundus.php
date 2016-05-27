@@ -143,7 +143,7 @@ JText::script('COM_EMUNDUS_SYNC_DONE');
 JText::script('COM_EMUNDUS_NO_SYNC_NEEDED');
 JText::script('COM_EMUNDUS_CANNOT_RETRIEVE_EMUNDUS_PROGRAMME_LIST');
 JText::script('COM_EMUNDUS_DATA_TO_ADD');
-JText::script('COM_EMUNDUS_SYNC_FAILED');
+JText::script('COM_EMUNDUS_ERROR_MISSING_FORM_DATA');
 
 JHtml::script(JURI::base() . 'media/com_emundus/lib/jquery-1.10.2.min.js');
 JHtml::script(JURI::base() . 'media/com_emundus/lib/jquery-ui-1.8.18.min.js');

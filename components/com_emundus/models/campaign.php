@@ -5,9 +5,9 @@
  * @package    	Joomla
  * @subpackage 	eMundus
  * @link       	http://www.emundus.fr
- * @copyright	Copyright (C) 2008 - 2013 Décision Publique. All rights reserved.
+ * @copyright	Copyright (C) 2016 eMundus. All rights reserved.
  * @license    	GNU/GPL
- * @author     	Decision Publique - Benjamin Rivalland
+ * @author     	Benjamin Rivalland
  */
  
 // No direct access
@@ -230,5 +230,64 @@ class EmundusModelCampaign extends JModelList
 		$db->setQuery( $query );
 		return $db->loadObjectList();
 	}
+
+	/**
+     * Method to create a new compaign for all active programmes.
+     *
+     * @param   array $data The data to use as campaign definition.
+     * @param   array $programmes The list of programmes who need a new campaign.
+     *
+     * @return  json  Does it work.
+     */
+    public function addCampaignsForProgrammes($data, $programmes)
+    {
+        $db = JFactory::getDbo();
+        $user = JFactory::getUser();
+
+        $data['date_time'] = date("Y-m-d H:i:s");
+		$data['user'] = $user->id;
+		$data['label'] = '';
+		$data['training'] = '';
+		$data['published'] = 1;
+
+		if (count($data) > 0 && count($programmes) > 0) {
+			$column = array_keys($data);
+			
+			$values = array();
+			$values_unity = array();
+			foreach ($programmes as $key => $v) {
+				$values[] = '('.$db->Quote($data['start_date']).', '.$db->Quote($data['end_date']).', '.$data['profile_id'].', '.$db->Quote($data['year']).', '.$db->Quote($data['short_description']).', '.$db->Quote($data['date_time']).', '.$data['user'].', '.$db->Quote($v['label']).', '.$db->Quote($v['code']).', '.$data['published'].')';
+				$values_unity[] = '('.$db->Quote($v['code']).', '.$db->Quote($v['label']).', '.$db->Quote($data['year']).', '.$data['profile_id'].', '.$db->Quote($v['programmes']).')';	
+			}
+
+			$query = 'INSERT INTO `#__emundus_setup_campaigns` (`'.implode('`, `', $column).'`) VALUES '.implode(',', $values);
+			//die($query);
+			try
+			{          
+			  $db->setQuery($query);
+			  $db->execute();
+			  
+			  try
+              {   
+                  $query = 'INSERT INTO `#__emundus_setup_teaching_unity` (`code`, `label`, `schoolyear`, `profile_id`, `programmes`) VALUES '.implode(',', $values_unity);
+                  $db->setQuery($query);
+                  return $db->execute();
+              }
+              catch(Exception $e)
+              {
+                  error_log($e->getMessage(), 0);
+                  return $e->getMessage();
+              }
+			}
+			catch(Exception $e)
+			{
+			  error_log($e->getMessage(), 0);
+			  return $e->getMessage();
+			}
+		} else {
+			return false;
+		}
+    }
+
 }
 ?>

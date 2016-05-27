@@ -46,7 +46,16 @@ class EmundusViewAmetys extends JViewLegacy
 		$this->assignRef('ametys_sync_default_decision', $ametys_sync_default_decision);
 
 		$document = JFactory::getDocument();
+		//$document->addScript( JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
+		//$document->addScript( JURI::base()."media/com_emundus/lib/bootstrap-336/js/bootstrap.min.js" );
+		$document->addScript( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/moment.min.js" );
+		$document->addScript( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/daterangepicker.min.js" );
+		//$document->addStyleSheet( JURI::base()."media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
+		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/daterangepicker.min.css" );
+
 		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
+		//$document->addScript( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.js" );
+
 		// overide css
 		$menu = @JSite::getMenu();
         $current_menu = $menu->getActive();

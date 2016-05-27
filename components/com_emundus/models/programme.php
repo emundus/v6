@@ -75,10 +75,13 @@ class EmundusModelProgramme extends JModelList
      * @return array
      * get list of declared programmes
      */
-    public function getProgrammes()
+    public function getProgrammes($published = null)
     {
         $query = 'select *
                   from #__emundus_setup_programmes';
+        if (isset($published) && !empty($published)) {
+          $query .= ' WHERE published = '.$published;
+        }
         try
         {
             $db = $this->getDbo();
@@ -88,7 +91,7 @@ class EmundusModelProgramme extends JModelList
         catch(Exception $e)
         {
             error_log($e->getMessage(), 0);
-            return false;
+            return array();
         }
     }
 
@@ -111,7 +114,7 @@ class EmundusModelProgramme extends JModelList
           }
 
           $query = 'INSERT INTO `#__emundus_setup_programmes` (`'.implode('`, `', $column).'`) VALUES '.implode(',', $values);
-//die($query);
+
           try
           {          
               $db->setQuery($query);
@@ -122,6 +125,7 @@ class EmundusModelProgramme extends JModelList
               error_log($e->getMessage(), 0);
               return $e->getMessage();
           }
+
         } else {
           return false;
         }

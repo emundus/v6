@@ -32,7 +32,6 @@ class EmundusViewAmetys extends JViewLegacy
 	{
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
 		
 		parent::__construct($config);
 	}
@@ -42,18 +41,6 @@ class EmundusViewAmetys extends JViewLegacy
     	$current_user = JFactory::getUser();
 		if( !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id) )
 			die( JText::_('RESTRICTED_ACCESS') );
-
-		$document = JFactory::getDocument();
-		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
-		// overide css
-		$menu = @JSite::getMenu();
-        $current_menu = $menu->getActive();
-        $menu_params = $menu->getParams($current_menu->id);
-
-		$pageclass_sfx = $menu_params->get('pageclass_sfx', '');
-		if (!empty($pageclass_sfx)) {
-			$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$pageclass_sfx.".css" );
-		}
 
 	   	$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_emundus');
@@ -66,15 +53,16 @@ class EmundusViewAmetys extends JViewLegacy
 		switch  ($layout)
 		{
 			// get Form Campaign
-			case 'campaign':
-				
+			case 'formcampaign':
+				// get list of applicant profiles
+				$mProfle = new EmundusModelProfile;
+				$applicantProfiles = $mProfle->getApplicantsProfiles(); 
+				$this->assignRef('applicantProfiles', $applicantProfiles);
 			break;
 
 			// get list of application files
 			default :
-			    $menu = @JSite::getMenu();
-			    $current_menu  = $menu->getActive();
-			    $menu_params = $menu->getParams($current_menu->id);
+			    // default actions
 
 		    break;
 	    }
