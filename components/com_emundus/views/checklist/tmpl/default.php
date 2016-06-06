@@ -9,6 +9,7 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 
 //if applicant not yet selected
 //if($this->isapplicant){ ?>
+ <!--
     <fieldset>
         <legend><?php echo $this->need<2?JText::_('CHECKLIST'):JText::_('RESULTS'); ?></legend>
         <div class = "<?php echo $this->need?'checklist'.$this->need:'checklist'.'0'; ?>" id="info_checklist">
@@ -26,8 +27,9 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
                 <?php } ?>
         </div>
     </fieldset>
-
+-->
 <?php //} 
+/*
 if(!$this->sent) : ?>
 <p>
 <div id="instructions">
@@ -35,18 +37,21 @@ if(!$this->sent) : ?>
     <?php echo $this->instructions->text; ?>
 </div>
 </p>
-<?php endif; ?>
+<?php endif; 
+*/?>
 <?php if (count($this->attachments) > 0) :?>
 
 <!--<form id="checklistForm" name="checklistForm" onSubmit="return OnSubmitForm();"  method="post" enctype="multipart/form-data">-->
     <div id="attachment_list">
-        <h3><?php echo JText::_('ATTACHMENTS'); ?></h3>
-        <h4><?php echo JText::_('UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('BYTES'); ?></h4>
-        <div id="legend">
+        <!-- <h3><?php echo JText::_('ATTACHMENTS'); ?></h3> -->
+        <br>
+        <p><?php echo JText::_('UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('BYTES'); ?> </p>
+        <br>
+      <!--  <div id="legend">
             <div class="need_missing"><?php echo JText::_('MISSING_DOC'); ?></div>, 
             <div class="need_ok"><?php echo JText::_('SENT_DOC'); ?></div>, 
             <div class="need_missing_fac"><?php echo JText::_('MISSING_DOC_FAC'); ?></div>
-        </div>
+        </div> -->
         <?php
         $attachment_list_mand = "";
         $attachment_list_opt = "";
@@ -56,7 +61,10 @@ if(!$this->sent) : ?>
             } else {
                 $class= 'need_ok';
             }
-            $div = '<fieldset id="a'.$attachment->id.'"><legend id="l'.$attachment->id.'"><span class="'.$class.'"></span><a href="javascript:toggleVisu(\''.$attachment->id .'\')">'.$attachment->value .' [+/-]</a></legend>
+            $div = '<fieldset id="a'.$attachment->id.'">
+                <legend id="l'.$attachment->id.'" class="'.$class.'">
+                    <h3><a href="javascript:toggleVisu(\''.$attachment->id .'\')">'.$attachment->value .' <i class="resize vertical icon"></i></a></h3>
+                </legend>
                 <p class="description">'.$attachment->description .'</p>
                 <div class="table-responsive">
                 <table id="'.$attachment->id .'" class="table">';
@@ -147,7 +155,7 @@ Dropzone.options.formA'.$attachment->id.' =  {
         }
 
         // Change icon on fieldset
-        document.getElementById("l"+'.$attachment->id.').childNodes[0].className = "need_ok";
+        document.getElementById("l"+'.$attachment->id.').className = "need_ok";
         document.getElementById("ml"+'.$attachment->id.').className = "need_ok";
 
         // Create the remove button
@@ -176,7 +184,7 @@ Dropzone.options.formA'.$attachment->id.' =  {
             success: function(result) {
                 if (result.status) {
                     // Change icon on fieldset
-                    document.getElementById("l"+'.$attachment->id.').childNodes[0].className = "";
+                    document.getElementById("l"+'.$attachment->id.').className = "";
                     document.getElementById("ml"+'.$attachment->id.').className = "";
                     alert("'. JText::_('ATTACHMENT_DELETED').'");
                 }
@@ -200,19 +208,19 @@ Dropzone.options.formA'.$attachment->id.' =  {
             </tr>
             <tr>
                 <td>
-                <h6>'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'</h6><em>'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</em>
+                <p><em>'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'</em></p><p><em>'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</em></p>
                 </td>
             </tr>';
             } else { 
                 $div .= '
             <tr>
                 <td>
-                <p class="description">'. JText::_('NO_MORE').' '.$attachment->value .'<br />'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</p>
+                <p>'. JText::_('NO_MORE').' '.$attachment->value .'<br />'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</p>
                 </td>
             </tr>
             </tbody>';
             }
-            $div .='</table></div></fieldset>'; 
+            $div .='</table></div></fieldset><div class="ui divider"></div>'; 
             if ($attachment->mandatory) 
                 $attachment_list_mand .= $div;
             else 
@@ -220,10 +228,10 @@ Dropzone.options.formA'.$attachment->id.' =  {
         }
 
         if ($attachment_list_mand!='') {
-           echo '<div id="attachment_list_mand"><h3>'.JText::_('MANDATORY_DOCUMENTS').'</h3>'.$attachment_list_mand.'</div>';
+           echo '<div id="attachment_list_mand"><h2>'.JText::_('MANDATORY_DOCUMENTS').'</h2>'.$attachment_list_mand.'</div>';
         }
         if ($attachment_list_opt!='') {
-           echo '<div id="attachment_list_opt"><h3>'.JText::_('OPTIONAL_DOCUMENTS').'</h3>'.$attachment_list_opt.'</div>';
+           echo '<div id="attachment_list_opt"><h2>'.JText::_('OPTIONAL_DOCUMENTS').'</h2>'.$attachment_list_opt.'</div>';
         }
 
         ?>

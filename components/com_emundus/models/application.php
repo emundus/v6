@@ -1580,7 +1580,7 @@ td {
     }
 
     /**
-     * Return the order for current fnum. If an order with confirmed status is found for funum campaign period, then return the order
+     * Return the order for current fnum. If an order with confirmed status is found for fnum campaign period, then return the order
      * @param $fnumInfos
      * @return bool|mixed
      */
@@ -1600,6 +1600,32 @@ td {
             $dbo->setQuery($query);
             $result = $dbo->loadObject();
             return $result;
+        }
+        catch (Exception $e)
+        {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    /**
+     * Return the checkout URL order for current fnum. 
+     * @param $fnumInfos
+     * @return bool|mixed
+     */
+    public function getHikashopCheckoutUrl($pid)
+    {
+        $dbo = $this->getDbo();
+        try
+        {
+            $query = 'SELECT CONCAT(link, "&Itemid=", id) as url
+                        FROM #__menu
+                        WHERE alias like "checkout'.$pid.'"';
+//echo str_replace('#_', 'jos', $query);
+            $dbo->setQuery($query);
+            $url = $dbo->loadResult();
+            return $url;
         }
         catch (Exception $e)
         {

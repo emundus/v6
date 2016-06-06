@@ -750,7 +750,7 @@ class EmundusModelUsers extends JModelList
             $db->setQuery($query);
             $db->Query() or die($db->getErrorMsg());
 
-            JFactory::getApplication()->enqueueMessage(JText::_('USER_SUCCESSFULLY_ADDED'), 'message');
+            //JFactory::getApplication()->enqueueMessage(JText::_('USER_SUCCESSFULLY_ADDED'), 'message');
 
             return $user->id;
         }
@@ -775,18 +775,18 @@ class EmundusModelUsers extends JModelList
         $app     = JFactory::getApplication();
         $db      = JFactory::getDBO();
         $session = JFactory::getSession();
-        $jUser   = JFactory::getUser($uid);
+        
+        $instance   = JFactory::getUser($uid, $options);
 
        // $userarray = array();
-        //$userarray['username'] = $jUser->username;
-        //$userarray['password'] = $jUser->password;
+        //$userarray['username'] = $instance->username;
+        //$userarray['password'] = $instance->password;
         //$app->login($userarray);              
-
-        $instance = $jUser;     
+  
         $instance->set('guest', 0);
 
         // Register the needed session variables
-        $session->set('user', $jUser);
+        $session->set('user', $instance);
 
         // Check to see the the session already exists.                        
         $app->checkSession();
@@ -806,9 +806,10 @@ class EmundusModelUsers extends JModelList
         // Trigger OnUserLogin
         JPluginHelper::importPlugin('user', 'emundus');
         $dispatcher = JEventDispatcher::getInstance();
+        $options = array('action' => 'core.login.site', 'remember' => false);
         $results = $dispatcher->trigger( 'onUserLogin', $instance );
 
-        return $jUser;
+        return $instance;
 
     }
 

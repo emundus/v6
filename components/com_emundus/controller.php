@@ -256,7 +256,7 @@ class EmundusController extends JControllerLegacy {
         if (EmundusHelperAccess::isApplicant($current_user->id)){
             $user = $current_user;
             $fnum = $user->fnum;
-            if ($duplicate == 1 && $nb == 1 && $copy_application_form == 1) {
+            if ($duplicate == 1 && $nb <= 1 && $copy_application_form == 1) {
                $fnums = implode(',', $db->Quote(array_keys($user->fnums)));
                $where = ' AND attachment_id='.$attachment_id;
             } else {
@@ -365,7 +365,7 @@ class EmundusController extends JControllerLegacy {
         $Itemid = $app->input->getInt('Itemid', null, 'int');
         $fnum   = JRequest::getVar('fnum', null, 'GET', 'none', 0);
         $redirect   = JRequest::getVar('redirect', null, 'GET');
-        $redirect   = (!empty($redirect))?base64_decode($redirect):'/';
+        $redirect   = (!empty($redirect))?base64_decode($redirect):'index.php?fnum='.$fnum;
         $aid    = JFactory::getUser();
 
         $model = new EmundusModelProfile;
@@ -392,7 +392,7 @@ class EmundusController extends JControllerLegacy {
         $aid->status        = $application['status'];
 
         //JError::raiseNotice('PERIOD', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($aid->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($aid->end_date) )));
-        $this->setRedirect($redirect, JText::_('CURRENT_APPLICATION_FILE'). ' : '.$fnum, 'notice');
+        $this->setRedirect($redirect);
     }
 
 
@@ -410,6 +410,7 @@ class EmundusController extends JControllerLegacy {
         $fnum   = JRequest::getVar('fnum', null, 'GET', 'none',0);
         $fnums = array();
         $current_user = JFactory::getUser();
+        $modelFiles = $this->getModel('files');
 
         if (EmundusHelperAccess::isApplicant($current_user->id)){
             $user = $current_user;
@@ -605,7 +606,9 @@ class EmundusController extends JControllerLegacy {
                         $can_be_deleted = @$post['can_be_deleted_'.$attachments]!=''?$post['can_be_deleted_'.$attachments]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
                         $can_be_viewed = @$post['can_be_viewed_'.$attachments]!=''?$post['can_be_viewed_'.$attachments]:JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
                         
-                        $query .= '('.$user->id.', '.$attachments.', \''.$paths.'\', '.$db->Quote($descriptions).', '.$can_be_deleted.', '.$can_be_viewed.', '.$user->campaign_id.', '.$db->Quote($fnum).'),';
+                        $fnumInfos = $modelFiles->getFnumInfos($fnum);
+
+                        $query .= '('.$user->id.', '.$attachments.', \''.$paths.'\', '.$db->Quote($descriptions).', '.$can_be_deleted.', '.$can_be_viewed.', '.$fnumInfos['id'].', '.$db->Quote($fnum).'),';
                         $nb++;
                     } else{
                         $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> Cannot move file : '.$file['tmp_name'].' to '.$chemin.$user->id.DS.$paths;
