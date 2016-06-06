@@ -292,7 +292,7 @@ tr.hikashop_checkout_payment_ccinfo td {
 
 a.hikashop_cart_button, a.hikashop_compare_button, .hikashop_cart_input_button{
 	text-decoration:none;
-	color: #777777 !important;
+	/*color: #777777 !important;*/
 	cursor: pointer;
 	display: inline-block;
 	line-height: 18px;
@@ -304,12 +304,12 @@ a.hikashop_cart_button, a.hikashop_compare_button, .hikashop_cart_input_button{
 	border:1px solid;
 	border-color: #EEEEEE #DDDDDD #DDDDDD #EEEEEE;
 	border-radius:3px;
-	background-color: #eee;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#eee));
-	background: -webkit-linear-gradient(top, #ffffff, #eee);
-	background: -moz-linear-gradient(top, #ffffff, #eee);
-	background: -o-linear-gradient(top, #ffffff, #eee);
-	background: linear-gradient(top, #ffffff, #eee);
+	background-color: #F7931E;
+	/*background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#F7931E));
+	background: -webkit-linear-gradient(top, #ffffff, #F7931E);
+	background: -moz-linear-gradient(top, #ffffff, #F7931E);
+	background: -o-linear-gradient(top, #ffffff, #F7931E);
+	background: linear-gradient(top, #ffffff, #F7931E);*/
 }
 
 a.hikashop_cart_button:hover, a.hikashop_compare_button:hover, .hikashop_cart_input_button:hover{
@@ -319,12 +319,12 @@ a.hikashop_cart_button:hover, a.hikashop_compare_button:hover, .hikashop_cart_in
 	border:1px solid;
 	border-color: #EEEEEE #DDDDDD #DDDDDD #EEEEEE;
 	text-decoration:none;
-	background-color: #f8f8f8;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#f8f8f8));
-	background: -webkit-linear-gradient(top, #ffffff, #f8f8f8);
-	background: -moz-linear-gradient(top, #ffffff, #f8f8f8);
-	background: -o-linear-gradient(top, #ffffff, #f8f8f8);
-	background: linear-gradient(top, #ffffff, #f8f8f8);
+	background-color: #F7931E;
+	/*background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#F7931E));
+	background: -webkit-linear-gradient(top, #ffffff, #F7931E);
+	background: -moz-linear-gradient(top, #ffffff, #F7931E);
+	background: -o-linear-gradient(top, #ffffff, #F7931E);
+	background: linear-gradient(top, #ffffff, #F7931E);*/
 }
 
 .hikashop_subcontainer br {display:none}
