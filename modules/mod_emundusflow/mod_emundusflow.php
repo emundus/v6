@@ -49,6 +49,12 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$fnumInfos = EmundusModelFiles::getFnumInfos($user->fnum);
 	if ($application_fee == 1) {
 		$paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
+		if ($paid == 0 ) {
+			$checkout_url = $application->getHikashopCheckoutUrl($user->profile);
+		} else{
+			$checkout_url = 'index.php';
+		}
+		
 	}
 	$attachments = $application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
 	$forms = $application->getFormsProgress($user->id, $user->profile, $user->fnum);

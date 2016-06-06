@@ -43,7 +43,7 @@ if ($sent>0) {
     <i class="large payment outline icon"></i>
     <div class="content">
       <div class="description"><?php echo  $paid>0?JText::_('APPLICATION_PAID'):JText::_('APPLICATION_NOT_PAID'); ?></div>
-      <div class="description"><?php echo  $paid>0?'':'<a href="index.php?option=com_hikashop&ctrl=product&task=updatecart&quantity=1&checkout=1&product_id=1" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>'; ?></div>
+      <div class="description"><?php echo  $paid>0?'':'<a href="'.$checkout_url.'" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>'; ?></div>
     </div>
   </div>
 <?php } ?>
