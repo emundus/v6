@@ -26,11 +26,16 @@ $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 $db	= JFactory::getDBO();
 $user = JFactory::getUser();
 
+$app = JFactory::getApplication();
+$fnum = $app->input->getString('fnum', null);
+
+
 if(isset($user->menutype)) $user_menutype = $user->menutype;
 else $user_menutype = 'mainmenu';
 $folder = $params->get('folder', '');
 $show_profile_link = $params->get('show_profile_link', 1);
 $show_start_link = $params->get('show_start_link', 1);
+$show_title = $params->get('show_title', 1);
 $text = $params->get($user_menutype, '');
 $img = $params->get($user_menutype.'_img', '');
 $is_text = $params->get($user_menutype.'_text', '');
@@ -67,10 +72,16 @@ if (!empty($t__)) {
 	if (count($res > 0)) {
 		$tab = array();
 
-		if($user->applicant == 1)
-			$btn_start = '<a class="btn btn-warning" role="button" href="'.JRoute::_($res[0]->link.'&Itemid='.$res[0]->id).'"><i class="right arrow icon"></i>'.JText::_('START').'</a>';
-		else
+		if($user->applicant == 1) {
+			$link = $res[0]->link.'&Itemid='.$res[0]->id;
+			if (!empty($fnum)) {
+				$app->redirect( $link );
+			}
+			$btn_start = '<a class="btn btn-warning" role="button" href="'.JRoute::_($link).'"><i class="right arrow icon"></i>'.JText::_('START').'</a>';
+		}
+		else {
 			$btn_start = '';
+		}
 
 		echo '<div class="emundus_home_page" id="em-panel">';
 		$j = 0;
@@ -110,11 +121,16 @@ if (!empty($t__)) {
 		$tab = array();
 		$tab_temp = array();
 
-		if($user->applicant == 1)
-			$btn_start = '<a class="btn btn-warning" role="button" href="'.JRoute::_($res[0]->link.'&Itemid='.$res[0]->id).'"><i class="right arrow icon"></i>'.JText::_('START').'</a>';
-		else
+		if($user->applicant == 1){
+			$link = $res[0]->link.'&Itemid='.$res[0]->id;
+			if (!empty($fnum)) { 
+				$app->redirect( $link );
+				exit();
+			}
+			$btn_start = '<a class="btn btn-warning" role="button" href="'.JRoute::_($link).'"><i class="right arrow icon"></i>'.JText::_('START').'</a>';
+		}else{
 			$btn_start = '';
-
+		}
 		foreach($res as $r){
 			$menu_params = json_decode($r->params, true); 
 

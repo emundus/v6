@@ -22,6 +22,17 @@
 		<fields name="params">
 			<fieldset addfieldpath="/modules/mod_emunduspanel/elements" name="basic">
 				<field
+					name="show_title"
+					type="radio"
+					default="1"
+					label="MOD_EMUNDUSPANEL_TITLE_LABEL"
+					description="MOD_EMUNDUSPANEL_TITLE_DESC">
+					<option
+						value="0">JNo</option>
+					<option
+						value="1">JYes</option>
+				</field>
+				<field
 					name="show_profile_link"
 					type="radio"
 					default="0"
