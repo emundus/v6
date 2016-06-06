@@ -255,9 +255,9 @@ class  plgSystemEmundus_ametys extends JPlugin
             $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
         
             // Global variables
-            define('EMUNDUS_PATH_ABS', JPATH_ROOT.DS.$applicant_files_path);
+           /* define('EMUNDUS_PATH_ABS', JPATH_ROOT.DS.$applicant_files_path);
             define('EMUNDUS_PATH_REL', $applicant_files_path);
-            define('EMUNDUS_PHOTO_AID', 10);
+            define('EMUNDUS_PHOTO_AID', 10);*/
 
             if ($ametys_integration == 1 && $user->guest && !empty($ametys_url)) {
                 $jinput = $app->input;

@@ -7,38 +7,39 @@ $user = JFactory::getUser();
 $chemin = EMUNDUS_PATH_REL;
 $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 
-//if applicant not yet selected
-//if($this->isapplicant){ ?>
- <!--
-    <fieldset>
-        <legend><?php echo $this->need<2?JText::_('CHECKLIST'):JText::_('RESULTS'); ?></legend>
-        <div class = "<?php echo $this->need?'checklist'.$this->need:'checklist'.'0'; ?>" id="info_checklist">
-            <h3><?php echo $this->title; ?></h3>
-            <?php 
-                if ($this->sent && count($this->result) == 0) 
-                    echo '<h3>'.JText::_('APPLICATION_SENT').'</h3>';
-                else 
-                    echo $this->text;
-    
-            if(!$this->need) { 
-            ?>
-                    <h3><a href="<?php echo $this->sent?'index.php?option=com_emundus&task=pdf':$this->confirm_form_url; ?>" class="<?php echo $this->sent?'appsent':'sent'; ?>" target="<?php echo $this->sent?'_blank':''; ?>"><?php echo $this->sent?JText::_('PRINT_APPLICATION'):JText::_('SEND_APPLICATION'); ?></a>
-                    </h3>
-                <?php } ?>
+if ($this->show_info_panel) :
+    //if applicant not yet selected
+    //if($this->isapplicant){ ?>
+        <fieldset>
+            <legend><?php echo $this->need<2?JText::_('CHECKLIST'):JText::_('RESULTS'); ?></legend>
+            <div class = "<?php echo $this->need?'checklist'.$this->need:'checklist'.'0'; ?>" id="info_checklist">
+                <h3><?php echo $this->title; ?></h3>
+                <?php 
+                    if ($this->sent && count($this->result) == 0) 
+                        echo '<h3>'.JText::_('APPLICATION_SENT').'</h3>';
+                    else 
+                        echo $this->text;
+        
+                if(!$this->need) { 
+                ?>
+                        <h3><a href="<?php echo $this->sent?'index.php?option=com_emundus&task=pdf':$this->confirm_form_url; ?>" class="<?php echo $this->sent?'appsent':'sent'; ?>" target="<?php echo $this->sent?'_blank':''; ?>"><?php echo $this->sent?JText::_('PRINT_APPLICATION'):JText::_('SEND_APPLICATION'); ?></a>
+                        </h3>
+                    <?php } ?>
+            </div>
+        </fieldset>
+
+    <?php
+        if(!$this->sent) : ?>
+        <p>
+        <div id="instructions">
+            <h3><?php echo $this->instructions->title; ?></h3>
+            <?php echo $this->instructions->text; ?>
         </div>
-    </fieldset>
--->
-<?php //} 
-/*
-if(!$this->sent) : ?>
-<p>
-<div id="instructions">
-    <h3><?php echo $this->instructions->title; ?></h3>
-    <?php echo $this->instructions->text; ?>
-</div>
-</p>
-<?php endif; 
-*/?>
+        </p>
+        <?php endif; ?>
+    <?php //endif; ?>
+<?php endif; ?>
+
 <?php if (count($this->attachments) > 0) :?>
 
 <!--<form id="checklistForm" name="checklistForm" onSubmit="return OnSubmitForm();"  method="post" enctype="multipart/form-data">-->
@@ -47,11 +48,13 @@ if(!$this->sent) : ?>
         <br>
         <p><?php echo JText::_('UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('BYTES'); ?> </p>
         <br>
-      <!--  <div id="legend">
+    <?php if ($this->show_info_legend) :?>
+            <div id="legend">
             <div class="need_missing"><?php echo JText::_('MISSING_DOC'); ?></div>, 
             <div class="need_ok"><?php echo JText::_('SENT_DOC'); ?></div>, 
             <div class="need_missing_fac"><?php echo JText::_('MISSING_DOC_FAC'); ?></div>
-        </div> -->
+        </div>
+    <?php endif; ?>
         <?php
         $attachment_list_mand = "";
         $attachment_list_opt = "";
@@ -63,7 +66,7 @@ if(!$this->sent) : ?>
             }
             $div = '<fieldset id="a'.$attachment->id.'">
                 <legend id="l'.$attachment->id.'" class="'.$class.'">
-                    <h3><a href="javascript:toggleVisu(\''.$attachment->id .'\')">'.$attachment->value .' <i class="resize vertical icon"></i></a></h3>
+                    <a href="javascript:toggleVisu(\''.$attachment->id .'\')">'.$attachment->value .' <i class="resize vertical icon"></i></a>
                 </legend>
                 <p class="description">'.$attachment->description .'</p>
                 <div class="table-responsive">
@@ -74,14 +77,14 @@ if(!$this->sent) : ?>
                     $div .= '<tr>
                         <td>';
                         if($item->can_be_viewed==1) {
-                        $div .= '<a href="'.$chemin.$user->id .'/'.$item->filename .'" target="_blank"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>'.JText::_('VIEW').'</a>';
+                        $div .= '<a class="btn btn-xs" href="'.$chemin.$user->id .'/'.$item->filename .'" target="_blank"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> '.JText::_('VIEW').'</a>';
                         }
                         else { 
                         $div .= JText::_('CANT_VIEW') ;
                         } 
                         $div .= '&nbsp;-&nbsp;' ;
                         if($item->can_be_deleted==1) {
-                        $div .= '<a href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'.JText::_('DELETE').'</a>';
+                        $div .= '<a class="btn btn-danger btn-xs" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> '.JText::_('DELETE').'</a>';
                         } 
                         else { 
                         $div .= JText::_('CANT_DELETE'); 
@@ -89,7 +92,9 @@ if(!$this->sent) : ?>
                         $div .= ' | ';
                         $div .= ($item->timedate);
                         $div .= ' | ';
-                        $div .= empty($item->description)?JText::_('NO_DESC'):$item->description;
+                        if ($this->show_shortdesc_input) {
+                            $div .= empty($item->description)?JText::_('NO_DESC'):$item->description;
+                        }       
                         $div .= '</td></tr>';   
                     } 
             if ($attachment->nb<$attachment->nbmax || $user->profile<=4) { 
@@ -101,12 +106,18 @@ if(!$this->sent) : ?>
                 <input type="hidden" name="duplicate" value="'.$attachment->duplicate.'"/>
                 <input type="hidden" name="label" value="'.$attachment->lbl.'"/>
                 <div class="input-group">
-                    <span class="input-group-btn">
-                        <input type="file" name="file" style="opacity:1;font-size:18px;margin-left: 15px;" />
-                        <input type="hidden" class="form-control" readonly="">
-                    <div class="col-sm-5"><input type="text" class="form-control" name="description" placeholder="'.JText::_('SHORT_DESC').'" /></div>
-                    <input class="btn btn-success" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/>
-                    </span>               
+                    <span class="input-group-btn">';
+                if ($this->show_browse_button) {
+                    $div .= '<input type="file" name="file" style="opacity:1;font-size:18px;margin-left: 15px;" />';
+                }
+                    $div .= '<input type="hidden" class="form-control" readonly="">';
+                if ($this->show_shortdesc_input) {
+                    $div .= '<div class="col-sm-5"><input type="text" class="form-control" name="description" placeholder="'.JText::_('SHORT_DESC').'" /></div>';
+                }
+                if ($this->show_browse_button) {
+                    $div .= '<input class="btn btn-success" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/>';
+                }
+                $div .= '</span>               
                 </div>';
                 
                 $div .= '<script>
@@ -220,24 +231,34 @@ Dropzone.options.formA'.$attachment->id.' =  {
             </tr>
             </tbody>';
             }
-            $div .='</table></div></fieldset><div class="ui divider"></div>'; 
+            $div .='</table></div></fieldset>'; 
             if ($attachment->mandatory) 
                 $attachment_list_mand .= $div;
             else 
                 $attachment_list_opt .= $div;
         }
+    ?>
 
+    
+    <div class="row">
+      <div class="col-md-<?php echo (int)(12/$this->show_nb_column); ?>">
+    <?php
         if ($attachment_list_mand!='') {
-           echo '<div id="attachment_list_mand"><h2>'.JText::_('MANDATORY_DOCUMENTS').'</h2>'.$attachment_list_mand.'</div>';
+           echo '<div id="attachment_list_mand"><h1>'.JText::_('MANDATORY_DOCUMENTS').'</h1>'.$attachment_list_mand.'</div>';
         }
+    ?>
+      </div>
+      <div class="ui vertical divider"></div>
+      <div class="col-md-<?php echo (int)(12/$this->show_nb_column); ?>">
+    <?php
         if ($attachment_list_opt!='') {
-           echo '<div id="attachment_list_opt"><h2>'.JText::_('OPTIONAL_DOCUMENTS').'</h2>'.$attachment_list_opt.'</div>';
+           echo '<div id="attachment_list_opt"><h1>'.JText::_('OPTIONAL_DOCUMENTS').'</h1>'.$attachment_list_opt.'</div>';
         }
-
-        ?>
+    ?>
+      </div>
     </div>
-
-<?php endif; ?>
+    <?php endif; ?>
+</div>
 
 <script>
 $(document).on('change', '.btn-file :file', function() {
@@ -305,5 +326,10 @@ function OnSubmitForm() {
     }
     return true;
 }
+
+var hash = window.location.hash;
+if (hash != '') {
+    $( hash ).addClass( "ui warning message" );
+};
+
 </script>
-<p></p>

@@ -29,7 +29,7 @@ class EmundusViewChecklist extends JViewLegacy
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		
 		$this->_user = JFactory::getUser();
@@ -39,12 +39,7 @@ class EmundusViewChecklist extends JViewLegacy
 	}
 	
     function display($tpl = null)
-    {
-		/*
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) die("You are not allowed to access to this page.");
-		*/	
+    {	
 
 		$document = JFactory::getDocument();
         $document->addScript( JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
@@ -54,6 +49,15 @@ class EmundusViewChecklist extends JViewLegacy
         $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus_application.css" );
 
 		//$greeting = $this->get('Greeting');
+        $menu = @JSite::getMenu();
+        $current_menu   = $menu->getActive();
+        $menu_params    = $menu->getParams(@$current_menu->id);
+
+		$show_browse_button = $menu_params->get('show_browse_button', 1);
+		$show_shortdesc_input = $menu_params->get('show_shortdesc_input', 1);
+		$show_info_panel = $menu_params->get('show_info_panel', 1);
+		$show_info_legend = $menu_params->get('show_info_legend', 1);
+		$show_nb_column = $menu_params->get('show_nb_column', 1);
 		
 		$sent = $this->get('sent');
 		$confirm_form_url = $this->get('ConfirmUrl');
@@ -80,7 +84,11 @@ class EmundusViewChecklist extends JViewLegacy
 		$this->assignRef('attachments', $attachments);
 		$this->assignRef('instructions', $instructions);
 		$this->assignRef('is_other_campaign', $is_other_campaign);
-
+		$this->assignRef('show_browse_button', $show_browse_button);
+		$this->assignRef('show_shortdesc_input', $show_shortdesc_input);
+		$this->assignRef('show_info_panel', $show_info_panel);
+		$this->assignRef('show_info_legend', $show_info_legend);
+		$this->assignRef('show_nb_column', $show_nb_column);
 	
 		$result = $this->get('Result');
 		$this->assignRef('result', $result);

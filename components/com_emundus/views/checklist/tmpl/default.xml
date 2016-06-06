@@ -5,4 +5,63 @@
 			<![CDATA[COM_EMUNDUS_CHECKLIST_VIEW_DEFAULT_TITLE_DESC]]>
 		</message>
 	</layout>
+	<fields name="params">
+		<fieldset addfieldpath="/administrator/components/com_emundus/models/fields" name="basic">
+			<field
+				name="show_info_panel"
+				type="radio"
+				default="1"
+				label="COM_EMUNDUS_CHECKLIST_SHOW_INFO_LABEL"
+				description="COM_EMUNDUS_CHECKLIST_SHOW_INFO_DESC">
+				<option
+					value="0">JNo</option>
+				<option
+					value="1">JYes</option>
+			</field>
+			<field
+				name="show_info_legend"
+				type="radio"
+				default="1"
+				label="COM_EMUNDUS_CHECKLIST_SHOW_INFO_LEGEND_LABEL"
+				description="COM_EMUNDUS_CHECKLIST_SHOW_INFO_LEGEND_DESC">
+				<option
+					value="0">JNo</option>
+				<option
+					value="1">JYes</option>
+			</field>
+			<field
+				name="show_browse_button"
+				type="radio"
+				default="1"
+				label="COM_EMUNDUS_CHECKLIST_SHOW_BROWSE_LABEL"
+				description="COM_EMUNDUS_CHECKLIST_SHOW_BROWSE_DESC">
+				<option
+					value="0">JNo</option>
+				<option
+					value="1">JYes</option>
+			</field>
+			<field
+				name="show_shortdesc_input"
+				type="radio"
+				default="1"
+				label="COM_EMUNDUS_CHECKLIST_SHOW_SHORT_DESC_LABEL"
+				description="COM_EMUNDUS_CHECKLIST_SHOW_SHORT_DESC_DESC">
+				<option
+					value="0">JNo</option>
+				<option
+					value="1">JYes</option>
+			</field>
+			<field
+				name="show_nb_column"
+				type="radio"
+				default="1"
+				label="COM_EMUNDUS_CHECKLIST_SHOW_NB_COLUMN_LABEL"
+				description="COM_EMUNDUS_CHECKLIST_SHOW_NB_COLUMN_DESC">
+				<option
+					value="1">1</option>
+				<option
+					value="2">2</option>
+			</field>
+		</fieldset>
+	</fields>
 </metadata>

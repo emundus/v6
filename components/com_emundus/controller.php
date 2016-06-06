@@ -233,6 +233,53 @@ class EmundusController extends JControllerLegacy {
         exit();
     }
 
+
+
+    /* 
+        Delete file
+    */
+    function deletefile() {
+        $app    = JFactory::getApplication();
+
+        $student_id    = JRequest::getVar('sid', null, 'GET', 'none',0);
+        
+        $layout        = JRequest::getVar('layout', null, 'GET', 'none',0);
+        $format        = JRequest::getVar('format', null, 'GET', 'none',0);
+        $itemid        = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $fnum          = JRequest::getVar('fnum', null, 'GET', 'none',0);
+        $current_user  = JFactory::getUser();
+        
+        $chemin = EMUNDUS_PATH_ABS;
+
+        $modelFiles = $this->getModel('files');
+
+        if (EmundusHelperAccess::isApplicant($current_user->id) && in_array($fnum, array_keys($current_user->fnums))){
+            $user = $current_user;
+            $result = $modelFiles->deleteFile($fnum);
+            
+        } elseif(EmundusHelperAccess::asAccessAction(1, 'd', $current_user->id, $fnum) || 
+                 EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
+            $user = JFactory::getUser($student_id);
+
+        } else {
+            JError::raiseError(500, JText::_('ACCESS_DENIED'));
+            $app->redirect('index.php');
+            
+            return false;
+        }
+
+        unset($current_user->fnums[$fnum]);
+
+        if (in_array($user->fnum, array_keys($user->fnums))) {
+            $app->redirect(JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$user->fnum);
+        } else {
+            $fnum = array_shift($current_user->fnums);
+            $app->redirect(JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$fnum->fnum);
+        }
+
+        return true;
+    }
+
     /* 
         Delete document from application file
     */
@@ -258,10 +305,10 @@ class EmundusController extends JControllerLegacy {
             $fnum = $user->fnum;
             if ($duplicate == 1 && $nb <= 1 && $copy_application_form == 1) {
                $fnums = implode(',', $db->Quote(array_keys($user->fnums)));
-               $where = ' AND attachment_id='.$attachment_id;
+               $where = ' AND user_id='.$user->id.' AND attachment_id='.$attachment_id. ' AND `fnum` in (select fnum from `#__emundus_campaign_candidature` where `status`=0)';
             } else {
                 $fnums = $db->Quote($fnum);
-                $where = ' AND id='.$upload_id;
+                $where = ' AND user_id='.$user->id.' AND id='.$upload_id;
             }
             
         } elseif(EmundusHelperAccess::asAccessAction(4, 'd', $current_user->id, $fnum) || 
@@ -309,10 +356,10 @@ class EmundusController extends JControllerLegacy {
                             if (is_file($chemin.$user->id.DS.'tn_'.$file['filename'])) {
                                 unlink($chemin.$user->id.DS.'tn_'.$file['filename']);                    
                             }
-                            $message .= JText::_('ATTACHMENT_DELETED').' : '.$file['filename'].'. ';
+                            $message .= '<br>'.JText::_('ATTACHMENT_DELETED').' : '.$file['filename'].'. ';
                             
                         } else {
-                            $message .= JText::_('FILE_NOT_FOUND').' : '.$file['filename'].'. ';
+                            $message .= '<br>'.JText::_('FILE_NOT_FOUND').' : '.$file['filename'].'. ';
                         }
                     }
 
@@ -365,7 +412,7 @@ class EmundusController extends JControllerLegacy {
         $Itemid = $app->input->getInt('Itemid', null, 'int');
         $fnum   = JRequest::getVar('fnum', null, 'GET', 'none', 0);
         $redirect   = JRequest::getVar('redirect', null, 'GET');
-        $redirect   = (!empty($redirect))?base64_decode($redirect):'index.php?fnum='.$fnum;
+        $redirect   = (!empty($redirect))?base64_decode($redirect):'index.php';
         $aid    = JFactory::getUser();
 
         $model = new EmundusModelProfile;
