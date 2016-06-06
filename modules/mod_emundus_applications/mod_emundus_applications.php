@@ -20,10 +20,9 @@ $document->addStyleSheet( JURI::base()."media/com_emundus/lib/bootstrap-336/css/
 $document->addStyleSheet( JURI::base()."media/com_emundus/lib/jquery-plugin-circliful-master/css/material-design-iconic-font.min.css" );
 $document->addStyleSheet( 'https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.css' );
 
-
 $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script><![endif]-->');
 $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->');
-$document->addScript( 'https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js');
+$document->addScript( JURI::base()."media/com_emundus/lib/jquery-1.12.4.min.js" );
 $document->addScript( JURI::base()."media/com_emundus/lib/bootstrap-336/js/bootstrap.min.js");
 $document->addScript( JURI::base()."media/com_emundus/lib/jquery-plugin-circliful-master/js/jquery.circliful.js" );
 
@@ -55,7 +54,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$attachments 		= $m_application->getAttachmentsProgress($user->id, $user->profile, array_keys($applications));
 	$forms 				= $m_application->getFormsProgress($user->id, $user->profile, array_keys($applications));
 
-	$confirm_form_url 	= $checklist->getConfirmUrl(); 
+	$confirm_form_url 	= $checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum; 
 }
 
 require JModuleHelper::getLayoutPath('mod_emundus_applications', $params->get('layout', 'default'));

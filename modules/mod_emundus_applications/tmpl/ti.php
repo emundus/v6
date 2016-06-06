@@ -31,11 +31,12 @@ echo $description;
       <p>
         <?php echo JText::_('FILE_NUMBER'); ?> : <i><?php echo $application->fnum; ?></i>
       </p>
-      <a class="btn btn-warning" href="<?php echo JRoute::_(JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>"  role="button">
-          <?php echo JText::_('OPEN_APPLICATION'); ?>
+      <a class="btn btn-warning" href="<?php echo JRoute::_(JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum).'&Itemid='.$Itemid.'#em-panel'); ?>"  role="button">
+          <i class="folder open outline icon"></i> <?php echo JText::_('OPEN_APPLICATION'); ?>
       </a>
-      <?php if((int)($attachments[$application->fnum])>=100 && $application->status==0 && $application->fnum==$user->fnum) : ?>
-        <a class="btn btn-mini" href="<?php echo $confirm_form_url; ?>&usekey=fnum&rowid=<?php echo $user->fnum; ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
+
+      <?php if((int)($attachments[$application->fnum])>=100 && $application->status==0) : ?>
+        <a class="btn btn-mini" href="<?php echo JRoute::_(JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($confirm_form_url)); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
       <?php endif; ?>
     </div>
 
