@@ -42,9 +42,9 @@ class PlgFabrik_ListSu_copy_fiche_emplois extends PlgFabrik_List
 	 * @return  bool;
 	 */
 
-	public function button($params, &$model, &$args)
+	public function button(&$args)
 	{
-		parent::button($params, $model, $args);
+		parent::button($args);
 		return true;
 	}
 
@@ -80,9 +80,11 @@ class PlgFabrik_ListSu_copy_fiche_emplois extends PlgFabrik_List
 	 * @return  bool
 	 */
 
-	public function process($params, &$model, $opts = array())
+	public function process($opts = array())
 	{
+		$model = $this->getModel();
 		$ids = JRequest::getVar('ids', array(), 'method', 'array');
+		$formModel = $model->getFormModel();
 		$user = JFactory::getUser();
 		$db = FabrikWorker::getDbo();
 		$query = 'SELECT id 
@@ -140,9 +142,9 @@ class PlgFabrik_ListSu_copy_fiche_emplois extends PlgFabrik_List
 	 * @return bool
 	 */
 
-	public function onLoadJavascriptInstance($params, $model, $args)
+	public function onLoadJavascriptInstance($args)
 	{
-		parent::onLoadJavascriptInstance($params, $model, $args);
+		parent::onLoadJavascriptInstance($args);
 		$opts = $this->getElementJSOptions($model);
 		$opts = json_encode($opts);
 		$this->jsInstance = "new FbListSu_copy_fiche_emplois($opts)";

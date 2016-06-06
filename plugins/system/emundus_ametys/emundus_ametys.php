@@ -40,6 +40,20 @@ class  plgSystemEmundus_ametys extends JPlugin
     {
         parent::__construct($subject, $config);
         $this->loadLanguage( );
+
+        jimport('joomla.log.log');
+        JLog::addLogger(
+            array(
+                // Sets file name
+                'text_file' => 'com_emundus.syncAmetys.php'
+            ),
+            // Sets messages of all log levels to be sent to the file
+            JLog::ALL,
+            // The log category/categories which should be recorded in this file
+            // In this case, it's just the one category from our extension, still
+            // we need to put it inside an array
+            array('com_emundus_syncAmetys')
+        );
     }
 
     /**
@@ -61,6 +75,144 @@ class  plgSystemEmundus_ametys extends JPlugin
         }
 
         return $connections;
+    }
+
+    /**
+     * Gets object of connections
+     *
+     * @return  array  of connection tables id, description
+     */
+    public function getAmetysDBO()
+    {
+        // Construct the DB connexion to Ametys local DB
+        $conn = $this->getConnections('ametys');
+        $option = array(); //prevent problems
+
+        $option['driver']   = 'mysql';                // Database driver name
+        $option['host']     = $conn[0]->host;         // Database host name
+        $option['user']     = $conn[0]->user;         // User for database authentication
+        $option['password'] = $conn[0]->password;     // Password for database authentication
+        $option['database'] = $conn[0]->database;     // Database name
+        $option['prefix']   = '';                     // Database prefix (may be empty)
+
+        $db_ext = JDatabaseDriver::getInstance( $option );
+
+        return $db_ext;
+    }
+
+    /**
+     * Gets object of connections
+     * @param   Object user
+     * @return  array  of connection tables id, description
+     */
+    public function syncCart($user)
+    {
+        $app        =  JFactory::getApplication();
+        $db         = JFactory::getDBO();
+        $dbAmetys   = $this->getAmetysDBO();
+
+        // get selected programmes in Ametys cart
+        $query = 'SELECT p.cdmCode, p.id_ODF_export_program, p.title
+            FROM ODFCartProgramsUserPref up, ODF_export_program p
+            WHERE up.login like "'.$user->email.'"
+            AND p.id_ODF_export_program = up.contentId';
+        try
+        {
+            $dbAmetys->setQuery($query);
+            $cartProgrammes = $dbAmetys->loadAssocList('cdmCode');
+        }
+        catch(Exception $e)
+        {
+            JLog::add($e->getMessage(), JLog::INFO, 'com_emundus_syncAmetys');
+            return $e->getMessage();
+        }
+        // get applicant files for current campaigns
+        $query = 'SELECT * FROM #__emundus_campaign_candidature as ec 
+                    LEFT JOIN #__emundus_setup_campaigns as esc ON ec.campaign_id=esc.id 
+                    WHERE ec.applicant_id = '.$user->id.' 
+                    AND NOW() BETWEEN esc.start_date AND esc.end_date';
+        try
+        {
+            $db->setQuery($query);
+            $files = $db->loadAssocList();
+        }
+        catch(Exception $e)
+        {
+            JLog::add($e->getMessage(), JLog::INFO, 'com_emundus_syncAmetys');
+            return $e->getMessage();
+        }
+
+        $cptCart = count($cartProgrammes);
+        $cptFiles = count($files);
+
+        if ($cptCart == 0 && $cptFiles == 0) { 
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $ametys_url = $eMConfig->get('ametys_url', '');
+
+            $app->redirect( $ametys_url );
+            
+        } elseif ($cptCart > 0) {
+            // get campaigns definition for seleted programmes in Ametys cart
+            $query = 'SELECT * 
+                        FROM #__emundus_setup_campaigns
+                        WHERE training IN ('.implode(',', $db->quote(array_keys($cartProgrammes))).')';
+            try
+            {
+                $db->setQuery($query);
+                $campaigns = $db->loadAssocList('training');
+            }
+            catch(Exception $e)
+            {
+                JLog::add($e->getMessage(), JLog::INFO, 'com_emundus_syncAmetys');
+                return $e->getMessage();
+            }
+
+            // check for existing application files
+            $newFiles = array();
+            foreach ($cartProgrammes as $key => $programme) {
+                foreach ($files as $key => $file) {
+                    if ($file['training'] == $programme['cdmCode']) {
+                        unset($cartProgrammes[$programme['cdmCode']]);
+                    }
+                }
+            }
+
+            // create applications for user (fnum) from Ametys cart
+            $values = array();
+            $column = array();
+            $column[] = 'date_time';
+            $column[] = 'applicant_id';
+            $column[] = 'user_id';
+            $column[] = 'campaign_id';
+            $column[] = 'submitted';
+            $column[] = 'fnum';
+            $column[] = 'status';
+            $column[] = 'published';
+
+            foreach ($cartProgrammes as $key => $programme) {
+                $campaign_id = $campaigns[$programme['cdmCode']]['id'];
+                $fnum        = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);
+
+                // get campaign definition for cdmCode
+                $values[] = '('.$db->Quote(date('Y-m-d H:i:s')).', '.$user->id.', '.$user->id.', '.$campaign_id.', 0, '.$db->Quote($fnum).', 0, 1)';
+            }
+
+            if (count($values) > 0) {
+                $query = 'INSERT INTO `#__emundus_campaign_candidature` (`'.implode('`, `', $column).'`) VALUES '.implode(',', $values);
+                try
+                {          
+                  $db->setQuery($query);
+                  $db->execute();
+                }
+                catch(Exception $e)
+                {
+                    JLog::add($e->getMessage(), JLog::INFO, 'com_emundus_syncAmetys');
+                    return $e->getMessage();
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -100,25 +252,20 @@ class  plgSystemEmundus_ametys extends JPlugin
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $ametys_integration = $eMConfig->get('ametys_integration', 0);
             $ametys_url = $eMConfig->get('ametys_url', '');
+            $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
+        
+            // Global variables
+            define('EMUNDUS_PATH_ABS', JPATH_ROOT.DS.$applicant_files_path);
+            define('EMUNDUS_PATH_REL', $applicant_files_path);
+            define('EMUNDUS_PHOTO_AID', 10);
 
             if ($ametys_integration == 1 && $user->guest && !empty($ametys_url)) {
                 $jinput = $app->input;
                 $token = $jinput->get('token', '', 'RAW');
 
                 if(!empty($token)){
-                    // @TODO :
                     // Construct the DB connexion to Ametys local DB
-                    $conn = $this->getConnections('ametys');
-                    $option = array(); //prevent problems
-
-                    $option['driver']   = 'mysql';                // Database driver name
-                    $option['host']     = $conn[0]->host;         // Database host name
-                    $option['user']     = $conn[0]->user;         // User for database authentication
-                    $option['password'] = $conn[0]->password;     // Password for database authentication
-                    $option['database'] = $conn[0]->database;     // Database name
-                    $option['prefix']   = '';                     // Database prefix (may be empty)
-
-                    $db_ext = JDatabaseDriver::getInstance( $option );
+                    $db_ext = $this->getAmetysDBO();
 
 // 1. select user data from Ametyd BDD
                     $query = 'SELECT uct.*,  u.firstname, u.lastname, u.email, u.password
@@ -150,19 +297,20 @@ class  plgSystemEmundus_ametys extends JPlugin
                             $db_ext->setQuery( $query );
                             $db_ext->execute();
 
+// 2.2 Sync cart and applications files
+                            if (EmundusHelperAccess::isApplicant($user_joomla->id)) {                         
+                                $sync = $this->syncCart($user_joomla);
+                                if ($sync !== true) {
+                                    die($sync);
+                                }
+                            }
                              // login user
                             $user = $m_users->login($user_joomla->id);
 
-                            //return true;
                             $app->redirect('index.php');
                         } 
                         else { 
-// 2.2 else 
-// 2.2.1 : get selected programmes
-// 2.2.2 : create user 
-// 2.2.3 : create applications for user (fnum)
-// 2.2.4 : login user
-                            
+// 2.2 else                 
                             include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');  
                             $m_profile          = new EmundusModelProfile;
 
@@ -201,8 +349,10 @@ class  plgSystemEmundus_ametys extends JPlugin
 
                             $usertype           = $m_users->found_usertype($acl_aro_groups[0]);
                             $user->usertype     = $usertype;
-                                
+                            
+// 2.2.1 : create user    
                             $uid = $m_users->adduser($user, $other_param);
+                            $user->id = $uid;
 
                             if (empty($uid) 
                                 || !isset($uid) 
@@ -213,17 +363,24 @@ class  plgSystemEmundus_ametys extends JPlugin
                             {
                                 return JError::raiseWarning(500, 'ERROR_CANNOT_CREATE_USER_FILE');
                             }
-                            // login user
-                            $user = $m_users->login($uid);
+// 2.2.2 Sync cart and applications files
+                            if (EmundusHelperAccess::isApplicant($user->id)) { 
+                                $sync = $this->syncCart($user);
+                                if ($sync !== true) {
+                                    die($sync);
+                                }
+                            }
+
                             // delete TOKEN
                             $query = 'DELETE  
                                 FROM `Users_CandidateToken` 
                                 WHERE login like '.$db_ext->quote($user_tmp['email']);
                             $db_ext->setQuery( $query );
                             $db_ext->execute();
-
+// 2.2.3 : login user
+                            $user = $m_users->login($uid);
                             $app->redirect('index.php');
-                            exit();
+                            //exit();
                         }
                     } else {
                         $app->redirect( $ametys_url );

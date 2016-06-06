@@ -3,7 +3,7 @@ defined( '_JEXEC' ) or die();
 /**
  * @version 3: isApplicationSent.php 89 2014-09-03 Benjamin Rivalland
  * @package Fabrik
- * @copyright Copyright (C) 2014 D�cision Publique. All rights reserved.
+ * @copyright Copyright (C) 2016 eMundus. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -54,7 +54,7 @@ else {
 	
 	if ($jinput->get('view') == 'form' && empty($fnum) && !isset($fnum)) {
 		$itemid = $jinput->get('Itemid');
-		// Si l'application Form a été envoy�e par le candidat : affichage vue details
+		// Si l'application Form a été envoyee par le candidat : affichage vue details
 		if($user->candidature_posted > 0 && $user->candidature_incomplete == 0 && $can_edit_until_deadline == 0) {
 			$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
 		} elseif(strtotime(date("Y-m-d H:m:i")) > strtotime($user->end_date) && !in_array($user->id, $applicants) ) {

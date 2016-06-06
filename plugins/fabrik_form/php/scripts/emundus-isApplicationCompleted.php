@@ -1,9 +1,9 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1: isApplicationCompleted.php 89 20014-11-13 Benjamin Rivalland
+ * @version 1: isApplicationCompleted.php 89 2016-06-02 Benjamin Rivalland
  * @package Fabrik
- * @copyright Copyright (C) 2008 Décision Publique. All rights reserved.
+ * @copyright Copyright (C) 2016 eMundus. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -20,7 +20,6 @@ $itemid = $jinput->get('Itemid');
 if ($jinput->get('view') == 'form') {
 	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
 	$user = JFactory::getUser();
@@ -35,17 +34,18 @@ if ($jinput->get('view') == 'form') {
 		if ($application_fee == 1) {
 			$paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
 
-			if (!$paid)
-				$mainframe->redirect( JRoute::_("index.php?option=com_hikashop&ctrl=product&task=updatecart&quantity=1&checkout=1&product_id=1"));
+			if (!$paid) {
+				$checkout_url = $application->getHikashopCheckoutUrl($user->profile);
+				$mainframe->redirect(JRoute::_($checkout_url));
+			}
 		}
 	}
-
 	
 	$attachments = $application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
 	$forms = $application->getFormsProgress($user->id, $user->profile, $user->fnum);
 
 	if($attachments < 100 || $forms < 100 ){
-		$mainframe->redirect( JRoute::_("index.php?option=com_emundus&view=checklist&Itemid=".$itemid), JText::_('INCOMPLETE_APPLICATION'));
+		$mainframe->redirect( "index.php?option=com_emundus&view=checklist&Itemid=".$itemid, JText::_('INCOMPLETE_APPLICATION'));
 	}
 }
 
