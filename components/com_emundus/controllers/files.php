@@ -636,9 +636,13 @@ class EmundusControllerFiles extends JControllerLegacy
      */
     public function updatestate()
     {
-        $jinput = JFactory::getApplication()->input;
+        $app    = JFactory::getApplication();
+
+        $jinput = $app->input;
         $fnums = $jinput->getString('fnums', null);
         $state = $jinput->getInt('state', null);
+
+        $email_from_sys = $app->getCfg('mailfrom');
 
         $fnums = (array) json_decode(stripslashes($fnums));
         $model = $this->getModel('Files');
@@ -703,11 +707,12 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $body = $emails->setTagsFabrik($body);
 
                                 $sender = array(
-                                    $from,
+                                    $email_from_sys,
                                     $fromname
                                 );
 
                                 $mailer->setSender($sender);
+                                $mailer->addReplyTo($from, $fromname);
                                 $mailer->addRecipient($to);
                                 $mailer->setSubject($subject);
                                 $mailer->isHTML(true);
@@ -747,11 +752,12 @@ class EmundusControllerFiles extends JControllerLegacy
                             $body = $emails->setTagsFabrik($body);
 
                             $sender = array(
-                                $from,
-                                $fromname
-                            );
+                                    $email_from_sys,
+                                    $fromname
+                                );
 
                             $mailer->setSender($sender);
+                            $mailer->addReplyTo($from, $fromname);
                             $mailer->addRecipient($to);
                             $mailer->setSubject($subject);
                             $mailer->isHTML(true);

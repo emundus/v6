@@ -144,13 +144,24 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         $post = array('PASSWORD' => $password);
         $tags = $model->setTags($user->id, $post, null, $password);
+
+        $from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
+        $fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
+        $to = $file['email'];
+        $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
         $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+        $body = $model->setTagsFabrik($body);
+
+        $app    = JFactory::getApplication();
+        $email_from_sys = $app->getCfg('mailfrom');
 
         $sender = array(
-            $email->emailfrom,
-            $email->name
+            $email_from_sys,
+            $fromname
         );
+
         $mailer->setSender($sender);
+        $mailer->addReplyTo($email->emailfrom, $email->name);
         $mailer->addRecipient($user->email);
         $mailer->setSubject($email->subject);
         $mailer->isHTML(true);
@@ -161,6 +172,7 @@ class EmundusControllerUsers extends JControllerLegacy {
         if ( $send !== true ) {
             echo 'Error sending email: ' . $send->__toString(); 
             echo json_encode((object)array('status' => false, 'msg' => JText::_('EMAIL_NOT_SENT')));
+            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
             exit();
         } else {
             $message = array(
@@ -742,25 +754,33 @@ class EmundusControllerUsers extends JControllerLegacy {
 
             $post = array();
             $tags = $emails->setTags($uid, $post, null, $passwd);
-
+/*
             $from = $email->emailfrom;
-            $from_id = 62;
+            $from_id = $current_user->id;
             $fromname =$email->name;
             $to = $recipient->email;
             $subject = $email->subject;
             $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+*/
+            $from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
+            $from_id = $current_user->id;
+            $fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
+            $to = $recipient->email;
+            $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
+            $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+            $body = $emails->setTagsFabrik($body);
 
-            //$attachment[] = $path_file;
-            //$replyto = $user->email;
-            //$replytoname = $user->name;
 
-            $config = JFactory::getConfig();
-            $sender = array(
-                $config->get( $from ),
-                $config->get( $fromname )
-            );
+            $app    = JFactory::getApplication();
+	        $email_from_sys = $app->getCfg('mailfrom');
+
+	        $sender = array(
+	            $email_from_sys,
+	            $fromname
+	        );
 
             $mailer->setSender($sender);
+            $mailer->addReplyTo($from, $fromname);
             $mailer->addRecipient($to);
             $mailer->setSubject($subject);
             $mailer->isHTML(true);
@@ -771,6 +791,7 @@ class EmundusControllerUsers extends JControllerLegacy {
             if ( $send !== true ) {
                 $res = false;
                 $msg = JText::_('COM_EMUNDUS_ERROR_CANNOT_SEND_EMAIL').' : '.$send->__toString();
+	            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
             } else {
                 $message = array(
                     'user_id_from' => $from_id,

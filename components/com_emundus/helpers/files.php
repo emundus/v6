@@ -66,12 +66,8 @@ class EmundusHelperFiles
 
     }
 
-    /*
-    ** @description Clear session and reinit values by default
-    */
-    public  function resetFilter()
+    public  function setMenuFilter()
     {
-
         //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
@@ -88,6 +84,7 @@ class EmundusHelperFiles
             JFactory::getSession()->set('filt_params', array());
         }
 
+        JFactory::getSession()->set('filt_menu', array());
         $params = JFactory::getSession()->get('filt_params');
 
         //Filters
@@ -95,7 +92,12 @@ class EmundusHelperFiles
         $filts_names    = explode(',', $menu_params->get('em_filters_names'));
         $filts_values   = explode(',', $menu_params->get('em_filters_values'));
         $filts_types    = explode(',', $menu_params->get('em_filters_options'));
-
+/*echo "<pre>";
+var_dump($filts_names);
+var_dump($filts_values);
+echo "<hr>";
+echo "</pre>";
+*/
         // All types of filters
         $filts_details  = array('profile'           => NULL,
                                   'evaluator'           => NULL,
@@ -169,25 +171,52 @@ class EmundusHelperFiles
             } else
                 $filts_options[$filt_name] = '';
         }
-        // ONLY FILES LINKED TO MY GROUP
-        $programme = count($this->code)>0?$this->code:null;
-        //////////////////////////////////////////
-  //var_dump($params['programme']);
-        if (count(@$params['programme']) == 0 || @$params['programme'][0] == '%') {
-            $params['programme'] = $programme;
-            $filts_details['programme'] = $programme;
-        } elseif(count($filts_details['programme']) == 0 || empty($filts_details['programme'])) {
-            $filts_details['programme'] = $programme;
+
+/*        var_dump($filts_details['programme']);
+        echo "<hr>";
+        var_dump($params);
+        echo "<hr>";*/
+        // on force avec la valeur du filtre défini dans les options de menu
+        if (count($filts_details['status'])>0 && isset($filts_details['status'][0]) && !empty($filts_details['status'][0])) {
+            $params['status'] = $filts_details['status'];
         }
-        $codes = $m_files->getAssociatedProgrammes($current_user->id);
-        if(count($codes)>0) {
-            $params['programme'] = array_merge($params['programme'], $codes);
-            $filts_details['programme'] = array_merge($filts_details['programme'], $codes);
+        if (count($filts_details['programme'])>0 && isset($filts_details['programme'][0]) && !empty($filts_details['programme'][0])) {
+            $params['programme'] = $filts_details['programme'];
+        } else {
+            // ONLY FILES LINKED TO MY GROUP
+            $programme = count($this->code)>0?$this->code:null;
+            //////////////////////////////////////////
+      //var_dump($params['programme']);
+            if (count(@$params['programme']) == 0 || @$params['programme'][0] == '%') {
+                $params['programme'] = $programme;
+                $filts_details['programme'] = $programme;
+            } elseif(count($filts_details['programme']) == 0 || empty($filts_details['programme'])) {
+                $filts_details['programme'] = $programme;
+            }
+            $codes = $m_files->getAssociatedProgrammes($current_user->id);
+            if(count($codes)>0) {
+                $params['programme'] = array_merge($params['programme'], $codes);
+                $filts_details['programme'] = array_merge($filts_details['programme'], $codes);
+            }
         }
 
         JFactory::getSession()->set('filt_params', $params);
+        JFactory::getSession()->set('filt_menu', $filts_details);
+        
+        $filters['filts_details'] = $filts_details;
+        $filters['filts_options'] = $filts_options;
+        $filters['tables'] = $tables;
 
-        return @EmundusHelperFiles::createFilterBlock($filts_details, $filts_options, $tables);
+        return $filters;
+    }
+
+    /*
+    ** @description Clear session and reinit values by default
+    */
+    public  function resetFilter()
+    {
+        $filters = @EmundusHelperFiles::setMenuFilter();
+        return @EmundusHelperFiles::createFilterBlock($filters['filts_details'], $filters['filts_options'], $filters['tables']);
     }
 
 
@@ -267,12 +296,21 @@ class EmundusHelperFiles
     }
 
     public  function getCampaigns() {
-        $params = JFactory::getSession()->get('filt_params');
-        if (!empty($params) && !empty($params['programme']) && count($params['programme'] > 0)) {
-            $code = implode('","', $params['programme']);
-            $where = 'training IN ("'.$code.'")';
-        } else
+        $session = JFactory::getSession();
+        $params = $session->get('filt_params');
+        $filt_menu = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
+
+        if ($filt_menu['programme'][0] == "%"){
             $where = '1=1';
+        } elseif(count($filt_menu['programme'])>0 && isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
+            $where = ' training IN ("'.implode('","', $filt_menu['programme']).'") ';
+        } else {
+            if (!empty($params) && !empty($params['programme']) && count($params['programme'] > 0)) {
+                $code = implode('","', $params['programme']);
+                $where = 'training IN ("'.$code.'")';
+            } else
+                $where = '1=1';
+        }
         $db = JFactory::getDBO();
         $query = 'SELECT id, label, year  FROM #__emundus_setup_campaigns WHERE published=1 AND '.$where.' ORDER BY year DESC';
 
