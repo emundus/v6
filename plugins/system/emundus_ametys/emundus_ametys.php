@@ -268,24 +268,35 @@ class  plgSystemEmundus_ametys extends JPlugin
                     $db_ext = $this->getAmetysDBO();
 
 // 1. select user data from Ametyd BDD
-                    $query = 'SELECT uct.*,  u.firstname, u.lastname, u.email, u.password
-                                FROM `Users_CandidateToken` as uct
-                                LEFT JOIN  `FOUsers` as u on u.email=uct.login
-                                WHERE uct.token like '.$db_ext->quote($token);
-                    $db_ext->setQuery( $query );
-                    $user_tmp = $db_ext->loadAssoc();
+                    try{
+                        $query = 'SELECT uct.*,  u.firstname, u.lastname, u.email, u.password
+                                    FROM `Users_CandidateToken` as uct
+                                    LEFT JOIN  `FOUsers` as u on u.email=uct.login
+                                    WHERE uct.token like '.$db_ext->quote($token);
+                        $db_ext->setQuery( $query );
+                        $user_tmp = $db_ext->loadAssoc();
+                    }
+                    catch(Exception $e)
+                    {
+                        JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                    }
 
                     if (count($user_tmp) > 0) {
                         include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php'); 
                         $m_users            = new EmundusModelUsers;
 // 2. check if user exist in emundus BDD
                         $db =  JFactory::getDBO();
-
-                        $query = 'SELECT *
-                                FROM `#__users`
-                                WHERE email like '.$db->quote($user_tmp['login']);
-                        $db->setQuery( $query );
-                        $user_joomla = $db->loadObject();
+                        try{
+                            $query = 'SELECT *
+                                    FROM `#__users`
+                                    WHERE email like '.$db->quote($user_tmp['login']);
+                            $db->setQuery( $query );
+                            $user_joomla = $db->loadObject();
+                        }
+                        catch(Exception $e)
+                        {
+                            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                        }
 
                         if(isset($user_joomla->id) && !empty($user_joomla->id)) { 
 // 2.1 if user exist in emundus then login                            
