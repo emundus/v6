@@ -233,6 +233,7 @@ class EmundusModelFiles extends JModelLegacy
                                                                                   'sub_labels' => $res->sub_labels,
                                                                                   'group_by' => $res->tab_group_by);
         }
+        
     }
 
     /**
@@ -352,6 +353,8 @@ class EmundusModelFiles extends JModelLegacy
      * @param $elem
      * @return array
      */
+/*
+DELETE 06/06/2016
     public function setSubQuery($tab, $elem)
     {
         $search = JRequest::getVar('elements', NULL, 'POST', 'array', 0);
@@ -395,11 +398,13 @@ class EmundusModelFiles extends JModelLegacy
         }
         return $list;
     }
-
+*/
     /**
      * @param $search
      * @return array|string
      */
+/*
+DELETE 06/06/2016
     public function setSelect($search)
     {
         $cols = array();
@@ -426,7 +431,7 @@ class EmundusModelFiles extends JModelLegacy
         }
         return $cols;
     }
-
+*/
     /**
      * @param $tab
      * @param $joined
@@ -445,6 +450,8 @@ class EmundusModelFiles extends JModelLegacy
      * @param $joined
      * @return array
      */
+/*
+DELETE 06/06/2016
     public function setJoins($search, &$query, &$joined)
     {
         $tables_list = array();
@@ -478,13 +485,15 @@ class EmundusModelFiles extends JModelLegacy
         }
         return $tables_list;
     }
-
+*/
     /**
      * @param $tables_list
      * @param $tables_list_other
      * @param $tables_list_default
      * @return string
      */
+/*
+DELETE 06/06/2016
     public function _buildSelect(&$tables_list, &$tables_list_other, &$tables_list_default)
     {
         $current_user = JFactory::getUser();
@@ -565,7 +574,7 @@ class EmundusModelFiles extends JModelLegacy
         }
         return $query;
     }
-
+*/
     /**
      * @description : Generate values for array of data for all applicants
      * @param    array $search filters elements
@@ -609,7 +618,10 @@ class EmundusModelFiles extends JModelLegacy
      */
     private function _buildWhere($tableAlias = array())
     {
-        $params = JFactory::getSession()->get('filt_params');
+        $session = JFactory::getSession();
+        $params = $session->get('filt_params'); // came from search box
+        $filt_menu = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
+
         $db = JFactory::getDBO();
 
         if(!is_numeric(@$params['published']) || is_null(@$params['published']))
@@ -912,6 +924,29 @@ class EmundusModelFiles extends JModelLegacy
                 }
             }
         }
+
+         // force menu filter
+        if (count($filt_menu['status'])>0 && 
+            isset($filt_menu['status'][0]) && 
+            !empty($filt_menu['status'][0]) && 
+            $filt_menu['status'][0] != "%") {
+            $query['q'] .= ' AND jos_emundus_campaign_candidature.status IN ("' . implode('","', $filt_menu['status']) . '") ';
+        } 
+
+        if ($filt_menu['programme'][0] == "%"){
+            $sql_code = '1=1';
+        } elseif(count($filt_menu['programme'])>0 && isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
+            $sql_code = ' sp.code IN ("'.implode('","', $filt_menu['programme']).'") ';
+        } else {
+            // ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
+            // if(count($this->code)>0)
+            $sql_code = ' sp.code IN ("'.implode('","', $this->code).'") ';
+        }
+        if(count($this->fnum_assoc)>0)
+            $sql_fnum = ' OR jos_emundus_campaign_candidature.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
+        
+        $query['q'] .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
+
         return $query;
     }
 
@@ -1020,15 +1055,6 @@ class EmundusModelFiles extends JModelLegacy
         $query .= $q['join'];
         $query .= " where 1=1 ".$q['q'];
 
-
-        // ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
-        // if(count($this->code)>0)
-        $sql_code = ' sp.code IN ("'.implode('","', $this->code).'") ';
-        //if(count($this->fnum_assoc)>0)
-        $sql_fnum = ' OR jos_emundus_campaign_candidature.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
-        $query .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
-        //////////////////////////////////////////////////////////////
-
         $query .= ' GROUP BY jos_emundus_campaign_candidature.id';
 
         $query .=  $this->_buildContentOrderBy();
@@ -1045,7 +1071,7 @@ class EmundusModelFiles extends JModelLegacy
             }
             $dbo->setQuery($query);
             $res = $dbo->loadAssocList();
-//     echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';
+//echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';
             return $res;
         }
         catch(Exception $e)
@@ -1182,7 +1208,7 @@ class EmundusModelFiles extends JModelLegacy
         $no_filter = array("Super Users", "Administrator");
         if (!in_array($user->usertype, $no_filter))
             $query .= ' AND esp.id IN (select profile_id from #__emundus_users_profiles where profile_id in (' .
-                implode(',', $this->getProfileAcces($user->id)) . ')) ';
+                implode(',', EmundusModelFiles::getProfileAcces($user->id)) . ')) ';
         $query .= ' ORDER BY esp.label';
         $db->setQuery($query);
         return $db->loadObjectList();
@@ -1807,9 +1833,8 @@ where 1 order by ga.fnum asc, g.title';
             $db = JFactory::getDBO();
             $query = 'select u.name, cc.fnum, cc.applicant_id, c.*
                         from #__emundus_campaign_candidature as cc 
-                        left join #__emundus_setup_campaigns as c on c.id = cc.campaign_id 
-                        left join #__users as u on u.id = cc.applicant_id 
-                        where cc.fnum like '.$db->Quote($fnum);
+                        left join #__emundus_setup_campaigns as c on c.id = cc.campaign_id left join 
+                        #__users as u on u.id = cc.applicant_id where cc.fnum like '.$db->Quote($fnum);
             $db->setQuery($query);
 
             return $db->loadAssoc();
@@ -2706,6 +2731,30 @@ where 1 order by ga.fnum asc, g.title';
         $query = 'SELECT *  FROM #__emundus_setup_status ORDER BY ordering';
         $db->setQuery( $query );
         return $db->loadAssocList('step');
+    }
+
+    /**
+     * @param $fnum
+     * @return bool|mixed
+     */
+    public function deleteFile($fnum)
+    {
+        try
+        {
+            $db = JFactory::getDbo();
+
+            $query = 'DELETE FROM #__emundus_campaign_candidature 
+                        WHERE fnum like '.$db->Quote($fnum);
+            
+            $db->setQuery($query);
+            return $db->query() ;
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
     }
 
 }
