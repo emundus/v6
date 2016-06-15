@@ -57,4 +57,6 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$confirm_form_url 	= $checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum; 
 }
 
+$user->fnums = $applications;
+
 require JModuleHelper::getLayoutPath('mod_emundus_applications', $params->get('layout', 'default'));

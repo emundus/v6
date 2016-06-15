@@ -14,6 +14,8 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
+require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+
 $document = JFactory::getDocument();
 $document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
 // overide css
@@ -87,17 +89,22 @@ if (!empty($t__)) {
 		$j = 0;
 		foreach($res as $r){
 			$menu_params = json_decode($r->params, true);
+			$src = '';
 			if (empty($img[$j]) && !empty($menu_params['menu_image']) && empty($menu_params['menu-anchor_css']))
 				$src = JURI::base().$menu_params['menu_image'];
 			else
-				$src = $folder.''.$img[$j];
+				$src = JURI::Base().$folder.''.$img[$j];
 
+			$img = '';
+			if (!empty($src)) {
+				$img = '<img src="'.$src.'" />';
+			}
 			if (!empty($menu_params['menu-anchor_css']))
 				$glyphicon = '<i class="'.$menu_params['menu-anchor_css'].'"></i>';
 			else
 				$glyphicon = '';
 
-			$str = '<a href="'.JRoute::_($r->link.'&Itemid='.$r->id).'">'.$glyphicon.'<img src="'.JURI::Base().'/'.$src.'" /></a>';
+			$str = '<a href="'.JRoute::_($r->link.'&Itemid='.$r->id).'">'.$glyphicon.'</a>';
 			if($is_text == '1')
 				$str .= '<br/><a class="text" href="'.$r->link.'&Itemid='.$r->id.'">'.$r->title.'</a>';
 			$tab[] = $str;
@@ -155,4 +162,6 @@ if (!empty($t__)) {
 
 }
 
-require(JModuleHelper::getLayoutPath('mod_emunduspanel'));
+if (count($user->fnums) > 0 && EmundusHelperAccess::isApplicant($user->id)) {
+	require(JModuleHelper::getLayoutPath('mod_emunduspanel'));
+}

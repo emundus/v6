@@ -7,7 +7,7 @@
  */
 // no direct access
 defined('_JEXEC') or die;
-
+//var_dump($user->fnums); echo "<hr>"; var_dump($applications);
 echo $description;
 ?>
 <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
@@ -111,6 +111,9 @@ echo $description;
   <hr>
   <?php endforeach;  ?>
  </div> 
+<?php else : 
+  echo JText::_('NO_FILE');
+?>
 <?php endif; ?>
 
 <?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
@@ -124,5 +127,4 @@ function deletefile(fnum){
     document.location.href="<?php echo JRoute::_(JURI::Base().'index.php?option=com_emundus&task=deletefile&fnum='); ?>"+fnum;
   }
 }
-
 </script>
