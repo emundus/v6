@@ -56,6 +56,8 @@ class EmundusViewFiles extends JViewLegacy
 	    $layout = $app->input->getString('layout', null);
 	    $model = $this->getModel('Files');
 
+	    @EmundusHelperFiles::setMenuFilter();
+
 		switch  ($layout)
 		{
 			// get access list for application file
@@ -356,7 +358,6 @@ class EmundusViewFiles extends JViewLegacy
 				$this->assignRef('submitForm', $submitForm);
 				$this->assignRef('accessObj', $objAccess);
 				$this->assignRef('colsSup', $colsSup);
-
 		    break;
 	    }
 

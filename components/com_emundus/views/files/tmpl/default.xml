@@ -18,6 +18,7 @@
 			<field name="em_actions" value="actions" type="list" label="COM_EMUNDUS_ACTIONS" description="COM_EMUNDUS_ACTIONS_DESC">
 				<option value="actions">actions</option>
 				<option value="actions-users">actions-users</option>
+				<option value="actions-shared-files">actions-shared-files</option>
 			</field>
 		</fieldset>
 	</fields>
