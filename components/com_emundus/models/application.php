@@ -1611,7 +1611,7 @@ td {
 
     /**
      * Return the checkout URL order for current fnum. 
-     * @param $fnumInfos
+     * @param $pid      the applicant's profile_id
      * @return bool|mixed
      */
     public function getHikashopCheckoutUrl($pid)
@@ -1633,5 +1633,182 @@ td {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
         }
+    }
+
+    /**
+     * Duplicate an application file (form data)
+     * @param $fnum_from      the fnum of the source
+     * @param $fnum_to      the fnum of the duplicated application
+     * @param $pid          the profile_id to get list of forms
+     * @return bool
+     */
+    public function copyApplication($fnum_from, $fnum_to, $pid = null)
+    {
+        $db = JFactory::getDbo();
+        
+        try
+        {
+            if (empty($pid)) {
+                $profiles = new EmundusModelProfile();
+
+                $fnumInfos = $profiles->getFnumDetails($fnum_from);
+                $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+            }
+
+            $forms = @EmundusHelperMenu::buildMenuQuery($pid);
+//echo "<hr><pre>";
+
+            foreach ($forms as $key => $form) {
+                $query = 'SELECT * FROM '.$form->db_table_name.' WHERE fnum like '.$db->Quote($fnum_from);
+                $db->setQuery( $query );
+                $stored = $db->loadAssoc();
+//var_dump($query); var_dump($stored); echo "<hr>STORED";
+                if (count($stored) > 0) {
+                    // update form data
+                    $parent_id = $stored['id'];
+                    unset($stored['id']);
+                    $stored['fnum'] = $fnum_to;
+                    
+                    $query = 'INSERT INTO '.$form->db_table_name.' (`'.implode('`,`', array_keys($stored)).'`) VALUES('.implode(',', $db->Quote($stored)).')';
+                    $db->setQuery( $query );
+                    $db->execute();
+                    $id = $db->insertid();
+
+//var_dump($query); echo "<hr>";
+
+                    // liste des groupes pour le formulaire d'une table
+                    $query = 'SELECT ff.id, ff.group_id, fe.name, fg.id, fg.label, fg.params as gparams
+                                FROM #__fabrik_formgroup ff
+                                LEFT JOIN #__fabrik_groups fg ON fg.id=ff.group_id 
+                                LEFT JOIN #__fabrik_elements fe ON fe.group_id=fg.id
+                                WHERE ff.form_id = "'.$form->form_id.'" 
+                                ORDER BY ff.ordering';
+                    $db->setQuery( $query );
+                    $groups = $db->loadObjectList();
+//var_dump($groups); echo "<hr>";
+
+                    // get data and update current form
+                    $data   = array();
+                    if (count($groups) > 0) {
+                        foreach ($groups as $key => $group) {
+                            $group_params = json_decode($group->gparams); 
+                            if (@$group_params->repeat_group_button == 1) {
+                                $data[$group->group_id]['repeat_group'] = $group_params->repeat_group_button;
+                                $data[$group->group_id]['group_id'] = $group->group_id;
+                                $data[$group->group_id]['element_name'][] = $group->name;
+                                $data[$group->group_id]['table'] = $form->db_table_name.'_'.$group->group_id.'_repeat';
+                            }       
+                        }
+                        if (count($data) > 0) {
+                            foreach ($data as $key => $d) {
+                                
+                                $query = 'SELECT '.implode(',', $d['element_name']).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
+                                $db->setQuery( $query );
+                                $stored = $db->loadAssoc();
+//var_dump($query); echo "<hr>";
+                                
+                                if (count($stored) > 0) {
+                                    // update form data
+                                    unset($stored['id']);
+                                    $stored['parent_id'] = $id;
+                                    
+                                    $query = 'INSERT INTO '.$d['table'].' (`'.implode('`,`', array_keys($stored)).'`) VALUES('.implode(',', $db->Quote($stored)).')';
+//var_dump($query); echo "<hr>";
+ 
+                                    $db->setQuery( $query );
+                                    $db->execute();
+                                }             
+                            }
+                        }
+                    }
+
+                }
+            }
+
+        }
+        catch (Exception $e)
+        {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+        return true;
+    }
+
+     /**
+     * Duplicate all documents (files)
+     * @param $fnum_from      the fnum of the source
+     * @param $fnum_to      the fnum of the duplicated application
+     * @param $pid          the profile_id to get list of forms
+     * @return bool
+     */
+    public function copyDocuments($fnum_from, $fnum_to, $pid = null, $duplicated = null)
+    {
+        $db = JFactory::getDbo();
+        
+        try
+        {
+            if (empty($pid)) {
+                $profiles = new EmundusModelProfile();
+
+                $fnumInfos = $profiles->getFnumDetails($fnum_from);
+                $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+            }
+
+                // 1. get list of uploaded documents for previous file defined as duplicated
+            $query = 'SELECT eu.* 
+                        FROM #__emundus_uploads as eu 
+                        LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id='.$pid.'
+                        WHERE eu.fnum like '.$db->Quote($fnum_from);
+
+            if (empty($pid)) 
+                $query .= ' AND esap.duplicate=1';
+
+            $db->setQuery( $query );
+            $stored = $db->loadAssocList();
+            
+            if (count($stored) > 0) {
+                // 2. copy DB définition and duplicate files in applicant directory
+                foreach ($stored as $key => $row) {
+                    $src = $row['filename'];
+                    $ext = explode('.', $src);
+                    $ext = $ext[count($ext)-1];;
+                    $cpt = 0-(int)(strlen($ext)+1);
+                    $dest = substr($row['filename'], 0, $cpt).'-'.$row['id'].'.'.$ext;
+                    $row['filename'] = $dest;
+                    unset($row['id']);
+                    unset($row['fnum']);
+                    try
+                    {
+                        $query = 'INSERT INTO #__emundus_uploads (`fnum`, `'.implode('`,`', array_keys($row)).'`) VALUES('.$db->Quote($fnum_to).', '.implode(',', $db->Quote($row)).')';
+                        $db->setQuery( $query );
+                        $db->execute();
+                        $id = $db->insertid();
+                        $path = EMUNDUS_PATH_ABS.$row['user_id'].DS;
+
+                        if (!copy($path.$src, $path.$dest)) {
+                            $query = 'UPDATE #__emundus_uploads SET filename='.$src.' WHERE id='.$id;
+                            $db->setQuery( $query );
+                            $db->execute();
+                        }
+                    }
+                    catch(Exception $e)
+                    {
+                        $error = JUri::getInstance().' :: USER ID : '.$row['user_id'].' -> '.$e->getMessage();
+                        JLog::add($error, JLog::ERROR, 'com_emundus');
+                    }
+                }
+            }
+
+        }
+        catch (Exception $e)
+        {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+        return true;
     }
 }
