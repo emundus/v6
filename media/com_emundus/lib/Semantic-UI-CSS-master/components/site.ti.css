@@ -108,19 +108,36 @@ p:last-child {
 --------------------*/
 
 a {
-  color: #333333;
+  color: #333333 !important;
   text-decoration: none;
 }
 a:hover {
-  color: #b9152e;
+  color: #b9152e !important;
   text-decoration: none;
 }
 a:visited {
-  color: #333333;
+  color: #333333 !important;
   text-decoration: none;
 }
 a:active {
-  color: #e8450f;
+  color: #e8450f !important;
+  text-decoration: none;
+}
+
+a.footer {
+  color: #fff !important;
+  text-decoration: none;
+}
+a.footer:hover {
+  color: #fff !important;
+  text-decoration: none;
+}
+a.footer:visited {
+  color: #fff !important;
+  text-decoration: none;
+}
+a.footer:active {
+  color: #fff !important;
   text-decoration: none;
 }
 
@@ -173,3 +190,39 @@ input::selection {
 i.huge.icon, i.huge.icons {
     font-size: 3em;
 }
+i.huge.icon:hover, i.huge.icons:hover {
+    background-color: #fff !important;
+    color: #f2711c !important;
+}
+i.circular.icon:hover{
+  box-shadow: 0 0 0 .1em #f2711c inset !important;
+}
+i.orange.icon:hover{
+  color: #F15A24;
+};
+i.inverted.bordered.orange.icon, i.inverted.circular.orange.icon {
+  background-color: #f2711c !important;
+  color: #fff !important;
+}
+i.inverted.circular.orange.icon:hover {
+    background-color: #fff !important;
+    color: #f2711c !important;
+}
+
+.button, .readon, .readmore, button.validate, #member-profile a, #member-registration a, .formelm-buttons button, .btn-primary, .btn.btn-primary.disabled, .btn.btn-primary[disabled], a.btn.btn-primary.disabled
+{
+    text-decoration: none;
+    background-color: #F15A24 !important;
+    color: #fff !important;
+    display: inline-block;
+    text-transform: uppercase;
+}
+
+.button:hover, .readon, .readmore, button.validate:hover, #member-profile a, #member-registration a, .formelm-buttons button, .btn-primary:hover, .btn.btn-primary.disabled, .btn.btn-primary.validate:hover, .btn.btn-primary[disabled], a.btn.btn-primary.disabled:hover{
+    text-decoration: none;
+    background-color: #f7931e !important;
+    color: #fff !important;
+    display: inline-block;
+    text-transform: uppercase;
+}
+
