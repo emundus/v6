@@ -30,8 +30,8 @@ class EmundusHelperEmails
 		$itemid = JRequest::getVar('Itemid', null, 'GET', null, 0);
 		$current_user = JFactory::getUser();
 		$email = '<div class="em_email_block" id="em_email_block">';
-		$email.= '<input placeholder="'.JText::_( 'EMAIL_FROM' ).'" name="mail_from_name" type="text" class="inputbox" id="mail_from_name" value="'.$current_user->name.'" /> ';
-		$email.= '<input placeholder="'.JText::_( 'EMAIL' ).'" name="mail_from" type="text" class="inputbox" id="mail_from" value="'.$current_user->email.'" /> ';
+		$email.= '<input placeholder="'.JText::_( 'EMAIL_FROM' ).'" name="mail_from_name" type="text" class="inputbox input-xlarge" id="mail_from_name" value="'.$current_user->name.'" /> ';
+		$email.= '<input placeholder="'.JText::_( 'EMAIL' ).'" name="mail_from" type="text" class="inputbox input-xlarge" id="mail_from" value="'.$current_user->email.'" /> ';
 		$email.= '<input name="mail_from_id" type="hidden" class="inputbox" id="mail_from_id" value="'.$current_user->id.'" /><br>';
 		
 		if(in_array('default',$params)){
@@ -190,7 +190,7 @@ class EmundusHelperEmails
 				$email .= '
 					<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />
 				<p>
-					<input name="mail_to" type="hidden" class="inputbox" id="mail_to" value="'.$applicant->id.'" />
+					<input name="mail_to" type="hidden" class="inputbox input-xlarge" id="mail_to" value="'.$applicant->id.'" />
 					<input name="campaign_id" type="hidden" class="inputbox" id="campaign_id" value="'.$campaign_id.'" size="100" />
 				</div>';
 				//$email .= '<p><label for="mail_body"> '.JText::_( 'MESSAGE' ).' </label><br/>';
@@ -264,8 +264,8 @@ class EmundusHelperEmails
 				$email.='</select>';
 				$email .= '<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />';
 				$email .= '<input placeholder="'.JText::_( 'EMAIL_TO' ).'"  name="mail_to" type="text" class="inputbox" id="mail_to" value="'.$experts.'" size="100" style="width: 100% !important;" />';
-				$email .= '<input name="mail_from_name" type="hidden" class="inputbox" id="mail_from_name" value="" size="100" style="width: 100% !important;" />';
-				$email .= '<input name="mail_from" type="hidden" class="inputbox" id="mail_from" value="" size="100" style="width: 100% !important;" />';
+				$email .= '<input name="mail_from_name" type="hidden" class="inputbox input-xlarge" id="mail_from_name" value="" size="100" style="width: 100% !important;" />';
+				$email .= '<input name="mail_from" type="hidden" class="inputbox input-xlarge" id="mail_from" value="" size="100" style="width: 100% !important;" />';
 				$email .= '<input name="campaign_id" type="hidden" class="inputbox" id="campaign_id" value="'.$campaign_id.'" />
 					<input name="student_id" type="hidden" class="inputbox" id="student_id" value="'.$student_id.'" />
 				</div>';
@@ -337,7 +337,7 @@ class EmundusHelperEmails
 
 			$email.= '
 					<input name="mail_subject" placeholder="'.JText::_( 'SUBJECT' ).'" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />
-					<input name="mail_to" type="text" class="inputbox" id="mail_to" value="'.$student->username.'" size="100" disabled/>
+					<input name="mail_to" type="text" class="inputbox input-xlarge" id="mail_to" value="'.$student->username.'" size="100" disabled/>
 					<input type="hidden" name="ud[]" value="'.$email_to.'" >';
 
 			$email .= $mail_body.'<div><input class="btn btn-large btn-success" type="submit" name="applicant_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>';
@@ -359,7 +359,7 @@ class EmundusHelperEmails
 	
 	function getAllEmail($type=2)
 	{
-		$query = 'SELECT * FROM #__emundus_setup_emails WHERE type IN ('.$this->_db->Quote($type).')';
+		$query = 'SELECT * FROM #__emundus_setup_emails WHERE type IN ('.$this->_db->Quote($type).') AND published=1';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObjectList();
 	}
@@ -377,6 +377,9 @@ class EmundusHelperEmails
 	
 	function sendGroupEmail(){
 		$current_user = JFactory::getUser();
+		
+		$app    = JFactory::getApplication();
+	    $email_from_sys = $app->getCfg('mailfrom');
         
 
 		if (//!EmundusHelperAccess::asAccessAction(9, 'c')  && 	//email applicant
@@ -494,11 +497,12 @@ class EmundusHelperEmails
 				$mailer = JFactory::getMailer();
 
                 $sender = array(
-                    $from,
-                    $fromname
-                );
+		            $email_from_sys,
+		            $fromname
+		        );
 
                 $mailer->setSender($sender);
+	            $mailer->addReplyTo($from, $fromname);
                 $mailer->addRecipient($user->email);
                 $mailer->setSubject($subject);
                 $mailer->isHTML(true);
@@ -507,6 +511,7 @@ class EmundusHelperEmails
 
                 $send = $mailer->Send();
                 if ( $send !== true ) {
+		            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
                     echo 'Error sending email: ' . $send->__toString(); die();
                 } else {
                     $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
@@ -532,6 +537,8 @@ class EmundusHelperEmails
 	function sendApplicantEmail() {
 		$current_user = JFactory::getUser();
         
+        $app    = JFactory::getApplication();
+	    $email_from_sys = $app->getCfg('mailfrom');
 
 		if (!EmundusHelperAccess::asAccessAction(9, 'c'))	//email applicant
 		{
@@ -638,18 +645,25 @@ class EmundusHelperEmails
             );
             $tags = $emails->setTags($user->id, $post);
 
+            $from = preg_replace($tags['patterns'], $tags['replacements'], $from);
+            $from_id = $user->id;
+            $fromname = preg_replace($tags['patterns'], $tags['replacements'], $fromname);
+            $to = $user->email;
+            $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
             $body = preg_replace($tags['patterns'], $tags['replacements'], $message);
+            $body = $emails->setTagsFabrik($body);
 
             if (!empty($user->email)) {
                 // mail function
 				$mailer = JFactory::getMailer();
 
                 $sender = array(
-                    $from,
-                    $fromname
-                );
+		            $email_from_sys,
+		            $fromname
+		        );
 
-                $mailer->setSender($sender);
+	            $mailer->setSender($sender);
+	            $mailer->addReplyTo($from, $fromname);
                 $mailer->addRecipient($user->email);
                 $mailer->setSubject($subject);
                 $mailer->isHTML(true);
@@ -658,6 +672,7 @@ class EmundusHelperEmails
 
                 $send = $mailer->Send();
                 if ($send !== true) {
+		            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
                     echo 'Error sending email: ' . $send->__toString();
                     die();
                 } else {
