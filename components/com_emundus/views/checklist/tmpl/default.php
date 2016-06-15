@@ -142,8 +142,11 @@ Dropzone.options.formA'.$attachment->id.' =  {
             var n = allowedExtension.indexOf(sFileExtension);
             if (n >= 0)
                 done();
-            else 
+            else {
+                alert("'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'");
                 done("'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'");
+                this.removeFile(file);
+            }
         }
     },
 

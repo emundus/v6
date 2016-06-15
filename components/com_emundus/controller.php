@@ -247,6 +247,9 @@ class EmundusController extends JControllerLegacy {
         $format        = JRequest::getVar('format', null, 'GET', 'none',0);
         $itemid        = JRequest::getVar('Itemid', null, 'GET', 'none',0);
         $fnum          = JRequest::getVar('fnum', null, 'GET', 'none',0);
+        if (empty($fnum)) {
+            $app->redirect(JURI::Base().'index.php');
+        }
         $current_user  = JFactory::getUser();
         
         $chemin = EMUNDUS_PATH_ABS;
@@ -411,6 +414,9 @@ class EmundusController extends JControllerLegacy {
         $app    = JFactory::getApplication();
         $Itemid = $app->input->getInt('Itemid', null, 'int');
         $fnum   = JRequest::getVar('fnum', null, 'GET', 'none', 0);
+        if (empty($fnum)) {
+            $app->redirect(JURI::Base().'index.php');
+        }
         $redirect   = JRequest::getVar('redirect', null, 'GET');
         $redirect   = (!empty($redirect))?base64_decode($redirect):'index.php';
         $aid    = JFactory::getUser();
@@ -588,7 +594,7 @@ class EmundusController extends JControllerLegacy {
                 $pos = strpos($attachment['allowed_types'], strtoupper($file_ext));
                 if ($pos === false) {
                     $error = JUri::getInstance().' :: USER ID : '.$user->id.' '.$file_ext.' -> type is not allowed, please send a doc with type : '.$attachment['allowed_types'];
-                    JLog::add($error, JLog::ERROR, 'com_emundus');
+                    //JLog::add($error, JLog::ERROR, 'com_emundus');
                     if ($format == "raw") {
                         echo '{"aid":"0","status":false,"message":"'.$error.'" }';
                     } else {
