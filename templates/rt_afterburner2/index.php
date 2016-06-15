@@ -163,17 +163,6 @@ $gpreset = str_replace(' ','',strtolower($gantry->get('name')));
 	<div id="rt-footer"> 
 		<br />    
         <footer id="footer">
-            <div class="notes">
-                <p>
-                    <em>
-                        Conformément à la loi « informatique et libertés » du 6 janvier 1978 modifiée en 2004,
-                        vous bénéficiez d’un droit d’accès et de rectification aux informations qui vous concernent, <br>
-                        que vous pouvez exercer en <a href="index.php?option=com_contact&amp;view=contact&amp;id=6:contact-cnil&amp;catid=47&amp;Itemid=139">nous adressant un message en cliquant ici</a>
-                    </em>
-                    <br>
-                </p>
-            </div>
-
           	<section class="logos-area">
           		<div class="rt-container">
 					<?php echo $gantry->displayModules('footer','standard','standard'); ?>

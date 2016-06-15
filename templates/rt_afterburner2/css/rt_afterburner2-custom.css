@@ -171,6 +171,14 @@ body {
 }
 
 /************ FORM LOGIN *************/
+/*** Module sclogin ***/
+.sclogin {
+    text-align: right;
+    position: absolute;
+    display: inline-block;
+    top: 4px;
+    right: 0px;
+}
 .sclogout-button {
     float : right !important;
 }
@@ -302,4 +310,22 @@ ul.logo-list li {
 
 input {
     height: inherit!important;
+}
+
+/***** TI *****/
+.button, .readon, .readmore, button.validate, #member-profile a, #member-registration a, .formelm-buttons button, .btn-primary, .btn.btn-primary.disabled, .btn.btn-primary[disabled], a.btn.btn-primary.disabled
+{
+    text-decoration: none;
+    background-color: #F15A24 !important;
+    color: #fff !important;
+    display: inline-block;
+    text-transform: uppercase;
+}
+
+.button:hover, .readon, .readmore, button.validate:hover, #member-profile a, #member-registration a, .formelm-buttons button, .btn-primary:hover, .btn.btn-primary.disabled, .btn.btn-primary.validate:hover, .btn.btn-primary[disabled], a.btn.btn-primary.disabled:hover{
+    text-decoration: none;
+    background-color: #f7931e !important;
+    color: #fff !important;
+    display: inline-block;
+    text-transform: uppercase;
 }
