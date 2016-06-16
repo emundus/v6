@@ -330,11 +330,11 @@ class  plgSystemEmundus_ametys extends JPlugin
                                 if (!empty($profile)) {
                                     $acl_aro_groups = $m_users->getDefaultGroup($profile);
                                 } else {
-                                    $profile = 1000;
+                                    $profile = 1026;
                                     $acl_aro_groups = array(2);
                                 }
                             } else {
-                                $profile = 1000;
+                                $profile = 1026;
                                 $acl_aro_groups = array(2);
                             }
                             

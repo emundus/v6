@@ -103,7 +103,7 @@ class EmundusHelperEmails
 					if (!empty($user['email']) && !in_array($user['email'], $email_list)) {
 						$email_list[] = $user['email'];
 						$email .= '<span class="label label-primary">';
-						$email .= $user['name'].' <em>'.$user['email'].'</em> ';
+						$email .= $user['name'].' <em>&lt;'.$user['email'].'&gt;</em>, ';
 						$email .= '</span> ';
 						$email .= '<input type="hidden" name="ud[]" value="'.$user['id'].'|'.$user['campaign_id'].'"/> ';
 					}

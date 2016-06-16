@@ -27,7 +27,7 @@ class EmundusModelProgramme extends JModelList
     public function getCampaign($id = 0)
     {
         $db = JFactory::getDbo();
-        $query  = $db->getQuery(true);
+        $query	= $db->getQuery(true);
         $query->select('pr.url,ca.*, pr.notes, pr.code, pr.apply_online');
         $query->from('#__emundus_setup_programmes as pr,#__emundus_setup_campaigns as ca');
         $query->where('ca.training = pr.code AND ca.published=1 AND ca.id='.$id);
@@ -38,7 +38,7 @@ class EmundusModelProgramme extends JModelList
     public function getParams($id = 0)
     {
         $db = JFactory::getDbo();
-        $query  = $db->getQuery(true);
+        $query	= $db->getQuery(true);
         $query->select('params');
         $query->from('#__menu');
         $query->where('id='.$id);

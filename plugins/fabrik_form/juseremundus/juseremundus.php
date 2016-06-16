@@ -114,7 +114,7 @@ class PlgFabrik_FormJUseremundus extends plgFabrik_Form
 	 * @return  mixed  value
 	 */
 
-	private function getFieldValue($pname, $data, $default = '')
+	public function getFieldValue($pname, $data, $default = '')
 	{
 		$params = $this->getParams();
 
