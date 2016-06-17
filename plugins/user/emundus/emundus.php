@@ -301,6 +301,8 @@ class plgUserEmundus extends JPlugin
 
                 if ($current_user->code == "csc") {
                     $app->redirect("index.php?option=com_content&view=article&id=83&Itemid=1570");
+                } else {
+                    $app->redirect("index.php");
                 }
             }
         } 
