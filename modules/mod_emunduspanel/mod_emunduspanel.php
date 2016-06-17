@@ -162,6 +162,6 @@ if (!empty($t__)) {
 
 }
 
-if (count($user->fnums) > 0 && EmundusHelperAccess::isApplicant($user->id)) {
+if (count($user->fnums) > 0 || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 	require(JModuleHelper::getLayoutPath('mod_emunduspanel'));
 }

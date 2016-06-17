@@ -40,7 +40,7 @@ if ($show_mandatory_documents == 1) {
       $cpt = $db->loadResult();
       $link   = '<a id="'.$attachment->_id.'" class="document" href="'.$itemid['link'].'&Itemid='.$itemid['id'].'#a'.$attachment->_id.'">';
       $active = '';
-      $need = $cpt==0?'need_missing_fac':'need_ok';
+      $need = $cpt==0?'need_missing':'need_ok';
       $class = $need.$active;
       $endlink= '</a>';
     ?>
@@ -66,7 +66,7 @@ if ($show_optional_documents == 1) {
       $cpt = $db->loadResult();
       $link   = '<a id="'.$attachment->_id.'" class="document" href="'.$itemid['link'].'&Itemid='.$itemid['id'].'#a'.$attachment->_id.'">';
       $active = '';
-      $need = $cpt==0?'need_missing':'need_ok';
+      $need = $cpt==0?'need_missing_fac':'need_ok';
       $class = $need.$active;
       $endlink= '</a>';
     ?>

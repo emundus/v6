@@ -5,7 +5,17 @@ defined('_JEXEC') or die('Restricted access');
 $renew='';
 $step_form = $forms<100?'':'completed';
 $step_attachment = $attachments<100?'':'completed';
-$step_paiement = @$paid==0?'':'completed';;
+$step_paiement = @$paid==0?'':'completed';
+if ($forms>=100 && $attachments>=100 && $paid>0) {
+  $btn_send = '
+  <div class="ui vertical mini button">
+    <div class="visible content">
+    <a href="'.$confirm_form_url.'&usekey=fnum&rowid='.$user->fnum.'" title="'.JText::_('SEND_APPLICATION_FILE').'">
+      <i class="mail outline icon"></i>
+    </a>
+  </div>';
+}
+
 $step_sent = '';
 if ($sent>0) {
   $step_sent = 'completed';
@@ -50,8 +60,8 @@ if ($sent>0) {
   <div class="<?php echo $step_sent; ?> step">
     <i class="large time outline icon"></i>
     <div class="content">
-      <div class="description"><?php echo $complete; ?></div>
-      <div class="description"><span class="label label-<?php echo $current_application->class; ?>"> <?php echo $current_application->value; ?></span></div>
+      <!-- <div class="description"><?php echo $complete; ?></div> -->
+      <div class="description"><span class="label label-<?php echo $current_application->class; ?>"> <?php echo $current_application->value; ?></span> <?php echo $btn_send; ?></div>
     </div>
   </div>
 </div>
