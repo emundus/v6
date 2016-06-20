@@ -35,7 +35,7 @@ $applicants 			 = explode(',',$id_applicants);
 
 $fnum = $jinput->get('rowid', null);
 $itemid = $jinput->get('Itemid'); 
-$reload = $jinput->get('reload', 0); 
+$reload = $jinput->get('r', 0); 
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $copy_application_form = $eMConfig->get('copy_application_form', 0);
@@ -52,9 +52,9 @@ if(!EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
     }
     //echo "<script>$('rt-header').remove(); $('rt-footer').remove(); $('gf-menu-toggle').remove();</script>";
 } else{
-    if (($user->fnum != $fnum && $fnum != -1) && !empty($fnum)) {
+    if (($user->fnum != $fnum && $fnum != -1) && !empty($fnum)) { 
         JError::raiseNotice('ERROR', JText::_('ERROR...'));
-        $mainframe->redirect("index.php");
+        $mainframe->redirect(JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$user->fnum);
     }
 }
 
@@ -78,11 +78,11 @@ else {
 			JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', utf8_encode(JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($user->end_date) ))));
 			$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
 		} else {
-			if (empty($fnum) && !isset($fnum)) {
+			if (empty($fnum) || !isset($fnum)) {
 				// redirection vers l'enregistrement du dossier
 				if ($reload < 5) {
 					$reload++;
-					$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&reload=".$reload);
+					$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
 				}
 			}
 		}
@@ -181,8 +181,9 @@ if (EmundusHelperAccess::isApplicant($user->id) && $copy_application_form == 1 &
 
 				if (count($fnums) > 0) {
 					$previous_fnum = array_keys($fnums);
-					$query = 'SELECT eu.* 
+					$query = 'SELECT eu.*, esa.nbmax
 								FROM #__emundus_uploads as eu 
+								LEFT JOIN #__emundus_setup_attachments as esa on esa.id=eu.attachment_id
 								LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id='.$user->profile.'
 								WHERE eu.user_id='.$user->id.' 
 								AND eu.fnum like '.$db->Quote($previous_fnum[0]).' 
@@ -198,21 +199,29 @@ if (EmundusHelperAccess::isApplicant($user->id) && $copy_application_form == 1 &
 							$ext = $ext[count($ext)-1];;
 							$cpt = 0-(int)(strlen($ext)+1);
 							$dest = substr($row['filename'], 0, $cpt).'-'.$row['id'].'.'.$ext;
+							$nbmax = $row['nbmax'];
 							$row['filename'] = $dest;
 							unset($row['id']);
 							unset($row['fnum']);
+							unset($row['nbmax']);
 							try
 					        {
-								$query = 'INSERT INTO #__emundus_uploads (`fnum`, `'.implode('`,`', array_keys($row)).'`) VALUES('.$db->Quote($user->fnum).', '.implode(',', $db->Quote($row)).')';
-								$db->setQuery( $query );
-								$db->execute();
-								$id = $db->insertid();
-								$path = EMUNDUS_PATH_ABS.$user->id.DS;
+					        	$query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id='.$user->id.' AND attachment_id='.$row['attachment_id'].' AND fnum like '.$db->Quote($user->fnum);
+		                        $db->setQuery( $query );
+		                        $cpt = $db->loadResult();
 
-								if (!copy($path.$src, $path.$dest)) {
-									$query = 'UPDATE #__emundus_uploads SET filename='.$src.' WHERE id='.$id;
+		                        if ($cpt < $nbmax) {
+									$query = 'INSERT INTO #__emundus_uploads (`fnum`, `'.implode('`,`', array_keys($row)).'`) VALUES('.$db->Quote($user->fnum).', '.implode(',', $db->Quote($row)).')';
 									$db->setQuery( $query );
 									$db->execute();
+									$id = $db->insertid();
+									$path = EMUNDUS_PATH_ABS.$user->id.DS;
+
+									if (!copy($path.$src, $path.$dest)) {
+										$query = 'UPDATE #__emundus_uploads SET filename='.$src.' WHERE id='.$id;
+										$db->setQuery( $query );
+										$db->execute();
+									}
 								}
 							}
 					        catch(Exception $e)
@@ -225,7 +234,7 @@ if (EmundusHelperAccess::isApplicant($user->id) && $copy_application_form == 1 &
 				}
 				if ($reload < 5) {
 					$reload++;
-					$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."$reload=".$reload); 
+					$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload); 
 				}
 		    }
 		}
