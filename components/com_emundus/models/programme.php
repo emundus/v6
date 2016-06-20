@@ -27,7 +27,7 @@ class EmundusModelProgramme extends JModelList
     public function getCampaign($id = 0)
     {
         $db = JFactory::getDbo();
-        $query	= $db->getQuery(true);
+        $query  = $db->getQuery(true);
         $query->select('pr.url,ca.*, pr.notes, pr.code, pr.apply_online');
         $query->from('#__emundus_setup_programmes as pr,#__emundus_setup_campaigns as ca');
         $query->where('ca.training = pr.code AND ca.published=1 AND ca.id='.$id);
@@ -38,7 +38,7 @@ class EmundusModelProgramme extends JModelList
     public function getParams($id = 0)
     {
         $db = JFactory::getDbo();
-        $query	= $db->getQuery(true);
+        $query  = $db->getQuery(true);
         $query->select('params');
         $query->from('#__menu');
         $query->where('id='.$id);
@@ -72,19 +72,29 @@ class EmundusModelProgramme extends JModelList
     }
 
     /**
+     * @param $published  int     get published or unpublished programme
+     * @param $codeList   array   array of IN and NOT IN programme code to get
      * @return array
      * get list of declared programmes
      */
-    public function getProgrammes($published = null)
+    public function getProgrammes($published = null, $codeList = array())
     {
+        $db = $this->getDbo();
+
         $query = 'select *
-                  from #__emundus_setup_programmes';
+                  from #__emundus_setup_programmes
+                  WHERE 1 = 1 ';
         if (isset($published) && !empty($published)) {
-          $query .= ' WHERE published = '.$published;
+          $query .= ' AND published = '.$published;
+        }
+        if (count($codeList['IN']) > 0) {
+          $query .= ' AND code IN ('.implode('","', $db->Quote($codeList['IN'])).')';
+        }
+        if (count($codeList['NOT_IN']) > 0) {
+          $query .= ' AND code NOT IN ('.implode('","', $db->Quote($codeList['NOT_IN'])).')';
         }
         try
-        {
-            $db = $this->getDbo();
+        {   
             $db->setQuery($query);
             return $db->loadAssocList('code');
         }
@@ -106,10 +116,15 @@ class EmundusModelProgramme extends JModelList
         $db = $this->getDbo();
 
         if (count($data) > 0) {
+          
+          unset($data[0]['organisation']);
+          unset($data[0]['organisation_code']);
           $column = array_keys($data[0]);
-         
+      
           $values = array();
           foreach ($data as $key => $v) {
+            unset($v['organisation']);
+            unset($v['organisation_code']);
             $values[] = '('.implode(',', $db->Quote($v)).')';
           }
 
@@ -122,7 +137,7 @@ class EmundusModelProgramme extends JModelList
           }
           catch(Exception $e)
           {
-              error_log($e->getMessage(), 0);
+              JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
               return $e->getMessage();
           }
 

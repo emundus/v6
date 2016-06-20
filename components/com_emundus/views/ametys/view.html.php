@@ -42,8 +42,10 @@ class EmundusViewAmetys extends JViewLegacy
 		$params = JComponentHelper::getParams('com_emundus');
 		$ametys_sync_default_eval = $params->get('ametys_sync_default_eval', null);
 		$ametys_sync_default_decision = $params->get('ametys_sync_default_decision', null);
+		$ametys_sync_default_synthesis = $params->get('ametys_sync_default_synthesis', null);
 		$this->assignRef('ametys_sync_default_eval', $ametys_sync_default_eval);
 		$this->assignRef('ametys_sync_default_decision', $ametys_sync_default_decision);
+		$this->assignRef('ametys_sync_default_synthesis', $ametys_sync_default_synthesis);
 
 		$document = JFactory::getDocument();
 		//$document->addScript( JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );

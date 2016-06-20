@@ -1,11 +1,11 @@
 <?php
 /**
- * @package    	Joomla
- * @subpackage 	eMundus
- * @link       	http://www.emundus.fr
- * @copyright	Copyright (C) 2016 eMundus. All rights reserved.
- * @license    	GNU/GPL
- * @author     	Benjamin Rivalland
+ * @package     Joomla
+ * @subpackage  eMundus
+ * @link        http://www.emundus.fr
+ * @copyright   Copyright (C) 2016 eMundus. All rights reserved.
+ * @license     GNU/GPL
+ * @author      Benjamin Rivalland
  */
 
 // No direct access

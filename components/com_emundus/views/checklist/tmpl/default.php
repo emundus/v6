@@ -251,7 +251,11 @@ Dropzone.options.formA'.$attachment->id.' =  {
         }
     ?>
       </div>
-      <div class="ui vertical divider"></div>
+    <?php
+      if ($this->show_nb_column > 1) {
+        echo '<div class="ui vertical divider"></div>';
+      }
+    ?>  
       <div class="col-md-<?php echo (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_opt!='') {

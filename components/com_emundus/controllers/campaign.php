@@ -1,11 +1,11 @@
 <?php
 /**
- * @package    	Joomla
- * @subpackage 	eMundus
- * @link       	http://www.emundus.fr
- * @copyright	Copyright (C) 2016 eMundus. All rights reserved.
- * @license    	GNU/GPL
- * @author     	eMundus - Benjamin Rivalland
+ * @package     Joomla
+ * @subpackage  eMundus
+ * @link        http://www.emundus.fr
+ * @copyright   Copyright (C) 2016 eMundus. All rights reserved.
+ * @license     GNU/GPL
+ * @author      eMundus - Benjamin Rivalland
 */
  
 // No direct access
@@ -21,41 +21,41 @@ jimport('joomla.application.component.controller');
  * @since      5.0.0
  */
 class EmundusControllerCampaign extends JControllerLegacy {
-	var $_user = null;
-	var $_db = null;
-	
-	function __construct($config = array()){
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
-		
-		$this->_user = JFactory::getUser();
-		$this->_db = JFactory::getDBO();
-		
-		parent::__construct($config);
-	}
-	function display($cachable = false, $urlparams = false) { 
-		// Set a default view if none exists
-		if ( ! JRequest::getCmd( 'view' ) ) {
-			$default = 'campaign';
-			JRequest::setVar('view', $default );
-		}
-		parent::display();
+    var $_user = null;
+    var $_db = null;
+    
+    function __construct($config = array()){
+        //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
+        //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+        //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
+        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+        //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
+        //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+        
+        $this->_user = JFactory::getUser();
+        $this->_db = JFactory::getDBO();
+        
+        parent::__construct($config);
+    }
+    function display($cachable = false, $urlparams = false) { 
+        // Set a default view if none exists
+        if ( ! JRequest::getCmd( 'view' ) ) {
+            $default = 'campaign';
+            JRequest::setVar('view', $default );
+        }
+        parent::display();
     }
 
-	function clear() {
-		EmundusHelperFilters::clear();
-	}
-	
-	function setCampaign()
-	{
-		return true;
-	}
+    function clear() {
+        EmundusHelperFilters::clear();
+    }
+    
+    function setCampaign()
+    {
+        return true;
+    }
 
-	public function addcampaigns(){ 
+    public function addcampaigns(){ 
         $user = JFactory::getUser();
         $view = JRequest::getVar('view', null, 'GET', 'none',0);
         $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
@@ -79,14 +79,14 @@ class EmundusControllerCampaign extends JControllerLegacy {
             $programmes = $mprogramme->getProgrammes(1);
 
             if (count($programmes) > 0) {
-            	$result = $mcampaign->addCampaignsForProgrammes($data, $programmes);
+                $result = $mcampaign->addCampaignsForProgrammes($data, $programmes);
             } else {
-            	$result = false;
+                $result = false;
             }
-            if($result === true)
-                $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_CAMPAIGNS_ADDED'), 'data' => $result);
-            else
+            if($result === false)
                 $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_CAMPAIGNS'), 'data' => $result);
+            else
+                $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_CAMPAIGNS_ADDED'), 'data' => $result);
         }
         echo json_encode((object)$tab);
         exit;

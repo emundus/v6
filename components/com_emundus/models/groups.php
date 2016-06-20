@@ -419,5 +419,63 @@ class EmundusModelGroups extends JModelList
 		return $db->loadResultArray();
 	}
 
+	 /**
+     * @param   array $programmes the programme newly added that should be affected to groups
+     * 
+     * @return boolean
+     * Add new groups
+     */
+    public function addGroupsByProgrammes($programmes)
+    {
+        $db = $this->getDbo();
+
+        if (count($programmes) > 0) {
+
+        	
+          $column = array_keys($programmes[0]);
+         
+          try{
+	          foreach ($programmes as $key => $v) {
+	          // Check if a group is already declared for the organisation
+	        	$query = 'SELECT * FROM `#__emundus_setup_groups` 
+	        				WHERE  label LIKE "%'.$v['organisation'].'%" 
+	        					OR label LIKE "%'.$v['organisation_code'].'%" 
+	        					OR description LIKE "%'.$v['organisation_code'].'%"';
+	        	$db->setQuery($query);
+	        	$groups = $db->loadObjectList();
+
+	        	if (count($groups) > 0) {
+	        		foreach ($groups as $key => $group) {
+	        			$query = 'DELETE FROM `#__emundus_setup_groups_repeat_course` WHERE parent_id='.$group->id.' AND course LIKE '.$db->Quote($v['code']);
+	        			$db->setQuery($query);
+	        			$db->execute();
+
+	        			$query = 'INSERT INTO `#__emundus_setup_groups_repeat_course` (`parent_id`, `course`) VALUES ('.$group->id.', '.$db->Quote($v['code']).')';
+	        			$db->setQuery($query);
+	        			$db->execute();
+	        		}
+	        	} else {
+	        		$query = 'INSERT INTO `#__emundus_setup_groups` (`label`, `description`, `published`) VALUES ('.$db->Quote($v['organisation'].' ['.$v['organisation_code'].']').', '.$db->Quote($v['organisation_code']).', 1)';
+	        		$db->setQuery($query);
+	        		$db->execute();
+	        		$lastid = $db->insertid();
+
+	        		$query = 'INSERT INTO `#__emundus_setup_groups_repeat_course` (`parent_id`, `course`) VALUES ('.$lastid.', '.$db->Quote($v['code']).')';
+	        		$db->setQuery($query);
+	        		$db->execute();
+	        	}
+	          }
+          }
+          catch(Exception $e)
+          {
+              JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+              return $e->getMessage();
+          }
+
+        } else {
+          return false;
+        }
+    }
+
 }
 ?>

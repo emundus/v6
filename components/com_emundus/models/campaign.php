@@ -256,37 +256,49 @@ class EmundusModelCampaign extends JModelList
 			$values = array();
 			$values_unity = array();
 			foreach ($programmes as $key => $v) {
-				$values[] = '('.$db->Quote($data['start_date']).', '.$db->Quote($data['end_date']).', '.$data['profile_id'].', '.$db->Quote($data['year']).', '.$db->Quote($data['short_description']).', '.$db->Quote($data['date_time']).', '.$data['user'].', '.$db->Quote($v['label']).', '.$db->Quote($v['code']).', '.$data['published'].')';
-				$values_unity[] = '('.$db->Quote($v['code']).', '.$db->Quote($v['label']).', '.$db->Quote($data['year']).', '.$data['profile_id'].', '.$db->Quote($v['programmes']).')';	
+				try{
+					$query = 'SELECT count(id) FROM `#__emundus_setup_campaigns` WHERE year LIKE '.$db->Quote($data['year']).' AND  training LIKE '.$db->Quote($v['code']);
+					$db->setQuery($query);
+					$cpt = $db->loadResult();
+
+					if($cpt == 0) {
+						$values[] = '('.$db->Quote($data['start_date']).', '.$db->Quote($data['end_date']).', '.$data['profile_id'].', '.$db->Quote($data['year']).', '.$db->Quote($data['short_description']).', '.$db->Quote($data['date_time']).', '.$data['user'].', '.$db->Quote($v['label']).', '.$db->Quote($v['code']).', '.$data['published'].')';
+						$values_unity[] = '('.$db->Quote($v['code']).', '.$db->Quote($v['label']).', '.$db->Quote($data['year']).', '.$data['profile_id'].', '.$db->Quote($v['programmes']).')';
+
+						$result .= '<i class="green check circle outline icon"></i> '.$v['label'].' ['.$data['year'].'] ['.$v['code'].'] '. JText::_('CREATED').'<br>';
+					} else{
+						$result .= '<i class="orange remove circle outline icon"></i> '.$v['label'].' ['.$data['year'].'] ['.$v['code'].'] '. JText::_('ALREADY_EXIST').'<br>';
+					}
+				}
+				catch(Exception $e)
+	            {
+	                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+	                return $e->getMessage();
+	            }
 			}
 
-			$query = 'INSERT INTO `#__emundus_setup_campaigns` (`'.implode('`, `', $column).'`) VALUES '.implode(',', $values);
-			//die($query);
 			try
-			{          
-			  $db->setQuery($query);
-			  $db->execute();
-			  
-			  try
-              {   
-                  $query = 'INSERT INTO `#__emundus_setup_teaching_unity` (`code`, `label`, `schoolyear`, `profile_id`, `programmes`) VALUES '.implode(',', $values_unity);
-                  $db->setQuery($query);
-                  return $db->execute();
-              }
-              catch(Exception $e)
-              {
-                  error_log($e->getMessage(), 0);
-                  return $e->getMessage();
-              }
+			{    
+				if (count($values) > 0) {
+					$query = 'INSERT INTO `#__emundus_setup_campaigns` (`'.implode('`, `', $column).'`) VALUES '.implode(',', $values);
+					$db->setQuery($query);
+					$db->execute();
+
+	                $query = 'INSERT INTO `#__emundus_setup_teaching_unity` (`code`, `label`, `schoolyear`, `profile_id`, `programmes`) VALUES '.implode(',', $values_unity);
+	                $db->setQuery($query);
+	                $db->execute();
+            	}
 			}
 			catch(Exception $e)
 			{
-			  error_log($e->getMessage(), 0);
-			  return $e->getMessage();
+	        	JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+				return $e->getMessage();
 			}
 		} else {
 			return false;
 		}
+
+		return $result;
     }
 
 }

@@ -558,7 +558,7 @@ class EmundusController extends JControllerLegacy {
                                 $this->setRedirect($url);
                             }
 
-                            return false;
+                            continue;
                         }
                     }
                     catch(Exception $e)
@@ -572,7 +572,7 @@ class EmundusController extends JControllerLegacy {
                             $this->setRedirect($url);
                         }
 
-                        return false;
+                        continue;
                     }
                 }
                 catch(Exception $e)
@@ -586,7 +586,7 @@ class EmundusController extends JControllerLegacy {
                         $this->setRedirect($url);
                     }
 
-                    return false;
+                    continue;
                 }
                 
                 $file_array = explode('.', $file['name']);

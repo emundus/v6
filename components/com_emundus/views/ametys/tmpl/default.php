@@ -27,9 +27,9 @@ JHTML::_('behavior.tooltip');
   	</a>
   </div>
   <div class="five wide column">
-  	<a href="#" id="em-ametys-cart">
+  	<!--<a href="#" id="em-ametys-cart">
   		<i class="circular big in cart link icon"></i> <?php echo JText::_('COM_EMUNDUS_DISPLAY_AMETYS_CART'); ?> 
-  	</a>
+  	</a>-->
   </div>
   <div class="sixteen wide column">
   	<div id="em-content"></div>
@@ -153,7 +153,7 @@ JHTML::_('behavior.tooltip');
 			var ametys = JSON.parse(programme.ametys);
 			var emundus = JSON.parse(programme.emundus);
 
-            if (emundus.status && ametys.status) {
+            if (ametys.status) {
 	           var ametysData = ametys.data;
 	           var emundusData = emundus.data;
 			   var data_to_add = new Array();
@@ -182,7 +182,9 @@ JHTML::_('behavior.tooltip');
                			var emData = new Object();
                			
                			emData.code = ametysData[d].cdmCode;
-               			emData.label = ametysData[d].title;
+               			emData.label = ametysData[d].title + " { " + ametysData[d].organisation + " }";
+               			emData.organisation = ametysData[d].organisation;
+               			emData.organisation_code = ametysData[d].organisation_code;
                			emData.notes = ametysData[d].presentation;
                			emData.published = 1;
                			emData.programmes = ametysData[d].catalog;
@@ -222,7 +224,28 @@ JHTML::_('behavior.tooltip');
 				        {
 				            console.log(jqXHR.responseText);
 				        }
-				    })
+				    });
+
+				    $.ajax({
+				        type:'POST',
+				        url:'index.php?option=com_emundus&controller=groups&task=addgroups&Itemid=',
+				        dataType:'json',
+				        data: {data : data_to_add},
+				        success: function(result)
+				        { 
+				        	if (result.status)
+				            {
+					           	$('#em-content').append("<hr>");
+					        	$('#em-content').append(Joomla.JText._("COM_EMUNDUS_GROUPS_SYNC_DONE"));				            
+				            }
+				        }, 
+				        error: function (jqXHR, textStatus, errorThrown)
+				        {
+				            console.log(jqXHR.responseText);
+				        }
+				    });
+
+
                 } else {
                 	$('#em-content').append("<hr>");
 					$('#em-content').append(Joomla.JText._("COM_EMUNDUS_NO_SYNC_NEEDED"));
