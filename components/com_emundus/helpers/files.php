@@ -367,7 +367,8 @@ echo "</pre>";
     public  function getApplicants(){
         $db = JFactory::getDBO();
         $query = 'SELECT esp.id, esp.label
-        FROM #__emundus_setup_profiles esp '; //WHERE esp.published =1';
+        FROM #__emundus_setup_profiles esp 
+        WHERE esp.status=1';
         $db->setQuery( $query );
         return $db->loadObjectList('id');
     }
@@ -377,6 +378,7 @@ echo "</pre>";
         $query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft
         FROM #__emundus_setup_profiles esp 
         INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id 
+        WHERE esp.status=1 
         ORDER BY caag.lft, esp.label';
         $db->setQuery( $query );
         return $db->loadObjectList('id');
@@ -389,7 +391,7 @@ echo "</pre>";
         LEFT JOIN #__emundus_users eu ON u.id = eu.user_id
         LEFT JOIN #__emundus_users_profiles eup ON u.id=eup.user_id
         LEFT JOIN #__emundus_setup_profiles esp ON (esp.id=eup.profile_id OR esp.id=eu.profile)
-        WHERE esp.is_evaluator=1
+        WHERE esp.is_evaluator=1 AND esp.status=1
         ORDER BY u.name';
         $db->setQuery( $query );
         return $db->loadObjectList('id');
