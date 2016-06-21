@@ -83,7 +83,7 @@ if ($copy_application_form == 1 && isset($user->fnum)) {
 			// Parent table
 			$parent_id = array();
 			foreach ($fnums as $key => $fnum) {
-				$query = 'INSERT INTO `'.$table_name.'` ('.implode(',', array_keys($parent_data)).', fnum) VALUES ';
+				$query = 'INSERT INTO `'.$table_name.'` (`'.implode('`,`', array_keys($parent_data)).'`, `fnum`) VALUES ';
 				$query .= '('.implode(',', $db->Quote($parent_data)).', '.$db->Quote($key).')';
 				$db->setQuery( $query );
 				try {
@@ -96,34 +96,37 @@ if ($copy_application_form == 1 && isset($user->fnum)) {
 			}
 			// Repeated table
 			foreach ($fabrik_group_rowids_key as $key => $rowids) {
-				$repeat_table_name = $table_name.'_'.$key.'_repeat';
-
-				$query = 'SELECT * FROM `'.$repeat_table_name.'` WHERE id IN ('.implode(',', $rowids).')';
+				if (count($rowids) > 0) {
 				
-				try {
-					$db->setQuery( $query );
-					$repeat_data = $db->loadAssocList();
-				} catch (Exception $e) {
-				    $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
-					JLog::add($error, JLog::ERROR, 'com_emundus');
-				}
-				if (count($repeat_data) > 0) {
-					foreach ($parent_id as $parent) {
-						$parent_data = array();
-						foreach ($repeat_data as $key => $d) {
-							unset($d['parent_id']);
-							unset($d['id']);
-							$columns = implode(',', array_keys($d));
-							$parent_data[] = '('.implode(',', $db->Quote($d)).', '.$parent.')';
-						}
-						$query = 'INSERT INTO `'.$repeat_table_name.'` ('.$columns.', parent_id) VALUES ';
-						$query .= implode(',', $parent_data);
+					$repeat_table_name = $table_name.'_'.$key.'_repeat';
+
+					$query = 'SELECT * FROM `'.$repeat_table_name.'` WHERE id IN ('.implode(',', $rowids).')';
+					
+					try {
 						$db->setQuery( $query );
-						try {
-					   		$db->execute();
-						} catch (Exception $e) {
-						    $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
-							JLog::add($error, JLog::ERROR, 'com_emundus');
+						$repeat_data = $db->loadAssocList();
+					} catch (Exception $e) {
+					    $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+						JLog::add($error, JLog::ERROR, 'com_emundus');
+					}
+					if (count($repeat_data) > 0) {
+						foreach ($parent_id as $parent) {
+							$parent_data = array();
+							foreach ($repeat_data as $key => $d) {
+								unset($d['parent_id']);
+								unset($d['id']);
+								$columns = '`'.implode('`,`', array_keys($d)).'`';
+								$parent_data[] = '('.implode(',', $db->Quote($d)).', '.$parent.')';
+							}
+							$query = 'INSERT INTO `'.$repeat_table_name.'` ('.$columns.', `parent_id`) VALUES ';
+							$query .= implode(',', $parent_data);
+							$db->setQuery( $query );
+							try {
+						   		$db->execute();
+							} catch (Exception $e) {
+							    $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+								JLog::add($error, JLog::ERROR, 'com_emundus');
+							}
 						}
 					}
 				}
@@ -135,7 +138,7 @@ if ($copy_application_form == 1 && isset($user->fnum)) {
 				$query = 'UPDATE `'.$table_name.'` SET ';
 				$parent_update = array();
 				foreach ($parent_data as $key => $value) {
-					$parent_update[] = $key.'='.$db->Quote($value);
+					$parent_update[] = '`'.$key.'`='.$db->Quote($value);
 				}
 				$query .= implode(',', $parent_update);
 				$query .= ' WHERE fnum like '.$db->Quote($fnum);
@@ -156,43 +159,46 @@ if ($copy_application_form == 1 && isset($user->fnum)) {
 
 			// Repeated table
 			foreach ($fabrik_group_rowids_key as $key => $rowids) {
-				$repeat_table_name = $table_name.'_'.$key.'_repeat';
 
-				$query = 'SELECT * FROM `'.$repeat_table_name.'` WHERE id IN ('.implode(',', $rowids).')';
-				try{
-					$db->setQuery( $query );
-					$repeat_data = $db->loadAssocList('id');
-				} catch (Exception $e) {
-				    $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
-					JLog::add($error, JLog::ERROR, 'com_emundus');
-				}
+				if (count($rowids) > 0) {
+					$repeat_table_name = $table_name.'_'.$key.'_repeat';
 
-				if (count($parent_id) > 0) {
-					$query = 'DELETE FROM `'.$repeat_table_name.'` WHERE parent_id IN ('.implode(',', $parent_id).')';
-					$db->setQuery( $query );
-					try {
-					    $res = $db->execute();
+					$query = 'SELECT * FROM `'.$repeat_table_name.'` WHERE id IN ('.implode(',', $rowids).')';
+					try{
+						$db->setQuery( $query );
+						$repeat_data = $db->loadAssocList('id');
 					} catch (Exception $e) {
 					    $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
-				        JLog::add($error, JLog::ERROR, 'com_emundus');
+						JLog::add($error, JLog::ERROR, 'com_emundus');
 					}
-					if (count($repeat_data) > 0) {
-						foreach ($parent_id as $parent) {
-							$parent_data = array();
-							foreach ($repeat_data as $key => $d) {
-								unset($d['parent_id']);
-								unset($d['id']);
-								$columns = implode(',', array_keys($d));
-								$parent_data[] = '('.implode(',', $db->Quote($d)).', '.$parent.')';
-							}
-							$query = 'INSERT INTO `'.$repeat_table_name.'` ('.$columns.', parent_id) VALUES ';
-							$query .= implode(',', $parent_data);
-							$db->setQuery( $query );
-							try {
-						   		$db->execute();
-							} catch (Exception $e) {
-							    $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
-								JLog::add($error, JLog::ERROR, 'com_emundus');
+
+					if (count($parent_id) > 0) {
+						$query = 'DELETE FROM `'.$repeat_table_name.'` WHERE parent_id IN ('.implode(',', $parent_id).')';
+						$db->setQuery( $query );
+						try {
+						    $res = $db->execute();
+						} catch (Exception $e) {
+						    $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+					        JLog::add($error, JLog::ERROR, 'com_emundus');
+						}
+						if (count($repeat_data) > 0) {
+							foreach ($parent_id as $parent) {
+								$parent_data = array();
+								foreach ($repeat_data as $key => $d) {
+									unset($d['parent_id']);
+									unset($d['id']);
+									$columns = '`'.implode('`,`', array_keys($d)).'`';
+									$parent_data[] = '('.implode(',', $db->Quote($d)).', '.$parent.')';
+								}
+								$query = 'INSERT INTO `'.$repeat_table_name.'` ('.$columns.', `parent_id`) VALUES ';
+								$query .= implode(',', $parent_data);
+								$db->setQuery( $query );
+								try {
+							   		$db->execute();
+								} catch (Exception $e) {
+								    $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+									JLog::add($error, JLog::ERROR, 'com_emundus');
+								}
 							}
 						}
 					}
@@ -247,7 +253,7 @@ if (EmundusHelperAccess::asApplicantAccessLevel($user->id)){
 	$student_id = !empty($s2)?$s2:$s1; 
 
 	$sid = is_array($student_id)?$student_id[0]:$student_id;
-	$query = 'UPDATE '.$db_table_name.' SET user='.$sid.' WHERE fnum like '.$db->Quote($fnum); 
+	$query = 'UPDATE `'.$db_table_name.'` SET `user`='.$sid.' WHERE fnum like '.$db->Quote($fnum); 
 	$db->setQuery( $query );
 	$db->execute();
 

@@ -151,15 +151,26 @@ if (count($trigger_emails) > 0) {
         }
     }
 }
+
 if ($application_fee == 1) {
+    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+
     $application = new EmundusModelApplication;
 
-    if (count($application->getHikashopOrder($student->fnum)) > 0) {
-        $link = JRoute::_('index.php?option=com_hikashop&ctrl=product&task=updatecart&quantity=1&checkout=1&product_id=1');
-        header('Location: '.$link);
+    $fnumInfos = EmundusModelFiles::getFnumInfos($student->fnum);
+    if (count($fnumInfos) > 0) {
+        $paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
+
+        if (!$paid) {
+            $checkout_url = $application->getHikashopCheckoutUrl($student->profile);
+            $mainframe->redirect(JRoute::_($checkout_url));
+        }
+    } else {
+        $mainframe->redirect('index.php');
     }
-    
+
 }
 
 

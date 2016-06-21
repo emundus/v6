@@ -31,14 +31,17 @@ if ($jinput->get('view') == 'form') {
 	
 	if ($application_fee == 1) {
 		$fnumInfos = EmundusModelFiles::getFnumInfos($user->fnum);
-		if ($application_fee == 1) {
+		if (count($fnumInfos) > 0) {
 			$paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
 
 			if (!$paid) {
 				$checkout_url = $application->getHikashopCheckoutUrl($user->profile);
 				$mainframe->redirect(JRoute::_($checkout_url));
 			}
+		} else {
+			$mainframe->redirect('index.php');
 		}
+
 	}
 	
 	$attachments = $application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
