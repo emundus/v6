@@ -478,6 +478,12 @@ class EmundusModelGroups extends JModelList
 					$db->setQuery($query);
 	        		$db->execute();
 	        	}
+
+	        	// add for All access group
+	        	$query = 'INSERT INTO `#__emundus_setup_groups_repeat_course` (`parent_id`, `course`) VALUES (1, '.$db->Quote($v['code']).')';
+    			$db->setQuery($query);
+    			$db->execute();
+
 	          }
          	}
          	catch(Exception $e)
