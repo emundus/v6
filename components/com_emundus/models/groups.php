@@ -427,14 +427,14 @@ class EmundusModelGroups extends JModelList
      */
     public function addGroupsByProgrammes($programmes)
     {
-        $db = $this->getDbo();
 
         if (count($programmes) > 0) {
 
-        	
-          $column = array_keys($programmes[0]);
+	        $db = $this->getDbo();      	
+   	
+        	$column = array_keys($programmes[0]);
          
-          try{
+        	try{
 	          foreach ($programmes as $key => $v) {
 	          // Check if a group is already declared for the organisation
 	        	$query = 'SELECT * FROM `#__emundus_setup_groups` 
@@ -463,18 +463,34 @@ class EmundusModelGroups extends JModelList
 	        		$query = 'INSERT INTO `#__emundus_setup_groups_repeat_course` (`parent_id`, `course`) VALUES ('.$lastid.', '.$db->Quote($v['code']).')';
 	        		$db->setQuery($query);
 	        		$db->execute();
+
+	        		// define default access right for group
+	        		$params = JComponentHelper::getParams('com_emundus');
+					$default_actions = $params->get('default_actions', 0);
+					$actions_evaluators = json_decode($default_actions);
+
+					$values = array();
+					foreach ($actions_evaluators as $key => $action) {
+						$values[] = '('.$lastid.', "'.implode('","', (array)$action).'")';
+					}
+
+					$query = 'INSERT INTO `#__emundus_acl` (`group_id`, `action_id`, `c`, `r`, `u`, `d`) VALUE '.implode(',', $values);
+					$db->setQuery($query);
+	        		$db->execute();
 	        	}
 	          }
-          }
-          catch(Exception $e)
-          {
+         	}
+         	catch(Exception $e)
+          	{
               JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
               return $e->getMessage();
-          }
+          	}
 
         } else {
-          return false;
+          return JText::_('NO_GROUP_TO_ADD');
         }
+
+        return true;
     }
 
 }

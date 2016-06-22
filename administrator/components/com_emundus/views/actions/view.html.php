@@ -36,7 +36,7 @@ class EmundusViewActions extends JViewLegacy
 		JToolBarHelper::help( 'screen.cpanel', true);
 
 		$model= $this->getModel('Actions');
-
+		echo "<h1>START SYNC...</h1>";
 		$model->syncAllActions();
 
 		/* Call the state object */

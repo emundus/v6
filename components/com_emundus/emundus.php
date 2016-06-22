@@ -71,6 +71,8 @@ JText::script('COM_EMUNDUS_DOWNLOAD_EXTRACTION');
 JText::script('COM_EMUNDUS_ZIP_GENERATION');
 JText::script('COM_EMUNDUS_DOWNLOAD_ZIP');
 JText::script('COM_EMUNDUS_PUBLISH');
+JText::script('COM_EMUNDUS_COPY_FILE');
+JText::script('COM_EMUNDUS_SHARE_FILE');
 
 JText::script('LOADING');
 JText::script('TITLE');
