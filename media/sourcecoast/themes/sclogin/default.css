@@ -120,7 +120,7 @@ a.forgot.btn i {
 
 .sclogin #scprofile-pic,
 .sclogin .sclogin-greeting {
-    /*display: inline-block;*/
+    display: inline-block;
     line-height: 15px;
     margin-top: 5px;
     margin-right: 5px;
