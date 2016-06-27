@@ -252,7 +252,7 @@ class JcrmModelContact extends JModelItem {
 	public function getOrganisationByName($name)
 	{
 		$dbo = $this->getDbo();
-		$query = "select id, organisation from #__jcrm_contacts where organisation LIKE '".$name."' and type = 1";
+		$query = "select id, organisation from #__jcrm_contacts where organisation LIKE ".$dbo->Quote($name)." and type = 1";
 		try
 		{
 			$dbo->setQuery($query);
