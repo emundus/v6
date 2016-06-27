@@ -252,7 +252,7 @@ class JcrmModelContact extends JModelItem {
 	public function getOrganisationByName($name)
 	{
 		$dbo = $this->getDbo();
-		$query = "select id, organisation from #__jcrm_contacts where organisation LIKE ".$dbo->Quote($name)." and type = 1";
+		$query = "select id, organisation from #__jcrm_contacts where organisation LIKE '".$name."' and type = 1";
 		try
 		{
 			$dbo->setQuery($query);
@@ -342,7 +342,10 @@ class JcrmModelContact extends JModelItem {
 		$dbo = $this->getDbo();
 		try
 		{
-		    $query = "select contact.id, contact.full_name, contact.email, contact.phone from #__jcrm_contacts as contact join #__jcrm_contact_orga as orga on orga.contact_id = contact.id where orga.org_id =" . $id;
+		    $query = "SELECT contact.* 
+		    FROM #__jcrm_contacts as contact 
+		    LEFT JOIN #__jcrm_contact_orga as orga on orga.contact_id = contact.id 
+		    WHERE orga.org_id =" . $id;
 			$dbo->setQuery($query);
 			return $dbo->loadObjectList();
 		}
@@ -364,7 +367,11 @@ class JcrmModelContact extends JModelItem {
 				$jcard->org = $orga->organisation;
 				$contact->organisation = $orga->organisation;
 				$contact->jcard = json_encode($jcard);
-				$query = "update #__jcrm_contacts set `organisation` = '".$orga->organisation."', `jcard` = '".json_encode($jcard)."' where `id` = ".$contact->id;
+				$query = "update #__jcrm_contacts set `organisation` = '".$orga->organisation."'";
+				if (isset($contact->jcard)) {
+					$query .= ", `jcard` = '".json_encode($jcard)."'";
+				}
+				$query .= " where `id` = ".$contact->id;
 				$this->getDbo()->setQuery($query);
 				$this->getDbo()->execute();
 			}
