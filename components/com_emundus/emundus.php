@@ -97,6 +97,7 @@ JText::script('ALL_IN_ONE_DOC');
 
 // view user
 JText::script('NOT_A_VALID_EMAIL');
+JText::script('NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER');
 JText::script('REQUIRED');
 JText::script('SELECT_A_VALUE');
 JText::script('GROUP_CREATED');
@@ -104,7 +105,6 @@ JText::script('USER_CREATED');
 JText::script('LOGIN_NOT_GOOD');
 JText::script('MAIL_NOT_GOOD');
 JText::script('ARE_YOU_SURE_TO_DELETE_USERS');
-JText::script('NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER');
 JText::script('COM_EMUNDUS_USERS_DELETED');
 JText::script('SHARE_PROGRESS');
 JText::script('SENT');

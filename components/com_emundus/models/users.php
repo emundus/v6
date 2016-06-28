@@ -294,9 +294,10 @@ class EmundusModelUsers extends JModelList
     public function getProfiles()
     {
         $db = JFactory::getDBO();
-        $query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, esp.published, caag.lft FROM #__emundus_setup_profiles esp
+        $query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, esp.published, caag.lft 
+        FROM #__emundus_setup_profiles esp
         INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
-        where esp.id > 1
+        where esp.status=1 AND esp.id > 1 
         ORDER BY esp.acl_aro_groups, esp.label';
         $db->setQuery( $query );
         return $db->loadObjectList('id');
@@ -312,7 +313,7 @@ class EmundusModelUsers extends JModelList
         $query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, esp.published, caag.lft
         FROM #__emundus_setup_profiles esp
         INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
-        WHERE esp.id IN (' . implode(',', $ids) . ')
+        WHERE esp.status=1 AND esp.id IN (' . implode(',', $ids) . ')
         ORDER BY caag.lft, esp.label';
         $db->setQuery($query);
         return $db->loadObjectList('id');

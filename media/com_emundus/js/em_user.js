@@ -82,6 +82,7 @@ function formCheck(id)
 	if($('#'+id).val().trim().length == 0)
 	{
 		$('#'+id).parent('.form-group').addClass('has-error');
+		$('#'+id+' help-block').remove();
 		$('#'+id).after('<span class="help-block">'+Joomla.JText._('REQUIRED')+'</span>');
 		return false;
 	}
@@ -93,6 +94,7 @@ function formCheck(id)
 			if(!$(this).parent('.form-group').hasClass('has-error'))
 			{
 				$(this).parent('.form-group').addClass('has-error');
+				$('#'+id+' help-block').remove();
 				$(this).after('<span class="help-block">'+Joomla.JText._('NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER')+'</span>');
 			}
 			return false;
@@ -103,6 +105,7 @@ function formCheck(id)
 			if(!$(this).parent('.form-group').hasClass('has-error'))
 			{
 				$(this).parent('.form-group').addClass('has-error');
+				$('#'+id+' help-block').remove();
 				$(this).after('<span class="help-block">'+Joomla.JText._('NOT_A_VALID_EMAIL')+'</span>');
 			}
 			return false;

@@ -135,7 +135,7 @@
 
           $(document).on('keyup', '#login', function()
                      {
-                         var re = /^[a-z0-9_@\-\.]*$/;
+                        var re = /^[a-z0-9_@]*$/;
                         if(!re.test($('#login').val()))
                         {
                             if(!$(this).parent('.form-group').hasClass('has-error'))
