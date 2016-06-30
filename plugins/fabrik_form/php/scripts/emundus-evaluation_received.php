@@ -22,8 +22,8 @@ $mailer = JFactory::getMailer();
 $email 		= $m_emails->getEmail('expert_received');
 
 $body 		= $m_emails->setBody($user, $email->message, "");
-$from 	= $m_emails->setBody($user, $email->emailfrom, "");
-$fromname 		= $m_emails->setBody($user, $email->name, "");
+$from 	    = $m_emails->setBody($user, $email->emailfrom, "");
+$fromname 	= $m_emails->setBody($user, $email->name, "");
 $subject 	= $m_emails->setBody($user, $email->subject, "");
 
 $config = JFactory::getConfig();
@@ -33,7 +33,17 @@ $sender = array(
 );
 $recipient = $user->email;
 
+// setup mail
+$app    = JFactory::getApplication();
+$email_from_sys = $app->getCfg('mailfrom');
+$sender = array(
+    $email_from_sys,
+    $fromname
+);
+$mailer = JFactory::getMailer();
+
 $mailer->setSender($sender);
+$mailer->addReplyTo($from, $fromname);
 $mailer->addRecipient($recipient);
 $mailer->setSubject($subject);
 $mailer->isHTML(true);

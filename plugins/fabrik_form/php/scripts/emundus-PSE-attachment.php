@@ -128,13 +128,16 @@ if ($inform_applicant_by_email == 1) {
 	$replyto = $email->emailfrom;
 	$replytoname = $email->name;
 
-    $config = JFactory::getConfig();
-    $sender = array(
-        $config->get( $from ),
-        $config->get( $fromname )
-    );
+    $app    = JFactory::getApplication();
+$email_from_sys = $app->getCfg('mailfrom');
+$sender = array(
+    $email_from_sys,
+    $fromname
+);
+$mailer = JFactory::getMailer();
 
-    $mailer->setSender($sender);
+$mailer->setSender($sender);
+$mailer->addReplyTo($from, $fromname);
     $mailer->addRecipient($recipient);
     $mailer->setSubject($subject);
     $mailer->isHTML(true);

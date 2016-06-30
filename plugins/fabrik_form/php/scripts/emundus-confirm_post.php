@@ -15,6 +15,8 @@ defined( '_JEXEC' ) or die();
 
 $db = JFactory::getDBO();
 $student =  JFactory::getUser();
+$app    = JFactory::getApplication();
+$email_from_sys = $app->getCfg('mailfrom');
 
 include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
@@ -114,20 +116,14 @@ if (count($trigger_emails) > 0) {
             $replyto = $from;
             $replytoname = $fromname;
 
-            if (empty($from) || !isset($from)) {
-                    $config = JFactory::getConfig();
-                    $sender = array(
-                        $config->get( $from ),
-                        $config->get( $fromname )
-                    );
-            } else {
-                $sender = array(
-                    $from,
-                    $fromname
-                );
-            }
+            // setup mail
+            $sender = array(
+                $email_from_sys,
+                $fromname
+            );
 
             $mailer->setSender($sender);
+            $mailer->addReplyTo($from, $fromname);
             $mailer->addRecipient($to);
             $mailer->setSubject($subject);
             $mailer->isHTML(true);

@@ -106,13 +106,16 @@ $mode = 1;
 $replyto = $obj->emailfrom;
 $replytoname = $obj->name;
 
-$config = JFactory::getConfig();
+// setup mail
+$app    = JFactory::getApplication();
+$email_from_sys = $app->getCfg('mailfrom');
 $sender = array(
-    $config->get( $from ),
-    $config->get( $fromname )
+    $email_from_sys,
+    $fromname
 );
 
 $mailer->setSender($sender);
+$mailer->addReplyTo($from, $fromname);
 $mailer->addRecipient($recipient);
 $mailer->setSubject($subject);
 $mailer->isHTML(true);
