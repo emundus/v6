@@ -185,6 +185,9 @@ class EmundusViewEvaluation extends JViewLegacy
 							elseif ($key == 'name') {
 						    	continue;
 						    }
+						    elseif ($key == 'status_class') {
+                                continue;
+                            }
 							elseif ($key == 'evaluator') {
 								if ($evaluators_can_see_other_eval || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) 
 									$userObj->val = !empty($value)?'<a href="#" data-toggle="modal" data-target="#basicModal" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'">
@@ -200,6 +203,7 @@ class EmundusViewEvaluation extends JViewLegacy
 							{
 								$userObj->val = $value;
 								$userObj->type = 'text';
+								$userObj->status_class = $user['status_class'];
 								$line[$key] = $userObj;
 							}
 						}

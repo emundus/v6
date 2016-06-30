@@ -1,9 +1,9 @@
 <?php
 /**
- * @version		$Id: data.php 14401 2014-09-16 14:10:00Z brivalland $
+ * @version		$Id: data.php 14401 2016-06-16 14:10:00Z brivalland $
  * @package		Joomla
  * @subpackage	Emundus
- * @copyright	Copyright (C) 2005 - 2015 Décision Publique. All rights reserved.
+ * @copyright	Copyright (C) 2016 eMundus. All rights reserved.
  * @license		GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant to the
  * GNU General Public License, and as distributed it includes or is derivative
@@ -24,7 +24,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 			<thead>
 			<tr>
 				<?php foreach($this->datas[0] as $kl => $v): ?>
-					<th title="<?php echo JText::_($v)?>" id="<?php echo $kl?>" >
+					<th title="<?php echo strip_tags(JText::_($v)); ?>" id="<?php echo $kl?>" >
 						<p class="em-cell">
 							<?php if($kl == 'check'): ?>
 								<label for="em-check-all">
@@ -42,10 +42,10 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									<span class="glyphicon glyphicon-sort-by-attributes"></span>
 								<?php endif;?>
 								<strong>
-									<?php echo JText::_($v)?>
+									<?php echo JText::_($v); ?>
 								</strong>
 							<?php else:?>
-								<?php echo JText::_($v)?>
+								<?php echo JText::_($v);?>
 							<?php endif;?>
 						</p>
 					</th>
@@ -70,7 +70,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 												echo ($tab[1] + 1 + $this->pagination->limitstart);
 												?>
 										</label>
-
+									<?php elseif($k == 'status'):?>
+                                        <span class="label label-<?php echo $value->status_class ?>" title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
 									<?php elseif($k == 'fnum'):?>
 										<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>">
 											<span class="glyphicon glyphicon-folder-open" title="<?php echo $value->val ?>">  <?php echo JFactory::getUser((int)substr($value->val, -7))->name; ?></span>

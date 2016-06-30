@@ -1003,7 +1003,7 @@ class EmundusModelEvaluation extends JModelList
 		$evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
 		$current_user = JFactory::getUser();
 
-		$query = 'select c.fnum, ss.value as status, u.name ';
+		$query = 'select c.fnum, ss.value as status, u.name, ss.class as status_class ';
 		// prevent double left join on query 
 		$lastTab = array('#__emundus_setup_status', 'jos_emundus_setup_status', 
 						 '#__emundus_setup_programmes', 'jos_emundus_setup_programmes',
