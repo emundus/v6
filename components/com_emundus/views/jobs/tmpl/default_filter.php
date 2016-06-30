@@ -34,7 +34,7 @@ endforeach;
 <fieldset id="filter-bar">
 	<div class="filter-search fltlft">
 		<?php if ($filters) : ?>
-            <input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" title="<?php echo JText::_('COM_USERS_SEARCH_USERS'); ?>" />
+            <input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" title="<?php echo JText::_('COM_EMUNDUS_SEARCH_FILTER_SUBMIT'); ?>" />
             <span class="glyphicon glyphicon-chevron-right"></span>
             <?php
             echo JText::_('COM_EMUNDUS_JOBS_DOMAINE') . " " . JHTML::_('select.genericlist', $options, 'filter_domaine', 'class="inputbox"', 'value', 'text', $selected_domaine);
