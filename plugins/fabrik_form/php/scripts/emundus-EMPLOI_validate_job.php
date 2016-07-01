@@ -20,6 +20,8 @@ include_once(JPATH_BASE.'/components/com_emundus/helpers/files.php');
 $db = JFactory::getDBO();
 $user =  JFactory::getUser();
 $mailer = JFactory::getMailer();
+$app    = JFactory::getApplication();
+$email_from_sys = $app->getCfg('mailfrom');
 
 //$eMConfig = JComponentHelper::getParams('com_emundus');
 
@@ -51,8 +53,8 @@ foreach ($elements_valide_comite->sub_values as $key => $value) {
 
 $emails = new EmundusModelEmails;
 
-$post = array(  'FICHE_EMPLOI' 		        => $intitule_poste,
-                'FICHE_EMPLOI_VALIDE' 		=> $valide,
+$post = array(  'FICHE_EMPLOI'              => $intitule_poste,
+                'FICHE_EMPLOI_VALIDE'       => $valide,
                 'FICHE_EMPLOI_VALIDE_COMITE'=> $valide_comite
 );
 $tags = $emails->setTags($deposant->id, $post);
@@ -72,31 +74,32 @@ $mode = 1;
 $replyto = $user->email;
 $replytoname = $user->name;
 
-$config = JFactory::getConfig();
+// setup mail
 $sender = array(
-    $config->get( $from ),
-    $config->get( $fromname )
+    $email_from_sys,
+    $fromname
 );
 
-$mailer->setSender($sender);
-$mailer->addRecipient($recipient);
-$mailer->setSubject($subject);
-$mailer->isHTML(true);
-$mailer->Encoding = 'base64';
-$mailer->setBody($body);
+if (isset($recipient) && !empty($recipient)) {
+    $mailer->setSender($sender);
+    $mailer->addReplyTo($from, $fromname);
+    $mailer->addRecipient($recipient);
+    $mailer->setSubject($subject);
+    $mailer->isHTML(true);
+    $mailer->Encoding = 'base64';
+    $mailer->setBody($body);
 
-$send = $mailer->Send();
-if ( $send !== true ) {
-    echo 'Error sending email: ' . $send->__toString(); die();
-} else {
-    $message = array(
-        'user_id_from' => $from_id,
-        'user_id_to' => $deposant->id,
-        'subject' => $subject,
-        'message' => $body
-    );
-    $emails->logEmail($message);
+    $send = $mailer->Send();
+    if ( $send !== true ) {
+        echo 'Error sending email: TO '.$recipient.' FROM '.$from.' ' . $send->__toString(); die();
+    } else {
+        $message = array(
+            'user_id_from' => $from_id,
+            'user_id_to' => $deposant->id,
+            'subject' => $subject,
+            'message' => $body
+        );
+        $emails->logEmail($message);
+    }
 }
-
-
 ?>
