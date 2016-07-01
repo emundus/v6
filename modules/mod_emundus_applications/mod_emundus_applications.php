@@ -32,7 +32,7 @@ $Itemid 					= $app->input->getInt('Itemid', null, 'int');
 $eMConfig 					= JComponentHelper::getParams('com_emundus');
 $applicant_can_renew 		= $eMConfig->get('applicant_can_renew', '0');
 
-$description		 		= $params->get('description', '');
+$description		 		= JText::_($params->get('description', ''));
 $show_add_application 		= $params->get('show_add_application', 1);
 $position_add_application 	= (int)$params->get('position_add_application', 0);
 $show_progress 				= $params->get('show_progress', 1);
