@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  * @version   $Id$
  */
@@ -43,6 +43,20 @@ AkeebaStrapper::addJSdef($js);
                 <?php echo AdmintoolsHelperSelect::booleanlist('exportdata[wafconfig]', null, 1);?>
             </div>
         </div>
+
+	    <div class="control-group">
+		    <label class="control-label"><?php echo JText::_('COM_ADMINTOOLS_IMPORTEXPORT_WAFBLACKLIST')?></label>
+		    <div class="controls">
+			    <?php echo AdmintoolsHelperSelect::booleanlist('exportdata[wafblacklist]', null, 1);?>
+		    </div>
+	    </div>
+
+	    <div class="control-group">
+		    <label class="control-label"><?php echo JText::_('COM_ADMINTOOLS_IMPORTEXPORT_WAFEXCEPTIONS')?></label>
+		    <div class="controls">
+			    <?php echo AdmintoolsHelperSelect::booleanlist('exportdata[wafexceptions]', null, 1);?>
+		    </div>
+	    </div>
 
         <div class="control-group">
             <label class="control-label"><?php echo JText::_('COM_ADMINTOOLS_IMPORTEXPORT_IPBLACKLIST')?></label>

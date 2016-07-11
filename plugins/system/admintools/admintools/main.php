@@ -1,19 +1,13 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  */
 
 defined('_JEXEC') or die;
 
 JLoader::import('joomla.application.plugin');
-
-// If JSON functions don't exist, load our compatibility layer
-if ((!function_exists('json_encode')) || (!function_exists('json_decode')))
-{
-	include_once JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_admintools' . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'jsonlib.php';
-}
 
 // This dummy class is here to allow the class autoloader to load the main plugin file
 class AtsystemAdmintoolsMain
@@ -80,14 +74,14 @@ class plgSystemAdmintools extends JPlugin
 		// Store a reference to the global input object
 		$this->input = JFactory::getApplication()->input;
 
+		// Load the component parameters
+		$this->loadComponentParameters();
+
 		// Work around IP issues with transparent proxies etc
 		$this->workaroundIP();
 
 		// Load the GeoIP library, if necessary
 		$this->loadGeoIpProvider();
-
-		// Load the component parameters
-		$this->loadComponentParameters();
 
 		// Preload the security exceptions handler object
 		$this->loadExceptionsHandler();
@@ -144,18 +138,7 @@ class plgSystemAdmintools extends JPlugin
 		// Register the late bound after render event handler, guaranteed to be the last onAfterRender plugin to execute
 		$app = JFactory::getApplication();
 
-		// Joomla 2.5 registers events in a different way, so we have to manually attach them
-		if(version_compare(JVERSION, '3.0', 'ge'))
-		{
-			$app->registerEvent('onAfterRender', array($this, 'onAfterRenderLatebound'));
-		}
-		else
-		{
-			$dispatcher = JDispatcher::getInstance();
-
-			$method = array('event' => 'onAfterRender', 'handler' => array($this, 'onAfterRenderLatebound'));
-			$dispatcher->attach($method);
-		}
+		$app->registerEvent('onAfterRender', array($this, 'onAfterRenderLatebound'));
 
 		return $this->runFeature('onBeforeRender', array());
 	}
@@ -292,8 +275,29 @@ class plgSystemAdmintools extends JPlugin
 	 */
 	protected function workaroundIP()
 	{
+		// IP workarounds are always disabled in the Core version
+		if (!defined('ADMINTOOLS_PRO'))
+		{
+			require_once JPATH_ADMINISTRATOR . '/components/com_admintools/version.php';
+		}
+
+		if (!ADMINTOOLS_PRO)
+		{
+			return;
+		}
+
+		$enableWorkarounds = $this->componentParams->getValue('ipworkarounds', -1);
+
+		// Upgrade from older versions (default: enable IP workarounds)
+		if ($enableWorkarounds == -1)
+		{
+			$enableWorkarounds = 1;
+			$this->componentParams->setValue('ipworkarounds', 1, true);
+		}
+
 		if (class_exists('F0FUtilsIp', true))
 		{
+			F0FUtilsIp::setAllowIpOverrides($enableWorkarounds);
 			F0FUtilsIp::workaroundIPIssues();
 		}
 	}
@@ -429,14 +433,136 @@ class plgSystemAdmintools extends JPlugin
 	 */
 	protected function loadWAFExceptions()
 	{
+		$jConfig = JFactory::getConfig();
+		$isSEF = $jConfig->get('sef', 0);
+
 		$option = $this->input->getCmd('option', '');
 		$view = $this->input->getCmd('view', '');
 
+		// If we have SEF URLs enabled and an empty $option (SEF not yet parsed) OR we have an option that does not
+		// start with com_ we need to a different kind of processing. NB! If an option in the form of com_something is
+		// provided we have a non-SEF URL running on a site with SEF URLs enabled.
+		if (($isSEF && empty($option)) || (!empty($option) && substr($option, 0, 4) != 'com_'))
+		{
+			$this->loadWAFExceptionsSEF();
+		}
+		else
+		{
+			$Itemid = $this->input->getInt('Itemid', null);
+
+			if (!empty($Itemid))
+			{
+				list($option, $view) = $this->loadMenuItem($Itemid, $option, $view);
+			}
+
+			$this->loadWAFExceptionsByOption($option, $view);
+		}
+
+		if (empty($this->exceptions))
+		{
+			$this->exceptions = array();
+		}
+		else
+		{
+			if (empty($this->exceptions[0]))
+			{
+				$this->skipFiltering = true;
+			}
+		}
+	}
+
+	protected function loadWAFExceptionsSEF()
+	{
+		// Get the SEF URI path
+		$uriPath = JUri::getInstance()->getPath();
+		$uriPath = ltrim($uriPath, '/');
+
+		// Do I have an index.php prefix?
+		if (substr($uriPath, 0, 10) == 'index.php/')
+		{
+			$uriPath = substr($uriPath, 10);
+		}
+
+		// Get the URI path without the language prefix
+		$uriPathNoLanguage = $uriPath;
+
+		if (F0FPlatform::getInstance()->isFrontend())
+		{
+			/** @var \JApplicationSite $app */
+			$app = \JFactory::getApplication();
+
+			if ($app->getLanguageFilter())
+			{
+				jimport('joomla.language.helper');
+				$languages = JLanguageHelper::getLanguages('lang_code');
+
+				foreach($languages as $lang)
+				{
+					$langSefCode = $lang->sef . '/';
+
+					if (strpos($uriPath, $langSefCode) === 0)
+					{
+						$uriPathNoLanguage = substr($uriPath, strlen($langSefCode));
+					}
+				}
+			}
+		}
+
+		// Load all WAF exceptions for SEF URLs
+		$db = JFactory::getDBO();
+		$this->exceptions = array();
+		$exceptions = array();
+		$view = $this->input->getCmd('view', '');
+
+		$sql = $db->getQuery(true)
+				  ->select('*')
+				  ->from($db->qn('#__admintools_wafexceptions'))
+				  ->where('NOT(' . $db->qn('option') . ' LIKE ' . $db->q('com_%') . ')');
+
+		$db->setQuery($sql);
+
+		try
+		{
+			$exceptions = $db->loadAssocList();
+		}
+		catch (Exception $e)
+		{
+		}
+
+		foreach ($exceptions as $exception)
+		{
+            if($exception['option'])
+            {
+                if ((strpos($uriPathNoLanguage, $exception['option']) !== 0) && (strpos($uriPath, $exception['option']) !== 0))
+                {
+                    continue;
+                }
+            }
+
+			if (!empty($exception['view']) && ($view != $exception['view']))
+			{
+				continue;
+			}
+
+			$this->exceptions[] = $exception['query'];
+		}
+	}
+
+	/**
+	 * Loads WAF Exceptions by option and view (non-SEF URLs)
+	 *
+	 * @param   string  $option  Component, e.g. com_something
+	 * @param   string  $view    View, e.g. foobar
+	 *
+	 * @return  void
+	 */
+	protected function loadWAFExceptionsByOption($option, $view)
+	{
 		$db = JFactory::getDBO();
 
 		$sql = $db->getQuery(true)
-			->select($db->qn('query'))
-			->from($db->qn('#__admintools_wafexceptions'));
+				  ->select($db->qn('query'))
+				  ->from($db->qn('#__admintools_wafexceptions'));
 
 		if (empty($option))
 		{
@@ -481,30 +607,55 @@ class plgSystemAdmintools extends JPlugin
 
 		try
 		{
-			if (version_compare(JVERSION, '3.0', 'ge'))
-			{
-				$this->exceptions = $db->loadColumn();
-			}
-			else
-			{
-				$this->exceptions = $db->loadResultArray();
-			}
+			$this->exceptions = $db->loadColumn();
 		}
 		catch (Exception $e)
 		{
 		}
+	}
 
-		if (empty($this->exceptions))
+	/**
+	 * Loads a menu item and returns the effective option and view
+	 *
+	 * @param   int     $Itemid  The menu item ID to load
+	 * @param   string  $option  The currently set option
+	 * @param   string  $view    The currently set view
+	 *
+	 * @return  array  The new option and view as array($option, $view)
+	 */
+	protected function loadMenuItem($Itemid, $option, $view)
+	{
+		// Option and view already set, they will override the Itemid
+		if (!empty($option) && !empty($view))
 		{
-			$this->exceptions = array();
+			return array($option, $view);
 		}
-		else
+
+		// Load the menu item
+		$menu = JFactory::getApplication()->getMenu()->getItem($Itemid);
+
+		// Menu item does not exist, nothign to do
+		if (!is_object($menu))
 		{
-			if (empty($this->exceptions[0]))
-			{
-				$this->skipFiltering = true;
-			}
+			return array($option, $view);
 		}
+
+		// Remove "index.php?" and parse the link
+		parse_str(str_replace('index.php?', '', $menu->link), $menuquery);
+
+		// We use the option and view from the menu item only if they are not overridden in the request
+		if (empty($option))
+		{
+			$option = array_key_exists('option', $menuquery) ? $menuquery['option'] : $option;
+		}
+
+		if (empty($view))
+		{
+			$view = array_key_exists('view', $menuquery) ? $menuquery['view'] : $view;
+		}
+
+		// Return the new option and view
+		return array($option, $view);
 	}
 
 	/**

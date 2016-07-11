@@ -82,7 +82,14 @@ class Com_AdmintoolsInstallerScript extends F0FUtilsInstallscript
 	 *
 	 * @var   string
 	 */
-	protected $minimumJoomlaVersion = '3.3.0';
+	protected $minimumJoomlaVersion = '3.0.0';
+
+	/**
+	 * The minimum PHP version required to install this extension
+	 *
+	 * @var   string
+	 */
+	protected $minimumPHPVersion = '5.3.4';
 
 	/**
 	 * The list of extra modules and plugins to install on component installation / update and remove on component
@@ -173,26 +180,28 @@ class Com_AdmintoolsInstallerScript extends F0FUtilsInstallscript
 			'administrator/components/com_admintools/views/badwords/view.html.php',
 			'administrator/components/com_admintools/views/base.view.html.php',
 
-			'administrator/components/com_jadmintools/fof/LICENSE.txt',
-			'administrator/components/com_jadmintools/fof/controller.php',
-			'administrator/components/com_jadmintools/fof/dispatcher.php',
-			'administrator/components/com_jadmintools/fof/index.html',
-			'administrator/components/com_jadmintools/fof/inflector.php',
-			'administrator/components/com_jadmintools/fof/input.php',
-			'administrator/components/com_jadmintools/fof/model.php',
-			'administrator/components/com_jadmintools/fof/query.abstract.php',
-			'administrator/components/com_jadmintools/fof/query.element.php',
-			'administrator/components/com_jadmintools/fof/query.mysql.php',
-			'administrator/components/com_jadmintools/fof/query.mysqli.php',
-			'administrator/components/com_jadmintools/fof/query.sqlazure.php',
-			'administrator/components/com_jadmintools/fof/query.sqlsrv.php',
-			'administrator/components/com_jadmintools/fof/table.php',
-			'administrator/components/com_jadmintools/fof/template.utils.php',
-			'administrator/components/com_jadmintools/fof/toolbar.php',
-			'administrator/components/com_jadmintools/fof/view.csv.php',
-			'administrator/components/com_jadmintools/fof/view.html.php',
-			'administrator/components/com_jadmintools/fof/view.json.php',
-			'administrator/components/com_jadmintools/fof/view.php',
+			'administrator/components/com_admintools/helpers/postinstall.php',
+
+			'administrator/components/com_admintools/fof/LICENSE.txt',
+			'administrator/components/com_admintools/fof/controller.php',
+			'administrator/components/com_admintools/fof/dispatcher.php',
+			'administrator/components/com_admintools/fof/index.html',
+			'administrator/components/com_admintools/fof/inflector.php',
+			'administrator/components/com_admintools/fof/input.php',
+			'administrator/components/com_admintools/fof/model.php',
+			'administrator/components/com_admintools/fof/query.abstract.php',
+			'administrator/components/com_admintools/fof/query.element.php',
+			'administrator/components/com_admintools/fof/query.mysql.php',
+			'administrator/components/com_admintools/fof/query.mysqli.php',
+			'administrator/components/com_admintools/fof/query.sqlazure.php',
+			'administrator/components/com_admintools/fof/query.sqlsrv.php',
+			'administrator/components/com_admintools/fof/table.php',
+			'administrator/components/com_admintools/fof/template.utils.php',
+			'administrator/components/com_admintools/fof/toolbar.php',
+			'administrator/components/com_admintools/fof/view.csv.php',
+			'administrator/components/com_admintools/fof/view.html.php',
+			'administrator/components/com_admintools/fof/view.json.php',
+			'administrator/components/com_admintools/fof/view.php',
 
 			// Joomla! update files
 			'administrator/components/com_admintools/restore.php',
@@ -207,34 +216,32 @@ class Com_AdmintoolsInstallerScript extends F0FUtilsInstallscript
 			'plugins/system/admintools/admintools/core.php',
 
 			// Removed features in Admin Tools 3.5.0
-			'administrator/components/com_jadmintools/models/adminuser.php',
-			'administrator/components/com_jadmintools/controllers/adminuser.php',
-			'media/com_admintools/images/adminuser-32.png',
+			'administrator/components/com_admintools/models/adminuser.php',
+			'administrator/components/com_admintools/controllers/adminuser.php',
 
-			'administrator/components/com_jadmintools/models/dbprefix.php',
-			'administrator/components/com_jadmintools/controllers/dbprefix.php',
-			'media/com_admintools/images/dbprefix-32.png',
+			'administrator/components/com_admintools/models/dbprefix.php',
+			'administrator/components/com_admintools/controllers/dbprefix.php',
 
-			'administrator/components/com_jadmintools/models/dbchcol.php',
-			'administrator/components/com_jadmintools/controllers/dbchcol.php',
-			'media/com_admintools/images/dbchcol-32.png',
-
-			'administrator/components/com_jadmintools/models/twofactor.php',
-			'administrator/components/com_jadmintools/controllers/twofactor.php',
+			'administrator/components/com_admintools/models/twofactor.php',
+			'administrator/components/com_admintools/controllers/twofactor.php',
 			'plugins/system/jadmintools/feature/twofactorauth.php',
-			'media/com_admintools/images/twofactor-32.png',
 
-			'administrator/components/com_jadmintools/controllers/postsetup.php',
+			'administrator/components/com_admintools/controllers/postsetup.php',
 
-			'administrator/components/com_jadmintools/helpers/ip.php',
+			'administrator/components/com_admintools/helpers/ip.php',
 
-			// Obsolete media files in 3.5.0
-			'media/com_admintools/js/backend.js',
-			'media/com_admintools/js/chosen.jquery.min.js',
-			'media/com_admintools/css/chosen.min.css',
-			'media/com_admintools/css/chosen-sprite.png',
-			'media/com_admintools/css/login.css',
-			'media/com_admintools/css/login-25-hathor.css',
+			// Obsolete files in .htaccess and NginX Maker
+			'administrator/components/com_admintools/views/htmaker/view.raw.php',
+			'administrator/components/com_admintools/views/nginxmaker/view.raw.php',
+
+			// Removed features
+			'plugins/system/admintools/feature/xssshield.php',
+
+			// No longer needed
+			'administrator/components/com_admintools/helpers/jsonlib.php',
+
+			// Fastcheck / integrity check
+			'administrator/components/com_admintools/controllers/checkfile.php',
 		),
 		'folders' => array(
 			'administrator/components/com_admintools/views/acl',
@@ -253,9 +260,18 @@ class Com_AdmintoolsInstallerScript extends F0FUtilsInstallscript
 			// Removed features in Admin Tools 3.5.0
 			'administrator/components/com_admintools/views/adminuser',
 			'administrator/components/com_admintools/views/dbprefix',
-			'administrator/components/com_admintools/views/dbchcol',
 			'administrator/components/com_admintools/views/twofactor',
 			'administrator/components/com_admintools/views/postsetup',
+
+			// Obsolete directories
+			'administrator/components/com_admintools/akeeba',
+			'administrator/components/com_admintools/fof',
+
+			// Public media directory (moved to administrator)
+			'media/com_admintools',
+
+			// Fastcheck / integrity check
+			'administrator/components/com_admintools/views/checkfiles',
 		)
 	);
 
@@ -271,50 +287,6 @@ class Com_AdmintoolsInstallerScript extends F0FUtilsInstallscript
 	);
 
 	/**
-	 * Post-installation message definitions for Joomla! 3.2 or later.
-	 *
-	 * This array contains the message definitions for the Post-installation Messages component added in Joomla! 3.2 and
-	 * later versions. Each element is also a hashed array. For the keys used in these message definitions please
-	 * @see F0FUtilsInstallscript::addPostInstallationMessage
-	 *
-	 * @var array
-	 */
-	protected $postInstallationMessages = array(
-		'autojupdate' => array(
-			'type'					=> 'action',
-			'title_key'				=> 'COM_ADMINTOOLS_POSTSETUP_LBL_AUTOJUPDATE',
-			'description_key'		=> 'COM_ADMINTOOLS_POSTSETUP_DESC_AUTOJUPDATE2',
-			'action_key'			=> 'COM_ADMINTOOLS_POSTSETUP_BTN_ENABLE_FEATURE',
-			'language_extension'	=> 'com_admintools',
-			'language_client_id'	=> '1',
-			'version_introduced'	=> '3.1.2',
-			'condition_file'		=> 'admin://components/com_admintools/helpers/postinstall.php',
-			'condition_method'		=> 'com_admintools_postinstall_autojupdate_condition',
-			'action_file'			=> 'admin://components/com_admintools/helpers/postinstall.php',
-			'action'				=> 'com_admintools_postinstall_autojupdate_action',
-		),
-		'accept_license' => array(
-			'type'					=> 'message',
-			'title_key'				=> 'COM_ADMINTOOLS_POSTSETUP_LBL_ACCEPTLICENSE',
-			'description_key'		=> 'COM_ADMINTOOLS_POSTSETUP_DESC_ACCEPTLICENSE',
-			'action_key'			=> 'COM_ADMINTOOLS_POSTSETUP_BTN_I_CONFIRM_THIS',
-			'language_extension'	=> 'com_admintools',
-			'language_client_id'	=> '1',
-			'version_introduced'	=> '3.1.2'
-		),
-		'accept_support' => array(
-			'type'					=> 'message',
-			'title_key'				=> 'COM_ADMINTOOLS_POSTSETUP_LBL_ACCEPTSUPPORT',
-			'description_key'		=> 'COM_ADMINTOOLS_POSTSETUP_DESC_ACCEPTSUPPORT',
-			'action_key'			=> 'COM_ADMINTOOLS_POSTSETUP_BTN_I_CONFIRM_THIS',
-			'language_extension'	=> 'com_admintools',
-			'language_client_id'	=> '1',
-			'version_introduced'	=> '3.1.2'
-		),
-	);
-
-
-	/**
 	 * Runs after install, update or discover_update
 	 *
 	 * @param string     $type install, update or discover_update
@@ -322,23 +294,40 @@ class Com_AdmintoolsInstallerScript extends F0FUtilsInstallscript
 	 */
 	function postflight($type, $parent)
 	{
-        /** @var AdmintoolsModelStats $model */
-		$this->isPaid = is_dir($parent->getParent()->getPath('source') . '/plugins/system/admintools/admintools/pro.php');
+		/** @var AdmintoolsModelStats $model */
+		$this->isPaid =
+			is_dir($parent->getParent()->getPath('source') . '/plugins/system/admintools/admintools/pro.php');
 
-		if (!$this->isPaid)
+		// Let's install common tables
+		$model = F0FModel::getTmpInstance('Stats', 'AdmintoolsModel');
+
+		if (method_exists($model, 'checkAndFixCommonTables'))
 		{
-			unset($this->postInstallationMessages['autojupdate']);
+			$model->checkAndFixCommonTables();
 		}
 
-        // Let's install common tables
-        $model = F0FModel::getTmpInstance('Stats', 'AdmintoolsModel');
-
-        if(method_exists($model, 'checkAndFixCommonTables'))
-        {
-            $model->checkAndFixCommonTables();
-        }
-
 		parent::postflight($type, $parent);
+
+		$this->uninstallObsoletePostinstallMessages();
+
+		$this->removeFOFUpdateSites();
+
+		// Set the configuration wizad flag on update (so as not to bother existing users)
+		if ($type == 'update')
+		{
+			if (!class_exists('AdmintoolsModelStorage'))
+			{
+				include_once JPATH_ADMINISTRATOR . '/components/com_admintools/models/storage.php';
+			}
+
+			if (class_exists('AdmintoolsModelStorage'))
+			{
+				$params = JModelLegacy::getInstance('Storage', 'AdmintoolsModel');
+				$params->load();
+				$params->setValue('quickstart', 1, true);
+			}
+
+		}
 	}
 
 	/**
@@ -353,7 +342,7 @@ class Com_AdmintoolsInstallerScript extends F0FUtilsInstallscript
 			You can download translation files <a href="http://cdn.akeebabackup.com/language/admintools/index.html">directly
 				from our CDN page</a>.
 		</div>
-		<img src="<?php echo rtrim(JURI::base(), '/') ?>/../media/com_admintools/images/admintools-48.png" width="48"
+		<img src="<?php echo rtrim(JUri::base(), '/') ?>/components/com_admintools/media/images/admintools-48.png" width="48"
 			 height="48" alt="Admin Tools" align="right"/>
 
 		<h2>Admin Tools Installation Status</h2>
@@ -383,6 +372,34 @@ class Com_AdmintoolsInstallerScript extends F0FUtilsInstallscript
 		parent::renderPostUninstallation($status, $parent);
 	}
 
+	private function uninstallObsoletePostinstallMessages()
+	{
+		$db = F0FPlatform::getInstance()->getDbo();
+
+		$obsoleteTitleKeys = array(
+			'COM_ADMINTOOLS_POSTSETUP_LBL_AUTOJUPDATE',
+			'COM_ADMINTOOLS_POSTSETUP_LBL_ACCEPTLICENSE',
+			'COM_ADMINTOOLS_POSTSETUP_LBL_ACCEPTSUPPORT',
+		);
+
+		foreach ($obsoleteTitleKeys as $obsoleteKey)
+		{
+
+			// Remove the post-installation messages
+			$query = $db->getQuery(true)
+			            ->delete($db->qn('#__postinstall_messages'))
+			            ->where($db->qn('title_key') . ' = ' . $db->q($obsoleteKey));
+			try
+			{
+				$db->setQuery($query)->execute();
+			}
+			catch (Exception $e)
+			{
+				// Do nothing
+			}
+		}
+	}
+
 	/**
 	 * The PowerAdmin extension makes menu items disappear. People assume it's our fault. JSN PowerAdmin authors don't
 	 * own up to their software's issue. I have no choice but to warn our users about the faulty third party software.
@@ -403,6 +420,22 @@ class Com_AdmintoolsInstallerScript extends F0FUtilsInstallscript
 			return;
 		}
 
+		$query = $db->getQuery(true)
+					->select('manifest_cache')
+					->from($db->qn('#__extensions'))
+					->where($db->qn('type') . ' = ' . $db->q('component'))
+					->where($db->qn('element') . ' = ' . $db->q('com_poweradmin'))
+					->where($db->qn('enabled') . ' = ' . $db->q('1'));
+		$paramsJson = $db->setQuery($query)->loadResult();
+		$jsnPAManifest = new JRegistry();
+		$jsnPAManifest->loadString($paramsJson, 'JSON');
+		$version = $jsnPAManifest->get('version', '0.0.0');
+
+		if (version_compare($version, '2.1.2', 'ge'))
+		{
+			return;
+		}
+
 		echo <<< HTML
 <div class="well" style="margin: 2em 0;">
 <h1 style="font-size: 32pt; line-height: 120%; color: red; margin-bottom: 1em">WARNING: Menu items for {$this->componentName} might not be displayed on your site.</h1>
@@ -413,11 +446,32 @@ class Com_AdmintoolsInstallerScript extends F0FUtilsInstallscript
 	regarding this issue.
 </p>
 <p style="font-size: 18pt; line-height: 120%; color: green;">
-	Tip: You can disable JSN PowerAdmin to see the menu items to Akeeba Backup.
+	Tip: You can disable JSN PowerAdmin to see the menu items to {$this->componentName}.
 </p>
 </div>
 
 HTML;
 
 	}
+
+	/**
+	 * Remove FOF 2.x update sites
+	 */
+	private function removeFOFUpdateSites()
+	{
+		$db = F0FPlatform::getInstance()->getDbo();
+		$query = $db->getQuery(true)
+					->delete($db->qn('#__update_sites_extensions'))
+					->where($db->qn('location') . ' = ' . $db->q('http://cdn.akeebabackup.com/updates/fof.xml'));
+		try
+		{
+			$db->setQuery($query)->execute();
+		}
+		catch (\Exception $e)
+		{
+			// Do nothing on failure
+		}
+
+	}
+
 }

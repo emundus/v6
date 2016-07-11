@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  * @version   $Id$
  */
@@ -71,6 +71,10 @@ class AdmintoolsControllerImportexports extends F0FController
 
     public function doimport()
     {
+        /** @var AdmintoolsModelStorage $params */
+        $params = JModelLegacy::getInstance('Storage', 'AdmintoolsModel');
+        $params->setValue('quickstart', 1, true);
+
         $model  = $this->getThisModel();
         $result = $model->importData();
 

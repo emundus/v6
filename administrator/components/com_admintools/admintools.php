@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  */
 
@@ -25,9 +25,9 @@ else
 }
 
 // Old PHP version detected. EJECT! EJECT! EJECT!
-if (!version_compare($version, '5.3.0', '>='))
+if (!version_compare($version, '5.3.4', '>='))
 {
-	return JError::raise(E_ERROR, 500, 'PHP ' . $version . ' is not supported by Admin Tools.<br/><br/>The version of PHP used on your site is obsolete and contains known security vulenrabilities. Moreover, it is missing features required by Admin Tools to work properly or at all. Please ask your host to upgrade your server to the latest PHP 5.3 release. Thank you!');
+	return JError::raise(E_ERROR, 500, 'PHP ' . $version . ' is not supported by Admin Tools.<br/><br/>The version of PHP used on your site is obsolete and contains known security vulenrabilities. Moreover, it is missing features required by Admin Tools to work properly or at all. Please ask your host to upgrade your server to the latest PHP 5.4 or later release. Thank you!');
 }
 
 JLoader::import('joomla.application.component.model');
@@ -110,12 +110,6 @@ if (!$isPro)
 			JFolder::delete($dir);
 		}
 	}
-}
-
-// If JSON functions don't exist, load our compatibility layer
-if ((!function_exists('json_encode')) || (!function_exists('json_decode')))
-{
-	require_once JPATH_COMPONENT_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'jsonlib.php';
 }
 
 JLoader::import('joomla.application.component.model');

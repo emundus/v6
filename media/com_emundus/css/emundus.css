@@ -186,23 +186,23 @@ p.description  {
 }
 .checklist1 {
 	background: url(../images/icones/error.png) 0 0 no-repeat;
-	background-position-x: right;
+	background-position: right;
 }
 .checklist0  {
 	background: url(../images/icones/clean.png) 0 0 no-repeat;
-	background-position-x: right;
+	background-position: right;
 }
 .checklist2 {
 	background: url(../images/icones/fail.png) 0 0 no-repeat;
-	background-position-x: right;
+	background-position: right;
 }
 .checklist3 {
 	background: url(../images/icones/wait.png) 0 0 no-repeat;
-	background-position-x: right;
+	background-position: right;
 }
 .checklist4  {
 	background: url(../images/icones/graduated.png) 0 0 no-repeat;
-	background-position-x: right;
+	background-position: right;
 }
 #info_checklist  h2{
 	text-align:center;

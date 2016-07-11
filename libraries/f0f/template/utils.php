@@ -2,7 +2,7 @@
 /**
  * @package     FrameworkOnFramework
  * @subpackage  template
- * @copyright   Copyright (C) 2010 - 2015 Nicholas K. Dionysopoulos / Akeeba Ltd. All rights reserved.
+ * @copyright   Copyright (C) 2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 // Protect from unauthorized access
@@ -215,7 +215,7 @@ class F0FTemplateUtils
 	 */
 	public static function sefSort($text, $field, $list)
 	{
-		$sort = JHTML::_('grid.sort', JText::_(strtoupper($text)) . '&nbsp;', $field, $list->order_Dir, $list->order);
+		$sort = JHtml::_('grid.sort', JText::_(strtoupper($text)) . '&nbsp;', $field, $list->order_Dir, $list->order);
 
 		return str_replace('href="#"', 'href="javascript:void(0);"', $sort);
 	}

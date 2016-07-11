@@ -2,7 +2,7 @@
 /**
  * @package    FrameworkOnFramework
  * @subpackage form
- * @copyright   Copyright (C) 2010 - 2015 Nicholas K. Dionysopoulos / Akeeba Ltd. All rights reserved.
+ * @copyright   Copyright (C) 2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 // Protect from unauthorized access
@@ -119,6 +119,6 @@ class F0FFormFieldSelectrow extends JFormField implements F0FFormField
 		$key_id    = $this->item->$key_field;
 
 		// Get the HTML
-		return JHTML::_('grid.id', $this->rowid, $key_id, $checked_out);
+		return JHtml::_('grid.id', $this->rowid, $key_id, $checked_out);
 	}
 }

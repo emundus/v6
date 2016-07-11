@@ -2,7 +2,7 @@
 /**
  * @package    FrameworkOnFramework
  * @subpackage form
- * @copyright   Copyright (C) 2010 - 2015 Nicholas K. Dionysopoulos / Akeeba Ltd. All rights reserved.
+ * @copyright   Copyright (C) 2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 // Protect from unauthorized access
@@ -31,7 +31,7 @@ class F0FFormHeaderField extends F0FFormHeader
 		{
 			$view = $this->form->getView();
 
-			return JHTML::_('grid.sort', $label, $this->name,
+			return JHtml::_('grid.sort', $label, $this->name,
 				$view->getLists()->order_Dir, $view->getLists()->order,
 				$this->form->getModel()->task
 			);

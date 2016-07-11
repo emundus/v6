@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  */
 
@@ -11,12 +11,6 @@ defined('_JEXEC') or die;
 if (!file_exists(JPATH_ADMINISTRATOR . '/components/com_admintools'))
 {
 	return;
-}
-
-// You can't fix stupid… but you can try working around it
-if ((!function_exists('json_encode')) || (!function_exists('json_decode')))
-{
-	require_once JPATH_ADMINISTRATOR . '/components/com_admintools/helpers/jsonlib.php';
 }
 
 // PHP version check
@@ -32,7 +26,7 @@ else
 {
 	$version = '5.0.0'; // all bets are off!
 }
-if (!version_compare($version, '5.3.0', '>='))
+if (!version_compare($version, '5.3.4', '>='))
 {
 	return;
 }

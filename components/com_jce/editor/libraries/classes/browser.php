@@ -1108,7 +1108,7 @@ class WFFileBrowser extends JObject {
         WFUtility::checkPath($destination);
 
         // check for extension in destination name
-        if ($destination !== "" && WFUtility::validateFileName($destination) === false) {
+        if (WFUtility::validateFileName($destination) === false) {
             JError::raiseError(403, 'INVALID FILE NAME');
         }
 

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-    <!-- These options must also be added to AdmintoolsModelCpanels::autoMigrate()'s $safeList -->
     <fieldset
             name="scan"
             label="ATOOLS_JCONFIG_SCAN_LABEL"
@@ -39,6 +38,29 @@
             <option value="0">JNo</option>
             <option value="1">JYes</option>
         </field>
+
+        <field name="reorderplugin" type="list" default="1"
+               label="COM_ADMINTOOLS_JCONFIG_REORDERPLUGIN_LABEL"
+               description="COM_ADMINTOOLS_JCONFIG_REORDERPLUGIN_DESC">
+            <option value="0">JNo</option>
+            <option value="1">JYes</option>
+        </field>
+
+    </fieldset>
+
+    <fieldset name="frontend" label="COM_ADMINTOOLS_JCONFIG_FRONTEND_LABEL" description="COM_ADMINTOOLS_JCONFIG_FRONTEND_DESC">
+        <field name="frontend_enable" type="radio" default="0"
+               label="COM_ADMINTOOLS_JCONFIG_FEBENABLE_LABEL"
+               description="COM_ADMINTOOLS_JCONFIG_FEBENABLE_DESC"
+               class="btn-group">
+            <option value="0">JNo</option>
+            <option value="1">JYes</option>
+        </field>
+
+        <field name="frontend_secret_word" type="text" default="" size="30"
+               label="COM_ADMINTOOLS_JCONFIG_SECRETWORD_LABEL"
+               description="COM_ADMINTOOLS_JCONFIG_SECRETWORD_DESC"
+               class="input-large"/>
     </fieldset>
 
     <fieldset

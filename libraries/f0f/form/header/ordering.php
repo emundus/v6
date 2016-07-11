@@ -2,7 +2,7 @@
 /**
  * @package    FrameworkOnFramework
  * @subpackage form
- * @copyright   Copyright (C) 2010 - 2015 Nicholas K. Dionysopoulos / Akeeba Ltd. All rights reserved.
+ * @copyright   Copyright (C) 2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 // Protect from unauthorized access
@@ -39,8 +39,8 @@ class F0FFormHeaderOrdering extends F0FFormHeader
 		if (!$hasAjaxOrderingSupport)
 		{
 			// Ye olde Joomla! 2.5 method
-			$html = JHTML::_('grid.sort', 'JFIELD_ORDERING_LABEL', 'ordering', $view->getLists()->order_Dir, $view->getLists()->order, 'browse');
-			$html .= JHTML::_('grid.order', $model->getList());
+			$html = JHtml::_('grid.sort', 'JFIELD_ORDERING_LABEL', 'ordering', $view->getLists()->order_Dir, $view->getLists()->order, 'browse');
+			$html .= JHtml::_('grid.order', $model->getList());
 
 			return $html;
 		}

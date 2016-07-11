@@ -280,9 +280,10 @@ CREATE TABLE [#__admintools_profiles] (
 SELECT COUNT(*) FROM #__admintools_profiles WHERE id = 1
             ]]></condition>
 
+			<!-- SQL Server does not allow an explicit value for an auto increment field -->
             <query><![CDATA[
-INSERT INTO #__admintools_profiles (id, description, configuration, filters)
-SELECT 1, 'Default PHP Change Scanner Profile', '', ''
+INSERT INTO #__admintools_profiles (description, configuration, filters)
+SELECT 'Default PHP Change Scanner Profile', '', ''
             ]]></query>
         </action>
 
@@ -354,9 +355,9 @@ CREATE TABLE [#__admintools_cookies] (
 SELECT COUNT(*) FROM `#__admintools_waftemplates`;
             ]]></condition>
             <query><![CDATA[
-INSERT INTO #__admintools_waftemplates (admintools_waftemplate_id, reason, language, subject, template, enabled, email_num, email_numfreq, email_freq, created_on, created_by, modified_on, modified_by)
+INSERT INTO #__admintools_waftemplates (reason, language, subject, template, enabled, email_num, email_numfreq, email_freq, created_on, created_by, modified_on, modified_by)
 VALUES
-	(NULL, 'all', '*', 'Security exception on [SITENAME]', '<div style=\"background-color: #e0e0e0; padding: 10px 20px;\">\r\n<div style=\"background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;\">\r\n<p>Hello,</p>\r\n<p>We would like to notify you that a security exception was detected on your site, [SITENAME], with the following details:</p>\r\n<p>IP Address: [IP] (IP Lookup: [LOOKUP])<br />Reason: [REASON]</p>\r\n<p>If this kind of security exception repeats itself, please log in to your site\'s back-end and add this IP address to your Admin Tools\'s Web Application Firewall feature in order to completely block the misbehaving user.</p>\r\n<p>Best regards,</p>\r\n<p>The [SITENAME] team</p>\r\n</div>\r\n<p style=\"font-size: x-small; color: #667;\">You are receiving this automatic email message because you have a subscription in <em>[SITENAME]</em>. <span style=\"line-height: 1.3em;\">Do not reply to this email, it\'s sent from an unmonitored email address.</span></p>\r\n</div>\r\n<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeebabackup.com/products/admin-tools.html\">Akeeba AdminTools</a></p>', 1, 5, 1, 'hour', '2014-04-14 14:36:34', 800, '2014-04-14 14:42:38', 800);
+	('all', '*', 'Security exception on [SITENAME]', '<div style=\"background-color: #e0e0e0; padding: 10px 20px;\">\r\n<div style=\"background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;\">\r\n<p>Hello,</p>\r\n<p>We would like to notify you that a security exception was detected on your site, [SITENAME], with the following details:</p>\r\n<p>IP Address: [IP] (IP Lookup: [LOOKUP])<br />Reason: [REASON]</p>\r\n<p>If this kind of security exception repeats itself, please log in to your site\'s back-end and add this IP address to your Admin Tools\'s Web Application Firewall feature in order to completely block the misbehaving user.</p>\r\n<p>Best regards,</p>\r\n<p>The [SITENAME] team</p>\r\n</div>\r\n<p style=\"font-size: x-small; color: #667;\">You are receiving this automatic email message because you have a subscription in <em>[SITENAME]</em>. <span style=\"line-height: 1.3em;\">Do not reply to this email, it\'s sent from an unmonitored email address.</span></p>\r\n</div>\r\n<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeebabackup.com/products/admin-tools.html\">Akeeba AdminTools</a></p>', 1, 5, 1, 'hour', '2014-04-14 14:36:34', 800, '2014-04-14 14:42:38', 800);
 
             ]]></query>
         </action>

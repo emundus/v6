@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  * @version   $Id$
  */
@@ -101,7 +101,12 @@ class AdmintoolsModelStats extends F0FModel
 			return false;
 		}
 
-		$params = JComponentHelper::getParams('com_admintools');
+		if (!class_exists('AdmintoolsHelperParams'))
+		{
+			require_once JPATH_ADMINISTRATOR . '/components/com_admintools/helpers/params.php';
+		}
+
+		$params = new AdmintoolsHelperParams();
 
 		$lastrun = $this->getCommonVariable('stats_lastrun', 0);
 

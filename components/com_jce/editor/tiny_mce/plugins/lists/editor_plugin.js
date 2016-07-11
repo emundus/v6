@@ -1,4 +1,4 @@
-/* JCE Editor - 2.5.16 | 08 April 2016 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2016 Ryan Demmer. All rights reserved | © Copyright, Moxiecode Systems AB | http://www.tinymce.com/license */
+/* JCE Editor - 2.5.19 | 24 June 2016 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2016 Ryan Demmer. All rights reserved | © Copyright, Moxiecode Systems AB | http://www.tinymce.com/license */
 (function(){function isListNode(node){return node&&(/^(OL|UL|DL)$/).test(node.nodeName);}
 function isFirstChild(node){return node.parentNode.firstChild==node;}
 function isLastChild(node){return node.parentNode.lastChild==node;}
@@ -53,7 +53,6 @@ if(li.nodeName=='DT'){editor.dom.rename(li,'DD');return true;}
 sibling=li.previousSibling;if(sibling&&isListNode(sibling)){sibling.appendChild(li);return true;}
 if(sibling&&sibling.nodeName=='LI'&&isListNode(sibling.lastChild)){sibling.lastChild.appendChild(li);mergeLists(li.lastChild,sibling.lastChild);return true;}
 sibling=li.nextSibling;if(sibling&&isListNode(sibling)){sibling.insertBefore(li,sibling.firstChild);return true;}
-if(sibling&&sibling.nodeName=='LI'&&isListNode(li.lastChild)){return false;}
 sibling=li.previousSibling;if(sibling&&sibling.nodeName=='LI'){newList=editor.dom.create(li.parentNode.nodeName);sibling.appendChild(newList);newList.appendChild(li);mergeLists(li.lastChild,newList);return true;}
 return false;}
 function indentSelection(){var listElements=getSelectedListItems();if(listElements.length){var bookmark=createBookmark(editor.selection.getRng(true));for(var i=0;i<listElements.length;i++){if(!indent(listElements[i])&&i===0){break;}}
@@ -84,7 +83,9 @@ splitList(rootList,li);});moveToBookmark(bookmark);}
 function toggleList(listName){var parentList=editor.dom.getParent(editor.selection.getStart(),'OL,UL,DL');if(parentList){if(parentList.nodeName==listName){removeList(listName);}else{var bookmark=createBookmark(editor.selection.getRng(true));mergeWithAdjacentLists(editor.dom.rename(parentList,listName));moveToBookmark(bookmark);}}else{applyList(listName);}}
 function queryListCommandState(listName){return function(){var parentList=editor.dom.getParent(editor.selection.getStart(),'UL,OL,DL');return parentList&&parentList.nodeName==listName;};}
 self.backspaceDelete=function(isForward){var dom=editor.dom,selection=editor.seletion;function findNextCaretContainer(rng,isForward){var node=rng.startContainer,offset=rng.startOffset;var nonEmptyBlocks,walker;if(node.nodeType==3&&(isForward?offset<node.data.length:offset>0)){return node;}
-nonEmptyBlocks=editor.schema.getNonEmptyElements();walker=new tinymce.dom.TreeWalker(rng.startContainer);while((node=walker[isForward?'next':'prev']())){if(node.nodeName=='LI'&&!node.hasChildNodes()){return node;}
+nonEmptyBlocks=editor.schema.getNonEmptyElements();if(node.nodeType==1){node=tinymce.dom.RangeUtils.getNode(node,offset);}
+walker=new tinymce.dom.TreeWalker(rng.startContainer);if(isForward){if(isBogusBr(node)){walker.next();}}
+while((node=walker[isForward?'next':'prev']())){if(node.nodeName=='LI'&&!node.hasChildNodes()){return node;}
 if(nonEmptyBlocks[node.nodeName]){return node;}
 if(node.nodeType==3&&node.data.length>0){return node;}}}
 function mergeLiElements(fromElm,toElm){var node,listNode,ul=fromElm.parentNode;if(isListNode(toElm.lastChild)){listNode=toElm.lastChild;}

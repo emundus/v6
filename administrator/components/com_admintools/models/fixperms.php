@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  * @version   $Id$
  */
@@ -83,6 +83,10 @@ class AdmintoolsModelFixperms extends F0FModel
 		$this->skipDirs[] = rtrim(JPATH_ROOT . '/cache', '/');
 		$this->skipDirs[] = rtrim(JFactory::getConfig()->get('tmp_path', JPATH_ROOT . '/tmp'), '/');
 		$this->skipDirs[] = rtrim(JFactory::getConfig()->get('log_path', JPATH_ROOT . '/logs'), '/');
+		$this->skipDirs[] = JPATH_ADMINISTRATOR . '/logs';
+		$this->skipDirs[] = JPATH_ADMINISTRATOR . '/log';
+		$this->skipDirs[] = JPATH_ROOT . '/logs';
+		$this->skipDirs[] = JPATH_ROOT . '/log';
 	}
 
 	/**

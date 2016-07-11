@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  */
 
@@ -107,7 +107,7 @@ class AtsystemUtilExceptionshandler
 			// Using a view
 			if (!JFactory::getSession()->get('block', false, 'com_admintools'))
 			{
-				// This is inside an if-block so that we don't end up in an infinite rediretion loop
+				// This is inside an if-block so that we don't end up in an infinite redirection loop
 				JFactory::getSession()->set('block', true, 'com_admintools');
 				JFactory::getSession()->set('message', $message, 'com_admintools');
 				JFactory::getSession()->close();
@@ -117,16 +117,9 @@ class AtsystemUtilExceptionshandler
 		else
 		{
 			// Using Joomla!'s error page
-			if (version_compare(JVERSION, '3.0', 'ge'))
-			{
-				JFactory::getApplication()->input->set('template', null);
-				throw new Exception($message, 403);
-			}
-			else
-			{
-				JRequest::setVar('template', null);
-				JError::raiseError(403, $message);
-			}
+			JFactory::getApplication()->input->set('template', null);
+
+			throw new Exception($message, 403);
 		}
 	}
 
@@ -191,14 +184,7 @@ class AtsystemUtilExceptionshandler
 
 			try
 			{
-				if (version_compare(JVERSION, '3.0', 'ge'))
-				{
-					$ipTable = $db->loadColumn();
-				}
-				else
-				{
-					$ipTable = $db->loadResultArray();
-				}
+				$ipTable = $db->loadColumn();
 			}
 			catch (Exception $e)
 			{
@@ -285,14 +271,7 @@ class AtsystemUtilExceptionshandler
 			// Logging to file
 			$config = JFactory::getConfig();
 
-			if (version_compare(JVERSION, '3.0', 'ge'))
-			{
-				$logpath = $config->get('log_path');
-			}
-			else
-			{
-				$logpath = $config->getValue('log_path');
-			}
+			$logpath = $config->get('log_path');
 
 			$fname = $logpath . DIRECTORY_SEPARATOR . 'admintools_breaches.log';
 
@@ -370,14 +349,7 @@ class AtsystemUtilExceptionshandler
 			// Get the site name
 			$config = JFactory::getConfig();
 
-			if (version_compare(JVERSION, '3.0', 'ge'))
-			{
-				$sitename = $config->get('sitename');
-			}
-			else
-			{
-				$sitename = $config->getValue('config.sitename');
-			}
+			$sitename = $config->get('sitename');
 
 			// Create a link to lookup the IP
 			$ip_link = $this->cparams->getValue('iplookupscheme', 'http') . '://' . $this->cparams->getValue('iplookup', 'ip-lookup.net/index.php?ip={ip}');
@@ -394,61 +366,63 @@ class AtsystemUtilExceptionshandler
 			}
 
 			// Send the email
-			$mailer = JFactory::getMailer();
-
-			if (version_compare(JVERSION, '3.0', 'ge'))
+			try
 			{
+				$mailer = JFactory::getMailer();
+
 				$mailfrom = $config->get('mailfrom');
 				$fromname = $config->get('fromname');
+
+				// Let's get the most suitable email template
+				$template = $this->getEmailTemplate($reason);
+
+				// Got no template, the user didn't published any email template, or the template doesn't want us to
+				// send a notification email. Anyway, let's stop here
+				if (!$template)
+				{
+					return true;
+				}
+				else
+				{
+					$subject = $template[0];
+					$body = $template[1];
+				}
+
+				$tokens = array(
+					'[SITENAME]'  => $sitename,
+					'[REASON]'    => $txtReason,
+					'[DATE]'      => gmdate('Y-m-d H:i:s') . " GMT",
+					'[URL]'       => $url,
+					'[USER]'      => $username,
+					'[IP]'        => $ip,
+					'[LOOKUP]'    => '<a href="' . $ip_link . '">IP Lookup</a>',
+					'[COUNTRY]'   => $country,
+					'[CONTINENT]' => $continent,
+					'[UA]'        => $_SERVER['HTTP_USER_AGENT']
+				);
+
+				$subject = str_replace(array_keys($tokens), array_values($tokens), $subject);
+				$body = str_replace(array_keys($tokens), array_values($tokens), $body);
+
+				$recipients = explode(',', $emailbreaches);
+				$recipients = array_map('trim', $recipients);
+
+				foreach ($recipients as $recipient)
+				{
+					// This line is required because SpamAssassin is BROKEN
+					$mailer->Priority = 3;
+
+					$mailer->isHtml(true);
+					$mailer->setSender(array($mailfrom, $fromname));
+					$mailer->addRecipient($recipient);
+					$mailer->setSubject($subject);
+					$mailer->setBody($body);
+					$mailer->Send();
+				}
 			}
-			else
+			catch (\Exception $e)
 			{
-				$mailfrom = $config->getValue('config.mailfrom');
-				$fromname = $config->getValue('config.fromname');
-			}
-
-			// Let's get the most suitable email template
-			$template = $this->getEmailTemplate($reason);
-
-			// Got no template, the user didn't published any email template, or the template doesn't want us to
-			// send a notification email. Anyway, let's stop here
-			if (!$template)
-			{
-				return true;
-			}
-			else
-			{
-				$subject = $template[0];
-				$body = $template[1];
-			}
-
-			$tokens = array(
-				'[SITENAME]'  => $sitename,
-				'[REASON]'    => $txtReason,
-				'[DATE]'      => gmdate('Y-m-d H:i:s') . " GMT",
-				'[URL]'       => $url,
-				'[USER]'      => $username,
-				'[IP]'        => $ip,
-				'[LOOKUP]'    => '<a href="' . $ip_link . '">IP Lookup</a>',
-				'[COUNTRY]'   => $country,
-				'[CONTINENT]' => $continent,
-				'[UA]'        => $_SERVER['HTTP_USER_AGENT']
-			);
-
-			$subject = str_replace(array_keys($tokens), array_values($tokens), $subject);
-			$body = str_replace(array_keys($tokens), array_values($tokens), $body);
-
-			$recipients = explode(',', $emailbreaches);
-			$recipients = array_map('trim', $recipients);
-
-			foreach ($recipients as $recipient)
-			{
-				$mailer->isHtml(true);
-				$mailer->setSender(array($mailfrom, $fromname));
-				$mailer->addRecipient($recipient);
-				$mailer->setSubject($subject);
-				$mailer->setBody($body);
-				$mailer->Send();
+				// Joomla 3.5 is written by incompetent bonobos
 			}
 		}
 
@@ -619,31 +593,79 @@ class AtsystemUtilExceptionshandler
 					'description' => 'IP automatically blocked after being banned automatically ' . $bans . ' times'
 				);
 
-				$db->insertObject('#__admintools_ipblock', $block);
+                try
+                {
+                    $db->insertObject('#__admintools_ipblock', $block);
+                }
+                catch (Exception $e)
+                {
+                    // This should never happen, however let's prevent a white page if anything goes wrong
+                }
 			}
 		}
 
-		$db->insertObject('#__admintools_ipautoban', $record);
+        try
+        {
+            $db->insertObject('#__admintools_ipautoban', $record);
+        }
+        catch (Exception $e)
+        {
+            // If the IP was already blocked and I have to block it again, I'll have to update the current record
+            $db->updateObject('#__admintools_ipautoban', $record, 'ip');
+        }
 
 		// Send an optional email
 		if ($this->cparams->getValue('emailafteripautoban', ''))
 		{
+			// Load the component's administrator translation files
+			$jlang = JFactory::getLanguage();
+			$jlang->load('com_admintools', JPATH_ADMINISTRATOR, 'en-GB', true);
+			$jlang->load('com_admintools', JPATH_ADMINISTRATOR, $jlang->getDefault(), true);
+			$jlang->load('com_admintools', JPATH_ADMINISTRATOR, null, true);
+
 			// Get the site name
 			$config = JFactory::getConfig();
 
-			if (version_compare(JVERSION, '3.0', 'ge'))
+			$sitename = $config->get('sitename');
+
+			$country = '';
+			$continent = '';
+
+			if (class_exists('AkeebaGeoipProvider'))
 			{
-				$sitename = $config->get('sitename');
-			}
-			else
-			{
-				$sitename = $config->getValue('config.sitename');
+				$geoip = new AkeebaGeoipProvider();
+				$country = $geoip->getCountryCode($ip);
+				$continent = $geoip->getContinent($ip);
 			}
 
+			if (empty($country))
+			{
+				$country = '(unknown country)';
+			}
+
+			if (empty($continent))
+			{
+				$continent = '(unknown continent)';
+			}
+
+			$uri = JURI::getInstance();
+			$url = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment'));
+
+			$ip_link = $this->cparams->getValue('iplookupscheme', 'http') . '://' . $this->cparams->getValue('iplookup', 'ip-lookup.net/index.php?ip={ip}');
+			$ip_link = str_replace('{ip}', $ip, $ip_link);
+
 			$substitutions = array(
-				'[SITENAME]' => $sitename,
-				'[IP]'       => $myIP,
-				'[UNTIL]'    => $minDate
+				'[SITENAME]'  => $sitename,
+				'[REASON]'	  => JText::_('COM_ADMINTOOLS_EMAILTEMPLATE_REASON_IPAUTOBAN'),
+				'[DATE]'      => gmdate('Y-m-d H:i:s') . " GMT",
+				'[URL]'       => $url,
+				'[USER]'      => '',
+				'[IP]'        => $ip,
+				'[LOOKUP]'    => '<a href="' . $ip_link . '">IP Lookup</a>',
+				'[COUNTRY]'   => $country,
+				'[CONTINENT]' => $continent,
+				'[UA]'		  => $_SERVER['HTTP_USER_AGENT'],
+				'[UNTIL]'     => $minDate
 			);
 
 			// Load the component's administrator translation files
@@ -652,8 +674,20 @@ class AtsystemUtilExceptionshandler
 			$jlang->load('com_admintools', JPATH_ADMINISTRATOR, $jlang->getDefault(), true);
 			$jlang->load('com_admintools', JPATH_ADMINISTRATOR, null, true);
 
-			$subject = JText::_('ATOOLS_LBL_WAF_AUTOIPBLOCKEMAIL_SUBJECT');
-			$body = JText::_('ATOOLS_LBL_WAF_AUTOIPBLOCKEMAIL_BODY');
+			// Let's get the most suitable email template
+			$template = $this->getEmailTemplate('ipautoban');
+
+			// Got no template, the user didn't published any email template, or the template doesn't want us to
+			// send a notification email. Anyway, let's stop here.
+			if (!$template)
+			{
+				return;
+			}
+			else
+			{
+				$subject = $template[0];
+				$body = $template[1];
+			}
 
 			foreach ($substitutions as $k => $v)
 			{
@@ -662,24 +696,27 @@ class AtsystemUtilExceptionshandler
 			}
 
 			// Send the email
-			$mailer = JFactory::getMailer();
-
-			if (version_compare(JVERSION, '3.0', 'ge'))
+			try
 			{
+				$mailer = JFactory::getMailer();
+
 				$mailfrom = $config->get('mailfrom');
 				$fromname = $config->get('fromname');
-			}
-			else
-			{
-				$mailfrom = $config->getValue('config.mailfrom');
-				$fromname = $config->getValue('config.fromname');
-			}
 
-			$mailer->setSender(array($mailfrom, $fromname));
-			$mailer->addRecipient($this->cparams->getValue('emailafteripautoban', ''));
-			$mailer->setSubject($subject);
-			$mailer->setBody($body);
-			$mailer->Send();
+				// This line is required because SpamAssassin is BROKEN
+				$mailer->Priority = 3;
+
+				$mailer->isHtml(true);
+				$mailer->setSender(array($mailfrom, $fromname));
+				$mailer->addRecipient($this->cparams->getValue('emailafteripautoban', ''));
+				$mailer->setSubject($subject);
+				$mailer->setBody($body);
+				$mailer->Send();
+			}
+			catch (\Exception $e)
+			{
+				// Joomla 3.5 is written by incompetent bonobos
+			}
 		}
 	}
 
@@ -809,9 +846,47 @@ class AtsystemUtilExceptionshandler
 			}
 		}
 
+		// Because SpamAssassin is a piece of shit that blacklists our domain when it misidentifies an email as spam.
+		$replaceThat = array(
+			'<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeebabackup.com/products/admin-tools.html\">Akeeba AdminTools</a></p>',
+			'<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeebabackup.com/products/admin-tools.html\">Akeeba AdminTools</a></p>',
+			'https://www.akeebabackup.com',
+			'http://www.akeebabackup.com',
+			'http://akeebabackup.com',
+			'https://akeebabackup.com',
+			'www.akeebabackup.com',
+			'akeebabackup.com',
+		);
+
+		foreach ($replaceThat as $find)
+		{
+			$best->subject = str_ireplace($find, '', $best->subject);
+			$best->template = str_ireplace($find, '', $best->template);
+		}
+
+		// Because SpamAssassin demands there is a body and surrounding html tag even though it's not necessary.
+		if (strpos($best->template, '<body') == false)
+		{
+			$best->template = '<body>' . $best->template . '</body>';
+		}
+
+		if (strpos($best->template, '<html') == false)
+		{
+			$best->template = <<< SPAMASSASSINSUCKS
+<html>
+<head>
+<title>{$best->subject}</title>
+</head>
+$best->template
+</html>
+SPAMASSASSINSUCKS;
+
+		}
+
+		// And now return the template
 		return array(
 			$best->subject,
 			$best->template
 		);
 	}
-} 
+}

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  */
 
@@ -160,13 +160,14 @@ class AtsystemFeatureAbstract
 	 * of the array returns true and breaks the RegEx matching loop. If you pass
 	 * any other data type except an array or string, it returns false.
 	 *
-	 * @param string $regex     The regular expressions to feed to preg_match
-	 * @param mixed  $array     The array to scan
-	 * @param bool   $striptags Should I strip tags? Default: no
+	 * @param string    $regex         The regular expressions to feed to preg_match
+	 * @param mixed     $array         The array to scan
+	 * @param bool      $striptags     Should I strip tags? Default: no
+	 * @param callable  $precondition  A callable to precondition each value before preg_match
 	 *
 	 * @return bool|int
 	 */
-	protected function match_array($regex, $array, $striptags = false)
+	protected function match_array($regex, $array, $striptags = false, $precondition = null)
 	{
 		$result = false;
 
@@ -178,6 +179,11 @@ class AtsystemFeatureAbstract
 		if (!is_array($array))
 		{
 			$v = $striptags ? strip_tags($array) : $array;
+
+			if (!empty($precondition) && is_callable($precondition))
+			{
+				$v = call_user_func($precondition, $v);
+			}
 
 			return preg_match($regex, $v);
 		}
@@ -191,11 +197,23 @@ class AtsystemFeatureAbstract
 
 			if (is_array($value))
 			{
-				$result = $this->match_array($regex, $value, $striptags);
+				$result = $this->match_array($regex, $value, $striptags, $precondition);
+
+				if ($result)
+				{
+					break;
+				}
+
 				continue;
 			}
 
 			$v = $striptags ? strip_tags($value) : $value;
+
+			if (!empty($precondition) && is_callable($precondition))
+			{
+				$v = call_user_func($precondition, $v);
+			}
+
 			$result = preg_match($regex, $v);
 
 			if ($result)

@@ -50,13 +50,16 @@ $result = '<p><h3>'.$r_scholarship_request.' : '.$r_scholarship_status[0].'</h3>
 	$replyto = $obj[0]->emailfrom;
 	$replytoname = $obj[0]->name;
 
-    $config = JFactory::getConfig();
-    $sender = array(
-        $config->get( $from ),
-        $config->get( $fromname )
-    );
+    $app    = JFactory::getApplication();
+	$email_from_sys = $app->getCfg('mailfrom');
+	// setup mail
+	$sender = array(
+	    $email_from_sys,
+	    $fromname
+	);
 
-    $mailer->setSender($sender);
+	$mailer->setSender($sender);
+	$mailer->addReplyTo($from, $fromname);
     $mailer->addRecipient($recipient);
     $mailer->setSubject($subject);
     $mailer->isHTML(true);

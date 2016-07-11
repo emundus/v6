@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  * @version   $Id$
  */
@@ -17,7 +17,7 @@ class AdmintoolsModelImportexports extends F0FModel
 
         $exportData = $this->input->get('exportdata', array(), 'array', 2);
 
-        if(isset($exportData['wafconfig']))
+        if(isset($exportData['wafconfig']) && $exportData['wafconfig'])
         {
             $config = F0FModel::getTmpInstance('Wafconfig', 'AdmintoolsModel')->getConfig();
 
@@ -29,22 +29,32 @@ class AdmintoolsModelImportexports extends F0FModel
             $return['wafconfig'] = $config;
         }
 
-        if(isset($exportData['ipblacklist']))
+	    if(isset($exportData['wafblacklist']) && $exportData['wafblacklist'])
+	    {
+	    	$return['wafblacklist'] = F0FModel::getTmpInstance('Wafblacklists', 'AdmintoolsModel')->getList(true);
+	    }
+
+	    if(isset($exportData['wafexceptions']) && $exportData['wafexceptions'])
+	    {
+		    $return['wafexceptions'] = F0FModel::getTmpInstance('Wafexceptions', 'AdmintoolsModel')->getList(true);
+	    }
+
+        if(isset($exportData['ipblacklist']) && $exportData['ipblacklist'])
         {
             $return['ipblacklist'] = F0FModel::getTmpInstance('Ipbls', 'AdmintoolsModel')->getList(true);
         }
 
-        if(isset($exportData['ipwhitelist']))
+        if(isset($exportData['ipwhitelist']) && $exportData['ipwhitelist'])
         {
             $return['ipwhitelist'] = F0FModel::getTmpInstance('Ipwls', 'AdmintoolsModel')->getList(true);
         }
 
-        if(isset($exportData['badwords']))
+        if(isset($exportData['badwords']) && $exportData['badwords'])
         {
             $return['badwords'] = F0FModel::getTmpInstance('Badwords', 'AdmintoolsModel')->getList(true);
         }
 
-        if(isset($exportData['emailtemplates']))
+        if(isset($exportData['emailtemplates']) && $exportData['emailtemplates'])
         {
             $return['emailtemplates'] = F0FModel::getTmpInstance('Waftemplates', 'AdmintoolsModel')->getList(true);
         }
@@ -92,24 +102,93 @@ class AdmintoolsModelImportexports extends F0FModel
             $config->saveConfig($data['wafconfig']);
         }
 
+        if (isset($data['wafblacklist']))
+        {
+        	try
+	        {
+	        	$db->truncateTable('#__admintools_wafblacklists');
+
+		        if($data['wafblacklist'])
+		        {
+			        $insert = $db->getQuery(true)
+				        ->insert($db->qn('#__admintools_wafblacklists'))
+				        ->columns(array(
+						        $db->qn('option'), $db->qn('view'), $db->qn('task'), $db->qn('query'),
+					            $db->qn('query_type'), $db->qn('query_content'), $db->qn('verb')
+				        ));
+
+			        // I could have several records, let's create a single big query
+			        foreach ($data['wafblacklist'] as $row)
+			        {
+				        $insert->values(
+					        $db->q($row['option']).', '.$db->q($row['view']).', '.$db->q($row['task']).', '.
+					        $db->q($row['query']).', '.$db->q($row['query_type']).', '.
+					        $db->q($row['query_content']).', '.$db->q($row['verb'])
+				        );
+			        }
+
+			        $db->setQuery($insert)->execute();
+		        }
+	        }
+	        catch (Exception $e)
+	        {
+		        $this->setError(JText::_('COM_ADMINTOOLS_IMPORTEXPORT_ERR_WAFBLACKLIST'));
+		        $result = false;
+	        }
+        }
+
+	    if (isset($data['wafexceptions']))
+	    {
+		    try
+		    {
+			    $db->truncateTable('#__admintools_wafexceptions');
+
+			    if($data['wafexceptions'])
+			    {
+				    $insert = $db->getQuery(true)
+					    ->insert($db->qn('#__admintools_wafexceptions'))
+					    ->columns(array(
+						    $db->qn('option'), $db->qn('view'), $db->qn('query')
+					    ));
+
+				    // I could have several records, let's create a single big query
+				    foreach ($data['wafexceptions'] as $row)
+				    {
+					    $insert->values(
+						    $db->q($row['option']).', '.$db->q($row['view']).', '.$db->q($row['query'])
+					    );
+				    }
+
+				    $db->setQuery($insert)->execute();
+			    }
+		    }
+		    catch (Exception $e)
+		    {
+			    $this->setError(JText::_('COM_ADMINTOOLS_IMPORTEXPORT_ERR_WAFEXCEPTIONS'));
+			    $result = false;
+		    }
+	    }
+
         if(isset($data['ipblacklist']))
         {
             try
             {
                 $db->truncateTable('#__admintools_ipblock');
 
-                $insert = $db->getQuery(true)
-                             ->insert($db->qn('#__admintools_ipblock'))
-                             ->columns(array($db->qn('ip'), $db->qn('description')));
-
-                // I could have several records, let's create a single big query
-                foreach ($data['ipblacklist'] as $row)
+                if($data['ipblacklist'])
                 {
-                    $insert->values($db->q($row['ip']).', '.$db->q($row['description']));
+                    $insert = $db->getQuery(true)
+                        ->insert($db->qn('#__admintools_ipblock'))
+                        ->columns(array($db->qn('ip'), $db->qn('description')));
+
+                    // I could have several records, let's create a single big query
+                    foreach ($data['ipblacklist'] as $row)
+                    {
+                        $insert->values($db->q($row['ip']).', '.$db->q($row['description']));
+                    }
+
+                    $db->setQuery($insert)->execute();
                 }
-
-                $db->setQuery($insert)->execute();
-
             }
             catch(Exception $e)
             {
@@ -125,18 +204,20 @@ class AdmintoolsModelImportexports extends F0FModel
             {
                 $db->truncateTable('#__admintools_adminiplist');
 
-                // I could have several records, let's create a single big query
-                $insert = $db->getQuery(true)
-                             ->insert($db->qn('#__admintools_adminiplist'))
-                             ->columns(array($db->qn('ip'), $db->qn('description')));
-
-                foreach ($data['ipwhitelist'] as $row)
+                if($data['ipwhitelist'])
                 {
-                    $insert->values($db->q($row['ip']).', '.$db->q($row['description']));
+                    // I could have several records, let's create a single big query
+                    $insert = $db->getQuery(true)
+                        ->insert($db->qn('#__admintools_adminiplist'))
+                        ->columns(array($db->qn('ip'), $db->qn('description')));
+
+                    foreach ($data['ipwhitelist'] as $row)
+                    {
+                        $insert->values($db->q($row['ip']).', '.$db->q($row['description']));
+                    }
+
+                    $db->setQuery($insert)->execute();
                 }
-
-                $db->setQuery($insert)->execute();
-
             }
             catch(Exception $e)
             {
@@ -151,18 +232,20 @@ class AdmintoolsModelImportexports extends F0FModel
             {
                 $db->truncateTable('#__admintools_badwords');
 
-                // I could have several records, let's create a single big query
-                $insert = $db->getQuery(true)
-                    ->insert($db->qn('#__admintools_badwords'))
-                    ->columns(array($db->qn('word')));
-
-                foreach ($data['badwords'] as $row)
+                if($data['badwords'])
                 {
-                    $insert->values($db->q($row['word']));
+                    // I could have several records, let's create a single big query
+                    $insert = $db->getQuery(true)
+                        ->insert($db->qn('#__admintools_badwords'))
+                        ->columns(array($db->qn('word')));
+
+                    foreach ($data['badwords'] as $row)
+                    {
+                        $insert->values($db->q($row['word']));
+                    }
+
+                    $db->setQuery($insert)->execute();
                 }
-
-                $db->setQuery($insert)->execute();
-
             }
             catch(Exception $e)
             {

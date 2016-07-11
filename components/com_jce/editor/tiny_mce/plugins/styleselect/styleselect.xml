@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <install version="2.0" type="plugin" plugin="styleselect" core="1" editable="1">
     <name>WF_STYLESELECT_TITLE</name>
-    <version>2.5.16</version>
-    <creationDate>08 April 2016</creationDate>
+    <version>2.5.19</version>
+    <creationDate>24 June 2016</creationDate>
     <author>Ryan Demmer</author>
     <authorEmail>info@joomlacontenteditor.net</authorEmail>
     <authorUrl>http://www.joomlacontenteditor.net/</authorUrl>
@@ -15,6 +15,7 @@
             <option value="stylesheet">WF_STYLESELECT_STYLESHEET</option>
             <option value="custom">WF_STYLESELECT_CUSTOM</option>
         </param>
+        <param name="custom_classes" type="text" default="" placeholder="eg: class1,class2,class3" label="WF_STYLESELECT_CUSTOM_CLASSES" description="WF_STYLESELECT_CUSTOM_CLASSES_DESC" parent="styles[custom]" />
         <param name="custom_styles" type="styleformat" default="" label="WF_STYLESELECT_CUSTOM" description="WF_STYLESELECT_CUSTOM_DESC" parent="styles[custom]" />
     </params>
     <help></help>

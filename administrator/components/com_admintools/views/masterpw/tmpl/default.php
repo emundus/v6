@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  * @version   $Id$
  */
@@ -57,11 +57,29 @@ $jno = 'JNO';
 				</div>
 			</div>
 		</div>
-		<?php foreach ($this->items as $view => $locked): ?>
+		<?php foreach ($this->items as $view => $locked):
+			$langKeys = array(
+				'ADMINTOOLS_TITLE_' . $view,
+				'ADMINTOOLS_TITLE_' . F0FInflector::pluralize($view),
+				'COM_ADMINTOOLS_TITLE_' . $view,
+				'COM_ADMINTOOLS_TITLE_' . F0FInflector::pluralize($view),
+			);
+
+			foreach ($langKeys as $langKey)
+			{
+				$label = JText::_($langKey);
+
+				if ($label != $langKey)
+				{
+					break;
+				}
+			}
+
+			?>
 			<?php $fieldname = 'views[' . $view . ']' ?>
 			<div class="control-group">
 				<label for="<?php echo $fieldname ?>"
-					   class="control-label"><?php echo JText::_('ADMINTOOLS_TITLE_' . strtoupper($view)); ?></label>
+					   class="control-label"><?php echo $label ?></label>
 
 				<div class="controls">
 					<?php echo booleanlist($fieldname, array('class' => 'masterpwcheckbox input-small'), ($locked ? 1 : 0), $jyes, $jno); ?>
@@ -75,8 +93,9 @@ $jno = 'JNO';
 <script type="text/javascript">
 	function doMassSelect(value)
 	{
-		$$('.masterpwcheckbox>option').setProperty('selected', '');
-		$$('.masterpwcheckbox').setProperty('value', value);
+		akeeba.jQuery('.masterpwcheckbox>option').attr('selected', '');
+		akeeba.jQuery('.masterpwcheckbox').val(value);
+
 		return false;
 	}
 </script>

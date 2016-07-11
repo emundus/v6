@@ -42,6 +42,15 @@ $sender = array(
 );
 $mailer = JFactory::getMailer();
 
+$app    = JFactory::getApplication();
+$email_from_sys = $app->getCfg('mailfrom');
+
+// setup mail
+$sender = array(
+    $email_from_sys,
+    $fromname
+);
+
 $mailer->setSender($sender);
 $mailer->addReplyTo($from, $fromname);
 $mailer->addRecipient($recipient);

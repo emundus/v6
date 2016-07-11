@@ -4,10 +4,10 @@
 	<author>Nicholas K. Dionysopoulos</author>
 	<authorEmail>nicholas@akeebabackup.com</authorEmail>
 	<authorUrl>http://www.akeebabackup.com</authorUrl>
-	<copyright>Copyright (c)2010-2015 Nicholas K. Dionysopoulos</copyright>
+	<copyright>Copyright (c)2010-2016 Nicholas K. Dionysopoulos</copyright>
 	<license>GNU General Public License version 3, or later</license>
-	<creationDate>2015-04-01</creationDate>
-	<version>3.5.1</version>
+	<creationDate>2016-07-01</creationDate>
+	<version>3.8.6</version>
 	<description>
 		Handles all the system-wide features provided by Admin Tools Core
 	</description>

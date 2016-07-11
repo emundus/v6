@@ -20,7 +20,7 @@ CREATE TABLE `#__admintools_acl` (
 	`user_id` bigint(20) unsigned NOT NULL,
 	`permissions` mediumtext,
 	PRIMARY KEY (`user_id`)
-) DEFAULT COLLATE utf8_general_ci CHARSET=utf8;
+) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
         </action>
 
@@ -33,7 +33,7 @@ CREATE TABLE `#__admintools_adminiplist` (
 	`ip` varchar(255) DEFAULT NULL,
 	`description` varchar(255) DEFAULT NULL,
 	UNIQUE KEY `id` (`id`)
-) DEFAULT COLLATE utf8_general_ci CHARSET=utf8;
+) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
         </action>
 
@@ -45,7 +45,7 @@ CREATE TABLE  `#__admintools_badwords` (
 	`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 	`word` varchar(255) DEFAULT NULL,
 	UNIQUE KEY `id` (`id`)
-) DEFAULT COLLATE utf8_general_ci CHARSET=utf8;
+) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
         </action>
 
@@ -58,8 +58,8 @@ CREATE TABLE  `#__admintools_customperms` (
 	`path` varchar(255) NOT NULL,
 	`perms` varchar(4) DEFAULT '0644',
 	UNIQUE KEY `id` (`id`),
-	KEY `path` (`path`)
-) DEFAULT COLLATE utf8_general_ci CHARSET=utf8;
+	KEY `#__admintools_customperms_path` (`path`(100))
+) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
         </action>
 
@@ -75,7 +75,7 @@ CREATE TABLE `#__admintools_filescache` (
 	`data` blob,
 	`checksum` varchar(32) NOT NULL DEFAULT '',
 	PRIMARY KEY (`admintools_filescache_id`)
-) DEFAULT COLLATE utf8_general_ci CHARSET=utf8;
+) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
         </action>
 
@@ -87,8 +87,8 @@ CREATE TABLE `#__admintools_ipautoban` (
 	`ip` varchar(255) NOT NULL,
 	`reason` varchar(255) DEFAULT 'other',
 	`until` datetime DEFAULT NULL,
-	UNIQUE KEY `ip` (`ip`)
-) DEFAULT COLLATE utf8_general_ci CHARSET=utf8;
+	UNIQUE KEY `#__admintools_ipautoban_ip` (`ip`(100))
+) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
         </action>
 
@@ -101,7 +101,7 @@ CREATE TABLE `#__admintools_ipblock` (
 	`ip` varchar(255) DEFAULT NULL,
 	`description` varchar(255) DEFAULT NULL,
 	UNIQUE KEY `id` (`id`)
-) DEFAULT COLLATE utf8_general_ci CHARSET=utf8;
+) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
         </action>
 
@@ -114,11 +114,11 @@ CREATE TABLE  `#__admintools_log` (
 	`logdate` datetime NOT NULL,
 	`ip` varchar(40) DEFAULT NULL,
 	`url` varchar(255) DEFAULT NULL,
-	`reason` enum('other', 'admindir', 'awayschedule', 'adminpw','ipwl','ipbl','sqlishield','antispam','tpone','tmpl','template','muashield','csrfshield','badbehaviour','geoblocking','rfishield','dfishield','uploadshield','xssshield','httpbl','loginfailure','securitycode', 'external') DEFAULT 'other',
+	`reason` enum('other', 'admindir', 'awayschedule', 'adminpw','ipwl','ipbl','sqlishield','antispam','tpone','tmpl','template','muashield','csrfshield','badbehaviour','geoblocking','rfishield','dfishield','uploadshield','xssshield','httpbl','loginfailure','securitycode', 'sessionshield', 'external') DEFAULT 'other',
 	`extradata` mediumtext,
 	UNIQUE KEY `id` (`id`),
-	KEY `idx_admintools_log_logdate_reason` (`logdate`, `reason`)
-) DEFAULT COLLATE utf8_general_ci CHARSET=utf8;
+	KEY `#__admintools_log_logdate_reason` (`logdate`, `reason`)
+) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
         </action>
 
@@ -134,7 +134,7 @@ CREATE TABLE `#__admintools_redirects` (
 	`published` tinyint(1) NOT NULL DEFAULT '1',
 	`keepurlparams` tinyint(1) NOT NULL DEFAULT '1',
 	UNIQUE KEY `id` (`id`)
-) DEFAULT COLLATE utf8_general_ci CHARSET=utf8;
+) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
         </action>
 
@@ -150,7 +150,7 @@ CREATE TABLE `#__admintools_scanalerts` (
 	`threat_score` int(11) NOT NULL DEFAULT '0',
 	`acknowledged` tinyint(4) NOT NULL DEFAULT '0',
 	PRIMARY KEY (`admintools_scanalert_id`)
-) DEFAULT COLLATE utf8_general_ci CHARSET=utf8;
+) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
         </action>
 
@@ -179,7 +179,7 @@ CREATE TABLE `#__admintools_scans` (
 	PRIMARY KEY (`id`),
 	KEY `idx_fullstatus` (`filesexist`,`status`),
 	KEY `idx_stale` (`status`,`origin`)
-) DEFAULT CHARACTER SET utf8;
+) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
         </action>
 
@@ -190,8 +190,8 @@ CREATE TABLE `#__admintools_scans` (
 CREATE TABLE `#__admintools_storage` (
 	`key` varchar(255) NOT NULL,
 	`value` longtext NOT NULL,
-	PRIMARY KEY (`key`)
-) DEFAULT COLLATE utf8_general_ci CHARSET=utf8;
+	PRIMARY KEY (`key`(100))
+) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
         </action>
 
@@ -205,7 +205,7 @@ CREATE TABLE `#__admintools_wafexceptions` (
 	`view` varchar(255) DEFAULT NULL,
 	`query` varchar(255) DEFAULT NULL,
 	PRIMARY KEY (`id`)
-) DEFAULT COLLATE utf8_general_ci CHARSET=utf8;
+) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
         </action>
 
@@ -222,7 +222,7 @@ CREATE TABLE `#__admintools_wafblacklists` (
 	`query_content` varchar(255) NOT NULL,
 	`verb` varchar(6) NOT NULL,
 	PRIMARY KEY (`id`)
-) DEFAULT COLLATE utf8_general_ci CHARSET=utf8;
+) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
       </action>
 
@@ -236,7 +236,7 @@ CREATE TABLE `#__admintools_profiles` (
 	`configuration` longtext,
 	`filters` longtext,
 	PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8;
+) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
         </action>
 
@@ -258,8 +258,8 @@ CREATE TABLE `#__admintools_waftemplates` (
   `modified_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `modified_by` bigint(20) NOT NULL DEFAULT '0',
   PRIMARY KEY (`admintools_waftemplate_id`),
-  UNIQUE KEY `admintools_waftemplate_keylang` (`reason`,`language`)
-) DEFAULT CHARSET=utf8;
+  UNIQUE KEY `#__admintools_waftemplate_keylang` (`reason`(100),`language`)
+) DEFAULT COLLATE utf8_general_ci;
           ]]></query>
         </action>
 
@@ -272,7 +272,7 @@ CREATE TABLE `#__admintools_ipautobanhistory` (
   `reason` varchar(255) DEFAULT 'other',
   `until` datetime DEFAULT NULL,
   PRIMARY KEY `id` (`id`)
-);
+) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
         </action>
 
@@ -283,8 +283,8 @@ CREATE TABLE `#__admintools_cookies` (
   `series` varchar(255) NOT NULL,
   `client_hash` varchar(255) NOT NULL,
   `valid_to` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY `series` (`series`)
-);
+  PRIMARY KEY (`series`(100))
+) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
         </action>
 
@@ -309,9 +309,27 @@ ALTER TABLE `#__admintools_redirects` ADD COLUMN `keepurlparams` tinyint(1) NOT 
         </action>
 
         <action table="#__admintools_log" canfail="1">
-            <condition type="true"/>
+            <condition type="index" value="idx_admintools_log_logdate_reason" />
             <query><![CDATA[
-CREATE INDEX `idx_admintools_log_logdate_reason` ON `#__admintools_log` (`logdate`, `reason`);
+ALTER TABLE `#__admintools_log` DROP KEY `idx_admintools_log_logdate_reason`;
+            ]]></query>
+        </action>
+
+        <action table="#__admintools_log" canfail="1">
+            <condition type="index" value="#__admintools_log_logdate_reason" operator="not" />
+            <!-- Keep top 1000 rows for performance reasons (we are going to regenerate the indices) -->
+            <query><![CDATA[
+DELETE FROM `#__admintools_log` where ID < (
+	SELECT CAST(`AUTO_INCREMENT` AS SIGNED) - 1000
+	FROM (
+		SELECT `AUTO_INCREMENT`
+		FROM  INFORMATION_SCHEMA.TABLES
+		WHERE `TABLE_SCHEMA` = DATABASE() AND `TABLE_NAME` = '#__admintools_log'
+	) a
+);
+            ]]></query>
+            <query><![CDATA[
+ALTER TABLE `#__admintools_log` ADD KEY `#__admintools_log_logdate_reason` (`logdate`, `reason`);
             ]]></query>
         </action>
 
@@ -322,7 +340,7 @@ ALTER TABLE `#__admintools_log` CHANGE `reason` `reason` ENUM(
       'other','adminpw','ipwl','ipbl','sqlishield','antispam', 'wafblacklist',
 			'tpone','tmpl','template','muashield','csrfshield','badbehaviour',
 			'geoblocking','rfishield','dfishield','uploadshield','xssshield',
-			'httpbl', 'loginfailure', 'securitycode', 'external', 'awayschedule', 'admindir');
+			'httpbl', 'loginfailure', 'securitycode', 'external', 'awayschedule', 'admindir', 'sessionshield');
             ]]></query>
         </action>
 
@@ -333,9 +351,22 @@ SELECT COUNT(*) FROM `#__admintools_waftemplates`;
             <query><![CDATA[
 INSERT INTO `#__admintools_waftemplates` (`admintools_waftemplate_id`, `reason`, `language`, `subject`, `template`, `enabled`, `email_num`, `email_numfreq`, `email_freq`, `created_on`, `created_by`, `modified_on`, `modified_by`)
 VALUES
-	(NULL, 'all', '*', 'Security exception on [SITENAME]', '<div style=\"background-color: #e0e0e0; padding: 10px 20px;\">\r\n<div style=\"background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;\">\r\n<p>Hello,</p>\r\n<p>We would like to notify you that a security exception was detected on your site, [SITENAME], with the following details:</p>\r\n<p>IP Address: [IP] (IP Lookup: [LOOKUP])<br />Reason: [REASON]</p>\r\n<p>If this kind of security exception repeats itself, please log in to your site\'s back-end and add this IP address to your Admin Tools\'s Web Application Firewall feature in order to completely block the misbehaving user.</p>\r\n<p>Best regards,</p>\r\n<p>The [SITENAME] team</p>\r\n</div>\r\n<p style=\"font-size: x-small; color: #667;\">You are receiving this automatic email message because you have a subscription in <em>[SITENAME]</em>. <span style=\"line-height: 1.3em;\">Do not reply to this email, it\'s sent from an unmonitored email address.</span></p>\r\n</div>\r\n<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeebabackup.com/products/admin-tools.html\">Akeeba AdminTools</a></p>', 1, 5, 1, 'hour', '2014-04-14 14:36:34', 800, '2014-04-14 14:42:38', 800),
-	(NULL, 'user-reactivate', '*', 'User deactivated on [SITENAME]', '<div style=\"background-color: #e0e0e0; padding: 10px 20px;\">\r\n<div style=\"background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;\">\r\n<p>Hello,</p>\r\n<p>on [DATE] the user [USER] has been de-activated since he failed too many logins (recorded IP: [IP]).</p>\r\n<p>Please click on the following link to activate the user again:<br />[ACTIVATE]</p>\r\n<p>If this kind of security exception repeats itself, please log in to your site\'s back-end and add this IP address to your Admin Tools\'s Web Application Firewall feature in order to completely block the misbehaving user.</p>\r\n<p>Best regards,</p>\r\n<p>The [SITENAME] team</p>\r\n</div>\r\n<p style=\"font-size: x-small; color: #667;\">You are receiving this automatic email message because you have a subscription in <em>[SITENAME]</em>. <span style=\"line-height: 1.3em;\">Do not reply to this email, it\'s sent from an unmonitored email address.</span></p>\r\n</div>\r\n<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeebabackup.com/products/admin-tools.html\">Akeeba AdminTools</a></p>', 1, 0, 0, '', '2014-04-24 14:44:49', 800, '0000-00-00 00:00:00', 0);
+	(NULL, 'all', '*', 'Security exception on [SITENAME]', '<div style=\"background-color: #e0e0e0; padding: 10px 20px;\">\r\n<div style=\"background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;\">\r\n<p>Hello,</p>\r\n<p>We would like to notify you that a security exception was detected on your site, [SITENAME], with the following details:</p>\r\n<p>IP Address: [IP] (IP Lookup: [LOOKUP])<br />Reason: [REASON]</p>\r\n<p>If this kind of security exception repeats itself, please log in to your site\'s back-end and add this IP address to your Admin Tools\'s Web Application Firewall feature in order to completely block the misbehaving user.</p>\r\n<p>Best regards,</p>\r\n<p>The [SITENAME] team</p>\r\n</div>\r\n<p style=\"font-size: x-small; color: #667;\">You are receiving this automatic email message because you are an administrator in <em>[SITENAME]</em>. <span style=\"line-height: 1.3em;\">Do not reply to this email, it\'s sent from an unmonitored email address.</span></p>\r\n</div>', 1, 5, 1, 'hour', '2014-04-14 14:36:34', 800, '2014-04-14 14:42:38', 800),
+	(NULL, 'user-reactivate', '*', 'User deactivated on [SITENAME]', '<div style=\"background-color: #e0e0e0; padding: 10px 20px;\">\r\n<div style=\"background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;\">\r\n<p>Hello,</p>\r\n<p>on [DATE] the user account [USER] was de-activated because too many failed logins were detected coming from IP address: [IP].</p>\r\n<p>Please click on the following link to activate the user account again:<br />[ACTIVATE]</p>\r\n<p>Best regards,</p>\r\n<p>The [SITENAME] team</p>\r\n</div>\r\n<p style=\"font-size: x-small; color: #667;\">You are receiving this automatic email message because you are an administrator in <em>[SITENAME]</em>. <span style=\"line-height: 1.3em;\">Do not reply to this email, it\'s sent from an unmonitored email address.</span></p>\r\n</div>', 1, 0, 0, '', '2014-04-24 14:44:49', 800, '0000-00-00 00:00:00', 0);
 
+            ]]></query>
+        </action>
+
+        <action table="#__admintools_waftemplates" canfail="1">
+            <condition type="equals" value="0"><![CDATA[
+SELECT COUNT(*) FROM `#__admintools_waftemplates` WHERE `reason` = 'adminloginfail';
+            ]]></condition>
+            <query><![CDATA[
+INSERT INTO `#__admintools_waftemplates` (`reason`, `language`, `subject`, `template`, `enabled`, `email_num`, `email_numfreq`, `email_freq`, `created_on`, `created_by`, `modified_on`, `modified_by`)
+VALUES
+	('adminloginfail', '*', 'Failed administrator login for user [USER] on [SITENAME]', '<div style=\"background-color: #e0e0e0; padding: 10px 20px;\">\r\n<div style=\"background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;\">\r\n<p>Hello,</p>\r\n<p>We would like to notify you that user <strong>[USER]</strong> did <strong>not</strong> log in successfully to the administrator back-end area of your site, [SITENAME]. <span style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">Further information:</span></p>\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">Username: [USER]<br />IP address: [IP] ([LOOKUP])<br />Country*: [COUNTRY]<br />Continent*: [CONTINENT]<br />Browser User Agent string: [UA]</p>\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">* Country and continent information availability and accuracy depend on the GeoIP database installed on your site.</p>\r\n<p>If this expected you need to do nothing about it. If you suspect a hacking attempt, please log in to your site\'s back-end immediately and activate Admin Tools\' Emergency Off-Line mode at once.</p>\r\n<p>Best regards,</p>\r\n<p>The [SITENAME] team</p>\r\n</div>\r\n<p style=\"font-size: x-small; color: #667;\">You are receiving this automatic email message because you are an administrator in <em>[SITENAME]</em>. <span style=\"line-height: 1.3em;\">Do not reply to this email, it\'s sent from an unmonitored email address.</span></p>', 1, 5, 1, 'hour', '2015-07-27 13:52:45', 800, '2015-07-27 13:58:31', 800),
+	('adminloginsuccess', '*', 'User [USER] logged in on [SITENAME] administrator area', '<div style=\"background-color: #e0e0e0; padding: 10px 20px;\">\r\n<div style=\"background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;\">\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">Hello,</p>\r\n<p>We would like to notify you that user [USER] has just logged in to the administrator back-end area of your site, [SITENAME]. Further information:</p>\r\n<p>Username: [USER]<br />IP address: [IP] ([LOOKUP])<br />Country*: [COUNTRY]<br />Continent*: [CONTINENT]<br />Browser User Agent string: [UA]</p>\r\n<p>* Country and continent information availability and accuracy depend on the GeoIP database installed on your site.</p>\r\n<p>If this expected you need to do nothing about it. If you suspect a hacking attempt, please log in to your site\'s back-end immediately and activate Admin Tools\' Emergency Off-Line mode at once.</p>\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">Best regards,</p>\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">The [SITENAME] team</p>\r\n</div>\r\n<p style=\"font-size: x-small; color: #667;\">You are receiving this automatic email message because you are an administrator in <em>[SITENAME]</em>. <span style=\"line-height: 1.3em;\">Do not reply to this email, it\'s sent from an unmonitored email address.</span></p>', 1, 5, 1, 'hour', '2015-07-27 13:58:08', 800, '0000-00-00 00:00:00', 0),
+	('ipautoban', '*', 'Automatic IP blocking notification for [IP] on [SITENAME]', '<div style=\"background-color: #e0e0e0; padding: 10px 20px;\">\r\n<div style=\"background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;\">\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">Hello,</p>\r\n<p>We would like to notify you that the IP address [IP] is now blocked from accessing your site, [SITENAME]<span style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">, with the following details:</span></p>\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">IP Address: [IP] (IP Lookup: [LOOKUP])<br />Reason: [REASON]<br />Banned until: [UNTIL]</p>\r\n<p>If this is your own IP address and you can no longer access your site please <a href=\"http://akee.ba/lockedout\">follow our instructions</a> to temporarily disable Admin Tools\' Web Application Firewall and clear the automatic IP ban.</p>\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">Best regards,</p>\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">The [SITENAME] team</p>\r\n</div>\r\n<p style=\"font-size: x-small; color: #667;\">You are receiving this automatic email message because you are an administrator in <em>[SITENAME]</em>. <span style=\"line-height: 1.3em;\">Do not reply to this email, it\'s sent from an unmonitored email address.</span></p>', 1, 5, 1, 'hour', '2015-07-27 14:20:00', 800, '0000-00-00 00:00:00', 0);
             ]]></query>
         </action>
 
@@ -348,5 +379,57 @@ ADD COLUMN `backupid` varchar(255) DEFAULT NULL
 AFTER `tag`
             ]]></query>
         </action>
+
+        <!-- Upgrade to UTF8MB4 -->
+        <action table="#__admintools_customperms" canfail="1">
+            <condition type="utf8mb4upgrade" />
+            <query><![CDATA[
+ALTER TABLE `#__admintools_customperms` DROP KEY `path`;
+            ]]></query>
+            <query><![CDATA[
+ALTER TABLE `#__admintools_customperms` ADD KEY `#__admintools_customperms_path` (`path`(100));
+            ]]></query>
+        </action>
+
+        <action table="#__admintools_ipautoban" canfail="1">
+            <condition type="utf8mb4upgrade" />
+            <query><![CDATA[
+ALTER TABLE `#__admintools_ipautoban` DROP KEY `ip`;
+            ]]></query>
+            <query><![CDATA[
+ALTER TABLE `#__admintools_ipautoban` ADD UNIQUE KEY `#__admintools_ipautoban_ip` (`ip`(100));
+            ]]></query>
+        </action>
+
+        <action table="#__admintools_storage" canfail="1">
+            <condition type="utf8mb4upgrade" />
+            <query><![CDATA[
+ALTER TABLE `#__admintools_storage` DROP PRIMARY KEY;
+            ]]></query>
+            <query><![CDATA[
+ALTER TABLE `#__admintools_storage` ADD PRIMARY KEY (`key`(100));
+            ]]></query>
+        </action>
+
+        <action table="#__admintools_waftemplates" canfail="1">
+            <condition type="utf8mb4upgrade" />
+            <query><![CDATA[
+ALTER TABLE `#__admintools_waftemplates` DROP KEY `admintools_waftemplate_keylang`;
+            ]]></query>
+            <query><![CDATA[
+ALTER TABLE `#__admintools_waftemplates` ADD UNIQUE KEY `#__admintools_waftemplate_keylang` (`reason`(100),`language`)
+            ]]></query>
+        </action>
+
+        <action table="#__admintools_cookies" canfail="1">
+            <condition type="utf8mb4upgrade" />
+            <query><![CDATA[
+ALTER TABLE `#__admintools_cookies` DROP PRIMARY KEY;
+            ]]></query>
+            <query><![CDATA[
+ALTER TABLE `#__admintools_cookies` ADD PRIMARY KEY (`series`(100));
+            ]]></query>
+        </action>
+
     </sql>
 </schema>

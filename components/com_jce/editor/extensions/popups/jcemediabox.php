@@ -34,18 +34,21 @@ class WFPopupsExtension_Jcemediabox {
 
             $files = JFolder::files($path, '.js');
 
-            foreach ($files as $file) {
-                if (strpos($file, '-src.js') === false) {
-                    $scripts[] = 'plugins/system/jcemediabox/addons/' . JFile::stripExt($file);
-                }
+            if (!empty($files)) {
+              foreach ($files as $file) {
+                  if (strpos($file, '-src.js') === false) {
+                      $scripts[] = 'plugins/system/jcemediabox/addons/' . JFile::stripExt($file);
+                  }
+              }
             }
+
             $document->addScript($scripts, 'joomla');
         }
     }
 
     public function getParams() {
         $wf = WFEditorPlugin::getInstance();
-        
+
         return array(
             'width'                 => 600,
             'album'                 => '#jcemediabox_popup_group',
@@ -69,7 +72,7 @@ class WFPopupsExtension_Jcemediabox {
 
         return false;
     }
-    
+
     public function checkVersion() {
         return true;
     }

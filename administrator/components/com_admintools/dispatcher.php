@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  */
 
@@ -55,7 +55,7 @@ class AdmintoolsDispatcher extends F0FDispatcher
 			AkeebaStrapper::$tag = ADMINTOOLSMEDIATAG;
 			AkeebaStrapper::bootstrap();
 			AkeebaStrapper::jQueryUI();
-			AkeebaStrapper::addCSSfile('media://com_admintools/css/backend.css');
+			AkeebaStrapper::addCSSfile('admin://components/com_admintools/media/css/backend.css');
 
 			// Work around non-transparent proxy and reverse proxy IP issues
 			if (class_exists('F0FUtilsIp', true))

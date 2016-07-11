@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  * @version   $Id$
  */
@@ -11,18 +11,23 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die;
 
+// Workaround for IDIOT HOSTS. If you are one of these hosts, YOUR "ANTIVIRUS" IS CRAP!
+$idiotHostWorkaround = 'h' . str_repeat('t', 2) . 'ps' . ':';
+$idiotHostWorkaround .= str_repeat('/', 2) . substr('WTF api IDIOT HOST', 4, 3) . '.';
+$idiotHostWorkaround .= strtolower('IP') . substr('signify', -3) .  '.' . substr('organisation', 0, 3);
+
 JHtml::_('behavior.modal');
 
-F0FTemplateUtils::addCSS('media://com_admintools/css/jquery.jqplot.min.css');
+F0FTemplateUtils::addCSS('admin://components/com_admintools/media/css/jquery.jqplot.min.css');
 
-AkeebaStrapper::addJSfile('media://com_admintools/js/excanvas.min.js?' . ADMINTOOLS_VERSION);
-AkeebaStrapper::addJSfile('media://com_admintools/js/jquery.jqplot.min.js?' . ADMINTOOLS_VERSION);
-AkeebaStrapper::addJSfile('media://com_admintools/js/jqplot.highlighter.min.js?' . ADMINTOOLS_VERSION);
-AkeebaStrapper::addJSfile('media://com_admintools/js/jqplot.dateAxisRenderer.min.js?' . ADMINTOOLS_VERSION);
-AkeebaStrapper::addJSfile('media://com_admintools/js/jqplot.barRenderer.min.js?' . ADMINTOOLS_VERSION);
-AkeebaStrapper::addJSfile('media://com_admintools/js/jqplot.pieRenderer.min.js?' . ADMINTOOLS_VERSION);
-AkeebaStrapper::addJSfile('media://com_admintools/js/jqplot.hermite.js?' . ADMINTOOLS_VERSION);
-AkeebaStrapper::addJSfile('media://com_admintools/js/cpanelgraphs.js?' . ADMINTOOLS_VERSION);
+AkeebaStrapper::addJSfile('admin://components/com_admintools/media/js/excanvas.min.js?' . ADMINTOOLS_VERSION);
+AkeebaStrapper::addJSfile('admin://components/com_admintools/media/js/jquery.jqplot.min.js?' . ADMINTOOLS_VERSION);
+AkeebaStrapper::addJSfile('admin://components/com_admintools/media/js/jqplot.highlighter.min.js?' . ADMINTOOLS_VERSION);
+AkeebaStrapper::addJSfile('admin://components/com_admintools/media/js/jqplot.dateAxisRenderer.min.js?' . ADMINTOOLS_VERSION);
+AkeebaStrapper::addJSfile('admin://components/com_admintools/media/js/jqplot.barRenderer.min.js?' . ADMINTOOLS_VERSION);
+AkeebaStrapper::addJSfile('admin://components/com_admintools/media/js/jqplot.pieRenderer.min.js?' . ADMINTOOLS_VERSION);
+AkeebaStrapper::addJSfile('admin://components/com_admintools/media/js/jqplot.hermite.js?' . ADMINTOOLS_VERSION);
+AkeebaStrapper::addJSfile('admin://components/com_admintools/media/js/cpanelgraphs.js?' . ADMINTOOLS_VERSION);
 
 $lang = JFactory::getLanguage();
 $option = 'com_admintools';
@@ -41,6 +46,8 @@ $script = <<<JS
 	$(document).ready(function(){
 		$('#optimize').click(warnBeforeOptimize);
 		$('#btnchangelog').click(showChangelog);
+
+		akeeba.jQuery.ajax('{$idiotHostWorkaround}/?format=jsonp&callback=adminToolsShowUnblock');
 	});
 
 	function warnBeforeOptimize(e)
@@ -68,6 +75,26 @@ $script = <<<JS
 	}
 })(akeeba.jQuery);
 
+function adminToolsShowUnblock(response)
+{
+	akeeba.jQuery.ajax('index.php?option=com_admintools&view=cpanels&task=selfblocked&tmpl=component', {
+		data: {
+			ip : response.ip
+		},
+		success : function(msg){
+			// Get rid of junk before and after data
+			var match = msg.match(/###([\s\S]*?)###/);
+			var result = match[1];
+
+			if(result == 1)
+			{
+				akeeba.jQuery('#selfBlocked a')
+				.attr('href', akeeba.jQuery('#selfBlocked a').attr('href') + '&ip=' + response.ip);
+				akeeba.jQuery('#selfBlocked').show();
+			}
+		}
+	})
+}
 JS;
 $document = JFactory::getDocument();
 $document->addScriptDeclaration($script, 'text/javascript');
@@ -75,6 +102,32 @@ $document->addScriptDeclaration($script, 'text/javascript');
 $db = JFactory::getDBO();
 
 ?>
+<?php if (isset($this->jwarnings) && !empty($this->jwarnings)):?>
+    <div class="alert alert-danger">
+        <h3><?php echo JText::_('COM_ADMINTOOLS_CPANEL_ERR_JCONFIG')?></h3>
+        <p><?php echo $this->jwarnings?></p>
+    </div>
+<?php endif;?>
+
+<?php if (isset($this->frontEndSecretWordIssue) && !empty($this->frontEndSecretWordIssue)): ?>
+	<div class="alert alert-danger">
+		<h3><?php echo JText::_('COM_ADMINTOOLS_CPANEL_ERR_FESECRETWORD_HEADER'); ?></h3>
+		<p><?php echo JText::_('COM_ADMINTOOLS_CPANEL_ERR_FESECRETWORD_INTRO'); ?></p>
+		<p><?php echo $this->frontEndSecretWordIssue ?></p>
+		<p>
+			<?php echo JText::_('COM_ADMINTOOLS_CPANEL_ERR_FESECRETWORD_WHATTODO_JOOMLA'); ?>
+			<?php echo JText::sprintf('COM_ADMINTOOLS_CPANEL_ERR_FESECRETWORD_WHATTODO_COMMON', $this->newSecretWord); ?>
+		</p>
+		<p>
+			<a class="btn btn-success btn-large"
+			   href="index.php?option=com_admintools&view=cpanel&task=resetSecretWord&<?php echo JFactory::getSession()->getToken() ?>=1">
+				<span class="icon icon-white icon-refresh"></span>
+				<?php echo JText::_('COM_ADMINTOOLS_CPANEL_BTN_FESECRETWORD_RESET'); ?>
+			</a>
+		</p>
+	</div>
+<?php endif; ?>
+
 <?php
 	// Obsolete PHP version check
 	if (version_compare(PHP_VERSION, '5.4.0', 'lt')):
@@ -97,25 +150,6 @@ $db = JFactory::getDBO();
 </div>
 <?php endif; ?>
 
-
-<div id="fastcheckNotice" class="alert alert-danger" style="display: none">
-	<h3><?php echo JText::_('COM_ADMINTOOLS_CPANEL_ERR_CORRUPT_HEAD') ?></h3>
-	<p>
-		<?php echo JText::_('COM_ADMINTOOLS_CPANEL_ERR_CORRUPT_INFO') ?>
-	</p>
-	<p>
-		<?php echo JText::_('COM_ADMINTOOLS_CPANEL_ERR_CORRUPT_DONTPANIC') ?>
-	</p>
-	<p>
-		<?php echo JText::_('COM_ADMINTOOLS_CPANEL_ERR_CORRUPT_MOREINFO') ?>
-	</p>
-	<p>
-		<a href="index.php?option=com_admintools&view=checkfiles" class="btn btn-large btn-primary">
-			<?php echo JText::_('COM_ADMINTOOLS_CPANEL_CORRUPT_RUNFILES') ?>
-		</a>
-	</p>
-</div>
-
 <div id="restOfCPanel">
 <?php if ($this->oldVersion): ?>
 	<div class="alert alert-warning">
@@ -131,11 +165,29 @@ $db = JFactory::getDBO();
 	</div>
 <?php endif; ?>
 
-<?php if ($this->needsdlid && $this->isPro): ?>
-	<div class="alert alert-error">
-		<a class="close" data-dismiss="alert" href="#">×</a>
-		<?php echo JText::sprintf('ATOOLS_LBL_CP_NEEDSDLID', 'https://www.akeebabackup.com/instructions/1436-admin-tools-download-id.html'); ?>
-	</div>
+<?php if($this->needsdlid): ?>
+    <div class="alert alert-success">
+        <h3>
+            <?php echo JText::_('COM_ADMINTOOLS_CPANEL_MSG_MUSTENTERDLID') ?>
+        </h3>
+        <p>
+            <?php echo JText::sprintf('COM_ADMINTOOLS_LBL_CPANEL_NEEDSDLID','https://www.akeebabackup.com/instructions/1436-admin-tools-download-id.html'); ?>
+        </p>
+        <form name="dlidform" action="index.php" method="post" class="form-inline">
+            <input type="hidden" name="option" value="com_admintools" />
+            <input type="hidden" name="view" value="cpanel" />
+            <input type="hidden" name="task" value="applydlid" />
+            <input type="hidden" name="<?php echo JFactory::getSession()->getFormToken()?>" value="1" />
+    <span>
+        <?php echo JText::_('COM_ADMINTOOLS_CPANEL_MSG_PASTEDLID') ?>
+    </span>
+            <input type="text" name="dlid" placeholder="<?php echo JText::_('ATOOLS_LBL_CONFIG_DOWNLOADID')?>" class="input-xlarge">
+            <button type="submit" class="btn btn-success">
+                <span class="icon icon-checkbox"></span>
+                <?php echo JText::_('COM_ADMINTOOLS_CPANEL_MSG_APPLYDLID') ?>
+            </button>
+        </form>
+    </div>
 <?php endif; ?>
 
 <div id="updateNotice"></div>
@@ -197,6 +249,13 @@ $db = JFactory::getDBO();
 
 <div id="cpanel" class="span6">
 
+<div id="selfBlocked" class="text-center" style="display: none;">
+	<a class="btn btn-large btn-danger" href="<?php echo JRoute::_('index.php?option=com_admintools&view=cpanel&task=unblockme')?>">
+		<span class="icon icon-unlock"></span>
+		<?php echo JText::_('COM_ADMINTOOLS_CPANEL_UNBLOCK_ME')?>
+	</a>
+</div>
+
 <?php if (!$this->hasValidPassword): ?>
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="well">
 		<input type="hidden" name="option" value="com_admintools"/>
@@ -217,12 +276,27 @@ $db = JFactory::getDBO();
 
 <h2><?php echo JText::_('ATOOLS_LBL_CP_SECURITY') ?></h2>
 
+	<?php if (ADMINTOOLS_PRO && $this->needsQuickSetup): ?>
+	<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
+		<div class="icon">
+			<a href="index.php?option=<?php echo $option ?>&view=quickstart">
+				<img
+					src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/quickstart-32.png"
+					border="0" alt="<?php echo JText::_('COM_ADMINTOOLS_TITLE_QUICKSTART') ?>"/>
+					<span>
+						<?php echo JText::_('COM_ADMINTOOLS_TITLE_QUICKSTART') ?><br/>
+					</span>
+			</a>
+		</div>
+	</div>
+	<?php endif; ?>
+
 <?php if ($this->htMakerSupported): ?>
 	<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
 		<div class="icon">
 			<a href="index.php?option=<?php echo $option ?>&view=eom">
 				<img
-					src="<?php echo rtrim(JURI::base(), '/'); ?>/../media/com_admintools/images/eom-32.png"
+					src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/eom-32.png"
 					border="0" alt="<?php echo JText::_('ADMINTOOLS_TITLE_EOM') ?>"/>
 					<span>
 						<?php echo JText::_('ADMINTOOLS_TITLE_EOM') ?><br/>
@@ -236,7 +310,7 @@ $db = JFactory::getDBO();
 	<div class="icon">
 		<a href="index.php?option=<?php echo $option ?>&view=masterpw">
 			<img
-				src="<?php echo rtrim(JURI::base(), '/'); ?>/../media/com_admintools/images/wafconfig-32.png"
+				src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/wafconfig-32.png"
 				border="0" alt="<?php echo JText::_('ADMINTOOLS_TITLE_MASTERPW') ?>"/>
 					<span>
 						<?php echo JText::_('ADMINTOOLS_TITLE_MASTERPW') ?><br/>
@@ -251,7 +325,7 @@ $db = JFactory::getDBO();
 		<div class="icon">
 			<a href="index.php?option=<?php echo $option ?>&view=adminpw">
 				<img
-					src="<?php echo rtrim(JURI::base(), '/'); ?>/../media/com_admintools/images/adminpw-<?php echo $icon ?>-32.png"
+					src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/adminpw-<?php echo $icon ?>-32.png"
 					border="0" alt="<?php echo JText::_('ADMINTOOLS_TITLE_ADMINPW') ?>"/>
 					<span>
 						<?php echo JText::_('ADMINTOOLS_TITLE_ADMINPW') ?><br/>
@@ -267,7 +341,7 @@ $db = JFactory::getDBO();
 			<div class="icon">
 				<a href="index.php?option=<?php echo $option ?>&view=htmaker">
 					<img
-						src="<?php echo rtrim(JURI::base(), '/'); ?>/../media/com_admintools/images/htmaker-32.png"
+						src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/htmaker-32.png"
 						border="0" alt="<?php echo JText::_('ADMINTOOLS_TITLE_HTMAKER') ?>"/>
 					<span>
 						<?php echo JText::_('ADMINTOOLS_TITLE_HTMAKER') ?><br/>
@@ -282,10 +356,25 @@ $db = JFactory::getDBO();
 			<div class="icon">
 				<a href="index.php?option=<?php echo $option ?>&view=nginxmaker">
 					<img
-						src="<?php echo rtrim(JURI::base(), '/'); ?>/../media/com_admintools/images/htmaker-32.png"
+						src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/htmaker-32.png"
 						border="0" alt="<?php echo JText::_('ADMINTOOLS_TITLE_NGINXMAKER') ?>"/>
 					<span>
 						<?php echo JText::_('ADMINTOOLS_TITLE_NGINXMAKER') ?><br/>
+					</span>
+				</a>
+			</div>
+		</div>
+	<?php endif; ?>
+
+	<?php if ($this->webConfMakerSupported): ?>
+		<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
+			<div class="icon">
+				<a href="index.php?option=<?php echo $option ?>&view=wcmaker">
+					<img
+						src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/htmaker-32.png"
+						border="0" alt="<?php echo JText::_('ADMINTOOLS_TITLE_WCMAKER') ?>"/>
+					<span>
+						<?php echo JText::_('ADMINTOOLS_TITLE_WCMAKER') ?><br/>
 					</span>
 				</a>
 			</div>
@@ -296,7 +385,7 @@ $db = JFactory::getDBO();
 		<div class="icon">
 			<a href="index.php?option=<?php echo $option ?>&view=waf">
 				<img
-					src="<?php echo rtrim(JURI::base(), '/'); ?>/../media/com_admintools/images/waf-32.png"
+					src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/waf-32.png"
 					border="0" alt="<?php echo JText::_('ADMINTOOLS_TITLE_WAF') ?>"/>
 					<span>
 						<?php echo JText::_('ADMINTOOLS_TITLE_WAF') ?><br/>
@@ -310,14 +399,28 @@ $db = JFactory::getDBO();
 	<div class="icon">
 		<a href="index.php?option=<?php echo $option ?>&view=scans">
 			<img
-				src="<?php echo rtrim(JURI::base(), '/'); ?>/../media/com_admintools/images/scans-32.png"
+				src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/scans-32.png"
 				border="0" alt="<?php echo JText::_('COM_ADMINTOOLS_TITLE_SCANS') ?>"/>
 				<span>
 					<?php echo JText::_('COM_ADMINTOOLS_TITLE_SCANS') ?><br/>
 				</span>
 		</a>
 	</div>
+
+	<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
+		<div class="icon">
+			<a href="index.php?option=com_admintools&view=schedule" target="_blank">
+				<img
+					src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/scheduling-32.png"
+					border="0" alt="<?php echo JText::_('COM_ADMINTOOLS_TITLE_SCHEDULING') ?>"/>
+				<span>
+					<?php echo JText::_('COM_ADMINTOOLS_TITLE_SCHEDULING') ?><br/>
+				</span>
+			</a>
+		</div>
+	</div>
 <?php endif; ?>
+
 
 <div style="clear: both;"></div>
 
@@ -328,7 +431,7 @@ $db = JFactory::getDBO();
 		<div class="icon">
 			<a href="index.php?option=<?php echo $option ?>&view=fixpermsconfig">
 				<img
-					src="<?php echo rtrim(JURI::base(), '/'); ?>/../media/com_admintools/images/fixpermsconfig-32.png"
+					src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/fixpermsconfig-32.png"
 					border="0" alt="<?php echo JText::_('ADMINTOOLS_TITLE_FIXPERMSCONFIG') ?>"/>
 					<span>
 						<?php echo JText::_('ADMINTOOLS_TITLE_FIXPERMSCONFIG') ?><br/>
@@ -343,7 +446,7 @@ $db = JFactory::getDBO();
 				<a href="index.php?option=<?php echo $option ?>&view=fixperms&tmpl=component" class="modal"
 				   rel="{handler: 'iframe', size: {x: 600, y: 250}}">
 					<img
-						src="<?php echo rtrim(JURI::base(), '/'); ?>/../media/com_admintools/images/fixperms-32.png"
+						src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/fixperms-32.png"
 						border="0" alt="<?php echo JText::_('ADMINTOOLS_TITLE_FIXPERMS') ?>"/>
 					<span>
 						<?php echo JText::_('ADMINTOOLS_TITLE_FIXPERMS') ?><br/>
@@ -358,7 +461,7 @@ $db = JFactory::getDBO();
 	<div class="icon">
 		<a href="index.php?option=<?php echo $option ?>&view=seoandlink">
 			<img
-				src="<?php echo rtrim(JURI::base(), '/'); ?>/../media/com_admintools/images/seoandlink-32.png"
+				src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/seoandlink-32.png"
 				border="0" alt="<?php echo JText::_('ADMINTOOLS_TITLE_SEOANDLINK') ?>"/>
 					<span>
 						<?php echo JText::_('ADMINTOOLS_TITLE_SEOANDLINK') ?><br/>
@@ -373,7 +476,7 @@ $db = JFactory::getDBO();
 			<a href="index.php?option=<?php echo $option ?>&view=cleantmp&tmpl=component" class="modal"
 			   rel="{handler: 'iframe', size: {x: 600, y: 250}}">
 				<img
-					src="<?php echo rtrim(JURI::base(), '/'); ?>/../media/com_admintools/images/cleantmp-32.png"
+					src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/cleantmp-32.png"
 					border="0" alt="<?php echo JText::_('ADMINTOOLS_TITLE_CLEANTMP') ?>"/>
 					<span>
 						<?php echo JText::_('ADMINTOOLS_TITLE_CLEANTMP') ?><br/>
@@ -383,13 +486,44 @@ $db = JFactory::getDBO();
 	</div>
 <?php endif; ?>
 
-<?php if ($this->enable_dbtools && $this->isMySQL): ?>
+<?php if ($this->enable_tmplogcheck): ?>
+    <div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
+        <div class="icon">
+            <a href="index.php?option=com_admintools&view=tmplogcheck&tmpl=component" class="modal"
+               rel="{handler: 'iframe', size: {x: 600, y: 250}}">
+                <img
+                    src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/scans-32.png"
+                    border="0" alt="<?php echo JText::_('ADMINTOOLS_TITLE_CLEANTMP') ?>"/>
+					<span>
+						<?php echo JText::_('ADMINTOOLS_TITLE_TMPLOGCHECK') ?><br/>
+					</span>
+            </a>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php if ($this->enable_dbchcol && $this->isMySQL): ?>
+	<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
+		<div class="icon">
+			<a href="index.php?option=<?php echo $option ?>&view=dbchcol">
+				<img
+					src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/dbchcol-32.png"
+					border="0" alt="<?php echo JText::_('ATOOLS_LBL_DBCHCOL') ?>"/>
+				<span>
+					<?php echo JText::_('ATOOLS_LBL_DBCHCOL') ?><br/>
+				</span>
+			</a>
+		</div>
+	</div>
+<?php endif; ?>
+
+	<?php if ($this->enable_dbtools && $this->isMySQL): ?>
 	<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
 		<div class="icon">
 			<a href="index.php?option=<?php echo $option ?>&view=dbtools&task=optimize&tmpl=component" class="modal"
 			   rel="{handler: 'iframe', size: {x: 600, y: 250}}">
 				<img
-					src="<?php echo rtrim(JURI::base(), '/'); ?>/../media/com_admintools/images/dbtools-optimize-32.png"
+					src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/dbtools-optimize-32.png"
 					border="0" alt="<?php echo JText::_('ATOOLS_LBL_OPTIMIZEDB') ?>"/>
 					<span>
 						<?php echo JText::_('ATOOLS_LBL_OPTIMIZEDB') ?><br/>
@@ -404,7 +538,7 @@ $db = JFactory::getDBO();
 		<div class="icon">
 			<a href="index.php?option=<?php echo $option ?>&view=dbtools&task=purgesessions" id="optimize">
 				<img
-					src="<?php echo rtrim(JURI::base(), '/'); ?>/../media/com_admintools/images/dbtools-32.png"
+					src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/dbtools-32.png"
 					border="0" alt="<?php echo JText::_('ATOOLS_LBL_PURGESESSIONS') ?>"/>
 					<span>
 						<?php echo JText::_('ATOOLS_LBL_PURGESESSIONS') ?><br/>
@@ -419,7 +553,7 @@ $db = JFactory::getDBO();
 		<div class="icon">
 			<a href="index.php?option=<?php echo $option ?>&view=redirs">
 				<img
-					src="<?php echo rtrim(JURI::base(), '/'); ?>/../media/com_admintools/images/redirs-32.png"
+					src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/redirs-32.png"
 					border="0" alt="<?php echo JText::_('ADMINTOOLS_TITLE_REDIRS') ?>"/>
 					<span>
 						<?php echo JText::_('ADMINTOOLS_TITLE_REDIRS') ?><br/>
@@ -435,7 +569,7 @@ $db = JFactory::getDBO();
 		<div class="icon">
 			<a href="<?php echo $url ?>" target="_blank">
 				<img
-					src="<?php echo rtrim(JURI::base(), '/'); ?>/../media/com_admintools/images/scheduling-32.png"
+					src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/scheduling-32.png"
 					border="0" alt="<?php echo JText::_('ATOOLS_TITLE_SCHEDULING') ?>"/>
 					<span>
 						<?php echo JText::_('ATOOLS_TITLE_SCHEDULING') ?><br/>
@@ -449,7 +583,7 @@ $db = JFactory::getDBO();
 	<div class="icon">
 		<a href="index.php?option=com_admintools&view=importexport&task=export">
 			<img
-				src="<?php echo rtrim(JURI::base(), '/'); ?>/../media/com_admintools/images/export-32.png"
+				src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/export-32.png"
 				border="0" alt="<?php echo JText::_('ATOOLS_TITLE_EXPORT_SETTINGS') ?>"/>
                         <span>
                             <?php echo JText::_('ATOOLS_TITLE_EXPORT_SETTINGS') ?><br/>
@@ -462,7 +596,7 @@ $db = JFactory::getDBO();
 	<div class="icon">
 		<a href="index.php?option=com_admintools&view=importexport&task=import">
 			<img
-				src="<?php echo rtrim(JURI::base(), '/'); ?>/../media/com_admintools/images/import-32.png"
+				src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/import-32.png"
 				border="0" alt="<?php echo JText::_('ATOOLS_TITLE_IMPORT_SETTINGS') ?>"/>
                             <span>
                                 <?php echo JText::_('ATOOLS_TITLE_IMPORT_SETTINGS') ?><br/>
@@ -470,6 +604,28 @@ $db = JFactory::getDBO();
 		</a>
 	</div>
 </div>
+
+<?php if (ADMINTOOLS_PRO && !$this->needsQuickSetup): ?>
+	<div style="clear: both;"></div>
+
+	<h2><?php echo JText::_('COM_ADMINTOOLS_CPANEL_HEADER_QUICKSETUP') ?></h2>
+	<p class="small alert alert-warning">
+		<?php echo JText::_('COM_ADMINTOOLS_CPANEL_HEADER_QUICKSETUP_HELP') ?>
+	</p>
+
+	<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
+		<div class="icon">
+			<a href="index.php?option=<?php echo $option ?>&view=quickstart">
+				<img
+					src="<?php echo rtrim(JURI::base(), '/'); ?>/components/com_admintools/media/images/quickstart-32.png"
+					border="0" alt="<?php echo JText::_('COM_ADMINTOOLS_TITLE_QUICKSTART') ?>"/>
+				<span>
+					<?php echo JText::_('COM_ADMINTOOLS_TITLE_QUICKSTART') ?><br/>
+				</span>
+			</a>
+		</div>
+	</div>
+<?php endif; ?>
 
 </div>
 
@@ -562,6 +718,7 @@ if($this->statsIframe)
 	{
 		$(document).ready(function ()
 		{
+            <?php if (!$this->needsdlid): ?>
 			$.ajax('index.php?option=com_admintools&view=cpanel&task=updateinfo&tmpl=component', {
 				success: function (msg, textStatus, jqXHR)
 				{
@@ -575,20 +732,7 @@ if($this->statsIframe)
 					}
 				}
 			});
-
-			$.ajax('index.php?option=com_admintools&view=cpanel&task=fastcheck&tmpl=component', {
-				success: function (msg, textStatus, jqXHR)
-				{
-					// Get rid of junk before and after data
-					var match = msg.match(/###([\s\S]*?)###/);
-					data = match[1];
-
-					if (data == 'false')
-					{
-						$('#fastcheckNotice').show('fast');
-					}
-				}
-			});
+            <?php endif; ?>
 		});
 	})(akeeba.jQuery);
 </script>

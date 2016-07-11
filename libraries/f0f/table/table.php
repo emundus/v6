@@ -2,7 +2,7 @@
 /**
  * @package     FrameworkOnFramework
  * @subpackage  table
- * @copyright   Copyright (C) 2010 - 2015 Nicholas K. Dionysopoulos / Akeeba Ltd. All rights reserved.
+ * @copyright   Copyright (C) 2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 // Protect from unauthorized access
@@ -69,9 +69,9 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 	protected $_tbl_key = '';
 
 	/**
-	 * JDatabaseDriver object.
+	 * F0FDatabaseDriver object.
 	 *
-	 * @var    JDatabaseDriver
+	 * @var    F0FDatabaseDriver
 	 */
 	protected $_db;
 
@@ -166,7 +166,7 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 	/**
 	 * Extended query including joins with other tables
 	 *
-	 * @var    JDatabaseQuery
+	 * @var    F0FDatabaseQuery
 	 */
 	protected $_queryJoin = null;
 
@@ -509,7 +509,7 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 	 *
 	 * @param   string           $table   Name of the database table to model.
 	 * @param   string           $key     Name of the primary key field in the table.
-	 * @param   JDatabaseDriver  &$db     Database driver
+	 * @param   F0FDatabaseDriver  &$db     Database driver
 	 * @param   array            $config  The configuration parameters array
 	 */
 	public function __construct($table, $key, &$db, $config = array())
@@ -1130,7 +1130,7 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 				{
 					$obj = $this->_db->loadObject();
 				}
-				catch (JDatabaseException $e)
+				catch (Exception $e)
 				{
 					$this->setError($e->getMessage());
 				}
@@ -1533,7 +1533,16 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
         }
 
 		$date = F0FPlatform::getInstance()->getDate();
-		$time = $date->toSql();
+
+		if (method_exists($date, 'toSql'))
+		{
+			$time = $date->toSql();
+		}
+		else
+		{
+			$time = $date->toMySQL();
+		}
+
 
 		$query = $this->_db->getQuery(true)
 			->update($this->_db->qn($this->_tbl))
@@ -1802,7 +1811,7 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 			{
 				$this->_db->execute();
 			}
-			catch (JDatabaseException $e)
+			catch (Exception $e)
 			{
 				$this->setError($e->getMessage());
 			}
@@ -2247,7 +2256,7 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 	 *
 	 * @param   boolean  $asReference  Return an object reference instead of a copy
 	 *
-	 * @return  JDatabaseQuery  Query used to join other tables
+	 * @return  F0FDatabaseQuery  Query used to join other tables
 	 */
 	public function getQueryJoin($asReference = false)
 	{
@@ -2271,11 +2280,11 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 	/**
 	 * Sets the query with joins to other tables
 	 *
-	 * @param   JDatabaseQuery  $query  The JOIN query to use
+	 * @param   F0FDatabaseQuery  $query  The JOIN query to use
 	 *
 	 * @return  void
 	 */
-	public function setQueryJoin(JDatabaseQuery $query)
+	public function setQueryJoin($query)
 	{
 		$this->_queryJoin = $query;
 	}
@@ -2582,7 +2591,7 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 
 				$date = F0FPlatform::getInstance()->getDate('now', null, false);
 
-				$this->$created_on = $date->toSql();
+				$this->$created_on = method_exists($date, 'toSql') ? $date->toSql() : $date->toMySQL();
 			}
 			elseif ($hasModifiedOn && $hasModifiedBy)
 			{
@@ -2595,7 +2604,7 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 
                 $date = F0FPlatform::getInstance()->getDate('now', null, false);
 
-				$this->$modified_on = $date->toSql();
+				$this->$modified_on = method_exists($date, 'toSql') ? $date->toSql() : $date->toMySQL();
 			}
 		}
 
@@ -3429,9 +3438,9 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 	}
 
 	/**
-	 * Method to get the JDatabaseDriver object.
+	 * Method to get the F0FDatabaseDriver object.
 	 *
-	 * @return  JDatabaseDriver  The internal database driver object.
+	 * @return  F0FDatabaseDriver  The internal database driver object.
 	 */
 	public function getDbo()
 	{
@@ -3439,13 +3448,13 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 	}
 
 	/**
-	 * Method to set the JDatabaseDriver object.
+	 * Method to set the F0FDatabaseDriver object.
 	 *
-	 * @param   JDatabaseDriver  $db  A JDatabaseDriver object to be used by the table object.
+	 * @param   F0FDatabaseDriver  $db  A F0FDatabaseDriver object to be used by the table object.
 	 *
 	 * @return  boolean  True on success.
 	 */
-	public function setDBO(JDatabaseDriver $db)
+	public function setDBO($db)
 	{
 		$this->_db = $db;
 

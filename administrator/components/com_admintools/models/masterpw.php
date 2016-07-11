@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  * @version   $Id$
  */
@@ -14,11 +14,13 @@ JLoader::import('joomla.application.component.model');
 class AdmintoolsModelMasterpw extends F0FModel
 {
 	var $views = array(
-		'adminpw', 'badwords', 'dbtools', 'eom', 'fixperms',
-		'fixpermsconfig', 'htmaker', 'ipbl', 'ipwl',
-		'log', 'redirs', 'masterpw',
-		'update', 'waf', 'wafconfig', 'cleantmp', 'dbchcol', 'seoandlink',
-		'dbprefix',
+		'adminpw', 'badwords', 'cleantmp', 'dbchcol', 'dbtools',
+		'eom', 'fixperms',  'fixpermsconfig',
+		'geoblock',  'htmaker', 'ipautobanhistory', 'ipautoban',
+		'ipbl', 'ipwl',  'log', 'masterpw', 'nginxmaker', 'quickstart',
+		'redirs', 'scanner', 'scan', 'seoandlink',
+		'waf', 'wafblacklist',
+		'wafconfig', 'wafexception', 'waftemplate', 'dbprefix', 'tmplogcheck'
 	);
 
 	/**

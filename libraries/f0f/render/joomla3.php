@@ -2,7 +2,7 @@
 /**
  * @package     FrameworkOnFramework
  * @subpackage  render
- * @copyright   Copyright (C) 2010 - 2015 Nicholas K. Dionysopoulos / Akeeba Ltd. All rights reserved.
+ * @copyright   Copyright (C) 2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 defined('F0F_INCLUDED') or die;
@@ -55,7 +55,15 @@ class F0FRenderJoomla3 extends F0FRenderStrapper
 			return;
 		}
 
-		JHtml::_('behavior.core');
+		if (version_compare(JVERSION, '3.3.0', 'ge'))
+		{
+			JHtml::_('behavior.core');
+		}
+		else
+		{
+			JHtml::_('behavior.framework', true);
+		}
+
 		JHtml::_('jquery.framework');
 
 		if ($platform->isBackend())

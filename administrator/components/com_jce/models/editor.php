@@ -184,7 +184,7 @@ class WFModelEditor extends WFModelBase {
 
         // set compression states
         if ((int) $debug === 0) {
-            $compress = array('javascript' => (int) $wf->getParam('editor.compress_javascript', 1), 'css' => (int) $wf->getParam('editor.compress_css', 1));
+            $compress = array('javascript' => (int) $wf->getParam('editor.compress_javascript', 0), 'css' => (int) $wf->getParam('editor.compress_css', 0));
         }
 
         // set compression
@@ -386,7 +386,7 @@ class WFModelEditor extends WFModelBase {
             foreach ((array) $settings['plugins'] as $plugin) {
                 $path = WF_EDITOR_PLUGINS . '/' . $plugin;
 
-                // if english file exists then the installed language file should too 
+                // if english file exists then the installed language file should too
                 if (JFile::exists($path . '/langs/en.js') && !JFile::exists($path . '/langs/' . $language . '.js')) {
                     $plugins[] = $plugin;
                 }
@@ -723,7 +723,7 @@ class WFModelEditor extends WFModelBase {
      * @return string font family list
      * @param string $add Font family to add
      * @param string $remove Font family to remove
-     * 
+     *
      * Deprecated in 2.3.4
      */
     public function getEditorFonts() {
@@ -935,7 +935,7 @@ class WFModelEditor extends WFModelBase {
                 // add to existing list
                 if ($profile === 0) {
                     $files = array_merge($files, $custom);
-                    // overwrite global config value	
+                    // overwrite global config value
                 } else {
                     $files = (array) $custom;
                 }

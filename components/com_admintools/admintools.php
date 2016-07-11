@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  * @version   $Id$
  *
@@ -21,77 +21,55 @@
 
 defined('_JEXEC') or die();
 
-if (!JFactory::getSession()->get('block', false, 'com_admintools'))
-{
-	JError::raiseError(404, JText::_('JLIB_APPLICATION_ERROR_COMPONENT_NOT_FOUND'));
-
-	return false;
-}
-
-// Reset the session variable
-JFactory::getSession()->set('block', false, 'com_admintools');
-
-// Check for PHP4
-if (defined('PHP_VERSION'))
-{
-	$version = PHP_VERSION;
-}
-elseif (function_exists('phpversion'))
-{
-	$version = phpversion();
-}
-else
-{
-	// No version info. I'll lie and hope for the best.
-	$version = '5.0.0';
-}
-
-// Old PHP version detected. EJECT! EJECT! EJECT!
-if (!version_compare($version, '5.3.0', '>='))
+// Check PHP version
+if (!version_compare(PHP_VERSION, '5.3.4', '>='))
 {
 	return;
 }
 
-JLoader::import('joomla.application.component.model');
-
-// Timezone fix; avoids errors printed out by PHP 5.3.3+ (thanks Yannick!)
-if (function_exists('date_default_timezone_get') && function_exists('date_default_timezone_set'))
-{
-	if (function_exists('error_reporting'))
-	{
-		$oldLevel = error_reporting(0);
-	}
-	$serverTimezone = @date_default_timezone_get();
-	if (empty($serverTimezone) || !is_string($serverTimezone))
-	{
-		$serverTimezone = 'UTC';
-	}
-	if (function_exists('error_reporting'))
-	{
-		error_reporting($oldLevel);
-	}
-	@date_default_timezone_set($serverTimezone);
-}
-
 // Load F0F
 include_once JPATH_LIBRARIES . '/f0f/include.php';
+
+if (!class_exists('AdmintoolsHelperParams'))
+{
+	require_once JPATH_ADMINISTRATOR . '/components/com_admintools/helpers/params.php';
+}
+
+$inBlockView          = JFactory::getSession()->get('block', false, 'com_admintools');
+$input                = JFactory::getApplication()->input;
+$view                 = $input->getCmd('view', null);
+$format               = $input->getCmd('format', 'html');
+$key                  = $input->get('key', '', 'raw');
+$componentParams      = new AdmintoolsHelperParams();
+$validKey             = $componentParams->get('frontend_secret_word', '');
+$isFileScannerEnabled = $componentParams->get('frontend_enable', 0) != 0;
+$inScannerView        = ($view == 'filescanner') && ($format = 'raw') && $isFileScannerEnabled && !empty($validKey) && ($validKey == $key);
+
+if ($inBlockView)
+{
+	// Reset the session variable
+	JFactory::getSession()->set('block', false, 'com_admintools');
+}
+
+JLoader::import('joomla.application.component.model');
+
 if (!defined('F0F_INCLUDED') || !class_exists('F0FForm', true))
 {
+	if (!$inBlockView)
+	{
+		return;
+	}
+
 	JError::raiseError('500', 'Your Admin Tools installation is broken; please re-install');
 }
 
 // Load version.php
 JLoader::import('joomla.filesystem.file');
 $version_php = JPATH_ADMINISTRATOR . '/components/com_admintools/version.php';
+
 if (!defined('ADMINTOOLS_VERSION') && JFile::exists($version_php))
 {
 	require_once $version_php;
-}
-
-// If JSON functions don't exist, load our compatibility layer
-if ((!function_exists('json_encode')) || (!function_exists('json_decode')))
-{
-	require_once JPATH_COMPONENT_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'jsonlib.php';
 }
 
 JLoader::import('joomla.application.component.model');
@@ -109,9 +87,37 @@ $jlang->load('com_admintools' . '.override', $paths[0], null, true);
 $jlang->load('com_admintools' . '.override', $paths[1], 'en-GB', true);
 $jlang->load('com_admintools' . '.override', $paths[1], null, true);
 
-// Force the view and task
-JRequest::setVar('view', 'blocks');
-JRequest::setVar('task', 'browse');
+if ($inBlockView)
+{
+	// Force the view and task
+	$input->set('view', 'blocks');
+	$input->set('task', 'browse');
+
+	if (class_exists('JRequest'))
+	{
+		JRequest::setVar('view', 'blocks');
+		JRequest::setVar('task', 'browse');
+	}
+}
+elseif ($inScannerView)
+{
+	// Force the view and task
+	$task = $input->get('task', 'browse');
+	$input->set('view', 'filescanner');
+	$input->set('task', $task);
+
+	if (class_exists('JRequest'))
+	{
+		JRequest::setVar('view', 'filescanner');
+		JRequest::setVar('task', $task);
+	}
+}
+else
+{
+	JError::raiseError(404, JText::_('JLIB_APPLICATION_ERROR_COMPONENT_NOT_FOUND'));
+
+	return false;
+}
 
 // Work around non-transparent proxy and reverse proxy IP issues
 if (class_exists('F0FUtilsIp', true))

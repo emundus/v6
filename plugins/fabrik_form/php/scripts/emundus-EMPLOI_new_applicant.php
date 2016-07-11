@@ -34,6 +34,9 @@ JLog::addLogger(
 $db 		= JFactory::getDBO();
 $student 	= JFactory::getUser();
 
+$app    = JFactory::getApplication();
+$email_from_sys = $app->getCfg('mailfrom');
+
 //$eMConfig = JComponentHelper::getParams('com_emundus');
 
 
@@ -154,16 +157,15 @@ if (count($trigger_emails) > 0) {
                 $body = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['message']);
 
                 //$attachment[] = $path_file;
-                $replyto = $from;
-                $replytoname = $fromname;
 
-                $config = JFactory::getConfig();
-                $sender = array(
-                    $config->get( $from ),
-                    $config->get( $fromname )
-                );
+                // setup mail
+		        $sender = array(
+		            $email_from_sys,
+		            $fromname
+		        );
 
-                $mailer->setSender($sender);
+		        $mailer->setSender($sender);
+		        $mailer->addReplyTo($from, $fromname);
                 $mailer->addRecipient($to);
                 $mailer->setSubject($subject);
                 $mailer->isHTML(true);

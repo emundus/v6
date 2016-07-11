@@ -11,6 +11,8 @@
  */
 defined('_JEXEC') or die('RESTRICTED');
 
+require_once(JPATH_ADMINISTRATOR . '/components/com_jce/includes/base.php');
+
 /**
  * JCE class
  *
@@ -21,14 +23,14 @@ defined('_JEXEC') or die('RESTRICTED');
 class WFEditor extends JObject {
 
     // Editor version
-    protected $_version = '2.5.16';
-    
-    // Editor instance 
+    protected $_version = '2.5.19';
+
+    // Editor instance
     protected static $instance;
-    
+
     // Editor Profile
     protected static $profile;
-    
+
     // Editor Params
     protected static $params = array();
 
@@ -102,7 +104,7 @@ class WFEditor extends JObject {
             }
             // get the Joomla! area (admin or site)
             $area = $mainframe->isAdmin() ? 2 : 1;
-            
+
             if (!class_exists('Wf_Mobile_Detect')) {
                 // load mobile detect class
                 require_once(dirname(__FILE__) . '/mobile.php');
@@ -168,7 +170,7 @@ class WFEditor extends JObject {
                     wfimport('admin.models.editor');
                     $model      = new WFModelEditor();
                     $plugins    = (array) $model->getPlugins();
-                    
+
                     if (in_array($plugin, $plugins) === false) {
                         continue;
                     }
@@ -178,10 +180,10 @@ class WFEditor extends JObject {
                     wfimport('admin.helpers.encrypt');
                     $item->params = WFEncryptHelper::decrypt($item->params);
                 }
-                
+
                 // assign item to profile
                 self::$profile = $item;
-                
+
                 // return
                 return self::$profile;
             }
@@ -206,11 +208,11 @@ class WFEditor extends JObject {
                 break;
             case 'com_categories' :
                 $section = JRequest::getCmd('section');
-                
+
                 if ($section) {
                     $option = $section;
                 }
-                
+
                 break;
         }
 
@@ -242,15 +244,15 @@ class WFEditor extends JObject {
         if ($plugin) {
             $options['plugin'] = $plugin;
         }
-        
+
         $signature = serialize($options);
 
         if (empty(self::$params[$signature])) {
             wfimport('admin.helpers.extension');
-            
+
             // get plugin
             $editor_plugin = WFExtensionHelper::getPlugin();
-            
+
             // get params data for this profile
             $profile = $this->getProfile($plugin);
 
@@ -263,7 +265,7 @@ class WFEditor extends JObject {
             } else {
                 // get component
                 $component = WFExtensionHelper::getComponent();
-                
+
                 // get params from component "params" field (legacy)
                 if ($component->params && $component->params !== "{}") {
                     $data = json_decode($component->params, true);
@@ -277,17 +279,17 @@ class WFEditor extends JObject {
             if ($profile) {
                 $profile_params = json_decode($profile->params, true);
             }
-            
+
             // make sure we have an empty array if null or false
             if (empty($editor_params)) {
                 $editor_params = array();
             }
-            
+
             // make sure we have an empty array if null or false
             if (empty($profile_params)) {
                 $profile_params = array();
             }
-            
+
             // merge data and convert to json string
             $data = WFParameter::mergeParams($editor_params, $profile_params, true, false);
 

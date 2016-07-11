@@ -100,13 +100,16 @@ $replytoname = $email->name;
 
 $student->candidature_posted = 1;
 
-$config = JFactory::getConfig();
+$app    = JFactory::getApplication();
+$email_from_sys = $app->getCfg('mailfrom');
+// setup mail
 $sender = array(
-    $config->get( $from ),
-    $config->get( $fromname )
+    $email_from_sys,
+    $fromname
 );
 
 $mailer->setSender($sender);
+$mailer->addReplyTo($from, $fromname);
 $mailer->addRecipient($recipient);
 $mailer->setSubject($subject);
 $mailer->isHTML(true);
@@ -161,13 +164,14 @@ if ($alert_new_applicant==1) {
 
 			$student->candidature_posted = 1;
 
-            $config = JFactory::getConfig();
-            $sender = array(
-                $config->get( $from ),
-                $config->get( $fromname )
-            );
+			// setup mail
+			$sender = array(
+			    $email_from_sys,
+			    $fromname
+			);
 
-            $mailer->setSender($sender);
+			$mailer->setSender($sender);
+			$mailer->addReplyTo($from, $fromname);
             $mailer->addRecipient($recipient);
             $mailer->setSubject($subject);
             $mailer->isHTML(true);

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  */
 
@@ -67,6 +67,21 @@ class AdmintoolsModelStorage extends JoomlaCompatModel
 		}
 
 		return $x;
+	}
+
+	public function resetContents($save = false)
+	{
+		if (is_null($this->config))
+		{
+			$this->load();
+		}
+
+		$this->config->loadArray(array());
+
+		if ($save)
+		{
+			$this->save();
+		}
 	}
 
 	public function load()

@@ -1,12 +1,12 @@
 <extension type="component" version="2.5.0" method="upgrade">
 	<name>Admintools</name>
-	<creationDate>2015-04-01</creationDate>
+	<creationDate>2016-07-01</creationDate>
 	<author>Nicholas K. Dionysopoulos</author>
 	<authorEmail>nicholas@akeebabackup.com</authorEmail>
 	<authorUrl>http://www.akeebabackup.com</authorUrl>
-	<copyright>Copyright (c)2010-2015 Nicholas K. Dionysopoulos</copyright>
+	<copyright>Copyright (c)2010-2016 Nicholas K. Dionysopoulos</copyright>
 	<license>This component in released under the GNU/GPL v3 or later license</license>
-	<version>3.5.1</version>
+	<version>3.8.6</version>
 	<description>Security and utilitarian tools for Joomla! site administrators</description>
 
 	<!-- Public front end files -->
@@ -19,18 +19,11 @@
 		<language tag="en-GB">en-GB/en-GB.com_admintools.ini</language>
 	</languages>
 
-	<!-- Media files -->
-	<media destination="com_admintools" folder="media">
-		<folder>css</folder>
-		<folder>images</folder>
-		<folder>js</folder>
-	</media>
-
 	<!-- Administrator back-end section -->
 	<administration>
 		<!-- Administration menu -->
 		<menu view="cpanel"
-			img="../media/com_admintools/images/admintools-16.png">COM_ADMINTOOLS</menu>
+			img="com_admintools/media/images/admintools-16.png">COM_ADMINTOOLS</menu>
 
 		<!-- Back-end files -->
 		<files folder="backend">
@@ -38,19 +31,18 @@
 			<filename>admintools.php</filename>
 			<filename>config.xml</filename>
 			<filename>dispatcher.php</filename>
-			<filename>fileslist.php</filename>
+			<!--<filename>fileslist.php</filename>-->
 			<filename>fof.xml</filename>
-			<filename>index.html</filename>
 			<!--<filename>restore.php</filename>-->
 			<filename>toolbar.php</filename>
 			<filename>version.php</filename>
 			<filename>CHANGELOG.php</filename>
 
-      <folder>assets</folder>
+			<folder>assets</folder>
 			<!--<folder>classes</folder>-->
 			<folder>controllers</folder>
-			<folder>fof</folder>
 			<folder>helpers</folder>
+			<folder>media</folder>
 			<folder>models</folder>
 			<folder>sql</folder>
 			<folder>tables</folder>
@@ -72,36 +64,4 @@
     <updateservers>
         <server type="extension" priority="1" name="Admin Tools Core">http://cdn.akeebabackup.com/updates/atcore.xml</server>
     </updateservers>
-
-	<!-- Akeeba Backup System Restore Points integration -->
-	<restorepoint>
-		<customdirs>
-			<dir>plugins/system/admintools</dir>
-			<dir>plugins/system/atoolsjupdatecheck</dir>
-			<dir>plugins/system/atoolsupdatecheck</dir>
-			<dir>plugins/system/oneclickaction</dir>
-		</customdirs>
-		<customfiles>
-			<file>plugins/system/admintools.php</file>
-			<file>plugins/system/admintools.xml</file>
-			<file>plugins/system/atoolsjupdatecheck.php</file>
-			<file>plugins/system/atoolsjupdatecheck.xml</file>
-			<file>plugins/system/atoolsupdatecheck.php</file>
-			<file>plugins/system/atoolsupdatecheck.xml</file>
-			<file>plugins/system/oneclickaction.php</file>
-			<file>plugins/system/oneclickaction.xml</file>
-		</customfiles>
-		<langfiles>
-			<lang>plg_system_admintools</lang>
-			<lang>plg_system_atoolsjupdatecheck</lang>
-			<lang>plg_system_atoolsupdatecheck</lang>
-			<lang>plg_system_oneclickaction</lang>
-		</langfiles>
-		<skiptables>
-			<table>admintools_filescache</table>
-			<table>admintools_log</table>
-			<table>admintools_scanalerts</table>
-			<table>admintools_scans</table>
-		</skiptables>
-	</restorepoint>
 </extension>

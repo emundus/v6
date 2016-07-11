@@ -48,11 +48,11 @@ class WFFileSystem extends WFExtension {
 
         if (!is_object($instance)) {
             $fs = parent::loadExtensions('filesystem', $type);
-            
+
             if (is_array($fs)) {
                 $fs = array_shift($fs);
             }
-            
+
             $classname = 'WF' . ucfirst($fs) . 'FileSystem';
 
             if (class_exists($classname)) {
@@ -116,14 +116,19 @@ class WFFileSystem extends WFExtension {
                 // Joomla! 1.6+
                 if (method_exists('JUserHelper', 'getUserGroups')) {
                     $groups = JUserHelper::getUserGroups($user->id);
+
+                    // get keys only
+                    $groups = array_keys($groups);
+
                     // get the first group
-                    $group_id = array_shift(array_keys($groups));
+                    $group_id = array_shift($groups);
+
                     // Joomla! 2.5?
                     if (is_int($group_id)) {
-                        // usergroup table				
+                        // usergroup table
                         $group = JTable::getInstance('Usergroup');
                         $group->load($group_id);
-                        // usertype	
+                        // usertype
                         $usertype = $group->title;
                     } else {
                         $usertype = $group_id;
@@ -139,9 +144,9 @@ class WFFileSystem extends WFExtension {
 
                 // split into path parts to preserve /
                 $parts = explode('/', $root);
-                
+
                 $textcase = $wf->getParam('editor.websafe_textcase');
-                
+
                 if (!empty($textcase)) {
                     $textcase = array_shift($textcase);
                 }
@@ -164,11 +169,11 @@ class WFFileSystem extends WFExtension {
     public function toRelative($path) {
         return $path;
     }
-    
+
     public function getTotalSize($path, $recurse = true) {
         return 0;
     }
-    
+
     public function countFiles($path, $recurse = false) {
         return 0;
     }
@@ -268,11 +273,11 @@ class WFFileSystem extends WFExtension {
     public function isLocal() {
         return $this->get('local') === true;
     }
-    
+
     public function is_file($path) {
         return true;
     }
-    
+
     public function is_dir($path) {
         return true;
     }
@@ -310,7 +315,7 @@ final class WFFileSystemResult {
     public $url = null;
 
     function __construct() {
-        
+
     }
 
 }

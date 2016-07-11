@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  */
 
@@ -36,14 +36,11 @@ class AdmintoolsControllerSeoandlink extends F0FController
 		{
 			$data = $this->input;
 		}
-		elseif ($this->input instanceof F0FInput)
+		else
 		{
 			$data = $this->input->getData();
 		}
-		else
-		{
-			$data = JRequest::get('POST', 2);
-		}
+
 		$model->saveConfig($data);
 
 		$this->setRedirect('index.php?option=com_admintools&view=cpanel', JText::_('ATOOLS_LBL_SEOANDLINK_CONFIGSAVED'));

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaReleaseSystem
- * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  * @version   $Id$
  */
@@ -151,7 +151,7 @@ $sortFields = array(
 					<td>
 						<a href="<?php echo str_replace('{ip}', $item->ip, $iplink) ?>" target="_blank">
 							<img align="middle" border="0" width="16" height="16"
-								 src="<?php echo rtrim(JURI::base(), '/') ?>/../media/com_admintools/images/iplookup_16.png"/>
+								 src="<?php echo rtrim(JURI::base(), '/') ?>/components/com_admintools/media/images/iplookup_16.png"/>
 						</a>&nbsp;
 						<?php echo $this->escape($item->ip) ?>
 					</td>
