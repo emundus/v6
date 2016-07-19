@@ -40,7 +40,17 @@ echo $description;
       <?php endif; ?>
       <?php if($application->status<=1) : ?>
         <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?php echo $application->fnum; ?>');" href="#row<?php echo $attachments[$application->fnum]; ?>" title="<?php echo JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
-        
+      
+        <?php 
+        if($forms[$application->fnum] == 0) {
+          echo '
+<div class="ui segments">
+  <div class="ui yellow segment">
+    <p><i class="info circle icon"></i> '.JText::_('MOD_EMUNDUS_FLOW_EMPTY_FILE_ACTION').'</p></p>
+  </div>
+</div>';
+        }
+        ?>
       <?php endif; ?>
     </div>
 
