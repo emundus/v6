@@ -37,10 +37,14 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
 	$db = JFactory::getDBO();
 
-	$params = JComponentHelper::getParams('com_emundus');
-	$applicant_can_renew = $params->get('applicant_can_renew', 0);
+	// module params
 	$show_programme = $params->get('show_programme', 1);
-	$application_fee  = $params->get('application_fee', 0);
+	$show_deadline  = $params->get('show_deadline', 0);
+
+	// eMundus params
+	$params_emundus = JComponentHelper::getParams('com_emundus');
+	$applicant_can_renew = $params_emundus->get('applicant_can_renew', 0);
+	$application_fee  = $params_emundus->get('application_fee', 0);
 
 	$checklist = new EmundusModelChecklist;
 	$application = new EmundusModelApplication;

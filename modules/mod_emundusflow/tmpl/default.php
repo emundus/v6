@@ -1,6 +1,7 @@
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access'); 
 
+$deadline = new JDate($user->end_date);
 
 $renew='';
 $step_form = $forms<100?'':'completed';
@@ -28,6 +29,7 @@ if ($sent>0) {
 ?>
 <div class="ui attached segment">
   <p><?php echo ($show_programme==1)?'<b>'.$user->campaign_name.'</b> '.@$renew:''; ?></p>
+  <p align="right"><?php echo ($show_deadline==1)?JText::_('MOD_EMUNDUSFLOW_DEADLINE').' : <b>'.$deadline->format(JText::_('DATE_FORMAT_LC2')).'</b>':''; ?></p>
 </div>
 <div class="ui tablet stackable bottom attached steps">
   <div class="step">
