@@ -155,7 +155,8 @@ class  plgSystemEmundus_ametys extends JPlugin
             // get campaigns definition for seleted programmes in Ametys cart
             $query = 'SELECT * 
                         FROM #__emundus_setup_campaigns
-                        WHERE training IN ('.implode(',', $db->quote(array_keys($cartProgrammes))).')';
+                        WHERE training IN ('.implode(',', $db->quote(array_keys($cartProgrammes))).') 
+                        AND NOW() BETWEEN start_date AND end_date';
             try
             {
                 $db->setQuery($query);
@@ -194,7 +195,9 @@ class  plgSystemEmundus_ametys extends JPlugin
                 $fnum        = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);
 
                 // get campaign definition for cdmCode
-                $values[] = '('.$db->Quote(date('Y-m-d H:i:s')).', '.$user->id.', '.$user->id.', '.$campaign_id.', 0, '.$db->Quote($fnum).', 0, 1)';
+                if (!empty($campaign_id)) {
+                    $values[] = '('.$db->Quote(date('Y-m-d H:i:s')).', '.$user->id.', '.$user->id.', '.$campaign_id.', 0, '.$db->Quote($fnum).', 0, 1)';
+                }
             }
 
             if (count($values) > 0) {
