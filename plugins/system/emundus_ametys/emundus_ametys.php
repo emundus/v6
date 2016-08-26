@@ -265,6 +265,8 @@ class  plgSystemEmundus_ametys extends JPlugin
             if ($ametys_integration == 1 && $user->guest && !empty($ametys_url)) {
                 $jinput = $app->input;
                 $token = $jinput->get('token', '', 'RAW');
+                $lang = $jinput->get('lang', 'en', 'RAW');
+                $ametys_url .= '&lang='.$lang;
 
                 if(!empty($token)){
                     // Construct the DB connexion to Ametys local DB
