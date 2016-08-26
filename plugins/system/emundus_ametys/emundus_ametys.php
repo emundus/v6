@@ -266,7 +266,6 @@ class  plgSystemEmundus_ametys extends JPlugin
                 $jinput = $app->input;
                 $token = $jinput->get('token', '', 'RAW');
                 $lang = $jinput->get('lang', 'en', 'RAW');
-                $ametys_url .= '&lang='.$lang;
 
                 if(!empty($token)){
                     // Construct the DB connexion to Ametys local DB
@@ -395,7 +394,7 @@ class  plgSystemEmundus_ametys extends JPlugin
                             $db_ext->execute();
 // 2.2.3 : login user
                             $user = $m_users->login($uid);
-                            $app->redirect('index.php');
+                            $app->redirect('index.php&lang='.$lang);
                             //exit();
                         }
                     } else {
