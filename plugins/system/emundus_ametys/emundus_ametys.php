@@ -393,8 +393,8 @@ class  plgSystemEmundus_ametys extends JPlugin
                             $db_ext->setQuery( $query );
                             $db_ext->execute();
 // 2.2.3 : login user
-                            $user = $m_users->login($uid);
-                            $app->redirect('index.php&lang='.$lang);
+                            $user = $m_users->login($uid); 
+                            $app->redirect('index.php?lang='.$lang);
                             //exit();
                         }
                     } else {
