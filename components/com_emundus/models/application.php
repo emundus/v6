@@ -80,7 +80,7 @@ class EmundusModelApplication extends JModelList
     {
         if($cid === null)
         {
-            $query = 'SELECT esc.*, ecc.date_submitted, ecc.submitted, ecc.id as campaign_candidature_id, efg.result_sent, efg.date_result_sent, efg.final_grade, ecc.fnum, ess.class, ess.value as step
+            $query = 'SELECT esc.*, ecc.date_submitted, ecc.submitted, ecc.id as campaign_candidature_id, efg.result_sent, efg.date_result_sent, efg.final_grade, ecc.fnum, ess.class, ess.step, ess.value as step_value
             FROM #__emundus_users eu
             LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.applicant_id=eu.user_id
             LEFT JOIN #__emundus_setup_campaigns esc ON ecc.campaign_id=esc.id
@@ -88,11 +88,12 @@ class EmundusModelApplication extends JModelList
             LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
             WHERE eu.user_id="'.$id.'" and ecc.published = 1';
             $this->_db->setQuery( $query );
+
             return $this->_db->loadObjectList();
         }
         else
         {
-            $query = 'SELECT esc.*, ecc.date_submitted, ecc.submitted, ecc.id as campaign_candidature_id, efg.result_sent, efg.date_result_sent, efg.final_grade, ecc.fnum, ess.class, ess.value as step
+            $query = 'SELECT esc.*, ecc.date_submitted, ecc.submitted, ecc.id as campaign_candidature_id, efg.result_sent, efg.date_result_sent, efg.final_grade, ecc.fnum, ess.class, ess.step, ess.value as step_value
             FROM #__emundus_users eu
             LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.applicant_id=eu.user_id
             LEFT JOIN #__emundus_setup_campaigns esc ON ecc.campaign_id=esc.id
@@ -106,7 +107,7 @@ class EmundusModelApplication extends JModelList
 
     public function getCampaignByFnum($fnum)
     {
-        $query = 'SELECT esc.*, ecc.date_submitted, ecc.submitted, ecc.id as campaign_candidature_id, efg.result_sent, efg.date_result_sent, efg.final_grade, ecc.fnum, ess.class, ess.value as step
+        $query = 'SELECT esc.*, ecc.date_submitted, ecc.submitted, ecc.id as campaign_candidature_id, efg.result_sent, efg.date_result_sent, efg.final_grade, ecc.fnum, ess.class, ess.step, ess.value as step_value
             FROM #__emundus_users eu
             LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.applicant_id=eu.user_id
             LEFT JOIN #__emundus_setup_campaigns esc ON ecc.campaign_id=esc.id
