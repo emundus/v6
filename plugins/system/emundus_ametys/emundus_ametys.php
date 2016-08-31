@@ -399,17 +399,17 @@ class  plgSystemEmundus_ametys extends JPlugin
                         }
                     } else {
                     	if ($lang == 'en') 
-                    		$url = $ametys_url.'/en/my-wishlist.html'
+                    		$url = $ametys_url.'/en/my-wishlist.html';
                     	else
-                    		$url = $ametys_url.'/fr/ma-wishlist.html'
+                    		$url = $ametys_url.'/fr/ma-wishlist.html';
 
                         $app->redirect( $url );
                     }         
                 } else { 
                     if ($lang == 'en') 
-                    		$url = $ametys_url.'/en/my-wishlist.html'
+                    		$url = $ametys_url.'/en/my-wishlist.html';
                     	else
-                    		$url = $ametys_url.'/fr/ma-wishlist.html'
+                    		$url = $ametys_url.'/fr/ma-wishlist.html';
 
                         $app->redirect( $url );
                 }
