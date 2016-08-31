@@ -398,20 +398,10 @@ class  plgSystemEmundus_ametys extends JPlugin
                             //exit();
                         }
                     } else {
-                    	if ($lang == 'en') 
-                    		$url = $ametys_url.'/en/my-wishlist.html';
-                    	else
-                    		$url = $ametys_url.'/fr/ma-wishlist.html';
-
-                        $app->redirect( $url );
+                        $app->redirect( $ametys_url );
                     }         
                 } else { 
-                    if ($lang == 'en') 
-                    		$url = $ametys_url.'/en/my-wishlist.html';
-                    	else
-                    		$url = $ametys_url.'/fr/ma-wishlist.html';
-
-                        $app->redirect( $url );
+                        $app->redirect( $ametys_url );
                 }
             }
         }

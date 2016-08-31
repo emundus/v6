@@ -298,6 +298,13 @@
         {
             $my      = JFactory::getUser();
             $session = JFactory::getSession();
+            $app     =  JFactory::getApplication();
+
+            $lang = JFactory::getLanguage();
+            $defaultLocale = $lang->getTag();
+
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $ametys_url = $eMConfig->get('ametys_url', '');
 
             // Make sure we're a valid user first
             if ($user['id'] == 0 && !$my->get('tmp_user'))
@@ -333,7 +340,15 @@
                     return false;
                 }
             }
-            return true;
+            
+
+            if ($defaultLocale == 'en-GB') 
+                $url = $ametys_url.'/en/my-wishlist.html';
+            else
+                $url = $ametys_url.'/fr/ma-wishlist.html';
+
+            $app->redirect( $url );
+            //return true;
         }
 
         /**
