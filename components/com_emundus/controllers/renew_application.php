@@ -18,7 +18,7 @@ class EmundusControllerRenew_application extends JControllerLegacy
 	//var $_model = null;
 	//$this->_model = $this->getModel( 'renew_application' );
 
-	function display() {
+	function display($cachable = false, $urlparams = false) {
 		$user = JFactory::getUser();
 		// Set a default view if none exists
 		if ( ! JRequest::getCmd( 'view' ) ) {
@@ -88,6 +88,13 @@ class EmundusControllerRenew_application extends JControllerLegacy
 		$application = $this->getModel('application');
 		$user = JRequest::getVar('uid', null, 'GET', 'none',0);
 		$profile = JRequest::getVar('up', null, 'GET', 'none',0);
+
+		if (empty($user) || !isset($user)) {
+			$user = JFactory::getUser()->id;
+		}
+		if (empty($up) || !isset($up)) {
+			$profile = 0;
+		}
 
 		//1.update the applicant's schoolyear to empty and profile to 0
 		$model->updateUser($user, $profile);
