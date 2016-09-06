@@ -19,7 +19,7 @@ jimport('joomla.plugin.plugin');
  * @subpackage  User.emundus
  * @since       5.0.0
  */
-class plgUserEmundus_su_pepite extends JPlugin
+class plgUserEmundus_su_csc extends JPlugin
 {
     
     /**
@@ -43,8 +43,8 @@ class plgUserEmundus_su_pepite extends JPlugin
         if (!$app->isAdmin()) {
             $current_user   = JFactory::getUser();
 
-            if ($current_user->code == "pepite") {
-                $app->redirect("index.php?option=com_fabrik&view=form&formid=164&Itemid=1372&usekey=fnum");
+            if ($current_user->code	== "utc-dfp-dri") {
+                $app->redirect("index.php?option=com_content&view=article&id=83&Itemid=1570");
             } else {
                 $app->redirect("index.php");
             }
@@ -66,6 +66,7 @@ class plgUserEmundus_su_pepite extends JPlugin
      */
     public function onUserLogout($user, $options = array())
     {
+        
         include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
         $app        = JFactory::getApplication();
         $profiles = new EmundusModelProfile;
@@ -73,8 +74,8 @@ class plgUserEmundus_su_pepite extends JPlugin
         $campaign = $profiles->getCurrentCampaignInfoByApplicant($user['id']);
 
         if (!$app->isAdmin()) {
-            if ($campaign["training"] == "pepite") {
-                $app->redirect("index.php?option=com_emundus&view=programme&id=86&Itemid=1521");
+            if ($campaign["training"] == "utc-dfp-dri") {
+                $app->redirect("index.php?option=com_content&view=article&id=80&Itemid=1570");
             } else {
                 $app->redirect("index.php");
             }

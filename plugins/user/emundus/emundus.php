@@ -3,7 +3,7 @@
  * @package     Joomla
  * @subpackage  eMundus
  * @link        http://www.emundus.fr
- * @copyright   Copyright (C) 2008 - 2013 Décision Publique. All rights reserved.
+ * @copyright   Copyright (C) 2016 eMundus. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  * @author      Decision Publique - Benjamin Rivalland
  */
@@ -304,7 +304,7 @@ class plgUserEmundus extends JPlugin
                 } else {
                     $jinput = $app->input;
                     $lang = $jinput->get('lang', '', 'RAW');
-                    $url = !empty($lang)?"index.php?lang=".$lang:"index.php";
+                    $url = !empty($lang)?"index.php?lang=".$lang."index.php";
                     $app->redirect($url);
                 }
             }

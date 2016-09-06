@@ -19,7 +19,7 @@ jimport('joomla.plugin.plugin');
  * @subpackage  User.emundus
  * @since       5.0.0
  */
-class plgUserEmundus_su_empolois extends JPlugin
+class plgUserEmundus_su_emplois extends JPlugin
 {
     
     /**
@@ -43,7 +43,7 @@ class plgUserEmundus_su_empolois extends JPlugin
         if (!$app->isAdmin()) {
             $current_user   = JFactory::getUser();
 
-            if ($current_user->code	== "utc-dfp-dri") {
+            if ($current_user->code == "utc-dfp-dri") {
                 $app->redirect("index.php?option=com_emundus&view=jobs&Itemid=1468");
             } else {
                 $app->redirect("index.php");
@@ -55,6 +55,35 @@ class plgUserEmundus_su_empolois extends JPlugin
         return true;
     }
 
+    /**
+     * This method should handle any logout logic and report back to the subject
+     *
+     * @param   array   $user       Holds the user data.
+     * @param   array   $options    Array holding options (client, ...).
+     *
+     * @return  object  True on success
+     * @since   1.5
+     */
+    public function onUserLogout($user, $options = array())
+    {
+        
+        include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
+        $app        = JFactory::getApplication();
+        $profiles = new EmundusModelProfile;
 
+        $campaign = $profiles->getCurrentCampaignInfoByApplicant($user['id']);
+
+        if (!$app->isAdmin()) {
+            if ($campaign["training"] == "utc-dfp-dri") {
+                $app->redirect("index.php?option=com_emundus&view=jobs&Itemid=1468");
+            } else {
+                $app->redirect("index.php");
+            }
+        } else {
+            $app->redirect("index.php");
+        }
+
+        return true;
+    }
 
 }
