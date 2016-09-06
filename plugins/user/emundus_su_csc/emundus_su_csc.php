@@ -43,7 +43,7 @@ class plgUserEmundus_su_csc extends JPlugin
         if (!$app->isAdmin()) {
             $current_user   = JFactory::getUser();
 
-            if ($current_user->code	== "utc-dfp-dri") {
+            if ($current_user->code	== "pcsc") {
                 $app->redirect("index.php?option=com_content&view=article&id=83&Itemid=1570");
             } else {
                 $app->redirect("index.php");
@@ -74,7 +74,7 @@ class plgUserEmundus_su_csc extends JPlugin
         $campaign = $profiles->getCurrentCampaignInfoByApplicant($user['id']);
 
         if (!$app->isAdmin()) {
-            if ($campaign["training"] == "utc-dfp-dri") {
+            if ($campaign["training"] == "pcsc") {
                 $app->redirect("index.php?option=com_content&view=article&id=80&Itemid=1570");
             } else {
                 $app->redirect("index.php");
