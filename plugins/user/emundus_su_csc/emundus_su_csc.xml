@@ -10,7 +10,7 @@
 	<version>2.5.0</version>
 	<description>PLG_USER_EMUNDUS_SU_CSC_XML_DESCRIPTION</description>
 	<files>
-		<filename plugin="emundus_su_emplois">emundus_su_csc.php</filename>
+		<filename plugin="emundus_su_csc">emundus_su_csc.php</filename>
 		<filename>index.html</filename>
 	</files>
 </extension>
