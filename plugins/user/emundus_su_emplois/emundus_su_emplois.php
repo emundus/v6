@@ -39,19 +39,22 @@ class plgUserEmundus_su_emplois extends JPlugin
         // In this example the boolean variable $success would be set to true if the login routine succeeds
         // ThirdPartyApp::loginUser($user['username'], $user['password']);
         $app            = JFactory::getApplication();
+        include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
+
 
         if (!$app->isAdmin()) {
             $current_user   = JFactory::getUser();
-
-            if ($current_user->code == "utc-dfp-dri") {
-                $app->redirect("index.php?option=com_emundus&view=jobs&Itemid=1468");
+            if (EmundusHelperAccess::isApplicant($current_user->id)) {
+                if ($current_user->code == "utc-dfp-dri") {
+                    $app->redirect("index.php?option=com_emundus&view=jobs&Itemid=1468");
+                } 
             } else {
                 $app->redirect("index.php");
-            }
+            } 
         } else {
             $app->redirect("index.php");
-        }
-
+        } 
+    
         return true;
     }
 
@@ -77,10 +80,10 @@ class plgUserEmundus_su_emplois extends JPlugin
             if ($campaign["training"] == "utc-dfp-dri") {
                 $app->redirect("index.php?option=com_emundus&view=jobs&Itemid=1468");
             } else {
-                $app->redirect("index.php");
+                $app->redirect("/");
             }
         } else {
-            $app->redirect("index.php");
+            $app->redirect("/");
         }
 
         return true;

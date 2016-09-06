@@ -38,21 +38,24 @@ class plgUserEmundus_su_csc extends JPlugin
         // The most common use of this routine would be logging the user into a third party application
         // In this example the boolean variable $success would be set to true if the login routine succeeds
         // ThirdPartyApp::loginUser($user['username'], $user['password']);
+
         $app            = JFactory::getApplication();
+
+        include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
+
 
         if (!$app->isAdmin()) {
             $current_user   = JFactory::getUser();
-
-            if ($current_user->code	== "pcsc") {
-                $app->redirect("index.php?option=com_content&view=article&id=83&Itemid=1570");
+            if (EmundusHelperAccess::isApplicant($current_user->id)) {
+                if ($current_user->code == "utc-dfp-dri") {
+                    $app->redirect("index.php?option=com_content&view=article&id=83&Itemid=1570");
+                }
             } else {
                 $app->redirect("index.php");
-            }
+            } 
         } else {
             $app->redirect("index.php");
-        }
-
-        return true;
+        } 
     }
 
     /**
@@ -65,8 +68,7 @@ class plgUserEmundus_su_csc extends JPlugin
      * @since   1.5
      */
     public function onUserLogout($user, $options = array())
-    {
-        
+    {   
         include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
         $app        = JFactory::getApplication();
         $profiles = new EmundusModelProfile;
@@ -74,7 +76,7 @@ class plgUserEmundus_su_csc extends JPlugin
         $campaign = $profiles->getCurrentCampaignInfoByApplicant($user['id']);
 
         if (!$app->isAdmin()) {
-            if ($campaign["training"] == "pcsc") {
+            if ($campaign["training"] == "utc-dfp-dri") {
                 $app->redirect("index.php?option=com_content&view=article&id=80&Itemid=1570");
             } else {
                 $app->redirect("index.php");
@@ -83,7 +85,7 @@ class plgUserEmundus_su_csc extends JPlugin
             $app->redirect("index.php");
         }
 
-        return true;
+        return true;   
     }
 
 }

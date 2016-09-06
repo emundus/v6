@@ -40,19 +40,21 @@ class plgUserEmundus_su_pepite extends JPlugin
         // ThirdPartyApp::loginUser($user['username'], $user['password']);
         $app            = JFactory::getApplication();
 
+        include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
+
+
         if (!$app->isAdmin()) {
             $current_user   = JFactory::getUser();
-
-            if ($current_user->code == "pepite") {
-                $app->redirect("index.php?option=com_fabrik&view=form&formid=164&Itemid=1372&usekey=fnum");
+            if (EmundusHelperAccess::isApplicant($current_user->id)) {
+                if ($current_user->code == "pepite") {
+                    $app->redirect("index.php?option=com_fabrik&view=form&formid=164&Itemid=1372&usekey=fnum");
+                }
             } else {
                 $app->redirect("index.php");
-            }
+            } 
         } else {
             $app->redirect("index.php");
-        }
-
-        return true;
+        } 
     }
 
     /**
