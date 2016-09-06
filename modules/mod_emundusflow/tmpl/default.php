@@ -33,7 +33,7 @@ if ($sent>0) {
 </div>
 <div class="ui tablet stackable bottom attached steps">
   <div class="step">
-    <a href="index.php" title="<?php echo  JText::_('RETURN'); ?>">
+    <a href="/" title="<?php echo  JText::_('RETURN'); ?>">
       <i class="large arrow left outline icon"></i> <?php echo  JText::_('RETURN'); ?>
     </a>
   </div>
