@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="user">
-	<name>plg_user_emundus_su_emplois</name>
+	<name>plg_user_emundus_su_csc</name>
 	<author>Benjamin Rivalland</author>
 	<creationDate>December 2015</creationDate>
 	<copyright>(C) 2016 eMundus. All rights reserved.</copyright>
@@ -8,9 +8,9 @@
 	<authorEmail>admin@emundus.fr</authorEmail>
 	<authorUrl>www.emundus.fr</authorUrl>
 	<version>2.5.0</version>
-	<description>PLG_USER_EMUNDUS_SU_EMPLOIS_XML_DESCRIPTION</description>
+	<description>PLG_USER_EMUNDUS_SU_CSC_XML_DESCRIPTION</description>
 	<files>
-		<filename plugin="emundus_su_emplois">emundus_su_emplois.php</filename>
+		<filename plugin="emundus_su_emplois">emundus_su_csc.php</filename>
 		<filename>index.html</filename>
 	</files>
 </extension>
