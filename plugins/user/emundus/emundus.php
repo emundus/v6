@@ -299,14 +299,14 @@ class plgUserEmundus extends JPlugin
                     $current_user->applicant                = 0;
                 }
 
-                if ($current_user->code == "csc") {
-                    $app->redirect("index.php?option=com_content&view=article&id=83&Itemid=1570");
-                } else {
+                //if ($current_user->code == "csc") {
+                //    $app->redirect("index.php?option=com_content&view=article&id=83&Itemid=1570");
+                //} else {
                     $jinput = $app->input;
                     $lang = $jinput->get('lang', '', 'RAW');
                     $url = !empty($lang)?"index.php?lang=".$lang."index.php";
                     $app->redirect($url);
-                }
+                //}
             }
         } 
         
