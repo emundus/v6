@@ -304,7 +304,7 @@ class plgUserEmundus extends JPlugin
                 //} else {
                     $jinput = $app->input;
                     $lang = $jinput->get('lang', '', 'RAW');
-                    $url = !empty($lang)?"index.php?lang=".$lang."index.php";
+                    $url = !empty($lang)?"index.php?lang=".$lang:"index.php";
                     $app->redirect($url);
                 //}
             }
