@@ -217,6 +217,10 @@ class plgUserEmundus extends JPlugin
                 $db->setQuery('UPDATE #__emundus_personal_detail SET last_name="'.strtoupper($lastname).'", first_name="'.ucfirst($firstname).'" WHERE user='.$user['id']);
                 $db->Query();
             }
+            
+            $this->onUserLogin($user);
+
+            $app->redirect('index.php?option=com_users&view=profile&user_id='.$user['id']);
         }
     }
 
