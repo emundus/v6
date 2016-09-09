@@ -135,8 +135,9 @@ class EmundusModelEvaluation extends JModelList
 				}
 				elseif ($def_elmt->element_plugin == 'databasejoin') {
 					$attribs = json_decode($def_elmt->element_attribs);
-                    //$join_val_column = !empty($attribs->join_val_column)?$attribs->join_val_column:'CONCAT('.str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat).')';
-					$join_val_column = (!empty($attribs->join_val_column_concat) && $attribs->join_val_column_concat!='')?'CONCAT('.$attribs->join_val_column_concat.')':$attribs->join_val_column;
+
+					$join_val_column_concat = str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat); 
+					$join_val_column = (!empty($join_val_column_concat) && $join_val_column_concat!='')?'CONCAT('.$join_val_column_concat.')':$attribs->join_val_column;
 
 					if ($group_params->repeat_group_button == 1) {
 						$query = '(
@@ -993,7 +994,7 @@ class EmundusModelEvaluation extends JModelList
 	}
 
 	public function getUsers($current_fnum = null)
-	{
+	{ 
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
 
 		//$userModel = new EmundusModelUsers();
@@ -1030,6 +1031,7 @@ class EmundusModelEvaluation extends JModelList
 		if (count($this->_elements_default)>0) {
 			$query .= ', '.implode(',', $this->_elements_default);
 		}
+
 		$query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eu.lastname," ",eu.firstname) AS evaluator';
 		
 		$query .= ' FROM #__emundus_campaign_candidature as c
@@ -1067,7 +1069,7 @@ class EmundusModelEvaluation extends JModelList
 
 		$dbo->setQuery($query);
 		try
-		{
+		{ 
 			$res = $dbo->loadAssocList();
 			$this->_applicants = $res;
 
@@ -1080,7 +1082,7 @@ class EmundusModelEvaluation extends JModelList
 			
 			$dbo->setQuery($query);
 			$res = $dbo->loadAssocList();
-//echo '<hr>'.str_replace('#_', 'jos', $query).'<hr>';
+//echo '<hr>'.str_replace('#_', 'jos', $query).'<hr>'; 
 			return $res;
 		}
 		catch(Exception $e)

@@ -142,7 +142,9 @@ class EmundusModelFiles extends JModelLegacy
                 }
                 elseif ($def_elmt->element_plugin == 'databasejoin') {
                     $attribs = json_decode($def_elmt->element_attribs);
-                    $column = (!empty($attribs->join_val_column_concat) && $attribs->join_val_column_concat!='')?'CONCAT('.$attribs->join_val_column_concat.')':$attribs->join_val_column;
+                    $join_val_column_concat = str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat); 
+                    $column = (!empty($join_val_column_concat) && $join_val_column_concat!='')?'CONCAT('.$join_val_column_concat.')':$attribs->join_val_column;
+                    //$column = (!empty($attribs->join_val_column_concat) && $attribs->join_val_column_concat!='')?'CONCAT('.$attribs->join_val_column_concat.')':$attribs->join_val_column;
 
                     if (@$group_params->repeat_group_button == 1) {
                         $query = '(
