@@ -236,11 +236,27 @@ if (EmundusHelperAccess::asApplicantAccessLevel($user->id)){
 	$link = $db->loadResult();
 
 	if(empty($link)) {
+
 		$query = 'SELECT CONCAT(link,"&Itemid=",id) 
-		FROM #__menu 
-		WHERE published=1 AND menutype = "'.$user->menutype.'" AND type!="separator" AND published=1 AND alias LIKE "checklist%"';
-		$db->setQuery( $query );
-		$link = $db->loadResult();
+			FROM #__menu 
+			WHERE published=1 AND menutype = "'.$user->menutype.'" 
+			AND parent_id != 1
+			AND lft = 4+(
+					SELECT menu.lft 
+					FROM `#__menu` AS menu 
+					WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="'.$user->menutype.'" 
+					AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)='.$formid.')';
+
+			$db->setQuery( $query );
+			$link = $db->loadResult();
+
+		if(empty($link)) {
+			$query = 'SELECT CONCAT(link,"&Itemid=",id) 
+			FROM #__menu 
+			WHERE published=1 AND menutype = "'.$user->menutype.'" AND type!="separator" AND published=1 AND alias LIKE "checklist%"';
+			$db->setQuery( $query );
+			$link = $db->loadResult();
+		}
 	}	
 } else { 
 	$query = 'SELECT db_table_name FROM `#__fabrik_lists` WHERE `form_id` ='.$formid;
