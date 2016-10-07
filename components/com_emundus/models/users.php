@@ -1028,7 +1028,7 @@ class EmundusModelUsers extends JModelList
         }
     }
 
-    public function getActions($actions)
+    public function getActions($actions = '')
     {
         //$usersGroups = JFactory::getUser()->groups;
         $usersGroups = $this->getUserGroups(JFactory::getUser()->id);

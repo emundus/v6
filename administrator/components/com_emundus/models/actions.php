@@ -12,149 +12,157 @@ class EmundusModelActions extends JModelList
 {
 	public function syncAllActions()
 	{
-		$dbo = $this->getDbo();
-		$queryActionID = "SELECT id FROM jos_emundus_setup_actions WHERE status >= 1";
-		$groupAssocQuery = "select jega.fnum, jega.group_id, jega.action_id from jos_emundus_group_assoc as jega left join jos_emundus_setup_actions as jesa on jesa.id = jega.action_id where jesa.status = 1";
-		$userAssocQuery = "select jega.fnum, jega.user_id, jega.action_id from jos_emundus_users_assoc as jega left join jos_emundus_setup_actions as jesa on jesa.id = jega.action_id where jesa.status = 1";
-		$queryAcl = "select action_id, group_id from jos_emundus_acl";
+		try{
+			$dbo = $this->getDbo();
+			$queryActionID = "SELECT id FROM jos_emundus_setup_actions WHERE status >= 1";
+			$groupAssocQuery = "select jega.fnum, jega.group_id, jega.action_id from jos_emundus_group_assoc as jega left join jos_emundus_setup_actions as jesa on jesa.id = jega.action_id where jesa.status = 1";
+			$userAssocQuery = "select jega.fnum, jega.user_id, jega.action_id from jos_emundus_users_assoc as jega left join jos_emundus_setup_actions as jesa on jesa.id = jega.action_id where jesa.status = 1";
+			$queryAcl = "select action_id, group_id from jos_emundus_acl";
 
-		$dbo->setQuery($queryActionID);
-		$actionsId = $dbo->loadColumn();
-		$dbo->setQuery($queryAcl);
-		$aclAction = $dbo->loadAssocList();
-		$dbo->setQuery($groupAssocQuery);
-		$arrayGroupAssoc = $dbo->loadAssocList();
-		$dbo->setQuery($userAssocQuery);
-		$arrayUserAssoc = $dbo->loadAssocList();
-		$acl = array();
-		$aclGroupAssoc = array();
-		$aclUserAssoc = array();
+			$dbo->setQuery($queryActionID);
+			$actionsId = $dbo->loadColumn();
+			$dbo->setQuery($queryAcl);
+			$aclAction = $dbo->loadAssocList();
+			$dbo->setQuery($groupAssocQuery);
+			$arrayGroupAssoc = $dbo->loadAssocList();
+			$dbo->setQuery($userAssocQuery);
+			$arrayUserAssoc = $dbo->loadAssocList();
+			$acl = array();
+			$aclGroupAssoc = array();
+			$aclUserAssoc = array();
 
-		foreach($aclAction as $action)
-		{
-			$acl[$action['group_id']][] = $action['action_id'];
-		}
-		foreach($arrayGroupAssoc as $aga)
-		{
-			$aclGroupAssoc[$aga['fnum']][$aga['group_id']][] = $aga['action_id'];
-		}
-		foreach($arrayUserAssoc as $aua)
-		{
-			$aclUserAssoc[$aua['fnum']][$aua['user_id']][] = $aua['action_id'];
-		}
-
-		foreach($acl as $gId => $groupAction)
-		{
-			$acl[$gId] = array_diff($actionsId, $groupAction);
-		}
-		$queryActionID = "SELECT id FROM jos_emundus_setup_actions WHERE status = 1";
-		$dbo->setQuery($queryActionID);
-		$actionsId = $dbo->loadColumn();
-
-		foreach($aclGroupAssoc as $fnum => $groups)
-		{
-			foreach($groups as $gid => $action)
+			foreach($aclAction as $action)
 			{
-				$aclGroupAssoc[$fnum][$gid] = array_diff($actionsId, $action);
+				$acl[$action['group_id']][] = $action['action_id'];
 			}
-		}
-		foreach($aclUserAssoc as $fnum => $users)
-		{
-			foreach($users as $uid => $action)
+			foreach($arrayGroupAssoc as $aga)
 			{
-				$aclUserAssoc[$fnum][$uid] = array_diff($actionsId, $action);
+				$aclGroupAssoc[$aga['fnum']][$aga['group_id']][] = $aga['action_id'];
 			}
-		}
-
-		$canInsert = false;
-		$insert = "INSERT INTO jos_emundus_acl (action_id, group_id, c, r, u, d) values ";
-		$overload = array();
-		foreach($acl as $gid => $actions)
-		{
-			if(!empty($actions))
+			foreach($arrayUserAssoc as $aua)
 			{
-				if(count($actions) > count($overload))
+				$aclUserAssoc[$aua['fnum']][$aua['user_id']][] = $aua['action_id'];
+			}
+
+			foreach($acl as $gId => $groupAction)
+			{
+				$acl[$gId] = array_diff($actionsId, $groupAction);
+			}
+			$queryActionID = "SELECT id FROM jos_emundus_setup_actions WHERE status = 1";
+			$dbo->setQuery($queryActionID);
+			$actionsId = $dbo->loadColumn();
+
+			foreach($aclGroupAssoc as $fnum => $groups)
+			{
+				foreach($groups as $gid => $action)
 				{
-					$overload = $actions;
-				}
-				$canInsert = true;
-				foreach($actions as $aid)
-				{
-					$insert .= "({$aid}, {$gid}, 0, 0, 0, 0),";
+					$aclGroupAssoc[$fnum][$gid] = array_diff($actionsId, $action);
 				}
 			}
-		}
-
-		if($canInsert)
-		{
-			$insert = rtrim($insert, ",");
-			$dbo->setQuery($insert);
-			echo "<pre>";
-				echo "group acl";
-				echo $insert;
-			echo "</pre>";
-			$dbo->execute();
-		}
-		$canInsert = false;
-		$insert = "INSERT INTO jos_emundus_group_assoc (fnum, action_id, group_id, c, r, u, d) values ";
-
-		foreach($aclGroupAssoc as $fnum => $groups)
-		{
-			foreach($groups as $gid => $assocActions)
+			foreach($aclUserAssoc as $fnum => $users)
 			{
-				if(!empty($assocActions))
+				foreach($users as $uid => $action)
 				{
+					$aclUserAssoc[$fnum][$uid] = array_diff($actionsId, $action);
+				}
+			}
+
+			$canInsert = false;
+			$insert = "INSERT INTO jos_emundus_acl (action_id, group_id, c, r, u, d) values ";
+			$overload = array();
+			foreach($acl as $gid => $actions)
+			{
+				if(!empty($actions))
+				{
+					if(count($actions) > count($overload))
+					{
+						$overload = $actions;
+					}
 					$canInsert = true;
-					foreach($assocActions as $aid)
+					foreach($actions as $aid)
 					{
-						$insert .= "({$fnum}, {$aid}, {$gid}, 0, 0, 0, 0),";
+						$insert .= "({$aid}, {$gid}, 0, 0, 0, 0),";
 					}
 				}
 			}
-		}
-		if($canInsert)
-		{
-			$insert = rtrim($insert, ",");
-			$dbo->setQuery($insert);
-			echo "<pre>";
-			echo "insert group assoc";
-			echo $insert;
-			echo "</pre>";
-			$dbo->execute();
-		}
-		$canInsert = false;
-		$insert = "INSERT INTO jos_emundus_users_assoc (fnum, action_id, user_id, c, r, u, d) values ";
 
-		foreach($aclUserAssoc as $fnum => $users)
-		{
-			foreach($users as $uid => $assocActions)
+			if($canInsert)
 			{
-				if(!empty($assocActions))
+				$insert = rtrim($insert, ",");
+				$dbo->setQuery($insert);
+				echo "<pre>";
+					echo "group acl : ";
+					echo $insert;
+				echo "</pre>";
+				$dbo->execute();
+			}
+			$canInsert = false;
+			$insert = "INSERT INTO jos_emundus_group_assoc (fnum, action_id, group_id, c, r, u, d) values ";
+
+			foreach($aclGroupAssoc as $fnum => $groups)
+			{
+				foreach($groups as $gid => $assocActions)
 				{
-					foreach($assocActions as $aid)
+					if(!empty($assocActions))
 					{
-						$user = JFactory::getUser($uid);
-						if ($user->id > 0) {
-							$canInsert = true;
-							$insert .= "({$fnum}, {$aid}, {$uid}, 0, 0, 0, 0),";
+						$canInsert = true;
+						foreach($assocActions as $aid)
+						{
+							$insert .= "({$fnum}, {$aid}, {$gid}, 0, 0, 0, 0),";
 						}
-						else 
-							echo '<hr>'.JText::_('ERROR_USER_ID_NOT_FOUND').' : '.$uid; 
-						
 					}
 				}
 			}
-		}
-		if($canInsert)
-		{
-			$insert = rtrim($insert, ",");
-			$dbo->setQuery($insert);
-			echo "<pre>";
-			echo "insert users assoc";
-			echo $insert;
-			echo "</pre>";
-			$dbo->execute();
-		}
+			if($canInsert)
+			{
+				$insert = rtrim($insert, ",");
+				$dbo->setQuery($insert);
+				echo "<pre>";
+				echo "insert group assoc : ";
+				echo $insert;
+				echo "</pre>";
+				$dbo->execute();
+			}
+			$canInsert = false;
+			$insert = "INSERT INTO jos_emundus_users_assoc (fnum, action_id, user_id, c, r, u, d) values ";
 
+			foreach($aclUserAssoc as $fnum => $users)
+			{
+				foreach($users as $uid => $assocActions)
+				{
+					if(!empty($assocActions))
+					{
+						foreach($assocActions as $aid)
+						{
+							$user = JFactory::getUser($uid);
+							if ($user->id > 0) {
+								$canInsert = true;
+								$insert .= "({$fnum}, {$aid}, {$uid}, 0, 0, 0, 0),";
+							}
+							else 
+								echo '<hr>'.JText::_('ERROR_USER_ID_NOT_FOUND').' : '.$uid; 
+							
+						}
+					}
+				}
+			}
+			if($canInsert)
+			{
+				$insert = rtrim($insert, ",");
+				$dbo->setQuery($insert);
+				echo "<pre>";
+				echo "insert users assoc : ";
+				echo $insert;
+				echo "</pre>";
+				$dbo->execute();
+			}
+			echo "END";
+		} 
+		catch (RuntimeException $e)
+        {
+            JFactory::getApplication()->enqueueMessage($e->getMessage());
+
+            return false;
+        }
 	}
 }

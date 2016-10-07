@@ -125,10 +125,10 @@ class EmundusViewUsers extends JViewLegacy
 	}
 
 	private function _loadGroupForm()
-	{
+	{ 
 		//$model = new EmundusModelFiles();
 		$userModel = new EmundusModelUsers();
-		$actions = $userModel->getActions('1,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,27');
+		$actions = $userModel->getActions();
 		$prog = $userModel->getProgramme();
 		$this->assignRef('actions', $actions);
 		$this->assignRef('progs', $prog);
@@ -164,7 +164,7 @@ class EmundusViewUsers extends JViewLegacy
 			die("ACCESS_DENIED");
 		}
 
-		$layout = JFactory::getApplication()->input->getString('layout', null);
+		$layout = JFactory::getApplication()->input->getString('layout', null); 
 		switch  ($layout)
 		{
 			case 'user':
@@ -215,7 +215,6 @@ class EmundusViewUsers extends JViewLegacy
 
 			break;
 		}
-
 		// Javascript
 		$onSubmitForm = EmundusHelperJavascript::onSubmitForm();
 		$this->assignRef('onSubmitForm', $onSubmitForm);

@@ -447,7 +447,7 @@ echo "</pre>";
         $query = 'SELECT *
                 FROM #__emundus_setup_attachments esa
                 WHERE id IN (
-                    SELECT distinct(esl.attachment_id) FROM #__emundus_setup_letters esl WHERE eligibility='.$result.'
+                    SELECT distinct(esl.attachment_id) FROM #__emundus_setup_letters esl WHERE status='.$result.'
                     )
                 ORDER BY esa.value';
         $db->setQuery( $query );

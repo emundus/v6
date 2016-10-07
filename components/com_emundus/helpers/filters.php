@@ -195,7 +195,7 @@ class EmundusHelperFilters {
 		$query = 'SELECT *
 				FROM #__emundus_setup_attachments esa
 				WHERE id IN (
-					SELECT distinct(esl.attachment_id) FROM #__emundus_setup_letters esl WHERE eligibility='.$result.'
+					SELECT distinct(esl.attachment_id) FROM #__emundus_setup_letters esl WHERE status='.$result.'
 					)
 				ORDER BY esa.value'; 
 		$db->setQuery( $query );
@@ -204,14 +204,14 @@ class EmundusHelperFilters {
 
 	function setEvaluationList ($result) {
 		$option_list =  @EmundusHelperFilters::getEvaluation_doc($result);
-		$current_filter = '<select name="attachment_id" id="attachment_id">';
+		$current_filter = '';
 		if(!empty($option_list)){
+			$current_filter = '<select name="attachment_id" id="attachment_id">';
 			foreach($option_list as $value){
 				$current_filter .= '<option value="'.$value->id.'">'.$value->value.'</option>';
 			}
+			$current_filter .= '</select>';
 		}
-		$current_filter .= '</select>';
-
 		return $current_filter;
 	}
 	

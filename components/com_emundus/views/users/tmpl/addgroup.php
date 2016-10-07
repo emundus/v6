@@ -57,7 +57,7 @@
 		</thead>
 		<tbody size="<?php echo count($this->actions)?>">
 		<?php 
-		//die(var_dump($this->actions));
+//die(var_dump($this->actions));
 		foreach($this->actions as $l => $action):?>
 			<tr class="em-actions-table-line">
 				<td  id="<?php echo $action['id']?>"><?php echo JText::_(strtoupper($action['label']))?></td>
@@ -91,9 +91,9 @@
 
 
 <script type="text/javascript">
-	$(document).ready(function()
-	                  {
-							$('#gprogs').chosen({width:'100%'});
-	                  });
+$(document).ready(function()
+{
+	$('#gprogs').chosen({width:'100%'});
+});
 </script>
 

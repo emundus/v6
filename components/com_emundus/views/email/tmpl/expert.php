@@ -100,11 +100,14 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 				//document.getElementById("r").innerHTML = response;
 			}
 		</script>
- 
+ <?php 
+ 	$attachment_types = @EmundusHelperfilters::setEvaluationList(0);
+ 	if (!empty($attachment_types)) {
+ ?>
 	<form action="<?php echo JURI::Base(); ?>index.php?option=com_emundus&controller=application&format=raw&task=upload_attachment" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart' : startCallback, 'onComplete' : completeCallback})">
 		<div>
-			<?php echo @EmundusHelperfilters::setEvaluationList(0); ?>
-			<input name="campaign_id" type="hidden" value="<?php echo $evaluation[0]["campaign_id"]; ?>" />
+			<?php echo $attachment_types; ?>
+			<input name="campaign_id" type="hidden" value="<?php echo $this->fnums->cid; ?>" />
 			<input name="uid" type="hidden" value="<?php echo $student_id; ?>" />
 			<input name="aid" type="hidden" value="26" />
 			<input name="can_be_viewed" type="hidden" value="1" />
@@ -115,6 +118,7 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 		</div>
 	</form>
 	<?php
+	}
 	echo '<hr />'; 
 	/*	<div># of submited forms: <span id="nr">0</span></div>
 		<div>last submit response: <span id="r"></span></div>';*/

@@ -944,6 +944,7 @@ DELETE 06/06/2016
             // if(count($this->code)>0)
             $sql_code = ' sp.code IN ("'.implode('","', $this->code).'") ';
         }
+        $sql_fnum = '';
         if(count($this->fnum_assoc)>0)
             $sql_fnum = ' OR jos_emundus_campaign_candidature.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
         

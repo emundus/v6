@@ -1,7 +1,7 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1: attachement_public.php 89 2014-02-04 Benjamin Rivalland
+ * @version 1: expert_agreement.php 89 2014-02-04 Benjamin Rivalland
  * @package Fabrik
  * @copyright Copyright (C) 2008 Décision Publique. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
@@ -273,15 +273,17 @@ if ($uid > 0) {
 	$email = $m_emails->getEmail('new_account');
 	$body = $m_emails->setBody($user, $email->message, $fnum, $password);
 
-    $config = JFactory::getConfig();
-    $sender = array(
-        $config->get( $email->emailfrom ),
-        $config->get( $email->name )
-    );
-    $recipient = $user->email;
+    $app    = JFactory::getApplication();
+    $email_from_sys = $app->getCfg('mailfrom');
+	$sender = array(
+	    $email_from_sys,
+	    $email->name
+	);
+	$mailer = JFactory::getMailer();
 
-    $mailer->setSender($sender);
-    $mailer->addRecipient($recipient);
+	$mailer->setSender($sender);
+	$mailer->addReplyTo($from, $fromname);
+    $mailer->addRecipient($user->email);
     $mailer->setSubject($email->subject);
     $mailer->isHTML(true);
     $mailer->Encoding = 'base64';

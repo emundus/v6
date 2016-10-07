@@ -264,12 +264,12 @@ class EmundusHelperEmails
 				$email.='</select>';
 				$email .= '<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />';
 				$email .= '<input placeholder="'.JText::_( 'EMAIL_TO' ).'"  name="mail_to" type="text" class="inputbox" id="mail_to" value="'.$experts.'" size="100" style="width: 100% !important;" />';
-				$email .= '<input name="mail_from_name" type="hidden" class="inputbox input-xlarge" id="mail_from_name" value="" size="100" style="width: 100% !important;" />';
+				/*$email .= '<input name="mail_from_name" type="hidden" class="inputbox input-xlarge" id="mail_from_name" value="" size="100" style="width: 100% !important;" />';
 				$email .= '<input name="mail_from" type="hidden" class="inputbox input-xlarge" id="mail_from" value="" size="100" style="width: 100% !important;" />';
 				$email .= '<input name="campaign_id" type="hidden" class="inputbox" id="campaign_id" value="'.$campaign_id.'" />
 					<input name="student_id" type="hidden" class="inputbox" id="student_id" value="'.$student_id.'" />
 				</div>';
-				//$email .= '<p><label for="mail_body"> '.JText::_( 'MESSAGE' ).' </label><br/>';
+				$email .= '<p><label for="mail_body"> '.JText::_( 'MESSAGE' ).' </label><br/>';*/
 				$email .= $mail_body;
 				$email .= '
 				</p>
