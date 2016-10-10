@@ -27,7 +27,8 @@ class EmundusHelperEmails
 {
 	function createEmailBlock($params, $users = null)
 	{
-		$itemid = JRequest::getVar('Itemid', null, 'GET', null, 0);
+		$jinput = JFactory::getApplication()->input;
+		$itemid = $jinput->get('Itemid', null, 'INT'); //JRequest::getVar('Itemid', null, 'GET', null, 0);
 		$current_user = JFactory::getUser();
 		$email = '<div class="em_email_block" id="em_email_block">';
 		$email.= '<input placeholder="'.JText::_( 'EMAIL_FROM' ).'" name="mail_from_name" type="text" class="inputbox input-xlarge" id="mail_from_name" value="'.$current_user->name.'" /> ';
@@ -51,7 +52,7 @@ class EmundusHelperEmails
 			$mail_body = $editor->display( 'mail_body', $default_template->message, '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
 
 			//$current_eval = JRequest::getVar('user', null, 'POST', 'none',0);
-			$current_group = JRequest::getVar('groups', null, 'POST', 'none',0);
+			$current_group = $jinput->get('groups', null, 'INT'); //JRequest::getVar('groups', null, 'POST', 'none',0);
 			$all_groups = EmundusHelperFilters::getGroups();
 			//$evaluators = EmundusHelperFilters::getEvaluators();
 
@@ -176,8 +177,8 @@ class EmundusHelperEmails
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
 
-			$student_id = JRequest::getVar('jos_emundus_evaluations___student_id', null, 'GET', 'INT',0);
-			$campaign_id = JRequest::getVar('jos_emundus_evaluations___campaign_id', null, 'GET', 'INT',0);
+			$student_id = $jinput->get('jos_emundus_evaluations___student_id', null, 'INT'); //JRequest::getVar('jos_emundus_evaluations___student_id', null, 'GET', 'INT',0);
+			$campaign_id = $jinput->get('jos_emundus_evaluations___campaign_id', null, 'INT'); //JRequest::getVar('jos_emundus_evaluations___campaign_id', null, 'GET', 'INT',0);
 			$applicant = JFactory::getUser($student_id);
 			
 			$email .= '<fieldset>
@@ -248,8 +249,18 @@ class EmundusHelperEmails
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
 
-			$student_id = JRequest::getVar('student_id', null, 'GET', 'INT',0);
-			$campaign_id = JRequest::getVar('campaign_id', null, 'GET', 'INT',0);
+			$student_id = $jinput->get('student_id', null, 'INT'); //JRequest::getVar('student_id', null, 'GET', 'INT',0);
+			$campaign_id = $jinput->get('campaign_id', null, 'INT'); //JRequest::getVar('campaign_id', null, 'GET', 'INT',0);
+			$fnums = $jinput->get('fnums', null, 'RAW');
+			$fnumsArray = (array) json_decode($fnums);
+			if (count($fnumsArray) > 0) {
+				$fnums = '{';
+				foreach ($fnumsArray as $key => $value) {
+					$fnums .= '\"fnum\":\"'.$value->fnum.'\"';
+				}
+				$fnums .= '}';
+			}
+
 			$applicant = JFactory::getUser($student_id);
 
 			$experts = "";
@@ -264,6 +275,7 @@ class EmundusHelperEmails
 				$email.='</select>';
 				$email .= '<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />';
 				$email .= '<input placeholder="'.JText::_( 'EMAIL_TO' ).'"  name="mail_to" type="text" class="inputbox" id="mail_to" value="'.$experts.'" size="100" style="width: 100% !important;" />';
+				$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 				/*$email .= '<input name="mail_from_name" type="hidden" class="inputbox input-xlarge" id="mail_from_name" value="" size="100" style="width: 100% !important;" />';
 				$email .= '<input name="mail_from" type="hidden" class="inputbox input-xlarge" id="mail_from" value="" size="100" style="width: 100% !important;" />';
 				$email .= '<input name="campaign_id" type="hidden" class="inputbox" id="campaign_id" value="'.$campaign_id.'" />

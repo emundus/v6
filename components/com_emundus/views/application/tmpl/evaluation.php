@@ -41,7 +41,7 @@ JFactory::getSession()->set('application_layout', 'evaluation');
                 <div class="form" id="form">
                     <?php if(!empty($this->url_form)):?>
                         <div class="holds-iframe"><?php echo JText::_('LOADING'); ?></div>
-                        <iframe id="iframe" src="<?php echo $this->url_form; ?>" align="left" frameborder="0" height="600" width="100%" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+                        <iframe id="iframe" src="<?php echo $this->url_form; ?>" align="left" frameborder="0" height="600" width="100%" scrolling="no" marginheight="0" marginwidth="0" onload="resizeIframe(this)"></iframe>
                     <?php else:?>
                         <div class="em_no-form"><?php echo JText::_('NO_EVALUATION_FORM_SET'); ?></div>
                     <?php endif;?>
@@ -56,6 +56,16 @@ JFactory::getSession()->set('application_layout', 'evaluation');
     $('iframe').load(function(){
         $(".holds-iframe").remove();
     }).show();
+
+    function resizeIframe(obj) {
+        obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+    }
+
+    window.ScrollToTop = function(){
+      $('html,body', window.document).animate({
+        scrollTop: '0px'
+      }, 'slow');
+    };
 
     var url_evaluation = '<?php echo $this->url_evaluation; ?>';
 

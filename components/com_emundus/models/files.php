@@ -2541,6 +2541,7 @@ where 1 order by ga.fnum asc, g.title';
         try
         {
             $dbo->setQuery($select);
+//echo str_replace("#", "jos", $query);
             return $dbo->loadAssocList();
         }
         catch(Exception $e)
@@ -2557,7 +2558,8 @@ where 1 order by ga.fnum asc, g.title';
      */
     public function getVariables($str)
     {
-        preg_match_all('/\$\{(.*?)}/i', $str, $matches);
+        //preg_match_all('/\$\{(.*?)}/i', $str, $matches);
+        preg_match_all( '#\{(\w+)}#', $str, $matches );
 
         return $matches[1];
     }

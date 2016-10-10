@@ -177,14 +177,16 @@ if ($uid > 0) {
 	$email = $m_emails->getEmail('expert_accept');
 	$body = $m_emails->setBody($user, $email->message, "");
 
-    $config = JFactory::getConfig();
+    $app    = JFactory::getApplication();
+    $email_from_sys = $app->getCfg('mailfrom');
     $sender = array(
-        $config->get( $email->emailfrom ),
-        $config->get( $email->name )
+        $email_from_sys,
+        $email->name
     );
     $recipient = $user->email;
 
     $mailer->setSender($sender);
+    $mailer->addReplyTo($email->emailfrom, $email->name);
     $mailer->addRecipient($recipient);
     $mailer->setSubject($email->subject);
     $mailer->isHTML(true);
@@ -206,10 +208,11 @@ if ($uid > 0) {
 
 // 2.1.3. Commentaire sur le dossier du candidat : nouvel expert ayant accepté l'évaluation du dossier
 	$row = array(
-	'applicant_id' => $student->id, 
-	'user_id' => 62, 
-	'reason' => JText::_( 'EXPERT_ACCEPT_TO_EVALUATE' ), 
-	'comment_body' => $user->name. ' ' .JText::_( 'ACCEPT_TO_EVALUATE' )
+	'applicant_id'  => $student->id, 
+	'user_id' 		=> $user->id, 
+	'reason' 		=> JText::_( 'EXPERT_ACCEPT_TO_EVALUATE' ), 
+	'comment_body'  => $user->name. ' ' .JText::_( 'ACCEPT_TO_EVALUATE' ),
+	'fnum'          => $fnum
 	);
 	$m_application->addComment($row);
 	$logged = $m_users->encryptLogin( array('username' => $user->username, 'password' => $user->password) );
@@ -282,7 +285,7 @@ if ($uid > 0) {
 	$mailer = JFactory::getMailer();
 
 	$mailer->setSender($sender);
-	$mailer->addReplyTo($from, $fromname);
+	$mailer->addReplyTo($email->emailfrom, $email->name);
     $mailer->addRecipient($user->email);
     $mailer->setSubject($email->subject);
     $mailer->isHTML(true);
@@ -294,20 +297,21 @@ if ($uid > 0) {
         echo 'Error sending email: ' . $send->__toString(); die();
     } else {
         $message = array(
-            'user_id_from' => 62,
-            'user_id_to' => $uid,
-            'subject' => $email->subject,
-            'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user->email.'</i><br>'.$body
+            'user_id_from'  => 62,
+            'user_id_to' 	=> $user->id,
+            'subject' 		=> $email->subject,
+            'message' 		=> '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user->email.'</i><br>'.$body
         );
         $m_emails->logEmail($message);
     }
 
 // 2.1.3. Commentaire sur le dossier du candidat : nouvel expert ayant accepté l'évaluation du dossier
 	$row = array(
-	'applicant_id' => $student->id, 
-	'user_id' => 62, 
-	'reason' => JText::_( 'EXPERT_ACCEPT_TO_EVALUATE' ), 
-	'comment_body' => $user->name. ' ' .JText::_( 'ACCEPT_TO_EVALUATE' )
+	'applicant_id' 	=> $student->id, 
+	'user_id' 		=> $user->id, 
+	'reason' 		=> JText::_( 'EXPERT_ACCEPT_TO_EVALUATE' ), 
+	'comment_body'  => $user->name. ' ' .JText::_( 'ACCEPT_TO_EVALUATE' ),
+	'fnum'          => $fnum
 	);
 	$m_application->addComment($row);
 

@@ -5,7 +5,7 @@
  * @package    Joomla
  * @subpackage eMundus
  *             components/com_emundus/emundus.php
- * @link       http://www.decisionpublique.fr
+ * @link       http://www.emundus.fr
  * @license    GNU/GPL
  */
 
@@ -286,11 +286,14 @@ class EmundusModelEmails extends JModelList
         $file = new EmundusModelFiles();
 
         $jinput = JFactory::getApplication()->input;
-        $fnums = $jinput->getString('fnums', null);
+        $fnums = $jinput->get('fnums', null, 'RAW'); 
+
         $fnumsArray = (array) json_decode(stripslashes($fnums));
+       
         $tags = $file->getVariables($str);
         $idFabrik = array();
         $setupTags = array();
+
         foreach($tags as $i => $val)
         {
             $tag = strip_tags($val);
@@ -303,6 +306,7 @@ class EmundusModelEmails extends JModelList
                 $setupTags[] = $tag;
             }
         }
+
         if(count($idFabrik) > 0) {
             $fabrikElts = $file->getValueFabrikByIds($idFabrik);
             $fabrikValues = array();
@@ -319,7 +323,7 @@ class EmundusModelEmails extends JModelList
                         $fabrikValues[$elt['id']] =
                             $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'],
                                 $params->date_form_format);
-                    } else {
+                    } else { 
                         $fabrikValues[$elt['id']] =
                             $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
                     }
@@ -523,6 +527,7 @@ class EmundusModelEmails extends JModelList
                 $tags = $this->setTags($student_id, $post, $fnum);
 
                 $body = preg_replace($tags['patterns'], $tags['replacements'], $mail_body);
+                $body = $this->setTagsFabrik($body);
 
                 //$sent = JUtility::sendMail($mail_from, $mail_from_name, $m_to, $mail_subject, $body, $mode, $mail_cc, null, @$mail_attachments);
                 $app    = JFactory::getApplication();
