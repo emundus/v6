@@ -188,7 +188,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 			mkdir(EMUNDUS_PATH_ABS.$user_id, 0755, true);
 			chmod(EMUNDUS_PATH_ABS.$user_id, 0755);
 		}
-		if(count($file) > 0 && strpos($file['filename'], 'lock')===false) {
+		if(count($file) > 0 && strpos($file['filename'], 'lock')===false && $letter['template_type'] != 4) {
 			$query = 'DELETE FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter['attachment_id'].' AND campaign_id='.$campaign_id. ' AND fnum like '.$db->Quote($fnum).' AND filename NOT LIKE "%lock%"';
 			$db->setQuery($query);
 			$db->query();

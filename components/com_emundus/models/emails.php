@@ -476,6 +476,7 @@ class EmundusModelEmails extends JModelList
             $mail_subject = $jinput->get('mail_subject', null, 'STRING'); //JRequest::getVar('mail_subject', null, 'POST', 'VARCHAR', 0);
             $mail_from_name = $jinput->get('mail_from_name', null, 'STRING'); //JRequest::getVar('mail_from_name', null, 'POST', 'VARCHAR', 0);
             $mail_from = $jinput->get('mail_from', null, 'STRING'); //JRequest::getVar('mail_from', null, 'POST', 'VARCHAR', 0);
+            
 
             $campaign = @EmundusHelperfilters::getCampaignByID($campaign_id);
             $application = new EmundusModelApplication;
@@ -502,6 +503,7 @@ class EmundusModelEmails extends JModelList
             $mail_body = preg_replace($tags['patterns'], $tags['replacements'], $mail_body);
 
             $mail_attachments = $jinput->get('mail_attachments', null, 'STRING'); //JRequest::getVar('mail_attachments', null, 'POST', 'VARCHAR', 0);
+            $delete_attachment = $jinput->get('delete_attachment', null, 'INT');
 
             if (!empty($mail_attachments))
                 $mail_attachments = explode(',', $mail_attachments); 
@@ -588,7 +590,7 @@ class EmundusModelEmails extends JModelList
             }
 
             // delete attached files
-            if (is_array($mail_attachments) && count($mail_attachments) > 0) {
+            if (is_array($mail_attachments) && count($mail_attachments) > 0 && $delete_attachment == 1) {
                 foreach ($mail_attachments as $attachment) {
                     $filename = explode(DS, $attachment);
 

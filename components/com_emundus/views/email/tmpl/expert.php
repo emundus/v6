@@ -42,8 +42,8 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	} 
 	?>
 <!--
-<div class="em_email_block_nav"><input type="button" name="'.JText::_('BACK').'" onclick="history.back()" value="<?php echo JText::_( 'BACK' ); ?>" ></div>-->
-<h1><?php echo JText::_( 'INFORM_EXPERTS' ); ?></h1>
+<div class="em_email_block_nav"><input type="button" name="'.JText::_('BACK').'" onclick="history.back()" value="<?php echo JText::_( 'BACK' ); ?>" ></div>
+<h1><?php echo JText::_( 'INFORM_EXPERTS' ); ?></h1>-->
 	<div id="attachment_list">
 	  <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" enctype="multipart/form-data" />
 	    <?php echo $this->email; ?>
@@ -71,6 +71,8 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	}
 
 	echo '<fieldset><legend>'.JText::_('ATTACHMENTS').'</legend>'; 
+	echo '<label><input type="checkbox" name="delete_attachment_box" id="delete_attachment_box" value="1"> '.JText::_('DELETE_ATTACHMENT_ONCE_MESSAGE_SENT').'</label>';
+	echo "<hr>";
 	// Upload ajax
 	?>
 	<script type="text/javascript">
@@ -161,10 +163,16 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 		btn[0].disabled = true;
 		btn[0].value = "<?php echo JText::_('SENDING_EMAIL'); ?>";
 
+		var delete_attachment = 0; 
+		if (document.getElementById('delete_attachment_box').checked) {
+			document.getElementById("delete_attachment").value = 1;
+			delete_attachment = 1; 
+		}
+
 		//alert(btn+' '+btn.disabled+' : '+btn.value);
 		switch(document.pressed) {
 			case 'expert': 
-				document.adminForm.action ="index.php?option=com_emundus&task=sendmail_expert&fnum=<?php echo $this->fnums->fnum ?>&sid=<?php echo $student_id ?>&Itemid=<?php echo $itemid ?>";
+				document.adminForm.action ="index.php?option=com_emundus&task=sendmail_expert&fnum=<?php echo $this->fnums->fnum ?>&sid=<?php echo $student_id ?>&Itemid=<?php echo $itemid ?>&delete_attachment="+delete_attachment;
 			break;
 			default: return false;
 		}

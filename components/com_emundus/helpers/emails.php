@@ -272,10 +272,11 @@ class EmundusHelperEmails
 				foreach ($AllEmail_template as $email_template){
 					$email.='<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
 				}
-				$email.='</select>';
+				$email .='</select>';
 				$email .= '<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />';
 				$email .= '<input placeholder="'.JText::_( 'EMAIL_TO' ).'"  name="mail_to" type="text" class="inputbox" id="mail_to" value="'.$experts.'" size="100" style="width: 100% !important;" />';
 				$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
+				$email .= '<input name="delete_attachment" type="hidden" class="inputbox" id="delete_attachment" value=0 />';
 				/*$email .= '<input name="mail_from_name" type="hidden" class="inputbox input-xlarge" id="mail_from_name" value="" size="100" style="width: 100% !important;" />';
 				$email .= '<input name="mail_from" type="hidden" class="inputbox input-xlarge" id="mail_from" value="" size="100" style="width: 100% !important;" />';
 				$email .= '<input name="campaign_id" type="hidden" class="inputbox" id="campaign_id" value="'.$campaign_id.'" />
