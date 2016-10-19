@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -173,7 +173,7 @@ class hikashopCharacteristicType {
 					$main_html = '<table class="hikashop_product_characteristics_table">';
 					$config =& hikashop_config();
 					foreach($this->characteristics as $characteristic){
-						$main_html.='<tr>';
+						$main_html.='<tr class="hikashop_characteristic_line_'.$characteristic->characteristic_id.'">';
 						$values = array();
 						$switch_done = false;
 						if(!empty($characteristic->values)){
@@ -186,9 +186,16 @@ class hikashopCharacteristicType {
 												if($variant->product_quantity != 0){
 													$hasQuantity = true;
 												}elseif( $element->product_id==$variant->product_id && !$switch_done){
-													$id = 'hikashop_product_characteristic_'.$characteristic->characteristic_id;
+													if($characteristic->characteristic_display_method == 'dropdown'){
+														$id = 'hikashop_product_characteristic_'.$characteristic->characteristic_id;
+														$js = "hikashopUpdateVariant(document.getElementById('".$id."'));";
+													}else{
+														$id = 'hikashop_product_characteristic['.$characteristic->characteristic_id.']';
+														$js = "var el = document.querySelector('[name=\"".$id."\"]'); if(el) el.checked = true; hikashopUpdateVariant(el);";
+													}
+
 													$js = "
-													window.hikashop.ready( function() {hikashopUpdateVariant(document.getElementById('".$id."'));});";
+													window.hikashop.ready( function() {".$js."});";
 													if (!HIKASHOP_PHP5) {
 														$doc =& JFactory::getDocument();
 													}else{
@@ -245,7 +252,7 @@ class hikashopCharacteristicType {
 			if(strpos($val, '<img ') !== false)
 				$val = str_replace('<img ', '<img onclick="return hikashopUpdateVariant(\'hikashop_product_characteristic_'.$characteristic_id.$key.'\');" ', $val);
 
-			$this->values[] = JHTML::_('select.option', $key,$val);
+			$this->values[] = JHTML::_('select.option', $key,( $characteristic_display!='radio' && count(strip_tags($val)) ? strip_tags($val) : $val ));
 		}
 
 		$type = 'onclick';

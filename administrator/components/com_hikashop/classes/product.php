@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -792,8 +792,10 @@ class hikashopProductClass extends hikashopClass{
 
 		if(hikashop_acl('product/variant/description')) {
 			$product->product_description = JRequest::getVar('product_variant_description','','','string',JREQUEST_ALLOWRAW);
-			$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
-			$product->product_description = $safeHtmlFilter->clean($product->product_description, 'string');
+			if((int)$config->get('safe_product_description', 0)) {
+				$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
+				$product->product_description = $safeHtmlFilter->clean($product->product_description, 'string');
+			}
 		}
 
 		if(hikashop_acl('product/variant/price')) {
@@ -2183,10 +2185,16 @@ class hikashopProductClass extends hikashopClass{
 						$new_variants = $this->database->loadObjectList('product_id');
 					}
 					else {
+						$config =& hikashop_config();
+						$symbols = explode(',',$config->get('weight_symbols', 'kg,g'));
+						$weight_unit = $symbols[0];
+						$symbols = explode(',', $config->get('volume_symbols', 'm,cm'));
+						$volume_unit = $symbols[0];
+
 						if(!empty($concat) && count($concat))
 							$p_code = 'CONCAT('.$p_code.', '.implode(',\'_\',', $concat).')';
-						$query = 'INSERT IGNORE INTO '.hikashop_table('product').' (product_code, product_type, product_parent_id, product_published, product_modified, product_created, product_group_after_purchase) '.
-							' SELECT '.$p_code.' as c_product_code, '. $this->database->Quote('variant') .','. (int)$product_id . ','.(int)$config->get('variant_default_publish',1).',' . $t . ',' . $t . ',' . $this->database->Quote(@$element->product_group_after_purchase) .
+						$query = 'INSERT IGNORE INTO '.hikashop_table('product').' (product_code, product_type, product_parent_id, product_published, product_modified, product_created, product_group_after_purchase, product_weight_unit, product_dimension_unit) '.
+							' SELECT '.$p_code.' as c_product_code, '. $this->database->Quote('variant') .','. (int)$product_id . ','.(int)$config->get('variant_default_publish',1).',' . $t . ',' . $t . ',' . $this->database->Quote(@$element->product_group_after_purchase).','.$this->database->Quote($weight_unit).','.$this->database->Quote($volume_unit).
 							' FROM ' . implode(', ', $tables);
 						if(!empty($filters) && count($filters))
 							$query .= ' WHERE ('.implode(') AND (', $filters) . ')';

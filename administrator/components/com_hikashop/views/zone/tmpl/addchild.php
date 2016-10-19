@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -26,6 +26,7 @@ defined('_JEXEC') or die('Restricted access');
 					}elseif(!empty($subtype)){
 						$map = JRequest::getVar('map',$subtype);
 						$column = JRequest::getVar('column','zone_namekey');
+						if(empty($column)) $column = 'zone_namekey';
 					?>
 						<input type="hidden" name="<?php echo $map;?>" value="<?php echo @$this->element->$column; ?>" />
 					<?php

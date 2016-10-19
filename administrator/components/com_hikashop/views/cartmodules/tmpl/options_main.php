@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -17,7 +17,7 @@ if(@$this->element['small_cart'])
 		<div class="hikashop_menu_subblock_title hikashop_module_edit_display_settings_div_title"><?php echo JText::_('HIKA_DATA_DISPLAY'); ?></div>
 		<dl class="hika_options">
 			<dt class="hikashop_option_name">
-				<?php echo hikashop_tooltip(JText::sprintf('HIKA_MINI_CART_DESC',$this->type), '', '', JText::sprintf('MINI_CART',$this->type), '', 0);?>
+				<?php echo hikashop_hktooltip(JText::sprintf('HIKA_MINI_CART_DESC',$this->type), '', JText::sprintf('MINI_CART',$this->type), '', 0);?>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php echo JHTML::_('hikaselect.booleanlist', $this->name.'[small_cart]','data-control="mini_cart"',@$this->element['small_cart']);?>
@@ -58,23 +58,23 @@ if(@$this->element['small_cart'])
 		</dl>
 		<dl class="hika_options">
 			<dt class="hikashop_option_name">
-				<?php echo hikashop_tooltip(JText::sprintf('HIKA_DELETE_BUTTON_DESC', $this->type), '', '', JText::_('HIKA_DELETE_BUTTON'), '', 0);?>
+				<?php echo hikashop_hktooltip(JText::sprintf('HIKA_DELETE_BUTTON_DESC', $this->type), '', JText::_('HIKA_DELETE_BUTTON'), '', 0);?>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php echo JHTML::_('hikaselect.booleanlist', $this->name.'[show_cart_delete]','',@$this->element['show_cart_delete']);?>
 			</dd>
 		</dl>
-		<dl class="hika_options" style="<?php echo $style; ?>" data-part="mini_cart">
+		<dl class="hika_options">
 			<dt class="hikashop_option_name">
-				<?php echo hikashop_tooltip(JText::sprintf('HIKA_CART_COUPON_DESC', $this->type), '', '', JText::_('HIKASHOP_CHECKOUT_COUPON'), '', 0);?>
+				<?php echo hikashop_hktooltip(JText::sprintf('HIKA_CART_COUPON_DESC', $this->type), '', JText::_('HIKASHOP_CHECKOUT_COUPON'), '', 0);?>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php echo JHTML::_('hikaselect.booleanlist', $this->name.'[show_coupon]','',@$this->element['show_coupon']);?>
 			</dd>
 		</dl>
-		<dl class="hika_options" style="<?php echo $style; ?>" data-part="mini_cart">
+		<dl class="hika_options">
 			<dt class="hikashop_option_name">
-				<?php echo hikashop_tooltip(JText::_('HIKA_CART_SHIPPING_DESC'), '', '', JText::_('HIKASHOP_CHECKOUT_SHIPPING'), '', 0);?>
+				<?php echo hikashop_hktooltip(JText::_('HIKA_CART_SHIPPING_DESC'), '', JText::_('HIKASHOP_CHECKOUT_SHIPPING'), '', 0);?>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php echo JHTML::_('hikaselect.booleanlist', $this->name.'[show_shipping]','',@$this->element['show_shipping']);?>
@@ -97,10 +97,10 @@ if(@$this->element['small_cart'])
 ?>
 		<dl class="hika_options" data-part="msg" style="<?php echo $style1; ?>">
 			<dt class="hikashop_option_name">
-				<?php echo hikashop_tooltip(JText::sprintf('HIKA_EMPTY_MESSAGE_DESC', $this->type), '', '', JText::_('HIKA_EMPTY_MESSAGE'), '', 0);?>
+				<?php echo hikashop_hktooltip(JText::sprintf('HIKA_EMPTY_MESSAGE_DESC', $this->type), '', JText::_('HIKA_EMPTY_MESSAGE'), '', 0);?>
 			</dt>
 			<dd class="hikashop_option_value">
-				<input name="<?php echo $this->name;?>[msg]" id="custommsg" type="text" value="<?php echo @$this->element['msg'];?>"/>
+				<input name="<?php echo $this->name;?>[msg]" id="custommsg" type="text" value="<?php echo $this->escape(@$this->element['msg']);?>"/>
 			</dd>
 		</dl>
 		<?php
@@ -108,7 +108,7 @@ if(@$this->element['small_cart'])
 		?>
 		<dl class="hika_options">
 			<dt class="hikashop_option_name">
-				<?php echo hikashop_tooltip(JText::sprintf('CART_MODULE_ITEMID_DESC', $this->type), '', '', JText::_('HIKA_ITEM_ID'), '', 0);?>
+				<?php echo hikashop_hktooltip(JText::sprintf('CART_MODULE_ITEMID_DESC', $this->type), '', JText::_('HIKA_ITEM_ID'), '', 0);?>
 			</dt>
 			<dd class="hikashop_option_value">
 				<input name="<?php echo $this->name;?>[cart_itemid]" type="text" value="<?php echo @$this->element['cart_itemid'];?>" />

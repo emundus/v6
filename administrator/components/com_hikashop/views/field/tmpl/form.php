@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -438,7 +438,9 @@ defined('_JEXEC') or die('Restricted access');
 				<td><?php echo JHTML::_('hikaselect.booleanlist', "data[field][field_backend_listing]" , '',@$this->field->field_backend_listing); ?></td>
 			</tr>
 <?php
-		}
+		}else{ ?>
+			<input type="hidden" name="data[field][field_frontcomp]" value="1" />
+<?php	}
 
 			if(!empty($this->displayOptions)) {
 				if(!empty($this->field->field_display) && is_string($this->field->field_display)) {
@@ -471,9 +473,10 @@ defined('_JEXEC') or die('Restricted access');
 ?>
 			<tr>
 <?php
-				if(!isset($this->field->field_display)) {
+				if(empty($this->field->field_display)) {
 					$this->field->field_display = new stdClass();
 				}
+
 				if(!isset($this->field->field_display->$displayOptionName)) {
 					$this->field->field_display->$displayOptionName = '1';
 				}

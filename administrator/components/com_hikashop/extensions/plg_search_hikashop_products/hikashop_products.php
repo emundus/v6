@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -287,7 +287,7 @@ class plgSearchHikashop_products extends JPlugin{
 					$row->characteristics = $db->loadObjectList();
 					$class->checkVariant($row,$mains[$row->product_parent_id]);
 					if(empty($row->title)){
-						$row->title = $row->product_name;
+						$row->title = strip_tags($row->product_name);
 					}
 					if(empty($row->text)){
 						$row->text = $mains[$row->product_parent_id]->product_description;

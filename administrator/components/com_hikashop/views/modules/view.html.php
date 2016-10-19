@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -583,6 +583,7 @@ class ModulesViewModules extends hikashopView{
 		$this->noForm = true;
 		$config = hikashop_config();
 		$this->default_params = $config->get('default_params');
+		hikashop_loadJslib('tooltip');
 
 		$extra_blocks = array(
 			'products' => array(),

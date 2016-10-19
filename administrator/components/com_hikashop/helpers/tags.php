@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -30,6 +30,7 @@ class HikaShopTagsHelper {
 					'core_hits' => 'product_hit',
 					'core_metakey' => 'product_keywords',
 					'core_metadesc' => 'product_meta_description',
+					'core_catid' => 'core_catid',
 				)
 			)
 		)
@@ -204,6 +205,10 @@ class HikaShopTagsHelper {
 				$contentType->router = $structure['router'];
 			$contentType->store();
 		}
+
+		$query = 'UPDATE #__ucm_content SET core_catid = 1 WHERE core_catid = 0 AND core_type_alias = \'com_hikashop.product\'';
+		$db->setQuery($query);
+		$db->query();
 	}
 }
 
@@ -224,6 +229,7 @@ class JHikaShopTagTable extends JTable {
 				$this->$k = $v;
 			}
 		}
+		$this->core_catid = 1;
 		parent::__construct($table, $structure['id'], $db);
 	}
 }

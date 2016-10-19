@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -90,9 +90,21 @@ class ProductViewProduct extends hikashopView
 			}
 		}
 
-		$order = '';
+		$doOrdering = !$selectedType;
+		if($doOrdering && !(empty($pageInfo->filter->filter_product_type) || $pageInfo->filter->filter_product_type=='main')){
+			$doOrdering=false;
+		}
+
 		$categoryClass = hikashop_get('class.category');
-		if(!$selectedType){
+		if(!$doOrdering && is_numeric($pageInfo->filter->filter_id)){
+			$category = $categoryClass->get($pageInfo->filter->filter_id);
+			if($category->category_left+1 == $category->category_right){
+				$doOrdering = true;
+			}
+		}
+
+		$order = '';
+		if($doOrdering){
 			$filters[]='a.category_id='.(int)$pageInfo->filter->filter_id;
 			$select='SELECT a.ordering, b.*';
 			$cat_ids = array((int)$pageInfo->filter->filter_id);
@@ -106,7 +118,7 @@ class ProductViewProduct extends hikashopView
 				$cat_ids[$child->category_id]=$child->category_id;
 			}
 			$filters[]=$filter.(int)$pageInfo->filter->filter_id.')';
-			$select='SELECT DISTINCT b.*';
+			$select='SELECT DISTINCT b.*, a.ordering';
 		}
 
 		$searchMap = array('b.product_name','b.product_description','b.product_id','b.product_code');
@@ -257,10 +269,8 @@ class ProductViewProduct extends hikashopView
 		$this->assignRef('breadCrumb',$breadcrumb);
 		$this->assignRef('rows',$rows);
 		$this->assignRef('pageInfo',$pageInfo);
-		$doOrdering = !$selectedType;
-		if($doOrdering && !(empty($pageInfo->filter->filter_product_type) || $pageInfo->filter->filter_product_type=='main')){
-			$doOrdering=false;
-		}
+
+
 		$this->assignRef('doOrdering',$doOrdering);
 		if($doOrdering){
 			$order = new stdClass();
@@ -1901,19 +1911,34 @@ class ProductViewProduct extends hikashopView
 				$db->setQuery($query);
 				$variant_data = $db->loadObjectList();
 
+				if(!empty($product->characteristics)) {
+					$i = 0;
+					foreach($product->characteristics as &$c) {
+						$c->sort_value = $i++;
+					}
+					unset($c);
+				}
+
 				foreach($variant_data as $d) {
 					$ppid = (int)$d->variant_product_id;
-					if(isset($product->variants[$ppid])) {
-						if(empty($product->variants[$ppid]->characteristics))
-							$product->variants[$ppid]->characteristics = array();
+					if(!isset($product->variants[$ppid]))
+						continue;
 
-						$pcid = (int)$product->characteristics[$d->characteristic_parent_id]->characteristic_id;
-						$value = new stdClass();
-						$value->id = $d->characteristic_id;
-						$value->value = $d->characteristic_value;
-						$product->variants[$ppid]->characteristics[$pcid] = $value;
-					}
+					if(empty($product->variants[$ppid]->characteristics))
+						$product->variants[$ppid]->characteristics = array();
+
+					$pcid = (int)$product->characteristics[$d->characteristic_parent_id]->characteristic_id;
+					$value = new stdClass();
+					$value->id = $d->characteristic_id;
+					$value->value = $d->characteristic_value;
+					$product->variants[$ppid]->characteristics[$pcid] = $value;
+
+					if(!isset($product->variants[$ppid]->sorting_value))
+						$product->variants[$ppid]->sorting_value = array();
+					$i = (int)$product->characteristics[ (int)$d->characteristic_parent_id ]->sort_value;
+					$product->variants[$ppid]->sorting_value[ $i ] = (int)$d->characteristic_ordering;
 				}
+				usort($product->variants, array(&$this, 'variantSortingCallback'));
 			}
 		}
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -55,7 +55,7 @@ class plgSystemHikashopproductInsert extends JPlugin {
 
 		$body = JResponse::getBody();
 		$alternate_body = false;
-		if(empty($body)) {
+		if(empty($body) && method_exists($app,'getBody')) {
 			$body = $app->getBody();
 			$alternate_body = true;
 		}

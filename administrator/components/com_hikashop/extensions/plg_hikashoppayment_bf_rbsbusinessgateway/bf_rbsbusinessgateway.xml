@@ -2,8 +2,8 @@
 <!DOCTYPE install SYSTEM "http://dev.joomla.org/xml/1.5/plugin-install.dtd">
 <extension type="plugin" version="2.5" method="upgrade" group="hikashoppayment">
 	<name>Hikashop WorldPay Business Gateway Plugin</name>
-	<creationDate>19 mai 2016</creationDate>
-	<version>2.6.3</version>
+	<creationDate>17 octobre 2016</creationDate>
+	<version>2.6.4</version>
 	<author>Jonathan Brain</author>
 	<authorEmail>brainforge@btinternet.com</authorEmail>
 	<authorUrl>http://www.brainforge.co.uk</authorUrl>

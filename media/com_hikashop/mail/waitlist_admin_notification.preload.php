@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,7 +32,7 @@ $front_product_url = hikashop_frontendLink('index.php?option=com_hikashop&ctrl=p
 $vars = array(
 	'LIVE_SITE' => HIKASHOP_LIVE,
 	'URL' => HIKASHOP_LIVE,
-	'USER_DETAILS' => htmlentities($data->user->name.' ( '.$data->user->user_email . ' )', ENT_COMPAT, 'UTF-8'),
+	'USER_DETAILS' => htmlentities($data->user->name.' ( '.$data->user->email . ' )', ENT_COMPAT, 'UTF-8'),
 	'PRODUCT_DETAILS' => ('<a href="'.$admin_product_url.'">'.strip_tags($data->product->product_name.' ('.$data->product->product_code.')').'</a>'),
 	'FRONT_PRODUCT_DETAILS' => ('<a href="'.$front_product_url.'">'.strip_tags($data->product->product_name.' ('.$data->product->product_code.')').'</a>'),
 );

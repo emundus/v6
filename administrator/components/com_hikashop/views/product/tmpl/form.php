@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -487,7 +487,7 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 				$onWhat = 'onchange';
 				if($oneExtraField->field_type == 'radio')
 					$onWhat = 'onclick';
-				echo $this->fieldsClass->display($oneExtraField, $this->product->$fieldName, 'data[product]['.$fieldName.']', false, ' '.$onWhat.'="hikashopToggleFields(this.value,\''.$fieldName.'\',\'product\',0);"');
+				echo $this->fieldsClass->display($oneExtraField, @$this->product->$fieldName, 'data[product]['.$fieldName.']', false, ' '.$onWhat.'="hikashopToggleFields(this.value,\''.$fieldName.'\',\'product\',0);"');
 			?></dd>
 		</dl>
 <?php

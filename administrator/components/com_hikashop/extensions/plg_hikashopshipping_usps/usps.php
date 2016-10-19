@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -547,7 +547,15 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 			if(empty($rates[$type])) {
 				$info = new stdClass();
 				$info = (!HIKASHOP_PHP5) ? $rate : clone($rate);
+
+				$typeKey = str_replace(' ','_', $type);
+				$shipping_name = JText::_($typeKey);
+
+				if($shipping_name != $typeKey)
+					$info->shipping_name = $shipping_name;
+				else
 				$info->shipping_name = preg_replace('#sup.*?sup#', '', $info->shipping_name.' : '. $this->pluginConfig['services'][2][$type]);
+
 				$shipping_description = JText::_($type.'_DESCRIPTION');
 				if($shipping_description != $type.'_DESCRIPTION') {
 					$info->shipping_description .= $shipping_description;

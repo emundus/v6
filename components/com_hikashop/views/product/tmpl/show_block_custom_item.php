@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,6 +11,8 @@ defined('_JEXEC') or die('Restricted access');
 	<table width="100%">
 <?php
 	foreach ($this->itemFields as $fieldName => $oneExtraField) {
+		if(empty($this->element->$fieldName)) 
+			$this->element->$fieldName = $oneExtraField->field_default;
 		$itemData = JRequest::getString('item_data_' . $fieldName, $this->element->$fieldName);
 ?>
 		<tr id="hikashop_item_<?php echo $oneExtraField->field_namekey; ?>" class="hikashop_item_<?php echo $oneExtraField->field_namekey;?>_line">

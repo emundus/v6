@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -710,13 +710,13 @@ class hikashopShippingClass extends hikashopClass {
 				case 'max_quantity':
 					$value = 'ORDER_QUANTITY_TOO_HIGH_FOR_SHIPPING_METHODS';
 					break;
-				case 'product_excluded':
-					$value = 'X_PRODUCTS_ARE_NOT_SHIPPABLE_TO_YOU';
-					break;
 				default:
 					$value = $key;
 					break;
 			}
+		}elseif(is_string($value)) {
+			$number = $value;
+			$value = $key;
 		}
 
 		$transKey = strtoupper(str_replace(' ','_',$value));
@@ -727,6 +727,9 @@ class hikashopShippingClass extends hikashopClass {
 		if($trans != $transKey) {
 			$value = $trans;
 		}
+
+		if($value == 'no_rates')
+			$value = $number;
 
 		static $translatedDisplayed = array();
 		if(isset($translatedDisplayed[$value]))

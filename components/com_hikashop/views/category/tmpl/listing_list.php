@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -234,33 +234,60 @@ switch($this->params->get('child_display_type')){
 		$found = -1;
 		$sub_selected = -1;
 		if($in_hikashop_context) {
-			if(JRequest::getString('ctrl', 'category') == 'product' && JRequest::getString('task', 'listing') == 'show' && empty($cid)) {
+			if(JRequest::getString('ctrl', 'category') == 'product' && JRequest::getString('task', 'listing') == 'show') {
 				$database = JFactory::getDBO();
 				$query = 'SELECT category_id FROM '.hikashop_table('product_category').' WHERE product_id = ' . (int)hikashop_getCID('product_id') . ' ORDER BY product_category_id ASC';
 				$database->setQuery($query);
-				$cid = $database->loadResult();
+				if(!HIKASHOP_J25){
+					$cid = $database->loadResultArray();
+				} else {
+					$cid = $database->loadColumn();
+				}
 				if(empty($cid)) {
 					$class = hikashop_get('class.product');
 					$product = $class->get(hikashop_getCID('product_id'));
 					if($product && $product->product_type == 'variant' && $product->product_parent_id) {
 						$query = 'SELECT category_id FROM '.hikashop_table('product_category').' WHERE product_id = ' . (int)$product->product_parent_id . ' ORDER BY product_category_id ASC';
 						$database->setQuery($query);
-						$cid = $database->loadResult();
+						if(!HIKASHOP_J25){
+							$cid = $database->loadResultArray();
+						} else {
+							$cid = $database->loadColumn();
+						}
 					}
 				}
 			}
+			if(empty($cid)){
+				if(!HIKASHOP_J30){
+					$menuClass = hikashop_get('class.menus');
+					$menuData = $menuClass->get($this->params->get('itemid',0));
+					if(@$menuData->hikashop_params['content_type']=='product' && isset($menuData->hikashop_params['selectparentlisting']))
+						$cid = $menuData->hikashop_params['selectparentlisting'];
+				}else{
+					$app = JFactory::getApplication();
+					$menuItem = $app->getMenu()->getActive();
+					if(is_object($menuItem)){
+						$hkParams = $menuItem->params->get('hk_product',false);
+						if(isset($hkParams->category))
+							$cid = $hkParams->category;
+					}
+				}
+			}
+
+			if(!is_array($cid))
+				$cid = array($cid);
 
 			$i = 0;
 			foreach($this->rows as $k => $row) {
 				if($only_if_products && $row->number_of_products < 1)
 					continue;
-				if((int)$row->category_id == $cid) {
+				if(in_array((int)$row->category_id,$cid)) {
 					$found = $i;
 					break;
 				}
 				if(!empty($row->childs)) {
 					foreach($row->childs as $child) {
-						if($child->category_id == $cid) {
+						if(in_array($child->category_id,$cid)) {
 							$found = $i;
 							$sub_selected = $row->category_id;
 							break 2;
@@ -277,7 +304,7 @@ switch($this->params->get('child_display_type')){
 				$found = (int)$last_category_selected;
 			}
 		} else {
-			$cid = 0;
+			$cid = array(0);
 		}
 
 		if($this->params->get('ul_display_simplelist', 0)) {
@@ -301,9 +328,9 @@ switch($this->params->get('child_display_type')){
 <?php
 				if(!empty($row->childs)) {
 					$sub_selected = false;
-					if($cid != $row->category_id) {
+					if(!in_array($row->category_id, $cid)) {
 						foreach($row->childs as $child) {
-							if($cid == $child->category_id) {
+							if(in_array($child->category_id, $cid)) {
 								$sub_selected = true;
 								break;
 							}
@@ -367,31 +394,6 @@ switch($this->params->get('child_display_type')){
 				}
 
 				$toOpen = false;
-
-				$cid = hikashop_getCid();
-
-				if(JRequest::getVar('ctrl','category') == 'product' && JRequest::getVar('task','listing') == 'show'){
-					$productClass = hikashop_get('class.product');
-					$cid = $productClass->getCategories(hikashop_getCid());
-				}
-
-				if(!HIKASHOP_J30){
-					$menuClass = hikashop_get('class.menus');
-					$menuData = $menuClass->get($this->params->get('itemid',0));
-					if(@$menuData->hikashop_params['content_type']=='product' && isset($menuData->hikashop_params['selectparentlisting']))
-						$cid = $menuData->hikashop_params['selectparentlisting'];
-				}else{
-					$app = JFactory::getApplication();
-					$menuItem = $app->getMenu()->getActive();
-					if(is_object($menuItem)){
-						$hkParams = $menuItem->params->get('hk_product',false);
-						if(isset($hkParams->category))
-							$cid = $hkParams->category;
-					}
-				}
-				if(!is_array($cid))
-					$cid = array($cid);
-
 				if(in_array($row->category_id,$cid))
 					$toOpen = true;
 
@@ -410,7 +412,7 @@ switch($this->params->get('child_display_type')){
 					foreach($row->childs as $child) {
 						if($only_if_products && $child->number_of_products < 1)
 							continue;
-						$class = ($cid == $child->category_id) ? ' current active' : '';
+						$class = (in_array($child->category_id, $cid)) ? ' current active' : '';
 						$link = $this->getLink($child);
 ?>
 			<li class="hikashop_category_list_item<?php echo $class; ?>">

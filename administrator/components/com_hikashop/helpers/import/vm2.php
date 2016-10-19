@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1283,7 +1283,7 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 			'INNER JOIN `#__hikashop_currency` hkcur ON CONVERT(vmc.currency_code_3 USING utf8) = CONVERT( hkcur.currency_code USING utf8) '. //needed ?
 			'LEFT JOIN `'.$this->vmprefix.'virtuemart_orderstates` AS vmos ON vmo.order_status = vmos.order_status_code '.
 			'LEFT JOIN `#__hikashop_category` AS hkc ON vmos.order_status_name = hkc.category_name AND hkc.category_type = \'status\' '. //No U founded
-			'INNER JOIN `#__hikashop_user` AS hkusr ON vmo.virtuemart_user_id = hkusr.user_cms_id '.
+			'LEFT JOIN `#__hikashop_user` AS hkusr ON vmo.virtuemart_user_id = hkusr.user_cms_id '.
 			'WHERE vmo.virtuemart_order_id > ' . (int)$this->options->last_vm_order . ' '.
 			'GROUP BY vmo.virtuemart_order_id '.
 			'ORDER BY vmo.virtuemart_order_id ASC;';
@@ -1333,7 +1333,7 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 		$sql4 = 'UPDATE `#__hikashop_order` AS o '.
 			'INNER JOIN `#__hikashop_address` AS a ON a.address_vm_order_info_id = o.order_vm_id '.
 			'SET o.order_shipping_address_id = a.address_id '.
-			"WHERE o.order_shipping_address_id = 0 AND address_published >= 8 ;";
+			"WHERE (o.order_shipping_address_id = 0 OR o.order_shipping_address_id = o.order_billing_address_id) AND address_published >= 8 ;";
 
 		$buffTable=$this->vmprefix."virtuemart_paymentmethods_".$this->vm_current_lng;
 

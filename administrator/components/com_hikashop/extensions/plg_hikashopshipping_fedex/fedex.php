@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -363,11 +363,11 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 						}
 						$data['price']+=$product->prices[0]->price_value_with_tax*$product->cart_product_quantity;
 					}
+					if(($this->freight==true && $this->classicMethod==false) || ($heavyProduct==true && $this->freight==true))
+						$data['XMLpackage'].=$this->_createPackage($data, $product, $rate, $order );
+					else
+						$data['XMLpackage'].=$this->_createPackage($data, $product, $rate, $order, true );
 				}
-				if(($this->freight==true && $this->classicMethod==false) || ($heavyProduct==true && $this->freight==true))
-					$data['XMLpackage'].=$this->_createPackage($data, $product, $rate, $order );
-				else
-					$data['XMLpackage'].=$this->_createPackage($data, $product, $rate, $order, true );
 			}
 
 			$usableMethods=$this->_FEDEXrequestMethods($data,$rate);

@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    2.6.3
+ * @version    2.6.4
  * @author     hikashop.com
  * @copyright  (C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -913,10 +913,20 @@ function submitform(pressbutton) {
 	return false;
 }
 
+if(!window.submitbutton) {
+	window.submitbutton = function(name) {
+		submitform(name);
+	};
+}
+
 function hikashopCheckChangeForm(type, form) {
 	if(!form)
 		return true;
-	var varform = document[form];
+	var varform = null;
+	if(typeof(form) == 'object' && form.form)
+		varform = form.form;
+	else if(typeof(form) == 'string')
+		varform = document[form];
 
 	if(typeof(hikashopFieldsJs) == 'undefined' || typeof(hikashopFieldsJs['reqFieldsComp']) == 'undefined' || typeof(hikashopFieldsJs['reqFieldsComp'][type]) == 'undefined' || hikashopFieldsJs['reqFieldsComp'][type].length <= 0)
 		return true;

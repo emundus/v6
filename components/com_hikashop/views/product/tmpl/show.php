@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,6 +23,11 @@ if(!empty($this->categories)){
 <?php
 $app = JFactory::getApplication();
 if(empty($this->element)) {
+	if($this->config->get('404_when_product_not_found',1)){
+		JError::raiseError(404, JText::_('PRODUCT_NOT_FOUND'));
+		echo '</div>';
+		return;
+	}
 	$app->enqueueMessage(JText::_('PRODUCT_NOT_FOUND'));
 	hikashop_setPageTitle(JText::_('PRODUCT_NOT_FOUND'));
 	echo '</div>';
@@ -168,6 +173,7 @@ if(empty($this->element->variants) || $this->params->get('characteristic_display
 		$this->element->images =& $main_images;
 		if(!empty($variant->images))
 			$this->element->images =& $variant->images;
+		$this->element->badges =& $variant->badges;
 
 		$variant_name = implode('_', $variant_name);
 		$this->variant_name = '_' . $variant_name;

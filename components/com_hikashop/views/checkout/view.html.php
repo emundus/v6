@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,7 +16,7 @@ class CheckoutViewCheckout extends hikashopView{
 	var $extraFields=array();
 	var $requiredFields = array();
 	var $validMessages = array();
-	var $triggerView = true;
+	var $triggerView = array('hikashop','hikashoppayment','hikashopshipping');
 
 	function display($tpl = null, $params = array()) {
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName();
@@ -558,6 +558,11 @@ function displayRegistration(el)
 		}
 		$this->assignRef('currentShipping', $currentShipping);
 
+		$auto = '';
+		if($config->get('auto_submit_methods',1)) {
+			$auto = ' document.forms[\'hikashop_checkout_form\'].submit();';
+		}
+
 		$js = "
 function hikashopEditAddress(obj,val,new_address){
 	var same_address = document.getElementById('same_address');
@@ -575,7 +580,7 @@ function hikashopSameAddress(value){
 		if(!value){
 			shipdiv.style.display='';
 		}else{
-			shipdiv.style.display='none';
+			shipdiv.style.display='none';".$auto."
 		}
 	}
 	return true;
@@ -832,6 +837,9 @@ ccHikaErrors [5] = '".JText::_('CREDIT_CARD_EXPIRED')."';
 			$orderClass = hikashop_get('class.order');
 			$order = $orderClass->loadFullOrder($order_id,false,false);
 		}
+
+		JPluginHelper::importPlugin('hikashoppayment');
+		JPluginHelper::importPlugin('hikashopshipping');
 
 		$this->assignRef('order',$order);
 	}

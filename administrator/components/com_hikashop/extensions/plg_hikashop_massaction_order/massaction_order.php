@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -215,8 +215,10 @@ class plgHikashopMassaction_order extends JPlugin
 				$users = $db->loadResultArray();
 			else
 				$users = $db->loadColumn();
-			if(!empty($users))
+			if(!empty($users)){
+				$query->leftjoin['user'] = hikashop_table('user').' as hk_user ON hk_order.order_user_id = hk_user.user_id';
 				$query->where[] = 'hk_user.user_cms_id'.' '.$filter['type'].' ('.implode(',',$users).')';
+			}
 		}
 	}
 	function onCountOrderMassFilteraccessLevel(&$query,$filter,$num){

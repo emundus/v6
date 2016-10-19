@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -38,7 +38,7 @@ class hikashopFileClass extends hikashopClass {
 		$file_path = strtolower(JFile::makeSafe($file['name']));
 
 		if(!preg_match('#\.('.str_replace(array(',','.'),array('|','\.'),$allowed).')$#Ui',$file_path,$extension) || preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)$#Ui',$file_path)){
-			$app->enqueueMessage(JText::sprintf( 'ACCEPTED_TYPE',substr($file_path,strrpos($file_path,'.')+1),$allowed), 'notice');
+			$app->enqueueMessage(JText::sprintf( 'ACCEPTED_TYPE',substr($file_path,strrpos($file_path,'.')+1),str_replace(',',', ',$allowed)), 'notice');
 			return false;
 		}
 
@@ -83,7 +83,7 @@ class hikashopFileClass extends hikashopClass {
 				if(empty($filename)) continue;
 				$file_path = strtolower(JFile::makeSafe($filename));
 				if(!preg_match('#\.('.str_replace(array(',','.'),array('|','\.'),$allowed).')$#Ui',$file_path,$extension) || preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)$#Ui',$file_path)){
-					$app->enqueueMessage(JText::sprintf( 'ACCEPTED_TYPE',substr($file_path,strrpos($file_path,'.')+1),$allowed), 'notice');
+					$app->enqueueMessage(JText::sprintf( 'ACCEPTED_TYPE',substr($file_path,strrpos($file_path,'.')+1),str_replace(',',', ',$allowed)), 'notice');
 					continue;
 				}
 				$file_path= str_replace(array('.',' '),'-',substr($file_path,0,strpos($file_path,$extension[0]))).$extension[0];
@@ -532,8 +532,7 @@ class hikashopFileClass extends hikashopClass {
 		if($config->get('deactivate_buffering_and_compression',0)){
 			ini_set('output_buffering', 0);
 			ini_set('zlib.output_compression', 0);
-			while(ob_get_level())
-				@ob_end_clean();
+			hikashop_cleanBuffers();
 		}
 
 		$fp = fopen($filename, 'rb');

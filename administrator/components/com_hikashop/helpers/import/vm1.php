@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1279,7 +1279,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 		$sql4 = 'UPDATE `#__hikashop_order` AS o '.
 			'INNER JOIN `#__hikashop_address` AS a ON a.address_vm_order_info_id = o.order_vm_id '.
 			'SET o.order_shipping_address_id = a.address_id '.
-			"WHERE o.order_shipping_address_id = 0 AND address_published >= 8 ;";
+			"WHERE (o.order_shipping_address_id = 0 OR o.order_shipping_address_id = o.order_billing_address_id) AND address_published >= 8 ;";
 
 		$sql5 = 'UPDATE `#__hikashop_order` AS a '.
 				'JOIN `'.$this->vmprefix.'vm_order_payment` AS o ON a.order_vm_id = o.order_id '.

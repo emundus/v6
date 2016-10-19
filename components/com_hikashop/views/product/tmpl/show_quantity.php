@@ -1,20 +1,20 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-$i = $this->params->get('i');
-$min_quantity = ($this->params->get('min_quantity'))?$this->params->get('min_quantity'):1;
-$max_quantity = $this->params->get('max_quantity','0');
+$i = (int)$this->params->get('i', 0);
+$min_quantity = max((int)$this->params->get('min_quantity', 0), 1);
+$max_quantity = (int)$this->params->get('max_quantity', 0);
 $html = $this->params->get('html');
 
-$qLayout = JRequest::getVar('quantitylayout','show_default');
-switch($qLayout){
+$qLayout = JRequest::getVar('quantitylayout', 'show_default');
+switch($qLayout) {
 	case 'show_none':
 ?>
 		<div class="hikashop_product_quantity_div hikashop_product_quantity_add_to_cart_div hikashop_product_quantity_add_to_cart_div_regrouped">
@@ -73,7 +73,7 @@ switch($qLayout){
 				foreach($this->row->prices as $price){
 					if($price->price_min_quantity == 0)
 						$price->price_min_quantity = 1;
-					if(in_array($price->price_min_quantity,$pricesSet) || $price->price_min_quantity < $min_quantity || $price->price_min_quantity > $max_quantity)
+					if(in_array($price->price_min_quantity,$pricesSet) || $price->price_min_quantity < $min_quantity)
 						continue;
 					$pricesSet[] = $price->price_min_quantity;
 					echo '<option value="'.$price->price_min_quantity.'">'.$price->price_min_quantity.'</option>';
@@ -95,7 +95,7 @@ switch($qLayout){
 
 	case 'show_simple':
 ?>
-		<input id="hikashop_product_quantity_field_<?php echo $i; ?>" type="hidden" value="<?php echo JRequest::getInt('quantity',$min_quantity); ?>" class="hikashop_product_quantity_field" name="quantity" />
+		<input id="hikashop_product_quantity_field_<?php echo $i; ?>" type="hidden" value="<?php echo JRequest::getInt('quantity', $min_quantity); ?>" class="hikashop_product_quantity_field" name="quantity" />
 		<div class="hikashop_product_quantity_div hikashop_product_quantity_add_to_cart_div hikashop_product_quantity_add_to_cart_div_simple">
 			<?php echo $html; ?>
 		</div>
@@ -106,11 +106,11 @@ switch($qLayout){
 ?>
 		<div class="input-prepend input-append hikashop_product_quantity_div hikashop_product_quantity_change_div_leftright">
 			<span class="add-on">
-				<a id="hikashop_product_quantity_field_change_plus_<?php echo $i; ?>" class="hikashop_product_quantity_field_change_plus hikashop_product_quantity_field_change" href="#" onclick="return hikashopQuantityChange('hikashop_product_quantity_field_<?php echo $i; ?>',1,<?php echo $max_quantity; ?>,<?php echo $min_quantity; ?>);">+</a>
+				<a id="hikashop_product_quantity_field_change_minus_<?php echo $i; ?>" class="hikashop_product_quantity_field_change_minus hikashop_product_quantity_field_change" href="#" onclick="return hikashopQuantityChange('hikashop_product_quantity_field_<?php echo $i; ?>',0,<?php echo $max_quantity; ?>,<?php echo $min_quantity; ?>);">&ndash;</a>
 			</span>
 			<input id="hikashop_product_quantity_field_<?php echo $i; ?>" type="text" value="<?php echo JRequest::getInt('quantity',$min_quantity); ?>" class="hikashop_product_quantity_field" name="quantity" onchange="hikashopCheckQuantityChange('hikashop_product_quantity_field_<?php echo $i; ?>',<?php echo $max_quantity; ?>,<?php echo $min_quantity; ?>);" />
 			<span class="add-on">
-				<a id="hikashop_product_quantity_field_change_minus_<?php echo $i; ?>" class="hikashop_product_quantity_field_change_minus hikashop_product_quantity_field_change" href="#" onclick="return hikashopQuantityChange('hikashop_product_quantity_field_<?php echo $i; ?>',0,<?php echo $max_quantity; ?>,<?php echo $min_quantity; ?>);">&ndash;</a>
+				<a id="hikashop_product_quantity_field_change_plus_<?php echo $i; ?>" class="hikashop_product_quantity_field_change_plus hikashop_product_quantity_field_change" href="#" onclick="return hikashopQuantityChange('hikashop_product_quantity_field_<?php echo $i; ?>',1,<?php echo $max_quantity; ?>,<?php echo $min_quantity; ?>);">+</a>
 			</span>
 		</div>
 		<div class="hikashop_product_quantity_div hikashop_product_quantity_add_to_cart_div hikashop_product_quantity_add_to_cart_div_leftright">
@@ -123,6 +123,20 @@ switch($qLayout){
 ?>
 		<div class="hikashop_product_quantity_div hikashop_product_quantity_input_div_simplified">
 			<input id="hikashop_product_quantity_field_<?php echo $i; ?>" type="text" value="<?php echo JRequest::getInt('quantity',$min_quantity); ?>" class="hikashop_product_quantity_field" name="quantity" onchange="hikashopCheckQuantityChange('hikashop_product_quantity_field_<?php echo $i; ?>',<?php echo $max_quantity; ?>,<?php echo $min_quantity; ?>);" />
+		</div>
+		<div class="hikashop_product_quantity_div hikashop_product_quantity_add_to_cart_div hikashop_product_quantity_add_to_cart_div_simplified">
+			<?php echo $html; ?>
+		</div>
+<?php
+		break;
+
+	case 'show_html5':
+		$html5_data = 'type="number" min="'.(int)$min_quantity.'"';
+		if((int)$max_quantity > 0)
+			$html5_data .= ' max="'.(int)$max_quantity.'"';
+?>
+		<div class="hikashop_product_quantity_div hikashop_product_quantity_input_div_simplified">
+			<input id="hikashop_product_quantity_field_<?php echo $i; ?>" <?php echo $html5_data; ?> value="<?php echo JRequest::getInt('quantity', $min_quantity); ?>" class="hikashop_product_quantity_field" name="quantity" onchange="hikashopCheckQuantityChange('hikashop_product_quantity_field_<?php echo $i; ?>',<?php echo $max_quantity; ?>,<?php echo $min_quantity; ?>);" />
 		</div>
 		<div class="hikashop_product_quantity_div hikashop_product_quantity_add_to_cart_div hikashop_product_quantity_add_to_cart_div_simplified">
 			<?php echo $html; ?>
@@ -173,11 +187,10 @@ switch($qLayout){
 		break;
 
 	default:
-		if(substr($qLayout,0,14) == 'show_quantity_'){
-			$doc = JFactory::getDocument();
-			$app = JFactory::getApplication();
+		if(substr($qLayout, 0, 14) == 'show_quantity_') {
 			$quantityDisplayType = hikashop_get('type.quantitydisplay');
-			if($quantityDisplayType->check( $qLayout, $app->getTemplate())){
+			if($quantityDisplayType->check($qLayout)) {
+				$doc = JFactory::getDocument();
 				$controller = new hikashopBridgeController(array('name'=>'product'));
 				$viewType	= $doc->getType();
 				if(!HIKASHOP_PHP5) {

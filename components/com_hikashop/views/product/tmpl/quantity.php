@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -88,9 +88,10 @@ if($end_date && $end_date < time()) {
 		$min = 1;
 
 	if($formName == ',0')
-		$formName = ',hikashop_product_form';
+		$formName = ',\'hikashop_product_form\'';
 	$cleanFormName = str_replace(array('\'',','),'',$formName);
-	$wishlistAjax =	'if(hikashopCheckChangeForm(\'item\''.$formName.')){ var typeField = document.querySelector(\'form[name='.$cleanFormName.'] input[name=cart_type]\'); if(typeField !== null){typeField.value = \'wishlist\';} return hikashopModifyQuantity(\'' . (int)@$this->row->product_id . '\',field,1' . $formName . ',\'wishlist\','.$module_id.'); } else { return false; }';
+	$module_id = $this->params->get('from_module', 0);
+	$wishlistAjax =	'if(hikashopCheckChangeForm(\'item\',this)){ var typeField = document.getElementById(\'hikashop_cart_type_'.$this->row->product_id.'_'.$module_id.'\'); if(!typeField){typeField = document.getElementById(\'cart_type\'); } if(typeField){typeField.value = \'wishlist\'; console.log(typeField); } return hikashopModifyQuantity(\'' . (int)@$this->row->product_id . '\',field,1' . $formName . ',\'wishlist\','.$module_id.'); } else { return false; }';
 
 	if($this->row->product_quantity == -1 && !empty($this->element->main) && $this->element->main->product_quantity != -1)
 		$this->row->product_quantity = $this->element->main->product_quantity;
@@ -124,8 +125,7 @@ if($end_date && $end_date < time()) {
 		else
 			$text = JText::sprintf('X_ITEMS_IN_STOCK', $this->row->product_quantity);
 
-		echo '<span class="hikashop_product_stock_count">'.$text.'<br/></span>'
-			. '<span style="display: none" itemprop="availability" itemscope itemtype="http://schema.org/InStock">in stock</span>';
+		echo '<span class="hikashop_product_stock_count">'.$text.'<br/></span>';
 
 		if($config->get('button_style', 'normal') == 'css')
 			echo '<br />';
@@ -152,8 +152,6 @@ if($end_date && $end_date < time()) {
 ?>
 	<div class="hikashop_product_no_stock">
 <?php
-		echo '<span style="display: none" itemprop="availability" itemscope itemtype="http://schema.org/InStock">Out of stock</span>';
-
 		echo JText::_('NO_STOCK').'<br/>';
 		$waitlist = $this->config->get('product_waitlist', 0);
 		if(hikashop_level(1) && ($waitlist == 2 || ($waitlist == 1 && (!empty($this->row->main->product_waitlist) || !empty($this->row->product_waitlist))))) {
@@ -186,7 +184,7 @@ if($end_date && $end_date < time()) {
 		if($this->params->get('add_to_cart', 1))
 			echo $this->cart->displayButton(JText::_('CHOOSE_OPTIONS'), 'choose_options', $this->params, hikashop_contentLink('product&task=show&product_id='.$this->row->product_id.'&name='.$this->row->alias.$url_itemid.$this->category_pathway,$this->row),'window.location = \''.str_replace("'","\'",hikashop_contentLink('product&task=show&product_id='.$this->row->product_id.'&name='.$this->row->alias.$url_itemid.$this->category_pathway,$this->row)).'\';return false;', '');
 	} else {
-		$wishlistAjax =	'if(hikashopCheckChangeForm(\'item\''.$formName.')){ return hikashopModifyQuantity(\'' . (int)@$this->row->product_id . '\',field,1' . $formName . ',\'wishlist\','.$module_id.'); } else { return false; }';
+		$wishlistAjax =	'if(hikashopCheckChangeForm(\'item\',this)){ return hikashopModifyQuantity(\'' . (int)@$this->row->product_id . '\',field,1' . $formName . ',\'wishlist\','.$module_id.'); } else { return false; }';
 		echo '<div id="hikashop_add_wishlist">' .
 			$this->cart->displayButton(JText::_('ADD_TO_WISHLIST'), 'add', $this->params, $url, $wishlistAjax, '', @$this->row->product_max_per_order, 1, '', false) .
 			'</div>';

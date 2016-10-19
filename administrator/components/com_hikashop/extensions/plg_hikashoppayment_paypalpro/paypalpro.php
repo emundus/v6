@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -159,6 +159,7 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 		curl_setopt($session, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($session, CURLOPT_VERBOSE,        1);
 		curl_setopt($session, CURLOPT_FOLLOWLOCATION, 0);
+		curl_setopt($session, CURLOPT_SSLVERSION, 6);
 		curl_setopt($session, CURLOPT_FAILONERROR,    true);
 
 		$httpsHikashop = str_replace('http://','https://', HIKASHOP_LIVE);
@@ -265,7 +266,7 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 			$this->modifyOrder($order,$order->order_status,false,$email);
 
 			$class = hikashop_get('class.cart');
-			$class->cleanCartFromSession();
+			$class->cleanCartFromSession(false);
 		}
 	 }
 

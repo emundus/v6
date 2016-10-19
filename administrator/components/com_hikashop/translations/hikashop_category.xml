@@ -14,6 +14,8 @@
 			<field type="text" name="category_keywords" length="255" maxlength="255" translate="1">Category keywords</field>
 			<field type="text" name="category_page_title"  length="255" maxlength="255" translate="1">Category page title</field>
 			<field type="text" name="category_alias"  length="255" maxlength="255" translate="1">Category alias</field>
+			<field type="text" name="category_canonical"  length="255" maxlength="255" translate="1">Category canonical</field>
+			<field type="text" name="category_published"  length="255" maxlength="255" translate="1">Category published</field>
 		</table>
 	</reference>
 	<translationfilters>

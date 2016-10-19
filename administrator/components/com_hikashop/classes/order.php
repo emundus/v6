@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -306,6 +306,9 @@ class hikashopOrderClass extends hikashopClass{
 							$order->cart->additional[$k]->order_product_code = 'order additional';
 							if(!empty( $p->value)) $order->cart->additional[$k]->order_product_options = $p->value;
 							if(!empty( $p->price_value)) $order->cart->additional[$k]->order_product_price = $p->price_value;
+							if(!empty( $p->price_value_with_tax)) $order->cart->additional[$k]->order_product_tax = $p->price_value_with_tax-$p->price_value;
+							if(!empty( $p->taxes)) $order->cart->additional[$k]->order_product_tax_info = $p->taxes;
+
 							$order->cart->additional[$k]->order_id = $order->order_id;
 						}
 						$productClass->save($order->cart->additional);
@@ -539,6 +542,7 @@ class hikashopOrderClass extends hikashopClass{
 			$billing_address = $fieldsClass->getInput(array($currentTask, 'address'), $oldAddress);
 
 			if(!empty($billing_address) && !empty($order_id)){
+				$billing_address->address_user_id = $oldAddress->address_user_id;
 				$result = $addressClass->save($billing_address, $order_id, 'billing');
 				if($result){
 					$order->order_billing_address_id = (int)$result;
@@ -556,6 +560,7 @@ class hikashopOrderClass extends hikashopClass{
 			$shipping_address = $fieldsClass->getInput(array($currentTask, 'address'), $oldAddress);
 
 			if(!empty($shipping_address) && !empty($order_id)){
+				$shipping_address->address_user_id = $oldAddress->address_user_id;
 				$result = $addressClass->save($shipping_address, $order_id, 'shipping');
 				if($result){
 					$order->order_shipping_address_id = (int)$result;
@@ -856,10 +861,15 @@ class hikashopOrderClass extends hikashopClass{
 					if(!isset($taxes[$tax->tax_namekey])) {
 						$taxes[$tax->tax_namekey] = 0;
 					}
-					$taxes[$tax->tax_namekey] += @$tax->tax_amount * $product->order_product_quantity;
+
+					if($product->order_product_code == 'order additional')
+						$taxes[$tax->tax_namekey] += @$tax->tax_amount;
+					else
+						$taxes[$tax->tax_namekey] += @$tax->tax_amount * $product->order_product_quantity;
 				}
 			}
 		}
+
 		if(empty($order->old) && !empty($order->order_id)) {
 			$order->old = $this->get($order->order_id);
 		}
@@ -894,6 +904,7 @@ class hikashopOrderClass extends hikashopClass{
 					$order->order_tax_info[$k]->todo = true;
 				}
 			}
+
 			if(!empty($taxes)) {
 				foreach($taxes as $namekey => $amount) {
 					$found = false;
@@ -1005,13 +1016,7 @@ class hikashopOrderClass extends hikashopClass{
 
 		$this->loadProducts($order);
 
-		if(!empty($order->additional)) {
-			foreach($order->additional as $additional) {
-				$order->order_subtotal -= $additional->order_product_price - $additional->order_product_tax;
-			}
-		}
-
-		$order->order_subtotal_no_vat = 0;
+		$order->order_subtotal_no_vat = $order->order_subtotal = 0;
 		JPluginHelper::importPlugin( 'hikashop' );
 		$dispatcher = JDispatcher::getInstance();
 		foreach($order->products as $k => $product) {
@@ -1025,6 +1030,7 @@ class hikashopOrderClass extends hikashopClass{
 			$dispatcher->trigger( 'onAfterCalculateProductPriceForQuantityInOrder', array( &$order->products[$k]) );
 
 			$order->order_subtotal_no_vat += $order->products[$k]->order_product_total_price_no_vat;
+			$order->order_subtotal += $order->products[$k]->order_product_total_price;
 			if(!empty($product->order_product_options)) {
 				$order->products[$k]->order_product_options = hikashop_unserialize($product->order_product_options);
 			}
@@ -1327,7 +1333,7 @@ class hikashopOrderClass extends hikashopClass{
 			$order->order_user_id = @$dbOrder->order_user_id;
 			if(empty($order->order_status)) $order->order_status = @$dbOrder->order_status;
 		}
-		if(empty($order->customer) || @$order->customer->user_id != $order->order_user_id) {
+		if(empty($order->customer) || (int)@$order->customer->user_id != (int)$order->order_user_id) {
 			$userClass = hikashop_get('class.user');
 			$order->customer = $userClass->get($order->order_user_id);
 		}

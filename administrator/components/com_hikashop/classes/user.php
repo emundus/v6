@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -466,6 +466,25 @@ class hikashopUserClass extends hikashopClass {
 			$this->registerData->username = $safeHtmlFilter->clean($this->registerData->username,'USERNAME');
 		}
 
+		$data = array(
+			 'name' => @$this->registerData->name,
+			 'username' => @$this->registerData->username 
+		);
+
+		$_SESSION['hikashop_main_user_data'] = $data;
+
+		jimport('joomla.mail.helper');
+		if(empty($this->registerData->email) || (method_exists('JMailHelper', 'isEmailAddress') && !JMailHelper::isEmailAddress($this->registerData->email))){
+			$app->enqueueMessage(JText::_('EMAIL_INVALID'), 'error');
+			return false;
+		}
+
+		$data['email'] = @$this->registerData->email;
+		$_SESSION['hikashop_main_user_data'] = $data;
+
+
+
+
 		if($simplified == 0 || $simplified ==3){
 			if(empty($this->registerData->password)){
 				$app->enqueueMessage( JText::_('JGLOBAL_AUTH_EMPTY_PASS_NOT_ALLOWED') );
@@ -506,15 +525,11 @@ class hikashopUserClass extends hikashopClass {
 			}
 		}
 
-		$data = array(
-			 'name' => @$this->registerData->name,
-			 'username' => @$this->registerData->username,
-			 'email' => @$this->registerData->email,
-			 'password' => @$this->registerData->password,
-			 'password2' => @$this->registerData->password2,
-		);
+		$data['password'] = @$this->registerData->password;
+		$data['password2'] = @$this->registerData->password2;
 
 		$_SESSION['hikashop_main_user_data'] = $data;
+
 		if(!empty($addressData->address_vat)){
 			$vat = hikashop_get('helper.vat');
 			if(!$vat->isValid($addressData)){
@@ -698,6 +713,14 @@ class hikashopUserClass extends hikashopClass {
 	}
 
 	function addAndConfirmUserInCB($newUser, $addressData = null) {
+
+		$query = 'SELECT id FROM #__comprofiler WHERE id='.(int)$newUser->user_cms_id;
+		$this->database->setQuery($query);
+		$CBID = $this->database->loadResult();
+		if($CBID){
+			return true;
+		}
+
 		if(is_null($addressData)) {
 			$addressClass = hikashop_get('class.address');
 			$addresses = $addressClass->getByUser($newUser->user_id);
@@ -721,8 +744,10 @@ class hikashopUserClass extends hikashopClass {
 		if(!empty($addressData->address_lastname))
 			$fields['lastname'] = $this->database->Quote($addressData->address_lastname);
 
-		$query = 'REPLACE #__comprofiler (' . implode(',', array_keys($fields)) . ') VALUES (' . implode(',', $fields) . ')';
+		$query = 'INSERT INTO #__comprofiler (' . implode(',', array_keys($fields)) . ') VALUES (' . implode(',', $fields) . ')';
 		$this->database->setQuery($query);
 		$this->database->query();
+
+		return true;
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -80,6 +80,7 @@ class hikashopWidgetClass extends hikashopClass {
 				$widget->widget_name=$safeHtmlFilter->clean(strip_tags($formData['widget']['widget_name']), 'string');
 				$widget->widget_published=(int)$formData['widget']['widget_published'];
 				$widget->widget_access=$safeHtmlFilter->clean(strip_tags($formData['widget']['widget_access']), 'string');
+				if(empty($widget->widget_access)) $widget->widget_access = 'all';
 				if(!isset($widget->widget_params)) $widget->widget_params = new stdClass();
 				$widget->widget_params->display='table';
 
@@ -292,7 +293,7 @@ class hikashopWidgetClass extends hikashopClass {
 				$separator = $config->get('csv_separator',";");
 				echo implode($separator,$widget->exportFields).$eol;
 				$missing = array();
-				$convert_date = $config->get('convert_date',DATE_RFC822);
+				$convert_date = $config->get('convert_date','d-M-Y');
 				foreach($widget->elements as $el){
 					$line = array();
 					foreach($widget->exportFields as $field){
@@ -374,7 +375,7 @@ class hikashopWidgetClass extends hikashopClass {
 					$parents[]=$cat->category_id;
 				}
 				$categoryClass = hikashop_get('class.category');
-				$childs = $categoryClass->getChildren($parents,true);
+				$childs = $categoryClass->getChildren($parents,true, array(), '', 0, 0);
 				$childs_id=array();
 				foreach($childs as $child){
 					$childs_id[]=$child->category_id;
@@ -941,7 +942,10 @@ class hikashopWidgetClass extends hikashopClass {
 					$filters=$this->_dateLimit($widget, $filters, $date_field);
 					$getLimit=$widget->widget_params->limit;
 					if(!empty($getLimit) && !$csv){	$limit=' LIMIT '.$getLimit;	}
-					$elements=$this->_getBestCustomers($filters, $widget, $limit);
+
+					unset($leftjoin['order']);
+					$leftjoin = implode(' ',$leftjoin);
+					$elements=$this->_getBestCustomers($filters, $widget, $limit, $leftjoin);
 					$widget->elements=$elements;
 					$first = reset($elements);
 					if(empty($first)){return false;}
@@ -1704,7 +1708,7 @@ class hikashopWidgetClass extends hikashopClass {
 		return $currencies;
 	}
 
-	function _getBestCustomers($filters, $widget, $limit=''){
+	function _getBestCustomers($filters, $widget, $limit='', $leftjoin=''){
 		$db = JFactory::getDBO();
 
 		if($widget->widget_params->content=='customers'){
@@ -1757,7 +1761,7 @@ class hikashopWidgetClass extends hikashopClass {
 		$filters[]=' o.order_type=\''.$this->order_type.'\'';
 		$filters = (empty($filters)? ' ':' WHERE ').implode(' AND ',$filters);
 		$query='SELECT *,	SUM( '.$case.' ) AS Total, COUNT(o.order_id) AS order_number FROM '.hikashop_table('order').' as o LEFT JOIN '.hikashop_table('user').' as a ON '.$user_id.'=a.user_id	LEFT JOIN '.hikashop_table('users',false).' as u ON u.id=a.user_cms_id ' .
-				$filters.' GROUP BY a.user_id ORDER BY '.$orderBy.' DESC '.$limit;
+				$leftjoin.' '.$filters.' GROUP BY a.user_id ORDER BY '.$orderBy.' DESC '.$limit;
 		$db->setQuery($query);
 		$elements = $db->loadObjectList();
 		if(empty($elements))

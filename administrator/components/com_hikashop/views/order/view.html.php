@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -755,7 +755,7 @@ class OrderViewOrder extends hikashopView{
 
 
 		$products = array();
-		if(!empty($order->products)){
+		if(!empty($order->products) && hikashop_level(1)){
 			$products_ids = array();
 			$productClass = hikashop_get('class.product');
 			foreach($order->products as $item) {
@@ -1241,8 +1241,10 @@ class OrderViewOrder extends hikashopView{
 					$originalProduct = $product;
 
 					$orderProduct->product_id = $product->product_id;
-					if($isVariant && empty($product->product_name)){
-						$product->product_name = $allproducts[ (int)$product_id[1] ]->product_name;
+					if($isVariant){
+						$database->setQuery('SELECT * FROM '.hikashop_table('variant').' AS a LEFT JOIN '.hikashop_table('characteristic') .' AS b ON a.variant_characteristic_id=b.characteristic_id WHERE a.variant_product_id='.(int)$product->product_id.' ORDER BY a.ordering');
+						$product->characteristics = $database->loadObjectList();
+						$productClass->checkVariant($product,$allproducts[ (int)$product_id[1] ]);
 					}
 
 					$orderProduct->order_product_name = strip_tags($product->product_name);

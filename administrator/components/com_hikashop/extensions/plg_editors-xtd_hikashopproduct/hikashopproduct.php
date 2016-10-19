@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -19,7 +19,7 @@ class plgButtonHikashopproduct extends JPlugin
 
 	function onDisplay($name, $asset='', $author='') {
 		$extension = JRequest::getCmd('option');
-		if(!in_array($extension, array('com_content', 'com_tz_portfolio', 'com_k2')))
+		if(!in_array($extension, array('com_content', 'com_tz_portfolio', 'com_k2', 'com_jevents')))
 			return;
 		if(!defined('DS'))
 			define('DS', DIRECTORY_SEPARATOR);

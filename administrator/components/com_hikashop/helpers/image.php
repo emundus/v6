@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -304,12 +304,12 @@ window.hikashop.ready( function() {
 					$folder='thumbnail_'.$ok[0].'x'.$ok[1];
 				}
 				$this->uploadFolder_url_thumb=$this->uploadFolder_url.$folder.'/'.$path;
-				return '<img src="'.$this->uploadFolder_url_thumb.'" alt="'.$alt.'" title="'.$title.'" '.$options.' />';
+				return '<img src="'.$this->uploadFolder_url_thumb.'" alt="'.htmlentities($alt).'" title="'.htmlentities($title).'" '.$options.' />';
 			}
 		}
 		$this->uploadFolder_url_thumb=$this->uploadFolder_url.$path;
 
-		return '<img src="'.$this->uploadFolder_url_thumb.'" alt="'.$alt.'" title="'.$title.'" '.$options.' />';
+		return '<img src="'.$this->uploadFolder_url_thumb.'" alt="'.htmlentities($alt).'" title="'.htmlentities($title).'" '.$options.' />';
 	}
 
 	function getThumbnail($filename, $size = null, $options = array(), $relativePath = true, $cachePath = null) {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -464,6 +464,16 @@ if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 								<?php
 								if(!isset($this->element->hikashop_params['display_badges'])) $this->element->hikashop_params['display_badges'] = '-1';
 								echo JHTML::_('hikaselect.radiolist', $arr, $this->control.'[display_badges]' , '', 'value', 'text', @$this->element->hikashop_params['display_badges']); ?>
+							</td>
+						</tr>
+						<tr>
+							<td class="key">
+								<?php echo JText::_('DISCOUNTED_ONLY');?>
+							</td>
+							<td>
+								<?php
+								if(!isset($this->element->hikashop_params['discounted_only'])) $this->element->hikashop_params['discounted_only'] = '0';
+								echo JHTML::_('hikaselect.booleanlist', $this->control.'[discounted_only]' , '', @$this->element->hikashop_params['discounted_only']); ?>
 							</td>
 						</tr>
 <?php

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -51,17 +51,19 @@ class hikashopBadgeClass extends hikashopClass {
 
 	function loadBadges(&$row) {
 		$discount=new stdClass();
-		$qty = 0;
+		$qty = $row->product_quantity;
 		if(isset($row->main)){
 			if(@$row->main->discount) $discount =& $row->main->discount;
 			elseif(@$row->discount) $discount =& $row->discount;
 			$product_id = $row->main->product_id;
-			$qty = $row->main->product_quantity;
+			if($row->product_quantity==-1){
+				$qty = $row->main->product_quantity;
+			}
 		}else{
 			if(@$row->discount) $discount =& $row->discount;
 			$product_id = $row->product_id;
-			$qty = $row->product_quantity;
 		}
+
 		$badge_filters=array(
 			'a.badge_start <= '.time(),
 			'( a.badge_end >= '.time().' OR a.badge_end =0 )',
@@ -81,6 +83,9 @@ class hikashopBadgeClass extends hikashopClass {
 		$categoryClass = hikashop_get('class.category');
 		$productClass = hikashop_get('class.product');
 
+		if(!isset($row->categories) && isset($row->main->categories)){
+			$row->categories =& $row->main->categories;
+		}
 		if(isset($row->categories)) {
 			$oneCat = reset($row->categories);
 			if(is_object($oneCat))

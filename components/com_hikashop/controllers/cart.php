@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -127,10 +127,33 @@ class CartController extends hikashopController {
 				JRequest::setVar($cart_type_id, $cart_id);
 
 				$cartClass = hikashop_get('class.cart');
+				$formItem = JRequest::getVar('item', array(), '', 'array');
 				$formData = JRequest::getVar('data', array(), '', 'array');
 				$i = 0;
+				if(!empty($formItem)){
+					$cart_product_id = 0;
+					$fromProducts = $cartClass->get(0,true,$cart_type);
+					foreach($formItem as $cart_product_id => $product){
+						if(!empty($product['checked'])) {
+							$i++;
+							if(!isset($product['cart_product_quantity'])) $product['cart_product_quantity'] = 1;
+							$options = array();
 
-				if(isset($formData['products'])){
+							foreach($fromProducts as $fromProduct){
+								if($fromProduct->cart_product_id == $cart_product_id){
+									$product_id = $fromProduct->product_id;
+								}
+							}
+							foreach($fromProducts as $fromProduct){
+								if($fromProduct->cart_product_option_parent_id == $cart_product_id){
+									$options[] = $fromProduct->product_id;
+								}
+							}
+							JRequest::setVar('hikashop_product_option',$options);
+							$cartClass->update((int)$product_id, (int)$product['cart_product_quantity'],1);
+						}
+					}
+				}elseif(isset($formData['products'])){
 					$cart_product_id = 0;
 					$fromProducts = $cartClass->get(0,true,$cart_type);
 					foreach($formData['products'] as $product_id => $product){
@@ -166,8 +189,40 @@ class CartController extends hikashopController {
 			}
 		}
 		else{
+			$formItem = JRequest::getVar('item', array(), '', 'array');
 			$formData = JRequest::getVar('data', array(), '', 'array');
-			if(isset($formData['products'])){
+			if(!empty($formItem)){
+
+				$from_id = JRequest::getInt('cart_id',0);
+				$cart_type = JRequest::getString('cart_type','cart');
+				$cidList = '';
+				$cart_product_id = 0;
+				$cart_type_id = $cart_type.'_id';
+				if($cart_type == 'cart') $addTo = 'wishlist';
+				else $addTo = 'cart';
+				JRequest::setVar('from_id',$from_id);
+				$cart_type_id = $addTo.'_id';
+				$cart_id = $app->getUserState(HIKASHOP_COMPONENT.'.'.$cart_type_id,'0');
+				$app->setUserState(HIKASHOP_COMPONENT.'.'.$cart_type.'_new', '0');
+				if(empty($cart_id))$cart_id=0;
+				JRequest::setVar('cart_type', $addTo);
+				JRequest::setVar($cart_type_id, $cart_id);
+
+				$cartClass = hikashop_get('class.cart');
+				$fromProducts = $cartClass->get(0,true,$cart_type);
+
+				foreach($formItem as $cart_product_id => $product){
+					if(!empty($product['checked'])) {
+						foreach($fromProducts as $fromProduct){
+							if($fromProduct->cart_product_id == $cart_product_id){
+								$product_id = $fromProduct->product_id;
+							}
+						}
+						$cidList[(int)$product_id] .= "&cid[]=".(int)$product_id;
+					}
+				}
+				$url = hikashop_completeLink('product&task=compare'.$cidList.'&Itemid='.$Itemid,false,true);
+			}elseif(isset($formData['products'])){
 				$cidList = '';
 				foreach($formData['products'] as $product_id => $product){
 					if(!empty($product['checked'])) {
@@ -190,7 +245,6 @@ class CartController extends hikashopController {
 		$user = JFactory::getUser();
 		$session = JFactory::getSession();
 
-		$formData = JRequest::getVar('data', array(), '', 'array');
 		$cart_id = JRequest::getInt('cart_id','0');
 		$cart_type = JRequest::getString('cart_type','cart');
 		$cart_name = JRequest::getString('cart_name','');
@@ -214,25 +268,32 @@ class CartController extends hikashopController {
 			$cart->cart_share = $cart_share;
 			$status = $cartClass->save($cart);
 
+			$formItem = JRequest::getVar( 'item', array(), '', 'array' );
 			$formData = JRequest::getVar( 'data', array(), '', 'array' );
-			if($status){
-				$cartContent = $cartClass->get($cart_id,false,$cart_type);
-				if(!empty($formData)){
-					foreach($formData['products'] as $k => $product){
-						foreach($cartContent as $l => $content){
-							if($content->product_id == $k){
-								$formData['products'][$content->cart_product_id] = $product;
-								$formData['products'][$content->cart_product_id]['cart_product_quantity'] = $formData['products'][$content->cart_product_id]['quantity'];
-								unset($formData['products'][$k]);
-							}
+			if(!$status){
+				$this->showcart();
+			}
+			$cartContent = $cartClass->get($cart_id,false,$cart_type);
+			if(empty($formData) && empty($formItem)){
+				$this->showcart();
+			}
+			if(empty($formItem)){
+				foreach($formData['products'] as $k => $product){
+					foreach($cartContent as $l => $content){
+						if($content->product_id == $k){
+							$formData['products'][$content->cart_product_id] = $product;
+							$formData['products'][$content->cart_product_id]['cart_product_quantity'] = $formData['products'][$content->cart_product_id]['quantity'];
+							unset($formData['products'][$k]);
 						}
 					}
-					JRequest::setVar($cart_type.'_id',$cart_id);
-					JRequest::setVar('cart_type',$cart_type);
-					$cartClass->update($formData['products'],0,0,'item');
 				}
+				$formItem = $formData['products'];
 			}
+			JRequest::setVar($cart_type.'_id',$cart_id);
+			JRequest::setVar('cart_type',$cart_type);
+			$cartClass->update($formItem,0,0,'item');
 		}
+
 		$this->showcart();
 	}
 

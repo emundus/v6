@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -310,6 +310,13 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 			echo print_r($response, true) . "\r\n\r\n";
 		}
 
+		echo 'PayPal transaction id: '.@$vars['txn_id'] . "\r\n\r\n";
+
+		$history = new stdClass();
+		$history->notified = 0;
+		$history->amount = @$vars['mc_gross'].@$vars['mc_currency'];
+		$history->data = ob_get_clean();
+
 		$response = substr($response, strpos($response, "\r\n\r\n") + strlen("\r\n\r\n"));
 
 		$verified = preg_match('#VERIFIED#i', $response);
@@ -328,7 +335,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 					echo 'invalid response'."\n\n\n";
 			}
 			$action = false;
-			$this->modifyOrder($action, null, null, $email);
+			$this->modifyOrder($action, null, $history, $email);
 			return false;
 		}
 
@@ -339,19 +346,12 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 			$email->subject = JText::sprintf('PAYMENT_NOTIFICATION_FOR_ORDER','Paypal',$vars['payment_status'],$dbOrder->order_number);
 			$email->body = str_replace('<br/>',"\r\n",JText::sprintf('PAYMENT_NOTIFICATION_STATUS','Paypal',$vars['payment_status'])).' '.JText::_('STATUS_NOT_CHANGED')."\r\n\r\n".JText::sprintf('CHECK_DOCUMENTATION',HIKASHOP_HELPURL.'payment-paypal-error#status').$order_text;
 			$action = false;
-			$this->modifyOrder($action, null, null, $email);
+			$this->modifyOrder($action, null, $history, $email);
 
 			if($this->payment_params->debug)
 				echo 'payment ' . $vars['payment_status'] . "\r\n\r\n";
 			return false;
 		}
-
-		echo 'PayPal transaction id: '.$vars['txn_id'] . "\r\n\r\n";
-
-		$history = new stdClass();
-		$history->notified = 0;
-		$history->amount = @$vars['mc_gross'].@$vars['mc_currency'];
-		$history->data = ob_get_clean();
 
 		$price_check = round($dbOrder->order_full_price, (int)$this->currency->currency_locale['int_frac_digits']);
 		if($price_check != @$vars['mc_gross'] || $this->currency->currency_code != @$vars['mc_currency']) {

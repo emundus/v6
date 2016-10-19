@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -135,7 +135,7 @@ if(!empty($this->extra_blocks['layouts'])) {
 <?php
 $js = "
 window.hikashop.ready(function(){
-	window.hikashop.dlTitle('hikashop_main_content');
+	setTimeout(function(){window.hikashop.dlTitle('hikashop_main_content')},1000);
 ";
 $js .= "
 	if(hkjQuery('#attrib-products')){

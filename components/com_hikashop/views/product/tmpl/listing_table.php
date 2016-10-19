@@ -1,14 +1,15 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-if(!empty($this->rows)){
+if(!empty($this->rows)) {
+	$columns = 1;
 	$app = JFactory::getApplication();
 	$pagination = $this->config->get('pagination','bottom');
 	if(in_array($pagination,array('top','both')) && $this->params->get('show_limit') && $this->pageInfo->elements->total){ $this->pagination->form = '_top'; ?>
@@ -23,11 +24,9 @@ if(!empty($this->rows)){
 	</form>
 	<?php } ?>
 	<div class="hikashop_products">
-	<?php
-		if ($this->config->get('show_quantity_field')>=2) { ?>
-			<form action="<?php echo hikashop_completeLink('product&task=updatecart'); ?>" method="post" name="hikashop_product_form_<?php echo $this->params->get('main_div_name'); ?>" enctype="multipart/form-data">
-		<?php }
-		$columns = 1; ?>
+	<?php if ($this->config->get('show_quantity_field') >= 2) { ?>
+		<form action="<?php echo hikashop_completeLink('product&task=updatecart'); ?>" method="post" name="hikashop_product_form_<?php echo $this->params->get('main_div_name'); ?>" enctype="multipart/form-data">
+	<?php } ?>
 		<table class="hikashop_products_table adminlist table table-striped table-hover" cellpadding="1">
 			<thead>
 				<tr>
@@ -39,35 +38,40 @@ if(!empty($this->rows)){
 					<th class="hikashop_product_name title" align="center">
 						<?php echo JText::_( 'PRODUCT' );?>
 					</th>
-					<?php if(hikashop_level(2)){
-							if(!empty($this->productFields)) {
-								$usefulFields = array();
-								foreach ($this->productFields as $field) {
-									$fieldname = $field->field_namekey;
-									foreach($this->rows as $product){
-										if(!empty($product->$fieldname)){
-											$usefulFields[] = $field;
-											break;
-										}
-									}
-								}
-								$productFields = $usefulFields;
-
-								if(!empty($this->productFields)) {
-									foreach($this->productFields as $field){?>
-									<th class="hikashop_product_field title" align="center">
-										<?php echo $this->fieldsClass->getFieldName($field); ?>
-									</th>
-							<?php	}
-								}
-							}
-						}?>
 					<?php if ($this->config->get('show_code')) { $columns++;?>
 						<th class="hikashop_product_code title" align="center">
 							<?php echo JText::_( 'PRODUCT_CODE' ); ?>
 						</th>
 					<?php } ?>
-					<?php if($this->params->get('show_vote_product')){ ?>
+<?php
+	if(hikashop_level(2)){
+		$productFields = array();
+		if(!empty($this->productFields)) {
+			foreach ($this->productFields as $field) {
+				$fieldname = $field->field_namekey;
+				foreach($this->rows as $product){
+					if(!empty($product->$fieldname)){
+						$productFields[] = $field;
+						break;
+					}
+				}
+			}
+
+			if(!empty($productFields)) {
+				foreach($productFields as $field){
+					$columns++;
+?>
+					<th class="hikashop_product_field title" align="center">
+						<?php echo $this->fieldsClass->getFieldName($field); ?>
+					</th>
+<?php
+				}
+			}
+		}
+	}
+?>
+
+					<?php if($this->params->get('show_vote_product')){ $columns++; ?>
 						<th class="hikashop_product_vote title" align="center">
 							<?php echo JText::_('VOTE'); ?>
 						</th>
@@ -95,7 +99,6 @@ if(!empty($this->rows)){
 			<tfoot>
 				<tr>
 					<td colspan="<?php echo $columns; ?>">
-
 					</td>
 				</tr>
 			</tfoot>
@@ -187,8 +190,8 @@ if(!empty($this->rows)){
 					<?php } ?>
 					<?php
 						if(hikashop_level(2)){
-							if(!empty($this->fields)) {
-								foreach($this->fields as $field){
+							if(!empty($productFields)) {
+								foreach($productFields as $field){
 									$namekey = $field->field_namekey;
 									?>
 									<td>
@@ -240,13 +243,13 @@ if(!empty($this->rows)){
 					?>
 						<td class="hikashop_product_compare_row">
 							<?php
-							$js = 'setToCompareList('.$this->row->product_id.',\''.$this->escape($this->row->product_name).'\',this); return false;';
+							$js = 'setToCompareList('.$this->row->product_id.',\''.$this->escape(str_replace("'","\'",$this->row->product_name)).'\',this); return false;';
 							echo $this->cart->displayButton(JText::_('ADD_TO_COMPARE_LIST'),'compare',$this->params,$link,$js,'',0,1,'hikashop_compare_button');
 							?>
 						</td>
 					<?php } else { ?>
 						<td class="hikashop_product_compare_row">
-							<input type="checkbox" class="hikashop_compare_checkbox" id="hikashop_listing_chk_<?php echo $this->row->product_id;?>" onchange="setToCompareList(<?php echo $this->row->product_id;?>,'<?php echo $this->escape($this->row->product_name); ?>',this);"><label for="hikashop_listing_chk_<?php echo $this->row->product_id;?>"><?php echo JText::_('ADD_TO_COMPARE_LIST'); ?></label>
+							<input type="checkbox" class="hikashop_compare_checkbox" id="hikashop_listing_chk_<?php echo $this->row->product_id;?>" onchange="setToCompareList(<?php echo $this->row->product_id;?>,'<?php echo $this->escape(str_replace("'","\'",$this->row->product_name)); ?>',this);"><label for="hikashop_listing_chk_<?php echo $this->row->product_id;?>"><?php echo JText::_('ADD_TO_COMPARE_LIST'); ?></label>
 						</td>
 					<?php }
 					} ?>

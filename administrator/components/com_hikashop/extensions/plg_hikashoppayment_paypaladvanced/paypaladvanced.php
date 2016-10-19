@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -156,7 +156,7 @@ class plgHikashoppaymentPaypalAdvanced extends hikashopPaymentPlugin {
 					$url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=after_end'.$this->url_itemid;
 					break;
 			}
-			$payment_notification_plg = JRequest::getVar('hikashop_payment_notification_plugin', false);
+			$payment_notification_plg = JRequest::getVar('hikashop_payment_notification_plugin', false, 'default', 'bool');
 			if($payment_notification_plg === true) {
 				echo '<html>
 <body>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -120,6 +120,7 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 	if(!empty($this->fields)){
 		foreach($this->fields as $field){
+			if($field->field_type == 'customtext') continue;
 			echo '<th class="title">'.JHTML::_('grid.sort', $this->fieldsClass->trans($field->field_realname), 'b.'.$field->field_namekey, $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ).'</th>';
 		}
 	}
@@ -199,6 +200,7 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 		if(!empty($this->fields)){
 			foreach($this->fields as $field){
+				if($field->field_type == 'customtext') continue;
 				$namekey = $field->field_namekey;
 				echo '<td>'.$this->fieldsClass->show($field,$row->$namekey).'</td>';
 			}

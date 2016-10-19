@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -112,7 +112,7 @@ class CategoryViewCategory extends hikashopView
 
 		$rows = $class->loadAllWithTrans($pageInfo->filter->filter_id,$pageInfo->selectedType,$filters,$order,$pageInfo->limit->start,$pageInfo->limit->value,$category_image);
 		if(!empty($pageInfo->search)){
-			$rows = hikashop_search($pageInfo->search,$rows,'category_id');
+			$rows = hikashop_search($pageInfo->search,$rows,array('category_id','file_path'));
 		}
 		$database->setQuery('SELECT COUNT(*)'.$class->query);
 		$pageInfo->elements = new stdClass();
@@ -149,7 +149,6 @@ class CategoryViewCategory extends hikashopView
 			}
 		}
 		$this->assignRef('order',$order);
-
 		$this->assignRef('category_image',$category_image);
 		$this->getPagination();
 	}

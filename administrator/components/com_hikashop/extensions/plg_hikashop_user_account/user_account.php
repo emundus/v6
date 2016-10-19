@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -39,6 +39,12 @@ class plgHikashopUser_account extends JPlugin{
 		}
 		$button = array('link'=>$url,'level'=>0,'image'=>'user2','text'=>JText::_('CUSTOMER_ACCOUNT'),'description'=>'<ul><li>'.JText::_('EDIT_INFOS').'</li></ul>');
 		array_unshift($buttons,$button);
+
+		$redirect = $this->params->get('redirect_back_on_profile_save');
+		if($redirect){
+			$app = JFactory::getApplication();
+			$app->setUserState('com_users.edit.profile.redirect',hikashop_currentURL());
+		}
 		return true;
 	}
 

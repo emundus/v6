@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -569,6 +569,7 @@ class OrderController extends hikashopController {
 		$tmpl = JRequest::getVar('tmpl', '');
 		if($tmpl == 'component') {
 			ob_end_clean();
+			hikashop_nocache();
 			parent::display();
 			exit;
 		}
@@ -601,6 +602,7 @@ class OrderController extends hikashopController {
 		if($tmpl == 'component') {
 			JRequest::setVar('layout', 'show_products');
 			ob_end_clean();
+			hikashop_nocache();
 			parent::display();
 			exit;
 		}

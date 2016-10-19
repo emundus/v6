@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -220,7 +220,7 @@ if($filter_type !== 3) {
 ?>
 	</div>
 <?php
-	}elseif(( !$this->module || JRequest::getVar('hikashop_front_end_main',0) ) && (@$_REQUEST['ctrl']=='product' || @$_REQUEST['view']=='product') && (@$_REQUEST['task']=='listing' || @$_REQUEST['layout']=='listing') && !empty($this->filters) && count($this->filters)){
+	}elseif(( !$this->module || JRequest::getVar('hikashop_front_end_main',0) ) && ((@$_REQUEST['ctrl']=='product' || @$_REQUEST['view']=='product') || (@$_REQUEST['ctrl']=='category' || @$_REQUEST['view']=='category')) && (@$_REQUEST['task']=='listing' || @$_REQUEST['layout']=='listing') && !empty($this->filters) && count($this->filters)){
 		echo JText::_('HIKASHOP_NO_RESULT');
 	}
 

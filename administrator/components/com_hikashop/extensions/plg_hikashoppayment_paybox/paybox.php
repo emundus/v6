@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -19,12 +19,55 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 	var $pluginConfig = array(
 		'pbx_site' => array('Site', 'input'),
 		'pbx_rang' => array('Rang', 'input'),
-		'pbx_indentifiant' => array('Indentifiant', 'input'),
+		'pbx_indentifiant' => array('Identifiant', 'input'),
 		'hash' => array('HMAC', 'input'),
+		'payment_methods' => array('Payment methods', 'list',array(
+			'_' => 'All',
+			'CARTE_' => '- All cards -',
+			'CARTE_CB' => 'CB, VISA, EUROCARD_MASTERCARD, E_CARD',
+			'CARTE_MAESTRO' => 'MAESTRO',
+			'CARTE_BCMC' => 'BCMC',
+			'CARTE_AMEX' => 'AMEX',
+			'CARTE_JCB' => 'JCB',
+			'CARTE_COFINOGA' => 'COFINOGA',
+			'CARTE_SOFINCO' => 'SOFINCO',
+			'CARTE_AURORE' => 'AURORE',
+			'CARTE_CDGP' => 'CDGP',
+			'CARTE_24H00' => '24H00',
+			'CARTE_RIVEGAUCHE' => 'RIVEGAUCHE',
+			'PAYPAL_PAYPAL' => '- Paypal -',
+			'CREDIT_' => ' - All credit cards -',
+			'CREDIT_UNEURO' => 'UNEURO',
+			'CREDIT_34ONEY' => '34ONEY',
+			'NETRESERVE_NETCDGP' => '- CDGP -',
+			'PREPAYEE_' => '- All prepayed cards -',
+			'PREPAYEE_SVS' => 'SVS',
+			'PREPAYEE_KADEOS' => 'KADEOS',
+			'PREPAYEE_PSC' => 'PSC',
+			'PREPAYEE_CSHTKT' => 'CSHTKT',
+			'PREPAYEE_LASER' => 'LASER',
+			'PREPAYEE_EMONEO' => 'EMONEO',
+			'PREPAYEE_IDEAL' => 'IDEAL',
+			'PREPAYEE_ONEYKDO' => 'ONEYKDO',
+			'PREPAYEE_ILLICADO' => 'ILLICADO',
+			'PREPAYEE_WEXPAY' => 'WEXPAY',
+			'PREPAYEE_MAXICHEQUE' => 'MAXICHEQUE',
+			'FINAREF_' => '- All gift cards -',
+			'FINAREF_SURCOUF' => 'SURCOUF',
+			'FINAREF_KANGOUROU' => 'KANGOUROU',
+			'FINAREF_FNAC' => 'FNAC',
+			'FINAREF_CYRILLUS' => 'CYRILLUS',
+			'FINAREF_PRINTEMPS' => 'PRINTEMPS',
+			'FINAREF_CONFORAMA' => 'CONFORAMA',
+			'BUYSTER_BUYSTER' => '- Buyster -',
+			'LEETCHI_LEETCHI' => '- Leetchi -',
+			'PAYBUTTONS_PAYBUTTONS' => '- Paybuttons -'
+		)),
 		'sandbox' => array('SANDBOX', 'boolean','0'),
+		'iframe' => array('iFrame mode', 'boolean', '0'),
 		'ips' => array('IPS', 'input'),
 		'signature' => array('SIGNATURE', 'boolean', '1'),
-		'force_card' => array('Force card', 'boolean', '1'),
+		'ticket' => array('Send the Paybox payment receipt to', 'input'),
 		'cancel_url' => array('CANCEL_URL', 'input'),
 		'return_url' => array('RETURN_URL', 'input'),
 		'invalid_status' => array('INVALID_STATUS', 'orderstatus'),
@@ -42,6 +85,10 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 		}
 
 		$this->url = 'https://'.$srv.'/cgi/MYchoix_pagepaiement.cgi';
+
+		if(!empty($this->payment_params->iframe)){
+			$this->url = 'https://'.$srv.'/cgi/MYframepagepaiement_ip.cgi';
+		}
 
 		$amount = (int)($order->cart->full_total->prices[0]->price_value_with_tax * 100);
 
@@ -63,9 +110,27 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 			'PBX_REPONDRE_A' => (HIKASHOP_LIVE.'paybox_'.$method_id.'.php')
 		);
 
-		if(!empty($this->payment_params->force_card)) {
-			$this->vars['PBX_TYPEPAIEMENT'] = 'CARTE';
+		if(!empty($this->payment_params->ticket)){
+			$this->vars['PBX_PORTEUR'] = $this->payment_params->ticket;
 		}
+
+		if(empty($this->payment_params->payment_methods) && !empty($this->payment_params->force_card)){
+			$this->payment_params->payment_methods = 'CARTE_';
+		}
+
+		if(!empty($this->payment_params->payment_methods)){
+			list($typepaiement,$typecarte) = explode('_',$this->payment_params->payment_methods);
+			if(!empty($typepaiement)) $this->vars['PBX_TYPEPAIEMENT'] = $typepaiement;
+			if(!empty($typecarte)) $this->vars['PBX_TYPECARTE'] = $typecarte;
+		}
+
+
+		$payboxLanguages = array('FRA','GBR','ESP','ITA','DEU','NLD','SWE','PRT');
+		$lang = JFactory::getLanguage();
+		$possibleLanguageCodes = explode(',',strtoupper(preg_replace('#[^a-z,]#i','',$lang->get('locale'))));
+		$inter = array_intersect($payboxLanguages,$possibleLanguageCodes);
+		if(!empty($inter)) $this->vars['PBX_LANGUE'] = reset($inter);
+
 
 		$msg = array();
 		foreach($this->vars as $k => $v) {
@@ -84,6 +149,10 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 		global $Itemid;
 		$this->url_itemid = empty($Itemid) ? '' : '&Itemid=' . $Itemid;
 
+		$method_id = JRequest::getInt('notif_id', 0);
+		$this->pluginParams($method_id);
+		$this->payment_params =& $this->plugin_params;
+
 		if(JRequest::getVar('pbx', '') == 'user') {
 			$app = JFactory::getApplication();
 			$t = JRequest::getVar('t', '');
@@ -99,13 +168,16 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 					$url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=after_end'.$this->url_itemid;
 					break;
 			}
-			$app->redirect($url);
+
+			if(!empty($this->payment_params->iframe)){
+				echo '<script>window.parent.location.href = "'.$url.'";</script>';
+				exit;
+			}else{
+				$app->redirect($url);
+			}
 			return;
 		}
 
-		$method_id = JRequest::getInt('notif_id', 0);
-		$this->pluginParams($method_id);
-		$this->payment_params =& $this->plugin_params;
 		if(empty($this->payment_params))
 			exit;
 
@@ -226,11 +298,16 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 		$element->payment_images = 'MasterCard,VISA,Credit_card,American_Express';
 
 		$element->payment_params->ips = '';
-		$element->payment_params->force_card = 1;
 
 		$element->payment_params->invalid_status = 'cancelled';
 		$element->payment_params->pending_status = 'created';
 		$element->payment_params->verified_status = 'confirmed';
+	}
+
+	function onPaymentConfiguration(&$element){
+		parent::onPaymentConfiguration($element);
+
+		if(!empty($element->payment_params->force_card)) $element->payment_params->payment_methods = 'CARTE_';
 	}
 
 	function onPaymentConfigurationSave(&$element) {

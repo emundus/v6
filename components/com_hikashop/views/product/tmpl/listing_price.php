@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -132,9 +132,9 @@ if(isset($this->row->product_msrp) && @$this->row->product_msrp > 0.0 && JReques
 				$round = $this->currencyHelper->getRounding($price->price_currency_id, true);
 				$this->element->displayed_price_microdata = true;
 				if($this->params->get('price_with_tax')){
-					$attributes = ' itemprop="price" content="'. $this->currencyHelper->round($price->price_value_with_tax, $round) .'"';
+					$attributes = ' itemprop="price" content="'. str_replace(',','.',$this->currencyHelper->round($price->price_value_with_tax, $round)) .'"';
 				}else{
-					$attributes = ' itemprop="price" content="'. $this->currencyHelper->round($price->price_value, $round) .'"';
+					$attributes = ' itemprop="price" content="'. str_replace(',','.',$this->currencyHelper->round($price->price_value, $round)) .'"';
 				}
 			}
 			echo '<span class="'.implode(' ',$classes).'"'.$attributes.'>';

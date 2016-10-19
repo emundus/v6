@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -45,6 +45,8 @@ class hikashopDiscountClass extends hikashopClass{
 		}
 
 		if(!empty($discount->discount_category_id) && !empty($discount->discount_product_id)){
+			$discount->discount_category_id = '';
+			$discount->discount_category_childs = 0;
 			$app = JFactory::getApplication();
 				$app->enqueueMessage('If you set both categories and products in a discount/coupon, only the products will be taken into account.', 'error');
 		}
@@ -388,6 +390,14 @@ class hikashopDiscountClass extends hikashopClass{
 
 		$coupon->discount_flat_amount = 0;
 
+		$config = hikashop_config();
+		$price = 'price_value';
+		$price_without_discount = 'price_value_without_discount';
+		if($config->get('coupons_based_on_taxed_product', 1)){
+			$price = 'price_value_with_tax';
+			$price_without_discount = 'price_value_without_discount_with_tax';
+		}
+
 		if(!empty($coupon->discount_product_id)) {
 			if(!is_array($coupon->discount_product_id)){
 				$coupon->discount_product_id = explode(',',$coupon->discount_product_id);
@@ -399,18 +409,18 @@ class hikashopDiscountClass extends hikashopClass{
 				if(in_array($product->product_id,$coupon->discount_product_id)  || in_array($product->product_parent_id,$coupon->discount_product_id)) {
 					switch($coupon->discount_coupon_nodoubling){
 						case 2:
-							if(isset($product->prices[0]->price_value_without_discount)) {
-								$coupon->discount_flat_amount += ($coupon->discount_percent_amount * $product->prices[0]->price_value) / 100;
-								$coupon->discount_flat_amount -= $product->prices[0]->price_value_without_discount - $product->prices[0]->price_value;
+							if(isset($product->prices[0]->$price_without_discount)) {
+								$coupon->discount_flat_amount += ($coupon->discount_percent_amount * $product->prices[0]->$price) / 100;
+								$coupon->discount_flat_amount -= $product->prices[0]->$price_without_discount - $product->prices[0]->$price;
 								if($coupon->discount_flat_amount<0)$coupon->discount_flat_amount=0;
 								continue;
 							}
 						case 1:
-							if(isset($product->prices[0]->price_value_without_discount)){
+							if(isset($product->prices[0]->$price_without_discount)){
 								continue;
 							}
 						default:
-							$coupon->discount_flat_amount += ($coupon->discount_percent_amount * $product->prices[0]->price_value) / 100;
+							$coupon->discount_flat_amount += ($coupon->discount_percent_amount * $product->prices[0]->$price) / 100;
 							break;
 					}
 				}
@@ -431,25 +441,26 @@ class hikashopDiscountClass extends hikashopClass{
 					if($product->product_id == $productid && empty($product->variants) || $product->product_parent_id == $productid) {
 						switch($coupon->discount_coupon_nodoubling) {
 							case 2:
-								if(isset($product->prices[0]->price_value_without_discount)){
-									$coupon->discount_flat_amount += ($coupon->discount_percent_amount * $product->prices[0]->price_value) / 100;
-									$coupon->discount_flat_amount -= $product->prices[0]->price_value_without_discount - $product->prices[0]->price_value;
+								if(isset($product->prices[0]->$price_without_discount)){
+									$coupon->discount_flat_amount += ($coupon->discount_percent_amount * $product->prices[0]->$price) / 100;
+									$coupon->discount_flat_amount -= $product->prices[0]->$price_without_discount - $product->prices[0]->$price;
 									if($coupon->discount_flat_amount < 0)
 										$coupon->discount_flat_amount = 0;
 									continue;
 								}
 							case 1:
-								if(isset($product->prices[0]->price_value_without_discount))
+								if(isset($product->prices[0]->$price_without_discount))
 									continue;
 
 							default:
 								if(isset($product->prices[0]->price_value))
-									$coupon->discount_flat_amount += ($coupon->discount_percent_amount * $product->prices[0]->price_value) / 100;
+									$coupon->discount_flat_amount += ($coupon->discount_percent_amount * $product->prices[0]->$price) / 100;
 								break;
 						}
 						break;
 					}
 				}
+
 			}
 		}
 

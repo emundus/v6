@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -255,6 +255,10 @@ function switchDisplay(value,name,activevalue){
 
 		$this->default_params = $this->config->get('default_params');
 
+		$doc = JFactory::getDocument();
+	 	$doc->addScriptDeclaration($js);
+		hikashop_loadJslib('tooltip');
+
 		$extra_blocks = array(
 			'products' => array(),
 			'layouts' => array()
@@ -362,6 +366,7 @@ function setVisibleLayoutEffect(value) {
 ';
 		$doc = JFactory::getDocument();
 	 	$doc->addScriptDeclaration($js);
+
 		$this->assignRef('element',$element);
 		$this->assignRef('control',$control);
 		$this->_assignTypes();

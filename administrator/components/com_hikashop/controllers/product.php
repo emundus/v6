@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -377,7 +377,8 @@ class ProductController extends hikashopController {
 				if(isset($formData['file']['file_path']))
 					$file->file_path = trim($formData['file']['file_path']);
 
-				if(empty($file->file_id) && (substr($file->file_path, 0, 7) == 'http://' || substr($file->file_path, 0, 8) == 'https://')) {
+				$config = hikashop_config();
+				if($config->get('store_external_files_locally',0) && empty($file->file_id) && (substr($file->file_path, 0, 7) == 'http://' || substr($file->file_path, 0, 8) == 'https://')) {
 					$parts = explode('/',$file->file_path);
 					$name = array_pop($parts);
 					$config =& hikashop_config();
@@ -688,8 +689,8 @@ class ProductController extends hikashopController {
 	}
 
 	function getTree() {
-		while(ob_get_level())
-			@ob_end_clean();
+		hikashop_nocache();
+		hikashop_cleanBuffers();
 
 		$category_id = JRequest::getInt('category_id', 0);
 		$displayFormat = JRequest::getVar('displayFormat', '');

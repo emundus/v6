@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -121,7 +121,7 @@ if(!window.aclMgr.trees) window.aclMgr.trees = {};
 if(!window.aclMgr.data) window.aclMgr.data = {};
 if(!window.aclMgr.popups) window.aclMgr.popups = {};
 if(!window.aclMgr.cpt) window.aclMgr.cpt = {};
-window.aclMgr.data["'.$this->id.'"] = ' . $this->getData($values) . ';
+window.aclMgr.data["'.$this->id.'"] = ' . $this->getData($values, true) . ';
 window.aclMgr.cpt["'.$this->id.'"] = ' . $cpt . ';
 window.aclMgr.updateJoomlaAcl = function(el,id,tree_id) {
 	var d = document, w = window, tree = d.getElementById(tree_id + "_otree"), e = d.getElementById(id), values = e.value;
@@ -179,6 +179,17 @@ window.aclMgr.updateJoomlaAcl = function(el,id,tree_id) {
 	w.aclMgr.popups[id] = f;
 
 	w.aclMgr.trees[tree_id].callbackCheck = function(treeObj, id, value) {
+		var node = treeObj.get(id);
+		if(node.state == 5) {
+			if(value === true) {
+				treeObj.chks("*",false);
+				e.value = "all";
+			} else if(value === false) {
+				treeObj.chks(false,false,true);
+				e.value = "none";
+			}
+			return;
+		}
 		var v = treeObj.getChk();
 		if(v === false || v.length == 0) {
 			e.value = "none";

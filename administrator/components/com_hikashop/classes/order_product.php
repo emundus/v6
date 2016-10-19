@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -41,7 +41,7 @@ class hikashopOrder_productClass extends hikashopClass {
 		if(hikashop_level(2)) {
 			$element = null;
 			$fieldsClass = hikashop_get('class.field');
-			$itemFields = $fieldsClass->getFields('frontcomp', $element, 'item');
+			$itemFields = $fieldsClass->getFields('', $element, 'item');
 			if(!empty($itemFields)) {
 				foreach($itemFields as $field){
 					if($field->field_type == 'customtext')

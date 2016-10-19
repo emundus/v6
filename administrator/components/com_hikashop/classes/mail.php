@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -80,6 +80,9 @@ class hikashopMailClass {
 		$safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
 		foreach($formData['mail'] as $column => $value){
 			hikashop_secureField($column);
+			if(in_array($column, array('from_name', 'from_email', 'reply_name', 'reply_email')) && $config->get($column) == $value){
+				$value = '';
+			}
 			if(in_array($column,array('params','body','altbody','preload'))){
 				$mail->$column = $value;
 			}else{
@@ -123,7 +126,7 @@ class hikashopMailClass {
 				$attachment->filename = strtolower(JFile::makeSafe($filename));
 				$attachment->size = $attachments['size'][$id];
 				if(!preg_match('#\.('.str_replace(array(',','.'),array('|','\.'),$config->get('allowedfiles')).')$#Ui',$attachment->filename,$extension) || preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)$#Ui',$attachment->filename)){
-					$app->enqueueMessage(JText::sprintf( 'ACCEPTED_TYPE',substr($attachment->filename,strrpos($attachment->filename,'.')+1),$config->get('allowedfiles')), 'notice');
+					$app->enqueueMessage(JText::sprintf( 'ACCEPTED_TYPE',substr($attachment->filename,strrpos($attachment->filename,'.')+1),str_replace(',',', ',$config->get('allowedfiles'))), 'notice');
 					continue;
 				}
 				$attachment->filename = str_replace(array('.',' '),'_',substr($attachment->filename,0,strpos($attachment->filename,$extension[0]))).$extension[0];
@@ -529,6 +532,29 @@ class hikashopMailClass {
 			}
 
 		}
+
+		if(preg_match_all('#\{([a-z0-9_\.]+)\}#', $mail->subject, $matches)){
+			foreach($matches[0] as $k => $match){
+				$var = $matches[1][$k];
+				$val = '';
+				$table = '';
+				if(strpos($var, '.')){
+					list($table, $var) = explode('.', $var, 2);
+				}
+
+				if(!empty($table) && !empty($var)){
+					if(!empty($mail->data->$table->$var)){
+						$val = $mail->data->$table->$var;
+					}elseif(!empty($mail->data->cart->$table->$var)){
+						$val = $mail->data->cart->$table->$var;
+					}
+				}elseif(!empty($mail->data->$table)){
+					$val = $mail->data->$table;
+				}
+				$mail->subject = str_replace($match,$val,$mail->subject);
+			}
+		}
+
 		$this->mailer->setSubject($mail->subject);
 		$this->mailer->IsHTML(@$mail->html);
 		if(!empty($mail->html)){

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -72,7 +72,9 @@ class plgSystemHikashopremarketing extends JPlugin
 		$db->setQuery($product_query);
 		$products = $db->loadObjectList();
 		foreach($products as $k => $product) {
-			$tags[(int)$product->product_id] = $product->product_code;
+			$val = $this->_additionalParameter($product,'ecomm_prodid');
+			if($val)
+				$tags[(int)$product->product_id] = $val;
 		}
 
 		if (count($tags) == 0)
@@ -102,5 +104,25 @@ var google_remarketing_only = true;
 		} else {
 			JResponse::setBody($body);
 		}
+	}
+
+	function _additionalParameter(&$product, $param){
+		$data = null;
+		static $fields = false;
+
+		if($fields === false) {
+			$fieldsClass = hikashop_get('class.field');
+			$fields = $fieldsClass->getFields('all', $data, 'product');
+		}
+
+		if(empty($this->params[$param])) {
+			$this->params[$param] = 'product_code';
+		}
+
+		$column = $this->params[$param];
+
+		if(empty($product->$column))
+			return false;
+		return $product->$column;
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -453,7 +453,7 @@ class plgHikashopMassaction_product extends JPlugin
 					$price_accesses = explode('|',$data->elements[$id]->price_access);
 					foreach($price_values as $k => $price_value){
 						$data->elements[$id]->prices[$k] = new stdClass();
-						$data->elements[$id]->prices[$k]->price_value = $price_value;
+						$data->elements[$id]->prices[$k]->price_value = hikashop_toFloat($price_value);
 					}
 					foreach($price_currencies as $k => $price_currency){
 						if(!is_int($price_currency)){

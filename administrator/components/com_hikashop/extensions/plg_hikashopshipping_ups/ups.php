@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -567,11 +567,12 @@ function checkAllBox(id, type){
 			if(!empty($rate->shipping_params->negotiated_rate)) {
 				$data['negotiated_rate'] = '<RateInformation><NegotiatedRatesIndicator/></RateInformation>';
 			}
-			$usableMethods=$this->_UPSrequestMethods($data);
+			$usableMethods=$this->_UPSrequestMethods($data, $rate);
 			return $usableMethods;
 		}
 
 		if($rate->shipping_params->group_package){
+			$this->nbpackage=0;
 			$data['weight']=0;
 			$data['height']=0;
 			$data['length']=0;
@@ -658,7 +659,7 @@ function checkAllBox(id, type){
 			if(!empty($rate->shipping_params->negotiated_rate)) {
 				$data['negotiated_rate'] = '<RateInformation><NegotiatedRatesIndicator/></RateInformation>';
 			}
-			$usableMethods=$this->_UPSrequestMethods($data);
+			$usableMethods=$this->_UPSrequestMethods($data, $rate);
 		}
 		else{
 			foreach($order->products as $product){
@@ -697,7 +698,7 @@ function checkAllBox(id, type){
 			if(!empty($rate->shipping_params->negotiated_rate)) {
 				$data['negotiated_rate'] = '<RateInformation><NegotiatedRatesIndicator/></RateInformation>';
 			}
-			$usableMethods=$this->_UPSrequestMethods($data);
+			$usableMethods=$this->_UPSrequestMethods($data, $rate);
 		}
 		if(empty($usableMethods)){
 			return false;
@@ -807,7 +808,7 @@ function checkAllBox(id, type){
 		return $xml;
 	}
 
-	function _UPSrequestMethods($data){
+	function _UPSrequestMethods($data, &$rate){
 		$fromStateCode = '';
 		$destStateCode = '';
 		$negotiated_rate = '';
@@ -891,13 +892,19 @@ function checkAllBox(id, type){
 
 			$shipment= array();
 			$i = 1;
-			foreach($xml->RatedShipment as $rate){
-				$shipment[$i]['value'] = (string) $rate->TotalCharges->MonetaryValue;
-				$shipment[$i]['currency_code'] = (string)$rate->TotalCharges->CurrencyCode;
-				$shipment[$i]['old_currency_code'] = (string)$rate->TotalCharges->CurrencyCode;
-				$shipment[$i]['code'] = (string)$rate->Service->Code;
-				$shipment[$i]['delivery_day'] = (string)$rate->GuaranteedDaysToDelivery;
-				$shipment[$i]['delivery_time'] = (string)$rate->ScheduledDeliveryTime;
+			foreach($xml->RatedShipment as $ups_rate){
+				if(@$rate->shipping_params->negotiated_rate && isset($ups_rate->NegotiatedRates->NetSummaryCharges->GrandTotal->MonetaryValue)){
+					$shipment[$i]['value'] = (string) $ups_rate->NegotiatedRates->NetSummaryCharges->GrandTotal->MonetaryValue;
+					$shipment[$i]['currency_code'] = (string)$ups_rate->NegotiatedRates->NetSummaryCharges->GrandTotal->CurrencyCode;
+					$shipment[$i]['old_currency_code'] = (string)$ups_rate->NegotiatedRates->NetSummaryCharges->GrandTotal->CurrencyCode;
+				} else {
+					$shipment[$i]['value'] = (string) $ups_rate->TotalCharges->MonetaryValue;
+					$shipment[$i]['currency_code'] = (string)$ups_rate->TotalCharges->CurrencyCode;
+					$shipment[$i]['old_currency_code'] = (string)$ups_rate->TotalCharges->CurrencyCode;
+				}
+				$shipment[$i]['code'] = (string)$ups_rate->Service->Code;
+				$shipment[$i]['delivery_day'] = (string)$ups_rate->GuaranteedDaysToDelivery;
+				$shipment[$i]['delivery_time'] = (string)$ups_rate->ScheduledDeliveryTime;
 				$i++;
 			}
 			$ok = false;

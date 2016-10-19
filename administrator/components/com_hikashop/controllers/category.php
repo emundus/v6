@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -104,8 +104,8 @@ class CategoryController extends hikashopController{
 	}
 
 	function getTree() {
-		while(ob_get_level())
-			@ob_end_clean();
+		hikashop_nocache();
+		hikashop_cleanBuffers();
 
 		$category_id = JRequest::getInt('category_id', 0);
 		$displayFormat = JRequest::getVar('displayFormat', '');

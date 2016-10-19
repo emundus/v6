@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,6 +24,7 @@ class OrderViewOrder extends hikashopView{
 	}
 
 	function listing(){
+		JHTML::script('system/core.js',false,true);
 		$app = JFactory::getApplication();
 		$pageInfo = new stdClass();
 		$pageInfo->filter = new stdClass();
@@ -140,6 +141,21 @@ class OrderViewOrder extends hikashopView{
 			$order_status_download_ok=true;
 		}
 		$this->assignRef('order_status_download_ok',$order_status_download_ok);
+
+		$products = array();
+		if(!empty($order->products) && hikashop_level(1)){
+			$products_ids = array();
+			$productClass = hikashop_get('class.product');
+			foreach($order->products as $item) {
+				if($item->product_id)
+					$products_ids[] = $item->product_id;
+			}
+			if(count($products_ids)){
+				$productClass->getProducts($products_ids);
+				$products =& $productClass->all_products;
+			}
+		}
+		$this->assignRef('products',$products);
 
 		$popup = hikashop_get('helper.popup');
 		$this->assignRef('popup',$popup);

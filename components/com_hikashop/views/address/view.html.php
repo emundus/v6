@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -86,7 +86,6 @@ class addressViewAddress extends HikaShopView {
 		$this->assignRef('edit', $edit);
 
 		$user_id = hikashop_loadUser();
-		$address = new stdClass();
 		$addressClass = hikashop_get('class.address');
 		if(!empty($address_id)) {
 			$address = $addressClass->get($address_id);
@@ -99,16 +98,21 @@ class addressViewAddress extends HikaShopView {
 				$addressClass->loadZone($addresses);
 			}
 		} else {
-			$userCMS = JFactory::getUser();
-			if(!$userCMS->guest) {
-				$name = $userCMS->get('name');
-				$pos = strpos($name, ' ');
-				if($pos !== false) {
-					$address->address_firstname = substr($name, 0, $pos);
-					$name = substr($name, $pos + 1);
+			$address = $_SESSION['hikashop_address_data'];
+			if(empty($address)){
+				$address = new stdClass();
+				$userCMS = JFactory::getUser();
+				if(!$userCMS->guest) {
+					$name = $userCMS->get('name');
+					$pos = strpos($name, ' ');
+					if($pos !== false) {
+						$address->address_firstname = substr($name, 0, $pos);
+						$name = substr($name, $pos + 1);
+					}
+					$address->address_lastname = $name;
 				}
-				$address->address_lastname = $name;
 			}
+
 			if($edit){
 				$addresses = $addressClass->loadUserAddresses($user_id);
 				$this->assignRef('addresses', $addresses);

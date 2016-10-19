@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,7 +24,7 @@ define('HIKASHOP_J30',version_compare($jversion,'3.0.0','>=') ? true : false);
 
 define('HIKASHOP_PHP5',version_compare(PHP_VERSION,'5.0.0', '>=') ? true : false);
 
-define('HIKASHOP_VERSION', '2.6.3');
+define('HIKASHOP_VERSION', '2.6.4');
 
 class hikashop{
 	function getDate($time = 0,$format = '%d %B %Y %H:%M'){ return hikashop_getDate($time,$format); }
@@ -1026,7 +1026,7 @@ function hikashop_footer(){
 		$link.='?partner_id='.$aff;
 	}
 	$text = '<!--  HikaShop Component powered by '.$link.' -->
-	<!-- version '.$config->get('level').' : '.$config->get('version').' [1605191518] -->';
+	<!-- version '.$config->get('level').' : '.$config->get('version').' [1610171401] -->';
 	if(!$config->get('show_footer',true)) return $text;
 	$text .= '<div class="hikashop_footer" style="text-align:center" align="center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 	$app= JFactory::getApplication();
@@ -1171,6 +1171,15 @@ function hikashop_tooltip($desc, $title = '', $image = 'tooltip.png', $name = ''
 	return JHTML::_('tooltip', str_replace(array("'", "::"), array("&#039;", ": : "), $desc . ' '), str_replace(array("'", '::'), array("&#039;", ': : '), $title), $image, str_replace(array("'", '"', '::'), array("&#039;", "&quot;", ': : '), $name . ' '), $href, $link, $class);
 }
 
+function hikashop_hktooltip($desc, $title = '', $name = '', $href = '') {
+	hikashop_loadJslib('tooltip');
+	$desc = htmlspecialchars($desc, ENT_COMPAT, 'UTF-8');
+	$title = htmlspecialchars($title, ENT_COMPAT, 'UTF-8');
+	if($href) $name = '<a href="' . $href . '">' . $name . '</a>';
+	if($title) $desc = '&lt;strong&gt;'.$title.'&lt;/strong&gt;&lt;br/&gt;' . $desc;
+	return '<span data-toggle="hk-tooltip" data-title="' . $desc . '">' . $name . '</span>';
+}
+
 function hikashop_checkRobots(){
 	if(preg_match('#(libwww-perl|python)#i',@$_SERVER['HTTP_USER_AGENT']))
 		die('Not allowed for robots. Please contact us if you are not a robot');
@@ -1297,6 +1306,14 @@ function hikashop_nocache() {
 	header('Pragma: no-cache');
 	header('Expires: Wed, 17 Sep 1975 21:32:10 GMT');
 	return true;
+}
+
+function hikashop_cleanBuffers(){
+	$previous = 0;
+	while(ob_get_level() != $previous){
+		$previous = ob_get_level();
+		ob_end_clean();
+	}
 }
 
 function hikashop_limitString($string, $limit, $replacement = '...', $tooltip = false) {
@@ -1863,7 +1880,11 @@ class hikashopView extends hikashopBridgeView {
 		if($lang->isRTL()) $this->direction = 'rtl';
 
 		if($this->triggerView) {
-			JPluginHelper::importPlugin('hikashop');
+			if(!is_array($this->triggerView))
+				$this->triggerView = array('hikashop');
+			foreach($this->triggerView as $group){
+				JPluginHelper::importPlugin($group);
+			}
 			$dispatcher = JDispatcher::getInstance();
 			$dispatcher->trigger('onHikashopBeforeDisplayView', array(&$this));
 		}
@@ -2927,12 +2948,15 @@ class hikashopShippingPlugin extends hikashopPlugin {
 				$rate_prices =& $order->shipping_prices[$rate->shippingkey]->price_per_product[$rate->shipping_id];
 
 				$price = 0;
+				$rate_prices['products']['product_names'] = array();
 				foreach($order->products as $k => $row) {
 					if(!empty($rate->products) && !in_array($row->product_id, $rate->products))
 						continue;
 
 					if(isset($rate_prices['products'][$row->product_id])) {
 						$price += $rate_prices['products'][$row->product_id];
+						if($rate_prices['products'][$row->product_id] < 0)
+							$rate_prices['products']['product_names'][] = '"' . $row->product_name . '"';
 						$rate_prices['products'][$row->product_id] = 0;
 					} elseif(isset($rate_prices['products'][$row->product_parent_id])) {
 						$price += $rate_prices['products'][$row->product_parent_id];
@@ -2949,9 +2973,7 @@ class hikashopShippingPlugin extends hikashopPlugin {
 					$rate->shipping_price = $currencyClass->round($rate->shipping_price + $price, $currencyClass->getRounding($rate->shipping_currency_id, true));
 				}
 				if($price < 0) {
-					if(!isset($rate->errors['product_excluded']))
-						$rate->errors['product_excluded'] = 0;
-					$rate->errors['product_excluded']++;
+					$rate->errors['X_PRODUCTS_ARE_NOT_SHIPPABLE_TO_YOU'] = implode($rate_prices['products']['product_names'], ', ');
 				}
 				unset($rate_prices);
 			}

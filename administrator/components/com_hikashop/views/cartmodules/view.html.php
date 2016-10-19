@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -52,6 +52,7 @@ class CartmodulesViewCartmodules extends hikashopView{
 		$this->type = 'cart';
 		if(preg_match('/wishlist/',$this->name))
 			$this->type = 'wishlist';
+		hikashop_loadJslib('tooltip');
 
 		$cid = JRequest::getInt('id','');
 		if(empty($cid))

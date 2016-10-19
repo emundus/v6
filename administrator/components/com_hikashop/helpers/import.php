@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -63,7 +63,7 @@ class hikashopImportHelper
 		$this->titlefont = ' style="font-size:1.2em;" ';
 		$this->copywarning = ' style="color:grey;font-size:0.8em" ';
 
-		$this->fields = array('product_weight','product_description','product_meta_description','product_tax_id','product_vendor_id','product_manufacturer_id','product_url','product_keywords','product_weight_unit','product_dimension_unit','product_width','product_length','product_height','product_max_per_order','product_min_per_order');
+		$this->fields = array('product_weight','product_description','product_meta_description','product_tax_id','product_vendor_id','product_manufacturer_id','product_url','product_keywords','product_weight_unit','product_dimension_unit','product_width','product_length','product_height','product_max_per_order','product_min_per_order','product_warehouse_id');
 		$fieldClass = hikashop_get('class.field');
 		$userFields = $fieldClass->getData('','product');
 
@@ -266,7 +266,7 @@ class hikashopImportHelper
 		$attachment->size = $importFile['size'];
 
 		if(!preg_match('#\.('.str_replace(array(',', '.'), array('|', '\.'), $allowedFiles).')$#Ui', $attachment->filename, $extension) || preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)$#Ui', $attachment->filename)) {
-			$app->enqueueMessage(JText::sprintf( 'ACCEPTED_TYPE',substr($attachment->filename,strrpos($attachment->filename,'.')+1),$config->get('allowedfiles')), 'notice');
+			$app->enqueueMessage(JText::sprintf( 'ACCEPTED_TYPE',substr($attachment->filename,strrpos($attachment->filename,'.')+1),str_replace(',',', ',$config->get('allowedfiles'))), 'notice');
 			return false;
 		}
 
@@ -1055,11 +1055,17 @@ class hikashopImportHelper
 		foreach($variables as $var){
 			$name = $type.'_'.$var;
 			if(empty($product->$name)) continue;
-			$this->_separate($product->$name);
-			if(count($product->$name) != count($files)) continue;
 			$key = 'file_'.$var;
-			foreach($files as $k => $file){
-				$files[$k]->$key = $product->{$name}[$k];
+			if(count($files)>1){
+				$this->_separate($product->$name);
+				if(count($product->$name) != count($files)) continue;
+				foreach($files as $k => $file){
+					$files[$k]->$key = $product->{$name}[$k];
+				}
+			}else{
+				foreach($files as $k => $file){
+					$files[$k]->$key = $product->$name;
+				}
 			}
 		}
 	}

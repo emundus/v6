@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -114,7 +114,7 @@ defined('_JEXEC') or die('Restricted access');
 							if($this->invoice_type=='full'){
 								$type = 'display:field_product_invoice=1';
 							}
-							if(hikashop_level(2)){
+							if(hikashop_level(1)){
 								$productFields = $this->fieldsClass->getFields($type,$null,'product');
 								if(!empty($productFields)) {
 									$usefulFields = array();
@@ -131,6 +131,7 @@ defined('_JEXEC') or die('Restricted access');
 
 									if(!empty($productFields)) {
 										foreach($productFields as $field){
+											$colspan++;
 											?>
 											<th class="title" ><?php echo $this->fieldsClass->getFieldName($field);?></th>
 											<?php
@@ -194,7 +195,7 @@ defined('_JEXEC') or die('Restricted access');
 											if(!empty($itemFields)) {
 												foreach($itemFields as $field){
 													$namekey = $field->field_namekey;
-													if(empty($product->$namekey) && !strlen($product->$namekey)){
+													if(empty($product->$namekey) && (!isset($product->$namekey) || !strlen($product->$namekey))){
 														continue;
 													}
 													echo '<p class="hikashop_order_item_'.$namekey.'">'.$this->fieldsClass->getFieldName($field).': '.$this->fieldsClass->show($field,$product->$namekey).'</p>';
@@ -202,7 +203,7 @@ defined('_JEXEC') or die('Restricted access');
 											}
 										}
 
-										if(hikashop_level(2)){
+										if(hikashop_level(1)){
 											if(!empty($productFields)) {
 												foreach($productFields as $field){
 													$namekey = $field->field_namekey;
@@ -352,7 +353,10 @@ defined('_JEXEC') or die('Restricted access');
 								</td>
 								<td ><?php
 									if(!empty($additional->order_product_price)) {
-										$additional->order_product_price = (float)$additional->order_product_price;
+										if($this->config->get('price_with_tax') && !empty($additional->order_product_tax))
+											$additional->order_product_price = (float)$additional->order_product_price + (float)$additional->order_product_tax;
+										else
+											$additional->order_product_price = (float)$additional->order_product_price;
 									}
 									if(!empty($additional->order_product_price) || empty($additional->order_product_options)) {
 										echo $this->currencyHelper->format($additional->order_product_price, $this->order->order_currency_id);

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -177,6 +177,7 @@ class UserController extends hikashopController{
 						}
 					}
 					$order->order_status = $config->get('order_confirmed_status','confirmed');
+					$order->history = new stdClass();
 					$order->history->history_reason=JText::sprintf('ORDER_CREATED');
 					$order->history->history_notified=0;
 					$order->history->history_type = 'creation';

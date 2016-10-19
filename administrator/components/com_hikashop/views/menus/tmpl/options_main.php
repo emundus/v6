@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -105,5 +105,18 @@ defined('_JEXEC') or die('Restricted access');
 				?>
 			</dd>
 		</dl>
+		<?php if($this->menu == 'product' || ($this->menu == 'category' && $this->type == 'product')){ ?>
+		<dl class="hika_options">
+			<dt class="hikashop_option_name">
+				<label for="data_menu__<?php echo $this->type; ?>_discounted_only"><?php echo JText::_( 'DISCOUNTED_ONLY' ); ?></label>
+			</dt>
+			<dd class="hikashop_option_value">
+				<?php
+				if(!isset($this->element['discounted_only'])) $this->element['discounted_only'] = '0';
+				echo JHTML::_('hikaselect.booleanlist', $this->name.'[discounted_only]' , '',$this->element['discounted_only']);
+				?>
+			</dd>
+		</dl>
+		<?php } ?>
 	</div>
 </div>

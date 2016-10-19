@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,19 +9,39 @@
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 class plgHikashoppaymentCmcic extends hikashopPaymentPlugin {
-	var $accepted_currencies = array('EUR','USD','GBP','CHF');
-	var $multiple = true;
-	var $name = 'cmcic';
-	var $doc_form = 'cmcic';
+	public $accepted_currencies = array('EUR','USD','GBP','CHF');
+	public $multiple = true;
+	public $name = 'cmcic';
+	public $doc_form = 'cmcic';
 
-	var $pluginConfig = array(
+	public $pluginConfig = array(
 		'tpe' => array('TPE', 'input'),
 		'key' => array('Key', 'input'),
 		'societe' => array('Societe', 'input'),
 		'bank' => array('Bank', 'list', array(
 			'cm' => 'Credit Mutuel',
 			'cic' => 'Groupe CIC',
-			'obc' => 'OBC')
+			'obc' => 'OBC',
+			'mp' => 'Monetico Paiement')
+		),
+		'locale' => array('Locale', 'list', array(
+			'' => 'Auto',
+			'en' => 'English',
+			'fr' => 'French',
+			'de' => 'German',
+			'it' => 'Italian',
+			'es' => 'Spanish',
+			'nl' => 'Dutch',
+			'pt' => 'Portuguese',
+		)),
+		'language' => array('Default language', 'list', array(
+			'fr' => 'FR',
+			'en' => 'EN',
+			'de' => 'DE',
+			'it' => 'IT',
+			'es' => 'ES',
+			'nl' => 'NL',
+			'pt' => 'PT')
 		),
 		'debug' => array('DEBUG', 'boolean','0'),
 		'sandbox' => array('SANDBOX', 'boolean','0'),
@@ -31,7 +51,7 @@ class plgHikashoppaymentCmcic extends hikashopPaymentPlugin {
 		'verified_status' => array('VERIFIED_STATUS', 'orderstatus', 'confirmed')
 	);
 
-	function getPaymentDefaultValues(&$element) {
+	public function getPaymentDefaultValues(&$element) {
 		$element->payment_name = 'CMCIC';
 		$element->payment_description = 'You can pay by credit card using this payment method';
 		$element->payment_images = 'MasterCard,VISA,Credit_card,American_Express';
@@ -39,9 +59,10 @@ class plgHikashoppaymentCmcic extends hikashopPaymentPlugin {
 		$element->payment_params->invalid_status = 'cancelled';
 		$element->payment_params->pending_status = 'created';
 		$element->payment_params->verified_status = 'confirmed';
+		$element->payment_params->language = 'fr';
 	}
 
-	function onBeforeOrderCreate(&$order,&$do){
+	public function onBeforeOrderCreate(&$order,&$do){
 		if(parent::onBeforeOrderCreate($order, $do) === true)
 			return true;
 
@@ -51,29 +72,35 @@ class plgHikashoppaymentCmcic extends hikashopPaymentPlugin {
 		}
 	}
 
-	function onAfterOrderConfirm(&$order,&$methods,$method_id) {
+	public function onAfterOrderConfirm(&$order,&$methods,$method_id) {
 		parent::onAfterOrderConfirm($order, $methods, $method_id);
 
-		$httpsHikashop = HIKASHOP_LIVE; //str_replace('http://','https://', HIKASHOP_LIVE);
-		$notify_url = $httpsHikashop.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment=cmcic&tmpl=component&orderId='.$order->order_id.'&lang='.$this->locale;
-		$return_url = $httpsHikashop.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment=cmcic&tmpl=component&cmcic_return=1&orderId='.$order->order_id.'&lang='.$this->locale;
+		$notify_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment=cmcic&tmpl=component&orderId='.$order->order_id.'&lang='.$this->locale;
+		$return_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment=cmcic&tmpl=component&cmcic_return=1&orderId='.$order->order_id.'&lang='.$this->locale;
 
-		$localeCM = 'EN';
+		if(empty($this->payment_params->language))
+			$this->payment_params->language = 'FR';
+		$localeCM = $this->payment_params->language;
 		if( in_array($this->locale, array('fr','en','de','it','es','nl','pt')) ) {
 			$localCM = strtoupper($this->locale);
+		}
+		if(!empty($this->payment_params->locale)) {
+			$localCM = strtoupper($this->payment_params->locale);
 		}
 
 		if(@$this->payment_params->sandbox) {
 			$urls = array(
 				'cm' => 'https://paiement.creditmutuel.fr/test/paiement.cgi',
 				'cic' => 'https://ssl.paiement.cic-banques.fr/test/paiement.cgi',
-				'obc' => 'https://ssl.paiement.banque-obc.fr/test/paiement.cgi'
+				'obc' => 'https://ssl.paiement.banque-obc.fr/test/paiement.cgi',
+				'mp' => 'https://p.monetico-services.com/test/paiement.cgi',
 			);
 		} else {
 			$urls = array(
 				'cm' => 'https://paiement.creditmutuel.fr/paiement.cgi',
 				'cic' => 'https://ssl.paiement.cic-banques.fr/paiement.cgi',
-				'obc' => 'https://ssl.paiement.banque-obc.fr/paiement.cgi'
+				'obc' => 'https://ssl.paiement.banque-obc.fr/paiement.cgi',
+				'mp' => 'https://p.monetico-services.com/paiement.cgi',
 			);
 		}
 		if(!isset($this->payment_params->bank) || !isset($urls[$this->payment_params->bank]) ) {
@@ -107,7 +134,7 @@ class plgHikashoppaymentCmcic extends hikashopPaymentPlugin {
 		return true;
 	}
 
-	function onPaymentNotification(&$statuses) {
+	public function onPaymentNotification(&$statuses) {
 		$finalReturn = isset($_GET['cmcic_return']);
 		if($finalReturn) {
 			$order_id = (int)@$_GET['orderId'];
@@ -117,10 +144,8 @@ class plgHikashoppaymentCmcic extends hikashopPaymentPlugin {
 			$db->setQuery('SELECT order_id FROM '.hikashop_table('order').' WHERE order_number='.$db->Quote($reference).';');
 			$order_id = (int)$db->loadResult();
 		}
-		if(empty($order_id)){
-			ob_clean();
-			echo "version=2\ncdr=1\n";
-			exit;
+		if(empty($order_id)) {
+			$this->sendNotifResponse(false);
 		}
 
 		$dbOrder = $this->getOrder($order_id);
@@ -158,36 +183,21 @@ class plgHikashoppaymentCmcic extends hikashopPaymentPlugin {
 			echo print_r($vars,true)."\r\n\r\n";
 		}
 
-		if(empty($dbOrder)){
-			$msg = ob_get_clean();
-			echo "version=2\ncdr=1\n";
-			$msg .= "\r\n".'POST[reference] invalid ("'.$vars['reference'].'")';
-			if($this->payment_params->debug) $this->writeToLog($msg);
-			exit;
+		if(empty($dbOrder)) {
+			$this->sendNotifResponse(false, 'POST[reference] invalid ("'.$vars['reference'].'")');
 		}
 
 		if(empty($_POST['MAC'])) {
-			$msg = ob_get_clean();
-			echo "version=2\ncdr=1\n";
-			$msg .= "\r\n".'POST[MAC] not present';
-			if($this->payment_params->debug) $this->writeToLog($msg);
-			exit;
+			$this->sendNotifResponse(false, 'POST[MAC] not present');
 		}
 
 		if($_POST['TPE'] != $this->payment_params->tpe) {
-			$msg = ob_get_clean();
-			echo "version=2\ncdr=1\n";
-			$msg .= "\r\n".'POST[TPE] invalid ("'.$_POST['TPE'].'" != "'.$this->payment_params->tpe.'")';
-			if($this->payment_params->debug) $this->writeToLog($msg);
-			exit;
+			$this->sendNotifResponse(false, 'POST[TPE] invalid ("' . htmlentities($_POST['TPE']) . '" != "' . $this->payment_params->tpe . '")');
 		}
 
-		if(strtolower($_POST['MAC']) != $this->generateHash($vars, $this->payment_params->key, 21)) {
-			$msg = ob_get_clean();
-			echo "version=2\ncdr=1\n";
-			$msg .= "\r\n".'POST[MAC] invalid ("'.$_POST['MAC'].'" != "'.$this->generateHash($vars, $this->payment_params->key, 21).'")';
-			if( $this->payment_params->debug ) $this->writeToLog($msg);
-			exit;
+		$processedHash = $this->generateHash($vars, $this->payment_params->key, 21);
+		if(strtolower($_POST['MAC']) != $processedHash) {
+			$this->sendNotifResponse(false, 'POST[MAC] invalid ("' . htmlentities($_POST['MAC']) . '" != "' . $processedHash . '")');
 		}
 
 		$history = new stdClass();
@@ -199,6 +209,18 @@ class plgHikashoppaymentCmcic extends hikashopPaymentPlugin {
 			$completed = ($vars['code-retour'] == 'payetest');
 		} else {
 			$completed = ($vars['code-retour'] == 'paiement');
+		}
+
+		if(!$completed && substr($vars['code-retour'], 0, 11) == 'paiement_pf') {
+			$email = new stdClass();
+			$email->subject = JText::sprintf('PAYMENT_NOTIFICATION', $this->name, 'recurrent');
+			$email->body = str_replace('<br/>', "\r\n", JText::sprintf('PAYMENT_NOTIFICATION_STATUS', $this->name, $dbOrder->order_status)) .
+				"\r\n".JText::sprintf('NOTIFICATION_OF_ORDER_ON_WEBSITE', $dbOrder->order_number, HIKASHOP_LIVE) .
+				"\r\n".str_replace('<br/>', "\r\n", JText::sprintf('ACCESS_ORDER_WITH_LINK', HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=order&task=edit&order_id=' . (int)$dbOrder->order_id));
+			$o = false;
+			$this->modifyOrder($o, null, null, $email);
+
+			$this->sendNotifResponse(true);
 		}
 
 		if($completed) {
@@ -214,14 +236,10 @@ class plgHikashoppaymentCmcic extends hikashopPaymentPlugin {
 			$email = $order_text;
 		$this->modifyOrder($order_id, $order_status, $history, $email);
 
-		$msg = ob_get_clean();
-		echo "version=2\ncdr=0\n";
-		if( $this->payment_params->debug )
-			$this->writeToLog($msg);
-		exit;
+		$this->sendNotifResponse(true);
 	}
 
-	function onPaymentUserReturn($dbOrder) {
+	protected function onPaymentUserReturn($dbOrder) {
 		$vars = array(
 			'reference' => @$_GET['orderId']
 		);
@@ -232,9 +250,8 @@ class plgHikashoppaymentCmcic extends hikashopPaymentPlugin {
 			return false;
 		}
 
-		$httpsHikashop = HIKASHOP_LIVE; //str_replace('http://','https://', HIKASHOP_LIVE);
-		$return_url = $httpsHikashop . 'index.php?option=com_hikashop&ctrl=checkout&task=after_end&order_id=' . $dbOrder->order_id . $this->url_itemid;
-		$cancel_url = $httpsHikashop . 'index.php?option=com_hikashop&ctrl=order&task=cancel_order&order_id=' . $dbOrder->order_id . $this->url_itemid;
+		$return_url = HIKASHOP_LIVE . 'index.php?option=com_hikashop&ctrl=checkout&task=after_end&order_id=' . $dbOrder->order_id . $this->url_itemid;
+		$cancel_url = HIKASHOP_LIVE . 'index.php?option=com_hikashop&ctrl=order&task=cancel_order&order_id=' . $dbOrder->order_id . $this->url_itemid;
 
 		if($dbOrder->order_status != $this->payment_params->verified_status) {
 			$this->app->enqueueMessage(JText::_('TRANSACTION_DECLINED'));
@@ -255,7 +272,26 @@ class plgHikashoppaymentCmcic extends hikashopPaymentPlugin {
 		$this->app->redirect($return_url);
 	}
 
-	function generateHash($vars, $key, $nb) {
+	private function sendNotifResponse($confirm = true, $msg = '', $exit = true) {
+		$data = ob_get_clean();
+
+		if($confirm) {
+			echo "version=2\ncdr=0\n";
+		} else {
+			echo "version=2\ncdr=1\n";
+		}
+
+		if(!empty($this->payment_params) && !empty($this->payment_params->debug)) {
+			if(!empty($data) && !empty($msg))
+				$data .= "\r\n" . $msg;
+			$this->writeToLog($data);
+		}
+
+		if($exit)
+			exit;
+	}
+
+	private function generateHash($vars, $key, $nb) {
 		$str = implode('*',$vars);
 		$l = $nb - count($vars);
 		$str .= str_pad('', $l, '*');
@@ -275,7 +311,7 @@ class plgHikashoppaymentCmcic extends hikashopPaymentPlugin {
 		return strtolower($this->hmacsha1($str, $hKey));
 	}
 
-	function hmacsha1($data,$key) {
+	private function hmacsha1($data,$key) {
 		if(function_exists('hash_hmac'))
 			return hash_hmac('sha1', $data, $key);
 

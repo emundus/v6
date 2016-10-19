@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    2.6.3
+ * @version    2.6.4
  * @author     hikashop.com
  * @copyright  (C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -73,23 +73,33 @@ function hikashopCheckOneTypeCreditCard(cardnumber, cardType) {
 	//  Length:       List of possible valid lengths of the card number for the card
 	//  prefixes:     List of possible prefixes for the card
 	//  checkdigit:   Boolean to say whether there is a check digit
+	// see: https://en.wikipedia.org/wiki/Payment_card_number#Issuer_identification_number_.28IIN.29
 	var cards = {
-		0: {name: "Visa", length: "13,16", prefixes: "4", checkdigit: true},
-		1: {name: "MasterCard", length: "16", prefixes: "51,52,53,54,55", checkdigit: true},
-		2: {name: "DinersClub", length: "14,16", prefixes: "305,36,38,54,55", checkdigit: true},
+		0: {name: "Visa", length: "13,16,19", prefixes: "4", checkdigit: true},
+		1: {name: "MasterCard", length: "16", prefixes: "51,52,53,54,55,2221,2222,2223,2224,2225,2226,2227,2228,2229,223,224,225,226,227,228,229,23,24,25,26,271,2720", checkdigit: true},
+		2: {name: "DinersClub", length: "14,16", prefixes: "309,36,38,39,54,55", checkdigit: true},
 		3: {name: "CarteBlanche",length: "14",prefixes: "300,301,302,303,304,305", checkdigit: true},
 		4: {name: "AmEx", length: "15", prefixes: "34,37",checkdigit: true},
 		5: {name: "Discover", length: "16", prefixes: "6011,622,64,65", checkdigit: true},
-		6: {name: "JCB", length: "16", prefixes: "35", checkdigit: true},
+		6: {name: "JCB", length: "16,19", prefixes: "35", checkdigit: true},
 		7: {name: "enRoute", length: "15", prefixes: "2014,2149", checkdigit: false},
 		8: {name: "Solo", length: "16,18,19", prefixes: "6334,6767", checkdigit: true},
 		9: {name: "Switch", length: "16,18,19", prefixes: "4903,4905,4911,4936,564182,633110,6333,6759", checkdigit: true},
-		10: {name: "Maestro", length: "12,13,14,15,16,18,19", prefixes: "5018,5020,5038,6304,6759,6761", checkdigit: true},
-		11: {name: "VisaElectron", length: "16", prefixes: "417500,4917,4913,4508,4844", checkdigit: true},
+		10: {name: "Maestro", length: "12,13,14,15,16,18,19", prefixes: "50,56,57,58,59,60,61,62,63,64,65,66,67,68,69", checkdigit: true},
+		11: {name: "UATP", length: "15", prefixes: "1", checkdigit: true},
 		12: {name: "LaserCard", length: "16,17,18,19", prefixes: "6304,6706,6771,6709", checkdigit: true},
 		13: {name: "UnionPay", length: "16,17,18,19", prefixes: "62", checkdigit: true},
 		14: {name: "Isracard", length: "8", prefixes: "0,1,2,3,4,5,6,7,8,9", checkdigit: false},
 		15: {name: "Direct", length: "9", prefixes: "0,1,2,3,4,5,6,7,8,9", checkdigit: false},
+		16: {name: "Bankcard", length: "16", prefixes: "5610,56022", checkdigit: true},
+		17: {name: "China UnionPay", length: "16,17,18,19", prefixes: "62", checkdigit: true},
+		18: {name: "InterPayment", length: "16,17,18,19", prefixes: "636", checkdigit: true},
+		19: {name: "InstaPayment", length: "16", prefixes: "637,638,639", checkdigit: true},
+		20: {name: "Laser", length: "16,17,18,19", prefixes: "6304,6706,6771,6709", checkdigit: true},
+		21: {name: "Dankort", length: "16", prefixes: "5019", checkdigit: true},
+		22: {name: "NSPK MIR", length: "16", prefixes: "2200,2201,2202,2203", checkdigit: true},
+		23: {name: "Verve", length: "16,19", prefixes: "506,6500", checkdigit: true},
+		24: {name: "CARDGUARD EAD BG ILS", length: "16", prefixes: "5392", checkdigit: true},
 	};
 
 	// Now check the modulus 10 check digit - if required
@@ -117,6 +127,17 @@ function hikashopCheckOneTypeCreditCard(cardnumber, cardType) {
 		// All done - if checksum is divisible by 10, it is a valid modulus 10.
 		// If not, report an error.
 		if(checksum % 10 != 0)
+			return 3;
+	}
+
+	// There is a specific algorithm to check on Isracard credit cards
+	if(cards[cardType].name == "Isracard") {
+		var sum = 0, iNum;
+		for(var i in cardNo += '') {
+			iNum = parseInt(cardNo[i]);
+			sum += i % 2 ? iNum : iNum > 4 ? iNum * 2 % 10 + 1 : iNum * 2;
+		}
+		if(sum % 10)
 			return 3;
 	}
 

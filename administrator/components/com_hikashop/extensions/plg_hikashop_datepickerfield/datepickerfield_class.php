@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -500,20 +500,19 @@ window.hikashopDatepicker = function(el) {
 			$dateOptions = '';
 		}
 
-		$datepicker_id = $id;
+		$datepicker_id = $id . '_input';
 
 		if(empty($datepicker_options['inline'])) {
 			if(($app->isAdmin() && HIKASHOP_BACK_RESPONSIVE) || (!$app->isAdmin() && HIKASHOP_RESPONSIVE)) {
 				$ret = '<div class="input-append">'.
-					'<input type="text" id="'.$id.'_input" data-picker="'.$id.'" data-options="'.$dateOptions.'" class="hikashop_datepicker" value="'.$txtValue.'"/>'.
-					'<button class="btn" onclick="document.getElementById(\''.$id.'_input\').focus();return false;"><i class="icon-calendar"></i></button>'.
+					'<input type="text" id="'.$datepicker_id.'" data-picker="'.$id.'" data-options="'.$dateOptions.'" class="hikashop_datepicker" value="'.$txtValue.'"/>'.
+					'<button class="btn" onclick="document.getElementById(\''.$datepicker_id.'\').focus();return false;"><i class="icon-calendar"></i></button>'.
 					'</div>';
-				$datepicker_id = $id . '_input';
 			} else {
-				$ret = '<input type="text" data-picker="'.$id.'" data-options="'.$dateOptions.'" class="hikashop_datepicker" value="'.$txtValue.'"/>';
+				$ret = '<input type="text" id="'.$datepicker_id.'" data-picker="'.$id.'" data-options="'.$dateOptions.'" class="hikashop_datepicker" value="'.$txtValue.'"/>';
 			}
 		} else {
-			$ret = '<div data-picker="'.$id.'" data-options="'.$dateOptions.'" class="hikashop_datepicker" value="'.$txtValue.'"></div>';
+			$ret = '<div id="'.$datepicker_id.'" data-picker="'.$id.'" data-options="'.$dateOptions.'" class="hikashop_datepicker" value="'.$txtValue.'"></div>';
 		}
 
 		$ret .= '<input type="hidden" value="'.$this->serializeDate($value).'" name="'.$map.'" id="'.$id.'"/>';

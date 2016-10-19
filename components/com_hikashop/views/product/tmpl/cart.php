@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -498,13 +498,19 @@ $this->params->set('show_quantity_field', 0);
 				if($row->product_quantity_layout == 'show_select' || (empty($this->row->product_quantity_layout) && $this->config->get('product_quantity_display', 'show_default') == 'show_select')) {
 					$min_quantity = $row->product_min_per_order;
 					$max_quantity = $row->product_max_per_order;
-					if($min_quantity == 0)
-						$min_quantity = 1;
-					if($max_quantity == 0)
-						$max_quantity = (int)$min_quantity * 15;
 ?>
 						<select id="hikashop_wishlist_quantity_select_<?php echo $this->params->get('id','0').'_'.$row->cart_product_id;?>" onchange="var qty_field = document.getElementById('hikashop_wishlist_quantity_<?php echo $this->params->get('id','0').'_'.$row->cart_product_id;?>'); qty_field.value = this.value; if (qty_field){<?php echo $input; ?> } document.<?php echo $form; ?>.submit(); return false;">
 <?php
+					if($min_quantity == 0)
+						$min_quantity = 1;
+					if($max_quantity == 0){
+						$max_quantity = (int)$min_quantity * 15;
+						if($max_quantity<$row->cart_product_quantity)
+							echo '<option value="'.$row->cart_product_quantity.'" selected="selected">'.$row->cart_product_quantity.'</option>';
+					}elseif($max_quantity<$row->cart_product_quantity){
+						$row->cart_product_quantity = $max_quantity;
+					}
+
 							for($j = $min_quantity; $j <= $max_quantity; $j += $min_quantity) {
 								$selected = '';
 								if($j == $row->cart_product_quantity)
@@ -532,13 +538,19 @@ $this->params->set('show_quantity_field', 0);
 				if($row->product_quantity_layout == 'show_select' || (empty($row->product_quantity_layout) && $this->config->get('product_quantity_display', 'show_default') == 'show_select')) {
 					$min_quantity = $row->product_min_per_order;
 					$max_quantity = $row->product_max_per_order;
-					if($min_quantity == 0)
-						$min_quantity = 1;
-					if($max_quantity == 0)
-						$max_quantity = (int)$min_quantity * 15;
 ?>
 						<select id="hikashop_cart_quantity_select_<?php echo $this->params->get('id','0').'_'.$row->cart_product_id;?>" class="tochosen" onchange="var qty_field = document.getElementById('hikashop_cart_quantity_<?php echo $this->params->get('id','0').'_'.$row->cart_product_id;?>'); qty_field.value = this.value; if (qty_field){<?php echo $input; ?> } document.<?php echo $form; ?>.submit(); return false;">
 <?php
+					if($min_quantity == 0)
+						$min_quantity = 1;
+					if($max_quantity == 0){
+						$max_quantity = (int)$min_quantity * 15;
+						if($max_quantity<$row->cart_product_quantity)
+							echo '<option value="'.$row->cart_product_quantity.'" selected="selected">'.$row->cart_product_quantity.'</option>';
+					}elseif($max_quantity<$row->cart_product_quantity){
+						$row->cart_product_quantity = $max_quantity;
+					}
+
 							for($j = $min_quantity; $j <= $max_quantity; $j += $min_quantity){
 								$selected = '';
 								if($j == $row->cart_product_quantity)

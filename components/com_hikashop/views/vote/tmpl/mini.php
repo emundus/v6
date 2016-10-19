@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -62,6 +62,7 @@ if($config->get('enable_status_vote', 'vote') != 'both' && $canVote) {
 	<span id="hikashop_vote_status_<?php echo $row->vote_ref_id;?>" class="hikashop_vote_notification_mini"></span>
 <?php
 } else {
+	if ($row->hikashop_vote_total_vote > 0) {
 ?>
 	<div style="display: none;">
 		<div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
@@ -71,6 +72,7 @@ if($config->get('enable_status_vote', 'vote') != 'both' && $canVote) {
 			<span itemprop="itemReviewed">Product</span>
 		</div>
 	</div>
+<?php } ?>
 	<div class="hk-rating" data-original-title="<?php echo $tooltip; ?>" data-toggle="hk-tooltip">
 <?php
 	for($i = 1; $i <= $row->hikashop_vote_average_score_rounded; $i++) {

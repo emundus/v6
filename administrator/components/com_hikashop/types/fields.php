@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,19 +24,19 @@ class hikashopFieldsType {
 		$this->allValues = array(
 			'text' => array(
 				'name' => JText::_('FIELD_TEXT'),
-				'options' => array("size","required","default","columnname","filtering","maxlength","readonly","placeholder","translatable","attribute")
+				'options' => array("size","required","default","columnname","filtering","maxlength","readonly","placeholder","translatable","attribute","regex")
 			),
 			'link' => array(
 				'name' => JText::_('LINK'),
-				'options' => array("size","required","default","columnname","filtering","maxlength","readonly","attribute")
+				'options' => array("size","required","default","columnname","filtering","maxlength","readonly","attribute","regex")
 			),
 			'textarea' => array(
 				'name' => JText::_('FIELD_TEXTAREA'),
-				'options' => array("cols","rows","required","default","columnname","filtering","readonly","maxlength","placeholder","translatable","attribute")
+				'options' => array("cols","rows","required","default","columnname","filtering","readonly","maxlength","placeholder","translatable","attribute","regex")
 			),
 			'wysiwyg' => array(
 				'name' => JText::_('WYSIWYG'),
-				'options' => array("cols","rows","required","default","columnname","filtering","translatable")
+				'options' => array("cols","rows","required","default","columnname","filtering","translatable","regex")
 			),
 			'radio' => array(
 				'name' => JText::_('FIELD_RADIO'),
@@ -68,7 +68,7 @@ class hikashopFieldsType {
 			if($type == 'entry'|| empty($type)) {
 				$this->allValues["coupon"] = array(
 					'name' => JText::_('HIKASHOP_COUPON'),
-					'options' => array("size","required","default","columnname")
+					'options' => array("size","required","default","columnname","regex")
 				);
 			}
 			$this->allValues["file"] = array(

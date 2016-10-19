@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -195,6 +195,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			case 11:
 				$next = $this->importDownloads();
 				break;
+			case 12:
 			case MAX_IMPORT_ID:
 				$next = $this->finishImport();
 				$ret = false;
@@ -1409,7 +1410,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 		$sql4 = 'UPDATE `#__hikashop_order` AS o '.
 			'INNER JOIN `#__hikashop_address` AS a ON a.address_openc_order_info_id = o.order_openc_id '.
 			'SET o.order_shipping_address_id = a.address_id '.
-			"WHERE o.order_shipping_address_id = 0 AND address_published >= 8 ;";
+			"WHERE (o.order_shipping_address_id = 0 OR o.order_shipping_address_id = o.order_billing_address_id) AND address_published >= 8 ;";
 
 		$sql5 = 'UPDATE `'.$this->hikaDatabaseName.'`.`#__hikashop_order` AS hko '.
 			'JOIN `'.$this->opencDatabase.'`.`'.$this->opencPrefix.'order` AS oco ON hko.order_openc_id = oco.order_id '.

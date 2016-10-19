@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -864,6 +864,7 @@ class hikashopCartClass extends hikashopClass {
 										}
 										$dispatcher->trigger( 'onAfterCalculateProductPriceForQuantityInOrder', array( &$r) );
 										$value += $r->order_product_total_price;
+										break;
 									case 'weight':
 										$id = ($r->product_parent_id == 0)?$r->product_id:$r->product_parent_id;
 										if(!empty($productClass->products[$id])){
@@ -1200,9 +1201,12 @@ class hikashopCartClass extends hikashopClass {
 			$quantityDisplayType = hikashop_get('type.quantitydisplay');
 			foreach($cart->products as $k => $row){
 				if($row->product_parent_id != 0 && $row->cart_product_parent_id != '0'){
-					$row->product_quantity_layout = $cart->products[$row->cart_product_parent_id]->product_quantity_layout;
-					$row->product_min_per_order = $cart->products[$row->cart_product_parent_id]->product_min_per_order;
-					$row->product_max_per_order = $cart->products[$row->cart_product_parent_id]->product_max_per_order;
+					if(empty($row->product_quantity_layout))
+						$row->product_quantity_layout = $cart->products[$row->cart_product_parent_id]->product_quantity_layout;
+					if(empty($row->product_min_per_order))
+						$row->product_min_per_order = $cart->products[$row->cart_product_parent_id]->product_min_per_order;
+					if(empty($row->product_max_per_order))
+						$row->product_max_per_order = $cart->products[$row->cart_product_parent_id]->product_max_per_order;
 				}
 				if(empty($row->product_quantity_layout) || $row->product_quantity_layout == 'inherit'){
 					$categoryQuantityLayout = '';
@@ -1712,7 +1716,7 @@ class hikashopCartClass extends hikashopClass {
 		return $result;
 	}
 
-	function cleanCartFromSession(){
+	function cleanCartFromSession($order_id = true) {
 		$config =& hikashop_config();
 		$app = JFactory::getApplication();
 		$cart_id = $app->getUserState( HIKASHOP_COMPONENT.'.cart_id');
@@ -1735,27 +1739,31 @@ class hikashopCartClass extends hikashopClass {
 		$app->setUserState( HIKASHOP_COMPONENT.'.checkout_terms', 0);
 		$app->setUserState(HIKASHOP_COMPONENT.'.display_ga', 1);
 
-		$order_id = $app->getUserState( HIKASHOP_COMPONENT.'.order_id');
-		if(empty($order_id)){
+		if($order_id === false)
+			return;
+
+		if($order_id === true || empty($order_id))
+			$order_id = $app->getUserState(HIKASHOP_COMPONENT.'.order_id');
+		if(empty($order_id))
 			$order_id = JRequest::getInt('order_id');
-		}
-		if($order_id){
-			$class = hikashop_get('class.order');
-			$order = $class->get($order_id);
-			$db = JFactory::getDBO();
-			$query = 'SELECT * FROM '.hikashop_table('payment').' WHERE payment_type='.$db->Quote($order->order_payment_method).' AND payment_id='.$db->Quote($order->order_payment_id);
-			$db->setQuery($query);
-			$paymentData = $db->loadObjectList();
-			$pluginsClass = hikashop_get('class.plugins');
-			$pluginsClass->params($paymentData,'payment');
-			$paymentOptions = reset($paymentData);
-			if(!empty($paymentOptions->payment_params->return_url)){
-				foreach(get_object_vars($order) as $key => $val){
-					if(!is_string($val)) continue;
-					$paymentOptions->payment_params->return_url = str_replace('{'.$key.'}',$val,$paymentOptions->payment_params->return_url);
-				}
-				$app->redirect($paymentOptions->payment_params->return_url);
+		if(empty($order_id))
+			return;
+
+		$orderClass = hikashop_get('class.order');
+		$order = $orderClass->get($order_id);
+		$db = JFactory::getDBO();
+		$query = 'SELECT * FROM '.hikashop_table('payment').' WHERE payment_type='.$db->Quote($order->order_payment_method).' AND payment_id='.$db->Quote($order->order_payment_id);
+		$db->setQuery($query);
+		$paymentData = $db->loadObjectList();
+		$pluginsClass = hikashop_get('class.plugins');
+		$pluginsClass->params($paymentData,'payment');
+		$paymentOptions = reset($paymentData);
+		if(!empty($paymentOptions->payment_params->return_url)){
+			foreach(get_object_vars($order) as $key => $val){
+				if(!is_string($val)) continue;
+				$paymentOptions->payment_params->return_url = str_replace('{'.$key.'}',$val,$paymentOptions->payment_params->return_url);
 			}
+			$app->redirect($paymentOptions->payment_params->return_url);
 		}
 	}
 

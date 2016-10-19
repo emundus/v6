@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -347,6 +347,8 @@ window.hikashop.ready( function() {
 					}else{
 						$pageInfo->limit->value = $this->params->get('limit');
 					}
+					JRequest::setVar('limit_'.$this->params->get('main_div_name').$category_selected,$pageInfo->limit->value);
+					JRequest::setVar('limit',$pageInfo->limit->value);
 				}else{
 					$pageInfo->limit->value = $app->getUserStateFromRequest( $this->paramBase.'.list_limit', 'limit_'.$this->params->get('main_div_name').$category_selected, $this->params->get('limit'), 'int' );
 				}
@@ -434,6 +436,8 @@ window.hikashop.ready( function() {
 				}else{
 					$pageInfo->limit->value = $this->params->get('limit');
 				}
+				JRequest::setVar('limit_'.$this->params->get('main_div_name').$category_selected,$pageInfo->limit->value);
+				JRequest::setVar('limit',$pageInfo->limit->value);
 				$app->setUserState($this->paramBase.'.list_limit',$pageInfo->limit->value);
 			}else{
 				$pageInfo->limit->value = $app->getUserStateFromRequest( $this->paramBase.'.list_limit', 'limit_'.$this->params->get('main_div_name').$category_selected, $this->params->get('limit'), 'int' );
@@ -458,6 +462,9 @@ window.hikashop.ready( function() {
 			$this->params->set('show_compare', 0);
 
 		if(!empty($pageInfo->filter->cid)) {
+			if(is_array($pageInfo->filter->cid)){
+				JArrayHelper::toInteger($pageInfo->filter->cid);
+			}
 			$acl_filters = array();
 			hikashop_addACLFilters($acl_filters,'category_access');
 			if(!empty($acl_filters)){
@@ -489,6 +496,7 @@ window.hikashop.ready( function() {
 		}
 
 		if(!is_array($pageInfo->filter->cid))
+
 			$pageInfo->filter->cid = array( (int)$pageInfo->filter->cid );
 
 		$this->assignRef('pageInfo',$pageInfo);
@@ -542,6 +550,77 @@ window.hikashop.ready( function() {
 			}
 		}
 
+		$discounted_only = (int)$this->params->get('discounted_only', 0);
+		if($discounted_only) {
+			$discount_filter = array();
+			$discount_filter[] = 'discount.discount_type = ' . $database->Quote('discount');
+			$discount_filter[] = 'discount.discount_published = 1';
+			$discount_filter[] = '(discount.discount_quota = 0 OR discount.discount_quota > discount.discount_used_times)';
+			$discount_filter[] = 'discount.discount_start < '.time().'';
+			$discount_filter[] = '(discount.discount_end = 0 OR discount.discount_end > '.time().')';
+
+			hikashop_addACLFilters($discount_filter, 'discount_access', 'discount', 2, false);
+
+			$queryDiscount = 'SELECT MAX(discount_product_id) as max_product_id, MAX(discount_category_id) as max_category_id, MAX(discount_category_childs) as max_category_children, MAX(discount_zone_id) as max_zone_id '.
+							' FROM '.hikashop_table('discount').' as discount  WHERE ('.implode(') AND (',$discount_filter).')';
+			$database->setQuery($queryDiscount);
+			$discounts = $database->loadObject();
+
+			$join_discount_links = array('discount.discount_product_id = \'\' AND discount.discount_category_id = \'\'');
+
+			if(!empty($discounts->max_product_id)) {
+				$join_discount_links[] = 'discount.discount_product_id = b.product_id';
+				$join_discount_links[] = 'discount.discount_product_id != \'\' AND discount.discount_product_id LIKE CONCAT(\'%,\', b.product_id, \',%\')';
+			}
+
+			if(!empty($discounts->max_category_id)) {
+				$on .=  ' LEFT JOIN '.hikashop_table('product_category').' AS discount_cat ON discount_cat.product_id = b.product_id ';
+
+				$join_discount_links[] = 'discount.discount_product_id = \'\' AND discount.discount_category_id = discount_cat.category_id';
+				$join_discount_links[] = 'discount.discount_product_id = \'\' AND discount.discount_category_id != \'\' AND discount.discount_category_id LIKE CONCAT(\'%,\', discount_cat.category_id, \',%\')';
+
+				if(!empty($discounts->max_category_children)) {
+					$on .= ' LEFT JOIN '.hikashop_table('category').' AS child_category '.
+								' ON child_category.category_id = discount_cat.category_id '.
+							' LEFT JOIN '.hikashop_table('category').' AS parent_category '.
+								' ON (parent_category.category_left <= child_category.category_left AND parent_category.category_right >= child_category.category_right)';
+
+					$join_discount_links[] = 'discount.discount_product_id = \'\' AND discount.discount_category_id != \'\' AND discount.discount_category_childs = 1 AND discount.discount_category_id LIKE CONCAT(\'%,\', parent_category.category_id, \',%\')';
+				}
+			}
+
+			if(!empty($discounts->max_product_id) || !empty($discounts->max_category_id) || !empty($discounts->max_category_children) || !empty($discounts->max_zone_id)) {
+				$on .= ' LEFT JOIN '.hikashop_table('discount').' AS discount '.
+					' ON (('. implode(') OR (', $join_discount_links) . '))';
+
+				$filters[] = 'discount.discount_type = ' . $database->Quote('discount');
+				$filters[] = 'discount.discount_published = 1';
+				$filters[] = '(discount.discount_quota = 0 OR discount.discount_quota > discount.discount_used_times)';
+				$filters[] = 'discount.discount_start < '.time().'';
+				$filters[] = '(discount.discount_end = 0 OR discount.discount_end > '.time().')';
+
+				hikashop_addACLFilters($filters, 'discount_access', 'discount', 2, false);
+
+				if(!empty($discounts->max_zone_id)) {
+					$zones = array();
+					$zone_id = hikashop_getZone(null);
+					$zoneClass = hikashop_get('class.zone');
+					$zones = $zoneClass->getZoneParents($zone_id);
+
+					if(!empty($zones)) {
+						foreach($zones as &$zone) {
+							$zone = hikashop_getEscaped($zone, true);
+						}
+						unset($zone);
+
+						$filters[] = '(discount.discount_zone_id = \'\' OR discount.discount_zone_id LIKE \'%,' .implode(',%\' OR discount.discount_zone_id LIKE \'%,', $zones) . ',%\')';
+					} else {
+						$filters[] = 'discount.discount_zone_id = \'\'';
+					}
+				}
+			}
+		}
+
 		$order = '';
 		if(!empty($pageInfo->filter->order->value)){
 			$order = ' ORDER BY '.$pageInfo->filter->order->value.' '.$pageInfo->filter->order->dir;
@@ -550,7 +629,7 @@ window.hikashop.ready( function() {
 			$defaultParams = $config->get('default_params');
 			$this->params->set('add_to_cart',$defaultParams['add_to_cart']);
 		}
-		if($this->params->get('add_to_cart')){
+		if($this->params->get('add_to_cart') || $this->params->get('add_to_wishlist')){
 			$cart = hikashop_get('helper.cart');
 			$this->assignRef('cart',$cart);
 			$catalogue = (int)$config->get('catalogue',0);
@@ -603,7 +682,10 @@ window.hikashop.ready( function() {
 			}
 		}
 
-		$query = $select2.' FROM '.$b.$a.$on.' WHERE '.implode(' AND ',$filters).$translationFilter.$order;
+		if(empty($filters))
+			$filters = array('1=1');
+
+		$query = $select2.' FROM '.$b.$a.$on.' WHERE ('.implode(') AND (',$filters).')'.$translationFilter.$order;
 
 		if(hikashop_level(2) && JRequest::getVar('hikashop_front_end_main',0) && JRequest::getVar('task','listing')!='show'){
 			$config->set('hikashopListingQuery', $query);
@@ -761,12 +843,12 @@ window.hikashop.ready( function() {
 								JArrayHelper::toInteger($itemField->$k);
 							} else if(!is_array($itemField->$k) && !empty($itemField->$k) && is_numeric($itemField->$k))
 								$itemField->$k = array( (int)$itemField->$k );
-							else
+							elseif(empty($itemField->$k))
 								$itemField->$k = array();
 						}
 
 						$item_cats = array();
-						if(!empty($itemField->field_with_sub_categories)) {
+						if(!empty($itemField->field_with_sub_categories)  && $itemField->field_categories != 'all') {
 							foreach($itemField->field_categories as $c) {
 								$item_cats[] = $c;
 								foreach($cats['children'] as $k => $v) {
@@ -786,7 +868,7 @@ window.hikashop.ready( function() {
 								continue;
 							}
 
-							if(!empty($itemField->field_categories)) {
+							if(!empty($itemField->field_categories) && $itemField->field_categories != 'all') {
 								$prod_cats = array_keys($row->categories);
 
 								if(empty($item_cats)) {
@@ -989,11 +1071,26 @@ window.hikashop.ready( function() {
 	function addParametersToUrl($url, $parameters){
 		foreach($parameters as $k => $v){
 			if($v == ' ') $v = '';
-			if(strpos($url,$k)!==false){
-				if(preg_match('#(\?|\&|\/)'.$k.'(\-|\=)(.*?)(?=(\&|.html|\/))#i',$url,$matches)){
-					$url = str_replace($matches[0],$matches[1].$k.$matches[2].$v,$url);
-				}elseif(preg_match('#(\?|\&|\/)'.$k.'(\-|\=)(.*)#i',$url,$matches)){
-					$url = str_replace($matches[0],$matches[1].$k.$matches[2].$v,$url);
+			if(strpos($url,$k.'-')!==false || strpos($url,$k.'=')!==false){
+				if(!preg_match_all('#(\?|\&|\/)'.$k.'(\-|\=)(.*?)(?=(\&|\?|.html|\/))#i',$url,$matches)){
+					preg_match_all('#(\?|\&|\/)'.$k.'(\-|\=)(.*)#i',$url,$matches);
+				}
+				if(!empty($matches) && count($matches)){
+					$done = false;
+					foreach($matches[0] as $i => $match){
+						if(!in_array($k,array('limit','limistart')) || is_numeric($matches[3][$i])){
+							$url = str_replace($matches[0][$i],$matches[1][$i].$k.$matches[2][$i].$v,$url);
+							$done = true;
+							break;
+						}
+					}
+					if(!$done){
+						$start = '?';
+						if(strpos($url,'?')!==false){
+							$start = '&';
+						}
+						$url.=$start.$k.'='.$v;
+					}
 				}
 			}else{
 				$start = '?';
@@ -1387,6 +1484,11 @@ window.hikashop.ready( function() {
 		$classbadge=hikashop_get('class.badge');
 		$this->assignRef('classbadge',$classbadge);
 		$classbadge->loadBadges($element);
+		if(!empty($element->variants)){
+			foreach($element->variants as $k => $variant){
+				$classbadge->loadBadges($element->variants[$k]);
+			}
+		}
 
 		$links = new stdClass();
 		$links->previous = '';
@@ -1488,6 +1590,22 @@ window.hikashop.ready( function() {
 							$links->next_product = $elt;
 						}
 						break;
+					}
+				}
+				if($config->get('circle_around_for_shortcuts', 1)){
+					if(empty($links->next) && !empty($links->previous)){
+						$id_next = reset($articles);
+						$elt = $productClass->get($id_next);
+						$productClass->addAlias($elt);
+						$links->next = hikashop_completeLink('product&task=show&cid='.(int)$id_next.'&name='.$elt->alias.'&'.$pathway.$url_itemid);
+						$links->next_product = $elt;
+					}
+					if(empty($links->previous) && !empty($links->next)){
+						$id_previous = end($articles);
+						$elt = $productClass->get($id_previous);
+						$productClass->addAlias($elt);
+						$links->previous = hikashop_completeLink('product&task=show&cid='.(int)$id_previous.'&name='.$elt->alias.'&'.$pathway.$url_itemid);
+						$links->previous_product = $elt;
 					}
 				}
 			}

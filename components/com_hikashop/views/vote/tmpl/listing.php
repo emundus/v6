@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -145,7 +145,7 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 <?php } ?>
 	<tr>
 		<td colspan="8">
-			<div id="<?php echo $i++; ?>" itemprop="reviewBody" class="hika_comment_listing_content"><?php echo $elt->vote_comment; ?></div>
+			<div id="<?php echo $i++; ?>" itemprop="reviewBody" class="hika_comment_listing_content"><?php echo nl2br($elt->vote_comment); ?></div>
 		</td>
 	</tr>
 	<tr>

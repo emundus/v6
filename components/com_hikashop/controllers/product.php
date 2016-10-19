@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -60,7 +60,7 @@ class productController extends hikashopController {
 		$dispatcher->trigger('onBeforeSendContactRequest', array(&$element, &$send));
 
 		jimport('joomla.mail.helper');
-		if($element->email && !JMailHelper::isEmailAddress($element->email)){
+		if($element->email && method_exists('JMailHelper', 'isEmailAddress') && !JMailHelper::isEmailAddress($element->email)){
 			$app->enqueueMessage(JText::_('EMAIL_INVALID'), 'error');
 			$send = false;
 		}
@@ -151,6 +151,13 @@ class productController extends hikashopController {
 			$app->enqueueMessage(JText::_('VALID_EMAIL'));
 			return $this->waitlist();
 		}
+
+		jimport('joomla.mail.helper');
+		if($element->email && !JMailHelper::isEmailAddress($element->email)) {
+			$app->enqueueMessage(JText::_('EMAIL_INVALID'), 'error');
+			return $this->waitlist();
+		}
+
 
 		$config =& hikashop_config();
 		if(!$config->get('product_waitlist', 0)) {

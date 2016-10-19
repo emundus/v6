@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -71,6 +71,11 @@ class plgHikashoppaymentBorgun extends hikashopPaymentPlugin
 			'returnurlerror' => $cancel_url // user end cancel/error
 		);
 
+		if(function_exists('hash_hmac')) {
+			$msg = utf8_encode(@$this->payment_params->merchantid . '|' . $notif_url .'|' . $notif_url . '|' . $order->order_id . '|' . $this->vars['amount'] . '|' . $this->currency->currency_code);
+			$this->vars['checkhash'] = hash_hmac('sha256', $msg, @$this->payment_params->securecode);
+		}
+
 		return $this->showPage('end');
 	}
 
@@ -114,8 +119,15 @@ class plgHikashoppaymentBorgun extends hikashopPaymentPlugin
 			return true;
 		}
 
-		$checkHash = md5($vars['orderid'] . number_format($dbOrder->order_full_price, 2, ',', '') . @$this->payment_params->securecode);
-		if($checkHash != $vars['orderhash']) {
+		$checkHashMD5 = md5($vars['orderid'] . number_format($dbOrder->order_full_price, 2, ',', '') . @$this->payment_params->securecode);
+
+		$checkHash256 = false;
+		if(function_exists('hash_hmac')) {
+			$msg = $vars['orderid'] . '|' . number_format($dbOrder->order_full_price, 2, ',', '') . '|' . $this->currency->currency_code;
+			$checkHash256 = hash_hmac('sha256', $msg, @$this->payment_params->securecode);
+		}
+
+		if($checkHashMD5 != $vars['orderhash'] && $checkHash256 != $vars['orderhash']) {
 			if($vars['step'] != 'payment') {
 				$this->app->redirect($cancel_url);
 			}

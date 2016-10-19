@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -119,6 +119,7 @@ class hikashopPluginsType{
 		if(empty($this->methods[$this->type][(string)@$this->order->order_id])){
 			$this->preload();
 		}
+
 		if(!empty($this->methods[$this->type][(string)@$this->order->order_id])){
 			$type_name = $this->type.'_type';
 			$id_name = $this->type.'_id';
@@ -129,6 +130,13 @@ class hikashopPluginsType{
 				}
 			}
 
+		}
+		if(is_numeric($id)){
+			$class = hikashop_get('class.'.$this->type);
+			$method = $class->get($id);
+			$name = $this->type.'_name';
+			if(!empty($method->$name))
+				return $method->$name;
 		}
 		return '';
 	}

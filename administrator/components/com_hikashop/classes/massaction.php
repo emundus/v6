@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -132,7 +132,11 @@ class hikashopMassactionClass extends hikashopClass{
 						}
 						break;
 					case 'category':
-						unset($action['category']);
+						$onlyName = false;
+						if(count($action['category']) == '1' && isset($action['category']['category_name'])){
+							$onlyName = true;
+							unset($action['category']);
+						}
 						$database = JFactory::getDBO();
 						$ids = array();
 
@@ -167,7 +171,8 @@ class hikashopMassactionClass extends hikashopClass{
 												$category->categories = $this->separator($array,$data,$table);
 												$types['categories'] = new stdClass();
 												$types['categories']->type = 'text';
-												$action['category']['categories'] = 'categories';
+												if($onlyName)
+													$action['category']['categories'] = 'categories';
 											}
 											unset($category);
 										}
@@ -1601,7 +1606,11 @@ class hikashopMassactionClass extends hikashopClass{
 		}
 
 		if(!empty($missingIds)){
-			$db->setQuery('SELECT * FROM '.hikashop_table('product').' WHERE product_code IN ('.implode(',',$db->quote($missingIds)).')');
+			$codes = array();
+			foreach($missingIds as $missingId){
+				$codes[] = $db->quote($missingId);
+			}
+			$db->setQuery('SELECT * FROM '.hikashop_table('product').' WHERE product_code IN ('.implode(',',$codes).')');
 			$missingIds = $db->loadObjectList();
 		}
 
@@ -1661,11 +1670,21 @@ class hikashopMassactionClass extends hikashopClass{
 			$codes[$importProduct->product_id] = $db->quote($importProduct->product_code);
 		}
 
-		$db->setQuery('SELECT product_id, product_code FROM '.hikashop_table('product').' WHERE product_id IN('.implode(',', $ids).') OR product_code IN('.implode(',', $codes).') GROUP BY product_code');
-		if(!HIKASHOP_J25){
-			$existingProducts = $db->loadResultArray();
-		} else {
-			$existingProducts = $db->loadAssocList('product_id');
+		$filters = array();
+		if(count($ids)){
+			$filters[] = 'product_id IN('.implode(',', $ids).')';
+		}
+		if(count($codes)){
+			$filters[] = 'product_code IN('.implode(',', $codes).')';
+		}
+
+		if(count($filters)){
+			$db->setQuery('SELECT product_id, product_code FROM '.hikashop_table('product').' WHERE '.implode(' OR ', $filters).' GROUP BY product_code');
+			if(!HIKASHOP_J25){
+				$existingProducts = $db->loadResultArray();
+			} else {
+				$existingProducts = $db->loadAssocList('product_id');
+			}
 		}
 
 		$ids = array();

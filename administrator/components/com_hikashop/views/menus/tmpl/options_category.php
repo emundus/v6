@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,7 +32,7 @@ defined('_JEXEC') or die('Restricted access');
 		<dl class="hika_options">
 			<dt class="hikashop_option_name">
 				<label for="data_menu__<?php echo $this->type; ?>_number_of_products">
-					<?php echo hikashop_tooltip(JText::_('SHOW_NUMBER_OF_PRODUCTS'), '', '', JText::_('HIKA_PRODUCTS_NUMBER'), '', 0);?>
+					<?php echo hikashop_hktooltip(JText::_('SHOW_NUMBER_OF_PRODUCTS'), '', JText::_('HIKA_PRODUCTS_NUMBER'), '', 0);?>
 				</label>
 			</dt>
 			<dd class="hikashop_option_value">
@@ -45,7 +45,7 @@ defined('_JEXEC') or die('Restricted access');
 		<dl class="hika_options">
 			<dt class="hikashop_option_name">
 				<label for="data_menu__<?php echo $this->type; ?>_only_if_products">
-					<?php echo hikashop_tooltip(JText::_('ONLY_DISPLAY_CATEGORIES_WITH_PRODUCTS'), '', '', JText::_('HIKA_ONLY_WITH_PRODUCTS'), '', 0);?>
+					<?php echo hikashop_hktooltip(JText::_('ONLY_DISPLAY_CATEGORIES_WITH_PRODUCTS'), '', JText::_('HIKA_ONLY_WITH_PRODUCTS'), '', 0);?>
 				</label>
 			</dt>
 			<dd class="hikashop_option_value">

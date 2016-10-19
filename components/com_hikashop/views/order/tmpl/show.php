@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -151,6 +151,34 @@ $config = hikashop_config();
 									echo JText::_('PRODUCT');
 								?></th>
 <?php
+	$null = null;
+	$type = 'display:field_product_invoice=1';
+	if(hikashop_level(1)){
+		$productFields = $this->fieldsClass->getFields($type,$null,'product');
+		if(!empty($productFields)) {
+			$usefulFields = array();
+			foreach($productFields as $field){
+				$fieldname = $field->field_namekey;
+				foreach($this->products as $product){
+					if(!empty($product->$fieldname)){
+						$usefulFields[] = $field;
+						break;
+					}
+				}
+			}
+			$productFields = $usefulFields;
+
+			if(!empty($productFields)) {
+				foreach($productFields as $field){
+					$colspan++;
+					?>
+					<th class="title" ><?php echo $this->fieldsClass->getFieldName($field);?></th>
+					<?php
+				}
+			}
+		}
+	}
+
 	$files = false;
 	foreach($this->order->products as $product ){
 		if(!empty($product->files)) {
@@ -274,7 +302,25 @@ $config = hikashop_config();
 			echo '<p class="hikashop_order_product_extra">' . (is_string($product->extraData) ? $product->extraData : implode('<br/>', $product->extraData)) . '</p>';
 ?>
 								</td>
-<?php if($this->invoice_type == 'order' && $files) { ?>
+
+<?php	if(hikashop_level(1)){
+			if(!empty($productFields)) {
+				foreach($productFields as $field){
+					$namekey = $field->field_namekey;
+					$productData = @$this->products[$product->product_id];
+					?>
+					<td>
+					<?php
+					if(!empty($productData->$namekey))
+						echo  '<p class="hikashop_order_product_'.$namekey.'">'.$this->fieldsClass->show($field,$productData->$namekey).'</p>';
+					?>
+					</td>
+				<?php
+				}
+			}
+		}
+
+		if($this->invoice_type == 'order' && $files) { ?>
 								<td class="hikashop_order_item_files_value">
 <?php
 		if(!empty($product->files) && ($this->order_status_download_ok || bccomp($product->order_product_price, 0, 5) == 0)) {

@@ -320,6 +320,8 @@
 					return;
 				}
 				t.sendNextFile();
+				if(entry.progressPercentage)
+					entry.progressPercentage.innerHTML = '100%';
 				// Update the progress bar
 				if(entry.progressBar) {
 					if(response && !response.error)
@@ -333,8 +335,6 @@
 					entry.progressBar.style.width = '100%';
 					window.Oby.removeClass(entry.progressBar, 'active');
 				}
-				if(entry.progressPercentage)
-					entry.progressPercentage.innerHTML = '100%';
 				entry.status = 1;
 			}, false);
 

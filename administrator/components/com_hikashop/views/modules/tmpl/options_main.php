@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -84,7 +84,7 @@ defined('_JEXEC') or die('Restricted access');
 		</dl>
 		 <dl class="hika_options">
 			<dt class="hikashop_option_name">
-				<?php echo hikashop_tooltip(JText::_('SYNCHRO_WITH_ITEM'), '', '', JText::_('HIKA_SYNCHRONIZE'), '', 0);?>
+				<?php echo hikashop_hktooltip(JText::_('SYNCHRO_WITH_ITEM'), '', JText::_('HIKA_SYNCHRONIZE'), '', 0);?>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[content_synchronize]', @$this->element['content_synchronize']); ?>
@@ -98,5 +98,18 @@ defined('_JEXEC') or die('Restricted access');
 				<?php echo JHTML::_('hikaselect.genericlist', $this->hikashop_menu, $this->name.'[itemid]' , 'size="1"', 'value', 'text', @$this->element['itemid']); ?>
 			</dd>
 		</dl>
+
+		<dl class="hika_options" data-display-type="product">
+			<dt class="hikashop_option_name">
+				<label for="data_menu__<?php echo $this->type; ?>_discounted_only"><?php echo JText::_( 'DISCOUNTED_ONLY' ); ?></label>
+			</dt>
+			<dd class="hikashop_option_value">
+				<?php
+				if(!isset($this->element['discounted_only'])) $this->element['discounted_only'] = '0';
+				echo JHTML::_('hikaselect.booleanlist', $this->name.'[discounted_only]' , '',$this->element['discounted_only']);
+				?>
+			</dd>
+		</dl>
+
 	</div>
 </div>

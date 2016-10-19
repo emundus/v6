@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -97,25 +97,30 @@ $cartFooters = array();
 if(!empty($data->cart->products)){
 
 	$null = null;
-	$fields = $fieldsClass->getFields('display:field_product_order_notification=1',$null,'product');
-	if(!empty($fields)){
-		$product_customfields = array();
-		$usefulFields = array();
-		foreach($fields as $field){
-			$namekey = $field->field_namekey;
-			foreach($productClass->all_products as $product){
-				if(!empty($product->$namekey)){
-					$usefulFields[] = $field;
-					break;
+	$fields = null;
+	$texts['CUSTOMFIELD_NAME'] = '';
+	$texts['FOOTER_COLSPAN'] = 3;
+	if(hikashop_level(1)){
+		$fields = $fieldsClass->getFields('display:field_product_order_notification=1',$null,'product');
+		if(!empty($fields)){
+			$product_customfields = array();
+			$usefulFields = array();
+			foreach($fields as $field){
+				$namekey = $field->field_namekey;
+				foreach($productClass->all_products as $product){
+					if(!empty($product->$namekey)){
+						$usefulFields[] = $field;
+						break;
+					}
 				}
 			}
+			$fields = $usefulFields;
 		}
-		$fields = $usefulFields;
-	}
-	$texts['CUSTOMFIELD_NAME'] = '';
-	if(!empty($fields)){
-		foreach($fields as $field){
-			$texts['CUSTOMFIELD_NAME'].='<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:left;color:#1c8faf !important;font-size:12px;font-weight:bold;">'.$fieldsClass->getFieldName($field).'</td>';
+		if(!empty($fields)){
+			foreach($fields as $field){
+				$texts['FOOTER_COLSPAN']++;
+				$texts['CUSTOMFIELD_NAME'].='<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:left;color:#1c8faf !important;font-size:12px;font-weight:bold;">'.$fieldsClass->getFieldName($field).'</td>';
+			}
 		}
 	}
 
@@ -171,8 +176,8 @@ if(!empty($data->cart->products)){
 			}
 		}
 
-		if(!empty($fields)){
-			$cartProduct['CUSTOMFIELD_VALUE'] = '';
+		$cartProduct['CUSTOMFIELD_VALUE'] = '';
+		if(!empty($fields) && hikashop_level(1)){
 			foreach($fields as $field){
 				$namekey = $field->field_namekey;
 				$productData = @$productClass->all_products[$item->product_id];

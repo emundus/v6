@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -155,7 +155,7 @@ class hikashopFieldClass extends hikashopClass {
 					if(!empty($productField->field_frontcomp))
 						continue;
 
-					if(empty($data->$product_key) && $empty_product_field_values_means_all) {
+					if(empty($data->$product_key) && ($empty_product_field_values_means_all || $data === null)) {
 						$fields[$key]->field_value = $productField->field_value;
 					} elseif(empty($data->$product_key)) {
 						unset($fields[$key]);
@@ -206,9 +206,20 @@ class hikashopFieldClass extends hikashopClass {
 			if(!isset($categories[$id]) && !is_array($data)) {
 				$categories[$id]['originals'] = array();
 				$categories[$id]['parents'] = array();
-				$categories[$id]['products'] = array($id);
+				$categories[$id]['products'] = array();
+				if($id)
+					$categories[$id]['products'][] = $id;
 
 				$categoryClass = hikashop_get('class.category');
+				$productClass = hikashop_get('class.product');
+				if(!empty($data->product_id) && !isset($data->product_type)) {
+					$prodData = $productClass->get($data->product_id);
+					if(!empty($prodData->product_type)) {
+						$data->product_type = $prodData->product_type;
+						$data->product_parent_id = $prodData->product_parent_id;
+						$categories[$id]['products'][] = $data->product_parent_id;
+					}
+				}
 				if(!empty($data->categories)) {
 					foreach($data->categories as $category) {
 						if(!is_object($category))
@@ -218,25 +229,16 @@ class hikashopFieldClass extends hikashopClass {
 					}
 					$parents = $categoryClass->getParents($data->categories);
 				} else {
-					$productClass = hikashop_get('class.product');
-					if(is_object($data) && !isset($data->product_type)) {
-						$prodData = $productClass->get($id);
-						if(!empty($prodData->product_type)) {
-							$data->product_type = $prodData->product_type;
-							$data->product_parent_id = $prodData->product_parent_id;
-						}
-					}
-					if(isset($data->product_type) && $data->product_type == 'variant')
+					if(isset($data->product_type) && $data->product_type == 'variant' && !empty($data->product_parent_id))
 						$loadedCategories = $productClass->getCategories($data->product_parent_id);
-					else
-						$loadedCategories = $productClass->getCategories($id);
-
+					elseif(!empty($data->product_id))
+						$loadedCategories = $productClass->getCategories($data->product_id);
 					if(!empty($loadedCategories)) {
 						foreach($loadedCategories as $cat) {
 							$categories[$id]['originals'][$cat] = $cat;
 						}
+						$parents = $categoryClass->getParents($loadedCategories);
 					}
-					$parents = $categoryClass->getParents($loadedCategories);
 				}
 				if(!empty($parents) && is_array($parents)) {
 					foreach($parents as $parent) {
@@ -447,6 +449,7 @@ foreach($results as $i => $oneResult){
 				} else {
 					$user_id = 0;
 				}
+				$id = 'product_id';
 				break;
 			case 'order':
 				$user_id = (int)@$data->order_user_id;
@@ -482,7 +485,7 @@ foreach($results as $i => $oneResult){
 			} else if(is_array($data) && !empty($namekey)) {
 				$v = (empty($fields[$namekey]->field_options['pleaseselect'])) ? $field->field_default : '';
 				foreach($data as &$d) {
-					if(!empty($d->$namekey) || !empty($data->$id))
+					if(!empty($d->$namekey) || !empty($d->$id))
 						continue;
 					$d->$namekey = $v;
 				}
@@ -725,9 +728,12 @@ foreach($results as $i => $oneResult){
 
 		if($data != null && !empty($data) && (!is_object($data) || count(get_object_vars($data)) > 0)) {
 			$_SESSION['hikashop_'.$type.'_data'] = $data;
+			$_SESSION['hikashop_'.$dataType.'_data'] = $data;
 		} else {
 			$_SESSION['hikashop_'.$type.'_data'] = null;
+			$_SESSION['hikashop_'.$dataType.'_data'] = null;
 			unset($_SESSION['hikashop_'.$type.'_data']);
+			unset($_SESSION['hikashop_'.$dataType.'_data']);
 		}
 
 		unset($formData);
@@ -1791,6 +1797,7 @@ class hikashopAjaxfile extends hikashopItem {
 	var $layoutName = 'upload';
 	var $mode = 'file';
 	var $viewName = 'file_entry';
+	var $defaultText = 'HIKA_PRODUCT_FILES_EMPTY_UPLOAD';
 
 	function display($field, $value, $map, $inside, $options = '', $test = false, $allFields = null, $allValues = null){
 		$config = hikashop_config();
@@ -1800,7 +1807,7 @@ class hikashopAjaxfile extends hikashopItem {
 		$options = array(
 			'upload' => true,
 			'gallery' => false,
-			'text' => JText::_('HIKA_DEFAULT_IMAGE_EMPTY_UPLOAD'),
+			'text' => JText::_($this->defaultText),
 			'uploader' => array('order', $field->field_table.'-'.$field->field_namekey),
 			'ajax' => true,
 			'vars' => array(
@@ -1846,8 +1853,12 @@ class hikashopAjaxfile extends hikashopItem {
 
 		$js = '';
 		$content = '';
-		if(!empty($value))
+		if(!empty($value)) {
 			$content = hikashop_getLayout($this->layoutName, $this->viewName, $params, $js);
+		} else {
+			$content = '<input type="hidden" name="'.$map.'" value=""/>';
+			$options[ 'empty'] = true;
+		}
 
 		if($this->mode == 'image')
 			return $uploaderType->displayImageSingle($id, $content, $options);
@@ -1935,6 +1946,7 @@ class hikashopAjaximage extends hikashopAjaxfile {
 	var $layoutName = 'upload';
 	var $mode = 'image';
 	var $viewName = 'image_entry';
+	var $defaultText = 'HIKA_DEFAULT_IMAGE_EMPTY_UPLOAD';
 }
 
 class hikashopCoupon extends hikashopText {
@@ -2010,7 +2022,7 @@ class hikashopWysiwyg extends hikashopTextarea {
 	}
 
 	function show(&$field,$value) {
-		return $this->trans($value);
+		return JHTML::_('content.prepare', $this->trans($value));
 	}
 }
 
@@ -2085,7 +2097,7 @@ class hikashopDropdown extends hikashopItem{
 			if(!empty($field->field_options['size'])) $arg .= ' size="'.intval($field->field_options['size']).'"';
 		}else{
 			$arg = 'size="1"';
-			if(is_string($value)&& empty($value) && !empty($field->field_value)){
+			if(is_string($value)&& empty($value) && !empty($field->field_value) && (!isset($field->field_default) || !isset($field->field_value[$field->field_default]))){
 				$found = false;
 				$first = false;
 				foreach($field->field_value as $oneValue => $title){

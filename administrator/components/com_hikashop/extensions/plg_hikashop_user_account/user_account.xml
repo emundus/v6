@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashop">
 	<name>Hikashop User account Plugin</name>
-	<creationDate>19 mai 2016</creationDate>
-	<version>2.6.3</version>
+	<creationDate>17 octobre 2016</creationDate>
+	<version>2.6.4</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
@@ -14,11 +14,19 @@
 	</files>
 	<params addpath="/components/com_hikashop/params">
 		<param name="itemid" type="text" size="50" default="" label="HIKA_FORCE_MENU" description="USER_ACOUNT_FORCE_MENU" />
+		<param name="redirect_back_on_profile_save" type="radio" default="1" label="HIKA_REDIRECT_BACK" description="HIKA_REDIRECT_BACK_ON_PROFILE_SAVE">
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
+		</param>
 	</params>
 	<config>
 		<fields name="params" addfieldpath="/components/com_hikashop/fields">
 			<fieldset name="basic">
 				<field name="itemid" type="text" size="50" default="" label="HIKA_FORCE_MENU" description="USER_ACOUNT_FORCE_MENU" />
+				<field name="redirect_back_on_profile_save" type="radio" default="1" label="HIKA_REDIRECT_BACK" description="HIKA_REDIRECT_BACK_ON_PROFILE_SAVE">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
+				</field>
 			</fieldset>
 		</fields>
 	</config>

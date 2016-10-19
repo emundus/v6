@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.3
+ * @version	2.6.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -139,7 +139,7 @@ if(!empty($this->extra_blocks['layouts'])) {
 <?php
 $js = "
 window.hikashop.ready(function(){
-	window.hikashop.dlTitle('hikashop_main_content');
+	setTimeout(function(){window.hikashop.dlTitle('hikashop_main_content');},1000);
 ";
 $js .= "
 	hkjQuery('div[data-type=\'product_layout\']').hide();
@@ -153,7 +153,7 @@ $js .= "
 	if(ctype == 'product')
 		hkjQuery('div[data-display-type=\'category\']').hide();
 	else
-		hkjQuery('div[data-display-type=\'product\']').hide();
+		hkjQuery('div[data-display-type=\'product\'], dl[data-display-type=\'product\']').hide();
 	if(ltype != 'div')
 		hkjQuery('div[data-display-tab=\'div\']').hide();
 	hkjQuery('#content_select_jform_params_hikashopmodule').change(function(){
