@@ -764,7 +764,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
     function pdf(){
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', null);
-        $student_id = $jinput->getString('student_id', null);
+        $student_id = $jinput->getInt('student_id', $jinput->getInt('user', $this->_user->id));
 
         if( !EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
             die(JText::_('RESTRICTED_ACCESS'));
@@ -775,7 +775,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
             $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
-            $name = $fnum.'-evaluation.pdf';
+            $name = 'evaluation-'.$fnum.'.pdf';
             $tmpName = JPATH_BASE.DS.'tmp'.DS.$name;
         }
 
@@ -791,7 +791,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         }
 
         require_once($file);
-        pdf_evaluation(!empty($student_id)?$student_id:$this->_user->id, $fnum, true, null);
+        pdf_evaluation($student_id, $fnum, true, $name);
         
         exit();
     }

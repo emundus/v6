@@ -483,15 +483,15 @@ class EmundusModelApplication extends JModelList
                         $forms .= '</legend>';
 
                         if ($itemg->repeated == 0 && $itemg->repeated_1 == 0) {
-                            foreach($elements as &$iteme) {
-                                $query = 'SELECT `id`, `'.$iteme->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
-                                try {
+                            foreach($elements as &$iteme) {                    
+                                try { 
+                                    $query = 'SELECT `id`, `'.$iteme->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
                                     $this->_db->setQuery( $query );
                                     $res = $this->_db->loadRow();
-
+                                    
                                     $iteme->content = @$res[1];
                                     $iteme->content_id = @$res[0];
-                                    
+
                                     if ($iteme->plugin == 'databasejoin') {
                                         $params = json_decode($iteme->params);
                                         if($params->database_join_display_type == 'checkbox'){
@@ -506,8 +506,19 @@ class EmundusModelApplication extends JModelList
                                             } catch (Exception $e) {
                                                 echo $e->getMessage();
                                             }
+                                        } else{
+                                            $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
+                                            $from = $params->join_db_name;
+                                            $where = $params->join_key_column.'='.$this->_db->Quote($iteme->content);
+                                            $query = "SELECT id, ".$select." FROM ".$from." WHERE ".$where;
+                                            $query = preg_replace('#{thistable}#', $from, $query);
+                                            $query = preg_replace('#{my->id}#', $aid, $query);
+                                            $this->_db->setQuery( $query );
+                                            $res = $this->_db->loadRow();
+                                            $iteme->content = @$res[1];
+                                            $iteme->content_id = @$res[0];
                                         }
-                                     }
+                                     } 
                                 } catch (Exception $e) {
                                     echo $e->getMessage();
                                 }
@@ -537,6 +548,9 @@ class EmundusModelApplication extends JModelList
                                         $query = preg_replace('#{my->id}#', $aid, $query);
                                         $this->_db->setQuery( $query );
                                         $elt = $this->_db->loadResult();
+                                    }
+                                    elseif ($element->plugin == 'checkbox') {
+                                        $elt = implode(", ", json_decode (@$element->content));
                                     }
                                     else
                                         $elt = $element->content;
@@ -602,6 +616,9 @@ class EmundusModelApplication extends JModelList
                                                 $this->_db->setQuery( $query );
                                                 $elt = $this->_db->loadResult();
                                             }
+                                            elseif ($elements[$j]->plugin == 'checkbox') {
+                                                $elt = implode(", ", json_decode (@$r_elt));
+                                            }
                                             else
                                                 $elt = $r_elt;
                                             //print_r($this->_mainframe->data);
@@ -625,6 +642,7 @@ class EmundusModelApplication extends JModelList
                         } else {
                             foreach($elements as &$element) {
                                 if(!empty($element->label) && $element->label!=' ') {
+
                                     if ($element->plugin=='date' && $element->content>0) {
                                         $date_params = json_decode($element->params);
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
@@ -638,7 +656,7 @@ class EmundusModelApplication extends JModelList
                                         $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
 
                                         if($params->database_join_display_type == 'checkbox'){
-                                            $elt = $element->content;
+                                            $elt = implode(", ", json_decode (@$element->content));
                                         }
                                         else {
                                             $from = $params->join_db_name;
@@ -664,6 +682,9 @@ class EmundusModelApplication extends JModelList
                                         $query = preg_replace('#{my->id}#', $aid, $query);
                                         $this->_db->setQuery( $query );
                                         $elt = $this->_db->loadResult();
+                                    }
+                                    elseif ($element->plugin == 'checkbox') {
+                                        $elt = implode(", ", json_decode (@$element->content));
                                     }
                                     else
                                         $elt = $element->content;
@@ -696,11 +717,14 @@ class EmundusModelApplication extends JModelList
                         width: 100%;
                     } 
                     th {
-                        border-spacing: 1px; color: #666666;
+                        border-spacing: 1px; 
+                        color: #666666;
+                        padding:5px;
                     }
                     td {
-                        border-spacing: 1px;
+                        border-spacing: 2px;
                         background-color: #FFFFFF;
+                        padding:5px;
                     }
                     </style>";
         if(isset($tableuser)) {
@@ -771,6 +795,10 @@ class EmundusModelApplication extends JModelList
                                         }
                                     }
                                 }
+                                elseif($iteme->plugin == 'checkbox') {
+                                    $iteme->content = implode(", ", json_decode (@$res[1]));
+                                    $iteme->content_id = $res[0];
+                                }
                             }
                         }
                         unset($iteme);
@@ -778,11 +806,12 @@ class EmundusModelApplication extends JModelList
                         if ($itemg->group_id == 14) {
 
                             foreach($elements as $element) {
-                                if(!empty($element->label) && $element->label!=' ') {
+                                if(!empty($element->label) && $element->label!=' ' && !empty($element->content)) {
                                     if ($element->plugin=='date' && $element->content>0) {
                                         $date_params = json_decode($element->params);
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
                                     } else $elt = $element->content;
+                                    
                                     $forms .= '<b>'.$element->label.': </b>'.$elt.'<br/>';
                                 }
                             }
@@ -844,6 +873,9 @@ class EmundusModelApplication extends JModelList
                                                 $this->_db->setQuery( $query );
                                                 $elt = $this->_db->loadResult();
                                             }
+                                            elseif($elements[$j]->plugin == 'checkbox') {
+                                                $elt = implode(", ", json_decode (@$r_elt));
+                                            }
                                             else
                                                 $elt = $r_elt;
                                             // trick to prevent from blank value in PDF when string is to long without spaces (usually emails)
@@ -889,33 +921,54 @@ class EmundusModelApplication extends JModelList
                                 $i = 1;
                                 foreach ($repeated_elements as $r_element) {
                                     $j = 0;
-                                    $forms .= '---- '.$i.' ----';
+                                    $forms .= '<br>---- '.$i.' ----';
                                     foreach ($r_element as $key => $r_elt) {
-                                        if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
-                                            if ($elements[$j]->plugin=='date') {
-                                                $date_params = json_decode($elements[$j]->params);
-                                                $elt = date($date_params->date_form_format, strtotime($r_elt));
+                                        if (!empty($r_elt)) {                        
+                                            if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
+                                                if ($elements[$j]->plugin=='date') {
+                                                    $date_params = json_decode($elements[$j]->params);
+                                                    $elt = date($date_params->date_form_format, strtotime($r_elt));
+                                                }
+                                                elseif ($elements[$j]->plugin=='birthday' && $r_elt>0) {
+                                                    $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
+                                                }
+                                                elseif($elements[$j]->plugin=='databasejoin') {
+                                                    $params = json_decode($elements[$j]->params);
+                                                    $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
+                                                    $from = $params->join_db_name;
+                                                    $where = $params->join_key_column.'='.$this->_db->Quote($r_elt);
+                                                    $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
+                                                    $query = preg_replace('#{thistable}#', $from, $query);
+                                                    $query = preg_replace('#{my->id}#', $aid, $query);
+                                                    $this->_db->setQuery( $query );
+                                                    $elt = $this->_db->loadResult();
+                                                }
+                                                elseif($element->plugin=='cascadingdropdown') {
+                                                    $params = json_decode($elements[$j]->params);
+                                                    $cascadingdropdown_id = $params->cascadingdropdown_id;
+                                                    $r1 = explode('___', $cascadingdropdown_id);
+                                                    $cascadingdropdown_label = $params->cascadingdropdown_label;
+                                                    $r2 = explode('___', $cascadingdropdown_label);
+                                                    $select = !empty($params->cascadingdropdown_label_concat)?"CONCAT(".$params->cascadingdropdown_label_concat.")":$r2[1];
+                                                    $from = $r2[0];
+                                                    $where = $r1[1].'='.$this->_db->Quote($element->content);
+                                                    $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
+                                                    $query = preg_replace('#{thistable}#', $from, $query);
+                                                    $query = preg_replace('#{my->id}#', $aid, $query);
+                                                    $this->_db->setQuery( $query );
+                                                    $elt = $this->_db->loadResult();
+                                                }
+                                                elseif($elements[$j]->plugin=='textarea') 
+                                                    $elt = '<br>'.$r_elt;
+                                                elseif($elements[$j]->plugin == 'checkbox') {
+                                                    $elt = implode(", ", json_decode (@$r_elt));
+                                                }
+                                                else
+                                                    $elt = $r_elt;
+                                                if (!empty($elt)) {
+                                                    $forms .= '<br><b><span style="color: #000071;">'.$elements[$j]->label.'</span>: </b>'.$elt;
+                                                }
                                             }
-                                            elseif ($elements[$j]->plugin=='birthday' && $r_elt>0) {
-                                                $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
-                                            }
-                                            elseif($elements[$j]->plugin=='databasejoin') {
-                                                $params = json_decode($elements[$j]->params);
-                                                $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
-                                                $from = $params->join_db_name;
-                                                $where = $params->join_key_column.'='.$this->_db->Quote($r_elt);
-                                                $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
-                                                $query = preg_replace('#{thistable}#', $from, $query);
-                                                $query = preg_replace('#{my->id}#', $aid, $query);
-                                                $this->_db->setQuery( $query );
-                                                $elt = $this->_db->loadResult();
-                                            }
-                                            elseif($elements[$j]->plugin=='textarea') 
-                                                $elt = '<br>'.$r_elt;
-                                            else
-                                                $elt = $r_elt;
-
-                                            $forms .= '<p><b><span style="color: #000071;">'.$elements[$j]->label.'</span>: </b>'.$elt.'</p>';
                                         }
                                         $j++;
                                     }
@@ -926,52 +979,58 @@ class EmundusModelApplication extends JModelList
                             // AFFICHAGE EN LIGNE
                         } else {
                             foreach($elements as $element) {
-                                if(!empty($element->label) && $element->label!=' ') {
-                                    if ($element->plugin=='date' && $element->content>0) {
-                                        $date_params = json_decode($element->params);
-                                        $elt = date($date_params->date_form_format, strtotime($element->content));
-                                    }
-                                    elseif ($element->plugin=='birthday' && $element->content>0) {
-                                        $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
-                                    }
-                                    elseif($element->plugin=='databasejoin') {
-                                        $params = json_decode($element->params);
-
-                                        $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
-
-                                        if($params->database_join_display_type == 'checkbox'){
-                                            $elt = $element->content;
+                                if (!empty($element->content)) {
+                                    if(!empty($element->label) && $element->label!=' ') {
+                                        if ($element->plugin=='date' && $element->content>0) {
+                                            $date_params = json_decode($element->params);
+                                            $elt = date($date_params->date_form_format, strtotime($element->content));
                                         }
-                                        else {
-                                            $from = $params->join_db_name;
-                                            $where = $params->join_key_column.'='.$this->_db->Quote($element->content);
+                                        elseif ($element->plugin=='birthday' && $element->content>0) {
+                                            $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                        }
+                                        elseif($element->plugin=='databasejoin') {
+                                            $params = json_decode($element->params);
+
+                                            $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
+
+                                            if($params->database_join_display_type == 'checkbox'){
+                                                $elt = implode(", ", json_decode (@$element->content));
+
+                                            }
+                                            else {
+                                                $from = $params->join_db_name;
+                                                $where = $params->join_key_column.'='.$this->_db->Quote($element->content);
+                                                $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
+                                                $query = preg_replace('#{thistable}#', $from, $query);
+                                                $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $this->_db->setQuery( $query );
+                                                $elt = $this->_db->loadResult();
+                                            }
+                                        }
+                                        elseif($element->plugin=='cascadingdropdown') {
+                                            $params = json_decode($element->params);
+                                            $cascadingdropdown_id = $params->cascadingdropdown_id;
+                                            $r1 = explode('___', $cascadingdropdown_id);
+                                            $cascadingdropdown_label = $params->cascadingdropdown_label;
+                                            $r2 = explode('___', $cascadingdropdown_label);
+                                            $select = !empty($params->cascadingdropdown_label_concat)?"CONCAT(".$params->cascadingdropdown_label_concat.")":$r2[1];
+                                            $from = $r2[0];
+                                            $where = $r1[1].'='.$this->_db->Quote($element->content);
                                             $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                             $query = preg_replace('#{thistable}#', $from, $query);
                                             $query = preg_replace('#{my->id}#', $aid, $query);
                                             $this->_db->setQuery( $query );
                                             $elt = $this->_db->loadResult();
                                         }
+                                        elseif($element->plugin=='textarea')
+                                            $elt = '<br>'.$element->content;
+                                        elseif($elements[$j]->plugin == 'checkbox') {
+                                            $elt = implode(", ", json_decode (@$element->content));
+                                        }
+                                        else
+                                            $elt = $element->content;
+                                        $forms .= '<br><span style="color: #000071;"><b>'.$element->label.'</span>: </b>'.$elt;
                                     }
-                                    elseif($element->plugin=='cascadingdropdown') {
-                                        $params = json_decode($element->params);
-                                        $cascadingdropdown_id = $params->cascadingdropdown_id;
-                                        $r1 = explode('___', $cascadingdropdown_id);
-                                        $cascadingdropdown_label = $params->cascadingdropdown_label;
-                                        $r2 = explode('___', $cascadingdropdown_label);
-                                        $select = !empty($params->cascadingdropdown_label_concat)?"CONCAT(".$params->cascadingdropdown_label_concat.")":$r2[1];
-                                        $from = $r2[0];
-                                        $where = $r1[1].'='.$this->_db->Quote($element->content);
-                                        $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
-                                        $query = preg_replace('#{thistable}#', $from, $query);
-                                        $query = preg_replace('#{my->id}#', $aid, $query);
-                                        $this->_db->setQuery( $query );
-                                        $elt = $this->_db->loadResult();
-                                    }
-                                    elseif($element->plugin=='textarea')
-                                        $elt = '<br>'.$element->content;
-                                    else
-                                        $elt = $element->content;
-                                    $forms .= '<p><span style="color: #000071;"><b>'.$element->label.'</span>: </b>'.$elt.'</p>';
                                 }
                             }
                         }
@@ -1105,6 +1164,9 @@ td {
                                             $this->_db->setQuery( $query );
                                             $elt = $this->_db->loadResult();
                                         }
+                                        elseif($elements[$j]->plugin == 'checkbox') {
+                                            $elt = implode(", ", json_decode (@$r_elt));
+                                        }
                                         else
                                             $elt = $r_elt;
 
@@ -1155,6 +1217,9 @@ td {
                                         $query = preg_replace('#{my->id}#', $aid, $query);
                                         $this->_db->setQuery( $query );
                                         $elt = $this->_db->loadResult();
+                                    }
+                                    elseif($element->plugin == 'checkbox') {
+                                        $elt = implode(", ", json_decode (@$element->content));
                                     }
                                     else
                                         $elt = $element->content;
