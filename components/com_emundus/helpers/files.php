@@ -675,7 +675,7 @@ echo "</pre>";
     {
         if (!empty($elements_id) && isset($elements_id)) {
             $db = JFactory::getDBO();
-            $query = 'SELECT element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.id, element.plugin as element_plugin, groupe.id as group_id, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias, joins.table_join
+            $query = 'SELECT removeHTMLTag(element.name) AS element_name, element.label as element_label, element.params AS element_attribs, element.id, element.plugin as element_plugin, groupe.id as group_id, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias, joins.table_join
                     FROM #__fabrik_elements element
                     INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id 
                     INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
@@ -684,7 +684,7 @@ echo "</pre>";
                     WHERE element.id IN ('.ltrim($elements_id, ',').')
                     ORDER BY formgroup.ordering, element.ordering ';
             $db->setQuery($query);
-//echo '<hr>'.str_replace('#_', 'jos', $query);
+//echo '<hr>'.str_replace('#_', 'jos', $query); 
             //$elementsIdTab = array_fill_keys(explode(',', $elements_id), "");
             $elementsIdTab = array();
             //$res0 = $db->loadObjectList();

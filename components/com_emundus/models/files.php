@@ -1966,7 +1966,7 @@ where 1 order by ga.fnum asc, g.title';
      * @param $methode  aggregate in one cell (0) or split one data per line
      * @return bool|mixed
      */
-    public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0)
+    public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0, $raw=1)
     {
         try
         {
@@ -2021,7 +2021,9 @@ where 1 order by ga.fnum asc, g.title';
                 }
                 else {
                     $select = $tableAlias[$elt->tab_name].'.'.$elt->element_name;
-                    $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name.'_raw';
+                    if ($raw == 1) {
+                        $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name.'_raw';
+                    }
 
                     if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
                         $element_attribs = json_decode($elt->element_attribs);

@@ -270,7 +270,8 @@ class EmundusHelperFilters {
 	/**
 	* Get list of elements declared in a list of Fabrik groups
 	* @param 	string 	List of Fabrik groups comma separated
-	* @param 	int 	Does the element are shown in Fabrik list ? 
+	* @param 	int 	Does the element are shown in Fabrik list ; if 1, show only item displayed in Fabrik List ? 
+	* @param 	int 	Does the element are hidden in Fabrik list ; if 0, show only displayed Fabrik Items ? 
 	* @return   array 	list of Fabrik element ID used in evaluation form
 	**/
 	function getElementsByGroups($groups, $show_in_list_summary=1, $hidden=0){
@@ -287,9 +288,10 @@ class EmundusHelperFilters {
 		$query .= $hidden==0?' AND element.hidden = 0 ':'';
 		$query .= ' AND element.published=1 
 					AND groupe.id IN ('.$groups.') 
-					AND element.label!=" " 
-					AND element.label!=""  
-				ORDER BY formgroup.ordering, groupe.id, element.ordering';
+					AND element.label != " " 
+					AND element.label != ""  
+					AND element.plugin != "display"  
+				ORDER BY formgroup.ordering, element.ordering';
 	//die(str_replace("#_", "jos", $query));
 		$db->setQuery( $query );
 		return $db->loadObjectList();

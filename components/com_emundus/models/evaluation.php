@@ -247,7 +247,8 @@ class EmundusModelEvaluation extends JModelList
 
 	/**
      * Get list of evaluation elements
-     * @param 	  int displayed in Fabrik List ; yes=1
+     * @param 	  show_in_list_summary int show item defined as displayed in Fabrik List ; yes=1
+     * @param 	  hidden int show item defined as hidden in Fabrik List  ; yes=1
      * @return    string list of Fabrik element ID used in evaluation form
      **/
     public function getEvaluationElementsName($show_in_list_summary=1, $hidden=0)
@@ -1092,7 +1093,9 @@ class EmundusModelEvaluation extends JModelList
 	}
 
 	// get elements by groups
-	// @params string List of Fabrik groups comma separated
+	// @param 	  $show_in_list_summary int show item defined as displayed in Fabrik List ; yes=1
+    // @param 	  $hidden int show item defined as hidden in Fabrik List  ; yes=1
+	// @params 	  $groups string List of Fabrik groups comma separated
 	function getElementsByGroups($groups, $show_in_list_summary=1, $hidden=0){
 		return @EmundusHelperFilters::getElementsByGroups($groups, $show_in_list_summary, $hidden);
 	}

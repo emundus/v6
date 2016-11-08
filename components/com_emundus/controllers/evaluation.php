@@ -688,7 +688,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
     {
          //Filters
         $model = $this->getModel('Evaluation');
-        $defaultElements = $model->getEvaluationElementsName(0, 1);
+        $defaultElements = $model->getEvaluationElementsName(0, 0);
         //var_dump($defaultElements);die();
         $elements = EmundusHelperFiles::getElements();
         $res = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);
@@ -979,7 +979,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         foreach($col as $c){
             $ordered_elements[$c] = $elements[$c];
         }
-        $fnumsArray = $model->getFnumArray($fnums, $ordered_elements, 0, $start, $limit);
+        $fnumsArray = $model->getFnumArray($fnums, $ordered_elements, 0, $start, $limit, 0);
 
         // On met a jour la liste des fnums traités
         $fnums =array();
@@ -1020,7 +1020,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
             $nbcol = 6;
             foreach ($ordered_elements as $fKey => $fLine) {
                 //if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id') {
-                    $line .= $fLine->element_label . "\t";
+                    $line .= strip_tags($fLine->element_label) . "\t";
                     $nbcol++;
                 //}
             }
@@ -1033,7 +1033,6 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
                 $nbcol++;
             }
-
             // On met les en-têtes dans le CSV
             $element_csv[] = $line;
             $line = "";
@@ -1051,13 +1050,14 @@ class EmundusControllerEvaluation extends JControllerLegacy
                         $line .= $status[$v]['value']."\t";
                         $uid = intval(substr($v, 21, 7));
                         $userProfil = JUserHelper::getProfile($uid)->emundus_profile;
-                        $line .= strtoupper($userProfil['lastname'])."\t";
+                        $lastname = (!empty($userProfil['lastname']))?$userProfil['lastname']:JFactory::getUser($uid)->name;
+                        $line .= strtoupper($lastname)."\t";
                         $line .= $userProfil['firstname']."\t";
                     }
-                    elseif($k === 'jos_emundus_evaluations___user')
+                    /*elseif($k === 'jos_emundus_evaluations___user')
                     {
                         $line .= strip_tags(JFactory::getUser($v)->name)."\t";
-                    }
+                    }*/
                     else
                     {
                         $line .= strip_tags($v)."\t";
