@@ -224,9 +224,9 @@ class EmundusModelThesiss extends JModelList
         {
             //$query->where('a.valide_comite = 1');
             $query->where('a.published = 1');
+            $query->where('a.valide = 1');
             $query->where('a.state = 1');
             //$query->where('a.date_limite >= NOW()');
-            $query->where('esc.published = 1');
             $query->where('esc.start_date <= NOW()');
             $query->where('esc.end_date > NOW()');
         }

@@ -110,7 +110,10 @@ $canView = $user->authorise('core.viewthesis', 'com_emundus');
             <tfoot>
             <tr>
                 <td colspan="<?php echo isset($this->items[0]) ? count(get_object_vars($this->items[0])) : 10; ?>">
-                    <?php echo $this->pagination->getListFooter(); ?>
+                    <?php 
+                        echo $this->pagination->getListFooter(); 
+                        echo $this->pagination->getResultsCounter(); 
+                    ?>
                 </td>
             </tr>
             </tfoot>
