@@ -966,7 +966,7 @@ class EmundusModelApplication extends JModelList
                                                 else
                                                     $elt = $r_elt;
                                                 if (!empty($elt)) {
-                                                    $forms .= '<br><b><span style="color: #000071;">'.$elements[$j]->label.'</span>: </b>'.$elt;
+                                                    $forms .= '<br><span style="color: #000071;"><b>'.$elements[$j]->label.'</b></span>: '.$elt;
                                                 }
                                             }
                                         }
@@ -1029,7 +1029,7 @@ class EmundusModelApplication extends JModelList
                                         }
                                         else
                                             $elt = $element->content;
-                                        $forms .= '<br><span style="color: #000071;"><b>'.$element->label.'</span>: </b>'.$elt;
+                                        $forms .= '<br><span style="color: #000071;"><b>'.$element->label.'</b></span>: '.$elt;
                                     }
                                 }
                             }
