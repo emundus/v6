@@ -2,8 +2,7 @@
 /**
  * @package    eMundus
  * @subpackage Components
- *             components/com_emundus/emundus.php
- * @link       http://www.decisionpublique.fr
+ * @link       http://www.emundus.fr
  * @license    GNU/GPL
  * @author     Benjamin Rivalland
 */
@@ -189,10 +188,15 @@ class EmundusViewEvaluation extends JViewLegacy
                                 continue;
                             }
 							elseif ($key == 'evaluator') {
-								if ($evaluators_can_see_other_eval || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) 
-									$userObj->val = !empty($value)?'<a href="#" data-toggle="modal" data-target="#basicModal" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'">
-											<span class="glyphicon icon-eye-open" title="'.JText::_('DETAILS').'">  </span>
-										</a>'.$value:'';
+								if ($formid > 0 && !empty($value)) {
+									if ($evaluators_can_see_other_eval) {
+										$link_view = '<a href="'.$form_url_view.$user['evaluation_id'].'" data-toggle="modal" data-target="#basicModal" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'"><span class="glyphicon icon-eye-open" title="'.JText::_('DETAILS').'">  </span></a>';
+									}
+									if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) { 
+										$link_edit = '<a href="'.$form_url_edit.$user['evaluation_id'].'" target="_blank"><span class="glyphicon icon-edit" title="'.JText::_('EDIT').'"> </span></a>';
+									}
+									$userObj->val = $link_view.' '.$link_edit.' '.$value;
+								}
 								else
 									$userObj->val = $value;
 
