@@ -10,7 +10,7 @@ defined( '_JEXEC' ) or die();
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  * See COPYRIGHT.php for copyright notices and details.
- * @description Envoi automatique d'un email � l'�tudiant lors de la validation de son dossier de candidature
+ * @description Envoi automatique d'un email suivan les triggers définis
  */
 
 $db = JFactory::getDBO();
@@ -25,7 +25,7 @@ jimport('joomla.log.log');
 JLog::addLogger(
     array(
         // Sets file name
-        'text_file' => 'com_emundus.fabrikPhpPlugin.php'
+        'text_file' => 'com_emundus.submit.php'
     ),
     // Sets messages of all log levels to be sent to the file
     JLog::ALL,
@@ -39,21 +39,47 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
 $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', 0);
 $application_fee = $eMConfig->get('application_fee', 0);
 
+
+
+// Application fees
+if ($application_fee == 1) {
+    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+
+    $application = new EmundusModelApplication;
+
+    $fnumInfos = EmundusModelFiles::getFnumInfos($student->fnum);
+    if (count($fnumInfos) > 0) {
+        $paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
+
+        if (!$paid) {
+            $checkout_url = $application->getHikashopCheckoutUrl($student->profile);
+            $mainframe->redirect(JRoute::_($checkout_url));
+        }
+    } else {
+        $mainframe->redirect('index.php');
+    }
+
+}
+
 // get current applicant course
 $campaigns = new EmundusModelCampaign;
 $campaign = $campaigns->getCampaignByID($student->campaign_id);
 
 $emails = new EmundusModelEmails;
 
-$post = array(  'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($campaign['end_date'])),
-                'APPLICANTS_LIST' => '',
-                'EVAL_CRITERIAS' => '',
-                'EVAL_PERIOD' => '',
-                'CAMPAIGN_LABEL' => $campaign['label'],
-                'CAMPAIGN_YEAR' => $campaign['year'],
-                'CAMPAIGN_START' => $campaign['start_date'],
-                'CAMPAIGN_END' => $campaign['end_date'],
-                'CAMPAIGN_CODE' => $campaign['training']
+$post = array( 
+    'APPLICANT_ID'  => $student->id,
+    'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($campaign['end_date'])),
+    'APPLICANTS_LIST' => '',
+    'EVAL_CRITERIAS' => '',
+    'EVAL_PERIOD' => '',
+    'CAMPAIGN_LABEL' => $campaign['label'],
+    'CAMPAIGN_YEAR' => $campaign['year'],
+    'CAMPAIGN_START' => $campaign['start_date'],
+    'CAMPAIGN_END' => $campaign['end_date'],
+    'CAMPAIGN_CODE' => $campaign['training']
 );
 
 // Applicant cannot delete this attachments now
@@ -102,7 +128,7 @@ if (count($trigger_emails) > 0) {
             $mailer     = JFactory::getMailer();
 
             //$post = array();
-            $tags = $emails->setTags($recipient['id'], $post);
+            $tags = $emails->setTags($student->id, $post);
 
             $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
             $from_id = 62;
@@ -121,7 +147,7 @@ if (count($trigger_emails) > 0) {
                 $email_from_sys,
                 $fromname
             );
-
+            
             $mailer->setSender($sender);
             $mailer->addReplyTo($from, $fromname);
             $mailer->addRecipient($to);
@@ -148,26 +174,4 @@ if (count($trigger_emails) > 0) {
     }
 }
 
-if ($application_fee == 1) {
-    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
-    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-
-    $application = new EmundusModelApplication;
-
-    $fnumInfos = EmundusModelFiles::getFnumInfos($student->fnum);
-    if (count($fnumInfos) > 0) {
-        $paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
-
-        if (!$paid) {
-            $checkout_url = $application->getHikashopCheckoutUrl($student->profile);
-            $mainframe->redirect(JRoute::_($checkout_url));
-        }
-    } else {
-        $mainframe->redirect('index.php');
-    }
-
-}
-
-
-?>
+?>  
