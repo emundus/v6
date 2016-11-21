@@ -2021,7 +2021,7 @@ where 1 order by ga.fnum asc, g.title';
                 }
                 else {
                     //$select = $tableAlias[$elt->tab_name].'.'.$elt->element_name;
-                    $select = '`'.$tableAlias[$elt->tab_name] . '`.`' . $elt->element_name.'`';
+                    $select = 'REPLACE(`'.$tableAlias[$elt->tab_name] . '`.`' . $elt->element_name.'`, "\t", "" )';
                     $if = array();
                     $endif = '';
                     if ($raw == 1) {
