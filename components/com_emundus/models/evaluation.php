@@ -157,11 +157,16 @@ class EmundusModelEvaluation extends JModelList
 				}
 				elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
 					$element_attribs = json_decode($def_elmt->element_attribs);
-					$select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
+					$select = '`'.$def_elmt->tab_name . '`.`' . $def_elmt->element_name.'`';
+					$if = array();
+					$endif = '';
 					foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-						$select = 'REPLACE('.$select.', "'.$value.'", "'.$element_attribs->sub_options->sub_labels[$key].'")';
+						$if[] = 'IF('.$select.'="'.$value.'","'.$element_attribs->sub_options->sub_labels[$key].'"';
+						$endif .= ')';
+						//$select = 'REPLACE('.$select.', "'.$value.'", "'.$element_attribs->sub_options->sub_labels[$key].'")';
 					}
-					$this->_elements_default[] = $select.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
+					//$this->_elements_default[] = $select.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
+					$this->_elements_default[] = implode(',', $if).','.$select.$endif.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
 				}
 				else {
 					if (@$group_params->repeat_group_button == 1) {

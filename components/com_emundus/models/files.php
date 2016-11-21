@@ -1866,7 +1866,7 @@ where 1 order by ga.fnum asc, g.title';
                         left join #__emundus_setup_status as ss on ss.step = cc.status
                         where cc.fnum in ("'. implode('","', $fnums).'")';
             $db->setQuery($query);
-
+//echo str_replace('#_', 'jos', $query);
             return $db->loadAssocList('fnum');
         }
         catch (Exception $e)
@@ -2020,7 +2020,10 @@ where 1 order by ga.fnum asc, g.title';
                     }
                 }
                 else {
-                    $select = $tableAlias[$elt->tab_name].'.'.$elt->element_name;
+                    //$select = $tableAlias[$elt->tab_name].'.'.$elt->element_name;
+                    $select = '`'.$tableAlias[$elt->tab_name] . '`.`' . $elt->element_name.'`';
+                    $if = array();
+                    $endif = '';
                     if ($raw == 1) {
                         $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name.'_raw';
                     }
@@ -2028,8 +2031,11 @@ where 1 order by ga.fnum asc, g.title';
                     if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
                         $element_attribs = json_decode($elt->element_attribs);
                         foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                            $select = 'REPLACE('.$select.', "'.$value.'", "'.$element_attribs->sub_options->sub_labels[$key].'")';
+                            $if[] = 'IF('.$select.'="'.$value.'","'.$element_attribs->sub_options->sub_labels[$key].'"';
+                            $endif .= ')';
+                            //$select = 'REPLACE('.$select.', "'.$value.'", "'.$element_attribs->sub_options->sub_labels[$key].'")';
                         }
+                        $select = implode(',', $if).','.$select.$endif;
                     }
                     elseif ($elt->element_plugin == 'databasejoin') {
                         $element_attribs = json_decode($elt->element_attribs);

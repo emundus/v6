@@ -1717,6 +1717,7 @@ echo "</pre>";
                         $element->element_name != 'email' &&
                         $element->element_name != 'label' &&
                         $element->element_name != 'code' &&
+                        $element->element_name != 'spacer' &&
                         array_key_exists($k, $eval))
                     {
                         $str .= '<tr>';
