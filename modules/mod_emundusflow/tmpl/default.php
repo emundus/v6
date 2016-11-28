@@ -7,6 +7,7 @@ $renew='';
 $step_form = $forms<100?'':'completed';
 $step_attachment = $attachments<100?'':'completed';
 $step_paiement = @$paid==0?'':'completed';
+$btn_send = '';
 if ($forms>=100 && $attachments>=100 && $paid>0 && $sent==0) {
   $btn_send = '
   <div class="ui vertical mini button">
