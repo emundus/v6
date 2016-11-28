@@ -74,6 +74,13 @@ class plgUserEmundus_univ_poitiers extends JPlugin
 
                 $current_user->menutype = $p->menutype;
                 $current_user->profile = $p->id;
+
+                $session = JFactory::getSession();
+                $session_user = $session->get('user');
+                $session_user->menutype = $p->menutype;
+                $session_user->profile = $p->id;
+                $session->set('user', $session_user);
+
                 $app->redirect("index.php");
             }
         } else {

@@ -246,6 +246,8 @@ class plgUserEmundus extends JPlugin
 
         $app            = JFactory::getApplication();
         $current_user   = JFactory::getUser();
+        $session        = JFactory::getSession();
+        $session_user   = $session->get('user');
 
         if (!$app->isAdmin()) {
             
@@ -266,9 +268,12 @@ class plgUserEmundus extends JPlugin
             else {
 
                 $profile = $profiles->getProfileByApplicant($current_user->id);
-                $current_user->firstname                = $profile["firstname"];
-                $current_user->lastname                 = strtoupper($profile["lastname"]);
-                $current_user->emGroups                 = array_keys($users->getUserGroups($current_user->id));
+                //$current_user->firstname                = $profile["firstname"];
+                $session_user->firstname                = $profile["firstname"];
+                //$current_user->lastname                 = strtoupper($profile["lastname"]);
+                $session_user->lastname                 = strtoupper($profile["lastname"]);
+                //$current_user->emGroups                 = array_keys($users->getUserGroups($current_user->id));
+                $session_user->emGroups                 = array_keys($users->getUserGroups($current_user->id));
 
                 if (EmundusHelperAccess::isApplicant($current_user->id)) {
                     $profile        = $profiles->getProfileByCampaign($campaign["id"]);
@@ -276,31 +281,54 @@ class plgUserEmundus extends JPlugin
                     if( empty($p['profile']) || empty($campaign["id"]) || !isset($p['profile']) || !isset($campaign["id"]) )
                         $app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
 
-                    $current_user->profile                  = $profile["profile_id"];
-                    $current_user->profile_label            = $profile["label"];
-                    $current_user->menutype                 = $profile["menutype"];
-                    $current_user->university_id            = null;
-                    $current_user->applicant                = 1;
-                    $current_user->start_date               = $profile["start_date"];
-                    $current_user->end_date                 = $profile["end_date"];
-                    $current_user->candidature_start        = $profile["start_date"];
-                    $current_user->candidature_end          = $profile["end_date"];
-                    $current_user->candidature_posted       = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] ==0  || @$profile["date_submitted"] == NULL)?0:1;
-                    $current_user->candidature_incomplete   = (count($incomplete)==0)?0:1;
-                    $current_user->schoolyear               = $profile["year"];
-                    $current_user->code                     = $profile["training"];
-                    $current_user->campaign_id              = $campaign["id"];
-                    $current_user->campaign_name            = $profile["label"];
-                    $current_user->fnum                     = $campaign["fnum"];
-                    $current_user->fnums                    = $profiles->getApplicantFnums($current_user->id, null, $profile["start_date"], $profile["end_date"]);
-                    $current_user->status                   = @$campaign["status"];
+                    //$current_user->profile                  = $profile["profile_id"];
+                    $session_user->profile                  = $profile["profile_id"];
+                    //$current_user->profile_label            = $profile["label"];
+                    $session_user->profile_label            = $profile["label"];
+                    //$current_user->menutype                 = $profile["menutype"];
+                    $session_user->menutype                 = $profile["menutype"];
+                    //$current_user->university_id            = null;
+                    $session_user->university_id            = null;
+                    //$current_user->applicant                = 1;
+                    $session_user->applicant                = 1;
+                    //$current_user->start_date               = $profile["start_date"];
+                    $session_user->start_date               = $profile["start_date"];
+                    //$current_user->end_date                 = $profile["end_date"];
+                    $session_user->end_date                 = $profile["end_date"];
+                    //$current_user->candidature_start        = $profile["start_date"];
+                    $session_user->candidature_start        = $profile["start_date"];
+                    //$current_user->candidature_end          = $profile["end_date"];
+                    $session_user->candidature_end          = $profile["end_date"];
+                    //$current_user->candidature_posted       = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] ==0  || @$profile["date_submitted"] == NULL)?0:1;
+                    $session_user->candidature_posted       = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] ==0  || @$profile["date_submitted"] == NULL)?0:1;
+                    //$current_user->candidature_incomplete   = (count($incomplete)==0)?0:1;
+                    $session_user->candidature_incomplete   = (count($incomplete)==0)?0:1;
+                    //$current_user->schoolyear               = $profile["year"];
+                    $session_user->schoolyear               = $profile["year"];
+                    //$current_user->code                     = $profile["training"];
+                    $session_user->code                     = $profile["training"];
+                    //$current_user->campaign_id              = $campaign["id"];
+                    $session_user->campaign_id              = $campaign["id"];
+                    //$current_user->campaign_name            = $profile["label"];
+                    $session_user->campaign_name            = $profile["label"];
+                    //$current_user->fnum                     = $campaign["fnum"];
+                    $session_user->fnum                     = $campaign["fnum"];
+                    //$current_user->fnums                    = $profiles->getApplicantFnums($current_user->id, null, $profile["start_date"], $profile["end_date"]);
+                    $session_user->fnums                    = $profiles->getApplicantFnums($current_user->id, null, $profile["start_date"], $profile["end_date"]);
+                    //$current_user->status                   = @$campaign["status"];
+                    $session_user->status                   = @$campaign["status"];
 
                 } else {
-                    $current_user->profile                  = $profile["profile"];
-                    $current_user->profile_label            = $profile["profile_label"];
-                    $current_user->menutype                 = $profile["menutype"];
-                    $current_user->university_id            = $profile["university_id"];
-                    $current_user->applicant                = 0;
+                    //$current_user->profile                  = $profile["profile"];
+                    $session_user->profile                  = $profile["profile"];
+                    //$current_user->profile_label            = $profile["profile_label"];
+                    $session_user->profile_label            = $profile["profile_label"];
+                    //$current_user->menutype                 = $profile["menutype"];
+                    $session_user->menutype                 = $profile["menutype"];
+                    //$current_user->university_id            = $profile["university_id"];
+                    $session_user->university_id            = $profile["university_id"];
+                    //$current_user->applicant                = 0;
+                    $session_user->applicant                = 0;
                 }
 
                 //if ($current_user->code == "csc") {
@@ -314,7 +342,9 @@ class plgUserEmundus extends JPlugin
                 //$app->redirect('/');
             }
         } 
-    //var_dump($current_user); die();    
+    //var_dump($current_user); die();  
+        $session->set('user', $session_user);
+
         return true;
     }
 
