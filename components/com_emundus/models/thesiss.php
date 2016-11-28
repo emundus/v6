@@ -279,22 +279,26 @@ class EmundusModelThesiss extends JModelList
     public function getApplied(){
         $db = JFactory::getDbo();
         $current_user = JFactory::getUser();
-        try
-        {
-            $query = "SELECT *
-                      FROM #__emundus_thesis_candidat etc
-                      LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.fnum = etc.fnum
-                      WHERE etc.fnum like \"$current_user->fnum\"
-                      AND ecc.campaign_id = $current_user->campaign_id";
-            $db->setQuery($query);
-//echo str_replace('#_', 'jos', $query);
-            return $db->loadObjectList();
-        }
-        catch(Exception $e)
-        {
-            throw $e;
-            return false;
-        }
+        if (!$current_user->guest) {
+	        try
+	        {
+	            $query = "SELECT *
+	                      FROM #__emundus_thesis_candidat etc
+	                      LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.fnum = etc.fnum
+	                      WHERE etc.fnum like \"$current_user->fnum\"
+	                      AND ecc.campaign_id = $current_user->campaign_id";
+	            $db->setQuery($query);
+	//echo str_replace('#_', 'jos', $query);
+	            return $db->loadObjectList();
+	        }
+	        catch(Exception $e)
+	        {
+	            throw $e;
+	            return false;
+	        }
+	    } else {
+	    	return array();
+	    }
     }
 
 	public function getItems()
