@@ -1727,12 +1727,18 @@ DELETE 06/06/2016
     /**
      * @return mixed|null
      */
-    public function getPhotos()
+    public function getPhotos($fnums = array())
     {
         try
         {
             $db = $this->getDbo();
-            $query = 'select emu.id, emu.user_id, c.fnum, emu.filename  from #__emundus_uploads as emu left join #__emundus_campaign_candidature as c on c.applicant_id = emu.user_id where attachment_id = 10';
+            $query = 'select emu.id, emu.user_id, c.fnum, emu.filename  
+                        from #__emundus_uploads as emu 
+                        left join #__emundus_campaign_candidature as c on c.applicant_id = emu.user_id 
+                        where attachment_id = 10';
+            if (count($fnums) > 0) {
+                $query .= ' AND emu.fnum IN ('.implode(',', $db->quote($fnums)).') GROUP BY emu.fnum';
+            }
             $db->setQuery($query);
             return $db->loadAssocList('fnum');
         }

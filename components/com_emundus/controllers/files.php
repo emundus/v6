@@ -1191,6 +1191,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $model = $this->getModel('Files');
         $modelApp = $this->getModel('Application');
+        $profiles = $this->getModel('Profile');
 
         $session     = JFactory::getSession();
         $fnums = $session->get('fnums_export');
@@ -1238,7 +1239,19 @@ class EmundusControllerFiles extends JControllerLegacy
             
             switch ($col[0]) {
                 case "photo":
-                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($model, JURI::base());
+                   //$colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($model, JURI::base());
+                    $photos = $model->getPhotos($fnums);
+                    if (count($photos) > 0) {
+                        $pictures = array();
+                        foreach ($photos as $photo)
+                        {
+                            $folder = $baseUrl.EMUNDUS_PATH_REL.$photo['user_id'];
+                            $pictures[$photo['fnum']] = '<a href="'.$folder.'/'.$photo['filename'].'" target="_blank"><img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></a>';
+                        }
+                        $colOpt['PHOTO'] = $pictures;
+                    } else {
+                        $colOpt['PHOTO'] = array();
+                    }
                     break;
                 case "forms":
                     foreach ($fnums as $fnum) {
@@ -2281,7 +2294,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
                             }
                         }
-                        if($elt['plugin'] == "birthday")
+                        elseif($elt['plugin'] == "birthday")
                         {
                             foreach($fabrikValues[$elt['id']] as $fnum => $val)
                             {
@@ -2292,6 +2305,10 @@ class EmundusControllerFiles extends JControllerLegacy
                                 }
                                 $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
                             }
+                        }
+                        else
+                        {
+                            $fabrikValues[$elt['id']] = $model->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
                         }
                     }
                     foreach($fnumsArray as $fnum)
