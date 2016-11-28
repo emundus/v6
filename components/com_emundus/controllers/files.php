@@ -1227,7 +1227,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $ordered_elements[$c] = $elements[$c];
         }
 
-        $fnumsArray = $model->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit);
+        $fnumsArray = $model->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
 
         // On met a jour la liste des fnums traités
         $fnums =array();
@@ -1314,7 +1314,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         // On parcours les fnums
         foreach ($fnumsArray as $fnum) {
-            // On traitre les données du fnum
+            // On traite les données du fnum
             foreach($fnum as $k => $v)
             {
                 if ($k != 'code' && $k != 'campaign_id' && $k != 'jos_emundus_campaign_candidature___campaign_id' && $k != 'c___campaign_id') {
@@ -1337,7 +1337,13 @@ class EmundusControllerFiles extends JControllerLegacy
             foreach($colOpt as $kOpt => $vOpt) {
                 switch ($kOpt) {
                     case "PHOTO":
-                        $line .= JText::_('photo') . "\t";
+                        //$line .= JText::_('photo') . "\t";
+                        if (array_key_exists($fnum['fnum'],$vOpt)) {
+                            $val = $vOpt[$fnum['fnum']];
+                            $line .= $val . "\t";
+                        } else {
+                            $line .= "\t";
+                        }
                         break;
                     case "forms":
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
@@ -1562,7 +1568,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $objPHPExcel->getActiveSheet()->freezePane('A2');
 
-        $objReader->loadIntoExisting(JPATH_BASE.DS."tmp".DS.$csv,$objPHPExcel);
+        $objReader->loadIntoExisting(JPATH_BASE.DS."tmp".DS.$csv, $objPHPExcel);
 
         $objConditional1 = new PHPExcel_Style_Conditional();
         $objConditional1->setConditionType(PHPExcel_Style_Conditional::CONDITION_CELLIS)
@@ -1583,21 +1589,28 @@ class EmundusControllerFiles extends JControllerLegacy
         $objConditional3->getStyle()->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
         $i = 0;
+        //FNUM
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $objPHPExcel->getActiveSheet()->getStyle('A2:A'.($nbrow+ 1))->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_NUMBER );
         $i++;
+        //STATUS
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
         $i++;
+        //LASTNAME
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
         $i++;
+        //FIRSTNAME
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
         $i++;
+        //EMAIL
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
+        $objPHPExcel->getActiveSheet()->getStyle('E2:E'.($nbrow+ 1))->getNumberFormat()->setFormatCode( PHPExcel_Style_Font::UNDERLINE_SINGLE );
         $i++;
+        //CAMPAIGN
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
         $i++;
 
-        for ($i; $i<$nbcol;$i++) {
+        for ($i ; $i<$nbcol ; $i++) {
             $value = $objPHPExcel->getActiveSheet()->getCellByColumnAndRow($i, 1)->getValue();
 
             if ($value=="forms(%)" || $value=="attachment(%)") {
@@ -1608,6 +1621,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i].'1')->setConditionalStyles($conditionalStyles);
                 $objPHPExcel->getActiveSheet()->duplicateConditionalStyle($conditionalStyles,$colonne_by_id[$i].'1:'.$colonne_by_id[$i].($nbrow+ 1));
             }
+
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         }
 
@@ -1626,53 +1640,9 @@ class EmundusControllerFiles extends JControllerLegacy
         echo json_encode((object) $result);
         exit();
 
-   }/*
+   }
 
 
-
-
-        //$objPHPExcel = new PHPExcel();
-        $inputFileType = 'CSV';
-        $inputFileName = 'testFile.csv';
-
-
-        // Create new PHPExcel object
-        $objPHPExcel = new PHPExcel();
-        // Initiate cache
-        $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
-        $cacheSettings = array( 'memoryCacheSize' => '32MB');
-        PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
-
-
-
-        // Initiate cache
-        $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
-        $cacheSettings = array( 'memoryCacheSize' => '32MB');
-        PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
-
-        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-        $objPHPExcel = $objReader->load($inputFileName);
-
-        // Set properties
-        $objPHPExcel->getProperties()->setCreator("eMundus SAS : http://www.emundus.fr/");
-        $objPHPExcel->getProperties()->setLastModifiedBy("eMundus SAS");
-        $objPHPExcel->getProperties()->setTitle("eMmundus Report");
-        $objPHPExcel->getProperties()->setSubject("eMmundus Report");
-        $objPHPExcel->getProperties()->setDescription("Report from open source eMundus plateform : http://www.emundus.fr/");
-        $objPHPExcel->setActiveSheetIndex(0);
-        $objPHPExcel->getActiveSheet()->setTitle('Extraction');
-        $objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-        $objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
-
-        $objPHPExcel->getActiveSheet()->freezePane('A2');
-
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-       // $objWriter = new PHPExcel_Writer_Excel5($objPHPExcel);
-
-        $objWriter->save(JPATH_BASE.DS.'tmp'.DS.JFactory::getUser()->id.'_extraction.xls');
-        return JFactory::getUser()->id.'_extraction.xls';
-
-    }*/
     /**
      * @param $fnums
      * @param $objs
@@ -1853,7 +1823,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 switch($kOpt)
                 {
                     case "photo":
-                        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('photo'));
+                        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('PHOTO'));
                         break;
                     case "forms":
                         $val = $vOpt[$fnunLine['fnum']];
