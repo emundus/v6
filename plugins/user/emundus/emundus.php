@@ -5,7 +5,7 @@
  * @link        http://www.emundus.fr
  * @copyright   Copyright (C) 2016 eMundus. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
- * @author      Decision Publique - Benjamin Rivalland
+ * @author      eMundus SAS - Benjamin Rivalland
  */
 
 // No direct access

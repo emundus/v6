@@ -3,7 +3,7 @@
  * @version		$Id: data.php 14401 2014-09-16 14:10:00Z brivalland $
  * @package		Joomla
  * @subpackage	Emundus
- * @copyright	Copyright (C) 2005 - 2015 Décision Publique. All rights reserved.
+ * @copyright	Copyright (C) 2005 - 2015 eMundus SAS. All rights reserved.
  * @license		GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant to the
  * GNU General Public License, and as distributed it includes or is derivative

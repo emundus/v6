@@ -1,15 +1,11 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: brivalland
- * Date: 17/10/14
- * Time: 11:39
- * @package        Joomla
- * @subpackage    eMundus
- * @link          http://www.emundus.fr
- * @copyright    Copyright (C) 2008 - 2014 Décision Publique. All rights reserved.
- * @license        GNU/GPL
- * @author        Decision Publique - Yoan Durand
+ * @package      Joomla
+ * @subpackage   eMundus
+ * @link         http://www.emundus.fr
+ * @copyright    Copyright (C) 2008 - 2014 eMundus SAS. All rights reserved.
+ * @license      GNU/GPL
+ * @author       eMundus SAS - Yoan Durand
  */
 
 // No direct access

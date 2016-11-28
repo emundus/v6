@@ -38,8 +38,8 @@ class EmundusModelXls_ranking extends JModelList
 		$cacheSettings = array( 'memoryCacheSize' => '32MB');
 		PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
 		// Set properties
-		$objPHPExcel->getProperties()->setCreator("Décision Publique : http://www.decisionpublique.fr/");
-		$objPHPExcel->getProperties()->setLastModifiedBy("Décision Publique");
+		$objPHPExcel->getProperties()->setCreator("eMundus SAS : http://www.emundus.fr/");
+		$objPHPExcel->getProperties()->setLastModifiedBy("eMundus SAS");
 		$objPHPExcel->getProperties()->setTitle("eMmundus® Report");
 		$objPHPExcel->getProperties()->setSubject("eMmundus® Report");
 		$objPHPExcel->getProperties()->setDescription("Report from open source eMundus® plateform : http://www.emundus.fr/");

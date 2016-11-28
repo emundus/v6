@@ -8,7 +8,7 @@ error_reporting(E_ALL);*/
 /**
  * @package		Joomla
  * @subpackage	eMundus
- * @copyright	Copyright (C) 2008-2010 Décision Publique SARL (http://www.decisionpublique.fr). All rights reserved.
+ * @copyright	Copyright (C) 2016 eMundus SAS (http://www.emundus.fr). All rights reserved.
  * @license		GNU/GPL
  */
 

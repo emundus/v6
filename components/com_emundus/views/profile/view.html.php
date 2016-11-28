@@ -4,7 +4,7 @@
  * @subpackage Components
  * @link       http://www.emundus.fr
  * @license    GNU/GPL
- * @author     Decision Publique - Jonas Lerebours
+ * @author     eMundus SAS - Jonas Lerebours
 */
  
 // no direct access

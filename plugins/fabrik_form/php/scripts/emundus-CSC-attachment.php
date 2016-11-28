@@ -3,7 +3,7 @@ defined( '_JEXEC' ) or die();
 /**
  * @version 1: attachement.php 89 2016-01-13 Benjamin Rivalland
  * @package Fabrik
- * @copyright Copyright (C) 2008 Décision Publique. All rights reserved.
+ * @copyright Copyright (C) 2008 eMundus SAS. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or

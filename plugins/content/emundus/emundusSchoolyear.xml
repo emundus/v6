@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <install version="1.5" type="plugin" group="content">
 	<name>eMundus Schoolyear</name>
-	<author>Benjamin Rivalland (Décision Publique SARL)</author>
+	<author>Benjamin Rivalland (eMundus SAS)</author>
 	<creationDate>Février 2011</creationDate>
-	<copyright>Copyright (C) 2008-2010 Décision Publique SARL. All rights reserved.</copyright>
+	<copyright>Copyright (C) 2016 eMundus SAS. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-	<authorEmail>brivalland@decisionpublique.fr</authorEmail>
-	<authorUrl>www.decisionpublique.fr</authorUrl>
+	<authorEmail>benjamin@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
 	<version>1.0b</version>
 	<description><![CDATA[
 	Set schoolyear plugin {emundusSchoolyear usekey=schoolyear} <a href="index.php?option=com_plugins&client=site">Admin Plugin</a>

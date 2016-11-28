@@ -3,9 +3,9 @@
 	<name>plg_user_profile</name>
 	<author>Benjamin Rivalland</author>
 	<creationDate>January 2013</creationDate>
-	<copyright>(C) 2010-${year} Décision Publique. All rights reserved.</copyright>
+	<copyright>(C) 2010-${year} eMundus SAS. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<authorEmail>benjamin@decisionpublique.fr</authorEmail>
+	<authorEmail>benjamin@emundus.fr</authorEmail>
 	<authorUrl>www.emundus.fr</authorUrl>
 	<version>2.5.0</version>
 	<files>

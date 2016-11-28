@@ -4,8 +4,7 @@
  * 
  * @package    eMundus
  * @subpackage Components
- *             components/com_emundus/emundus.php
- * @link       http://www.decisionpublique.fr
+ * @link       http://www.emundus.fr
  * @license    GNU/GPL
  * @author     Benjamin Rivalland
  */

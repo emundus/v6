@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="2.5.0">
 	<name>ExtLogin</name>
-	<author>Decision Publique</author>
+	<author>eMundus SAS</author>
 	<creationDate>August 2010</creationDate>
 	<license>GNU/GPL</license>
-	<authorEmail>emundus@decisionpublique.fr</authorEmail>
+	<authorEmail>emundus@emundus.fr</authorEmail>
 	<authorUrl>www.emundus.fr</authorUrl>
 	<version>2.0</version>
 	<description>Login emundus.</description>

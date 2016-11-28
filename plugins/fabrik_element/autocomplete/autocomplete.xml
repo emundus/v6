@@ -6,7 +6,7 @@
 		<creationDate>Sept 2014</creationDate>
 		<copyright>(C) 2008-2014 decisionpublique.fr</copyright>
 		<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
-		<authorEmail>benjamin@decisionpublique.fr</authorEmail>
+		<authorEmail>benjamin@emundus.fr</authorEmail>
 		<authorUrl>www.emundus.fr</authorUrl>
 		<version>2.0.0</version>
 		<description>Performs an ajax autocomplete on result data.</description>

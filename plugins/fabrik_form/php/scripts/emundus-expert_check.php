@@ -3,7 +3,7 @@ defined( '_JEXEC' ) or die();
 /**
  * @version 1.5: emundus-expert_check.php 89 2012-11-05 Benjamin Rivalland
  * @package Fabrik
- * @copyright Copyright (C) 2008-2013 Décision Publique. All rights reserved.
+ * @copyright Copyright (C) 2008-2013 eMundus SAS. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or

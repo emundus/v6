@@ -3,7 +3,7 @@
  * @version		$Id: javascript.php 14401 2013-03-19 14:10:00Z brivalland $
  * @package		Joomla
  * @subpackage	Emundus
- * @copyright	Copyright (C) 2008 - 2013 Decision Publique. All rights reserved.
+ * @copyright	Copyright (C) 2016 eMundus SAS. All rights reserved.
  * @license		GNU/GPL, see LICENSE.php
  * eMundus is free software. This version may have been modified pursuant to the
  * GNU General Public License, and as distributed it includes or is derivative

@@ -2,7 +2,7 @@
 /**
  * @version		$Id: application.php 750 2012-01-23 22:29:38Z brivalland $
  * @package		Joomla
- * @copyright	(C) 2008 - 2013 eMundus LLC. All rights reserved.
+ * @copyright	(C) 2016 eMundus LLC. All rights reserved.
  * @license		GNU General Public License
  */
 

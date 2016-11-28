@@ -2,8 +2,7 @@
 /**
  * @package    Joomla
  * @subpackage emundus
- *             components/com_emundus/emundus.php
- * @link       http://www.decisionpublique.fr
+ * @link       http://www.emundus.fr
  * @license    GNU/GPL
  * @author     Benjamin Rivalland
  */
@@ -13,7 +12,7 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport( 'joomla.application.component.view');
-error_reporting(E_ALL);
+//error_reporting(E_ALL);
 /**
  * HTML View class for the Emundus Component
  *

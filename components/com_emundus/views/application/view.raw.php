@@ -1,15 +1,8 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: yoan
- * Date: 17/06/14
- * Time: 16:04
- */
-/**
  * @package    Joomla
  * @subpackage emundus
- *             components/com_emundus/emundus.php
- * @link       http://www.decisionpublique.fr
+ * @link       http://www.emundus.fr
  * @license    GNU/GPL
  * @author     Benjamin Rivalland
  */
