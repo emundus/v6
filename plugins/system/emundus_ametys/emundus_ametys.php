@@ -251,6 +251,18 @@ class  plgSystemEmundus_ametys extends JPlugin
         $app        =  JFactory::getApplication();
         $user       =  JFactory::getUser();
 
+        // bypass if reset password request.... arf arf arf
+        //@todo ask Amety to manage lost password
+        $jinput = JFactory::getApplication()->input;
+        $option = $jinput->getString('option', null);
+        $view = $jinput->getString('view', null);
+        $layout = $jinput->getString('layout', null);
+
+        //if ($option == "com_users" && ($view == "reset" || $layout == "confirm")) {
+        if ($option == "com_users") {
+            return;
+        }
+
         if ( !$app->isAdmin() ) {
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $ametys_integration = $eMConfig->get('ametys_integration', 0);

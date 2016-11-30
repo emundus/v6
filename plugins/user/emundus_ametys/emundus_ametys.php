@@ -343,9 +343,9 @@
             
 
             if ($defaultLocale == 'en-GB') 
-                $url = $ametys_url.'/en/my-wishlist.html';
+                $url = $ametys_url;
             else
-                $url = $ametys_url.'/fr/ma-wishlist.html';
+                $url = $ametys_url;
 
             $app->redirect( $url );
             //return true;
