@@ -19,7 +19,7 @@ $m_emails = new EmundusModelEmails;
 $user = JFactory::getUser();
 $mailer = JFactory::getMailer();
 
-$email 		= $m_emails->getEmail('expert_received');
+$email 		= $m_emails->getEmail('evaluation_received');
 
 $body 		= $m_emails->setBody($user, $email->message, "");
 $from 	    = $m_emails->setBody($user, $email->emailfrom, "");
@@ -41,9 +41,6 @@ $sender = array(
     $fromname
 );
 $mailer = JFactory::getMailer();
-
-$app    = JFactory::getApplication();
-$email_from_sys = $app->getCfg('mailfrom');
 
 // setup mail
 $sender = array(
@@ -71,7 +68,5 @@ if ( $send !== true ) {
     );
     $m_emails->logEmail($message);
 }
-
-
 
 ?>
