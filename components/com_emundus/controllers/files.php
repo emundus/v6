@@ -2179,14 +2179,29 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnumsArray = $model->checkFnumsDoc($code, $fnumsArray);
         $tmpl = $modelEvaluation->getLettersTemplateByID($idTmpl);
         $attachInfos = $model->getAttachmentInfos($tmpl[0]['attachment_id']);
+
+        $res = new stdClass();
+        $res->status = true;
+        $res->files = array();
+        $fnumsInfos = $model->getFnumsTagsInfos($fnumsArray);
+
         switch($tmpl[0]['template_type'])
         {
             case 1:
                 //Simple FILE
-
+                $res->status = false;
+                $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE");
+                echo json_encode($res);
                 break;
             case 2:
                 //Generate PDF
+                /*if (!empty($tmpl[0]['attachment_id'])) { 
+                    require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
+                    $files = letter_pdf($user->id, $tmpl[0]['status'], $tmpl[0]['training'], 0, 0);
+                }*/
+                $res->status = false;
+                $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE_FROM_HTML_TEMPLATE");
+                echo json_encode($res);
 
                 break;
             case 3:
@@ -2197,10 +2212,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     \PhpOffice\PhpWord\Autoloader::register();
                 }
 
-                $res = new stdClass();
-                $res->status = true;
-                $res->files = array();
-                $fnumsInfos = $model->getFnumsTagsInfos($fnumsArray);
+                
                 $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
                 try
                 {
