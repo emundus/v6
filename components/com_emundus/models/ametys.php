@@ -292,7 +292,7 @@ class EmundusModelAmetys extends JModelLegacy
                   FROM ODF_export_program p 
                   LEFT JOIN ODF_export_program_meta_orgUnit pmo ON pmo.idUp_ODF_export_program=p.id_ODF_export_program 
                   LEFT JOIN ODF_export_orgunit o ON o.id_ODF_export_orgunit=pmo.orgUnit  
-                  WHERE p.content_language like "fr"';
+                  WHERE p.content_language like "en"';
 
         try
         {
