@@ -700,9 +700,17 @@ class EmundusModelEvaluation extends JModelList
 
 	private function _buildWhere($tableAlias = array())
 	{
+		$session = JFactory::getSession();
+        $params = $session->get('filt_params'); // came from search box
+        $filt_menu = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
+
+        $db = JFactory::getDBO();
+
+        if(!is_numeric(@$params['published']) || is_null(@$params['published']))
+            $params['published'] = 1;
+
 		$query = array('q' => '', 'join' => '');
 
-		$params = JFactory::getSession()->get('filt_params');
 		if(!empty($params))
 		{
 			foreach($params as $key => $value)
@@ -956,6 +964,26 @@ class EmundusModelEvaluation extends JModelList
 							}
 						}
 						break;
+					case 'tag':
+                        if ($value)
+                        {
+                            if ( $value[0] == "%" || !isset($value[0]) )
+                                $query['q'] .= ' ';
+                            else
+                            {
+                                $query['q'] .= ' and eta.id_tag IN (' . implode(',', $value) . ') ';
+                            }
+                        }
+                        break;
+                    case 'published':
+                        if ($value == "-1") {
+                            $query['q'] .= ' and c.published=-1 ';
+                        } elseif ($value == "0") {
+                            $query['q'] .= ' and c.published=0 ';
+                        } else {
+                            $query['q'] .= ' and c.published=1 ';
+                        }
+                        break;
 				}
 			}
 		} 
@@ -1017,7 +1045,8 @@ class EmundusModelEvaluation extends JModelList
 						 '#__emundus_setup_campaigns', 'jos_emundus_setup_campaigns',
 						 '#__emundus_evaluations', 'jos_emundus_evaluations',
 						 '#__emundus_users', 'jos_emundus_users',
-						 '#__users', 'jos_users'
+						 '#__users', 'jos_users',
+                         '#__emundus_tag_assoc', 'jos_emundus_tag_assoc'
 						 );
 		$leftJoin = '';
 		if (count($this->_elements)>0) {
@@ -1044,7 +1073,8 @@ class EmundusModelEvaluation extends JModelList
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = c.status 
 					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = c.campaign_id 
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
-					LEFT JOIN #__users as u on u.id = c.applicant_id ';
+					LEFT JOIN #__users as u on u.id = c.applicant_id 
+                    LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=c.fnum ' ;
 		$q = $this->_buildWhere($lastTab);
 
 
