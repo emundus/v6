@@ -543,10 +543,10 @@ class hikashopMailClass {
 				}
 
 				if(!empty($table) && !empty($var)){
-					if(!empty($mail->data->$table->$var)){
-						$val = $mail->data->$table->$var;
-					}elseif(!empty($mail->data->cart->$table->$var)){
+					if(!empty($mail->data->cart->$table->$var) && is_string($mail->data->cart->$table->$var)){
 						$val = $mail->data->cart->$table->$var;
+					}elseif(!empty($mail->data->$table->$var) && is_string($mail->data->cart->$table->$var)){
+						$val = $mail->data->$table->$var;
 					}
 				}elseif(!empty($mail->data->$table)){
 					$val = $mail->data->$table;

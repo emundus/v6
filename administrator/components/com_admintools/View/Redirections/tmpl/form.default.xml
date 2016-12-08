@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+@package   AdminTools
+@copyright 2010-2016 Akeeba Ltd / Nicholas K. Dionysopoulos
+@license   GNU General Public License version 3, or later
+-->
+<form
+        type="browse"
+        show_header="1"
+        show_filters="1"
+        show_pagination="1"
+        norows_placeholder="COM_ADMINTOOLS_ERR_REDIRECTION_NOITEMS"
+>
+    <headerset>
+        <header name="id" type="RowSelect" tdwidth="20px"/>
+        <header name="ordering" type="Ordering" tdwidth="20px"/>
+        <header name="source" label="COM_ADMINTOOLS_LBL_REDIRECTION_SOURCE" filterclass="input-medium" type="Searchable"
+                buttons="0"/>
+        <header name="dest" label="COM_ADMINTOOLS_LBL_REDIRECTION_DEST" filterclass="input-medium" type="Searchable" buttons="0"/>
+        <header name="keepurlparams" label="COM_ADMINTOOLS_REDIRECTIONS_FIELD_KEEPURLPARAMS" type="Selectable"
+                source_class="Akeeba\AdminTools\Admin\Helper\Select"
+                source_method="keepUrlParamsList"
+                source_translate="false"
+                source_format="optionsobject"
+        />
+        <header name="published" label="JPUBLISHED" type="Published"/>
+
+    </headerset>
+
+    <fieldset name="items">
+        <field name="id" type="SelectRow"/>
+        <field name="ordering" type="Ordering" class="input-mini"/>
+        <field name="source" type="SourceURLWithExternalLink"/>
+
+        <field name="dest" type="Text"
+               show_link="1"
+               url="index.php?option=com_admintools&amp;view=Redirections&amp;task=edit&amp;id=[ITEM:ID]"
+        />
+
+        <field name="keepurlparams" type="KeepURLParams"/>
+        <field name="published" type="Published"/>
+
+    </fieldset>
+</form>

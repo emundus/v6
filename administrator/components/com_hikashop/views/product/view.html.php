@@ -104,6 +104,7 @@ class ProductViewProduct extends hikashopView
 		}
 
 		$order = '';
+		$groupby = '';
 		if($doOrdering){
 			$filters[]='a.category_id='.(int)$pageInfo->filter->filter_id;
 			$select='SELECT a.ordering, b.*';
@@ -117,8 +118,9 @@ class ProductViewProduct extends hikashopView
 				$filter .= $child->category_id.',';
 				$cat_ids[$child->category_id]=$child->category_id;
 			}
-			$filters[]=$filter.(int)$pageInfo->filter->filter_id.')';
-			$select='SELECT DISTINCT b.*, a.ordering';
+			$filters[] = $filter.(int)$pageInfo->filter->filter_id.')';
+			$select = 'SELECT b.*, a.ordering';
+			$groupby = ' GROUP BY b.product_id';
 		}
 
 		$searchMap = array('b.product_name','b.product_description','b.product_id','b.product_code');
@@ -171,9 +173,9 @@ class ProductViewProduct extends hikashopView
 		$dispatcher->trigger( 'onBeforeProductListingLoad', array( & $filters, & $order, &$this, & $select, & $select2, & $a, & $b, & $on) );
 
 		if($pageInfo->filter->filter_product_type=='all'){
-			$query = '( '.$select.' FROM '.hikashop_table('product_category').' AS a LEFT JOIN '.hikashop_table('product').' AS b ON a.product_id=b.product_id WHERE '.implode(' AND ',$filters).' AND b.product_id IS NOT NULL )
+			$query = '( '.$select.' FROM '.hikashop_table('product_category').' AS a LEFT JOIN '.hikashop_table('product').' AS b ON a.product_id=b.product_id WHERE '.implode(' AND ',$filters).' AND b.product_id IS NOT NULL '.$groupby.')
 			UNION
-						( '.$select.' FROM '.hikashop_table('product_category').' AS a LEFT JOIN '.hikashop_table('product').' AS b ON a.product_id=b.product_parent_id WHERE '.implode(' AND ',$filters).' AND b.product_parent_id IS NOT NULL ) ';
+						( '.$select.' FROM '.hikashop_table('product_category').' AS a LEFT JOIN '.hikashop_table('product').' AS b ON a.product_id=b.product_parent_id WHERE '.implode(' AND ',$filters).' AND b.product_parent_id IS NOT NULL '.$groupby.') ';
 			$database->setQuery($query.$order,(int)$pageInfo->limit->start,(int)$pageInfo->limit->value);
 		}else{
 			$filters[]='b.product_type = '.$database->Quote($pageInfo->filter->filter_product_type);
@@ -184,7 +186,7 @@ class ProductViewProduct extends hikashopView
 			}
 			$query = ' FROM '.hikashop_table('product_category').' AS a LEFT JOIN '.hikashop_table('product').' AS b ON '.$lf.' WHERE '.implode(' AND ',$filters);
 
-			$database->setQuery($select.$query.$order,(int)$pageInfo->limit->start,(int)$pageInfo->limit->value);
+			$database->setQuery($select.$query.$groupby.$order,(int)$pageInfo->limit->start,(int)$pageInfo->limit->value);
 		}
 
 		$rows = $database->loadObjectList();

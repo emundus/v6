@@ -1026,7 +1026,7 @@ function hikashop_footer(){
 		$link.='?partner_id='.$aff;
 	}
 	$text = '<!--  HikaShop Component powered by '.$link.' -->
-	<!-- version '.$config->get('level').' : '.$config->get('version').' [1610171401] -->';
+	<!-- version '.$config->get('level').' : '.$config->get('version').' [1612051411] -->';
 	if(!$config->get('show_footer',true)) return $text;
 	$text .= '<div class="hikashop_footer" style="text-align:center" align="center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 	$app= JFactory::getApplication();
@@ -1312,7 +1312,7 @@ function hikashop_cleanBuffers(){
 	$previous = 0;
 	while(ob_get_level() != $previous){
 		$previous = ob_get_level();
-		ob_end_clean();
+		@ob_end_clean();
 	}
 }
 

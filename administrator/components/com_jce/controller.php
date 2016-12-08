@@ -21,11 +21,11 @@ class WFController extends WFControllerBase {
     public function __construct($default = array()) {
         parent::__construct($default);
 
-        // load helpers
-        wfimport('admin.helpers.parameter');
         wfimport('admin.helpers.extension');
         wfimport('admin.helpers.xml');
-    }
+
+        $view = JRequest::getWord('view', 'cpanel');
+     }
 
     private function loadMenu() {
         $view = JRequest::getWord('view', 'cpanel');
@@ -36,8 +36,7 @@ class WFController extends WFControllerBase {
 
         $subMenus = array(
             'WF_CONFIGURATION' => 'config',
-            'WF_PROFILES' => 'profiles',
-            'WF_INSTALL' => 'installer'
+            'WF_PROFILES' => 'profiles'
         );
 
         if (JPluginHelper::isEnabled('system', 'jcemediabox')) {
@@ -46,20 +45,28 @@ class WFController extends WFControllerBase {
 
         foreach ($subMenus as $menu => $item) {
             if (WFModel::authorize($item)) {
-                JSubMenuHelper::addEntry(WFText::_($menu), 'index.php?option=com_jce&view=' . $item, $view == $item);
+                $url = 'index.php?option=com_jce&view=' . $item;
+
+                if ($item === "installer") {
+                    $url = 'index.php?option=com_installer';
+                }
+
+                JSubMenuHelper::addEntry(WFText::_($menu), $url, $view == $item);
             }
         }
     }
 
     /**
-     * Create the View. 
-     * This is an overloaded function of JController::getView 
+     * Create the View.
+     * This is an overloaded function of JController::getView
      * and includes addition of the JDocument Object with required scripts and styles
      * @return object
      */
     public function getView($name = '', $type = '', $prefix = '', $config = array()) {
         $language = JFactory::getLanguage();
         $language->load('com_jce', JPATH_ADMINISTRATOR);
+        // laod "pro" language file for plugins
+        $language->load('com_jce_pro', JPATH_SITE);
 
         $document = JFactory::getDocument();
 
@@ -102,12 +109,19 @@ class WFController extends WFControllerBase {
 
         $scripts = array();
 
+        $view->addScript(JURI::root(true) . '/administrator/components/com_jce/media/js/core.min.js');
+
+        if (!$version->isCompatible('3.0')) {
+            $view->addStyleSheet(JURI::root(true) . '/administrator/components/com_jce/media/css/legacy.min.css');
+        }
+
         switch ($name) {
             case 'help':
-                $view->addScript(JURI::root(true) . '/components/com_jce/editor/libraries/js/help.js');
+                $view->addScript(JURI::root(true) . '/administrator/components/com_jce/media/js/help.min.js');
+                $view->addStyleSheet(JURI::root(true) . '/administrator/components/com_jce/media/css/help.min.css');
                 break;
             default:
-                $view->addStyleSheet(JURI::root(true) . '/administrator/components/com_jce/media/css/global.css');
+                $view->addStyleSheet(JURI::root(true) . '/administrator/components/com_jce/media/css/global.min.css');
 
                 // load Joomla! core javascript
                 if (method_exists('JHtml', 'core')) {
@@ -117,11 +131,6 @@ class WFController extends WFControllerBase {
                 require_once(JPATH_ADMINISTRATOR . '/includes/toolbar.php');
 
                 JToolBarHelper::title(WFText::_('WF_ADMINISTRATION') . ' :: ' . WFText::_('WF_' . strtoupper($name)), 'logo.png');
-
-                $params = WFParameterHelper::getComponentParams();
-                $theme = $params->get('preferences.theme', 'jce');
-
-                $view->addScript(JURI::root(true) . '/administrator/components/com_jce/media/js/core.js');
 
                 $options = array(
                     'labels' => array(
@@ -135,7 +144,7 @@ class WFController extends WFControllerBase {
                     )
                 );
 
-                $view->addScriptDeclaration('jQuery.jce.options = ' . json_encode($options) . ';');
+                $view->addScriptDeclaration('Wf.options = ' . json_encode($options) . ';');
 
                 $view->addHelperPath(dirname(__FILE__) . '/helpers');
                 $this->addModelPath(dirname(__FILE__) . '/models');
@@ -188,12 +197,11 @@ class WFController extends WFControllerBase {
     }
 
     public function pack() {
-        
+
     }
 
     /**
      * Display View
-     * @return 
      */
     public function display($cachable = false, $params = false) {
         $view = $this->getView();
@@ -202,7 +210,6 @@ class WFController extends WFControllerBase {
 
     /**
      * Generic cancel method
-     * @return 
      */
     public function cancel() {
         // Check for request forgeries

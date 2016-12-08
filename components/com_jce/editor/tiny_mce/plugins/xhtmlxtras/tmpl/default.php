@@ -19,8 +19,8 @@ $tabs = WFTabs::getInstance();
   	<?php $tabs->render(); ?>
   	</div>
 	<div class="mceActionPanel">
-		<button type="submit" id="insert" onclick="XHTMLXtrasDialog.insert();"><?php echo WFText::_('WF_LABEL_UPDATE');?></button>
-		<button type="button" id="remove" onclick="XHTMLXtrasDialog.remove();"><?php echo WFText::_('WF_XHTMLXTRAS_REMOVE');?></button>
-		<button type="button" id="cancel"><?php echo WFText::_('WF_LABEL_CANCEL');?></button>
+		<button class="uk-button" type="submit" id="insert" onclick="XHTMLXtrasDialog.insert();"><?php echo WFText::_('WF_LABEL_UPDATE');?></button>
+		<button class="uk-button" type="button" id="remove" onclick="XHTMLXtrasDialog.remove();"><?php echo WFText::_('WF_XHTMLXTRAS_REMOVE');?></button>
+		<button class="uk-button" type="button" id="cancel"><?php echo WFText::_('WF_LABEL_CANCEL');?></button>
 	</div>
 </form>

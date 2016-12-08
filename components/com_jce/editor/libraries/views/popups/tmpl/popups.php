@@ -12,14 +12,19 @@
 
 defined( '_JEXEC' ) or die('RESTRICTED');
 
-//$popups = WFPopupsExtension::getInstance();
 ?>
-<h4><label for="popup_list" class="hastip" title="<?php echo WFText::_('WF_POPUP_TYPE_DESC');?>"><?php echo WFText::_('WF_POPUP_TYPE');?></label><?php echo $this->popups->getPopupList();?></h4>
-<table style="display:<?php echo ($this->popups->get('text') === false) ? 'none' : ''?>;">
-	<tr>
-		<td><label for="popup_text" class="hastip"
-			title="<?php echo WFText::_('WF_POPUP_TEXT_DESC');?>"><?php echo WFText::_('WF_POPUP_TEXT');?></label></td>
-		<td><input id="popup_text" type="text" value="" /></td>
-	</tr>
-</table>
+<div class="uk-form-row uk-margin-small-bottom">
+<label for="popup_list" class="uk-form-label uk-width-1-5 hastip" title="<?php echo WFText::_('WF_POPUP_TYPE_DESC');?>"><?php echo WFText::_('WF_POPUP_TYPE');?></label>
+	<div class="uk-form-controls uk-width-2-5">
+		<?php echo $this->popups->getPopupList();?>
+	</div>
+</div>
+
+<div class="uk-form-row uk-margin-small-bottom" style="display:<?php echo ($this->popups->get('text') === false) ? 'none' : ''?>;">
+	<label for="popup_text" class="hastip uk-form-label uk-width-1-5"
+			title="<?php echo WFText::_('WF_POPUP_TEXT_DESC');?>"><?php echo WFText::_('WF_POPUP_TEXT');?></label>
+		<div class="uk-form-controls uk-width-4-5">
+			<input id="popup_text" type="text" value="" />
+		</div>
+</div>
 <?php echo $this->popups->getPopupTemplates();?>

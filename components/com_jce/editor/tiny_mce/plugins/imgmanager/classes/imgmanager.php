@@ -14,18 +14,19 @@ defined('_JEXEC') or die('RESTRICTED');
 // Load class dependencies
 wfimport('editor.libraries.classes.manager');
 
-final class WFImageManagerPlugin extends WFMediaManager {
+class WFImageManagerPlugin extends WFMediaManager {
 
-    var $_filetypes = 'images=jpg,jpeg,png,gif';
+    public $_filetypes = 'jpg,jpeg,png,gif';
 
     /**
      * @access	protected
      */
-    public function __construct() {
-        parent::__construct(array('colorpicker' => true));
+    public function __construct($config = array()) {
+        $config['colorpicker'] = true;
 
-        $browser = $this->getBrowser();
-        $browser->addEvent('onUpload', array($this, 'onUpload'));
+        parent::__construct($config);
+
+        $this->addFileBrowserEvent('onUpload', array($this, 'onUpload'));
     }
 
     /**
@@ -39,11 +40,11 @@ final class WFImageManagerPlugin extends WFMediaManager {
 
         // create new tabs instance
         $tabs = WFTabs::getInstance(array(
-                    'base_path' => WF_EDITOR_PLUGIN
-                ));
+          'base_path' => WF_EDITOR_PLUGINS . '/imgmanager'
+        ));
 
         // Add tabs
-        $tabs->addTab('image');
+        $tabs->addTab('image', 1, array('plugin' => $this));
 
         $tabs->addTab('rollover', $this->getParam('tabs_rollover', 1));
         $tabs->addTab('advanced', $this->getParam('tabs_advanced', 1));
@@ -54,25 +55,15 @@ final class WFImageManagerPlugin extends WFMediaManager {
         $document->addScriptDeclaration('ImageManagerDialog.settings=' . json_encode($this->getSettings()) . ';');
     }
 
-    function onUpload($file, $relative = '', $method = '') {
-        $browser = $this->getBrowser();
-        $filesystem = $browser->getFileSystem();
-
-        $params = $this->getParams();
-
-        // get method (with bc check)
-        if (empty($method)) {
-            $method = JRequest::getWord('method', '');
-        }
-
-        // dialog/form upload
-        if ($method == 'inline' || $method == 'dragdrop') {
+    public function onUpload($file, $relative = '') {
+        // inline upload
+        if (JRequest::getInt('inline', 0) === 1) {
             $result = array(
                 'file' => $relative,
                 'name' => basename($relative)
             );
 
-            if ($params->get('always_include_dimensions', 1)) {
+            if ($this->getParam('always_include_dimensions', 1)) {
                 $dim = @getimagesize($file);
 
                 if ($dim) {
@@ -144,7 +135,7 @@ final class WFImageManagerPlugin extends WFMediaManager {
                         if ($k == 'direction') {
                             $k = 'dir';
                         }
-                        
+
                         if ($k == 'classes') {
                             $k = 'class';
                         }
@@ -164,33 +155,22 @@ final class WFImageManagerPlugin extends WFMediaManager {
             return $result;
         }
 
-        return $browser->getResult();
+        return array();
     }
 
     public function getSettings($settings = array()) {
-        $params = $this->getParams();
+        $params = $this->getParams(array('key' => 'imgmanager'));
 
         $settings = array(
             'attributes' => array(
-                'dimensions' => $params->get('imgmanager.attributes_dimensions', 1),
-                'align' => $params->get('imgmanager.attributes_align', 1),
-                'margin' => $params->get('imgmanager.attributes_margin', 1),
-                'border' => $params->get('imgmanager.attributes_border', 1)
+                'dimensions' => $params->get('attributes_dimensions', 1),
+                'align' => $params->get('attributes_align', 1),
+                'margin' => $params->get('attributes_margin', 1),
+                'border' => $params->get('attributes_border', 1)
             ),
-            'always_include_dimensions' => $params->get('imgmanager.always_include_dimensions', 0)
+            'always_include_dimensions' => $params->get('always_include_dimensions', 0)
         );
 
         return parent::getSettings($settings);
     }
-
-    /**
-     * Get default parameters
-     * @return string parameters
-     */
-    public function getDefaults($defaults = array()) {
-        return parent::getDefaults($defaults);
-    }
-
 }
-
-?>

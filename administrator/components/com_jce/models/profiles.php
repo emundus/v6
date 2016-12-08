@@ -25,7 +25,7 @@ class WFModelProfiles extends WFModel {
     /**
      * Convert row string into array
      * @param object $rows
-     * @return 
+     * @return
      */
     public function getRowArray($rows) {
         $out = array();
@@ -41,7 +41,7 @@ class WFModelProfiles extends WFModel {
     /**
      * Get a plugin's extensions
      * @param object $plugin
-     * @return 
+     * @return
      */
     public function getExtensions($plugin) {
         wfimport('admin.models.plugins');
@@ -53,12 +53,10 @@ class WFModelProfiles extends WFModel {
 
         $item = null;
 
-        $manifest = WF_EDITOR_PLUGINS . '/' . $plugin . '/' . $plugin . '.xml';
+        if (is_file($plugin->manifest)) {
+            $xml = WFXMLElement::load($plugin->manifest);
 
-        if (is_file($manifest)) {
-            $xml = WFXMLElement::load($manifest);
-
-            // get the plugin xml file    
+            // get the plugin xml file
             if ($xml) {
                 // get extensions supported by the plugin
                 if ((string) $xml->extensions) {
@@ -68,19 +66,17 @@ class WFModelProfiles extends WFModel {
         }
 
         foreach ($model->getExtensions() as $extension) {
-            $type = $extension->folder;
-
             // the plugin only supports some extensions, move along
-            if (!in_array($type, $supported)) {
+            if (!in_array($extension->folder, $supported)) {
                 continue;
             }
 
             // this extension only supports some plugins, move along
-            if (!empty($extension->plugins) && !in_array($plugin, $extension->plugins)) {
+            if (!empty($extension->plugins) && !in_array($plugin->name, $extension->plugins)) {
                 continue;
             }
 
-            $extensions[$type][] = $extension;
+            $extensions[$extension->folder][] = $extension;
         }
 
         return $extensions;
@@ -98,9 +94,9 @@ class WFModelProfiles extends WFModel {
         }
 
         // only need plugins with xml files
-        foreach ($model->getPlugins() as $plugin => $properties) {
-            if (is_file(JPATH_SITE . $properties->path . '/' . $plugin . '.xml')) {
-                $plugins[$plugin] = $properties;
+        foreach ($model->getPlugins() as $plugin) {
+            if (is_file($plugin->manifest)) {
+                $plugins[$plugin->name] = $plugin;
             }
         }
 
@@ -218,16 +214,16 @@ class WFModelProfiles extends WFModel {
 
                 // Postgresql needs special attention because of the query syntax
                 if ($driver == 'postgresql') {
-                    $query = "CREATE OR REPLACE FUNCTION create_table_if_not_exists (create_sql text) 
-                    RETURNS bool as $$ 
-                    BEGIN 
-                        BEGIN 
-                            EXECUTE create_sql; 
-                            EXCEPTION WHEN duplicate_table THEN RETURN false; 
-                        END; 
-                        RETURN true; 
-                    END; $$ 
-                    LANGUAGE plpgsql; 
+                    $query = "CREATE OR REPLACE FUNCTION create_table_if_not_exists (create_sql text)
+                    RETURNS bool as $$
+                    BEGIN
+                        BEGIN
+                            EXECUTE create_sql;
+                            EXCEPTION WHEN duplicate_table THEN RETURN false;
+                        END;
+                        RETURN true;
+                    END; $$
+                    LANGUAGE plpgsql;
                     SELECT create_table_if_not_exists ('" . $query . "');";
                 }
                 // set query
@@ -314,7 +310,7 @@ class WFModelProfiles extends WFModel {
      * Process import data from XML file
      * @param object $file XML file
      * @param boolean $install Can be used by the package installer
-     * @return 
+     * @return
      */
     public function processImport($file) {
         $app = JFactory::getApplication();
@@ -333,7 +329,7 @@ class WFModelProfiles extends WFModel {
 
             foreach ($xml->profiles->children() as $profile) {
                 $row = JTable::getInstance('profiles', 'WFTable');
-                // get profile name                 
+                // get profile name
                 $name = (string) $profile->attributes()->name;
 
                 // backwards compatability
@@ -491,7 +487,7 @@ class WFModelProfiles extends WFModel {
     }
 
     function getPluginParameters() {
-        
+
     }
 
     function getThemes() {
@@ -572,7 +568,7 @@ class WFModelProfiles extends WFModel {
 
         foreach ($icons as $icon) {
             if ($icon == '|' || $icon == 'spacer') {
-                $span .= '<span class="mceSeparator"></span>';
+                continue;
             } else {
                 $path = $base . $icon . '.png';
 
@@ -580,7 +576,7 @@ class WFModelProfiles extends WFModel {
                     $img = '<img src="' . JURI::root(true) . $path . '" alt="' . WFText::_($plugin->title) . '" />';
                 }
 
-                $span .= '<span data-button="' . preg_replace('/[^\w]/i', '', $icon) . '" class="' . self::getIconType($icon) . '"><span class="mceIcon mce_' . preg_replace('/[^\w]/i', '', $icon) . '">' . $img . '</span></span>';
+                $span .= '<div data-button="' . preg_replace('/[^\w]/i', '', $icon) . '" class="' . self::getIconType($icon) . '"><span class="mceIcon mce_' . preg_replace('/[^\w]/i', '', $icon) . '">' . $img . '</span></div>';
             }
         }
 

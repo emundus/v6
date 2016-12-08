@@ -19,7 +19,7 @@ class WFXHTMLXtrasPlugin extends WFEditorPlugin {
     }
 
     public function isHTML5() {
-        return $this->getParam('editor.schema', 'html4') == 'html5' && (bool) $this->getParam('editor.verify_html', 0) === true;
+        return $this->getParam('editor.schema', 'mixed') !== 'html4';
     }
 
     /**

@@ -102,7 +102,7 @@ foreach ($this->fields as $fieldName => $oneExtraField) {
 			$this->setLayout('listing_price');
 			echo $this->loadTemplate();
 
-			$availability = ($this->row->product_quantity > 0) ? 'In stock' : 'Out of stock';
+			$availability = ($this->row->product_quantity != 0) ? 'In stock' : 'Out of stock';
 			echo '<span style="display:none;" itemprop="availability" content="' . $availability . '">' . $availability . '</span>';
 
 			$CurrId = hikashop_getCurrency();
@@ -197,7 +197,8 @@ foreach ($this->fields as $fieldName => $oneExtraField) {
 <?php if(empty ($this->element->characteristics) || $this->params->get('characteristic_display')!='list'){ ?>
 		<div id="hikashop_product_quantity_main" class="hikashop_product_quantity_main"><?php
 			$this->row = & $this->element;
-			$this->ajax = 'if(hikashopCheckChangeForm(\'item\',\'hikashop_product_form\')){ return hikashopModifyQuantity(\'' . $this->row->product_id . '\',field,1' . $form . ',\'cart\'); } else { return false; }';
+			if(empty($this->ajax))
+				$this->ajax = 'if(hikashopCheckChangeForm(\'item\',\'hikashop_product_form\')){ return hikashopModifyQuantity(\'' . $this->row->product_id . '\',field,1' . $form . ',\'cart\'); } else { return false; }';
 			$this->setLayout('quantity');
 			echo $this->loadTemplate();
 		?></div>

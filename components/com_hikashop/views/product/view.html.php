@@ -1372,6 +1372,12 @@ window.hikashop.ready( function() {
 		$this->assignRef('fields',$fields);
 		if(hikashop_level(2)) {
 			$itemFields = $fieldsClass->getFields('display:field_item_product_show=1', $element, 'item', 'checkout&task=state');
+
+			foreach ($itemFields as $fieldName => $oneExtraField) {
+				if(empty($element->$fieldName)) {
+					$element->$fieldName = $oneExtraField->field_default;
+				}
+			}
 			$null = array();
 			$fieldsClass->addJS($null,$null,$null);
 			$fieldsClass->jsToggle($itemFields,$element, 0);
@@ -2155,6 +2161,10 @@ window.hikashop.ready( function() {
 
 		$cartClass = hikashop_get('class.cart');
 
+		$cartHelper = hikashop_get('helper.cart');
+		$this->assignRef('cartHelper', $cartHelper);
+		$this->cart = $this->cartHelper;
+
 		$cart_type = $this->params->get('cart_type', 'cart');
 		$this->assignRef('cart_type', $cart_type);
 
@@ -2162,6 +2172,18 @@ window.hikashop.ready( function() {
 			$cart_type = 'cart';
 
 		$cart_id = $app->getUserState( HIKASHOP_COMPONENT.'.'.$cart_type.'_id', 0, 'int' );
+
+		if($cart_id){
+			$cartClass->cart_type = $cart_type;
+			$cartInfo = $cartClass->loadCart($cart_id);
+			$currUser = hikashop_loadUser(true);
+			$session = JFactory::getSession();
+			if(@$currUser->user_cms_id != $cartInfo->user_id && $session->getId() != $cartInfo->session_id){
+				$notice_html = '';
+				$this->assignRef('notice_html', $notice_html);
+				return;
+			}
+		}
 
 		$cartClass->get($cart_id, true, $cart_type);
 		$full = $cartClass->loadFullCart(true,true,true);
@@ -2195,10 +2217,6 @@ window.hikashop.ready( function() {
 		$this->assignRef('element',$full);
 		$this->assignRef('total', $total);
 		$this->assignRef('rows', $rows);
-
-		$cartHelper = hikashop_get('helper.cart');
-		$this->assignRef('cartHelper', $cartHelper);
-		$this->cart = $this->cartHelper;
 
 		$cartHelper->cartCount(true);
 

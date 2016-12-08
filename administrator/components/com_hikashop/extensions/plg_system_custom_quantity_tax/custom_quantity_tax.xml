@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="system" method="upgrade">
 	<name>HikaShop tax calculations override plugin</name>
-	<creationDate>17 octobre 2016</creationDate>
+	<creationDate>05 décembre 2016</creationDate>
 	<version>2.6.4</version>
 	<author>HikaShop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>

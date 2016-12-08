@@ -30,6 +30,7 @@ class WFAggregatorExtension_Dailymotion extends WFAggregatorExtension
 	{
 		$document = WFDocument::getInstance();
 		$document->addScript('dailymotion', 'extensions/aggregator/dailymotion/js');
+		$document->addStyleSheet('dailymotion', 'extensions/aggregator/dailymotion/css');
 	}
 	
 	function isEnabled()

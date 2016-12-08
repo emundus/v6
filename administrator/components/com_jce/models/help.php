@@ -44,7 +44,7 @@ class WFModelHelp extends WFModel {
                     if ($file) {
                         $result .= $this->getTopics(WF_EDITOR . '/' . $file);
                     } else {
-                        $result .= '<dd' . $class . ' id="' . $key . '">' . trim(WFText::_($title)) . '</dd>';
+                        $result .= '<dd' . $class . ' id="' . $key . '"><i class="icon-copy"></i><i class="icon-file"></i>&nbsp;' . trim(WFText::_($title)) . '</dd>';
                     }
 
                     if (count($subtopics)) {
@@ -54,7 +54,7 @@ class WFModelHelp extends WFModel {
 
                             // if a file is set load it as sub-subtopics
                             if ($file = (string) $subtopic->attributes()->file) {
-                                $result .= '<dd class="subtopics">' . trim(WFText::_((string) $subtopic->attributes()->title)) . '</dd>';
+                                $result .= '<dd class="subtopics"><i class="icon-copy"></i>&nbsp;' . trim(WFText::_((string) $subtopic->attributes()->title)) . '</dd>';
                                 $result .= '<dl class="hidden">';
                                 $result .= $this->getTopics(WF_EDITOR . '/' . $file);
                                 $result .= '</dl>';
@@ -62,12 +62,12 @@ class WFModelHelp extends WFModel {
                                 $id = $subtopic->attributes()->key ? ' id="' . (string) $subtopic->attributes()->key . '"' : '';
 
                                 $class = count($sub_subtopics) ? ' class="subtopics"' : '';
-                                $result .= '<dd' . $class . $id . '>' . trim(WFText::_((string) $subtopic->attributes()->title)) . '</dd>';
+                                $result .= '<dd' . $class . $id . '><i class="icon-copy"></i><i class="icon-file"></i>&nbsp;' . trim(WFText::_((string) $subtopic->attributes()->title)) . '</dd>';
 
                                 if (count($sub_subtopics)) {
                                     $result .= '<dl class="hidden">';
                                     foreach ($sub_subtopics as $sub_subtopic) {
-                                        $result .= '<dd id="' . (string) $sub_subtopic->attributes()->key . '">' . trim(WFText::_((string) $sub_subtopic->attributes()->title)) . '</dd>';
+                                        $result .= '<dd id="' . (string) $sub_subtopic->attributes()->key . '"><i class="icon-copy"></i><i class="icon-file"></i>&nbsp;' . trim(WFText::_((string) $sub_subtopic->attributes()->title)) . '</dd>';
                                     }
                                     $result .= '</dl>';
                                 }
@@ -115,7 +115,7 @@ class WFModelHelp extends WFModel {
 
         $result = '';
 
-        $result .= '<dl><dt><span>' . WFText::_('WF_' . strtoupper($category) . '_TITLE') . '</span></dt>';
+        $result .= '<dl><dt><i class="icon-folder"></i>&nbsp;' . WFText::_('WF_' . strtoupper($category) . '_TITLE') . '</dt>';
         $result .= $this->getTopics($file);
         $result .= '</dl>';
 

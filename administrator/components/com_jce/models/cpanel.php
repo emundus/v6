@@ -16,21 +16,6 @@ require_once(dirname(__FILE__) . '/model.php');
 
 class WFModelCpanel extends WFModel {
 
-    public function iconButton($link, $image, $text, $description = '', $disabled = false) {
-        $lang = JFactory::getLanguage();
-
-        if ($disabled) {
-            $link = '#';
-        }
-
-        $description = $description ? $text . '::' . $description : $text;
-        ?>
-        <li class="cpanel-icon tooltip ui-corner-all" title="<?php echo $description; ?>">
-            <a href="<?php echo $link; ?>"><?php echo JHTML::_('image.site', $image, '/components/com_jce/media/img/cpanel/', NULL, NULL, $text); ?><?php echo $text; ?></a>
-        </li>
-        <?php
-    }
-
     public function getVersion() {
         $xml = WFXMLHelper::parseInstallManifest(JPATH_ADMINISTRATOR . '/components/com_jce/jce.xml');
 
@@ -48,10 +33,10 @@ class WFModelCpanel extends WFModel {
 
         $feeds = array();
         $options = array(
-            'rssUrl' => 'https://www.joomlacontenteditor.net/news/feed/rss/latest-news?format=feed',
+            'rssUrl' => 'https://www.joomlacontenteditor.net/news?format=feed',
             'cache_time' => $params->get('feed_cachetime', 86400)
         );
-        
+
         // prevent Strict Standards errors in simplepie
         error_reporting(32767 ^ 2048);
 
@@ -61,9 +46,9 @@ class WFModelCpanel extends WFModel {
         if (!is_writable(JPATH_BASE . '/cache')) {
             $options['cache_time'] = 0;
         }
-        
+
         error_reporting(E_ERROR | E_WARNING | E_PARSE);
-        
+
         $rss = new SimplePie($options['rssUrl'], JPATH_BASE . '/cache', isset($options['cache_time']) ? $options['cache_time'] : 0);
         $rss->force_feed(true);
         $rss->handle_content_type();

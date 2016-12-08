@@ -1,58 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema>
-    <!-- Metadata -->
-    <meta>
-        <!-- Supported driver types -->
-        <drivers>
-            <driver>mysql</driver>
-            <driver>mysqli</driver>
-            <driver>pdomysql</driver>
-        </drivers>
-    </meta>
+	<!-- Metadata -->
+	<meta>
+		<!-- Supported driver types -->
+		<drivers>
+			<driver>mysql</driver>
+			<driver>mysqli</driver>
+			<driver>pdomysql</driver>
+		</drivers>
+	</meta>
 
-    <!-- SQL commands to run on installation and update -->
-    <sql>
-        <!-- Create the #__admintools_acl table if it's missing -->
-        <action table="#__admintools_acl" canfail="0">
-            <condition type="missing" value=""/>
-            <query><![CDATA[
+	<!-- SQL commands to run on installation and update -->
+	<sql>
+		<!-- Create the #__admintools_acl table if it's missing -->
+		<action table="#__admintools_acl" canfail="0">
+			<condition type="missing" value=""/>
+			<query><![CDATA[
 CREATE TABLE `#__admintools_acl` (
 	`user_id` bigint(20) unsigned NOT NULL,
 	`permissions` mediumtext,
 	PRIMARY KEY (`user_id`)
 ) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <!-- Create the #__admintools_adminiplist table if it's missing -->
-        <action table="#__admintools_adminiplist" canfail="0">
-            <condition type="missing" value=""/>
-            <query><![CDATA[
+		<!-- Create the #__admintools_adminiplist table if it's missing -->
+		<action table="#__admintools_adminiplist" canfail="0">
+			<condition type="missing" value=""/>
+			<query><![CDATA[
 CREATE TABLE `#__admintools_adminiplist` (
 	`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 	`ip` varchar(255) DEFAULT NULL,
 	`description` varchar(255) DEFAULT NULL,
 	UNIQUE KEY `id` (`id`)
 ) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <!-- Create the #__admintools_badwords table if it's missing -->
-        <action table="#__admintools_badwords" canfail="0">
-            <condition type="missing" value=""/>
-            <query><![CDATA[
+		<!-- Create the #__admintools_badwords table if it's missing -->
+		<action table="#__admintools_badwords" canfail="0">
+			<condition type="missing" value=""/>
+			<query><![CDATA[
 CREATE TABLE  `#__admintools_badwords` (
 	`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 	`word` varchar(255) DEFAULT NULL,
 	UNIQUE KEY `id` (`id`)
 ) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <!-- Create the #__admintools_customperms table if it's missing -->
-        <action table="#__admintools_customperms" canfail="0">
-            <condition type="missing" value=""/>
-            <query><![CDATA[
+		<!-- Create the #__admintools_customperms table if it's missing -->
+		<action table="#__admintools_customperms" canfail="0">
+			<condition type="missing" value=""/>
+			<query><![CDATA[
 CREATE TABLE  `#__admintools_customperms` (
 	`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 	`path` varchar(255) NOT NULL,
@@ -60,13 +60,13 @@ CREATE TABLE  `#__admintools_customperms` (
 	UNIQUE KEY `id` (`id`),
 	KEY `#__admintools_customperms_path` (`path`(100))
 ) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <!-- Create the #__admintools_filescache table if it's missing -->
-        <action table="#__admintools_filescache" canfail="0">
-            <condition type="missing" value=""/>
-            <query><![CDATA[
+		<!-- Create the #__admintools_filescache table if it's missing -->
+		<action table="#__admintools_filescache" canfail="0">
+			<condition type="missing" value=""/>
+			<query><![CDATA[
 CREATE TABLE `#__admintools_filescache` (
 	`admintools_filescache_id` bigint(20) NOT NULL AUTO_INCREMENT,
 	`path` varchar(2048) NOT NULL,
@@ -76,39 +76,39 @@ CREATE TABLE `#__admintools_filescache` (
 	`checksum` varchar(32) NOT NULL DEFAULT '',
 	PRIMARY KEY (`admintools_filescache_id`)
 ) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <!-- Create the #__admintools_ipautoban table if it's missing -->
-        <action table="#__admintools_ipautoban" canfail="0">
-            <condition type="missing" value=""/>
-            <query><![CDATA[
+		<!-- Create the #__admintools_ipautoban table if it's missing -->
+		<action table="#__admintools_ipautoban" canfail="0">
+			<condition type="missing" value=""/>
+			<query><![CDATA[
 CREATE TABLE `#__admintools_ipautoban` (
 	`ip` varchar(255) NOT NULL,
 	`reason` varchar(255) DEFAULT 'other',
 	`until` datetime DEFAULT NULL,
 	UNIQUE KEY `#__admintools_ipautoban_ip` (`ip`(100))
 ) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <!-- Create the #__admintools_ipblock table if it's missing -->
-        <action table="#__admintools_ipblock" canfail="0">
-            <condition type="missing" value=""/>
-            <query><![CDATA[
+		<!-- Create the #__admintools_ipblock table if it's missing -->
+		<action table="#__admintools_ipblock" canfail="0">
+			<condition type="missing" value=""/>
+			<query><![CDATA[
 CREATE TABLE `#__admintools_ipblock` (
 	`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 	`ip` varchar(255) DEFAULT NULL,
 	`description` varchar(255) DEFAULT NULL,
 	UNIQUE KEY `id` (`id`)
 ) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <!-- Create the #__admintools_log table if it's missing -->
-        <action table="#__admintools_log" canfail="0">
-            <condition type="missing" value=""/>
-            <query><![CDATA[
+		<!-- Create the #__admintools_log table if it's missing -->
+		<action table="#__admintools_log" canfail="0">
+			<condition type="missing" value=""/>
+			<query><![CDATA[
 CREATE TABLE  `#__admintools_log` (
 	`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 	`logdate` datetime NOT NULL,
@@ -119,13 +119,13 @@ CREATE TABLE  `#__admintools_log` (
 	UNIQUE KEY `id` (`id`),
 	KEY `#__admintools_log_logdate_reason` (`logdate`, `reason`)
 ) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <!-- Create the #__admintools_redirects table if it's missing -->
-        <action table="#__admintools_redirects" canfail="0">
-            <condition type="missing" value=""/>
-            <query><![CDATA[
+		<!-- Create the #__admintools_redirects table if it's missing -->
+		<action table="#__admintools_redirects" canfail="0">
+			<condition type="missing" value=""/>
+			<query><![CDATA[
 CREATE TABLE `#__admintools_redirects` (
 	`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 	`source` varchar(255) DEFAULT NULL,
@@ -135,13 +135,13 @@ CREATE TABLE `#__admintools_redirects` (
 	`keepurlparams` tinyint(1) NOT NULL DEFAULT '1',
 	UNIQUE KEY `id` (`id`)
 ) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <!-- Create the #__admintools_scanalerts table if it's missing -->
-        <action table="#__admintools_scanalerts" canfail="0">
-            <condition type="missing" value=""/>
-            <query><![CDATA[
+		<!-- Create the #__admintools_scanalerts table if it's missing -->
+		<action table="#__admintools_scanalerts" canfail="0">
+			<condition type="missing" value=""/>
+			<query><![CDATA[
 CREATE TABLE `#__admintools_scanalerts` (
 	`admintools_scanalert_id` bigint(20) NOT NULL AUTO_INCREMENT,
 	`path` varchar(2048) NOT NULL,
@@ -151,13 +151,13 @@ CREATE TABLE `#__admintools_scanalerts` (
 	`acknowledged` tinyint(4) NOT NULL DEFAULT '0',
 	PRIMARY KEY (`admintools_scanalert_id`)
 ) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <!-- Create the #__admintools_scans table if it's missing -->
-        <action table="#__admintools_scans" canfail="0">
-            <condition type="missing" value=""/>
-            <query><![CDATA[
+		<!-- Create the #__admintools_scans table if it's missing -->
+		<action table="#__admintools_scans" canfail="0">
+			<condition type="missing" value=""/>
+			<query><![CDATA[
 CREATE TABLE `#__admintools_scans` (
 	`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 	`description` varchar(255) NOT NULL,
@@ -180,25 +180,25 @@ CREATE TABLE `#__admintools_scans` (
 	KEY `idx_fullstatus` (`filesexist`,`status`),
 	KEY `idx_stale` (`status`,`origin`)
 ) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <!-- Create the #__admintools_storage table if it's missing -->
-        <action table="#__admintools_storage" canfail="0">
-            <condition type="missing" value=""/>
-            <query><![CDATA[
+		<!-- Create the #__admintools_storage table if it's missing -->
+		<action table="#__admintools_storage" canfail="0">
+			<condition type="missing" value=""/>
+			<query><![CDATA[
 CREATE TABLE `#__admintools_storage` (
 	`key` varchar(255) NOT NULL,
 	`value` longtext NOT NULL,
 	PRIMARY KEY (`key`(100))
 ) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <!-- Create the #__admintools_wafexceptions table if it's missing -->
-        <action table="#__admintools_wafexceptions" canfail="0">
-            <condition type="missing" value=""/>
-            <query><![CDATA[
+		<!-- Create the #__admintools_wafexceptions table if it's missing -->
+		<action table="#__admintools_wafexceptions" canfail="0">
+			<condition type="missing" value=""/>
+			<query><![CDATA[
 CREATE TABLE `#__admintools_wafexceptions` (
 	`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 	`option` varchar(255) DEFAULT NULL,
@@ -206,12 +206,12 @@ CREATE TABLE `#__admintools_wafexceptions` (
 	`query` varchar(255) DEFAULT NULL,
 	PRIMARY KEY (`id`)
 ) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-      <action table="#__admintools_wafblacklists" canfail="0">
-        <condition type="missing" value=""/>
-        <query><![CDATA[
+	  <action table="#__admintools_wafblacklists" canfail="0">
+		<condition type="missing" value=""/>
+		<query><![CDATA[
 CREATE TABLE `#__admintools_wafblacklists` (
 	`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 	`option` varchar(255) NOT NULL,
@@ -221,15 +221,16 @@ CREATE TABLE `#__admintools_wafblacklists` (
 	`query_type` varchar(1) NOT NULL,
 	`query_content` varchar(255) NOT NULL,
 	`verb` varchar(6) NOT NULL,
+	`enabled` TINYINT(3) NOT NULL DEFAULT 1,
 	PRIMARY KEY (`id`)
 ) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-      </action>
+			]]></query>
+	  </action>
 
-        <!-- Create the #__admintools_profiles table if it's missing -->
-        <action table="#__admintools_profiles" canfail="0">
-            <condition type="missing" value=""/>
-            <query><![CDATA[
+		<!-- Create the #__admintools_profiles table if it's missing -->
+		<action table="#__admintools_profiles" canfail="0">
+			<condition type="missing" value=""/>
+			<query><![CDATA[
 CREATE TABLE `#__admintools_profiles` (
 	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 	`description` varchar(255) NOT NULL,
@@ -237,12 +238,12 @@ CREATE TABLE `#__admintools_profiles` (
 	`filters` longtext,
 	PRIMARY KEY (`id`)
 ) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <action table="#__admintools_waftemplates" canfail="0">
-            <condition type="missing" value=""/>
-            <query><![CDATA[
+		<action table="#__admintools_waftemplates" canfail="0">
+			<condition type="missing" value=""/>
+			<query><![CDATA[
 CREATE TABLE `#__admintools_waftemplates` (
   `admintools_waftemplate_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `reason` varchar(255) NOT NULL,
@@ -260,12 +261,12 @@ CREATE TABLE `#__admintools_waftemplates` (
   PRIMARY KEY (`admintools_waftemplate_id`),
   UNIQUE KEY `#__admintools_waftemplate_keylang` (`reason`(100),`language`)
 ) DEFAULT COLLATE utf8_general_ci;
-          ]]></query>
-        </action>
+		  ]]></query>
+		</action>
 
-        <action table="#__admintools_ipautobanhistory" canfail="0">
-            <condition type="missing" value=""/>
-            <query><![CDATA[
+		<action table="#__admintools_ipautobanhistory" canfail="0">
+			<condition type="missing" value=""/>
+			<query><![CDATA[
 CREATE TABLE `#__admintools_ipautobanhistory` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `ip` varchar(255) NOT NULL,
@@ -273,52 +274,52 @@ CREATE TABLE `#__admintools_ipautobanhistory` (
   `until` datetime DEFAULT NULL,
   PRIMARY KEY `id` (`id`)
 ) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <action table="#__admintools_cookies" canfail="0">
-            <condition type="missing" value=""/>
-            <query><![CDATA[
+		<action table="#__admintools_cookies" canfail="0">
+			<condition type="missing" value=""/>
+			<query><![CDATA[
 CREATE TABLE `#__admintools_cookies` (
   `series` varchar(255) NOT NULL,
   `client_hash` varchar(255) NOT NULL,
   `valid_to` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`series`(100))
 ) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <!-- Insert into #__admintools_profiles if id=1 is not there -->
-        <action table="#__admintools_profiles" canfail="1">
-            <condition type="equals" operator="not" value="1"><![CDATA[
+		<!-- Insert into #__admintools_profiles if id=1 is not there -->
+		<action table="#__admintools_profiles" canfail="1">
+			<condition type="equals" operator="not" value="1"><![CDATA[
 SELECT COUNT(*) FROM `#__admintools_profiles` WHERE `id` = 1;
-            ]]></condition>
+			]]></condition>
 
-            <query><![CDATA[
+			<query><![CDATA[
 INSERT IGNORE INTO `#__admintools_profiles`
 (`id`,`description`, `configuration`, `filters`) VALUES
 (1,'Default PHP Change Scanner Profile','','');
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <action table="#__admintools_redirects" canfail="1">
-            <condition type="missing" value="keepurlparams"/>
-            <query><![CDATA[
+		<action table="#__admintools_redirects" canfail="1">
+			<condition type="missing" value="keepurlparams"/>
+			<query><![CDATA[
 ALTER TABLE `#__admintools_redirects` ADD COLUMN `keepurlparams` tinyint(1) NOT NULL DEFAULT '1' AFTER `published`;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <action table="#__admintools_log" canfail="1">
-            <condition type="index" value="idx_admintools_log_logdate_reason" />
-            <query><![CDATA[
+		<action table="#__admintools_log" canfail="1">
+			<condition type="index" value="idx_admintools_log_logdate_reason" />
+			<query><![CDATA[
 ALTER TABLE `#__admintools_log` DROP KEY `idx_admintools_log_logdate_reason`;
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <action table="#__admintools_log" canfail="1">
-            <condition type="index" value="#__admintools_log_logdate_reason" operator="not" />
-            <!-- Keep top 1000 rows for performance reasons (we are going to regenerate the indices) -->
-            <query><![CDATA[
+		<action table="#__admintools_log" canfail="1">
+			<condition type="index" value="#__admintools_log_logdate_reason" operator="not" />
+			<!-- Keep top 1000 rows for performance reasons (we are going to regenerate the indices) -->
+			<query><![CDATA[
 DELETE FROM `#__admintools_log` where ID < (
 	SELECT CAST(`AUTO_INCREMENT` AS SIGNED) - 1000
 	FROM (
@@ -327,109 +328,143 @@ DELETE FROM `#__admintools_log` where ID < (
 		WHERE `TABLE_SCHEMA` = DATABASE() AND `TABLE_NAME` = '#__admintools_log'
 	) a
 );
-            ]]></query>
-            <query><![CDATA[
+			]]></query>
+			<query><![CDATA[
 ALTER TABLE `#__admintools_log` ADD KEY `#__admintools_log_logdate_reason` (`logdate`, `reason`);
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <action table="#__admintools_log" canfail="1">
-            <condition type="true"/>
-            <query><![CDATA[
+		<action table="#__admintools_log" canfail="1">
+			<condition type="true"/>
+			<query><![CDATA[
 ALTER TABLE `#__admintools_log` CHANGE `reason` `reason` ENUM(
-      'other','adminpw','ipwl','ipbl','sqlishield','antispam', 'wafblacklist',
+	  'other','adminpw','ipwl','ipbl','sqlishield','antispam', 'wafblacklist',
 			'tpone','tmpl','template','muashield','csrfshield','badbehaviour',
 			'geoblocking','rfishield','dfishield','uploadshield','xssshield',
 			'httpbl', 'loginfailure', 'securitycode', 'external', 'awayschedule', 'admindir', 'sessionshield');
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <action table="#__admintools_waftemplates" canfail="1">
-            <condition type="equals" value="0"><![CDATA[
+		<action table="#__admintools_waftemplates" canfail="1">
+			<condition type="equals" value="0"><![CDATA[
 SELECT COUNT(*) FROM `#__admintools_waftemplates`;
-            ]]></condition>
-            <query><![CDATA[
+			]]></condition>
+			<query><![CDATA[
 INSERT INTO `#__admintools_waftemplates` (`admintools_waftemplate_id`, `reason`, `language`, `subject`, `template`, `enabled`, `email_num`, `email_numfreq`, `email_freq`, `created_on`, `created_by`, `modified_on`, `modified_by`)
 VALUES
 	(NULL, 'all', '*', 'Security exception on [SITENAME]', '<div style=\"background-color: #e0e0e0; padding: 10px 20px;\">\r\n<div style=\"background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;\">\r\n<p>Hello,</p>\r\n<p>We would like to notify you that a security exception was detected on your site, [SITENAME], with the following details:</p>\r\n<p>IP Address: [IP] (IP Lookup: [LOOKUP])<br />Reason: [REASON]</p>\r\n<p>If this kind of security exception repeats itself, please log in to your site\'s back-end and add this IP address to your Admin Tools\'s Web Application Firewall feature in order to completely block the misbehaving user.</p>\r\n<p>Best regards,</p>\r\n<p>The [SITENAME] team</p>\r\n</div>\r\n<p style=\"font-size: x-small; color: #667;\">You are receiving this automatic email message because you are an administrator in <em>[SITENAME]</em>. <span style=\"line-height: 1.3em;\">Do not reply to this email, it\'s sent from an unmonitored email address.</span></p>\r\n</div>', 1, 5, 1, 'hour', '2014-04-14 14:36:34', 800, '2014-04-14 14:42:38', 800),
 	(NULL, 'user-reactivate', '*', 'User deactivated on [SITENAME]', '<div style=\"background-color: #e0e0e0; padding: 10px 20px;\">\r\n<div style=\"background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;\">\r\n<p>Hello,</p>\r\n<p>on [DATE] the user account [USER] was de-activated because too many failed logins were detected coming from IP address: [IP].</p>\r\n<p>Please click on the following link to activate the user account again:<br />[ACTIVATE]</p>\r\n<p>Best regards,</p>\r\n<p>The [SITENAME] team</p>\r\n</div>\r\n<p style=\"font-size: x-small; color: #667;\">You are receiving this automatic email message because you are an administrator in <em>[SITENAME]</em>. <span style=\"line-height: 1.3em;\">Do not reply to this email, it\'s sent from an unmonitored email address.</span></p>\r\n</div>', 1, 0, 0, '', '2014-04-24 14:44:49', 800, '0000-00-00 00:00:00', 0);
 
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <action table="#__admintools_waftemplates" canfail="1">
-            <condition type="equals" value="0"><![CDATA[
+		<action table="#__admintools_waftemplates" canfail="1">
+			<condition type="equals" value="0"><![CDATA[
 SELECT COUNT(*) FROM `#__admintools_waftemplates` WHERE `reason` = 'adminloginfail';
-            ]]></condition>
-            <query><![CDATA[
+			]]></condition>
+			<query><![CDATA[
 INSERT INTO `#__admintools_waftemplates` (`reason`, `language`, `subject`, `template`, `enabled`, `email_num`, `email_numfreq`, `email_freq`, `created_on`, `created_by`, `modified_on`, `modified_by`)
 VALUES
 	('adminloginfail', '*', 'Failed administrator login for user [USER] on [SITENAME]', '<div style=\"background-color: #e0e0e0; padding: 10px 20px;\">\r\n<div style=\"background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;\">\r\n<p>Hello,</p>\r\n<p>We would like to notify you that user <strong>[USER]</strong> did <strong>not</strong> log in successfully to the administrator back-end area of your site, [SITENAME]. <span style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">Further information:</span></p>\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">Username: [USER]<br />IP address: [IP] ([LOOKUP])<br />Country*: [COUNTRY]<br />Continent*: [CONTINENT]<br />Browser User Agent string: [UA]</p>\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">* Country and continent information availability and accuracy depend on the GeoIP database installed on your site.</p>\r\n<p>If this expected you need to do nothing about it. If you suspect a hacking attempt, please log in to your site\'s back-end immediately and activate Admin Tools\' Emergency Off-Line mode at once.</p>\r\n<p>Best regards,</p>\r\n<p>The [SITENAME] team</p>\r\n</div>\r\n<p style=\"font-size: x-small; color: #667;\">You are receiving this automatic email message because you are an administrator in <em>[SITENAME]</em>. <span style=\"line-height: 1.3em;\">Do not reply to this email, it\'s sent from an unmonitored email address.</span></p>', 1, 5, 1, 'hour', '2015-07-27 13:52:45', 800, '2015-07-27 13:58:31', 800),
 	('adminloginsuccess', '*', 'User [USER] logged in on [SITENAME] administrator area', '<div style=\"background-color: #e0e0e0; padding: 10px 20px;\">\r\n<div style=\"background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;\">\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">Hello,</p>\r\n<p>We would like to notify you that user [USER] has just logged in to the administrator back-end area of your site, [SITENAME]. Further information:</p>\r\n<p>Username: [USER]<br />IP address: [IP] ([LOOKUP])<br />Country*: [COUNTRY]<br />Continent*: [CONTINENT]<br />Browser User Agent string: [UA]</p>\r\n<p>* Country and continent information availability and accuracy depend on the GeoIP database installed on your site.</p>\r\n<p>If this expected you need to do nothing about it. If you suspect a hacking attempt, please log in to your site\'s back-end immediately and activate Admin Tools\' Emergency Off-Line mode at once.</p>\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">Best regards,</p>\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">The [SITENAME] team</p>\r\n</div>\r\n<p style=\"font-size: x-small; color: #667;\">You are receiving this automatic email message because you are an administrator in <em>[SITENAME]</em>. <span style=\"line-height: 1.3em;\">Do not reply to this email, it\'s sent from an unmonitored email address.</span></p>', 1, 5, 1, 'hour', '2015-07-27 13:58:08', 800, '0000-00-00 00:00:00', 0),
 	('ipautoban', '*', 'Automatic IP blocking notification for [IP] on [SITENAME]', '<div style=\"background-color: #e0e0e0; padding: 10px 20px;\">\r\n<div style=\"background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;\">\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">Hello,</p>\r\n<p>We would like to notify you that the IP address [IP] is now blocked from accessing your site, [SITENAME]<span style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">, with the following details:</span></p>\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">IP Address: [IP] (IP Lookup: [LOOKUP])<br />Reason: [REASON]<br />Banned until: [UNTIL]</p>\r\n<p>If this is your own IP address and you can no longer access your site please <a href=\"http://akee.ba/lockedout\">follow our instructions</a> to temporarily disable Admin Tools\' Web Application Firewall and clear the automatic IP ban.</p>\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">Best regards,</p>\r\n<p style=\"font-size: 12.1599998474121px; line-height: 15.8079996109009px;\">The [SITENAME] team</p>\r\n</div>\r\n<p style=\"font-size: x-small; color: #667;\">You are receiving this automatic email message because you are an administrator in <em>[SITENAME]</em>. <span style=\"line-height: 1.3em;\">Do not reply to this email, it\'s sent from an unmonitored email address.</span></p>', 1, 5, 1, 'hour', '2015-07-27 14:20:00', 800, '0000-00-00 00:00:00', 0);
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <!-- Add the backupid column to #__ak_stats if it's missing -->
-        <action table="#__admintools_scans" canfail="1">
-            <condition type="missing" value="backupid" />
-            <query><![CDATA[
+		<!-- Add the backupid column to #__ak_stats if it's missing -->
+		<action table="#__admintools_scans" canfail="1">
+			<condition type="missing" value="backupid" />
+			<query><![CDATA[
 ALTER TABLE `#__admintools_scans`
 ADD COLUMN `backupid` varchar(255) DEFAULT NULL
 AFTER `tag`
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <!-- Upgrade to UTF8MB4 -->
-        <action table="#__admintools_customperms" canfail="1">
-            <condition type="utf8mb4upgrade" />
-            <query><![CDATA[
+		<!-- Upgrade to UTF8MB4 -->
+		<action table="#__admintools_customperms" canfail="1">
+			<condition type="utf8mb4upgrade" />
+			<query><![CDATA[
 ALTER TABLE `#__admintools_customperms` DROP KEY `path`;
-            ]]></query>
-            <query><![CDATA[
+			]]></query>
+			<query><![CDATA[
 ALTER TABLE `#__admintools_customperms` ADD KEY `#__admintools_customperms_path` (`path`(100));
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <action table="#__admintools_ipautoban" canfail="1">
-            <condition type="utf8mb4upgrade" />
-            <query><![CDATA[
+		<action table="#__admintools_ipautoban" canfail="1">
+			<condition type="utf8mb4upgrade" />
+			<query><![CDATA[
 ALTER TABLE `#__admintools_ipautoban` DROP KEY `ip`;
-            ]]></query>
-            <query><![CDATA[
+			]]></query>
+			<query><![CDATA[
 ALTER TABLE `#__admintools_ipautoban` ADD UNIQUE KEY `#__admintools_ipautoban_ip` (`ip`(100));
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <action table="#__admintools_storage" canfail="1">
-            <condition type="utf8mb4upgrade" />
-            <query><![CDATA[
+		<action table="#__admintools_storage" canfail="1">
+			<condition type="utf8mb4upgrade" />
+			<query><![CDATA[
 ALTER TABLE `#__admintools_storage` DROP PRIMARY KEY;
-            ]]></query>
-            <query><![CDATA[
+			]]></query>
+			<query><![CDATA[
 ALTER TABLE `#__admintools_storage` ADD PRIMARY KEY (`key`(100));
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <action table="#__admintools_waftemplates" canfail="1">
-            <condition type="utf8mb4upgrade" />
-            <query><![CDATA[
+		<action table="#__admintools_waftemplates" canfail="1">
+			<condition type="utf8mb4upgrade" />
+			<query><![CDATA[
 ALTER TABLE `#__admintools_waftemplates` DROP KEY `admintools_waftemplate_keylang`;
-            ]]></query>
-            <query><![CDATA[
+			]]></query>
+			<query><![CDATA[
 ALTER TABLE `#__admintools_waftemplates` ADD UNIQUE KEY `#__admintools_waftemplate_keylang` (`reason`(100),`language`)
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-        <action table="#__admintools_cookies" canfail="1">
-            <condition type="utf8mb4upgrade" />
-            <query><![CDATA[
+		<action table="#__admintools_cookies" canfail="1">
+			<condition type="utf8mb4upgrade" />
+			<query><![CDATA[
 ALTER TABLE `#__admintools_cookies` DROP PRIMARY KEY;
-            ]]></query>
-            <query><![CDATA[
+			]]></query>
+			<query><![CDATA[
 ALTER TABLE `#__admintools_cookies` ADD PRIMARY KEY (`series`(100));
-            ]]></query>
-        </action>
+			]]></query>
+		</action>
 
-    </sql>
+		<action table="#__admintools_wafblacklists" canfail="1">
+			<condition type="missing" value="enabled" />
+			<query><![CDATA[
+ALTER TABLE `#__admintools_wafblacklists` ADD COLUMN `enabled` TINYINT(3) NOT NULL DEFAULT 1 AFTER `verb`;
+			]]></query>
+		</action>
+
+		<!-- WAF Blacklist rule: Joomla! SQLi vulnerability, October 2015 -->
+		<action table="#__admintools_wafblacklists" canfail="1">
+			<condition type="equals" operator="not" value="1"><![CDATA[
+SELECT COUNT(*) FROM `#__admintools_wafblacklists` WHERE `option` = '' AND `view`='' AND `task`=''
+AND `query`='list[select]' AND `query_type`='E' AND `verb`='';
+			]]></condition>
+			<query><![CDATA[
+INSERT IGNORE INTO `#__admintools_wafblacklists`
+(`option`, `view`, `task`, `query`, `query_type`, `query_content`, `verb`, `enabled`)
+VALUES ('', '', '', 'list[select]', 'E', '!#^[\\p{L}\\d,\\s]+$#iu', '', 1);
+			]]></query>
+		</action>
+
+		<!-- WAF Blacklist rule: Joomla! user registration vulnerability, October 2016 -->
+		<action table="#__admintools_wafblacklists" canfail="1">
+			<condition type="equals" operator="not" value="1"><![CDATA[
+SELECT COUNT(*) FROM `#__admintools_wafblacklists` WHERE `option` = 'com_users' AND `view`='' AND `task`=''
+AND `query`='user[groups]' AND `query_type`='P' AND `query_content`='' AND
+`verb`='';
+			]]></condition>
+			<query><![CDATA[
+INSERT IGNORE INTO `#__admintools_wafblacklists`
+(`option`, `view`, `task`, `query`, `query_type`, `query_content`, `verb`, `enabled`)
+VALUES ('com_users', '', '', 'user[groups]', 'P', '', '', 1);
+			]]></query>
+		</action>
+
+	</sql>
 </schema>

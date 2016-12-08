@@ -959,7 +959,7 @@ echo $this->leftmenu(
 								<?php echo JText::_('VERSION');?>
 							</td>
 							<td>
-								HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [1610171401]
+								HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [1612051411]
 							</td>
 						</tr>
 <?php

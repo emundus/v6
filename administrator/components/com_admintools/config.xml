@@ -1,118 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+@package   AdminTools
+@copyright 2010-2016 Akeeba Ltd / Nicholas K. Dionysopoulos
+@license   GNU General Public License version 3, or later
+-->
 <config>
-    <fieldset
-            name="scan"
-            label="ATOOLS_JCONFIG_SCAN_LABEL"
-            description="ATOOLS_JCONFIG_SCAN_DESC"
-            >
+	<fieldset
+			name="scan"
+			label="COM_ADMINTOOLS_JCONFIG_SCAN_LABEL"
+			description="COM_ADMINTOOLS_JCONFIG_SCAN_DESC"
+	>
 
-        <field name="scandiffs" type="list" default="0"
-               label="ATOOLS_JCONFIG_SCANDIFF_LABEL"
-               description="ATOOLS_JCONFIG_SCANDIFF_DESC">
-            <option value="0">JNo</option>
-            <option value="1">JYes</option>
-        </field>
-        <field name="scanemail" type="text" default="" size="30"
-               label="ATOOLS_LBL_CONFIG_SCANEMAIL_LABEL"
-               description="ATOOLS_LBL_CONFIG_SCANEMAIL_DESC"
-                />
+		<field name="scandiffs" type="list" default="0"
+			   label="COM_ADMINTOOLS_JCONFIG_SCANDIFF_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_SCANDIFF_DESC">
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+		</field>
+		<field name="scanemail" type="text" default="" size="30"
+			   label="COM_ADMINTOOLS_LBL_JCONFIG_SCANEMAIL_LABEL"
+			   description="COM_ADMINTOOLS_LBL_JCONFIG_SCANEMAIL_DESC"
+		/>
 
-    </fieldset>
+	</fieldset>
 
-    <fieldset
-            name="backend"
-            label="COM_ADMINTOOLS_JCONFIG_BACKEND_LABEL"
-            description="COM_ADMINTOOLS_JCONFIG_BACKEND_DESC"
-            >
+	<fieldset
+			name="backend"
+			label="COM_ADMINTOOLS_JCONFIG_BACKEND_LABEL"
+			description="COM_ADMINTOOLS_JCONFIG_BACKEND_DESC"
+	>
 
-        <field name="showstats" type="list" default="1"
-               label="COM_ADMINTOOLS_JCONFIG_SHOWSTATS_LABEL"
-               description="COM_ADMINTOOLS_JCONFIG_SHOWSTATS_DESC">
-            <option value="0">JNo</option>
-            <option value="1">JYes</option>
-        </field>
+		<field name="showstats" type="list" default="1"
+			   label="COM_ADMINTOOLS_JCONFIG_SHOWSTATS_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_SHOWSTATS_DESC">
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+		</field>
 
-        <field name="longconfigpage" type="list" default="0"
-               label="COM_ADMINTOOLS_JCONFIG_LONGCONFIGPAGE_LABEL"
-               description="COM_ADMINTOOLS_JCONFIG_LONGCONFIGPAGE_DESC">
-            <option value="0">JNo</option>
-            <option value="1">JYes</option>
-        </field>
+		<field name="longconfigpage" type="list" default="0"
+			   label="COM_ADMINTOOLS_JCONFIG_LONGCONFIGPAGE_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_LONGCONFIGPAGE_DESC">
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+		</field>
 
-        <field name="reorderplugin" type="list" default="1"
-               label="COM_ADMINTOOLS_JCONFIG_REORDERPLUGIN_LABEL"
-               description="COM_ADMINTOOLS_JCONFIG_REORDERPLUGIN_DESC">
-            <option value="0">JNo</option>
-            <option value="1">JYes</option>
-        </field>
+		<field name="reorderplugin" type="list" default="1"
+			   label="COM_ADMINTOOLS_JCONFIG_REORDERPLUGIN_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_REORDERPLUGIN_DESC">
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+		</field>
 
-    </fieldset>
+		<field name="updatedb" type="hidden" default="" label=""/>
+	</fieldset>
 
-    <fieldset name="frontend" label="COM_ADMINTOOLS_JCONFIG_FRONTEND_LABEL" description="COM_ADMINTOOLS_JCONFIG_FRONTEND_DESC">
-        <field name="frontend_enable" type="radio" default="0"
-               label="COM_ADMINTOOLS_JCONFIG_FEBENABLE_LABEL"
-               description="COM_ADMINTOOLS_JCONFIG_FEBENABLE_DESC"
-               class="btn-group">
-            <option value="0">JNo</option>
-            <option value="1">JYes</option>
-        </field>
+	<fieldset name="frontend" label="COM_ADMINTOOLS_JCONFIG_FRONTEND_LABEL"
+			  description="COM_ADMINTOOLS_JCONFIG_FRONTEND_DESC">
+		<field name="frontend_enable" type="radio" default="0"
+			   label="COM_ADMINTOOLS_JCONFIG_FEBENABLE_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_FEBENABLE_DESC"
+			   class="btn-group">
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+		</field>
 
-        <field name="frontend_secret_word" type="text" default="" size="30"
-               label="COM_ADMINTOOLS_JCONFIG_SECRETWORD_LABEL"
-               description="COM_ADMINTOOLS_JCONFIG_SECRETWORD_DESC"
-               class="input-large"/>
-    </fieldset>
+		<field name="frontend_secret_word" type="text" default="" size="30"
+			   label="COM_ADMINTOOLS_JCONFIG_SECRETWORD_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_SECRETWORD_DESC"
+			   class="input-large"/>
+	</fieldset>
 
-    <fieldset
-            name="updates"
-            label="ATOOLS_JCONFIG_UPDATES_LABEL"
-            description="ATOOLS_JCONFIG_UPDATES_DESC"
-            >
-        <field name="downloadid" type="text" default="" size="30"
-               label="ATOOLS_LBL_CONFIG_DOWNLOADID"
-               description=""/>
+	<fieldset
+			name="updates"
+			label="COM_ADMINTOOLS_JCONFIG_UPDATES_LABEL"
+			description="COM_ADMINTOOLS_JCONFIG_UPDATES_DESC"
+	>
+		<field name="downloadid" type="text" default="" size="30"
+			   label="COM_ADMINTOOLS_LBL_JCONFIG_DOWNLOADID"
+			   description=""/>
 
-      <field name="autoupdateCli" type="list" default="1"
-             label="CONFIG_AUTOUPDATE_SETTINGS_LABEL"
-             description="CONFIG_AUTOUPDATE_SETTINGS_DESC">
-        <option value="1">CONFIG_AUTOUPDATE_NOTIFY_UPDATE</option>
-        <option value="2">CONFIG_AUTOUPDATE_NOTIFY</option>
-        <option value="3">CONFIG_AUTOUPDATE_UPDATE</option>
-      </field>
+		<field name="autoupdateCli" type="list" default="1"
+			   label="COM_ADMINTOOLS_JCONFIG_AUTOUPDATE_SETTINGS_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_AUTOUPDATE_SETTINGS_DESC">
+			<option value="1">COM_ADMINTOOLS_JCONFIG_AUTOUPDATE_NOTIFY_UPDATE</option>
+			<option value="2">COM_ADMINTOOLS_JCONFIG_AUTOUPDATE_NOTIFY</option>
+			<option value="3">COM_ADMINTOOLS_JCONFIG_AUTOUPDATE_UPDATE</option>
+		</field>
 
-      <field name="notificationFreq" type="text" default="1"
-             label="CONFIG_NOTIFICATION_FREQ_LABEL" />
+		<field name="notificationFreq" type="text" default="1"
+			   label="COM_ADMINTOOLS_JCONFIG_NOTIFICATION_FREQ_LABEL"/>
 
-      <field name="notificationTime" type="list" default="day"
-             label="CONFIG_NOTIFICATION_TIME_LABEL" >
-        <option value="min">CONFIG_NOTIFICATION_TIME_MIN</option>
-        <option value="hour">CONFIG_NOTIFICATION_TIME_HOUR</option>
-        <option value="day">CONFIG_NOTIFICATION_TIME_DAY</option>
-      </field>
+		<field name="notificationTime" type="list" default="day"
+			   label="COM_ADMINTOOLS_JCONFIG_NOTIFICATION_TIME_LABEL">
+			<option value="min">COM_ADMINTOOLS_JCONFIG_NOTIFICATION_TIME_MIN</option>
+			<option value="hour">COM_ADMINTOOLS_JCONFIG_NOTIFICATION_TIME_HOUR</option>
+			<option value="day">COM_ADMINTOOLS_JCONFIG_NOTIFICATION_TIME_DAY</option>
+		</field>
 
-      <field name="notificationEmail" type="text" default=""
-             label="CONFIG_NOTIFICATION_EMAIL_LABEL"
-             description="CONFIG_NOTIFICATION_EMAIL_DESC"/>
+		<field name="notificationEmail" type="text" default=""
+			   label="COM_ADMINTOOLS_JCONFIG_NOTIFICATION_EMAIL_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_NOTIFICATION_EMAIL_DESC"/>
 
-      <field name="stats_enabled" type="list" default="1" label="CONFIG_USAGESTATS_LABEL" description="CONFIG_USAGESTATS_DESC">
-        <option value="0">JNO</option>
-        <option value="1">JYES</option>
-      </field>
-    </fieldset>
+		<field name="stats_enabled" type="list" default="1" label="COM_ADMINTOOLS_JCONFIG_USAGESTATS_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_USAGESTATS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+	</fieldset>
 
-    <fieldset
-            name="permissions"
-            label="JCONFIG_PERMISSIONS_LABEL"
-            description="JCONFIG_PERMISSIONS_DESC"
-            >
+	<fieldset
+			name="permissions"
+			label="JCONFIG_PERMISSIONS_LABEL"
+			description="JCONFIG_PERMISSIONS_DESC"
+	>
 
-        <field
-                name="rules"
-                type="rules"
-                label="JCONFIG_PERMISSIONS_LABEL"
-                class="inputbox"
-                filter="rules"
-                component="com_admintools"
-                section="component"/>
-    </fieldset>
+		<field
+				name="rules"
+				type="rules"
+				label="JCONFIG_PERMISSIONS_LABEL"
+				class="inputbox"
+				filter="rules"
+				component="com_admintools"
+				section="component"/>
+	</fieldset>
 </config>

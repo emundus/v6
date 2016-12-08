@@ -35,6 +35,11 @@ class WFModelPlugins extends WFModel {
                     foreach ($command->children() as $item) {
                         $key = $item->getName();
                         $value = (string) $item;
+
+                        if (is_numeric($value)) {
+                            $value = (int) $value;
+                        }
+
                         $commands[$name]->$key = $value;
                     }
 
@@ -49,151 +54,247 @@ class WFModelPlugins extends WFModel {
     public function getPlugins() {
         jimport('joomla.filesystem.folder');
 
-        $plugins = array();
+        $language = JFactory::getLanguage();
 
-        // get core xml
-        $xml = WFXMLElement::load(dirname(__FILE__) . '/plugins.xml');
+        static $plugins;
 
-        if ($xml) {
+        if (!isset($plugins)) {
+          $plugins = array();
 
-            foreach ($xml->children() as $plugin) {
-                $name = (string) $plugin->name;
+          // get core xml
+          $xml = WFXMLElement::load(dirname(__FILE__) . '/plugins.xml');
 
-                if ($name) {
-                    $plugins[$name] = new StdClass();
+          if ($xml) {
+              foreach ($xml->children() as $plugin) {
+                  $name = (string) $plugin->name;
 
-                    foreach ($plugin->children() as $item) {
-                        $key = $item->getName();
-                        $value = (string) $item;
+                  if ($name) {
+                      $plugins[$name] = new StdClass();
 
-                        if (is_numeric($value)) {
-                            $value = (int) $value;
-                        }
+                      foreach ($plugin->children() as $item) {
+                          $key = $item->getName();
+                          $value = (string) $item;
 
-                        $plugins[$name]->$key = $value;
-                    }
+                          if (is_numeric($value)) {
+                              $value = (int) $value;
+                          }
 
-                    $plugins[$name]->type = 'plugin';
+                          $plugins[$name]->$key = $value;
+                      }
 
-                    $plugins[$name]->path = str_replace(JPATH_SITE, '', WF_EDITOR_PLUGINS) . '/' . $name;
-                }
+                      $plugins[$name]->type     = 'plugin';
+                      $plugins[$name]->path     = str_replace(JPATH_SITE, '', WF_EDITOR_PLUGINS) . '/' . $name;
+                      $plugins[$name]->manifest = WF_EDITOR_PLUGINS . '/' . $name . '/' . $name . '.xml';
+                  }
+              }
+          }
+
+          unset($xml);
+
+          // get all core plugins
+          $folders = JFolder::folders(WF_EDITOR_PLUGINS, '.', false, true, array_merge(array('.svn', 'CVS'), array_keys($plugins)));
+
+          // get all installed plugins
+          $installed = JPluginHelper::getPlugin('jce');
+
+          foreach($installed as $item) {
+            // check for delimiter, only load "extensions"
+            if (strpos($item->name, '-') === false || strpos($item->name, 'editor-') === false) {
+                continue;
             }
-        }
 
-        unset($xml);
+            $name = str_replace('editor-', '', $item->name);
 
-        // get all Plugins
-        $folders = JFolder::folders(WF_EDITOR_PLUGINS, '.', false, true, array_merge(array('.svn', 'CVS'), array_keys($plugins)));
+            // load language
+            $language->load('plg_jce_' . $name, JPATH_ADMINISTRATOR);
 
-        foreach ($folders as $folder) {
-            $name = basename($folder);
-            $file = $folder . '/' . $name . '.xml';
+            $folders[] = JPATH_PLUGINS . '/jce/' . $item->name;
+          }
 
-            if (is_file($file)) {
-                $xml = WFXMLElement::load($folder . '/' . $name . '.xml');
+          foreach ($folders as $folder) {
+              $name = basename($folder);
+              $file = $folder . '/' . $name . '.xml';
 
-                if ($xml) {
+              if (is_file($file)) {
+                  $plugins[$name] = new StdClass();
+                  $plugins[$name]->name = str_replace('editor-', '', $name);
+                  $plugins[$name]->manifest = $file;
+
+                  $xml = WFXMLElement::load($file);
+
+                  if ($xml) {
+                    // check xml file is valid
                     if ((string) $xml->getName() != 'extension' && (string) $xml->getName() != 'install') {
                         continue;
                     }
 
                     $params = $xml->params;
 
-                    if (!isset($plugins[$name])) {
-                        $plugins[$name] = new StdClass();
+                    $plugins[$name] = new StdClass();
 
-                        $plugins[$name]->name = $name;
+                    $plugins[$name]->name = str_replace('editor-', '', $name);
 
-                        $plugins[$name]->title = (string) $xml->name;
-                        $plugins[$name]->icon = (string) $xml->icon;
+                    $plugins[$name]->title    = (string) $xml->name;
+                    $plugins[$name]->icon     = (string) $xml->icon;
+                    $plugins[$name]->editable = 0;
 
-                        $editable = (int) $xml->attributes()->editable;
-                        $plugins[$name]->editable = $editable ? $editable : ($params && count($params->children()) ? 1 : 0);
-
-                        $row = (int) $xml->attributes()->row;
-
-                        $plugins[$name]->row = $row ? $row : 4;
-                        $plugins[$name]->core = (int) $xml->attributes()->core ? 1 : 0;
+                    // can't be editable without parameters
+                    if ($params && count($params->children())) {
+                        $plugins[$name]->editable = 1;
                     }
-                    // relative path
-                    $plugins[$name]->path = str_replace(JPATH_SITE, '', $folder);
 
+                    $row = (int) $xml->attributes()->row;
+
+                    $plugins[$name]->row = $row ? $row : 4;
+                    $plugins[$name]->description = (string) $xml->description;
+                    $plugins[$name]->core = (int) $xml->attributes()->core ? 1 : 0;
+
+                    // installer stuff
                     $plugins[$name]->author = (string) $xml->author;
                     $plugins[$name]->version = (string) $xml->version;
                     $plugins[$name]->creationdate = (string) $xml->creationDate;
-                    $plugins[$name]->description = (string) $xml->description;
-
                     $plugins[$name]->authorUrl = (string) $xml->authorUrl;
+
+                    // relative path
+                    $plugins[$name]->path = str_replace(JPATH_SITE, '', $folder);
                     $plugins[$name]->type = 'plugin';
-                }
-            }
+                    $plugins[$name]->manifest = $file;
+                  }
+              }
+          }
         }
 
         return $plugins;
     }
 
     /**
-     * Get a plugin's extensions
-     * @param object $plugin
-     * @return
+     * Get installed extensions
+     * @return array $extensions
      */
     public function getExtensions() {
         jimport('joomla.filesystem.folder');
         jimport('joomla.filesystem.file');
 
-        $extensions = array();
+        $language = JFactory::getLanguage();
 
-        // recursively get all extension files
-        $files = JFolder::files(WF_EDITOR_EXTENSIONS, '\.xml$', true, true);
+        static $extensions;
 
-        foreach ($files as $file) {
-            $object = new StdClass();
-            $object->folder = basename(dirname($file));
-            $object->manifest = $file;
-            $object->plugins = array();
-            $name = basename($file, '.xml');
-            $object->name = $name;
-            $object->description = '';
-            $object->id = $object->folder . '.' . $object->name;
+        if (empty($extensions)) {
+          $extensions = array();
 
-            // get core xml
-            $xml = WFXMLElement::load($file);
+          // recursively get all extension files
+          $files = JFolder::files(WF_EDITOR_EXTENSIONS, '\.xml$', true, true);
+
+          foreach ($files as $file) {
+              $name = basename($file, '.xml');
+
+              $object = new StdClass();
+              $object->folder = basename(dirname($file));
+              $object->manifest = $file;
+              $object->plugins = array();
+              $object->name   = $name;
+              $object->title  = $name;
+              $object->description = '';
+              $object->id = $object->folder . '.' . $object->name;
+              $object->extension = $object->name;
+              // set as non-core by default
+              $object->core = 0;
+              // set as not editable by default
+              $object->editable = 0;
+              // set type
+              $object->type = $object->folder;
+
+              $extensions[] = $object;
+          }
+
+          // get all installed plugins
+          $installed = JPluginHelper::getPlugin('jce');
+
+          if (!empty($installed)) {
+              foreach ($installed as $p) {
+
+                  // check for delimiter, only load "extensions"
+                  if (strpos($p->name, '-') === false && strpos($p->name, 'editor-') !== false) {
+                      continue;
+                  }
+
+                  // set path
+                  $p->path = JPATH_PLUGINS . '/jce/' . $p->name;
+
+                  // Joomla 1.5!!
+                  if (!defined('JPATH_PLATFORM')) {
+                      $p->path = JPATH_PLUGINS . '/jce';
+                  }
+
+                  $parts = explode("-", $p->name);
+                  // get type and name
+                  $p->folder    = $parts[0];
+                  $p->extension = $parts[1];
+
+                  // plugin manifest, eg: filesystem-joomla.xml
+                  $p->manifest = $p->path . '/' . $p->name . '.xml';
+
+                  $p->plugins = array();
+                  $p->description = '';
+                  $p->title = $p->name;
+                  // create plugin id, eg: filesystem.joomla
+                  $p->id = $p->folder . '.' . $p->extension;
+                  // not core
+                  $p->core = 0;
+                  // set as not editable by default
+                  $p->editable = 0;
+                  // set type
+                  $p->type = $p->folder;
+
+                  // load language
+                  $language->load('plg_jce_' . $p->folder . '_' . $p->extension, JPATH_ADMINISTRATOR);
+
+                  $extensions[] = $p;
+              }
+          }
+
+          // process xml for each extension
+          for($i = 0; $i < count($extensions); $i++) {
+            $extension = $extensions[$i];
+
+            $xml = WFXMLElement::load($extension->manifest);
 
             if ($xml) {
+                // not a valid extension xml file
                 if ((string) $xml->getName() != 'extension' && (string) $xml->getName() != 'install') {
+                    unset($extensions[$i]);
                     continue;
                 }
 
+                // list of plugins this extension is restricted to
                 $plugins = (string) $xml->plugins;
 
                 if ($plugins) {
-                    $object->plugins = explode(',', $plugins);
+                    $extension->plugins = explode(',', $plugins);
                 }
 
-                $object->name = (string) $xml->name;
-                $object->title = (string) $xml->name;
-                $object->description = (string) $xml->description;
+                $extension->title       = (string) $xml->name;
+                $extension->description = (string) $xml->description;
+                $extension->core        = (int) $xml->attributes()->core ? 1 : 0;
 
-                $object->creationdate = (string) $xml->creationDate;
-                $object->author = (string) $xml->author;
-                $object->version = (string) $xml->version;
-                $object->type = (string) $xml->attributes()->folder;
-                $object->authorUrl = (string) $xml->authorUrl;
+                $params = $xml->params;
 
-
-                $object->folder = (string) $xml->attributes()->folder;
-                $object->core = (int) $xml->attributes()->core ? 1 : 0;
-
-                if ($object->core == 0) {
-                    // load language
-                    $language = JFactory::getLanguage();
-                    $language->load('com_jce_' . $object->folder . '_' . $name, JPATH_SITE);
+                // can't be editable without parameters
+                if ($params && count($params->children())) {
+                    $extension->editable = 1;
                 }
 
-                $object->extension = $name;
-                $extensions[] = $object;
+                // installer stuff
+                $extension->author = (string) $xml->author;
+                $extension->version = (string) $xml->version;
+                $extension->creationdate = (string) $xml->creationDate;
+                $extension->authorUrl = (string) $xml->authorUrl;
             }
+          }
         }
+
+        // reset array
+        $extensions = array_values($extensions);
 
         return $extensions;
     }
@@ -202,7 +303,7 @@ class WFModelPlugins extends WFModel {
      * Process import data from XML file
      * @param object $file XML file
      * @param boolean $install Can be used by the package installer
-     * @return
+     * @return boolean 
      */
     public function processImport($file, $install = false) {
         return true;
@@ -225,7 +326,7 @@ class WFModelPlugins extends WFModel {
 
             if ($plugin->icon) {
                 if (in_array($plugin->name, preg_split('/[;,]+/', $profile->rows)) === false) {
-                    // get rows as array	
+                    // get rows as array
                     $rows = explode(';', $profile->rows);
 
                     if (count($rows)) {

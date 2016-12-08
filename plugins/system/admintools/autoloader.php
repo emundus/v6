@@ -29,7 +29,7 @@ class AdmintoolsAutoloaderPlugin
 	public static $autoloader = null;
 
 	/**
-	 * The path to the F0F root directory
+	 * The path to the root directory
 	 *
 	 * @var   string
 	 */

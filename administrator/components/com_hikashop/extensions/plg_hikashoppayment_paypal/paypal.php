@@ -315,7 +315,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		$history = new stdClass();
 		$history->notified = 0;
 		$history->amount = @$vars['mc_gross'].@$vars['mc_currency'];
-		$history->data = ob_get_clean();
+		$history->data = ob_get_contents();
 
 		$response = substr($response, strpos($response, "\r\n\r\n") + strlen("\r\n\r\n"));
 
@@ -413,6 +413,15 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 			$lang = JFactory::getLanguage();
 			$locale = strtolower(substr($lang->get('tag'), 0, 2));
 			$app->enqueueMessage(JText::sprintf('ENTER_INFO_REGISTER_IF_NEEDED', 'PayPal', JText::_('HIKA_EMAIL'), 'PayPal', 'https://www.paypal.com/' . $locale . '/mrb/pal=SXL9FKNKGAEM8'));
+		}
+
+		if(!empty($element->payment_params->details)){
+			$config = hikashop_config();
+			$round_calculations = $config->get('round_calculations');
+			if(empty($round_calculations)){
+				$app = JFactory::getApplication();
+				$app->enqueueMessage('When you activate the "Send details of the order" setting, PayPal calculate itself the total amount and round prices during calculations. So you need to have option "Round prices during calculations" turned on in the HikaShop configuration in order for HikaShop to calculate the total in the same way. Otherwise, you might get payments with an amount different than the total amount of the orders and it will create an error.');
+			}
 		}
 	}
 

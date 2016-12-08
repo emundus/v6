@@ -10,7 +10,6 @@ defined('_JEXEC') or die('Restricted access');
 ?><?php
 class plgHikashoppaymentMigsvpc extends hikashopPaymentPlugin
 {
-	var $accepted_currencies = array('AUD');
 	var $multiple = true;
 	var $name = 'migsvpc';
 	var $pluginConfig = array(
@@ -24,7 +23,6 @@ class plgHikashoppaymentMigsvpc extends hikashopPaymentPlugin
 		'access_code' => array('ACCESS_CODE', 'input'),
 		'secure_secret' => array('SECURE_SECRET', 'input'),
 		'ticket_info' => array('Display payment information in Redirect mode', 'boolean','0'),
-		'currency' => array('CURRENCY', 'input'),
 		'ask_ccv' => array('Ask CCV', 'boolean','0'),
 		'debug' => array('DEBUG', 'boolean','0'),
 		'cancel_url' => array('CANCEL_URL', 'input'),
@@ -56,9 +54,6 @@ class plgHikashoppaymentMigsvpc extends hikashopPaymentPlugin
 		}
 
 		$this->ccLoad();
-
-		if(!empty($this->payment_params->currency))
-			$this->accepted_currencies = array( strtoupper($this->payment_params->currency) );
 
 		ob_start();
 		$dbg = '';

@@ -1,29 +1,32 @@
 <?php
 /**
- * @package		Joomla.Site
- * @subpackage	com_mailto
- * @copyright	Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
- * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ * @package     Joomla.Site
+ * @subpackage  com_mailto
+ *
+ * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-// no direct access
 defined('_JEXEC') or die;
+JHtml::_('behavior.core');
 JHtml::_('behavior.keepalive');
-?>
-<script type="text/javascript">
-	Joomla.submitbutton = function(pressbutton) {
+
+$data = $this->get('data');
+
+JFactory::getDocument()->addScriptDeclaration("
+	Joomla.submitbutton = function(pressbutton)
+	{
 		var form = document.getElementById('mailtoForm');
 
 		// do field validation
-		if (form.mailto.value == "" || form.from.value == "") {
-			alert('<?php echo JText::_('COM_MAILTO_EMAIL_ERR_NOINFO'); ?>');
+		if (form.mailto.value == '' || form.from.value == '')
+		{
+			alert('" . JText::_('COM_MAILTO_EMAIL_ERR_NOINFO') . "');
 			return false;
 		}
 		form.submit();
 	}
-</script>
-<?php
-$data	= $this->get('data');
+");
 ?>
 
 <div id="mailto-window">
@@ -35,7 +38,7 @@ $data	= $this->get('data');
 		 <span><?php echo JText::_('COM_MAILTO_CLOSE_WINDOW'); ?> </span></a>
 	</div>
 
-	<form action="<?php echo JURI::base() ?>index.php" id="mailtoForm" method="post">
+	<form action="<?php echo JUri::base() ?>index.php" id="mailtoForm" method="post">
 		<div class="formelm">
 			<label for="mailto_field"><?php echo JText::_('COM_MAILTO_EMAIL_TO'); ?></label>
 			<input type="text" id="mailto_field" name="mailto" class="inputbox" size="25" value="<?php echo $this->escape($data->mailto); ?>"/>
@@ -63,7 +66,7 @@ $data	= $this->get('data');
 				<?php echo JText::_('COM_MAILTO_CANCEL'); ?>
 			</button>
 		</p>
-		<input type="hidden" name="layout" value="<?php echo $this->getLayout();?>" />
+		<input type="hidden" name="layout" value="<?php echo htmlspecialchars($this->getLayout(), ENT_COMPAT, 'UTF-8'); ?>" />
 		<input type="hidden" name="option" value="com_mailto" />
 		<input type="hidden" name="task" value="send" />
 		<input type="hidden" name="tmpl" value="component" />

@@ -11,9 +11,13 @@
  */
 defined('_JEXEC') or die('RESTRICTED');
 
+wfimport('editor.libraries.classes.response');
+
 final class WFRequest extends JObject {
 
-    var $request = array();
+    protected static $instance;
+
+    protected $requests = array();
 
     /**
      * Constructor activating the default information of the class
@@ -34,13 +38,11 @@ final class WFRequest extends JObject {
      * @return  object WFRequest
      */
     public static function getInstance() {
-        static $instance;
-
-        if (!is_object($instance)) {
-            $instance = new WFRequest();
+        if (!isset(self::$instance)) {
+            self::$instance = new WFRequest();
         }
 
-        return $instance;
+        return self::$instance;
     }
 
     /**
@@ -49,21 +51,25 @@ final class WFRequest extends JObject {
      * @access 	public
      * @param 	array	$function An array containing the function and object
      */
-    public function setRequest($function) {
-        $object = new StdClass();
+    public function register($function) {
+        $object = new stdClass;
 
         if (is_array($function)) {
-            $name = $function[1];
-            $ref = $function[0];
+            $ref = array_shift($function);
+            $name = array_shift($function);
 
             $object->fn = $name;
             $object->ref = $ref;
 
-            $this->request[$name] = $object;
+            $this->requests[$name] = $object;
         } else {
             $object->fn = $function;
-            $this->request[$function] = $object;
+            $this->requests[$function] = $object;
         }
+    }
+
+    private function isRegistered($function) {
+        return array_key_exists($function, $this->requests);
     }
 
     /**
@@ -71,8 +77,20 @@ final class WFRequest extends JObject {
      * @access 	public
      * @param 	string $function
      */
-    public function getRequest($function) {
-        return $this->request[$function];
+    public function getFunction($function) {
+        return $this->requests[$function];
+    }
+
+    /**
+     * Check if the HTTP Request is a WFRequest
+     * @return boolean
+     */
+    private function isRequest() {
+        return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') || (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], "multipart") !== false);
+    }
+
+    public function setRequest($request) {
+      return $this->register($request);
     }
 
     /**
@@ -111,112 +129,101 @@ final class WFRequest extends JObject {
         // Check for request forgeries
         WFToken::checkToken() or die('Access to this resource is restricted');
 
+        if ($this->isRequest() === false) {
+            return false;
+        }
+
+        // empty arguments
+        $args = array();
+
+        // Joomla Input Filter
         $filter = JFilterInput::getInstance();
 
         $json   = JRequest::getVar('json', '', 'POST', 'STRING', 2);
-        $action = JRequest::getWord('action');
+        $method = JRequest::getWord('method');
 
         // set error handling for requests
         JError::setErrorHandling(E_ALL, 'callback', array('WFRequest', 'raiseError'));
 
-        if ($action || $json) {
-            // set request flag			
+        // get and encode json data
+        if ($json) {
+          // remove slashes
+          $json = stripslashes($json);
+
+          // convert to JSON object
+          $json = json_decode($json);
+        }
+
+        // get current request id
+        $id = empty($json->id) ? JRequest::getWord('id') : $json->id;
+
+        // create response
+        $response = new WFResponse($id);
+
+        if ($method || $json) {
+            // set request flag
             define('JCE_REQUEST', 1);
 
-            $output = array(
-                "result" => null,
-                "text" => null,
-                "error" => null
-            );
-
-            if ($json) {                
-                // remove slashes
-                $json = stripslashes($json);
-                
-                // convert to JSON object
-                $json = json_decode($json);
-                
-                // invalid JSON
-                if (is_null($json)) {
-                    throw new InvalidArgumentException('Invalid JSON');
-                }
-                
+            // check if valid json object
+            if (is_object($json)) {
                 // no function call
-                if (isset($json->fn) === false) {
-                    throw new InvalidArgumentException('Invalid Function Call');
+                if (isset($json->method) === false) {
+                    $response->setError(array('code' => -32600, 'message' => 'Invalid Request'))->send();
                 }
-                
+
                 // get function call
-                $fn = $json->fn;
-                
-                // get arguments
-                $args = isset($json->args) ? $json->args : array();
-            } else {
-                $fn     = $action;
-                $args   = array();
-            }
-            
-            // clean function
-            $fn = $filter->clean($fn, 'cmd');
+                $fn = $json->method;
 
-            // check query
-            $this->checkQuery($args);
+                // clean function
+                $fn = $filter->clean($fn, 'cmd');
 
-            // call function
-            if (array_key_exists($fn, $this->request)) {
-                $method = $this->request[$fn];
+                // pass params to input and flatten
+                if (!empty($json->params)) {
+                    // check query
+                    $this->checkQuery($json->params);
 
-                // set default function call
-                $call = null;
-
-                if (!isset($method->ref)) {
-                    $call = $method->fn;
-                    if (!function_exists($call)) {
-                        throw new InvalidArgumentException('Invalid Function -  "' . $call . '"');
+                    // merge array with args
+                    if (is_array($json->params)) {
+                      $args = array_merge($args, $json->params);
+                    // pass through string or object  
+                    } else {
+                      $args[] = $json->params;
                     }
-                } else {
-                    if (!method_exists($method->ref, $method->fn)) {
-                        throw new InvalidArgumentException('Invalid Method "' . $method->ref . '::' . $method->fn . '"');
-                    }
-                    $call = array($method->ref, $method->fn);
-                }
-
-                if (!$call) {
-                    throw new InvalidArgumentException('Invalid Function Call');
-                }
-
-                if (!is_array($args)) {
-                    $result = call_user_func($call, $args);
-                } else {
-                    $result = call_user_func_array($call, $args);
                 }
             } else {
-                if ($fn) {
-                    throw new InvalidArgumentException('Unregistered Function - "' . addslashes($fn) . '"');
-                } else {
-                    throw new InvalidArgumentException('Invalid Function Call');
-                }
+                $fn = $method;
+                $response->setHeaders(array('Content-type' => 'text/html;charset=UTF-8'));
             }
 
-            $output = array(
-                "result" => $result
-            );
+            if (empty($fn) || $this->isRegistered($fn) === false) {
+                $response->setError(array('code' => -32601, 'message' => 'Method not found'))->send();
+            }
 
-            ob_start();
+            // get method
+            $request = $this->getFunction($fn);
 
-            // set output headers
-            header('Content-Type: text/json;charset=UTF-8');
-            header('Content-Encoding: UTF-8');
-            header("Expires: Mon, 4 April 1984 05:00:00 GMT");
-            header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-            header("Cache-Control: no-store, no-cache, must-revalidate");
-            header("Cache-Control: post-check=0, pre-check=0", false);
-            header("Pragma: no-cache");
+            // create callable function
+            $callback = array($request->ref, $request->fn);
 
-            echo json_encode($output);
+            // check function is callable
+            if (is_callable($callback) === false) {
+                $response->setError(array('code' => -32601, 'message' => 'Method not found'))->send();
+            }
 
-            exit(ob_get_clean());
+            // create empty result
+            $result = "";
+
+            try {
+                $result = call_user_func_array($callback, (array) $args);
+            } catch (Exception $e) {
+                $response->setError(array('code' => $e->getCode(), 'message' => $e->getMessage()))->send();
+            }
+
+            $response->setContent($result)->send();
         }
+
+        // default response
+        $response->setError(array('code' => -32601, 'message' => 'The server returned an invalid response'))->send();
     }
 
     /**

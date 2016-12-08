@@ -11,7 +11,7 @@
  */
 class WFBrowserPluginConfig {
 	public static function getConfig( &$settings ){
-		$settings['file_browser_callback'] = "function(name, url, type, win){tinyMCE.activeEditor.plugins.browser.browse(name, url, type, win);}";
+		$settings['file_browser_callback'] = "";
 	}
 }
 ?>

@@ -1835,7 +1835,7 @@ class hikashopCartClass extends hikashopClass {
 		$cartInfo = $this->loadCart($cart_id);
 		$currUser = hikashop_loadUser(true);
 		$session = JFactory::getSession();
-		if($cart_id == 0 || $app->isAdmin() || $currUser->user_cms_id == $cartInfo->user_id || $session->getId()==$cartInfo->session_id){
+		if($cart_id == 0 || $app->isAdmin() || @$currUser->user_cms_id == $cartInfo->user_id || $session->getId()==$cartInfo->session_id){
 			if($cart_id != '0'){
 				$query='UPDATE '.hikashop_table('cart').' SET cart_current = 1 WHERE cart_id = '.(int)$cart_id;
 				$db->setQuery($query);

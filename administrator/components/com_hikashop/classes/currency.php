@@ -70,12 +70,14 @@ class hikashopCurrencyClass extends hikashopClass{
 			}
 		} else {
 			$taxedPrice = (float)$price;
-			$price = $this->round($taxedPrice / (1.00000 + $tax), $round);
+			$tax = 0.0;
 			if(!empty($this->taxRates)) {
 				foreach($this->taxRates as $k => $rate) {
 					$this->taxRates[$k]->tax_amount = $this->round($taxedPrice * floatval($rate->tax_rate) / (1.00000 + floatval($rate->tax_rate)), $round);
+					$tax += $this->taxRates[$k]->tax_amount;
 				}
 			}
+			$price = $this->round($taxedPrice - $this->round($tax, $round), $round);
 		}
 		return $taxedPrice;
 	}
@@ -325,7 +327,17 @@ class hikashopCurrencyClass extends hikashopClass{
 		foreach($prices as $price) {
 			if((int)@$price->price_min_quantity > 1)
 				continue;
-			$p[] = $this->format($price->$value_field, $price->$currency_id_field);
+			if(is_array($currency_id_field)){
+				if(is_string($price->{$currency_id_field[0]})){
+					$params = hikashop_unserialize($price->{$currency_id_field[0]});
+				}else{
+					$params = $price->{$currency_id_field[0]};
+				}
+				$currency_id = $params->{$currency_id_field[1]};
+			}else{
+				$currency_id = $price->$currency_id_field;
+			}
+			$p[] = $this->format($price->$value_field, $currency_id);
 		}
 		return implode(' / ', $p);
 	}
@@ -474,7 +486,7 @@ class hikashopCurrencyClass extends hikashopClass{
 			$product_matches[] = 'discount_product_id LIKE \'%,'.(int)$id.',%\'';
 		}
 
-		if(!empty($options['no_discounts'])){
+		if(!isset($options['no_discounts']) || !empty($options['no_discounts'])){
 			$filters=array(
 				'discount_type=\'discount\'',
 				'discount_published=1',

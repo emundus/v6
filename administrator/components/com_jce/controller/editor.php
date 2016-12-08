@@ -32,7 +32,7 @@ class WFControllerEditor extends WFControllerBase {
                     if ($task == 'pack' || $task == 'loadlanguages' || $task == 'compileless') {
                         wfimport('admin.models.editor');
                         $model = new WFModelEditor();
-                        
+
                         switch($task) {
                             case 'loadlanguages':
                                 $model->loadLanguages();
@@ -44,17 +44,21 @@ class WFControllerEditor extends WFControllerBase {
                                 $model->compileLess();
                                 break;
                         }
-                        
+
                         exit();
                     }
 
                     break;
 
-                case 'plugin':                    
+                case 'plugin':
+                    if (strpos($plugin, '.') !== false) {
+                      list($plugin, $caller) = explode('.', $plugin);
+                    }
+
                     $file = basename(JRequest::getCmd('file', $plugin));
                     $path = WF_EDITOR_PLUGINS . '/' . $plugin;
 
-                    if (is_dir($path) && file_exists($path . '/' . $file . '.php')) {                        
+                    if (is_dir($path) && file_exists($path . '/' . $file . '.php')) {
                         include_once($path . '/' . $file . '.php');
                     } else {
                         throw new InvalidArgumentException('File ' . $file . ' not found!');

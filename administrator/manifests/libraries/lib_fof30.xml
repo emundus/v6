@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="library" version="3.2" method="upgrade">
+    <name>FOF30</name>
+	<libraryname>fof30</libraryname>
+	<description>
+		<![CDATA[
+		Framework-on-Framework (FOF) 3.x - The rapid application development framework for Joomla!.<br/>
+		<b>WARNING</b>: This is NOT a duplicate of the FOF library already installed with Joomla!. It is a different version used by other extensions on your site. Do NOT uninstall either FOF package. If you do you will break your site.
+		]]>
+	</description>
+	<creationDate>2016-10-04 19:03:23</creationDate>
+	<author>Nicholas K. Dionysopoulos / Akeeba Ltd</author>
+	<authorEmail>nicholas@akeebabackup.com</authorEmail>
+	<authorUrl>https://www.akeebabackup.com</authorUrl>
+	<copyright>(C)2011-2015 Nicholas K. Dionysopoulos</copyright>
+	<license>GNU GPLv2 or later</license>
+	<version>3.0.15</version>
+	<packager>Akeeba Ltd</packager>
+	<packagerurl>https://www.AkeebaBackup.com/download.html</packagerurl>
+
+    <languages folder="fof/language">
+        <language tag="en-GB">en-GB/en-GB.lib_fof30.ini</language>
+    </languages>
+
+    <files folder="fof">
+		<folder>Autoloader</folder>
+		<folder>Configuration</folder>
+		<folder>Container</folder>
+		<folder>Controller</folder>
+		<folder>Database</folder>
+		<folder>Dispatcher</folder>
+		<folder>Download</folder>
+		<folder>Encrypt</folder>
+		<folder>Event</folder>
+		<folder>Factory</folder>
+		<folder>Form</folder>
+		<folder>Hal</folder>
+		<folder>Inflector</folder>
+		<folder>Input</folder>
+		<folder>Layout</folder>
+		<folder>Less</folder>
+		<folder>Model</folder>
+		<folder>Params</folder>
+		<folder>Pimple</folder>
+		<folder>Platform</folder>
+		<folder>Render</folder>
+		<folder>Template</folder>
+		<folder>Timer</folder>
+		<folder>Toolbar</folder>
+		<folder>TransparentAuthentication</folder>
+		<folder>Update</folder>
+		<folder>Utils</folder>
+		<folder>View</folder>
+
+		<file>LICENSE.txt</file>
+		<file>include.php</file>
+		<file>version.txt</file>
+	</files>
+
+	<!-- Installation / uninstallation script file -->
+	<scriptfile>script.fof.php</scriptfile>
+
+    <updateservers>
+        <server type="extension" priority="1" name="FOF 3.x">http://cdn.akeebabackup.com/updates/fof3.xml</server>
+    </updateservers>
+</extension>

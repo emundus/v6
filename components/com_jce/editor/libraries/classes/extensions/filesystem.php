@@ -122,7 +122,7 @@ class WFFileSystem extends WFExtension {
 
                     // get the first group
                     $group_id = array_shift($groups);
-
+                    
                     // Joomla! 2.5?
                     if (is_int($group_id)) {
                         // usergroup table

@@ -1,17 +1,19 @@
 <extension type="component" version="2.5.0" method="upgrade">
 	<name>Admintools</name>
-	<creationDate>2016-07-01</creationDate>
+	<creationDate>2016-10-25</creationDate>
 	<author>Nicholas K. Dionysopoulos</author>
 	<authorEmail>nicholas@akeebabackup.com</authorEmail>
 	<authorUrl>http://www.akeebabackup.com</authorUrl>
 	<copyright>Copyright (c)2010-2016 Nicholas K. Dionysopoulos</copyright>
 	<license>This component in released under the GNU/GPL v3 or later license</license>
-	<version>3.8.6</version>
+	<version>4.0.2</version>
 	<description>Security and utilitarian tools for Joomla! site administrators</description>
 
 	<!-- Public front end files -->
 	<files folder="frontend">
-		<filename>admintools.php</filename>
+        <folder>Dispatcher</folder>
+
+        <filename>admintools.php</filename>
 	</files>
 
 	<!-- Front end translation files -->
@@ -26,28 +28,25 @@
 			img="com_admintools/media/images/admintools-16.png">COM_ADMINTOOLS</menu>
 
 		<!-- Back-end files -->
-		<files folder="backend">
-			<filename>access.xml</filename>
-			<filename>admintools.php</filename>
-			<filename>config.xml</filename>
-			<filename>dispatcher.php</filename>
-			<!--<filename>fileslist.php</filename>-->
-			<filename>fof.xml</filename>
-			<!--<filename>restore.php</filename>-->
-			<filename>toolbar.php</filename>
-			<filename>version.php</filename>
-			<filename>CHANGELOG.php</filename>
+        <files folder="backend">
+            <folder>assets</folder>
+            <folder>Controller</folder>
+            <folder>Dispatcher</folder>
+            <folder>Form</folder>
+            <folder>Helper</folder>
+            <folder>media</folder>
+            <folder>Model</folder>
+            <folder>sql</folder>
+            <folder>Toolbar</folder>
+            <folder>View</folder>
 
-			<folder>assets</folder>
-			<!--<folder>classes</folder>-->
-			<folder>controllers</folder>
-			<folder>helpers</folder>
-			<folder>media</folder>
-			<folder>models</folder>
-			<folder>sql</folder>
-			<folder>tables</folder>
-			<folder>views</folder>
-		</files>
+            <filename>access.xml</filename>
+            <filename>admintools.php</filename>
+            <filename>CHANGELOG.php</filename>
+            <filename>config.xml</filename>
+            <filename>fof.xml</filename>
+            <filename>version.php</filename>
+        </files>
 
 		<!-- Back-end translation files -->
 		<languages folder="language/backend">
@@ -58,10 +57,5 @@
 
 	</administration>
 
-	<scriptfile>script.admintools.php</scriptfile>
-
-    <!-- Update servers -->
-    <updateservers>
-        <server type="extension" priority="1" name="Admin Tools Core">http://cdn.akeebabackup.com/updates/atcore.xml</server>
-    </updateservers>
+	<scriptfile>script.com_admintools.php</scriptfile>
 </extension>

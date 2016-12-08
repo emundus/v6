@@ -147,6 +147,8 @@ class hikashopCategoryClass extends hikashopClass {
 			$old = $this->get($element->$pkey);
 
 			if(isset($element->category_parent_id)) {
+				if(!$element->category_parent_id)
+					$element->category_parent_id = 1;
 				$newParentElement = $this->get($element->category_parent_id);
 				if($old->category_parent_id != $element->category_parent_id) {
 

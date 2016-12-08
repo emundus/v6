@@ -16,15 +16,6 @@ class WFAggregatorExtension extends WFExtension {
     protected static $instance;
 
     /**
-     * Constructor activating the default information of the class
-     *
-     * @access	protected
-     */
-    public function __construct($config = array()) {
-        parent::__construct($config);
-    }
-
-    /**
      * Returns a reference to a plugin object
      *
      * This method must be invoked as:

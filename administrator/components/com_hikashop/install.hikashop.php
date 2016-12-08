@@ -16,7 +16,7 @@ function com_install(){
 }
 class hikashopInstall{
 	var $level = 'Starter';
-	var $version = '2.6.3';
+	var $version = '2.6.4';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';

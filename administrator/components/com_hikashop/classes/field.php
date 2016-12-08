@@ -885,7 +885,7 @@ foreach($results as $i => $oneResult){
 				$class->JSCheck($oneField,$requiredFields[$type],$validMessages[$type],$values[$type]);
 
 				if(!empty($oneField->field_options['regex'])){
-					$this->regexs[$type][$oneField->field_namekey] = str_replace(array("'","\\"),array("\'","\\\\"),$oneField->field_options['regex']);
+					$this->regexs[$type][$oneField->field_namekey] = str_replace(array("\\","'"),array("\\\\","\'"),$oneField->field_options['regex']);
 				}
 				$extraFields[$type][$k]->field_js_added = true;
 			}
@@ -1611,14 +1611,16 @@ class hikashopItem {
 		}
 
 		if(!empty($this->report)) {
+			if(!empty($field->field_options['errormessage'])){
+				$message = $this->trans($field->field_options['errormessage']);
+			}else{
+				$message = JText::sprintf('PLEASE_FILL_THE_FIELD', $this->trans($field->field_realname));
+			}
 			if($this->report === true) {
 				$app = JFactory::getApplication();
-				$app->enqueueMessage(JText::sprintf('PLEASE_FILL_THE_FIELD', $this->trans($field->field_realname)), 'error');
+				$app->enqueueMessage($message, 'error');
 			} else {
-				$this->parent->messages[] = array(
-					JText::sprintf('PLEASE_FILL_THE_FIELD', $this->trans($field->field_realname)),
-					'error'
-				);
+				$this->parent->messages[] = array($message, 'error');
 			}
 		}
 		return false;

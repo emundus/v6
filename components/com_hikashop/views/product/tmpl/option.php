@@ -123,7 +123,7 @@ defined('_JEXEC') or die('Restricted access');
 			$options='<img src="'.HIKASHOP_IMAGES.'info.png" alt="Information"/>';
 			$description = '';
 			if(!empty($optionInfo->product_description)){
-				$description = $this->escape(strip_tags(JHTML::_('content.prepare',$optionInfo->product_description)));
+				$description = $this->escape(html_entity_decode(strip_tags(JHTML::_('content.prepare',$optionInfo->product_description)), ENT_NOQUOTES | ENT_HTML401, 'UTF-8'));
 				$options='<span class="hikashop_option_info" title="'.$description.'">'.$options.'</span>';
 			}
 			if(!empty($optionInfo->product_url)){

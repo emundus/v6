@@ -202,24 +202,7 @@ defined('_JEXEC') or die('Restricted access');
 												}
 											}
 										}
-
-										if(hikashop_level(1)){
-											if(!empty($productFields)) {
-												foreach($productFields as $field){
-													$namekey = $field->field_namekey;
-													$productData = @$this->products[$product->product_id];
-													?>
-													<td>
-													<?php
-													if(!empty($productData->$namekey))
-														echo  '<p class="hikashop_order_product_'.$namekey.'">'.$this->fieldsClass->show($field,$productData->$namekey).'</p>';
-													?>
-													</td>
-												<?php
-												}
-											}
-										}
-
+										echo '</p>';
 										if($group){
 											foreach($this->order->products as $j => $optionElement){
 												if($optionElement->order_product_option_parent_id != $product->order_product_id) continue;
@@ -245,13 +228,28 @@ defined('_JEXEC') or die('Restricted access');
 											<?php
 											}
 										} ?>
-										</p>
 									</td>
-									<?php if ($this->config->get('show_code')) { ?>
-										<td><p class="hikashop_product_code_invoice"><?php echo $product->order_product_code; ?></p></td>
-									<?php } ?>
-
-									<?php if($this->invoice_type=='full'){?>
+									<?php
+									if ($this->config->get('show_code')) {
+										echo '<td><p class="hikashop_product_code_invoice">'.$product->order_product_code.'</p></td>';
+									}
+									if(hikashop_level(1)){
+										if(!empty($productFields)) {
+											foreach($productFields as $field){
+												$namekey = $field->field_namekey;
+												$productData = @$this->products[$product->product_id];
+												?>
+												<td>
+												<?php
+												if(!empty($productData->$namekey))
+													echo  '<p class="hikashop_order_product_'.$namekey.'">'.$this->fieldsClass->show($field,$productData->$namekey).'</p>';
+												?>
+												</td>
+											<?php
+											}
+										}
+									}
+									if($this->invoice_type=='full'){?>
 									<td>
 										<?php
 										if($this->config->get('price_with_tax')){

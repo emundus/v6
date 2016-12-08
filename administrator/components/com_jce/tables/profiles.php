@@ -77,6 +77,13 @@ class WFTableProfiles extends JTable {
      *
      * @var varchar
      */
+    var $custom = null;
+
+    /**
+     *
+     *
+     * @var varchar
+     */
     var $rows = null;
 
     /**

@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2012 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -121,18 +121,20 @@ class plgEditorJCE extends JPlugin {
         if (empty($id)) {
             $id = $name;
         }
-
-        $editor = '<textarea id="' . $id . '" name="' . $name . '" cols="' . $col . '" rows="' . $row . '" style="width:' . $width . ';height:' . $height . ';" class="wfEditor mce_editable source" wrap="off">' . $content . '</textarea>';
-        $editor .= $this->_displayButtons($id, $buttons, $asset, $author);
+        $editor  = '<div class="wf-editor-container">';
+        $editor .= '  <div class="wf-editor-header"></div>';
+        $editor .= '  <textarea spellcheck="false" id="' . $id . '" name="' . $name . '" cols="' . $col . '" rows="' . $row . '" style="width:' . $width . ';height:' . $height . ';" class="wf-editor" wrap="off">' . $content . '</textarea>';
+        $editor .= '</div>';
+        $editor .= $this->displayButtons($id, $buttons, $asset, $author);
 
         return $editor;
     }
 
     public function onGetInsertMethod($name) {
-        
+
     }
 
-    private function _displayButtons($name, $buttons, $asset, $author) {
+    private function displayButtons($name, $buttons, $asset, $author) {
         $return = '';
 
         $args = array(
@@ -168,7 +170,7 @@ class plgEditorJCE extends JPlugin {
                 }
 
                 $return .= JLayoutHelper::render('joomla.editors.buttons', $buttons);
-                
+
             // Joomla 3.0 to 3.4
             } else if ($version->isCompatible('3.0')) {
                 /*
@@ -201,10 +203,10 @@ class plgEditorJCE extends JPlugin {
                  * This will allow plugins to attach buttons or change the behavior on the fly using AJAX
                  */
                 $return .= "\n<div id=\"editor-xtd-buttons\"";
-                
+
                 if ($version->isCompatible('3.0')) {
                     $return .= " class=\"btn-toolbar pull-left\">\n";
-                    $return .= "\n<div class=\"btn-toolbar\">\n";                        
+                    $return .= "\n<div class=\"btn-toolbar\">\n";
                 } else {
                     $return .= ">\n";
                 }
@@ -216,33 +218,33 @@ class plgEditorJCE extends JPlugin {
                     if ($button->get('name')) {
                         $modal  = ($button->get('modal')) ? ' class="btn modal-button"' : '';
                         $href   = ($button->get('link')) ? ' class="btn" href="' . JURI::base() . $button->get('link') . '"' : '';
-                        
+
                         $onclick    = ($button->get('onclick')) ? ' onclick="' . $button->get('onclick') . '"' : ' onclick="IeCursorFix(); return false;"';
                         $title      = ($button->get('title')) ? $button->get('title') : $button->get('text');
 
                         if (!$version->isCompatible('3.0')) {
                             $return .= '<div class="button2-left"><div class="' . $button->get('name') . '">';
                         }
-                        
+
                         $return .= '<a' . $modal . ' title="' . $title . '"' . $href . $onclick . ' rel="' . $button->get('options') . '">';
-                        
+
                         // add icon-font class
                         if ($version->isCompatible('3.0')) {
                             $return .= '<i class="icon-' . $button->get('name') . '"></i> ';
                         }
-                        
+
                         $return .= $button->get('text') . '</a>';
-                        
+
                         if (!$version->isCompatible('3.0')) {
                             $return .= '</div></div>';
                         }
                     }
                 }
-                
+
                 if ($version->isCompatible('3.0')) {
                     $return .= "</div>\n";
                 }
-                
+
                 $return .= "</div>\n";
             }
         }

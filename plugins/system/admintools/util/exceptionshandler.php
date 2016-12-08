@@ -7,15 +7,17 @@
 
 defined('_JEXEC') or die;
 
+use Akeeba\AdminTools\Admin\Helper\Storage;
+
 class AtsystemUtilExceptionshandler
 {
 	/** @var   JRegistry  Plugin parameters */
 	protected $params = null;
 
-	/** @var   AdmintoolsModelStorage  Component parameters */
+	/** @var   Storage  Component parameters */
 	protected $cparams = null;
 
-	public function __construct(JRegistry &$params, AdmintoolsModelStorage &$cparams)
+	public function __construct(JRegistry &$params, Storage &$cparams)
 	{
 		$this->params = $params;
 		$this->cparams = $cparams;
@@ -111,7 +113,7 @@ class AtsystemUtilExceptionshandler
 				JFactory::getSession()->set('block', true, 'com_admintools');
 				JFactory::getSession()->set('message', $message, 'com_admintools');
 				JFactory::getSession()->close();
-				JFactory::getApplication()->redirect(JURI::base());
+				JFactory::getApplication()->redirect(JUri::base());
 			}
 		}
 		else
@@ -134,12 +136,12 @@ class AtsystemUtilExceptionshandler
 	 */
 	public function logBreaches($reason, $extraLogInformation = '', $extraLogTableInformation = '')
 	{
-		$reasons_nolog = $this->cparams->getValue('reasons_nolog', 'geoblocking');
-		$reasons_noemail = $this->cparams->getValue('reasons_noemail', 'geoblocking');
+		$reasons_nolog     = $this->cparams->getValue('reasons_nolog', 'geoblocking');
+		$reasons_noemail   = $this->cparams->getValue('reasons_noemail', 'geoblocking');
 		$whitelist_domains = $this->cparams->getValue('whitelist_domains', '.googlebot.com,.search.msn.com');
 
-		$reasons_nolog = explode(',', $reasons_nolog);
-		$reasons_noemail = explode(',', $reasons_noemail);
+		$reasons_nolog     = explode(',', $reasons_nolog);
+		$reasons_noemail   = explode(',', $reasons_noemail);
 		$whitelist_domains = explode(',', $whitelist_domains);
 
 		// === SANITY CHECK - BEGIN ===
@@ -176,10 +178,11 @@ class AtsystemUtilExceptionshandler
 		// Make sure we don't have a list in the administrator white list
 		if ($this->cparams->getValue('ipwl', 0) == 1)
 		{
-			$db = JFactory::getDBO();
+			$db = JFactory::getDbo();
 			$sql = $db->getQuery(true)
-				->select($db->qn('ip'))
-				->from($db->qn('#__admintools_adminiplist'));
+					->select($db->qn('ip'))
+					->from($db->qn('#__admintools_adminiplist'));
+
 			$db->setQuery($sql);
 
 			try
@@ -228,7 +231,7 @@ class AtsystemUtilExceptionshandler
 			($this->cparams->getValue('emailbreaches', '') && !in_array($reason, $reasons_noemail))
 		)
 		{
-			$uri = JURI::getInstance();
+			$uri = JUri::getInstance();
 			$url = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment'));
 
 			JLoader::import('joomla.utilities.date');
@@ -317,7 +320,7 @@ class AtsystemUtilExceptionshandler
 			}
 
 			// ...and write a record to the log table
-			$db = JFactory::getDBO();
+			$db = JFactory::getDbo();
 			$logEntry = (object)array(
 				'logdate'   => $date->toSql(),
 				'ip'        => $ip,
@@ -356,7 +359,7 @@ class AtsystemUtilExceptionshandler
 			$ip_link = str_replace('{ip}', $ip, $ip_link);
 
 			// Get the reason in human readable format
-			$txtReason = JText::_('ATOOLS_LBL_REASON_' . strtoupper($reason));
+			$txtReason = JText::_('COM_ADMINTOOLS_LBL_SECURITYEXCEPTION_REASON_' . strtoupper($reason));
 
 			// Get extra information
 			if ($extraLogTableInformation)
@@ -455,7 +458,7 @@ class AtsystemUtilExceptionshandler
 		}
 
 		// Check for repeat offenses
-		$db = JFactory::getDBO();
+		$db = JFactory::getDbo();
 		$strikes = $this->cparams->getValue('tsrstrikes', 3);
 		$numfreq = $this->cparams->getValue('tsrnumfreq', 1);
 		$frequency = $this->cparams->getValue('tsrfrequency', 'hour');
@@ -524,8 +527,8 @@ class AtsystemUtilExceptionshandler
 
 		$myIP = inet_ntop($myIP);
 
-		$until = $jNow->toUnix();
-		$numfreq = $this->cparams->getValue('tsrbannum', 1);
+		$until     = $jNow->toUnix();
+		$numfreq   = $this->cparams->getValue('tsrbannum', 1);
 		$frequency = $this->cparams->getValue('tsrbanfrequency', 'hour');
 
 		switch ($frequency)
@@ -593,26 +596,26 @@ class AtsystemUtilExceptionshandler
 					'description' => 'IP automatically blocked after being banned automatically ' . $bans . ' times'
 				);
 
-                try
-                {
-                    $db->insertObject('#__admintools_ipblock', $block);
-                }
-                catch (Exception $e)
-                {
-                    // This should never happen, however let's prevent a white page if anything goes wrong
-                }
+				try
+				{
+					$db->insertObject('#__admintools_ipblock', $block);
+				}
+				catch (Exception $e)
+				{
+					// This should never happen, however let's prevent a white page if anything goes wrong
+				}
 			}
 		}
 
-        try
-        {
-            $db->insertObject('#__admintools_ipautoban', $record);
-        }
-        catch (Exception $e)
-        {
-            // If the IP was already blocked and I have to block it again, I'll have to update the current record
-            $db->updateObject('#__admintools_ipautoban', $record, 'ip');
-        }
+		try
+		{
+			$db->insertObject('#__admintools_ipautoban', $record);
+		}
+		catch (Exception $e)
+		{
+			// If the IP was already blocked and I have to block it again, I'll have to update the current record
+			$db->updateObject('#__admintools_ipautoban', $record, 'ip');
+		}
 
 		// Send an optional email
 		if ($this->cparams->getValue('emailafteripautoban', ''))
@@ -648,7 +651,7 @@ class AtsystemUtilExceptionshandler
 				$continent = '(unknown continent)';
 			}
 
-			$uri = JURI::getInstance();
+			$uri = JUri::getInstance();
 			$url = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment'));
 
 			$ip_link = $this->cparams->getValue('iplookupscheme', 'http') . '://' . $this->cparams->getValue('iplookup', 'ip-lookup.net/index.php?ip={ip}');
@@ -656,7 +659,7 @@ class AtsystemUtilExceptionshandler
 
 			$substitutions = array(
 				'[SITENAME]'  => $sitename,
-				'[REASON]'	  => JText::_('COM_ADMINTOOLS_EMAILTEMPLATE_REASON_IPAUTOBAN'),
+				'[REASON]'	  => JText::_('COM_ADMINTOOLS_WAFEMAILTEMPLATE_REASON_IPAUTOBAN'),
 				'[DATE]'      => gmdate('Y-m-d H:i:s') . " GMT",
 				'[URL]'       => $url,
 				'[USER]'      => '',
@@ -686,7 +689,7 @@ class AtsystemUtilExceptionshandler
 			else
 			{
 				$subject = $template[0];
-				$body = $template[1];
+				$body    = $template[1];
 			}
 
 			foreach ($substitutions as $k => $v)
@@ -787,9 +790,9 @@ class AtsystemUtilExceptionshandler
 		if ($this->cparams->getValue('email_throttle', 1))
 		{
 			// Ok I found out the best template, HOWEVER, should I really send out an email? Let's do some checks vs frequency limits
-			$emails = $best->email_num ? $best->email_num : 5;
-			$numfreq = $best->email_numfreq ? $best->email_numfreq : 1;
-			$frequency = $best->email_freq ? $best->email_freq : 'hour';
+			$emails       = $best->email_num ? $best->email_num : 5;
+			$numfreq      = $best->email_numfreq ? $best->email_numfreq : 1;
+			$frequency    = $best->email_freq ? $best->email_freq : 'hour';
 			$mindatestamp = 0;
 
 			switch ($frequency)
@@ -849,7 +852,7 @@ class AtsystemUtilExceptionshandler
 		// Because SpamAssassin is a piece of shit that blacklists our domain when it misidentifies an email as spam.
 		$replaceThat = array(
 			'<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeebabackup.com/products/admin-tools.html\">Akeeba AdminTools</a></p>',
-			'<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeebabackup.com/products/admin-tools.html\">Akeeba AdminTools</a></p>',
+			'<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeebabackup.com/products/admin-tools.html\">Akeeba AdminTools</a></p>',
 			'https://www.akeebabackup.com',
 			'http://www.akeebabackup.com',
 			'http://akeebabackup.com',
@@ -860,7 +863,7 @@ class AtsystemUtilExceptionshandler
 
 		foreach ($replaceThat as $find)
 		{
-			$best->subject = str_ireplace($find, '', $best->subject);
+			$best->subject  = str_ireplace($find, '', $best->subject);
 			$best->template = str_ireplace($find, '', $best->template);
 		}
 

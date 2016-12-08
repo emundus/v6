@@ -22,6 +22,7 @@ class WFModelUpdates extends WFModel {
     protected static $updateURL = 'https://www.joomlacontenteditor.net/index.php?option=com_updates&format=raw';
 
     public static function canUpdate() {
+
         if (UpdatesHelper::hasCURL() === false) {
             return UpdatesHelper::hasFOPEN();
         }
@@ -36,46 +37,40 @@ class WFModelUpdates extends WFModel {
     public function getVersions() {
         $db = JFactory::getDBO();
 
+        jimport('joomla.installer.helper');
+
         $versions = array('joomla' => array(), 'jce' => array());
 
         // Get Component xml
-        $com_xml = WFXMLHelper::parseInstallManifest(JPATH_ADMINISTRATOR . '/components/com_jce/jce.xml');
+        $com_xml = JApplicationHelper::parseXMLInstallFile(JPATH_ADMINISTRATOR . '/components/com_jce/jce.xml');
 
         // set component version
-        $versions['joomla']['com_jce'] = $com_xml['version'];
+        $component = 'com_jce';
+
+        if (is_dir(JPATH_COMPONENT_SITE . '/editor/libraries/pro')) {
+             $component = 'com_jce_pro'; 
+        }
+
+        $versions['joomla'][$component] = str_replace('pro-', '', $com_xml['version']);
+
         // get mediabox version
-        $mediabox_xml_file = WF_JOOMLA15 ? JPATH_PLUGINS . '/system/jcemediabox.xml' : JPATH_PLUGINS . '/system/jcemediabox/jcemediabox.xml';
+        $mediabox_xml_file = JPATH_PLUGINS . '/system/jcemediabox.xml';
+
         // set mediabox version
         if (file_exists($mediabox_xml_file)) {
-            $mediabox_xml = WFXMLHelper::parseInstallManifest($mediabox_xml_file);
+            $mediabox_xml = JApplicationHelper::parseXMLInstallFile($mediabox_xml_file);
             $versions['joomla']['plg_jcemediabox'] = $mediabox_xml['version'];
         }
 
-        wfimport('admin.models.plugins');
-        $model = new WFModelPlugins();
+        $plugins = JFolder::files(JPATH_PLUGINS . '/jce', '\.xml$', false, true);
 
-        // get all plugins
-        $plugins = $model->getPlugins();
-        // get all extensions
-        $extensions = $model->getExtensions();
+        if (!empty($plugins)) {
+            foreach ($plugins as $plugin) {
+                $name = str_replace('editor-', '', basename($plugin));
 
-        foreach ($plugins as $plugin) {
-            if ($plugin->core == 0) {
+                $xml = WFXMLHelper::parseInstallManifest($plugin);
 
-                $file = WF_EDITOR_PLUGINS . '/' . $plugin->name . '/' . $plugin->name . '.xml';
-
-                $xml = WFXMLHelper::parseInstallManifest($file);
-                $versions['jce']['jce_' . $plugin->name] = $xml['version'];
-            }
-        }
-
-        foreach ($extensions as $extension) {
-            if ($extension->core == 0) {
-
-                $file = WF_EDITOR_EXTENSIONS . '/' . $extension->folder . '/' . $extension->extension . '.xml';
-
-                $xml = WFXMLHelper::parseInstallManifest($file);
-                $versions['jce']['jce_' . $extension->folder . '_' . $extension->extension] = $xml['version'];
+                $versions['jce']['jce_' . $name] = $xml['version'];
             }
         }
 
@@ -90,24 +85,20 @@ class WFModelUpdates extends WFModel {
         $result = false;
 
         // Get all extensions and version numbers
-        $data = array('task' => 'check', 'jversion' => WF_JOOMLA15 ? '1.5' : '2.5');
+        $data = array('task' => 'check', 'jversion' => '1.5');
 
-        wfimport('admin.helpers.extension');
+        $key = "";
+        
+        $component = JComponentHelper::getComponent('com_jce');
+        $params = json_decode($component->params);
 
-        $component = WFExtensionHelper::getComponent();
-        $params = new WFParameter($component->params, '', 'preferences');
-
-        // get update key
-        $key = $params->get('updates_key', '');
-        $type = $params->get('updates_type', '');
+        if ($params && isset($params->preferences) && isset($params->preferences->updates_key)) {
+            $key = $params->preferences->updates_key;
+        }
 
         // encode it
         if (!empty($key)) {
             $data['key'] = urlencode($key);
-        }
-
-        if ($type) {
-            $data['type'] = $type;
         }
 
         $req = array();
@@ -143,9 +134,18 @@ class WFModelUpdates extends WFModel {
 
         $result = array('error' => WFText::_('WF_UPDATES_DOWNLOAD_ERROR'));
 
-        $id = JRequest::getInt('id');
+        $id   = JRequest::getInt('id');
         
-        $data = $this->connect(self::$updateURL . '&task=download&id=' . $id);
+        $key = "";
+        
+        $component = JComponentHelper::getComponent('com_jce');
+        $params = json_decode($component->params);
+
+        if ($params && isset($params->preferences) && isset($params->preferences->updates_key)) {
+            $key = $params->preferences->updates_key;
+        }
+
+        $data = $this->connect(self::$updateURL . '&task=download&id=' . $id . '&key=' . urlencode($key));
 
         if ($data) {
             $data = json_decode($data);
@@ -186,113 +186,6 @@ class WFModelUpdates extends WFModel {
     }
 
     /**
-     * Method to detect the extension type from a package directory
-     *
-     * @param   string  $dir  Path to package directory
-     * @return  mixed  Extension type string or boolean false on fail
-     * 
-     * @copyright   Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
-     */
-    public static function detectType($dir) {
-        // Search the install dir for an XML file
-        $files = JFolder::files($dir, '\.xml$', 1, true);
-
-        if (!count($files)) {
-            return false;
-        }
-
-        foreach ($files as $file) {
-            $xml = @simplexml_load_file($file);
-            if (!$xml) {
-                continue;
-            }
-
-            $name = $xml->getName();
-
-            if ($name != 'extension' && $name != 'install') {
-                unset($xml);
-                continue;
-            }
-
-            $type = (string) $xml->attributes()->type;
-
-            // Free up memory
-            unset($xml);
-            return $type;
-        }
-
-        // Free up memory.
-        unset($xml);
-        return false;
-    }
-
-    /**
-     * Unpacks a file and verifies it as a Joomla element package
-     * Supports .gz .tar .tar.gz and .zip
-     *
-     * @param   string  $archive  The uploaded package filename or install directory
-     * @return  mixed  Array on success or boolean false on failure
-     * 
-     * @copyright   Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
-     */
-    private static function unpack($archive) {
-        jimport('joomla.filesystem.file');
-        jimport('joomla.filesystem.archive');
-        jimport('joomla.installer.helper');
-
-        // Temporary folder to extract the archive into
-        $tmpdir = uniqid('install_');
-
-        // Clean the paths to use for archive extraction
-        $extractdir = JPath::clean(dirname($archive) . '/' . $tmpdir);
-
-        // Do the unpacking of the archive
-        try {
-            JArchive::extract($archive, $extractdir);
-        } catch (Exception $e) {
-            JInstallerHelper::cleanupInstall($archive, $extractdir);
-            return false;
-        }
-
-        /*
-         * Let's set the extraction directory and package file in the result array so we can
-         * cleanup everything properly later on.
-         */
-        $retval['extractdir'] = $extractdir;
-        $retval['packagefile'] = $archive;
-
-        /*
-         * Try to find the correct install directory.  In case the package is inside a
-         * subdirectory detect this and set the install directory to the correct path.
-         *
-         * List all the items in the installation directory.  If there is only one, and
-         * it is a folder, then we will set that folder to be the installation folder.
-         */
-        $dirList = array_merge(JFolder::files($extractdir, ''), JFolder::folders($extractdir, ''));
-
-        if (count($dirList) == 1) {
-            if (JFolder::exists($extractdir . '/' . $dirList[0])) {
-                $extractdir = JPath::clean($extractdir . '/' . $dirList[0]);
-            }
-        }
-
-        $retval['dir'] = $extractdir;
-
-        /*
-         * Get the extension type and return the directory/type array on success or
-         * false on fail.
-         */
-        $retval['type'] = self::detectType($extractdir);
-
-        if ($retval['type']) {
-            return $retval;
-        } else {
-            JInstallerHelper::cleanupInstall($archive, $extractdir);
-            return false;
-        }
-    }
-
-    /**
      * Install extension update
      * @return String JSON string
      */
@@ -317,31 +210,17 @@ class WFModelUpdates extends WFModel {
             if (JFile::exists($path)) {
                 // check hash
                 if ($hash == md5(md5_file($path))) {
-                    $package = self::unpack($path);
-                    
+                    $package = JInstallerHelper::unpack($path);
+
                     if ($package) {
-                        // Install a JCE Add-on
-                        if ($method == 'jce') {
-                            wfimport('admin.classes.installer');
+                        jimport('joomla.installer.installer');
 
-                            $installer = WFInstaller::getInstance();
+                        // get new Installer instance
+                        $installer = JInstaller::getInstance();
 
-                            // install
-                            if ($installer->install($package['dir'])) {
-                                // installer message
-                                $result = array('error' => '', 'text' => WFText::_($installer->get('message'), $installer->get('message')));
-                            }
-                            // Install a Joomla! Extension    
-                        } else {
-                            jimport('joomla.installer.installer');
-
-                            // get new Installer instance
-                            $installer = JInstaller::getInstance();
-
-                            if ($installer->install($package['dir'])) {
-                                // installer message
-                                $result = array('error' => '', 'text' => WFText::_($installer->get('message'), $installer->get('message')));
-                            }
+                        if ($installer->install($package['dir'])) {
+                            // installer message
+                            $result = array('error' => '', 'text' => WFText::_($installer->get('message'), $installer->get('message')));
                         }
                         // Cleanup the install files
                         JInstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);
@@ -369,7 +248,7 @@ class WFModelUpdates extends WFModel {
      */
     protected function connect($url, $data = '', $download = '') {
         @error_reporting(E_ERROR);
-        
+
         $result = false;
 
         if ($download) {
@@ -381,7 +260,7 @@ class WFModelUpdates extends WFModel {
                 return array('error' => WFText::_('Update check failed : Invalid response from update server'));
             }
         }
-        
+
         return $result;
     }
 }

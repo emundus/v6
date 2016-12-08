@@ -7,7 +7,8 @@
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><form action="<?php echo hikashop_completeLink('view');?>" method="post"  name="adminForm" id="adminForm">
+?><div class="iframedoc" id="iframedoc"></div>
+<form action="<?php echo hikashop_completeLink('view');?>" method="post"  name="adminForm" id="adminForm">
 
 	<?php if($this->ftp){ ?>
 	<fieldset title="<?php echo JText::_('DESCFTPTITLE'); ?>">

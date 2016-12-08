@@ -405,14 +405,15 @@ class checkoutController extends hikashopController {
 		if(!empty($coupon)){
 			$class = hikashop_get('class.cart');
 			if($class->update($coupon,$qty,0,'coupon')){
+				$this->initCart(true);
+				$this->cart_update = true;
 				if(strpos($this->checkout_workflow,'shipping')!==false){
 					$this->before_shipping(true);
 				}
 				if(strpos($this->checkout_workflow,'payment')!==false){
 					$this->before_payment(true);
 				}
-				$this->initCart(true);
-				$this->cart_update = true;
+
 				return false;
 			}
 		}
@@ -505,14 +506,17 @@ class checkoutController extends hikashopController {
 		}
 		if($modified){
 			$class->get();
+
+			$this->initCart(true);
+			$this->cart_update = true;
+
 			if(strpos($this->checkout_workflow,'shipping')!==false){
 				$this->before_shipping(true);
 			}
 			if(strpos($this->checkout_workflow,'payment')!==false){
 				$this->before_payment(true);
 			}
-			$this->initCart(true);
-			$this->cart_update = true;
+
 			return false;
 		}
 
@@ -1157,10 +1161,11 @@ class checkoutController extends hikashopController {
 			$class = hikashop_get('class.payment');
 			$methods = $class->getPayments($cart, $this->cart_update);
 
-			if(!empty($methods)) {
-				$reset_payment = true;
-				if($this->cart_update) {
-					$found = false;
+			$reset_payment = true;
+
+			if($this->cart_update) {
+				$found = false;
+				if(!empty($methods)) {
 					foreach($methods as $m) {
 						if($m->payment_id == $payment_id && $m->payment_type == $payment_method) {
 							$found = true;
@@ -1175,7 +1180,7 @@ class checkoutController extends hikashopController {
 					$auto_select_default = $config->get('auto_select_default',2);
 					if($auto_select_default == 1 && count($methods) > 1) $auto_select_default = 0;
 					$ok = false;
-					if($auto_select_default) {
+					if($auto_select_default && !empty($methods)) {
 						$method = reset($methods);
 
 						$app->setUserState( HIKASHOP_COMPONENT.'.payment_method',$method->payment_type);
@@ -1255,7 +1260,7 @@ class checkoutController extends hikashopController {
 
 			if(!empty($paymentData->ask_cc)){
 				$paymentClass = hikashop_get('class.payment');
-				if(!$paymentClass->readCC()){ 
+				if(!$paymentClass->readCC()){
 					$app->enqueueMessage( JText::_('FILL_CREDIT_CARD_INFO') );
 					return false;
 				}

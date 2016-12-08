@@ -210,13 +210,29 @@ class plgHikashopshippingCANADAPOST extends hikashopShippingPlugin {
 				$r->shipping_price += $method['value'];
 				$selected_method = '';
 				$name = '';
+				$description = '';
 				foreach($this->canadapost_methods as $canadapost_method) {
 					if($canadapost_method['name'] == $method['name']) {
 						$name = $canadapost_method['name'];
 						$selected_method = $canadapost_method['key'];
 					}
 				}
+				$typeKey = str_replace(' ','_', strtoupper($name));
+				$shipping_name = JText::_($typeKey);
+
+				if($shipping_name != $typeKey)
+					$name = $shipping_name;
+				else
+					$name = $name;
+
+				$shipping_description = JText::_($typeKey.'_DESCRIPTION');
+				if($shipping_description != $typeKey.'_DESCRIPTION')
+					$description .= $shipping_description;
+
 				$r->shipping_name = $name;
+				if($description != '')
+					$r->shipping_description .= $description;
+
 				if(!empty($selected_method))
 					$r->shipping_id .= '-' . $selected_method;
 
@@ -224,10 +240,10 @@ class plgHikashopshippingCANADAPOST extends hikashopShippingPlugin {
 					if(is_numeric($method['deliveryDate'])) {
 						$timestamp = strtotime($method['deliveryDate']);
 						$time = parent::displayDelaySECtoDAY($timestamp - strtotime('now'), 2);
-						$r->shipping_description .= 'Estimated delivery date:  ' . $time;
+						$r->shipping_description .= '<br/>Estimated delivery date:  ' . $time;
 					} else {
 						$time = $method['deliveryDate'];
-						$r->shipping_description .= JText::sprintf('SHIPPING_DELIVERY_DELAY',$time);
+						$r->shipping_description .= '<br/>' .JText::sprintf('SHIPPING_DELIVERY_DELAY',$time);
 					}
 				} else {
 					$r->shipping_description .= ' ' . JText::_('NO_ESTIMATED_TIME_AFTER_SEND');

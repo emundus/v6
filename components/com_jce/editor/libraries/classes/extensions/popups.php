@@ -14,9 +14,9 @@ defined('_JEXEC') or die('RESTRICTED');
 wfimport('editor.libraries.classes.extensions');
 
 class WFPopupsExtension extends WFExtension {
-    
+
     protected static $instance;
-    
+
     private $_popups = array();
     private $_templates = array();
 
@@ -83,7 +83,7 @@ class WFPopupsExtension extends WFExtension {
 
         // Add popup tab and assign popups reference to document
         if (count($this->getPopups())) {
-            $tabs->addTab('popups', 1);
+            $tabs->addTab('popups');
             $tabs->getPanel('popups')->assign('popups', $this);
         }
     }
@@ -129,7 +129,7 @@ class WFPopupsExtension extends WFExtension {
             $options[] = JHTML::_('select.option', $popup, WFText::_('WF_POPUPS_' . strtoupper($popup) . '_TITLE'));
         }
 
-        return JHTML::_('select.genericlist', $options, 'popup_list', 'class="inputbox levels" size="1"', 'value', 'text', $this->get('default'));
+        return JHTML::_('select.genericlist', $options, 'popup_list', '', 'value', 'text', $this->get('default'));
     }
 
     public function getPopupTemplates() {

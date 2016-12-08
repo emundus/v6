@@ -411,7 +411,7 @@ class hikashopPaymentClass extends hikashopClass{
 
 			$row->col_display_price = '';
 			if(bccomp($row->payment_price, 0, 3)) {
-				$row->col_display_price = $view->currencyClass->displayPrices(array($row), 'payment_price', 'payment_currency');
+				$row->col_display_price = $view->currencyClass->displayPrices(array($row), 'payment_price', array('payment_params', 'payment_currency'));
 			}
 			if(isset($row->plugin_params->payment_percentage) && bccomp($row->plugin_params->payment_percentage, 0, 3)) {
 				$row->col_display_price .= '<br/>';

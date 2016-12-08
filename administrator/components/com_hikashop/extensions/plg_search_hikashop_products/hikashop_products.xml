@@ -2,7 +2,7 @@
 <extension version="2.5" type="plugin" group="search" method="upgrade">
 	<name>Search - Hikashop Products</name>
 	<author>Hikari Software</author>
-	<creationDate>17 octobre 2016</creationDate>
+	<creationDate>05 décembre 2016</creationDate>
 	<version>2.6.4</version>
 	<copyright>(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>

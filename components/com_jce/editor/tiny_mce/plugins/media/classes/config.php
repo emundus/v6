@@ -47,6 +47,8 @@ class WFMediaPluginConfig {
 
         $settings['media_strict'] = $wf->getParam('media.strict', 1, 1);
 
+        $settings['media_live_embed'] = $wf->getParam('media.live_embed', 0, 0);
+
         $settings['media_version_flash'] = $wf->getParam('media.version_flash', '10,1,53,64', '10,1,53,64');
         $settings['media_version_windowsmedia'] = $wf->getParam('media.version_windowsmedia', '10,00,00,3646', '10,00,00,3646');
         $settings['media_version_shockwave'] = $wf->getParam('media.version_shockwave', '10,2,0,023', '10,2,0,023');

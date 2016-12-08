@@ -780,7 +780,7 @@
 					elems = parents[i].querySelectorAll(s);
 				if(!elems || !elems.length)
 					continue;
-				this.setConsistencyHeight(elems);
+				this.setConsistencyHeight(elems, 'min');
 				parents[i].setAttribute('data-consistencyheight', '');
 			}
 		},
@@ -1068,7 +1068,7 @@ function hikashopCheckField(elementToCheck, type, i, elementName, form) {
 }
 
 window.hikashop.ready(function(){
-	if(window.hikaVotes && typeOf(initVote) == 'function')
+	if(window.hikaVotes && typeof(initVote) == 'function')
 		initVote();
 	window.hikashop.checkConsistency();
 });

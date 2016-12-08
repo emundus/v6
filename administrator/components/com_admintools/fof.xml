@@ -1,4 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+@package   AdminTools
+@copyright 2010-2016 Akeeba Ltd / Nicholas K. Dionysopoulos
+@license   GNU General Public License version 3, or later
+-->
 <fof>
-    <!-- Currently empty, only used for the autoloader to recognise this component as F0F-powered -->
+	<common>
+		<container>
+			<option name="componentNamespace">Akeeba\AdminTools</option>
+			<option name="factoryClass">FOF30\Factory\BasicFactory</option>
+			<option name="scaffolding">0</option>
+		</container>
+	</common>
+
+	<frontend>
+		<container>
+			<option name="factoryClass">FOF30\Factory\BasicFactory</option>
+			<option name="scaffolding">0</option>
+		</container>
+	</frontend>
 </fof>

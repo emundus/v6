@@ -255,6 +255,7 @@ function switchDisplay(value,name,activevalue){
 
 		$this->default_params = $this->config->get('default_params');
 
+		$js = '';
 		$doc = JFactory::getDocument();
 	 	$doc->addScriptDeclaration($js);
 		hikashop_loadJslib('tooltip');

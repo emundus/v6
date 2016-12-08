@@ -14,30 +14,11 @@ defined('_JEXEC') or die('RESTRICTED');
 wfimport('admin.classes.view');
 
 class WFViewProfiles extends WFView {
-    
+
     private function getOptions($params) {
         wfimport('admin.models.editor');
-        
+
         $options = array(
-            'combobox' => array('label' => WFText::_('WF_TOOLS_EDITABLESELECT_LABEL')),
-            'extensions' => array(
-                'labels' => array(
-                    'type_new' => WFText::_('WF_EXTENSION_MAPPER_TYPE_NEW'),
-                    'group_new' => WFText::_('WF_EXTENSION_MAPPER_GROUP_NEW'),
-                    'acrobat' => WFText::_('WF_FILEGROUP_ACROBAT'),
-                    'office' => WFText::_('WF_FILEGROUP_OFFICE'),
-                    'flash' => WFText::_('WF_FILEGROUP_FLASH'),
-                    'shockwave' => WFText::_('WF_FILEGROUP_SHOCKWAVE'),
-                    'quicktime' => WFText::_('WF_FILEGROUP_QUICKTIME'),
-                    'windowsmedia' => WFText::_('WF_FILEGROUP_WINDOWSMEDIA'),
-                    'silverlight' => WFText::_('WF_FILEGROUP_SILVERLIGHT'),
-                    'openoffice' => WFText::_('WF_FILEGROUP_OPENOFFICE'),
-                    'divx' => WFText::_('WF_FILEGROUP_DIVX'),
-                    'real' => WFText::_('WF_FILEGROUP_REAL'),
-                    'video' => WFText::_('WF_FILEGROUP_VIDEO'),
-                    'audio' => WFText::_('WF_FILEGROUP_AUDIO')
-                )
-            ),
             'colorpicker' => array(
                 'stylesheets' => (array) WFModelEditor::getStyleSheets(),
                 'labels' => array(
@@ -111,19 +92,19 @@ class WFViewProfiles extends WFView {
                     }
                 }
                 $order = array($filter_order, $filter_order_Dir);
-                
+
                 // get the total number of records
                 $query = $db->getQuery(true);
                 if (is_object($query)) {
                     $query->select('COUNT(p.id)')->from('#__wf_profiles AS p');
-                    
+
                     if (count($where)) {
                         $query->where($where);
                     }
-                    
+
                 } else {
-                    $query = 'SELECT COUNT(p.id)' 
-                    . ' FROM #__wf_profiles AS p' 
+                    $query = 'SELECT COUNT(p.id)'
+                    . ' FROM #__wf_profiles AS p'
                     . (count($where) ? ' WHERE ' . implode(' AND ', $where) : '');
                 }
 
@@ -136,13 +117,13 @@ class WFViewProfiles extends WFView {
                 $query = $db->getQuery(true);
                 if (is_object($query)) {
                     $query->select('p.*, u.name AS editor')->from('#__wf_profiles AS p')->join('LEFT', '#__users AS u ON u.id = p.checked_out');
-                    
+
                     if (count($where)) {
                         $query->where($where);
                     }
-                    
+
                     $query->order(trim(implode(' ', $order)));
-                    
+
                 } else {
                     $query = 'SELECT p.*, u.name AS editor'
                     . ' FROM #__wf_profiles AS p'
@@ -153,7 +134,7 @@ class WFViewProfiles extends WFView {
 
                 $db->setQuery($query, $pagination->limitstart, $pagination->limit);
                 $rows = $db->loadObjectList();
-                
+
                 if ($db->getErrorNum()) {
                     echo $db->stderr();
                     return false;
@@ -182,9 +163,9 @@ class WFViewProfiles extends WFView {
                     WFToolbarHelper::publishList();
                     WFToolbarHelper::unpublishList();
                 }
-                
+
                 WFToolbarHelper::deleteList('', 'remove', 'WF_PROFILES_DELETE');
-               
+
                 WFToolbarHelper::help('profiles.about');
 
                 $options = array(
@@ -196,11 +177,7 @@ class WFViewProfiles extends WFView {
                     )
                 );
 
-                $this->addScript(JURI::root(true) . '/administrator/components/com_jce/media/js/uploads.js');
                 $this->addScriptDeclaration('jQuery(document).ready(function($){$(\'input[type="file"]\').upload(' . json_encode($options) . ')});');
-                
-                // load styles
-                $this->addStyleSheet(JURI::root(true) . '/administrator/components/com_jce/media/css/upload.css');
 
                 $this->setLayout('default');
                 break;
@@ -209,11 +186,11 @@ class WFViewProfiles extends WFView {
             case 'edit':
                 JHtml::_('behavior.modal');
 
-                // Load media   
-                $this->addScript(JURI::root(true) . '/administrator/components/com_jce/media/js/profile.js');
-                
+                // Load media
+                $this->addScript(JURI::root(true) . '/administrator/components/com_jce/media/js/profile.min.js');
+
                 // load styles
-                $this->addStyleSheet(JURI::root(true) . '/administrator/components/com_jce/media/css/profiles.css');
+                $this->addStyleSheet(JURI::root(true) . '/administrator/components/com_jce/media/css/profile.min.css');
 
                 $cid = JRequest::getVar('cid', array(0), '', 'array');
                 JArrayHelper::toInteger($cid, array(0));
@@ -240,22 +217,13 @@ class WFViewProfiles extends WFView {
                 $language->load('com_jce', JPATH_SITE);
 
                 $language->load('plg_editors_jce', JPATH_ADMINISTRATOR);
-                $plugins = $model->getPlugins();
-
-                // load plugin languages
-                foreach ($plugins as $plugin) {
-                    if ($plugin->core == 0) {
-                        // Load Language for plugin
-                        $language->load('com_jce_' . $plugin->name, JPATH_SITE);
-                    }
-                }
 
                 // load the row from the db table
                 if ($cid[0]) {
                     $row->checkout($user->get('id'));
                 } else {
                     $query = $db->getQuery(true);
-                    
+
                     if (is_object($query)) {
                         $query->select('COUNT(id)')->from('#__wf_profiles');
                     } else {
@@ -286,9 +254,9 @@ class WFViewProfiles extends WFView {
                 }
 
                 $row->area = (isset($row->area)) ? $row->area : 0;
-                
+
                 $query = $db->getQuery(true);
-                
+
                 if (is_object($query)) {
                     $query->select('ordering AS value, name AS text')->from('#__wf_profiles')->where(array('published = 1', 'ordering > -10000', 'ordering < 10000'))->order('ordering');
                 } else {
@@ -302,22 +270,22 @@ class WFViewProfiles extends WFView {
                 }
 
                 $order = JHTML::_('list.genericordering', $query);
-                $lists['ordering']  = JHTML::_('select.genericlist', $order, 'ordering', 'class="inputbox" size="1"', 'value', 'text', intval($row->ordering));
-                
+                $lists['ordering']  = JHTML::_('select.genericlist', $order, 'ordering', 'class="inputbox"', 'value', 'text', intval($row->ordering));
+
                 $lists['published'] = '';
-                
+
                 $options = array(
                     1 => WFText::_('WF_OPTION_YES'),
                     0 => WFTEXT::_('WF_OPTION_NO')
                 );
-                
+
                 foreach($options as $value => $text) {
                     $checked = '';
-                    
+
                     if ($value == $row->published) {
                         $checked = ' checked="checked"';
                     }
-                    
+
                     $lists['published'] .= '<label class="radio inline"><input type="radio" id="published-' . $value . '" name="published" value="' . $value . '"' . $checked . ' />' . $text . '</label>';
                 }
 
@@ -363,7 +331,7 @@ class WFViewProfiles extends WFView {
                 $components = $db->loadObjectList();
 
                 $options = array();
-                
+
                 // load component languages
                 for ($i = 0; $i < count($components); $i++) {
                     if (!in_array($components[$i]->value, $exclude)) {
@@ -376,7 +344,7 @@ class WFViewProfiles extends WFView {
                 $disabled = (!$row->components) ? ' disabled="disabled"' : '';
 
                 // components list
-                $lists['components'] = '<ul id="components" class="checkbox-list">';
+                $lists['components'] = '<ul id="components" class="checkbox-list span4">';
 
                 foreach ($options as $option) {
                     $checked = in_array($option->value, explode(',', $row->components)) ? ' checked="checked"' : '';
@@ -392,10 +360,10 @@ class WFViewProfiles extends WFView {
                 );
 
                 $lists['components-select'] = '';
-                
+
                 foreach($options as $value => $text) {
                     $checked = '';
-                    
+
                     if ($row->components) {
                         if ($value == 'select') {
                             $checked = ' checked="checked"';
@@ -405,26 +373,26 @@ class WFViewProfiles extends WFView {
                             $checked = ' checked="checked"';
                         }
                     }
-                    
-                    $lists['components-select'] .= '<label class="radio inline"><input type="radio" id="components-select-' . $value . '" name="components-select" value="' . $value . '"' . $checked . ' />' . $text . '</label>';
+
+                    $lists['components-select'] .= '<label class="radio"><input type="radio" id="components-select-' . $value . '" name="components-select" value="' . $value . '"' . $checked . ' />' . $text . '</label>';
                 }
 
                 // area
                 $options = array(
                     1 => WFText::_('WF_PROFILES_AREA_FRONTEND'),
-                    2 => WFText::_('WF_PROFILES_AREA_BACKEND')      
+                    2 => WFText::_('WF_PROFILES_AREA_BACKEND')
                 );
-                
+
                 $lists['area'] = '';
-                
+
                 foreach($options as $value => $text) {
                     $checked = '';
-                    
+
                     if (!isset($row->area) || empty($row->area) || in_array($value, explode(',', $row->area))) {
                         $checked = ' checked="checked"';
                     }
-                    
-                    $lists['area'] .= '<label class="checkbox inline"><input type="checkbox" name="area[]" value="' . $value . '"'. $checked .' />' . $text . '</label>'; 
+
+                    $lists['area'] .= '<label class="checkbox"><input type="checkbox" name="area[]" value="' . $value . '"'. $checked .' />' . $text . '</label>';
                 }
 
                 // device
@@ -433,17 +401,17 @@ class WFViewProfiles extends WFView {
                     'tablet'    => WFText::_('WF_PROFILES_DEVICE_TABLET'),
                     'phone'    => WFText::_('WF_PROFILES_DEVICE_PHONE')
                 );
-                
+
                 $lists['device'] = '';
-                
+
                 foreach($options as $value => $text) {
                     $checked = '';
-                    
+
                     if (!isset($row->device) || empty($row->device) || in_array($value, explode(',', $row->device))) {
                         $checked = ' checked="checked"';
                     }
-                    
-                    $lists['device'] .= '<label class="checkbox inline"><input type="checkbox" name="device[]" value="' . $value . '"'. $checked .' />' . $text . '</label>'; 
+
+                    $lists['device'] .= '<label class="checkbox inline"><input type="checkbox" name="device[]" value="' . $value . '"'. $checked .' />' . $text . '</label>';
                 }
 
                 // user types from profile
@@ -451,7 +419,7 @@ class WFViewProfiles extends WFView {
 
                 if (is_object($query)) {
                     $query->select('types')->from('#__wf_profiles')->where('id NOT IN (17,28,29,30)');
-                    
+
                     $db->setQuery($query);
                     $types = $db->loadColumn();
                 } else {
@@ -459,14 +427,14 @@ class WFViewProfiles extends WFView {
                     . ' FROM #__wf_profiles'
                     // Exclude ROOT, USERS, Super Administrator, Public Frontend, Public Backend
                     . ' WHERE id NOT IN (17,28,29,30)';
-                    
+
                     $db->setQuery($query);
                     $types = $db->loadResultArray();
                 }
 
                 if (defined('JPATH_PLATFORM')) {
                     $options = array();
-                    
+
                     $query = $db->getQuery(true);
 
                     $query->select('a.id AS value, a.title AS text')->from('#__usergroups AS a');
@@ -487,7 +455,7 @@ class WFViewProfiles extends WFView {
                     }
                 } else {
                     // get list of Groups for dropdown filter
-                    $query = 'SELECT id AS value, name AS text' 
+                    $query = 'SELECT id AS value, name AS text'
                     . ' FROM #__core_acl_aro_groups'
                     // Exclude ROOT, USERS, Super Administrator, Public Frontend, Public Backend
                     . ' WHERE id NOT IN (17,28,29,30)';
@@ -505,7 +473,7 @@ class WFViewProfiles extends WFView {
                     }
                 }
 
-                $lists['usergroups'] = '<ul id="user-groups" class="checkbox-list">';
+                $lists['usergroups'] = '<ul id="user-groups" class="checkbox-list span4">';
 
                 foreach ($options as $option) {
                     $checked = in_array($option->value, explode(',', $row->types)) ? ' checked="checked"' : '';
@@ -537,7 +505,7 @@ class WFViewProfiles extends WFView {
                         }
                     }
                 }
-                $lists['users'] = '<ul id="users" class="users-list">';
+                $lists['users'] = '<ul id="users" class="unstyled users-list span4">';
 
                 foreach ($options as $option) {
                     $lists['users'] .= '<li><input type="hidden" name="users[]" value="' . $option->value . '" /><label><span class="users-list-delete"></span>' . $option->text . '</label></li>';
@@ -564,17 +532,19 @@ class WFViewProfiles extends WFView {
                     }
                 }
 
+                $plugins = $model->getPlugins();
+
                 // assign references
-                $this->assignRef('lists', $lists);
-                $this->assignRef('profile', $row);
-                $this->assignRef('rows', $rows);
-                $this->assignRef('params', $params);
-                $this->assignRef('plugins', $plugins);
-                
+                $this->assign('lists', $lists);
+                $this->assign('profile', $row);
+                $this->assign('rows', $rows);
+                $this->assign('params', $params);
+                $this->assign('plugins', $plugins);
+
                 // get options for various widgets
                 $options = $this->getOptions($params);
 
-                $this->addScriptDeclaration('jQuery.jce.Profiles.options = ' . json_encode($options) . ';');
+                $this->addScriptDeclaration('Wf.profiles.options = ' . json_encode($options) . ';');
 
                 // set toolbar
                 if ($row->id) {

@@ -25,41 +25,19 @@ class WFElementSpacer extends WFElement
 	 */
 	protected $_name = 'Spacer';
 
-	/**
-	 * Fetch tooltip for a radio button
-	 *
-	 * @param   string       $label         Element label
-	 * @param   string       $description   Element description for tool tip
-	 * @param   JXMLElement  &$node         JXMLElement node object containing the settings for the element
-	 * @param   string       $control_name  Control name
-	 * @param   string       $name          The name.
-	 *
-	 * @return  string
-	 */
-	public function fetchTooltip($label, $description, &$node, $control_name = '', $name = '')
-	{
-		return '&#160;';
+	function fetchTooltip($label, $description, &$node, $control_name = '', $name = '') {
+		$html = "";
+		if ($label) {
+			$html .= '<h3>' . WFText::_($label) . '</h3>';
+		}
+
+		$html .= "<hr />";
+
+		return $html;
 	}
 
-	/**
-	 * Fetch HTML for a radio button
-	 *
-	 * @param   string       $name          Element name
-	 * @param   string       $value         Element value
-	 * @param   JXMLElement  &$node         JXMLElement node object containing the settings for the element
-	 * @param   string       $control_name  Control name
-	 *
-	 * @return  string
-	 */
-	public function fetchElement($name, $value, &$node, $control_name)
+	function fetchElement($name, $value, &$node, $control_name)
 	{
-		if ($value)
-		{
-			return JText::_($value);
-		}
-		else
-		{
-			return ' ';
-		}
+		return "";
 	}
 }

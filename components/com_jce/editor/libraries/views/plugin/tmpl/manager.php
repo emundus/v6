@@ -11,23 +11,19 @@
  */
 
 defined( 'WF_EDITOR' ) or die('RESTRICTED');
+?>
+<div class="uk-position-cover uk-browser uk-browser-<?php echo $this->filebrowser->get('position');?>">
+<?php
+	// render tabs and panels
+	WFTabs::getInstance()->render();
 
-$tabs = WFTabs::getInstance();
-
-if ($this->browser->get('position') == 'top') {
-	$this->browser->render();
-}
-// render tabs and panels
-$tabs->render();
-
-if ($this->browser->get('position') == 'bottom') {
-	$this->browser->render();
-}
-
-?>	
-
-<div class="actionPanel">
-	<button class="button" id="refresh"><?php echo WFText::_('WF_LABEL_REFRESH')?></button>
-	<button class="button confirm" id="insert"><?php echo WFText::_('WF_LABEL_INSERT')?></button>
-	<button class="button cancel" id="cancel"><?php echo WFText::_('WF_LABEL_CANCEL')?></button>
+	if ($this->filebrowser->get('position') !== 'external') {
+		$this->filebrowser->render();
+	}
+?>
+</div>
+<div class="actionPanel uk-modal-footer">
+	<button class="uk-button uk-button-refresh" id="refresh"><?php echo WFText::_('WF_LABEL_REFRESH')?></button>
+	<button class="uk-button uk-button-confirm" id="insert"><?php echo WFText::_('WF_LABEL_INSERT')?></button>
+	<button class="uk-button uk-button-cancel" id="cancel"><?php echo WFText::_('WF_LABEL_CANCEL')?></button>
 </div>

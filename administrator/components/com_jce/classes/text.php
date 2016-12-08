@@ -22,7 +22,6 @@ abstract class WFText {
         $language = JFactory::getLanguage();
 
         // replace legacy JCE_ prefix
-        $string = str_replace('JCE_', 'WF_', $string);
         $translated = $language->_($string);
 
         if ($translated == $string) {
@@ -30,10 +29,10 @@ abstract class WFText {
                 return $default;
             }
 
-            if (strpos($string, 'WF_') !== false) {
+            if (strpos($string, 'WF_') !== false || strpos($string, 'JCE_') !== false) {
                 $view = JRequest::getWord('view', '');
                 // remove prefix
-                $translated = preg_replace(array('#^(WF_)#', '#(LABEL|OPTION|FILEGROUP|' . strtoupper($view) . ')_#', '#_(DESC|TITLE)#'), '', $string);
+                $translated = preg_replace(array('#^(WF|JCE)_#', '#(LABEL|OPTION|FILEGROUP|' . strtoupper($view) . ')_#', '#_(DESC|TITLE)#'), '', $string);
                 $translated = ucwords(strtolower(str_replace('_', ' ', $translated)));
             }
         }

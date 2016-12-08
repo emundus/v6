@@ -82,7 +82,7 @@ abstract class WFExtensionHelper {
                 $plugin->load($id);
                 // map extension_id to id
                 $plugin->id = $plugin->extension_id;
-                
+
                 // store result
                 self::$plugin[$signature] = $plugin;
             } else {
@@ -90,14 +90,18 @@ abstract class WFExtensionHelper {
 
                 if (!$id) {
                     $db = JFactory::getDBO();
-                    $query = 'SELECT id FROM #__plugins' . ' WHERE folder = ' . $db->Quote($folder) . ' AND element = ' . $db->Quote($element);
+                    $query = 'SELECT id FROM #__plugins' . ' WHERE folder = ' . $db->Quote($folder);
+
+                    if ($element) {
+                        $query .= ' AND element = ' . $db->Quote($element);
+                    }
 
                     $db->setQuery($query);
                     $id = $db->loadResult();
                 }
 
                 $plugin->load($id);
-                
+
                 // store result
                 self::$plugin[$signature] = $plugin;
             }

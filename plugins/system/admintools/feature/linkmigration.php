@@ -23,7 +23,7 @@ class AtsystemFeatureLinkmigration extends AtsystemFeatureAbstract
 	public function isEnabled()
 	{
 		// We only use this feature in the front-end
-		if (F0FPlatform::getInstance()->isBackend())
+		if ($this->helper->isBackend())
 		{
 			return false;
 		}
@@ -190,7 +190,7 @@ class AtsystemFeatureLinkmigration extends AtsystemFeatureAbstract
 	 */
 	protected function populateMyDomain()
 	{
-		$this->myDomain = JURI::base(false);
+		$this->myDomain = JUri::base(false);
 
 		if (substr($this->myDomain, -1) == '/')
 		{

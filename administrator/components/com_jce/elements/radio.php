@@ -36,28 +36,46 @@ class WFElementRadio extends WFElement {
      */
     public function fetchElement($name, $value, &$node, $control_name) {
         $options = array();
+
         foreach ($node->children() as $option) {
-            $val = (string) $option->attributes()->value;
-            $text = (string) $option;
-            $options[] = JHtml::_('select.option', $val, $text);
+            $val        = (string) $option->attributes()->value;
+            $text       = (string) $option;
+            $options[]  = JHtml::_('select.option', $val, $text);
         }
-        
+
         $attribs = array();
 
         // pattern data attribute for editable select input box
         if ((string) $node->attributes()->parent) {
             $prefix = preg_replace(array('#^params#', '#([^\w]+)#'), '', $control_name);
-            
+
             $items = array();
-            
+
             foreach(explode(';', (string) $node->attributes()->parent) as $item) {
                 $items[] = $prefix . $item;
             }
-            
+
             $attribs[] =  'data-parent="' . implode(';', $items) . '"';
         }
 
-        return JHtml::_('select.radiolist', $options, $control_name . '[' . $name . ']', implode(' ', $attribs), 'value', 'text', $value, $control_name . $name, true);
+        $html = '';
+
+        foreach($options as $option) {
+          $k  	= $option->value;
+          $id 	= $control_name . $name . $k;
+          $text = JText::_($option->text);
+
+          $selected = ((string) $k == (string) $value) ? 'checked="checked"' : '';
+
+          $html .= '<label for="' . $control_name . $name . '" id="' . $control_name . $name . '-lbl" class="radio">';
+          $html .= '  <input type="radio" name="' . $control_name . '[' . $name . ']' . '" id="' . $id . '" value="' . $k . '" ' . $selected . '/>';
+          $html .= $text;
+          $html .= '</label>';
+        }
+
+        return $html;
+
+        //return JHtml::_('select.radiolist', $options, $control_name . '[' . $name . ']', implode(' ', $attribs), 'value', 'text', $value, $control_name . $name, true);
     }
 
 }

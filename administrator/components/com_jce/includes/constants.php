@@ -16,6 +16,7 @@ defined('_JEXEC') or die('RESTRICTED');
 define('WF_JOOMLA15', version_compare(JVERSION, '1.6', '<'));
 
 // Some shortcuts to make life easier
+define('WF_VERSION', '2.6.1');
 
 // JCE Administration Component
 define('WF_ADMINISTRATOR',     JPATH_ADMINISTRATOR . '/components/com_jce');
@@ -39,6 +40,8 @@ define('WF_EDITOR_LIBRARIES',  WF_EDITOR . '/libraries');
 define('WF_EDITOR_CLASSES',    WF_EDITOR_LIBRARIES . '/classes');
 // JCE Editor Extensions
 define('WF_EDITOR_EXTENSIONS', WF_EDITOR . '/extensions');
+
+define('WF_EDITOR_PRO', '0');
 
 // required for some plugins
 if (!defined('DS')) {

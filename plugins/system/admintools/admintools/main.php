@@ -5,6 +5,9 @@
  * @license   GNU General Public License version 3, or later
  */
 
+use Akeeba\AdminTools\Admin\Helper\Storage;
+use FOF30\Utils\Ip;
+
 defined('_JEXEC') or die;
 
 JLoader::import('joomla.application.plugin');
@@ -23,8 +26,11 @@ class AtsystemAdmintoolsMain
  */
 class plgSystemAdmintools extends JPlugin
 {
-	/** @var   AdmintoolsModelStorage   Component parameters */
+	/** @var   Storage   Component parameters */
 	protected $componentParams = null;
+
+	/** @var \Akeeba\AdminTools\Admin\Helper\Plugin Common helper for all plugin features */
+	protected $pluginHelper = null;
 
 	/** @var   array  Maps plugin hooks (onSomethingSomething) to feature objects */
 	protected $featuresPerHook = array();
@@ -76,6 +82,9 @@ class plgSystemAdmintools extends JPlugin
 
 		// Load the component parameters
 		$this->loadComponentParameters();
+
+		// Load plugin helper
+		$this->loadPluginHelper();
 
 		// Work around IP issues with transparent proxies etc
 		$this->workaroundIP();
@@ -256,16 +265,16 @@ class plgSystemAdmintools extends JPlugin
 		// Load the components parameters
 		JLoader::import('joomla.application.component.model');
 
-		require_once JPATH_ADMINISTRATOR . '/components/com_admintools/models/storage.php';
+		require_once JPATH_ADMINISTRATOR . '/components/com_admintools/Helper/Storage.php';
 
-		if (interface_exists('JModel'))
-		{
-			$this->componentParams = JModelLegacy::getInstance('Storage', 'AdmintoolsModel');
-		}
-		else
-		{
-			$this->componentParams = JModel::getInstance('Storage', 'AdmintoolsModel');
-		}
+		$this->componentParams = Storage::getInstance();
+	}
+
+	protected function loadPluginHelper()
+	{
+		require_once JPATH_ADMINISTRATOR . '/components/com_admintools/Helper/Plugin.php';
+
+		$this->pluginHelper = new \Akeeba\AdminTools\Admin\Helper\Plugin();
 	}
 
 	/**
@@ -295,11 +304,24 @@ class plgSystemAdmintools extends JPlugin
 			$this->componentParams->setValue('ipworkarounds', 1, true);
 		}
 
-		if (class_exists('F0FUtilsIp', true))
+		if (!$enableWorkarounds)
 		{
-			F0FUtilsIp::setAllowIpOverrides($enableWorkarounds);
-			F0FUtilsIp::workaroundIPIssues();
+			return;
 		}
+
+		if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
+		{
+			// FOF 3.0 is not installed
+			return;
+		}
+
+		if (!class_exists('FOF30\\Utils\\Ip'))
+		{
+			return;
+		}
+
+		Ip::setAllowIpOverrides($enableWorkarounds);
+		Ip::workaroundIPIssues();
 	}
 
 	/**
@@ -351,7 +373,7 @@ class plgSystemAdmintools extends JPlugin
 			}
 
 			/** @var AtsystemFeatureAbstract $o */
-			$o = new $className($this->app, $this->db, $this->params, $this->componentParams, $this->input, $this->exceptionsHandler, $this->exceptions, $this->skipFiltering);
+			$o = new $className($this->app, $this->db, $this->params, $this->componentParams, $this->input, $this->exceptionsHandler, $this->exceptions, $this->skipFiltering, $this->pluginHelper);
 
 			if (!$o->isEnabled())
 			{
@@ -434,10 +456,10 @@ class plgSystemAdmintools extends JPlugin
 	protected function loadWAFExceptions()
 	{
 		$jConfig = JFactory::getConfig();
-		$isSEF = $jConfig->get('sef', 0);
+		$isSEF   = $jConfig->get('sef', 0);
 
 		$option = $this->input->getCmd('option', '');
-		$view = $this->input->getCmd('view', '');
+		$view   = $this->input->getCmd('view', '');
 
 		// If we have SEF URLs enabled and an empty $option (SEF not yet parsed) OR we have an option that does not
 		// start with com_ we need to a different kind of processing. NB! If an option in the form of com_something is
@@ -473,6 +495,13 @@ class plgSystemAdmintools extends JPlugin
 
 	protected function loadWAFExceptionsSEF()
 	{
+		// Do you have a fucktasting host like the one in ticket #25473 that crashes JUri if you access it
+		// onAfterIntialize because the morons unset two fundamental server variables? If you do, no exceptions for you
+		if (!isset($_SERVER) || (!isset($_SERVER['HTTP_HOST']) && !isset($_SERVER['SCRIPT_NAME'])))
+		{
+			return;
+		}
+
 		// Get the SEF URI path
 		$uriPath = JUri::getInstance()->getPath();
 		$uriPath = ltrim($uriPath, '/');
@@ -486,7 +515,7 @@ class plgSystemAdmintools extends JPlugin
 		// Get the URI path without the language prefix
 		$uriPathNoLanguage = $uriPath;
 
-		if (F0FPlatform::getInstance()->isFrontend())
+		if ($this->pluginHelper->isFrontend())
 		{
 			/** @var \JApplicationSite $app */
 			$app = \JFactory::getApplication();
@@ -509,7 +538,7 @@ class plgSystemAdmintools extends JPlugin
 		}
 
 		// Load all WAF exceptions for SEF URLs
-		$db = JFactory::getDBO();
+		$db = JFactory::getDbo();
 		$this->exceptions = array();
 		$exceptions = array();
 		$view = $this->input->getCmd('view', '');
@@ -531,13 +560,13 @@ class plgSystemAdmintools extends JPlugin
 
 		foreach ($exceptions as $exception)
 		{
-            if($exception['option'])
-            {
-                if ((strpos($uriPathNoLanguage, $exception['option']) !== 0) && (strpos($uriPath, $exception['option']) !== 0))
-                {
-                    continue;
-                }
-            }
+			if($exception['option'])
+			{
+				if ((strpos($uriPathNoLanguage, $exception['option']) !== 0) && (strpos($uriPath, $exception['option']) !== 0))
+				{
+					continue;
+				}
+			}
 
 			if (!empty($exception['view']) && ($view != $exception['view']))
 			{
@@ -558,7 +587,7 @@ class plgSystemAdmintools extends JPlugin
 	 */
 	protected function loadWAFExceptionsByOption($option, $view)
 	{
-		$db = JFactory::getDBO();
+		$db = JFactory::getDbo();
 
 		$sql = $db->getQuery(true)
 				  ->select($db->qn('query'))

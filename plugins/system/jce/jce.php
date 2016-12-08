@@ -18,25 +18,16 @@ defined('JPATH_BASE') or die;
  * @since       2.5.5
  */
 class PlgSystemJce extends JPlugin {
-
-    /**
-     * Constructor
-     *
-     * @param   object  &$subject  The object to observe
-     * @param   array   $config    An array that holds the plugin configuration
-     *
-     * @since   1.5
-     */
-    public function __construct(& $subject, $config) {
-        parent::__construct($subject, $config);
-    }
-
     protected function getLink($filter = 'images') {
         require_once(JPATH_ADMINISTRATOR . '/components/com_jce/helpers/browser.php');
 
         $link = WFBrowserHelper::getMediaFieldLink('', $filter);
 
         return $link;
+    }
+
+    public function onPlgSystemJceContentPrepareForm($form, $data) {
+        return $this->onContentPrepareForm($form, $data);
     }
 
     /**
@@ -47,9 +38,11 @@ class PlgSystemJce extends JPlugin {
      *
      * @return  boolean
      *
-     * @since   1.6
+     * @since   2.5.20
      */
     public function onContentPrepareForm($form, $data) {
+        $app = JFactory::getApplication();
+
         $version = new JVersion;
 
         if (!$version->isCompatible('3.4')) {
@@ -71,19 +64,21 @@ class PlgSystemJce extends JPlugin {
         // get form name.
         $name = $form->getName();
 
-        $valid = array(
-            'com_content.article',
-            'com_categories.categorycom_content',
-            'com_templates.style',
-            'com_tags.tag',
-            'com_banners.banner',
-            'com_contact.contact',
-            'com_newsfeeds.newsfeed'
-        );
+        if (!$version->isCompatible('3.6')) {
+        	$valid = array(
+            	'com_content.article',
+            	'com_categories.categorycom_content',
+            	'com_templates.style',
+            	'com_tags.tag',
+            	'com_banners.banner',
+            	'com_contact.contact',
+            	'com_newsfeeds.newsfeed'
+        	);
 
-        // only allow some forms, see - https://github.com/joomla/joomla-cms/pull/8657
-        if (!in_array($name, $valid)) {
-            return true;
+        	// only allow some forms, see - https://github.com/joomla/joomla-cms/pull/8657
+        	if (!in_array($name, $valid)) {
+            	return true;
+        	}
         }
 
         $config = JFactory::getConfig();
@@ -101,6 +96,14 @@ class PlgSystemJce extends JPlugin {
         $fields = $form->getFieldset();
 
         foreach ($fields as $field) {
+            
+            $name = $field->getAttribute('name');
+            
+            // avoid processing twice
+            if (strpos($form->getFieldAttribute($name, 'class'), 'wf-media-input') !== false) {
+                return;
+            }
+
             $type = $field->getAttribute('type');
 
             if (strtolower($type) === "media") {
@@ -115,8 +118,7 @@ class PlgSystemJce extends JPlugin {
                   continue;
                 }
 
-                $name   = $field->getAttribute('name');
-                $group  = (string) $field->group;
+                $group = (string) $field->group;
                 $form->setFieldAttribute($name, 'link', $link, $group);
                 $form->setFieldAttribute($name, 'class', 'input-large wf-media-input', $group);
 
@@ -130,6 +132,8 @@ class PlgSystemJce extends JPlugin {
 
             $document = JFactory::getDocument();
             $document->addScriptDeclaration('jQuery(document).ready(function($){$(".wf-media-input").removeAttr("readonly");});');
+
+            $document->addStyleSheet(JURI::root(true) . '/plugins/content/jce/css/media.css');
         }
 
         return true;

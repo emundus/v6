@@ -11,9 +11,12 @@
  */
 defined('_JEXEC') or die('RESTRICTED');
 
+$language   = JFactory::getLanguage();
+$direction  = $language->isRTL() ? 'right' : 'left';
+
 ?>
-<form action="index.php" method="post" name="adminForm" id="adminForm" class="form-horizontal">
-    <div id="jce" class="loading">
+<div class="ui-jce loading">
+  <form action="index.php" method="post" name="adminForm" id="adminForm" class="form-horizontal">
         <div class="progress progress-striped active">
             <div class="bar" style="width: 100%;"><?php echo JText :: _('WF_MESSAGE_LOAD');?></div>
         </div>
@@ -31,11 +34,11 @@ defined('_JEXEC') or die('RESTRICTED');
                 <div id="tabs-features" class="tab-pane">
                     <?php echo $this->loadTemplate('features'); ?>
                 </div>
-                <div id="tabs-editor" class="tab-pane tabbable tabs-left">
+                <div id="tabs-editor" class="tab-pane tabbable tabs-<?php echo $direction;?>">
                     <ul class="nav nav-tabs">
                         <?php
                         $x = 0;
-                        foreach ($this->profile->editor_groups as $group) :                            
+                        foreach ($this->profile->editor_groups as $group) :
                             echo '<li><a href="#tabs-editor-' . $group . '"><span>' . WFText::_('WF_PROFILES_EDITOR_' . strtoupper($group)) . '</span></a></li>';
                             $x++;
                         endforeach;
@@ -43,7 +46,7 @@ defined('_JEXEC') or die('RESTRICTED');
                     </ul>
                     <?php echo $this->loadTemplate('editor'); ?>
                 </div>
-                <div id="tabs-plugins" class="tab-pane tabbable tabs-left">
+                <div id="tabs-plugins" class="tab-pane tabbable tabs-<?php echo $direction;?>">
                     <ul class="nav nav-tabs">
                         <?php
                         // Build tabs
@@ -57,7 +60,7 @@ defined('_JEXEC') or die('RESTRICTED');
 
                                 $class = in_array($plugin->name, explode(',', $this->profile->plugins)) ? '' : 'tab-disabled';
 
-                                echo '<li class="defaultSkin ' . $class . '" data-name="' . $plugin->name . '"><a href="#tabs-plugin-' . $plugin->name . '">' . $icon . '<span class="tabs-label">' . WFText::_($plugin->title) . '</span></a></li>';
+                                echo '<li class="defaultSkin ' . $class . '" data-name="' . $plugin->name . '"><a href="#tabs-plugin-' . $plugin->name . '" class="mceToolBarItem">' . $icon . '<span class="tabs-label">' . WFText::_($plugin->title) . '</span></a></li>';
                             endif;
                         endforeach;
                         ?>
@@ -68,12 +71,12 @@ defined('_JEXEC') or die('RESTRICTED');
                 </div>
             </div>
         </div>
-    </div>
     <input type="hidden" name="users[]" value="" />
     <input type="hidden" name="option" value="com_jce" />
     <input type="hidden" name="id" value="<?php echo $this->profile->id; ?>" />
     <input type="hidden" name="cid[]" value="<?php echo $this->profile->id; ?>" />
     <input type="hidden" name="view" value="profiles" />
     <input type="hidden" name="task" value="" />
-<?php echo JHTML::_('form.token'); ?>
+    <?php echo JHTML::_('form.token'); ?>
 </form>
+</div>

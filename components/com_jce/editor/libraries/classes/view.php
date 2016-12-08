@@ -166,7 +166,9 @@ final class WFView extends JObject {
         // load the template script
         jimport('joomla.filesystem.path');
 
-        $template = JPath::find($this->getTemplatePath(), $file . '.php');
+        $path = $this->getTemplatePath();
+
+        $template = JPath::find($path, $file . '.php');
 
         if ($template != false) {
             // unset so as not to introduce into template scope
@@ -191,7 +193,7 @@ final class WFView extends JObject {
 
             return $output;
         } else {
-            return JError::raiseError(500, 'Layout "' . $file . '" not found');
+            return JError::raiseError(500, 'Layout "' . $file . '" not found in Paths ' . implode(', ', $path));
         }
     }
 

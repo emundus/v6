@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashopshipping">
 	<name>Hikashop FedEx Shipping Plugin</name>
-	<creationDate>17 octobre 2016</creationDate>
+	<creationDate>05 décembre 2016</creationDate>
 	<version>2.6.4</version>
 	<author>Rich S Wyatt - D3 Web Creations / OBSIDEV</author>
 	<authorEmail>info@dcubedweb.com / contact@obsidev.com</authorEmail>

@@ -21,7 +21,7 @@ class JoomlalinksWeblinks extends JObject {
      * @access	protected
      */
     public function __construct($options = array()) {
-        
+
     }
 
     /**
@@ -51,7 +51,7 @@ class JoomlalinksWeblinks extends JObject {
         $wf = WFEditorPlugin::getInstance();
 
         if ($wf->checkAccess('links.joomlalinks.weblinks', 1)) {
-            return '<li id="index.php?option=com_weblinks&view=categories"><div class="tree-row"><div class="tree-image"></div><span class="folder weblink nolink"><a href="javascript:;">' . WFText::_('WF_LINKS_JOOMLALINKS_WEBLINKS') . '</a></span></div></li>';
+            return '<li id="index.php?option=com_weblinks&view=categories" class="folder menu nolink"><div class="uk-tree-row"><a href="#"><span class="uk-tree-icon"></span><span class="uk-tree-text">' . WFText::_('WF_LINKS_JOOMLALINKS_WEBLINKS') . '</span></a></div></li>';
         }
     }
 
@@ -64,7 +64,7 @@ class JoomlalinksWeblinks extends JObject {
             require_once(JPATH_SITE . '/includes/application.php');
         }
         require_once(JPATH_SITE . '/components/com_weblinks/helpers/route.php');
-        
+
         $language = '';
 
         switch ($args->view) {
@@ -82,7 +82,7 @@ class JoomlalinksWeblinks extends JObject {
                         if (isset($category->language)) {
                             $language = $category->language;
                         }
-                        
+
                         $id = WeblinksHelperRoute::getCategoryRoute($category->id, $language);
 
                         if (strpos($id, 'index.php?Itemid=') !== false) {
@@ -121,7 +121,7 @@ class JoomlalinksWeblinks extends JObject {
                                     if (isset($category->language)) {
                                         $language = $category->language;
                                     }
-                                    
+
                                     $id = WeblinksHelperRoute::getCategoryRoute($category->id, $language);
 
                                     if (strpos($id, 'index.php?Itemid=') !== false) {
@@ -151,7 +151,7 @@ class JoomlalinksWeblinks extends JObject {
                     if (isset($weblink->language)) {
                         $language = $weblink->language;
                     }
-                    
+
                     $id = WeblinksHelperRoute::getWeblinkRoute($weblink->slug, $weblink->catslug, $language);
 
                     if (defined('JPATH_PLATFORM')) {
@@ -173,7 +173,7 @@ class JoomlalinksWeblinks extends JObject {
         $wf = WFEditorPlugin::getInstance();
         $db = JFactory::getDBO();
         $user = JFactory::getUser();
-        
+
         $version    = new JVersion();
         $language   = $version->isCompatible('3.0') ? ', a.language' : '';
 
@@ -186,7 +186,7 @@ class JoomlalinksWeblinks extends JObject {
         if ($wf->getParam('links.joomlalinks.weblinks_alias', 1) == 1) {
             if (is_object($dbquery) && method_exists($dbquery, 'charLength')) {
                 $query .= $language;
-                
+
                 //sqlsrv changes
                 $case_when1 = ' CASE WHEN ';
                 $case_when1 .= $dbquery->charLength('a.alias', '!=', '0');

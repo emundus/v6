@@ -13,50 +13,47 @@ defined('_JEXEC') or die('RESTRICTED');
 
 require_once(WF_EDITOR_LIBRARIES . '/classes/manager.php');
 
-final class WFFileBrowserPlugin extends WFMediaManager {
+class WFFileBrowserPlugin extends WFMediaManager {
     /*
      * @var string
      */
+    protected $_filetypes = 'doc,docx,ppt,pptx,xls,xlsx,gif,jpeg,jpg,png,pdf,zip,tar,gz,swf,rar,mov,mp4,qt,wmv,asx,asf,avi,wav,mp3,aiff,odt,odg,odp,ods,odf,rtf,txt,csv';
 
-    protected $_filetypes = 'word=doc,docx;powerpoint=ppt,pptx;excel=xls,xlsx;image=gif,jpeg,jpg,png;acrobat=pdf;archive=zip,tar,gz;flash=swf;winrar=rar;quicktime=mov,mp4,qt;windowsmedia=wmv,asx,asf,avi;audio=wav,mp3,aiff;openoffice=odt,odg,odp,ods,odf;text=rtf,txt,csv';
+    public function __construct($config = array()) {
+        $config = array(
+          'layout' => 'browser',
+          'can_edit_images' => 1,
+          'show_view_mode' => 1
+        );
 
-    /**
-     * @access	protected
-     */
-    public function __construct() {
-        parent::__construct();
+        parent::__construct($config);
 
-        $browser = $this->getBrowser();
+        // get the plugin that opened the file browser
+        $caller     = JRequest::getWord('caller', 'browser');
+        $filter     = JRequest::getVar('filter', 'files');
 
-        if (JRequest::getWord('type', 'file') == 'file') {
-            // Add all files
-            $browser->addFileTypes(array('WF_FILEGROUP_ALL' => '*.*'));
+        // clean filter value
+        $filter     = (string) preg_replace('/[^\w_,]/i', '', $filter);
+
+        if ($filter == 'images') {
+            $filetypes = 'jpg,jpeg,png,gif';
+        } else if ($filter === 'media') {
+            $filetypes = 'avi,wmv,wm,asf,asx,wmx,wvx,mov,qt,mpg,mpeg,m4a,swf,dcr,rm,ra,ram,divx,mp4,ogv,ogg,webm,flv,f4v,mp3,ogg,wav,xap';
+        } else if ($filter === 'html') {
+            $filetypes = 'html,htm,txt';
         } else {
-            $browser->setFileTypes('images=jpg,jpeg,png,gif');
-        }
-
-        $filter = JRequest::getString('filter');
-
-        if ($filter) {
-            if ($filter === 'images') {
-                $filetypes = 'images=jpg,jpeg,png,gif';
-            } else if ($filter === 'media') {
-                $filetypes = 'windowsmedia=avi,wmv,wm,asf,asx,wmx,wvx;quicktime=mov,qt,mpg,mpeg,m4a;flash=swf;shockwave=dcr;real=rm,ra,ram;divx=divx;video=mp4,ogv,ogg,webm,flv,f4v;audio=mp3,ogg,wav;silverlight=xap';
-            } else if ($filter === 'html') {
-                $filetypes = 'html=html,htm,txt';
+            if (strpos($filter, ',') !== false) {
+                $filetypes = $filter;
             } else {
-                // custom filter list, eg: jpg,jpeg,png,pdf
-                if (strpos($filter, ',') !== false) {
-                  $filetypes = 'files=' . $filter;
-                } else {
-                  $filetypes = $this->get('_filetypes');
-                }
+                $filetypes = $this->get('_filetypes');
             }
-
-            $browser->setFileTypes($filetypes);
         }
-        // remove insert button
-        $browser->removeButton('file', 'insert');
+
+        // get filetypes from params
+        $filetypes = $this->getParam($caller.'.extensions', $filetypes);
+
+        // set filetypes
+        $this->setFileTypes($filetypes);
     }
 
     /**
@@ -67,30 +64,29 @@ final class WFFileBrowserPlugin extends WFMediaManager {
         parent::display();
 
         $document = WFDocument::getInstance();
-        $settings = $this->getSettings();
-
-        $document->addScript(array('browser'), 'plugins');
 
         if ($document->get('standalone') == 1) {
-            $document->addScript(array('browser'), 'component');
+          if (JRequest::getCmd('dialog', 'browser') === "browser") {
+              $document->addScript(array('window.min'), 'plugins');
 
-            $element = JRequest::getCmd('element', JRequest::getCmd('fieldid', ''));
+              $element = JRequest::getCmd('element', JRequest::getCmd('fieldid', ''));
 
-            $options = array(
-                'plugin' => array(
-                    'root' => JURI::root(),
-                    'site' => JURI::base(true) . '/'
-                ),
-                'manager' => $settings,
-                'element' => $element
-            );
+              $settings = array(
+                'site_url'  => JURI::base(true) . '/',
+                'language'  => WFLanguage::getCode(),
+                'element'   => $element,
+                'token'     => WFToken::getToken()
+              );
 
-            $document->addScriptDeclaration('jQuery(document).ready(function($){$.WFBrowserWidget.init(' . json_encode($options) . ');});');
+              $document->addScriptDeclaration('tinymce.settings=' . json_encode($settings) . ';');
+          }
 
-        } else {
-            $document->addScriptDeclaration('BrowserDialog.settings=' . json_encode($settings) . ';');
+          $document->addScript(array('popup.min'), 'plugins');
+          $document->addStyleSheet(array('browser.min'), 'plugins');
+        }
+
+        if (JRequest::getCmd('dialog', 'browser') === "browser") {
+            $document->addScript(array('browser'), 'plugins');
         }
     }
 }
-
-?>

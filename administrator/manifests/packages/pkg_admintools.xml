@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.3.0" type="package" method="upgrade">
+    <name>Admin Tools package</name>
+    <author>Nicholas K. Dionysopoulos</author>
+    <creationDate>2016-10-25</creationDate>
+    <packagename>admintools</packagename>
+    <version>4.0.2</version>
+    <url>https://www.akeebabackup.com</url>
+    <packager>Akeeba Ltd</packager>
+    <packagerurl>https://www.akeebabackup.com</packagerurl>
+    <copyright>Copyright (c)2010-2016 Akeeba Ltd / Nicholas K. Dionysopoulos</copyright>
+    <license>GNU GPL v3 or later</license>
+    <description>Admin Tools Core installation package v.4.0.2</description>
+
+    <!-- List of extensions to install -->
+    <files>
+        <!-- Component -->
+        <file type="component" id="com_admintools">com_admintools-core.zip</file>
+
+        <!-- Plugins: system -->
+        <file type="plugin" group="system" id="admintools">plg_system_admintools-core.zip</file>
+    </files>
+
+    <!-- Installation script -->
+    <scriptfile>script.admintools.php</scriptfile>
+
+    <!-- Update servers -->
+    <updateservers>
+        <server type="extension" priority="1" name="Admin Tools Core">http://cdn.akeebabackup.com/updates/pkgadmintoolscore.xml</server>
+    </updateservers>
+</extension>

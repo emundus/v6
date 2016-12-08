@@ -26,45 +26,26 @@ else
 {
 	$version = '5.0.0'; // all bets are off!
 }
-if (!version_compare($version, '5.3.4', '>='))
+
+if (!version_compare($version, '5.4.0', '>='))
 {
 	return;
 }
 
-// Timezone fix; avoids errors printed out by PHP 5.3.3+ (thanks Yannick!)
-if (function_exists('date_default_timezone_get') && function_exists('date_default_timezone_set'))
+// Why, oh why, are you people using eAccelerator? Seriously, what's wrong with you, people?!
+if (function_exists('eaccelerator_info'))
 {
-	if (function_exists('error_reporting'))
+	$isBrokenCachingEnabled = true;
+
+	if (function_exists('ini_get') && !ini_get('eaccelerator.enable'))
 	{
-		$oldLevel = error_reporting(0);
+		$isBrokenCachingEnabled = false;
 	}
 
-	$serverTimezone = @date_default_timezone_get();
-
-	if (empty($serverTimezone) || !is_string($serverTimezone))
+	if ($isBrokenCachingEnabled)
 	{
-		$serverTimezone = 'UTC';
+		return;
 	}
-	if (function_exists('error_reporting'))
-	{
-		error_reporting($oldLevel);
-	}
-	@date_default_timezone_set($serverTimezone);
-}
-
-// Include F0F's loader if required
-if (!defined('F0F_INCLUDED'))
-{
-	$libraries_dir = defined('JPATH_LIBRARIES') ? JPATH_LIBRARIES : JPATH_ROOT . '/libraries';
-	$mainFile = $libraries_dir . '/f0f/include.php';
-
-	@include_once $mainFile;
-}
-
-// If F0F is not present (e.g. not installed) bail out
-if (!defined('F0F_INCLUDED') || !class_exists('F0FLess', true))
-{
-	return;
 }
 
 // Include and initialise Admin Tools System Plugin autoloader

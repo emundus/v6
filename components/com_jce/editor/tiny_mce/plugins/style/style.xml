@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <install version="2.0" type="plugin" plugin="style" core="1" editable="0">
 	<name>WF_STYLE_TITLE</name>
-	<version>2.5.19</version>
-	<creationDate>24 June 2016</creationDate>
+	<version>2.6.1</version>
+	<creationDate>01-12-2016</creationDate>
 	<author>Ryan Demmer</author>
-	<authorEmail>info@joomlacontenteditor.net</authorEmail>
+	<authorEmail>@@e-mail@@</authorEmail>
 	<authorUrl>http://www.joomlacontenteditor.net/</authorUrl>
 	<copyright>Ryan Demmer</copyright>
 	<license>GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html</license>

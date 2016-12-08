@@ -32,7 +32,7 @@ class WFLinkExtension extends WFExtension {
 
         $extensions = self::loadExtensions('links');
 
-        // Load all link extensions		
+        // Load all link extensions
         foreach ($extensions as $link) {
             $this->extensions[] = $this->getLinkExtension($link);
         }
@@ -51,9 +51,6 @@ class WFLinkExtension extends WFExtension {
     public function display() {
         parent::display();
 
-        $document = WFDocument::getInstance();
-        $document->addScript(array('link.full'), 'libraries');
-
         foreach ($this->extensions as $extension) {
             $extension->display();
         }
@@ -70,7 +67,7 @@ class WFLinkExtension extends WFExtension {
 
         return self::$links[$name];
     }
-    
+
     public function getLists() {
         $list = array();
 
@@ -79,7 +76,7 @@ class WFLinkExtension extends WFExtension {
                 $list[] = $extension->getList();
             }
         }
-        
+
         return $list;
     }
 
@@ -141,7 +138,7 @@ class WFLinkExtension extends WFExtension {
         $query = $db->getQuery(true);
 
         $where = array();
-        
+
         $version    = new JVersion();
         $language   = $version->isCompatible('3.0') ? ', language' : '';
 
@@ -261,5 +258,5 @@ class WFLinkExtension extends WFExtension {
 }
 
 abstract class WFLinkBrowser extends WFLinkExtension {
-    
+
 }

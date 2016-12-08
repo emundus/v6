@@ -261,7 +261,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 				$cart->loadAddress($order->shipping_address_full, $address, 'object', 'shipping');
 			}
 
-			if(isset($packages['w'])){
+			if(isset($packages['w']) && $packages['w'] > 0){
 				if($packages['w'] > $max_weight) {
 					$messages['items_weight_over_limit'] = JText::_('ITEMS_WEIGHT_TOO_BIG_FOR_SHIPPING_METHODS');
 					$cache_messages['items_weight_over_limit'] = JText::_('ITEMS_WEIGHT_TOO_BIG_FOR_SHIPPING_METHODS');
@@ -298,6 +298,9 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 				$parcels[] = $parcel;
 			}else{
 				foreach($packages as $package){
+					if((!isset($package['w']) || $package['w'] <= 0))
+						continue;
+
 					if($package['w'] > $max_weight) {
 						$messages['items_weight_over_limit'] = JText::_('ITEMS_WEIGHT_TOO_BIG_FOR_SHIPPING_METHODS');
 						$cache_messages['items_weight_over_limit'] = JText::_('ITEMS_WEIGHT_TOO_BIG_FOR_SHIPPING_METHODS');
@@ -531,6 +534,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 		} else {
 			$rateResult = $response_xml->xpath('Package/Postage');
 			$usps_rate_arr = $this->xml2array($rateResult);
+
 			foreach($usps_rate_arr as $k => $v) {
 				$usps_rates = array(
 					'Service' => html_entity_decode($v['MailService']),

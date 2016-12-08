@@ -248,7 +248,7 @@ class plgHikashopshippingAupost2 extends hikashopShippingPlugin {
 		if(empty($packages))
 			return true;
 
-		if((!$domestic && isset($packages['w'])) || ($domestic && isset($packages['x']) && isset($packages['y']) && isset($packages['z']))) {
+		if((!$domestic && isset($packages['w']) && $packages['w'] > 0) || ($domestic && isset($packages['x']) && isset($packages['y']) && isset($packages['z']))) {
 			if(empty($parcels[$i]))
 				$parcels[$i] = new stdClass();
 			$parcels[$i]->Weight = $packages['w'];
@@ -267,7 +267,7 @@ class plgHikashopshippingAupost2 extends hikashopShippingPlugin {
 			$i++;
 		} else {
 			foreach($packages as $package) {
-				if((!$domestic && isset($package['w'])) || ($domestic && isset($package['x']) && isset($package['y']) && isset($package['z']))) {
+				if((!$domestic && isset($package['w']) && $package['w'] > 0) || ($domestic && isset($package['w']) && $package['w'] > 0 && isset($package['x']) && isset($package['y']) && isset($package['z']))) {
 					if(empty($parcels[$i]))
 						$parcels[$i] = new stdClass();
 					$parcels[$i]->Weight = $package['w'];

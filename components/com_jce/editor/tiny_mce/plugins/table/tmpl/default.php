@@ -13,27 +13,27 @@
 defined( '_JEXEC' ) or die('RESTRICTED');
 $tabs = WFTabs::getInstance();
 ?>
-<form onsubmit="return false;">
+<form onsubmit="return false;" class="uk-form uk-form-horizontal" data-context="<?php echo $this->plugin->getContext();?>">
 	<?php echo $tabs->render(); ?>
 	<div class="mceActionPanel">
 	<?php if ($this->plugin->getContext() == 'cell') : ?>
-	<div>
-		<select id="action" name="action">
-			<option value="cell"><?php echo WFText::_('WF_TABLE_CELL_CELL');?></option>
-			<option value="row"><?php echo WFText::_('WF_TABLE_CELL_ROW');?></option>
-			<option value="all"><?php echo WFText::_('WF_TABLE_CELL_ALL');?></option>
-		</select>
-	</div>
+		<div class="uk-form-row uk-float-left">
+			<select id="action" name="action">
+				<option value="cell"><?php echo WFText::_('WF_TABLE_CELL_CELL');?></option>
+				<option value="row"><?php echo WFText::_('WF_TABLE_CELL_ROW');?></option>
+				<option value="all"><?php echo WFText::_('WF_TABLE_CELL_ALL');?></option>
+			</select>
+		</div>
 	<?php endif;
 	if ($this->plugin->getContext() == 'row') : ?>
-	<div>
-		<select id="action" name="action">
-			<option value="row"><?php echo WFText::_('WF_TABLE_ROW_ROW');?></option>
-			<option value="odd"><?php echo WFText::_('WF_TABLE_ROW_ODD');?></option>
-			<option value="even"><?php echo WFText::_('WF_TABLE_ROW_EVEN');?></option>
-			<option value="all"><?php echo WFText::_('WF_TABLE_ROW_ALL');?></option>
-		</select>
-	</div>
+		<div class="uk-form-row uk-float-left">
+			<select id="action" name="action">
+				<option value="row"><?php echo WFText::_('WF_TABLE_ROW_ROW');?></option>
+				<option value="odd"><?php echo WFText::_('WF_TABLE_ROW_ODD');?></option>
+				<option value="even"><?php echo WFText::_('WF_TABLE_ROW_EVEN');?></option>
+				<option value="all"><?php echo WFText::_('WF_TABLE_ROW_ALL');?></option>
+			</select>
+		</div>
 	<?php endif; ?>
 	<button type="submit" id="insert" onclick="TableDialog.insert();"><?php echo WFText::_('WF_LABEL_INSERT');?></button>
 	<button type="button" id="cancel"><?php echo WFText::_('WF_LABEL_CANCEL');?></button>

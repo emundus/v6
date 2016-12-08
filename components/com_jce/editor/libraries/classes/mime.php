@@ -589,7 +589,7 @@ abstract class WFMimeType {
         'text/css' => 'css',
         'text/csv' => 'csv',
         'text/html' => 'html htm',
-        'text/plain' => 'txt text conf def list log in csv',
+        'text/plain' => 'txt text conf def list log in',
         'text/prs.lines.tag' => 'dsc',
         'text/richtext' => 'rtx',
         'text/sgml' => 'sgml sgm',
@@ -657,11 +657,11 @@ abstract class WFMimeType {
     }
 
     /**
-     *
+     * 
      * Get the mime type from the $mimes array
      * @access	private
      * @param 	string $type
-     * @return	string
+     * @return	string 
      */
     private static function getMime($type) {
         // get mimetype array

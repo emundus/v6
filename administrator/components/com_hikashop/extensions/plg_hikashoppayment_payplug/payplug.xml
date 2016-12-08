@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="1.5" method="upgrade" group="hikashoppayment">
 	<name>Hikashop PayPlug payment plugin</name>
-	<creationDate>17 octobre 2016</creationDate>
+	<creationDate>05 décembre 2016</creationDate>
 	<version>2.6.4</version>
 	<author>Hikari Software</author>
 	<authorEmail>dev@hikashop.com</authorEmail>

@@ -176,6 +176,7 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 			$receivedMethods = $this->_getBestMethods($rate, $order, $usableWarehouses, $heavyProduct, $null);
 
 			if(empty($receivedMethods)) {
+				$this->error_messages['no_rates'] = JText::_('NO_SHIPPING_METHOD_FOUND');
 				continue;
 			}
 
@@ -186,16 +187,32 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 				$new_usable_rates[$i]->shipping_price += round($method['value'], 2);
 				$selected_method = '';
 				$name = '';
+				$description ='';
 
 				foreach($this->ups_methods as $ups_method) {
 					if($ups_method['code'] == $method['code'] && ($method['old_currency_code'] == 'CAD' || !isset($ups_method['double']))) {
 						$selected_method = $ups_method['key'];
-						$name = $ups_method['name'];
+
+						$typeKey = str_replace(' ','_', strtoupper($ups_method['name']));
+						$shipping_name = JText::_($typeKey);
+
+						if($shipping_name != $typeKey)
+							$name = $shipping_name;
+						else
+							$name = $ups_method['name'];
+
+						$shipping_description = JText::_($typeKey.'_DESCRIPTION');
+						if($shipping_description != $typeKey.'_DESCRIPTION')
+							$description .= $shipping_description;
+
 						break;
 					}
 				}
 
 				$new_usable_rates[$i]->shipping_name = $name;
+
+				if($description != '')
+					$new_usable_rates[$i]->shipping_description .= $description;
 
 				if(!empty($selected_method))
 					$new_usable_rates[$i]->shipping_id .= '-' . $selected_method;

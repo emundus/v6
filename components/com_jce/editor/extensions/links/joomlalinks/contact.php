@@ -21,7 +21,7 @@ class JoomlalinksContact extends JObject {
      * @access	protected
      */
     public function __construct($options = array()) {
-        
+
     }
 
     /**
@@ -52,20 +52,20 @@ class JoomlalinksContact extends JObject {
         $wf = WFEditorPlugin::getInstance();
 
         if ($wf->checkAccess('links.joomlalinks.contacts', 1)) {
-            return '<li id="index.php?option=com_contact"><div class="tree-row"><div class="tree-image"></div><span class="folder contact nolink"><a href="javascript:;">' . WFText::_('WF_LINKS_JOOMLALINKS_CONTACTS') . '</a></span></div></li>';
+            return '<li id="index.php?option=com_contact" class="folder contact nolink"><div class="uk-tree-row"><a href="#"><span class="uk-tree-icon"></span><span class="uk-tree-text">' . WFText::_('WF_LINKS_JOOMLALINKS_CONTACTS') . '</span></a></div></li>';
         }
     }
 
     public function getLinks($args) {
         $items = array();
         $view = isset($args->view) ? $args->view : '';
-        
+
         $language = '';
-        
+
         if (defined('JPATH_PLATFORM')) {
             require_once(JPATH_SITE . '/components/com_contact/helpers/route.php');
         }
-        
+
         switch ($view) {
             default:
                 if (defined('JPATH_PLATFORM')) {
@@ -74,7 +74,7 @@ class JoomlalinksContact extends JObject {
                     $categories = WFLinkBrowser::getCategory('com_contact_details');
                 }
 
-                foreach ($categories as $category) {                  
+                foreach ($categories as $category) {
                     if (defined('JPATH_PLATFORM')) {
                         // language
                         if (isset($category->language)) {
@@ -102,7 +102,7 @@ class JoomlalinksContact extends JObject {
 
                     foreach ($categories as $category) {
                         $children = WFLinkBrowser::getCategory('com_contact', $category->id);
-                        
+
                         // language
                         if (isset($category->language)) {
                             $language = $category->language;
@@ -110,10 +110,10 @@ class JoomlalinksContact extends JObject {
 
                         if ($children) {
                             $id = ContactHelperRoute::getCategoryRoute($category->id, $language);
-                        } else {                            
+                        } else {
                             $id = ContactHelperRoute::getCategoryRoute($category->slug, $language);
                         }
-                        
+
                         // convert to SEF
                         $url = self::route($id);
 
@@ -133,7 +133,7 @@ class JoomlalinksContact extends JObject {
                     if (isset($contact->language)) {
                         $language = $contact->language;
                     }
-                    
+
                     if (defined('JPATH_PLATFORM')) {
                         $id = ContactHelperRoute::getContactRoute($contact->id, $args->id, $language);
                     } else {
@@ -148,7 +148,7 @@ class JoomlalinksContact extends JObject {
                         $id = 'index.php?option=com_contact&view=contact' . $catid . '&id=' . $contact->id . '-' . $contact->alias . $itemid;
                     }
                     $id = self::route($id);
-                    
+
                     $items[] = array(
                         'id'    => $id,
                         'name'  => $contact->name . ' / ' . $contact->alias,
@@ -159,14 +159,14 @@ class JoomlalinksContact extends JObject {
         }
         return $items;
     }
-    
+
     private static function route($url) {
         $wf = WFEditorPlugin::getInstance();
-        
+
         if ($wf->getParam('links.joomlalinks.sef_url', 0)) {
             $url = WFLinkExtension::route($url);
         }
-        
+
         return $url;
     }
 
@@ -175,7 +175,7 @@ class JoomlalinksContact extends JObject {
         $user = JFactory::getUser();
 
         $where = '';
-        
+
         $version    = new JVersion();
         $language   = $version->isCompatible('3.0') ? ', language' : '';
 

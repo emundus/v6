@@ -17,7 +17,7 @@ class AtsystemFeatureHttpsizer extends AtsystemFeatureAbstract
 	public function isEnabled()
 	{
 		// We only use this feature in the front-end
-		if (F0FPlatform::getInstance()->isBackend())
+		if ($this->helper->isBackend())
 		{
 			return false;
 		}
@@ -29,7 +29,7 @@ class AtsystemFeatureHttpsizer extends AtsystemFeatureAbstract
 		}
 
 		// Make sure we're accessed over SSL (HTTPS)
-		$uri = JURI::getInstance();
+		$uri = JUri::getInstance();
 		$protocol = $uri->toString(array('scheme'));
 
 		if ($protocol != 'https://')

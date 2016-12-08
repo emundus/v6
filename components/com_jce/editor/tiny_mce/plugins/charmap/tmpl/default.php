@@ -12,19 +12,21 @@
 
 defined( '_JEXEC' ) or die('RESTRICTED');
 ?>
-<div id="charmap" role="presentation">
-	<h3><?php echo WFText::_('WF_ADVANCED_CHARMAP_TITLE');?></h3>
-	<div id="charmapView"><!-- Chars will be rendered here --></div>
-	<div id="charmapDescription">
-		<div id="codeV"></div>
-		<div id="codeN"></div>
-		<div class="box">
-			<div class="title">HTML-Code</div>
-			<div id="codeA"></div>
-		</div>
-		<div class="box">
-			<div class="title">NUM-Code</div>
-			<div id="codeB"></div>
+
+<form onsubmit="return false;" action="#">
+	<div id="charmap" role="presentation" class="uk-grid uk-grid-small">
+		<div id="charmapView" class="uk-width-5-6"><!-- Chars will be rendered here --></div>
+		<div id="charmapDescription" class="uk-width-1-6">
+			<div id="codeV"></div>
+			<div id="codeN"></div>
+			<div class="box">
+				<div class="title">HTML-Code</div>
+				<div id="codeA"></div>
+			</div>
+			<div class="box">
+				<div class="title">NUM-Code</div>
+				<div id="codeB"></div>
+			</div>
 		</div>
 	</div>
-</div>
+</form>

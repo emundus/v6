@@ -143,14 +143,17 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 		if($vendor !== null && $vendor > 1)
 			$extra_filters = ' AND a.shipping_vendor_id IN (-1, 0, ' . (int)$vendor . ') ';
 
+		$sql_check_setting = ($app->isAdmin()) ? '%s:20:"shipping_per_product";s:1:"1"%' : '%s:20:"shipping_per_product";i:1%';
+
 		$db = JFactory::getDBO();
 		$query = 'SELECT b.*, a.*, c.currency_symbol FROM ' . hikashop_table('shipping') . ' AS a INNER JOIN '.
 			hikashop_table('shipping_price').' AS b ON a.shipping_id = b.shipping_id INNER JOIN '.
 			hikashop_table('currency').' AS c ON c.currency_id = a.shipping_currency_id '.
 			'WHERE a.shipping_params LIKE '.
-			$db->Quote('%s:20:"shipping_per_product";s:1:"1"%') . ' AND b.shipping_price_ref_id = ' . $product->product_id . ' AND b.shipping_price_ref_type = \'product\' '.
+			$db->Quote($sql_check_setting) . ' AND b.shipping_price_ref_id = ' . $product->product_id . ' AND b.shipping_price_ref_type = \'product\' '.
 			$extra_filters.
 			'ORDER BY a.shipping_id, b.shipping_price_min_quantity';
+
 		$db->setQuery($query);
 		$shippings = $db->loadObjectList('shipping_price_id');
 

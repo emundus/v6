@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+@package   AdminTools
+@copyright 2010-2016 Akeeba Ltd / Nicholas K. Dionysopoulos
+@license   GNU General Public License version 3, or later
+-->
+<form>
+    <fieldset name="items">
+        <field name="source" type="Text"
+               label="COM_ADMINTOOLS_LBL_REDIRECTION_SOURCE"
+               description="COM_ADMINTOOLS_REDIRECTIONS_FIELD_SOURCE_DESC"
+        />
+
+        <field name="dest" type="Text"
+               label="COM_ADMINTOOLS_LBL_REDIRECTION_DEST"
+               description="COM_ADMINTOOLS_REDIRECTIONS_FIELD_DEST_DESC"
+        />
+
+        <field name="keepurlparams" type="GenericList"
+               source_class="Akeeba\AdminTools\Admin\Helper\Select"
+               source_method="keepUrlParamsList"
+               source_translate="false"
+               source_format="optionsobject"
+               label="COM_ADMINTOOLS_REDIRECTIONS_FIELD_KEEPURLPARAMS"
+               description="COM_ADMINTOOLS_REDIRECTIONS_FIELD_KEEPURLPARAMS_DESC"
+        />
+
+        <field name="published" type="Published"
+               label="JPUBLISHED"
+               description="COM_ADMINTOOLS_REDIRECTIONS_FIELD_PUBLISHED_DESC"
+        />
+
+    </fieldset>
+</form>

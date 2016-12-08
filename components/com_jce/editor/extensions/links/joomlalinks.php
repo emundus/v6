@@ -33,12 +33,12 @@ class WFLinkBrowser_Joomlalinks {
         if (!empty($files)) {
             foreach ($files as $file) {
                 $name = basename($file, '.php');
-                
+
                 // skip weblinks if it doesn't exist!
                 if ($name === "weblinks" && !is_file(JPATH_SITE . '/components/com_weblinks/helpers/route.php')) {
                     continue;
                 }
- 
+
                 require_once( $path . '/' . $file );
 
                 $classname = 'Joomlalinks' . ucfirst($name);

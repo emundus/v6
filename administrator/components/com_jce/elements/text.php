@@ -34,68 +34,90 @@ class WFElementText extends WFElement {
             if ($k === 'parent') {
                 continue;
             }
-            
+
             if ($v != '') {
                 $attributes[$k] = (string) $v;
             }
         }
-        
-        $class = (string) $node->attributes()->class; 
+
+        $class = (string) $node->attributes()->class;
 
         if (strpos($name, 'max_size') !== false || strpos($class, 'upload_size') !== false) {
             $uploadsize = intval($this->getUploadValue());
             $attributes['max'] = $uploadsize;
         }
 
-        /*
-         * Required to avoid a cycle of encoding &
-         * html_entity_decode was used in place of htmlspecialchars_decode because
-         * htmlspecialchars_decode is not compatible with PHP 4
-         */
-        $value = htmlspecialchars(html_entity_decode($value, ENT_QUOTES), ENT_QUOTES);
-        $attributes['class'] = ($class ? $class . ' text_area' : 'text_area' );
+        $attributes['class'] = ($class ? $class : '');
 
         $control = $control_name . '[' . $name . ']';
 
-        $html = '';
+        $attributes['type']   = 'text';
+        $attributes['name']   = $control;
+        $attributes['id']     = preg_replace('#[^a-z0-9_-]#i', '', $control_name . $name);
 
-        $attributes['value'] = $value;
-        $attributes['type'] = 'text';
-        $attributes['name'] = $control;
-        $attributes['id'] = preg_replace('#[^a-z0-9_-]#i', '', $control_name . $name);
-        
         // pattern data attribute for editable select input box
         if ((string) $node->attributes()->parent) {
             $prefix = preg_replace(array('#^params#', '#([^\w]+)#'), '', $control_name);
-            
+
             $items = array();
-            
+
             foreach(explode(';', (string) $node->attributes()->parent) as $item) {
                 $items[] = $prefix . $item;
             }
-            
+
             $attributes['data-parent'] = implode(';', $items);
         }
 
-        $html .= '<input';
-
-        foreach ($attributes as $k => $v) {
-            if (!in_array($k, array('default', 'label', 'description'))) {
-                $html .= ' ' . $k . ' = "' . $v . '"';
-            }
+        if ((string) $node->attributes()->repeatable && is_array($value)) {
+            $values = $value;
+        } else {
+            $values = array(htmlspecialchars_decode($value, ENT_QUOTES));
         }
 
-        $html .= ' />';
+        $html = '';
 
-        if (strpos($name, 'max_size') !== false) {
-            $html .= $this->uploadSize();
+        if (strpos($class, 'color') !== false) {
+            $html .= '<div class="input-append">';
+        }
+
+        foreach($values as $value) {
+          $attributes['value'] = $value;
+
+          if ((string) $node->attributes()->repeatable) {
+              $control  .= '[]';
+              $html     .= '<div class="ui-repeatable form-inline"><div class="input-append">';
+          }
+
+          $html .= '<input';
+
+          foreach ($attributes as $k => $v) {
+              if (!in_array($k, array('default', 'label', 'description'))) {
+                  $html .= ' ' . $k . ' = "' . $v . '"';
+              }
+          }
+
+          $html .= ' />';
+
+          if ((string) $node->attributes()->repeatable) {
+              $html .= '<button type="button" class="btn btn-link ui-repeatable-create"><i class="icon-plus"></i></button>';
+              $html .= '<button type="button" class="btn btn-link ui-repeatable-delete"><i class="icon-trash"></i></button>';
+              $html .= '</div></div>';
+          }
+
+          if (strpos($name, 'max_size') !== false) {
+              $html .= $this->uploadSize();
+          }
+
+          if (strpos($class, 'color') !== false) {
+              $html .= '</div>';
+          }
         }
 
         return $html;
     }
 
     function uploadSize() {
-        return '&nbsp;' . WFText::_('WF_SERVER_UPLOAD_SIZE') . ' : ' . $this->getUploadValue();
+        return '<span class="help-block help-block-inline">' . WFText::_('WF_SERVER_UPLOAD_SIZE') . ' : ' . $this->getUploadValue() . '</span>';
     }
 
     function getUploadValue() {
@@ -105,7 +127,11 @@ class WFElementText extends WFElement {
         $upload = $this->convertValue($upload);
         $post = $this->convertValue($post);
 
-        if (intval($upload) <= intval($post)) {
+        if (intval($post) === 0) {
+            return $upload;
+        }
+
+        if (intval($upload) < intval($post)) {
             return $upload;
         }
 
@@ -149,7 +175,6 @@ class WFElementText extends WFElement {
         }
         return preg_replace('/[^0-9]/', '', $value) . ' ' . $unit;
     }
-
 }
 
 ?>

@@ -1358,52 +1358,52 @@ class hikashopMassactionClass extends hikashopClass{
 		}else{
 			switch($filter['operator']){
 				case 'BEGINS':
-					if(preg_match('/^'.$filter['value'].'/i',$element->$filter['type'])){ $in = true; }
+					if(preg_match('/^'.$filter['value'].'/i',$element->{$filter['type']})){ $in = true; }
 					break;
 				case 'END':
-					if(preg_match('/'.$filter['value'].'$/i',$element->$filter['type'])){ $in = true; }
+					if(preg_match('/'.$filter['value'].'$/i',$element->{$filter['type']})){ $in = true; }
 					break;
 				case 'LIKE':
-					if(preg_match('/\b'.$filter['value'].'\b/i',$element->$filter['type'])){ $in = true; }
+					if(preg_match('/\b'.$filter['value'].'\b/i',$element->{$filter['type']})){ $in = true; }
 					break;
 				case 'NOT LIKE':
-					if(!preg_match('/\b'.$filter['value'].'\b/i',$element->$filter['type'])){ $in = true; }
+					if(!preg_match('/\b'.$filter['value'].'\b/i',$element->{$filter['type']})){ $in = true; }
 					break;
 				case 'CONTAINS':
-					if(preg_match('/'.$filter['value'].'/i',$element->$filter['type'])){ $in = true; }
+					if(preg_match('/'.$filter['value'].'/i',$element->{$filter['type']})){ $in = true; }
 					break;
 				case 'NOTCONTAINS':
-					if(!preg_match('/'.$filter['value'].'/i',$element->$filter['type'])){ $in = true; }
+					if(!preg_match('/'.$filter['value'].'/i',$element->{$filter['type']})){ $in = true; }
 					break;
 				case 'REGEXP':
-					if(preg_match($filter['value'],$element->$filter['type'])){ $in = true;	}
+					if(preg_match($filter['value'],$element->{$filter['type']})){ $in = true;	}
 					break;
 				case 'NOT REGEXP':
-					if(!preg_match($filter['value'],$element->$filter['type'])){ $in = true; }
+					if(!preg_match($filter['value'],$element->{$filter['type']})){ $in = true; }
 					break;
 				case 'IS NULL':
-					if($element->$filter['type'] == null){ $in = true; }
+					if($element->{$filter['type']} == null){ $in = true; }
 					break;
 				case 'IS NOT NULL':
-					if($element->$filter['type'] != null){ $in = true; }
+					if($element->{$filter['type']} != null){ $in = true; }
 					break;
 				case '>':
-					if($element->$filter['type'] > $filter['value']){ $in = true; }
+					if($element->{$filter['type']} > $filter['value']){ $in = true; }
 					break;
 				case '<':
-					if($element->$filter['type'] < $filter['value']){ $in = true; }
+					if($element->{$filter['type']} < $filter['value']){ $in = true; }
 					break;
 				case '>=':
-					if($element->$filter['type'] >= $filter['value']){ $in = true; }
+					if($element->{$filter['type']} >= $filter['value']){ $in = true; }
 					break;
 				case '<=':
-					if($element->$filter['type'] <= $filter['value']){ $in = true; }
+					if($element->{$filter['type']} <= $filter['value']){ $in = true; }
 					break;
 				case '!=':
-					if($element->$filter['type'] != $filter['value']){ $in = true; }
+					if($element->{$filter['type']} != $filter['value']){ $in = true; }
 					break;
 				default:
-					if($element->$filter['type'] == $filter['value']){ $in = true; }
+					if($element->{$filter['type']} == $filter['value']){ $in = true; }
 					break;
 			}
 		}

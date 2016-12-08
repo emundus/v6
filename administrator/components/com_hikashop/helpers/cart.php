@@ -95,15 +95,18 @@ class hikashopCartHelper{
 						var fieldEl=document.getElementById(field);
 						var current = fieldEl.value;
 						current = parseInt(current);
+						if(isNaN(current)){
+							current = fieldEl.value = 0;
+						}
 						if(plus){
 							if(max==0 || current<max){
-								fieldEl.value=parseInt(fieldEl.value)+1;
+								fieldEl.value = current+1;
 							}else if(max && current==max){
 								alert(\''.JText::_('NOT_ENOUGH_STOCK',true).'\');
 							}
 						}else{
 							if(current>1 && current>min){
-								fieldEl.value=current-1;
+								fieldEl.value = current-1;
 							}
 						}
 						return false;
@@ -155,15 +158,18 @@ class hikashopCartHelper{
 						var fieldEl=document.getElementById(field);
 						var current = fieldEl.value;
 						current = parseInt(current);
+						if(isNaN(current)){
+							current = fieldEl.value = 0;
+						}
 						if(plus){
 							if(max==0 || current<max){
-								fieldEl.value=parseInt(fieldEl.value)+1;
+								fieldEl.value = current+1;
 							}else if(max && current==max){
 								alert(\''.JText::_('NOT_ENOUGH_STOCK',true).'\');
 							}
 						}else{
 							if(current>1 && current>min){
-								fieldEl.value=current-1;
+								fieldEl.value = current-1;
 							}
 						}
 						return false;
@@ -217,10 +223,11 @@ class hikashopCartHelper{
 						$config =& hikashop_config();
 						$popupWidth = $config->get('add_to_cart_popup_width','480');
 						$popupHeight = $config->get('add_to_cart_popup_height','140');
-						echo '<div style="display:none;">'.
-							'<a rel="{handler: \'iframe\',size: {x: '.$popupWidth.', y: '.$popupHeight.'}}"  id="hikashop_notice_box_trigger_link" href="'.hikashop_completeLink('checkout&task=notice&cart_type=cart'.$url_itemid,true).'"></a>'.
-							'<a rel="{handler: \'iframe\',size: {x: '.$popupWidth.', y: '.$popupHeight.'}}" id="hikashop_notice_wishlist_box_trigger_link" href="'.hikashop_completeLink('checkout&task=notice&cart_type=wishlist'.$url_itemid,true).'"></a>'.
-							'</div>';
+						if(ob_get_level()>=1)
+							echo '<div style="display:none;">'.
+								'<a rel="{handler: \'iframe\',size: {x: '.$popupWidth.', y: '.$popupHeight.'}}"  id="hikashop_notice_box_trigger_link" href="'.hikashop_completeLink('checkout&task=notice&cart_type=cart'.$url_itemid,true).'"></a>'.
+								'<a rel="{handler: \'iframe\',size: {x: '.$popupWidth.', y: '.$popupHeight.'}}" id="hikashop_notice_wishlist_box_trigger_link" href="'.hikashop_completeLink('checkout&task=notice&cart_type=wishlist'.$url_itemid,true).'"></a>'.
+								'</div>';
 					}
 				}
 				if($this->override && function_exists('hikashop_popup_js_render')){

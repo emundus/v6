@@ -167,7 +167,6 @@ defined('_JEXEC') or die('Restricted access');
 			hikashopNameboxType::NAMEBOX_SINGLE,
 			$type,
 			array(
-				'delete' => true,
 				'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
 			)
 		);

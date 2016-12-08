@@ -790,7 +790,7 @@ class hikashopWidgetClass extends hikashopClass {
 					if(!empty($selectAdd)){
 						$pie= 'SUM('.$selectAdd.') AS total';
 					}else if(isset($widget->widget_params->filters['prod.product_id'])){
-						$pie = 'SUM((prod.order_product_price+order_product_tax)*order_product_quantity) AS total,a.order_currency_id AS currency_id';
+						$pie = 'SUM((prod.order_product_price+prod.order_product_tax)*prod.order_product_quantity) AS total,a.order_currency_id AS currency_id';
 					}else{
 						$pie = 'SUM(a.order_full_price) AS total,a.order_currency_id AS currency_id';
 					}
@@ -1055,12 +1055,23 @@ class hikashopWidgetClass extends hikashopClass {
 			case 'table':
 				if($widget->widget_params->content=='sales' || $widget->widget_params->content=='orders' || $widget->widget_params->content=='taxes'){
 					if($widget->widget_params->content=='sales'){
-						if(@$widget->widget_params->with_tax && !@$widget->widget_params->include_shipping){
+						if(@$widget->widget_params->with_tax && !@$widget->widget_params->include_shipping && @$widget->widget_params->include_coupon){
 							$sum = 'a.order_full_price-a.order_shipping_price';
-						}else if(@$widget->widget_params->with_tax && @$widget->widget_params->include_shipping){
+						}else if(@$widget->widget_params->with_tax && !@$widget->widget_params->include_shipping && !@$widget->widget_params->include_coupon){
+							$sum = 'a.order_full_price-a.order_shipping_price+a.order_discount_price';
+						}else if(@$widget->widget_params->with_tax && @$widget->widget_params->include_shipping && @$widget->widget_params->include_coupon){
 							$sum = 'a.order_full_price';
-						}else if(!@$widget->widget_params->with_tax && @$widget->widget_params->include_shipping){
+						}else if(@$widget->widget_params->with_tax && @$widget->widget_params->include_shipping && !@$widget->widget_params->include_coupon){
+							$sum = 'a.order_full_price+a.order_discount_price';
+						}else if(!@$widget->widget_params->with_tax && @$widget->widget_params->include_shipping && @$widget->widget_params->include_coupon){
 							$sum = 'a.order_full_price+a.order_discount_tax-a.order_shipping_tax-a.order_payment_tax-(SELECT SUM(subprod.order_product_tax*subprod.order_product_quantity) FROM '.hikashop_table('order_product').' AS subprod WHERE a.order_id=subprod.order_id)';
+						}else if(!@$widget->widget_params->with_tax && @$widget->widget_params->include_shipping && !@$widget->widget_params->include_coupon){
+							$sum = 'a.order_full_price+a.order_discount_price+a.order_discount_tax-a.order_shipping_tax-a.order_payment_tax-(SELECT SUM(subprod.order_product_tax*subprod.order_product_quantity) FROM '.hikashop_table('order_product').' AS subprod WHERE a.order_id=subprod.order_id)';
+						}elseif(@$widget->widget_params->include_coupon){
+							if(!isset($leftjoin['order_product'])){
+								$leftjoin['order_product'] = ' LEFT JOIN '.hikashop_table('order_product').' AS prod ON a.order_id=prod.order_id ';
+							}
+							$sum = 'prod.order_product_price*prod.order_product_quantity+a.order_discount_price';
 						}else{
 							if(!isset($leftjoin['order_product'])){
 								$leftjoin['order_product'] = ' LEFT JOIN '.hikashop_table('order_product').' AS prod ON a.order_id=prod.order_id ';

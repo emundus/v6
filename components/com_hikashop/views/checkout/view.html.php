@@ -658,7 +658,7 @@ function hikashopSameAddress(value){
 			if($auto_select_default == 1 && count($usable_rates) > 1)
 				$auto_select_default = 0;
 
-			if($auto_select_default && empty($shipping_id) && count($usable_rates)) {
+			if($auto_select_default && (empty($shipping_id) || count($shipping_id) != count($shipping_groups)) && count($usable_rates)) {
 				$rates = array();
 				$shipping_id = array();
 				$shipping_method = array();

@@ -10,7 +10,7 @@
  */
 defined('_JEXEC') or die('RESTRICTED');
 ?>
-<div id="jce">
+<div class="ui-jce">
     <h3><?php echo WFText::_('WF_UPDATES_AVAILABLE'); ?></h3>
     <div id="updates-list">
         <div class="row-fluid header">

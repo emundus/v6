@@ -141,6 +141,8 @@ class WFControllerProfiles extends WFController {
                         $value = $value[0];
                     }
                     break;
+                case 'custom':
+                    break;
                 case 'plugins':
                     $value = preg_replace('#[^\w,]+#', '', $value);
                     break;
@@ -431,7 +433,7 @@ class WFControllerProfiles extends WFController {
             if (is_uploaded_file($file['tmp_name']) && $file['name']) {
                 // create destination path
                 $destination = $tmp . '/' . $file['name'];
-                
+
                 if (JFile::upload($file['tmp_name'], $destination)) {
                     // check it exists, was uploaded properly
                     if (JFile::exists($destination)) {
