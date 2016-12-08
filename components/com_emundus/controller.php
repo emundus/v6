@@ -239,6 +239,7 @@ class EmundusController extends JControllerLegacy {
         Delete file
     */
     function deletefile() {
+        //@TODO ADD COMMENT ON DELETE
         $app    = JFactory::getApplication();
 
         $student_id    = JRequest::getVar('sid', null, 'GET', 'none',0);
@@ -287,6 +288,7 @@ class EmundusController extends JControllerLegacy {
         Delete document from application file
     */
     function delete() {
+        //@TODO ADD COMMENT ON DELETE
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $copy_application_form = $eMConfig->get('copy_application_form', 0);
 
