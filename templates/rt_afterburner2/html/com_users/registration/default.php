@@ -30,6 +30,7 @@ if (!empty($course)) {
 	$campaigns = $campaign->getCampaignsByCourse($course);
 	$campaign_id = $campaigns['id'];
 }
+
 if(count($campaign_id) == 0 && !empty($course)) { 
 	JFactory::getApplication()->enqueueMessage(JText::_('EMUNDUS_NO_CAMPAIGN'), 'error');
 	JLog::add('No available campaign', JLog::ERROR, 'com_emundus');
@@ -68,7 +69,9 @@ else {
 				</dt>
 				<dd>
 					<?php echo ($field->type!='Spacer') ? $field->input : "&#160;";  $this->form->setValue($field->name, $field->group, ""); ?>
+					<span class="help-inline has-warning">
 					<div class="em_msg" id="em_msg_<?php echo $field->name; ?>" style="display: inline; border-width: 2px; border-color: #FF0000; color:#FF0000; padding: 5px"></div>
+					</span>
 				</dd>
 			<?php endif;?>
 		<?php endforeach;?>
@@ -113,6 +116,11 @@ else {
 ?>
 
 <script>
+function validateEmail(email) {
+  var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email);
+}
+
 function check_field(){
 	campaign_id = "<?php echo $campaign_id ?>";
 	campaign = $('jform_emundus_profile_campaign');
@@ -162,11 +170,12 @@ function check_field(){
 	passwd1 = document.getElementById("jform_password1");
 	passwd2 = document.getElementById("jform_password2");
 	username.onkeyup = function() { this.value = this.value.replace(/[^a-z0-9]/gi, '').toLowerCase(); };
-	passwd1.onkeyup = function() { if(passwd1.value.length < 4) $('em_msg_jform[password1]').innerHTML = "<?php echo JText::_('COM_USERS_DESIRED_PASSWORD');?>"; else $('em_msg_jform[password1]').innerHTML = ""; };
-	passwd2.onkeyup = function() { if(passwd1.value != this.value) $('em_msg_jform[password2]').innerHTML = "<?php echo JText::_('COM_USERS_FIELD_RESET_PASSWORD1_MESSAGE');?>"; else $('em_msg_jform[password2]').innerHTML = ""; };
+	passwd1.onchange = function() { if(passwd1.value.length < 4) $('em_msg_jform[password1]').innerHTML = "<?php echo JText::_('COM_USERS_DESIRED_PASSWORD');?>"; else $('em_msg_jform[password1]').innerHTML = ""; };
+	passwd2.onchange = function() { if(passwd1.value != this.value) $('em_msg_jform[password2]').innerHTML = "<?php echo JText::_('COM_USERS_FIELD_RESET_PASSWORD1_MESSAGE');?>"; else $('em_msg_jform[password2]').innerHTML = ""; };
 	email1 = document.getElementById("jform_email1");
+	email1.onchange = function() { if (!validateEmail(this.value)) {$('em_msg_jform[email1]').innerHTML = "<?php echo JText::_('COM_USERS_INVALID_EMAIL');?>";} else $('em_msg_jform[email1]').innerHTML = ""; };
 	email2 = document.getElementById("jform_email2");
-	email2.onkeyup = function() { if(jform_email1.value != this.value) $('em_msg_jform[email2]').innerHTML = "<?php echo JText::_('COM_USERS_PROFILE_EMAIL2_MESSAGE');?>"; else $('em_msg_jform[email2]').innerHTML = ""; };
+	email2.onchange = function() { if(jform_email1.value != this.value) $('em_msg_jform[email2]').innerHTML = "<?php echo JText::_('COM_USERS_PROFILE_EMAIL2_MESSAGE');?>"; else $('em_msg_jform[email2]').innerHTML = ""; };
 	campaign = document.getElementById("jform_emundus_profile_campaign");
 	campaign.onclick = function() { if(campaign.value == "") $('em_msg_jform[emundus_profile][campaign]').innerHTML = "<?php echo JText::_('COM_USERS_PROFILE_CAMPAIGN_MESSAGE');?>"; else $('em_msg_jform[emundus_profile][campaign]').innerHTML = ""; };
 }
