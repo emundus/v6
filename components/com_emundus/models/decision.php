@@ -979,7 +979,7 @@ class EmundusModelDecision extends JModelList
 		}
 		$query .= ' LEFT JOIN #__emundus_users as eu on eu.user_id = jos_emundus_final_grade.user ';
 		$query .= $q['join'];
-		$query .= ' where c.published = 1 ' . $q['q'];
+		$query .= ' where 1 = 1 ' . $q['q'];
 
 		if (isset($current_fnum) && !empty($current_fnum)) {
 			$query .= ' AND c.fnum like '.$dbo->Quote($current_fnum);
