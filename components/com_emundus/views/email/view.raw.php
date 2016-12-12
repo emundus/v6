@@ -55,9 +55,14 @@ class EmundusViewEmail extends JViewLegacy
 			$users[] = $appModel->getApplicantInfos($fnum['sid'], ['jos_emundus_personal_detail.last_name', 'jos_emundus_personal_detail.first_name', 'jos_users.username', 'jos_users.email']);
 		}
 		$mailBlock = EmundusHelperEmails::createEmailBlock(['applicant_list']);
+
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$default_email_tmpl = $eMConfig->get('default_email_tmpl', 'expert');
 	
 		$this->assignRef('email', $mailBlock);
-		   parent::display($tpl);
+		$this->assignRef('default_email_tmpl', $default_email_tmpl);
+		
+		parent::display($tpl);
 	}
 }
 ?>

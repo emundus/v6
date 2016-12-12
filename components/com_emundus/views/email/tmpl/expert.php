@@ -34,7 +34,7 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 
 	$user = JFactory::getUser($student_id);
 
-	$email = $emails->getEmail("expert");
+	$email = $emails->getEmail($this->default_email_tmpl);
 
 	$experts_email = array();
 	foreach ($this->experts_list as $key => $value) { 
