@@ -130,6 +130,7 @@ class EmundusViewEmail extends JViewLegacy
 			    $eMConfig = JComponentHelper::getParams('com_emundus');
 				$reference_table = $eMConfig->get('reference_table', '#__emundus_references');
 				$reference_field = $eMConfig->get('reference_field', 'Email_1 as email');
+				$default_email_tmpl = $eMConfig->get('default_email_tmpl', 'expert');
 			    
 			    foreach ($fnums as $fnum)
 			    {
@@ -144,6 +145,7 @@ class EmundusViewEmail extends JViewLegacy
 			    $this->assignRef('fnums', $fnums[0]);
 			    $this->assignRef('experts_list', $experts_list);
 			    $this->assignRef('email', $email);
+			    $this->assignRef('default_email_tmpl', $default_email_tmpl);
 		    }
 
 			parent::display($tpl);
