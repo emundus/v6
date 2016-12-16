@@ -795,9 +795,14 @@ class EmundusModelApplication extends JModelList
                                         }
                                     }
                                 }
-                                elseif($iteme->plugin == 'checkbox') {
-                                    $iteme->content = implode(", ", json_decode (@$res[1]));
-                                    $iteme->content_id = $res[0];
+                                elseif($iteme->plugin == 'checkbox') { 
+                                    if(count($res)>1) {
+                                        $iteme->content = implode(", ", json_decode(@$res[1]));
+                                        $iteme->content_id = $res[0];
+                                    } else {
+                                        $iteme->content = '';
+                                        $iteme->content_id = -1;
+                                    }     
                                 }
                             }
                         }
@@ -1024,7 +1029,7 @@ class EmundusModelApplication extends JModelList
                                         }
                                         elseif($element->plugin=='textarea')
                                             $elt = '<br>'.$element->content;
-                                        elseif($elements[$j]->plugin == 'checkbox') {
+                                        elseif($element->plugin == 'checkbox') {
                                             $elt = implode(", ", json_decode (@$element->content));
                                         }
                                         else
