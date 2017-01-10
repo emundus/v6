@@ -273,10 +273,11 @@ class EmundusModelEmails extends JModelList
                 $replacements[] = $result;
             } else
                 $replacements[] = $request[0];
+       echo "<hr>".$query;
         }
 
         $tags = array('patterns' => $patterns , 'replacements' => $replacements);
-
+var_dump($tags); die();
         return $tags;
     }
 

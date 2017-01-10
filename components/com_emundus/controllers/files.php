@@ -695,7 +695,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             foreach($fnumsInfos as $file) {
                                 $mailer     = JFactory::getMailer();
 
-                                $post = array();
+                                $post = array('FNUM' => $file['fnum']);
                                 $tags = $emails->setTags($file['applicant_id'], $post);
 
                                 $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
