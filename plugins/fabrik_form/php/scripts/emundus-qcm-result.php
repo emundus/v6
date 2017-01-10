@@ -37,10 +37,9 @@ foreach($answers as $answer) {
 $query = "UPDATE `jos_emundus_qcm` set qcm_date_submitted=NOW(), result=".$result.", qcm_time_elapsed=ROUND(time_to_sec((TIMEDIFF(NOW(), time_date))) / 60) WHERE fnum like ".$db->Quote($user->fnum);
 $db->setQuery( $query );
 $db->execute();
-/*
-echo $query; die();*/
-JFactory::getApplication()->enqueueMessage(JText::_('RESULT').' : '.$result, 'message');
-$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$jinput->get('Itemid')."&usekey=fnum&rowid=".$user->fnum."&rq=3");
+
+JFactory::getApplication()->enqueueMessage('<h1>'.JText::_('SENT').'<h1>', 'message');
+$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$jinput->get('Itemid')."&usekey=fnum&rowid=".$user->fnum."&rq=3&result=".$result);
 
 
 ?>

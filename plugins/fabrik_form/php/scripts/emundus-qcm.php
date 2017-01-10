@@ -28,6 +28,8 @@ $user = JFactory::getUser();
 $mainframe = JFactory::getApplication();
 $jinput = $mainframe->input;
 
+$db 		= JFactory::getDBO();
+
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $id_applicants 			 = $eMConfig->get('id_applicants', '0');
 $applicants 			 = explode(',',$id_applicants);
@@ -35,11 +37,14 @@ $applicants 			 = explode(',',$id_applicants);
 $fnum = $jinput->get('rowid', null);
 $itemid = $jinput->get('Itemid'); 
 $reload = $jinput->get('rq', 0); 
-
+/*
+$table_elements  	= $formModel->getElementOptions(false, 'name', false, false, array(), '', true);
+echo $formModel->data["jos_emundus_qcm___question_b4_raw"]."<hr>";
+var_dump($table_elements);
+die();*/
 if (empty($formModel->getRowId())) {
 	try
 	{
-		$db 		= JFactory::getDBO();
 		$purl = '';
 		$i = 1;
 		// Section A - FR
@@ -133,8 +138,19 @@ if (empty($formModel->getRowId())) {
 else {
 	if ($reload == 0) {
 		$reload = 2;
+		try
+		{
+			$query = "SELECT result FROM `jos_emundus_qcm` WHERE fnum LIKE ".$db->Quote($user->fnum);
+			$db->setQuery( $query );
+			$result = $db->loadResult();
+		}
+		catch(Exception $e)
+		{
+		    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+		    JLog::add($error, JLog::ERROR, 'com_emundus');
+		}
 		JFactory::getApplication()->enqueueMessage(JText::_('QCM_ALREADY_DONE'), 'error');
-		$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&rq=".$reload);
+		$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&rq=".$reload."&result=".$result);
 	}
 }
 
