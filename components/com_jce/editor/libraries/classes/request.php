@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -215,6 +215,15 @@ final class WFRequest extends JObject {
 
             try {
                 $result = call_user_func_array($callback, (array) $args);
+
+                if (is_array($result) && !empty($result['error'])) {
+                    if (is_array($result['error'])) {
+                        $result['error'] = implode("\n", $result['error']);    
+                    }
+                    
+                    $response->setError(array('message' => $result['error']))->send();
+                }
+
             } catch (Exception $e) {
                 $response->setError(array('code' => $e->getCode(), 'message' => $e->getMessage()))->send();
             }

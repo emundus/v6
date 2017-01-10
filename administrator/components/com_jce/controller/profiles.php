@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -277,7 +277,7 @@ class WFControllerProfiles extends WFController {
 
     public function saveorder() {
         // Check for request forgeries
-        JRequest::checkToken() or jexit('RESTRICTED');
+        JRequest::checkToken() or jexit('Invalid Token');
 
         $cid = JRequest::getVar('cid', array(0), 'post', 'array');
         $order = JRequest::getVar('order', array(0), 'post', 'array');

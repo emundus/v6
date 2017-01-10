@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -15,6 +15,7 @@ wfimport('admin.classes.model');
 wfimport('admin.classes.text');
 wfimport('admin.helpers.xml');
 wfimport('admin.helpers.extension');
+wfimport('admin.models.plugins');
 wfimport('editor.libraries.classes.token');
 wfimport('editor.libraries.classes.editor');
 wfimport('editor.libraries.classes.language');
@@ -183,8 +184,16 @@ class WFModelEditor extends WFModelBase {
 
             // Editor Toggle
             $settings['toggle'] = $wf->getParam('editor.toggle', 1, 1);
-            $settings['toggle_label'] = htmlspecialchars($wf->getParam('editor.toggle_label', '[Toggle Editor]', '[Toggle Editor]'));
+            $settings['toggle_label'] = htmlspecialchars($wf->getParam('editor.toggle_label', ''));
             $settings['toggle_state'] = $wf->getParam('editor.toggle_state', 1, 1);
+
+            // Get all optional plugin configuration options
+            $this->getPluginConfig($settings);
+
+            // clean up invalid_elements
+            if (!empty($settings['invalid_elements'])) {
+                $settings['invalid_elements'] = array_values($settings['invalid_elements']);
+            }
         }// end profile
         // check for joomla debug mode
         $config = JFactory::getConfig();
@@ -224,9 +233,6 @@ class WFModelEditor extends WFModelBase {
             }
         }
 
-        // Get all optional plugin configuration options
-        $this->getPluginConfig($settings);
-
         // remove 'rows' key from $settings
         unset($settings['rows']);
 
@@ -246,8 +252,6 @@ class WFModelEditor extends WFModelBase {
 
         // check for language files
         $this->checkLanguages($settings);
-
-        $settings['invalid_elements'] = array_values($settings['invalid_elements']);
 
         // process settings
         array_walk($settings, function (&$value) {
@@ -420,9 +424,6 @@ class WFModelEditor extends WFModelBase {
      * @return The row array
      */
     private function getToolbar() {
-        wfimport('admin.models.plugins');
-        $model = new WFModelPlugins();
-
         $wf = WFEditor::getInstance();
         $rows = array('theme_advanced_buttons1' => '', 'theme_advanced_buttons2' => '', 'theme_advanced_buttons3' => '');
 
@@ -432,9 +433,9 @@ class WFModelEditor extends WFModelBase {
         }
 
         // get plugins
-        $plugins = $model->getPlugins();
+        $plugins = WFModelPlugins::getPlugins();
         // get core commands
-        $commands = $model->getCommands();
+        $commands = WFModelPlugins::getCommands();
 
         // merge plugins and commands
         $icons = array_merge($commands, $plugins);
@@ -586,6 +587,14 @@ class WFModelEditor extends WFModelBase {
                   // get plugin items from profile
                   $items = explode(',', $this->profile->plugins);
 
+                  // get core and installed plugins list
+                  $list = WFModelPlugins::getPlugins();
+
+                  // check that the plugin is available
+                  $items = array_filter($items, function($item) use ($list) {
+                      return in_array($item, array_keys($list));
+                  });
+
                   // core plugins
                   $core = array('core', 'autolink', 'cleanup', 'code', 'format', 'importcss', 'colorpicker', 'upload');
 
@@ -598,11 +607,6 @@ class WFModelEditor extends WFModelBase {
                   if ($wf->getParam('editor.path', 1)) {
                       $items[] = 'wordcount';
                   }
-
-                  // remove invalid items
-                  $items = array_filter($items, function($item) {
-                      return is_file(WF_EDITOR_PLUGINS . '/' . $item . '/editor_plugin.js');
-                  });
 
                   // reset index
                   $items = array_values($items);
@@ -617,41 +621,35 @@ class WFModelEditor extends WFModelBase {
                   $items = array_unique(array_filter($items));
 
                   // create plugins array
-                  $plugins = array('core' => $items, 'external' => array());
-
-                  // get installed plugins
-                  $installed = JPluginHelper::getPlugin('jce');
+                  $plugins = array('core' => array(), 'external' => array());
 
                   // check installed plugins are valid
-                  foreach ($installed as $item) {
-                      // check for delimiter, only load "extensions"
-                      if (strpos($item->name, 'editor-') === false) {
+                  foreach ($list as $name => $attribs) {
+                      // skip core plugins
+                      if ($attribs->core) {
                           continue;
                       }
 
-                      $name = str_replace('editor-', '', $item->name);
+                      // find plugin key in plugins list
+                      $pos = array_search($name, $items);
 
                       // check it is in profile plugin list
-                      if (!in_array($name, $items)) {
+                      if ($pos === false) {
                           continue;
                       }
 
-                      // set path
-                      $item->path = JPATH_PLUGINS . '/jce/' . $item->name;
-                      // get plugin name
-                      $name = str_replace('editor-', '', $item->name);
+                      // remove from items array
+                      unset($items[$pos]);
 
-                      // get plugin relative path
-                      $path = str_replace(JPATH_SITE, JURI::root(true), $item->path);
+                      // reset index
+                      $items = array_values($items);
 
-                      // get plugin file (uncompressed)
-                      $file = $item->path . '/editor_plugin.js';
-
-                      // check file exists, add to array
-                      if (is_file($file)) {
-                          $plugins['external'][$name] = $path . '/editor_plugin.js';
-                      }
+                      // add to array
+                      $plugins['external'][$name] = JURI::root(true) . $attribs->path . '/editor_plugin.js';
                   }
+                  
+                  // update core plugins
+                  $plugins['core'] = $items;
               }
           }
 
@@ -803,12 +801,12 @@ class WFModelEditor extends WFModelBase {
             $layouts = $warp['config']->get('layouts');
             $style = $layouts['default']['style'];
 
-            if (!empty($style)) {
-                return "templates/" . $template . "/styles/" . $style . "/css";
+            if (!empty($style) && is_dir(JPATH_SITE . '/templates/' . $template . '/' . $style)) {
+                return 'templates/' . $template . '/' . $style . '/css';
             }
         }
 
-        return "templates/" . $template . "/css";
+        return 'templates/' . $template . '/css';
     }
 
     private static function getStyleSheetsList($absolute = false) {
@@ -1145,14 +1143,6 @@ class WFModelEditor extends WFModelBase {
                       if (JFile::exists($content)) {
                           $files[] = $content;
                       }
-                    }
-
-                    // load content styles dor each plugin if they exist
-                    foreach ($plugins as $plugin) {
-                        $content = WF_EDITOR_PLUGINS . '/' . $plugin . '/css/content.css';
-                        if (JFile::exists($content)) {
-                            $files[] = $content;
-                        }
                     }
                 } else if ($context == 'preview') {
                     $files = array();

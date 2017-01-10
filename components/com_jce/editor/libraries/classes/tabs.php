@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -69,7 +69,7 @@ final class WFTabs extends JObject {
      * @param object $layout Layout (panel) name
      * @return panel JView object
      */
-    private function loadPanel($panel) {
+    private function loadPanel($panel, $state) {
         $view = new WFView(array(
           'name'    => $panel,
           'layout'  => $panel
@@ -79,6 +79,9 @@ final class WFTabs extends JObject {
         foreach ($this->_paths as $path) {
             $view->addTemplatePath($path);
         }
+
+        // assign panel state to view
+        $view->assign('state', (int) $state);
 
         return $view;
     }
@@ -99,14 +102,11 @@ final class WFTabs extends JObject {
      * @param array $values An array of values to assign to panel view
      */
     public function addTab($tab, $state = 1, $values = array()) {
-        // backwards compatability as $state has been removed
-        if (!$state) {
-            return false;
-        }
-
         if (!array_key_exists($tab, $this->_tabs)) {
-            $this->_tabs[$tab] = $tab;
-            $panel = $this->addPanel($tab);
+
+            $this->_tabs[$tab] = (int) $state === 1 ? $tab : "";
+
+            $panel = $this->addPanel($tab, $state);
 
             // array is not empty and is associative
             if (!empty($values) && array_values($values) !== $values) {
@@ -120,9 +120,9 @@ final class WFTabs extends JObject {
      * @access	public
      * @param 	object $panel Panel name
      */
-    public function addPanel($tab) {
+    public function addPanel($tab, $state) {
         if (!array_key_exists($tab, $this->_panels)) {
-            $this->_panels[$tab] = $this->loadPanel($tab);
+            $this->_panels[$tab] = $this->loadPanel($tab, $state);
 
             return $this->_panels[$tab];
         }
@@ -156,14 +156,18 @@ final class WFTabs extends JObject {
 
             $x = 0;
 
-            foreach ($this->_tabs as $tab) {
+            foreach ($this->_tabs as $name => $tab) {
                 $class = "";
 
                 if ($x === 0) {
                     $class .= " uk-active";
                 }
 
-                $output .= "\t" . '<li class="' . $class . '"><a href="#' . $tab . '_tab">' . WFText::_('WF_TAB_' . strtoupper($tab)) . '</a></li>' . "\n";
+                if (!$tab) {
+                    $class .= " uk-hidden";
+                }
+
+                $output .= "\t" . '<li class="' . $class . '"><a href="#' . $name . '_tab">' . WFText::_('WF_TAB_' . strtoupper($name)) . '</a></li>' . "\n";
                 $x++;
             }
 
@@ -179,6 +183,10 @@ final class WFTabs extends JObject {
             foreach ($this->_panels as $key => $panel) {
                 $class = "";
 
+                if ($panel->state === 0) {
+                    $class .= " uk-hidden";
+                }
+
                 if (!empty($this->_tabs)) {
 
                     if ($x === 0) {
@@ -186,15 +194,12 @@ final class WFTabs extends JObject {
                     } else {
                         $class .= " uk-tabs-hide";
                     }
-
-                    $output .= '<div id="' . $key . '_tab" class="' . $class . '">';
-                    $output .= $panel->loadTemplate();
-                    $output .= '</div>';
-                } else {
-                    $output .= '<div id="' . $key . '">';
-                    $output .= $panel->loadTemplate();
-                    $output .= '</div>';
                 }
+
+                $output .= '<div id="' . $key . '_tab" class="' . $class . '">';
+                $output .= $panel->loadTemplate();
+                $output .= '</div>';
+
                 $x++;
             }
 

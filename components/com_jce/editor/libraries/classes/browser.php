@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -81,6 +81,7 @@ class WFFileBrowser extends JObject {
     public function __construct($config = array()) {
         // set file browser config
         $this->setConfig($config);
+
         // add actions
         $this->addDefaultActions();
         // add buttons
@@ -300,7 +301,7 @@ class WFFileBrowser extends JObject {
             } else {
                 $this->_result[$key] = $value;
             }
-        } else {
+        } else {            
             $this->_result = $value;
         }
     }
@@ -365,15 +366,28 @@ class WFFileBrowser extends JObject {
         $filesystem = $this->getFileSystem();
         $list = $filesystem->getFolders($relative, $filter);
 
-        $filter = $this->get('filter');
+        $filters = $this->get('filter');
 
         // remove filtered items
-        if (!empty($filter)) {
-          $list = array_filter($list, function($item) {
+        if (!empty($filters)) {
+          $list = array_filter($list, function($item) use ($filters) {            
             // remmove leading slash
             $id = ltrim($item['id'], '/');
 
-            return !in_array($id, (array) $filter);
+            return !in_array($id, $filters);
+
+            /*foreach($filters as $filter) {
+                // show this folder
+                if ($filter{0} === "+") {
+                    return substr($filter, 1) === $id;
+                }
+                // hide this folder
+                if ($filter{0} === "-") {
+                    $filter = substr($filter, 1);
+                }
+
+                return $filter !== $id;
+            }*/
           });
         }
 
@@ -513,7 +527,7 @@ class WFFileBrowser extends JObject {
      * @param string $dir The relative path of the folder to search
      * @return Tree html string
      */
-    public function getTree($path) {
+    public function getTree($path = "") {
         $filesystem = $this->getFileSystem();
 
         // decode path
@@ -521,10 +535,14 @@ class WFFileBrowser extends JObject {
 
         WFUtility::checkPath($path);
 
-        // get source dir from path eg: images/stories/fruit.jpg = images/stories
+        // get source dir from path eg: images/stories/fruit.jpg = /stories
         $dir = $filesystem->getSourceDir($path);
 
+        // remove leading slash
+        $dir = ltrim($dir, "/");
+
         $result = $this->getTreeItems($dir);
+
         return $result;
     }
 
@@ -563,13 +581,15 @@ class WFFileBrowser extends JObject {
         if ($folders) {
             $result .= '<ul class="uk-tree-node">';
             foreach ($folders as $folder) {
-                $open = strpos($treedir, ltrim($folder['id'], '/')) === 0;
+                $name = ltrim($folder['id'], '/');
+ 
+                $open = preg_match('#' . $name . '\b#', $treedir);
 
                 $result .= '<li id="' . $this->escape($folder['id']) . '" class="' . ($open ? 'uk-tree-open' : '') . '">'
                 . ' <div class="uk-tree-row">'
                 . '   <a href="#">'
                 . '     <span class="uk-tree-icon" role="presentation"></span>'
-                . '     <span class="uk-tree-text">' . $folder['name'] . '</span>'
+                . '     <span class="uk-tree-text uk-width-4-5 uk-text-truncate" title="' . $folder['name'] . '">' . $folder['name'] . '</span>'
                 . '   </a>'
                 .' </div>';
 
@@ -1044,8 +1064,8 @@ class WFFileBrowser extends JObject {
 
                 $event = $this->fireEvent('onUpload', array($result->path, $result->url));
 
-                if (!empty($result)) {
-                  $this->setResult($event);
+                if (!empty($event)) {
+                    $this->setResult($event);
                 }
 
                 $this->setResult($name, 'files');
@@ -1054,7 +1074,7 @@ class WFFileBrowser extends JObject {
             }
         }
 
-        return $result;
+        return $this->getResult();
     }
 
     /**
@@ -1412,8 +1432,7 @@ class WFFileBrowser extends JObject {
 
     private function getUploadDefaults() {
         $filesystem = $this->getFileSystem();
-        $features = $filesystem->get('upload');
-        $elements = isset($features['elements']) ? $features['elements'] : array();
+        $features   = $filesystem->get('upload');
 
         $upload_max = $this->getUploadValue();
 
@@ -1434,17 +1453,20 @@ class WFFileBrowser extends JObject {
             }        
         }
 
-        $defaults = array(
+        $upload = array_merge($upload, array(
             'max_size'  => $size,
-            'filetypes' => $this->listFileTypes(),
-            'elements'  => $elements
-        );
+            'filetypes' => $this->listFileTypes()
+        ));
 
-        if (isset($features['dialog'])) {
-            $defaults['dialog'] = $features['dialog'];
+        if (isset($features['elements'])) {
+            $upload['elements'] = $features['elements'];
         }
 
-        return $defaults;
+        if (isset($features['dialog'])) {
+            $upload['dialog'] = $features['dialog'];
+        }
+
+        return $upload;
     }
 
     public function getDimensions($file) {

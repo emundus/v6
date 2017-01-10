@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -184,6 +184,8 @@ abstract class WFInstall {
             $admin . '/media/js/uploads.js',
             $admin . '/models/installer.php',
             $admin . '/models/installer.xml',
+            $admin . '/models/plugins.xml',
+            $admin . '/models/commands.xml',
 
             $site . '/editor/elements/mediaplayer.php',
             $site . '/editor/libraries/extensions/imgageeditor/picmonkey.php',
@@ -242,6 +244,7 @@ abstract class WFInstall {
                 }
             }
         }
+
         // pro cleanup
         if (is_dir($site . '/libraries/pro')) {
             // remove old language files
@@ -249,11 +252,7 @@ abstract class WFInstall {
 
             if (!empty($languages)) {
                 JFile::delete($languages);
-            }
-
-            if (JFile::exists($site . '/editor/libraries/classes/extensions/mediaplayer.php')) {
-                JFile::delete($site . '/editor/libraries/classes/extensions/mediaplayer.php');
-            }
+            }  
         }
 
         // clean up links extension folder

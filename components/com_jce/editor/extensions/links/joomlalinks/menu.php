@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -82,7 +82,12 @@ class JoomlalinksMenu extends JObject {
                     $class = array();
 
                     if (defined('JPATH_PLATFORM')) {
-                        $params = new JRegistry($menu->params);
+                        // bypass errors in menu parameters syntax
+                        try {
+                            $params = new JRegistry($menu->params);
+                        } catch (Exception $e) {
+                            $params = new JRegistry();
+                        }
                     } else {
                         $params = new JParameter($menu->params);
                     }
@@ -172,6 +177,7 @@ class JoomlalinksMenu extends JObject {
                 }
                 break;
         }
+
         return $items;
     }
 
@@ -197,7 +203,7 @@ class JoomlalinksMenu extends JObject {
         return $link;
     }
 
-    private static function _resolveLink($menu, $secure) {
+    private static function _resolveLink($menu) {
         $wf = WFEditorPlugin::getInstance();
 
         // get link from menu object

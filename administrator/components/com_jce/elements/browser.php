@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -68,7 +68,7 @@ class WFElementBrowser extends WFElement {
         $filter = isset($attributes['data-filter']) ? $attributes['data-filter'] : '';
 
         $html .= '<div class="input-append">';
-        $html .= '<input';
+        $html .= '  <input';
 
         foreach ($attributes as $k => $v) {
             if (!in_array($k, array('default', 'label', 'description'))) {
@@ -90,12 +90,10 @@ class WFElementBrowser extends WFElement {
 
         $link = $model->getBrowserLink($attributes['id'], $filter);
 
-        if (empty($link)) {
-            return $html;
+        if (!empty($link)) {
+            $html .= '  <span class="add-on"><a href="' . $link . '" id="' . $attributes['id'] . '_browser" class="browser" target="_blank" onclick="Joomla.modal(this, \'' . $link . '\', '. $width .', '. $height .');return false;" title="' . WFText::_('WF_BROWSER_TITLE') . '"><i class="icon-picture"></i></a></span>';
         }
-
-        $html .= '<span class="add-on"><a href="' . $link . '" id="' . $attributes['id'] . '_browser' . '" class="browser" target="_blank" onclick="Joomla.modal(this, \'' . $link . '\', '. $width .', '. $height .');return false;" title="' . WFText::_('WF_BROWSER_TITLE') . '"><i class="icon-picture"></i></a></span>';
-
+        
         $html .= '</div>';
 
         return $html;

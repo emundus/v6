@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -29,10 +29,17 @@ class WFTablesPlugin extends WFEditorPlugin {
     public function display() {
         parent::display();
 
+        $context = $this->getContext();
+
         $document = WFDocument::getInstance();
 
         $document->addScript(array('table'), 'plugins');
         $document->addStyleSheet(array('table'), 'plugins');
+
+        // update title
+        if ($context !== "table") {
+            $document->setTitle(WFText::_('WF_TABLE_' . strtoupper($context) . '_TITLE'));
+        }
 
         $settings = $this->getSettings();
 
@@ -40,7 +47,7 @@ class WFTablesPlugin extends WFEditorPlugin {
 
         $tabs = WFTabs::getInstance(array('base_path' => WF_EDITOR_PLUGIN));
 
-        if ($this->getContext() == 'merge') {
+        if ($context == 'merge') {
             // Add tabs
             $tabs->addTab('merge');
         } else {

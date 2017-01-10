@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -56,7 +56,13 @@ class WFMediaManagerBase extends WFEditorPlugin {
      * @return object WFBrowserExtension
      */
     protected function getFileBrowser() {
-        $name = $this->getName();
+        $name   = $this->getName();
+        $caller = $this->get('caller'); 
+
+        // add caller if set
+        if ($caller) {
+            $name .= '.' . $caller;    
+        }
 
         if (!isset(self::$browser[$name])) {
             self::$browser[$name] = new WFFileBrowser($this->getFileBrowserConfig());
@@ -96,8 +102,13 @@ class WFMediaManagerBase extends WFEditorPlugin {
         $browser->display();
         $view->assign('filebrowser', $browser);
 
+        $options = $browser->getProperties();
+
+        // map processed root directory
+        $options['dir'] = $browser->getFileSystem()->getRootDir();
+
         // set global options
-        $document->addScriptDeclaration('FileBrowser.options=' . json_encode($browser->getProperties()) . ';');
+        $document->addScriptDeclaration('FileBrowser.options=' . json_encode($options) . ';');
     }
 
     public function getFileTypes() {
@@ -228,12 +239,17 @@ class WFMediaManagerBase extends WFEditorPlugin {
         if (!empty($textcase) && is_array($textcase)) {
             $textcase = count($textcase) > 1 ? 'any' : array_shift($textcase);
         }
+        
+        $filter = (array) $this->getParam('editor.dir_filter', array());
+
+        // remove empty values
+        $filter = array_filter($filter);
 
         $base = array(
-            'dir' => $this->getParam('dir', ''),
+            'dir' => $this->getParam('dir'),
             'filesystem'  => $this->getFileSystem(),
             'filetypes'   => $filetypes,
-            'filter'      => $this->getParam('dir_filter', array()),
+            'filter'      => $filter,
             'upload' => array(
                 'max_size'          => $this->getParam('max_size', 1024, '', 'string', false),
                 'validate_mimetype' => (int) $this->getParam('editor.validate_mimetype', 1),

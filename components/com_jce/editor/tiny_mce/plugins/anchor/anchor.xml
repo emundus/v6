@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <install version="2.1.0" type="plugin" plugin="anchor" core="1" editable="0">
 	<name>WF_ANCHOR_TITLE</name>
-	<version>2.6.1</version>
-	<creationDate>01-12-2016</creationDate>
+	<version>2.6.6</version>
+	<creationDate>02-01-2017</creationDate>
 	<author>Ryan Demmer</author>
 	<authorEmail>@@e-mail@@</authorEmail>
 	<authorUrl>http://www.joomlacontenteditor.net/</authorUrl>

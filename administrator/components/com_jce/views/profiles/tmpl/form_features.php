@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -73,9 +73,9 @@ if (strpos($theme, '.') === false) {
                                               <?php if ($icon == 'spacer') : ?>
                                                   <div class="mceToolBarItem sortableRowItem spacer" data-name="spacer"><div class="mceSeparator"></div></div>
                                               <?php endif;
-                                              foreach ($this->plugins as $plugin) :
-                                                  if ($plugin->icon && $plugin->name == $icon) : ?>
-                                                      <div data-name="<?php echo $plugin->name; ?>" class="mceToolBarItem sortableRowItem <?php echo $plugin->type; ?> wf-tooltip wf-tooltip-cancel-ondrag" title="<?php echo WFText::_($plugin->title);?>::<?php echo WFText::_($plugin->description);?>"><?php echo $this->model->getIcon($plugin); ?></div>
+                                              foreach ($this->plugins as $name => $plugin) :
+                                                  if ($plugin->icon && $name == $icon) : ?>
+                                                      <div data-name="<?php echo $name; ?>" class="mceToolBarItem sortableRowItem <?php echo $plugin->type; ?> wf-tooltip wf-tooltip-cancel-ondrag" title="<?php echo WFText::_($plugin->title);?>::<?php echo WFText::_($plugin->description);?>"><?php echo $this->model->getIcon($plugin); ?></div>
                                                   <?php
                                                   endif;
                                               endforeach;
@@ -116,10 +116,10 @@ if (strpos($theme, '.') === false) {
                           <?php for ($i = 1; $i <= 5; $i++) :?>
                               <div class="sortableListItem">
                               <div class="sortableRow mceToolbarRow mceToolbarRow<?php echo $i;?> Enabled" role="toolbar" tabindex="-1">
-                                <?php foreach ($this->plugins as $plugin) :
-                                    if (!in_array($plugin->name, explode(',', implode(',', $this->rows)))) :
+                                <?php foreach ($this->plugins as $name => $plugin) :
+                                    if (!in_array($name, explode(',', implode(',', $this->rows)))) :
                                         if ($plugin->icon && (int)$plugin->row == $i) :
-                                            echo '<div class="mceToolBarItem sortableRowItem ' . $plugin->type . ' wf-tooltip wf-tooltip-cancel-ondrag" data-name="' . $plugin->name . '" title="' . WFText::_($plugin->title) . '::' . WFText::_($plugin->description) . '">' . $this->model->getIcon($plugin) . '</div>';
+                                            echo '<div class="mceToolBarItem sortableRowItem ' . $plugin->type . ' wf-tooltip wf-tooltip-cancel-ondrag" data-name="' . $name . '" title="' . WFText::_($plugin->title) . '::' . WFText::_($plugin->description) . '">' . $this->model->getIcon($plugin) . '</div>';
                                         endif;
                                     endif;
                                 endforeach;
@@ -143,7 +143,7 @@ if (strpos($theme, '.') === false) {
     <div id="profileAdditionalFeatures" class="adminformlist">
         <?php
         $i = 0;
-        foreach ($this->plugins as $plugin) :
+        foreach ($this->plugins as $name => $plugin) :
             if (!$plugin->icon) :
                 if ($plugin->editable) :
                     ?>
@@ -151,8 +151,8 @@ if (strpos($theme, '.') === false) {
                         <label class="control-label"><?php echo WFText::_($plugin->title); ?></label>
                         <div class="controls">
                           <label class="checkbox">
-                            <input type="checkbox" value="<?php echo $plugin->name; ?>" <?php echo in_array($plugin->name, explode(',', $this->profile->plugins)) ? 'checked="checked"' : ''; ?>/>
-                            <?php echo WFText::_('WF_' . strtoupper($plugin->name) . '_DESC'); ?>
+                            <input type="checkbox" value="<?php echo $name; ?>" <?php echo in_array($name, explode(',', $this->profile->plugins)) ? 'checked="checked"' : ''; ?>/>
+                            <?php echo WFText::_('WF_' . strtoupper($name) . '_DESC'); ?>
                           </label>
                         </div>
                     </div>
@@ -161,8 +161,8 @@ if (strpos($theme, '.') === false) {
                         <label class="control-label"><?php echo WFText::_($plugin->title); ?></label>
                         <div class="controls">
                           <label class="checkbox">
-                            <input type="checkbox" value="<?php echo $plugin->name; ?>" <?php echo in_array($plugin->name, explode(',', $this->profile->plugins)) ? 'checked="checked"' : ''; ?>/>
-                            <?php echo WFText::_('WF_' . strtoupper($plugin->name) . '_DESC'); ?>
+                            <input type="checkbox" value="<?php echo $name; ?>" <?php echo in_array($name, explode(',', $this->profile->plugins)) ? 'checked="checked"' : ''; ?>/>
+                            <?php echo WFText::_('WF_' . strtoupper($name) . '_DESC'); ?>
                           </label>
                         </div>
                     </div>

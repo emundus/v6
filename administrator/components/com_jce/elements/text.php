@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @copyright   Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
@@ -51,7 +51,12 @@ class WFElementText extends WFElement {
 
         $control = $control_name . '[' . $name . ']';
 
-        $attributes['type']   = 'text';
+        // create array id repeatable
+        if ((string) $node->attributes()->repeatable) {
+            $control .= '[]';    
+        }
+
+        $attributes['type']   = strtolower($this->_name);
         $attributes['name']   = $control;
         $attributes['id']     = preg_replace('#[^a-z0-9_-]#i', '', $control_name . $name);
 
@@ -84,8 +89,7 @@ class WFElementText extends WFElement {
           $attributes['value'] = $value;
 
           if ((string) $node->attributes()->repeatable) {
-              $control  .= '[]';
-              $html     .= '<div class="ui-repeatable form-inline"><div class="input-append">';
+              $html .= '<div class="ui-repeatable form-inline"><div class="input-append">';
           }
 
           $html .= '<input';
@@ -141,39 +145,51 @@ class WFElementText extends WFElement {
     function convertValue($value) {
         $unit = 'KB';
 
-        // GB
-        if ($value > 1073741824)
-            $unit = 'GB';
+        $prefix = '';
 
-        // MB
-        if ($value > 1048576)
-            $unit = 'MB';
+        preg_match('#([0-9]+)\s?([a-z]+)#i', $value, $matches);
+
+        // get unit
+        if (isset($matches[2])) {
+            $prefix = $matches[2];    
+        }
+        // get value
+        if (isset($matches[1])) {
+            $value = (int) $matches[1];
+        }
 
         // Convert to bytes
-        switch (strtolower($value{strlen($value) - 1})) {
+        switch (strtolower($prefix)) {
             case 'g':
+            case 'gb':
                 $value *= 1073741824;
                 break;
             case 'm':
+            case 'mb':
                 $value *= 1048576;
                 break;
             case 'k':
+            case 'kb':
                 $value *= 1024;
                 break;
         }
+
         // Convert to unit value
-        switch (strtolower($unit{0})) {
+        switch (strtolower($unit)) {
             case 'g':
+            case 'gb':
                 $value /= 1073741824;
                 break;
             case 'm':
+            case 'mb':
                 $value /= 1048576;
                 break;
             case 'k':
+            case 'kb':
                 $value /= 1024;
                 break;
         }
-        return preg_replace('/[^0-9]/', '', $value) . ' ' . $unit;
+        return (int) $value . ' KB';
     }
 }
 

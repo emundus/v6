@@ -2,7 +2,7 @@
 
 /**
  * @package    JCE
- * @copyright    Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright    Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license    GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -25,7 +25,7 @@ $links = $this->plugin->getLinks();
 <div class="uk-form-row">
     <label for="text" class="uk-form-label uk-width-1-5 hastip" title="<?php echo WFText::_('WF_LINK_LINK_TEXT_DESC'); ?>"><?php echo WFText::_('WF_LINK_LINK_TEXT'); ?></label>
     <div class="uk-form-controls uk-width-4-5">
-        <input id="text" type="text" value="" required />
+        <input id="text" type="text" value="" required placeholder="<?php echo WFText::_('WF_ELEMENT_SELECTION'); ?>" />
     </div>
 </div>
 <?php if ($search->isEnabled() || count($links->getLists())) : ?>

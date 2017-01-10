@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -13,6 +13,8 @@ defined('_JEXEC') or die('RESTRICTED');
 
 // load base model
 require_once(dirname(__FILE__) . '/model.php');
+
+wfimport('admin.models.plugins');
 
 /**
  * Profiles Model
@@ -83,20 +85,16 @@ class WFModelProfiles extends WFModel {
     }
 
     public function getPlugins($plugins = array()) {
-        wfimport('admin.models.plugins');
-
-        $model = new WFModelplugins();
-
         $commands = array();
 
         if (empty($plugins)) {
-            $commands = $model->getCommands();
+            $commands = WFModelplugins::getCommands();
         }
 
         // only need plugins with xml files
-        foreach ($model->getPlugins() as $plugin) {
+        foreach (WFModelplugins::getPlugins() as $name => $plugin) {
             if (is_file($plugin->manifest)) {
-                $plugins[$plugin->name] = $plugin;
+                $plugins[$name] = $plugin;
             }
         }
 
@@ -610,8 +608,9 @@ class WFModelProfiles extends WFModel {
                         break;
                     }
                 }
-                if (!$found)
+                if (!$found) {
                     $conditions[] = array($row->id, $condition);
+                }
             }
         }
 

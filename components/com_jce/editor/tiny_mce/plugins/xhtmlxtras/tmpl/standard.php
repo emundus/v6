@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -36,7 +36,7 @@ endif;
     <div class="uk-form-row">
         <label class="uk-form-label uk-width-3-10" for="dir"><?php echo WFText::_('WF_XHTMLXTRAS_ATTRIBUTE_LABEL_LANGDIR'); ?></label>
         <div class="uk-form-controls uk-width-7-10"><select id="dir">
-                <option value="">{#not_set}</option>
+                <option value=""><?php echo WFText::_('WF_OPTION_NOT_SET'); ?></option>
                 <option value="ltr"><?php echo WFText::_('WF_XHTMLXTRAS_ATTRIBUTE_OPTION_LTR'); ?></option>
                 <option value="rtl"><?php echo WFText::_('WF_XHTMLXTRAS_ATTRIBUTE_OPTION_RTL'); ?></option>
             </select></div>

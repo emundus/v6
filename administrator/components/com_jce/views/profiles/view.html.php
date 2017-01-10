@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -508,7 +508,7 @@ class WFViewProfiles extends WFView {
                 $lists['users'] = '<ul id="users" class="unstyled users-list span4">';
 
                 foreach ($options as $option) {
-                    $lists['users'] .= '<li><input type="hidden" name="users[]" value="' . $option->value . '" /><label><span class="users-list-delete"></span>' . $option->text . '</label></li>';
+                    $lists['users'] .= '<li><span>' . $option->text . '</span><button class="btn btn-link users-list-delete"><i class="icon-trash"></i></button><input name="users[]" value="' . $option->value . '" type="hidden"></li>';
                 }
 
                 $lists['users'] .= '</ul>';

@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -50,17 +50,17 @@ $direction  = $language->isRTL() ? 'right' : 'left';
                     <ul class="nav nav-tabs">
                         <?php
                         // Build tabs
-                        foreach ($this->plugins as $plugin) :
-                            if ($plugin->editable && is_file(JPATH_SITE . '/' . $plugin->path . '/' . $plugin->name . '.xml')) :
+                        foreach ($this->plugins as $name => $plugin) :
+                            if ($plugin->editable) :
                                 $icon   = '';
                                 $class  = '';
                                 if ($plugin->icon) :
                                     $icon = $this->model->getIcon($plugin);
                                 endif;
 
-                                $class = in_array($plugin->name, explode(',', $this->profile->plugins)) ? '' : 'tab-disabled';
+                                $class = in_array($name, explode(',', $this->profile->plugins)) ? '' : 'tab-disabled';
 
-                                echo '<li class="defaultSkin ' . $class . '" data-name="' . $plugin->name . '"><a href="#tabs-plugin-' . $plugin->name . '" class="mceToolBarItem">' . $icon . '<span class="tabs-label">' . WFText::_($plugin->title) . '</span></a></li>';
+                                echo '<li class="defaultSkin ' . $class . '" data-name="' . $name . '"><a href="#tabs-plugin-' . $name . '" class="mceToolBarItem">' . $icon . '<span class="tabs-label">' . WFText::_($plugin->title) . '</span></a></li>';
                             endif;
                         endforeach;
                         ?>

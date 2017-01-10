@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -52,16 +52,20 @@ class WFControllerEditor extends WFControllerBase {
 
                 case 'plugin':
                     if (strpos($plugin, '.') !== false) {
-                      list($plugin, $caller) = explode('.', $plugin);
+                        $parts = explode('.', $plugin);
+                        $plugin = $parts[0];
                     }
 
-                    $file = basename(JRequest::getCmd('file', $plugin));
                     $path = WF_EDITOR_PLUGINS . '/' . $plugin;
 
-                    if (is_dir($path) && file_exists($path . '/' . $file . '.php')) {
-                        include_once($path . '/' . $file . '.php');
+                    if (strpos($plugin, 'editor-') !== false) {
+                        $path = JPATH_PLUGINS . '/jce/' . $plugin;
+                    }
+
+                    if (is_dir($path) && file_exists($path . '/' . $plugin . '.php')) {
+                        include_once($path . '/' . $plugin . '.php');
                     } else {
-                        throw new InvalidArgumentException('File ' . $file . ' not found!');
+                        throw new InvalidArgumentException('File "' . $plugin . '" not found!');
                     }
 
                     break;

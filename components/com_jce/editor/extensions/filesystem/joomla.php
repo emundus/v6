@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -307,11 +307,14 @@ class WFJoomlaFileSystem extends WFFileSystem {
             return '';
         }
 
-        // remove leading / trailing slash
-        //$path = trim($path, '/');
-        // directory path relative to base dir
+        // directory path relative base directory
         if (is_dir(WFUtility::makePath($this->getBaseDir(), $path))) {
             return $path;
+        }
+
+        // directory path relative to site root
+        if (is_dir(WFUtility::makePath(JPATH_SITE, $path))) {                        
+            return substr($path, strlen($this->getRootDir()));
         }
 
         // file url relative to site root
