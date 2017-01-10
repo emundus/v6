@@ -481,7 +481,7 @@ class EmundusModelApplication extends JModelList
                         $forms .= '<fieldset><legend class="legend">';
                         $forms .= $itemg->label;
                         $forms .= '</legend>';
-
+/*
                         if ($itemg->repeated == 0 && $itemg->repeated_1 == 0) {
                             foreach($elements as &$iteme) {                    
                                 try { 
@@ -526,7 +526,7 @@ class EmundusModelApplication extends JModelList
                         }
 
                         unset($iteme);
-
+*/
                         if ($itemg->group_id == 14) {
 
                             foreach($elements as &$element) {
@@ -642,6 +642,12 @@ class EmundusModelApplication extends JModelList
                         } else {
                             foreach($elements as &$element) {
                                 if(!empty($element->label) && $element->label!=' ') {
+                                    $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
+                                    $this->_db->setQuery( $query );
+                                    $res = $this->_db->loadRow();
+                                    
+                                    $element->content = @$res[1];
+                                    $element->content_id = @$res[0];
 
                                     if ($element->plugin=='date' && $element->content>0) {
                                         $date_params = json_decode($element->params);
@@ -795,14 +801,9 @@ class EmundusModelApplication extends JModelList
                                         }
                                     }
                                 }
-                                elseif($iteme->plugin == 'checkbox') { 
-                                    if(count($res)>1) {
-                                        $iteme->content = implode(", ", json_decode(@$res[1]));
-                                        $iteme->content_id = $res[0];
-                                    } else {
-                                        $iteme->content = '';
-                                        $iteme->content_id = -1;
-                                    }     
+                                elseif($iteme->plugin == 'checkbox') {
+                                    $iteme->content = implode(", ", json_decode (@$res[1]));
+                                    $iteme->content_id = $res[0];
                                 }
                             }
                         }
@@ -1029,7 +1030,7 @@ class EmundusModelApplication extends JModelList
                                         }
                                         elseif($element->plugin=='textarea')
                                             $elt = '<br>'.$element->content;
-                                        elseif($element->plugin == 'checkbox') {
+                                        elseif($elements[$j]->plugin == 'checkbox') {
                                             $elt = implode(", ", json_decode (@$element->content));
                                         }
                                         else
