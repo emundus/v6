@@ -16,7 +16,7 @@ defined('_JEXEC') or die('RESTRICTED');
 define('WF_JOOMLA15', version_compare(JVERSION, '1.6', '<'));
 
 // Some shortcuts to make life easier
-define('WF_VERSION', '2.6.6');
+define('WF_VERSION', '2.6.7.1');
 
 // JCE Administration Component
 define('WF_ADMINISTRATOR',     JPATH_ADMINISTRATOR . '/components/com_jce');

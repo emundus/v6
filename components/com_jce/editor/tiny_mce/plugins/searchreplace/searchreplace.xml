@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <extension version="3.0" type="plugin" plugin="searchreplace" core="1" editable="0">
 	<name>WF_SEARCHREPLACE_TITLE</name>
-	<version>2.6.6</version>
-	<creationDate>02-01-2017</creationDate>
+	<version>2.6.7.1</version>
+	<creationDate>18-01-2017</creationDate>
 	<author>Ryan Demmer</author>
 	<authorEmail>@@e-mail@@</authorEmail>
 	<authorUrl>http://www.joomlacontenteditor.net/</authorUrl>

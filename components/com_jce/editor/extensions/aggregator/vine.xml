@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <install version="2.0" type="extension" extension="vine" folder="aggregator" method="upgrade" core="1">
 	<name>WF_AGGREGATOR_VINE_TITLE</name>
-	<version>2.6.6</version>
-	<creationDate>02-01-2017</creationDate>
+	<version>2.6.7.1</version>
+	<creationDate>18-01-2017</creationDate>
 	<author>Ryan Demmer</author>
 	<authorEmail>@@e-mail@@</authorEmail>
 	<authorUrl>http://www.joomlacontenteditor.net/</authorUrl>

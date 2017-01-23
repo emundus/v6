@@ -14,22 +14,29 @@ defined('_JEXEC') or die('RESTRICTED');
 $position = 'mce' . ucfirst($this->profile->layout_params->get('toolbar_align', 'left'));
 
 // width and height
-$width  = $this->profile->layout_params->get('editor_width', 800);
-$height = $this->profile->layout_params->get('editor_height', 'auto');
+$width  = $this->profile->layout_params->get('width');
+$height = $this->profile->layout_params->get('height');
 
-if (is_numeric($width) || strpos('%', $width) === false) {
-    $width .= 'px';
-}
-if (is_numeric($height) || strpos('%', $height) === false) {
-    $height .= 'px';
+if (!empty($width)) {
+    if (is_numeric($width) || strpos('%', $width) === false) {
+        $width .= 'px';
+    }
+
+    if (strpos('%', $width) !== false) {
+        $height = 600;
+    }
+} else {
+    $width = '100%';
 }
 
-if (strpos('%', $width) !== false) {
-    $height = '600px';
-}
+if (!empty($height)) {
+    if (is_numeric($height) || strpos('%', $height) === false) {
+        $height .= 'px';
+    }
 
-if (strpos('%', $height) !== false) {
-    $height = 'auto';
+    if (strpos('%', $height) !== false) {
+        $height = 'auto';
+    }
 }
 
 $theme = $this->profile->layout_params->get('toolbar_theme', 'default');
@@ -60,7 +67,7 @@ if (strpos($theme, '.') === false) {
               <div class="mceEditor defaultSkin <?php echo $theme; ?>" role="application">
 
                 <span id="editor_toggle"></span>
-                <span class="widthMarker" style="width:<?php echo $width; ?>;"><span><?php echo $width; ?></span></span>
+                <span class="widthMarker"><span><?php echo $width; ?></span></span>
 
                 <div class="mceLayout" role="presentation" style="max-width:<?php echo $width;?>">
                     <div role="toolbar" class="sortableList mceToolbar <?php echo $position;?> mceFirst">
@@ -108,7 +115,7 @@ if (strpos($theme, '.') === false) {
         <!-- Available Buttons -->
         <div class="controls-group">
             <label class="control-label wf-tooltip" title="<?php echo WFText::_('WF_PROFILES_FEATURES_LAYOUT_AVAILABLE') . '::' . WFText::_('WF_PROFILES_FEATURES_LAYOUT_AVAILABLE_DESC'); ?>"><?php echo WFText::_('WF_PROFILES_FEATURES_LAYOUT_AVAILABLE'); ?></label>
-            <div class="profileLayoutContainer profileLayoutContainerToolbar" style="width:<?php echo $width;?>">
+            <div class="profileLayoutContainer profileLayoutContainerToolbar">
                 <div class="mceEditor defaultSkin <?php echo $theme; ?>" role="application">
 
                   <div class="mceLayout" role="presentation">

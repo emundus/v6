@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @package   	JCE
- * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
- * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * @package       JCE
+ * @copyright     Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
+ * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
  * is derivative of works licensed under the GNU General Public License or
@@ -102,12 +102,4 @@ defined('_JEXEC') or die('RESTRICTED');
                 </div>
             </div>
         </div>
-        <!--li>
-            <label for="custom" class="control-label wf-tooltip" title="<?php echo WFText::_('WF_PROFILES_CUSTOM') . '::' . WFText::_('WF_PROFILES_CUSTOM_DESC'); ?>">
-                <?php echo WFText::_('WF_PROFILES_CUSTOM'); ?>
-            </label>
-            <input class="text_area" type="text" name="custom[]" value="" />
-            =
-            <input class="text_area" type="text" name="custom[]" value="" />
-        </li-->
 </fieldset>
