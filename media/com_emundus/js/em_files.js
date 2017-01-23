@@ -1382,7 +1382,7 @@ $(document).ready(function()
         $.ajaxQ.abortAll();
         var id = parseInt($(this).attr('id'));
         var url = $(this).attr('url');
-        $('#em-modal-form').modal({backdrop:true},'toggle');
+        $('#em-modal-form').modal({backdrop:false},'toggle');
         //  $('#em-modal-form .modal-content').html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="em-modal-actions-title">'+Joomla.JText._('LOADING')+'</h4></div><div class="modal-body"><img src="media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'></button></div>');
 
         $('.modal-title').empty();
@@ -1416,7 +1416,7 @@ $(document).ready(function()
         $.ajaxQ.abortAll();
         e.preventDefault();
         var id = parseInt($(this).attr('id'));
-        $('#em-modal-actions').modal({backdrop:true,keyboard:true},'toggle');
+        $('#em-modal-actions').modal({backdrop:false,keyboard:true},'toggle');
         $('.modal-title').empty();
         $('.modal-title').append($(this).children('a').text());
         $('.modal-body').empty();
