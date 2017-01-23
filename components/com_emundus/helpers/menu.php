@@ -18,7 +18,7 @@ class EmundusHelperMenu{
 
 	function buildMenuQuery($profile) {
 		$_db = JFactory::getDBO();
-		$query = 'SELECT fbtables.id AS table_id, fbtables.form_id, fbtables.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype 
+		$query = 'SELECT fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype 
 		FROM #__menu AS menu 
 		INNER JOIN #__emundus_setup_profiles AS profile ON profile.menutype = menu.menutype AND profile.id = '.$profile.'
 		INNER JOIN #__fabrik_forms AS fbforms ON fbforms.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
