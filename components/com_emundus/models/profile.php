@@ -85,7 +85,7 @@ class EmundusModelProfile extends JModelList
 		$query = 'SELECT attachment.*, profile.id AS selected, profile.displayed, profile.mandatory, profile.bank_needed 
 					FROM #__emundus_setup_attachments AS attachment
 					LEFT JOIN #__emundus_setup_attachment_profiles AS profile ON profile.attachment_id = attachment.id AND profile.profile_id='.mysql_real_escape_string($p).' 
-					WHERE published=1 
+					WHERE attachment.published=1 
 					ORDER BY attachment.ordering';
 		
 		try
