@@ -51,6 +51,8 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
 	$files = array();
 
+	$applications = new EmundusModelApplication;
+
 	/*$query = "SELECT * FROM #__emundus_setup_letters WHERE eligibility=".$eligibility." AND training=".$db->Quote($training);
 	$db->setQuery($query);
 	$letters = $db->loadAssocList();*/
@@ -61,9 +63,8 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	$db->setQuery($query);
 	$courses = $db->loadAssocList();
 	*/
-	//$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE published=1 AND date_start>NOW() AND code=".$db->Quote($training). " ORDER BY date_start ASC";
 	$query = "SELECT * FROM #__emundus_setup_teaching_unity 
-				WHERE published=1 AND date_start>NOW() AND code IN (".$letters[0]['training'].") 
+				WHERE published=1 AND date_start>NOW() AND code IN (".$db->Quote($letters[0]['training']).") 
 				ORDER BY date_start ASC";
 	$db->setQuery($query);
 	$courses = $db->loadAssocList();
@@ -175,7 +176,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 //die(var_dump($tags));
 	foreach ($letters as $letter) {
 		$error = 0;
-		$applications = new EmundusModelApplication;
+		
 		$attachment = $applications->getAttachmentByID($letter['attachment_id']);
 		
 		/*$query = "SELECT * FROM #__emundus_setup_attachments WHERE id=".$letter['attachment_id'];
@@ -200,6 +201,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 		}
 
 		if($letter['template_type'] == 1) { // Static file
+
 			$file_path = explode(DS, $letter['file']);
 			$file_type = explode('.', $file_path[count($file_path)-1]);
 			$name = $attachment['lbl'].'_'.date('Y-m-d_H-i-s').'.'.$file_type[1];
@@ -231,6 +233,17 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
 				$document->save($path);
 				unset($document);
+			} else {
+				JFactory::getApplication()->enqueueMessage($name.' - '.JText::_("TEMPLATE_FILE_MISSING").' : '.JPATH_BASE.$letter['file'], 'error');  
+				$error++;
+			}
+
+		} elseif($letter['template_type'] == 4) { // Applicant file
+			$upload_file = $applications->getAttachmentsByFnum($fnum, $letter['attachment_id']);
+			$name = $upload_file[0]->filename;
+			if(file_exists(JPATH_BASE.$letter['file'])) {
+				$path = EMUNDUS_PATH_ABS.$user_id.DS.$name;
+				$url  = EMUNDUS_PATH_REL.$user_id.'/'.$name;
 			} else {
 				JFactory::getApplication()->enqueueMessage($name.' - '.JText::_("TEMPLATE_FILE_MISSING").' : '.JPATH_BASE.$letter['file'], 'error');  
 				$error++;
@@ -301,11 +314,14 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 		}
 
 		if($error == 0) {
-			$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES ('.$user_id.', '.$letter['attachment_id'].', "'.$name.'","'.$training.' '.date('Y-m-d H:i:s').'", 0, 1, '.$campaign_id.', '.$db->Quote($fnum).')';
-			$db->setQuery($query);
-			$db->query();
-			$id = $db->insertid();
-
+			if($letter['template_type'] == 4) {
+				$id = $upload_file[0]->id;
+			} else {
+				$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES ('.$user_id.', '.$letter['attachment_id'].', "'.$name.'","'.$training.' '.date('Y-m-d H:i:s').'", 0, 1, '.$campaign_id.', '.$db->Quote($fnum).')';
+				$db->setQuery($query);
+				$db->query();
+				$id = $db->insertid();
+			} 
 			$file_info['id'] = $id;
 			$file_info['path'] = $path;
 			$file_info['attachment_id'] = $letter['attachment_id'];
@@ -315,7 +331,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 			$files[] = $file_info;
 		}
 	}
-//die(var_dump($files));
+
 	return $files;
 }	
 

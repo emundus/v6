@@ -124,8 +124,9 @@ class EmundusViewEmail extends JViewLegacy
 		    elseif($dest == 3)
 		    {
 			   //require_once(JPATH_BASE . '/components/com_emundus/models/users.php');
-			   require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
-			    //$userModel = new EmundusModelUsers();
+			   	require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+			    require_once(JPATH_BASE . '/components/com_emundus/models/application.php');
+			    $appModel = new EmundusModelApplication();
 			    $evaluations = new EmundusModelEvaluation;
 			    $eMConfig = JComponentHelper::getParams('com_emundus');
 				$reference_table = $eMConfig->get('reference_table', '#__emundus_references');
@@ -137,12 +138,15 @@ class EmundusViewEmail extends JViewLegacy
 				    if(EmundusHelperAccess::asAccessAction(18, 'c', $this->_user->id, $fnum->fnum))
 				    {
 					    $fnum_array[] = $fnum->fnum;
+					    $app_file = $appModel->getApplication($fnum->fnum);
+					    $fnum->status = $app_file->status;
 				    }
 			    }
 			    $experts_list = $evaluations->getExperts(@$fnums[0]->fnum, $reference_field, $reference_table);
 
 			    $email = @EmundusHelperEmails::createEmailBlock(array('expert'), $experts_list);
 			    $this->assignRef('fnums', $fnums[0]);
+
 			    $this->assignRef('experts_list', $experts_list);
 			    $this->assignRef('email', $email);
 			    $this->assignRef('default_email_tmpl', $default_email_tmpl);

@@ -1314,11 +1314,14 @@ td {
         }
     }
 
-    public function getAttachmentsByFnum($fnum)
+    public function getAttachmentsByFnum($fnum, $attachment_id=null)
     {
         try
         {
-            $query = "SELECT id, fnum, user_id, filename FROM #__emundus_uploads WHERE fnum like $fnum";
+            $query = "SELECT * FROM #__emundus_uploads WHERE fnum like ".$this->_db->quote($fnum);
+            if (isset($attachment_id)) {
+                $query .= " AND attachment_id=".$attachment_id;
+            }
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
         }

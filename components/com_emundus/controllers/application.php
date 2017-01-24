@@ -1,9 +1,9 @@
 <?php
 /**
- * @version		$Id: application.php 750 2012-01-23 22:29:38Z brivalland $
- * @package		Joomla
- * @copyright	(C) 2016 eMundus LLC. All rights reserved.
- * @license		GNU General Public License
+ * @version     $Id: application.php 750 2012-01-23 22:29:38Z brivalland $
+ * @package     Joomla
+ * @copyright   (C) 2016 eMundus LLC. All rights reserved.
+ * @license     GNU General Public License
  */
 
 // ensure this file is being included by a parent file
@@ -13,7 +13,7 @@ require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 
 /**
  * Custom report controller
- * @package		Emundus
+ * @package     Emundus
  */
 class EmundusControllerApplication extends JControllerLegacy
 {
@@ -32,7 +32,7 @@ class EmundusControllerApplication extends JControllerLegacy
 /*
     public function export_zip() {
         require_once('libraries/emundus/zip.php');
-        //$db	= JFactory::getDBO();
+        //$db   = JFactory::getDBO();
         $cid = JRequest::getVar('uid', null, 'POST', 'array', 0);
         JArrayHelper::toInteger( $cid, 0 );
         if (count( $cid ) == 0) {
@@ -52,7 +52,7 @@ class EmundusControllerApplication extends JControllerLegacy
         //$allowed = array("Super Users", "Administrator", "Editor");
         if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
 
-        //$db	= JFactory::getDBO();
+        //$db   = JFactory::getDBO();
         $attachments = JRequest::getVar('attachments', null, 'POST', 'array', 0);
 
         $user_id = JRequest::getVar('sid', null, 'POST', 'none', 0);
@@ -74,26 +74,30 @@ class EmundusControllerApplication extends JControllerLegacy
         foreach ($attachments as $id) {
             $upload = $model->getUploadByID($id);
             $attachment = $model->getAttachmentByID($upload['attachment_id']);
+            if( EmundusHelperAccess::asAccessAction(4, 'd', $user->id, $upload['fnum']) ) {
+                $result = $model->deleteAttachment($id);
 
-            $result = $model->deleteAttachment($id);
+                if($result != 1){
+                    echo JText::_('ATTACHMENT_DELETE_ERROR').' : '.$attachment['value'].' : '.$upload['filename'];
+                } else {
+                    $file = EMUNDUS_PATH_ABS.$user_id.DS.$upload['filename'];
+                    @unlink($file);
 
-            if($result != 1){
-                echo JText::_('ATTACHMENT_DELETE_ERROR').' : '.$attachment['value'].' : '.$upload['filename'];
-            } else {
-                $file = EMUNDUS_PATH_ABS.$user_id.DS.$upload['filename'];
-                @unlink($file);
+                    $row['applicant_id'] = $upload['user_id'];
+                    $row['user_id'] = $user->id;
+                    $row['reason'] = JText::_('ATTACHMENT_DELETED');
+                    $row['comment_body'] = $attachment['value'].' : '.$upload['filename'];
+                    $model->addComment($row);
 
-                $row['applicant_id'] = $upload['user_id'];
-                $row['user_id'] = $user->id;
-                $row['reason'] = JText::_('ATTACHMENT_DELETED');
-                $row['comment_body'] = $attachment['value'].' : '.$upload['filename'];
-                $model->addComment($row);
-
-                echo $result;
+                    echo $result;
+                }
+            } 
+            else {
+                echo JText::_('ACCESS_DENIED').' : '.$attachment['value'].' : '.$upload['filename'];
             }
         }
 
-        $this->setRedirect($url, JText::_('ATTACHMENTS_DELETED'), 'message');
+        $this->setRedirect($url, JText::_('DONE'), 'message');
         return;
     }
 
@@ -105,9 +109,6 @@ class EmundusControllerApplication extends JControllerLegacy
 
         if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
 
-        //$view = JRequest::getVar('view', null, 'GET', 'none',0);
-        //$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-
         $id = JRequest::getVar('id', null, 'GET', 'none',0);
 
         $model = $this->getModel('application');
@@ -115,18 +116,23 @@ class EmundusControllerApplication extends JControllerLegacy
         $upload = $model->getUploadByID($id);
         $attachment = $model->getAttachmentByID($upload['attachment_id']);
 
-        $result = $model->deleteAttachment($id);
+        if( EmundusHelperAccess::asAccessAction(4, 'd', $user->id, $upload['fnum']) ) {
+            $result = $model->deleteAttachment($id);
 
-        if($result != 1){
-            echo JText::_('ATTACHMENT_DELETE_ERROR');
-        } else {
-            $row['applicant_id'] = $upload['user_id'];
-            $row['user_id'] = $user->id;
-            $row['reason'] = JText::_('ATTACHMENT_DELETED');
-            $row['comment_body'] = $attachment['value'].' : '.$upload['filename'];
-            $model->addComment($row);
+            if($result != 1){
+                echo JText::_('ATTACHMENT_DELETE_ERROR');
+            } else {
+                $row['applicant_id'] = $upload['user_id'];
+                $row['user_id'] = $user->id;
+                $row['reason'] = JText::_('ATTACHMENT_DELETED');
+                $row['comment_body'] = $attachment['value'].' : '.$upload['filename'];
+                $model->addComment($row);
 
-            echo $result;
+                echo $result;
+            }
+        }
+        else {
+                echo JText::_('ACCESS_DENIED').' : '.$attachment['value'].' : '.$upload['filename'];
         }
     }
 
@@ -156,7 +162,7 @@ class EmundusControllerApplication extends JControllerLegacy
             $msg = "";
             $data = "{";
             switch ($_FILES['filename']['error']) {
-                case 0:		$msg .= JText::_("FILE_UPLOADED");
+                case 0:     $msg .= JText::_("FILE_UPLOADED");
                     $data .= '"message":"'.$msg.'",';
                     $tempFile = $_FILES['filename']['tmp_name'];
                     $targetPath = $targetFolder;
@@ -198,28 +204,28 @@ class EmundusControllerApplication extends JControllerLegacy
 
 
                     break;
-                case 1:		$msg .= "The file is bigger than this PHP installation allows";
+                case 1:     $msg .= "The file is bigger than this PHP installation allows";
                     $data .= '"message":"'.$msg.'"';
                     break;
-                case 2:		$msg .= "The file is bigger than this form allows";
+                case 2:     $msg .= "The file is bigger than this form allows";
                     $data .= '"message":"'.$msg.'"';
                     break;
-                case 3:		$msg .= "Only part of the file was uploaded";
+                case 3:     $msg .= "Only part of the file was uploaded";
                     $data .= '"message":"'.$msg.'"';
                     break;
-                case 4:		$msg .= "No file was uploaded";
+                case 4:     $msg .= "No file was uploaded";
                     $data .= '"message":"'.$msg.'"';
                     break;
-                case 6:		$msg .= "Missing a temporary folder";
+                case 6:     $msg .= "Missing a temporary folder";
                     $data .= '"message":"'.$msg.'"';
                     break;
-                case 7:		$msg .= "Failed to write file to disk";
+                case 7:     $msg .= "Failed to write file to disk";
                     $data .= '"message":"'.$msg.'"';
                     break;
-                case 8:		$msg .= "File upload stopped by extension";
+                case 8:     $msg .= "File upload stopped by extension";
                     $data .= '"message":"'.$msg.'"';
                     break;
-                default:	$msg .= "Unknown error ".$_FILES['filename']['error'];
+                default:    $msg .= "Unknown error ".$_FILES['filename']['error'];
                     $data .= '"message":"'.$msg.'",';
                     break;
             }

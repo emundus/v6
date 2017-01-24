@@ -17,9 +17,9 @@ require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 
 $current_user = JFactory::getUser();
-if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
+if( !EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnums->fnum) ) {
 	echo "<script>window.setTimeout('closeme();', 1500); function closeme() { parent.SqueezeBox.close(); }</script>";
-	die('<h1><img src="'.$this->baseurl.'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>');
+	die('<h1>'.JText::_("RESTRICTED_ACCESS").'</h1>');
 } else {
 	$student_id = $this->fnums->sid; 
 	$itemid = JRequest::getVar('Itemid', null, 'GET', 'INT',0); 
@@ -54,7 +54,7 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	$attachments = $evaluations->getEvaluationDocuments($this->fnums->fnum, $this->fnums->cid, 0); 
 	if ( count($attachments) == 0 ) {
 		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php'); 
-		$files = letter_pdf($this->fnums->sid, 0, $campaign['training'], $this->fnums->cid, 0, "F", $this->fnums->fnum);
+		$files = letter_pdf($this->fnums->sid, $this->fnums->status, $campaign['training'], $this->fnums->cid, 0, "F", $this->fnums->fnum);	
 	} else {
 		if (!empty($attachments)) {
 			$files = array();
@@ -141,7 +141,7 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 						<div class="vJ"></div>
 					</a>
 					<div class="em_email_icon" id="attachment_'.$file['id'].'">
-						<img src="'.JURI::Base().'/media/com_emundus/images/icones/x_8px.png" alt="'.JText::_("DELETE_ATTACHMENT").'" title="'.JText::_("DELETE_ATTACHMENT").'" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_ATTACHMENT_CONFIRM").'"').')) {deleteAttachment('.$file['id'].');}"/>
+						<img src="'.JURI::Base().'/media/com_emundus/images/icones/x_8px.png" alt="'.JText::_("DELETE_ATTACHMENT").'" title="'.JText::_("DELETE_ATTACHMENT").'" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_ATTACHMENT_CONFIRM").'"').')) {deleteAttachment('.$file['id'].'); document.getElementById(\'mail_attachments\').value=\'\';}"/>
 					</div>
 				</div>
 			</div>';
