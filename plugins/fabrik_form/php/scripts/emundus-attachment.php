@@ -133,7 +133,8 @@ if ($inform_applicant_by_email == 1) {
     $mailer->isHTML(true);
     $mailer->Encoding = 'base64';
     $mailer->setBody($body);
-    $mailer->addAttachment($attachment);
+    if ($can_be_view == 1)
+    	$mailer->addAttachment($attachment);
 
     $send = $mailer->Send();
     if ( $send !== true ) {
