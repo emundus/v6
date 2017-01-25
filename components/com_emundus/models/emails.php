@@ -503,6 +503,13 @@ class EmundusModelEmails extends JModelList
             $tags = $this->setTags($student_id, $post, $fnum);
             $mail_body = preg_replace($tags['patterns'], $tags['replacements'], $mail_body);
 
+            //tags from Fabrik ID
+            $element_ids = $this->getFabrikElementIDs($mail_body);
+            if(count(@$element_ids[0])>0) {
+                $element_values = $this->getFabrikElementValues($fnum, $element_ids[1]);
+                $synthesis->block = $this->setElementValues($mail_body, $element_values);
+            }
+
             $mail_attachments = $jinput->get('mail_attachments', null, 'STRING'); //JRequest::getVar('mail_attachments', null, 'POST', 'VARCHAR', 0);
             $delete_attachment = $jinput->get('delete_attachment', null, 'INT');
 
@@ -582,6 +589,8 @@ class EmundusModelEmails extends JModelList
                     $this->logEmail($message);
 
                     echo "<hr>".JText::_('EMAIL_SENT').' : '.$m_to;
+                    echo "<hr>".JText::_('SUBJECT').' : '.$mail_subject;
+                    echo "<hr>".$body;
                 }
 
                 $application->addComment($row);
