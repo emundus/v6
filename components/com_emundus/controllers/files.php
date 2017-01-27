@@ -1119,7 +1119,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $validFnums = array();
         foreach($fnums as $fnum)
         {
-            if(EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all')
+            if(EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all')
             {
                 $validFnums[] = $fnum;
             }
