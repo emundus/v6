@@ -175,7 +175,7 @@ if (count($trigger_emails) > 0) {
                     echo 'Error sending email: ' . $send->__toString();
                     JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
                 } else {
-                    JFactory::getApplication()->enqueueMessageJText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to);
+                    JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to);
                     $message = array(
                         'user_id_from' => $from_id,
                         'user_id_to' => $to_id,

@@ -16,6 +16,8 @@ defined( '_JEXEC' ) or die();
 $db = JFactory::getDBO();
 $student =  JFactory::getUser();
 $mailer = JFactory::getMailer();
+$app    = JFactory::getApplication();
+$email_from_sys = $app->getCfg('mailfrom');
 include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/groups.php');
@@ -23,9 +25,7 @@ include_once(JPATH_BASE.'/components/com_emundus/models/groups.php');
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $alert_new_applicant = $eMConfig->get('alert_new_applicant');
 
-/*$mainframe = JFactory::getApplication();
-$jinput = $mainframe->input;
-$fnum 	 		= $jinput->get('jos_emundus_declaration___fnum');*/
+
 $references_id = array(4, 6, 21, 19); // document ID from #__emundus_setup_attachments
 
 // get current applicant course
@@ -100,8 +100,7 @@ $replytoname = $email->name;
 
 $student->candidature_posted = 1;
 
-$app    = JFactory::getApplication();
-$email_from_sys = $app->getCfg('mailfrom');
+
 // setup mail
 $sender = array(
     $email_from_sys,
@@ -146,13 +145,15 @@ if ($alert_new_applicant==1) {
 	$email = $emails->getEmail("new_applicant");
 	if (count($evaluators) > 0) {
 		foreach ($evaluators as $evaluator) {
+			$mailer = JFactory::getMailer();
+
 			$eval_user = & JFactory::getUser($evaluator);
 			$tags = $emails->setTags($eval_user->id, $post);
 			// Mail 
 			$from = $email->emailfrom;
 			$from_id = 62;
 			$fromname =$email->name;
-			$recipient = $eval_user->email;
+			$recipient = $eval_user->email; 
 			$subject = $email->subject;
 			//$body = preg_replace($patterns, $replacements, $email->message);
 			$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message); 
@@ -164,14 +165,14 @@ if ($alert_new_applicant==1) {
 
 			$student->candidature_posted = 1;
 
-			// setup mail
-			$sender = array(
-			    $email_from_sys,
-			    $fromname
-			);
+            // setup mail
+            $sender = array(
+                $email_from_sys,
+                $fromname
+            );
 
-			$mailer->setSender($sender);
-			$mailer->addReplyTo($from, $fromname);
+            $mailer->setSender($sender);
+            $mailer->addReplyTo($from, $fromname);
             $mailer->addRecipient($recipient);
             $mailer->setSubject($subject);
             $mailer->isHTML(true);

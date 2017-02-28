@@ -3,7 +3,7 @@ defined( '_JEXEC' ) or die();
 /**
  * @version 1: attachement.php 89 2008-10-13 Benjamin Rivalland
  * @package Fabrik
- * @copyright Copyright (C) 2008 eMundus SAS. All rights reserved.
+ * @copyright Copyright (C) 2008 Décision Publique. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -128,16 +128,17 @@ if ($inform_applicant_by_email == 1) {
 	$replyto = $email->emailfrom;
 	$replytoname = $email->name;
 
-    $app    = JFactory::getApplication();
-$email_from_sys = $app->getCfg('mailfrom');
-$sender = array(
-    $email_from_sys,
-    $fromname
-);
-$mailer = JFactory::getMailer();
 
-$mailer->setSender($sender);
-$mailer->addReplyTo($from, $fromname);
+    // setup mail
+    $app    = JFactory::getApplication();
+	$email_from_sys = $app->getCfg('mailfrom');
+    $sender = array(
+        $email_from_sys,
+        $fromname
+    );
+
+
+    $mailer->setSender($sender);
     $mailer->addRecipient($recipient);
     $mailer->setSubject($subject);
     $mailer->isHTML(true);
@@ -147,7 +148,8 @@ $mailer->addReplyTo($from, $fromname);
 
     $send = $mailer->Send();
     if ( $send !== true ) {
-        echo 'Error sending email: ' . $send->__toString(); die();
+        echo 'Error sending email: ' . $send->__toString(); var_dump($recipient);
+        die();
     } else {
         $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 					VALUES ('".$from_id."', '".$student->id."', '".$subject."', '".$body."', NOW())";
