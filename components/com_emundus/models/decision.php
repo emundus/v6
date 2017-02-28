@@ -604,9 +604,16 @@ class EmundusModelDecision extends JModelList
 
 	private function _buildWhere($tableAlias = array())
 	{
-		$query = array('q' => '', 'join' => '');
+		$session = JFactory::getSession();
+        $params = $session->get('filt_params'); // came from search box
+        $filt_menu = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
 
-		$params = JFactory::getSession()->get('filt_params');
+        $db = JFactory::getDBO();
+
+        if(!is_numeric(@$params['published']) || is_null(@$params['published']))
+            $params['published'] = 1;
+
+		$query = array('q' => '', 'join' => '');
 		if(!empty($params))
 		{
 			foreach($params as $key => $value)
@@ -631,17 +638,42 @@ class EmundusModelDecision extends JModelList
 											$query['q'] .= ' search_'.$tab[0].'.id like "%' . $v . '%"';
 										}
 										else
-										{
-											$query['q'] .= ' AND ';
-											$query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
+                                        {
+                                            $query['q'] .= ' AND ';
+                                            // Check if it is a join table
+                                            $sql = 'SELECT join_from_table FROM #__fabrik_joins WHERE table_join like '.$db->Quote($tab[0]);
+                                            $db->setQuery($sql);
+                                            $join_from_table = $db->loadResult();
+                                            if (!empty($join_from_table)) {
+                                                $table = $join_from_table;
+                                                $table_join = $tab[0];
 
-											if(!isset($query[$tab[0]]))
-												{
-													$query[$tab[0]] = true;
-													if (!array_key_exists($tab[0], $tableAlias) && !in_array($tab[0], $tableAlias))
-														$query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like c.fnum ';
-												}
-										}
+                                                $query['q'] .= $table_join.'.'.$tab[1].' like "%' . $v . '%"';
+
+                                                if(!isset($query[$table]))
+                                                {
+                                                    $query[$table] = true;
+                                                    if (!array_key_exists($table, $tableAlias) && !in_array($table, $tableAlias))
+                                                        $query['join'] .= ' left join '.$table.' on ' .$table.'.fnum like c.fnum ';
+                                                }
+                                                if(!isset($query[$table_join]))
+                                                {
+                                                    $query[$table_join] = true;
+                                                    if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias))
+                                                        $query['join'] .= ' left join '.$table_join.' on ' .$table.'.id='.$table_join.'.parent_id';
+                                                }
+                                            }
+                                            else {
+                                                $query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
+
+                                                if(!isset($query[$tab[0]]))
+                                                {
+                                                    $query[$tab[0]] = true;
+                                                    if (!array_key_exists($tab[0], $tableAlias) && !in_array($tab[0], $tableAlias))
+                                                        $query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like c.fnum ';
+                                                }
+                                            }
+                                        }
 									}
 									
 								}
