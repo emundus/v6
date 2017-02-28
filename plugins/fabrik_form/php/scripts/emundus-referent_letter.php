@@ -21,10 +21,10 @@ $baseurl = JURI::root();
 $student_id = $formModel->getElementData('jos_emundus_references___user', false, '');
 $fnum = $formModel->getElementData('jos_emundus_references___fnum', false, '');
 
-$recipients[] = array('attachment_id' => 4, 'email' => $formModel->getElementData('jos_emundus_references___Email_1', false, ''));
-$recipients[] = array('attachment_id' => 6, 'email' => $formModel->getElementData('jos_emundus_references___Email_2', false, ''));
-$recipients[] = array('attachment_id' => 21, 'email' => $formModel->getElementData('jos_emundus_references___Email_3', false, ''));
-$recipients[] = array('attachment_id' => 19, 'email' => $formModel->getElementData('jos_emundus_references___Email_4', false, ''));
+$recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus_references___attachment_id_1', false, 4), 'email' => $formModel->getElementData('jos_emundus_references___Email_1', false, ''));
+$recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus_references___attachment_id_2', false, 6), 'email' => $formModel->getElementData('jos_emundus_references___Email_2', false, ''));
+$recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus_references___attachment_id_3', false, 21), 'email' => $formModel->getElementData('jos_emundus_references___Email_3', false, ''));
+$recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus_references___attachment_id_4', false, 19), 'email' => $formModel->getElementData('jos_emundus_references___Email_4', false, ''));
 
 $student = JFactory::getUser($student_id[0]);
 $current_user = JFactory::getUser();

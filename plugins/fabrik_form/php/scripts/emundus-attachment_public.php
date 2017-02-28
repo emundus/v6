@@ -19,7 +19,7 @@ return false;
 $mainframe = JFactory::getApplication();
 $jinput = $mainframe->input;
 $baseurl = JURI::base();
-$db =& JFactory::getDBO();
+$db = JFactory::getDBO();
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $alert_new_attachment = $eMConfig->get('alert_new_attachment');
 $mailer = JFactory::getMailer();
@@ -30,6 +30,20 @@ $user_id = $jinput->get('jos_emundus_uploads___user_id');
 $sid=JRequest::getVar('sid', null,'get');
 $attachment_id = $jinput->get('jos_emundus_uploads___attachment_id');
 //$params =& $this->getParams();
+
+jimport('joomla.log.log');
+JLog::addLogger(
+    array(
+        // Sets file name
+        'text_file' => 'com_emundus.filerequest.php'
+    ),
+    // Sets messages of all log levels to be sent to the file
+    JLog::ALL,
+    // The log category/categories which should be recorded in this file
+    // In this case, it's just the one category from our extension, still
+    // we need to put it inside an array
+    array('com_emundus')
+);
 
 $db->setQuery('SELECT student_id, attachment_id, keyid FROM #__emundus_files_request WHERE keyid="'.mysql_real_escape_string($key_id).'"');
 $file_request=$db->loadObject();
@@ -46,6 +60,7 @@ if($files['jos_emundus_uploads___filename']['size'] == 0){
 
 if($user_id != $file_request->student_id || $attachment_id != $file_request->attachment_id) {
 	// die('data1:'.$file_request->student_id.'-'.$user_id.'-'.$file_request->attachment_id.'-'.$attachment_id.'-'.$key_id.'-'.$db->getErrorMsg());
+	JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_ACCESS_DENIED"), JLog::ERROR, 'com_emundus');
 	header('Location: '.$baseurl.'index.php');
 	exit();
 }
@@ -55,6 +70,7 @@ $student = &JUser::getInstance($user_id);
 
 if(!isset($student)) {
 	// die('data2:'.$key_id.'-'.$user_id.'-'.$attachment_id);
+	JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_STUDENT_NOT_SET"), JLog::ERROR, 'com_emundus');
 	header('Location: '.$baseurl.'index.php');
 	exit();
 }
@@ -76,18 +92,27 @@ $attachement_params=$db->loadObject();
 $query = 'SELECT id, filename FROM #__emundus_uploads WHERE attachment_id='.$attachment_id.' AND user_id='.$user_id.' ORDER BY id DESC';
 $db->setQuery( $query );
 $upload=$db->loadObject();
+
+if (count($upload) == 0) {
+	JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_FILE_NOT_FOUND"), JLog::ERROR, 'com_emundus');
+	die(JText::_("ERROR_FILE_NOT_FOUND"));
+}
 $nom = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($student->name,ENT_NOQUOTES,'UTF-8'))));
 if(!isset($attachement_params->displayed) || $attachement_params->displayed === '0') $nom.= "_locked";
 $nom .= $attachement_params->lbl.rand().'.'.end(explode('.', $upload->filename));
 
 if(!file_exists(EMUNDUS_PATH_ABS.$user_id)) {
-	if (!mkdir(EMUNDUS_PATH_ABS.$user_id, 0777, true) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user_id.DS.'index.html')) 
-			die(JError::raiseWarning(500, 'ERROR_CANNOT_CREATE_USER_FILE'));
+	if (!mkdir(EMUNDUS_PATH_ABS.$user_id, 0777, true) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user_id.DS.'index.html')) {
+		JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_CANNOT_CREATE_USER_FILE"), JLog::ERROR, 'com_emundus');
+		die(JError::raiseWarning(500, 'ERROR_CANNOT_CREATE_USER_FILE'));
+	}
 }
 	
 
-if (!rename(JPATH_SITE.$upload->filename, EMUNDUS_PATH_ABS.$user_id.DS.$nom))
-	die("ERROR_MOVING_UPLOAD_FILE");
+if (!rename(JPATH_SITE.$upload->filename, EMUNDUS_PATH_ABS.$user_id.DS.$nom)) {
+	JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_MOVING_UPLOAD_FILE"), JLog::ERROR, 'com_emundus');
+	die(JText::_("ERROR_MOVING_UPLOAD_FILE"));
+}
 
 $db->setQuery('UPDATE #__emundus_uploads SET filename="'.$nom.'" WHERE id='.$upload->id);
 $db->execute();
@@ -138,10 +163,11 @@ $obj=$db->loadObject();
     $mailer->isHTML(true);
     $mailer->Encoding = 'base64';
     $mailer->setBody($body);
-    $mailer->addAttachment($attachment);
+    //$mailer->addAttachment($attachment);
 
     $send = $mailer->Send();
     if ( $send !== true ) {
+    	JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_CANNOT_SEND_EMAIL").$send->__toString(), JLog::ERROR, 'com_emundus');
         echo 'Error sending email: ' . $send->__toString(); die();
     } else {
         $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
