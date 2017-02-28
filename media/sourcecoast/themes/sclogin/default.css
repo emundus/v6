@@ -122,9 +122,9 @@ a.forgot.btn i {
 .sclogin .sclogin-greeting {
     display: inline-block;
     line-height: 15px;
-    margin-top: 5px;
+    margin-top: 1px;
     margin-right: 5px;
-    max-width: 140px;
+    max-width: 150px;
 }
 
 .sc-connect-user {
