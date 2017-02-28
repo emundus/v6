@@ -562,6 +562,17 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 	exit();
 }
 
+function data_to_img($match) {
+    list(, $img, $type, $base64, $end) = $match;
+
+    $bin = base64_decode($base64);
+    $md5 = md5($bin);   // generate a new temporary filename
+    $fn = "tmp/$md5.$type";
+    file_exists($fn) or file_put_contents($fn, $bin);
+
+    return "$img$fn$end";  // new <img> tag
+}
+
 function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1) {
 	jimport( 'joomla.html.parameter' );
 	set_time_limit(0);
@@ -745,6 +756,10 @@ $htmldata .= '
 
 	}
 	$htmldata .='</ol></div>';
+
+	$htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
+
+
 	if (!empty($htmldata)) {
 		$pdf->startTransaction();
 		$start_y = $pdf->GetY();
