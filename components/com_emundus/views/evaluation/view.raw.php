@@ -187,6 +187,9 @@ class EmundusViewEvaluation extends JViewLegacy
 						    elseif ($key == 'status_class') {
                                 continue;
                             }
+                            elseif ($key == 'step') {
+                                continue;
+                            }
 							elseif ($key == 'evaluator') {
 								if ($formid > 0 && !empty($value)) {
 									if ($evaluators_can_see_other_eval) {

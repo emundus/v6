@@ -436,9 +436,10 @@ class EmundusModelApplication extends JModelList
 
         $forms = '';
 
+        try {
         if(isset($tableuser)) {
             foreach($tableuser as $key => $itemt) {
-                $forms .= '<br><h3>';
+                $forms .= '<br><hr><h3>';
                 $title = explode('-', $itemt->label);
                 $forms .= $title[1];
 
@@ -449,10 +450,11 @@ class EmundusModelApplication extends JModelList
                     $this->_db->setQuery( $query );
                     $cpt = $this->_db->loadResult();
 
-                    if($cpt>0)
-                        $forms .= ' <button type="button" id="'.$itemt->form_id.'" class="btn btn-default em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
+                    iif($cpt>0)
+                        $forms .= ' <button type="button" id="'.$itemt->form_id.'" class="btn btn btn-info btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
                     else
-                        $forms .= ' <button type="button" id="'.$itemt->form_id.'" class="btn btn-default em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&'.$itemt->db_table_name.'___fnum='.$fnum.'&'.$itemt->db_table_name.'___user_raw='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
+                        $forms .= ' <button type="button" id="'.$itemt->form_id.'" class="btn btn-default btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&'.$itemt->db_table_name.'___fnum='.$fnum.'&'.$itemt->db_table_name.'___user_raw='.$aid.'&'.$itemt->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
+
 
                 }
 
@@ -475,6 +477,7 @@ class EmundusModelApplication extends JModelList
                                       fe.hidden=0 AND 
                                       fe.group_id = "'.$itemg->group_id.'" 
                                 ORDER BY fe.ordering';
+
                     $this->_db->setQuery( $query );
                     $elements = $this->_db->loadObjectList();
                     if(count($elements)>0) {
@@ -703,7 +706,12 @@ class EmundusModelApplication extends JModelList
                 }
             }
         }
-
+        } 
+        catch(Exception $e)
+        {
+            error_log($e->getMessage(), 0);
+            return $e->getMessage();
+        }
         return $forms;
     }
 
@@ -764,6 +772,7 @@ class EmundusModelApplication extends JModelList
                                       fe.hidden=0 AND 
                                       fe.group_id = "'.$itemg->group_id.'" 
                                 ORDER BY fe.ordering';
+
                     $this->_db->setQuery( $query );
                     $elements = $this->_db->loadObjectList();
                     if(count($elements)>0) {
@@ -1310,7 +1319,8 @@ td {
         }
         catch(Exception $e)
         {
-            throw $e;
+            error_log($e->getMessage(), 0);
+            return false;
         }
     }
 
@@ -1327,7 +1337,8 @@ td {
         }
         catch(Exception $e)
         {
-            throw $e;
+            error_log($e->getMessage(), 0);
+            return false;
         }
     }
 
@@ -1750,14 +1761,18 @@ td {
                     $id = $db->insertid();
 
 //var_dump($query); echo "<hr>";
-
+ 
                     // liste des groupes pour le formulaire d'une table
-                    $query = 'SELECT ff.id, ff.group_id, fe.name, fg.id, fg.label, fg.params as gparams
+                    $query = 'SELECT ff.id, ff.group_id, fe.name, fg.id, fg.label, (IF( ISNULL(fj.table_join), fl.db_table_name, fj.table_join)) as `table`, fg.params as `gparams`
                                 FROM #__fabrik_formgroup ff
+                                LEFT JOIN #__fabrik_lists fl ON fl.form_id=ff.form_id 
                                 LEFT JOIN #__fabrik_groups fg ON fg.id=ff.group_id 
                                 LEFT JOIN #__fabrik_elements fe ON fe.group_id=fg.id
+                                LEFT JOIN #__fabrik_joins AS fj ON (fj.group_id = fe.group_id AND fj.list_id != 0 AND fj.element_id = 0)
                                 WHERE ff.form_id = "'.$form->form_id.'" 
                                 ORDER BY ff.ordering';
+//echo str_replace("#_", "jos", $query);
+
                     $db->setQuery( $query );
                     $groups = $db->loadObjectList();
 //var_dump($groups); echo "<hr>";
@@ -1771,7 +1786,8 @@ td {
                                 $data[$group->group_id]['repeat_group'] = $group_params->repeat_group_button;
                                 $data[$group->group_id]['group_id'] = $group->group_id;
                                 $data[$group->group_id]['element_name'][] = $group->name;
-                                $data[$group->group_id]['table'] = $form->db_table_name.'_'.$group->group_id.'_repeat';
+                                $data[$group->group_id]['table'] = $group->table;
+                                //$data[$group->group_id]['table'] = $form->db_table_name.'_'.$group->group_id.'_repeat';
                             }       
                         }
                         if (count($data) > 0) {
@@ -1780,7 +1796,7 @@ td {
                                 $query = 'SELECT '.implode(',', $d['element_name']).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
                                 $db->setQuery( $query );
                                 $stored = $db->loadAssoc();
-//var_dump($query); echo "<hr>";
+// var_dump($query); echo "<hr>";
                                 
                                 if (count($stored) > 0) {
                                     // update form data

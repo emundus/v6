@@ -270,6 +270,9 @@ class EmundusViewFiles extends JViewLegacy
                             elseif ($key == 'status_class') {
                                 continue;
                             }
+                            elseif ($key == 'step') {
+                                continue;
+                            }
 						    else
 						    {
 							    $userObj->val = $value;

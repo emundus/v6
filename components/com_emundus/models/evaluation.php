@@ -975,7 +975,7 @@ class EmundusModelEvaluation extends JModelList
 					case 'status':
 						if ($value)
 						{
-							if ( $value[0] == "%" || !isset($value[0]) ) 
+							if ( $value[0] == "%" || !isset($value[0])  || empty($value[0]) ) 
 								$query['q'] .= ' ';
 							else
 							{
@@ -1062,7 +1062,7 @@ class EmundusModelEvaluation extends JModelList
 		$evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
 		$current_user = JFactory::getUser();
 
-		$query = 'select c.fnum, ss.value as status, u.name, ss.class as status_class ';
+		$query = 'select c.fnum, ss.step, ss.value as status, u.name, ss.class as status_class ';
 		// prevent double left join on query 
 		$lastTab = array('#__emundus_setup_status', 'jos_emundus_setup_status', 
 						 '#__emundus_setup_programmes', 'jos_emundus_setup_programmes',
@@ -1147,7 +1147,8 @@ class EmundusModelEvaluation extends JModelList
 		}
 		catch(Exception $e)
 		{
-			throw new JDatabaseException;
+			echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
 	}
 

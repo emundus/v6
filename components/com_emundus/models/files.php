@@ -1012,7 +1012,7 @@ DELETE 06/06/2016
     public function getAllUsers($limitStart=0, $limit=20)
     {
         $dbo = $this->getDbo();
-        $query = 'select jos_emundus_campaign_candidature.fnum, ss.value as status, ss.class as status_class, u.name ';
+        $query = 'select jos_emundus_campaign_candidature.fnum, ss.step, ss.value as status, ss.class as status_class, u.name ';
 
         // prevent double left join on query
         $lastTab = array('#__emundus_campaign_candidature', 'jos_emundus_campaign_candidature',

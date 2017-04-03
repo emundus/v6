@@ -291,7 +291,10 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 			//$dimensions = $pdf->getPageDimensions();
 
 			//$htmldata .= $letter["header"];
-			$htmldata .= preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $letter["body"])))); 
+			$letter["body"] = $emails->setTagsFabrik($letter["body"], array($fnum)); 
+
+			$htmldata .= preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $letter["body"]))));
+
 			//$htmldata .= $letter["footer"];
 			//die($htmldata);
 			$pdf->AddPage();

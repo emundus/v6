@@ -50,6 +50,17 @@ class EmundusHelperEmails
 			$editor = JFactory::getEditor('tinymce');
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', $default_template->message, '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
+			$fnums = $jinput->get('fnums', null, 'RAW');
+			$fnumsArray = (array) json_decode($fnums);
+			if (count($fnumsArray) > 0) {
+				$fnums = '{';
+				foreach ($fnumsArray as $key => $value) {
+					$fnums .= '\"fnum\":\"'.$value->fnum.'\"';
+				}
+				$fnums .= '}';
+			}
+
+			$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
 			//$current_eval = JRequest::getVar('user', null, 'POST', 'none',0);
 			$current_group = $jinput->get('groups', null, 'INT'); //JRequest::getVar('groups', null, 'POST', 'none',0);
@@ -75,11 +86,23 @@ class EmundusHelperEmails
 			$email.='</select>';
 			$email.= ' <input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="'.$default_template->subject.'" size="100" style="width: inherit !important;" />';
 			$email .= $mail_body.'<input class="btn btn-large btn-success" type="submit" name="group_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" >';
+
 		}
 		if(in_array('applicants', $params)){
 			$editor = JFactory::getEditor('tinymce');
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
+			$fnums = $jinput->get('fnums', null, 'RAW');
+			$fnumsArray = (array) json_decode($fnums);
+			if (count($fnumsArray) > 0) {
+				$fnums = '{';
+				foreach ($fnumsArray as $key => $value) {
+					$fnums .= '\"fnum\":\"'.$value->fnum.'\"';
+				}
+				$fnums .= '}';
+			}
+
+			$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
 			if(is_null($users))
 			{
@@ -127,6 +150,17 @@ class EmundusHelperEmails
 			$editor = JFactory::getEditor('tinymce');
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', $default_template->message, '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
+			$fnums = $jinput->get('fnums', null, 'RAW');
+			$fnumsArray = (array) json_decode($fnums);
+			if (count($fnumsArray) > 0) {
+				$fnums = '{';
+				foreach ($fnumsArray as $key => $value) {
+					$fnums .= '\"fnum\":\"'.$value->fnum.'\"';
+				}
+				$fnums .= '}';
+			}
+
+			$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
 			if(is_null($users))
 			{
@@ -176,6 +210,17 @@ class EmundusHelperEmails
 			$editor = JFactory::getEditor('tinymce');
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
+			$fnums = $jinput->get('fnums', null, 'RAW');
+			$fnumsArray = (array) json_decode($fnums);
+			if (count($fnumsArray) > 0) {
+				$fnums = '{';
+				foreach ($fnumsArray as $key => $value) {
+					$fnums .= '\"fnum\":\"'.$value->fnum.'\"';
+				}
+				$fnums .= '}';
+			}
+
+			$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
 			$student_id = $jinput->get('jos_emundus_evaluations___student_id', null, 'INT'); //JRequest::getVar('jos_emundus_evaluations___student_id', null, 'GET', 'INT',0);
 			$campaign_id = $jinput->get('jos_emundus_evaluations___campaign_id', null, 'INT'); //JRequest::getVar('jos_emundus_evaluations___campaign_id', null, 'GET', 'INT',0);
@@ -336,6 +381,17 @@ class EmundusHelperEmails
 			$editor = JFactory::getEditor('tinymce');
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
+			$fnums = $jinput->get('fnums', null, 'RAW');
+			$fnumsArray = (array) json_decode($fnums);
+			if (count($fnumsArray) > 0) {
+				$fnums = '{';
+				foreach ($fnumsArray as $key => $value) {
+					$fnums .= '\"fnum\":\"'.$value->fnum.'\"';
+				}
+				$fnums .= '}';
+			}
+
+			$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
 			$email_to = JRequest::getVar('sid', null, 'GET', 'none',0);
 			$student = JFactory::getUser($email_to);

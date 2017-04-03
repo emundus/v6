@@ -453,7 +453,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
                     $validFnums[] = $fnum;
                 }
             }
-            $tagged = $model->getTaggedFile($validFnums);
+            $tagged = $model->getTaggedFile($tag);
         }
         else
         {

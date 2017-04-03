@@ -281,15 +281,20 @@ class EmundusModelEmails extends JModelList
         return $tags;
     }
 
-    public function setTagsFabrik($str)
+    public function setTagsFabrik($str, $fnums = array())
     {
-        require_once(JPATH_COMPONENT.DS.'models'.DS.'files.php');
+        require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $file = new EmundusModelFiles();
 
         $jinput = JFactory::getApplication()->input;
-        $fnums = $jinput->get('fnums', null, 'RAW'); 
 
-        $fnumsArray = (array) json_decode(stripslashes($fnums));
+        if (count($fnums) == 0) {
+            $fnums = $jinput->get('fnums', null, 'RAW');
+            $fnumsArray = (array) json_decode(stripslashes($fnums));
+        }
+        else {
+            $fnumsArray = $fnums;
+        }
        
         $tags = $file->getVariables($str);
         $idFabrik = array();
