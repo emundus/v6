@@ -36,6 +36,8 @@ class EmundusViewEmail extends JViewLegacy
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+
 		
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
@@ -81,6 +83,15 @@ class EmundusViewEmail extends JViewLegacy
 	    else
 	    {*/
 		   $fnums = (array) json_decode(stripslashes($fnums));
+
+		   if(!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
+			{
+				$model = new EmundusModelFiles;
+			    $fnums = $model->getAllFnums();
+			    $fnums_infos = $model->getFnumsInfos($fnums, 'object');
+			    $fnums = $fnums_infos;
+			}
+
 		   $dest = $jinput->getInt('desc', 0);
 		   $fnum_array = array();
 
@@ -92,7 +103,7 @@ class EmundusViewEmail extends JViewLegacy
 			    $tables = array('jos_users.name', 'jos_users.username', 'jos_users.email', 'jos_users.id');
 			    foreach ($fnums as $fnum)
 			    {
-				    if(EmundusHelperAccess::asAccessAction(9, 'c', $this->_user->id, $fnum->fnum) && is_int($fnum->sid))
+				    if(EmundusHelperAccess::asAccessAction(9, 'c', $this->_user->id, $fnum->fnum) && !empty($fnum->sid))
 				    {
 					    $user = $appModel->getApplicantInfos($fnum->sid, $tables);
 					    $user['campaign_id'] = $fnum->cid;
