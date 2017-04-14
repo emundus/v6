@@ -1382,7 +1382,7 @@ $(document).ready(function()
         $.ajaxQ.abortAll();
         var id = parseInt($(this).attr('id'));
         var url = $(this).attr('url');
-        $('#em-modal-form').modal({backdrop:false},'toggle');
+        $('#em-modal-form').modal({backdrop:true},'toggle');
         //  $('#em-modal-form .modal-content').html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="em-modal-actions-title">'+Joomla.JText._('LOADING')+'</h4></div><div class="modal-body"><img src="media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'></button></div>');
 
         $('.modal-title').empty();
@@ -1416,7 +1416,7 @@ $(document).ready(function()
         $.ajaxQ.abortAll();
         e.preventDefault();
         var id = parseInt($(this).attr('id'));
-        $('#em-modal-actions').modal({backdrop:false,keyboard:true},'toggle');
+        $('#em-modal-actions').modal({backdrop:true,keyboard:true},'toggle');
         $('.modal-title').empty();
         $('.modal-title').append($(this).children('a').text());
         $('.modal-body').empty();
@@ -2004,8 +2004,9 @@ $(document).ready(function()
                 $('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
 
                 break;
+            // generate DOCX
             case 27:
-                $('#em-modal-actions .modal-body').empty();
+               $('#em-modal-actions .modal-body').empty();
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
                 '</div>');
@@ -2028,6 +2029,7 @@ $(document).ready(function()
                 });
 
                 break;
+            // publication status od the application file
             case 28:
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
@@ -2060,6 +2062,24 @@ $(document).ready(function()
                 });
 
                 break;
+
+                // decision
+                case 29:
+                break;
+
+                // trombinoscope
+                case 30:
+                $('.modal-body').append('<div>' +
+                '<img src="'+loadingLine+'" alt="loading"/>' +
+                '</div>');
+                $('.modal-footer').hide();
+                $('.modal-dialog').addClass('modal-lg');
+                //var url = 'index.php?option=com_emundus&view=email&tmpl=component&Itemid='+itemId+'&fnums='+encodeURIComponent(fnums)+'&desc=2';
+                $('.modal-body').empty();
+                $('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
+                
+                break;
+
             default:
                 break;
         }

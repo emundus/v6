@@ -1860,7 +1860,7 @@ where 1 order by ga.fnum asc, g.title';
      * @param $fnums
      * @return bool|mixed
      */
-    public function getFnumsInfos($fnums)
+    public function getFnumsInfos($fnums, $format = 'array')
     {
         try
         {
@@ -1873,7 +1873,11 @@ where 1 order by ga.fnum asc, g.title';
                         where cc.fnum in ("'. implode('","', $fnums).'")';
             $db->setQuery($query);
 //echo str_replace('#_', 'jos', $query);
-            return $db->loadAssocList('fnum');
+            if ($format == 'array') {
+               return $db->loadAssocList('fnum');
+            } else {
+                return $db->loadObjectList('fnum');
+            }
         }
         catch (Exception $e)
         {
@@ -1936,7 +1940,7 @@ where 1 order by ga.fnum asc, g.title';
     /**
      * @return bool|mixed
      */
-    public function getAllFnums()
+    public function getAllFnums($assoc_tab_fnums = false)
     {
         include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
         $userModel = new EmundusModelUsers;
@@ -1953,8 +1957,19 @@ where 1 order by ga.fnum asc, g.title';
         $files = $this->getAllUsers(0, 0);
         $fnums = array();
 
-        foreach($files as $file){
-            $fnums[] = $file['fnum'];
+        if ($assoc_tab_fnums) {
+            foreach($files as $key => $file){
+                if ($file['applicant_id'] > 0) {
+                    $fnums[] = array( 'fnum' => $file['fnum'], 
+                                      'applicant_id' => $file['applicant_id'], 
+                                      'campaign_id' => $file['campaign_id']
+                                    );
+                }
+            }
+        } else {
+            foreach($files as $file){
+                $fnums[] = $file['fnum'];
+            }
         }
 
         return $fnums;

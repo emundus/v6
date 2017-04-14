@@ -218,18 +218,26 @@ class EmundusModelEmails extends JModelList
 
     public function setConstants($user_id, $post=null, $passwd='')
     {
-        $current_user = JFactory::getUser();
-        $user = JFactory::getUser($user_id);
+        $app            = JFactory::getApplication();
+        $current_user   = JFactory::getUser();
+        $user           = JFactory::getUser($user_id);
+
+        //get logo
+        $template   = $app->getTemplate(true);
+        $params     = $template->params;
+
+        $logo       = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+        $logo       = !empty($logo['path']) ? $logo['path'] : "";
 
         $patterns = array(
             '/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[USERNAME\]/', '/\[USER_ID\]/', '/\[USER_NAME\]/', '/\[USER_EMAIL\]/', '/\n/', '/\[USER_USERNAME\]/', '/\[PASSWORD\]/',
             '/\[ACTIVATION_URL\]/', '/\[SITE_URL\]/',
-            '/\[APPLICANT_ID\]/', '/\[APPLICANT_NAME\]/', '/\[APPLICANT_EMAIL\]/', '/\[APPLICANT_USERNAME\]/', '/\[CURRENT_DATE\]/'
+            '/\[APPLICANT_ID\]/', '/\[APPLICANT_NAME\]/', '/\[APPLICANT_EMAIL\]/', '/\[APPLICANT_USERNAME\]/', '/\[CURRENT_DATE\]/', '/\[LOGO\]/'
         );
         $replacements = array(
             $user->id, $user->name, $user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
             JURI::base()."index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), JURI::base(),
-            $user->id, $user->name, $user->email, $user->username, date("F j, Y")
+            $user->id, $user->name, $user->email, $user->username, date("F j, Y"), $logo
         );
 
         if(count($post) > 0) {
