@@ -10,6 +10,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 $document = JFactory::getDocument();
 $document->addStyleSheet(JURI::base()."media/com_emundus/css/emundus_trombinoscope.css" );
+$document->addStyleSheet(JURI::base()."media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
 ?>
 
 <form action="" method="post" enctype="multipart/form-data" name="adminForm" id="job-form" class="form-validate">
@@ -42,7 +43,7 @@ $document->addStyleSheet(JURI::base()."media/com_emundus/css/emundus_trombinosco
                         <div class="col-md-9">
                             <select id="trombi_grid" name="trombi_grid" class="inputbox">
                                 <option value="3x3">3 x 3</option>
-                                <option value="2x6">2 x 6</option>
+                                <option value="2x6">2 x 6 (<?php echo JText::_('COM_EMUNDUS_TROMBI_BADGE');?>)</option>
                                 <option value="5x3">5 x 3</option>
                                 <option value="5x5">5 x 5</option>
                             </select>
@@ -60,22 +61,35 @@ $document->addStyleSheet(JURI::base()."media/com_emundus/css/emundus_trombinosco
                         <div class="col-md-3"><?php echo JText::_('COM_EMUNDUS_TROMBI_TEMPLATE')?></div>
                         <div class="col-md-9"><?php echo $this->wysiwyg; ?></div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-12"><a href="<?php echo $this->form_elements_id_list; ?>" target="_blank"><?php echo JText::_('COM_EMUNDUS_TROMBI_ID_LIST')?></a></div>
+                    </div>
                 </div>
                 <div class="panel-footer">
                     <div class="row">
-                        <button type="button" id="trombi_preview" class="btn"><?php echo JText::_('COM_EMUNDUS_TROMBI_PREVIEW')?></button>
-                        <button type="button" id="trombi_cancel" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EMUNDUS_TROMBI_CANCEL')?></button>
+                        <div class="col-md-3">
+                            <button type="button" id="trombi_preview" class="btn btn-info"><?php echo JText::_('COM_EMUNDUS_TROMBI_PREVIEW')?>
+                                <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" id="trombi_generate" class="btn btn-primary"><?php echo JText::_('COM_EMUNDUS_TROMBI_GENERATE')?>
+                                <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                        <div class="col-md-9">
+                            <button type="button" id="trombi_cancel" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EMUNDUS_TROMBI_CANCEL')?></button>
+                        </div>
                     </div>
                 </div>
                 <div class="panel-footer preview" id="div-preview">
                     <div class="row print">
-                        <button type="button" id="trombi_generate" class="btn"><?php echo JText::_('COM_EMUNDUS_TROMBI_GENERATE')?></button>
+                        
                     </div>
                     <div class="row" id="preview"></div>
                 </div>
                 <div class="panel-footer download" id="div-download">
                     <div class="row print">
-                        <a class="btn .btn-link" id="trombi_download" title="<?php echo JText::_('COM_EMUNDUS_TROMBI_DOWNLOAD')?>" href="" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>
+                        <a class="btn .btn-link" id="trombi_download" title="<?php echo JText::_('COM_EMUNDUS_TROMBI_DOWNLOAD')?>" href="" target="_blank">
+                            <span class="glyphicon glyphicon-download-alt"></span>
                             <span><?php echo JText::_('COM_EMUNDUS_TROMBI_DOWNLOAD')?></span>
                         </a>
                     </div>
@@ -164,6 +178,7 @@ $document->addStyleSheet(JURI::base()."media/com_emundus/css/emundus_trombinosco
                 $('#trombi_download').attr("href", $pdf_url);
                 $('#div-download').show();
                 $('#div-preview').hide();
+                $(this).prop('disabled', false);
             },
             error: function (xhr, type, exception) {
                 //$('#div-preview').html(xhr.responseText);

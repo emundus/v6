@@ -20,10 +20,10 @@ class EmundusViewTrombinoscope extends JViewLegacy
 
     public function display($tpl = null)
     {
-        $document = JFactory::getDocument();
+       /*$document = JFactory::getDocument();
         $document->addStyleSheet(JURI::base()."media/com_emundus/css/emundus_trombinoscope.css" );
-        //$document->addScript(JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
-
+        $document->addScript(JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
+*/
         $current_user = JFactory::getUser();
         if( !EmundusHelperAccess::asPartnerAccessLevel($current_user->id) )
             die( JText::_('RESTRICTED_ACCESS') );
@@ -32,6 +32,15 @@ class EmundusViewTrombinoscope extends JViewLegacy
         $fnums = $app->input->getString('fnums', null);
 
         $trombi = new EmundusModelTrombinoscope();
+        $fnums_json_decode = $trombi->fnums_json_decode($fnums);
+
+        //$file = $this->getModel('Files');
+        $programme = $trombi->getProgByFnum($fnums_json_decode[0]['fnum']);
+        $trombi->set_template($programme['code'], 'trombi');
+        $trombi->set_template($programme['code'], 'badge');
+
+        $form_elements_id_list = 'index.php?option=com_emundus&view=export_select_columns&format=raw&code='.$programme['code'].'&layout=programme&rowid='.$programme['id'];
+
         // SET EDITOR PARAMS
         /*$params = array( 'smilies'=> '0' ,
             'style'  => '1' ,
@@ -59,6 +68,7 @@ class EmundusViewTrombinoscope extends JViewLegacy
         $this->assign('badge_tmpl', $trombi->badge_tpl);
         $this->assign('default_margin', $trombi->default_margin);
         $this->assign('wysiwyg', $wysiwyg);
+        $this->assign('form_elements_id_list', $form_elements_id_list);
 
         parent::display($tpl);
     }

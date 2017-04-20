@@ -1,28 +1,15 @@
 .modal-footer {
     display: none !important;
 }
-button#trombi_cancel, button#trombi_preview {
+button#trombi_cancel {
     float: right;
     margin-right: 10px;
 }
-button#trombi_preview, button#trombi_generate {
-    color: #fff;
-    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
-    background-color: #5bb75b;
-    border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
-    background-image: -webkit-linear-gradient(#88c149, #73a839 60%, #699934) !important;
-    background-image: linear-gradient(#88c149, #73a839 60%, #699934) !important;
-    background-repeat: no-repeat !important;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff88c149', endColorstr='#ff699934', GradientType=0) !important;
-    filter: none !important;
-    border-bottom: 1px solid #59822c !important;
-}
+
 .panel-footer.preview .row.print {
     text-align: center;
 }
-button#trombi_generate {
-    margin-bottom: 10px !important;
-}
+
 #div-preview {
     background-color: #fff;
     display: none;

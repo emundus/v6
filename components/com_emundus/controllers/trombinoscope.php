@@ -32,16 +32,8 @@ class EmundusControllerTrombinoscope extends EmundusController
         parent::__construct($config);
     }
 
-    /*
-     * Génération de code HTML pour l'affichage de la 1ère page de prévisualisation
-     */
-    public function generate_preview() {
-
-        $grid = (isset($_POST['grid'])) ? $_POST['grid'] : '';
-        $margin = (isset($_POST['margin'])) ? $_POST['margin'] : '';
-        $template = (isset($_POST['template'])) ? $_POST['template'] : '';
-        $string_fnums = (isset($_POST['string_fnums'])) ? $_POST['string_fnums'] : '';
-
+    public function fnums_json_decode($string_fnums)
+    {
         $fnums_obj = (array) json_decode(stripslashes($string_fnums));
 
         if(@$fnums_obj[0] == 'all'){
@@ -59,7 +51,20 @@ class EmundusControllerTrombinoscope extends EmundusController
                 }
             }
         }
+        return $fnums;
+    }
 
+    /*
+     * Génération de code HTML pour l'affichage de la 1ère page de prévisualisation
+     */
+    public function generate_preview() {
+
+        $grid = (isset($_POST['grid'])) ? $_POST['grid'] : '';
+        $margin = (isset($_POST['margin'])) ? $_POST['margin'] : '';
+        $template = (isset($_POST['template'])) ? $_POST['template'] : '';
+        $string_fnums = (isset($_POST['string_fnums'])) ? $_POST['string_fnums'] : '';
+
+        $fnums = $this->fnums_json_decode($string_fnums);
         // Génération du HTML
         $html_content = $this->generate_data_for_pdf($fnums, $grid, $margin, $template, false);
 
@@ -188,16 +193,7 @@ body {
     }
 
     public function generate_pdf() {
-/*  
-        $jinput = JFactory::getApplication()->input;
-        $grid = $jinput->getString('grid', '');
-        $margin = $jinput->getString('margin', '');
-        //$template = $jinput->get('template', '', 'HTML');
-        $template = (isset($_POST['template'])) ? $_POST['template'] : '';
-        $format = $jinput->getString('format', 'trombi');
-        //$string_fnums = $jinput->json->get('string_fnums', '');
-        $string_fnums = (isset($_POST['string_fnums'])) ? $_POST['string_fnums'] : '';
-         */
+
         $grid = (isset($_POST['grid'])) ? $_POST['grid'] : '';
         $margin = (isset($_POST['margin'])) ? $_POST['margin'] : '';
         $template = (isset($_POST['template'])) ? $_POST['template'] : '';
@@ -205,23 +201,7 @@ body {
         $string_fnums = (isset($_POST['string_fnums'])) ? $_POST['string_fnums'] : '';
         $fnums_obj = (array) json_decode(stripslashes($string_fnums));
         
-
-        if(@$fnums_obj[0] == 'all'){
-            $model = $this->getmodel('Files');
-            $assoc_tab_fnums = true;
-            $fnums = $model->getAllFnums($assoc_tab_fnums);
-        } else {
-            $fnums = array();
-            foreach ($fnums_obj as $key => $value) {
-                if (@$value->sid > 0) {
-                    $fnums[] = array( 'fnum' => @$value->fnum, 
-                                      'applicant_id' => @$value->sid, 
-                                      'campaign_id' => @$value->cid
-                                    );
-                }
-            }
-        }
-
+        $fnums = $this->fnums_json_decode($string_fnums);
 
         $html_content = $this->generate_data_for_pdf($fnums, $grid, $margin, $template, false);
 
