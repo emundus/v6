@@ -2068,7 +2068,7 @@ $(document).ready(function()
                 break;
 
                 // trombinoscope
-                case 30:
+                case 31:
                 $('.modal-body').append('<div>' +
                 '<img src="'+loadingLine+'" alt="loading"/>' +
                 '</div>');

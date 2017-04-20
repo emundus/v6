@@ -273,6 +273,12 @@ class EmundusViewFiles extends JViewLegacy
                             elseif ($key == 'step') {
                                 continue;
                             }
+                            elseif ($key == 'applicant_id') {
+                                continue;
+                            }
+                            elseif ($key == 'campaign_id') {
+                                continue;
+                            }
 						    else
 						    {
 							    $userObj->val = $value;
