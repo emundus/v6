@@ -2175,6 +2175,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $idTmpl = $jinput->getString('id_tmpl', "");
         $model = $this->getModel('Files');
         $modelEvaluation = $this->getModel('Evaluation');
+        $modelEmails = $this->getModel('Emails');
         $user = JFactory::getUser();
         $fnumsArray = $model->checkFnumsDoc($code, $fnumsArray);
         $tmpl = $modelEvaluation->getLettersTemplateByID($idTmpl);
@@ -2305,9 +2306,21 @@ class EmundusControllerFiles extends JControllerLegacy
                                 {
                                     $preprocess->setValue($tag, $const[$lowerTag]);
                                 }
-                                else
+                                elseif(!empty(@$fnumsInfos[$fnum][$lowerTag]))
                                 {
                                     $preprocess->setValue($tag, @$fnumsInfos[$fnum][$lowerTag]);
+                                } 
+                                else {
+                                    $tags = $modelEmails->setTagsWord(@$fnumsInfos[$fnum]['applicant_id'], null, $fnum, '');
+                                    $i = 0;
+                                    foreach ($tags['patterns'] as $key => $value) {
+                                        if ($value == $tag) {
+                                            $val = $tags['replacements'][$i];
+                                            break;
+                                        }
+                                        $i++;
+                                    }
+                                    $preprocess->setValue($tag, $val);
                                 }
                             }
                             foreach($idFabrik as $id)
