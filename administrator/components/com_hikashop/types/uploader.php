@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -77,14 +77,14 @@ class HikashopUploaderType {
 		if(empty($options['classes']['btn_add']))
 			$options['classes']['btn_add'] = 'hika_add_btn';
 
-		$maxSize = min(hikashop_bytes(ini_get('upload_max_filesize')), hikashop_bytes(ini_get('post_max_size')));
-		if(empty($options['maxSize'])) {
-			$options['maxSize'] = $maxSize;
+		$maxPostSize = min(hikashop_bytes(ini_get('upload_max_filesize')), hikashop_bytes(ini_get('post_max_size')));
+		if(empty($options['maxPostSize'])) {
+			$options['maxPostSize'] = $maxPostSize;
 		} else {
-			$size = (int)$options['maxSize'];
-			if((''.$size) != $options['maxSize'])
-				$size = hikashop_bytes($options['maxSize']);
-			$options['maxSize'] = min($size, $maxSize);
+			$size = (int)$options['maxPostSize'];
+			if((''.$size) != $options['maxPostSize'])
+				$size = hikashop_bytes($options['maxPostSize']);
+			$options['maxPostSize'] = min($size, $maxPostSize);
 		}
 
 		if(empty($options['uploadUrls']))
@@ -128,7 +128,7 @@ class HikashopUploaderType {
 				).
 				'<input id="'.$id.'" type="file"/></span>';
 
-			$js .= "\r\n" . 'var hkUploader_'.$id.' = new hkUploaderMgr("'.$id.'", {mode: \'single\', url:\''.$options['uploadUrls'][1].'\',formData:'.$options['formData'].', options:{maxSize:'.(int)$options['maxSize'].'}})';
+			$js .= "\r\n" . 'var hkUploader_'.$id.' = new hkUploaderMgr("'.$id.'", {mode: \'single\', url:\''.$options['uploadUrls'][1].'\',formData:'.$options['formData'].', options:{maxPostSize:'.(int)$options['maxPostSize'].'}})';
 		}
 
 		if(!empty($options['browseUrl'])) {
@@ -240,7 +240,7 @@ class HikashopUploaderType {
 
 		$js = '';
 		if(!empty($options['uploadUrls'])) {
-			$js .= "\r\n" . 'var hkUploader_'.$id.' = new hkUploaderMgr("'.$id.'", {mode: \'listImg\', url:\''.$options['uploadUrls'][1].'\', formData:'.$options['formData'].', options: {maxSize:'.(int)$options['maxSize'].', imgClasses:[\''.$options['classes']['firstImg'].'\',\''.$options['classes']['otherImg'].'\']} })';
+			$js .= "\r\n" . 'var hkUploader_'.$id.' = new hkUploaderMgr("'.$id.'", {mode: \'listImg\', url:\''.$options['uploadUrls'][1].'\', formData:'.$options['formData'].', options: {maxPostSize:'.(int)$options['maxPostSize'].', imgClasses:[\''.$options['classes']['firstImg'].'\',\''.$options['classes']['otherImg'].'\']} })';
 		}
 
 		if(!empty($js)) {
@@ -283,7 +283,7 @@ class HikashopUploaderType {
 				).
 				'<input id="'.$id.'" type="file"/></span>';
 
-			$js .= "\r\n" . 'var hkUploader_'.$id.' = new hkUploaderMgr("'.$id.'", {mode: \'single\', url:\''.$options['uploadUrls'][1].'\',formData:'.$options['formData'].',options:{maxSize:'.(int)$options['maxSize'].'}})';
+			$js .= "\r\n" . 'var hkUploader_'.$id.' = new hkUploaderMgr("'.$id.'", {mode: \'single\', url:\''.$options['uploadUrls'][1].'\',formData:'.$options['formData'].',options:{maxPostSize:'.(int)$options['maxPostSize'].'}})';
 		}
 		$ret .= '
 		</div>
@@ -340,7 +340,7 @@ class HikashopUploaderType {
 				).
 				'<input id="'.$id.'" type="file"/></span>';
 
-			$js .= "\r\n" . 'var hkUploader_'.$id.' = new hkUploaderMgr("'.$id.'", {mode: \'list\', url:\''.$options['uploadUrls'][1].'\',formData:'.$options['formData'].',options:{maxSize:'.(int)$options['maxSize'].'}})';
+			$js .= "\r\n" . 'var hkUploader_'.$id.' = new hkUploaderMgr("'.$id.'", {mode: \'list\', url:\''.$options['uploadUrls'][1].'\',formData:'.$options['formData'].',options:{maxPostSize:'.(int)$options['maxPostSize'].'}})';
 		}
 
 		if(!empty($options['toolbar'])) {

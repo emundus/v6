@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -86,11 +86,10 @@ class hikashopNameboxType {
 			)
 		),
 		'order_status' => array(
-			'class' => 'class.category',
-			'name' => 'category_name',
+			'class' => 'class.orderstatus',
+			'name' => 'orderstatus_name',
 			'mode' => 'list',
 			'params' => array(
-				'category_type' => 'status'
 			),
 			'url' => 'category&task=findList&category_type=order_status'
 		),
@@ -132,6 +131,19 @@ class hikashopNameboxType {
 				'tree_url' => 'category&task=getTree&category_type=tax&category_id={ID}',
 				'tree_key' => '{ID}',
 			),
+		),
+		'user' => array(
+			'class' => 'class.user',
+			'name' => 'user_id',
+			'mode' => 'list',
+			'displayFormat' => '{user_id} - {name}',
+			'url' => 'users&task=getValues',
+			'options' => array(
+				'olist' => array(
+					'table' => array('user_id' => 'ID', 'name' => 'HIKA_NAME', 'user_email' => 'HIKA_EMAIL' ),
+					'displayFormat' => '{user_id} - {name}',
+				)
+			)
 		),
 		'warehouse' => array(
 			'class' => 'class.warehouse',

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -141,11 +141,12 @@ defined('_JEXEC') or die('Restricted access');
 				echo $this->order->order_payment_method;
 			?></span></dd>
 <?php }
-	if(!empty($this->order->additional)) { ?>
+
+	if(!empty($this->order->additional)) {
+?>
 <input type="hidden" name="data[order][additional]" value="1"/>
 <?php	
 		foreach($this->order->additional as $additional) {
-?><?php
 			if(!empty($additional->order_product_price)) {
 				$additional->order_product_price = (float)$additional->order_product_price;
 			}
@@ -156,7 +157,7 @@ defined('_JEXEC') or die('Restricted access');
 				$name = 'order_product_options';
 				$value = $additional->order_product_options;
 			}
-		?>
+?>
 		<dt class="hikashop_order_additional_additional"><label><?php echo JText::_($additional->order_product_name); ?></label></dt>
 		<dd class="hikashop_order_additional_additional"><span>
 			<input type="text" name="data[order][product][<?php echo $additional->order_product_name; ?>][<?php echo $name; ?>]" value="<?php echo $value; ?>"/>

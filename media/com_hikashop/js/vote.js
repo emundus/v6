@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    2.6.4
+ * @version    3.0.1
  * @author     hikashop.com
- * @copyright  (C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 var hikaVote = function(el,opt) {
@@ -38,7 +38,7 @@ hikaVote.vote = function(val, from){
 	} else {
 		infos = d.querySelector("[data-ref][id=\"hikashop_vote_rating_id\"]");
 		ref_id = infos.getAttribute("data-ref");
-		if(!val && infos.value){
+		if(!val && infos.value) {
 			val = infos.value;
 		}
 	}

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -169,10 +169,10 @@ defined('_JEXEC') or die('Restricted access');
 		$publishedid = 'product_published-'.$row->product_id;
 ?>
 						<tr class="row<?php echo $k; ?>">
-							<td align="center"><?php
+							<td class="hk_center"><?php
 								echo $this->pagination->getRowOffset($i);
 							?></td>
-							<td align="center"><?php
+							<td class="hk_center"><?php
 								echo JHTML::_('grid.id', $i, $row->product_id );
 							?></td>
 							<td><?php
@@ -233,14 +233,14 @@ defined('_JEXEC') or die('Restricted access');
 									?><a href="#" title="<?php echo JText::_('CHANGE_SUB_ELEMENT_FILTER_TO_REORDER_ELEMENTS'); ?>"><img src="<?php echo HIKASHOP_IMAGES; ?>delete2.png" alt="<?php echo JText::_('HIKA_DELETE'); ?>"></a><?php
 								}
 							?></td>
-							<td align="center"><?php
+							<td class="hk_center"><?php
 								if($this->manage) {
 									?><span id="<?php echo $publishedid ?>" class="spanloading"><?php echo $this->toggleClass->toggle($publishedid,(int) $row->product_published,'product') ?></span><?php
 								} else {
 									echo $this->toggleClass->display('activate',$row->product_published);
 								}
 							?></td>
-							<td width="1%" align="center"><?php
+							<td width="1%" class="hk_center"><?php
 								echo $row->product_id;
 							?></td>
 						</tr>

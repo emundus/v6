@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -274,8 +274,9 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		if($this->payment_params->debug)
 			echo print_r($url, true) . "\r\n\r\n";
 
-		$fp = fsockopen($url['host_socket'], $url['port'], $errno, $errstr, 30);
-		if(!$fp) {
+		$response = $this->sendRequest($url, $data);
+
+		if(empty($response)){
 			$email = new stdClass();
 			$email->subject = JText::sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER','Paypal').' '.JText::sprintf('PAYPAL_CONNECTION_FAILED',$dbOrder->order_number);
 			$email->body = str_replace('<br/>',"\r\n",JText::sprintf('NOTIFICATION_REFUSED_NO_CONNECTION','Paypal'))."\r\n\r\n".JText::sprintf('CHECK_DOCUMENTATION',HIKASHOP_HELPURL.'payment-paypal-error#connection') . $order_text;
@@ -286,38 +287,12 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 			return false;
 		}
 
-		$uri = $url['path'] . ($url['query'] != '' ? '?' . $url['query'] : '');
-		$header = 'POST '.$uri.' HTTP/1.1'."\r\n".
-			'User-Agent: PHP/'.phpversion()."\r\n".
-			'Referer: '.hikashop_currentURL()."\r\n".
-			'Server: '.$_SERVER['SERVER_SOFTWARE']."\r\n".
-			'Host: '.$url['host']."\r\n".
-			'Content-Type: application/x-www-form-urlencoded'."\r\n".
-			'Content-Length: '.strlen($data)."\r\n".
-			'Accept: */'.'*'."\r\n".
-			'Connection: close'."\r\n\r\n";
-
-		fwrite($fp, $header . $data);
-		$response = '';
-		while(!feof($fp)) {
-			$response .= fgets($fp, 1024);
-		}
-		fclose ($fp);
-
-		if($this->payment_params->debug) {
-			echo print_r($header, true) . "\r\n\r\n";
-			echo print_r($data, true) . "\r\n\r\n";
-			echo print_r($response, true) . "\r\n\r\n";
-		}
-
 		echo 'PayPal transaction id: '.@$vars['txn_id'] . "\r\n\r\n";
 
 		$history = new stdClass();
 		$history->notified = 0;
 		$history->amount = @$vars['mc_gross'].@$vars['mc_currency'];
 		$history->data = ob_get_contents();
-
-		$response = substr($response, strpos($response, "\r\n\r\n") + strlen("\r\n\r\n"));
 
 		$verified = preg_match('#VERIFIED#i', $response);
 		if(!$verified) {
@@ -397,6 +372,128 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		return true;
 	}
 
+	function sendRequest($url, $data){
+		$response = $this->_sendRequestSocket($url,$data);
+		if(!$response)
+			$response = $this->_sendRequestCURL($url,$data);
+		return $response;
+	}
+
+	function _sendRequestCURL($url, $data) {
+		if(!function_exists('curl_version')) {
+			if($this->payment_params->debug)
+				echo 'CURL is not available'. "\r\n\r\n";
+			return false;
+		}
+
+		$uri = $url['scheme'] . '://' . $url['host'] . $url['path'] . ($url['query'] != '' ? '?' . $url['query'] : '');
+		$ch = curl_init($uri);
+
+		if(!$ch){
+			if($this->payment_params->debug)
+				echo 'CURL could not be initialized'. "\r\n\r\n";
+			return false;
+		}
+
+		curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+		curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
+		curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Connection: Close'));
+		curl_setopt($ch, CURLOPT_FAILONERROR,true);
+
+		if($this->payment_params->debug) {
+			echo print_r($data, true) . "\r\n\r\n";
+		}
+
+		$response = curl_exec($ch);
+
+		$errno = curl_errno($ch);
+		$error = curl_error($ch);
+
+		curl_close($ch);
+
+		if (!$response) {
+			if($this->payment_params->debug)
+				echo 'CURL request didn\t return any data'. "\r\n\r\n";
+			return false;
+		}
+
+		if($errno){
+			if($this->payment_params->debug) {
+				echo 'CURL error number: '.$errno. "\r\n\r\n";
+				echo 'CURL error message: '.$error. "\r\n\r\n";
+			}
+		}
+
+		if($this->payment_params->debug) {
+			echo print_r($response, true) . "\r\n\r\n";
+		}
+
+		return $response;
+	}
+
+	function _sendRequestSocket($url, $data){
+		if(!function_exists('fsockopen')) {
+			if($this->payment_params->debug)
+				echo 'fsockopen function does not exist'. "\r\n\r\n";
+			return false;
+		}
+		if(!is_callable('fsockopen')) {
+			if($this->payment_params->debug)
+				echo 'fsockopen function is not callable'. "\r\n\r\n";
+			return false;
+		}
+
+		$fp = fsockopen($url['host_socket'], $url['port'], $errno, $errstr, 30);
+		if(!$fp) {
+			if($this->payment_params->debug)
+				echo 'fsockopen connection couldn\'t be established'. "\r\n\r\n";
+			return false;
+		}
+
+		$uri = $url['path'] . ($url['query'] != '' ? '?' . $url['query'] : '');
+		$header = 'POST '.$uri.' HTTP/1.1'."\r\n".
+			'User-Agent: PHP/'.phpversion()."\r\n".
+			'Referer: '.hikashop_currentURL()."\r\n".
+			'Server: '.$_SERVER['SERVER_SOFTWARE']."\r\n".
+			'Host: '.$url['host']."\r\n".
+			'Content-Type: application/x-www-form-urlencoded'."\r\n".
+			'Content-Length: '.strlen($data)."\r\n".
+			'Accept: */'.'*'."\r\n".
+			'Connection: close'."\r\n\r\n";
+
+		if($this->payment_params->debug) {
+			echo print_r($header, true) . "\r\n\r\n";
+			echo print_r($data, true) . "\r\n\r\n";
+		}
+
+		fwrite($fp, $header . $data);
+		$response = '';
+		while(!feof($fp)) {
+			$response .= fgets($fp, 1024);
+		}
+		fclose ($fp);
+
+		if(empty($response)){
+			if($this->payment_params->debug)
+				echo 'fsockopen request didn\t return any data'. "\r\n\r\n";
+			return false;
+		}
+
+		if($this->payment_params->debug) {
+			echo print_r($response, true) . "\r\n\r\n";
+		}
+
+		$response = substr($response, strpos($response, "\r\n\r\n") + strlen("\r\n\r\n"));
+
+		return $response;
+	}
+
 	function onPaymentConfiguration(&$element) {
 		$subtask = JRequest::getCmd('subtask', '');
 		if($subtask == 'ips') {
@@ -423,6 +520,11 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 				$app->enqueueMessage('When you activate the "Send details of the order" setting, PayPal calculate itself the total amount and round prices during calculations. So you need to have option "Round prices during calculations" turned on in the HikaShop configuration in order for HikaShop to calculate the total in the same way. Otherwise, you might get payments with an amount different than the total amount of the orders and it will create an error.');
 			}
 		}
+
+        if(defined('OPENSSL_VERSION_NUMBER') && OPENSSL_VERSION_NUMBER < 0x009080bf ){
+            $app = JFactory::getApplication();
+            $app->enqueueMessage('The OpenSSL version installed on your server is too old and payment notifications will be rejected by PayPal. Please contact your hosting company in order to update it.');
+        }
 	}
 
 	function onPaymentConfigurationSave(&$element) {

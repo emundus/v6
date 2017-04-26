@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -159,10 +159,10 @@ class TaxViewTax extends hikashopView{
 					$tax_amount = $taxes_info->tax_amount + @$taxes_info->tax_amount_for_shipping + @$taxes_info->tax_amount_for_payment - @$taxes_info->tax_amount_for_coupon;
 					if(!isset($taxes_info->tax_rate)) $taxes_info->tax_rate = $rows[$taxes_info->tax_namekey]->tax_rate;
 					if($taxes_info->tax_rate != 0)
-						$info[$k2]->amount = round($tax_amount/$taxes_info->tax_rate,$currencyClass->getRounding($v->order_currency_id));
+						$info[$k2]->amount = $currencyClass->round($tax_amount/$taxes_info->tax_rate,$currencyClass->getRounding($v->order_currency_id));
 					else
 						$info[$k2]->amount = 0;
-					$info[$k2]->tax_amount = round($tax_amount,$currencyClass->getRounding($v->order_currency_id));
+					$info[$k2]->tax_amount = $currencyClass->round($tax_amount,$currencyClass->getRounding($v->order_currency_id));
 					if($main_currency!=$v->order_currency_id){
 						$info[$k2]->tax_amount_main_currency = $currencyClass->convertUniquePrice($info[$k2]->tax_amount,$v->order_currency_id,$main_currency);
 						$info[$k2]->amount_main_currency = $currencyClass->convertUniquePrice($info[$k2]->amount,$v->order_currency_id,$main_currency);

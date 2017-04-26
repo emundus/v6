@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -125,12 +125,12 @@ class MassactionController extends hikashopController{
 		$actions = JRequest::getVar( 'cid', array(), '', 'array' );
 		$result = true;
 		if(!empty($actions)){
-			$actionsClass = hikashop_get('class.massaction');
+			$massactionClass = hikashop_get('class.massaction');
 			foreach($actions as $action){
-				$data = $actionsClass->get($action);
+				$data = $massactionClass->get($action);
 				if($data){
 					unset($data->massaction_id);
-					if(!$actionsClass->save($data)){
+					if(!$massactionClass->save($data)){
 						$result=false;
 					}
 				}
@@ -148,18 +148,25 @@ class MassactionController extends hikashopController{
 		$num = JRequest::getInt('num');
 		$table = JRequest::getWord('table');
 		$filters = JRequest::getVar('filter');
+
+		if(empty($filters[$table]['type'][$num]))
+			exit;
+
 		$query = new HikaShopQuery();
 		$query->select = 'hk_'.$table.'.*';
 		$query->from = '#__hikashop_'.$table.' as hk_'.$table;
-		if(empty($filters[$table]['type'][$num])) exit;
+
 		$currentType = $filters[$table]['type'][$num];
-		if(empty($filters[$table][$num][$currentType])) exit;
+		if(empty($filters[$table][$num][$currentType]))
+			exit;
+
 		$currentFilterData = $filters[$table][$num][$currentType];
+
 		JPluginHelper::importPlugin('hikashop');
 		$dispatcher = JDispatcher::getInstance();
-		$messages = $dispatcher->trigger('onCount'.ucfirst($table).'MassFilter'.$currentType,array(&$query,$currentFilterData,$num));
+		$messages = $dispatcher->trigger('onCount'.ucfirst($table).'MassFilter'.$currentType, array(&$query, $currentFilterData, $num));
 
-		echo implode(' | ',$messages);
+		echo implode(' | ', $messages);
 		exit;
 	}
 

@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <install version="2.0" type="plugin" plugin="visualchars" core="1" editable="1">
 	<name>WF_VISUALCHARS_TITLE</name>
-	<version>2.6.7.1</version>
-	<creationDate>18-01-2017</creationDate>
+	<version>2.6.11</version>
+	<creationDate>12-04-2017</creationDate>
 	<author>Ryan Demmer</author>
-	<authorEmail>@@e-mail@@</authorEmail>
+	<authorEmail>info@joomlacontenteditor.net</authorEmail>
 	<authorUrl>http://www.joomlacontenteditor.net/</authorUrl>
 	<copyright>Ryan Demmer</copyright>
 	<license>GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html</license>

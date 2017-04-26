@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -22,7 +22,7 @@ if(!hikashop_acl('product/edit/variants') || empty($this->product->product_id))
 	<div style="clear:both"></div>
 </div>
 <div id="hikashop_product_variant_creation_container"></div>
-<table id="hikashop_product_variant_list_table" class="<?php if(!HIKASHOP_RESPONSIVE) echo 'hikam_table '; ?>table table-striped table-hover" style="width:100%;">
+<table id="hikashop_product_variant_list_table" class="<?php if(!HIKASHOP_BACK_RESPONSIVE) echo 'hikam_table '; ?>table table-striped table-hover" style="width:100%;">
 	<thead>
 		<tr>
 			<th style="width:25px; text-align:center">

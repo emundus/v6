@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -30,26 +30,23 @@ class PluginsViewPlugins extends hikashopView{
 		$config =& hikashop_config();
 		$this->assignRef('config', $config);
 
-		$toggle = hikashop_get('helper.toggle');
-		$this->assignRef('toggleClass',$toggle);
-
-		$currencyClass = hikashop_get('class.currency');
-		$this->assignRef('currencyClass', $currencyClass);
-		$zoneClass = hikashop_get('class.zone');
-		$this->assignRef('zoneClass', $zoneClass);
-
+		$this->loadRef(array(
+			'toggleClass' => 'helper.toggle',
+			'currencyClass' => 'class.currency',
+			'zoneClass' => 'class.zone',
+			'searchType' => 'type.search',
+		));
 		$manage = hikashop_isAllowed($config->get('acl_plugins_manage','all'));
 		$this->assignRef('manage',$manage);
 
 		$type = $app->getUserStateFromRequest(HIKASHOP_COMPONENT.'.plugin_type', 'plugin_type', 'shipping');
 		$this->assignRef('plugin_type',$type);
 
-		if(HIKASHOP_J16){
-			$query='SELECT * FROM '.hikashop_table('extensions',false).' WHERE type=\'plugin\' AND enabled = 1 AND access <> 1 AND (folder=\'hikashoppayment\' OR folder=\'hikashopshipping\') ORDER BY ordering ASC';
+		if(HIKASHOP_J16) {
+			$query = 'SELECT * FROM '.hikashop_table('extensions',false).' WHERE type=\'plugin\' AND enabled = 1 AND access <> 1 AND (folder=\'hikashoppayment\' OR folder=\'hikashopshipping\') ORDER BY ordering ASC';
 			$db->setQuery($query);
 			$plugins = $db->loadObjectList();
-			if (!empty($plugins))
-			{
+			if(!empty($plugins)) {
 				$s = '(';
 				foreach ($plugins as $p)
 					$s .= $p->name.', ';
@@ -144,7 +141,6 @@ class PluginsViewPlugins extends hikashopView{
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-listing'),
 			'dashboard'
 		);
-
 
 		return true;
 	}
@@ -683,6 +679,11 @@ class PluginsViewPlugins extends hikashopView{
 
 					case 'html':
 						$html .= $value[2];
+						break;
+					default:
+						if(method_exists($this->plugin, 'pluginConfigDisplay')){
+							$html .= $this->plugin->pluginConfigDisplay($value[1], @$value[2], $type, $paramsType, $key, $this->element);
+						}
 						break;
 				}
 

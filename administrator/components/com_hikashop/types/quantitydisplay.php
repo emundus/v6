@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,6 +18,7 @@ class hikashopQuantitydisplayType {
 		'show_simple',
 		'show_leftright',
 		'show_simplified',
+		'show_html5',
 		'show_default_div'
 	);
 
@@ -100,7 +101,13 @@ class hikashopQuantitydisplayType {
 		}
 		return $values;
 	}
-	function check($name,$template) {
+
+	function check($name, $template = null) {
+		if($template === null) {
+			$app = JFactory::getApplication();
+			$template = $app->getTemplate();
+		}
+
 		if($name == '' || in_array($name, $this->default))
 			return true;
 		$values = $this->getLayout($template);

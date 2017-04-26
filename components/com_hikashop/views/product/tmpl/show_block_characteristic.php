@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -174,11 +174,14 @@ if(!empty($this->element->main->characteristics)) {
 					echo JHTML::_('content.prepare', preg_replace('#<hr *id="system-readmore" */>#i', '', $variant->product_description));
 				?></td>
 <?php 	}
+
 		if($this->params->get('show_price') && $display['prices']){
 ?>
 				<td class="hikashop_product_price_row hikashop_variants_table_td" data-label="<?php echo JText::_( 'PRICE' ); ?>">
 <?php
-			$this->params->set('from_module',1);
+			if ( ($this->row->product_msrp) == ($this->element->main->product_msrp) )
+				$this->params->set('from_module',1);
+
 			$this->setLayout('listing_price');
 			echo $this->loadTemplate();
 			$this->params->set('from_module',0);
@@ -189,30 +192,23 @@ if(!empty($this->element->main->characteristics)) {
 		if(!$this->params->get('catalogue')) {
 ?>
 				<td class="hikashop_product_add_to_cart_row hikashop_variants_table_td">
-<?php		if ($this->config->get('show_quantity_field') < 2) { ?>
-					<form action="<?php echo hikashop_completeLink('product&task=updatecart'); ?>" method="post" name="hikashop_product_form_<?php echo $this->row->product_id.'_'.$this->params->get('main_div_name'); ?>" enctype="multipart/form-data">
-<?php
-				$this->formName = 'hikashop_product_form_'.$this->row->product_id.'_'.$this->params->get('main_div_name');
-				$this->ajax = 'return hikashopModifyQuantity(\'' . $this->row->product_id . '\',field,\'' . $this->formName . '\',\'cart\');';
-				$this->setLayout('quantity');
+<?php		if ($this->config->get('show_quantity_field') < 2) {
+				$this->params->set('main_div_name','variants');
+	 			$this->setLayout('add_to_cart_ajax');
 				echo $this->loadTemplate();
-
-				if($this->config->get('redirect_url_after_add_cart','stay_if_cart') == 'ask_user') {
-?>
-						<input type="hidden" name="popup" value="1"/>
-<?php			} ?>
-						<input type="hidden" name="hikashop_cart_type_<?php echo $this->row->product_id.'_0'; ?>" id="hikashop_cart_type_<?php echo $this->row->product_id.'_0'; ?>" value="cart"/>
-						<input type="hidden" name="product_id" value="<?php echo $this->row->product_id; ?>" />
-						<input type="hidden" name="module_id" value="0" />
-						<input type="hidden" name="add" value="1"/>
-						<input type="hidden" name="ctrl" value="product"/>
-						<input type="hidden" name="task" value="updatecart"/>
-						<input type="hidden" name="return_url" value="<?php echo urlencode(base64_encode(urldecode($this->redirect_url))); ?>"/>
-					</form>
-<?php
 			} else {
+?>
+					<span class="hikashop_product_stock_count">
+<?php
+				if($this->row->product_quantity > 0)
+					echo (($this->row->product_quantity == 1 && JText::_('X_ITEM_IN_STOCK') != 'X_ITEM_IN_STOCK') ? JText::sprintf('X_ITEM_IN_STOCK', $this->row->product_quantity) : JText::sprintf('X_ITEMS_IN_STOCK', $this->row->product_quantity));
+				elseif($this->row->product_quantity == 0)
+					echo JText::_('NO_STOCK');
+?>
+					</span>
+<?php
 				if($this->row->product_quantity == -1 || $this->row->product_quantity > 0) {
-					if(JRequest::getVar('quantitylayout', 'show_default') != 'show_select') {
+					if(empty($this->quantitylayout) || $this->quantitylayout != 'show_select') {
 ?>
 						<input id="hikashop_listing_quantity_<?php echo $this->row->product_id;?>" type="text" style="width:40px;" name="data[<?php echo $this->row->product_id;?>]" class="hikashop_listing_quantity_field" value="0" />
 <?php 				} else {
@@ -233,8 +229,6 @@ if(!empty($this->element->main->characteristics)) {
 						<input id="hikashop_listing_quantity_<?php echo $this->row->product_id;?>" type="hidden" name="data[<?php echo $this->row->product_id;?>]" value="0" />
 <?php
 					}
-				} else {
-					echo JText::_('NO_STOCK');
 				}
 			}
 ?>
@@ -258,9 +252,9 @@ if(!empty($this->element->main->characteristics)) {
 		$this->row->product_max_per_order = -1;
 		$this->row->product_sale_start = 0;
 		$this->row->product_sale_end = 0;
+		$this->row->formName = 'hikashop_product_form_variants';
 		$this->row->prices = array('filler');
 		$this->params->set('show_quantity_field', 2);
-
 		$this->setLayout('quantity');
 		echo $this->loadTemplate();
 

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -185,8 +185,8 @@ class ViewViewView extends hikashopView{
 							if(file_exists($templatePerJoomlaTemplate->override)){
 								$templatePerJoomlaTemplate->overriden=true;
 							}
-							$templatePerJoomlaTemplate->id = $templatePerJoomlaTemplate->client_id.'|'.$templatePerJoomlaTemplate->template .'|'. $templatePerJoomlaTemplate->type.'|'. $templatePerJoomlaTemplate->type_name.'|'. $templatePerJoomlaTemplate->view.'|'.$templatePerJoomlaTemplate->filename;
-							$key = $templatePerJoomlaTemplate->client_id.'|'.$templatePerJoomlaTemplate->template .'|'.$templatePerJoomlaTemplate->type_name.'|'. $templatePerJoomlaTemplate->view.'|'.$templatePerJoomlaTemplate->filename;
+							$templatePerJoomlaTemplate->id = $templatePerJoomlaTemplate->client_id.'|'.$templatePerJoomlaTemplate->template .'|'. $templatePerJoomlaTemplate->type.'|'. $templatePerJoomlaTemplate->type_name.'|'. $templatePerJoomlaTemplate->view.'|'.$templatePerJoomlaTemplate->file;
+							$key = $templatePerJoomlaTemplate->client_id.'|'.$templatePerJoomlaTemplate->template .'|'.$templatePerJoomlaTemplate->type_name.'|'. $templatePerJoomlaTemplate->view.'|'.$templatePerJoomlaTemplate->file;
 
 							if(!empty($pageInfo->filter->viewType) && $templatePerJoomlaTemplate->view!=$pageInfo->filter->viewType){
 								continue;
@@ -228,8 +228,8 @@ class ViewViewView extends hikashopView{
 											$obj->file = substr($file,0,strlen($file)-4);
 											$obj->override = $filename;
 											$obj->overriden = true;
-											$obj->id = $obj->client_id.'|'.$obj->template.'|'.$obj->type.'|'.$obj->type_name.'|'.$obj->view.'|'.$obj->filename;
-											$key = $obj->client_id.'|'.$obj->template.'|'.$obj->view.'|'.$obj->filename;
+											$obj->id = $obj->client_id.'|'.$obj->template.'|'.$obj->type.'|'.$obj->type_name.'|'.$obj->view.'|'.$obj->file;
+											$key = $obj->client_id.'|'.$obj->template.'|'.$obj->view.'|'.$obj->file;
 											$templates[$key]=$obj;
 										}
 									}

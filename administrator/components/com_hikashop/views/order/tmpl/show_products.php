@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -61,7 +61,7 @@ window.orderMgr.selectProduct = function(el) {
 <?php
 	$null = null;
 	if(hikashop_level(2)){
-		$productFields = $this->fieldsClass->getFields('display:field_product_order_form=1',$null,'product');
+		$productFields = $this->fieldsClass->getFields('display:order_form=1',$null,'product');
 		if(!empty($productFields)) {
 			$usefulFields = array();
 			foreach($productFields as $field){

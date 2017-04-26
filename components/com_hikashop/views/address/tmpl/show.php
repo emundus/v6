@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -26,7 +26,9 @@ $delete_url = 'address&task=delete&subtask='.$this->type.'&cid='.$this->address_
 	if(!isset($this->edit) || $this->edit !== true ) {
 ?>		<div class="hika_edit">
 			<a href="<?php echo hikashop_completeLink($update_url, true);?>" id="<?php echo $uniq_id; ?>_edit" onclick="return window.hikashop.get(this,'<?php echo $this->fieldset_id; ?>');"><img src="<?php echo HIKASHOP_IMAGES; ?>edit.png" alt=""/><span><?php echo JText::_('HIKA_EDIT'); ?></span></a>
-			<a href="<?php echo hikashop_completeLink($delete_url, true);?>" id="<?php echo $uniq_id; ?>_delete" onclick="return window.addressMgr.delete(this,<?php echo $this->address_id; ?>,'<?php echo $uniq_id; ?>','<?php echo $this->type; ?>');"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png" alt=""/><span><?php echo JText::_('HIKA_DELETE'); ?></span></a>
+			<?php if(count($this->addresses)>=2){ ?>
+				<a href="<?php echo hikashop_completeLink($delete_url, true);?>" id="<?php echo $uniq_id; ?>_delete" onclick="return window.addressMgr.delete(this,<?php echo $this->address_id; ?>,'<?php echo $uniq_id; ?>','<?php echo $this->type; ?>');"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png" alt=""/><span><?php echo JText::_('HIKA_DELETE'); ?></span></a>
+			<?php } ?>
 		</div>
 <?php
 	} else {
@@ -41,13 +43,15 @@ $delete_url = 'address&task=delete&subtask='.$this->type.'&cid='.$this->address_
 ?>
 <?php
 $display = 'field_backend';
-if(isset($this->edit) && $this->edit === true ) {
+if(isset($this->edit) && $this->edit === true) {
 ?>
 <table class="admintable table">
 <?php
 	foreach($this->fields as $field){
-		if($field->$display){
-			$fieldname = $field->field_namekey;
+		if(empty($field->$display))
+			continue;
+
+		$fieldname = $field->field_namekey;
 ?>
 	<tr class="hikashop_<?php echo $this->type;?>_address_<?php echo $fieldname;?>" id="hikashop_<?php echo $this->type; ?>_address_<?php echo $fieldname; ?>">
 		<td class="key"><label><?php echo $this->fieldsClass->trans($field->field_realname);?></label></td>
@@ -70,7 +74,6 @@ if(isset($this->edit) && $this->edit === true ) {
 		?></td>
 	</tr>
 <?php
-		}
 	}
 ?>
 </table>
@@ -127,14 +130,16 @@ window.addressMgr.delete = function(el, cid, uid, type) {
 	if(!confirm('<?php echo JText::_('HIKASHOP_CONFIRM_DELETE_ADDRESS', true); ?>'))
 		return false;
 	var w = window, o = w.Oby, d = document;
-	o.xRequest(el.href, null, function(xhr) { if(xhr.status == 200) {
+	o.xRequest(el.href, null, function(xhr) {
+		if(xhr.status != 200)
+			return;
 		if(xhr.responseText == '1') {
 			var target = d.getElementById(uid);
 			if(target) target.parentNode.removeChild(target);
 			window.Oby.fireAjax('hikashop_address_deleted',{'type':type,'cid':cid,'uid':uid,'el':el});
 		} else if(xhr.responseText != '0')
 			o.updateElem(uid, xhr.responseText);
-	}});
+	});
 	return false;
 };
 window.addressMgr.click = function(el, cid, uid, type) { window.Oby.fireAjax('hikashop_address_click',{'type':type,'cid':cid,'uid':uid,'el':el}); }

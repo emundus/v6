@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,57 +11,54 @@ defined('_JEXEC') or die('Restricted access');
 	<div class="hikashop_module_subblock_content">
 		<div class="hikashop_module_subblock_title hikashop_module_edit_display_settings_div_title"><?php echo JText::_('HIKA_PRODUCT_DATA_DISPLAY'); ?></div>
 		<dl class="hika_options">
-			<dt class="hikashop_option_name">
-				<?php echo JText::_('HIKA_OUT_OF_STOCK');?>
-			</dt>
-			<dd class="hikashop_option_value">
-				<?php
-					if(!isset($this->element['show_out_of_stock'])) $this->element['show_out_of_stock'] = '-1';
-					echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[show_out_of_stock]', @$this->element['show_out_of_stock']);
-				?>
-			</dd>
+			<dt class="hikashop_option_name"><?php
+				echo JText::_('HIKA_OUT_OF_STOCK');
+			?></dt>
+			<dd class="hikashop_option_value"><?php
+				if(!isset($this->element['show_out_of_stock']))
+					$this->element['show_out_of_stock'] = -1;
+				echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[show_out_of_stock]', $this->element['show_out_of_stock']);
+			?></dd>
 		</dl>
 		<dl class="hika_options">
-			<dt class="hikashop_option_name">
-				<?php echo hikashop_hktooltip(JText::_('HIKA_PRODUCT_RELATION'), '', JText::_('HIKA_RELATION'), '');?>
-			</dt>
-			<dd>
-				<?php
-				if(!isset($this->element['product_synchronize'])) $this->element['product_synchronize'] = 4;
-				echo $this->productSyncType->display($this->name.'[product_synchronize]' , @$this->element['product_synchronize']); ?>
-			</dd>
+			<dt class="hikashop_option_name"><?php
+				echo hikashop_hktooltip(JText::_('HIKA_PRODUCT_RELATION'), '', JText::_('HIKA_RELATION'), '');
+			?></dt>
+			<dd><?php
+				if(!isset($this->element['product_synchronize']))
+					$this->element['product_synchronize'] = 4;
+				echo $this->productSyncType->display($this->name.'[product_synchronize]', $this->element['product_synchronize']);
+			?></dd>
 		</dl>
 		<dl class="hika_options">
-			<dt class="hikashop_option_name">
-				<label for="data_module__<?php echo $this->type; ?>_recently_viewed"><?php echo JText::_( 'RECENTLY_VIEWED' ); ?></label>
-			</dt>
-			<dd class="hikashop_option_value">
-				<?php
-				if(!isset($this->element['recently_viewed'])) $this->element['recently_viewed'] = '-1';
-				echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[recently_viewed]', @$this->element['recently_viewed']);
-				?>
-			</dd>
+			<dt class="hikashop_option_name"><?php
+				echo JText::_('RECENTLY_VIEWED');
+			?></dt>
+			<dd class="hikashop_option_value"><?php
+				if(!isset($this->element['recently_viewed']) || (int)$this->element['recently_viewed'] == -1)
+					$this->element['recently_viewed'] = 0;
+				echo JHTML::_('hikaselect.booleanlist', $this->name.'[recently_viewed]', '', $this->element['recently_viewed']);
+			?></dd>
 		</dl>
 		<dl class="hika_options">
-			<dt class="hikashop_option_name">
-				<?php echo JText::_('HIKA_LINK_TO_DETAIL_PAGE');?>
-			</dt>
-			<dd class="hikashop_option_value">
-				<?php
-				if(!isset($this->element['link_to_product_page'])) $this->element['link_to_product_page'] = '-1';
-				echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[link_to_product_page]', @$this->element['link_to_product_page']); ?>
-			</dd>
+			<dt class="hikashop_option_name"><?php
+				echo JText::_('HIKA_LINK_TO_DETAIL_PAGE');
+			?></dt>
+			<dd class="hikashop_option_value"><?php
+				if(!isset($this->element['link_to_product_page']))
+					$this->element['link_to_product_page'] = -1;
+				echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[link_to_product_page]', $this->element['link_to_product_page']);
+			?></dd>
 		</dl>
 		<dl class="hika_options">
-			<dt class="hikashop_option_name">
-				<?php echo JText::_('DISPLAY_PRICE');?>
-			</dt>
-			<dd class="hikashop_option_value">
-				<?php
-					if(!isset($this->element['show_price'])) $this->element['show_price'] = '-1';
-					echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[show_price]', @$this->element['show_price']);
-				?>
-			</dd>
+			<dt class="hikashop_option_name"><?php
+				echo JText::_('DISPLAY_PRICE');
+			?></dt>
+			<dd class="hikashop_option_value"><?php
+				if(!isset($this->element['show_price']))
+					$this->element['show_price'] = -1;
+				echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[show_price]', $this->element['show_price']);
+			?></dd>
 		</dl>
 		<dl class="hika_options" id="price_display_type_line">
 			<dt class="hikashop_option_name">

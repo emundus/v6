@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -32,35 +32,32 @@ defined('_JEXEC') or die('Restricted access');
 	</h1>
 <?php if(!empty($this->element->extraData->topEnd)) { echo implode("\r\n",$this->element->extraData->topEnd); } ?>
 </div>
-<?php if(HIKASHOP_RESPONSIVE){ ?>
-	<div class="<?php echo HK_GRID_ROW; ?>">
-<?php } ?>
-
-<div id="hikashop_product_left_part" class="hikashop_product_left_part <?php echo HK_GRID_COL_6; ?>" style="width: 220px;margin-right: 50px;">
-	<?php
+<div class="hk-row-fluid>">
+<div id="hikashop_product_left_part" class="hikashop_product_left_part hkc-md-6" style="width: 220px;margin-right: 50px;">
+<?php
 	if(!empty($this->element->extraData->rightBegin))
 		echo implode("\r\n",$this->element->extraData->rightBegin);
-	?>
+?>
 	<span id="hikashop_product_price_main" class="hikashop_product_price_main" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-		<?php
-		if ($this->params->get('show_price')) {
-			$this->row = & $this->element;
-			$this->setLayout('listing_price');
-			echo $this->loadTemplate();
+<?php
+	if ($this->params->get('show_price')) {
+		$this->row = & $this->element;
+		$this->setLayout('listing_price');
+		echo $this->loadTemplate();
 
-			$availability = ($this->row->product_quantity != 0) ? 'In stock' : 'Out of stock';
-			echo '<span style="display:none;" itemprop="availability" content="' . $availability . '">' . $availability . '</span>';
+?>
+		<meta itemprop="availability" content="http://schema.org/<?php echo ($this->row->product_quantity != 0) ? 'InStock' : 'OutOfstock' ;?>" />
+<?php
 
-			$CurrId = hikashop_getCurrency();
-			$null = null;
-			$currency = $this->currencyHelper->getCurrencies($CurrId, $null);
-			$CurrCode = $currency[$CurrId]->currency_code;
-
-		?>
-			<meta itemprop="priceCurrency" content="<?php echo $CurrCode; ?>" />
-		<?php
+		$CurrId = hikashop_getCurrency();
+		$null = null;
+		$currency = $this->currencyHelper->getCurrencies($CurrId, $null);
+		$CurrCode = $currency[$CurrId]->currency_code;
+?>
+		<meta itemprop="priceCurrency" content="<?php echo $CurrCode; ?>" />
+<?php
 		}
-		?>
+?>
 	</span>
 	<div id="hikashop_product_vote_mini" class="hikashop_product_vote_mini">
 		<?php
@@ -131,38 +128,35 @@ defined('_JEXEC') or die('Restricted access');
 		}
 	}
 	$this->formName = $form;
-	if($this->params->get('show_price')){ ?>
+	if($this->params->get('show_price')) { ?>
 		<span id="hikashop_product_price_with_options_main" class="hikashop_product_price_with_options_main">
 		</span>
-	<?php } ?>
-	<?php $contact = $this->config->get('product_contact',0); ?>
+<?php } ?>
 	<div id="hikashop_product_contact_main" class="hikashop_product_contact_main">
-		<?php
-		if (hikashop_level(1) && ($contact == 2 || ($contact == 1 && !empty ($this->element->product_contact)))) {
-			$empty = '';
-			$params = new HikaParameter($empty);
-			global $Itemid;
-			$url_itemid='';
-			if(!empty($Itemid)){
-				$url_itemid='&Itemid='.$Itemid;
-			}
-			echo $this->cart->displayButton(JText :: _('CONTACT_US_FOR_INFO'), 'contact_us', $params, hikashop_completeLink('product&task=contact&cid=' . $this->element->product_id.$url_itemid), 'window.location=\'' . hikashop_completeLink('product&task=contact&cid=' . $this->element->product_id.$url_itemid) . '\';return false;');
-		}
-		?>
+<?php
+	$contact = $this->config->get('product_contact',0);
+	if(hikashop_level(1) && ($contact == 2 || ($contact == 1 && !empty ($this->element->product_contact)))) {
+		$css_button = $this->config->get('css_button', 'hikabtn');
+?>
+			<a href="<?php echo hikashop_completeLink('product&task=contact&cid=' . (int)$this->element->product_id . $this->url_itemid); ?>" class="<?php echo $css_button; ?>"><?php
+				echo JText::_('CONTACT_US_FOR_INFO');
+			?></a>
+<?php
+	}
+?>
 	</div>
-	<?php
-	if(!empty($this->fields)){
+<?php
+	if(!empty($this->fields)) {
 		$this->setLayout('show_block_custom_main');
 		echo $this->loadTemplate();
 	}
-	?>
+?>
 	<br />
 	<?php if(empty ($this->element->characteristics) || $this->params->get('characteristic_display')!='list'){ ?>
 		<div id="hikashop_product_quantity_main" class="hikashop_product_quantity_main">
 			<?php
 			$this->row = & $this->element;
-			if(empty($this->ajax))
-				$this->ajax = 'if(hikashopCheckChangeForm(\'item\',\'hikashop_product_form\')){ return hikashopModifyQuantity(\'' . $this->row->product_id . '\',field,1' . $form . ',\'cart\'); } else { return false; }';
+			$this->ajax = 'if(hikashopCheckChangeForm(\'item\',\'hikashop_product_form\')){ return hikashopModifyQuantity(\'' . $this->row->product_id . '\',field,1' . $form . ',\'cart\'); } else { return false; }';
 			$this->setLayout('quantity');
 			echo $this->loadTemplate();
 			?>
@@ -186,7 +180,7 @@ defined('_JEXEC') or die('Restricted access');
 		echo implode("\r\n",$this->element->extraData->rightEnd);
 	?>
 </div>
-<div id="hikashop_product_right_part" class="hikashop_product_right_part <?php echo HK_GRID_COL_6; ?>">
+<div id="hikashop_product_right_part" class="hikashop_product_right_part hkc-md-6">
 <?php
 	if(!empty($this->element->extraData->leftBegin)) { echo implode("\r\n",$this->element->extraData->leftBegin); }
 
@@ -197,9 +191,7 @@ defined('_JEXEC') or die('Restricted access');
 	if(!empty($this->element->extraData->leftEnd)) { echo implode("\r\n",$this->element->extraData->leftEnd); }
 ?>
 </div>
-<?php if(HIKASHOP_RESPONSIVE){ ?>
-	</div>
-<?php } ?>
+</div>
 <div id="hikashop_product_bottom_part" class="hikashop_product_bottom_part">
 	<?php
 	if(!empty($this->element->extraData->bottomBegin))

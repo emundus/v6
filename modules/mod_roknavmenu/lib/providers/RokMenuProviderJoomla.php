@@ -2,7 +2,7 @@
 /**
  * @version   $Id: RokMenuProviderJoomla.php 8586 2013-03-20 14:15:35Z steph $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 require_once(dirname(__FILE__) . '/JoomlaRokMenuNode.php');

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -113,10 +113,10 @@ class plgHikashopshippingAupost extends hikashopShippingPlugin {
 					continue;
 				}
 			}
-			if(empty($order->shipping_address_full)){
-				$cart = hikashop_get('class.cart');
-				$address=$app->getUserState( HIKASHOP_COMPONENT.'.shipping_address');
-				$cart->loadAddress($order->shipping_address_full,$address,'object','shipping');
+			if(empty($order->shipping_address_full)) {
+				$cart = hikashop_get('class.cart');;
+				if(isset($order->shipping_address->address_id))
+					$cart->loadAddress($order->shipping_address_full, $order->shipping_address->address_id, 'object', 'shipping');
 			}
 			$rates = array();
 

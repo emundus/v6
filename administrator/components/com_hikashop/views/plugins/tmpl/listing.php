@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,26 +12,21 @@ defined('_JEXEC') or die('Restricted access');
 	<div style="float:right"><?php echo implode(' ', $this->filters); ?></div>
 	<div style="clear:right"></div>
 <?php } ?>
-<form action="index.php?option=<?php echo HIKASHOP_COMPONENT; ?>&amp;ctrl=plugins&plugin_type=<?php echo $this->plugin_type;?>" method="post"  name="adminForm" id="adminForm" enctype="multipart/form-data">
-	<table>
-		<tr>
-			<td width="100%">
-				<?php echo JText::_( 'FILTER' ); ?>:
-				<input type="text" name="search" id="search" value="<?php echo $this->escape($this->pageInfo->search);?>" class="text_area" />
-				<button class="btn" onclick="document.adminForm.limitstart.value=0;this.form.submit();"><?php echo JText::_( 'GO' ); ?></button>
-				<button class="btn" onclick="document.adminForm.limitstart.value=0;document.getElementById('search').value='';this.form.submit();"><?php echo JText::_( 'RESET' ); ?></button>
-			</td>
-			<td nowrap="nowrap">
-<?php
-				if(!empty($this->extrafilters)) {
-					foreach($this->extrafilters as $name => $filterObj) {
-						echo $filterObj->displayFilter($name, $this->pageInfo->filter);
-					}
-				}
-?>
-			</td>
-		</tr>
-	</table>
+<form action="<?php echo hikashop_completeLink('plugins&plugin_type='.$this->plugin_type); ?>" method="post" name="adminForm" id="adminForm" enctype="multipart/form-data">
+
+<div class="hk-row">
+	<div class="hkc-md-5"><?php
+		echo $this->searchType->display('search', $this->pageInfo->search);
+	?></div>
+	<div class="hkc-md-7"><?php
+		if(!empty($this->extrafilters)) {
+			foreach($this->extrafilters as $name => $filterObj) {
+				echo $filterObj->displayFilter($name, $this->pageInfo->filter);
+			}
+		}
+	?></div>
+</div>
+
 <?php $cols = 7; ?>
 <table class="adminlist table table-striped" cellpadding="1">
 	<thead>
@@ -53,8 +48,8 @@ defined('_JEXEC') or die('Restricted access');
 			<th class="title"><?php echo JText::_('HIKA_TYPE');?></th>
 			<th class="title titleorder" style="width:10%;"><?php
 				if($this->ordering->ordering)
-					echo JHTML::_('grid.order',  $this->rows);
-				echo JText::_( 'HIKA_ORDER' );
+					echo JHTML::_('grid.order', $this->rows);
+				echo JText::_('HIKA_ORDER');
 			?></th>
 			<th class="title" style="width:2%;"><?php echo JText::_('HIKA_DELETE');?></th>
 			<th class="title" style="width:2%;"><?php echo JText::_('HIKA_PUBLISHED');?></th>
@@ -94,10 +89,10 @@ if(!empty($this->rows)) {
 		}
 ?>
 		<tr class="row<?php echo $k;?>" id="<?php echo $id;?>">
-			<td align="center"><?php
+			<td class="hk_center"><?php
 				echo $i+1;
 			?></td>
-			<td align="center"><?php
+			<td class="hk_center"><?php
 				echo JHTML::_('grid.id', $i, $plugin->$p_id );
 			?></td>
 			<td>
@@ -151,12 +146,12 @@ if(!empty($this->rows)) {
 <?php } ?>
 				<input type="text" name="order[]" size="5" <?php if(!$this->ordering->ordering) echo 'disabled="disabled"'; ?> value="<?php echo $plugin->$p_order; ?>" class="text_area" style="text-align: center" />
 			</td>
-			<td align="center">
+			<td class="hk_center">
 				<span class=""><?php
 					echo $this->toggleClass->delete($id, $plugin->$p_type.'-'.$plugin->$p_id, $this->plugin_type, true);
 				?></span>
 			</td>
-			<td align="center">
+			<td class="hk_center">
 				<span id="<?php echo $published_id;?>" class="spanloading"><?php echo $this->toggleClass->toggle($published_id, (int)$plugin->$p_published, $this->plugin_type);?></span>
 			</td>
 		</tr>

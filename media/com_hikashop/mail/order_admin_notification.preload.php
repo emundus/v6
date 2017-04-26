@@ -1,14 +1,13 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-
 $app = JFactory::getApplication();
 $config = hikashop_config();
 $orderClass = hikashop_get('class.order');
@@ -17,7 +16,7 @@ $productClass = hikashop_get('class.product');
 $fieldsClass = hikashop_get('class.field');
 if(hikashop_level(2)) {
 	$null = null;
-	$itemFields = $fieldsClass->getFields('display:field_item_order_admin_notification=1',$null,'item');
+	$itemFields = $fieldsClass->getFields('display:mail_admin_notif=1',$null,'item');
 }
 
 global $Itemid;
@@ -37,17 +36,11 @@ foreach($fs as $f) {
 $order_url = $data->order_url;
 $mail_status = $data->mail_status;
 $customer = $data->customer;
-$url = $data->order->order_number;
 
 $userClass = hikashop_get('class.user');
 $userClass->get(false);
 $userInfos = $userClass->get($data->order_user_id);
-
 $data->order->order_url = $order_url;
-
-if($config->get('simplified_registration',0)!=2) {
-	$url = '<a href="'.$order_url.'">'. $url.'</a>';
-}
 
 $data->cart = $orderClass->loadFullOrder($data->order_id,true,false);
 $data->cart->coupon = new stdClass();
@@ -67,7 +60,7 @@ if($app->isAdmin()) {
 
 $vars = array(
 	'LIVE_SITE' => HIKASHOP_LIVE,
-	'URL' => $order_url,
+	'URL' => '#',
 	'ORDER_NUMBER' => $data->order_number,
 	'ORDER_LINK' => HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=order&task=edit&order_id='.$data->order_id,
 	'CUSTOMER_DETAILS' => JText::_('HIKA_CUSTOMER_EMAIL').': '.$userInfos->user_email,
@@ -77,12 +70,16 @@ $vars = array(
 	'customer' => $customer,
 	'billing_address' => @$data->cart->billing_address,
 	'shipping_address' => @$data->cart->shipping_address,
+
+	'TPL_HEADER' => (bool)@$customer->user_cms_id,
+	'TPL_HEADER_URL' => $order_url,
 );
 $texts = array(
 	'BILLING_ADDRESS' => JText::_('HIKASHOP_BILLING_ADDRESS'),
 	'SHIPPING_ADDRESS' => JText::_('HIKASHOP_SHIPPING_ADDRESS'),
 	'SUMMARY_OF_THE_ORDER' => JText::_('SUMMARY_OF_THE_ORDER'),
 	'MAIL_HEADER' => JText::_('HIKASHOP_MAIL_HEADER'),
+	'TPL_HEADER_TEXT' => JText::_('HIKASHOP_MAIL_HEADER'),
 	'PRODUCT_NAME' => JText::_('CART_PRODUCT_NAME'),
 	'PRODUCT_CODE' => JText::_('CART_PRODUCT_CODE'),
 	'PRODUCT_PRICE' => JText::_('CART_PRODUCT_UNIT_PRICE'),
@@ -126,7 +123,7 @@ if(!empty($data->cart->products)){
 	$texts['CUSTOMFIELD_NAME'] = '';
 	$texts['FOOTER_COLSPAN'] = 3;
 	if(hikashop_level(1)){
-		$fields = $fieldsClass->getFields('display:field_product_order_admin_notification=1',$null,'product');
+		$fields = $fieldsClass->getFields('display:mail_admin_notif=1',$null,'product');
 		if(!empty($fields)){
 			$product_customfields = array();
 			$usefulFields = array();
@@ -429,7 +426,7 @@ ob_start();
 
 	$sep = '';
 	if(hikashop_level(2)) {
-		$fields = $fieldsClass->getFields('display:field_order_admin_notification=1',$data,'order','');
+		$fields = $fieldsClass->getFields('display:mail_admin_notif=1',$data,'order','');
 		foreach($fields as $fieldName => $oneExtraField) {
 			if(empty($data->cart->$fieldName))
 				continue;

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -38,43 +38,39 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 	var $doc_form = 'paypalexpress';
 	var $button = '';
 
-	function __construct(&$subject, $config) {
-		$datehash = time();
+	public function __construct(&$subject, $config) {
+		$this->pluginConfig['notification'][0] = JText::sprintf('ALLOW_NOTIFICATIONS_FROM_X', 'Paypal');
 
-		$notif = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&amp;notif_payment='.$this->name.'&tmpl=component&hash='.$datehash;
-		$this->pluginConfig['notification'][0] =  JText::sprintf('ALLOW_NOTIFICATIONS_FROM_X','Paypal');
 		$lang = JFactory::getLanguage();
+		$notif = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&amp;notif_payment='.$this->name.'&tmpl=component&hash='.time();
 		$this->button = ''
 			. '<div id="paypal_express_button" style="width:144px; height:46px; margin-top:15px;"><a href="'.$notif
 			. '&setExpressCheckout=1"><img src="https://fpdbs.paypal.com/dynamicimageweb?cmd=_dynamic-image&buttontype'
-			. '=ecshortcut&locale='.str_replace('-','_',$lang->get('tag')).'" align="left"></a></div>';
+			. '=ecshortcut&locale='.str_replace('-','_',$lang->get('tag')).'"></a></div>';
 
 		return parent::__construct($subject, $config);
 	}
 
-	function onPaymentDisplay(&$order,&$methods,&$usable_methods) {
+	public function onPaymentDisplay(&$order, &$methods, &$usable_methods) {
 	}
 
-	function onAfterOrderConfirm(&$order,&$methods,$method_id) {
-		parent::onAfterOrderConfirm($order,$methods,$method_id);
-
+	public function onAfterOrderConfirm(&$order, &$methods, $method_id) {
+		parent::onAfterOrderConfirm($order, $methods, $method_id);
 	}
 
-	function getPaymentDefaultValues(&$element) { 
-
-		$element->payment_name='PaypalExpress';
-		$element->payment_description='You can pay by credit card using this payment method';
-		$element->payment_images='MasterCard,VISA,Credit_card,American_Express';
-		$element->payment_params->address_type="billing";
-		$element->payment_params->apiversion='109.0';
-		$element->payment_params->landingpage=1;
-		$element->payment_params->notification=1;
-		$element->payment_params->invalid_status='cancelled';
-		$element->payment_params->verified_status='confirmed';
+	public function getPaymentDefaultValues(&$element) {
+		$element->payment_name = 'PaypalExpress';
+		$element->payment_description = 'You can pay by credit card using this payment method';
+		$element->payment_images = 'MasterCard,VISA,Credit_card,American_Express';
+		$element->payment_params->address_type = 'billing';
+		$element->payment_params->apiversion = '109.0';
+		$element->payment_params->landingpage = 1;
+		$element->payment_params->notification = 1;
+		$element->payment_params->invalid_status = 'cancelled';
+		$element->payment_params->verified_status = 'confirmed';
 	}
 
-	function onPaymentNotification(&$statuses) {
-
+	public function onPaymentNotification(&$statuses) {
 		$cartClass = hikashop_get('class.cart');
 		$cart = $cartClass->loadFullCart(true);
 		$currencyClass = hikashop_get('class.currency');
@@ -83,7 +79,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 
 		$app = JFactory::getApplication();
 
-		if(!empty($_SESSION['paypal_express_checkout_payment_method'] ) ) 
+		if(!empty($_SESSION['paypal_express_checkout_payment_method'] ) )
 			$this->pluginParams($_SESSION['paypal_express_checkout_payment_method']->payment_id);
 		else
 			$this->pluginParams();
@@ -95,7 +91,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 		$notify_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment='.$this->name.'&tmpl=component'.$url_menu_id;
 		$return_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=after_end'.$url_menu_id;
 
-		$amountTheorical = (isset($cart->full_total->prices[0]->price_value_without_payment_with_tax) ) ? 
+		$amountTheorical = (isset($cart->full_total->prices[0]->price_value_without_payment_with_tax) ) ?
 			round($cart->full_total->prices[0]->price_value_without_payment_with_tax,2) : round($cart->full_total->prices[0]->price_value_with_tax,2);
 
 		$vars = $this->getRequestDatas();
@@ -118,7 +114,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 
 					$productprice = 0;
 					$optionalProdDesc = '';
-					if($p->cart_product_quantity<=0) 
+					if($p->cart_product_quantity<=0)
 						continue;
 
 					if($group) {
@@ -129,9 +125,9 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 						foreach ($cart->products as $p2) {
 							if ($p2->cart_product_option_parent_id == $p->cart_product_id) {
 
-								if(isset($p2->prices[0]->unit_price) ) 
+								if(isset($p2->prices[0]->unit_price) )
 									$unit2 =& $p2->prices[0]->unit_price;
-								else 
+								else
 									$unit2 =& $p2->prices[0];
 
 								$productprice += round($unit2->price_value,2);
@@ -258,7 +254,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 				if ($vars['ACK']=='Success') {
 
 					$datehash = time();
-					$url = ($this->plugin_params->sandbox) ? 
+					$url = ($this->plugin_params->sandbox) ?
 						'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token='.$vars['TOKEN'].'&hash='.$datehash
 						: 'https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token='.$vars['TOKEN'].'&hash='.$datehash;
 
@@ -273,9 +269,9 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 				}
 				else {
 
-					if($this->plugin_params->debug){
+					$error = 'Connection failure - error code : '.$vars['L_ERRORCODE0'].' , error message : '.$vars['L_LONGMESSAGE0'];
 
-						$error = 'Connection failure - error code : '.$vars['L_ERRORCODE0'].' , error message : '.$vars['L_LONGMESSAGE0'];
+					if($this->plugin_params->debug){
 						$this->writeToLog('Fail at step 0 :'.$error);
 						$this->writeToLog(print_r($varform,true));
 					}
@@ -295,7 +291,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 			$dbOrder = $this->getOrder($orderid);
 			$this->loadOrderData($dbOrder);
 
-			if(!empty($dbOrder->order_payment_id)) 
+			if(!empty($dbOrder->order_payment_id))
 				$this->pluginParams($dbOrder->order_payment_id);
 
 			$cancel_url .= '&order_id='.$orderid.$this->url_itemid;
@@ -388,7 +384,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 
 							$productprice = 0;
 							$optionalProdDesc = '';
-							if($p->cart_product_quantity<=0) 
+							if($p->cart_product_quantity<=0)
 								continue;
 
 							if($group) {
@@ -399,9 +395,9 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 								foreach ($cart->products as $p2) {
 									if ($p2->cart_product_option_parent_id == $p->cart_product_id) {
 
-										if(isset($p2->prices[0]->unit_price) ) 
+										if(isset($p2->prices[0]->unit_price) )
 											$unit2 =& $p2->prices[0]->unit_price;
-										else 
+										else
 											$unit2 =& $p2->prices[0];
 
 										$productprice += round($unit2->price_value,2);
@@ -556,100 +552,134 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 		}
 	}
 
-	function onHikashopBeforeDisplayView(&$element) {
-
+	public function onHikashopBeforeDisplayView(&$element) {
 		$this->pluginParams();
 		$this->layout =  $element->getLayout();
-		if (isset($element->ctrl))
-			if($element->ctrl=='checkout' && $this->layout=='step' && $this->canDisplayButton($element))
+		if(isset($element->ctrl) && $element->ctrl == 'checkout' && $this->layout == 'step' && $this->canDisplayButton($element)) {
+			if(isset($element->extraData)) {
+				if(!isset($element->extraData->bottom))
+					$element->extraData->bottom = array();
+				$element->extraData->bottom[] = $this->button;
+			} else {
 				ob_start();
-	}
-
-	function onHikashopAfterDisplayView(&$element) {
-
-		if (isset($element->ctrl) ) {
-
-			if ($element->ctrl=='product' && $this->layout=='cart' && $element->element->cart_type=='cart' && $this->canDisplayButton($element,'cart') )
-				echo $this->button;
-
-			elseif($element->ctrl=='checkout' && $this->layout=='step' && $this->canDisplayButton($element) ) {
-
-				$contenttable = array();
-				$contentth = array();
-				$inserthtml = '<tr>';
-				$html = ob_get_clean();
-
-				if (preg_match_all('#<div id="hikashop_checkout_cart"(.*?)</table>#iUs',$html,$contenttable) ) {
-
-					$old_cart = $contenttable[0][0];
-					preg_match_all('#</th>#i',$old_cart,$contentth);
-
-					for ($i=0 ; $i<count($contentth[0])-2 ; $i++) //2 dynamic
-						$inserthtml .= '<td></td>';
-
-					$inserthtml .= '<td colspan="2">'.$this->button.'</td></tr></tbody>';
-					$new_cart = str_replace('</tbody>',$inserthtml,$old_cart);
-					$html = str_replace($old_cart,$new_cart,$html);
-				}
-				echo $html;
 			}
+			return;
+		}
+
+		if(isset($element->ctrl) && $element->ctrl == 'checkout' && in_array($this->layout, array('show','showblock')) && $this->canDisplayButton($element)) {
+			$checkoutHelper = hikashopCheckoutHelper::get();
+			$workflow_step = hikashop_getCID();
+			if($workflow_step > 0)
+				$workflow_step--;
+			if($workflow_step < 0)
+				$workflow_step = 0;
+
+			foreach($checkoutHelper->checkout_workflow['steps'][$workflow_step]['content'] as $k => &$content) {
+				if($content['task'] != 'cart')
+					continue;
+
+				if(!empty($content['params']['readonly'])) {
+				}
+
+				if(!isset($element->extraData))
+					$element->extraData = array();
+				if(empty($element->extraData[$k]))
+					$element->extraData[$k] = new stdClass();
+				if(!isset($element->extraData[$k]->bottom))
+					$element->extraData[$k]->bottom = array();
+				$element->extraData[$k]->bottom[] = $this->button;
+			}
+		}
+
+		if(isset($element->extraData) && $element->ctrl == 'product' && $this->layout == 'cart' && !empty($element->element->cart_type) && $element->element->cart_type == 'cart' && $this->canDisplayButton($element,'cart') ) {
+			if(!isset($element->extraData->bottom))
+				$element->extraData->bottom = array();
+			$element->extraData->bottom[] = $this->button;
 		}
 	}
 
-	function canDisplayButton(&$view,$type='checkout') {
+	public function onHikashopAfterDisplayView(&$element) {
+		if(!isset($element->ctrl) )
+			return;
 
+		if(isset($element->extraData))
+			return;
+
+		if ($element->ctrl == 'product' && $this->layout == 'cart' && !empty($element->element->cart_type) && $element->element->cart_type == 'cart' && $this->canDisplayButton($element,'cart') ) {
+			echo $this->button;
+			return;
+		}
+
+		if($element->ctrl == 'checkout' && $this->layout=='step' && $this->canDisplayButton($element) ) {
+			$contenttable = array();
+			$contentth = array();
+			$inserthtml = '<tr>';
+			$html = ob_get_clean();
+
+			if (preg_match_all('#<div id="hikashop_checkout_cart"(.*?)</table>#iUs',$html,$contenttable) ) {
+
+				$old_cart = $contenttable[0][0];
+				preg_match_all('#</th>#i',$old_cart,$contentth);
+
+				for ($i=0 ; $i<count($contentth[0])-2 ; $i++) //2 dynamic
+					$inserthtml .= '<td></td>';
+
+				$inserthtml .= '<td colspan="2">'.$this->button.'</td></tr></tbody>';
+				$new_cart = str_replace('</tbody>',$inserthtml,$old_cart);
+				$html = str_replace($old_cart,$new_cart,$html);
+			}
+			echo $html;
+			return;
+		}
+	}
+
+	protected function canDisplayButton(&$view, $type = 'checkout') {
 		static $method = null;
 
-		if(is_null($method) ) {
+		if(!is_null($method))
+			return is_object($method) && empty($method->errors) && ((!empty($method->payment_params->displaycart) && $type == 'cart') || (!empty($method->payment_params->displaycheckout) && $type == 'checkout'));
 
-			$class = hikashop_get('class.cart');
-			$cart = $class->loadFullCart(true);
-			$methods = $this->loadPaymentMethod('','all',$cart);
+		$cartClass = hikashop_get('class.cart');
+		$cart = $cartClass->getFullCart();
+		$methods = $this->loadPaymentMethod('', 'all', $cart);
 
-			if($methods) {
+		if(empty($methods))
+			return false;
 
-				$already = array();
-				$max = 0;
-
-				foreach($methods as $k => $method) {
-
-					if(!empty($method->payment_params) ) {
-						if (function_exists('hikashop_unserialize') ) $methods[$k]->payment_params = hikashop_unserialize($method->payment_params); 
-						else $methods[$k]->payment_params = @unserialize($method->payment_params);
-					}
-
-					$methods[$k]->enabled = true;
-
-					if(empty($method->ordering)) {
-						$max++;
-						$methods[$k]->ordering = $max;
-					}
-
-					while(isset($already[$methods[$k]->ordering]) ) {
-						$max++;
-						$methods[$k]->ordering = $max;
-					}
-					$already[$methods[$k]->ordering] = true;
-				}
-
-				$usable_methods = array();
-				parent::onPaymentDisplay($cart,$methods,$usable_methods);
-
-				if(count($usable_methods ) ) 
-					$method = reset($usable_methods);
+		$already = array();
+		$max = 0;
+		foreach($methods as $k => $method) {
+			if(!empty($method->payment_params) ) {
+				if(function_exists('hikashop_unserialize'))
+					$methods[$k]->payment_params = hikashop_unserialize($method->payment_params);
+				else
+					$methods[$k]->payment_params = @unserialize($method->payment_params);
 			}
+
+			$methods[$k]->enabled = true;
+
+			if(empty($method->ordering)) {
+				$max++;
+				$methods[$k]->ordering = $max;
+			}
+
+			while(isset($already[$methods[$k]->ordering]) ) {
+				$max++;
+				$methods[$k]->ordering = $max;
+			}
+			$already[$methods[$k]->ordering] = true;
 		}
 
-		if(is_object($method) && empty($method->errors) ) {
+		$usable_methods = array();
+		parent::onPaymentDisplay($cart, $methods, $usable_methods);
 
-			if ( ($method->payment_params->displaycart && $type=='cart') || ($method->payment_params->displaycheckout && $type=='checkout') )
-				return true;
-		}
-		return false;
+		if(count($usable_methods))
+			$method = reset($usable_methods);
+
+		return is_object($method) && empty($method->errors) && ((!empty($method->payment_params->displaycart) && $type == 'cart') || (!empty($method->payment_params->displaycheckout) && $type == 'checkout'));
 	}
 
-	function getPostDatas($string) {
-
+	protected function getPostDatas($string) {
 		$datas = explode('&',$string);
 		$vars = array();
 
@@ -660,8 +690,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 		return $vars;
 	}
 
-	function getRequestDatas() {
-
+	protected function getRequestDatas() {
 		$vars = array();
 		$filter = JFilterInput::getInstance();
 
@@ -673,8 +702,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 		return $vars;
 	}
 
-	function initCurlToPaypal($varform, $sandbox) {
-
+	protected function initCurlToPaypal($varform, $sandbox) {
 		$url = ($sandbox) ? 'https://api-3t.sandbox.paypal.com/nvp' : 'https://api-3t.paypal.com/nvp';
 
 		$post_string = '';
@@ -687,12 +715,12 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 		curl_setopt($request, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($request, CURLOPT_POSTFIELDS, $post_string);
 		curl_setopt($request, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_setopt($request, CURLOPT_SSLVERSION, 6);
 
 		return $request;
 	}
 
-	function createOrder($cart) {
-
+	protected function createOrder($cart) {
 		$app = JFactory::getApplication();
 		$config =& hikashop_config();
 		$shippings = array();
@@ -701,9 +729,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 		$shipping_id = $app->getUserState( HIKASHOP_COMPONENT.'.shipping_id');
 
 		if(!empty($shipping) ) {
-
 			foreach($shipping as $ship) {
-
 				$ship = explode('@', $ship, 2);
 				$current_id = 0;
 				foreach($shipping_id as $sid) {
@@ -841,7 +867,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 									$order->order_tax_info[$tax->tax_namekey]->tax_amount_for_shipping = 0;
 
 								$order->order_tax_info[$tax->tax_namekey]->tax_amount_for_shipping += $tax->tax_amount;
-							} 
+							}
 							else {
 
 								$order->order_tax_info[$tax->tax_namekey] = $tax;
@@ -909,22 +935,22 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 		return $order;
 	}
 
-	function loadOrderId($token) {
-
+	protected function loadOrderId($token) {
 		$db = JFactory::getDBO();
-		$db->setQuery('SELECT history_order_id FROM `#__hikashop_history` hh INNER JOIN `#__hikashop_order` ho '
-			. 'ON hh.history_order_id = ho.order_id WHERE history_data = '.$db->Quote(htmlspecialchars($token)).';');
+		$query = 'SELECT history_order_id FROM `#__hikashop_history` hh '.
+			' INNER JOIN `#__hikashop_order` ho ON hh.history_order_id = ho.order_id '.
+			' WHERE history_data = '.$db->Quote(htmlspecialchars($token)).';';
+		$db->setQuery($query);
 		$datas = $db->loadObjectList();
 		return $datas;
 	}
 
-	function loadPaymentMethod($name,$type,&$cart) {
-
+	protected function loadPaymentMethod($name,$type,&$cart) {
 		static $datas = array();
 		if(empty($name)){
 			$name = $this->name;
 		}
-		if(!isset($datas[$name])){
+		if(!isset($datas[$name])) {
 			$db = JFactory::getDBO();
 			$where = array('payment_type = '.$db->Quote($name),'payment_published=\'1\'');
 
@@ -954,76 +980,64 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 			$datas[$name] = $db->loadObjectList();
 		}
 
-		if (!empty($datas[$name])){
-			if($type=='id'){
-				return $datas[$name][0]->payment_id;
-			}elseif($type=='first'){
-				return $datas[$name][0];
-			}else{
-				return $datas[$name];
-			}
-		}
+		if(empty($datas[$name]))
+			return false;
 
-		return false;
+		if($type == 'id')
+			return $datas[$name][0]->payment_id;
+		if($type == 'first')
+			return $datas[$name][0];
+		return $datas[$name];
 	}
 
-	function createUser($vars) {
-
+	protected function createUser($vars) {
 		$user = new stdClass();
 		$user->user_cms_id = 0;
 		$user->user_email = $vars['EMAIL'];
 		return $user;
 	}
 
-	function createAddress($vars,$userid) {
-
+	protected function createAddress($vars, $userid) {
 		if (empty($userid) )
 			return false;
-		else {
 
-			$db = JFactory::getDBO();
+		$db = JFactory::getDBO();
 
-			if(!empty($vars['PAYMENTREQUEST_0_SHIPTOCOUNTRYCODE'] ) ) {
-
-				$db->setQuery('SELECT zone_namekey FROM `#__hikashop_zone` WHERE zone_code_2 = '.
-				$db->Quote($vars['PAYMENTREQUEST_0_SHIPTOCOUNTRYCODE']).' AND zone_type = \'country\';');
-
-				$country = $db->loadResult();
-			}
-
-			if (empty($country) ) {
-
-				$db->setQuery('SELECT zone_namekey FROM `#__hikashop_zone` WHERE zone_name_english = '.
-					$db->Quote($vars['PAYMENTREQUEST_0_SHIPTOCOUNTRYNAME']).' AND zone_type = \'country\';');
-
-				$country = $db->loadResult();
-
-				if (empty($country))
-					$country = $vars['PAYMENTREQUEST_0_SHIPTOCOUNTRYNAME'];
-			}
-
-			if (empty($vars['PAYMENTREQUEST_0_SHIPTOSTATE'] ) )
-				$state = "NULL";
-			else {
-				$db->setQuery('SELECT zone_namekey FROM `#__hikashop_zone` WHERE zone_code_2 = '
-						.$db->Quote($vars['PAYMENTREQUEST_0_SHIPTOSTATE']).' AND zone_type = \'state\';');
-
-				$state = $db->loadResult();
-
-				if (empty($state) )
-					$state = $vars['PAYMENTREQUEST_0_SHIPTOSTATE'];
-			}
-
-			$address = new stdClass();
-			$address->address_user_id = $userid;
-			$address->address_firstname = $vars['FIRSTNAME'];
-			$address->address_lastname = $vars['LASTNAME'];
-			$address->address_street = $vars['PAYMENTREQUEST_0_SHIPTOSTREET'];
-			$address->address_post_code = $vars['PAYMENTREQUEST_0_SHIPTOZIP'];
-			$address->address_city = $vars['PAYMENTREQUEST_0_SHIPTOCITY'];
-			$address->address_state = $state;
-			$address->address_country = $country;
+		if(!empty($vars['PAYMENTREQUEST_0_SHIPTOCOUNTRYCODE'] ) ) {
+			$db->setQuery('SELECT zone_namekey FROM `#__hikashop_zone` WHERE zone_code_2 = '.
+			$db->Quote($vars['PAYMENTREQUEST_0_SHIPTOCOUNTRYCODE']).' AND zone_type = \'country\';');
+			$country = $db->loadResult();
 		}
+		if (empty($country) ) {
+			$query = 'SELECT zone_namekey FROM `#__hikashop_zone` '.
+				' WHERE zone_name_english = '.$db->Quote($vars['PAYMENTREQUEST_0_SHIPTOCOUNTRYNAME']).' AND zone_type = \'country\';';
+			$db->setQuery($query);
+			$country = $db->loadResult();
+			if (empty($country))
+				$country = $vars['PAYMENTREQUEST_0_SHIPTOCOUNTRYNAME'];
+		}
+
+		if (empty($vars['PAYMENTREQUEST_0_SHIPTOSTATE'] ) ) {
+			$state = "NULL";
+		} else {
+			$query = 'SELECT zone_namekey FROM `#__hikashop_zone` '.
+				' WHERE zone_code_2 = '.$db->Quote($vars['PAYMENTREQUEST_0_SHIPTOSTATE']).' AND zone_type = \'state\';';
+			$db->setQuery($query);
+			$state = $db->loadResult();
+
+			if (empty($state) )
+				$state = $vars['PAYMENTREQUEST_0_SHIPTOSTATE'];
+		}
+
+		$address = new stdClass();
+		$address->address_user_id = $userid;
+		$address->address_firstname = $vars['FIRSTNAME'];
+		$address->address_lastname = $vars['LASTNAME'];
+		$address->address_street = $vars['PAYMENTREQUEST_0_SHIPTOSTREET'];
+		$address->address_post_code = $vars['PAYMENTREQUEST_0_SHIPTOZIP'];
+		$address->address_city = $vars['PAYMENTREQUEST_0_SHIPTOCITY'];
+		$address->address_state = $state;
+		$address->address_country = $country;
 
 		return $address;
 	}

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -17,7 +17,7 @@ class hikashopToggleHelper{
 		$this->token = '&'.hikashop_getFormToken().'=1';
 	}
 
-	function _getToggle($column,$table = '') {
+	function _getToggle($column) {
 		$params = new stdClass();
 		$params->mode = 'pictures';
 		if(!HIKASHOP_J16){
@@ -33,25 +33,32 @@ class hikashopToggleHelper{
 
 	function toggle($id,$value,$table,$extra = null){
 		$column = substr($id,0,strpos($id,'-'));
-		$params = $this->_getToggle($column,$table);
+		$params = $this->_getToggle($column);
 		$newValue = $params->values[$value];
+		$jsparams = '';
+		$url = '';
+		$values = '';
+		if(!empty($extra)){
+			foreach($extra as $k => $v){
+				$jsparams .= ', '.$k;
+				$url .= "+'&extra[".$k."]='+".$k;
+				$values .= ', \''.urlencode($v).'\'';
+			}
+		}
 		if($params->mode == 'pictures'){
 			static $pictureincluded = false;
 			if(!$pictureincluded){
 				$pictureincluded = true;
-				$js = "function joomTogglePicture(id,newvalue,table){
+				$js = "function joomTogglePicture(id, newvalue, table ".$jsparams."){
 					window.document.getElementById(id).className = 'onload';
 					try{
-						new Ajax('index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table,{ method: 'get', update: $(id), onComplete: function() {	window.document.getElementById(id).className = 'loading'; }}).request();
+						new Ajax('index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table".$url.",{ method: 'get', update: $(id), onComplete: function() {	window.document.getElementById(id).className = 'loading'; }}).request();
 					}catch(err){
-						new Request({url:'index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table,method: 'get', onComplete: function(response) { $(id).innerHTML = response; window.document.getElementById(id).className = 'loading'; }}).send();
+						new Request({url:'index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table".$url.",method: 'get', onComplete: function(response) { $(id).innerHTML = response; window.document.getElementById(id).className = 'loading'; }}).send();
 					}
 				}";
-				if (!HIKASHOP_PHP5) {
-					$doc =& JFactory::getDocument();
-				}else{
-					$doc = JFactory::getDocument();
-				}
+
+				$doc = JFactory::getDocument();
 				$doc->addScriptDeclaration( $js );
 			}
 			$desc = empty($params->description[$value]) ? '' : $params->description[$value];
@@ -62,32 +69,67 @@ class hikashopToggleHelper{
 				$text = '<img src="'.$params->pictures[$value].'"/>';
 				$class = '';
 			}
-			return '<a href="javascript:void(0);" '.$class.' onclick="joomTogglePicture(\''.$id.'\',\''.$newValue.'\',\''.$table.'\')" title="'.$desc.'">'.$text.'</a>';
+			return '<a href="javascript:void(0);" '.$class.' onclick="joomTogglePicture(\''.$id.'\', \''.$newValue.'\', \''.$table.'\''.$values.');" title="'.$desc.'">'.$text.'</a>';
 		}elseif($params->mode == 'class'){
 			static $classincluded = false;
 			if(!$classincluded){
 				$classincluded = true;
-				$js = "function joomToggleClass(id,newvalue,table,extra){
+				$js = "function joomToggleClass(id, newvalue, table ".$jsparams."){
 					var mydiv=$(id); mydiv.innerHTML = ''; mydiv.className = 'onload';
 					try{
-						new Ajax('index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table+'&extra[color]='+extra,{ method: 'get', update: $(id), onComplete: function() {	window.document.getElementById(id).className = 'loading'; }}).request();
+						new Ajax('index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table".$url.",{ method: 'get', update: $(id), onComplete: function() {	window.document.getElementById(id).className = 'loading'; }}).request();
 					}catch(err){
-						new Request({url:'index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table+'&extra[color]='+extra,method: 'get', onComplete: function(response) { $(id).innerHTML = response; window.document.getElementById(id).className = 'loading'; }}).send();
+						new Request({url:'index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table".$url.",method: 'get', onComplete: function(response) { $(id).innerHTML = response; window.document.getElementById(id).className = 'loading'; }}).send();
 					}
 				}";
-				if (!HIKASHOP_PHP5) {
-					$doc =& JFactory::getDocument();
-				}else{
-					$doc = JFactory::getDocument();
-				}
+
+				$doc = JFactory::getDocument();
 				$doc->addScriptDeclaration( $js );
 			}
 			$desc = empty($params->description[$value]) ? '' : $params->description[$value];
-			$return = '<a class="btn btn-micro active" href="javascript:void(0);" onclick="joomToggleClass(\''.$id.'\',\''.$newValue.'\',\''.$table.'\',\''.urlencode($extra['color']).'\');" title="'.$desc.'"><div class="'. $params->class[$value] .'" style="background-color:'.$extra['color'].'">';
+			$return = '<a class="btn btn-micro active" href="javascript:void(0);" onclick="joomToggleClass(\''.$id.'\', \''.$newValue.'\', \''.$table.'\''.$values.');" title="'.$desc.'"><div class="'. $params->class[$value] .'" style="background-color:'.$extra['color'].'">';
 			if(!empty($extra['tooltip'])) $return .= JHTML::_('tooltip', $extra['tooltip'], '','','&nbsp;&nbsp;&nbsp;&nbsp;');
 			$return .= '</div></a>';
 			return $return;
 		}
+	}
+
+	function radio($id,$value,$table,$extra = null, $options=array()){
+		$column = substr($id,0,strrpos($id,'-'));
+		$params = $this->_getToggle($column);
+		$newValue = $params->values[$value];
+		$jsparams = '';
+		$url = '';
+		$values = '';
+		if(!empty($extra)){
+			foreach($extra as $k => $v){
+				$jsparams .= ', '.$k;
+				$url .= "+'&extra[".$k."]='+".$k;
+				$values .= ',\''.urlencode($v).'\'';
+			}
+		}
+
+		static $pictureincluded = false;
+		if(!$pictureincluded){
+			$pictureincluded = true;
+			$js = "function joomRadioPicture(id, newvalue, table ".$jsparams."){
+				window.document.getElementById(id).className = 'onload';
+				try{
+					new Ajax('index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table".$url.",{ method: 'get', onComplete: function() {	window.document.getElementById(id).className = 'loading'; }}).request();
+				}catch(err){
+					new Request({url:'index.php?option=com_hikashop&tmpl=component&ctrl=".$this->ctrl.$this->token."&task='+id+'&value='+newvalue+'&table='+table".$url.",method: 'get', onComplete: function(response) { window.document.getElementById(id).className = 'loading'; }}).send();
+				}
+			}";
+			if (!HIKASHOP_PHP5) {
+				$doc =& JFactory::getDocument();
+			}else{
+				$doc = JFactory::getDocument();
+			}
+			$doc->addScriptDeclaration( $js );
+		}
+		$desc = empty($params->description[$value]) ? '' : $params->description[$value];
+		$checked = empty($value) ? '' : 'checked="checked"';
+		return '<input type="radio" '.$checked.' name="'.$column.'" onchange="joomRadioPicture(\''.$id.'\', \''.$newValue.'\', \''.$table.'\''.$values.');" />';
 	}
 
 	function display($column, $value) {

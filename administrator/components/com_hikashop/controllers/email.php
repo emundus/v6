@@ -1,42 +1,76 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class emailController extends hikashopController{
-	var $type='mail';
-	function test(){
-		$this->store();
-		$config =& hikashop_config();
-		$user = hikashop_loadUser(true);
-		$mailClass = hikashop_get('class.mail');
-		$addedName = $config->get('add_names',true) ? $mailClass->cleanText(@$user->name) : '';
-		$mail = new stdClass();
-		$mail->from_name = $config->get('from_name');
-		$mail->from_email = $config->get('from_email');
-		$mail->reply_name = $config->get('reply_name');
-		$mail->reply_email = $config->get('reply_email');
-		$mail->html = 0;
-		$mailClass->AddAddress($user->user_email,$addedName);
-		$mailClass->Subject = 'Test e-mail from '.HIKASHOP_LIVE;
-		$mailClass->Body = 'This test email confirms that your configuration enables HikaShop to send emails normally.';
-		$mail->debug = 1;
-		$result = $mailClass->sendMail($mail);
-		return $this->edit();
+class emailController extends hikashopController {
+	var $type = 'mail';
+
+	function __construct($config = array())
+	{
+		parent::__construct($config);
+		$this->modify_views[]='emailtemplate';
+		$this->modify[]='saveemailtemplate';
+	}
+	public function test() {
 	}
 
-	function remove(){
-		$mail_name = JRequest::getCmd('mail_name');
-		$type = JRequest::getCmd('type');
-		$class = hikashop_get('class.'.$this->type);
-		$num = $class->delete($mail_name,$type);
-		$app = JFactory::getApplication();
-		$app->enqueueMessage(JText::sprintf('SUCC_DELETE_ELEMENTS',$num), 'message');
+	public function edit() {
+		return false;
+	}
+
+	public function remove() {
 		return $this->listing();
+	}
+
+	public function getUploadSetting($upload_key, $caller = '') {
+	}
+
+	public function manageUpload($upload_key, &$ret, $uploadConfig, $caller = '') {
+		if(empty($ret))
+			return;
+	}
+
+	function emailtemplate(){
+		JRequest::setVar('layout', 'emailtemplate');
+		return parent::display();
+	}
+
+	public function saveemailtemplate(){
+		JRequest::checkToken() || die( 'Invalid Token' );
+		$file = JRequest::getCmd('file');
+		$email_name = JRequest::getCmd('email_name');
+
+		jimport('joomla.filesystem.file');
+		$fileName = JFile::makeSafe($file);
+
+		$path = HIKASHOP_MEDIA.'mail'.DS.'template'.DS.$fileName.'.html.modified.php';
+		if(empty($fileName) || $fileName == 'none' || strpos($fileName, DS) !== false || strpos($fileName, '.') !== false || !JPath::check($path)) {
+			hikashop_display(JText::sprintf('FAIL_SAVE','invalid filename'),'error');
+			return $this->emailtemplate();
+		}
+
+		$templatecontent = JRequest::getVar('templatecontent', '', '', 'string', JREQUEST_ALLOWRAW);
+		$templatecontent = trim($templatecontent);
+
+		if(empty($templatecontent)) {
+			if(JFile::exists($path) && JFile::delete($path)) {
+				hikashop_display(JText::sprintf('SUCC_DELETE_ELEMENTS', 1),'success');
+			}
+			return $this->emailtemplate();
+		}
+
+		$ret = JFile::write($path, $templatecontent);
+		if($ret)
+			hikashop_display(JText::_('HIKASHOP_SUCC_SAVED'),'success');
+		else
+			hikashop_display(JText::sprintf('FAIL_SAVE',$path),'error');
+
+		return $this->emailtemplate();
 	}
 }

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -68,6 +68,19 @@ class hikashopDatabaseHelper {
 
 			foreach($fields as $oneField) {
 				$oneField = trim($oneField);
+
+				$pattern='/`(.*)`.*AUTO_INCREMENT/msU';
+				preg_match($pattern, $oneField , $ai_matches);
+				if(isset($ai_matches[1])){
+					$structure[$tableName]['AUTO_INCREMENT'][] = $ai_matches[1];
+				}
+
+				$pattern='/PRIMARY KEY \(`(.*)`\)/msU';
+				preg_match($pattern, $oneField , $pm_matches);
+				if(isset($pm_matches[1])){
+					$structure[$tableName]['PRIMARY_KEY'] = $pm_matches[1];
+				}
+
 				if(substr($oneField,0,1) != '`' || substr($oneField, strlen($oneField) - 1, strlen($oneField)) != ',')
 					continue;
 
@@ -143,6 +156,7 @@ class hikashopDatabaseHelper {
 			try{
 				$this->db->setQuery('SHOW COLUMNS FROM ' . $oneTableName);
 				$fields2 = $this->db->loadObjectList();
+
 			} catch(Exception $e) {
 				$fields2 = null;
 				$msg = $e->getMessage();
@@ -192,7 +206,6 @@ class hikashopDatabaseHelper {
 					$structureDB[$oneTableName][$oneField->Field] = $oneField->Field;
 				}
 			}
-
 		}
 
 		foreach($tableName as $oneTableName) {
@@ -200,7 +213,7 @@ class hikashopDatabaseHelper {
 			if(!empty($structureDB[$oneTableName]))
 				$t = $structureDB[$oneTableName];
 
-			$resultCompare[$oneTableName] = array_diff(array_keys($structure[$oneTableName]), $t);
+			$resultCompare[$oneTableName] = array_diff(array_keys($structure[$oneTableName]), $t, array('AUTO_INCREMENT','PRIMARY_KEY'));
 
 			$table_name = str_replace('#__', '', $oneTableName);
 
@@ -213,6 +226,9 @@ class hikashopDatabaseHelper {
 			}
 
 			foreach($resultCompare[$oneTableName] as $oneField) {
+				if($oneField == 'AUTO_INCREMENT' || $oneField == 'PRIMARY_KEY')
+					continue;
+
 				$ret[] = array(
 					'info',
 					sprintf('Field "%s" missing in %s', $oneField, $table_name)
@@ -240,6 +256,149 @@ class hikashopDatabaseHelper {
 					$ret[] = array(
 						'success',
 						sprintf('Field "%s" added in the table "%s"', $oneField, $table_name)
+					);
+				}
+			}
+		}
+
+		foreach($tableName as $oneTableName) {
+			$msg = '';
+			$fields2 = null;
+			try{
+				$this->db->setQuery('SHOW COLUMNS FROM ' . $oneTableName);
+				$fields2 = $this->db->loadObjectList();
+			} catch(Exception $e) {
+				$fields2 = null;
+				$msg = $e->getMessage();
+			}
+			$table_name = str_replace('#__', '', $oneTableName);
+
+			if(empty($fields2))
+				continue;
+
+			$primary_keys = array();
+			if(isset($structure[$oneTableName]['PRIMARY_KEY'])){
+				if(strpos($structure[$oneTableName]['PRIMARY_KEY'], "`,`") !== false)
+					$primary_keys = explode( "`,`", $structure[$oneTableName]['PRIMARY_KEY']);
+				else
+					$primary_keys[] = $structure[$oneTableName]['PRIMARY_KEY'];
+			}
+
+			$auto_increments = array();
+			if(isset($structure[$oneTableName]['AUTO_INCREMENT'])){
+				$auto_increments = $structure[$oneTableName]['AUTO_INCREMENT'];
+			}
+
+			$deletePrimary = false;
+			foreach($fields2 as $oneField) {
+				if(in_array($oneField->Field, $primary_keys) && (empty($oneField->Key) || $oneField->Key != 'PRI')) {
+					$deletePrimary = true;
+					break;
+				}
+			}
+
+			if(!empty($deletePrimary)) {
+				$query = 'SELECT '. implode(',',$primary_keys).', count(*) AS counter FROM '. $oneTableName .
+						' GROUP BY '. implode(',',$primary_keys) .
+						' HAVING counter > 1';
+				try{
+					$this->db->setQuery($query);
+					$duplication_primarykeys = $this->db->loadObjectList();
+				} catch(Exception $e) {
+					$ret[] = array(
+						'error',
+						$e->getMessage()
+					);
+					$duplication_primarykeys = false;
+				}
+
+				if(is_array($duplication_primarykeys) && !empty($duplication_primarykeys) && count($duplication_primarykeys)) {
+					$where = ' WHERE ';
+					$where_conditions = array();
+					foreach($duplication_primarykeys as $duplication_primarykey){
+						$first_duplication = true;
+						$where_condition = '';
+						foreach($duplication_primarykey as $duplication_key => $duplication_value){
+							if($duplication_key == 'counter')
+								continue;
+
+							if(!$first_duplication)
+								$where_condition .= ' AND ';
+							else
+								$first_duplication = false;
+
+							$where_condition .= $duplication_key . ' = ' . $duplication_value;
+						}
+						$where_conditions[] = $where_condition;
+					}
+
+					if(!empty($where_conditions)){
+						$where .= implode(' OR ',$where_conditions);
+
+						$query = 'DELETE FROM '.$oneTableName . $where.';';
+						try{
+							$this->db->setQuery($query);
+							$result = $this->db->query();
+						} catch(Exception $e) {
+							$ret[] = array(
+								'error',
+								$e->getMessage()
+							);
+							$result = false;
+						}
+
+						if($result) {
+							$ret[] = array(
+								'info',
+								'Element(s) of the table "'.$table_name.'" with the same ID deleted'
+							);
+						}
+					}
+				}
+
+				try{
+					$query = 'ALTER TABLE '.$oneTableName.' ADD PRIMARY KEY('.implode(',',$primary_keys).')';
+					$this->db->setQuery($query);
+					$result = $this->db->query();
+				} catch(Exception $e) {
+					$ret[] = array(
+						'error',
+						$e->getMessage()
+					);
+					$result = false;
+				}
+				if($result){
+					$ret[] = array(
+						'info',
+						'Primary key(s) for the table "'.$table_name.'" fixed'
+					);
+				}
+			}
+
+			foreach($fields2 as $oneField) {
+				if(!in_array($oneField->Field, $auto_increments) || $oneField->Extra == 'auto_increment')
+					continue;
+
+				try{
+					$query = 'ALTER TABLE '.$oneTableName.' MODIFY COLUMN '.$oneField->Field . ' ';
+
+					if(!empty($oneField->Type))
+						$query.= $oneField->Type . ' ';
+
+					$query.= 'auto_increment';
+					$this->db->setQuery($query);
+					$result = $this->db->query();
+				} catch(Exception $e) {
+					$ret[] = array(
+						'error',
+						$e->getMessage()
+					);
+					$result = false;
+				}
+				if($result){
+					$ret[] = array(
+						'info',
+						'Auto increments for the table "'.$table_name.'" fixed'
 					);
 				}
 			}
@@ -326,6 +485,128 @@ class hikashopDatabaseHelper {
 				$ret[] = array(
 					'success',
 					'Variants orphan links cleaned'
+				);
+			}
+		} catch(Exception $e) {
+			$ret[] = array(
+				'error',
+				$e->getMessage()
+			);
+		}
+
+		$query = 'SELECT COUNT(*) FROM `#__hikashop_orderstatus`';
+		try{
+			$this->db->setQuery($query);
+			$result = $this->db->loadResult();
+
+			if(empty($result)) {
+				$query = 'INSERT IGNORE INTO `#__hikashop_orderstatus` (orderstatus_name, orderstatus_description, orderstatus_published, orderstatus_ordering, orderstatus_namekey) '.
+						' SELECT category_name, category_description, category_published, category_ordering, category_namekey FROM `#__hikashop_category` AS c '.
+						' WHERE c.category_type = \'status\' AND c.category_depth > 1';
+				$this->db->setQuery($query);
+				$result = $this->db->query();
+
+				if($result){
+					$ret[] = array(
+						'success',
+						'Order statuses imported'
+					);
+				}
+			}
+		} catch(Exception $e) {
+			$ret[] = array(
+				'error',
+				$e->getMessage()
+			);
+		}
+
+		$query = 'SELECT DISTINCT order_status COLLATE utf8_bin FROM `#__hikashop_order` WHERE order_type = \'sale\'';
+		try{
+			$this->db->setQuery($query);
+			if(!HIKASHOP_J25) {
+				$statuses_in_orders = $this->db->loadResultArray();
+			} else {
+				$statuses_in_orders = $this->db->loadColumn();
+			}
+
+			$query = 'SELECT * FROM `#__hikashop_orderstatus`';
+			$this->db->setQuery($query);
+			$order_statuses = $this->db->loadObjectList();
+		} catch(Exception $e) {
+			$ret[] = array(
+				'error',
+				$e->getMessage()
+			);
+		}
+		if(!empty($statuses_in_orders) && !empty($order_statuses)) {
+			$moves = array();
+			$invalids = array();
+			foreach($statuses_in_orders as $status_in_orders) {
+				$f = false;
+				foreach($order_statuses as $order_status) {
+					if($order_status->orderstatus_namekey == $status_in_orders) {
+						$f = true;
+						break;
+					}
+					if($order_status->orderstatus_name == $status_in_orders) {
+						$f = $order_status->orderstatus_namekey;
+					}
+				}
+				if($f === false) {
+					$invalids[] = $status_in_orders;
+				} elseif($f !== true) {
+					$moves[$status_in_orders] = $f;
+				}
+			}
+			foreach($moves as $old => $new) {
+				try{
+					$query = 'UPDATE `#__hikashop_order` SET order_status = ' . $this->db->Quote($new).' WHERE order_status = '.$this->db->Quote($old);
+					$this->db->setQuery($query);
+					$this->db->query();
+					$ret[] = array(
+						'warning',
+						'Orders with order statuses `'.$old.'` changed to `'.$new.'`'
+					);
+				} catch(Exception $e) {
+					$ret[] = array(
+						'error',
+						$e->getMessage()
+					);
+				}
+			}
+			foreach($invalids as $invalid) {
+				$ret[] = array(
+					'error',
+					'The order status `'.$invalid.'` is not found but orders with that status exist'
+				);
+			}
+		}
+
+		$query = 'INSERT IGNORE INTO `#__hikashop_user` (`user_email`,`user_cms_id`,`user_created`) SELECT `email`, `id`,'.time().' FROM `#__users`';
+		$this->db->setQuery($query);
+		try{
+			$result = $this->db->query();
+			if($result){
+				$ret[] = array(
+					'success',
+					'Joomla users synchronized'
+				);
+			}
+		} catch(Exception $e) {
+			$ret[] = array(
+				'error',
+				$e->getMessage()
+			);
+		}
+
+		$query = 'UPDATE `#__hikashop_user` AS hku JOIN `#__users` AS ju ON hku.`user_email`=ju.`email` SET hku.`user_cms_id`=ju.`id` WHERE hku.`user_cms_id`!=ju.`id`';
+		$this->db->setQuery($query);
+		try{
+			$result = $this->db->query();
+			if($result){
+				$ret[] = array(
+					'success',
+					'User email addresses synchronized'
 				);
 			}
 		} catch(Exception $e) {

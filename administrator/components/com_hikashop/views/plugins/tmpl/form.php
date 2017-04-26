@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -223,6 +223,18 @@ function hika_payment_algorithm(el) {
 					<td>
 						<input type="text" name="data[shipping][shipping_params][shipping_price_per_product]" value="<?php echo @$this->element->shipping_params->shipping_price_per_product; ?>" />
 					</td>
+				</tr>
+				<tr>
+					<td class="key">
+						<label for="data[shipping][shipping_params][shipping_virtual_included]"><?php echo JText::_( 'INCLUDE_VIRTUAL_PRODUCTS_PRICE' ); ?></label>
+					</td>
+					<td><?php
+						if(!isset($this->element->shipping_params->shipping_virtual_included)){
+							$config = hikashop_config();
+							$this->element->shipping_params->shipping_virtual_included = $config->get('force_shipping',1);
+						}
+						echo JHTML::_('hikaselect.booleanlist', "data[shipping][shipping_params][shipping_virtual_included]" , '',$this->element->shipping_params->shipping_virtual_included);
+					?></td>
 				</tr>
 				<tr>
 					<td class="key">
@@ -457,18 +469,6 @@ function hika_payment_algorithm(el) {
 					<td>
 						<input type="text" name="data[shipping][shipping_params][shipping_max_price]" value="<?php echo @$this->element->shipping_params->shipping_max_price; ?>" />
 					</td>
-				</tr>
-				<tr>
-					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_virtual_included]"><?php echo JText::_( 'INCLUDE_VIRTUAL_PRODUCTS_PRICE' ); ?></label>
-					</td>
-					<td><?php
-						if(!isset($this->element->shipping_params->shipping_virtual_included)){
-							$config = hikashop_config();
-							$this->element->shipping_params->shipping_virtual_included = $config->get('force_shipping',1);
-						}
-						echo JHTML::_('hikaselect.booleanlist', "data[shipping][shipping_params][shipping_virtual_included]" , '',$this->element->shipping_params->shipping_virtual_included);
-					?></td>
 				</tr>
 				<tr>
 					<td class="key">

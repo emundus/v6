@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -27,6 +27,13 @@ class ToggleController extends HikashopBridgeController {
 		$value =  JRequest::getVar('value','','','cmd');
 		$controllerName =  JRequest::getVar('table','','','word');
 
+		$extra = JRequest::getVar('extra',array(),'','array');
+		if(!empty($extra)){
+			foreach($extra as $key => $val){
+				$extra[$key] = urldecode($val);
+			}
+		}
+
 		$controller = hikashop_get('controller.'.$controllerName);
 		if(empty($controller)) {
 			echo 'No controller';
@@ -38,7 +45,42 @@ class ToggleController extends HikashopBridgeController {
 			exit;
 		}
 		$function = $controllerName.$task;
-		if(method_exists($this,$function)){
+		if(!empty($extra['trigger'])){
+			$parts = explode('.',$extra['trigger']);
+			if(@$parts[0] == 'fct' && !empty($parts[1]) && method_exists($this,$parts[1])){
+				$function = $parts[1];
+				$this->$function($elementPkey,$value, $extra);
+			}elseif(@$parts[0] == 'plg' && !empty($parts[1]) && !empty($parts[2]) && !empty($parts[3])){
+				$pluginInstance = hikashop_import($parts[1], $parts[2]);
+				if(empty($pluginInstance)){
+					echo 'No plugin';
+					exit;
+				}
+
+				if(!method_exists($pluginInstance, 'onOrderStatusListingLoad')){
+					echo 'No onOrderStatusListingLoad function';
+					exit;
+				}
+
+				$function = $parts[3];
+				if(!method_exists($pluginInstance, $function)){
+					echo 'No function '.$function;
+					exit;
+				}
+
+				$orderstatus_columns = array();
+				$rows = array();
+				$pluginInstance->onOrderStatusListingLoad($orderstatus_columns, $rows);
+				$found = false;
+				foreach($orderstatus_columns as $s){
+					if(isset($s['trigger']) && $s['trigger'] == $extra['trigger']){
+						$found = true;
+					}
+				}
+				if($found)
+					$pluginInstance->$function($this, $elementPkey, $value, $extra);
+			}
+		}elseif(method_exists($this,$function)){
 			$this->$function($elementPkey,$value);
 		}else{
 			if(isset($controller->type)){
@@ -76,13 +118,10 @@ class ToggleController extends HikashopBridgeController {
 			}
 		}
 		$toggleHelper = hikashop_get('helper.toggle');
-		$extra = JRequest::getVar('extra',array(),'','array');
-		if(!empty($extra)){
-			foreach($extra as $key => $val){
-				$extra[$key] = urldecode($val);
-			}
-		}
-		echo $toggleHelper->toggle(JRequest::getCmd('task',''),$value,$controllerName,$extra);
+		$type = @$extra['type'];
+		if(!in_array($type, array('radio','toggle')))
+			$type = 'toggle';
+		echo $toggleHelper->$type(JRequest::getCmd('task',''),$value,$controllerName,$extra);
 		exit;
 	}
 
@@ -137,6 +176,31 @@ class ToggleController extends HikashopBridgeController {
 				}
 			}
 		}
+	}
+
+	function configstatus($elementPkey,$value, $extra){
+		if(empty($extra['key'])){
+			return false;
+		}
+		$config =& hikashop_config();
+		$currentValue = $config->get($extra['key'],@$extra['default_value']);
+		$currentValue = explode(',',$currentValue);
+		if($extra['type'] == 'radio'){
+			$currentValue = array($elementPkey);
+		}else{
+			if($value){
+				if(!in_array($elementPkey,$currentValue)){
+					$currentValue[] = $elementPkey;
+				}
+			}else{
+				if(in_array($elementPkey,$currentValue)){
+					$key = array_search($elementPkey,$currentValue);
+					unset($currentValue[$key]);
+				}
+			}
+		}
+		$data = array($extra['key']=>trim(implode(',',$currentValue),','));
+		$config->save($data);
 	}
 
 	function configconfig_value($elementPkey,$value){

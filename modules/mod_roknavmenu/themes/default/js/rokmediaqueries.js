@@ -1,7 +1,7 @@
 /*
  * @version    $Id: rokmediaqueries.js 4586 2012-10-27 01:50:24Z btowles $
  * @author        RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
  * @license    http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 ((function(){window.matchMedia=window.matchMedia||window.msMatchMedia||(function(e,f){var c,a=e.documentElement,b=a.firstElementChild||a.firstChild,d=e.createElement("body"),g=e.createElement("div");

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -32,7 +32,7 @@ class hikashopModulesClass extends hikashopClass{
 	}
 
 	function loadParams(&$result){
-		if(!empty($result->params)){
+		if(!empty($result->params) && is_string($result->params)){
 			if(version_compare(JVERSION,'1.6','<')){
 				$lines = explode("\n",$result->params);
 				$result->params = array();
@@ -198,7 +198,7 @@ class hikashopModulesClass extends hikashopClass{
 				return false;
 		}
 		if($ctrl == 'checkout' && (int)$params->get('display_on_checkout_page', 1) == 0) {
-				return false;
+			return false;
 		}
 
 		return true;

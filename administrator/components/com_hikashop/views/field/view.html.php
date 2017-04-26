@@ -1,28 +1,28 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?>
-<?php
+?><?php
+class FieldViewField extends hikashopView {
 
-class FieldViewField extends hikashopView{
+	public $displayView = true;
 
-	var $displayView = true;
-
-	function display($tpl = null){
+	function display($tpl = null) {
 		$function = $this->getLayout();
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName();
-		if(method_exists($this,$function)) $this->$function();
+		if(method_exists($this,$function))
+			$this->$function();
 
-		if($this->displayView) parent::display($tpl);
+		if($this->displayView)
+			parent::display($tpl);
 	}
 
-	function form() {
+	public function form() {
 		$app = JFactory::getApplication();
 		$doc = JFactory::getDocument();
 
@@ -35,7 +35,7 @@ class FieldViewField extends hikashopView{
 		} else {
 			$field = new stdClass();
 			if(hikashop_level(1)) {
-				$field->field_table = $app->getUserStateFromRequest($this->paramBase.".filter_table",'filter_table','product','string');
+				$field->field_table = $app->getUserStateFromRequest($this->paramBase.'.filter_table', 'filter_table', 'product', 'string');
 			} else {
 				$field->field_table = 'address';
 			}
@@ -44,37 +44,31 @@ class FieldViewField extends hikashopView{
 			$field->field_backend = 1;
 			$allFields = null;
 		}
-		$this->assignRef('allFields',$allFields);
+		$this->assignRef('allFields', $allFields);
 
 		$fieldTitle = '';
 		if(!empty($field->field_id))
 			$fieldTitle = ' : '.$field->field_namekey;
-		hikashop_setTitle(JText::_('FIELD').$fieldTitle,'field','field&task=edit&field_id='.$fieldid);
+		hikashop_setTitle(JText::_('FIELD').$fieldTitle, 'field', 'field&task=edit&field_id='.$fieldid);
 
-		$jsDrop = '';
-		if(HIKASHOP_BACK_RESPONSIVE && $app->isAdmin()) {
-			$jsDrop = 'jQuery(input3).chosen();';
-		}
 
 		hikashop_loadJslib('jquery');
+		hikashop_loadJsLib('tooltip');
 
 		$script = '
-		function addLine() {
-			window.hikashop.dupRow("hikashop_field_values_table_template", {
-				"TITLE":"field_values[title][]",
-				"VALUE":"field_values[value][]",
-				"DISABLED":"field_values[disabled][]"
-			})
-		}
-
-		function setVisible(value){
-			if(value=="product" || value=="item" || value=="category"){
-				document.getElementById(\'category_field\').style.display = "";
-			}else{
-				document.getElementById(\'category_field\').style.display = \'none\';
-			}
-		}';
-
+function addLine() {
+	window.hikashop.dupRow("hikashop_field_values_table_template", {
+		"TITLE":"field_values[title][]",
+		"VALUE":"field_values[value][]",
+		"DISABLED":"field_values[disabled][]"
+	})
+}
+function setVisible(value) {
+	var el = document.getElementById(\'category_field\');
+	if(!el) return;
+	el.style.display = (value == "product" || value == "item" || value == "category") ? "" : "none";
+}
+';
 		$doc->addScriptDeclaration($script);
 
 		$this->toolbar = array(
@@ -85,116 +79,132 @@ class FieldViewField extends hikashopView{
 			array('name' => 'pophelp', 'target' => 'field-form')
 		);
 
-		$this->assignRef('field',$field);
-		$this->assignRef('fieldsClass',$fieldsClass);
+		$this->assignRef('field', $field);
+		$this->assignRef('fieldsClass', $fieldsClass);
 
 		$fieldType = hikashop_get('type.fields');
-		$this->assignRef('fieldtype',$fieldType);
+		$this->assignRef('fieldtype', $fieldType);
 
 		$zoneType = hikashop_get('type.zone');
-		$this->assignRef('zoneType',$zoneType);
+		$this->assignRef('zoneType', $zoneType);
 
 		$allowType = hikashop_get('type.allow');
-		$this->assignRef('allowType',$allowType);
+		$this->assignRef('allowType', $allowType);
 
 		$displayOptions = array();
-		if($field->field_table == 'product'){
+		if($field->field_table == 'product') {
 			$displayOptions = array(
-				array('name'=>'field_product_show'),
-				array('name'=>'field_product_compare'),
-				array('name'=>'field_product_listing'),
-				array('name'=>'field_product_frontend_listing'),
-				array('name'=>'field_product_form'),
-				array('name'=>'field_product_invoice'),
-				array('name'=>'field_product_shipping_invoice'),
-				array('name'=>'field_product_order_form'),
-				array('name'=>'field_product_backend_cart_details'),
-				array('name'=>'field_product_frontend_cart_details'),
-				array('name'=>'field_product_order_notification'),
-				array('name'=>'field_product_order_status_notification'),
-				array('name'=>'field_product_order_creation_notification'),
-				array('name'=>'field_product_order_admin_notification'),
-				array('name'=>'field_product_payment_notification')
-			);
-		}
-		if($field->field_table == 'item'){
-			$displayOptions = array(
-				array('name'=>'field_item_show_cart'),
-				array('name'=>'field_item_backend_cart_details'),
-				array('name'=>'field_item_checkout'),
-				array('name'=>'field_item_order'),
-				array('name'=>'field_item_product_listing'),
-				array('name'=>'field_item_product_show'),
-				array('name'=>'field_item_product_cart'),
-				array('name'=>'field_item_order_form'),
-				array('name'=>'field_item_invoice'),
-				array('name'=>'field_item_shipping_invoice'),
-				array('name'=>'field_item_edit_product_order'),
-				array('name'=>'field_item_order_notification'),
-				array('name'=>'field_item_order_status_notification'),
-				array('name'=>'field_item_order_creation_notification'),
-				array('name'=>'field_item_order_admin_notification'),
-				array('name'=>'field_item_payment_notification')
-			);
-		}
-		if($field->field_table == 'order'){
-			$displayOptions = array(
-				array('name'=>'field_order_invoice'),
-				array('name'=>'field_order_shipping_invoice'),
-				array('name'=>'field_order_show'),
-				array('name'=>'field_order_checkout'),
-				array('name'=>'field_order_listing'),
-				array('name'=>'field_order_form'),
-				array('name'=>'field_order_edit_fields'),
-				array('name'=>'field_order_notification'),
-				array('name'=>'field_order_status_notification'),
-				array('name'=>'field_order_creation_notification'),
-				array('name'=>'field_order_admin_notification'),
-				array('name'=>'field_order_payment_notification')
-			);
-		}
-		$this->assignRef('displayOptions',$displayOptions);
+			//	'field_product_show', //--> frontcomp
+				array('name' => 'compare', 'title' => JText::_('field_product_compare')), // (ex: field_product_compare)
+				array('name' => 'front_listing', 'title' => JText::_('field_product_frontend_listing')), // (ex: field_product_frontend_listing)
+				array('name' => 'back_invoice', 'title' => JText::_('field_product_invoice')), // only back ? (ex: field_product_invoice)
+				array('name' => 'back_shipping_invoice', 'title' => JText::_('field_product_shipping_invoice')), // only back ? (ex: field_product_shipping_invoice)
+				array('name' => 'order_form', 'title' => JText::_('field_product_order_form')), // back (ex: field_product_order_form)
+				array('name' => 'back_cart_details', 'title' => JText::_('field_product_backend_cart_details')), // (ex: field_product_backend_cart_details)
+				array('name' => 'front_cart_details', 'title' => JText::_('field_product_frontend_cart_details')), // (ex: field_product_frontend_cart_details)
 
-		if(hikashop_level(1)){
-			$tabletype = hikashop_get('type.table');
-			$this->assignRef('tabletype',$tabletype);
-		}
+				array('name' => 'mail_order_notif', 'title' => JText::_('field_product_order_notification'), 'group' => 'mail'), // (ex: field_product_order_notification)
+				array('name' => 'mail_status_notif', 'title' => JText::_('field_product_order_status_notification'), 'group' => 'mail'), // (ex: field_product_order_status_notification)
+				array('name' => 'mail_order_creation', 'title' => JText::_('field_product_order_creation_notification'), 'group' => 'mail'), // (ex: field_product_order_creation_notification)
+				array('name' => 'mail_admin_notif', 'title' => JText::_('field_product_order_admin_notification'), 'group' => 'mail'), // (ex: field_product_order_admin_notification)
+				array('name' => 'mail_payment_notif', 'title' => JText::_('field_product_payment_notification'), 'group' => 'mail'), // (ex: field_product_payment_notification)
+			);
+		} elseif($field->field_table == 'item') {
+			$displayOptions = array(
+			//	'field_item_product_show', //--> frontcomp
+				array('name' => 'front_product_listing', 'title' => JText::_('FIELD_ITEM_PRODUCT_LISTING')), // (ex: field_item_product_listing)
+				array('name' => 'front_order', 'title' => JText::_('FIELD_ITEM_ORDER')), // front (ex: field_item_order)
+				array('name' => 'order_edit', 'title' => JText::_('FIELD_ITEM_EDIT_PRODUCT_ORDER')), // back (ex: field_item_edit_product_order)   ~~> backend ??
+				array('name' => 'back_invoice', 'title' => JText::_('FIELD_ITEM_INVOICE')), // only back ? (ex: field_item_invoice)
+				array('name' => 'back_shipping_invoice', 'title' => JText::_('FIELD_ITEM_SHIPPING_INVOICE')), // only back ? (ex: field_item_shipping_invoice)
 
-		if(hikashop_level(2)){
+				array('name' => 'product_cart', 'title' => JText::_('field_item_product_cart'), 'group' => 'cart'), // (ex: field_item_product_cart)
+				array('name' => 'checkout', 'title' => JText::_('field_item_checkout'), 'group' => 'cart'), // (ex: field_item_checkout)
+				array('name' => 'front_cart_details', 'title' => JText::_('field_item_show_cart'), 'group' => 'cart'), // (ex: field_item_show_cart)
+				array('name' => 'back_cart_details', 'title' => JText::_('field_item_backend_cart_details'), 'group' => 'cart'), // (ex: field_item_backend_cart_details)
+
+				array('name' => 'mail_order_notif', 'title' => JText::_('FIELD_ITEM_ORDER_NOTIFICATION'), 'group' => 'mail'), // (ex: field_item_order_notification)
+				array('name' => 'mail_status_notif', 'title' => JText::_('FIELD_ITEM_ORDER_STATUS_NOTIFICATION'), 'group' => 'mail'), // (ex: field_item_order_status_notification)
+				array('name' => 'mail_order_creation', 'title' => JText::_('FIELD_ITEM_ORDER_CREATION_NOTIFICATION'), 'group' => 'mail'), // (ex: field_item_order_creation_notification)
+				array('name' => 'mail_admin_notif', 'title' => JText::_('FIELD_ITEM_ORDER_ADMIN_NOTIFICATION'), 'group' => 'mail'), // (ex: field_item_order_admin_notification)
+				array('name' => 'mail_payment_notif', 'title' => JText::_('FIELD_ITEM_PAYMENT_NOTIFICATION'), 'group' => 'mail'), // (ex: field_item_payment_notification)
+			);
+		} elseif($field->field_table == 'order') {
+			$displayOptions = array(
+			//	'field_order_checkout', //--> frontcomp
+			//	'field_order_listing', //--> backend_listing
+			//	'field_order_form', //--> backend
+				array('name' => 'front_order', 'title' => JText::_('field_order_show')), // front (ex: field_order_show)
+				array('name' => 'invoice', 'title' => JText::_('field_order_invoice')), // front & back - WHY ?! (ex: field_order_invoice)
+				array('name' => 'back_shipping_invoice', 'title' => JText::_('field_order_shipping_invoice')), // only back ? (ex: field_order_shipping_invoice)
+				array('name' => 'order_edit', 'title' => JText::_('field_order_edit_fields')), // back (ex: field_order_edit_fields)
+
+				array('name' => 'mail_order_notif', 'title' => JText::_('field_order_notification'), 'group' => 'mail'), // (ex: field_order_notification)
+				array('name' => 'mail_status_notif', 'title' => JText::_('field_order_status_notification'), 'group' => 'mail'), // (ex: field_order_status_notification)
+				array('name' => 'mail_order_creation', 'title' => JText::_('field_order_creation_notification'), 'group' => 'mail'), // (ex: field_order_creation_notification)
+				array('name' => 'mail_admin_notif', 'title' => JText::_('field_order_admin_notification'), 'group' => 'mail'), // (ex: field_order_admin_notification)
+				array('name' => 'mail_payment_notif', 'title' => JText::_('field_order_payment_notification'), 'group' => 'mail'), // (ex: field_order_payment_notification)
+			);
+		}
+		$this->assignRef('displayOptions', $displayOptions);
+
+		$tabletype = hikashop_get('type.table');
+		$tabletype->load();
+		if(count($tabletype->values) > 2)
+			$this->assignRef('tabletype', $tabletype);
+
+		if(hikashop_level(2)) {
 			$limitParent = hikashop_get('type.limitparent');
 			$this->assignRef('limitParent',$limitParent);
+
 			if(!empty($field->field_options['product_id'])) {
 				$product = hikashop_get('class.product');
-				$element = $product->get($field->field_options['product_id']);
-				$this->assignRef('element',$element);
+				$element = $product->get((int)$field->field_options['product_id']);
+				$this->assignRef('element', $element);
 			}
 		}
 
 		$categories = array();
-		if(isset($this->field->field_categories)){
-			$this->field->field_categories=$this->field->field_categories;
-			$this->categories= explode(",", $this->field->field_categories);
-			unset($this->categories[0]);
-			unset($this->categories[count($this->categories)]);
-			if(!empty($this->categories)){
-				foreach($this->categories as $k => $cat){
+		if(isset($this->field->field_categories)) {
+			$this->field->field_categories = $this->field->field_categories;
+			$this->categories = explode(',', trim($this->field->field_categories, ','));
+
+			if(!empty($this->categories)) {
+				foreach($this->categories as $k => $cat) {
 					if(!isset($categories[$k]))
 						$categories[$k] = new stdClass();
-					$categories[$k]->category_id=$cat;
+					$categories[$k]->category_id = $cat;
 				}
+
+				JArrayHelper::toInteger($this->categories);
+
 				$db = JFactory::getDBO();
-				$db->setQuery('SELECT * FROM '.hikashop_table('category').' WHERE category_id IN ('.implode(',',$this->categories).')');
+				$db->setQuery('SELECT * FROM '.hikashop_table('category').' WHERE category_id IN ('.implode(',', $this->categories).')');
 				$cats = $db->loadObjectList('category_id');
-				foreach($this->categories as $k => $cat){
-					if(!empty($cats[$cat])){
+
+				foreach($this->categories as $k => $cat) {
+					if(!empty($cats[$cat])) {
 						$categories[$k]->category_name = $cats[$cat]->category_name;
-					}else{
+					} else {
 						$categories[$k]->category_name = JText::_('CATEGORY_NOT_FOUND');
 					}
 				}
 			}
 			$this->categories = $categories;
 		}
+
+		if(!empty($this->field->field_display) && is_string($this->field->field_display)) {
+			$fields_display = explode(';', trim($this->field->field_display, ';'));
+			$this->field->field_display = new stdClass();
+			foreach($fields_display as $f) {
+				if(empty($f) || strpos($f, '=') === false)
+					continue;
+				list($k,$v) = explode('=', $f, 2);
+				$this->field->field_display->$k = $v;
+			}
+		}
+		if(!isset($this->field->field_display))
+			$this->field->field_display = new stdClass();
 
 		JHTML::_('behavior.modal');
 		$popup = hikashop_get('helper.popup');
@@ -208,72 +218,62 @@ class FieldViewField extends hikashopView{
 		$dispatcher->trigger('onCustomfieldEdit', array(&$field, &$this));
 	}
 
-	function listing(){
+	public function listing() {
 		$db = JFactory::getDBO();
-		$filter = '';
-		if(hikashop_level(1)){
-			$app = JFactory::getApplication();
-			$selectedType = $app->getUserStateFromRequest( $this->paramBase.".filter_table",'filter_table','','string');
-			if(!empty($selectedType)){
-				$filter = ' WHERE a.field_table='.$db->Quote($selectedType);
-			}
-			$table = hikashop_get('type.table');
-			$this->assignRef('tabletype',$table);
-		}else{
-			$filter = ' WHERE a.field_table=\'address\' OR a.field_table LIKE \'plg.%\'';
-		}
-		$db->setQuery('SELECT a.* FROM '.hikashop_table('field').' AS a'.$filter.' ORDER BY a.`field_table` ASC, a.`field_ordering` ASC');
-		$rows = $db->loadObjectList();
-
 		$config =& hikashop_config();
-		$manage = hikashop_isAllowed($config->get('acl_field_manage','all'));
-		$this->assignRef('manage',$manage);
+		$filter = '';
+
+		$tableType = hikashop_get('type.table');
+		$tableType->load();
+		if(hikashop_level(1) || count($tableType->values) > 2)
+			$this->assignRef('tabletype', $tableType);
+
+		$selectedType = '';
+		if(hikashop_level(1)) {
+			$app = JFactory::getApplication();
+			$selectedType = $app->getUserStateFromRequest($this->paramBase . '.filter_table', 'filter_table', '', 'string');
+			if(!empty($selectedType) && isset($tableType->values[$selectedType])) {
+				$filter = ' WHERE f.field_table = '.$db->Quote($selectedType);
+			} else {
+				$selectedType = '';
+			}
+		} else {
+			$filter = ' WHERE (f.field_table = \'address\' OR f.field_table LIKE \'plg.%\')';
+		}
+		$this->assignRef('selectedType', $selectedType);
+
+		$query = 'SELECT f.* FROM '.hikashop_table('field').' AS f ' . $filter . ' ORDER BY f.field_table ASC, f.field_ordering ASC';
+		$db->setQuery($query);
+		$rows = $db->loadObjectList();
+		$this->assignRef('rows',$rows);
+
+		$total = count($rows);
+		$pagination = hikashop_get('helper.pagination', $total, 0, $total);
+		$this->assignRef('pagination', $pagination);
+
+		hikashop_setTitle(JText::_('FIELDS'),'field','field');
+
+		$manage = hikashop_isAllowed($config->get('acl_field_manage', 'all'));
+		$this->assignRef('manage', $manage);
+
 		$this->toolbar = array(
-			array('name'=>'addNew','display'=>$manage),
-			array('name'=>'editList','display'=>$manage),
-			array('name'=>'deleteList','display'=>hikashop_isAllowed($config->get('acl_field_delete','all'))),
+			array('name'=>'addNew','display' => $manage),
+			array('name'=>'editList','display' => $manage),
+			array('name'=>'deleteList','display' => hikashop_isAllowed($config->get('acl_field_delete', 'all'))),
 			'|',
 			array('name' => 'pophelp', 'target' => 'field-listing'),
 			'dashboard'
 		);
 
-		$total = count($rows);
 
-		$pagination = hikashop_get('helper.pagination', $total, 0, $total);
-
-		hikashop_setTitle(JText::_('FIELDS'),'field','field');
-
-		$this->assignRef('rows',$rows);
 		$toggle = hikashop_get('helper.toggle');
 		$this->assignRef('toggleClass',$toggle);
-		$this->assignRef('pagination',$pagination);
-		$this->assignRef('selectedType',$selectedType);
-		$type = hikashop_get('type.fields');
-		$type->load();
-		$this->assignRef('fieldtype',$type);
+
+		$fieldsType = hikashop_get('type.fields');
+		$fieldsType->load();
+		$this->assignRef('fieldtype', $fieldsType);
+
 		$fieldClass = hikashop_get('class.field');
-		$this->assignRef('fieldsClass',$fieldClass);
-	}
-
-
-	function state(){
-		$namekey = JRequest::getCmd('namekey', '');
-		if(!empty($namekey)) {
-			$field_namekey = JRequest::getCmd('field_namekey', '');
-			if(empty($field_namekey))
-				$field_namekey = 'address_state';
-
-			$field_id = JRequest::getCmd('field_id', '');
-			if(empty($field_id))
-				$field_id = 'address_state';
-
-			$field_type = JRequest::getCmd('field_type', '');
-			if(empty($field_type))
-				$field_type = 'address';
-
-			$class = hikashop_get('type.country');
-			echo $class->displayStateDropDown($namekey, $field_id, $field_namekey, $field_type);
-		}
-		exit;
+		$this->assignRef('fieldsClass', $fieldClass);
 	}
 }

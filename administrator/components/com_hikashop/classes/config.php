@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -148,5 +148,32 @@ class hikashopConfigClass extends hikashopClass{
 		$this->database->setQuery($query);
 		$this->database->query();
 
+	}
+
+	public function getAddressFormat($originalOnly=false){
+		if(!HIKASHOP_J25)
+			return;
+		if(!$originalOnly){
+			$db = JFactory::getDBO();
+			$query = "SELECT template FROM #__template_styles WHERE client_id = 0 AND home = 1";
+			$db->setQuery($query);
+			$defaultemplate = $db->loadResult();
+			if(empty($defaultemplate))
+				return;
+			$path = HIKASHOP_ROOT . 'templates' . DS . $defaultemplate . DS . 'html' . DS . 'com_hikashop' . DS . 'address' . DS . 'address_template.php';
+			jimport('joomla.filesystem.file');
+			if(JFile::exists($path))
+				$file = JFile::read($path);
+		}
+		if(empty($file)){
+			$path = HIKASHOP_FRONT . 'views' . DS . 'address' . DS . 'tmpl' . DS . 'address_template.php';
+			if(JFile::exists($path))
+				$file = JFile::read($path);
+		}
+
+		if(empty($file))
+			return;
+
+		return trim(preg_replace("/<\?php\s*(?:\/\*.*\*\/)?\s*defined\('_JEXEC'\) or die\('Restricted access'\);\s*\?>/Us", '', $file));
 	}
 }

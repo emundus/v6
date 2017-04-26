@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metadata>
 	<state>
-		<name>Checkout</name>
+		<name>Checkout Legacy</name>
 	</state>
-	<layout title="COM_HIKASHOP_CHECKOUT_VIEW_DEFAULT_TITLE">
+	<layout title="COM_HIKASHOP_CHECKOUT_LEGACY_VIEW_DEFAULT_TITLE">
 		<message></message>
 	</layout>
 </metadata>

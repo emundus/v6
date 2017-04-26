@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -23,7 +23,7 @@ class DiscountViewDiscount extends hikashopView {
 		parent::display($tpl);
 	}
 
-	function listing($extendedData = true) {
+	public function listing($extendedData = true) {
 		$app = JFactory::getApplication();
 		$pageInfo = new stdClass();
 		$pageInfo->filter = new stdClass();
@@ -128,9 +128,10 @@ class DiscountViewDiscount extends hikashopView {
 			}
 		}
 
-		if($pageInfo->limit->value == 500) $pageInfo->limit->value = 100;
+		if($pageInfo->limit->value == 500)
+			$pageInfo->limit->value = 100;
 
-		hikashop_setTitle(JText::_($this->nameListing),$this->icon,$this->ctrl);
+		hikashop_setTitle(JText::_($this->nameListing), $this->icon, $this->ctrl);
 
 		$config =& hikashop_config();
 		$manage = hikashop_isAllowed($config->get('acl_discount_manage','all'));
@@ -150,16 +151,16 @@ class DiscountViewDiscount extends hikashopView {
 			'dashboard'
 		);
 
-		$discountType = hikashop_get('type.discount');
-		$this->assignRef('filter_type',$discountType);
-		$toggleClass = hikashop_get('helper.toggle');
-		$this->assignRef('toggleClass',$toggleClass);
+		$this->loadRef(array(
+			'searchType' => 'type.search',
+			'filter_type' => 'type.discount',
+			'toggleClass' => 'helper.toggle',
+			'currencyHelper' => 'class.currency',
+		));
+
 		$this->assignRef('rows',$rows);
 		$this->assignRef('pageInfo',$pageInfo);
 		$this->getPagination();
-
-		$currencyHelper = hikashop_get('class.currency');
-		$this->assignRef('currencyHelper',$currencyHelper);
 	}
 
 	public function export() {
@@ -222,30 +223,34 @@ class DiscountViewDiscount extends hikashopView {
 		}
 	}
 
-	function form() {
-		$discount_id = hikashop_getCID('discount_id',false);
-		if(!empty($discount_id)){
-			$class = hikashop_get('class.discount');
-			$element = $class->get($discount_id);
-			$task='edit';
-		}else{
+	public function form() {
+		$discount_id = hikashop_getCID('discount_id', false);
+
+		if(!empty($discount_id)) {
+			$disountClass = hikashop_get('class.discount');
+			$element = $disountClass->get($discount_id);
+			$task = 'edit';
+		} else {
 			$element = JRequest::getVar('fail');
-			if(empty($element)){
+			if(empty($element)) {
 				$element = new stdClass();
 				$app = JFactory::getApplication();
-				$type = $app->getUserState( $this->paramBase.".filter_type");
-				if(!in_array($type,array('all','nochilds'))){
+				$type = $app->getUserState($this->paramBase . '.filter_type');
+				if(!in_array($type,array('all','nochilds'))) {
 					$element->discount_type = $type;
 					$this->nameForm = 'HIKASHOP_COUPON';
-				}else{
+				} else {
 					$element->discount_type = 'discount';
 				}
 				$element->discount_published=1;
 			}
-			$task='add';
+			$task = 'add';
 		}
+		$this->assignRef('element', $element);
 
 		hikashop_setTitle(JText::_($this->nameForm), $this->icon,$this->ctrl.'&task='.$task.'&discount_id='.$discount_id);
+
+		hikashop_loadJsLib('tooltip');
 
 		$this->toolbar = array(
 			'save',
@@ -256,27 +261,20 @@ class DiscountViewDiscount extends hikashopView {
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-form')
 		);
 
-		$this->assignRef('element', $element);
-
-		$discountType = hikashop_get('type.discount');
-		$this->assignRef('type', $discountType);
-
-		$currencyType = hikashop_get('type.currency');
-		$this->assignRef('currency', $currencyType);
-
 		$categoryType = hikashop_get('type.categorysub');
 		$categoryType->type = 'tax';
 		$categoryType->field = 'category_id';
 		$this->assignRef('categoryType', $categoryType);
 
-		$popup = hikashop_get('helper.popup');
-		$this->assignRef('popup', $popup);
-
-		$nameboxType = hikashop_get('type.namebox');
-		$this->assignRef('nameboxType', $nameboxType);
+		$this->loadRef(array(
+			'type' => 'type.discount',
+			'currency' => 'type.currency',
+			'popup' => 'helper.popup',
+			'nameboxType' => 'type.namebox',
+		));
 	}
 
-	function select_coupon(){
+	function select_coupon() {
 		$badge = JRequest::getVar('badge','false');
 		$this->assignRef('badge',$badge);
 		$app = JFactory::getApplication();
@@ -354,41 +352,55 @@ class DiscountViewDiscount extends hikashopView {
 	}
 
 	function add_coupon(){
-		$discounts = JRequest::getVar( 'cid', array(), '', 'array' );
-		$rows = array();
-		$filter='';
-		$badge = JRequest::getVar( 'badge');
-		if(!isset($badge)){ $badge='false'; }
+		$discounts = JRequest::getVar('cid', array(), '', 'array');
+
+		$badge = JRequest::getVar('badge');
+		if(!isset($badge)) {
+			$badge = 'false';
+		}
 		$this->assignRef('badge',$badge);
-		if(!empty($discounts)){
+
+		$rows = array();
+		if(!empty($discounts)) {
 			JArrayHelper::toInteger($discounts);
-			$database	= JFactory::getDBO();
-			if($badge=='false'){ $filter='AND discount_type="coupon"';}
-			$query = 'SELECT * FROM '.hikashop_table('discount').' WHERE discount_id IN ('.implode(',',$discounts).') '.$filter;
-			$database->setQuery($query);
-			$rows = $database->loadObjectList();
+			$db = JFactory::getDBO();
+
+			$filter = '';
+			if($badge == 'false') {
+				$filter = ' AND discount_type = '.$db->Quote('coupon');
+			}
+			$query = 'SELECT * FROM '.hikashop_table('discount').' WHERE discount_id IN ('.implode(',', $discounts).')' . $filter;
+
+			$db->setQuery($query);
+			$rows = $db->loadObjectList();
 		}
-		$this->assignRef('rows',$rows);
-		$document= JFactory::getDocument();
-		if($badge=='false'){
-			$js = "window.hikashop.ready( function() {
-					var dstTable = window.parent.document.getElementById('coupon_listing');
-					var srcTable = document.getElementById('result');
-					for (var c = 0,m=srcTable.rows.length;c<m;c++){
-						var rowData = srcTable.rows[c].cloneNode(true);
-						dstTable.appendChild(rowData);
-					}
-					window.parent.hikashop.closeBox();
-			});";
-		}else{
-			$js = "window.hikashop.ready( function() {
-						var field = window.parent.document.getElementById('changeDiscount');
-						var result = document.getElementById('result').innerHTML;
-						field.innerHTML=result;
-						window.parent.hikashop.closeBox();
-				});";
+		$this->assignRef('rows', $rows);
+
+		if($badge == 'false') {
+			$js = '
+window.hikashop.ready( function() {
+	var dstTable = window.parent.document.getElementById("coupon_listing");
+	var srcTable = document.getElementById("result");
+	for(var c = 0, m = srcTable.rows.length; c < m; c++) {
+		var rowData = srcTable.rows[c].cloneNode(true);
+		dstTable.appendChild(rowData);
+	}
+	window.parent.hikashop.closeBox();
+});
+';
+		} else {
+			$js = '
+window.hikashop.ready( function() {
+	var field = window.parent.document.getElementById("changeDiscount");
+	var result = document.getElementById("result").innerHTML;
+	field.innerHTML = result;
+	window.parent.hikashop.closeBox();
+});
+';
 		}
-		$document->addScriptDeclaration($js);
+
+		$doc = JFactory::getDocument();
+		$doc->addScriptDeclaration($js);
 	}
 
 }

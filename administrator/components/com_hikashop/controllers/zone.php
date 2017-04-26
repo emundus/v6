@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -40,7 +40,7 @@ class ZoneController extends hikashopController{
 						foreach($childs as $child){
 							$childNamekeys[]=$child->zone_namekey;
 						}
-						$zoneClass->addChilds($data->zone_namekey,$childNamekeys);
+						$zoneClass->addChildren($data->zone_namekey,$childNamekeys);
 					}
 
 				}
@@ -60,8 +60,8 @@ class ZoneController extends hikashopController{
 		$new_id = $this->store();
 		$main_id = JRequest::getInt('main_id');
 		if($main_id && $new_id){
-			$zoneObject = hikashop_get('class.zone');
-			$insertedNamekeys = $zoneObject->addChilds($main_id,array($new_id));
+			$zoneClass = hikashop_get('class.zone');
+			$insertedNamekeys = $zoneClass->addChildren($main_id,array($new_id));
 			JRequest::setVar('cid',$new_id);
 			JRequest::setVar( 'layout', 'savechild'  );
 			return parent::display();
@@ -81,8 +81,8 @@ class ZoneController extends hikashopController{
 		if(!in_array($type,array('discount','shipping','payment','config','tax'))){
 			$childNamekeys = JRequest::getVar( 'cid', array(), '', 'array' );
 			$mainNamekey = JRequest::getVar( 'main_id', 0, '', 'int' );
-			$zoneObject = hikashop_get('class.zone');
-			$insertedNamekeys = $zoneObject->addChilds($mainNamekey,$childNamekeys);
+			$zoneClass = hikashop_get('class.zone');
+			$insertedNamekeys = $zoneClass->addChildren($mainNamekey,$childNamekeys);
 			JRequest::setVar( 'cid', $insertedNamekeys );
 			JRequest::setVar( 'layout', 'newchild'  );
 		}else{

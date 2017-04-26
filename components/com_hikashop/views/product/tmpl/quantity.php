@@ -1,192 +1,123 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-global $Itemid;
-$url_itemid = '';
-if(!empty($this->itemid))
-	$url_itemid = $this->itemid;
-elseif(!empty($Itemid))
-	$url_itemid = '&Itemid='.$Itemid;
-
-if($this->config->get('show_quantity_field') == -2){
-	if(@$this->row->product_display_quantity_field == 0)
-		$this->row->product_display_quantity_field = 1;
-	$this->params->set('show_quantity_field', @$this->row->product_display_quantity_field);
+if($this->config->get('add_to_cart_legacy', true)) {
+	$this->setLayout('quantity_legacy');
+	echo $this->loadTemplate();
+	return;
 }
 
-$config =& hikashop_config();
+$catalogue_mode = $this->config->get('catalogue', false);
+$enable_wishlist = (hikashop_level(1) && $this->config->get('enable_wishlist', 1) && $this->params->get('add_to_wishlist', 0) && (!$this->config->get('hide_wishlist_guest', 1) || hikashop_loadUser() != null));
+if($catalogue_mode && !$enable_wishlist)
+	return;
 
-$wishlistEnabled = $config->get('enable_wishlist', 1);
-$hideForGuest = 1;
-if(($config->get('hide_wishlist_guest', 1) && hikashop_loadUser() != null) || !$config->get('hide_wishlist_guest', 1))
-	$hideForGuest = 0;
+$in_stock = ((int)$this->row->product_quantity == -1 || (int)$this->row->product_quantity > 0);
+$is_free = empty($this->row->prices);
+$display_free_cart = (int)$this->config->get('display_add_to_cart_for_free_products', 0);
+$display_free_wishlist = (int)$this->config->get('display_add_to_wishlist_for_free_products', 1);
+$display_quantity_field = ((int)$this->config->get('show_quantity_field', -1) != 0);
+$this->global_on_listing = $this->config->get('show_quantity_field') == 2;
 
-if(!isset($this->cart))
-	$this->cart = hikashop_get('helper.cart');
+$waitlist = (int)$this->config->get('product_waitlist', 0);
+$waitlist_btn = !$in_stock && (hikashop_level(1) && ($waitlist == 2 || ($waitlist == 1 && (!empty($this->row->main->product_waitlist) || !empty($this->row->product_waitlist)))));
 
-$url = '';
-$module_id = $this->params->get('from_module', 0);
+$now = time();
+$start_date = (@$this->row->product_sale_start || empty($this->element->main)) ? @$this->row->product_sale_start : $this->element->main->product_sale_start;
+$end_date = (@$this->row->product_sale_end || empty($this->element->main)) ? @$this->row->product_sale_end : $this->element->main->product_sale_end;
+$product_available = ($end_date <= 0 || $end_date >= $now) && ($start_date <= 0 || $start_date < $now);
+$add_to_cart = !$catalogue_mode && $in_stock && (!$is_free || $display_free_cart) && $product_available;
+$add_to_wishlist = $enable_wishlist && (!$is_free || $display_free_wishlist);
 
-if(empty($this->ajax))
-	$this->ajax = 'return hikashopModifyQuantity(\''.$this->row->product_id.'\',field,1,0,\'cart\','.$module_id.')';
+$css_button = $this->config->get('css_button', 'hikabtn');
+$css_button_cart = $this->config->get('css_button_cart', 'hikacart');
+$css_button_wishlist = $this->config->get('css_button_wishlist', 'hikawishlist');
 
-if(@$this->row->product_sale_start || empty($this->element->main))
-	$start_date = @$this->row->product_sale_start;
-else
-	$start_date = $this->element->main->product_sale_start;
-
-if(@$this->row->product_sale_end || empty($this->element->main))
-	$end_date = @$this->row->product_sale_end;
-else
-	$end_date = $this->element->main->product_sale_end;
-
-$formName = ',0';
-if(!$this->config->get('ajax_add_to_cart', 0) || ($this->config->get('show_quantity_field') >= 2 && !@$this->element->product_id)) {
-	if(empty($this->formName)) {
-		if(@$this->row->product_id)
-			$formName = ',\'hikashop_product_form_'.$this->row->product_id.'_'.$this->params->get('main_div_name').'\'';
-		else
-			$formName = ',\'hikashop_product_form_'.$this->params->get('main_div_name').'\'';
-	} else {
-		$formName = $this->formName;
-	}
-}
-
-$showFree = ($this->config->get('display_add_to_wishlist_for_free_products', 1) || (!$this->config->get('display_add_to_wishlist_for_free_products', 1) && !empty($this->row->prices) && $this->row->prices[0]->price_value != '0'));
-
-if($end_date && $end_date < time()) {
+if($this->global_on_listing && !empty($this->row->formName)) {
+	if($add_to_cart) {
 ?>
-	<span class="hikashop_product_sale_end">
-		<?php echo JText::_('ITEM_NOT_SOLD_ANYMORE'); ?>
-	</span>
+	<a class="<?php echo $css_button . ' ' . $css_button_cart; ?>" href="#" onclick="if(window.hikashop.addToCart) { return window.hikashop.addToCart(this); }" data-addTo-div="<?php echo $this->row->formName; ?>" data-addTo-class="add_in_progress"><span><?php
+		echo JText::_('ADD_TO_CART');
+	?></span></a>
 <?php
-} elseif($start_date && $start_date > time()) {
+	}
+	if($add_to_wishlist) {
 ?>
-	<span class="hikashop_product_sale_start"><?php
-		echo JText::sprintf('ITEM_SOLD_ON_DATE', hikashop_getDate($start_date, $this->params->get('date_format','%d %B %Y')));
+	<a class="<?php echo $css_button . ' ' . $css_button_wishlist; ?>" href="#" onclick="if(window.hikashop.addToWishlist) { document.getElementById('hikashop_cart_type_0').value = 'wishlist'; return window.hikashop.addToWishlist(this); }" data-addTo-div="<?php echo $this->row->formName; ?>" data-addTo-class="add_in_progress"><span><?php
+		echo JText::_('ADD_TO_WISHLIST');
+	?></span></a>
+<?php
+	}
+	return;
+}
+
+$this->global_on_listing = false;
+$classical_url = 'product&task=updatecart&add=1&product_id='.$this->row->product_id;
+if(!empty($this->return_url))
+	$classical_url .= '&return_url=' . urlencode(base64_encode(urldecode($this->redirect_url)));
+
+
+if($end_date > 0 && $end_date < $now) {
+?>
+	<span class="hikashop_product_sale_end"><?php
+		echo JText::_('ITEM_NOT_SOLD_ANYMORE');
 	?></span>
 <?php
-} elseif(!$this->params->get('catalogue') && ($this->config->get('display_add_to_cart_for_free_products') || !empty($this->row->prices))) {
-	if(@$this->row->product_min_per_order || empty($this->element->main))
-		$min = @$this->row->product_min_per_order;
-	else
-		$min = @$this->element->main->product_min_per_order;
+	return;
+}
 
-	if(@$this->row->product_max_per_order || empty($this->element->main))
-		$max = @$this->row->product_max_per_order;
-	else
-		$max = @$this->element->main->product_max_per_order;
-
-	if($min <= 0)
-		$min = 1;
-
-	if($formName == ',0')
-		$formName = ',\'hikashop_product_form\'';
-	$cleanFormName = str_replace(array('\'',','),'',$formName);
-	$module_id = $this->params->get('from_module', 0);
-	$wishlistAjax =	'if(hikashopCheckChangeForm(\'item\',this)){ var typeField = document.getElementById(\'hikashop_cart_type_'.$this->row->product_id.'_'.$module_id.'\'); if(!typeField){typeField = document.getElementById(\'cart_type\'); } if(typeField){typeField.value = \'wishlist\'; console.log(typeField); } return hikashopModifyQuantity(\'' . (int)@$this->row->product_id . '\',field,1' . $formName . ',\'wishlist\','.$module_id.'); } else { return false; }';
-
-	if($this->row->product_quantity == -1 && !empty($this->element->main) && $this->element->main->product_quantity != -1)
-		$this->row->product_quantity = $this->element->main->product_quantity;
-
-	$btnType = 'add';
-	if($this->row->product_quantity == -1) {
+if($start_date > 0 && $start_date > $now) {
 ?>
-	<div class="hikashop_product_stock"><?php
-
-		if(!empty($this->row->has_options)) {
-			if($this->params->get('add_to_cart',1))
-				echo $this->cart->displayButton(JText::_('CHOOSE_OPTIONS'), 'choose_options', $this->params, hikashop_contentLink('product&task=show&product_id='.$this->row->product_id.'&name='.$this->row->alias.$url_itemid.$this->category_pathway,$this->row),'window.location = \''.str_replace("'","\'",hikashop_contentLink('product&task=show&product_id='.$this->row->product_id.'&name='.$this->row->alias.$url_itemid.$this->category_pathway,$this->row)).'\';return false;', '');
-		} else {
-			if($this->params->get('add_to_cart', 1)) {
-				echo $this->cart->displayButton(JText::_('ADD_TO_CART'), 'add', $this->params, $url, $this->ajax, '', $max, $min);
-				$btnType = 'wish';
-			}
-
-			if(hikashop_level(1) && $this->params->get('add_to_wishlist') && $wishlistEnabled && !$hideForGuest && $showFree) {
-				echo '<div id="hikashop_add_wishlist">' .
-					$this->cart->displayButton(JText::_('ADD_TO_WISHLIST'), $btnType, $this->params, $url, $wishlistAjax, '', $max, $min, '', false) .
-					'</div>';
-			}
-		}
-	} elseif($this->row->product_quantity > 0) {
-?>
-	<div class="hikashop_product_stock">
+	<span class="hikashop_product_sale_start"><?php
+		echo JText::sprintf('ITEM_SOLD_ON_DATE', hikashop_getDate($start_date, $this->params->get('date_format', '%d %B %Y')));
+	?></span>
 <?php
-		if($this->row->product_quantity == 1 && JText::_('X_ITEM_IN_STOCK') != 'X_ITEM_IN_STOCK')
-			$text = JText::sprintf('X_ITEM_IN_STOCK', $this->row->product_quantity);
-		else
-			$text = JText::sprintf('X_ITEMS_IN_STOCK', $this->row->product_quantity);
+	return;
+}
 
-		echo '<span class="hikashop_product_stock_count">'.$text.'<br/></span>';
-
-		if($config->get('button_style', 'normal') == 'css')
-			echo '<br />';
-
-		if($max <= 0 || $max > $this->row->product_quantity)
-			$max = $this->row->product_quantity;
-
-		if(!empty($this->row->has_options)) {
-			if($this->params->get('add_to_cart', 1))
-				echo $this->cart->displayButton(JText::_('CHOOSE_OPTIONS'), 'choose_options', $this->params, hikashop_contentLink('product&task=show&product_id='.$this->row->product_id.'&name='.$this->row->alias.$url_itemid.$this->category_pathway,$this->row),'window.location = \''.str_replace("'","\'",hikashop_contentLink('product&task=show&product_id='.$this->row->product_id.'&name='.$this->row->alias.$url_itemid.$this->category_pathway,$this->row)).'\';return false;','');
-		} else {
-			if($this->params->get('add_to_cart', 1)) {
-				echo $this->cart->displayButton(JText::_('ADD_TO_CART'), 'add', $this->params, $url, $this->ajax, '', $max, $min);
-				$btnType = 'wish';
-			}
-
-			if(hikashop_level(1) && $this->params->get('add_to_wishlist') && $wishlistEnabled && !$hideForGuest && $showFree){
-				echo '<div id="hikashop_add_wishlist">' .
-					$this->cart->displayButton(JText::_('ADD_TO_WISHLIST'), $btnType, $this->params, $url, $wishlistAjax, '', $max, $min, '', false) .
-					'</div>';
-			}
-		}
-	} else {
 ?>
-	<div class="hikashop_product_no_stock">
+<span class="hikashop_product_stock_count">
 <?php
-		echo JText::_('NO_STOCK').'<br/>';
-		$waitlist = $this->config->get('product_waitlist', 0);
-		if(hikashop_level(1) && ($waitlist == 2 || ($waitlist == 1 && (!empty($this->row->main->product_waitlist) || !empty($this->row->product_waitlist))))) {
+	if($this->row->product_quantity > 0)
+		echo (($this->row->product_quantity == 1 && JText::_('X_ITEM_IN_STOCK') != 'X_ITEM_IN_STOCK') ? JText::sprintf('X_ITEM_IN_STOCK', $this->row->product_quantity) : JText::sprintf('X_ITEMS_IN_STOCK', $this->row->product_quantity));
+	elseif(!$in_stock)
+		echo JText::_('NO_STOCK');
 ?>
-	</div>
-	<div id="hikashop_product_waitlist_main" class="hikashop_product_waitlist_main">
+</span>
 <?php
-			$empty = '';
-			jimport('joomla.html.parameter');
-			$params = new HikaParameter($empty);
-			echo $this->cart->displayButton(JText::_('ADD_ME_WAITLIST'), 'add_waitlist', $params, hikashop_completeLink('product&task=waitlist&cid='.$this->row->product_id.$url_itemid), 'window.location=\''.str_replace("'","\'",hikashop_completeLink('product&task=waitlist&cid='.$this->row->product_id.$url_itemid)).'\';return false;');
-		}
 
-		if(hikashop_level(1) && $this->params->get('add_to_wishlist')  && $wishlistEnabled && !$hideForGuest && $showFree) {
-			if(!empty($this->row->has_options)) {
-				if($this->params->get('add_to_cart', 1))
-					echo $this->cart->displayButton(JText::_('CHOOSE_OPTIONS'),'choose_options',$this->params,hikashop_contentLink('product&task=show&product_id='.$this->row->product_id.'&name='.$this->row->alias.$url_itemid.$this->category_pathway,$this->row),'window.location = \''.str_replace("'","\'",hikashop_contentLink('product&task=show&product_id='.$this->row->product_id.'&name='.$this->row->alias.$url_itemid.$this->category_pathway,$this->row)).'\';return false;','');
-			}else{
-				echo '<div id="hikashop_add_wishlist">' .
-					$this->cart->displayButton(JText::_('ADD_TO_WISHLIST'), 'add', $this->params, $url, $wishlistAjax, '', @$this->row->product_max_per_order, 1, '', false) .
-					'</div>';
-			}
-		}
-	}
+if($waitlist_btn) {
 ?>
-	</div>
+	<a class="<?php echo $css_button; ?>" rel="nofollow" href="<?php echo hikashop_completeLink('product&task=waitlist&cid='.$this->row->product_id); ?>"><span><?php
+		echo JText::_('ADD_ME_WAITLIST');
+	?></span></a>
 <?php
-} elseif(hikashop_level(1) && $wishlistEnabled && $this->params->get('add_to_wishlist', 1) && $showFree && !$hideForGuest && !$this->config->get('display_add_to_cart_for_free_products')) {
-	if(!empty($this->row->has_options)) {
-		if($this->params->get('add_to_cart', 1))
-			echo $this->cart->displayButton(JText::_('CHOOSE_OPTIONS'), 'choose_options', $this->params, hikashop_contentLink('product&task=show&product_id='.$this->row->product_id.'&name='.$this->row->alias.$url_itemid.$this->category_pathway,$this->row),'window.location = \''.str_replace("'","\'",hikashop_contentLink('product&task=show&product_id='.$this->row->product_id.'&name='.$this->row->alias.$url_itemid.$this->category_pathway,$this->row)).'\';return false;', '');
-	} else {
-		$wishlistAjax =	'if(hikashopCheckChangeForm(\'item\',this)){ return hikashopModifyQuantity(\'' . (int)@$this->row->product_id . '\',field,1' . $formName . ',\'wishlist\','.$module_id.'); } else { return false; }';
-		echo '<div id="hikashop_add_wishlist">' .
-			$this->cart->displayButton(JText::_('ADD_TO_WISHLIST'), 'add', $this->params, $url, $wishlistAjax, '', @$this->row->product_max_per_order, 1, '', false) .
-			'</div>';
-	}
+}
+
+if(($add_to_cart || $add_to_wishlist) && $display_quantity_field) {
+	$this->setLayout('show_quantity');
+	echo $this->loadTemplate();
+}
+
+if($add_to_cart) {
+?>
+	<a class="<?php echo $css_button . ' ' . $css_button_cart; ?>" rel="nofollow" href="<?php echo hikashop_completeLink($classical_url); ?>" onclick="if(window.hikashop.addToCart) { return window.hikashop.addToCart(this); }" data-addToCart="<?php echo $this->row->product_id; ?>" data-addTo-div="hikashop_product_form" data-addTo-class="add_in_progress"><span><?php
+		echo JText::_('ADD_TO_CART');
+	?></span></a>
+<?php
+}
+
+if($add_to_wishlist) {
+?>
+	<a class="<?php echo $css_button . ' ' . $css_button_wishlist; ?>" rel="nofollow" href="<?php echo hikashop_completeLink($classical_url); ?>" onclick="if(window.hikashop.addToWishlist) { return window.hikashop.addToWishlist(this); }" data-addToWishlist="<?php echo $this->row->product_id; ?>" data-addTo-div="hikashop_product_form" data-addTo-class="add_in_progress"><span><?php
+		echo JText::_('ADD_TO_WISHLIST');
+	?></span></a>
+<?php
 }

@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <install version="2.0" type="plugin" plugin="article" core="1" editable="1">
     <name>WF_ARTICLE_TITLE</name>
-    <version>2.6.7.1</version>
-    <creationDate>18-01-2017</creationDate>
+    <version>2.6.11</version>
+    <creationDate>12-04-2017</creationDate>
     <author>Ryan Demmer</author>
-    <authorEmail>@@e-mail@@</authorEmail>
+    <authorEmail>info@joomlacontenteditor.net</authorEmail>
     <authorUrl>http://www.joomlacontenteditor.net/</authorUrl>
     <copyright>Ryan Demmer</copyright>
     <license>GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html</license>
@@ -26,8 +26,8 @@
     </params>
     <params group="buttons">
             <param name="buttons" class="checklist buttonlist" type="list" multiple="multiple" default="readmore,pagebreak" label="WF_PARAM_BUTTONS" description="WF_PARAM_BUTTONS_DESC">
-                <option value="readmore">Readmore</option>
-                <option value="pagebreak">Pagebreak</option>
+                <option value="readmore">WF_ARTICLE_READMORE</option>
+                <option value="pagebreak">WF_ARTICLE_PAGEBREAK</option>
             </param>
         </params>
     <help>

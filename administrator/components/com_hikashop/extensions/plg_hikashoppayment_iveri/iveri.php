@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -165,7 +165,6 @@ class plgHikashoppaymentIveri extends hikashopPaymentPlugin
 			$result = curl_exec($session);
 			$error = curl_error($session);
 
-
 			$inputs = $this->getHiddenInputValues($result, true);
 
 			if( empty($error) && isset($inputs['lite_payment_card_status']) ) {
@@ -195,7 +194,6 @@ class plgHikashoppaymentIveri extends hikashopPaymentPlugin
 		curl_close($session);
 
 		$this->ccClear();
-
 		return true;
 	}
 

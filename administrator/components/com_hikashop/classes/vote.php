@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -165,8 +165,10 @@ class hikashopVoteClass extends hikashopClass {
 	function save(&$element){
 		$this->app = Jfactory::getApplication();
 		$this->config = hikashop_config();
-		$dispatcher = JDispatcher::getInstance();
 		$db = JFactory::getDBO();
+
+		JPluginHelper::importPlugin('hikashop');
+		$dispatcher = JDispatcher::getInstance();
 
 		if(isset($element->vote_ref_id) || !$this->app->isAdmin())
 			$this->checkVote($element);
@@ -215,19 +217,16 @@ class hikashopVoteClass extends hikashopClass {
 			$element->vote_id = 0;
 		}
 
-		$new = false;
-		if($element->vote_id == 0)
-			$new = true;
-
 		$do = true;
 		$errors = array();
+		$new = empty($element->vote_id);
 
 		if($new)
 			$dispatcher->trigger('onBeforeVoteCreate', array( &$element, &$do, &$errors ) );
 		else
 			$dispatcher->trigger('onBeforeVoteUpdate', array( &$element, &$do, &$oldElement, &$errors ) );
 
-		if(!$do){
+		if(!$do) {
 			if(empty($errors)){
 				$this->error = array('code' => '505019', 'message' => JText::_('HIKA_VOTE_DO_FALSE_FROM_PLUGIN'));
 			}else{
@@ -243,7 +242,7 @@ class hikashopVoteClass extends hikashopClass {
 		}
 
 		$success = parent::save($element);
-		if(!$success){
+		if(!$success) {
 			$this->error = array('code' => '505016', 'message' => JText::_('HIKA_VOTE_ERROR_SAVING_DATA'));
 			return false;
 		}
@@ -255,25 +254,23 @@ class hikashopVoteClass extends hikashopClass {
 				' WHERE vote_ref_id = ' . (int)$element->vote_ref_id .' AND vote_type = ' . $db->Quote($element->vote_type).' AND v.vote_rating != 0';
 			$db->setQuery($query);
 			$data = $db->loadObject();
-			if($data->total == 0){
+			if($data->total == 0) {
 				$return_data['average'] = $element->vote_rating;
 				$return_data['total'] = 1;
-			}else{
-				if(!$new){
-					$return_data['average'] = (($data->total * $data->average) - $oldElement->vote_rating + $element->vote_rating) / $data->total;
-					$return_data['total'] = $data->total;
-
-				}else{
-					$return_data['average'] = (($data->total * $data->average) + $element->vote_rating) / ($data->total + 1);
-					$return_data['total'] = $data->total++;
-				}
+			} else if(!$new) {
+				$return_data['average'] = (($data->total * $data->average) - $oldElement->vote_rating + $element->vote_rating) / $data->total;
+				$return_data['total'] = $data->total;
+			} else {
+				$return_data['average'] = (($data->total * $data->average) + $element->vote_rating) / ($data->total + 1);
+				$data->total++;
+				$return_data['total'] = $data->total;
 			}
 		}
 
-		if(!$new){
+		if($new) {
 			$dispatcher->trigger('onAfterVoteCreate', array( &$element, &$return_data ) );
 			$this->error = array('code' => '1', 'message' => JText::_('VOTE_UPDATED'));
-		}else{
+		} else {
 			$dispatcher->trigger('onAfterVoteUpdate', array( &$element, &$return_data ) );
 			$this->error = array('code' => '2', 'message' => JText::_('THANK_FOR_VOTE'));
 		}
@@ -322,7 +319,8 @@ class hikashopVoteClass extends hikashopClass {
 				return $data;
 			$addVote = true;
 		}
-		if($element->vote_id == '0' || $addVote){
+
+		if(($element->vote_id == '0' && empty($oldElement->vote_published) && $element->vote_published == '1') || $addVote){
 			$data->product_average_score = (($data->product_total_vote * $data->product_average_score) + $element->vote_rating) / ($data->product_total_vote + 1);
 			$data->product_total_vote = $data->product_total_vote + 1;
 			return $data;
@@ -343,9 +341,11 @@ class hikashopVoteClass extends hikashopClass {
 				$data->product_average_score = $data->product_total_vote = 0;
 				return $data;
 			}
+
 			$data->product_average_score = (($data->product_total_vote * $data->product_average_score) - $oldElement->vote_rating + $element->vote_rating) / $data->product_total_vote;
 			return $data;
 		}
+		return $data;
 	}
 
 	function delete(&$elements){
@@ -427,13 +427,12 @@ hikaVote.setOptions({
 	},ctrl : "'.JRequest::getVar('ctrl','product').'",
 	both : "'.$voteType.'"
 });
-
 function hikashop_vote_useful(hikashop_vote_id, val) { return hikaVote.useful(hikashop_vote_id, val); }
 function hikashop_send_comment(){ return hikaVote.vote(0,"hikashop_vote_rating_id"); }
 function hikashop_send_vote(rating, from){ return hikaVote.vote(rating, from); }
-		';
+';
 		$doc = JFactory::getDocument();
-		$doc->addScriptDeclaration("\n<!--\n" . $js . "\n//-->\n");
+		$doc->addScriptDeclaration($js);
 	}
 
 	function sendNotifComment($vote_id, $comment, $vote_ref_id, $user_id, $pseudo, $email, $vote_type){
@@ -624,35 +623,52 @@ function hikashop_send_vote(rating, from){ return hikaVote.vote(rating, from); }
 		return $purchased;
 	}
 
-	function commentPassed($vote_type, $vote_ref_id, $user_id){
-		$nb_comment = 0;
+	function commentPassed($vote_type, $vote_ref_id, $user_id) {
 		$db = JFactory::getDBO();
-		$query = 'SELECT vote_comment FROM '.hikashop_table('vote').' WHERE vote_type = '.$db->quote($vote_type).' AND vote_ref_id = '.(int)$vote_ref_id.' AND vote_user_id = '.$db->quote($user_id).' AND vote_comment != \'\'';
+		$query = 'SELECT COUNT(vote_comment) as count' .
+			' FROM ' . hikashop_table('vote') .
+			' WHERE vote_type = ' . $db->quote($vote_type) . ' AND vote_ref_id = ' . (int)$vote_ref_id . ' AND vote_user_id = ' . $db->quote($user_id).' AND vote_comment != \'\'';
 		$db->setQuery($query);
-		$results = $db->loadObjectList();
-		foreach($results as $result) {
-			$nb_comment++;
-		}
-		return $nb_comment;
+		$result = $db->loadObject();
+		return (int)$result->count;
 	}
 
-	function getUserRating($type, $ref_id, $user_id = ''){
-		if(empty($user_id)){
+	function getUserRating($type, $ref_id, $user_id = '') {
+		if(empty($user_id)) {
 			$user_id = hikashop_loadUser();
 			if($user_id == null)
 				$user_id = '';
 		}
+
 		$db = JFactory::getDBO();
-		$filters = array('vote_type = '.$db->quote($type),'vote_ref_id = '.(int)$ref_id,'vote_rating != 0');
-		if(empty($user_id) || $user_id == hikashop_getIp()){
-			$filters[] = 'vote_ip = '.$db->quote(hikashop_getIp());
+		$filters = array(
+			'vote_type = '.$db->quote($type),
+			'vote_rating != 0'
+		);
+
+		if(is_array($ref_id)) {
+			JArrayHelper::toInteger($ref_id);
+			$filters[] = 'vote_ref_id IN ('.implode(',', $ref_id).')';
+		} else {
+			$filters[] = 'vote_ref_id = '.(int)$ref_id;
+		}
+
+		$ip = hikashop_getIP();
+		if(empty($user_id) || $user_id == $ip) {
+			$filters[] = 'vote_ip = '.$db->quote($ip);
 			$filters[] = 'vote_user_id = \'\'';
-		}else{
+		} else {
 			$filters[] = 'vote_user_id = '.$db->quote($user_id);
 		}
-		$query = 'SELECT * FROM '.hikashop_table('vote').' WHERE '.implode(' AND ',$filters);
+
+		$query = 'SELECT * FROM '.hikashop_table('vote').' WHERE ('.implode(') AND (', $filters) . ')';
 		$db->setQuery($query);
-		$result = $db->loadObject();
+
+		if(is_array($ref_id)) {
+			$result = $db->loadObjectList('vote_ref_id');
+		} else {
+			$result = $db->loadObject();
+		}
 		return $result;
 	}
 }

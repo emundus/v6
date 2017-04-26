@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -124,11 +124,11 @@ class hikashopImportmijoHelper extends hikashopImportHelper
 				$next = $this->importDownloads();
 				break;
 			case 12:
-			case MAX_IMPORT_ID:
+			case 13:
 				$next = $this->finishImport();
 				$ret = false;
 				break;
-			case MAX_IMPORT_ID+1:
+			case 14:
 				$next = false;
 				$ret = $this->proposeReImport();
 				break;
@@ -159,7 +159,7 @@ class hikashopImportmijoHelper extends hikashopImportHelper
 
 	function loadConfiguration()
 	{
-		$this->options = new stdClass();
+		$this->options = null;
 
 		if (defined('DIR_IMAGE')) {
 			if(strpos(DIR_IMAGE, HIKASHOP_ROOT) === false)
@@ -683,7 +683,7 @@ class hikashopImportmijoHelper extends hikashopImportHelper
 		$this->db->query();
 		$datas = $this->db->loadObjectList();
 
-		$sql2 = 'INSERT INTO `#__hikashop_category` (`category_id`,`category_parent_id`,`category_type`,`category_name`,`category_description`,`category_published`,'.
+		$sql2 = 'INSERT IGNORE INTO `#__hikashop_category` (`category_id`,`category_parent_id`,`category_type`,`category_name`,`category_description`,`category_published`,'.
 			'`category_ordering`,`category_namekey`,`category_created`,`category_modified`,`category_access`,`category_menu`) VALUES ';
 		$sql3 = 'INSERT INTO `#__hikashop_mijo_cat` (`mijo_id`,`hk_id`,`category_type`) VALUES ';
 		$sql4 = 'INSERT INTO `#__hikashop_file` (`file_name`,`file_description`,`file_path`,`file_type`,`file_ref_id`) VALUES ';
@@ -1622,7 +1622,7 @@ class hikashopImportmijoHelper extends hikashopImportHelper
 		$data = $this->db->loadObjectList();
 		$this->options->last_mijo_manufacturer = (int)($data[0]->max);
 
-		$this->options->state = (MAX_IMPORT_ID+1);
+		$this->options->state = 14;
 		$query = 'REPLACE INTO `#__hikashop_config` (`config_namekey`,`config_value`,`config_default`) VALUES '.
 				"('mijo_import_state',".$this->options->state.",".$this->options->state.")".
 				",('mijo_import_max_hk_cat',".$this->options->max_hk_cat.",".$this->options->max_hk_cat.")".
@@ -1643,12 +1643,12 @@ class hikashopImportmijoHelper extends hikashopImportHelper
 
 		echo '<p'.$this->titlefont.'>Import finished !</p>';
 
-		$class = hikashop_get('class.plugins');
+		$pluginsClass = hikashop_get('class.plugins');
 
-		$infos = $class->getByName('system','mijo_redirect');
+		$infos = $pluginsClass->getByName('system','mijo_redirect');
 		if($infos)
 		{
-			$pkey = reset($class->pkeys);
+			$pkey = reset($pluginsClass->pkeys);
 			if(!empty($infos->$pkey))
 			{
 				if(version_compare(JVERSION,'1.6','<'))

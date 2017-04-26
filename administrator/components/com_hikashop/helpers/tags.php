@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -30,7 +30,6 @@ class HikaShopTagsHelper {
 					'core_hits' => 'product_hit',
 					'core_metakey' => 'product_keywords',
 					'core_metadesc' => 'product_meta_description',
-					'core_catid' => 'core_catid',
 				)
 			)
 		)
@@ -118,6 +117,13 @@ class HikaShopTagsHelper {
 
 		$tagsHelper->preStoreProcess($tagsTable);
 		$ret = $tagsHelper->postStoreProcess($tagsTable, $tags);
+
+		if($ret) {
+			$query = 'UPDATE #__ucm_content SET core_catid = 1 WHERE core_catid = 0 AND core_type_alias = \'com_hikashop.product\'';
+			$db = JFactory::getDBO();
+			$db->setQuery($query);
+			$db->query();
+		}
 	}
 
 	function deleteUCM($type, $elements) {
@@ -162,8 +168,7 @@ class HikaShopTagsHelper {
 			$alias = 'com_'.$component.'.'.$structure['table'];
 
 			$contentType = new JTableContenttype($db);
-			if($contentType->load(array('type_alias' => $alias)))
-				continue;
+			$contentType->load(array('type_alias' => $alias));
 
 			if(substr($structure['table'], 0, 1) == '#')
 				$table = $structure['table'];
@@ -229,7 +234,6 @@ class JHikaShopTagTable extends JTable {
 				$this->$k = $v;
 			}
 		}
-		$this->core_catid = 1;
 		parent::__construct($table, $structure['id'], $db);
 	}
 }

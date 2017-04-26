@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -128,7 +128,7 @@ if(!HIKASHOP_RESPONSIVE) { ?>
 			if(empty($rate->shipping_price))
 				$rate->shipping_price = $rate->shipping_price_with_tax;
 
-			$taxes = round($rate->shipping_price_with_tax-$rate->shipping_price,$this->currencyHelper->getRounding($rate->shipping_currency_id));
+			$taxes = $this->currencyHelper->round($rate->shipping_price_with_tax-$rate->shipping_price,$this->currencyHelper->getRounding($rate->shipping_currency_id));
 			$prices_taxes = 1;
 			if(bccomp($taxes,0,5) == 0)
 				$prices_taxes = 0;

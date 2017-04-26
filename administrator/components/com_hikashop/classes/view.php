@@ -1,33 +1,34 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class hikashopViewClass extends hikashopClass{
+class hikashopViewClass extends hikashopClass {
 
-	function saveForm(){
+	public function saveForm() {
 		$id = JRequest::getString('id');
 		$element = $this->get($id);
 
 		if(!$element) return false;
 
-		$duplicate = trim(JRequest::getString('duplicate', '', 'post'));
+		$duplicate = trim(JRequest::getCmd('duplicate', '', 'post'));
 		if(!empty($duplicate) && substr($duplicate,0,1) != '.' && substr($duplicate,0,1) != '/' && substr($duplicate,0,1) != '\\' ) {
 			$name = explode('_', $element->filename, 2);
-			$override = substr($element->override, 0, -strlen($name[1])) . $duplicate.'.php';
+			$override = substr($element->override, 0, - strlen($name[1])) . $duplicate.'.php';
+
 			if($element->override != $override) {
-				if(!file_exists($override)) {
-					$element->override = $override;
-				} else {
+				if(file_exists($override)) {
 					$app = JFactory::getApplication();
 					$app->enqueueMessage(JText::_('CANT_DUPLICATE_ON_EXISTING_FILE'));
 					return false;
 				}
+
+				$element->override = $override;
 			}
 		}
 
@@ -36,7 +37,7 @@ class hikashopViewClass extends hikashopClass{
 		return $result;
 	}
 
-	function save(&$element){
+	public function save(&$element) {
 		jimport('joomla.client.helper');
 		JClientHelper::setCredentialsFromRequest('ftp');
 		$ftp = JClientHelper::getCredentials('ftp');
@@ -47,12 +48,14 @@ class hikashopViewClass extends hikashopClass{
 		jimport('joomla.filesystem.file');
 		$result = JFile::write($element->override, $element->content);
 
-		if (!$result){
+		if(!$result) {
 			if(!$ftp['enabled'] && !JPath::setPermissions($element->override, '0755')) {
 				JError::raiseNotice('SOME_ERROR_CODE', JText::sprintf('FILE_NOT_WRITABLE',$element->override));
 			}
+
 			$result = JFile::write($element->override, $element->content);
-			if (!$ftp['enabled']) {
+
+			if(!$ftp['enabled']) {
 				JPath::setPermissions($element->override, '0555');
 			}
 		}
@@ -60,16 +63,15 @@ class hikashopViewClass extends hikashopClass{
 		return $result;
 	}
 
-	function delete(&$id){
+	public function delete(&$id) {
 		$element = $this->get(reset($id));
-		if(!$element){
+		if(!$element)
 			return false;
-		}
-		jimport('joomla.filesystem.file');
 
-		if(!JFile::exists($element->override)){
+		jimport('joomla.filesystem.file');
+		if(!JFile::exists($element->override))
 			return true;
-		}
+
 		jimport('joomla.client.helper');
 		JClientHelper::setCredentialsFromRequest('ftp');
 		$ftp = JClientHelper::getCredentials('ftp');
@@ -81,7 +83,7 @@ class hikashopViewClass extends hikashopClass{
 		return $result;
 	}
 
-	function get($id,$default=null){
+	public function get($id, $default = null) {
 		$parts = explode('|',$id);
 		if(count($parts)!=6){
 			return false;
@@ -94,6 +96,9 @@ class hikashopViewClass extends hikashopClass{
 		$obj->type_name = $parts[3];
 		$obj->view = $parts[4];
 		$obj->filename = $parts[5];
+
+		if(substr($obj->filename, -4) != '.php')
+			$obj->filename .= '.php';
 
 		if($obj->type == 'plugin') {
 			$obj->folder = rtrim(JPATH_PLUGINS,DS).DS.$obj->type_name.DS;

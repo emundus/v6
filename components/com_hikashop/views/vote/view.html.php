@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -25,9 +25,11 @@ class VoteViewvote extends HikaShopView {
 		$db = JFactory::getDBO();
 		$config = hikashop_config();
 		$type_item = JRequest::getCmd('ctrl');
-		$ctrl_param = $this->params->get('main_ctrl','');
-		if(!empty($ctrl_param))
-			$type_item = $ctrl_param;
+		if(!empty($this->params)){
+			$ctrl_param = $this->params->get('main_ctrl','');
+			if(!empty($ctrl_param))
+				$type_item = $ctrl_param;
+		}
 		$row = new stdClass();
 		$elts = null;
 		$hikashop_vote_con_req_list = $config->get('show_listing_comment',0);
@@ -92,13 +94,15 @@ class VoteViewvote extends HikaShopView {
 				}elseif($vote_comment_sort == "date_desc"){
 					$order = ' ORDER BY `vote_date` DESC';
 				}
-				$sort_comments = JRequest::getString('sort_comment','');
-				if($sort_comments == "date"){
-					$order = ' ORDER BY `vote_date` ASC';
-				}else if($sort_comments == "date_desc"){
-					$order = ' ORDER BY `vote_date` DESC';
-				}else if($sort_comments == "helpful"){
-					$order=' ORDER BY `vote_useful` DESC, `vote_date` ASC';
+				if($vote_comment_sort_frontend){
+					$sort_comments = JRequest::getString('sort_comment','');
+					if($sort_comments == "date"){
+						$order = ' ORDER BY `vote_date` ASC';
+					}else if($sort_comments == "date_desc"){
+						$order = ' ORDER BY `vote_date` DESC';
+					}else if( $useful_rating && $sort_comments == "helpful"){
+						$order = ' ORDER BY `vote_useful` DESC, `vote_date` ASC';
+					}
 				}
 				$query = 'FROM `#__hikashop_vote` AS hika_vote LEFT JOIN `#__hikashop_user` AS hika_user ON hika_vote.vote_user_id=hika_user.user_id LEFT JOIN `#__users`AS users ON hika_user.user_cms_id=users.id '.$where.'';
 				$db->setQuery('SELECT COUNT(*) '.$query);
@@ -214,7 +218,7 @@ class VoteViewvote extends HikaShopView {
 			$hikashop_vote_average_score = $hikashop_vote_score->vendor_average_score;
 			$hikashop_vote_total_vote = $hikashop_vote_score->vendor_total_vote;
 
-			if((int)$scores->vendor_average_score == 0){
+			if((int)$hikashop_vote_score->vendor_average_score == 0) {
 				$db = JFactory::getDBO();
 				$query = 'SELECT AVG(v.vote_rating) AS average, COUNT(v.vote_id) AS total FROM '.hikashop_table('vote').' AS v '.
 					' WHERE vote_ref_id = ' . (int)$hikashop_vote_ref_id .' AND vote_type = ' . $db->Quote($type_item).' AND v.vote_rating != 0';
@@ -284,7 +288,8 @@ class VoteViewvote extends HikaShopView {
 		$result = $voteClass->getUserRating($type_item,$hikashop_vote_ref_id);
 		$this->assignRef('user_vote', $result);
 	}
-	function mini(){
+
+	function mini() {
 		$config = hikashop_config();
 		$row = new stdClass();
 		$row->vote_enabled = 0;
@@ -315,7 +320,11 @@ class VoteViewvote extends HikaShopView {
 			$type_item = $this->params->get('vote_type');
 		}
 		$hikashop_vote_user_id = hikashop_loadUser();
-		if($type_item == 'vendor'){
+
+		$hikashop_vote_average_score = $this->params->get('average_score', null);
+		$hikashop_vote_total_vote = $this->params->get('total_vote', -1);
+
+		if($type_item == 'vendor' && $hikashop_vote_total_vote < 0) {
 			$query = 'SELECT vendor_average_score, vendor_total_vote FROM '.hikashop_table('hikamarket_vendor',false).' WHERE vendor_id = '.(int)$hikashop_vote_ref_id;
 			$db->setQuery($query);
 			$scores = $db->loadObject();
@@ -333,27 +342,33 @@ class VoteViewvote extends HikaShopView {
 					$hikashop_vote_total_vote = $data->total;
 				}
 			}
-		}else{
+		} elseif($hikashop_vote_total_vote < 0) {
 			$query = 'SELECT product_average_score, product_total_vote FROM '.hikashop_table('product').' WHERE product_id = '.(int)$hikashop_vote_ref_id;
 			$db->setQuery($query);
 			$scores = $db->loadObject();
 			$hikashop_vote_average_score = $scores->product_average_score;
 			$hikashop_vote_total_vote = $scores->product_total_vote;
 		}
+
 		$hikashop_vote_average_score_rounded = round($hikashop_vote_average_score, 0);
+		JRequest::setVar('rate_rounded', $hikashop_vote_average_score_rounded);
+
 		$row->vote_ref_id = $hikashop_vote_ref_id;
-		$row->main_div_name = $main_div_name ;
+		$row->main_div_name = $main_div_name;
 		$row->listing_true = $listing_true;
 		$row->hikashop_vote_average_score_rounded = $hikashop_vote_average_score_rounded;
-		JRequest::setVar("rate_rounded",$hikashop_vote_average_score_rounded);
 		$row->hikashop_vote_average_score = $hikashop_vote_average_score;
 		$row->hikashop_vote_total_vote = $hikashop_vote_total_vote;
 		$row->hikashop_vote_nb_star = $hikashop_vote_nb_star;
 		$row->type_item = $type_item;
 
-		$voteClass = hikashop_get('class.vote');
-		$result = $voteClass->getUserRating($type_item,$hikashop_vote_ref_id);
-		$this->assignRef('user_vote', $result);
+		$user_vote = $this->params->get('user_vote', null);
+		if($user_vote === null) {
+			$voteClass = hikashop_get('class.vote');
+			$user_vote = $voteClass->getUserRating($type_item, $hikashop_vote_ref_id);
+		}
+
+		$this->assignRef('user_vote', $user_vote);
 		$this->assignRef('rows', $row);
 	}
 }

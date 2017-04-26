@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,6 +12,7 @@ $ajax = false;
 if(!empty($this->upload_ajax))
 	$ajax = true;
 $product_type = (!empty($this->params->product_type) && $this->params->product_type == 'variant') ? 'variant' : 'product';
+$uploader_id = empty($this->editing_variant) ? 'hikashop_product_image' : 'hikashop_product_variant_image';
 $upload = hikashop_acl('product/edit/images/upload');
 $options = array(
 	'classes' => array(
@@ -45,10 +46,7 @@ if(!empty($this->product->images)) {
 	}
 }
 
-if(empty($this->editing_variant))
-	echo $this->uploaderType->displayImageMultiple('hikashop_product_image', $content, $options);
-else
-	echo $this->uploaderType->displayImageMultiple('hikashop_product_variant_image', $content, $options);
+echo $this->uploaderType->displayImageMultiple($uploader_id, $content, $options);
 
 echo $this->popup->display('',JText::_('EDIT_IMAGE'),'','hikashop_product_image_edit',750, 460,'', '', 'link');
 ?>

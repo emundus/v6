@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -106,7 +106,7 @@ class hikashopCategoryClass extends hikashopClass {
 			unset($element->alias);
 		}
 
-		if(!empty($element->category_alias)) {
+		if(!empty($element->category_alias) && (empty($element->category_type) || in_array($element->category_type,array('product','manufacturer')))) {
 			$query = 'SELECT category_id FROM '.hikashop_table('category').' WHERE category_alias='.$this->database->Quote($element->category_alias);
 			$this->database->setQuery($query);
 			$element_with_same_alias = $this->database->loadResult();
@@ -220,23 +220,22 @@ class hikashopCategoryClass extends hikashopClass {
 		if(!$status)
 			return false;
 
-		if($new)
+		if($new) {
+			$element->$pkey = $status;
 			$dispatcher->trigger( 'onAfterCategoryCreate', array( & $element ) );
-		else
+		} else
 			$dispatcher->trigger( 'onAfterCategoryUpdate', array( & $element ) );
 
-		if(empty($element->$pkey)) {
-			$element->$pkey = $status;
-			if($ordering) {
-				$orderHelper = hikashop_get('helper.order');
-				$orderHelper->pkey = 'category_id';
-				$orderHelper->table = 'category';
-				$orderHelper->groupMap = 'category_parent_id';
-				$orderHelper->groupVal = $element->category_parent_id;
-				$orderHelper->orderingMap = 'category_ordering';
-				$orderHelper->reOrder();
-			}
+		if($new && $ordering) {
+			$orderHelper = hikashop_get('helper.order');
+			$orderHelper->pkey = 'category_id';
+			$orderHelper->table = 'category';
+			$orderHelper->groupMap = 'category_parent_id';
+			$orderHelper->groupVal = $element->category_parent_id;
+			$orderHelper->orderingMap = 'category_ordering';
+			$orderHelper->reOrder();
 		}
+
 		$filter = '';
 		if($new) {
 			$query = 'UPDATE '.$table.' SET category_right = category_right + 2 WHERE category_right >= '.(int)$newParentElement->category_right.$filter;
@@ -599,6 +598,11 @@ class hikashopCategoryClass extends hikashopClass {
 	function loadAllWithTrans($type = '', $all = false, $filters = array(), $order = ' ORDER BY category_ordering ASC', $start = 0, $value = 500, $category_image = false, $locale = null) {
 		static $data = array();
 		static $queries = array();
+
+		if($type == 'status') {
+			$orderStatusClass = hikashop_get('class.orderstatus');
+			return $orderStatusClass->getList($filters, array('legacy' => true));
+		}
 
 		if(is_array($type))
 			$typeQ = implode('_', $type);
@@ -966,10 +970,10 @@ class hikashopCategoryClass extends hikashopClass {
 				return $ret;
 			}
 			if($mode == hikashopNameboxType::NAMEBOX_MULTIPLE && is_array($value)) {
-				foreach($value as $v){
-					if(isset($ret[0][$v])){
+				foreach($value as $v) {
+					if(isset($ret[0][$v])) {
 						$ret[1][$v] = $ret[0][$v];
-					}elseif(!empty($v)){
+					} elseif(!empty($v)) {
 						$ret[1][$v] = $v;
 					}
 				}

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -156,11 +156,11 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 			case 12:
 				$next = $this->importReviews();
 				break;
-			case MAX_IMPORT_ID:
+			case 13:
 				$next = $this->finishImport();
 				$ret = false;
 				break;
-			case MAX_IMPORT_ID+1:
+			case 14:
 				$next = false;
 				$ret = $this->proposeReImport();
 				break;
@@ -416,7 +416,7 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 		$this->options->last_vm_review = (int)($data->max);
 
 
-		$this->options->state = (MAX_IMPORT_ID+1);
+		$this->options->state = 14;
 		$query = 'REPLACE INTO `#__hikashop_config` (`config_namekey`,`config_value`,`config_default`) VALUES '.
 			"('vm_import_state',".$this->options->state.",".$this->options->state.")".
 			",('vm_import_max_hk_cat',".$this->options->max_hk_cat.",".$this->options->max_hk_cat.")".

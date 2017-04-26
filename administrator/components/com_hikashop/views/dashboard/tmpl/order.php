@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -32,7 +32,7 @@ defined('_JEXEC') or die('Restricted access');
 						$row =& $this->widget->elements[$i];
 			?>
 				<tr class="<?php echo "row$k"; ?>">
-					<td align="center">
+					<td class="hk_center">
 						<a href="<?php echo hikashop_completeLink('order&task=edit&cid[]='.$row->order_id.'&cancel_redirect='.urlencode(base64_encode(hikashop_completeLink('dashboard')))); ?>">
 							<?php echo $row->order_number; ?>
 						</a>
@@ -46,10 +46,10 @@ defined('_JEXEC') or die('Restricted access');
 						 echo $row->user_email.'<a href="'.$url.'"><img src="'.HIKASHOP_IMAGES.'edit.png" alt="edit"/></a>';
 						 ?>
 					</td>
-					<td align="center">
+					<td class="hk_center">
 						<?php echo $row->order_status; ?>
 					</td>
-					<td align="center">
+					<td class="hk_center">
 						<?php
 							if(isset($this->widget->widget_params->orders_total_calculation) && $this->widget->widget_params->orders_total_calculation=='exclude_fees'){
 								echo $this->currencyHelper->format(($row->order_full_price-$row->order_shipping_price),$row->order_currency_id);

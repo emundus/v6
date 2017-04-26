@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -19,15 +19,15 @@ defined('_JEXEC') or die('Restricted access');
 		'config_checkout' => array('CHECKOUT', 'checkout'),
 		'config_display' => array('DISPLAY', 'display'),
 		'config_features' => array('HIKA_FEATURES', 'features'),
-		'config_plugins' => array('PLUGINS', 'plugins'),
+		'config_advanced' => array('HIKA_ADVANCED', 'advanced'),
 		'config_languages' => array('LANGUAGES', 'languages')
 	);
 
-	if(hikashop_level(2)){
+	if(hikashop_level(2)) {
 		$configTabs['config_acl'] = array('ACCESS_LEVEL', 'acl');
 	}
 
-	if(hikashop_level(1)){
+	if(hikashop_level(1)) {
 		$configTabs['config_cron'] = array('CRON', 'cron');
 	}
 
@@ -36,16 +36,17 @@ defined('_JEXEC') or die('Restricted access');
 		'useCookie' => true
 	);
 	if(!HIKASHOP_J30) {
-		$options['onActive'] = 'function(title, description) {
-			description.setStyle("display", "block");
-			title.addClass("open").removeClass("closed");
-			if(title.getAttribute("class").indexOf("config_") >= 0)
-				myHash = title.getAttribute("class").replace("tabs","").replace("open","").replace("config_","").replace(/^\s*|\s*$/g, "");
-			else
-				myHash = title.getAttribute("id").replace("config_","").replace(/^\s*|\s*$/g, "");
-			if(window.location.hash.substr(1, myHash.length) != myHash)
-				window.location.hash = myHash;
-		}';
+		$options['onActive'] = '
+function(title, description) {
+	description.setStyle("display", "block");
+	title.addClass("open").removeClass("closed");
+	if(title.getAttribute("class").indexOf("config_") >= 0)
+		myHash = title.getAttribute("class").replace("tabs","").replace("open","").replace("config_","").replace(/^\s*|\s*$/g, "");
+	else
+		myHash = title.getAttribute("id").replace("config_","").replace(/^\s*|\s*$/g, "");
+	if(window.location.hash.substr(1, myHash.length) != myHash)
+		window.location.hash = myHash;
+}';
 	}
 	echo $this->tabs->start('config_tab', $options);
 	foreach($configTabs as $pane => $paneOpt) {
@@ -139,7 +140,7 @@ var configWatcher = {
 	scrollToCust: function(name) {
 		var d = document, elem = d.getElementById(name);
 		if( !elem ) { window.scrollTo(0, 0); return; }
-		var topPos = elem.offsetTop + 100;
+		var topPos = elem.offsetTop - 80;
 		window.scrollTo(0, topPos);
 	}
 }

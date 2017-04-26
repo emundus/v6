@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -21,16 +21,16 @@ $js = '';
 global $Itemid;
 $config =& hikashop_config();
 $custom_itemid = $this->params->get('itemid');
-if($this->quantityfield == 1){
+if($this->quantityfield == 1)
 	$params->set('show_quantity_field', 1);
-}
+
 $productClass = hikashop_get('class.product');
 
 $thumbnail_x = $config->get('thumbnail_x',100);
 $thumbnail_y = $config->get('thumbnail_y',100);
 foreach($products as $product) {
 	if(in_array($product->product_id,$id)){
-		echo'<div class="hikashop_inserted_product" style="text-align:center;">';
+		echo'<div id="hikashop_inserted_product_'.$product->product_id.'" class="hikashop_inserted_product_'.$product->product_id.'" style="text-align:center;">';
 		$_SESSION['hikashop_product']=$product;
 		if($this->border == 1 ) echo '<div class="hikashop_subcontainer hikashop_subcontainer_border">';
 		$productClass->addAlias($product);
@@ -51,9 +51,8 @@ foreach($products as $product) {
 		if($this->picture == 1) {
 ?>
 			<!-- PRODUCT IMG -->
-			<div style="position:relative;text-align:center;clear:both;width:200px;margin: auto;" class="hikashop_product_image">
-				<?php if($this->link == 1){
-				?>
+			<div style="position:relative;text-align:center;clear:both;width:200px;margin:auto;" class="hikashop_product_image">
+				<?php if($this->link == 1){ ?>
 						<a href="<?php echo $link;?>" title="<?php echo $this->escape($product->product_name); ?>">
 				<?php }
 					if(!empty($product->images)){
@@ -145,7 +144,9 @@ foreach($products as $product) {
 			<?php
 				$params->set('price_with_tax',$config->get('price_with_tax',1));
 				$params->set('add_to_cart',1);
+				$params->set('main_div_name', 'hikashop_inserted_product_' . $product->product_id);
 				$scripts_already = count($doc->_scripts);
+				$script_already = count($doc->_script);
 				$css_already = count($doc->_styleSheets);
 				$add_to_cart = hikashop_getLayout('product','add_to_cart_listing',$params,$js);
 				echo $add_to_cart;
@@ -165,6 +166,10 @@ foreach($products as $product) {
 					echo '<style type="text/css">'."\r\n@import url(".$css.");\r\n".'</style>';
 				}
 				foreach($doc->_script as $script) {
+					if($script_already){
+						$script_already--;
+						continue;
+					}
 					echo '<script type="text/javascript">'."\r\n".$script."\r\n".'</script>';
 				}
 			?>

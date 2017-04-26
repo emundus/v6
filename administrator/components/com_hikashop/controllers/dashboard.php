@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,7 +12,7 @@ class DashboardController extends hikashopController{
 	var $type = 'widget';
 
 	function __construct($config = array()) {
-		$this->display = array('listing','csv','cpanel');
+		$this->display = array('listing','csv','cpanel','reports');
 		$this->modify_views = array('edit');
 		$this->add = array('add');
 		$this->modify = array('save');
@@ -32,4 +32,22 @@ class DashboardController extends hikashopController{
 		}
 	}
 
+	public function reports() {
+		$statName = JRequest::getCmd('chart', '');
+		$statValue = JRequest::getString('value', '');
+		if(empty($statName) || empty($statValue)) {
+			echo '{}';
+			exit;
+		}
+
+		$statisticsClass = hikashop_get('class.statistics');
+		$ret = $statisticsClass->getAjaxData($statName, $statValue);
+
+		if($ret === false) {
+			echo '{}';
+			exit;
+		}
+		echo $ret;
+		exit;
+	}
 }

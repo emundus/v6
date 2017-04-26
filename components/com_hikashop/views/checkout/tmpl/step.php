@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -181,7 +181,7 @@ defined('_JEXEC') or die('Restricted access');
 					$checkout_next_button = JText::_('NEXT');
 			} else
 				$checkout_next_button = JText::_('NEXT');
-			echo $this->cart->displayButton($checkout_next_button,'next',$this->params, hikashop_completeLink('checkout&task=step&step='.$this->step+1),'if(hikashopCheckChangeForm(\'order\',\'hikashop_checkout_form\')){ if(hikashopCheckMethods()){ document.getElementById(\'hikashop_validate\').value=1; this.disabled = true; document.forms[\'hikashop_checkout_form\'].submit();}} return false;','id="hikashop_checkout_next_button"');
+			echo $this->cart->displayButton($checkout_next_button,'next',$this->params, hikashop_completeLink('checkout&task=step&step='.((int)$this->step+1)),'if(hikashopCheckChangeForm(\'order\',\'hikashop_checkout_form\')){ if(hikashopCheckMethods()){ document.getElementById(\'hikashop_validate\').value=1; this.disabled = true; document.forms[\'hikashop_checkout_form\'].submit();}} return false;','id="hikashop_checkout_next_button"');
 			$button = $this->config->get('button_style','normal');
 			 	if ($button=='css')
 					echo '<input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/></input>';

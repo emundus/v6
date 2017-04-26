@@ -2,7 +2,7 @@
 /**
  * @version   $Id: RokSubfieldForm.php 10623 2013-05-23 23:37:15Z steph $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 if(!class_exists('RokSubfieldForm')){

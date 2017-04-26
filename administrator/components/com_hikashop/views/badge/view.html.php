@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -13,13 +13,16 @@ class BadgeViewBadge extends hikashopView {
 	var $nameListing = 'HIKA_BADGES';
 	var $nameForm = 'HIKA_BADGES';
 	var $icon = 'badge';
+
 	function display($tpl = null){
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName();
 		$function = $this->getLayout();
-		if(method_exists($this,$function)) $this->$function();
+		if(method_exists($this,$function))
+			$this->$function();
 		parent::display($tpl);
 	}
-	function listing(){
+
+	function listing() {
 		$app = JFactory::getApplication();
 		$pageInfo = new stdClass();
 		$pageInfo->filter = new stdClass();
@@ -119,8 +122,13 @@ class BadgeViewBadge extends hikashopView {
 
 		$toggleClass = hikashop_get('helper.toggle');
 		$this->assignRef('toggleClass',$toggleClass);
-		$image=hikashop_get('helper.image');
+
+		$image = hikashop_get('helper.image');
 		$this->assignRef('image',$image);
+
+		$searchType = hikashop_get('type.search');
+		$this->assignRef('searchType', $searchType);
+
 		$this->assignRef('rows',$rows);
 		$this->assignRef('pageInfo',$pageInfo);
 		$order = new stdClass();
@@ -152,6 +160,7 @@ class BadgeViewBadge extends hikashopView {
 			'dashboard'
 		);
 	}
+
 	function form(){
 		$badge_id = hikashop_getCID('badge_id');
 		$class = hikashop_get('class.badge');

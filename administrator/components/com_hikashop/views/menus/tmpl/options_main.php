@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -114,6 +114,17 @@ defined('_JEXEC') or die('Restricted access');
 				<?php
 				if(!isset($this->element['discounted_only'])) $this->element['discounted_only'] = '0';
 				echo JHTML::_('hikaselect.booleanlist', $this->name.'[discounted_only]' , '',$this->element['discounted_only']);
+				?>
+			</dd>
+		</dl>
+		<dl class="hika_options">
+			<dt class="hikashop_option_name">
+				<label for="data_menu__<?php echo $this->type; ?>_related_products_from_cart"><?php echo JText::_( 'RELATED_PRODUCTS_FROM_CART' ); ?></label>
+			</dt>
+			<dd class="hikashop_option_value">
+				<?php
+				if(!isset($this->element['related_products_from_cart'])) $this->element['related_products_from_cart'] = '0';
+				echo JHTML::_('hikaselect.booleanlist', $this->name.'[related_products_from_cart]' , '',$this->element['related_products_from_cart']);
 				?>
 			</dd>
 		</dl>

@@ -1,28 +1,23 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-$class ='';
-if(!empty($this->row->prices) && count($this->row->prices)>1){
-	$class = ' hikashop_product_several_prices';
-}
+$class = (!empty($this->row->prices) && count($this->row->prices) > 1) ? ' hikashop_product_several_prices' : '';
 if(isset($this->element->main->product_msrp) && !(@$this->row->product_msrp > 0.0) )
 	$this->row->product_msrp = $this->element->main->product_msrp;
-if(isset($this->row->product_msrp) && @$this->row->product_msrp > 0.0 && JRequest::getCmd('layout') == 'show' && $this->params->get('from_module','') == ''){ ?>
+if(isset($this->row->product_msrp) && @$this->row->product_msrp > 0.0 && JRequest::getCmd('layout') == 'show' && $this->params->get('from_module','') == '') {
+?>
 	<span class="hikashop_product_msrp_price hikashop_product_price_full">
-		<span class="hikashop_product_msrp_price_title">
-		<?php
+		<span class="hikashop_product_msrp_price_title"><?php
 			echo JText::_('PRODUCT_MSRP_BEFORE');
-		?>
-		</span>
-		<span class="hikashop_product_price">
-		<?php
+		?></span>
+		<span class="hikashop_product_price"><?php
 			$mainCurr = $this->currencyHelper->mainCurrency();
 			$app = JFactory::getApplication();
 			$currCurrency = $app->getUserState( HIKASHOP_COMPONENT.'.currency_id', $mainCurr );
@@ -31,16 +26,16 @@ if(isset($this->row->product_msrp) && @$this->row->product_msrp > 0.0 && JReques
 				echo $this->currencyHelper->format($this->row->product_msrp,$mainCurr);
 			else
 				echo $this->currencyHelper->format($msrpCurrencied,$currCurrency).' ('.$this->currencyHelper->format($this->row->product_msrp,$mainCurr).')';
-		?>
-		</span>
+		?></span>
 	</span>
-<?php } ?>
+<?php
+}
+?>
+	<span class="hikashop_product_price_full<?php echo $class; ?>"><?php
 
-	<span class="hikashop_product_price_full<?php echo $class; ?>">
-	<?php
-	if(empty($this->row->prices)){
+	if(empty($this->row->prices)) {
 		echo JText::_('FREE_PRICE');
-	}else{
+	} else {
 		$first = true;
 		echo JText::_('PRICE_BEGINNING');
 		$i=0;
@@ -132,9 +127,9 @@ if(isset($this->row->product_msrp) && @$this->row->product_msrp > 0.0 && JReques
 				$round = $this->currencyHelper->getRounding($price->price_currency_id, true);
 				$this->element->displayed_price_microdata = true;
 				if($this->params->get('price_with_tax')){
-					$attributes = ' itemprop="price" content="'. str_replace(',','.',$this->currencyHelper->round($price->price_value_with_tax, $round)) .'"';
+					$attributes = ' itemprop="price" content="'. str_replace(',','.',$this->currencyHelper->round($price->price_value_with_tax, $round, 0, true)) .'"';
 				}else{
-					$attributes = ' itemprop="price" content="'. str_replace(',','.',$this->currencyHelper->round($price->price_value, $round)) .'"';
+					$attributes = ' itemprop="price" content="'. str_replace(',','.',$this->currencyHelper->round($price->price_value, $round, 0, true)) .'"';
 				}
 			}
 			echo '<span class="'.implode(' ',$classes).'"'.$attributes.'>';
@@ -206,6 +201,5 @@ if(isset($this->row->product_msrp) && @$this->row->product_msrp > 0.0 && JReques
 			$i++;
 		}
 		echo JText::_('PRICE_END');
-
 	}
 	?></span>

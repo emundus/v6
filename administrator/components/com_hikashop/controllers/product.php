@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -25,6 +25,7 @@ class ProductController extends hikashopController {
 			'listing','show','cancel',
 			'selectcategory','addcategory',
 			'selectrelated','addrelated',
+			'form_price_edit',
 			'getprice','addimage','selectimage','addfile','selectfile','file_entry',
 			'variant','updatecart','export',
 			'galleryimage','galleryselect',
@@ -53,6 +54,12 @@ class ProductController extends hikashopController {
 	function priceaccess(){
 		JRequest::setVar('layout', 'priceaccess');
 		return parent::display();
+	}
+
+	function form_price_edit(){
+		JRequest::setVar('layout', 'form_price_edit');
+		parent::display();
+		exit;
 	}
 
 	function edit_translation(){
@@ -524,10 +531,10 @@ class ProductController extends hikashopController {
 
 	function getprice(){
 		$price = JRequest::getVar('price');
-		$productClass = hikashop_get('class.product');
 		$price=hikashop_toFloat($price);
 		$tax_id = JRequest::getInt('tax_id');
 		$conversion = JRequest::getInt('conversion');
+		$currency = JRequest::getInt('currency');
 		$currencyClass = hikashop_get('class.currency');
 		$config =& hikashop_config();
 		$main_tax_zone = explode(',',$config->get('main_tax_zone',1346));
@@ -538,6 +545,9 @@ class ProductController extends hikashopController {
 				$function = 'getUntaxedPrice';
 			}
 			$newprice = $currencyClass->$function($price,array_shift($main_tax_zone),$tax_id,5);
+		}
+		if($currency){
+			$newprice = $currencyClass->format($newprice,$currency);
 		}
 		echo $newprice;
 		exit;
@@ -694,12 +704,14 @@ class ProductController extends hikashopController {
 
 		$category_id = JRequest::getInt('category_id', 0);
 		$displayFormat = JRequest::getVar('displayFormat', '');
+		$variants = JRequest::getInt('variants', 0);
 		$search = JRequest::getVar('search', null);
 
 		$nameboxType = hikashop_get('type.namebox');
 		$options = array(
 			'start' => $category_id,
-			'displayFormat' => $displayFormat
+			'displayFormat' => $displayFormat,
+			'variants' => $variants
 		);
 		$ret = $nameboxType->getValues($search, $this->type, $options);
 		if(!empty($ret)) {

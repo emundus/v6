@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -44,7 +44,7 @@ function hikashop_setId(id) {
 			</td>
 		</tr>
 	</table>
-	<table class="adminlist hika_listing <?php echo (HIKASHOP_RESPONSIVE)?'table table-striped table-hover':'hikam_table'; ?>" style="cell-spacing:1px">
+	<table class="adminlist hika_listing <?php echo (HIKASHOP_BACK_RESPONSIVE)?'table table-striped table-hover':'hikam_table'; ?>" style="cell-spacing:1px">
 		<thead>
 			<tr>
 				<th class="title titlenum">
@@ -108,11 +108,11 @@ function hikashop_setId(id) {
 		}
 ?>
 			<tr class="row<?php echo $k; ?>"<?php echo $extraTr; ?>>
-				<td align="center">
+				<td class="hk_center">
 					<?php echo $this->pagination->getRowOffset($i); ?>
 				</td>
 <?php if( !$this->singleSelection ) { ?>
-				<td align="center">
+				<td class="hk_center">
 					<?php echo JHTML::_('grid.id', $i, $row->user_id ); ?>
 				</td>
 <?php } ?>
@@ -125,7 +125,7 @@ function hikashop_setId(id) {
 				<td>
 					<?php echo $lbl1 . $row->user_email . $lbl2; ?>
 				</td>
-				<td width="1%" align="center">
+				<td width="1%" class="hk_center">
 					<?php echo $row->user_id; ?>
 				</td>
 			</tr>

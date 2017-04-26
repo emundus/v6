@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -26,7 +26,7 @@ if($data->order_payment_method=='creditcard' && !empty($data->credit_card_info->
 	echo "\r\n".JText::_('CREDITCARD_WARNING');
 }
 $fieldsClass = hikashop_get('class.field');
-$fields = $fieldsClass->getFields('display:field_order_admin_notification=1',$data,'order','');
+$fields = $fieldsClass->getFields('display:mail_admin_notif=1',$data,'order','');
 foreach($fields as $fieldName => $oneExtraField) {
 	$fieldData = trim(@$data->$fieldName);
 	if(empty($fieldData)) continue;

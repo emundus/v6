@@ -1,33 +1,34 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-$sort = JRequest::getString('sort_comment','');
-$row = & $this->rows;
-$pagination = & $this->pagination;
+$row =& $this->rows;
 if($row->comment_enabled != 1)
 	return;
 
 if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row->hikashop_vote_con_req_list == 0) {
 ?>
 
-<div class="hikashop_listing_comment"><?php echo JText::_('HIKASHOP_LISTING_COMMENT');?>
-<?php if($row->vote_comment_sort_frontend){ ?>
+<div class="hikashop_listing_comment">
+	<span><?php echo JText::_('HIKASHOP_LISTING_COMMENT');?></span>
+<?php
+	if($row->vote_comment_sort_frontend) {
+		$sort = JRequest::getString('sort_comment','');
+?>
 	<span style="float: right;" class="hikashop_sort_listing_comment">
 		<select name="sort_comment" onchange="refreshCommentSort(this.value); return false;">
 			<option <?php if($sort == 'date')echo "selected"; ?> value="date"><?php echo JText::_('HIKASHOP_COMMENT_ORDER_DATE');?></option>
 			<option <?php if($sort == 'helpful')echo "selected"; ?> value="helpful"><?php echo JText::_('HIKASHOP_COMMENT_ORDER_HELPFUL');?></option>
 		</select>
 	</span>
-<?php } ?>
-</div>
 <?php
+	}
 
 	$i = 0;
 	foreach($this->elts as $elt) {
@@ -43,51 +44,55 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 			<span itemprop="name" class="hika_vote_listing_username" ><?php echo $elt->vote_pseudo; ?></span>
 <?php } ?>
 		</td>
-		<td class="hika_comment_listing_stars"><?php
+		<td class="hika_comment_listing_stars hk-rating"><?php
+
 		$nb_star_vote = $elt->vote_rating;
 		JRequest::setVar("nb_star", $nb_star_vote);
 		$nb_star_config = $row->vote_star_number;
 		JRequest::setVar("nb_max_star", $nb_star_config);
+
 		if($nb_star_vote != 0) {
-			for($k=0; $k < $nb_star_vote; $k++ ){
-				?><span class="hika_comment_listing_full_stars" ></span><?php
+			for($k = 0; $k < $nb_star_vote; $k++){
+				?><span class="hika_comment_listing_full_stars hk-rate-star state-full"></span><?php
 			}
 			$nb_star_empty = $nb_star_config - $nb_star_vote;
-			if($nb_star_empty != 0){
-				for($j=0; $j < $nb_star_empty; $j++ ){
-					?><span class="hika_comment_listing_empty_stars" ></span><?php
-				}
-			} ?>
+			for($k = 0; $k < $nb_star_empty; $k++) {
+				?><span class="hika_comment_listing_empty_stars hk-rate-star state-empty"></span><?php
+			}
+?>
 			<span style="display:none;" itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
 				<span itemprop="bestRating"><?php echo $nb_star_config; ?></span>
 				<span itemprop="worstRating">1</span>
 				<span itemprop="ratingValue"><?php echo $nb_star_vote; ?></span>
 			</span>
-		<?php } ?>
+<?php
+		}
+?>
 		</td>
 		<td>
-			<div class="hika_comment_listing_notification" id="<?php echo $elt->vote_id; ?>">
-		<?php
-		if($elt->total_vote_useful != 0){
-			if($elt->vote_useful == 0) {
-				$hika_useful = $elt->total_vote_useful / 2;
-			} else if($elt->total_vote_useful == $elt->vote_useful) {
-				$hika_useful = $elt->vote_useful;
-			} else if($elt->total_vote_useful == -$elt->vote_useful) {
-				$hika_useful = 0;
-			} else {
-				$hika_useful = ($elt->total_vote_useful + $elt->vote_useful) /2;
-			}
+			<div class="hika_comment_listing_notification" id="<?php echo $elt->vote_id; ?>"><?php
+		if($row->useful_rating == 1){
+			if($elt->total_vote_useful != 0){
+				if($elt->vote_useful == 0) {
+					$hika_useful = $elt->total_vote_useful / 2;
+				} else if($elt->total_vote_useful == $elt->vote_useful) {
+					$hika_useful = $elt->vote_useful;
+				} else if($elt->total_vote_useful == -$elt->vote_useful) {
+					$hika_useful = 0;
+				} else {
+					$hika_useful = ($elt->total_vote_useful + $elt->vote_useful) /2;
+				}
 
-			$hika_useless = $elt->total_vote_useful - $hika_useful;
-			if($row->useful_style == 'helpful'){
-				echo JText::sprintf('HIKA_FIND_IT_HELPFUL', $hika_useful, $elt->total_vote_useful);
-			}
-		} else {
-			$hika_useless = 0;
-			$hika_useful  = 0;
-			if($row->useful_style == 'helpful' && $row->useful_rating == 1 && $elt->vote_user_id != hikashop_loadUser() && $elt->vote_user_id != hikashop_getIP()) {
-				echo JText::_('HIKASHOP_NO_USEFUL');
+				$hika_useless = $elt->total_vote_useful - $hika_useful;
+				if($row->useful_style == 'helpful'){
+					echo JText::sprintf('HIKA_FIND_IT_HELPFUL', $hika_useful, $elt->total_vote_useful);
+				}
+			} else {
+				$hika_useless = 0;
+				$hika_useful  = 0;
+				if($row->useful_style == 'helpful' && $elt->vote_user_id != hikashop_loadUser() && $elt->vote_user_id != hikashop_getIP()) {
+					echo JText::_('HIKASHOP_NO_USEFUL');
+				}
 			}
 		}
 			?></div>
@@ -145,7 +150,7 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 <?php } ?>
 	<tr>
 		<td colspan="8">
-			<div id="<?php echo $i++; ?>" itemprop="reviewBody" class="hika_comment_listing_content"><?php echo nl2br($elt->vote_comment); ?></div>
+			<div id="<?php echo $i++; ?>" itemprop="reviewBody" class="hika_comment_listing_content"><?php echo nl2br($this->escape($elt->vote_comment)); ?></div>
 		</td>
 	</tr>
 	<tr>
@@ -179,8 +184,10 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 ?></div>
 <?php
 	}
+?>
+</div>
+<?php
 }
-
 if($row->vote_comment_sort_frontend) {
 	$jconfig = JFactory::getConfig();
 	$sef = (HIKASHOP_J30 ? $jconfig->get('sef') : $jconfig->getValue('config.sef'));

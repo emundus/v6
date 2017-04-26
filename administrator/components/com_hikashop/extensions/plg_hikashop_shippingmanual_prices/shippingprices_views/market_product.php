@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -56,7 +56,7 @@ foreach($shippings as &$shipping) {
 	}
 
 	if($previous_shipping_id != $shipping->shipping_id) {
-		echo "\r\n".'<tr class="hikashop_shipping_price_category"><td colspan="5">'.$shipping_data.'</td><td align="center">'.
+		echo "\r\n".'<tr class="hikashop_shipping_price_category"><td colspan="5">'.$shipping_data.'</td><td class="hk_center">'.
 			'<a href="#" onclick="return hikashop_shippingprice.addLine('.$product_id.',this,'.$shipping->shipping_id.',\''.str_replace(array('"',"'"),array('&quot;','\\\''),$shipping->shipping_name).'\',\''.$shipping->currency_symbol.'\');"><img src="'.HIKASHOP_IMAGES.'add.png" alt="+"/></a>'.
 			'</td></tr>';
 	}
@@ -81,7 +81,7 @@ foreach($shippings as &$shipping) {
 			'<td style="text-align:center"><input style="width:auto;" type="text" id="shipping_prices_value_'.$product_id.'_'.$i.'" '.$attribute.' name="shipping_prices['.$product_id.']['.$i.'][value]" value="'.$shipping->shipping_price_value.'" size="7"/> '.$shipping->currency_symbol.'</td>'.
 			'<td style="text-align:center"><input style="width:auto;" type="text" id="shipping_prices_fee_'.$product_id.'_'.$i.'" '.$attribute.' name="shipping_prices['.$product_id.']['.$i.'][fee]" value="'.$shipping->shipping_fee_value.'" size="7"/> '.$shipping->currency_symbol.'</td>'.
 			'<td><input type="checkbox" onchange="hikashop_shippingprice.block('.$product_id.','.$i.', this);" '.$blocked_checked.'/></td>'.
-			'<td align="center">'.
+			'<td class="hk_center">'.
 			'<a href="#" onclick="return hikashop_shippingprice.remLine(this);"><img src="'.HIKASHOP_IMAGES.'delete.png" alt="-"/></a>'.
 			'</td></tr>';
 	}
@@ -96,7 +96,7 @@ foreach($shippings as &$shipping) {
 			<td style="text-align:center"><input style="width:auto;" id="shipping_prices_value_<?php echo $product_id; ?>_{cpt}" type="text" name="{field_value}" value="" size="7"/> {currency}</td>
 			<td style="text-align:center"><input style="width:auto;" id="shipping_prices_fee_<?php echo $product_id; ?>_{cpt}" type="text" name="{field_fee}" value="" size="7"/> {currency}</td>
 			<td><input type="checkbox" onchange="hikashop_shippingprice.block(<?php echo $product_id; ?>,{cpt}, this);" /></td>
-			<td align="center"><a href="#" onclick="return hikashop_shippingprice.remLine(this);"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png" alt="-"/></a></td>
+			<td class="hk_center"><a href="#" onclick="return hikashop_shippingprice.remLine(this);"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png" alt="-"/></a></td>
 		</tr>
 	</tbody>
 </table>

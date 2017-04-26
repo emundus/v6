@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -27,6 +27,7 @@ class ConfigController extends hikashopController{
 		$this->modify_views[]='cleanreport';
 		$this->modify[]='wizard';
 		$this->modify[]='checkdb';
+		$this->modify[]='resetAddressFormat';
 	}
 	function save(){
 		$this->store();
@@ -66,7 +67,7 @@ class ConfigController extends hikashopController{
 		}
 		$config =& hikashop_config();
 
-		$nameboxes = array('simplified_registration','partner_valid_status','order_status_for_download','payment_capture_order_status','cancellable_order_status','cancelled_order_status','invoice_order_statuses','order_unpaid_statuses');
+		$nameboxes = array('simplified_registration');
 		foreach($nameboxes as $namebox){
 			if(!isset($formData[$namebox])){
 				$formData[$namebox] = '';
@@ -94,6 +95,8 @@ class ConfigController extends hikashopController{
 			}
 		}
 		$formData['store_address']=JRequest::getVar( 'config_store_address','','','string',JREQUEST_ALLOWRAW);
+
+		$this->_saveAddressFormat();
 
 		if(!empty($formData['cart_item_limit']) && !is_numeric($formData['cart_item_limit'])){
 			$formData['cart_item_limit']=0;
@@ -248,6 +251,77 @@ class ConfigController extends hikashopController{
 			return false;
 		}
 		return true;
+	}
+
+	function _saveAddressFormat(){
+		if(!HIKASHOP_J25)
+			return;
+		$format = trim(JRequest::getVar( 'config_address_format','','','string',JREQUEST_ALLOWRAW));
+		if(empty($format))
+			return;
+		$config = hikashop_config();
+		$previousFormat = $config->getAddressFormat();
+		if($previousFormat == $format)
+			return;
+
+		$db = JFactory::getDBO();
+		$query = "SELECT * FROM #__template_styles";
+		$db->setQuery($query);
+		$templates = $db->loadObjectList();
+		if(empty($templates))
+			return;
+		jimport('joomla.filesystem.file');
+
+		$header = "<?php
+ defined('_JEXEC') or die('Restricted access');
+?>
+";
+
+		$format = $header . $format;
+
+		foreach($templates as $template){
+			$path = HIKASHOP_ROOT;
+			if($template->client_id){
+				$path .= 'administrator' . DS;
+			}
+			$path .= 'templates' . DS . $template->template . DS . 'html' . DS . 'com_hikashop' . DS . 'address' . DS . 'address_template.php';
+			JFile::write($path, $format);
+		}
+	}
+
+	function resetAddressFormat(){
+		$db = JFactory::getDBO();
+		$query = "SELECT * FROM #__template_styles";
+		$db->setQuery($query);
+		$templates = $db->loadObjectList();
+		if(empty($templates))
+			return;
+		jimport('joomla.filesystem.file');
+		$ret = 	array(
+			'error' => '',
+			'result' => true,
+		);
+		foreach($templates as $template){
+			$path = HIKASHOP_ROOT;
+			if($template->client_id){
+				$path .= 'administrator' . DS;
+			}
+			$path .= 'templates' . DS . $template->template . DS . 'html' . DS . 'com_hikashop' . DS . 'address' . DS . 'address_template.php';
+			if(!JFile::delete($path)){
+				$ret['error'] .= JText::sprintf('COULD_NOT_DELETE_THE_FILE', $path);
+				$ret['result'] = false;
+			}
+		}
+
+		if($ret['result']){
+			$ret['message'] = hikashop_display(JText::_('ADDRESS_FORMAT_RESET_SUCCESSFULLY'),'success',true);
+			$config = hikashop_config();
+			$ret['defaultFormat'] = trim($config->getAddressFormat(true));
+		}
+
+		ob_clean();
+		echo json_encode($ret);
+		exit;
 	}
 
 	function display($cachable = false, $urlparams = array()){

@@ -1,20 +1,20 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><div>
+?><div class="hikashop_upload_file">
 <?php
 	if(!empty($this->params->delete) && !empty($this->params->uploader_id)) {
 		$p = '';
 		if(!empty($this->params->field_name))
 			$p = ',\'' . $this->params->field_name . '\'';
 ?>
-	<a href="#delete" class="deleteImg" onclick="return window.hkUploaderList['<?php echo $this->params->uploader_id; ?>'].delImage(this<?php echo $p;?>);"><img src="<?php echo HIKASHOP_IMAGES; ?>cancel.png" border="0"></a>
+	<a href="#delete" class="deleteFile" onclick="return window.hkUploaderList['<?php echo $this->params->uploader_id; ?>'].delBlock(this<?php echo $p;?>);"><img src="<?php echo HIKASHOP_IMAGES; ?>cancel.png" border="0"></a>
 <?php
 	}
 

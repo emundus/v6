@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -253,12 +253,16 @@ window.hikashopDatepicker = function(el) {
 	el.datepicker(options);
 
 	el.change(function(){
-		var e = hkjQuery(this), format = e.datepicker("option", "dateFormat");
-		if(e.val() == "") {
+		var e = hkjQuery(this), format = e.datepicker("option", "dateFormat"), dateValue = e.val();
+		if(dateValue == "") {
 			hkjQuery("#"+e.attr("data-picker")).val("");
 		} else {
 			try{
-				hkjQuery.datepicker.parseDate(format, e.val());
+				if(options["dateFormat"] && options["dateFormat"].indexOf("d") == -1 && options["dateFormat"].indexOf("D") == -1){
+					dateValue = "01/"+dateValue;
+					format = "dd/"+format;
+				}
+				hkjQuery.datepicker.parseDate(format, dateValue);
 			}catch(ex) {
 				hkjQuery("#"+e.attr("data-picker")).val("");
 			}

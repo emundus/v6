@@ -1,58 +1,71 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 class addressViewAddress extends HikaShopView {
-
-	function display($tpl = null, $params = null) {
-
+	public function display($tpl = null, $params = null) {
 		if(empty($params))
 			$params = new HikaParameter('');
-		$this->assignRef('params',$params);
+		$this->assignRef('params', $params);
 
 		$function = $this->getLayout();
-		if(method_exists($this,$function)) $this->$function();
+		if(method_exists($this, $function))
+			$this->$function();
 		parent::display($tpl);
 	}
 
-	function listing(){
+	public function listing() {
+		$config = hikashop_config();
+		$this->assignRef('config', $config);
+
 		$user_id = hikashop_loadUser();
+		$this->assignRef('user_id', $user_id);
+
 		$addresses = array();
 		$fields = null;
-		if($user_id){
+
+		if(!empty($user_id)) {
 			$addressClass = hikashop_get('class.address');
 			$addresses = $addressClass->getByUser($user_id);
-			if(!empty($addresses)){
+			if(!empty($addresses)) {
 				$addressClass->loadZone($addresses);
 				$fields =& $addressClass->fields;
 			}
 		}
-		$this->assignRef('user_id',$user_id);
-		$this->assignRef('fields',$fields);
-		$this->assignRef('addresses',$addresses);
-		$fieldsClass = hikashop_get('class.field');
-		$this->assignRef('fieldsClass',$fieldsClass);
-		$popup = hikashop_get('helper.popup');
-		$this->assignRef('popup',$popup);
+		$this->assignRef('fields', $fields);
+		$this->assignRef('addresses', $addresses);
+
+		$this->loadRef(array(
+			'fieldClass' => 'class.field',
+			'popupHelper' => 'helper.popup',
+		));
+		$this->fieldsClass =& $this->fieldClass;
+		$this->popup =& $this->popupHelper;
+
+		$this->type = 'user';
+		$this->show_new_btn = false;
+		$this->use_popup = (int)$config->get('user_address_legacy_popup', 0);
+		$this->address_selector = (int)$config->get('user_address_selector', 0);
 
 		hikashop_setPageTitle('ADDRESSES');
 	}
 
-	function show() {
+	public function show() {
 		$app = JFactory::getApplication();
 		$this->assignRef('app', $app);
+
 		$config = hikashop_config();
 		$this->assignRef('config', $config);
 
-		if(!empty($this->params->type))
+		if(!empty($this->params->type)) {
 			$type = $this->params->type;
-		else {
+		} else {
 			$type = JRequest::getCmd('address_type', '');
 			if(empty($type))
 				$type = JRequest::getCmd('subtask', 'billing');
@@ -61,7 +74,7 @@ class addressViewAddress extends HikaShopView {
 		}
 
 		if(!empty($this->params->address_id))
-			$address_id = $this->params->address_id;
+			$address_id = (int)$this->params->address_id;
 		else
 			$address_id = hikashop_getCID();
 
@@ -77,16 +90,14 @@ class addressViewAddress extends HikaShopView {
 		$fieldsClass = hikashop_get('class.field');
 		$this->assignRef('fieldsClass', $fieldsClass);
 
-		$edit = false;
-		if(JRequest::getVar('edition', false)) {
-			$edit = true;
-		}
+		$edit = (JRequest::getVar('edition', false) === true);
 		if(isset($this->params->edit))
 			$edit = $this->params->edit;
 		$this->assignRef('edit', $edit);
 
 		$user_id = hikashop_loadUser();
 		$addressClass = hikashop_get('class.address');
+
 		if(!empty($address_id)) {
 			$address = $addressClass->get($address_id);
 			if($address->address_user_id != $user_id) {
@@ -96,10 +107,12 @@ class addressViewAddress extends HikaShopView {
 			if(!$edit) {
 				$addresses = array(&$address);
 				$addressClass->loadZone($addresses);
+				$userAddresses = $addressClass->loadUserAddresses($user_id);
+				$this->assignRef('addresses', $userAddresses);
 			}
 		} else {
-			$address = $_SESSION['hikashop_address_data'];
-			if(empty($address)){
+			$address = @$_SESSION['hikashop_address_data'];
+			if(empty($address)) {
 				$address = new stdClass();
 				$userCMS = JFactory::getUser();
 				if(!$userCMS->guest) {
@@ -112,10 +125,9 @@ class addressViewAddress extends HikaShopView {
 					$address->address_lastname = $name;
 				}
 			}
-
-			if($edit){
-				$addresses = $addressClass->loadUserAddresses($user_id);
-				$this->assignRef('addresses', $addresses);
+			if($edit) {
+				$userAddresses = $addressClass->loadUserAddresses($user_id);
+				$this->assignRef('addresses', $userAddresses);
 			}
 		}
 		$this->assignRef('address', $address);
@@ -125,8 +137,10 @@ class addressViewAddress extends HikaShopView {
 		if(!empty($Itemid))
 			$url_itemid = '&Itemid='.$Itemid;
 		$this->assignRef('url_itemid', $url_itemid);
-		$extraFields = array();
-		$extraFields['address'] = $fieldsClass->getFields('frontcomp' ,$address, 'address', 'checkout&task=state'.$url_itemid);
+
+		$extraFields = array(
+			'address' => $fieldsClass->getFields('frontcomp' ,$address, 'address', 'checkout&task=state'.$url_itemid)
+		);
 		$this->assignRef('fields', $extraFields['address']);
 
 		$init_js = '';
@@ -168,21 +182,26 @@ class addressViewAddress extends HikaShopView {
 		$jsInit[$type][$edit] = true;
 	}
 
-	function form(){
+	public function form() {
 		$user_id = hikashop_loadUser();
-		$this->assignRef('user_id',$user_id);
+		$this->assignRef('user_id', $user_id);
+
 		$address_id = hikashop_getCID('address_id');
+
+		$tmpl = JRequest::getString('tmpl', '');
+		$this->assignRef('tmpl', $tmpl);
+
 		$address = JRequest::getVar('fail');
-		if(empty($address)){
+		if(empty($address)) {
 			$address = new stdClass();
-			if(!empty($address_id)){
-				$class=hikashop_get('class.address');
-				$address = $class->get($address_id);
-				if($address->address_user_id!=$user_id){
+			if(!empty($address_id)) {
+				$addressClass = hikashop_get('class.address');
+				$address = $addressClass->get($address_id);
+				if($address->address_user_id != $user_id) {
 					$address = new stdClass();
 					$address_id = 0;
 				}
-			}else{
+			} else {
 				$userCMS = JFactory::getUser();
 				if(!$userCMS->guest){
 					$name = $userCMS->get('name');
@@ -195,32 +214,67 @@ class addressViewAddress extends HikaShopView {
 				}
 			}
 		}
-		$extraFields=array();
+
 		$fieldsClass = hikashop_get('class.field');
-		$this->assignRef('fieldsClass',$fieldsClass);
-		$fieldsClass->skipAddressName=true;
+		$this->assignRef('fieldsClass', $fieldsClass);
+		$fieldsClass->skipAddressName = true;
+
 		global $Itemid;
-		$url_itemid='';
-		if(!empty($Itemid)){
-			$url_itemid='&Itemid='.$Itemid;
-		}
-		$extraFields['address'] = $fieldsClass->getFields('frontcomp',$address,'address','checkout&task=state'.$url_itemid);
+		$url_itemid = '';
+		if(!empty($Itemid))
+			$url_itemid = '&Itemid='.$Itemid;
 
+		$extraFields = array(
+			'address' => $fieldsClass->getFields('frontcomp', $address, 'address', 'checkout&task=state'.$url_itemid)
+		);
 		$this->assignRef('extraFields',$extraFields);
-		$null=array();
-		$fieldsClass->addJS($null,$null,$null);
-		$fieldsClass->jsToggle($this->extraFields['address'],$address,0);
 
-		$this->assignRef('address',$address);
+		$null = array();
+		$fieldsClass->addJS($null,$null,$null);
+		$fieldsClass->jsToggle($this->extraFields['address'], $address, 0);
+
+		$this->assignRef('address', $address);
+
 		$module = hikashop_get('helper.module');
 		$module->initialize($this);
+
 		$requiredFields = array();
 		$validMessages = array();
-		$values = array('address'=>$address);
-		$fieldsClass->checkFieldsForJS($extraFields,$requiredFields,$validMessages,$values);
-		$fieldsClass->addJS($requiredFields,$validMessages,array('address'));
-		$cart=hikashop_get('helper.cart');
-		$this->assignRef('cart',$cart);
+		$values = array('address' => $address);
+		$fieldsClass->checkFieldsForJS($extraFields, $requiredFields, $validMessages, $values);
+		$fieldsClass->addJS($requiredFields, $validMessages, array('address'));
+
+		$cart = hikashop_get('helper.cart');
+		$this->assignRef('cart', $cart);
 	}
 
+	public function select() {
+		$config = hikashop_config();
+		$this->assignRef('config', $config);
+
+		$fieldClass = hikashop_get('class.field');
+		$this->assignRef('fieldsClass', $fieldClass);
+		$this->assignRef('fieldClass', $fieldClass);
+
+		$this->fields = $this->params->fields;
+		$this->addresses = $this->params->addresses;
+
+		if(isset($this->params->type))
+			$this->type = $this->params->type;
+		else
+			$this->type = 'user';
+
+		if(isset($this->params->show_new_btn))
+			$this->show_new_btn = $this->params->show_new_btn;
+		else
+			$this->show_new_btn = true;
+
+		if(isset($this->params->address_selector) && is_int($this->params->address_selector)) {
+			$this->address_selector = (int)$this->params->address_selector;
+		} else {
+			$this->address_selector = (int)$config->get('user_address_selector', 0);
+		}
+
+		$this->fieldset_id = 'hikashop_'.$this->type.'_address_zone';
+	}
 }

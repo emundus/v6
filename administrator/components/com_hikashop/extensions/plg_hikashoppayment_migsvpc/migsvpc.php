@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -71,8 +71,10 @@ class plgHikashoppaymentMigsvpc extends hikashopPaymentPlugin
 			'vpc_OrderInfo' => $order_id,
 			'vpc_Amount' => $amount,
 			'vpc_CardNum' => $this->cc_number,
-			'vpc_CardExp' => $this->cc_year.$this->cc_month
+			'vpc_CardExp' => $this->cc_year.$this->cc_month,
+			'vpc_SecureHashType' => 'SHA256'
 		);
+
 		if($this->payment_params->ask_ccv) {
 			$vars['vpc_CardSecurityCode'] = $this->cc_CCV;
 		}
@@ -210,7 +212,6 @@ class plgHikashoppaymentMigsvpc extends hikashopPaymentPlugin
 	}
 
 	function onAfterOrderConfirm_VPCPAY(&$order,&$methods,$method_id){
-
 		$amount = round($order->cart->full_total->prices[0]->price_value_with_tax * 100);
 		$uuid = $order->order_id.'-'.uniqid('');
 
@@ -229,10 +230,11 @@ class plgHikashoppaymentMigsvpc extends hikashopPaymentPlugin
 			'vpc_Locale' => $this->payment_params->locale,
 			'vpc_Amount' => $amount,
 			'vpc_ReturnURL' => $return_url,
+			'vpc_SecureHashType' => 'SHA256'
 		);
 
 		ksort($this->vars);
-		$this->vars['vpc_SecureHash'] = md5($this->payment_params->secure_secret . implode('', $this->vars));
+		$this->vars['vpc_SecureHash'] = $this->getHash($this->vars, $this->payment_params->secure_secret);
 
 		foreach($this->vars as $key => &$var) {
 			$var = $key . '=' . urlencode($var);
@@ -244,6 +246,22 @@ class plgHikashoppaymentMigsvpc extends hikashopPaymentPlugin
 
 		$this->app->redirect($this->payment_params->url . '?' . implode('&', $this->vars));
 	}
+
+	function getHash($data, $secret){
+		ksort($data);
+		$hash = null;
+		foreach ($data as $k => $v) {
+			if (in_array($k, array('vpc_SecureHash', 'vpc_SecureHashType'))) {
+				continue;
+			}
+			if ((strlen($v) > 0) && ((substr($k, 0, 4)=="vpc_") || (substr($k, 0, 5) =="user_"))) {
+				$hash .= $k . "=" . $v . "&";
+			}
+		}
+		$hash = rtrim($hash, "&");
+		return strtoupper(hash_hmac('SHA256', $hash, pack('H*', $secret)));
+	}
+
 
 	function onPaymentNotification(&$statuses){
 		$vars = array();
@@ -280,13 +298,7 @@ class plgHikashoppaymentMigsvpc extends hikashopPaymentPlugin
 			return false;
 		}
 
-		ksort($vars);
-		$hash = $this->payment_params->secure_secret;
-		foreach($vars as $var) {
-			$hash .= $var;
-		}
-
-		if(strtolower($return_hash) != strtolower(md5($hash))) {
+		if($return_hash != $this->getHash($vars,$this->payment_params->secure_secret)) {
 			echo 'Invalid hash';
 			return false;
 		}

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -95,18 +95,18 @@ defined('_JEXEC') or die('Restricted access');
 		}
 ?>
 			<tr class="row<?php echo $k; ?>"<?php echo $extraTr; ?>>
-				<td align="center"><?php
+				<td class="hk_center"><?php
 					echo $this->pagination->getRowOffset($i);
 				?></td>
 <?php if( !$this->singleSelection ) { ?>
-				<td align="center">
+				<td class="hk_center">
 					<input type="checkbox" onclick="this.clicked=true; this.checked=!this.checked" value="<?php echo $row->warehouse_id;?>" name="cid[]" id="cb<?php echo $i;?>"/>
 				</td>
 <?php } ?>
 				<td><?php
 					echo $lbl1 . $row->warehouse_name . $lbl2;
 				?></td>
-				<td width="1%" align="center"><?php
+				<td width="1%" class="hk_center"><?php
 					echo $row->warehouse_id;
 				?></td>
 			</tr>

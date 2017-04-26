@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -14,8 +14,8 @@ class JElementPluginoptions extends JElement{
 			return 'This module can not work without the Hikashop Component';
 		}
 		$id = hikashop_getCID('cid');
-		$plugins = hikashop_get('class.plugins');
-		$plugin = $plugins->get($id);
+		$pluginsClass = hikashop_get('class.plugins');
+		$plugin = $pluginsClass->get($id);
 		$name = @$plugin->element;
 		if(@$plugin->folder=='hikashopshipping'){
 			$group = 'shipping';

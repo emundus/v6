@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -13,7 +13,8 @@ class PluginsController extends hikashopController {
 	var $listing = true;
 	var $toggle = array(
 		'payment_published' => 'payment_id',
-		'shipping_published' => 'shipping_id'
+		'shipping_published' => 'shipping_id',
+		'plugin_published' => 'plugin_id',
 	);
 
 	function __construct($config = array()){
@@ -32,7 +33,9 @@ class PluginsController extends hikashopController {
 
 	function _getToggle() {
 		$this->type = JRequest::getCmd('plugin_type');
-		if($this->type == 'payment') {
+		if($this->type == 'plugin') {
+			$this->toggle = array('plugin_published' => 'plugin_id');
+		} else if($this->type == 'payment') {
 			$this->toggle = array('payment_published' => 'payment_id');
 		} else {
 			$this->toggle = array('shipping_published' => 'shipping_id');
@@ -198,7 +201,7 @@ class PluginsController extends hikashopController {
 		if(!empty($formData[$this->plugin_type])) {
 			$plugin_id = $this->plugin_type.'_id';
 			$element->$plugin_id = $id;
-			if(in_array($this->plugin_type, array('payment','shipping'))){
+			if(in_array($this->plugin_type, array('payment', 'shipping'))) {
 				$plugin_images = $this->plugin_type.'_images';
 				$element->$plugin_images = '';
 			}

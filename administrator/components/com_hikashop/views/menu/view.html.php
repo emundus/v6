@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -95,10 +95,10 @@ class MenuViewMenu extends hikashopView{
 					),
 					array(
 						'name' => JText::_('ORDER_STATUSES'),
-						'check' => array('ctrl'=>'category','filter_id' => 'status'),
+						'check' => array('ctrl'=>'orderstatus'),
 						'acl' => 'config',
 						'icon' => 'icon-16-order',
-						'url' => hikashop_completeLink('category&filter_id=status')
+						'url' => hikashop_completeLink('orderstatus')
 					),
 					array(
 						'name' => JText::_('EMAILS'),
@@ -106,7 +106,6 @@ class MenuViewMenu extends hikashopView{
 						'acl' => 'email',
 						'url' => hikashop_completeLink('email'),
 						'icon' => 'icon-16-email',
-						'display' => hikashop_level(2)
 					),
 					array(
 						'name' => JText::_('HIKA_MASSACTION'),

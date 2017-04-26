@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -16,6 +16,7 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 
 	var $multiple = true;
 	var $name = 'paybox';
+	var $doc_form = 'paybox';
 	var $pluginConfig = array(
 		'pbx_site' => array('Site', 'input'),
 		'pbx_rang' => array('Rang', 'input'),
@@ -86,7 +87,7 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 
 		$this->url = 'https://'.$srv.'/cgi/MYchoix_pagepaiement.cgi';
 
-		if(!empty($this->payment_params->iframe)){
+		if(!empty($this->payment_params->iframe)) {
 			$this->url = 'https://'.$srv.'/cgi/MYframepagepaiement_ip.cgi';
 		}
 
@@ -131,7 +132,6 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 		$inter = array_intersect($payboxLanguages,$possibleLanguageCodes);
 		if(!empty($inter)) $this->vars['PBX_LANGUE'] = reset($inter);
 
-
 		$msg = array();
 		foreach($this->vars as $k => $v) {
 			$msg[] = $k . '=' . $v;
@@ -175,6 +175,7 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 			}else{
 				$app->redirect($url);
 			}
+
 			return;
 		}
 
@@ -328,23 +329,23 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 		$locale = strtolower(substr($lang->get('tag'),0,2));
 
 		$content = '<?php
-	$_GET[\'option\']=\'com_hikashop\';
-	$_GET[\'tmpl\']=\'component\';
-	$_GET[\'ctrl\']=\'checkout\';
-	$_GET[\'task\']=\'notify\';
-	$_GET[\'notif_payment\']=\'paybox\';
-	$_GET[\'format\']=\'html\';
-	$_GET[\'lang\']=\''.$locale.'\';
-	$_GET[\'notif_id\']=\''.$element->payment_id.'\';
-	$_REQUEST[\'option\']=\'com_hikashop\';
-	$_REQUEST[\'tmpl\']=\'component\';
-	$_REQUEST[\'ctrl\']=\'checkout\';
-	$_REQUEST[\'task\']=\'notify\';
-	$_REQUEST[\'notif_payment\']=\'paybox\';
-	$_REQUEST[\'format\']=\'html\';
-	$_REQUEST[\'lang\']=\''.$locale.'\';
-	$_REQUEST[\'notif_id\']=\''.$element->payment_id.'\';
-	include(\'index.php\');
+$_GET[\'option\']=\'com_hikashop\';
+$_GET[\'tmpl\']=\'component\';
+$_GET[\'ctrl\']=\'checkout\';
+$_GET[\'task\']=\'notify\';
+$_GET[\'notif_payment\']=\'paybox\';
+$_GET[\'format\']=\'html\';
+$_GET[\'lang\']=\''.$locale.'\';
+$_GET[\'notif_id\']=\''.$element->payment_id.'\';
+$_REQUEST[\'option\']=\'com_hikashop\';
+$_REQUEST[\'tmpl\']=\'component\';
+$_REQUEST[\'ctrl\']=\'checkout\';
+$_REQUEST[\'task\']=\'notify\';
+$_REQUEST[\'notif_payment\']=\'paybox\';
+$_REQUEST[\'format\']=\'html\';
+$_REQUEST[\'lang\']=\''.$locale.'\';
+$_REQUEST[\'notif_id\']=\''.$element->payment_id.'\';
+include(\'index.php\');
 ';
 		JFile::write(JPATH_ROOT.DS.'paybox_'.$element->payment_id.'.php', $content);
 

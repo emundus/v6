@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,7 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 	$row_id=0;
 	$popupHelper = hikashop_get('helper.popup');
 ?>
-<div id="table_<?php echo $id; ?>" style="margin:auto; margin-b" align="center">
+<div id="table_<?php echo $id; ?>" style="margin:auto; margin-b" class="hk_center">
 	<?php
 
 	echo '<table class="widget_table" style="margin-bottom:10px;">';

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -72,15 +72,15 @@ class hikashopEditorHelper {
 
 	function jsCode() {
 		$name = $this->myEditor->get('_name');
-		$js = 'try{ ' .
-				$this->myEditor->save($this->id) .
-			' }catch(e){ try{ ' .
-				$this->myEditor->save($this->name) .
-			' } catch(f){}}';
+		$js = 'var unload = false; if(window.navigator.userAgent.indexOf("Edge") > -1) { unload = true; } ';
 		if($name=='tinymce'){
-			$js = 'try{tinyMCE.execCommand(\'mceToggleEditor\', false, \''.$this->id.'\');}catch(h){'.$js.'}';
+			$js .= 'if(!unload) { try{ tinyMCE.execCommand(\'mceToggleEditor\', false, \''.$this->id.'\'); unload = true; }catch(h){}} ';
 		}
-
+		$js .= 'if(!unload) { try{ ' .
+				$this->myEditor->save($this->id) .
+			' unload = true; }catch(e){} } if(!unload) { try {' .
+				$this->myEditor->save($this->name) .
+			' unload = true; } catch(f){} }';
 		return $js;
 	}
 
@@ -93,28 +93,35 @@ class hikashopEditorHelper {
 						' if(document.getElementById(n[1])) { tinymce.remove("#"+n[1]); } ' .
 					' } catch(f){}';
 		}
+		return '';
 	}
 
-	function displayCode($name, $content) {
+	function displayCode($name, $content, $options = array()) {
 		$config =& hikashop_config();
 		$code_editor = $config->get('code_editor','codemirror');
 
 		if(!empty($code_editor) && $this->hasCodeEditor($code_editor))
 			$this->setEditor($code_editor);
-		else
+		elseif($this->hasCodeEditor('none'))
 			$this->setEditor('none');
+		else
+			return "You need to activate either the CodeMirror or the None editor plugin via the Joomla plugins manager to be able to edit files.";
 
-		$this->myEditor->setContent($name,$content);
+		if(!HIKASHOP_J16) {
+			$this->myEditor->setContent($name,$content);
+			return $this->myEditor->display($name, $content, $this->width, $this->height, $this->cols, $this->rows, false);
+		}
 
-		if(version_compare(JVERSION,'1.6','<'))
-			return $this->myEditor->display( $name,  $content ,$this->width, $this->height, $this->cols, $this->rows,false);
+		$params = array();
+		if(!empty($options))
+			$params = $options;
 
 		$id = $this->id;
 		if(self::$cpt >= 1 && $this->id == 'jform_articletext') {
 			$id = $this->id . '_' . self::$cpt;
 		}
 		self::$cpt++;
-		return $this->myEditor->display( $name,  $content ,$this->width, $this->height, $this->cols, $this->rows,false,$id) ;
+		return $this->myEditor->display($name, $content, $this->width, $this->height, $this->cols, $this->rows, false, $id, null, null, $params);
 	}
 
 	function setEditor($editor = '') {
@@ -138,9 +145,9 @@ class hikashopEditorHelper {
 	}
 
 	function hasCodeEditor($name = 'codemirror') {
-		static $has = null;
-		if($has !== null)
-			return $has;
+		static $has = array();
+		if(isset($has[$name]))
+			return $has[$name];
 
 		$db = JFactory::getDBO();
 		if(version_compare(JVERSION,'1.6','<'))
@@ -150,7 +157,7 @@ class hikashopEditorHelper {
 
 		$db->setQuery($query);
 		$editor = $db->loadResult();
-		$has = !empty($editor);
-		return $has;
+		$has[$name] = !empty($editor);
+		return $has[$name];
 	}
 }

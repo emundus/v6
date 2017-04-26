@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -17,21 +17,27 @@ class OrderViewOrder extends hikashopView{
 	var $displayCompleted = false;
 	var $triggerView = true;
 
-	function display($tpl = null, $params = null){
+	public function display($tpl = null, $params = null){
 		if(empty($params))
 			$params = new HikaParameter('');
 		$this->assignRef('params',$params);
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName();
 		$function = $this->getLayout();
-		if(method_exists($this,$function)) $this->$function();
-		if(empty($this->displayCompleted)) parent::display($tpl);
+		if(method_exists($this,$function))
+			$this->$function();
+		if(empty($this->displayCompleted))
+			parent::display($tpl);
 	}
 
-	function listing(){
+	public function listing() {
 		$app = JFactory::getApplication();
-		$fieldsClass = hikashop_get('class.field');$null=null;
-		$fields =  @$fieldsClass->getFields('display:field_order_listing=1', $null, 'order');
+		$fieldsClass = hikashop_get('class.field');
+		$null = null;
+		$fields =  $fieldsClass->getFields('backend_listing', $null, 'order');
+
 		$popup = (JRequest::getString('tmpl') === 'component');
+		$this->assignRef('popup',$popup);
+
 		$pageInfo = new stdClass();
 		$pageInfo->filter = new stdClass();
 		$pageInfo->filter->order = new stdClass();
@@ -40,8 +46,10 @@ class OrderViewOrder extends hikashopView{
 		$pageInfo->filter->order->value = $app->getUserStateFromRequest( $this->paramBase.".filter_order", 'filter_order',	'b.order_id','cmd' );
 		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest( $this->paramBase.".filter_order_Dir", 'filter_order_Dir',	'desc',	'word' );
 		$pageInfo->limit->value = $app->getUserStateFromRequest( $this->paramBase.'.list_limit', 'limit', $app->getCfg('list_limit'), 'int' );
+
 		if(empty($pageInfo->limit->value))
 			$pageInfo->limit->value = 500;
+
 		if(JRequest::getVar('search') != $app->getUserState($this->paramBase.".search")){
 			$app->setUserState( $this->paramBase.'.limitstart',0);
 			$pageInfo->limit->start = 0;
@@ -57,9 +65,12 @@ class OrderViewOrder extends hikashopView{
 		$pageInfo->filter->filter_end = $app->getUserStateFromRequest($this->paramBase.".filter_end",'filter_end','','string');
 		$pageInfo->filter->filter_start = $app->getUserStateFromRequest($this->paramBase.".filter_start",'filter_start','','string');
 		$pageInfo->filter->filter_product = JRequest::getInt('filter_product',0);
+
 		$database = JFactory::getDBO();
 		$tables = array();
-		$filters = array('b.order_type=\'sale\'');
+		$filters = array(
+			'b.order_type=\'sale\''
+		);
 
 		if(is_array($pageInfo->filter->filter_status) && count($pageInfo->filter->filter_status) == 1) {
 			$pageInfo->filter->filter_status = reset($pageInfo->filter->filter_status);
@@ -81,9 +92,10 @@ class OrderViewOrder extends hikashopView{
 				$filters[]='b.order_status IN ('.implode(',',$statuses).')';
 				break;
 		}
-		switch($pageInfo->filter->filter_start){
+
+		switch($pageInfo->filter->filter_start) {
 			case '':
-				switch($pageInfo->filter->filter_end){
+				switch($pageInfo->filter->filter_end) {
 					case '':
 						break;
 					default:
@@ -118,21 +130,24 @@ class OrderViewOrder extends hikashopView{
 				}
 				break;
 		}
-		if(!empty($pageInfo->filter->filter_payment) && is_numeric($pageInfo->filter->filter_payment)){
-			$filters[]='b.order_payment_id = '.(int)$pageInfo->filter->filter_payment;
-		}else{
-			switch($pageInfo->filter->filter_payment){
+
+		if(!empty($pageInfo->filter->filter_payment) && is_numeric($pageInfo->filter->filter_payment)) {
+			$filters[] = 'b.order_payment_id = '.(int)$pageInfo->filter->filter_payment;
+		} else {
+			switch($pageInfo->filter->filter_payment) {
 				case '':
 					break;
 				default:
-					$filters[]='b.order_payment_method = '.$database->Quote($pageInfo->filter->filter_payment);
+					$filters[] = 'b.order_payment_method = '.$database->Quote($pageInfo->filter->filter_payment);
 					break;
 			}
 		}
+
 		$searchMap = array('c.id','c.username','c.name','a.user_email','b.order_user_id','b.order_number','b.order_id','b.order_invoice_number','b.order_invoice_id','b.order_full_price','d.address_firstname','d.address_lastname');
-		foreach($fields as $field){
-			if($field->field_type == "customtext") continue;
-			$searchMap[]='b.'.$field->field_namekey;
+		foreach($fields as $field) {
+			if($field->field_type == "customtext")
+				continue;
+			$searchMap[] = 'b.'.$field->field_namekey;
 		}
 
 		$extrafilters = array();
@@ -141,45 +156,56 @@ class OrderViewOrder extends hikashopView{
 			JPluginHelper::getPlugin('system', 'hikashopaffiliate');
 		$dispatcher = JDispatcher::getInstance();
 		$dispatcher->trigger('onBeforeOrderListing', array($this->paramBase, &$extrafilters, &$pageInfo, &$filters, &$tables, &$searchMap));
-		$this->assignRef('extrafilters',$extrafilters);
+		$this->assignRef('extrafilters', $extrafilters);
 
-		if(!empty($pageInfo->search)){
+		if(!empty($pageInfo->search)) {
 			$searchVal = '\'%'.hikashop_getEscaped(JString::strtolower(trim($pageInfo->search)),true).'%\'';
-			$filter = implode(" LIKE $searchVal OR ",$searchMap)." LIKE $searchVal";
+			$filter = implode(' LIKE '.$searchVal.' OR ', $searchMap) . ' LIKE ' . $searchVal;
 			$filters[] =  $filter;
 		}
-		if(!empty($pageInfo->filter->filter_product)){
+		if(!empty($pageInfo->filter->filter_product)) {
 			$tables['order_product'] = 'INNER JOIN '.hikashop_table('order_product').' AS order_product ON b.order_id = order_product.order_id ';
 			$tables['product'] = 'INNER JOIN '.hikashop_table('product').' AS product ON (product.product_id = order_product.product_id OR (product.product_parent_id > 0 AND product.product_parent_id = order_product.product_id))';
 			$filters[] = 'product.product_id = '.(int)$pageInfo->filter->filter_product.' OR product.product_parent_id = '.(int)$pageInfo->filter->filter_product;
 		}
+
 		$order = '';
-		if(!empty($pageInfo->filter->order->value)){
+		if(!empty($pageInfo->filter->order->value)) {
 			$order = ' ORDER BY '.$pageInfo->filter->order->value.' '.$pageInfo->filter->order->dir;
 		}
-		if(!empty($filters)){
-			$filters = ' WHERE ('. implode(') AND (',$filters).')';
-		}else{
+
+		if(!empty($filters)) {
+			$filters = ' WHERE ('. implode(') AND (', $filters).')';
+		} else {
 			$filters = '';
 		}
-		$query = ' FROM '.hikashop_table('order').' AS b LEFT JOIN '.hikashop_table('address').' AS d ON b.order_billing_address_id=d.address_id LEFT JOIN '.hikashop_table('user').' AS a ON b.order_user_id=a.user_id LEFT JOIN '.hikashop_table('users',false).' AS c ON a.user_cms_id=c.id '.implode(' ', $tables).' '.$filters.$order;
-		$database->setQuery('SELECT a.*,b.*,c.*,d.*'.$query,(int)$pageInfo->limit->start,(int)$pageInfo->limit->value);
+
+		$query = ' FROM '.hikashop_table('order').' AS b '.
+			' LEFT JOIN '.hikashop_table('address').' AS d ON b.order_billing_address_id = d.address_id '.
+			' LEFT JOIN '.hikashop_table('user').' AS a ON b.order_user_id=a.user_id '.
+			' LEFT JOIN '.hikashop_table('users',false).' AS c ON a.user_cms_id = c.id ' .
+			implode(' ', $tables) . ' ' . $filters . $order;
+		$database->setQuery('SELECT a.*,b.*,c.*,d.*'.$query, (int)$pageInfo->limit->start, (int)$pageInfo->limit->value);
 		$rows = $database->loadObjectList();
 
-		if(!empty($pageInfo->search)){
+		if(!empty($pageInfo->search)) {
 			$rows = hikashop_search($pageInfo->search,$rows,'order_id');
 		}
+
 		$database->setQuery('SELECT COUNT(*)'.$query);
 		$pageInfo->elements = new stdClass();
 		$pageInfo->elements->total = $database->loadResult();
 		$pageInfo->elements->page = count($rows);
-		if($pageInfo->limit->value == 500) $pageInfo->limit->value = 100;
+		if($pageInfo->limit->value == 500)
+			$pageInfo->limit->value = 100;
 
 		hikashop_setTitle(JText::_($this->nameListing),$this->icon,$this->ctrl);
 
 		$config =& hikashop_config();
+
 		$manage = hikashop_isAllowed($config->get('acl_order_manage','all'));
-		$this->assignRef('manage',$manage);
+		$this->assignRef('manage', $manage);
+
 		$this->toolbar = array(
 			array('name' => 'export'),
 			array('name' => 'custom', 'icon' => 'copy', 'alt' => JText::_('HIKA_COPY'), 'task' => 'copy', 'display' => $manage),
@@ -196,6 +222,7 @@ class OrderViewOrder extends hikashopView{
 
 		$this->assignRef('fields',$fields);
 		$this->assignRef('fieldsClass',$fieldsClass);
+
 		$fieldsClass->handleZoneListing($fields,$rows);
 		$pluginClass = hikashop_get('class.plugins');
 		$payments = $pluginClass->getMethods('payment');
@@ -205,19 +232,21 @@ class OrderViewOrder extends hikashopView{
 			$newPayments[$payment->payment_type] = $payment; //backward compat for old order listing views overrides
 		}
 
-		$this->assignRef('payments',$newPayments);
-		$this->assignRef('rows',$rows);
-		$this->assignRef('pageInfo',$pageInfo);
+		$this->assignRef('payments', $newPayments);
+		$this->assignRef('rows', $rows);
+		$this->assignRef('pageInfo', $pageInfo);
+
 		$currencyClass = hikashop_get('class.currency');
-		$this->assignRef('currencyHelper',$currencyClass);
+		$this->assignRef('currencyHelper', $currencyClass);
 		$category = hikashop_get('type.categorysub');
 		$category->type = 'status';
-		$this->assignRef('category',$category);
+		$this->assignRef('category', $category);
+
 		$payment = hikashop_get('type.payment');
 		$this->assignRef('payment',$payment);
-		$this->assignRef('popup',$popup);
+
 		$popupHelper = hikashop_get('helper.popup');
-		$this->assignRef('popupHelper',$popupHelper);
+		$this->assignRef('popupHelper', $popupHelper);
 		$extrafields = array();
 		$dispatcher->trigger('onAfterOrderListing', array(&$this->rows, &$extrafields, $pageInfo));
 		$this->assignRef('extrafields',$extrafields);
@@ -234,15 +263,11 @@ class OrderViewOrder extends hikashopView{
 			$order = $class->loadFullOrder($order_id,true);
 
 			if(hikashop_level(2)){
-				$task = JRequest::getCmd('task', '');
-				if($task == 'edit')
-					$fields['order'] = $fieldsClass->getFields('display:field_order_edit_fields=1',$order,'order');
-				else
-					$fields['order'] = $fieldsClass->getFields('display:field_order_form=1',$order,'order');
+				$fields['order'] = $fieldsClass->getFields('backend', $order, 'order');
 
 				$null = null;
 				$fields['entry'] = $fieldsClass->getFields('backend_listing',$null,'entry');
-				$fields['item'] = $fieldsClass->getFields('display:field_item_order_form=1',$null,'item');
+				$fields['item'] = $fieldsClass->getFields('backend_listing',$null,'item');
 			}
 			$task='edit';
 
@@ -858,7 +883,7 @@ class OrderViewOrder extends hikashopView{
 		$fieldsClass = hikashop_get('class.field');
 		$this->assignRef('fieldsClass',$fieldsClass);
 		$null=null;
-		$extraFields['item'] = $fieldsClass->getFields('display:field_item_edit_product_order=1',$null,'item','user&task=state');
+		$extraFields['item'] = $fieldsClass->getFields('display:order_edit=1',$null,'item','user&task=state');
 		$this->assignRef('extraFields',$extraFields);
 		$ratesType = hikashop_get('type.rates');
 		$this->assignRef('ratesType',$ratesType);
@@ -1307,7 +1332,7 @@ class OrderViewOrder extends hikashopView{
 
 		if(hikashop_level(2)) {
 			$null = null;
-			$this->fields['item'] = $this->fieldsClass->getFields('display:field_item_edit_product_order=1',$null,'item','user&task=state');
+			$this->fields['item'] = $this->fieldsClass->getFields('display:order_edit=1',$null,'item','user&task=state');
 		}
 	}
 
@@ -1381,7 +1406,7 @@ class OrderViewOrder extends hikashopView{
 			$shipping_ids = explode('-', $shipping_id, 2);
 			$shipping = $this->shippingClass->get($shipping_ids[0]);
 			if(!empty($shipping->shipping_params) && is_string($shipping->shipping_params))
-				$shipping->shipping_params = unserialize($shipping->shipping_params);
+				$shipping->shipping_params = hikashop_unserialize($shipping->shipping_params);
 			$shippingMethod = hikashop_import('hikashopshipping', $shipping_method);
 			$methods = $shippingMethod->shippingMethods($shipping);
 

@@ -1,41 +1,50 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 class dashboardViewDashboard extends hikashopView {
 
-	function display($tpl = null,$params=null){
+	public function display($tpl = null, $params = null) {
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName();
 		$function = $this->getLayout();
-		if(method_exists($this,$function)) $this->$function($params);
+		if(method_exists($this, $function))
+			$this->$function($params);
 		parent::display($tpl);
 	}
 
-	function listing(){
+	public function listing() {
 		$this->toolbar = array();
-		$this->widgets();
+
+		$config = hikashop_config();
+		if($config->get('legacy_widgets', true)) {
+			$this->widgets();
+		} else {
+			$this->statistics();
+		}
+
 		$this->links();
-		hikashop_setTitle( HIKASHOP_NAME , 'hikashop' ,'dashboard' );
+		hikashop_setTitle(HIKASHOP_NAME, 'hikashop', 'dashboard');
+
 		if(HIKASHOP_J16 && JFactory::getUser()->authorise('core.admin', 'com_hikashop')) {
 			$this->toolbar[] = array('name' => 'preferences');
 		}
 		$this->toolbar[] = array('name' => 'pophelp', 'target' => 'dashboard');
 		$toggle = hikashop_get('helper.toggle');
-		$this->assignRef('toggleClass',$toggle);
+		$this->assignRef('toggleClass', $toggle);
 	}
 
-	function cpanel(){
+	public function cpanel() {
 		$this->links();
 	}
 
-	function widget($params){
-		$this->edit=true;
+	public function widget($params) {
+		$this->edit = true;
 		$widgetClass = hikashop_get('class.widget');
 		$widget = $params;
 		$widgetClass=hikashop_get('class.widget');
@@ -68,35 +77,33 @@ class dashboardViewDashboard extends hikashopView {
 		}
 	}
 
-	function widgets(){
+	public function widgets() {
 		$widgetClass = hikashop_get('class.widget');
 		$widgets = $widgetClass->get();
-		foreach($widgets as $k => $widget){
-			$content = @$widget->widget_params->content;
-			if(!empty($content) || $widget->widget_params->display=='table'){
-				if($widget->widget_params->display=='table'){
-					foreach($widget->widget_params->table as $row){
-						if(!empty($row))
-							$widgetClass->data($row);
-					}
-				}else{
+		foreach($widgets as $k => $widget) {
+			if(empty($widget->widget_params->content) && $widget->widget_params->display != 'table')
+				continue;
+
+			if($widget->widget_params->display == 'table') {
+				foreach($widget->widget_params->table as $row){
+					if(!empty($row))
+						$widgetClass->data($row);
+				}
+			} else {
+				$widgetClass->data($widget);
+				if(isset($widget->widget_params->period_compare)  && $widget->widget_params->period_compare != 'none') {
 					$widgetClass->data($widget);
-					if (isset($widget->widget_params->period_compare)  && $widget->widget_params->period_compare!='none' ){
-						$widgetClass->data($widget);
-					}
 				}
 			}
 		}
-		$this->assignRef('widgets',$widgets);
-		if (!HIKASHOP_PHP5) {
-			$doc =& JFactory::getDocument();
-		}else{
-			$doc = JFactory::getDocument();
-		}
+		$this->assignRef('widgets', $widgets);
+
+		$doc = JFactory::getDocument();
 		$doc->addScript((hikashop_isSSL() ? 'https://' : 'http://').'www.google.com/jsapi');
+
 		$currencyHelper = hikashop_get('class.currency');
 		$this->assignRef('currencyHelper',$currencyHelper);
-		if(hikashop_level(1)){
+		if(hikashop_level(1)) {
 			$config =& hikashop_config();
 			$manage = hikashop_isAllowed($config->get('acl_dashboard_manage','all'));
 			$this->assignRef('manage',$manage);
@@ -106,7 +113,26 @@ class dashboardViewDashboard extends hikashopView {
 		}
 	}
 
-	function links(){
+	public function statistics() {
+		$statisticsClass = hikashop_get('class.statistics');
+		$statistics = $statisticsClass->getDashboard();
+
+		$statistics_slots = array();
+		foreach($statistics as $key => &$stat) {
+			$slot = (int)@$stat['slot'];
+			$stat['slot'] = $slot;
+			$stat['key'] = $key;
+			$statistics_slots[ $slot ] = $slot;
+		}
+		unset($stat);
+		asort($statistics_slots);
+
+		$this->assignRef('statisticsClass', $statisticsClass);
+		$this->assignRef('statistics', $statistics);
+		$this->assignRef('statistics_slots', $statistics_slots);
+	}
+
+	public function links() {
 		$buttons = array();
 		$desc = array(
 			'product' => array(JText::_('PRODUCTS_DESC_CREATE'),JText::_('PRODUCTS_DESC_MANAGE'),JText::_('CHATACTERISTICS_DESC_MANAGE')),
@@ -156,17 +182,17 @@ class dashboardViewDashboard extends hikashopView {
 		$this->assignRef('descriptions', $desc);
 	}
 
-	function _quickiconButton( $link, $image, $text,$description,$level) {
+	public function _quickiconButton($link, $image, $text,$description,$level) {
 		if(is_array($description))
 			$description = '<ul><li>' . implode('</li><li>', $description) . '</li></ul>';
 
 		$url = hikashop_level($level) ? 'onclick="document.location.href=\''.hikashop_completeLink($link).'\';"' : '';
-		$html = '<div style="float:left;width: 100%;" '.$url.' class="icon"><a href="';
-		$html .= hikashop_level($level) ? hikashop_completeLink($link) : '#';
-		$html .= '"><table width="100%"><tr><td style="text-align: center;" width="120px">';
-		$html .= '<span class="icon-48-'.$image.'" style="background-repeat:no-repeat;background-position:center;height:48px" title="'.$text.'"> </span>';
-		$html .= '<span>'.$text.'</span></td><td>'.$description.'</td></tr></table></a>';
-		$html .= '</div>';
+		$html = '<div style="float:left;width: 100%;" '.$url.' class="icon"><a href="' .
+			(hikashop_level($level) ? hikashop_completeLink($link) : '#') .
+			'"><table width="100%"><tr><td style="text-align: center;" width="120px">' .
+			'<span class="icon-48-'.$image.'" style="background-repeat:no-repeat;background-position:center;height:48px" title="'.$text.'"> </span>' .
+			'<span>'.$text.'</span></td><td>'.$description.'</td></tr></table></a>' .
+			'</div>';
 		return $html;
 	}
 }

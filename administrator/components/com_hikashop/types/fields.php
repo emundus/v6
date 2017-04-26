@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -68,7 +68,7 @@ class hikashopFieldsType {
 			if($type == 'entry'|| empty($type)) {
 				$this->allValues["coupon"] = array(
 					'name' => JText::_('HIKASHOP_COUPON'),
-					'options' => array("size","required","default","columnname","regex")
+					'options' => array("size","required","default","columnname")
 				);
 			}
 			$this->allValues["file"] = array(
@@ -161,34 +161,54 @@ function updateFieldType() {
 		newType = el.value;
 
 	for(var i = 0; i < hiddenAll.length; i++) {
-		key = hiddenAll[i]
-		el = d.getElementById("fieldopt_" + key);
-		if(el) {
-			el.style.display = "none";
-		} else {
-			var j = 0;
-			el = d.getElementById("fieldopt_" + key + "_" + j);
-			while(el) {
-				el.style.display = "none";
-				j++;
-				el = d.getElementById("fieldopt_" + key + "_" + j);
-			}
+		fields_display_blocks(hiddenAll[i], false);
+	}
+
+	var hkDisplays = d.querySelectorAll(\'[data-hk-displays]\');
+	if(hkDisplays && hkDisplays.length > 0) {
+		for(var i = 0; i < hkDisplays.length; i++) {
+			var values = hkDisplays[i].getAttribute("data-hk-displays");
+			if(!values)
+				continue;
+			hkDisplays[i].style.display = "none";
 		}
 	}
+
 	for(var i = 0; i < allTypes[newType].length; i++) {
-		key = allTypes[newType][i];
+		fields_display_blocks(allTypes[newType][i], true, hkDisplays);
+	}
+}
+function fields_display_blocks(key, state, hkDisplays) {
+	var d = document,
 		el = d.getElementById("fieldopt_" + key);
-		if(el) {
-			el.style.display = "";
-		} else {
-			var j = 0;
+	if(!el) {
+		var j = 0;
+		el = d.getElementById("fieldopt_" + key + "_" + j);
+		while(el) {
+			el.style.display = state ? "" : "none";
+			j++;
 			el = d.getElementById("fieldopt_" + key + "_" + j);
-			while(el) {
-				el.style.display = "";
-				j++;
-				el = d.getElementById("fieldopt_" + key + "_" + j);
-			}
 		}
+	} else {
+		el.style.display = state ? "" : "none";
+	}
+
+	var fields = d.querySelectorAll(\'[data-hk-display="\' + key + \'"]\');
+	if(fields && fields.length > 0) {
+		for(var i = 0; i < fields.length; i++) {
+			fields[i].style.display = state ? "" : "none";
+		}
+	}
+
+	if(!state || !hkDisplays || hkDisplays.length == 0)
+		return;
+	for(var i = 0; i < hkDisplays.length; i++) {
+		var values = hkDisplays[i].getAttribute("data-hk-displays");
+		if(!values)
+			continue;
+		values = "," + values + ",";
+		if(values.indexOf("," + key + ",") >= 0)
+			hkDisplays[i].style.display = "";
 	}
 }
 window.hikashop.ready(function(){updateFieldType();});

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -68,4 +68,4 @@ if(isset($this->edit) && $this->edit){
 	$size='width: 300px; height: 210px;';
 }
 ?>
-<div id="graph_<?php echo $id; ?>" style="<?php echo $size; ?>" align="center"></div>
+<div id="graph_<?php echo $id; ?>" style="<?php echo $size; ?>" class="hk_center"></div>

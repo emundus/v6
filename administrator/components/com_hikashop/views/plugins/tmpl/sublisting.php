@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -47,10 +47,10 @@ foreach($plugins as $plugin){
 	$id = $this->plugin_type.'_' . $plugin->$p_id;
 ?>
 		<tr class="row<?php echo $k;?>" id="<?php echo $id;?>">
-			<td align="center"><?php
+			<td class="hk_center"><?php
 				echo $i+1;
 			?></td>
-			<td align="center"><?php
+			<td class="hk_center"><?php
 				echo JHTML::_('grid.id', $i, $plugin->$p_id );
 			?></td>
 			<td>
@@ -78,12 +78,12 @@ foreach($plugins as $plugin){
 					?></span>
 				<input type="text" name="order[]" size="5" <?php if(!$this->data['order']->ordering) echo 'disabled="disabled"'; ?> value="<?php echo $plugin->$p_order; ?>" class="text_area" style="text-align: center" />
 			</td>
-			<td align="center">
+			<td class="hk_center">
 				<span class=""><?php
 					echo $this->data['toggleClass']->delete($id, $this->name.'-'.$plugin->$p_id, $this->plugin_type, true);
 				?></span>
 			</td>
-			<td align="center">
+			<td class="hk_center">
 				<span id="<?php echo $published_id;?>" class="spanloading"><?php echo $this->data['toggleClass']->toggle($published_id, (int)$plugin->$p_published, $this->plugin_type);?></span>
 			</td>
 		</tr>

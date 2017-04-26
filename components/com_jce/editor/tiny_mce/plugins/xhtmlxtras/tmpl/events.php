@@ -1,13 +1,12 @@
 <?php
 
 /**
- * @package   	JCE
- * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
  * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
+ * other free or open source software licenses
  */
 defined('_JEXEC') or die('RESTRICTED');
 ?>
@@ -163,6 +162,10 @@ defined('_JEXEC') or die('RESTRICTED');
         <label class="uk-form-label uk-width-3-10" for="onscroll">onscroll</label>
         <div class="uk-form-controls uk-width-7-10"><input id="onscroll" class="html5" type="text" value="" /></div>
     </div>
+    <div class="uk-form-row">
+        <label class="uk-form-label uk-width-3-10" for="oncontextmenu">oncontextmenu</label>
+        <div class="uk-form-controls uk-width-7-10"><input id="oncontextmenu" type="text" class="html5" value="" /></div>
+    </div>
 
     <!-- Form -->
 
@@ -173,10 +176,6 @@ defined('_JEXEC') or die('RESTRICTED');
     <div class="uk-form-row">
         <label class="uk-form-label uk-width-3-10" for="onchange">onchange</label>
         <div class="uk-form-controls uk-width-7-10"><input id="onchange" type="text" class="form" value="" /></div>
-    </div>
-    <div class="uk-form-row">
-        <label class="uk-form-label uk-width-3-10" for="oncontextmenu">oncontextmenu</label>
-        <div class="uk-form-controls uk-width-7-10"><input id="oncontextmenu" type="text" class="html5 form" value="" /></div>
     </div>
     <div class="uk-form-row">
         <label class="uk-form-label uk-width-3-10" for="onfocus">onfocus</label>

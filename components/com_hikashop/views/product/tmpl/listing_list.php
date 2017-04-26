@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -51,32 +51,11 @@ if((!empty($this->rows) || !$this->module || JRequest::getVar('hikashop_front_en
 		foreach($this->rows as $row) {
 			$this->row =& $row;
 			$link = hikashop_contentLink('product&task=show&cid='.$row->product_id.'&name='.$row->alias.$this->itemid.$this->category_pathway,$row);
-			if($row->product_parent_id != 0 && isset($row->main_product_quantity_layout)){
-				$row->product_quantity_layout = $row->main_product_quantity_layout;
-			}
-			if(!empty($row->product_quantity_layout) &&  $row->product_quantity_layout != 'inherit'){
-				$qLayout = $row->product_quantity_layout;
-			}else{
-				$categoryQuantityLayout = '';
-				if(!empty($row->categories) ) {
-					foreach($row->categories as $category) {
-						if(!empty($category->category_quantity_layout) && $this->quantityDisplayType->check($category->category_quantity_layout, $app->getTemplate())) {
-							$categoryQuantityLayout = $category->category_quantity_layout;
-							break;
-						}
-					}
-				}
-				if(!empty($categoryQuantityLayout) && $categoryQuantityLayout != 'inherit'){
-					$qLayout = $categoryQuantityLayout;
-				}else{
-					$qLayout = $this->config->get('product_quantity_display','show_default');
-				}
-			}
-			JRequest::setVar('quantitylayout',$qLayout);
+			$this->quantityLayout = $this->getProductQuantityLayout($row);
 ?>
 				<li class="hikashop_product_list_item" <?php echo $width; ?>>
 <?php
-			if($this->params->get('link_to_product_page',0)){ ?>
+			if($this->params->get('link_to_product_page', 0)) { ?>
 					<a href="<?php echo $link; ?>" class="hikashop_product_name_in_list">
 <?php
 			}
@@ -100,21 +79,28 @@ if((!empty($this->rows) || !$this->module || JRequest::getVar('hikashop_front_en
 
 
 			if(!empty($this->productFields)) {
-				foreach ($this->productFields as $fieldName => $oneExtraField) {
-					if(!empty($this->row->$fieldName) || (isset($this->row->$fieldName) && $this->row->$fieldName === '0')) {
-			?>
-					<dl class="hikashop_product_custom_<?php echo $oneExtraField->field_namekey;?>_line">
-						<dt class="hikashop_product_custom_name">
-							<?php echo $this->fieldsClass->getFieldName($oneExtraField);?>
-						</dt>
-						<dd class="hikashop_product_custom_value">
-							<?php echo $this->fieldsClass->show($oneExtraField,$this->row->$fieldName); ?>
-						</dd>
-					</dl>
-			<?php
+				foreach($this->productFields as $fieldName => $oneExtraField) {
+					if(empty($this->row->$fieldName) && (!isset($this->row->$fieldName) || $this->row->$fieldName !== '0'))
+						continue;
+
+					if(!empty($oneExtraField->field_products)) {
+						$field_products = is_string($oneExtraField->field_products) ? explode(',', trim($oneExtraField->field_products, ',')) : $oneExtraField->field_products;
+						if(!in_array($this->row->product_id, $field_products))
+							continue;
 					}
+			?>
+				<dl class="hikashop_product_custom_<?php echo $oneExtraField->field_namekey;?>_line">
+					<dt class="hikashop_product_custom_name">
+						<?php echo $this->fieldsClass->getFieldName($oneExtraField);?>
+					</dt>
+					<dd class="hikashop_product_custom_value">
+						<?php echo $this->fieldsClass->show($oneExtraField,$this->row->$fieldName); ?>
+					</dd>
+				</dl>
+			<?php
 				}
 			}
+
 
 
 			if($this->params->get('show_vote_product')){
@@ -122,18 +108,23 @@ if((!empty($this->rows) || !$this->module || JRequest::getVar('hikashop_front_en
 				echo $this->loadTemplate();
 			}
 
-			if($this->params->get('add_to_cart') || $this->params->get('add_to_wishlist')){
+			if($this->params->get('add_to_cart') || $this->params->get('add_to_wishlist')) {
 				$this->setLayout('add_to_cart_listing');
 				echo $this->loadTemplate();
 			}
 
-			if(JRequest::getVar('hikashop_front_end_main',0) && JRequest::getVar('task')=='listing' && $this->params->get('show_compare')) {
-				if( $this->params->get('show_compare') == 1 ) {
-					$js = 'setToCompareList('.$this->row->product_id.',\''.$this->escape(str_replace("'","\'",$this->row->product_name)).'\',this); return false;';
-					echo $this->cart->displayButton(JText::_('ADD_TO_COMPARE_LIST'),'compare',$this->params,$link,$js,'',0,1,'hikashop_compare_button');
+			if(JRequest::getVar('hikashop_front_end_main', 0) && JRequest::getVar('task') == 'listing' && $this->params->get('show_compare')) {
+				$css_button = $this->config->get('css_button', 'hikabtn');
+				$css_button_compare = $this->config->get('css_button_compare', 'hikabtn-compare');
+				if((int)$this->params->get('show_compare') == 1) {
+?>
+					<a class="<?php echo $css_button . ' ' . $css_button_compare; ?>" href="<?php echo $link; ?>" onclick="if(window.hikashop.addToCompare) { return window.hikashop.addToCompare(this); }" data-addToCompare="<?php echo $this->row->product_id; ?>" data-product-name="<?php echo $this->escape($this->row->product_name); ?>" data-addTo-class="hika-compare"><span><?php
+						echo JText::_('ADD_TO_COMPARE_LIST');
+					?></span></a>
+<?php
 				} else {
 ?>
-					<input type="checkbox" class="hikashop_compare_checkbox" id="hikashop_listing_chk_<?php echo $this->row->product_id;?>" onchange="setToCompareList(<?php echo $this->row->product_id;?>,'<?php echo $this->escape(str_replace("'","\'",$this->row->product_name)); ?>',this);"><label for="hikashop_listing_chk_<?php echo $this->row->product_id;?>"><?php echo JText::_('ADD_TO_COMPARE_LIST'); ?></label>
+					<label><input type="checkbox" class="hikashop_compare_checkbox" onchange="if(window.hikashop.addToCompare) { return window.hikashop.addToCompare(this); }" data-addToCompare="<?php echo $this->row->product_id; ?>" data-product-name="<?php echo $this->escape($this->row->product_name); ?>" data-addTo-class="hika-compare"><?php echo JText::_('ADD_TO_COMPARE_LIST'); ?></label>
 <?php
 				}
 			}
@@ -141,7 +132,7 @@ if((!empty($this->rows) || !$this->module || JRequest::getVar('hikashop_front_en
 				</li>
 <?php
 			if($current_column >= $columns) {
-				$current_column=0;
+				$current_column = 0;
 			}
 			$current_column++;
 		}

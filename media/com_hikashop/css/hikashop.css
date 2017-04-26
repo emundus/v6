@@ -1,0 +1,958 @@
+/**
+ * @package    HikaShop for Joomla!
+ * @version    3.0.1
+ * @author     hikashop.com
+ * @copyright  (C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ */
+.hk-container {
+	margin-right:auto; margin-left:auto; padding-left:5px; padding-right:5px;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	box-sizing:border-box;
+}
+.hk-thumbnails {
+	list-style:outside none none;
+}
+@media (min-width:768px) {
+	.hk-container { width:750px; }
+}
+@media (min-width:992px) {
+	.hk-container { width:970px; }
+}
+@media (min-width:1200px) {
+	.hk-container { width:1170px; }
+}
+.hk-container-fluid {
+	margin-right:auto; margin-left:auto; padding-left:5px; padding-right:5px;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	box-sizing:border-box;
+}
+.hk-row {
+	margin-left:-5px; margin-right:-5px;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	box-sizing:border-box;
+}
+.hk-row-fluid {
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	box-sizing:border-box;
+}
+.hkc-xs-1, .hkc-sm-1, .hkc-md-1, .hkc-lg-1, .hkc-xl-1, .hkc-xs-2, .hkc-sm-2, .hkc-md-2, .hkc-lg-2, .hkc-xl-2, .hkc-xs-3, .hkc-sm-3, .hkc-md-3, .hkc-lg-3, .hkc-xl-3, .hkc-xs-4, .hkc-sm-4, .hkc-md-4, .hkc-lg-4, .hkc-xl-4, .hkc-xs-5, .hkc-sm-5, .hkc-md-5, .hkc-lg-5, .hkc-xl-5, .hkc-xs-6, .hkc-sm-6, .hkc-md-6, .hkc-lg-6, .hkc-xl-6, .hkc-xs-7, .hkc-sm-7, .hkc-md-7, .hkc-lg-7, .hkc-xl-7, .hkc-xs-8, .hkc-sm-8, .hkc-md-8, .hkc-lg-8, .hkc-xl-8, .hkc-xs-9, .hkc-sm-9, .hkc-md-9, .hkc-lg-9, .hkc-xl-9, .hkc-xs-10, .hkc-sm-10, .hkc-md-10, .hkc-lg-10, .hkc-xl-10, .hkc-xs-11, .hkc-sm-11, .hkc-md-11, .hkc-lg-11, .hkc-xl-11, .hkc-xs-12, .hkc-sm-12, .hkc-md-12, .hkc-lg-12 {
+	position:relative; min-height:1px; padding-left:5px; padding-right:5px;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	box-sizing:border-box;
+}
+.hkc-xs-1, .hkc-xs-2, .hkc-xs-3, .hkc-xs-4, .hkc-xs-5, .hkc-xs-6, .hkc-xs-7, .hkc-xs-8, .hkc-xs-9, .hkc-xs-10, .hkc-xs-11, .hkc-xs-12 {
+	float:left;
+}
+.hkc-xs-12 { width:100%; }
+.hkc-xs-11 { width:91.66666667%; }
+.hkc-xs-10 { width:83.33333333%; }
+.hkc-xs-9 { width:75%; }
+.hkc-xs-8 { width:66.66666667%; }
+.hkc-xs-7 { width:58.33333333%; }
+.hkc-xs-6 { width:50%; }
+.hkc-xs-5 { width:41.66666667%; }
+.hkc-xs-4 { width:33.33333333%; }
+.hkc-xs-3 { width:25%; }
+.hkc-xs-2 { width:16.66666667%; }
+.hkc-xs-1 { width:8.33333333%; }
+@media (min-width:768px) {
+	.hkc-sm-1, .hkc-sm-2, .hkc-sm-3, .hkc-sm-4, .hkc-sm-5, .hkc-sm-6, .hkc-sm-7, .hkc-sm-8, .hkc-sm-9, .hkc-sm-10, .hkc-sm-11, .hkc-sm-12 { float:left; }
+	.hkc-sm-12 { width:100%; }
+	.hkc-sm-11 { width:91.66666667%; }
+	.hkc-sm-10 { width:83.33333333%; }
+	.hkc-sm-9 { width:75%; }
+	.hkc-sm-8 { width:66.66666667%; }
+	.hkc-sm-7 { width:58.33333333%; }
+	.hkc-sm-6 { width:50%; }
+	.hkc-sm-5 { width:41.66666667%; }
+	.hkc-sm-4 { width:33.33333333%; }
+	.hkc-sm-3 { width:25%; }
+	.hkc-sm-2 { width:16.66666667%; }
+	.hkc-sm-1 { width:8.33333333%; }
+}
+@media (min-width:992px) {
+	.hkc-md-1, .hkc-md-2, .hkc-md-3, .hkc-md-4, .hkc-md-5, .hkc-md-6, .hkc-md-7, .hkc-md-8, .hkc-md-9, .hkc-md-10, .hkc-md-11, .hkc-md-12 { float:left; }
+	.hkc-md-12 { width:100%; }
+	.hkc-md-11 { width:91.66666667%; }
+	.hkc-md-10 { width:83.33333333%; }
+	.hkc-md-9 { width:75%; }
+	.hkc-md-8 { width:66.66666667%; }
+	.hkc-md-7 { width:58.33333333%; }
+	.hkc-md-6 { width:50%; }
+	.hkc-md-5 { width:41.66666667%; }
+	.hkc-md-4 { width:33.33333333%; }
+	.hkc-md-3 { width:25%; }
+	.hkc-md-2 { width:16.66666667%; }
+	.hkc-md-1 { width:8.33333333%; }
+}
+@media (min-width:1200px) {
+	.hkc-lg-1, .hkc-lg-2, .hkc-lg-3, .hkc-lg-4, .hkc-lg-5, .hkc-lg-6, .hkc-lg-7, .hkc-lg-8, .hkc-lg-9, .hkc-lg-10, .hkc-lg-11, .hkc-lg-12 { float:left; }
+	.hkc-lg-12 { width:100%; }
+	.hkc-lg-11 { width:91.66666667%; }
+	.hkc-lg-10 { width:83.33333333%; }
+	.hkc-lg-9 { width:75%; }
+	.hkc-lg-8 { width:66.66666667%; }
+	.hkc-lg-7 { width:58.33333333%; }
+	.hkc-lg-6 { width:50%; }
+	.hkc-lg-5 { width:41.66666667%; }
+	.hkc-lg-4 { width:33.33333333%; }
+	.hkc-lg-3 { width:25%; }
+	.hkc-lg-2 { width:16.66666667%; }
+	.hkc-lg-1 { width:8.33333333%; }
+}
+@media (min-width:1200px) and (max-width:1600px) {
+	.hkc-lg-clear { clear:left; }
+}
+@media (min-width:1600px) {
+	.hkc-xl-1, .hkc-xl-2, .hkc-xl-3, .hkc-xl-4, .hkc-xl-5, .hkc-xl-6, .hkc-xl-7, .hkc-xl-8, .hkc-xl-9, .hkc-xl-10, .hkc-xl-11, .hkc-xl-12 { float:left; }
+	.hkc-xl-12 { width:100%; }
+	.hkc-xl-11 { width:91.66666667%; }
+	.hkc-xl-10 { width:83.33333333%; }
+	.hkc-xl-9 { width:75%; }
+	.hkc-xl-8 { width:66.66666667%; }
+	.hkc-xl-7 { width:58.33333333%; }
+	.hkc-xl-6 { width:50%; }
+	.hkc-xl-5 { width:41.66666667%; }
+	.hkc-xl-4 { width:33.33333333%; }
+	.hkc-xl-3 { width:25%; }
+	.hkc-xl-2 { width:16.66666667%; }
+	.hkc-xl-1 { width:8.33333333%; }
+	.hkc-xl-clear { clear:left; }
+}
+.clearfix:before,
+.clearfix:after,
+.hk-container:before,
+.hk-container:after,
+.hk-container-fluid:before,
+.hk-container-fluid:after,
+.hk-row:before,
+.hk-row:after,
+.hk-row-fluid:before,
+.hk-row-fluid:after,
+.hk-thumbnails:before,
+.hk-thumbnails:after {
+	content:" ";
+	display:table;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	box-sizing:border-box;
+}
+.clearfix:after,
+.hk-container:after,
+.hk-container-fluid:after,
+.hk-row:after,
+.hk-row-fluid:after,
+.hk-thumbnails:before,
+.hk-thumbnails:after {
+	clear:both;
+}
+
+
+.hk-row-10 > .hkc-xs-10 { width: 100%; }
+.hk-row-10 > .hkc-xs-9 { width: 90%; }
+.hk-row-10 > .hkc-xs-8 { width: 80%; }
+.hk-row-10 > .hkc-xs-7 { width: 70%; }
+.hk-row-10 > .hkc-xs-6 { width: 60%; }
+.hk-row-10 > .hkc-xs-5 { width: 50%; }
+.hk-row-10 > .hkc-xs-4 { width: 40%; }
+.hk-row-10 > .hkc-xs-3 { width: 30%; }
+.hk-row-10 > .hkc-xs-2 { width: 20%; }
+.hk-row-10 > .hkc-xs-1 { width: 10%; }
+@media (min-width: 768px) {
+	.hk-row-10 > .hkc-sm-10 { width: 100%; }
+	.hk-row-10 > .hkc-sm-9 { width: 90%; }
+	.hk-row-10 > .hkc-sm-8 { width: 80%; }
+	.hk-row-10 > .hkc-sm-7 { width: 70%; }
+	.hk-row-10 > .hkc-sm-6 { width: 60%; }
+	.hk-row-10 > .hkc-sm-5 { width: 50%; }
+	.hk-row-10 > .hkc-sm-4 { width: 40%; }
+	.hk-row-10 > .hkc-sm-3 { width: 30%; }
+	.hk-row-10 > .hkc-sm-2 { width: 20%; }
+	.hk-row-10 > .hkc-sm-1 { width: 10%; }
+}
+@media (min-width: 992px) {
+	.hk-row-10 > .hkc-md-10 { width: 100%; }
+	.hk-row-10 > .hkc-md-9 { width: 90%; }
+	.hk-row-10 > .hkc-md-8 { width: 80%; }
+	.hk-row-10 > .hkc-md-7 { width: 70%; }
+	.hk-row-10 > .hkc-md-6 { width: 60%; }
+	.hk-row-10 > .hkc-md-5 { width: 50%; }
+	.hk-row-10 > .hkc-md-4 { width: 40%; }
+	.hk-row-10 > .hkc-md-3 { width: 30%; }
+	.hk-row-10 > .hkc-md-2 { width: 20%; }
+	.hk-row-10 > .hkc-md-1 { width: 10%; }
+}
+@media (min-width: 1200px) {
+	.hk-row-10 > .hkc-lg-10 { width: 100%; }
+	.hk-row-10 > .hkc-lg-9 { width: 90%; }
+	.hk-row-10 > .hkc-lg-8 { width: 80%; }
+	.hk-row-10 > .hkc-lg-7 { width: 70%; }
+	.hk-row-10 > .hkc-lg-6 { width: 60%; }
+	.hk-row-10 > .hkc-lg-5 { width: 50%; }
+	.hk-row-10 > .hkc-lg-4 { width: 40%; }
+	.hk-row-10 > .hkc-lg-3 { width: 30%; }
+	.hk-row-10 > .hkc-lg-2 { width: 20%; }
+	.hk-row-10 > .hkc-lg-1 { width: 10%; }
+}
+@media (min-width:1600px) {
+	.hk-row-10 > .hkc-xl-10 { width: 100%; }
+	.hk-row-10 > .hkc-xl-9 { width: 90%; }
+	.hk-row-10 > .hkc-xl-8 { width: 80%; }
+	.hk-row-10 > .hkc-xl-7 { width: 70%; }
+	.hk-row-10 > .hkc-xl-6 { width: 60%; }
+	.hk-row-10 > .hkc-xl-5 { width: 50%; }
+	.hk-row-10 > .hkc-xl-4 { width: 40%; }
+	.hk-row-10 > .hkc-xl-3 { width: 30%; }
+	.hk-row-10 > .hkc-xl-2 { width: 20%; }
+	.hk-row-10 > .hkc-xl-1 { width: 10%; }
+}
+
+.hk-row-9 > .hkc-xs-9 { width: 100%; }
+.hk-row-9 > .hkc-xs-8 { width: 88.88888889%; }
+.hk-row-9 > .hkc-xs-7 { width: 77.77777778%; }
+.hk-row-9 > .hkc-xs-6 { width: 66.66666667%; }
+.hk-row-9 > .hkc-xs-5 { width: 55.55555556%; }
+.hk-row-9 > .hkc-xs-4 { width: 44.44444444%; }
+.hk-row-9 > .hkc-xs-3 { width: 33.33333333%; }
+.hk-row-9 > .hkc-xs-2 { width: 22.22222222%; }
+.hk-row-9 > .hkc-xs-1 { width: 11.11111111%; }
+@media (min-width: 768px) {
+	.hk-row-9 > .hkc-sm-9 { width: 100%; }
+	.hk-row-9 > .hkc-sm-8 { width: 88.88888889%; }
+	.hk-row-9 > .hkc-sm-7 { width: 77.77777778%; }
+	.hk-row-9 > .hkc-sm-6 { width: 66.66666667%; }
+	.hk-row-9 > .hkc-sm-5 { width: 55.55555556%; }
+	.hk-row-9 > .hkc-sm-4 { width: 44.44444444%; }
+	.hk-row-9 > .hkc-sm-3 { width: 33.33333333%; }
+	.hk-row-9 > .hkc-sm-2 { width: 22.22222222%; }
+	.hk-row-9 > .hkc-sm-1 { width: 11.11111111%; }
+}
+@media (min-width: 992px) {
+	.hk-row-9 > .hkc-md-9 { width: 100%; }
+	.hk-row-9 > .hkc-md-8 { width: 88.88888889%; }
+	.hk-row-9 > .hkc-md-7 { width: 77.77777778%; }
+	.hk-row-9 > .hkc-md-6 { width: 66.66666667%; }
+	.hk-row-9 > .hkc-md-5 { width: 55.55555556%; }
+	.hk-row-9 > .hkc-md-4 { width: 44.44444444%; }
+	.hk-row-9 > .hkc-md-3 { width: 33.33333333%; }
+	.hk-row-9 > .hkc-md-2 { width: 22.22222222%; }
+	.hk-row-9 > .hkc-md-1 { width: 11.11111111%; }
+}
+@media (min-width: 1200px) {
+	.hk-row-9 > .hkc-lg-9 { width: 100%; }
+	.hk-row-9 > .hkc-lg-8 { width: 88.88888889%; }
+	.hk-row-9 > .hkc-lg-7 { width: 77.77777778%; }
+	.hk-row-9 > .hkc-lg-6 { width: 66.66666667%; }
+	.hk-row-9 > .hkc-lg-5 { width: 55.55555556%; }
+	.hk-row-9 > .hkc-lg-4 { width: 44.44444444%; }
+	.hk-row-9 > .hkc-lg-3 { width: 33.33333333%; }
+	.hk-row-9 > .hkc-lg-2 { width: 22.22222222%; }
+	.hk-row-9 > .hkc-lg-1 { width: 11.11111111%; }
+}
+@media (min-width: 1600px) {
+	.hk-row-9 > .hkc-xl-9 { width: 100%; }
+	.hk-row-9 > .hkc-xl-8 { width: 88.88888889%; }
+	.hk-row-9 > .hkc-xl-7 { width: 77.77777778%; }
+	.hk-row-9 > .hkc-xl-6 { width: 66.66666667%; }
+	.hk-row-9 > .hkc-xl-5 { width: 55.55555556%; }
+	.hk-row-9 > .hkc-xl-4 { width: 44.44444444%; }
+	.hk-row-9 > .hkc-xl-3 { width: 33.33333333%; }
+	.hk-row-9 > .hkc-xl-2 { width: 22.22222222%; }
+	.hk-row-9 > .hkc-xl-1 { width: 11.11111111%; }
+}
+
+.hk-row-8 > .hkc-xs-8 { width: 100%; }
+.hk-row-8 > .hkc-xs-7 { width: 87.5%; }
+.hk-row-8 > .hkc-xs-6 { width: 75%; }
+.hk-row-8 > .hkc-xs-5 { width: 62.5%; }
+.hk-row-8 > .hkc-xs-4 { width: 50%; }
+.hk-row-8 > .hkc-xs-3 { width: 37.5%; }
+.hk-row-8 > .hkc-xs-2 { width: 25%; }
+.hk-row-8 > .hkc-xs-1 { width: 12.5%; }
+@media (min-width: 768px) {
+	.hk-row-8 > .hkc-sm-8 { width: 100%; }
+	.hk-row-8 > .hkc-sm-7 { width: 87.5%; }
+	.hk-row-8 > .hkc-sm-6 { width: 75%; }
+	.hk-row-8 > .hkc-sm-5 { width: 62.5%; }
+	.hk-row-8 > .hkc-sm-4 { width: 50%; }
+	.hk-row-8 > .hkc-sm-3 { width: 37.5%; }
+	.hk-row-8 > .hkc-sm-2 { width: 25%; }
+	.hk-row-8 > .hkc-sm-1 { width: 12.5%; }
+}
+@media (min-width: 992px) {
+	.hk-row-8 > .hkc-md-8 { width: 100%; }
+	.hk-row-8 > .hkc-md-7 { width: 87.5%; }
+	.hk-row-8 > .hkc-md-6 { width: 75%; }
+	.hk-row-8 > .hkc-md-5 { width: 62.5%; }
+	.hk-row-8 > .hkc-md-4 { width: 50%; }
+	.hk-row-8 > .hkc-md-3 { width: 37.5%; }
+	.hk-row-8 > .hkc-md-2 { width: 25%; }
+	.hk-row-8 > .hkc-md-1 { width: 12.5%; }
+}
+@media (min-width: 1200px) {
+	.hk-row-8 > .hkc-lg-8 { width: 100%; }
+	.hk-row-8 > .hkc-lg-7 { width: 87.5%; }
+	.hk-row-8 > .hkc-lg-6 { width: 75%; }
+	.hk-row-8 > .hkc-lg-5 { width: 62.5%; }
+	.hk-row-8 > .hkc-lg-4 { width: 50%; }
+	.hk-row-8 > .hkc-lg-3 { width: 37.5%; }
+	.hk-row-8 > .hkc-lg-2 { width: 25%; }
+	.hk-row-8 > .hkc-lg-1 { width: 12.5%; }
+}
+@media (min-width: 1600px) {
+	.hk-row-8 > .hkc-xl-8 { width: 100%; }
+	.hk-row-8 > .hkc-xl-7 { width: 87.5%; }
+	.hk-row-8 > .hkc-xl-6 { width: 75%; }
+	.hk-row-8 > .hkc-xl-5 { width: 62.5%; }
+	.hk-row-8 > .hkc-xl-4 { width: 50%; }
+	.hk-row-8 > .hkc-xl-3 { width: 37.5%; }
+	.hk-row-8 > .hkc-xl-2 { width: 25%; }
+	.hk-row-8 > .hkc-xl-1 { width: 12.5%; }
+}
+
+.hk-row-7 > .hkc-xs-7 { width: 100%; }
+.hk-row-7 > .hkc-xs-6 { width: 85.71428571%; }
+.hk-row-7 > .hkc-xs-5 { width: 71.42857143%; }
+.hk-row-7 > .hkc-xs-4 { width: 57.14285714%; }
+.hk-row-7 > .hkc-xs-3 { width: 42.85714286%; }
+.hk-row-7 > .hkc-xs-2 { width: 28.57142857%; }
+.hk-row-7 > .hkc-xs-1 { width: 14.28571429%; }
+@media (min-width: 768px) {
+	.hk-row-7 > .hkc-sm-7 { width: 100%; }
+	.hk-row-7 > .hkc-sm-6 { width: 85.71428571%; }
+	.hk-row-7 > .hkc-sm-5 { width: 71.42857143%; }
+	.hk-row-7 > .hkc-sm-4 { width: 57.14285714%; }
+	.hk-row-7 > .hkc-sm-3 { width: 42.85714286%; }
+	.hk-row-7 > .hkc-sm-2 { width: 28.57142857%; }
+	.hk-row-7 > .hkc-sm-1 { width: 14.28571429%; }
+}
+@media (min-width: 992px) {
+	.hk-row-7 > .hkc-md-7 { width: 100%; }
+	.hk-row-7 > .hkc-md-6 { width: 85.71428571%; }
+	.hk-row-7 > .hkc-md-5 { width: 71.42857143%; }
+	.hk-row-7 > .hkc-md-4 { width: 57.14285714%; }
+	.hk-row-7 > .hkc-md-3 { width: 42.85714286%; }
+	.hk-row-7 > .hkc-md-2 { width: 28.57142857%; }
+	.hk-row-7 > .hkc-md-1 { width: 14.28571429%; }
+}
+@media (min-width: 1200px) {
+	.hk-row-7 > .hkc-lg-7 { width: 100%; }
+	.hk-row-7 > .hkc-lg-6 { width: 85.71428571%; }
+	.hk-row-7 > .hkc-lg-5 { width: 71.42857143%; }
+	.hk-row-7 > .hkc-lg-4 { width: 57.14285714%; }
+	.hk-row-7 > .hkc-lg-3 { width: 42.85714286%; }
+	.hk-row-7 > .hkc-lg-2 { width: 28.57142857%; }
+	.hk-row-7 > .hkc-lg-1 { width: 14.28571429%; }
+}
+@media (min-width: 1600px) {
+	.hk-row-7 > .hkc-xl-7 { width: 100%; }
+	.hk-row-7 > .hkc-xl-6 { width: 85.71428571%; }
+	.hk-row-7 > .hkc-xl-5 { width: 71.42857143%; }
+	.hk-row-7 > .hkc-xl-4 { width: 57.14285714%; }
+	.hk-row-7 > .hkc-xl-3 { width: 42.85714286%; }
+	.hk-row-7 > .hkc-xl-2 { width: 28.57142857%; }
+	.hk-row-7 > .hkc-xl-1 { width: 14.28571429%; }
+}
+
+@media only screen and (max-width: 320px) {
+	.hk-xts-show { display: none; }
+}
+@media only screen and (min-width: 320px) {
+	.hk-xts-hide { display: none; }
+}
+@media only screen and (max-width: 480px) {
+	.hk-ts-show { display: none; }
+}
+@media only screen and (min-width: 480px) {
+	.hk-ts-hide { display: none; }
+}
+@media only screen and (max-width: 640px) {
+	.hk-xs-show { display: none; }
+}
+@media only screen and (min-width: 640px) {
+	.hk-xs-hide { display: none; }
+}
+@media only screen and (max-width: 768px) {
+	.hk-sm-show { display: none; }
+}
+@media only screen and (min-width: 768px) {
+	.hk-sm-hide { display: none; }
+}
+@media only screen and (max-width: 992px) {
+	.hk-md-show { display: none; }
+}
+@media only screen and (min-width: 992px) {
+	.hk-md-hide { display: none; }
+}
+@media only screen and (max-width: 1200px) {
+	.hk-lg-show { display: none; }
+}
+@media only screen and (min-width: 1200px) {
+	.hk-lg-hide { display: none; }
+}
+@media only screen and (max-width: 1600px) {
+	.hk-xl-show { display: none; }
+}
+@media only screen and (min-width: 1600px) {
+	.hk-xl-hide { display: none; }
+}
+
+.hkform-control {
+	display: block;
+	width: 100%;
+}
+
+.hkform-horizontal .radio,
+.hkform-horizontal .checkbox,
+.hkform-horizontal .radio-inline,
+.hkform-horizontal .checkbox-inline {
+	margin-top: 0;
+	margin-bottom: 0;
+	padding-top: 7px;
+}
+.hkform-horizontal .radio,
+.hkform-horizontal .checkbox {
+	min-height: 27px;
+	padding-left: 0;
+	vertical-align: middle;
+}
+.hkform-horizontal .hkform-group {
+	margin-left: -5px;
+	margin-right: -5px;
+}
+@media (min-width: 768px) {
+	.hkform-horizontal .hkcontrol-label {
+		text-align: right;
+		margin-bottom: 0;
+		padding-top: 7px;
+	}
+	.hkform-horizontal .form-group-lg .hkcontrol-label {
+		padding-top: 11px;
+	}
+	.hkform-horizontal .form-group-sm .hkcontrol-label {
+		padding-top: 6px;
+	}
+}
+
+.hkform-group {
+	margin-bottom: 15px;
+}
+
+.hikashop_hidden_checkout {
+	display: none;
+}
+.clear_both { clear:both; }
+
+div.hikashop_footer {
+	padding:20px 0px;
+	clear:both;
+}
+
+dl.hika_options,
+dl.hika_suboptions {
+	margin-bottom:2px;
+}
+
+dl.hika_options > dt {
+	float:left;
+	clear:left;
+	font-weight:normal;
+	padding:5px;
+	width:120px;
+	text-align:right;
+	line-height:16px;
+	overflow:hidden !important;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+}
+
+dl.hika_options.large > dt {
+	width:180px;
+}
+
+dl.hika_options > dt label {
+	margin:0px;
+}
+
+dl.hika_options > dd {
+	margin-left:130px;
+	padding-top:4px;
+	padding-bottom:4px;
+	line-height:18px;
+	min-height:18px;
+}
+dl.hika_options.large > dd {
+	margin-left:190px;
+}
+
+
+@media (max-width: 768px) {
+	dl.hika_options.large > dd {
+		margin-left:0px !important;
+	}
+	dl.hika_options.large > dt {
+		float:none !important;
+		text-align:left !important;
+	}
+}
+@media (max-width: 480px) {
+	dl.hika_options > dd {
+		margin-left:0px !important;
+	}
+	dl.hika_options > dt {
+		float:none !important;
+		text-align:left !important;
+	}
+}
+
+ul.hika_tabs {
+	list-style:none !important;
+	margin:2px 0px 15px 0px;
+	border-bottom: 1px solid #ddd;
+}
+ul.hika_tabs:before,
+ul.hika_tabs:after {
+	display: table;
+	content: "";
+	line-height: 0;
+}
+ul.hika_tabs:after {
+	clear: both;
+}
+ul.hika_tabs > li {
+	float:left;
+	margin-bottom:-1px !important;
+}
+ul.hika_tabs > li > a {
+	display:block;
+	padding: 8px 12px;
+	line-height: 18px;
+	border: 1px solid transparent;
+	-webkit-border-radius: 4px 4px 0 0;
+	-moz-border-radius: 4px 4px 0 0;
+	border-radius: 4px 4px 0 0;
+	text-decoration:none;
+}
+ul.hika_tabs > li > a:hover,
+ul.hika_tabs > li > a:focus {
+	border-color: #eee #eee #ddd;
+}
+ul.hika_tabs > li.active > a,
+ul.hika_tabs > li.active > a:hover,
+ul.hika_tabs > li.active > a:focus {
+	color: #555;
+	background-color:#fff;
+	border: 1px solid #ddd;
+	border-bottom-color: transparent;
+	cursor: default;
+}
+
+.hikabtn {
+	display:inline-block;
+	margin-bottom:0;
+	font-weight:normal;
+	text-align:center;
+	vertical-align:middle;
+	cursor:pointer;
+	background-image:none;
+	border:1px solid transparent;
+	white-space:nowrap;
+	padding:6px 12px;
+	font-size:14px;
+	line-height:1.42;
+	border-radius:4px;
+	-webkit-user-select:none;
+	-moz-user-select:none;
+	-ms-user-select:none;
+	user-select:none;
+
+	color:#333;
+	background-color:#fff;
+	border-color:#ccc;
+}
+.hikabtn:focus {
+	color:#333;
+	background-color:#e6e6e6;
+	border-color:#8c8c8c;
+}
+.hikabtn:hover {
+	text-decoration: none;
+	color:#333;
+	background-color:#e6e6e6;
+	border-color:#adadad;
+}
+
+
+.hikabtn-group, .hikabtn-group-vertical {
+	position:relative;
+	display:inline-block;
+	vertical-align:middle;
+}
+.hikabtn-group > .hikabtn, .hikabtn-group-vertical > .hikabtn {
+	position:relative;
+	float:left;
+}
+.hikabtn-group .hikabtn + .hikabtn,
+.hikabtn-group .hikabtn + .hikabtn-group,
+.hikabtn-group .hikabtn-group + .hikabtn,
+.hikabtn-group .hikabtn-group + .hikabtn-group {
+	margin-left:-1px;
+}
+.hikabtn-group > .hikabtn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
+	border-radius:0;
+}
+.hikabtn-group > .hikabtn:first-child {
+	margin-left:0;
+}
+.hikabtn-group > .hikabtn:first-child:not(:last-child):not(.dropdown-toggle) {
+	border-bottom-right-radius:0;
+	border-top-right-radius:0;
+}
+.hikabtn-group > .hikabtn:last-child:not(:first-child) {
+	border-bottom-left-radius:0;
+	border-top-left-radius:0;
+}
+.hikabtn-group-vertical > .hikabtn,
+.hikabtn-group-vertical > .hikabtn-group,
+.hikabtn-group-vertical > .hikabtn-group > .hikabtn {
+	display:block;
+	float:none;
+	width:100%;
+	max-width:100%;
+}
+
+
+.hikabtn-primary { color:#fff; background-color:#337ab7; border-color:#2e6da4; }
+.hikabtn-primary:focus { color:#fff; background-color:#286090; border-color:#122b40; }
+.hikabtn-primary:hover { color:#fff; background-color:#286090; border-color:#204d74; }
+.hikabtn-success { color:#fff; background-color:#5cb85c; border-color:#4cae4c; }
+.hikabtn-success:focus { color:#fff; background-color:#449d44; border-color:#255625; }
+.hikabtn-success:hover { color:#fff; background-color:#449d44; border-color:#398439; }
+.hikabtn-danger { color:#fff; background-color:#d9534f; border-color:#d43f3a; }
+.hikabtn-danger:focus { color:#fff; background-color:#c9302c; border-color:#761c19; }
+.hikabtn-danger:hover { color:#fff; background-color:#c9302c; border-color:#ac2925; }
+.hikabtn-info { color:#fff; background-color:#5bc0de; border-color:#46b8da; }
+.hikabtn-info:focus { color:#fff; background-color:#31b0d5; border-color:#1b6d85; }
+.hikabtn-info:hover { color:#fff; background-color:#31b0d5; border-color:#269abc; }
+
+div.hikashop_checkout_loading { position:relative; }
+div.hikashop_checkout_loading div.hikashop_checkout_loading_elem,
+div.hikashop_checkout_loading div.hikashop_checkout_loading_spinner {
+	position:absolute;
+	z-index:999;
+	top:0px;
+	left:0px;
+	right:0px;
+	bottom:0px;
+}
+div.hikashop_checkout_loading div.hikashop_checkout_loading_elem {
+	background-color:#ffffff;
+	opacity:0.5;
+	filter:alpha(opacity=50);
+}
+div.hikashop_checkout_loading div.hikashop_checkout_loading_spinner {
+	background:url('../images/spinner_02.gif') no-repeat center;
+}
+div.hikashop_checkout_loading div.hikashop_checkout_loading_spinner.small_spinner {
+	background:url('../images/spinner.gif') no-repeat center;
+}
+
+.hikashop_wizardbar {
+	background-color:#f9f9f9;
+	border:1px solid #d4d4d4;
+	margin-bottom:8px;
+	-webkit-border-radius:4px;
+	-moz-border-radius:4px;
+	border-radius:4px;
+	*zoom:1;
+	-webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.065);
+	-moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.065);
+	box-shadow:0 1px 4px rgba(0, 0, 0, 0.065);
+}
+
+.hikashop_wizardbar:before,
+.hikashop_wizardbar:after {
+	display:table;
+	line-height:0;
+	content:"";
+}
+.hikashop_wizardbar:after { clear:both; }
+
+.hikashop_wizardbar ul {
+	padding:0;
+	margin:0;
+	list-style:none outside none;
+}
+
+.hikashop_wizardbar ul li {
+	position:relative;
+	float:left;
+	height:46px;
+	padding:0 20px 0 30px;
+	margin:0;
+	font-size:16px;
+	line-height:46px;
+	color:#999999;
+	cursor:default;
+	background:#ededed;
+}
+
+.hikashop_wizardbar ul li .hikashop_chevron {
+	position:absolute;
+	top:0;
+	right:-14px;
+	display:block;
+	border:24px solid transparent;
+	border-right:0;
+	border-left:14px solid #d4d4d4;
+}
+
+.hikashop_wizardbar ul li .hikashop_chevron:before {
+	position:absolute;
+	top:-24px;
+	right:1px;
+	display:block;
+	border:24px solid transparent;
+	border-right:0;
+	border-left:14px solid #ededed;
+	content:"";
+}
+
+.hikashop_wizardbar ul li .hkbadge { margin-right:8px; }
+
+.hikashop_wizardbar ul li a { color:#999999; }
+.hikashop_wizardbar ul li.hikashop_cart_step_finished { color:#468847; background:#f3f4f5; }
+.hikashop_wizardbar ul li.hikashop_cart_step_finished a { color:#468847; }
+.hikashop_wizardbar ul li.hikashop_cart_step_finished:hover { cursor:pointer; background:#e7eff8; }
+.hikashop_wizardbar ul li.hikashop_cart_step_finished:hover .hikashop_chevron:before { border-left:14px solid #e7eff8; }
+.hikashop_wizardbar ul li.hikashop_cart_step_finished .hikashop_chevron:before { border-left:14px solid #f3f4f5; }
+.hikashop_wizardbar ul li.hikashop_cart_step_current { color:#3a87ad; background:#f1f6fc; }
+.hikashop_wizardbar ul li.hikashop_cart_step_current a { color:#3a87ad; }
+.hikashop_wizardbar ul li.hikashop_cart_step_current .hikashop_chevron:before { border-left:14px solid #f1f6fc; }
+
+.hikashop_wizardbar ul li:nth-child(1) {
+	z-index:10;
+	padding-left:20px;
+	border-radius:4px 0 0 4px;
+}
+.hikashop_wizardbar ul li:nth-child(2) { z-index:9; }
+.hikashop_wizardbar ul li:nth-child(3) { z-index:8; }
+.hikashop_wizardbar ul li:nth-child(4) { z-index:7; }
+.hikashop_wizardbar ul li:nth-child(5) { z-index:6; }
+.hikashop_wizardbar ul li:nth-child(6) { z-index:5; }
+.hikashop_wizardbar ul li:nth-child(7) { z-index:4; }
+.hikashop_wizardbar ul li:nth-child(8) { z-index:3; }
+.hikashop_wizardbar ul li:nth-child(9) { z-index:2; }
+.hikashop_wizardbar ul li:nth-child(10) { z-index:1; }
+
+.hkbadge {
+	display: inline-block;
+	min-width: 10px;
+	padding: 3px 7px;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1;
+	color: #fff;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	background-color: #777;
+	border-radius: 10px
+}
+.hkbadge-current {
+	background-color: #337ab7;
+}
+.hkbadge-past {
+	background-color: #5cb85c;
+}
+
+#hikashop_checkout_terms label{display: inline;}
+.next_button_disabled{
+	cursor: not-allowed;
+}
+.next_button_disabled::after{
+	content: url('../images/spinner.gif');
+	margin-left: 5px;
+}
+
+div.hikashop_main_image_div,
+div.hikashop_main_file_div {
+	position:relative;
+}
+div.hikashop_uploader_image_add,
+div.hikashop_uploader_file_add {
+	position:absolute;
+	top:5px;
+	right:5px;
+}
+div.hikashop_uploader_image_add span,
+div.hikashop_uploader_file_add span {
+	display:inline-block;
+	width:32px;
+	height:32px;
+}
+div.hikashop_uploader_image_add span.hika_add_btn {
+	background-image:url(../images/gallery.png);
+}
+div.hikashop_uploader_image_add span.hika_upload_btn,
+div.hikashop_uploader_file_add span.hika_upload_btn {
+	background-image:url(../images/upload2.png);
+}
+
+ul.hikashop_uploader_images .ui-sortable-placeholder {
+	border:1px dotted black;
+	visibility:visible !important;
+	width:50px;
+	height:50px !important;
+}
+
+ul.hikashop_uploader_images .ui-sortable-placeholder * {
+	visibility:hidden;
+}
+ul.hikashop_uploader_images {
+	list-style-type:none;
+	margin:0 !important;
+	padding:15px 0 0 0 !important;
+}
+div.hikashop_uploader_singleimage_content,
+div.hikashop_uploader_singlefile_content {
+	padding:15px 0 5px 8px !important;
+	width:100px;
+}
+ul.hikashop_uploader_multiimage_content > li,
+div.hikashop_uploader_singleimage_content > div,
+div.hikashop_uploader_singlefile_content > div {
+	position:relative;
+}
+
+ul.hikashop_uploader_multiimage_content .deleteImg,
+div.hikashop_uploader_singleimage_content .deleteImg,
+div.hikashop_uploader_singlefile_content .deleteImg {
+	position:absolute;
+	right:0px;
+	top:0px;
+	display:none;
+}
+
+ul.hikashop_uploader_multiimage_content:hover .deleteImg,
+div.hikashop_uploader_singleimage_content:hover .deleteImg,
+div.hikashop_uploader_singlefile_content:hover .deleteImg {
+	display:block;
+	opacity:0.5;
+	filter:alpha(opacity=50);
+}
+
+ul.hikashop_uploader_multiimage_content .deleteImg:hover,
+div.hikashop_uploader_singleimage_content .deleteImg:hover,
+div.hikashop_uploader_singlefile_content .deleteImg:hover {
+	opacity:1;
+	filter:alpha(opacity=100);
+}
+.hkIcon-delete { background-image:url(../images/cancel.png); }
+
+.dropOver { background-color:#909090; }
+
+.hikashop_dropzone {
+	border:2px dashed #CCCCCC;
+	width:auto;
+	display:block;
+	-webkit-border-radius:12px; -moz-border-radius:12px; border-radius:12px;
+	min-height:100px;
+}
+
+.hikashop_uploader_image_empty,
+.hikashop_uploader_file_empty {
+	width:100%;
+	padding:30px 0px;
+	text-align:center;
+}
+
+.hkIcon { width:16px; height:16px; display:inline-block; line-height:16px; }
+
+.hkicon-32 { background-repeat:no-repeat; background-position:center; height:32px !important; width:32px !important; }
+.hkicon-48 { background-repeat:no-repeat; background-position:center; height:48px !important; width:48px !important; }
+
+.icon-32-cancel {background-image:url(../images/icons/icon-32-cancel.png) !important;}
+.icon-32-cart {background-image:url(../images/icons/icon-32-show_cart.png) !important;}
+.icon-32-back {background-image:url(../images/icons/icon-32-back.png) !important;}
+.icon-32-new {background-image:url(../images/icons/icon-32-new.png) !important;}
+.icon-32-apply {background-image:url(../images/icons/icon-32-apply.png) !important;}
+.icon-32-save {background-image:url(../images/icons/icon-32-save.png) !important;}
+.icon-32-print {background-image:url(../images/icons/icon-32-print.png) !important;}
+.icon-32-wishlist {background-image:url(../images/icons/icon-32-wishlist.png) !important;}
+.icon-48-order {background-image:url(../images/icons/icon-48-order.png) !important;}
+.icon-48-category {background-image:url(../images/icons/icon-48-category.png) !important;}
+.icon-48-user {background-image:url(../images/icons/icon-48-user.png) !important;}
+.icon-48-user2 {background-image:url(../images/icons/icon-48-account.png) !important;}
+.icon-48-account {background-image:url(../images/icons/icon-48-account.png) !important;}
+.icon-48-address {background-image:url(../images/icons/icon-48-address.png) !important;}
+.icon-48-affiliate {background-image:url(../images/icons/icon-48-affiliate.png) !important;}
+.icon-48-subscription {background-image:url(../images/icons/icon-48-subscription.png) !important;}
+.icon-48-product {background-image:url(../images/icons/icon-48-product.png) !important;}
+
+.icon-48-cart {background-image:url(../images/icons/icon-48-cart.png) !important;}
+.icon-48-wishlist {background-image:url(../images/icons/icon-48-wishlist.png) !important;}
+.icon-48-downloads {background-image:url(../images/icons/icon-48-downloads.png) !important;}
+.icon-32-add_cart {background-image:url(../images/icons/icon-32-add_cart.png) !important;}
+.icon-32-show_cart {background-image:url(../images/icons/icon-32-show_cart.png) !important;}
+.icon-32-add_wishlist {background-image:url(../images/icons/icon-32-add_wishlist.png) !important;}
+.icon-32-show_wishlist {background-image:url(../images/icons/icon-32-show_wishlist.png) !important;}
+.icon-32-badge {background-image:url(../images/icons/icon-32-badge.png) !important;}
+.icon-32-badge2 {background-image:url(../images/icons/icon-32-badge2.png) !important;}
+
+.hika_edit { text-align:right; }
+.hika_edit span { display:none; }
+
+.hika-radio input[type="radio"] { display:none; }
+
+div.hikashop_messages {
+	border:2px solid;
+	font-weight:bold;
+	margin:4px 10px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+}
+
+div.hikashop_messages.hikashop_warning { background-color:#EFE7B8; border-color:#F0DC7E; color:#CC0000; }
+div.hikashop_messages.hikashop_success { background-color:#CCFFBB; border-color:#00AA00; color:#00AA00; }
+div.hikashop_messages.hikashop_info    { background-color:#C3D2E5; border-color:#84A7DB; color:#0055BB; }
+div.hikashop_messages.hikashop_error   { background-color:#E6C0C0; border-color:#DE7A7B; color:#CC0000; }
+
+div.hikashop_messages ul { margin:0px; padding:7px; }
+div.hikashop_messages li { list-style-type : none; }
+
+.hk-rating {
+	margin:auto;
+	display:inline;
+}
+.hk-rating a { cursor: pointer; background-color: transparent !important; }
+.hk-rate-star {
+	width:16px;
+	height:16px;
+	font-size:2px;
+	display:inline-block;
+	text-decoration:none;
+	vertical-align:bottom;
+	background-image:url('../images/star.gif') !important;
+	background-repeat:no-repeat;
+}
+.hk-rate-star.state-full { background-position:left top; }
+.hk-rate-star.state-mid { background-position:left -16px; }
+.hk-rate-star.state-empty { background-position:left -32px; }
+.hk-rate-star.state-hover { background-position:left -48px !important; }
+
+@media print {
+	.hikashop_no_print:after {
+		content: "" !important;
+	}
+}
+
+
+.hikashopcurrency { width:100%; }

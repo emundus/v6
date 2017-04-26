@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -20,7 +20,7 @@ class HikashopDiscountType
 		$this->values[] = JHTML::_('select.option', 'coupon', JText::_('COUPONS'));
 	}
 
-	public function display($map, $value, $form=false)
+	public function display($map, $value, $form = false)
 	{
 		$this->load($form);
 		$attribute='';
@@ -31,38 +31,13 @@ class HikashopDiscountType
 				$value = 'discount';
 			}
 			$js = '
-function hikashopToggleDiscount(value){
-	autoLoad = document.getElementById(\'hikashop_auto_load\');
-	tax = document.getElementById(\'hikashop_tax\');
-	minOrder = document.getElementById(\'hikashop_min_order\');
-	hikashop_quota_per_user = document.getElementById(\'hikashop_quota_per_user\');
-	hikashop_min_products = document.getElementById(\'hikashop_min_products\');
-	hikashop_discount_coupon_product_only = document.getElementById(\'hikashop_discount_coupon_product_only\');
-	hikashop_discount_coupon_nodoubling = document.getElementById(\'hikashop_discount_coupon_nodoubling\');
-	hikashop_discount_affiliate = document.getElementById(\'hikashop_discount_affiliate\');
-	if(value==\'discount\'){
-		if(autoLoad) autoLoad.style.display = \'none\';
-		if(tax) tax.style.display = \'none\';
-		if(minOrder) minOrder.style.display = \'none\';
-		if(hikashop_quota_per_user) hikashop_quota_per_user.style.display = \'none\';
-		if(hikashop_min_products) hikashop_min_products.style.display = \'none\';
-		if(hikashop_discount_coupon_product_only) hikashop_discount_coupon_product_only.style.display = \'none\';
-		if(hikashop_discount_coupon_nodoubling) hikashop_discount_coupon_nodoubling.style.display = \'none\';
-		if(hikashop_discount_affiliate) hikashop_discount_affiliate.style.display = \'none\';
-	}else{
-		if(autoLoad) autoLoad.style.display = \'\';
-		if(tax) tax.style.display = \'\';
-		if(minOrder) minOrder.style.display = \'\';
-		if(hikashop_quota_per_user) hikashop_quota_per_user.style.display = \'\';
-		if(hikashop_min_products) hikashop_min_products.style.display = \'\';
-		if(hikashop_discount_coupon_product_only) hikashop_discount_coupon_product_only.style.display = \'\';
-		if(hikashop_discount_coupon_nodoubling) hikashop_discount_coupon_nodoubling.style.display = \'\';
-		if(hikashop_discount_affiliate) hikashop_discount_affiliate.style.display = \'\';
+function hikashopToggleDiscount(value) {
+	var elements = document.querySelectorAll("[data-discount-display]");
+	for(var i = elements.length - 1; i >= 0; i--) {
+		elements[i].style.display = (elements[i].getAttribute("data-discount-display") == value) ? "" : "none";
 	}
 }
-window.hikashop.ready( function(){
-	hikashopToggleDiscount(\''.$value.'\');
-});
+window.hikashop.ready( function(){ hikashopToggleDiscount(\''.$value.'\'); });
 ';
 			$doc = JFactory::getDocument();
 			$doc->addScriptDeclaration($js);
@@ -113,7 +88,7 @@ window.localPage.fieldRemDiscount = function(el, name) {
 		}
 
 		$discountClass = hikashop_get('class.discount');
-		$popup = hikashop_get('helper.popup');
+		$popupHelper = hikashop_get('helper.popup');
 
 		$name = str_replace(array('][', '[', ']'), '_', $map);
 		$discount_id = (int)$value;
@@ -139,7 +114,7 @@ window.localPage.fieldRemDiscount = function(el, name) {
 
 		$ret = '<span id="'.$name.'_span_id">'.$discount_display_name.'</span>' .
 			'<input type="hidden" id="'.$name.'_input_id" name="'.$map.'" value="'.$discount_id.'"/> '.
-			$popup->display(
+			$popupHelper->display(
 				'<img src="'.HIKASHOP_IMAGES.'edit.png" style="vertical-align:middle;"/>',
 				'DISCOUNT_SELECTION',
 				hikashop_completeLink('discount&task=selection&filter_type='.$type.'&single=true', true),

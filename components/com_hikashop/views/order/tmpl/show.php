@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -14,7 +14,6 @@ $url_itemid = '';
 if(!empty($Itemid)) {
 	$url_itemid = '&Itemid=' . $Itemid;
 }
-$config = hikashop_config();
 ?>
 <div id="hikashop_order_main">
 <fieldset>
@@ -32,24 +31,26 @@ $config = hikashop_config();
 <?php
 	if($this->invoice_type == 'order') {
 ?>
-	<div class="toolbar hikashop_header_buttons" id="toolbar">
-		<table>
+	<div class="toolbar hikashop_header_buttons" id="toolbar" style="float: right;">
+		<table class="hikashop_no_border">
 			<tr>
 <?php
-		if(hikashop_level(1)) {
-			if($this->config->get('print_invoice_frontend') && !in_array($this->element->order_status, array('created','refunded','cancelled'))) {
+		if(hikashop_level(1) && $this->config->get('print_invoice_frontend', 0) && !in_array($this->element->order_status, array('created','refunded','cancelled'))) {
 ?>
 				<td><?php
+					$url = 'order&task=invoice&order_id='.$this->element->order_id.$url_itemid;
+					$token = JRequest::getVar('order_token');
+					if(!empty($token))
+						$url .= '&order_token='.urlencode($token);
 					echo $this->popup->display(
 						'<span class="icon-32-print" title="'. JText::_('PRINT_INVOICE').'"></span>'. JText::_('PRINT_INVOICE'),
 						'PRINT_INVOICE',
-						hikashop_completeLink('order&task=invoice&order_id='.$this->element->order_id.$url_itemid,true),
+						hikashop_completeLink($url,true),
 						'hikashop_print_invoice',
 						760, 480, '', '', 'link'
 					);
 				?></td>
 <?php
-			}
 		}
 ?>
 				<td>
@@ -210,27 +211,24 @@ $config = hikashop_config();
 <?php
 	$k=0;
 	$group = $this->config->get('group_options',0);
-	$productClass = hikashop_get('class.product');
 	foreach($this->order->products as $product) {
+		$productData = null;
+		if(!empty($product->product_id) && !empty($this->products[ (int)$product->product_id ]))
+			$productData = $this->products[ (int)$product->product_id ];
 		if($group && $product->order_product_option_parent_id)
 			continue;
 ?>
 							<tr class="row<?php echo $k;?>">
 								<td class="hikashop_order_item_name_value">
-<?php
-		if($this->invoice_type=='order' && !empty($product->product_id)) {
-			$prodData = $productClass->get($product->product_id);
-?>
-									<a class="hikashop_order_product_link" href="<?php echo hikashop_contentLink('product&task=show&cid='.$product->product_id.$url_itemid,$prodData); ?>">
-<?php
-		}
-?>
-										<p class="hikashop_order_product_name">
+<?php if($this->invoice_type == 'order' && !empty($product->product_id)) { ?>
+									<a class="hikashop_order_product_link" href="<?php echo hikashop_contentLink('product&task=show&cid='.$product->product_id.$url_itemid, $productData); ?>">
+<?php } ?>
+										<span class="hikashop_order_product_name">
 											<?php echo $product->order_product_name; ?>
 											<?php if($this->config->get('show_code')) { ?>
 												<span class="hikashop_product_code_order"><?php echo $product->order_product_code; ?></span>
 											<?php } ?>
-										</p>
+										</span>
 <?php
 		if($group) {
 			$display_item_price = false;
@@ -257,7 +255,11 @@ $config = hikashop_config();
 									<p class="hikashop_order_product_custom_item_fields">
 <?php
 		if(hikashop_level(2)){
-			$itemFields = $this->fieldsClass->getFields('display:field_item_order=1',$product,'item');
+			$item_type = 'display:back_invoice=1';
+			if($this->invoice_type == 'order'){
+				$item_type = 'display:front_order=1';
+			}
+			$itemFields = $this->fieldsClass->getFields($item_type,$product,'item');
 			if(!empty($itemFields)) {
 				foreach($itemFields as $field) {
 					$namekey = $field->field_namekey;
@@ -350,6 +352,9 @@ $config = hikashop_config();
 					if(!empty($file->file_pos)) {
 						$file_pos = '&file_pos='.$file->file_pos;
 					}
+					$token = JRequest::getVar('order_token');
+					if(!empty($token))
+						$file_pos .= '&order_token='.urlencode($token);
 					$fileHtml = '<a href="'.hikashop_completeLink('order&task=download&file_id='.$file->file_id.'&order_id='.$this->order->order_id.$file_pos.$url_itemid).'">'.$file->file_name.'</a>';
 
 					$order_created = (empty($this->order->order_invoice_created) ? $this->order->order_created : $this->order->order_invoice_created);
@@ -409,7 +414,7 @@ $config = hikashop_config();
 								?></td>
 							</tr>
 <?php
-	$taxes = round($this->order->order_subtotal - $this->order->order_subtotal_no_vat + $this->order->order_shipping_tax + $this->order->order_payment_tax - $this->order->order_discount_tax,$this->currencyHelper->getRounding($this->order->order_currency_id, true));
+	$taxes = $this->currencyHelper->round($this->order->order_subtotal - $this->order->order_subtotal_no_vat + $this->order->order_shipping_tax + $this->order->order_payment_tax - $this->order->order_discount_tax, $this->currencyHelper->getRounding($this->order->order_currency_id, true));
 
 	if(!empty($this->order->order_discount_code)) {
 ?>
@@ -472,7 +477,7 @@ $config = hikashop_config();
 										$additional->order_product_price = (float)$additional->order_product_price;
 									}
 									if(!empty($additional->order_product_price) || empty($additional->order_product_options)) {
-										if($config->get('price_with_tax')){
+										if($this->config->get('price_with_tax')) {
 											echo $this->currencyHelper->format($additional->order_product_price + @$additional->order_product_tax, $this->order->order_currency_id);
 										}else{
 											echo $this->currencyHelper->format($additional->order_product_price, $this->order->order_currency_id);

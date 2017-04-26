@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -247,6 +247,7 @@ class uploadController extends hikashopController {
 					$params->$k = $v;
 				}
 
+				$js = '';
 				$r->params = $params;
 				$this->controller->manageUpload($upload_key, $r, $uploadConfig, 'galleryselect');
 
@@ -355,7 +356,7 @@ class uploadController extends hikashopController {
 				$params->file_path = $file->file_path;
 				$params->file_url = $file->file_url;
 				$params->file_limit = -1;
-				$params->file_size = @filesize($options['upload_dir'] . $file->file_name);
+				$params->file_size = @filesize($options['upload_dir'] . $file->file_path);
 			}
 
 			foreach($extra_data as $k => $v) {

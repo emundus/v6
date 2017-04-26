@@ -1,32 +1,35 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 ob_start();
-$titleType='h1';
-if(version_compare(JVERSION,'1.6','<')){
-	$title = $this->params->get('show_page_title');
-}elseif($this->module){
-	$title = $this->params->get('showtitle');
-	$titleType='h2';
-}else{
-	$title = (string) $this->params->get('show_page_heading');
-	if($title===''){
-		$params = JComponentHelper::getParams( 'com_menus' );
-		$title = $params->get('show_page_heading');
-	}
+
+$title_key = 'show_page_heading';
+if(!HIKASHOP_J16)
+	$title_key = 'show_page_title';
+
+$titleType = 'h1';
+if($this->module) {
+	$title_key = 'showtitle';
+	$titleType = 'h2';
 }
 
-if($title && JRequest::getVar('hikashop_front_end_main',0)){
-	if($this->module){
+$title = $this->params->get($title_key);
+if(empty($title) && $title_key == 'show_page_heading') {
+	$params = JComponentHelper::getParams('com_menus');
+	$title = $params->get($title_key);
+}
+
+if(!empty($title) && JRequest::getVar('hikashop_front_end_main', 0)){
+	if($this->module) {
 		$heading = $this->params->get('title');
-	}else{
+	} else {
 		$heading = $this->params->get('page_title');
 		if($this->params->get('page_heading')){
 			$heading = $this->params->get('page_heading');

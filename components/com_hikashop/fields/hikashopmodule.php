@@ -1,27 +1,27 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class JFormFieldHikashopmodule extends JFormField{
-
+class JFormFieldHikashopmodule extends JFormField {
 	protected $type = 'hikashopmodule';
 
 	protected function getInput() {
 		if(!defined('DS'))
 			define('DS', DIRECTORY_SEPARATOR);
-		if(!function_exists('hikashop_config') && !include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')){
+
+		if(!function_exists('hikashop_config') && !include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')) {
 			return 'This module can not work without the Hikashop Component';
 		}
 
 		$config =& hikashop_config();
 		$id = JRequest::getInt('id');
-		if(HIKASHOP_J30 && !in_array(@$_REQUEST['option'],array('com_falang','com_joomfish'))){
+		if(HIKASHOP_J30 && !in_array(@$_REQUEST['option'], array('com_falang','com_joomfish'))) {
 			if(preg_match('/hikashopmodule/',$this->name)){
 				$associated = false;
 				$cid = JRequest::getVar('id','');
@@ -44,7 +44,7 @@ class JFormFieldHikashopmodule extends JFormField{
 					$app->enqueueMessage(JText::sprintf('USE_MENU_SETTINGS_INSTEAD_OF_ASSOCIATED_ONES',JRoute::_('index.php?option=com_menus&view=item&layout=edit&id='.$associated)));
 				}
 				$layout = 'modules';
-			}else{
+			} else {
 				$layout = 'cartmodules';
 			}
 			$empty='';
@@ -56,12 +56,12 @@ class JFormFieldHikashopmodule extends JFormField{
 			$params->set('value',$this->value);
 			$content = hikashop_getLayout($layout,'options',$params,$js,true);
 			$text = '</div></div>'.$content.'<div><div>';
-		}elseif(!empty($id)){
-			if(!hikashop_isAllowed($config->get('acl_modules_manage','all'))){
+		} elseif(!empty($id)) {
+			if(!hikashop_isAllowed($config->get('acl_modules_manage','all'))) {
 				return 'Access to the HikaShop options of the modules is restricted';
 			}
 			$text = '<a style="float:left;" title="'.JText::_('HIKASHOP_OPTIONS').'"  href="'.JRoute::_('index.php?option=com_hikashop&ctrl=modules&fromjoomla=1&task=edit&cid[]='.$id).'" >'.JText::_('HIKASHOP_OPTIONS').'</a>';
-		}else{
+		} else {
 			$text = JText::_('HIKASHOP_OPTIONS_EDIT');
 		}
 		return $text;

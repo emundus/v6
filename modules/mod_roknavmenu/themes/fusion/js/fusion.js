@@ -1,7 +1,7 @@
 /*
  * @version   $Id: fusion.js 26502 2015-02-10 00:23:21Z kat $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 ((function(){var b=navigator.userAgent.match(/iPad/i)!=null;

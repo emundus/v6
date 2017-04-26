@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -58,10 +58,10 @@ defined('_JEXEC') or die('Restricted access');
 			$publishedid = 'product_published-'.$row->product_id;
 ?>
 			<tr class="row<?php echo $k; ?>">
-				<td align="center"><?php
+				<td class="hk_center"><?php
 					echo $i;
 				?></td>
-				<td align="center">
+				<td class="hk_center">
 					<?php echo JHTML::_('grid.id', $i, $row->product_id ); ?>
 				</td>
 				<td>
@@ -90,12 +90,12 @@ defined('_JEXEC') or die('Restricted access');
 				}
 			}
 ?>
-				<td align="center">
+				<td class="hk_center">
 					<span id="<?php echo $publishedid ?>" class="spanloading"><?php
 						echo $this->toggleClass->toggle($publishedid, (int)$row->product_published,'product')
 					?></span>
 				</td>
-				<td width="1%" align="center"><?php
+				<td width="1%" class="hk_center"><?php
 					echo $row->product_id;
 				?></td>
 			</tr>

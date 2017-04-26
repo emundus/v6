@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -38,7 +38,7 @@ function HikashopBuildRoute( &$query )
 					unset( $query['task'] );
 				}
 			}
-			if( ( isset($query['ctrl']) && $query['ctrl']=='checkout' || isset($query['view']) && $query['view']=='checkout' ) && !empty($query['Itemid']) && ( !isset($query['task']) && !isset($query['layout']) || (isset($query['task']) && $query['task']=='step' ) || (isset($query['layout']) && $query['layout']=='step' )) ) {
+			if( ( isset($query['ctrl']) && $query['ctrl']=='checkout' || isset($query['view']) && $query['view']=='checkout' ) && !empty($query['Itemid']) && ( !isset($query['task']) && !isset($query['layout']) || @$query['task']=='step' || @$query['task']=='show' || @$query['layout']=='step' || @$query['layout']=='show' ) ) {
 				if(empty($checkoutSef)){
 					$menuClass = hikashop_get('class.menus');
 					$menu = $menuClass->get($query['Itemid']);

@@ -608,7 +608,7 @@
 						try	{
 							response = window.Oby.evalJSON(response);
 						}catch(e) { response = false; }
-						if(response == false)
+						if(!response)
 							return false;
 
 						if(response.partial || response.error)

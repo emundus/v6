@@ -1,7 +1,7 @@
 /*
  * @version   $Id: childtype.js 4758 2012-10-30 19:15:31Z djamil $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 window.addEvent("domready",function(){var f=document.id("jform_params_dropdown_children_type1")||document.id("jform_params_fusion_children_type1"),e=document.id("jform_params_dropdown_children_type2")||document.id("jform_params_fusion_children_type2"),b=document.id("jform_params_dropdown_children_type0")||document.id("jform_params_fusion_children_type0");

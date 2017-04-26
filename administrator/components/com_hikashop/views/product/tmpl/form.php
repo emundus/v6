@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -422,6 +422,17 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 							'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
 						)
 					);
+				} else
+					echo hikashop_getUpgradeLink('essential');
+			?></dd>
+<?php
+	}
+
+	if(hikashop_acl('product/edit/bundle')) { ?>
+			<dt class="hikashop_product_bundle"><label for="data_product_bundle_text"><?php echo JText::_('BUNDLED_PRODUCTS'); ?></label></dt>
+			<dd class="hikashop_product_bundle"><?php
+				if(hikashop_level(1)) {
+					echo $this->loadTemplate('bundle');
 				} else
 					echo hikashop_getUpgradeLink('essential');
 			?></dd>

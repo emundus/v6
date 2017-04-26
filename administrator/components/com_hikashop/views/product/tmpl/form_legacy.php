@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -123,6 +123,18 @@ defined('_JEXEC') or die('Restricted access');
 					<?php
 					if(hikashop_level(1)){
 						$this->type='options';
+						$this->setLayout('related');
+						echo $this->loadTemplate();
+					}else{
+						echo hikashop_getUpgradeLink('essential');
+					}
+					?>
+					</fieldset>
+					<fieldset class="adminform hikashop_product_bundle" id="htmlfieldset">
+						<legend><?php echo JText::_( 'BUNDLE' ); ?></legend>
+					<?php
+					if(hikashop_level(1)){
+						$this->type='bundle';
 						$this->setLayout('related');
 						echo $this->loadTemplate();
 					}else{

@@ -1,24 +1,25 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class addressController extends hikashopController{
-
-	function __construct($config = array(), $skip = false) {
+class addressController extends hikashopController
+{
+	public function __construct($config = array(), $skip = false) {
 		parent::__construct($config, $skip);
+
 		$this->modify_views = array('edit');
 		$this->add = array('add');
 		$this->modify = array('save', 'setdefault');
 		$this->delete = array('delete');
 	}
 
-	function show() {
+	public function show() {
 		$tmpl = JRequest::getCmd('tmpl', '');
 		if($tmpl == 'component') {
 			JRequest::setVar('hidemainmenu', 1);
@@ -30,7 +31,7 @@ class addressController extends hikashopController{
 		parent::show();
 	}
 
-	function edit() {
+	public function edit() {
 		$tmpl = JRequest::getCmd('tmpl', '');
 		$subtask = JRequest::getCmd('subtask', '');
 		$addrtype = JRequest::getCmd('address_type', '');
@@ -55,28 +56,27 @@ class addressController extends hikashopController{
 		parent::edit();
 	}
 
-	function listing(){
+	public function listing() {
 		$user = JFactory::getUser();
-		if ($user->guest) {
-			$app=JFactory::getApplication();
-			$app->enqueueMessage(JText::_('PLEASE_LOGIN_FIRST'));
-			global $Itemid;
-			$url = '';
-			if(!empty($Itemid)){
-				$url='&Itemid='.$Itemid;
-			}
-			if(version_compare(JVERSION,'1.6','<')){
-				$url = 'index.php?option=com_user&view=login'.$url;
-			}else{
-				$url = 'index.php?option=com_users&view=login'.$url;
-			}
-			$app->redirect(JRoute::_($url.'&return='.urlencode(base64_encode(hikashop_currentUrl('',false))),false));
-			return false;
+		if(!$user->guest)
+			return parent::listing();
+
+		$app = JFactory::getApplication();
+		$app->enqueueMessage(JText::_('PLEASE_LOGIN_FIRST'));
+
+		global $Itemid;
+		$url = (!empty($Itemid)) ? '&Itemid='.$Itemid : '';
+
+		if(!HIKASHOP_J16) {
+			$url = 'index.php?option=com_user&view=login'.$url;
+		} else {
+			$url = 'index.php?option=com_users&view=login'.$url;
 		}
-		return parent::listing();
+		$app->redirect(JRoute::_($url.'&return='.urlencode(base64_encode(hikashop_currentUrl('',false))),false));
+		return false;
 	}
 
-	function delete() {
+	public function delete() {
 		$addressdelete = JRequest::getInt('address_id', 0);
 		if($addressdelete){
 			JRequest::checkToken('request') || jexit( 'Invalid Token' );
@@ -128,7 +128,7 @@ class addressController extends hikashopController{
 		$this->listing();
 	}
 
-	function save() {
+	public function save() {
 		JRequest::checkToken('request') || jexit('Invalid Token');
 
 		$app = JFactory::getApplication();
@@ -164,10 +164,13 @@ class addressController extends hikashopController{
 			JRequest::setVar( 'fail', $addressData );
 			$address_id = $addressClass->save($addressData);
 		}
-		if(!$ok || !$address_id){
+
+		if(!$ok || !$address_id) {
 			$message = '';
-			if(isset($addressClass->message)) $message='alert(\''.addslashes($addressClass->message).'\');';
-			if(version_compare(JVERSION,'1.6','<')){
+			if(isset($addressClass->message))
+				$message='alert(\''.addslashes($addressClass->message).'\');';
+
+			if(!HIKASHOP_J16) {
 				$app = JFactory::getApplication();
 				$session = JFactory::getSession();
 				$session->set('application.queue', $app->_messageQueue);
@@ -176,16 +179,14 @@ class addressController extends hikashopController{
 			$this->edit();
 			return;
 		}
-		$redirect = JRequest::getWord('redirect','');
-		global $Itemid;
-		$url = '';
-		if(!empty($Itemid)){
-			$url='&Itemid='.$Itemid;
-		}
 
-		if($redirect=='checkout'){
+		global $Itemid;
+		$url = (!empty($Itemid)) ? '&Itemid='.$Itemid : '';
+
+		$redirect = JRequest::getWord('redirect','');
+		if($redirect == 'checkout') {
 			$makenew = JRequest::getInt('makenew');
-			switch(JRequest::getVar('type')){
+			switch(JRequest::getVar('type')) {
 				case 'shipping':
 					if(JRequest::getVar('action')== 'add' && $makenew){
 						$app->setUserState( HIKASHOP_COMPONENT.'.billing_address',$address_id );
@@ -220,11 +221,18 @@ class addressController extends hikashopController{
 				$checkoutController->before_payment(true);
 			}
 			$url = hikashop_completeLink('checkout&task=step&step='.JRequest::getInt('step',0).$url,false,true);
-		}else{
-			$url = hikashop_completeLink('address'.$url,false,true);
+		} else {
+			$url = hikashop_completeLink('address'.$url, false, true);
 		}
-		ob_clean();
-		echo '<html><head><script type="text/javascript">window.parent.location.href=\''.$url.'\';</script></head><body></body></html>';
-		exit;
+
+		$tmpl = JRequest::getCmd('tmpl', '');
+		if($tmpl == 'component') {
+			ob_clean();
+			echo '<html><head><script type="text/javascript">window.parent.location.href=\''.$url.'\';</script></head><body></body></html>';
+			exit;
+		}
+
+		$app->redirect($url);
+		return false;
 	}
 }

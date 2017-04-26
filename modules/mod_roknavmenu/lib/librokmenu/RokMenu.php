@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: RokMenu.php 4585 2012-10-27 01:44:54Z btowles $
+ * @version   $Id: RokMenu.php 30073 2016-03-09 08:29:49Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -52,9 +52,7 @@ if (!class_exists('RokMenu')) {
         );
 
         /**
-         * @param RokMenuRenderer $renderer
          * @param  $args
-         * @return void
          */
         public function __construct($args) {
             $this->args = $args;

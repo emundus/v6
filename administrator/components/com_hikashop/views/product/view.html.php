@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -19,7 +19,7 @@ class ProductViewProduct extends hikashopView
 	var $displayCompleted = false;
 	var $triggerView = true;
 
-	function display($tpl = null, $params = array()) {
+	public function display($tpl = null, $params = array()) {
 		$this->params =& $params;
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName();
 		$fct = $this->getLayout();
@@ -31,7 +31,7 @@ class ProductViewProduct extends hikashopView
 			parent::display($tpl);
 	}
 
-	function listing(){
+	public function listing() {
 		$app = JFactory::getApplication();
 		$pageInfo = new stdClass();
 		$pageInfo->filter = new stdClass();
@@ -91,62 +91,64 @@ class ProductViewProduct extends hikashopView
 		}
 
 		$doOrdering = !$selectedType;
-		if($doOrdering && !(empty($pageInfo->filter->filter_product_type) || $pageInfo->filter->filter_product_type=='main')){
-			$doOrdering=false;
+		if($doOrdering && !(empty($pageInfo->filter->filter_product_type) || $pageInfo->filter->filter_product_type == 'main')) {
+			$doOrdering = false;
 		}
 
 		$categoryClass = hikashop_get('class.category');
-		if(!$doOrdering && is_numeric($pageInfo->filter->filter_id)){
+		if(!$doOrdering && is_numeric($pageInfo->filter->filter_id)) {
 			$category = $categoryClass->get($pageInfo->filter->filter_id);
-			if($category->category_left+1 == $category->category_right){
+			if($category->category_left + 1 == $category->category_right) {
 				$doOrdering = true;
 			}
 		}
 
 		$order = '';
+		$select = 'SELECT b.*, a.ordering';
 		$groupby = '';
-		if($doOrdering){
-			$filters[]='a.category_id='.(int)$pageInfo->filter->filter_id;
-			$select='SELECT a.ordering, b.*';
+		if(!$selectedType){
+			$filters[] = 'a.category_id='.(int)$pageInfo->filter->filter_id;
 			$cat_ids = array((int)$pageInfo->filter->filter_id);
 		}else{
 			$categoryClass->parentObject =& $this;
 			$children = $categoryClass->getChildren((int)$pageInfo->filter->filter_id,true,array(),'',0,0);
 			$filter = 'a.category_id IN (';
 			$cat_ids = array();
-			foreach($children as $child){
+			foreach($children as $child) {
 				$filter .= $child->category_id.',';
-				$cat_ids[$child->category_id]=$child->category_id;
+				$cat_ids[$child->category_id] = $child->category_id;
 			}
 			$filters[] = $filter.(int)$pageInfo->filter->filter_id.')';
-			$select = 'SELECT b.*, a.ordering';
 			$groupby = ' GROUP BY b.product_id';
 		}
 
 		$searchMap = array('b.product_name','b.product_description','b.product_id','b.product_code');
 
 		$fieldsClass = hikashop_get('class.field');
+		$this->assignRef('fieldsClass', $fieldsClass);
+
 		$parent_cat_ids = array();
-		if(!empty($cat_ids)){
-			$parents = $categoryClass->getParents($cat_ids,true,array(),'',0,0);
-			if(!empty($parents)){
-				foreach($parents as $parent){
-					$parent_cat_ids[]=$parent->category_id;
+		if(!empty($cat_ids)) {
+			$parents = $categoryClass->getParents($cat_ids, true, array(), '', 0, 0);
+			if(!empty($parents)) {
+				foreach($parents as $parent) {
+					$parent_cat_ids[] = (int)$parent->category_id;
 				}
 			}
 		}
-		$categories=array('originals'=>$cat_ids,'parents'=>$parent_cat_ids);
 
-		$fields = @$fieldsClass->getFields('display:field_product_listing=1', $categories, 'product');
-		$this->assignRef('fields',$fields);
+		$categories = array('originals' => $cat_ids, 'parents' => $parent_cat_ids);
 
-		$this->assignRef('fieldsClass',$fieldsClass);
+		$fields = @$fieldsClass->getFields('backend_listing', $categories, 'product');
 
 
-		if(!empty($fields)){
-			foreach($fields as $field){
-				if($field->field_type == "customtext") continue;
-				$searchMap[]='b.'.$field->field_namekey;
+		$this->assignRef('fields', $fields);
+
+		if(!empty($fields)) {
+			foreach($fields as $field) {
+				if($field->field_type == "customtext")
+					continue;
+				$searchMap[] = 'b.'.$field->field_namekey;
 			}
 		}
 
@@ -173,9 +175,9 @@ class ProductViewProduct extends hikashopView
 		$dispatcher->trigger( 'onBeforeProductListingLoad', array( & $filters, & $order, &$this, & $select, & $select2, & $a, & $b, & $on) );
 
 		if($pageInfo->filter->filter_product_type=='all'){
-			$query = '( '.$select.' FROM '.hikashop_table('product_category').' AS a LEFT JOIN '.hikashop_table('product').' AS b ON a.product_id=b.product_id WHERE '.implode(' AND ',$filters).' AND b.product_id IS NOT NULL '.$groupby.')
+			$query = '( '.$select.' FROM '.hikashop_table('product_category').' AS a LEFT JOIN '.hikashop_table('product').' AS b ON a.product_id=b.product_id WHERE '.implode(' AND ',$filters).' AND b.product_id IS NOT NULL'.$groupby.' )
 			UNION
-						( '.$select.' FROM '.hikashop_table('product_category').' AS a LEFT JOIN '.hikashop_table('product').' AS b ON a.product_id=b.product_parent_id WHERE '.implode(' AND ',$filters).' AND b.product_parent_id IS NOT NULL '.$groupby.') ';
+						( '.$select.' FROM '.hikashop_table('product_category').' AS a LEFT JOIN '.hikashop_table('product').' AS b ON a.product_id=b.product_parent_id WHERE '.implode(' AND ',$filters).' AND b.product_parent_id IS NOT NULL'.$groupby.' ) ';
 			$database->setQuery($query.$order,(int)$pageInfo->limit->start,(int)$pageInfo->limit->value);
 		}else{
 			$filters[]='b.product_type = '.$database->Quote($pageInfo->filter->filter_product_type);
@@ -272,7 +274,6 @@ class ProductViewProduct extends hikashopView
 		$this->assignRef('rows',$rows);
 		$this->assignRef('pageInfo',$pageInfo);
 
-
 		$this->assignRef('doOrdering',$doOrdering);
 		if($doOrdering){
 			$order = new stdClass();
@@ -297,7 +298,7 @@ class ProductViewProduct extends hikashopView
 		$this->getPagination();
 	}
 
-	function form_legacy() {
+	public function form_legacy() {
 		$product_id = hikashop_getCID('product_id');
 		$class = hikashop_get('class.product');
 		$popup = hikashop_get('helper.popup');
@@ -317,6 +318,9 @@ class ProductViewProduct extends hikashopView
 				$query = 'SELECT a.*,b.* FROM '.hikashop_table('product_related').' AS a LEFT JOIN '.hikashop_table('product').' AS b ON a.product_related_id=b.product_id WHERE a.product_related_type=\'options\' AND a.product_id = '.$product_id;
 				$database->setQuery($query);
 				$element->options = $database->loadObjectList();
+				$query = 'SELECT a.*,b.* FROM '.hikashop_table('product_related').' AS a LEFT JOIN '.hikashop_table('product').' AS b ON a.product_related_id=b.product_id WHERE a.product_related_type=\'bundle\' AND a.product_id = '.$product_id;
+				$database->setQuery($query);
+				$element->bundle = $database->loadObjectList();
 				$query = 'SELECT * FROM '.hikashop_table('file').' WHERE file_ref_id = '.$product_id.' AND file_type=\'product\' ORDER BY file_ordering, file_id';
 				$database->setQuery($query);
 				$element->images = $database->loadObjectList();
@@ -402,6 +406,19 @@ class ProductViewProduct extends hikashopView
 						$element->options[$k]->product_related_ordering = $rel_ids[$option->product_id];
 					}
 				}
+				if(!empty($element->bundle)){
+					$rel_ids = array();
+					foreach($element->bundle as $related){
+						$rel_ids[(int)$related->product_related_id] = $related->product_related_ordering;
+					}
+					$query = 'SELECT b.* FROM '.hikashop_table('product').' AS b WHERE b.product_id IN ('.implode(',',array_keys($rel_ids)).')';
+					$database->setQuery($query);
+					$element->bundle = $database->loadObjectList();
+					foreach($element->bundle as $k => $option){
+						$element->bundle[$k]->product_related_id = $option->product_id;
+						$element->bundle[$k]->product_related_ordering = $rel_ids[$option->product_id];
+					}
+				}
 				if(!empty($element->characteristics)){
 					$char_ids = array();
 					foreach($element->characteristics as $k => $char){
@@ -427,6 +444,11 @@ class ProductViewProduct extends hikashopView
 				$ids[]=(int)@$optionElement->product_id;
 			}
 		}
+		if(!empty($element->bundle)){
+			foreach($element->bundle as $optionElement){
+				$ids[]=(int)@$optionElement->product_id;
+			}
+		}
 		if(!empty($ids)){
 			$query = 'SELECT * FROM '.hikashop_table('price').' WHERE price_product_id IN ('.implode(',',$ids).')';
 			$database->setQuery($query);
@@ -448,6 +470,14 @@ class ProductViewProduct extends hikashopView
 						foreach($element->options as $k => $optionElement){
 							if($price->price_product_id==$optionElement->product_id){
 								$element->options[$k]->prices[]=$price;
+								break;
+							}
+						}
+					}
+					if(!empty($element->bundle)){
+						foreach($element->bundle as $k => $optionElement){
+							if($price->price_product_id==$optionElement->product_id){
+								$element->bundle[$k]->prices[]=$price;
 								break;
 							}
 						}
@@ -641,7 +671,7 @@ class ProductViewProduct extends hikashopView
 		$this->_addCustom($element);
 	}
 
-	function edit_translation_legacy(){
+	public function edit_translation_legacy(){
 		$language_id = JRequest::getInt('language_id',0);
 		$product_id = hikashop_getCID('product_id');
 		$class = hikashop_get('class.product');
@@ -665,17 +695,17 @@ class ProductViewProduct extends hikashopView
 		$this->assignRef('tabs',$tabs);
 	}
 
-	function _addCustom(&$element){
+	protected function _addCustom(&$element) {
 		$fieldsClass = hikashop_get('class.field');
-		$fields = $fieldsClass->getFields('display:field_product_form=1',$element,'product','field&task=state');
-		$null=array();
-		$fieldsClass->addJS($null,$null,$null);
-		$fieldsClass->jsToggle($fields,$element,0);
+		$fields = $fieldsClass->getFields('backend', $element, 'product', 'field&task=state');
+		$null = array();
+		$fieldsClass->addJS($null, $null, $null);
+		$fieldsClass->jsToggle($fields, $element, 0);
 		$this->assignRef('fieldsClass',$fieldsClass);
 		$this->assignRef('fields',$fields);
 	}
 
-	function _getCharacteristics($product_id){
+	protected function _getCharacteristics($product_id){
 		$database = JFactory::getDBO();
 		$query = 'SELECT a.ordering,b.* FROM '.hikashop_table('variant').' AS a LEFT JOIN '.hikashop_table('characteristic').' AS b ON a.variant_characteristic_id=b.characteristic_id WHERE a.variant_product_id = '.(int)$product_id.' ORDER BY a.ordering';
 		$database->setQuery($query);
@@ -735,14 +765,15 @@ class ProductViewProduct extends hikashopView
 		return $characteristics;
 	}
 
-	function _loadPrices(&$rows){
+	protected function _loadPrices(&$rows){
 		$currencyClass = hikashop_get('class.currency');
 		$zone_id = hikashop_getZone();
 		$ids = array();
 		$parents = array();
 		foreach($rows as $row){
 			$ids[]=(int)$row->product_id;
-			if(!empty($row->product_parent_id)) $parents[(int)$row->product_parent_id] = (int)$row->product_parent_id;
+			if(!empty($row->product_parent_id))
+				$parents[(int)$row->product_parent_id] = (int)$row->product_parent_id;
 		}
 		$query = 'SELECT * FROM '.hikashop_table('price').' WHERE price_product_id IN ('.implode(',',$ids).')';
 		$database = JFactory::getDBO();
@@ -758,17 +789,17 @@ class ProductViewProduct extends hikashopView
 				foreach($prices as $price){
 					if($price->price_product_id==$row->product_id){
 						if(!isset($row->prices)) $row->prices=array();
-						$rows[$k]->prices[$price->price_min_quantity.'_'.$price->price_access.'_'.$price->price_currency_id]=$price;
+						$rows[$k]->prices[$price->price_min_quantity.'_'.$price->price_access.'_'.$price->price_users.'_'.$price->price_currency_id]=$price;
 						if(!empty($row->product_parent_id))
 							$row->product_tax_id = @$parents_tax_id[$row->product_parent_id]->product_tax_id;
-						$rows[$k]->prices[$price->price_min_quantity.'_'.$price->price_access.'_'.$price->price_currency_id]->price_value_with_tax = $currencyClass->getTaxedPrice($price->price_value,$zone_id,$row->product_tax_id);
+						$rows[$k]->prices[$price->price_min_quantity.'_'.$price->price_access.'_'.$price->price_users.'_'.$price->price_currency_id]->price_value_with_tax = $currencyClass->getTaxedPrice($price->price_value,$zone_id,$row->product_tax_id);
 					}
 				}
 			}
 		}
 	}
 
-	function variant_legacy(){
+	public function variant_legacy(){
 		$app = JFactory::getApplication();
 		$database	= JFactory::getDBO();
 		$filters = array();
@@ -873,7 +904,7 @@ class ProductViewProduct extends hikashopView
 		$this->assignRef('fieldsClass',$fieldsClass);
 	}
 
-	function selectcategory(){
+	public function selectcategory(){
 		$this->paramBase .= '_category';
 		$app = JFactory::getApplication();
 		$pageInfo = new stdClass();
@@ -950,7 +981,7 @@ class ProductViewProduct extends hikashopView
 		$this->getPagination();
 	}
 
-	function addcategory(){
+	public function addcategory(){
 		$categories = JRequest::getVar( 'cid', array(), '', 'array' );
 		$rows = array();
 		if(!empty($categories)){
@@ -978,7 +1009,7 @@ class ProductViewProduct extends hikashopView
 		$document->addScriptDeclaration($js);
 	}
 
-	function selectrelated(){
+	public function selectrelated(){
 		$type = JRequest::getCmd('select_type');
 		$this->paramBase .= '_related_'.$type;
 		switch($type){
@@ -1001,7 +1032,7 @@ class ProductViewProduct extends hikashopView
 		$this->assignRef('control',$control);
 	}
 
-	function addrelated(){
+	public function addrelated(){
 		$elements = JRequest::getVar( 'cid', array(), '', 'array' );
 		$type = JRequest::getCmd('select_type');
 		$this->assignRef('type',$type);
@@ -1106,7 +1137,7 @@ class ProductViewProduct extends hikashopView
 		}
 	}
 
-	function selectimage(){
+	public function selectimage(){
 		$id = (int)hikashop_getCID( 'file_id');
 		if(!empty($id)){
 			$class = hikashop_get('class.file');
@@ -1125,7 +1156,7 @@ class ProductViewProduct extends hikashopView
 		$this->assignRef('editor',$editor);
 	}
 
-	function addimage(){
+	public function addimage(){
 		$legacy = JRequest::getInt('legacy', 0);
 		if($legacy) {
 			$element = JRequest::getInt( 'cid');
@@ -1197,7 +1228,7 @@ class ProductViewProduct extends hikashopView
 		return false;
 	}
 
-	function selectfile(){
+	public function selectfile(){
 		$id = (int)hikashop_getCID('file_id');
 		if(!empty($id)){
 			$class = hikashop_get('class.file');
@@ -1216,7 +1247,7 @@ class ProductViewProduct extends hikashopView
 		$this->assignRef('config',$config);
 	}
 
-	function addfile(){
+	public function addfile(){
 		$legacy = JRequest::getInt('legacy', 0);
 		if($legacy) {
 			$element = JRequest::getInt('cid');
@@ -1262,7 +1293,7 @@ class ProductViewProduct extends hikashopView
 		return false;
 	}
 
-	function galleryimage() {
+	public function galleryimage() {
 		hikashop_loadJslib('otree');
 		$app = JFactory::getApplication();
 
@@ -1310,7 +1341,7 @@ class ProductViewProduct extends hikashopView
 		$this->getPagination();
 	}
 
-	function priceaccess(){
+	public function priceaccess(){
 		$js = "
 		function hikashopSetACL() {
 			acl = document.getElementById('hidden_price_access');
@@ -1330,7 +1361,7 @@ class ProductViewProduct extends hikashopView
 		$this->assignRef('access',$access);
 	}
 
-	function export(){
+	public function export(){
 		$product = hikashop_get('class.product');
 		$products = JRequest::getVar( 'cid', array(), '', 'array' );
 		$product->getProducts($products,'object');
@@ -1478,6 +1509,7 @@ class ProductViewProduct extends hikashopView
 		$this->loadRef(array(
 			'toggleClass' => 'helper.toggle',
 			'currencyClass' => 'class.currency',
+			'userClass' => 'class.user',
 			'popup' => 'helper.popup',
 			'quantityType' => 'type.quantity',
 			'productsType' => 'type.products',
@@ -1525,11 +1557,11 @@ class ProductViewProduct extends hikashopView
 				}
 			}
 
-			$query = 'SELECT b.* FROM '.hikashop_table('product_category').' AS a LEFT JOIN '.hikashop_table('category').' AS b ON a.category_id = b.category_id WHERE a.product_id = '.(int)$product_id.' ORDER BY a.product_category_id';
+			$query = 'SELECT b.* FROM '.hikashop_table('product_category').' AS a LEFT JOIN '.hikashop_table('category').' AS b ON a.category_id = b.category_id WHERE a.product_id = '.(int)$product_id.' ORDER BY a.product_category_id ASC';
 			$db->setQuery($query);
 			$product->categories = $db->loadObjectList('category_id');
 
-			$query = 'SELECT * FROM '.hikashop_table('file').' WHERE file_ref_id = '.(int)$product_id.' AND file_type=\'product\' ORDER BY file_ordering, file_id';
+			$query = 'SELECT * FROM '.hikashop_table('file').' WHERE file_ref_id = '.(int)$product_id.' AND file_type=\'product\' ORDER BY file_ordering ASC, file_id ASC';
 			$db->setQuery($query);
 			$product->images = $db->loadObjectList();
 
@@ -1537,17 +1569,21 @@ class ProductViewProduct extends hikashopView
 				' LEFT JOIN '.hikashop_table('download').' AS download ON file.file_id = download.file_id '.
 				' WHERE file_ref_id = '.(int)$product_id.' AND file.file_type='.$db->Quote('file').' '.
 				' GROUP BY file.file_id '.
-				' ORDER BY file.file_ordering, file.file_id';
+				' ORDER BY file.file_ordering ASC, file.file_id ASC';
 			$db->setQuery($query);
 			$product->files = $db->loadObjectList('file_id');
 
-			$query = 'SELECT a.*,b.* FROM '.hikashop_table('product_related').' AS a LEFT JOIN '.hikashop_table('product').' AS b ON a.product_related_id=b.product_id WHERE a.product_related_type=\'related\' AND a.product_id = '.(int)$product_id.' ORDER BY a.product_related_ordering';
+			$query = 'SELECT a.*,b.* FROM '.hikashop_table('product_related').' AS a LEFT JOIN '.hikashop_table('product').' AS b ON a.product_related_id=b.product_id WHERE a.product_related_type=\'related\' AND a.product_id = '.(int)$product_id.' ORDER BY a.product_related_ordering ASC';
 			$db->setQuery($query);
 			$product->related = $db->loadObjectList();
 
-			$query = 'SELECT a.*,b.* FROM '.hikashop_table('product_related').' AS a LEFT JOIN '.hikashop_table('product').' AS b ON a.product_related_id=b.product_id WHERE a.product_related_type=\'options\' AND a.product_id = '.(int)$product_id.' ORDER BY a.product_related_ordering';
+			$query = 'SELECT a.*,b.* FROM '.hikashop_table('product_related').' AS a LEFT JOIN '.hikashop_table('product').' AS b ON a.product_related_id=b.product_id WHERE a.product_related_type=\'options\' AND a.product_id = '.(int)$product_id.' ORDER BY a.product_related_ordering ASC';
 			$db->setQuery($query);
 			$product->options = $db->loadObjectList();
+
+			$query = 'SELECT a.*,b.* FROM '.hikashop_table('product_related').' AS a LEFT JOIN '.hikashop_table('product').' AS b ON a.product_related_id=b.product_id WHERE a.product_related_type=\'bundle\' AND a.product_id = '.(int)$product_id.' ORDER BY a.product_related_ordering ASC';
+			$db->setQuery($query);
+			$product->bundle = $db->loadObjectList();
 
 			$query = 'SELECT variant.*, characteristic.* FROM '.hikashop_table('variant').' as variant LEFT JOIN '.hikashop_table('characteristic').' as characteristic ON variant.variant_characteristic_id = characteristic.characteristic_id WHERE variant.variant_product_id = '.(int)$product_id . ' ORDER BY variant.ordering ASC, characteristic.characteristic_ordering ASC, ordering ASC';
 			$db->setQuery($query);
@@ -1665,6 +1701,20 @@ class ProductViewProduct extends hikashopView
 				foreach($product->options as $k => $v) {
 					$product->options[$k]->product_related_id = $v->product_id;
 					$product->options[$k]->product_related_ordering = $tmp_ids[$v->product_id];
+				}
+			}
+
+			if(!empty($element->bundle)) {
+				$tmp_ids = array();
+				foreach($product->bundle as $v) {
+					$rel_ids[(int)$v->product_related_id] = (int)$v->product_related_ordering;
+				}
+				$query = 'SELECT p.* FROM '.hikashop_table('product').' AS p WHERE p.product_id IN (' . implode(',', array_keys($tmp_ids)) . ')';
+				$db->setQuery($query);
+				$product->bundle = $db->loadObjectList();
+				foreach($product->bundle as $k => $v) {
+					$product->bundle[$k]->product_related_id = $v->product_id;
+					$product->bundle[$k]->product_related_ordering = $tmp_ids[$v->product_id];
 				}
 			}
 
@@ -1806,7 +1856,7 @@ class ProductViewProduct extends hikashopView
 		}
 
 		$fieldsClass = hikashop_get('class.field');
-		$fields = $fieldsClass->getFields('display:field_product_form=1', $product, 'product', 'field&task=state');
+		$fields = $fieldsClass->getFields('backend', $product, 'product', 'field&task=state');
 		$null = array();
 		$fieldsClass->addJS($null, $null, $null);
 		$fieldsClass->jsToggle($fields, $product, 0);
@@ -1844,6 +1894,8 @@ class ProductViewProduct extends hikashopView
 	}
 
 	public function variantSortingCallback($a, $b) {
+		if(!is_array($a->sorting_value))
+			return 0;
 		ksort($a->sorting_value);
 		foreach($a->sorting_value as $k => $aSort){
 			if($a->sorting_value[$k] == $b->sorting_value[$k])
@@ -2066,7 +2118,11 @@ class ProductViewProduct extends hikashopView
 		}
 
 		$editor = hikashop_get('helper.editor');
-		$editor->setEditor($config->get('editor', ''));
+		$editorType = $config->get('editor', '');
+		if(preg_match('/Edge/i', $_SERVER['HTTP_USER_AGENT'])){
+			$editorType = 'none';
+		}
+		$editor->setEditor($editorType);
 		$editor->id = 'product_variant_editors_'.time();
 		$editor->name = 'product_variant_description';
 		$editor->content = $product->product_description;
@@ -2101,7 +2157,7 @@ class ProductViewProduct extends hikashopView
 
 		$fieldsClass = hikashop_get('class.field');
 		$fieldsClass->prefix = 'variant_'.time().'_';
-		$fields = $fieldsClass->getFields('display:field_product_form=1', $product, 'product', 'field&task=state');
+		$fields = $fieldsClass->getFields('backend', $product, 'product', 'field&task=state');
 		$null = array();
 		$fieldsClass->addJS($null, $null, $null);
 		$fieldsClass->jsToggle($fields, $product, 0, $fieldsClass->prefix);
@@ -2150,6 +2206,75 @@ class ProductViewProduct extends hikashopView
 			}
 
 			$this->assignRef('params', $element);
+		}
+	}
+
+	public function form_price_edit(){
+		$db = JFactory::getDBO();
+
+		$price_id = hikashop_getCID('price_id');
+		$this->assignRef('price_id', $price_id);
+
+		$config = hikashop_config();
+		$this->assignRef('config', $config);
+
+		$main_currency = $config->get('main_currency',1);
+
+		$form_key = JRequest::getVar('formkey','price');
+		$this->assignRef('form_key', $form_key);
+
+		$this->loadRef(array(
+			'nameboxVariantType' => 'type.namebox',
+			'currencyType' => 'type.currency'
+		));
+
+		$price = null;
+		if(!empty($price_id)){
+			$query = 'SELECT * FROM #__hikashop_price WHERE price_id = '.(int)$price_id;
+			$db->setQuery($query);
+			$price = $db->loadObject();
+		}
+
+		if(empty($price)){
+			$price = new stdClass();
+			$price->price_id = 0;
+			$price->price_access = 'all';
+			$price->price_currency_id = $main_currency;
+		}elseif(!empty($price->price_product_id)){
+			$price->price_value_with_tax = $price->price_value;
+			$productClass = hikashop_get('class.product');
+			$product = $productClass->get($price->price_product_id);
+			if($product->product_tax_id){
+				$currencyClass = hikashop_get('class.currency');
+				$config =& hikashop_config();
+				$main_tax_zone = explode(',',$config->get('main_tax_zone',1346));
+				$price->price_value_with_tax = $currencyClass->getTaxedPrice($price->price_value, array_shift($main_tax_zone), $product->product_tax_id, 5);
+			}
+		}
+
+		if(empty($price->price_min_quantity)){
+			$price->price_min_quantity = 1;
+		}
+
+		$this->assignRef('price', $price);
+
+		if(hikashop_level(2)) {
+			hikashop_loadJslib('otree');
+			$joomlaAcl = hikashop_get('type.joomla_acl');
+			$this->assignRef('joomlaAcl', $joomlaAcl);
+		}
+
+		$this->loadJMS();
+	}
+
+	public function loadJMS(){
+		$this->jms_integration = false;
+		if(file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_multisites'.DS.'helpers'.DS.'utils.php')){
+			include_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_multisites'.DS.'helpers'.DS.'utils.php');
+			if(class_exists('MultisitesHelperUtils') && method_exists('MultisitesHelperUtils','getComboSiteIDs')){
+				$this->comboSiteIDs = str_replace('class="inputbox"','class="inputbox chzn-done"',MultisitesHelperUtils::getComboSiteIDs('','price[price_site_id][##]',JText::_('SELECT_A_SITE')));
+				$this->jms_integration = !empty($this->comboSiteIDs);
+			}
 		}
 	}
 
@@ -2218,7 +2343,7 @@ class ProductViewProduct extends hikashopView
 		$this->assignRef('product', $product);
 
 		$fieldsClass = hikashop_get('class.field');
-		$fields = $fieldsClass->getFields('display:field_product_form=1', $product, 'product', 'field&task=state');
+		$fields = $fieldsClass->getFields('backend', $product, 'product', 'field&task=state');
 		$this->assignRef('fieldsClass', $fieldsClass);
 		$this->assignRef('fields', $fields);
 

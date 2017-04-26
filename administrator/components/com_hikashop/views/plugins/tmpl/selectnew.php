@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -59,7 +59,7 @@ foreach($this->plugins as $i => &$row) {
 	}
 ?>
 		<tr class="row<?php echo $k; ?>">
-			<td align="center"><?php
+			<td class="hk_center"><?php
 				echo $i+1
 			?></td>
 			<td><?php
@@ -74,7 +74,7 @@ foreach($this->plugins as $i => &$row) {
 <?php
 	if(!empty($this->currencies)) {
 		foreach($this->currencies as $currency) {
-?>			<td align="center"><?php
+?>			<td class="hk_center"><?php
 				if(empty($row->accepted_currencies) || in_array($currency->currency_code, $row->accepted_currencies))
 					echo $icon_yes;
 				else
@@ -84,7 +84,7 @@ foreach($this->plugins as $i => &$row) {
 		}
 	}
 ?>
-			<td align="center">
+			<td class="hk_center">
 				<span id="<?php echo $publishedid ?>" class="loading"><?php
 					if($this->manage){
 						echo $this->toggleClass->toggle($publishedid,$row->published,'plugins');
@@ -93,7 +93,7 @@ foreach($this->plugins as $i => &$row) {
 					}
 				?></span>
 			</td>
-			<td align="center"><?php
+			<td class="hk_center"><?php
 				echo $row->id;
 			?></td>
 		</tr>

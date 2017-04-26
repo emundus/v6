@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="system" method="upgrade">
 	<name>User - HikaShop</name>
-	<creationDate>05 décembre 2016</creationDate>
-	<version>2.6.4</version>
+	<creationDate>23 avril 2017</creationDate>
+	<version>3.0.1</version>
 	<author>HikaShop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>HikaShop User plugin to automatically synchronise the Joomla Users and the HikaShop ones</description>
 	<files>

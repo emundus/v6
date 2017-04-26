@@ -1,7 +1,7 @@
 /*
 	oTree : Obscurelighty Project ( http://www.obscurelighty.com/ )
 	Author: Jerome GLATIGNY <jerome@obscurelighty.com>
-	Copyright (C) 2010-2016  Jerome GLATIGNY
+	Copyright (C) 2010-2017  Jerome GLATIGNY
 
 	This file is part of Obscurelighty.
 
@@ -26,8 +26,8 @@
 */
 
 /** oTree
- * version: 0.9.8
- * release date: 2014-09-14
+ * version: 0.9.9
+ * release date: 2016-03-01
  */
 (function(){
 	window.oTrees = [];
@@ -878,14 +878,14 @@
 			}
 		}
 	};
-	oTree.version = 20140914;
+	oTree.version = 20160301;
 	if(!window.oTree || window.oTree.version < oTree.version)
 		window.oTree = oTree;
 })();
 
 /** oList
- * version: 0.1.2
- * release date: 2015-08-07
+ * version: 0.1.3
+ * release date: 2016-03-01
  */
 (function(){
 	window.oLists = [];
@@ -1314,15 +1314,15 @@
 		highlightNext: function(cpt) { return this.highlightMove(1,cpt); },
 		highlightPrevious: function(cpt) { return this.highlightMove(-1,cpt); },
 	};
-	oList.version = 20150807;
+	oList.version = 20160301;
 	if(!window.oList || window.oList.version < oList.version)
 		window.oList = oList;
 })();
 
 /**
  * oNamebox
- * version: 0.1.2
- * release date: 2015-08-07
+ * version: 0.1.3
+ * release date: 2016-03-01
  */
 (function(){
 	window.oNameboxes = [];
@@ -1388,10 +1388,7 @@
 				if(json.length == 0)
 					return tree.emptyDirectory(node);
 				var s = json.length, n;
-				for(var i = 0; i < s; i++) {
-					n = json[i];
-					tree.add(node.id, n.status, n.name, n.value, n.url, n.icon);
-				}
+				tree.load(json, node.id);
 				tree.update(node);
 				if(tree.selectOnOpen) {
 					n = tree.find(tree.selectOnOpen);
@@ -1435,7 +1432,9 @@
 				t.content = new window.oList(t.id,t.config.olist,null,t.data,false);
 				t.content.callbackSelection = function(ol,id,value) {
 					var d = document, node = ol.get(id);
-					if(node.key && node.name)
+					if(node.key && t.config.olist && t.config.olist.displayFormat)
+						t.set(value, node.key);
+					else if(node.key && node.name)
 						t.set(node.name, node.key);
 					else if(t.content.config.table && node.key)
 						t.set(value, node.key);
@@ -1810,7 +1809,7 @@
 					var p = w.Oby.evalJSON(xhr.responseText),
 						data = ((p.data) ? p.data : p),
 						u = false, i = (input.value == '');
-					if(data.length == 0) {
+					if(!data || data.length == 0) {
 						t.content.config.gradientLoad = false;
 						if(i) {
 							t.url = '';
@@ -2029,7 +2028,7 @@
 			return true;
 		},
 	};
-	oNamebox.version = 20150807;
+	oNamebox.version = 20160301;
 	if(!window.oNamebox || !window.oNamebox.version || window.oNamebox.version < oNamebox.version)
 		window.oNamebox = oNamebox;
 })();

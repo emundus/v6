@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -150,10 +150,10 @@ window.orderMgr.setAdditionals = function(el) {
 			<td class="key"><label><?php echo JText::_($additional->order_product_name); ?></label></td>
 			<td><span><?php
 			if(!empty($additional->order_product_price)) {
-					if($this->config->get('price_with_tax') && !empty($additional->order_product_tax))
-						$additional->order_product_price = (float)$additional->order_product_price + (float)$additional->order_product_tax;
-					else
-						$additional->order_product_price = (float)$additional->order_product_price;
+				if($this->config->get('price_with_tax') && !empty($additional->order_product_tax))
+					$additional->order_product_price = (float)$additional->order_product_price + (float)$additional->order_product_tax;
+				else
+					$additional->order_product_price = (float)$additional->order_product_price;
 			}
 			if(!empty($additional->order_product_price) || empty($additional->order_product_options)) {
 				echo $this->currencyHelper->format($additional->order_product_price, $this->order->order_currency_id);

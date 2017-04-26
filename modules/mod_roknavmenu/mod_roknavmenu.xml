@@ -2,12 +2,12 @@
 <extension client="site" method="upgrade" type="module" version="2.5">
 	<name>RokNavMenu</name>
 	<author>RocketTheme, LLC</author>
-	<creationDate>February 24, 2015</creationDate>
+	<creationDate>February 3, 2017</creationDate>
 	<authorEmail>support@rockettheme.com</authorEmail>
 	<authorUrl>http://www.rockettheme.com</authorUrl>
-	<copyright>(C) 2005 - 2015 RocketTheme, LLC. All rights reserved.</copyright>
+	<copyright>(C) 2005 - 2017 RocketTheme, LLC. All rights reserved.</copyright>
 	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
-	<version>2.0.8</version>
+	<version>2.0.9</version>
 	<description>RocketTheme Customizable Navigation Menu</description>
     <scriptfile>install.script.php</scriptfile>
     <updateservers>

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -52,6 +52,11 @@ class updateController extends HikashopBridgeController {
 	}
 
 	function update(){
+		$config = hikashop_config();
+		if(!hikashop_isAllowed($config->get('acl_update_about_view','all'))){
+			hikashop_display(JText::_('RESSOURCE_NOT_ALLOWED'),'error');
+			return false;
+		}
 		hikashop_setTitle(JText::_('UPDATE_ABOUT'),'install','update');
 		if (!HIKASHOP_PHP5) {
 			$bar =& JToolBar::getInstance('toolbar');
@@ -114,7 +119,8 @@ class updateController extends HikashopBridgeController {
 		JRequest::setVar( 'layout', 'wizard' );
 		return parent::display();
 	}
-	function wizard_save(){
+
+	function wizard_save() {
 		$layoutType = JRequest::getVar('layout_type');
 		$currency = JRequest::getVar('currency');
 		$taxName = JRequest::getVar('tax_name');
@@ -191,32 +197,68 @@ class updateController extends HikashopBridgeController {
 			foreach($languages as $code){
 				$path = JLanguage::getLanguagePath(JPATH_ROOT).DS.$code.DS.$code.'.com_hikashop.ini';
 				jimport('joomla.filesystem.file');
-				if(!JFile::exists($path)){
+				if(!JFile::exists($path)) {
 					$url = str_replace('https://','http://',HIKASHOP_UPDATEURL.'languageload&raw=1&code='.$code);
-					$data = '';
-					if(function_exists('curl_version')){
-						$ch = curl_init();
-						$timeout = 5;
-						curl_setopt($ch, CURLOPT_URL, $url);
-						curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-						curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-						$data = curl_exec($ch);
-						curl_close($ch);
-					}else{
-						$data = file_get_contents($url);
-					}
-					if(!empty($data)){
-						$result = JFile::write($path, $data);
-						if($result){
-							$updateHelper->installMenu($code);
-							hikashop_display(JText::_('HIKASHOP_SUCC_SAVED'),'success');
-						}else{
-							hikashop_display(JText::sprintf('FAIL_SAVE',$path),'error');
-						}
-					}else{
+					$ret = $this->retrieveFile($url, $path);
+					if($ret === false) {
 						hikashop_display(JText::sprintf('CANT_GET_LANGUAGE_FILE_CONTENT',$path),'error');
+					} elseif($ret === 1) {
+						$updateHelper->installMenu($code);
+						hikashop_display(JText::_('HIKASHOP_SUCC_SAVED'),'success');
+					} else {
+						hikashop_display(JText::sprintf('FAIL_SAVE',$path),'error');
 					}
 				}
+			}
+		}
+
+		$install_eu_taxes = JRequest::getVar('install_eu_taxes');
+		if($install_eu_taxes === '1') {
+			$url = str_replace('https://','http://',HIKASHOP_URL.'index.php?option=com_updateme&ctrl=download&plugin=tax_europe');
+			$file = JPath::clean(realpath('../tmp/') . DS .'european_taxes.zip');
+			$ret = $this->retrieveFile($url, $file, true);
+
+			if($ret === 1) {
+				if(HIKASHOP_J30)
+					jimport('joomla.archive.archive');
+				else
+					jimport('joomla.filesystem.archive');
+
+				$archiveClass = new JArchive();
+				$zip = $archiveClass->getAdapter('zip');
+
+				$path = JPath::clean(realpath('../tmp/') . DS . 'eu_taxes' . DS); // pathinfo(realpath($file), PATHINFO_DIRNAME);
+				if(!JFile::exists($path))
+					JFolder::create($path);
+
+				$ret = $zip->extract($file, $path);
+
+				if($ret) {
+					$eu_tax_file = JPath::clean($path . '/install.php');
+					if(!JFile::exists($eu_tax_file))
+						$ret = false;
+				}
+
+				if(!$ret) {
+					hikashop_display(JText::sprintf('WIZZARD_DATA_ERROR', 'unzipping', 'index.php?option=com_hikashop&ctrl=update&task=wizard'), 'error');
+				} else {
+					try {
+						include_once($eu_tax_file);
+					} catch(Exception $e) {}
+
+					if(class_exists('pkg_tax_europeInstallerScript')) {
+						$tax_install = new pkg_tax_europeInstallerScript();
+						$tax_install->redirect = false;
+						$tax_install->preflight(null, null);
+						$tax_install->setMainCountry(null);
+					}
+				}
+
+				if(JFile::exists($path) && strpos($path, 'eu_taxes') !== false)
+					JFolder::delete($path);
+
+				if(JFile::exists($file))
+					JFile::delete($file);
 			}
 		}
 
@@ -232,23 +274,28 @@ class updateController extends HikashopBridgeController {
 			}else{
 				$maxId = (int)$maxId + 1 ;
 			}
-			$tax = array();
-			$tax['taxation_id'] = (int)$maxId;
+			$empty = $db->Quote('');
+
+			$tax = array(
+				'taxation_id' => (int)$maxId,
+				'zone_namekey' => $empty,
+				'category_namekey' => $db->Quote('default_tax'),
+				'tax_namekey' => $db->Quote($taxName),
+				'taxation_published' => 1,
+				'taxation_type' => $empty,
+				'taxation_access' => $db->Quote('all'),
+				'taxation_cumulative' => 0,
+				'taxation_post_code' => $empty,
+				'taxation_date_start' => 0,
+				'taxation_date_end' => 0,
+				'taxation_internal_code' => 0,
+				'taxation_note' => $empty,
+			);
 			if($addressCountry == 'country_United_States_of_America_223')
 				$tax['zone_namekey'] = $db->Quote($addressState);
 			else
 				$tax['zone_namekey'] = $db->Quote($addressCountry);
-			$tax['category_namekey'] = $db->Quote('default_tax');
-			$tax['tax_namekey'] = $db->Quote($taxName);
-			$tax['taxation_published'] = 1;
-			$tax['taxation_type'] = $db->Quote('');
-			$tax['taxation_access'] = $db->Quote('all');
-			$tax['taxation_cumulative'] = 0;
-			$tax['taxation_post_code'] = $db->Quote('');
-			$tax['taxation_date_start'] = 0;
-			$tax['taxation_date_end'] = 0;
-			$tax['taxation_internal_code'] = 0;
-			$tax['taxation_note'] = $db->Quote('');
+
 			$query = 'INSERT INTO '.hikashop_table('taxation').' ('.implode(',',array_keys($tax)).') VALUES ('.implode(',',$tax).')';
 
 			$db->setQuery($query);
@@ -307,6 +354,27 @@ class updateController extends HikashopBridgeController {
 		$this->setRedirect($url);
 	}
 
+	private function retrieveFile($url, $dest) {
+		$data = '';
+		if(function_exists('curl_version')){
+			$ch = curl_init();
+			$timeout = 5;
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+			$data = curl_exec($ch);
+			curl_close($ch);
+		} else {
+			$data = file_get_contents($url);
+		}
+
+		if(empty($data))
+			return false;
+
+		jimport('joomla.filesystem.file');
+		$result = JFile::write($dest, $data);
+		return ($result) ? 1 : 0;
+	}
 
 	function state(){
 		JRequest::setVar( 'layout', 'state' );
@@ -318,192 +386,189 @@ class updateController extends HikashopBridgeController {
 	}
 
 
-	function process_data_save()
-	{
-		if (isset($_GET['step']))
+	function process_data_save() {
+		if( !isset($_GET['step']) )
+			return;
+
+		$step = JRequest::getInt('step');
+		$url = 'index.php?option=com_hikashop&ctrl=update&task=process_data_save&'.hikashop_getFormToken().'=1&step='.$step;
+		$redirect = 'index.php?option=com_hikashop&ctrl=product&task=add';
+		$error = false;
+		$app = JFactory::getApplication();
+		$urlsrc = "http://www.hikashop.com/sampledata/dataexample.zip"; //server URL
+		$destination = '../tmp/dataexample.zip'; //HIKASHOP_ROOT.'tmp\dataexample.zip';
+		$path = pathinfo(realpath($destination), PATHINFO_DIRNAME);
+		switch ($step)
 		{
-
-			$step = JRequest::getInt('step');
-			$url = 'index.php?option=com_hikashop&ctrl=update&task=process_data_save&'.hikashop_getFormToken().'=1&step='.$step;
-			$redirect = 'index.php?option=com_hikashop&ctrl=product&task=add';
-			$error = false;
-			$app = JFactory::getApplication();
-			$urlsrc = "http://www.hikashop.com/sampledata/dataexample.zip"; //server URL
-			$destination = '../tmp/dataexample.zip'; //HIKASHOP_ROOT.'tmp\dataexample.zip';
-			$path = pathinfo(realpath($destination), PATHINFO_DIRNAME);
-			switch ($step)
-			{
-				case 1: //Download zip
-					if(!function_exists('curl_init')){
-						$app = JFactory::getApplication();
-						$app->enqueueMessage(JText::sprintf('CURL_ERROR',$url),'error');
-						$error = true;
-					}
-					else
-					{
-						$getContent = false;
-						$curl = curl_init ();
-						curl_setopt($curl, CURLOPT_TIMEOUT, 50);
-						curl_setopt ($curl, CURLOPT_URL, $urlsrc);
-						curl_setopt($curl, CURLOPT_HEADER, 0);
-						curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-						curl_setopt($curl, CURLOPT_BINARYTRANSFER,1);
-						curl_setopt ($curl, CURLOPT_FOLLOWLOCATION, 1);
-
-						$rawdata = curl_exec($curl);
-
-						$httpcode=curl_getinfo($curl, CURLINFO_HTTP_CODE);
-						if ($httpcode!=200)
-							$getContent = true;
-
-						curl_close ($curl);
-
-
-						if(file_exists($destination))
-							@unlink($destination);
-						$fhandle = fopen($destination, "x");
-						try {
-							fwrite($fhandle, $rawdata);
-							fclose($fhandle);
-						} catch(Exception $e) {
-							echo 'fail : '.$e->getMessage();
-							$getContent = true;
-						}
-
-						if ($getContent)
-							if(!file_put_contents($destination, file_get_contents($urlsrc)))
-							{
-								$app->enqueueMessage(JText::sprintf('WIZZARD_DATA_ERROR','downloading',$url), 'error');
-								$error = true;
-							}
-					}
-				break;
-
-				case 2 : //Unzip
-					if(HIKASHOP_J30){
-						jimport('joomla.archive.archive');
-					}else{
-						jimport('joomla.filesystem.archive');
-					}
-					$archiveClass = new JArchive();
-					$zip = $archiveClass->getAdapter('zip');
-
-					if(!$zip->extract($destination,$path))
-					{
-						$app->enqueueMessage(JText::sprintf('WIZZARD_DATA_ERROR','unzipping',$url), 'error');
-						$error = true;
-					}
-				break;
-
-				case 3 ://Copy
-					$config = hikashop_config();
-					jimport('joomla.filesystem.folder');
-					jimport( 'joomla.filesystem.file' );
-
-					$uploadSecudeFolder = str_replace('/','\\',$config->get('uploadsecurefolder','media/com_hikashop/upload/safe/'));
-					$src = $path.'\dataexample\upload\safe\\';
-					$dst = HIKASHOP_ROOT.$uploadSecudeFolder;
-
-					$files = scandir($src,1);
-					foreach($files as $f){
-						if($f!='..' && $f!='.' && !file_exists($dst.$f)){
-							if(is_dir($src.$f)){
-								$ret = JFolder::create($dst.$f);
-							}else{
-								$ret = JFile::copy($src.$f, $dst.$f, '', true); //Overwrite
-							}
-							if (!$ret)
-								$app->enqueueMessage(JText::sprintf('WIZZARD_DATA_ERROR_COPY',$f,$url), 'error');
-						}
-					}
-
-					$uploadFolder = str_replace('/','\\',$config->get('uploadfolder','images/com_hikashop/upload/'));
-					$src = $path.'\dataexample\upload\\';
-					$dst = HIKASHOP_ROOT.$uploadFolder;
-
-					$files = scandir($src,1);
-					foreach($files as $f){
-						if($f!='..' && $f!='.' && !file_exists($dst.$f)){
-							if(is_dir($src.$f)){
-								$ret = JFolder::create($dst.$f);
-							}else{
-								$ret = JFile::copy($src.$f, $dst.$f, '', true); //Overwrite
-							}
-							if (!$ret)
-								$app->enqueueMessage(JText::sprintf('WIZZARD_DATA_ERROR_COPY',$f,$url), 'error');
-						}
-					}
-				break;
-
-				case 4 : //exec script
-					$fh = fopen('../tmp/dataexample/script.sql', 'r+') or die("Can't open file /tmp/dataexample/script.sql");
-					$data = explode("\r\n",fread($fh,filesize('../tmp/dataexample/script.sql')));
-					$db = JFactory::getDBO();
-					foreach ($data as $d)
-					{
-						if (!empty($d))
-						{
-							$db->setQuery($d);
-							try {
-								$db->query();
-							} catch(Exception $e) {
-								echo 'Fail query : '.$e->getMessage();
-								$error = true;
-								$getContent = true;
-							}
-						}
-					}
-
-					$paypalEmail = $app->getUserState('WIZARD_DATA_SAMPLE_PAYPAL');
-					if (!empty($paypalEmail))
-					{
-						$db->setQuery("UPDATE `#__hikashop_payment` SET `payment_published` = '0'");
-						$db->query();
-						$db->setQuery("UPDATE `#__hikashop_payment` SET `payment_published` = '1' WHERE `payment_id` = '1'");
-						$db->query();
-					}
-					else
-					{
-						$db->setQuery("UPDATE `#__hikashop_payment` SET `payment_published` = '1'");
-						$db->query();
-					}
-
-					$categoryClass = hikashop_get('class.category');
-					$query = 'SELECT category_namekey,category_left,category_right,category_depth,category_id,category_parent_id FROM `#__hikashop_category` ORDER BY category_left ASC';
-					$db->setQuery($query);
-					$categories = $db->loadObjectList();
-					$root = null;
-					$categoryClass->categories = array();
-					foreach($categories as $cat)
-					{
-						$categoryClass->categories[$cat->category_parent_id][]=$cat;
-						if(empty($cat->category_parent_id))
-							$root = $cat;
-					}
-					$categoryClass->rebuildTree($root,0,1);
-				break;
-
-				case 5 : //Delete everything (try catch ?)
-					jimport( 'joomla.filesystem.folder' );
-					jimport( 'joomla.filesystem.file' );
-					if (!JFolder::delete($path.'\dataexample\\') or !JFile::delete($path.'\dataexample.zip'))
-					{
-						$app->enqueueMessage(JText::sprintf('WIZZARD_DATA_ERROR','deleting',$url), 'error');
-						$error = true;
-					}
-				break;
-
-				default:
+			case 1: //Download zip
+				if(!function_exists('curl_init')){
+					$app = JFactory::getApplication();
+					$app->enqueueMessage(JText::sprintf('CURL_ERROR',$url),'error');
 					$error = true;
-				break;
-			}
-			$step++;
-			if (!$error)
-				$redirect = 'index.php?option=com_hikashop&ctrl=update&task=process_data_save&'.hikashop_getFormToken().'=1&step='.$step;
-			if ($step > 5)
-				$app->enqueueMessage(JText::_('WIZARD_DATA_END'));
-			$app->redirect($redirect);
-		}
-	}
+				}
+				else
+				{
+					$getContent = false;
+					$curl = curl_init ();
+					curl_setopt($curl, CURLOPT_TIMEOUT, 50);
+					curl_setopt ($curl, CURLOPT_URL, $urlsrc);
+					curl_setopt($curl, CURLOPT_HEADER, 0);
+					curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+					curl_setopt($curl, CURLOPT_BINARYTRANSFER,1);
+					curl_setopt ($curl, CURLOPT_FOLLOWLOCATION, 1);
 
+					$rawdata = curl_exec($curl);
+
+					$httpcode=curl_getinfo($curl, CURLINFO_HTTP_CODE);
+					if ($httpcode!=200)
+						$getContent = true;
+
+					curl_close ($curl);
+
+
+					if(file_exists($destination))
+						@unlink($destination);
+					$fhandle = fopen($destination, "x");
+					try {
+						fwrite($fhandle, $rawdata);
+						fclose($fhandle);
+					} catch(Exception $e) {
+						echo 'fail : '.$e->getMessage();
+						$getContent = true;
+					}
+
+					if ($getContent)
+						if(!file_put_contents($destination, file_get_contents($urlsrc)))
+						{
+							$app->enqueueMessage(JText::sprintf('WIZZARD_DATA_ERROR','downloading',$url), 'error');
+							$error = true;
+						}
+				}
+			break;
+
+			case 2 : //Unzip
+				if(HIKASHOP_J30){
+					jimport('joomla.archive.archive');
+				}else{
+					jimport('joomla.filesystem.archive');
+				}
+				$archiveClass = new JArchive();
+				$zip = $archiveClass->getAdapter('zip');
+
+				if(!$zip->extract($destination,$path))
+				{
+					$app->enqueueMessage(JText::sprintf('WIZZARD_DATA_ERROR','unzipping',$url), 'error');
+					$error = true;
+				}
+			break;
+
+			case 3 ://Copy
+				$config = hikashop_config();
+				jimport('joomla.filesystem.folder');
+				jimport( 'joomla.filesystem.file' );
+
+				$uploadSecudeFolder = str_replace('/','\\',$config->get('uploadsecurefolder','media/com_hikashop/upload/safe/'));
+				$src = $path.'\dataexample\upload\safe\\';
+				$dst = HIKASHOP_ROOT.$uploadSecudeFolder;
+
+				$files = scandir($src,1);
+				foreach($files as $f){
+					if($f!='..' && $f!='.' && !file_exists($dst.$f)){
+						if(is_dir($src.$f)){
+							$ret = JFolder::create($dst.$f);
+						}else{
+							$ret = JFile::copy($src.$f, $dst.$f, '', true); //Overwrite
+						}
+						if (!$ret)
+							$app->enqueueMessage(JText::sprintf('WIZZARD_DATA_ERROR_COPY',$f,$url), 'error');
+					}
+				}
+
+				$uploadFolder = str_replace('/','\\',$config->get('uploadfolder','images/com_hikashop/upload/'));
+				$src = $path.'\dataexample\upload\\';
+				$dst = HIKASHOP_ROOT.$uploadFolder;
+
+				$files = scandir($src,1);
+				foreach($files as $f){
+					if($f!='..' && $f!='.' && !file_exists($dst.$f)){
+						if(is_dir($src.$f)){
+							$ret = JFolder::create($dst.$f);
+						}else{
+							$ret = JFile::copy($src.$f, $dst.$f, '', true); //Overwrite
+						}
+						if (!$ret)
+							$app->enqueueMessage(JText::sprintf('WIZZARD_DATA_ERROR_COPY',$f,$url), 'error');
+					}
+				}
+			break;
+
+			case 4 : //exec script
+				$fh = fopen('../tmp/dataexample/script.sql', 'r+') or die("Can't open file /tmp/dataexample/script.sql");
+				$data = explode("\r\n",fread($fh,filesize('../tmp/dataexample/script.sql')));
+				$db = JFactory::getDBO();
+				foreach ($data as $d)
+				{
+					if (!empty($d))
+					{
+						$db->setQuery($d);
+						try {
+							$db->query();
+						} catch(Exception $e) {
+							echo 'Fail query : '.$e->getMessage();
+							$error = true;
+							$getContent = true;
+						}
+					}
+				}
+
+				$paypalEmail = $app->getUserState('WIZARD_DATA_SAMPLE_PAYPAL');
+				if (!empty($paypalEmail))
+				{
+					$db->setQuery("UPDATE `#__hikashop_payment` SET `payment_published` = '0'");
+					$db->query();
+					$db->setQuery("UPDATE `#__hikashop_payment` SET `payment_published` = '1' WHERE `payment_id` = '1'");
+					$db->query();
+				}
+				else
+				{
+					$db->setQuery("UPDATE `#__hikashop_payment` SET `payment_published` = '1'");
+					$db->query();
+				}
+
+				$categoryClass = hikashop_get('class.category');
+				$query = 'SELECT category_namekey,category_left,category_right,category_depth,category_id,category_parent_id FROM `#__hikashop_category` ORDER BY category_left ASC';
+				$db->setQuery($query);
+				$categories = $db->loadObjectList();
+				$root = null;
+				$categoryClass->categories = array();
+				foreach($categories as $cat)
+				{
+					$categoryClass->categories[$cat->category_parent_id][]=$cat;
+					if(empty($cat->category_parent_id))
+						$root = $cat;
+				}
+				$categoryClass->rebuildTree($root,0,1);
+			break;
+
+			case 5 : //Delete everything (try catch ?)
+				jimport( 'joomla.filesystem.folder' );
+				jimport( 'joomla.filesystem.file' );
+				if (!JFolder::delete($path.'\dataexample\\') or !JFile::delete($path.'\dataexample.zip'))
+				{
+					$app->enqueueMessage(JText::sprintf('WIZZARD_DATA_ERROR','deleting',$url), 'error');
+					$error = true;
+				}
+			break;
+
+			default:
+				$error = true;
+			break;
+		}
+		$step++;
+		if (!$error)
+			$redirect = 'index.php?option=com_hikashop&ctrl=update&task=process_data_save&'.hikashop_getFormToken().'=1&step='.$step;
+		if ($step > 5)
+			$app->enqueueMessage(JText::_('WIZARD_DATA_END'));
+		$app->redirect($redirect);
+	}
 }

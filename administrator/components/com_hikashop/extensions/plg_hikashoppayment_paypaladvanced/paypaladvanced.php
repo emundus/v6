@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -65,7 +65,7 @@ class plgHikashoppaymentPaypalAdvanced extends hikashopPaymentPlugin {
 			'PARTNER' => $this->payment_params->partner,
 			'SECURETOKENID' => uniqid('',true),
 			'SECURETOKEN' => '',
-			'AMT' => @ round($order->cart->order_full_price, (int)$this->currency->currency_locale['int_frac_digits']),
+			'AMT' => @ round($order->order_full_price, (int)$this->currency->currency_locale['int_frac_digits']),
 			'SILENT_POST_URL' => $notify_url,
 			'RETURN_URL' => $return_url,//see comments before to understand why it's not $this->payment_params->return_url
 			'CANCEL_URL' => $cancel_url,
@@ -118,6 +118,7 @@ class plgHikashoppaymentPaypalAdvanced extends hikashopPaymentPlugin {
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
+		curl_setopt($ch, CURLOPT_SSLVERSION, 6);
 		$resp = curl_exec($ch);
 
 		if (!$resp) {

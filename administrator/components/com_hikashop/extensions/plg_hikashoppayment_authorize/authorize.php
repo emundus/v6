@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -101,7 +101,7 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		curl_setopt($request, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($request, CURLOPT_POST, true);
 		curl_setopt($request, CURLOPT_POSTFIELDS, $post_string);
-		curl_setopt($request, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_setopt($request, CURLOPT_SSL_VERIFYPEER, false);
 		$post_response = curl_exec($request);
 
 		if(empty($post_response)){
@@ -187,7 +187,7 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 					break;
 			}
 			$class = hikashop_get('class.cart');
-			$class->cleanCartFromSession(false);
+			$class->cleanCartFromSession();
 		}
 	}
 

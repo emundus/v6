@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -659,13 +659,13 @@ class hikashopWidgetClass extends hikashopClass {
 			}
 		}
 
-		if($compare==true){
+		if($compare == true) {
 			$limit=''; $getLimit='';
-			if(isset($widget->widget_params->limit)) $getLimit=$widget->widget_params->limit;
-			$filters=$this->_dateLimit($widget, $filters, $date_field);
+			if(isset($widget->widget_params->limit)) $getLimit = $widget->widget_params->limit;
+			$filters = $this->_dateLimit($widget, $filters, $date_field);
 			$filters = (empty($filters)? ' ':' WHERE ').implode(' AND ',$filters);
-			if(!empty($getLimit)	&& !$csv){
-				$limit=' LIMIT '.$getLimit;
+			if(!empty($getLimit) && !$csv){
+				$limit=' LIMIT '.(int)$getLimit;
 			}
 			if(isset($widget->widget_params->compares)){
 				$leftjoin['currency'] = ' LEFT JOIN '.hikashop_table('currency').' AS d ON d.currency_id = a.order_currency_id ';
@@ -926,6 +926,11 @@ class hikashopWidgetClass extends hikashopClass {
 						$group_string = $widget->widget_params->date_group;
 						break;
 				}
+				if(!is_numeric($timeoffset)){
+					$tz = new DateTimeZone(JFactory::getUser()->getParam('timezone', JFactory::getConfig()->get('offset')));
+					$date = JFactory::getDate('now',$tz);
+					$timeoffset = $date->getOffsetFromGmt(true);
+				}
 				$timeoffset = (int)($timeoffset*60*60)-(int)@$widget->widget_params->offset;
 				if($timeoffset>=0){
 					$timeoffset = '+'.$timeoffset;
@@ -941,8 +946,7 @@ class hikashopWidgetClass extends hikashopClass {
 				if(($widget->widget_params->content=='customers' && $best_customers) || ($widget->widget_params->content=='partners' && $widget->widget_params->partners=='best_customers')){
 					$filters=$this->_dateLimit($widget, $filters, $date_field);
 					$getLimit=$widget->widget_params->limit;
-					if(!empty($getLimit) && !$csv){	$limit=' LIMIT '.$getLimit;	}
-
+					if(!empty($getLimit) && !$csv){	$limit=' LIMIT '.(int)$getLimit;	}
 					unset($leftjoin['order']);
 					$leftjoin = implode(' ',$leftjoin);
 					$elements=$this->_getBestCustomers($filters, $widget, $limit, $leftjoin);
@@ -956,7 +960,7 @@ class hikashopWidgetClass extends hikashopClass {
 				if($widget->widget_params->content=='products' || $widget->widget_params->content=='categories' || $widget->widget_params->content=='discounts'){
 					$widget->widget_params->content_view='product';
 					$getLimit=$widget->widget_params->limit;
-					if(!empty($getLimit)	&& !$csv){ $limit=' LIMIT '.$getLimit;	}
+					if(!empty($getLimit)	&& !$csv){ $limit=' LIMIT '.(int)$getLimit;	}
 					if($widget->widget_params->content=='products' || $widget->widget_params->content=='categories'){
 						$filters=$this->_dateLimit($widget, $filters, $date_field);
 					}else{
@@ -1719,7 +1723,7 @@ class hikashopWidgetClass extends hikashopClass {
 		return $currencies;
 	}
 
-	function _getBestCustomers($filters, $widget, $limit='', $leftjoin=''){
+	function _getBestCustomers($filters, $widget, $limit = '', $leftjoin = ''){
 		$db = JFactory::getDBO();
 
 		if($widget->widget_params->content=='customers'){
@@ -1734,12 +1738,10 @@ class hikashopWidgetClass extends hikashopClass {
 
 		if($widget->widget_params->display=='table'){
 			$orderBy='Total';
+		}elseif(($widget->widget_params->content=='customers' && $widget->widget_params->customers_order=='sales') || ($widget->widget_params->content=='partners' && $widget->widget_params->partners_order=='sales')){
+			$orderBy='Total';
 		}else{
-			if(($widget->widget_params->content=='customers' && $widget->widget_params->customers_order=='sales') || ($widget->widget_params->content=='partners' && $widget->widget_params->partners_order=='sales')){
-				$orderBy='Total';
-			}else{
-				$orderBy='order_number';
-			}
+			$orderBy='order_number';
 		}
 		$case=' case';
 		$currentCurrency = hikashop_getCurrency();

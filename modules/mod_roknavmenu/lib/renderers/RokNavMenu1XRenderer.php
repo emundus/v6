@@ -2,7 +2,7 @@
 /**
  * @version   $Id: RokNavMenu1XRenderer.php 9687 2013-04-24 20:37:47Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 class RokNavMenu1XRenderer implements RokMenuRenderer {

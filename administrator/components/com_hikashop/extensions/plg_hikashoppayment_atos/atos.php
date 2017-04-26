@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -197,33 +197,33 @@ class plgHikashoppaymentAtos extends hikashopPaymentPlugin
 		$locale = $this->locale;
 		switch($this->locale){
 			case 'es':
-				$locale='sp';
+				$locale = 'sp';
 				break;
 			case 'ja':
-				$locale='jp';
+				$locale = 'jp';
 				break;
 			case 'nl':
-				$locale='du';
+				$locale = 'du';
 				break;
 			case 'nb':
-				$locale='no';
+				$locale = 'no';
 				break;
 			case 'pt':
-				$locale='po';
+				$locale = 'po';
 				break;
 			case 'sv':
-				$locale='su';
+				$locale = 'su';
 				break;
 			case 'zh':
 				$lang = JFactory::getLanguage();
-				if(substr($lang->get('tag'),3)=='TW'){
-					$locale='ct';
-				}else{
-					$locale='cs';
+				if(substr($lang->get('tag'), 3) == 'TW') {
+					$locale = 'ct';
+				} else {
+					$locale = 'cs';
 				}
 				break;
 			case 'de':
-				$locale='ge';
+				$locale = 'ge';
 				break;
 			case 'fr':
 			case 'fi':
@@ -232,18 +232,18 @@ class plgHikashoppaymentAtos extends hikashopPaymentPlugin
 			case 'ko':
 				break;
 			default:
-				$locale="en";
+				$locale = "en";
 				break;
 		}
-		$vars["language"]=$locale;
-		$vars["return_url_text"]=JText::_('RETURN_TO_THE_STORE');
+		$vars["language"] = $locale;
+		$vars["return_url_text"] = JText::_('RETURN_TO_THE_STORE');
 
-		$address=$this->app->getUserState( HIKASHOP_COMPONENT.'.billing_address');
+		$address = $this->app->getUserState( HIKASHOP_COMPONENT.'.billing_address');
 		$type = 'billing';
-		if(empty($address)){
-			$address=$this->app->getUserState( HIKASHOP_COMPONENT.'.shipping_address');
-			if(!empty($address)){
-				$type='shipping';
+		if(empty($address)) {
+			$address = $this->app->getUserState( HIKASHOP_COMPONENT.'.shipping_address');
+			if(!empty($address)) {
+				$type = 'shipping';
 			}
 		}
 		if(!empty($address)){
@@ -282,7 +282,7 @@ class plgHikashoppaymentAtos extends hikashopPaymentPlugin
 	}
 
 	function onPaymentNotification(&$statuses){
-		$element=$this->getMethod();
+		$element = $this->getMethod();
 
 		$safe_mode = ini_get('safe_mode') == 1 || !strcasecmp(ini_get('safe_mode'), 'On');
 		if($safe_mode){
@@ -439,7 +439,7 @@ class plgHikashoppaymentAtos extends hikashopPaymentPlugin
 			return true;
 		}
 
-		if(!in_array($vars['status'],array(00))) {
+		if(!in_array($vars['status'],array(0))) {
 			if($vars['status']==12){
 				$vars['message']=$message['invalid_transaction'];
 			}elseif($vars['status']==13){

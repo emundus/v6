@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   2.0.8 February 24, 2015
+ * @version   2.0.9 February 3, 2017
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 

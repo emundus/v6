@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,18 +12,18 @@ defined('_JEXEC') or die('Restricted access');
 
 <?php
 if(isset($data->result->vote_type) && $data->result->vote_type == 'vendor'){
-	echo JText::sprintf('COMMENT_ITEM_NAME').": ".$data->type->vendor_name;
+	echo JText::_('COMMENT_ITEM_NAME').": ".$data->type->vendor_name;
 }else{
-	echo JText::sprintf('COMMENT_ITEM_NAME').": ".$data->type->product_name;
+	echo JText::_('COMMENT_ITEM_NAME').": ".$data->type->product_name;
 }
 ?>
 	<br/>
-<?php echo JText::sprintf('USERNAME').": ".$data->result->username_comment; ?>
+<?php echo JText::_('HIKA_USERNAME').": ".$data->result->username_comment; ?>
 	<br/>
-<?php echo JText::sprintf('HIKA_EMAIL').": ".$data->result->email_comment; ?>
+<?php echo JText::_('HIKA_EMAIL').": ".$data->result->email_comment; ?>
 	<br/><br/>
-<?php echo JText::sprintf('COMMENT_CONTENT').": ".$data->result->comment; ?>
+<?php echo JText::_('COMMENT_CONTENT').": ".$data->result->comment; ?>
 	<br/><br/>
-<?php echo JText::sprintf('SEE_COMMENT').": "; ?>
+<?php echo JText::_('SEE_COMMENT').": "; ?>
 	<br/>
 	<a href="<?php echo JRoute::_('administrator/index.php?option=com_hikashop&ctrl=vote&task=edit&cid[]='.$data->result->vote_id,false,true);?>"><?php echo JRoute::_('administrator/index.php?option=com_hikashop&ctrl=vote&task=edit&cid[]='.$data->result->vote_id,false,true);?></a>

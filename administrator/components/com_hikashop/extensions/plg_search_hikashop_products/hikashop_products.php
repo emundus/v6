@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -282,6 +282,12 @@ class plgSearchHikashop_products extends JPlugin{
 						$mains[$row->product_parent_id] = $class->get((int)$row->product_parent_id);
 						$class->addAlias($mains[$row->product_parent_id]);
 					}
+
+					if(isset($mains[$row->product_parent_id]) && empty($mains[$row->product_parent_id]->product_published)) {
+						unset($rows[$k]);
+						continue;
+					}
+
 					$db = JFactory::getDBO();
 					$db->setQuery('SELECT * FROM '.hikashop_table('variant').' AS a LEFT JOIN '.hikashop_table('characteristic') .' AS b ON a.variant_characteristic_id=b.characteristic_id WHERE a.variant_product_id='.(int)$row->id.' ORDER BY a.ordering');
 					$row->characteristics = $db->loadObjectList();

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -78,10 +78,10 @@ if(HIKASHOP_BACK_RESPONSIVE) { ?>
 					$publishedid = 'published-'.$row->id;
 			?>
 				<tr class="<?php echo "row$k"; ?>">
-					<td align="center">
+					<td class="hk_center">
 					<?php echo $i+1 ?>
 					</td>
-					<td align="center">
+					<td class="hk_center">
 						<?php echo JHTML::_('grid.id', $i, $row->id ); ?>
 					</td>
 					<td>
@@ -93,12 +93,12 @@ if(HIKASHOP_BACK_RESPONSIVE) { ?>
 							</a>
 						<?php } ?>
 					</td>
-					<td align="center">
+					<td class="hk_center">
 						<?php if($this->manage){ ?>
 							<span id="<?php echo $publishedid ?>" class="loading"><?php echo $this->toggleClass->toggle($publishedid,$row->published,'modules') ?></span>
 						<?php }else{ echo $this->toggleClass->display('activate',$row->published); } ?>
 					</td>
-					<td align="center">
+					<td class="hk_center">
 						<?php echo $row->id; ?>
 					</td>
 				</tr>

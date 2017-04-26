@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -111,11 +111,11 @@ defined('_JEXEC') or die('Restricted access');
 		}
 ?>
 			<tr class="row<?php echo $k; ?>"<?php echo $extraTr; ?>>
-				<td align="center"><?php
+				<td class="hk_center"><?php
 					echo $this->pagination->getRowOffset($i);
 				?></td>
 <?php if( !$this->singleSelection ) { ?>
-				<td align="center">
+				<td class="hk_center">
 					<input type="checkbox" onclick="this.clicked=true; this.checked=!this.checked" value="<?php echo $row->vendor_id;?>" name="cid[]" id="cb<?php echo $i;?>"/>
 				</td>
 <?php } ?>
@@ -125,13 +125,13 @@ defined('_JEXEC') or die('Restricted access');
 				<td><?php
 					echo $lbl1 . $row->discount_type . $lbl2;
 				?></td>
-				<td align="center"><?php
+				<td class="hk_center"><?php
 					echo $lbl1 . hikashop_getDate($row->discount_start) . $lbl2;
 				?></td>
-				<td align="center"><?php
+				<td class="hk_center"><?php
 					echo $lbl1 . hikashop_getDate($row->discount_end) . $lbl2;
 				?></td>
-				<td align="center"><?php
+				<td class="hk_center"><?php
 					echo $lbl1;
 					if(isset($row->discount_flat_amount) && $row->discount_flat_amount > 0){
 						echo $this->currencyHelper->displayPrices(array($row),'discount_flat_amount','discount_currency_id');
@@ -141,7 +141,7 @@ defined('_JEXEC') or die('Restricted access');
 					echo $lbl2;
 				?></td>
 <?php if(hikashop_level(1)){ ?>
-				<td align="center"><?php
+				<td class="hk_center"><?php
 					echo $lbl1;
 					if(empty($row->discount_quota)){
 						echo JText::_('UNLIMITED');
@@ -197,10 +197,10 @@ defined('_JEXEC') or die('Restricted access');
 					echo $lbl1 . implode('<br/>',$restrictions) . $lbl2;
 				?></td>
 <?php } ?>
-				<td align="center"><?php
+				<td class="hk_center"><?php
 					echo $lbl1 . $this->toggleClass->display('activate',$row->discount_published) . $lbl2;
 				?></td>
-				<td width="1%" align="center"><?php
+				<td width="1%" class="hk_center"><?php
 					echo $row->discount_id;
 				?></td>
 			</tr>

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,11 +18,12 @@ class hikashopCart_shareType {
 			'registered' => 'HIKASHOP_REGISTERED_USERS',
 			'email' => 'HIKA_EMAIL',
 		);
-		if($this->values === null) {
-			$this->values = array();
-			foreach($values as $k => $v) {
-				$this->values[] = JHTML::_('select.option', $k, JText::_($v));
-			}
+		if($this->values !== null)
+			return $values;
+
+		$this->values = array();
+		foreach($values as $k => $v) {
+			$this->values[] = JHTML::_('select.option', $k, JText::_($v));
 		}
 		return $values;
 	}

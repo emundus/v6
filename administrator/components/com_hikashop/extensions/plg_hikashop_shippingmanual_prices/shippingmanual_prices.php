@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -26,12 +26,12 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 
 		$db = JFactory::getDBO();
 		$query = 'SELECT b.*, a.*, c.currency_symbol FROM ' . hikashop_table('shipping') . ' AS a '.
-		' LEFT JOIN '.hikashop_table('shipping_price').' AS b ON a.shipping_id = b.shipping_id AND b.shipping_price_ref_id = '.$product_id.
-		' INNER JOIN '. hikashop_table('currency').' AS c ON c.currency_id = a.shipping_currency_id '.
-		' WHERE (a.shipping_params LIKE \'%' . hikashop_getEscaped('s:20:"shipping_per_product";s:1:"1"') . '%\' OR a.shipping_params LIKE \'%' . hikashop_getEscaped('s:20:"shipping_per_product";i:1') . '%\') '.
-		' AND (b.shipping_price_ref_id IS NULL OR (b.shipping_price_ref_id = ' . $product_id . ' AND b.shipping_price_ref_type = \'product\')) '.
-		$extra_filters.
-		'ORDER BY a.shipping_id, b.shipping_price_min_quantity';
+			' LEFT JOIN '.hikashop_table('shipping_price').' AS b ON a.shipping_id = b.shipping_id AND b.shipping_price_ref_id = '.$product_id.
+			' INNER JOIN '. hikashop_table('currency').' AS c ON c.currency_id = a.shipping_currency_id '.
+			' WHERE (a.shipping_params LIKE \'%' . hikashop_getEscaped('s:20:"shipping_per_product";s:1:"1"') . '%\' OR a.shipping_params LIKE \'%' . hikashop_getEscaped('s:20:"shipping_per_product";i:1') . '%\') '.
+			' AND (b.shipping_price_ref_id IS NULL OR (b.shipping_price_ref_id = ' . $product_id . ' AND b.shipping_price_ref_type = \'product\')) '.
+			$extra_filters.
+			'ORDER BY a.shipping_id, b.shipping_price_min_quantity';
 
 		$db->setQuery($query);
 		$shippings = $db->loadObjectList();
@@ -80,7 +80,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 
 		$marketConfig = hikamarket::config();
 		if(!$marketConfig->get('frontend_edition',0)) return;
-		if(!hikamarket::acl('product_edit_plugin_shippingprices')) return;
+		if(!hikamarket::acl('product/edit/plugin/shippingprices')) return;
 
 		$vendor_id = hikamarket::loadVendor(false);
 		$shippings = $this->_getShippings($product, $vendor_id);
@@ -118,7 +118,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 
 			$marketConfig = hikamarket::config();
 			if(!$marketConfig->get('frontend_edition',0)) return;
-			if(!hikamarket::acl('product_edit_plugin_shippingprices')) return;
+			if(!hikamarket::acl('product/edit/plugin/shippingprices')) return;
 
 			$vendor = hikamarket::loadVendor(false);
 		}
@@ -221,6 +221,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 			$db->query();
 		}
 	}
+
 	function onHikaShopBeforeDisplayView (&$view) {
 		if (!isset($view->element->product_id) )
 			return;
@@ -262,7 +263,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 				$arrayKey = $v->shipping_name . ' ' . $v->shipping_price_id;
 				$shipData[$arrayKey] = array();
 
-				$shipParams = unserialize($v->shipping_params);
+				$shipParams = hikashop_unserialize($v->shipping_params);
 
 				if ( ($v->shipping_price_min_quantity > 1 ) && (isset($v->shipping_price_min_quantity) ) ) {
 					$shipData[$arrayKey]['minQtity'] = $v->shipping_price_min_quantity;

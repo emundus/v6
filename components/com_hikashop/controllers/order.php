@@ -1,411 +1,513 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class orderController extends hikashopController{
+class orderController extends hikashopController {
 	var $modify = array();
 	var $delete = array();
 	var $modify_views = array();
-	function __construct($config = array(),$skip=false){
+
+	public function __construct($config = array(), $skip = false) {
 		parent::__construct($config,$skip);
-		$this->display[]='cancel';
-		$this->display[]='invoice';
-		$this->display[]='download';
-		$this->display[]='pay';
-		$this->display[]='cancel_order';
-		$this->display[]='reorder';
+
+		$this->display = array_merge($this->display, array(
+			'invoice', 'cancel', 'download',
+			'pay', 'cancel_order', 'reorder'
+		));
 	}
-	function authorize($task){
-		if($this->isIn($task,array('display'))){
+
+	public function authorize($task) {
+		if($this->isIn($task, array('display'))) {
 			return true;
 		}
 		return false;
 	}
 
-	function listing(){
-		$user_id = hikashop_loadUser();
-		if(empty($user_id)){
-			$app=JFactory::getApplication();
-			$app->enqueueMessage(JText::_('PLEASE_LOGIN_FIRST'));
-			global $Itemid;
-			$url = '';
-			if(!empty($Itemid)){
-				$url='&Itemid='.$Itemid;
-			}
-			if(version_compare(JVERSION,'1.6','<')){
-				$url = 'index.php?option=com_user&view=login'.$url;
-			}else{
-				$url = 'index.php?option=com_users&view=login'.$url;
-			}
-			$app->redirect(JRoute::_($url.'&return='.urlencode(base64_encode(hikashop_currentUrl('',false))),false));
+	protected function isLogged($message = true) {
+		$user_id = hikashop_loadUser(false);
+		if(!empty($user_id))
 			return true;
+
+		$app = JFactory::getApplication();
+		if($message)
+			$app->enqueueMessage(JText::_('PLEASE_LOGIN_FIRST'));
+
+		global $Itemid;
+		$suffix = (!empty($Itemid) ? '&Itemid=' . $Itemid : '');
+
+		if(!HIKASHOP_J16) {
+			$url = 'index.php?option=com_user&view=login';
+		} else {
+			$url = 'index.php?option=com_users&view=login';
 		}
-		return parent::listing();
+
+		$app->redirect(JRoute::_($url . $suffix . '&return='.urlencode(base64_encode(hikashop_currentUrl('', false))), false));
+		return false;
 	}
 
-	function show(){
-		if($this->_check()){
-			return parent::show();
+	protected function _check($message = true) {
+		$order_id = hikashop_getCID('order_id');
+		if(empty($order_id))
+			return $this->listing();
+
+		$orderClass = hikashop_get('class.order');
+		$order = $orderClass->get($order_id);
+		if(empty($order))
+			return $this->listing();
+
+		$userClass = hikashop_get('class.user');
+		$user = $userClass->get($order->order_user_id);
+		if(empty($user))
+			return $this->listing();
+
+		if(empty($user->user_cms_id) || (int)$user->user_cms_id == 0){
+			$token = JRequest::getVar('order_token');
+			if(empty($order->order_token) || $token != $order->order_token){
+				return false;
+			}
+		}elseif(!$this->isLogged($message)){
+			return false;
 		}
+
 		return true;
 	}
 
-	function cancel_order(){
+	public function listing() {
+		if(!$this->isLogged())
+			return false;
+
+		return parent::listing();
+	}
+
+	public function show() {
+		if(!$this->_check())
+			return false;
+
+		return parent::show();
+	}
+
+	public function invoice() {
+		if(!$this->_check())
+			return false;
+
+		JRequest::setVar('layout', 'invoice');
+		return parent::display();
+	}
+
+	public function cancel_order() {
 		$app = JFactory::getApplication();
 		$order_id = hikashop_getCID('order_id');
-		if(empty($order_id)){
-			$order_id = $app->getUserState( HIKASHOP_COMPONENT.'.order_id');
+		$order_id_in_session = (int)$app->getUserState(HIKASHOP_COMPONENT.'.order_id');
+
+		$user_id = hikashop_loadUser(false);
+		$connected = !empty($user_id);
+		if(!$connected){
+			if(!$order_id_in_session || ($order_id && $order_id_in_session != $order_id)){
+				if(!$this->isLogged())
+					return false;
+			}
 		}
-		$class = hikashop_get('class.order');
-		$order = $class->get($order_id);
+
+		if(empty($order_id))
+			$order_id = $order_id_in_session;
+
+		if(empty($order_id))
+			return false;
+
+		$orderClass = hikashop_get('class.order');
+		$user_id = hikashop_loadUser();
 		$config =& hikashop_config();
-		$checkout = explode(',',$config->get('checkout'));
-		$step = JRequest::getInt('step',0);
-		if (empty($step))
-			$step = max(count($checkout)-2,0);
+
+		$order = $orderClass->get($order_id);
+
+		if(!$connected && !empty($order->order_user_id))
+			return false;
+
+		$checkout = explode(',', $config->get('checkout'));
+		$step = JRequest::getInt('step', 0);
+		if(empty($step))
+			$step = max(count($checkout) - 2, 0);
+
 		$itemid_for_checkout = $config->get('checkout_itemid','0');
-		$item ='';
-		if(!empty($itemid_for_checkout)){
-			$item='&Itemid='.(int)$itemid_for_checkout;
+		$item = (!empty($itemid_for_checkout) ? '&Itemid='.(int)$itemid_for_checkout : '');
+
+		$cancel_url =  hikashop_completeLink('checkout&step=' . $step . $item, false, true);
+
+		if(empty($order) || $order->order_user_id != $user_id) {
+			$redirect_url = JRequest::getVar('redirect_url');
+
+			if(!empty($redirect_url) && !hikashop_disallowUrlRedirect($redirect_url))
+				$cancel_url = $redirect_url;
+
+			$app->redirect($cancel_url);
+			return true;
 		}
-		$cancel_url =  hikashop_completeLink('checkout&step='.$step.$item,false,true);
 
-		if(!empty($order)){
-			$user_id = hikashop_loadUser();
-			if($order->order_user_id==$user_id){
-				$status = $config->get('cancelled_order_status');
-				$unpaid_statuses = explode(',',$config->get('order_unpaid_statuses','created'));
-				$cancellable_statuses = explode(',',$config->get('cancellable_order_status'));
+		$status = $config->get('cancelled_order_status');
+		$unpaid_statuses = explode(',', trim($config->get('order_unpaid_statuses', 'created'), ','));
+		$cancellable_statuses = explode(',', trim($config->get('cancellable_order_status'), ','));
 
-				if( in_array($order->order_status, $unpaid_statuses) || in_array($order->order_status, $cancellable_statuses) ) {
-					if(!empty($status)){
-						$statuses = explode(',',$status);
-						$newOrder = new stdClass();
-						$newOrder->order_status = reset($statuses);
-						$newOrder->order_id = $order_id;
-						$class->save($newOrder);
+		if(!empty($status) && (in_array($order->order_status, $unpaid_statuses) || in_array($order->order_status, $cancellable_statuses))) {
+			$statuses = explode(',', trim($status, ','));
 
-						if( JRequest::getVar('email',false) ) {
-							$mailClass = hikashop_get('class.mail');
-							$infos = null;
-							$infos =& $order;
-							$mail = $mailClass->get('order_cancel',$infos);
-							if( !empty($mail) ) {
-								$mail->subject = JText::sprintf($mail->subject,HIKASHOP_LIVE);
-								$config =& hikashop_config();
-								if(!empty($infos->email)){
-									$mail->dst_email = $infos->email;
-								}else{
-									$mail->dst_email = $config->get('from_email');
-								}
-								if(!empty($infos->name)){
-									$mail->dst_name = $infos->name;
-								}else{
-									$mail->dst_name = $config->get('from_name');
-								}
-								$mailClass->sendMail($mail);
-							}
-						}
-					}
+			$newOrder = new stdClass();
+			$newOrder->order_status = reset($statuses);
+			$newOrder->order_id = $order_id;
+			$ret = $orderClass->save($newOrder);
+
+			if($ret && JRequest::getInt('email', false)) {
+				$order->order_status = $newOrder->order_status;
+
+				$mailClass = hikashop_get('class.mail');
+				$infos = null;
+				$infos =& $order;
+				$mail = $mailClass->get('order_cancel', $infos);
+				if( !empty($mail) ) {
+					$mail->subject = JText::sprintf($mail->subject, HIKASHOP_LIVE);
+					$mail->dst_email = (!empty($infos->email) ? $infos->email : $config->get('from_email'));
+					$mail->dst_name = (!empty($infos->name) ? $infos->name : $config->get('from_name'));
+
+					$mailClass->sendMail($mail);
 				}
 			}
-			$db = JFactory::getDBO();
-			$query = 'SELECT * FROM '.hikashop_table('payment').' WHERE payment_type='.$db->Quote($order->order_payment_method).' AND payment_id='.$db->Quote($order->order_payment_id);
-			$db->setQuery($query);
-			$paymentData = $db->loadObjectList();
-			$pluginsClass = hikashop_get('class.plugins');
-			$pluginsClass->params($paymentData,'payment');
-			$paymentOptions=reset($paymentData);
-			if(!empty($paymentOptions->payment_params->cancel_url)){
-				$cancel_url = $paymentOptions->payment_params->cancel_url;
-			}
 		}
+
+		$db = JFactory::getDBO();
+		$query = 'SELECT * FROM '.hikashop_table('payment').
+			' WHERE payment_type = '.$db->Quote($order->order_payment_method).' AND payment_id = '.(int)$order->order_payment_id;
+		$db->setQuery($query);
+		$paymentData = $db->loadObjectList();
+
+		$pluginsClass = hikashop_get('class.plugins');
+		$pluginsClass->params($paymentData, 'payment');
+
+		$paymentOptions = reset($paymentData);
+		if(!empty($paymentOptions->payment_params->cancel_url)) {
+			$cancel_url = $paymentOptions->payment_params->cancel_url;
+		}
+
 		$redirect_url = JRequest::getVar('redirect_url');
-		if( !empty($redirect_url) )
+		if(!empty($redirect_url) && !hikashop_disallowUrlRedirect($redirect_url))
 			$cancel_url = $redirect_url;
 
 		$app->redirect($cancel_url);
 		return true;
 	}
 
-	function invoice(){
-		if($this->_check()){
-			JRequest::setVar( 'layout', 'invoice'  );
-			return parent::display();
-		}
-		return true;
-	}
-
-	function reorder(){
-		if(!hikashop_level(1) || !$this->_check()){
+	public function reorder() {
+		if(!hikashop_level(1) || !$this->_check()) {
 			return false;
 		}
-		$order_id = hikashop_getCID('order_id');
-		if(empty($order_id)){
-			parent::listing();
-			return false;
-		}
-
-		$class = hikashop_get('class.order');
-		$order = $class->loadFullOrder($order_id,true);
 
 		$app = JFactory::getApplication();
+		$config = hikashop_config();
+		$order_id = hikashop_getCID('order_id');
 
+		if(empty($order_id) || !$config->get('allow_reorder', 0))
+			return false;
 
-		if(empty($order->order_id)){
-			$app->enqueueMessage('The order '.$order_id.' could not be found');
+		$orderClass = hikashop_get('class.order');
+		$order = $orderClass->loadFullOrder($order_id);
+
+		if(empty($order)) {
+			$app->enqueueMessage(JText::_('ORDER_NOT_FOUND'), 'error');
 			parent::listing();
 			return false;
 		}
 
 		$cartClass = hikashop_get('class.cart');
-		$cartClass->resetCart(false);
+		$products = $cartClass->cartProductsToArray( $order->products );
 
-		$array = array();
-		$hasOptions = array();
-		foreach($order->products as $product){
-			if(!empty($product->order_product_option_parent_id)){
-				$hasOptions[$product->order_product_option_parent_id]=$product->order_product_option_parent_id;
-			}
+		$ret = $cartClass->addProduct(0, $products);
+		if($ret === false) {
+			parent::listing();
+			return false;
 		}
 
-		$fieldsClass = hikashop_get('class.field');
-		$row = null;
-		$itemFields = $fieldsClass->getFields('frontcomp',$row,'item','checkout&task=state');
-
-		$done = array();
-		foreach($order->products as $product){
-			if(!empty($done[$product->order_product_id]) || empty($product->product_id) || !empty($product->order_product_option_parent_id)) continue;
-
-			foreach($product as $k => $v){
-				if(!is_object($v) && !is_array($v) && isset($itemFields[$k])){
-					$_REQUEST['data']['item'][$k] = $v;
-					$_POST['data']['item'][$k] = $v;
-					$_GET['data']['item'][$k] = $v;
-					JRequest::setVar('data',$_REQUEST['data']);
-					JRequest::setVar('data',$_GET['data'],'get');
-					JRequest::setVar('data',$_POST['data'],'post');
-				}
-			}
-			if(isset($hasOptions[$product->order_product_id])){
-				$cartClass->mainProduct = $product->product_id;
-				$cartClass->options = array();
-				foreach($order->products as $option){
-					if($option->order_product_option_parent_id==$product->order_product_id){
-						$cartClass->options[$option->product_id] = $product->order_product_quantity;
-						$done[$option->order_product_id] = $option->order_product_id;
-					}
-				}
-			}
-			$cartClass->updateEntry($product->order_product_quantity,$array,$product->product_id,0,false,'product',2);
-
-			if(!empty($cartClass->options)){
-				foreach($cartClass->options as $id => $qty){
-					$cartClass->updateEntry($qty,$array,$id,0,false);
-				}
-				$cartClass->options = array();
-				$cartClass->mainProduct = null;
-			}
-
-			$done[$product->order_product_id] = $product->order_product_id;
+		if(is_array($ret) && @$ret['status'] === false && !empty($ret['errors'])) {
+			$app->enqueueMessage(JText::_('HIKASHOP_SOME_PRODUCT_NOT_ADDED_TO_CART'));
 		}
 
-		if(!empty($order->order_discount_code)){
-			$cartClass->update($order->order_discount_code,1,0,'coupon',false);
+		if(!empty($order->order_discount_code)) {
+			$cartClass->addCoupon(0, $order->order_discount_code);
 		}
-		$cartClass->loadCart(0,true);
-		$app->setUserState( HIKASHOP_COMPONENT.'.shipping_method',null);
-		$app->setUserState( HIKASHOP_COMPONENT.'.shipping_id',null);
-		$app->setUserState( HIKASHOP_COMPONENT.'.shipping_data',null);
 
-		global $Itemid;
-		$url = 'checkout';
-		if(!empty($Itemid)){
-			$url.='&Itemid='.$Itemid;
-		}
-		$url = hikashop_completeLink($url,false,true);
-
-		$app->redirect($url);
+		$itemid_for_checkout = $config->get('checkout_itemid','0');
+		$item = (!empty($itemid_for_checkout) ? '&Itemid='.(int)$itemid_for_checkout : '');
+		$app->redirect( hikashop_completeLink('checkout'.$item, false, true) );
 	}
 
-	function pay(){
-		if(!$this->_check()){
+	public function pay() {
+		if(!$this->_check()) {
 			return false;
 		}
+
+		$app = JFactory::getApplication();
+		$config = hikashop_config();
+		$user_id = hikashop_loadUser(false);
+
+		if(!hikashop_level(1) || !$config->get('allow_payment_button', 1))
+			return false;
+
 		$order_id = hikashop_getCID('order_id');
-		if(empty($order_id)){
-			parent::listing();
+		if(empty($order_id))
+			return false;
+
+		$orderClass = hikashop_get('class.order');
+		$order = $orderClass->loadFullOrder($order_id);
+
+		if(empty($order) || empty($order->order_id)) {
+			$app->enqueueMessage(JText::sprintf('ORDER_X_NOT_FOUND', $order_id), 'error');
+			$app->redirect( hikashop_completeLink('order&task=listing', false, true) );
 			return false;
 		}
 
-		$class = hikashop_get('class.order');
-		$order = $class->loadFullOrder($order_id,true);
-		if(empty($order->order_id)){
-			$app = JFactory::getApplication();
-			$app->enqueueMessage(JText::sprintf('ORDER_X_NOT_FOUND', $order_id));
-			parent::listing();
-			return false;
-		}
-
-		$config =& hikashop_config();
-		$unpaid_statuses = explode(',',$config->get('order_unpaid_statuses','created'));
-		if(!in_array($order->order_status,$unpaid_statuses)){
-			$app = JFactory::getApplication();
-			$app->enqueueMessage(JText::sprintf('ORDER_X_NOT_PAID_ANYMORE', $order->order_number));
-			parent::listing();
-			return false;
-		}
-
-		if(empty($order->order_currency_id)){
-			$null = new stdClass();
-			$null->order_currency_id = hikashop_getCurrency();
-			$null->order_id = $order->order_id;
-			$order->order_currency_id = $null->order_currency_id;
-			$class->save($null);
-		}
-		$new_payment_method = JRequest::getVar('new_payment_method','');
-		$config =& hikashop_config();
-		if($config->get('allow_payment_change',1) && !empty($new_payment_method)){
-			$new_payment_method = explode('_',$new_payment_method);
-			$payment_id = array_pop($new_payment_method);
-			$payment_method = implode('_',$new_payment_method);
-			if($payment_id!=$order->order_payment_id || $payment_method!=$order->order_payment_method){
-				$updateOrder=new stdClass();
-				$updateOrder->order_id=$order->order_id;
-				$updateOrder->order_payment_id = $payment_id;
-				$updateOrder->order_payment_method = $payment_method;
-				$paymentClass = hikashop_get('class.payment');
-				$payment = $paymentClass->get($payment_id);
-				if(!empty($payment->payment_params)&&is_string($payment->payment_params)){
-					$payment->payment_params=unserialize($payment->payment_params);
-				}
-				$full_price_without_payment = $order->order_full_price-$order->order_payment_price;
-				$new_payment = $payment;
-				$new_payment_price = $paymentClass->computePrice( $order, $new_payment, $full_price_without_payment, @$payment->payment_price, hikashop_getCurrency());
-				$new_payment_tax = @$new_payment->payment_tax;
-				$updateOrder->order_payment_price = $new_payment_price;
-				$updateOrder->order_full_price = $full_price_without_payment+$new_payment_price+$new_payment_tax;
-				$updateOrder->history = new stdClass();
-				$updateOrder->history->history_payment_id = $payment_id;
-				$updateOrder->history->history_payment_method = $payment_method;
-				$class->save($updateOrder);
-				$order->order_payment_id = $payment_id;
-				$order->order_payment_method = $payment_method;
-				$order->order_payment_price = $updateOrder->order_payment_price;
-				$order->order_full_price = $updateOrder->order_full_price;
+		if(isset($order->customer->user_cms_id) && (int)$order->customer->user_cms_id == 0){
+			$token = JRequest::getVar('order_token');
+			if(empty($order->order_token) || $token != $order->order_token){
+				$app->enqueueMessage(JText::sprintf('ORDER_X_NOT_FOUND', $order_id), 'error');
+				$app->redirect( hikashop_completeLink('order&task=listing', false, true) );
+				return false;
 			}
+		}elseif($order->order_user_id != $user_id){
+			$app->enqueueMessage(JText::sprintf('ORDER_X_NOT_FOUND', $order_id), 'error');
+			$app->redirect( hikashop_completeLink('order&task=listing', false, true) );
+		}
+
+		$unpaid_statuses = explode(',', $config->get('order_unpaid_statuses', 'created'));
+		if(!in_array($order->order_status, $unpaid_statuses)) {
+			$app->enqueueMessage(JText::sprintf('ORDER_X_NOT_PAID_ANYMORE', $order->order_number));
+			$app->redirect( hikashop_completeLink('order&task=listing', false, true) );
+			return false;
+		}
+
+		$new_payment_method = JRequest::getVar('new_payment_method', null);
+		$payment_change = $config->get('allow_payment_change', 1);
+		if($payment_change && $new_payment_method === null) {
+			JRequest::setVar('layout', 'pay');
+			return $this->display();
+		}
+
+		if($payment_change && !empty($new_payment_method)) {
+			$ret = $this->changePaymentMethod($order, $new_payment_method);
+			if(!$ret)
+				return false;
+		}
+
+		$app->setUserState(HIKASHOP_COMPONENT.'.shipping_address', $order->order_shipping_address_id);
+		$app->setUserState(HIKASHOP_COMPONENT.'.billing_address', $order->order_billing_address_id);
+
+		$paymentPlugin = hikashop_import('hikashoppayment', $order->order_payment_method);
+
+		if(empty($paymentPlugin)) {
+			return false;
+		}
+
+		$paymentClass = hikashop_get('class.payment');
+		$needCC = false;
+		$paymentMethod = null;
+		if( method_exists($paymentPlugin, 'needCC') ) {
+			$paymentMethod = $paymentClass->get($order->order_payment_id);
+			$needCC = $paymentPlugin->needCC($paymentMethod);
+		}
+
+		$app->setUserState(HIKASHOP_COMPONENT.'.order_id', $order_id);
+		$app->setUserState( HIKASHOP_COMPONENT.'.payment_method', $order->order_payment_method);
+		$app->setUserState( HIKASHOP_COMPONENT.'.payment_id', $order->order_payment_id);
+		if(!empty($paymentMethod))
+			$app->setUserState( HIKASHOP_COMPONENT.'.payment_data', $paymentMethod);
+
+		if(!empty($needCC) && !$paymentClass->readCC()) {
+			JRequest::setVar('layout', 'pay');
+			return $this->display();
+		}
+		if(!empty($paymentMethod) && !empty($paymentMethod->custom_html) && (JRequest::getInt('payment_custom_html', 0) == 0 || !JRequest::checkToken())) {
+			JRequest::setVar('layout', 'pay');
+			return $this->display();
 		}
 
 		$userClass = hikashop_get('class.user');
 		$order->customer = $userClass->get($order->order_user_id);
-		$db = JFactory::getDBO();
-		$query = 'SELECT * FROM '.hikashop_table('payment').' WHERE payment_type='.$db->Quote($order->order_payment_method);
-		$db->setQuery($query);
-		$paymentData = $db->loadObjectList('payment_id');
-		$pluginsClass = hikashop_get('class.plugins');
-		$pluginsClass->params($paymentData,'payment');
-		if(empty($paymentData)){
-			$app =& JFactory::getApplication();
-			$app->enqueueMessage('The payment method '.$order->order_payment_method.' could not be found');
-
-			parent::listing();
-			return false;
-		}
 		$order->cart =& $order;
-		$order->cart->coupon = new stdClass();
+
 		$price = new stdClass();
 		$price->price_value_with_tax = $order->order_full_price;
+
 		$order->cart->full_total = new stdClass();
 		$order->cart->full_total->prices = array($price);
-		$price2 = new stdClass();
-		$total = 0;
-		$class = hikashop_get('class.currency');
+
 		$order->cart->total = new stdClass();
-		$price2 = $class->calculateTotal($order->products,$order->cart->total,$order->order_currency_id);
-		$order->cart->coupon->discount_value =& $order->order_discount_price;
 
-		$shippingClass = hikashop_get('class.shipping');
-		$methods = $shippingClass->getMethods($order->cart);
-		$data = hikashop_import('hikashopshipping',$order->order_shipping_method);
-		if(!empty($data))
-			$order->cart->shipping = $data->onShippingSave($order->cart,$methods,$order->order_shipping_id);
-
-		$app = JFactory::getApplication();
-		$app->setUserState( HIKASHOP_COMPONENT.'.shipping_address',$order->order_shipping_address_id);
-		$app->setUserState( HIKASHOP_COMPONENT.'.billing_address',$order->order_billing_address_id);
-		ob_start();
-		$data = hikashop_import('hikashoppayment',$order->order_payment_method);
-		if(!empty($data)){
-			$needCC = false;
-			if( method_exists($data, 'needCC') ) {
-				$method =& $paymentData[$order->order_payment_id];
-				$needCC = $data->needCC($method);
-			}
-			if( !$needCC ) {
-				$itemid_for_checkout = $config->get('checkout_itemid','0');
-				if($itemid_for_checkout){
-					global $Itemid;
-					$Itemid = $itemid_for_checkout;
-				}
-				if(method_exists($data,'onAfterOrderConfirm')) $data->onAfterOrderConfirm($order,$paymentData,$order->order_payment_id);
-			} else {
-				$paymentClass = hikashop_get('class.payment');
-				$do = false;
-
-				$app->setUserState( HIKASHOP_COMPONENT.'.payment_method',$order->order_payment_method);
-				$app->setUserState( HIKASHOP_COMPONENT.'.payment_id',$order->order_payment_id);
-				$app->setUserState( HIKASHOP_COMPONENT.'.payment_data',$method);
-
-				if( $paymentClass->readCC() ) {
-					$do = true;
-					if(method_exists($data,'onBeforeOrderCreate')) $data->onBeforeOrderCreate($order, $do);
-				}
-
-				if( !$do ) {
-					$app->setUserState( HIKASHOP_COMPONENT.'.cc_number','');
-					$app->setUserState( HIKASHOP_COMPONENT.'.cc_month','');
-					$app->setUserState( HIKASHOP_COMPONENT.'.cc_year','');
-					$app->setUserState( HIKASHOP_COMPONENT.'.cc_CCV','');
-					$app->setUserState( HIKASHOP_COMPONENT.'.cc_type','');
-					$app->setUserState( HIKASHOP_COMPONENT.'.cc_owner','');
-
-					$params = '';
-					$js = '';
-					echo hikashop_getLayout('checkout','ccinfo',$params,$js);
-				} else {
-					$order->history->history_notified = 1;
-					$class = hikashop_get('class.order');
-					$updateOrder=new stdClass();
-					$updateOrder->order_id=$order->order_id;
-					$updateOrder->order_status=$order->order_status;
-					$updateOrder->order_payment_id = $payment_id;
-					$updateOrder->order_payment_method = $payment_method;
-					$updateOrder->history =& $order->history;
-
-					$class->save($updateOrder);
-
-					$app->redirect( hikashop_completeLink('checkout&task=after_end', false, true) );
+		if($config->get('group_options',0)){
+			foreach($order->cart->products as $k => $product){
+				if(!empty($product->order_product_option_parent_id)){
+					foreach($order->cart->products as $k2 => $product2){
+						if($product->order_product_option_parent_id == $product2->order_product_id){
+							$product2->order_product_price += $product->order_product_price;
+							$product2->order_product_tax += $product->order_product_tax;
+							$product2->order_product_total_price_no_vat += $product->order_product_total_price_no_vat;
+							$product2->order_product_total_price += $product->order_product_total_price;
+						}
+					}
 				}
 			}
 		}
-		$html = ob_get_clean();
-		if(empty($html)){
-			$app =& JFactory::getApplication();
-			$app->enqueueMessage('The payment method '.$order->order_payment_method.' does not handle payments after the order has been created');
-			parent::listing();
+
+		$currencyClass = hikashop_get('class.currency');
+		$currencyClass->calculateTotal($order->cart->products, $order->cart->total, $order->order_currency_id);
+
+		if(bccomp($order->order_discount_price, 0, 5) !== 0) {
+			$order->cart->coupon = new stdClass();
+			$order->cart->coupon->discount_value =& $order->order_discount_price;
+		}
+
+		$paymentMethods = $paymentClass->getMethods($order->cart);
+
+		if(!empty($paymentMethod) && !empty($paymentMethod->custom_html)) {
+			$order->cart->payment = $paymentPlugin->onPaymentSave($order->cart, $paymentMethods, $order->order_payment_id);
+
+			$app->setUserState( HIKASHOP_COMPONENT.'.payment_data', $paymentMethod);
+			unset($methods);
+		}
+
+		if(!empty($order->order_shipping_method)) {
+			$shippingClass = hikashop_get('class.shipping');
+			$shippingMethods = $shippingClass->getMethods($order->cart);
+			$shippingPlugin = hikashop_import('hikashopshipping', $order->order_shipping_method);
+			if(!empty($shippingPlugin))
+				$order->cart->shipping = $shippingPlugin->onShippingSave($order->cart, $shippingMethods, $order->order_shipping_id);
+		}
+
+		$old_order_status = $order->order_status;
+
+		$do = true;
+		if(method_exists($paymentPlugin, 'onBeforeOrderCreate'))
+			$paymentPlugin->onBeforeOrderCreate($order, $do);
+
+		if(!$do) {
+			$app->enqueueMessage(JText::_('PAYMENT_REFUSED'), 'error');
+			$app->redirect( hikashop_completeLink('order&task=listing', false, true) );
 			return false;
 		}
-		echo $html;
+
+		if(empty($needCC)) {
+			$itemid_for_checkout = (int)$config->get('checkout_itemid', 0);
+			if($itemid_for_checkout) {
+				global $Itemid;
+				$Itemid = $itemid_for_checkout;
+			}
+
+			if(method_exists($paymentPlugin, 'onAfterOrderConfirm'))
+				$paymentPlugin->onAfterOrderConfirm($order, $paymentMethods, $order->order_payment_id);
+
+			$html = ob_get_clean();
+			if(empty($html)) {
+				$app->enqueueMessage('The payment method '.$order->order_payment_method.' does not handle payments after the order has been created');
+				$app->redirect( hikashop_completeLink('order&task=listing', false, true) );
+				return false;
+			}
+		}
+
+		if($old_order_status != $order->order_status) {
+			if(empty($order->history))
+				$order->history = new stdClass();
+			$order->history->history_notified = 1;
+
+			$updateOrder = new stdClass();
+			$updateOrder->order_id = $order->order_id;
+			$updateOrder->order_status = $order->order_status;
+			$updateOrder->order_payment_id = $order->order_payment_id;
+			$updateOrder->order_payment_method = $order->order_payment_method;
+			$updateOrder->history =& $order->history;
+
+			$orderClass->save($updateOrder);
+		}
+
+		if(empty($needCC) && !empty($html)) {
+			echo $html;
+			return true;
+		}
+
+		$app->redirect( hikashop_completeLink('checkout&task=after_end', false, true) );
+		return false;
+	}
+
+	protected function changePaymentMethod(&$order, $new_payment_method) {
+		$new_payment_method = explode('_', $new_payment_method);
+		$payment_id = array_pop($new_payment_method);
+		$payment_method = implode('_', $new_payment_method);
+
+		if($order->order_payment_id == $payment_id && $order->order_payment_method == $payment_method)
+			return true;
+
+		$pluginPaymentType = hikashop_get('type.plugins');
+		$pluginPaymentType->type = 'payment';
+		$pluginPaymentType->order = $order;
+		$pluginPaymentType->preload(false);
+
+		$methods = $pluginPaymentType->methods['payment'][(string)$order->order_id];
+		$found = false;
+		foreach($methods as $method) {
+			if($method->payment_id != $payment_id || $method->payment_type != $payment_method)
+				continue;
+			$found = $method;
+			break;
+		}
+		if(!$found) {
+			$app->enqueueMessage(JText::_('INVALID_DATA'), 'error');
+			return false;
+		}
+
+		$updateOrder = new stdClass();
+		$updateOrder->order_id = $order->order_id;
+		$updateOrder->order_payment_id = $payment_id;
+		$updateOrder->order_payment_method = $payment_method;
+
+		$paymentClass = hikashop_get('class.payment');
+		$payment = $paymentClass->get($payment_id);
+		if(!empty($payment->payment_params) && is_string($payment->payment_params)) {
+			$payment->payment_params = hikashop_unserialize($payment->payment_params);
+		}
+
+		$full_price_without_payment = $order->order_full_price - $order->order_payment_price;
+
+
+		$new_payment = $payment;
+		$new_payment_price = $paymentClass->computePrice( $order, $new_payment, $full_price_without_payment, @$payment->payment_price, hikashop_getCurrency());
+		$new_payment_tax = @$new_payment->payment_tax;
+		$updateOrder->order_payment_price = $new_payment_price;
+		$updateOrder->order_full_price = $full_price_without_payment + $new_payment_price + $new_payment_tax;
+
+		$updateOrder->history = new stdClass();
+		$updateOrder->history->history_payment_id = $payment_id;
+		$updateOrder->history->history_payment_method = $payment_method;
+
+		$orderClass = hikashop_get('class.order');
+		$orderClass->save($updateOrder);
+
+		$order->order_payment_id = $payment_id;
+		$order->order_payment_method = $payment_method;
+		$order->order_payment_price = $updateOrder->order_payment_price;
+		$order->order_full_price = $updateOrder->order_full_price;
+
+		$app = JFactory::getApplication();
+		$app->setUserState(HIKASHOP_COMPONENT.'.cc_number', null);
+		$app->setUserState(HIKASHOP_COMPONENT.'.cc_month', null);
+		$app->setUserState(HIKASHOP_COMPONENT.'.cc_year', null);
+		$app->setUserState(HIKASHOP_COMPONENT.'.cc_CCV', null);
+		$app->setUserState(HIKASHOP_COMPONENT.'.cc_type', null);
+		$app->setUserState(HIKASHOP_COMPONENT.'.cc_owner', null);
+
 		return true;
 	}
 
-	function download(){
+	public function download() {
 		$file_id = JRequest::getInt('file_id');
 		if(empty($file_id)){
 			$field_table = JRequest::getString('field_table');
@@ -427,16 +529,19 @@ class orderController extends hikashopController{
 		}
 
 		$order_id = hikashop_getCID('order_id');
-		if(empty($order_id)){
+		if(empty($order_id)) {
 			parent::listing();
 			return false;
 		}
 
 		$file_pos = JRequest::getInt('file_pos', 1);
-		$email = JRequest::getVar('email', '');
+		$order_token = JRequest::getVar('order_token', '');
+
+		if(empty($order_token))
+			$order_token = JRequest::getVar('email', '');
 
 		$fileClass = hikashop_get('class.file');
-		if(!$fileClass->download($file_id, $order_id, $file_pos, $email)) {
+		if(!$fileClass->download($file_id, $order_id, $file_pos, $order_token)) {
 			switch($fileClass->error_type){
 				case 'login':
 					$this->_check(false);
@@ -452,61 +557,36 @@ class orderController extends hikashopController{
 		return true;
 	}
 
-	function _check($message = true){
-		$user_id = hikashop_loadUser();
-		if(empty($user_id)){
-			$app = JFactory::getApplication();
-			if($message) $app->enqueueMessage(JText::_('PLEASE_LOGIN_FIRST'));
-			global $Itemid;
-			$url = '';
-			if(!empty($Itemid)){
-				$url='&Itemid='.$Itemid;
-			}
-			if(version_compare(JVERSION,'1.6','<')){
-				$url = 'index.php?option=com_user&view=login'.$url;
-			}else{
-				$url = 'index.php?option=com_users&view=login'.$url;
-			}
-			$app->redirect(JRoute::_($url.'&return='.urlencode(base64_encode(hikashop_currentUrl('',false))),false));
-			return false;
-		}
-		$order_id = hikashop_getCID('order_id');
-		if(empty($order_id)){
-			parent::listing();
-			return false;
-		}
-		return true;
-	}
-
-	function cancel(){
+	public function cancel() {
 		$cancel_redirect = JRequest::getString('cancel_redirect');
-		if(empty($cancel_redirect)){
-			$cancel_url = JRequest::getString('cancel_url');
-			if(!empty($cancel_url)){
-				$cancel_url = urldecode($cancel_url);
-				if(hikashop_disallowUrlRedirect($cancel_url)) return false;
-				$this->setRedirect(base64_decode($cancel_url));
-			}else{
-				$order_id = hikashop_getCID('order_id');
-				if(empty($order_id)){
-					global $Itemid;
-					$url = '';
-					if(!empty($Itemid)){
-						$url='&Itemid='.$Itemid;
-					}
-					$this->setRedirect(hikashop_completeLink('user'.$url,false,true));
-				}else{
-					return $this->listing();
-				}
-			}
-		}else{
+		if(!empty($cancel_redirect)) {
 			$cancel_redirect = urldecode($cancel_redirect);
-			if(hikashop_disallowUrlRedirect($cancel_redirect)) return false;
+			if(hikashop_disallowUrlRedirect($cancel_redirect))
+				return false;
 			$this->setRedirect($cancel_redirect);
+			return true;
 		}
+
+		$cancel_url = JRequest::getString('cancel_url');
+		if(!empty($cancel_url)) {
+			$cancel_url = urldecode($cancel_url);
+			if(hikashop_disallowUrlRedirect($cancel_url))
+				return false;
+			$this->setRedirect(base64_decode($cancel_url));
+			return true;
+		}
+
+		$order_id = hikashop_getCID('order_id');
+		if(!empty($order_id)) {
+			return $this->listing();
+		}
+
+		global $Itemid;
+		$url = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
+		$this->setRedirect(hikashop_completeLink('user'.$url, false, true));
 	}
 
-	function getUploadSetting($upload_key, $caller = '') {
+	public function getUploadSetting($upload_key, $caller = '') {
 		if(empty($upload_key))
 			return false;
 		if(strpos($upload_key, '-') === false)
@@ -545,7 +625,7 @@ class orderController extends hikashopController{
 		);
 	}
 
-	function manageUpload($upload_key, &$ret, $uploadConfig, $caller = '') {
+	public function manageUpload($upload_key, &$ret, $uploadConfig, $caller = '') {
 		if(empty($ret) || empty($ret->name))
 			return;
 
@@ -608,9 +688,9 @@ class orderController extends hikashopController{
 		}
 
 		if($field->field_type == 'ajaxfile')
-			$ajaxFileClass = new hikashopAjaxfile($fieldClass);
+			$ajaxFileClass = new hikashopFieldAjaxfile($fieldClass);
 		else
-			$ajaxFileClass = new hikashopAjaximage($fieldClass);
+			$ajaxFileClass = new hikashopFieldAjaximage($fieldClass);
 		$ajaxFileClass->_manageUpload($field, $ret, $map, $uploadConfig, $caller);
 	}
 }

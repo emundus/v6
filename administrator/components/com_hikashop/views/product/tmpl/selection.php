@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -84,7 +84,7 @@ if($this->config->get('show_category_explorer', 1)) { ?>
 			</td>
 			<td style="vertical-align:top;" id="hika_product_main_listing">
 <?php } ?>
-	<table class="adminlist <?php echo (HIKASHOP_RESPONSIVE)?'table table-striped table-hover':'hika_table'; ?>" style="width:100%;cell-spacing:1px">
+	<table class="adminlist <?php echo (HIKASHOP_BACK_RESPONSIVE)?'table table-striped table-hover':'hika_table'; ?>" style="width:100%;cell-spacing:1px">
 		<thead>
 			<tr>
 				<th class="title titlenum"><?php
@@ -156,11 +156,11 @@ foreach($this->rows as $product) {
 	}
 ?>
 			<tr class="row<?php echo $k; ?>"<?php echo $extraTr; ?>>
-				<td align="center"><?php
+				<td class="hk_center"><?php
 					echo $this->pagination->getRowOffset($i);
 				?></td>
 <?php if( !$this->singleSelection ) { ?>
-				<td align="center"><input type="checkbox" onclick="this.clicked = true; this.checked = !this.checked;" value="<?php echo $product->product_id; ?>" name="cid[]" id="cb<?php echo $i; ?>"/></td>
+				<td class="hk_center"><input type="checkbox" onclick="this.clicked = true; this.checked = !this.checked;" value="<?php echo $product->product_id; ?>" name="cid[]" id="cb<?php echo $i; ?>"/></td>
 <?php } ?>
 				<td class="hikashop_product_name_value"><?php
 					echo $product->product_name;
@@ -175,7 +175,7 @@ foreach($this->rows as $product) {
 					if(!empty($product->prices))
 						echo $this->currencyHelper->displayPrices($product->prices);
 				?></td>
-				<td class="hikashop_product_id_value" align="center"><?php
+				<td class="hikashop_product_id_value hk_center"><?php
 					echo $product->product_id;
 				?></td>
 			</tr>

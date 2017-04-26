@@ -1,7 +1,7 @@
 /*
  * @version   $Id: sidemenu.js 18923 2014-02-21 03:03:39Z djamil $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 ((function(){var b=(function(){return !!("ontouchstart" in window);

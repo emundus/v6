@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -25,10 +25,10 @@ class hikashopDefault_registration_viewType{
 				var display_login = window.document.getElementById('config_display_login1');
 				if(!display_login) display_login = window.document.getElementById('config[display_login]1');
 				var display_login_selection=display_login.checked;
-				var normal = window.document.getElementById('config[simplified_registration][normal]');
-				var simple = window.document.getElementById('config[simplified_registration][simple]');
-				var simple_pwd = window.document.getElementById('config[simplified_registration][simple_pwd]');
-				var guest = window.document.getElementById('config[simplified_registration][guest]');
+				var normal = window.document.getElementById('config_simplified_registration_normal');
+				var simple = window.document.getElementById('config_simplified_registration_simple');
+				var simple_pwd = window.document.getElementById('config_simplified_registration_simple_pwd');
+				var guest = window.document.getElementById('config_simplified_registration_guest');
 
 				if(display_login_selection==true){
 					addValue(default_registration_view,'login','".JText::_('HIKA_LOGIN',true)."');

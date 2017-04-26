@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -14,8 +14,8 @@ if(version_compare(JVERSION, '3.1.4', '>')) {
 			list($id, $name) = explode(':', $contentId, 2);
 			if(!include_once(rtrim(JPATH_ADMINISTRATOR,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_hikashop'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php'))
 				return;
-			$class = hikashop_get('class.product');
-			$data = $class->get($id);
+			$productClass = hikashop_get('class.product');
+			$data = $productClass->get($id);
 			if(empty($link))
 				$link = 'index.php?option=com_hikashop&ctrl=product&task=show&cid=' . $id.'&name='.$name;
 

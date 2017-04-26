@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,21 +12,16 @@ class hikashopQuantityType {
 	protected $values = array();
 
 	protected function load($config) {
-		$this->values = array();
-		if($config) {
-			$this->values[] = JHTML::_('select.option', 2,JText::_('GLOBAL_ON_LISTINGS'));
-			$hkconfig = hikashop_config();
-			if($hkconfig->get('show_quantity_field',1) == '-2')
-				$this->values[] = JHTML::_('select.option', -2,JText::_('ON_A_PER_PRODUCT_BASIS'));
-		}
-		$this->values[] = JHTML::_('select.option', 1,JText::_('AJAX_INPUT'));
-		$this->values[] = JHTML::_('select.option', -1,JText::_('NORMAL_INPUT'));
-		$this->values[] = JHTML::_('select.option', 0,JText::_('NO_DISPLAY'));
+		$this->values = array(
+			1 => JHTML::_('select.option', 1, JText::_('TYPE_QTY_ONE_PER_PRODUCT')),
+			2 => JHTML::_('select.option', 2, JText::_('TYPE_QTY_GLOBAL')),
+		);
+		return $this->values;
 	}
 
 	public function display($map, $value, $config = true) {
 		$this->load($config);
-		return JHTML::_('select.genericlist', $this->values, $map, 'class="inputbox" size="1"', 'value', 'text', (int)$value);
+		return JHTML::_('hikaselect.radiolist', $this->values, $map, '', 'value', 'text', (int)$value);
 	}
 
 	public function displayInput($map, $value) {

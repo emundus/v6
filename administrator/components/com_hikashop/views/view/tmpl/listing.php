@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -137,11 +137,11 @@ if(HIKASHOP_BACK_RESPONSIVE) { ?>
 		<tbody>
 			<?php
 				$k = 0;
-				foreach($this->rows as $i => $r) {
-					$row =& $this->rows[$i];
+				$i = 0;
+				foreach($this->rows as $row) {
 			?>
 				<tr class="row<?php echo $k;?>">
-					<td align="center">
+					<td class="hk_center">
 					<?php echo $this->pagination->getRowOffset($i);
 					?>
 					</td>
@@ -175,7 +175,7 @@ if(HIKASHOP_BACK_RESPONSIVE) { ?>
 							</a>
 						<?php } ?>
 					</td>
-					<td align="center">
+					<td class="hk_center">
 					<?php if($row->overriden){ ?>
 						<?php if($this->delete){ ?>
 							<a href="<?php echo hikashop_completeLink('view&task=remove&cid='.$row->id); ?>" onclick="return hikashopRemoveCustom('<?php echo $row->id?>');">
@@ -187,6 +187,7 @@ if(HIKASHOP_BACK_RESPONSIVE) { ?>
 				</tr>
 			<?php
 					$k = 1-$k;
+					$i++;
 				}
 			?>
 		</tbody>

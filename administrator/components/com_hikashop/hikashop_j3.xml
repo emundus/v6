@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="2.5" method="upgrade">
 	<name>HikaShop</name>
-	<creationDate>05 décembre 2016</creationDate>
-	<version>2.6.4</version>
+	<creationDate>23 avril 2017</creationDate>
+	<version>3.0.1</version>
 	<author>hikashop.com</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<description>E-Commerce software built for simplicity and flexibility</description>
 	<license>GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html</license>
 	<languages folder="language">
 		<language tag="en-GB">en-GB.com_hikashop.ini</language>
+		<language tag="en-GB">en-GB.com_hikashop_config.ini</language>
 	</languages>
 	<install>
 		<sql>
@@ -41,6 +42,7 @@
 	</media>
 	<administration>
 		<files folder="back">
+			<folder>_database</folder>
 			<folder>buttons</folder>
 			<folder>classes</folder>
 			<folder>controllers</folder>

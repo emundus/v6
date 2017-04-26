@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -154,22 +154,30 @@ class hikashopCategorysubType {
 		} else {
 			$attribute = '';
 		}
-		$this->load($form);
 
-		if(!in_array($this->type,array('status','tax'))) {
-			$value = (int)$value;
-		}
-		if(strpos($attribute,'size="') === false) {
-			if($this->multiple && !HIKASHOP_J30) {
-				$attribute.=' size="3"';
-			} else {
-				$attribute.=' size="1"';
-			}
-		}
 		if($this->multiple){
 			$attribute .= ' multiple="multiple"';
 			$map .='[]';
 		}
+
+		if(!in_array($this->type, array('status','tax'))) {
+			$value = (int)$value;
+		}
+		if(strpos($attribute, 'size="') === false) {
+			if($this->multiple && !HIKASHOP_J30) {
+				$attribute .= ' size="3"';
+			} else {
+				$attribute .= ' size="1"';
+			}
+		}
+
+		if($this->type == 'status') {
+			$order_statusType = hikashop_get('type.order_status');
+			$addAll = empty($form);
+			return $order_statusType->display($map, $value, $attribute, $addAll);
+		}
+
+		$this->load($form);
 		if(!empty($id))
 			return JHTML::_('select.genericlist', $this->values, $map, 'class="inputbox"'.$attribute, 'value', 'text', $value , $id);
 		return JHTML::_('select.genericlist', $this->values, $map, 'class="inputbox"'.$attribute, 'value', 'text', $value );
@@ -315,7 +323,8 @@ function callbackTree(tree,node,ev,skip) {
 		}
 		$typeConfig = array('params' => array('category_type' => $type), 'mode' => 'tree');
 		$fullLoad = false;
-		$options = array('depth' => 2, 'start' => $root);
+		$config = hikashop_config();
+		$options = array('depth' => $config->get('explorer_default_depth',2), 'start' => $root);
 
 		list($elements,$values) = $categoryClass->getNameboxData($typeConfig, $fullLoad, null, null, null, $options);
 

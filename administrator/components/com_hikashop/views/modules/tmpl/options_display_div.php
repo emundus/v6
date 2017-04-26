@@ -1,13 +1,17 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
+$showDescription="";
+if($this->element['div_item_layout_type']!='fade' && $this->element['div_item_layout_type']!='slider_horizontal' && $this->element['div_item_layout_type']!='slider_vertical'){
+	$showDescription='style="display:none"';
+}
 if(hikashop_level(2)){
 	$productEffect="";
 	$productEffectDuration="";
@@ -38,19 +42,17 @@ if(hikashop_level(2)){
 					<p class="field_columns"><?php echo JText::_( 'FIELD_COLUMNS' ); ?></p>
 					<div class="listing_item_quantity_selector" data-name="<?php echo $this->name; ?>">
 <?php
-					$colsNb = @$this->element['columns'];
-					$rowsNb = 0;
-					if(@$this->element['columns'] != 0)
-						$rowsNb = round($this->element['limit'] / $this->element['columns']);
-					for($j = 0; $j < 12; $j++){
-						for($i = 0; $i < 6; $i++){
-							$class = ' listing_div';
-							if($i < $colsNb && $j < $rowsNb)
-								$class .= ' selected';
-							echo '<div class="col'.$i.' row'.$j.$class.'"></div>';
-						}
-						echo '<br/>';
-					}
+		$colsNb = @$this->element['columns'];
+		$rowsNb = 0;
+		if(@$this->element['columns'] != 0)
+			$rowsNb = round($this->element['limit'] / $this->element['columns']);
+		for($j = 0; $j < 12; $j++){
+			for($i = 0; $i < 6; $i++){
+				$class = ($i < $colsNb && $j < $rowsNb) ? ' selected' : '';
+				echo '<div class="col'.$i.' row'.$j.' listing_div'.$class.'"></div>';
+			}
+			echo '<br/>';
+		}
 ?>
 					</div>
 					<div class="listing_item_quantity_fields" data-list-type="div">
@@ -158,6 +160,26 @@ if(hikashop_level(2)){
 					?>
 				</dd>
 			</dl>
+			<dl class="hika_options showdescription_hide" <?php echo $showDescription; ?>>
+				<dt class="hikashop_option_name">
+					<?php echo JText::_('ELEMENT_DESCRIPTION');?>
+				</dt>
+				<dd class="hikashop_option_value">
+					<?php
+					if(!isset($this->element['show_description_listing'])) $this->element['show_description_listing'] = '0';
+					echo JHTML::_('hikaselect.booleanlist', $this->name.'[show_description_listing]', '', @$this->element['show_description_listing']);
+					?>
+				</dd>
+			</dl>
+			<dl class="hika_options">
+				<dt class="hikashop_option_name"><?php
+					echo JText::_('HIKA_HEIGHT_CONSISTENCY');
+				?></dt>
+				<dd class="hikashop_option_value"><?php
+					if(!isset($this->element['consistencyheight'])) $this->element['consistencyheight'] = 1;
+					echo JHTML::_('hikaselect.booleanlist', $this->name.'[consistencyheight]', '', @$this->element['consistencyheight']);
+				?></dd>
+			</dl>
 		</div>
 	</div>
 	<div class="hkc-xl-4 hkc-md-6 hikashop_module_subblock hikashop_module_edit_display_settings_subdiv">
@@ -210,11 +232,14 @@ window.hikashop.ready(function(){
 	hkjQuery('select[name=\'".$this->name."[div_item_layout_type]\']').change(function(){
 		if(hkjQuery(this).val()==\"slider_vertical\" || hkjQuery(this).val()==\"slider_horizontal\"){
 			hkjQuery('.layouteffect_hide').show();
+			hkjQuery('.showdescription_hide').show();
 		}else if(hkjQuery(this).val()==\"fade\"){
 			hkjQuery('.layouteffect_hide').show();
 			hkjQuery('.layoutfade_hide').hide();
+			hkjQuery('.showdescription_hide').show();
 		}else{
 			hkjQuery('.layouteffect_hide').hide();
+			hkjQuery('.showdescription_hide').hide();
 		}
 	});
 });

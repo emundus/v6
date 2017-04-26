@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -83,10 +83,10 @@ if(HIKASHOP_BACK_RESPONSIVE) { ?>
 						$publishedid = 'massaction_published-'.$row->massaction_id;
 				?>
 					<tr class="<?php echo "row$k"; ?>">
-						<td align="center">
+						<td class="hk_center">
 						<?php echo $this->pagination->getRowOffset($i); ?>
 						</td>
-						<td align="center">
+						<td class="hk_center">
 							<?php echo JHTML::_('grid.id', $i, $row->massaction_id ); ?>
 						</td>
 						<td>
@@ -101,12 +101,12 @@ if(HIKASHOP_BACK_RESPONSIVE) { ?>
 						<td>
 							<?php echo $row->massaction_table; ?>
 						</td>
-						<td align="center">
+						<td class="hk_center">
 							<?php if($this->manage){ ?>
 								<span id="<?php echo $publishedid ?>" class="spanloading"><?php echo $this->toggleClass->toggle($publishedid,(int) $row->massaction_published,'massaction') ?></span>
 							<?php }else{ echo $this->toggleClass->display('activate',$row->massaction_published); } ?>
 						</td>
-						<td width="1%" align="center">
+						<td width="1%" class="hk_center">
 							<?php echo $row->massaction_id; ?>
 						</td>
 					</tr>

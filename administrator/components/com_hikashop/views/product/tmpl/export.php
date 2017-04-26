@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -43,6 +43,7 @@ $columns = array_merge($columns, array(
 	'price_currency_id' => 'price_currency_id',
 	'price_min_quantity' => 'price_min_quantity',
 	'price_access' => 'price_access',
+	'price_users' => 'price_users',
 	'files' => 'files',
 	'images' => 'images',
 	'related' => 'related',
@@ -87,7 +88,7 @@ if(!empty($this->categories)) {
 
 if(!empty($this->products)) {
 	foreach($this->products as $k => $product) {
-		if($product->product_type == 'variant')
+		if($product->product_type == 'variant' && !empty($product->product_parent_id))
 			$this->products[$k]->product_parent_id = $this->products[$product->product_parent_id]->product_code;
 	}
 	foreach($this->products as $product) {
@@ -131,16 +132,19 @@ if(!empty($this->products)) {
 		$codes = array();
 		$qtys = array();
 		$accesses = array();
+		$users = array();
 		if(!empty($product->prices)) {
 			foreach($product->prices as $price) {
 				$values[] = $price->price_value;
 				$codes[] = $this->currencies[$price->price_currency_id]->currency_code;
 				$qtys[] = $price->price_min_quantity;
 				$accesses[] = $price->price_access;
+				$users[] = $price->price_users;
 			}
 
 		}
 		if(empty($values)) {
+			$data[] = '';
 			$data[] = '';
 			$data[] = '';
 			$data[] = '';
@@ -150,6 +154,7 @@ if(!empty($this->products)) {
 			$data[] = implode('|', $codes);
 			$data[] = implode('|', $qtys);
 			$data[] = implode('|', $accesses);
+			$data[] = implode('|', $users);
 		}
 
 		$files = array();

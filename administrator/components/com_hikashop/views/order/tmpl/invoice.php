@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -32,7 +32,7 @@ defined('_JEXEC') or die('Restricted access');
 		</tr>
 		<tr>
 			<td>
-				<div style="float:right;width:100px;padding-top:20px">
+				<div style="float:right;width:10em;padding-top:20px">
 				<?php
 					if(!empty($this->element->order_invoice_created)) {
 						echo JText::_('DATE').': '.hikashop_getDate($this->element->order_invoice_created,'%d %B %Y');
@@ -110,9 +110,9 @@ defined('_JEXEC') or die('Restricted access');
 
 							<?php
 							$null = null;
-							$type = 'display:field_product_shipping_invoice=1';
+							$type = 'display:back_shipping_invoice=1';
 							if($this->invoice_type=='full'){
-								$type = 'display:field_product_invoice=1';
+								$type = 'display:back_invoice=1';
 							}
 							if(hikashop_level(1)){
 								$productFields = $this->fieldsClass->getFields($type,$null,'product');
@@ -259,7 +259,7 @@ defined('_JEXEC') or die('Restricted access');
 										} ?>
 									</td>
 									<?php } ?>
-									<td align="center">
+									<td class="hk_center">
 										<?php echo $product->order_product_quantity;?>
 									</td>
 									<?php if($this->invoice_type=='full'){?>
@@ -296,7 +296,7 @@ defined('_JEXEC') or die('Restricted access');
 								</td>
 							</tr>
 							<?php
-								$taxes = round($this->order->order_subtotal - $this->order->order_subtotal_no_vat + $this->order->order_shipping_tax + $this->order->order_payment_tax - $this->order->order_discount_tax,$this->currencyHelper->getRounding($this->order->order_currency_id,true));
+								$taxes = $this->currencyHelper->round($this->order->order_subtotal - $this->order->order_subtotal_no_vat + $this->order->order_shipping_tax + $this->order->order_payment_tax - $this->order->order_discount_tax,$this->currencyHelper->getRounding($this->order->order_currency_id,true));
 
 								if($this->order->order_discount_price != 0){ ?>
 							<tr>
@@ -441,7 +441,7 @@ defined('_JEXEC') or die('Restricted access');
 		<?php if($this->invoice_type=='full'){
 
 			$fieldsClass = hikashop_get('class.field');
-			$fields = $fieldsClass->getFields('display:field_order_invoice=1',$this->order,'order');
+			$fields = $fieldsClass->getFields('display:invoice=1',$this->order,'order');
 			if(!empty($fields)){ ?>
 		<tr>
 			<td>
@@ -485,7 +485,7 @@ defined('_JEXEC') or die('Restricted access');
 		</tr>
 		<?php }else{
 			$fieldsClass = hikashop_get('class.field');
-			$fields = $fieldsClass->getFields('display:field_order_shipping_invoice=1',$this->order,'order');
+			$fields = $fieldsClass->getFields('display:back_shipping_invoice=1',$this->order,'order');
 			if(!empty($fields)){ ?>
 		<tr>
 			<td>

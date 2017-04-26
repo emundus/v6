@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -145,18 +145,22 @@ class hikashopZoneClass extends hikashopClass{
 	}
 
 	function getOrderZones(&$order) {
-		$field = 'address_country';
 		$fieldClass = hikashop_get('class.field');
 		$fields = $fieldClass->getData('frontcomp', 'address');
-		if(isset($fields['address_state']) && $fields['address_state']->field_type == 'zone' && !empty($order->shipping_address) && !empty($order->shipping_address->address_state) && (!is_array($order->shipping_address->address_state) || count($order->shipping_address->address_state)>1 || !empty($order->shipping_address->address_state[0]))) {
+
+		$field = 'address_country';
+		if(isset($fields['address_state']) && $fields['address_state']->field_type == 'zone' && !empty($order->shipping_address) && !empty($order->shipping_address->address_state) && (!is_array($order->shipping_address->address_state) || count($order->shipping_address->address_state) > 1 || !empty($order->shipping_address->address_state[0]))) {
 			$field = 'address_state';
 		}
+
 		$type = 'shipping_address';
 		if(empty($order->shipping_address) && !empty($order->billing_address)) {
 			$type = 'billing_address';
 		}
+
 		if(empty($order->$type) || empty($order->$type->$field)) {
-			$zones = $this->getZoneParents(hikashop_getZone());
+			$zone = hikashop_getZone('shipping', array('object' => $order));
+			$zones = $this->getZoneParents($zone);
 		} else {
 			$zones =& $order->$type->$field;
 			if(!is_array($zones)) {
@@ -166,26 +170,31 @@ class hikashopZoneClass extends hikashopClass{
 		return $zones;
 	}
 
-	function getNamekey($element){
-		return $element->zone_type.'_'.preg_replace('#[^a-z_]#i','',$element->zone_name_english).'_'.rand();
+	function getNamekey($element) {
+		return $element->zone_type.'_'.preg_replace('#[^a-z_]#i', '', $element->zone_name_english).'_'.rand();
 	}
 
-	function getChilds($zone_namekey){
+	function getChilds($zone_namekey) {
 		return $this->getChildren($zone_namekey);
 	}
 
 	function getChildren($zone_namekey) {
-		$database = JFactory::getDBO();
-		if(is_numeric($zone_namekey)){
+		if(is_numeric($zone_namekey)) {
 			$zone = $this->get($zone_namekey);
+			if(empty($zone))
+				return array();
 			$zone_namekey = $zone->zone_namekey;
 		}
-		$query = 'SELECT a.* FROM '.hikashop_table('zone_link').' AS b LEFT JOIN '.hikashop_table('zone').' AS a ON b.zone_child_namekey=a.zone_namekey WHERE b.zone_parent_namekey  = '.$database->Quote($zone_namekey).' ORDER BY a.zone_id';
-		$database->setQuery($query);
-		return  $database->loadObjectList();
+		$query = 'SELECT a.* FROM '.hikashop_table('zone_link').' AS b LEFT JOIN '.hikashop_table('zone').' AS a ON b.zone_child_namekey=a.zone_namekey WHERE b.zone_parent_namekey  = '.$this->db->Quote($zone_namekey).' ORDER BY a.zone_id';
+		$this->db->setQuery($query);
+		return  $this->db->loadObjectList();
 	}
 
-	function addChilds($mainNamekey,$childNamekeys){
+	function addChilds($mainNamekey, $childNamekeys) {
+		return $this->addChildren($mainNamekey, $childNamekeys);
+	}
+
+	function addChildren($mainNamekey, $childNamekeys) {
 		if(empty($mainNamekey)) return null;
 		if(empty($childNamekeys)) return null;
 		$NamekeysString = '';
@@ -243,10 +252,9 @@ class hikashopZoneClass extends hikashopClass{
 		if(empty($field_type))
 			$field_type = 'address';
 
-		$db = JFactory::getDBO();
-		$query = 'SELECT * FROM '.hikashop_table('field').' WHERE field_namekey = '.$db->Quote($field_namekey);
-		$db->setQuery($query, 0, 1);
-		$field = $db->loadObject();
+		$query = 'SELECT * FROM '.hikashop_table('field').' WHERE field_namekey = '.$this->db->Quote($field_namekey);
+		$this->db->setQuery($query, 0, 1);
+		$field = $this->db->loadObject();
 
 		$countryType = hikashop_get('type.country');
 		return $countryType->displayStateDropDown($namekey, $field_id, $field_namekey, $field_type, '', $field->field_options);
@@ -348,11 +356,20 @@ class hikashopZoneClass extends hikashopClass{
 
 			$zone_key = $options['zone_key'];
 
-			$query = 'SELECT z.* '.
+			if($type == 'namekey') {
+				$query = 'SELECT z.* '.
 					' FROM '.hikashop_table('zone').' as z '.
 					' INNER JOIN ' . hikashop_table('zone_link') . ' as zl ON z.zone_namekey = zl.zone_child_namekey '.
-					' WHERE z.zone_published = 1 AND zl.'.$parent_column.' = ' . $db->Quote($zone_key).
+					' WHERE z.zone_published = 1 AND zl.zone_parent_namekey = ' . $db->Quote($zone_key).
 					' ORDER BY z.zone_name_english';
+			} else {
+				$query = 'SELECT z.* '.
+					' FROM '.hikashop_table('zone').' as z '.
+					' INNER JOIN ' . hikashop_table('zone_link') . ' as zl ON z.zone_namekey = zl.zone_child_namekey '.
+					' LEFT JOIN ' . hikashop_table('zone') . ' AS zp ON zp.zone_namekey = zl.zone_parent_namekey '.
+					' WHERE z.zone_published = 1 AND zp.zone_id = ' . $db->Quote($zone_key).
+					' ORDER BY z.zone_name_english';
+			}
 		}
 
 		$db->setQuery($query);

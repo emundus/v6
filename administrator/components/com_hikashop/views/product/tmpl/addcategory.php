@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -28,14 +28,14 @@ defined('_JEXEC') or die('Restricted access');
 				}
 				echo implode(' / ',$html);
 			?></td>
-			<td align="center">
+			<td class="hk_center">
 				<?php if(JRequest::getCmd('control')=='plugin'){ ?>
 					<input style="width: 50px; background-color:#e8f9db;" type="text" name="category_points[<?php echo $row->category_id;?>]" id="category_points[<?php echo $row->category_id;?>]" value="0" />
 				<?php }else{ ?>
 				<a href="#" onclick="return deleteRow('category_div_<?php echo $row->category_id.'_'.$id;?>','category[<?php echo $row->category_id;?>][<?php echo $id;?>]','category_<?php echo $row->category_id.'_'.$id;?>');"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png"/></a>
 				<?php } ?>
 			</td>
-			<td width="1%" align="center">
+			<td width="1%" class="hk_center">
 				<?php echo $row->category_id; ?>
 				<div id="category_div_<?php echo $row->category_id.'_'.$id;?>">
 					<input type="hidden" name="category[<?php echo $row->category_id;?>]" id="category[<?php echo $row->category_id;?>][<?php echo $id;?>]" value="<?php echo $row->category_id;?>"/>

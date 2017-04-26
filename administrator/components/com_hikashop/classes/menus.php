@@ -1,21 +1,22 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class hikashopMenusClass extends hikashopClass{
-	var $pkeys=array('id');
-	var $toggle = array('published'=>'id');
-	function getTable(){
-		return hikashop_table('menu',false);
+class hikashopMenusClass extends hikashopClass {
+	var $pkeys = array('id');
+	var $toggle = array('published' => 'id');
+
+	function getTable() {
+		return hikashop_table('menu', false);
 	}
 
-	function get($id,$default=''){
+	function get($id, $default = ''){
 		$obj = parent::get($id);
 		$config =& hikashop_config();
 		if(is_null($obj)) $obj = new stdClass();
@@ -52,19 +53,21 @@ class hikashopMenusClass extends hikashopClass{
 		return $obj;
 	}
 
-	function loadParams(&$result){
-		if(!empty($result->params)){
-			if(HIKASHOP_J30){
-				$result->params = json_decode($result->params);
-			}else{
-				$lines = explode("\n",$result->params);
-				$result->params = array();
-				foreach($lines as $line){
-					$param = explode('=',$line,2);
-					if(count($param)==2){
-						$result->params[$param[0]]=$param[1];
-					}
-				}
+	function loadParams(&$result) {
+		if(empty($result->params))
+			return;
+
+		if(HIKASHOP_J30){
+			$result->params = json_decode($result->params);
+			return;
+		}
+
+		$lines = explode("\n", $result->params);
+		$result->params = array();
+		foreach($lines as $line) {
+			$param = explode('=', $line, 2);
+			if(count($param) == 2) {
+				$result->params[$param[0]] = $param[1];
 			}
 		}
 	}
@@ -159,13 +162,14 @@ class hikashopMenusClass extends hikashopClass{
 
 	function displayErrors($id){
 		static $displayed = false;
-		if(!$displayed){
-			$displayed = true;
-			$app = JFactory::getApplication();
-			$app->enqueueMessage(JText::_('MENU_WITHOUT_ASSOCIATED_MODULE'));
-			$app->enqueueMessage(JText::_('ASSOCIATED_MODULE_NEEDED'));
-			$app->enqueueMessage(JText::sprintf('ADD_MODULE_AUTO',hikashop_completeLink('menus&task=add_module&cid='.$id.'&'.hikashop_getFormToken().'=1')));
-		}
+		if($displayed)
+			return;
+
+		$displayed = true;
+		$app = JFactory::getApplication();
+		$app->enqueueMessage(JText::_('MENU_WITHOUT_ASSOCIATED_MODULE'));
+		$app->enqueueMessage(JText::_('ASSOCIATED_MODULE_NEEDED'));
+		$app->enqueueMessage(JText::sprintf('ADD_MODULE_AUTO',hikashop_completeLink('menus&task=add_module&cid='.$id.'&'.hikashop_getFormToken().'=1')));
 	}
 
 	function getCheckoutMenuIdForURL(){
@@ -195,7 +199,6 @@ class hikashopMenusClass extends hikashopClass{
 				'a.published=1',
 				'b.title IS NOT NULL'
 			);
-
 
 			if(HIKASHOP_J25){
 				$user = JFactory::getUser();

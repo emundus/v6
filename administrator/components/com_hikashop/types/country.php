@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -73,13 +73,13 @@ class hikashopCountryType{
 		$obj->excludeValue = array();
 
 		$fieldClass = hikashop_get('class.field');
-		$dropdown = new hikashopSingledropdown($obj);
+		$dropdown = new hikashopFieldSingledropdown($obj);
 		$field = new stdClass();
 		$field->field_namekey = $field_id;
 		$statesArray = array();
 		if(!empty($states)) {
 			if(!empty($field_options) && is_string($field_options)){
-				$field_options = unserialize($field_options);
+				$field_options = hikashop_unserialize($field_options);
 			}
 
 			$pleaseSelect = !empty($field_options['pleaseselect']);

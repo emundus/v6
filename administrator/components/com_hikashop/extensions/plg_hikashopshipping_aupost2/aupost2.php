@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -189,9 +189,8 @@ class plgHikashopshippingAupost2 extends hikashopShippingPlugin {
 			}
 			if(empty($order->shipping_address_full)) {
 				$cart = hikashop_get('class.cart');
-				$app = JFactory::getApplication();
-				$address=$app->getUserState( HIKASHOP_COMPONENT.'.shipping_address');
-				$cart->loadAddress($order->shipping_address_full,$address,'object','shipping');
+				if(isset($order->shipping_address->address_id))
+					$cart->loadAddress($order->shipping_address_full, $order->shipping_address->address_id, 'object', 'shipping');
 			}
 			$rates = array();
 
@@ -248,7 +247,7 @@ class plgHikashopshippingAupost2 extends hikashopShippingPlugin {
 		if(empty($packages))
 			return true;
 
-		if((!$domestic && isset($packages['w']) && $packages['w'] > 0) || ($domestic && isset($packages['x']) && isset($packages['y']) && isset($packages['z']))) {
+		if((!$domestic && isset($packages['w'])) || ($domestic && isset($packages['x']) && isset($packages['y']) && isset($packages['z']))) {
 			if(empty($parcels[$i]))
 				$parcels[$i] = new stdClass();
 			$parcels[$i]->Weight = $packages['w'];
@@ -267,7 +266,7 @@ class plgHikashopshippingAupost2 extends hikashopShippingPlugin {
 			$i++;
 		} else {
 			foreach($packages as $package) {
-				if((!$domestic && isset($package['w']) && $package['w'] > 0) || ($domestic && isset($package['w']) && $package['w'] > 0 && isset($package['x']) && isset($package['y']) && isset($package['z']))) {
+				if((!$domestic && isset($package['w'])) || ($domestic && isset($package['x']) && isset($package['y']) && isset($package['z']))) {
 					if(empty($parcels[$i]))
 						$parcels[$i] = new stdClass();
 					$parcels[$i]->Weight = $package['w'];

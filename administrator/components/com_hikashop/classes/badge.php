@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -13,7 +13,7 @@ class hikashopBadgeClass extends hikashopClass {
 	var $pkeys = array('badge_id');
 	var $toggle = array('badge_published'=>'badge_id');
 
-	function saveForm() {
+	public function saveForm() {
 		$element = new stdClass();
 		$element->badge_id = hikashop_getCID('badge_id');
 		$formData = JRequest::getVar( 'data', array(), '', 'array' );
@@ -49,31 +49,33 @@ class hikashopBadgeClass extends hikashopClass {
 		return $status;
 	}
 
-	function loadBadges(&$row) {
-		$discount=new stdClass();
+	public function loadBadges(&$row) {
+		$discount = new stdClass();
 		$qty = $row->product_quantity;
-		if(isset($row->main)){
-			if(@$row->main->discount) $discount =& $row->main->discount;
-			elseif(@$row->discount) $discount =& $row->discount;
+		if(isset($row->main)) {
+			if(@$row->main->discount)
+				$discount =& $row->main->discount;
+			elseif(@$row->discount)
+				$discount =& $row->discount;
 			$product_id = $row->main->product_id;
-			if($row->product_quantity==-1){
+			if($row->product_quantity == -1)
 				$qty = $row->main->product_quantity;
-			}
-		}else{
-			if(@$row->discount) $discount =& $row->discount;
+		} else {
+			if(@$row->discount)
+				$discount =& $row->discount;
 			$product_id = $row->product_id;
 		}
 
-		$badge_filters=array(
+		$badge_filters = array(
 			'a.badge_start <= '.time(),
-			'( a.badge_end >= '.time().' OR a.badge_end =0 )',
-			'a.badge_published=1',
-			'(a.badge_quantity=\'\' OR a.badge_quantity='.(int)$qty.')',
+			'(a.badge_end >= '.time().' OR a.badge_end = 0)',
+			'a.badge_published = 1',
+			'(a.badge_quantity = \'\' OR a.badge_quantity = '.(int)$qty.')',
 		);
-		if($discount && isset($discount->discount_id)){
-			$badge_filters[]='(badge_discount_id='.(int)@$discount->discount_id.' OR badge_discount_id LIKE \'%,'.(int)@$discount->discount_id.',%\' OR badge_discount_id=\'0\' OR badge_discount_id=\'\' )';
-		}else{
-			$badge_filters[]='(badge_discount_id=\'0\' OR badge_discount_id=\'\')';
+		if($discount && isset($discount->discount_id)) {
+			$badge_filters[] = '(badge_discount_id = '.(int)@$discount->discount_id.' OR badge_discount_id = 0 OR badge_discount_id = \'\' OR badge_discount_id LIKE \'%,'.(int)@$discount->discount_id.',%\')';
+		} else {
+			$badge_filters[] = '(badge_discount_id = 0 OR badge_discount_id = \'\')';
 		}
 
 		$categories = array(
@@ -83,9 +85,9 @@ class hikashopBadgeClass extends hikashopClass {
 		$categoryClass = hikashop_get('class.category');
 		$productClass = hikashop_get('class.product');
 
-		if(!isset($row->categories) && isset($row->main->categories)){
+		if(!isset($row->categories) && isset($row->main->categories))
 			$row->categories =& $row->main->categories;
-		}
+
 		if(isset($row->categories)) {
 			$oneCat = reset($row->categories);
 			if(is_object($oneCat))
@@ -100,8 +102,8 @@ class hikashopBadgeClass extends hikashopClass {
 		if(!empty($row->product_manufacturer_id))
 			$categories['originals'][$row->product_manufacturer_id] = $row->product_manufacturer_id;
 
-		if(!empty($loadedCategories)){
-			foreach($loadedCategories as $cat){
+		if(!empty($loadedCategories)) {
+			foreach($loadedCategories as $cat) {
 				$categories['originals'][$cat] = $cat;
 			}
 		}
@@ -139,95 +141,106 @@ class hikashopBadgeClass extends hikashopClass {
 
 		static $badges = array();
 		$key = sha1($badge_filters);
-		if(!isset($badges[$key])){
-			$query = ' FROM '.hikashop_table('badge').' AS a WHERE '.$badge_filters.' ORDER BY a.badge_ordering ASC,a.badge_id ASC';
-			$this->database->setQuery('SELECT a.*'.$query);
+		if(!isset($badges[$key])) {
+			$query = 'SELECT a.* FROM '.hikashop_table('badge').' AS a WHERE '.$badge_filters.' ORDER BY a.badge_ordering ASC,a.badge_id ASC';
+			$this->database->setQuery($query);
 			$badges[$key] = $this->database->loadObjectList();
 		}
 
 		$badgesForProduct = array();
-		if(is_array($badges[$key]) && count($badges[$key])){
+		if(is_array($badges[$key]) && !empty($badges[$key])) {
 			foreach($badges[$key] as $badge){
-				if(!empty($badge->badge_product_id)){
-					if(!is_array($badge->badge_product_id)) $badge->badge_product_id = explode(',',$badge->badge_product_id);
-					if(!in_array($product_id,$badge->badge_product_id)) continue;
+				if(!empty($badge->badge_product_id)) {
+					if(!is_array($badge->badge_product_id))
+						$badge->badge_product_id = explode(',',$badge->badge_product_id);
+					if(!in_array($product_id,$badge->badge_product_id))
+						continue;
 				}
 				$badgesForProduct[] = $badge;
 			}
 		}
-		if(count($badgesForProduct)){
+
+		if(!empty($badgesForProduct)) {
 			$row->badges = $badgesForProduct;
-		}else{
+		} else {
 			$row->badges = null;
 		}
 	}
 
-	function placeBadges(&$image, &$badges, $vertical, $horizontal, $echo = true){
+	public function placeBadges(&$image, &$badges, $vertical, $horizontal, $echo = true) {
 		if(empty($badges))
 			return;
-		$position1 = 0;
-		$position2 = 0;
-		$position3 = 0;
-		$position4 = 0;
+
+		$position1 = 0; $position2 = 0; $position3 = 0; $position4 = 0;
+
 		$backup_main_x = $image->main_thumbnail_x;
 		$backup_main_y = $image->main_thumbnail_y;
-		$width_real= $image->thumbnail_x;
-		$height_real= $image->thumbnail_y;
+
+		$width_real = $image->thumbnail_x;
+		$height_real = $image->thumbnail_y;
 		$html = '';
+
 		$config = hikashop_config();
 
-		foreach($badges as $badge){
-			if($badge->badge_published == 1) {
-				if(!empty($badge->badge_keep_size)){
-					list($badge_width, $badge_height) = getimagesize($image->getPath(@$badge->badge_image,false));
-				}else{
-					$badge_width = intval(($width_real * $badge->badge_size) / 100);
-					$badge_height = intval(($height_real * $badge->badge_size) / 100);
-				}
-				$position = $badge->badge_position;
-				$position_top = $badge->badge_vertical_distance + $vertical;
-				$position_right = $badge->badge_horizontal_distance + $horizontal;
-				$position_left = $badge->badge_horizontal_distance + $horizontal;
-				$position_bottom = $badge->badge_vertical_distance + $vertical;
-				$styletopleft="position: absolute; z-index:2; top: ".$position_top."px; left: ".$position_left."px;margin-top:10px;";
-				$styletopright="position: absolute; z-index:3; top: ".$position_top."px; right: ".$position_right."px;margin-top:10px;";
-				$stylebottomleft="position: absolute; z-index:4; bottom: ".$position_bottom."px; left: ".$position_left."px;margin-bottom:10px;";
-				$stylebottomright="position: absolute; z-index:5; bottom: ".$position_bottom."px; right: ".$position_right."px;margin-bottom:10px;";
-				$image_options = array('default' => true,'forcesize'=>$config->get('image_force_size',true),'scale'=>$config->get('image_scale_mode','inside'));
-				$img = $image->getThumbnail(@$badge->badge_image, array('width' => $badge_width, 'height' => $badge_height), $image_options);
-				if(!$img)
-					continue;
-				$imageDisplayed = '<img class="hikashop_product_badge_image" title="'.htmlentities(@$badge->badge_name).'" alt="'.htmlentities(@$badge->badge_name).'" src="'.$img->url.'"/>';
-				if(!empty($badge->badge_url)){
-					$imageDisplayed='<a href="'.hikashop_cleanURL($badge->badge_url).'">'. $imageDisplayed .'</a>';
-				}
-				if($position == 'topleft' && ($position1 == 0 || $badge->badge_ordering < $position1)) {
-					$html .= '<div class="hikashop_badge_topleft_div" style="' . $styletopleft . '">'.$imageDisplayed.'</div>';
-					$position1 = $badge->badge_ordering;
-				}
-				elseif($position == 'topright' && ($position2 == 0 || $badge->badge_ordering < $position2)) {
-					$html .= '<div class="hikashop_badge_topright_div" style="' . $styletopright . '">'.$imageDisplayed.'</div>';
-					$position2 = $badge->badge_ordering;
-				}
-				elseif($position == 'bottomright' && ($position3 == 0 || $badge->badge_ordering < $position3)) {
-					$html .= '<div class="hikashop_badge_bottomright_div" style="' . $stylebottomright . '">'.$imageDisplayed.'</div>';
-					$position3 = $badge->badge_ordering;
-				}
-				elseif($position == 'bottomleft' && ($position4 == 0 || $badge->badge_ordering < $position4)) {
-					$html .= '<div class="hikashop_badge_bottomleft_div" style="' . $stylebottomleft . '">'.$imageDisplayed.'</div>';
-					$position4 = $badge->badge_ordering;
-				}
+		foreach($badges as $badge) {
+			if(empty($badge->badge_published))
+				continue;
+
+			if(!empty($badge->badge_keep_size)) {
+				list($badge_width, $badge_height) = getimagesize($image->getPath(@$badge->badge_image,false));
+			} else {
+				$badge_width = intval(($width_real * $badge->badge_size) / 100);
+				$badge_height = intval(($height_real * $badge->badge_size) / 100);
+			}
+
+			$position = $badge->badge_position;
+			$position_top = (int)($badge->badge_vertical_distance + $vertical);
+			$position_right = (int)($badge->badge_horizontal_distance + $horizontal);
+			$position_left = (int)($badge->badge_horizontal_distance + $horizontal);
+			$position_bottom = (int)($badge->badge_vertical_distance + $vertical);
+
+			$styletopleft = 'position:absolute; z-index:2; top:'.$position_top.'px; left:'.$position_left.'px; margin-top:10px;';
+			$styletopright = 'position:absolute; z-index:3; top:'.$position_top.'px; right:'.$position_right.'px; margin-top:10px;';
+			$stylebottomleft = 'position:absolute; z-index:4; bottom:'.$position_bottom.'px; left:'.$position_left.'px; margin-bottom:10px;';
+			$stylebottomright = 'position:absolute; z-index:5; bottom:'.$position_bottom.'px; right:'.$position_right.'px; margin-bottom:10px;';
+
+			$image_options = array('default' => true,'forcesize' => $config->get('image_force_size', true), 'scale' => $config->get('image_scale_mode', 'inside'));
+			$img = $image->getThumbnail(@$badge->badge_image, array('width' => $badge_width, 'height' => $badge_height), $image_options);
+			if(!$img)
+				continue;
+
+			$imageDisplayed = '<img class="hikashop_product_badge_image" title="'.htmlentities(@$badge->badge_name).'" alt="'.htmlentities(@$badge->badge_name).'" src="'.$img->url.'"/>';
+			if(!empty($badge->badge_url)) {
+				$imageDisplayed = '<a href="'.hikashop_cleanURL($badge->badge_url).'">'. $imageDisplayed . '</a>';
+			}
+			if($position == 'topleft' && ($position1 == 0 || $badge->badge_ordering < $position1)) {
+				$html .= '<div class="hikashop_badge_topleft_div" style="' . $styletopleft . '">' . $imageDisplayed . '</div>';
+				$position1 = $badge->badge_ordering;
+			}
+			elseif($position == 'topright' && ($position2 == 0 || $badge->badge_ordering < $position2)) {
+				$html .= '<div class="hikashop_badge_topright_div" style="' . $styletopright . '">' . $imageDisplayed . '</div>';
+				$position2 = $badge->badge_ordering;
+			}
+			elseif($position == 'bottomright' && ($position3 == 0 || $badge->badge_ordering < $position3)) {
+				$html .= '<div class="hikashop_badge_bottomright_div" style="' . $stylebottomright . '">' . $imageDisplayed . '</div>';
+				$position3 = $badge->badge_ordering;
+			}
+			elseif($position == 'bottomleft' && ($position4 == 0 || $badge->badge_ordering < $position4)) {
+				$html .= '<div class="hikashop_badge_bottomleft_div" style="' . $stylebottomleft . '">' . $imageDisplayed . '</div>';
+				$position4 = $badge->badge_ordering;
 			}
 		}
+
 		$image->main_thumbnail_x = $backup_main_x;
 		$image->main_thumbnail_y = $backup_main_y;
-		if($echo)
-			echo $html;
-		else
+		if(!$echo)
 			return $html;
+
+		echo $html;
+		return null;
 	}
 
-	function save(&$element) {
+	public function save(&$element) {
 		$isNew = empty($element->badge_id);
 		$status = parent::save($element);
 		if(!$status) {

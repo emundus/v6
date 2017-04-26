@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -58,13 +58,14 @@ class hikashopJoomla_aclType {
 		return $this->groups;
 	}
 
-	public function display($map, $values, $allBtn = false, $min = false) {
+	public function display($map, $values, $allBtn = false, $min = false, $id = '') {
 		hikashop_loadJslib('otree');
 		if(empty($this->groups)) {
 			$this->load();
 		}
 		$map = str_replace('"','',$map);
-		$id = str_replace(array('[',']',' '),array('_','','_'),$map);
+		if(empty($id))
+			$id = str_replace(array('[',']',' '),array('_','','_'),$map);
 		$cpt = count($this->groups)-1;
 
 		$ret = '<div id="'.$id.'_otree" class="oTree"></div><input type="hidden" value="'.$values.'" name="'.$map.'" id="'.$id.'"/>
@@ -226,6 +227,22 @@ window.aclMgr.updateJoomlaAcl = function(el,id,tree_id) {
 			$name = str_repeat('- ', $group->level) . $group->text;
 			$values[] = JHTML::_('select.option', $group->value, $name);
 		}
+		$class = hikashop_get('class.field');
+		$userFields = $class->getData('all','user');
+		if($userFields){
+			$values[] = JHTML::_('select.optgroup','-- '.JText::sprintf('CUSTOM_FIELDS_X',JText::_('HIKA_USER')).' --');
+			foreach($userFields as $field){
+				$values[] = JHTML::_('select.option', 'f'.$field->field_id, $field->field_realname);
+			}
+		}
+		$addressFields = $class->getData('all','address');
+		if($addressFields){
+			$values[] = JHTML::_('select.optgroup','-- '.JText::sprintf('CUSTOM_FIELDS_X',JText::_('ADDRESS')).' --');
+			foreach($addressFields as $field){
+				$values[] = JHTML::_('select.option', 'f'.$field->field_id, $field->field_realname);
+			}
+		}
+
 		return JHTML::_('select.genericlist', $values, $map, 'class="inputbox" size="1"', 'value', 'text', $value);
 	}
 

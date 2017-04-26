@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -82,7 +82,7 @@ defined('_JEXEC') or die('Restricted access');
 										</div>
 									</td>
 
-									<td align="center">
+									<td class="hk_center">
 										<span id="warehouse_<?php echo $i;?>_zone">
 											<?php if(!empty($row->zone_name)){ echo $row->zone_name;} ?>
 											<input type="hidden" name="warehouse[<?php echo $i;?>][zone]" value="<?php echo @$row->zone ?>"/>
@@ -91,7 +91,7 @@ defined('_JEXEC') or die('Restricted access');
 											<img src="<?php echo HIKASHOP_IMAGES; ?>edit.png"/>
 										</a>
 									</td>
-									<td align="center">
+									<td class="hk_center">
 										<a href="#" onclick="return deleteZone('warehouse_<?php echo $i;?>_zone');">
 											<img src="../media/com_hikashop/images/delete.png"/>
 										</a>
@@ -102,7 +102,7 @@ defined('_JEXEC') or die('Restricted access');
 											<option <?php if(@$row->units=='kg')  echo "selected=\"selected\""; ?> value="kg">KG/CM</option>
 										</select>
 									</td>
-									<td align="center">
+									<td class="hk_center">
 										<a href="#" onclick="return deleteRow('warehouse_<?php echo $i;?>_zip','warehouse_<?php echo $i;?>_zip_input','warehouse_<?php echo $i;?>');">
 											<img src="../media/com_hikashop/images/delete.png"/>
 										</a>
@@ -126,7 +126,7 @@ defined('_JEXEC') or die('Restricted access');
 								<input size="10" type="text" id="warehouse_##_zip_input" name="warehouse[##][zip]" value="-"/>
 								</div>
 							</td>
-							<td align="center">
+							<td class="hk_center">
 								<span id="warehouse_##_zone">
 									<input type="hidden" name="warehouse[##][zone]" value=""/>
 								</span>
@@ -134,7 +134,7 @@ defined('_JEXEC') or die('Restricted access');
 									<img src="<?php echo HIKASHOP_IMAGES; ?>edit.png"/>
 								</a>
 							</td>
-							<td align="center">
+							<td class="hk_center">
 								<a href="#" onclick="return deleteZone('warehouse_##_zone');">
 									<img src="../media/com_hikashop/images/delete.png"/>
 								</a>
@@ -145,7 +145,7 @@ defined('_JEXEC') or die('Restricted access');
 									<option value="kg">KG/CM</option>
 								</select>
 							</td>
-							<td align="center">
+							<td class="hk_center">
 								<a href="#" onclick="return deleteRow('warehouse_##_zip','warehouse_##_zip_input','warehouse_##');">
 									<img src="../media/com_hikashop/images/delete.png"/>
 								</a>

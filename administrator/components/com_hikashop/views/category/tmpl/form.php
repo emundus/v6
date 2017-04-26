@@ -1,14 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
-<form action="index.php?option=<?php echo HIKASHOP_COMPONENT ?>&amp;ctrl=category" method="post"  name="adminForm" id="adminForm" enctype="multipart/form-data">
+<form action="<?php echo hikashop_completeLink('category'); ?>" method="post"  name="adminForm" id="adminForm" enctype="multipart/form-data">
 <?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 <div id="page-category">
 	<table style="width:100%">
@@ -53,6 +53,49 @@ defined('_JEXEC') or die('Restricted access');
 								<?php echo JHTML::_('hikaselect.booleanlist', "data[category][category_published]" , '',@$this->element->category_published	); ?>
 							</td>
 						</tr>
+<?php
+	if((isset($this->element->category_type) && $this->element->category_type == 'status') || (isset($this->element->category_namekey) && in_array($this->element->category_namekey, array('root','product','tax','status','created','confirmed','cancelled','refunded','shipped','manufacturer')))) {
+?>
+						<tr style="display:none;">
+							<td></td>
+							<td><input type="hidden" name="data[category][category_parent_id]" value="<?php echo @$this->element->category_parent_id; ?>" /></td>
+						</tr>
+<?php
+	} else {
+		switch(@$this->element->category_type){
+			case 'tax':
+				$type = 'tax_category';
+				break;
+			case 'manufacturer':
+				$type = 'category';
+				break;
+			case 'status':
+				$type = 'order_status';
+				break;
+			default:
+				$type = 'category';
+				break;
+		}
+?>
+						<tr id="category_parent">
+							<td class="key"><?php
+								echo JText::_('CATEGORY_PARENT');
+							?></td>
+							<td><?php
+		echo $this->nameboxType->display(
+			'data[category][category_parent_id]',
+			@$this->element->category_parent_id,
+			hikashopNameboxType::NAMEBOX_SINGLE,
+			$type,
+			array(
+				'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
+			)
+		);
+							?></td>
+						</tr>
+<?php
+	}
+?>
 <?php
 	if(empty($this->element->category_type) || $this->element->category_type=='product') {
 ?>
@@ -134,49 +177,6 @@ defined('_JEXEC') or die('Restricted access');
 	}
 ?>
 					</table>
-<?php
-	if((isset($this->element->category_type) && $this->element->category_type == 'status') || (isset($this->element->category_namekey) && in_array($this->element->category_namekey, array('root','product','tax','status','created','confirmed','cancelled','refunded','shipped','manufacturer')))) {
-?>
-						<input type="hidden" name="data[category][category_parent_id]" value="<?php echo @$this->element->category_parent_id; ?>" />
-<?php
-	} else {
-		switch(@$this->element->category_type){
-			case 'tax':
-				$type = 'tax_category';
-				break;
-			case 'manufacturer':
-				$type = 'category';
-				break;
-			case 'status':
-				$type = 'order_status';
-				break;
-			default:
-				$type = 'category';
-				break;
-		}
-?>
-						<table class="admintable table" id="category_parent">
-							<tr>
-								<td class="key">
-									<?php echo JText::_( 'CATEGORY_PARENT' ); ?>
-								</td>
-								<td><?php
-		echo $this->nameboxType->display(
-			'data[category][category_parent_id]',
-			@$this->element->category_parent_id,
-			hikashopNameboxType::NAMEBOX_SINGLE,
-			$type,
-			array(
-				'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
-			)
-		);
-							?>
-								</td>
-							</tr>
-						</table>
-<?php
-	}
-?>
 				</fieldset>
 <?php if($this->category_image){ ?>
 				<fieldset class="adminform" id="htmlfieldset">

@@ -1,243 +1,311 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-$app = JFactory::getApplication();
-$mainDivName=$this->params->get('main_div_name');
-$carouselEffect=$this->params->get('carousel_effect');
-$enableCarousel=$this->params->get('enable_carousel');
+if( (empty($this->rows) && $this->module && !JRequest::getVar('hikashop_front_end_main', 0)) || empty($this->pageInfo->elements->total) )
+	return;
 
-$textCenterd=$this->params->get('text_center');
-$this->align="left";
-if($textCenterd){
-	$this->align="center";
+if(!empty($this->tmpl_ajax) && empty($this->rows)) {
+	hikashop_cleanBuffers();
+	exit;
 }
-$height=$this->params->get('image_height');
-$width=$this->params->get('image_width');
-$this->borderClass="";
 
-if($this->params->get('border_visible',1) == 1){
-	$this->borderClass="hikashop_subcontainer_border";
+$mainDivName = $this->params->get('main_div_name', '');
+$enableCarousel = (int)$this->params->get('enable_carousel', 0);
+$infinite_scroll = !$enableCarousel && ((int)$this->params->get('infinite_scroll', 0) == 1) && ((int)$this->params->get('random', 0) == 0);
+
+$this->align = (((int)$this->params->get('text_center') == 0) ? 'left' : 'center');
+
+switch((int)$this->params->get('border_visible', 1)) {
+	case 1:
+		$this->borderClass = 'hikashop_subcontainer_border';
+		break;
+	case 2:
+		$this->borderClass = 'thumbnail';
+		break;
+	default:
+		$this->borderClass = '';
+		break;
 }
-if($this->params->get('border_visible',1) == 2){
-	$this->borderClass="thumbnail";
+
+$height = (int)$this->params->get('image_height', 0);
+$width = (int)$this->params->get('image_width', 0);
+
+if(empty($width) && empty($height)) {
+	$width = $this->image->main_thumbnail_x;
+	$height = $this->image->main_thumbnail_y;
 }
-if(empty($width) && empty($height)){
-	$width=$this->image->main_thumbnail_x;
-	$height=$this->image->main_thumbnail_y;
-}
-if(!empty($this->rows)){
+
+if(!empty($this->rows)) {
 	$row = reset($this->rows);
-	$this->image->checkSize($width,$height,$row);
-	$this->newSizes= new stdClass();
-	$this->newSizes->height=$height;
-	$this->newSizes->width=$width;
-	$this->image->main_thumbnail_y=$height;
-	$this->image->main_thumbnail_x=$width;
+	$this->image->checkSize($width, $height, $row);
+	$this->newSizes = new stdClass();
+	$this->newSizes->height = $height;
+	$this->newSizes->width = $width;
+	$this->image->main_thumbnail_y = $height;
+	$this->image->main_thumbnail_x = $width;
 }
-$columns = (int)$this->params->get('columns');
-if(empty($columns) || $columns<1) $columns = 1;
 
-if((!empty($this->rows) || !$this->module || JRequest::getVar('hikashop_front_end_main',0)) && $this->pageInfo->elements->total){
-	$pagination = $this->config->get('pagination','bottom');
-	if(in_array($pagination,array('top','both')) && $this->params->get('show_limit') && $this->pageInfo->elements->total){
-		$this->pagination->form = '_top';
+$columns = max((int)$this->params->get('columns'), 1);
+
+$pagination = $this->config->get('pagination','bottom');
+if(in_array($pagination, array('top', 'both')) && $this->params->get('show_limit') && $this->pageInfo->elements->total && !$infinite_scroll) {
+	$this->pagination->form = '_top';
 ?>
-	<form action="<?php echo hikashop_currentURL(); ?>" method="post" name="adminForm_<?php echo $this->params->get('main_div_name').$this->category_selected;?>_top">
-		<div class="hikashop_products_pagination hikashop_products_pagination_top">
+<form action="<?php echo hikashop_currentURL(); ?>" method="post" name="adminForm_<?php echo $mainDivName . $this->category_selected; ?>_top">
+	<div class="hikashop_products_pagination hikashop_products_pagination_top">
 		<?php echo $this->pagination->getListFooter($this->params->get('limit')); ?>
 		<span class="hikashop_results_counter"><?php echo $this->pagination->getResultsCounter(); ?></span>
-		</div>
-		<input type="hidden" name="filter_order_<?php echo $this->params->get('main_div_name').$this->category_selected;?>" value="<?php echo $this->pageInfo->filter->order->value; ?>" />
-		<input type="hidden" name="filter_order_Dir_<?php echo $this->params->get('main_div_name').$this->category_selected;?>" value="<?php echo $this->pageInfo->filter->order->dir; ?>" />
-		<?php echo JHTML::_( 'form.token' ); ?>
-	</form>
+	</div>
+	<input type="hidden" name="filter_order_<?php echo $mainDivName . $this->category_selected; ?>" value="<?php echo $this->pageInfo->filter->order->value; ?>" />
+	<input type="hidden" name="filter_order_Dir_<?php echo $mainDivName . $this->category_selected; ?>" value="<?php echo $this->pageInfo->filter->order->dir; ?>" />
+	<?php echo JHTML::_('form.token'); ?>
+</form>
+<?php
+}
+
+$attributes = ($columns > 1 && $this->params->get('consistencyheight', 1)) ? ' data-consistencyheight=".hikashop_subcontainer"' : '';
+
+if(empty($this->tmpl_ajax)) {
+?>
+<div class="hikashop_products"<?php echo $attributes; ?>>
+<?php
+}
+
+if(!empty($this->rows)) {
+	if($this->config->get('show_quantity_field') >= 2 && empty($this->tmpl_ajax)) {
+?>
+	<form action="<?php echo hikashop_completeLink('product&task=updatecart'); ?>" method="post" name="hikashop_product_form_<?php echo $mainDivName; ?>" enctype="multipart/form-data">
 <?php
 	}
-	$attributes = '';
-	if($columns>1 && $this->params->get('consistencyheight',1)){
-		$attributes .= 'data-consistencyheight=".hikashop_subcontainer"';
-	}
-?>
-	<div class="hikashop_products" <?php echo $attributes; ?>>
-<?php
 
-	if(!empty($this->rows)){
+	if($enableCarousel) {
+		$this->setLayout('carousel');
+		echo $this->loadTemplate();
+	} else {
+		$width = (int)(100 / $columns) - 1;
+		$current_column = 1;
+		$current_row = 1;
 
-		if ($this->config->get('show_quantity_field')>=2) {
-?>
-		<form action="<?php echo hikashop_completeLink('product&task=updatecart'); ?>" method="post" name="hikashop_product_form_<?php echo $this->params->get('main_div_name'); ?>" enctype="multipart/form-data">
-<?php
-		}
-		if($enableCarousel){
-			$this->setLayout('carousel');
-			echo $this->loadTemplate();
-		}
-		else
-		{
-			$width = (int)(100/$columns)-1;
-			$current_column = 1;
-			$current_row = 1;
-
-			if(HIKASHOP_RESPONSIVE) {
-				$span = 1;
+		switch($columns) {
+			case 12:
+			case 6:
+			case 4:
+			case 3:
+			case 2:
+			case 1:
 				$row_fluid = 12;
-				switch($columns) {
-					case 12:
-					case 6:
-					case 4:
-					case 3:
-					case 2:
-					case 1:
-						$row_fluid = 12;
-						$span = $row_fluid / $columns;
-						break;
-					case 10:
-					case 8:
-					case 7:
-						$row_fluid = $columns;
-						$span = 1;
-						break;
-					case 5:
-						$row_fluid = 10;
-						$span = 2;
-						break;
-					case 9: // special case
-						$row_fluid = 10;
-						$span = 1;
-						break;
-				}
-				$span = constant('HK_GRID_COL_'.$span);
-				if($row_fluid == 12)
-					echo '<div class="'.HK_GRID_ROW.'">';
-				else
-					echo '<div class="row-fluid-'.$row_fluid.'">';
+				$span = $row_fluid / $columns;
+				break;
+			case 10:
+			case 8:
+			case 7:
+				$row_fluid = $columns;
+				$span = 1;
+				break;
+			case 5:
+				$row_fluid = 10;
+				$span = 2;
+				break;
+			case 9: // special case
+				$row_fluid = 10;
+				$span = 1;
+				break;
+		}
 
-				if(HK_GRID_THUMBNAILS !== false && HK_GRID_THUMBNAILS != '')
-					echo '<ul class="'.HK_GRID_THUMBNAILS.'">';
-			}
+		if($row_fluid == 12)
+			echo '<div class="hk-row-fluid">';
+		else
+			echo '<div class="hk-row-fluid hk-row-'.$row_fluid.'">';
 
-			foreach($this->rows as $row){
-				if(!HIKASHOP_RESPONSIVE) {
+		$itemLayoutType = $this->params->get('div_item_layout_type');
+
+		foreach($this->rows as $row) {
 ?>
-			<div class="hikashop_product hikashop_product_column_<?php echo $current_column; ?> hikashop_product_row_<?php echo $current_row; ?>" style="width:<?php echo $width;?>%;">
-				<div class="hikashop_container">
-					<div class="hikashop_subcontainer <?php echo $this->borderClass; ?>">
+		<div class="hkc-md-<?php echo (int)$span; ?> hikashop_product hikashop_product_column_<?php echo $current_column; ?> hikashop_product_row_<?php echo $current_row; ?>">
+			<div class="hikashop_container">
+				<div class="hikashop_subcontainer <?php echo $this->borderClass; ?>">
 <?php
-				} else {
+
+			$this->quantityLayout = $this->getProductQuantityLayout($row);
+
+			$this->row =& $row;
+			$this->setLayout('listing_' . $itemLayoutType);
+			echo $this->loadTemplate();
+			unset($this->row);
 ?>
-			<<?php echo (HK_GRID_THUMBNAILS !== false && HK_GRID_THUMBNAILS != '') ? 'li' : 'div'; ?> class="<?php echo $span; ?> hikashop_product hikashop_product_column_<?php echo $current_column; ?> hikashop_product_row_<?php echo $current_row; ?>">
-				<div class="hikashop_container">
-					<div class="hikashop_subcontainer <?php echo $this->borderClass; ?>">
-<?php
-				}
-
-				if($row->product_parent_id != 0 && isset($row->main_product_quantity_layout)){
-					$row->product_quantity_layout = $row->main_product_quantity_layout;
-				}
-				if(!empty($row->product_quantity_layout) &&  $row->product_quantity_layout != 'inherit'){
-					$qLayout = $row->product_quantity_layout;
-				}else{
-					$categoryQuantityLayout = '';
-					if(!empty($row->categories) ) {
-						foreach($row->categories as $category) {
-							if(!empty($category->category_quantity_layout) && $this->quantityDisplayType->check($category->category_quantity_layout, $app->getTemplate())) {
-								$categoryQuantityLayout = $category->category_quantity_layout;
-								break;
-							}
-						}
-					}
-					if(!empty($categoryQuantityLayout) && $categoryQuantityLayout != 'inherit'){
-						$qLayout = $categoryQuantityLayout;
-					}else{
-						$qLayout = $this->config->get('product_quantity_display','show_default');
-					}
-				}
-				JRequest::setVar('quantitylayout',$qLayout);
-
-				$this->row =& $row;
-				$this->setLayout('listing_'.$this->params->get('div_item_layout_type'));
-				echo $this->loadTemplate();
-
-				if(!HIKASHOP_RESPONSIVE) {
-?>
-					</div>
 				</div>
 			</div>
+		</div>
 <?php
-				} else {
-?>
-					</div>
-				</div>
-			</<?php echo (HK_GRID_THUMBNAILS !== false && HK_GRID_THUMBNAILS != '') ? 'li' : 'div'; ?>>
-<?php
-				}
-				if($current_column>=$columns){
-					$current_row++;
-					if(!HIKASHOP_RESPONSIVE) {
-?>
-			<div style="clear:both"></div>
-<?php
-					}
-					$current_column=0;
-				}
-				$current_column++;
-			}
 
-			if(HIKASHOP_RESPONSIVE) {
-				if(HK_GRID_THUMBNAILS !== false && HK_GRID_THUMBNAILS != '')
-					echo '</ul>';
-				echo '</div>';
+			if($current_column >= $columns) {
+				$current_row++;
+				$current_column = 0;
 			}
+			$current_column++;
 		}
-?>
-			<div style="clear:both"></div>
-<?php
-		if ($this->config->get('show_quantity_field')>=2) {
-			$this->ajax = 'if(hikashopCheckChangeForm(\'item\',\'hikashop_product_form_'.$this->params->get('main_div_name').'\')){ return hikashopModifyQuantity(\'\',field,1,\'hikashop_product_form_'.$this->params->get('main_div_name').'\'); } return false;';
-			$this->row = new stdClass();
-			$this->row->prices = array($this->row);
-			$this->row->product_quantity = -1;
-			$this->row->product_min_per_order = 0;
-			$this->row->product_max_per_order = -1;
-			$this->row->product_sale_start = 0;
-			$this->row->product_sale_end = 0;
-			$this->row->prices = array('filler');
-			$this->params->set('show_quantity_field',2);
-			$this->setLayout('quantity');
-			echo $this->loadTemplate();
-			if(!empty($this->ajax) && $this->config->get('redirect_url_after_add_cart','stay_if_cart')=='ask_user'){
-?>
-			<input type="hidden" name="popup" value="1"/>
-<?php
-			}
-?>
-			<input type="hidden" name="hikashop_cart_type_0" id="hikashop_cart_type_0" value="cart"/>
-			<input type="hidden" name="add" value="1"/>
-			<input type="hidden" name="ctrl" value="product"/>
-			<input type="hidden" name="task" value="updatecart"/>
-			<input type="hidden" name="return_url" value="<?php echo urlencode(base64_encode(urldecode($this->redirect_url)));?>"/>
-		</form>
-<?php
-		}
+
+		echo '</div>';
 	}
 ?>
-	</div>
-	<?php if(in_array($pagination,array('bottom','both')) && $this->params->get('show_limit') && $this->pageInfo->elements->total){ $this->pagination->form = '_bottom'; ?>
-	<form action="<?php echo hikashop_currentURL(); ?>" method="post" name="adminForm_<?php echo $this->params->get('main_div_name').$this->category_selected;?>_bottom">
-		<div class="hikashop_products_pagination hikashop_products_pagination_bottom">
+		<div style="clear:both"></div>
+<?php
+	if($infinite_scroll && empty($this->tmpl_ajax) && $this->pageInfo->elements->page > 1) {
+
+		global $Itemid;
+
+		$filters_params = '';
+		if(!empty($this->filters)){
+			foreach($this->filters as $uniqueFitler){
+				$name = 'filter_'.$uniqueFitler->filter_namekey;
+				$value = JRequest::getVar($name);
+
+				$filters_params .= '&'.$name . '=' . $value;
+
+				$name .= '_values';
+				$value = JRequest::getVar($name);
+				if(empty($value)){
+					continue;
+				}
+
+				$filters_params .= '&'.$name . '=' . $value;
+			}
+		}
+?>
+		<div class="hikashop_infinite_scroll" id="<?php echo $mainDivName; ?>_infinite_scroll">
+			<a href="#" onclick="return window.localPage.infiniteScroll('<?php echo $mainDivName; ?>');">
+				<span><?php echo JText::_('HIKA_LOAD_MORE'); ?></span>
+			</a>
+		</div>
+<script type="text/javascript">
+if(!window.localPage) window.localPage = {};
+window.localPage.infiniteScrollEvents = {};
+window.localPage.infiniteScrollPage = 1;
+window.localPage.infiniteScroll = function(container_name) {
+	if(window.localPage.infiniteScrollPage <= 0)
+		return false;
+
+	var w = window, d = document, o = w.Oby,
+		container = d.getElementById(container_name + '_infinite_scroll');
+
+	if(!container)
+		return false;
+	if(container.loading)
+		return false;
+
+	container.loading = true;
+	o.addClass(container, 'loading');
+
+	var url = '<?php echo HIKASHOP_LIVE; ?>index.php?option=com_hikashop&ctrl=product&task=listing&cid=<?php echo (int)(is_array($this->pageInfo->filter->cid) ? reset($this->pageInfo->filter->cid) : $this->pageInfo->filter->cid); ?>&limitstart=HIKAPAGE<?php echo $filters_params; ?>&Itemid=<?php echo (int)$Itemid; ?>&tmpl=ajax';
+	url = url.replace(/HIKAPAGE/g, <?php echo (int)$this->pageInfo->limit->value; ?> * window.localPage.infiniteScrollPage);
+	o.xRequest(url, null, function(xhr) {
+		if(xhr.responseText.length == 0) {
+			window.localPage.infiniteScrollPage = -1;
+			container.style.display = 'none';
+			container.loading = false;
+			o.removeClass(container, 'loading');
+			return;
+		}
+		var div = d.createElement('div');
+		o.updateElem(div, xhr.responseText);
+		var newNode = container.parentNode.insertBefore(div, container);
+<?php if($this->params->get('consistencyheight', 1)) { ?>
+		if(newNode.getElementsByClassName)
+			elems = newNode.getElementsByClassName('hikashop_subcontainer');
+		else
+			elems = newNode.querySelectorAll('.hikashop_subcontainer');
+		if(elems && elems.length) {
+			window.hikashop.setConsistencyHeight(elems, 'min');
+		}
+<?php } ?>
+		o.removeClass(container, 'loading');
+		container.loading = false;
+		window.localPage.infiniteScrollPage++;
+
+		setTimeout(function(){
+			window.localPage.checkInfiniteScroll('<?php echo $mainDivName; ?>');
+		}, 500);
+	});
+	return false;
+};
+window.localPage.checkInfiniteScroll = function(container_name) {
+	if(window.localPage.infiniteScrollPage < 0)
+		return;
+	var d = document,
+		el = d.getElementById(container_name + '_infinite_scroll');
+	if(!el)
+		return;
+	var top = el.getBoundingClientRect().top;
+	if(top > window.innerHeight)
+		return;
+	window.localPage.infiniteScroll(container_name);
+};
+window.Oby.addEvent(window, 'scroll', function() {
+	window.localPage.checkInfiniteScroll('<?php echo $mainDivName; ?>');
+});
+window.Oby.addEvent(window, 'resize', function() {
+	window.localPage.checkInfiniteScroll('<?php echo $mainDivName; ?>');
+});
+window.hikashop.ready(function() { window.localPage.checkInfiniteScroll('<?php echo $mainDivName; ?>'); });
+</script>
+<?php
+	}
+
+	if($this->config->get('show_quantity_field') >= 2) {
+		$this->ajax = 'if(hikashopCheckChangeForm(\'item\',\'hikashop_product_form_'.$mainDivName.'\')){ return hikashopModifyQuantity(\'\',field,1,\'hikashop_product_form_'.$mainDivName.'\'); } return false;';
+		$this->row = new stdClass();
+		$this->row->prices = array($this->row);
+		$this->row->product_quantity = -1;
+		$this->row->product_min_per_order = 0;
+		$this->row->product_max_per_order = -1;
+		$this->row->product_sale_start = 0;
+		$this->row->product_sale_end = 0;
+		$this->row->formName = 'hikashop_product_form_'.$this->params->get('main_div_name', '');
+		$this->row->prices = array('filler');
+		$this->params->set('show_quantity_field', 2);
+
+		$this->setLayout('quantity');
+		echo $this->loadTemplate();
+		if(!empty($this->ajax) && $this->config->get('redirect_url_after_add_cart', 'stay_if_cart') == 'ask_user') {
+?>
+		<input type="hidden" name="popup" value="1"/>
+<?php
+		}
+?>
+		<input type="hidden" name="hikashop_cart_type_0" id="hikashop_cart_type_0" value="cart"/>
+		<input type="hidden" name="add" value="1"/>
+		<input type="hidden" name="ctrl" value="product"/>
+		<input type="hidden" name="task" value="updatecart"/>
+		<input type="hidden" name="return_url" value="<?php echo urlencode(base64_encode(urldecode($this->redirect_url))); ?>"/>
+	</form>
+<?php
+	}
+}
+
+if(empty($this->tmpl_ajax)) {
+?>
+</div>
+<?php
+}
+
+if(in_array($pagination, array('bottom', 'both')) && $this->params->get('show_limit') && $this->pageInfo->elements->total && !$infinite_scroll) {
+	$this->pagination->form = '_bottom';
+?>
+<form action="<?php echo hikashop_currentURL(); ?>" method="post" name="adminForm_<?php echo $mainDivName . $this->category_selected; ?>_bottom">
+	<div class="hikashop_products_pagination hikashop_products_pagination_bottom">
 		<?php echo $this->pagination->getListFooter($this->params->get('limit')); ?>
 		<span class="hikashop_results_counter"><?php echo $this->pagination->getResultsCounter(); ?></span>
-		</div>
-		<input type="hidden" name="filter_order_<?php echo $this->params->get('main_div_name').$this->category_selected;?>" value="<?php echo $this->pageInfo->filter->order->value; ?>" />
-		<input type="hidden" name="filter_order_Dir_<?php echo $this->params->get('main_div_name').$this->category_selected;?>" value="<?php echo $this->pageInfo->filter->order->dir; ?>" />
-		<?php echo JHTML::_( 'form.token' ); ?>
-	</form>
-<?php }
+	</div>
+	<input type="hidden" name="filter_order_<?php echo $mainDivName . $this->category_selected; ?>" value="<?php echo $this->pageInfo->filter->order->value; ?>" />
+	<input type="hidden" name="filter_order_Dir_<?php echo $mainDivName . $this->category_selected; ?>" value="<?php echo $this->pageInfo->filter->order->dir; ?>" />
+	<?php echo JHTML::_('form.token'); ?>
+</form>
+<?php
 }

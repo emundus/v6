@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -326,11 +326,11 @@ window.localPage.createBox = function(el,href,options) {
 			$shadowboxMode = $config->get('image_popup_mode', 'mootools');
 			$doc = JFactory::getDocument();
 			if($shadowboxMode != 'shadowbox-embbeded') {
-				$doc->addStyleSheet('//www.hikashop.com/cdn/shadowbox/shadowbox.css');
-				$doc->addScript('//www.hikashop.com/cdn/shadowbox/shadowbox.js');
-				$doc->addScriptDeclaration("\r\n".'Shadowbox.init();'."\r\n");
+				$doc->addStyleSheet('https://cdn.hikashop.com/shadowbox/shadowbox.css');
+				$doc->addScript('https://cdn.hikashop.com/shadowbox/shadowbox.js');
+				$doc->addScriptDeclaration("\r\n".'try{ Shadowbox.init(); }catch(e){ console.log("Shadowbox not loaded"); }'."\r\n");
 			}
-			$doc->addScriptDeclaration("\r\n".'(function(){ window.Oby.registerAjax("hkContentChanged", function(){ Shadowbox.clearCache(); Shadowbox.setup(); }); })();'."\r\n");
+			$doc->addScriptDeclaration("\r\n".'(function(){window.Oby.registerAjax("hkContentChanged",function(){Shadowbox.clearCache();Shadowbox.setup();});})();'."\r\n");
 			$init = true;
 		}
 

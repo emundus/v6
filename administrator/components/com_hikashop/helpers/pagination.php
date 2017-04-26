@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -135,7 +135,7 @@ class hikashopBridgePaginationHelper extends JPagination {
 	}
 
 	function _list_footer($list) {
-		$html = '<div class="list-footer">'."\n";
+		$html = '<div class="list-footer pagination pagination-toolbar clearfix">'."\n";
 		if(HIKASHOP_J16) {
 			$display = JText::_('JGLOBAL_DISPLAY_NUM');
 		} else {

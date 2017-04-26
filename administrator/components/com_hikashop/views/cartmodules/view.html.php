@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -31,23 +31,22 @@ class CartmodulesViewCartmodules extends hikashopView{
 		$this->discountDisplayType = hikashop_get('type.discount_display');
 		$this->priceDisplayType = hikashop_get('type.priceDisplay');
 		$this->arr = array(
-			JHTML::_('select.option',  '-1', JText::_( 'HIKA_INHERIT' ) ),
-			JHTML::_('select.option',  '1', JText::_( 'HIKASHOP_YES' ) ),
-			JHTML::_('select.option',  '0', JText::_( 'HIKASHOP_NO' ) ),
+			JHTML::_('select.option', '-1', JText::_('HIKA_INHERIT') ),
+			JHTML::_('select.option', '1', JText::_('HIKASHOP_YES') ),
+			JHTML::_('select.option', '0', JText::_('HIKASHOP_NO') ),
 		);
 		$this->arr[0]->class = 'btn-primary';
 		$this->arr[1]->class = 'btn-success';
 		$this->arr[2]->class = 'btn-danger';
 
 		$this->arr1 = array(
-			JHTML::_('select.option',  '0', JText::_( 'HIKA_DEFAULT' ) ),
-			JHTML::_('select.option',  '1', JText::_( 'HIKA_CUSTOM' ) ),
-			JHTML::_('select.option',  '2', JText::_( 'HIKA_HIDE' ) ),
+			JHTML::_('select.option', '0', JText::_('HIKA_DEFAULT') ),
+			JHTML::_('select.option', '1', JText::_('HIKA_CUSTOM') ),
+			JHTML::_('select.option', '2', JText::_('HIKA_HIDE') ),
 		);
 		$this->arr1[0]->class = 'btn-primary';
 		$this->arr1[1]->class = 'btn-success';
 		$this->arr1[2]->class = 'btn-danger';
-
 
 		$this->type = 'cart';
 		if(preg_match('/wishlist/',$this->name))

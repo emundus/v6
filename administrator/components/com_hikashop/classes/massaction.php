@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -40,13 +40,15 @@ class hikashopMassactionClass extends hikashopClass{
 	}
 
 	function _retreiveData(&$element, $type='trigger'){
-		$var_name='massaction_'.$type.'s';
+		$var_name = 'massaction_'.$type.'s';
 		$element->$var_name = '';
 		$formData = JRequest::getVar( $type, array(), '', 'array' );
 
-		if(count($formData[$element->massaction_table])>1) $element->$var_name = array();
+		if(count($formData[$element->massaction_table]) > 0)
+			$element->$var_name = array();
 		foreach($formData[$element->massaction_table]['type'] as $i => $selection){
-			if(empty($selection)) continue;
+			if(empty($selection))
+				continue;
 			$obj = new stdClass();
 			$obj->name = $selection;
 			$obj->data = array();
@@ -137,9 +139,9 @@ class hikashopMassactionClass extends hikashopClass{
 							$onlyName = true;
 							unset($action['category']);
 						}
+
 						$database = JFactory::getDBO();
 						$ids = array();
-
 						foreach($elements as $element){
 							foreach($element as $key=>$data){
 								if($key == 'category'){
@@ -1358,52 +1360,52 @@ class hikashopMassactionClass extends hikashopClass{
 		}else{
 			switch($filter['operator']){
 				case 'BEGINS':
-					if(preg_match('/^'.$filter['value'].'/i',$element->{$filter['type']})){ $in = true; }
+					if(preg_match('/^'.$filter['value'].'/i',$element->$filter['type'])){ $in = true; }
 					break;
 				case 'END':
-					if(preg_match('/'.$filter['value'].'$/i',$element->{$filter['type']})){ $in = true; }
+					if(preg_match('/'.$filter['value'].'$/i',$element->$filter['type'])){ $in = true; }
 					break;
 				case 'LIKE':
-					if(preg_match('/\b'.$filter['value'].'\b/i',$element->{$filter['type']})){ $in = true; }
+					if(preg_match('/\b'.$filter['value'].'\b/i',$element->$filter['type'])){ $in = true; }
 					break;
 				case 'NOT LIKE':
-					if(!preg_match('/\b'.$filter['value'].'\b/i',$element->{$filter['type']})){ $in = true; }
+					if(!preg_match('/\b'.$filter['value'].'\b/i',$element->$filter['type'])){ $in = true; }
 					break;
 				case 'CONTAINS':
-					if(preg_match('/'.$filter['value'].'/i',$element->{$filter['type']})){ $in = true; }
+					if(preg_match('/'.$filter['value'].'/i',$element->$filter['type'])){ $in = true; }
 					break;
 				case 'NOTCONTAINS':
-					if(!preg_match('/'.$filter['value'].'/i',$element->{$filter['type']})){ $in = true; }
+					if(!preg_match('/'.$filter['value'].'/i',$element->$filter['type'])){ $in = true; }
 					break;
 				case 'REGEXP':
-					if(preg_match($filter['value'],$element->{$filter['type']})){ $in = true;	}
+					if(preg_match($filter['value'],$element->$filter['type'])){ $in = true;	}
 					break;
 				case 'NOT REGEXP':
-					if(!preg_match($filter['value'],$element->{$filter['type']})){ $in = true; }
+					if(!preg_match($filter['value'],$element->$filter['type'])){ $in = true; }
 					break;
 				case 'IS NULL':
-					if($element->{$filter['type']} == null){ $in = true; }
+					if($element->$filter['type'] == null){ $in = true; }
 					break;
 				case 'IS NOT NULL':
-					if($element->{$filter['type']} != null){ $in = true; }
+					if($element->$filter['type'] != null){ $in = true; }
 					break;
 				case '>':
-					if($element->{$filter['type']} > $filter['value']){ $in = true; }
+					if($element->$filter['type'] > $filter['value']){ $in = true; }
 					break;
 				case '<':
-					if($element->{$filter['type']} < $filter['value']){ $in = true; }
+					if($element->$filter['type'] < $filter['value']){ $in = true; }
 					break;
 				case '>=':
-					if($element->{$filter['type']} >= $filter['value']){ $in = true; }
+					if($element->$filter['type'] >= $filter['value']){ $in = true; }
 					break;
 				case '<=':
-					if($element->{$filter['type']} <= $filter['value']){ $in = true; }
+					if($element->$filter['type'] <= $filter['value']){ $in = true; }
 					break;
 				case '!=':
-					if($element->{$filter['type']} != $filter['value']){ $in = true; }
+					if($element->$filter['type'] != $filter['value']){ $in = true; }
 					break;
 				default:
-					if($element->{$filter['type']} == $filter['value']){ $in = true; }
+					if($element->$filter['type'] == $filter['value']){ $in = true; }
 					break;
 			}
 		}
@@ -1669,7 +1671,6 @@ class hikashopMassactionClass extends hikashopClass{
 		foreach($importProducts as $importProduct){
 			$codes[$importProduct->product_id] = $db->quote($importProduct->product_code);
 		}
-
 		$filters = array();
 		if(count($ids)){
 			$filters[] = 'product_id IN('.implode(',', $ids).')';
@@ -1690,13 +1691,15 @@ class hikashopMassactionClass extends hikashopClass{
 		$ids = array();
 		foreach($importProducts as $key => $importProduct){
 			$importProduct->existing = false;
-			foreach($existingProducts as $existingProduct){
-				if($importProduct->product_code == $existingProduct['product_code']){
-					$importProduct->product_id = $existingProduct['product_id'];
-					$importProduct->existing = true;
-				}
-				if($importProduct->product_id == $existingProduct['product_id']){
-					$importProduct->existing = true;
+			if(!empty($existingProducts)){
+				foreach($existingProducts as $existingProduct){
+					if($importProduct->product_code == $existingProduct['product_code']){
+						$importProduct->product_id = $existingProduct['product_id'];
+						$importProduct->existing = true;
+					}
+					if($importProduct->product_id == $existingProduct['product_id']){
+						$importProduct->existing = true;
+					}
 				}
 			}
 			if(!$importProduct->existing){

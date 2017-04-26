@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -22,14 +22,14 @@ class ImportController extends hikashopController
 		$this->db = JFactory::getDBO();
 		$this->modify[]='import';
 		$this->registerDefaultTask('show');
-		$this->helper = hikashop_get('helper.import');
+		$this->importHelper = hikashop_get('helper.import');
 	}
 
 	function import()
 	{
 		JRequest::checkToken('request') || die( 'Invalid Token' );
 		$function = JRequest::getCmd('importfrom');
-		$this->helper->addTemplate(JRequest::getInt('template_product',0));
+		$this->importHelper->addTemplate(JRequest::getInt('template_product',0));
 
 		switch($function){
 			case 'file':
@@ -117,25 +117,25 @@ class ImportController extends hikashopController
 
 	function _textarea(){
 		$content = JRequest::getVar('textareaentries','','','string',JREQUEST_ALLOWRAW);
-		$this->helper->overwrite = JRequest::getInt('textarea_update_products');
-		$this->helper->createCategories = JRequest::getInt('textarea_create_categories');
-		$this->helper->force_published = JRequest::getInt('textarea_force_publish');
-		return $this->helper->handleContent($content);
+		$this->importHelper->overwrite = JRequest::getInt('textarea_update_products');
+		$this->importHelper->createCategories = JRequest::getInt('textarea_create_categories');
+		$this->importHelper->force_published = JRequest::getInt('textarea_force_publish');
+		return $this->importHelper->handleContent($content);
 	}
 
 	function _folder(){
 		$type = JRequest::getCmd('importfolderfrom');
 		$delete = JRequest::getInt('delete_files_automatically');
 		$uploadFolder = JRequest::getVar($type.'_folder','');
-		return $this->helper->importFromFolder($type,$delete,$uploadFolder);
+		return $this->importHelper->importFromFolder($type,$delete,$uploadFolder);
 	}
 
 	function _file(){
 		$importFile =  JRequest::getVar( 'importfile', array(), 'files','array');
-		$this->helper->overwrite = JRequest::getInt('file_update_products');
-		$this->helper->createCategories = JRequest::getInt('file_create_categories');
-		$this->helper->force_published = JRequest::getInt('file_force_publish');
-		return $this->helper->importFromFile($importFile);
+		$this->importHelper->overwrite = JRequest::getInt('file_update_products');
+		$this->importHelper->createCategories = JRequest::getInt('file_create_categories');
+		$this->importHelper->force_published = JRequest::getInt('file_force_publish');
+		return $this->importHelper->importFromFile($importFile);
 	}
 
 

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -52,7 +52,7 @@ window.hikashopLocal.radioEvent = function(el) {
 	$("input[name=\"" + $(el).attr("name") + "\"]").each(function() {
 		if($(this).attr("id") != id) {
 			c = $(this).attr("class");
-			lbl = $("label[for=\"" + jQuery(this).attr("id") + "\"]");
+			lbl = $("label[for=\"" + $(this).attr("id") + "\"]");
 			if(c !== undefined && c.length > 0)
 				lbl.removeClass(c);
 			lbl.removeClass("active");
@@ -150,7 +150,7 @@ $(document).ready(function() {
 			$htmlLabels .= "\n\t"."\n\t" . '<label for="' . $currId . '"' . ' data-default="'.$dataDefault.'" class="btn '.$addClass.($sel ? ' active '.$class : '') .'">' . $t . '</label>';
 		}
 
-		$html .= "\r\n" . '<div class="btn-group'. ($vertical?' btn-group-vertical':'').'" data-toggle="buttons-radio">' . $htmlLabels . "\r\n" . '</div>';
+		$html .= "\r\n" . '<div class="btn-group'. ($vertical?' btn-group-vertical':'').'" data-toggle="">' . $htmlLabels . "\r\n" . '</div>';
 		$html .= "\r\n" . '</div>' . "\r\n";
 		return $html;
 	}

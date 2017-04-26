@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -113,10 +113,12 @@ class CategoryViewCategory  extends HikaShopView {
 					$db->setQuery($queryImage);
 					$images = $db->loadObjectList();
 					foreach($products as $k=>$row){
-						$products[$k]->images = array();
 						foreach($images as $image){
 							if($row->product_id==$image->file_ref_id){
 								foreach(get_object_vars($image) as $key => $name){
+									if(!is_object($products[$k]->images[0])){
+										$products[$k]->images[0] = new stdClass();
+									}
 									$products[$k]->images[0]->$key = $name;
 								}
 								break;
@@ -178,8 +180,8 @@ class CategoryViewCategory  extends HikaShopView {
 			$pathway_sef_name = $config->get('pathway_sef_name','category_pathway');
 			$link = JURI::base().'index.php?option=com_hikashop&amp;ctrl=product&amp;task=show&amp;cid='.$product->product_id.'&amp;name='.$product->alias.'&amp;Itemid='.$Itemid.'&amp;'.$pathway_sef_name.'='.$product->category_id;
 
-			if(!empty($product->prices) && $product->prices['0']->price_value_with_tax != 0 ){
-				$desc = $product->product_description.JText::_('CART_PRODUCT_PRICE').' : '.$currencyClass->format($product->prices[0]->price_value_with_tax,$product->prices[0]->price_currency_id);
+			if($product->prices['0']->price_value_with_tax != 0 ){
+			$desc = $product->product_description.JText::_('CART_PRODUCT_PRICE').' : '.$currencyClass->format($product->prices[0]->price_value_with_tax,$product->prices[0]->price_currency_id);
 			}
 			else{
 				$desc= $product->product_description.JText::_('FREE_PRICE');

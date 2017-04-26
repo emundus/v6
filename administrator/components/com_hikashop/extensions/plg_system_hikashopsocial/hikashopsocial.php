@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -54,6 +54,7 @@ class plgSystemHikashopsocial extends JPlugin {
 				'fb_theme' => 0,
 				'fb_font' => 0,
 				'fb_type' => 0,
+				'fb_mode' => 'fb-like',
 				'twitter_count' => 0,
 				'google_size' => 2,
 				'google_count' => 1
@@ -363,7 +364,10 @@ function twitterPop(str) {
 			foreach($xfbml_options as $k => $v) {
 				$url_options[] = 'data-' . $k . '="' . urlencode($v) . '"';
 			}
-			$html .= '<div class="fb-like" data-href="'.$url.'" '.implode(' ', $url_options).'></div>';
+			if(empty($plugin->params['fb_mode'])){
+				$plugin->params['fb_mode'] = 'fb-like';
+			}
+			$html .= '<div class="'.$plugin->params['fb_mode'].'" data-href="'.$url.'" '.implode(' ', $url_options).'></div>';
 		}
 
 		$html .= '</span>';

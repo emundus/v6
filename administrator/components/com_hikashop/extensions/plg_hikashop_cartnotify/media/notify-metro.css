@@ -1,0 +1,44 @@
+.notifyjs-metro-base,
+.notifyjs-metro-lite-base{
+	position: relative;
+    min-height: 52px;
+    color:#444;
+}
+.notifyjs-metro-base .image {
+	display: table;
+	position: absolute;
+	height: auto;
+	width: auto;
+	left: 25px;
+	top: 50%;
+	-moz-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	-o-transform: translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+}
+.notifyjs-metro-base .text-wrapper,
+.notifyjs-metro-lite-base .text-wrapper {
+	display: inline-block;
+	vertical-align: top;
+	text-align: left;
+	clear: both;
+	font-family: 'Segoe UI';
+}
+.notifyjs-metro-base .text-wrapper {
+	margin: 10px 10px 10px 52px;
+}
+.notifyjs-metro-base .title,
+.notifyjs-metro-lite-base .title {
+	font-size: 15px;
+	font-weight: bold;
+}
+.notifyjs-metro-base .text,
+.notifyjs-metro-lite-base .text {
+	font-size: 12px;
+	font-weight: normal;
+	vertical-align: middle;
+}
+.notifyjs-container {
+	min-width:250px;
+}

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -140,9 +140,9 @@ class OrderController extends hikashopController {
 			return;
 
 		if($field->field_type == 'ajaxfile')
-			$ajaxFileClass = new hikashopAjaxfile($fieldClass);
+			$ajaxFileClass = new hikashopFieldAjaxfile($fieldClass);
 		else
-			$ajaxFileClass = new hikashopAjaximage($fieldClass);
+			$ajaxFileClass = new hikashopFieldAjaximage($fieldClass);
 		$ajaxFileClass->_manageUpload($field, $ret, $map, $uploadConfig, $caller);
 	}
 
@@ -236,19 +236,17 @@ class OrderController extends hikashopController {
 		}else{ //cart type
 			$classCart = hikashop_get('class.cart');
 			if($cart_id == '0'){
-				$cart = $classCart->initCart();
+				$cart = new stdClass();
+				$cart->cart_type = $cart_type;
 				$cart_id = $classCart->save($cart);
 			}
-			$cart = new stdClass();
-			$cart->cart_id = $cart_id;
-			$cart->cart_type = $cart_type;
 
 			JRequest::setVar('cart_type',$cart_type);
 			JRequest::setVar($cart_type.'_id',$cart_id);
 
 			$result = true;
 			foreach($element as $data){
-				if(!$classCart->update($data->product_id, $data->order_product_quantity,1,'cart',false,true)){
+				if(!$classCart->update((int)$data->product_id, $data->order_product_quantity,1,'product',false,true,$cart_id)){
 					$result=false;
 				}
 			}

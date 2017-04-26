@@ -1,47 +1,49 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
+class hikashopOperatorsType {
+	public $extra = '';
+	protected $values = array();
 
-class hikashopOperatorsType{
-	var $extra = '';
-	function __construct(){
-
-		$this->values = array();
-
-		$this->values[] = JHTML::_('select.option', '<OPTGROUP>',JText::_('HIKA_NUMERIC'));
-		$this->values[] = JHTML::_('select.option', '=','=');
-		$this->values[] = JHTML::_('select.option', '!=','!=');
-		$this->values[] = JHTML::_('select.option', '>','>');
-		$this->values[] = JHTML::_('select.option', '<','<');
-		$this->values[] = JHTML::_('select.option', '>=','>=');
-		$this->values[] = JHTML::_('select.option', '<=','<=');
-		$this->values[] = JHTML::_('select.option', '</OPTGROUP>');
-		$this->values[] = JHTML::_('select.option', '<OPTGROUP>',JText::_('HIKA_STRING'));
-		$this->values[] = JHTML::_('select.option', 'BEGINS',JText::_('HIKA_BEGINS_WITH'));
-		$this->values[] = JHTML::_('select.option', 'END',JText::_('HIKA_ENDS_WITH'));
-		$this->values[] = JHTML::_('select.option', 'CONTAINS',JText::_('HIKA_CONTAINS'));
-		$this->values[] = JHTML::_('select.option', 'NOTCONTAINS',JText::_('HIKA_NOT_CONTAINS'));
-		$this->values[] = JHTML::_('select.option', 'LIKE','LIKE');
-		$this->values[] = JHTML::_('select.option', 'NOT LIKE','NOT LIKE');
-		$this->values[] = JHTML::_('select.option', 'REGEXP','REGEXP');
-		$this->values[] = JHTML::_('select.option', 'NOT REGEXP','NOT REGEXP');
-		$this->values[] = JHTML::_('select.option', '</OPTGROUP>');
-		$this->values[] = JHTML::_('select.option', '<OPTGROUP>',JText::_('OTHER'));
-		$this->values[] = JHTML::_('select.option', 'IS NULL','IS NULL');
-		$this->values[] = JHTML::_('select.option', 'IS NOT NULL','IS NOT NULL');
-		$this->values[] = JHTML::_('select.option', '</OPTGROUP>');
-
+	public function __construct() {
+		$this->values = array(
+			JHTML::_('select.option', '<OPTGROUP>', JText::_('HIKA_NUMERIC')),
+			JHTML::_('select.option', '=','='),
+			JHTML::_('select.option', '!=','!='),
+			JHTML::_('select.option', '>','>'),
+			JHTML::_('select.option', '<','<'),
+			JHTML::_('select.option', '>=','>='),
+			JHTML::_('select.option', '<=','<='),
+			JHTML::_('select.option', '</OPTGROUP>'),
+			JHTML::_('select.option', '<OPTGROUP>',JText::_('HIKA_STRING')),
+			JHTML::_('select.option', 'BEGINS',JText::_('HIKA_BEGINS_WITH')),
+			JHTML::_('select.option', 'END',JText::_('HIKA_ENDS_WITH')),
+			JHTML::_('select.option', 'CONTAINS',JText::_('HIKA_CONTAINS')),
+			JHTML::_('select.option', 'NOTCONTAINS',JText::_('HIKA_NOT_CONTAINS')),
+			JHTML::_('select.option', 'LIKE','LIKE'),
+			JHTML::_('select.option', 'NOT LIKE','NOT LIKE'),
+			JHTML::_('select.option', 'REGEXP','REGEXP'),
+			JHTML::_('select.option', 'NOT REGEXP','NOT REGEXP'),
+			JHTML::_('select.option', '</OPTGROUP>'),
+			JHTML::_('select.option', '<OPTGROUP>',JText::_('OTHER')),
+			JHTML::_('select.option', 'IS NULL','IS NULL'),
+			JHTML::_('select.option', 'IS NOT NULL','IS NOT NULL'),
+			JHTML::_('select.option', '</OPTGROUP>'),
+		);
 	}
 
-	function display($map, $default ='', $additionalClass=""){
-		return JHTML::_('select.genericlist', $this->values, $map, 'class="inputbox '.$additionalClass.'" size="1" style="width:120px;" '.$this->extra, 'value', 'text',$default);
+	public function display($map, $default = '', $additionalClass = '') {
+		return JHTML::_('select.genericlist', $this->values, $map, 'class="inputbox '.$additionalClass.'" size="1" style="width:120px;" '.$this->extra, 'value', 'text', $default);
 	}
 
+	public function displayFilter($map, $default = '', $additionalClass = '') {
+		return $this->display($map, $default, $additionalClass);
+	}
 }

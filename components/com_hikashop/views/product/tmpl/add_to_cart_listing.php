@@ -1,13 +1,19 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
+if(!$this->config->get('add_to_cart_legacy', true)) {
+	$this->setLayout('add_to_cart_ajax');
+	echo $this->loadTemplate();
+	return;
+}
+
 if($this->config->get('show_quantity_field') < 2) {
 ?>
 	<form action="<?php echo hikashop_completeLink('product&task=updatecart'); ?>" method="post" name="hikashop_product_form_<?php echo $this->row->product_id.'_'.$this->params->get('main_div_name'); ?>" enctype="multipart/form-data">
@@ -20,17 +26,18 @@ if(empty($this->row->has_options) && ($this->row->product_quantity == -1 || $thi
 		if(isset($this->row->itemFields))
 			$itemFields = $this->row->itemFields;
 		else
-			$itemFields = $this->fieldsClass->getFields('display:field_item_product_listing=1', $this->row, 'item', 'checkout&task=state');
+			$itemFields = $this->fieldsClass->getFields('display:front_product_listing=1', $this->row, 'item', 'checkout&task=state');
 	}
 
-	$display_custom_item_fields = $this->params->get('display_custom_item_fields', 0);
+	$display_custom_item_fields = (int)$this->params->get('display_custom_item_fields', 0);
 	if($display_custom_item_fields == -1){
 		$default_params = $this->config->get('default_params');
-		$display_custom_item_fields = @$default_params['display_custom_item_fields'];
+		$display_custom_item_fields = (int)@$default_params['display_custom_item_fields'];
 	}
 
-	if(!empty($itemFields) && !$display_custom_item_fields) {
-		$this->row->has_options = true;
+	if(!$display_custom_item_fields){
+		if(!empty($this->row->has_required_item_field))
+			$this->row->has_options = true;
 		$itemFields = array();
 	}
 
@@ -52,7 +59,7 @@ if(empty($this->row->has_options) && ($this->row->product_quantity == -1 || $thi
 		<table class="hikashop_product_custom_item_info_table hikashop_product_listing_custom_item_table" width="100%">
 <?php
 		foreach($itemFields as $fieldName => $oneExtraField) {
-			$itemData = JRequest::getString('item_data_'.$fieldName,$this->row->$fieldName);
+			$itemData = JRequest::getString('item_data_'.$fieldName, @$this->row->$fieldName);
 ?>
 			<tr id="hikashop_item_<?php echo $oneExtraField->field_namekey; ?>" class="hikashop_item_<?php echo $oneExtraField->field_namekey;?>_line">
 				<td class="key">
@@ -115,7 +122,7 @@ if($this->config->get('show_quantity_field') < 2) {
 <?php
 } elseif(empty($this->row->has_options) && !$this->config->get('catalogue') && ($this->config->get('display_add_to_cart_for_free_products') || !empty($this->row->prices)) ) {
 	if($this->row->product_quantity == -1 || $this->row->product_quantity > 0) {
-		if(JRequest::getVar('quantitylayout','show_default') != 'show_select') {
+		if(empty($this->quantitylayout) || $this->quantitylayout != 'show_select') {
 ?>
 		<input id="hikashop_listing_quantity_<?php echo $this->row->product_id;?>" type="text" style="width:40px;" name="data[<?php echo $this->row->product_id;?>]" class="hikashop_listing_quantity_field" value="0" />
 <?php

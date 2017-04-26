@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <install version="2.0.0" type="plugin" plugin="charmap" editable="0" core="1" row="2">
 	<name>WF_CHARMAP_TITLE</name>
-	<version>2.6.7.1</version>
-	<creationDate>18-01-2017</creationDate>
+	<version>2.6.11</version>
+	<creationDate>12-04-2017</creationDate>
 	<author>Moxiecode / Ryan Demmer</author>
-	<authorEmail>@@e-mail@@</authorEmail>
+	<authorEmail>info@joomlacontenteditor.net</authorEmail>
 	<authorUrl>http://www.joomlacontenteditor.net/</authorUrl>
 	<copyright>Ryan Demmer</copyright>
 	<license>GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html</license>

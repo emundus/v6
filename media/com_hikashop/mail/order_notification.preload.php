@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -17,7 +17,7 @@ $productClass = hikashop_get('class.product');
 $fieldsClass = hikashop_get('class.field');
 if(hikashop_level(2)) {
 	$null = null;
-	$itemFields = $fieldsClass->getFields('display:field_item_order_notification=1',$null,'item');
+	$itemFields = $fieldsClass->getFields('display:mail_order_notif=1',$null,'item');
 }
 
 global $Itemid;
@@ -32,10 +32,7 @@ $customer = $data->customer;
 $url = $data->order->order_number;
 
 $data->order->order_url = $order_url;
-
-if(!empty($customer->user_cms_id) && (int)$customer->user_cms_id != 0) {
-	$url = '<a href="'.$order_url.'">'. $url.'</a>';
-}
+$url = '<a href="'.$order_url.'">'. $url.'</a>';
 
 $data->cart = $orderClass->loadFullOrder($data->order_id,true,false);
 $data->cart->coupon = new stdClass();
@@ -66,12 +63,16 @@ $vars = array(
 	'user' => $customer,
 	'billing_address' => @$data->cart->billing_address,
 	'shipping_address' => @$data->cart->shipping_address,
+
+	'TPL_HEADER' => (bool)@$customer->user_cms_id,
+	'TPL_HEADER_URL' => $order_url,
 );
 $texts = array(
 	'BILLING_ADDRESS' => JText::_('HIKASHOP_BILLING_ADDRESS'),
 	'SHIPPING_ADDRESS' => JText::_('HIKASHOP_SHIPPING_ADDRESS'),
 	'SUMMARY_OF_YOUR_ORDER' => JText::_('SUMMARY_OF_YOUR_ORDER'),
 	'MAIL_HEADER' => JText::_('HIKASHOP_MAIL_HEADER'),
+	'TPL_HEADER_TEXT' => JText::_('HIKASHOP_MAIL_HEADER'),
 	'USER_ACCOUNT' => (bool)@$customer->user_cms_id,
 	'PRODUCT_NAME' => JText::_('CART_PRODUCT_NAME'),
 	'PRODUCT_CODE' => JText::_('CART_PRODUCT_CODE'),
@@ -101,7 +102,7 @@ if(!empty($data->cart->products)){
 	$texts['CUSTOMFIELD_NAME'] = '';
 	$texts['FOOTER_COLSPAN'] = 3;
 	if(hikashop_level(1)){
-		$fields = $fieldsClass->getFields('display:field_product_order_notification=1',$null,'product');
+		$fields = $fieldsClass->getFields('display:mail_order_notif=1',$null,'product');
 		if(!empty($fields)){
 			$product_customfields = array();
 			$usefulFields = array();
@@ -215,7 +216,7 @@ if(!empty($data->cart->products)){
 				$fileName = empty($file->file_name) ? $file->file_path : $file->file_name;
 				$file_pos = empty($file->file_pos) ? '' : ('&file_pos=' . $file->file_pos);
 				if(empty($customer->user_cms_id))
-					$file_pos .= '&email=' . $customer->user_email;
+					$file_pos .= '&order_token=' . $data->cart->order_token;
 				$t .= '<a href="'.hikashop_frontendLink('index.php?option=com_hikashop&ctrl=order&task=download&file_id='.$file->file_id.'&order_id='.$data->order_id.$file_pos.$url_itemid).'">'.$fileName.'</a><br/>';
 			}
 			$t .= '</p>';

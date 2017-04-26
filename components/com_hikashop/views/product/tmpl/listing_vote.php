@@ -1,19 +1,18 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><span class="hikashop_product_vote">
-<?php
+?><span class="hikashop_product_vote"><?php
 	$js = '';
-	$this->params->set('vote_type','product');
-	$this->params->set('product_id',$this->row->product_id);
-	$this->params->set('main_div_name',$this->params->get('main_div_name'));
+	$this->params->set('vote_type', 'product');
+	$this->params->set('product_id', (int)$this->row->product_id);
+	$this->params->set('average_score', $this->row->product_average_score);
+	$this->params->set('total_vote', (int)$this->row->product_total_vote);
 	$this->params->set('listing_product', true);
 	echo hikashop_getLayout('vote', 'mini', $this->params, $js);
-?>
-</span>
+?></span>
