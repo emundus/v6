@@ -2563,7 +2563,7 @@ class DataModel extends Model implements \JTableInterface
 	/**
 	 * Adds a behaviour by its name. It will search the following classes, in this order:
 	 * \component_namespace\Model\modelName\Behaviour\behaviourName
-	 * \component_namespace\Model\DataModel\Behaviour\behaviourName
+	 * \component_namespace\Model\Behaviour\behaviourName
 	 * \FOF30\Model\DataModel\Behaviour\behaviourName
 	 * where:
 	 * component_namespace  is the namespace of the component as defined in the container

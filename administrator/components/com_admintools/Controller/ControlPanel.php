@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright 2010-2016 Akeeba Ltd / Nicholas K. Dionysopoulos
+ * @copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  */
 
@@ -29,7 +29,8 @@ class ControlPanel extends Controller
 		parent::__construct($container, $config);
 
 		$this->predefinedTaskList = [
-			'browse', 'login', 'updategeoip', 'updateinfo', 'selfblocked', 'unblockme', 'applydlid', 'resetSecretWord', 'forceUpdateDb'
+			'browse', 'login', 'updategeoip', 'updateinfo', 'selfblocked', 'unblockme', 'applydlid', 'resetSecretWord', 'forceUpdateDb',
+			'IpWorkarounds'
 		];
 	}
 
@@ -285,5 +286,32 @@ ENDRESULT;
 		}
 
 		$this->setRedirect('index.php?option=com_admintools');
+	}
+
+	/**
+	 * Enables the IP workarounds option or disables the warning
+	 */
+	public function IpWorkarounds()
+	{
+		$enable = $this->input->getInt('enable', 0);
+		$msg    = null;
+
+		if ($enable)
+		{
+			$msg = JText::_('COM_ADMINTOOLS_CPANEL_ERR_PRIVNET_ENABLED');
+		}
+
+		/** @var \Akeeba\AdminTools\Admin\Model\ControlPanel $model */
+		$model = $this->getModel();
+		$model->setIpWorkarounds($enable);
+
+		if ($customURL = $this->input->getBase64('returnurl', ''))
+		{
+			$customURL = base64_decode($customURL);
+		}
+
+		$returnUrl = $customURL ? $customURL : 'index.php?option=com_admintools&view=ControlPanel';
+
+		$this->setRedirect($returnUrl, $msg);
 	}
 }

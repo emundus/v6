@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright 2010-2016 Akeeba Ltd / Nicholas K. Dionysopoulos
+ * @copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  */
 
@@ -419,6 +419,7 @@ HTML;
 	public function onRedirectionsBrowse()
 	{
 		JToolbarHelper::back('JTOOLBAR_BACK', 'index.php?option=com_admintools');
+		JToolbarHelper::custom('copy', 'copy.png', 'copy_f2.png', 'JLIB_HTML_BATCH_COPY', false);
 		parent::onBrowse();
 		JToolbarHelper::title(JText::_('COM_ADMINTOOLS_TITLE_REDIRS'), 'admintools');
 	}

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  */
 
@@ -157,12 +157,29 @@ class AtsystemFeatureLinkmigration extends AtsystemFeatureAbstract
 	{
 		$this->oldDomains = array();
 
-		$temp = explode("\n", $this->cparams->getValue('migratelist', ''));
+		$list = $this->cparams->getValue('migratelist', '');
+
+		// Do not run if we don't have anything
+		if (!$list)
+		{
+			return;
+		}
+
+		// Sanitize input
+		$list = str_replace("\r", "", $list);
+
+		$temp = explode("\n", $list);
 
 		if (!empty($temp))
 		{
 			foreach ($temp as $entry)
 			{
+				// Skip empty lines
+				if (!$entry)
+				{
+					continue;
+				}
+
 				if (substr($entry, -1) == '/')
 				{
 					$entry = substr($entry, 0, -1);

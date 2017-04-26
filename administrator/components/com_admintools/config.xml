@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 @package   AdminTools
-@copyright 2010-2016 Akeeba Ltd / Nicholas K. Dionysopoulos
+@copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
 @license   GNU General Public License version 3, or later
 -->
 <config>
@@ -52,6 +52,7 @@
 		</field>
 
 		<field name="updatedb" type="hidden" default="" label=""/>
+		<field name="detected_exceptions_from_private_network" type="hidden" default="0" label=""/>
 	</fieldset>
 
 	<fieldset name="frontend" label="COM_ADMINTOOLS_JCONFIG_FRONTEND_LABEL"

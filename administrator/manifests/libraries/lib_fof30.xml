@@ -8,13 +8,13 @@
 		<b>WARNING</b>: This is NOT a duplicate of the FOF library already installed with Joomla!. It is a different version used by other extensions on your site. Do NOT uninstall either FOF package. If you do you will break your site.
 		]]>
 	</description>
-	<creationDate>2016-10-04 19:03:23</creationDate>
+	<creationDate>2016-12-12</creationDate>
 	<author>Nicholas K. Dionysopoulos / Akeeba Ltd</author>
 	<authorEmail>nicholas@akeebabackup.com</authorEmail>
 	<authorUrl>https://www.akeebabackup.com</authorUrl>
 	<copyright>(C)2011-2015 Nicholas K. Dionysopoulos</copyright>
 	<license>GNU GPLv2 or later</license>
-	<version>3.0.15</version>
+	<version>3.0.17</version>
 	<packager>Akeeba Ltd</packager>
 	<packagerurl>https://www.AkeebaBackup.com/download.html</packagerurl>
 

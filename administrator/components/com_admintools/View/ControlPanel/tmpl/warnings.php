@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright 2010-2016 Akeeba Ltd / Nicholas K. Dionysopoulos
+ * @copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  */
 
@@ -12,6 +12,8 @@ defined('_JEXEC') or die;
 $root = realpath(JPATH_ROOT);
 $root = trim($root);
 $emptyRoot = empty($root);
+
+echo $this->loadAnyTemplate('admin:com_admintools/ControlPanel/needsipworkarounds');
 
 ?>
 

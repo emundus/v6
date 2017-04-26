@@ -114,7 +114,7 @@ CREATE TABLE  `#__admintools_log` (
 	`logdate` datetime NOT NULL,
 	`ip` varchar(40) DEFAULT NULL,
 	`url` varchar(255) DEFAULT NULL,
-	`reason` enum('other', 'admindir', 'awayschedule', 'adminpw','ipwl','ipbl','sqlishield','antispam','tpone','tmpl','template','muashield','csrfshield','badbehaviour','geoblocking','rfishield','dfishield','uploadshield','xssshield','httpbl','loginfailure','securitycode', 'sessionshield', 'external') DEFAULT 'other',
+	`reason` enum('other', 'admindir', 'awayschedule', 'adminpw','ipwl','ipbl','sqlishield','antispam','tpone','tmpl','template','muashield','csrfshield','badbehaviour','geoblocking','rfishield','dfishield','uploadshield','xssshield','httpbl','loginfailure','securitycode', 'sessionshield', 'external', 'nonewadmin', 'nonewfrontendadmin', 'configmonitor', 'phpshield') DEFAULT 'other',
 	`extradata` mediumtext,
 	UNIQUE KEY `id` (`id`),
 	KEY `#__admintools_log_logdate_reason` (`logdate`, `reason`)
@@ -341,7 +341,8 @@ ALTER TABLE `#__admintools_log` CHANGE `reason` `reason` ENUM(
 	  'other','adminpw','ipwl','ipbl','sqlishield','antispam', 'wafblacklist',
 			'tpone','tmpl','template','muashield','csrfshield','badbehaviour',
 			'geoblocking','rfishield','dfishield','uploadshield','xssshield',
-			'httpbl', 'loginfailure', 'securitycode', 'external', 'awayschedule', 'admindir', 'sessionshield');
+			'httpbl', 'loginfailure', 'securitycode', 'external', 'awayschedule', 'admindir', 'sessionshield',
+			'nonewadmin', 'nonewfrontendadmin', 'configmonitor', 'phpshield');
 			]]></query>
 		</action>
 
@@ -463,6 +464,28 @@ AND `query`='user[groups]' AND `query_type`='P' AND `query_content`='' AND
 INSERT IGNORE INTO `#__admintools_wafblacklists`
 (`option`, `view`, `task`, `query`, `query_type`, `query_content`, `verb`, `enabled`)
 VALUES ('com_users', '', '', 'user[groups]', 'P', '', '', 1);
+			]]></query>
+		</action>
+
+		<!-- WAF Email Template for Configuration Monitor -->
+		<action table="#__admintools_waftemplates" canfail="1">
+			<condition type="equals" value="0"><![CDATA[
+SELECT COUNT(*) FROM `#__admintools_waftemplates` WHERE `reason` = 'configmonitor';
+			]]></condition>
+			<query><![CDATA[
+INSERT INTO `#__admintools_waftemplates`
+(`admintools_waftemplate_id`, `reason`, `language`, `subject`, `template`, `enabled`, `email_num`, `email_numfreq`, `email_freq`, `created_on`, `created_by`, `modified_on`, `modified_by`)
+VALUES(6, 'configmonitor', '*', 'Configuration options for [AREA] modified on [SITENAME]', '<div style="background-color: #e0e0e0; padding: 10px 20px;">
+<div style="background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;">
+<p>Hello,</p>
+<p>We would like to notify you that the configuration options for [AREA] on your site, [SITENAME], have been modified by user [USER]. More details about the origin of this change as follows:</p>
+<p>IP Address: [IP] (IP Lookup: [LOOKUP])<br />User Agent: [UA]</p>
+<p>If this change was not made by you or an administrator user you trust please review your site immediately as this would be an indication of hacking activity.</p>
+<p>Best regards,</p>
+<p>The [SITENAME] team</p>
+</div>
+<p style="font-size: x-small; color: #667;">You are receiving this automatic email message because you have a subscription in <em>[SITENAME]</em>. <span style="line-height: 1.3em;">Do not reply to this email, it''s sent from an unmonitored email address.</span></p>
+</div>', 1, 0, 0, '', '2016-12-15 10:46:00', 800, '2016-12-15 10:46:00', 800);
 			]]></query>
 		</action>
 

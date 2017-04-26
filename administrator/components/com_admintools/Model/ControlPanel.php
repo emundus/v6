@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright 2010-2016 Akeeba Ltd / Nicholas K. Dionysopoulos
+ * @copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  */
 
@@ -465,5 +465,45 @@ class ControlPanel extends Model
 		}
 
 		return $internalIP;
+	}
+
+	/**
+	 * Checks if we have detected private network IPs AND the IP Workaround feature is turned off
+	 *
+	 * @return bool
+	 */
+	public function needsIpWorkarounds()
+	{
+		$WAFparams = Storage::getInstance();
+		$params    = $this->container->params;
+
+		// If IP Workarounds is disabled AND we have detected private IPs, show the warning
+		if (!$WAFparams->getValue('ipworkarounds', -1) && ($params->get('detected_exceptions_from_private_network') === 1))
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Sets the IP workarounds or ignores the warning
+	 *
+	 * @param $state
+	 */
+	public function setIpWorkarounds($state)
+	{
+		if ($state)
+		{
+			$WAFparams = Storage::getInstance();
+			$WAFparams->setValue('ipworkarounds', 1, true);
+		}
+		else
+		{
+			// If we user wants to ignore the warning, let's set the flag to -1 (ignore)
+			$params = $this->container->params;
+			$params->set('detected_exceptions_from_private_network', -1);
+			$params->save();
+		}
 	}
 }

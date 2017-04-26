@@ -1,12 +1,12 @@
 <extension type="component" version="2.5.0" method="upgrade">
 	<name>Admintools</name>
-	<creationDate>2016-10-25</creationDate>
+	<creationDate>2017-01-27</creationDate>
 	<author>Nicholas K. Dionysopoulos</author>
 	<authorEmail>nicholas@akeebabackup.com</authorEmail>
 	<authorUrl>http://www.akeebabackup.com</authorUrl>
-	<copyright>Copyright (c)2010-2016 Nicholas K. Dionysopoulos</copyright>
+	<copyright>Copyright (c)2010-2017 Nicholas K. Dionysopoulos</copyright>
 	<license>This component in released under the GNU/GPL v3 or later license</license>
-	<version>4.0.2</version>
+	<version>4.1.1</version>
 	<description>Security and utilitarian tools for Joomla! site administrators</description>
 
 	<!-- Public front end files -->

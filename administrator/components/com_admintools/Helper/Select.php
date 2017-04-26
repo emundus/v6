@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright 2010-2016 Akeeba Ltd / Nicholas K. Dionysopoulos
+ * @copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  */
 
@@ -108,7 +108,8 @@ class Select
 			'other', 'adminpw', 'ipwl', 'ipbl', 'sqlishield', 'antispam',
 			'tmpl', 'template', 'muashield', 'csrfshield',
 			'geoblocking', 'rfishield', 'dfishield', 'uploadshield',
-			'httpbl', 'loginfailure', 'external', 'awayschedule', 'admindir'
+			'httpbl', 'loginfailure', 'external', 'awayschedule', 'admindir',
+			'nonewadmins', 'nonewfrontendadmins', 'phpshield'
 		);
 
 		$options = array();
@@ -132,6 +133,7 @@ class Select
 			$options[] = JHtml::_('select.option', 'adminloginfail', JText::_('COM_ADMINTOOLS_WAFEMAILTEMPLATE_REASON_ADMINLOGINFAIL'));
 			$options[] = JHtml::_('select.option', 'adminloginsuccess', JText::_('COM_ADMINTOOLS_WAFEMAILTEMPLATE_REASON_ADMINLOGINSUCCESS'));
 			$options[] = JHtml::_('select.option', 'ipautoban', JText::_('COM_ADMINTOOLS_WAFEMAILTEMPLATE_REASON_IPAUTOBAN'));
+			$options[] = JHtml::_('select.option', 'configmonitor', JText::_('COM_ADMINTOOLS_WAFEMAILTEMPLATE_REASON_CONFIGMONITOR'));
 			unset($attribs['misc']);
 		}
 
@@ -387,6 +389,27 @@ class Select
 		$options[] = JHtml::_('select.option', '2', 'abc; def');
 		$options[] = JHtml::_('select.option', '3', '"abc"; "def"');
 		$options[] = JHtml::_('select.option', '-99', JText::_('COM_ADMINTOOLS_IMPORTANDEXPORT_DELIMITERS_CUSTOM'));
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
+	 * Creates a drop-down list with the possible configuration monitor actions
+	 *
+	 * @param   string  $name      Field name
+	 * @param   array   $attribs   Field attributes
+	 * @param   string  $selected  Selected value
+	 *
+	 * @return  string  The HTML of the field
+	 *
+	 * @since   4.1.0
+	 */
+	public static function configMonitorAction($name, $attribs = null, $selected = null)
+	{
+		$options = array(
+			JHtml::_('select.option', 'email', JText::_('COM_ADMINTOOLS_LBL_CONFIGUREWAF_OPT_CONFIGMONITORACTION_EMAIL')),
+			JHtml::_('select.option', 'block', JText::_('COM_ADMINTOOLS_LBL_CONFIGUREWAF_OPT_CONFIGMONITORACTION_BLOCK')),
+		);
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}

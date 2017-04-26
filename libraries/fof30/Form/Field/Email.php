@@ -151,7 +151,8 @@ class Email extends \JFormFieldEMail implements FieldInterface
 
 		if (!empty($empty_replacement) && empty($this->value))
 		{
-			$this->value = JText::_($empty_replacement);
+            $replacement_key = (string) $this->element['empty_replacement'];
+            $this->value = \JText::_($replacement_key);
 		}
 
 		$value = htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8');
