@@ -286,7 +286,7 @@ class EmundusModelEmails extends JModelList
                 }
             else {
                 $request = explode('|', $value);
-                $val = $this->setTagsFabrik($request[1], array($fnum));                
+                $val = $this->setTagsFabrik($request[1], array($fnum));
                 $replacements[] = eval("$val");
             }
 
@@ -313,23 +313,27 @@ class EmundusModelEmails extends JModelList
         foreach ($tags as $tag) {
             $patterns[] = $tag['tag'];
             $value = preg_replace($constants['patterns'], $constants['replacements'], $tag['request']);
+            $value = $this->setTagsFabrik($value, array($fnum));
+
             if( strpos( $value, 'php|' ) === false ) {
-                $request = explode('|', $value);
+                    $request = explode('|', $value);
                 if (count($request) > 1) {
                     $query = 'SELECT '.$request[0].' FROM '.$request[1].' WHERE '.$request[2];
                     $db->setQuery($query);
                     $replacements[] = $db->loadResult();
+                    
                 } else
                     $replacements[] = $request[0];
             }
             else {
                 $request = explode('|', $value);
-                $val = $this->setTagsFabrik($request[1], array($fnum));                
+                $val = $this->setTagsFabrik($request[1], array($fnum));
                 $replacements[] = eval("$val");
             }
         }
 
         $tags = array('patterns' => $patterns , 'replacements' => $replacements);
+
         return $tags;
     }
 
@@ -351,17 +355,18 @@ class EmundusModelEmails extends JModelList
         $tags = $file->getVariables($str);
         $idFabrik = array();
         $setupTags = array();
-
-        foreach($tags as $i => $val)
-        {
-            $tag = strip_tags($val);
-            if(is_numeric($tag))
+        if(count($tags) > 0) {
+            foreach($tags as $i => $val)
             {
-                $idFabrik[] = $tag;
-            }
-            else
-            {
-                $setupTags[] = $tag;
+                $tag = strip_tags($val);
+                if(is_numeric($tag))
+                {
+                    $idFabrik[] = $tag;
+                }
+                else
+                {
+                    $setupTags[] = $tag;
+                }
             }
         }
 

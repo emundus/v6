@@ -2208,6 +2208,7 @@ class EmundusControllerFiles extends JControllerLegacy
             case 3:
                 // template DOCX
                 require_once JPATH_LIBRARIES.DS.'PHPWord'.DS.'src'.DS.'Autoloader.php';
+                //require_once JPATH_LIBRARIES.DS.'HTMLtoOpenXML'.DS.'HTMLtoOpenXML.php';
 
                 if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
                     \PhpOffice\PhpWord\Autoloader::register();
@@ -2217,7 +2218,9 @@ class EmundusControllerFiles extends JControllerLegacy
                 $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
                 try
                 {
-                    $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
+                    $phpWord = new \PhpOffice\PhpWord\PhpWord();
+                    $preprocess = $phpWord->loadTemplate(JPATH_BASE.$tmpl[0]['file']);
+                    //$preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
                     $tags = $preprocess->getVariables();
                     $idFabrik = array();
                     $setupTags = array();
@@ -2268,13 +2271,17 @@ class EmundusControllerFiles extends JControllerLegacy
                                 {
                                     $val = explode(',', $val['val']);
                                 }
-
-                                foreach($val as $k => $v)
-                                {
-                                    $index = array_search(trim($v),$params->sub_options->sub_values);
-                                    $val[$k] = $params->sub_options->sub_labels[$index];
+                                if(count($val) > 0) {
+                                    foreach($val as $k => $v)
+                                    {
+                                        $index = array_search(trim($v),$params->sub_options->sub_values);
+                                        $val[$k] = $params->sub_options->sub_labels[$index];
+                                    }
+                                    $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
                                 }
-                                $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
+                                else {
+                                    $fabrikValues[$elt['id']][$fnum]['val'] = "";
+                                }
                             }
                         }
                         elseif($elt['plugin'] == "birthday")
@@ -2296,11 +2303,12 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                     foreach($fnumsArray as $fnum)
                     {
-                        $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
+                        //$preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
                         if(isset($fnumsInfos[$fnum]))
                         {
                             foreach($setupTags as $tag)
                             {
+                                $val = "";
                                 $lowerTag = strtolower($tag);
                                 if(array_key_exists($lowerTag, $const))
                                 {
@@ -2320,7 +2328,14 @@ class EmundusControllerFiles extends JControllerLegacy
                                         }
                                         $i++;
                                     }
-                                    $preprocess->setValue($tag, $val);
+                                    // Add HTML to a tag value is not possible....
+                                    /*$phpWord = new \PhpOffice\PhpWord\PhpWord();
+                                    $section = $phpWord->addSection();
+                                    $preprocessHtml = new \PhpOffice\PhpWord\Shared\Html;
+                                    $preprocessHtml->addHtml($section, $val);*/
+
+                                    //$val = HTMLtoOpenXML::getInstance()->fromHTML(str_replace("<br />","<br>", stripslashes($val)));
+                                    $preprocess->setValue($tag, htmlspecialchars($val));
                                 }
                             }
                             foreach($idFabrik as $id)
