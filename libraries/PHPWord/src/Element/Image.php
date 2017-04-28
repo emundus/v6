@@ -11,7 +11,7 @@
  * contributors, visit https://github.com/PHPOffice/PHPWord/contributors.
  *
  * @link        https://github.com/PHPOffice/PHPWord
- * @copyright   2010-2014 PHPWord contributors
+ * @copyright   2010-2016 PHPWord contributors
  * @license     http://www.gnu.org/licenses/lgpl.txt LGPL version 3
  */
 
@@ -35,6 +35,7 @@ class Image extends AbstractElement
     const SOURCE_LOCAL = 'local'; // Local images
     const SOURCE_GD = 'gd'; // Generated using GD
     const SOURCE_ARCHIVE = 'archive'; // Image in archives zip://$archive#$image
+    const SOURCE_STRING = 'string'; // Image from string
 
     /**
      * Image source
@@ -126,6 +127,7 @@ class Image extends AbstractElement
      * @param string $source
      * @param mixed $style
      * @param boolean $watermark
+     *
      * @throws \PhpOffice\PhpWord\Exception\InvalidImageException
      * @throws \PhpOffice\PhpWord\Exception\UnsupportedImageTypeException
      */
@@ -365,7 +367,9 @@ class Image extends AbstractElement
      * Check memory image, supported type, image functions, and proportional width/height.
      *
      * @param string $source
+     *
      * @return void
+     *
      * @throws \PhpOffice\PhpWord\Exception\InvalidImageException
      * @throws \PhpOffice\PhpWord\Exception\UnsupportedImageTypeException
      */
@@ -376,11 +380,13 @@ class Image extends AbstractElement
         // Check image data
         if ($this->sourceType == self::SOURCE_ARCHIVE) {
             $imageData = $this->getArchiveImageSize($source);
+        } else if ($this->sourceType == self::SOURCE_STRING) {
+            $imageData = $this->getStringImageSize($source);
         } else {
             $imageData = @getimagesize($source);
         }
         if (!is_array($imageData)) {
-            throw new InvalidImageException();
+            throw new InvalidImageException(sprintf('Invalid image: %s', $source));
         }
         list($actualWidth, $actualHeight, $imageType) = $imageData;
 
@@ -413,9 +419,15 @@ class Image extends AbstractElement
         } elseif (strpos($source, 'zip://') !== false) {
             $this->memoryImage = false;
             $this->sourceType = self::SOURCE_ARCHIVE;
+        } elseif (filter_var($source, FILTER_VALIDATE_URL) !== false) {
+            $this->memoryImage = true;
+            $this->sourceType = self::SOURCE_GD;
+        } elseif (@file_exists($source)) {
+            $this->memoryImage = false;
+            $this->sourceType = self::SOURCE_LOCAL;
         } else {
-            $this->memoryImage = (filter_var($source, FILTER_VALIDATE_URL) !== false);
-            $this->sourceType = $this->memoryImage ? self::SOURCE_GD : self::SOURCE_LOCAL;
+            $this->memoryImage = true;
+            $this->sourceType = self::SOURCE_STRING;
         }
     }
 
@@ -425,7 +437,9 @@ class Image extends AbstractElement
      * @since 0.12.0 Throws CreateTemporaryFileException.
      *
      * @param string $source
+     *
      * @return array|null
+     *
      * @throws \PhpOffice\PhpWord\Exception\CreateTemporaryFileException
      */
     private function getArchiveImageSize($source)
@@ -453,6 +467,24 @@ class Image extends AbstractElement
         }
 
         return $imageData;
+    }
+
+    /**
+     * get image size from string
+     * 
+     * @param string $source
+     * 
+     * @codeCoverageIgnore this method is just a replacement for getimagesizefromstring which exists only as of PHP 5.4
+     */
+    private function getStringImageSize($source)
+    {
+        if (!function_exists('getimagesizefromstring')) {
+            $uri = 'data://application/octet-stream;base64,'  . base64_encode($source);
+            return @getimagesize($uri);
+        } else {
+            return @getimagesizefromstring($source);
+        }
+        return false;
     }
 
     /**
@@ -517,6 +549,7 @@ class Image extends AbstractElement
      * Get is watermark
      *
      * @deprecated 0.10.0
+     *
      * @codeCoverageIgnore
      */
     public function getIsWatermark()
@@ -528,6 +561,7 @@ class Image extends AbstractElement
      * Get is memory image
      *
      * @deprecated 0.10.0
+     *
      * @codeCoverageIgnore
      */
     public function getIsMemImage()
