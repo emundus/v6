@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2015 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -17,7 +17,7 @@ if (!class_exists('FOF30\\Autoloader\\Autoloader'))
 
 if (!defined('FOF30_INCLUDED'))
 {
-	define('FOF30_INCLUDED', '3.0.17');
+	define('FOF30_INCLUDED', '3.0.21');
 
 	JFactory::getLanguage()->load('lib_fof30', JPATH_SITE, 'en-GB', true);
 	JFactory::getLanguage()->load('lib_fof30', JPATH_SITE, null, true);

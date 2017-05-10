@@ -16,7 +16,7 @@ use Akeeba\AdminTools\Admin\Model\ControlPanel;
 use Akeeba\AdminTools\Admin\Model\GeographicBlocking;
 use Akeeba\AdminTools\Admin\Model\MasterPassword;
 use Akeeba\AdminTools\Admin\Model\Stats;
-use FOF30\Utils\Ip;
+use FOF30\Date\Date;
 use FOF30\View\DataView\Html as BaseView;
 use JText;
 
@@ -245,7 +245,7 @@ class Html extends BaseView
 
 		// Is this a very old version? If it's older than 90 days let's warn the user
 		$this->oldVersion = false;
-		$relDate          = new \JDate(ADMINTOOLS_DATE);
+		$relDate          = new Date(ADMINTOOLS_DATE, 'UTC');
 		$interval         = time() - $relDate->toUnix();
 
 		if ($interval > (60 * 60 * 24 * 90))
@@ -281,7 +281,6 @@ class Html extends BaseView
 		$this->extension_id          = $controlPanelModel->getState('extension_id', 0, 'int');
 		$this->needsdlid             = $controlPanelModel->needsDownloadID();
 		$this->needsQuickSetup       = $controlPanelModel->needsQuickSetupWizard();
-		$this->changeLog             = Coloriser::colorise(JPATH_COMPONENT_ADMINISTRATOR . '/CHANGELOG.php');
 		$this->stuckUpdates          = ($this->container->params->get('updatedb', 0) == 1);
 
 		// Pro version secret word setup
@@ -325,5 +324,10 @@ akeeba.jQuery(document).ready(function(){
 JS;
 		$this->addJavascriptInline($js);
 
+	}
+
+	protected function onBeforeChangelog()
+	{
+		$this->changeLog = Coloriser::colorise(JPATH_COMPONENT_ADMINISTRATOR . '/CHANGELOG.php');
 	}
 }

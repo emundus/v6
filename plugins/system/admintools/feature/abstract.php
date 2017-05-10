@@ -8,6 +8,7 @@
 defined('_JEXEC') or die;
 
 use Akeeba\AdminTools\Admin\Helper\Storage;
+use FOF30\Date\Date;
 
 class AtsystemFeatureAbstract
 {
@@ -47,23 +48,27 @@ class AtsystemFeatureAbstract
 	/** @var null|bool Is this an administrator application? */
 	protected static $isAdmin = null;
 
+	/** @var plgSystemAdmintools  Our parent plugin */
+	protected $parentPlugin = null;
+
 	/** @var   array  Timestamps of the last run of each scheduled task */
 	private $timestamps = array();
 
 	/**
 	 * Public constructor. Creates the feature class.
 	 *
-	 * @param JApplication                              $app               The CMS application
-	 * @param JDatabase                                 $db                The database driver
-	 * @param JRegistry                                 $params            Plugin parameters
-	 * @param Storage                                   $componentParams   Component parameters
-	 * @param JInput                                    $input             Global input object
-	 * @param AtsystemUtilExceptionshandler             $exceptionsHandler Security exceptions handler class (or null if the feature is not implemented)
-	 * @param array                                     $exceptions        A list of WAF exceptions
-	 * @param bool                                      $skipFiltering     Should I skip the filtering?
-	 * @param \Akeeba\AdminTools\Admin\Helper\Plugin    $helper            Common helper for all plugin features
+	 * @param   JApplication                              $app               The CMS application
+	 * @param   JDatabase                                 $db                The database driver
+	 * @param   JRegistry                                 $params            Plugin parameters
+	 * @param   Storage                                   $componentParams   Component parameters
+	 * @param   JInput                                    $input             Global input object
+	 * @param   AtsystemUtilExceptionshandler             $exceptionsHandler Security exceptions handler class (or null if the feature is not implemented)
+	 * @param   array                                     $exceptions        A list of WAF exceptions
+	 * @param   bool                                      $skipFiltering     Should I skip the filtering?
+	 * @param   \Akeeba\AdminTools\Admin\Helper\Plugin    $helper            Common helper for all plugin features
+	 * @param   plgSystemAdmintools                       $parentPlugin      The plugin we belong to
 	 */
-	public function __construct($app, $db, JRegistry &$params, Storage &$componentParams, JInput &$input, &$exceptionsHandler, array &$exceptions, &$skipFiltering, $helper)
+	public function __construct($app, $db, JRegistry &$params, Storage &$componentParams, JInput &$input, &$exceptionsHandler, array &$exceptions, &$skipFiltering, $helper, $parentPlugin)
 	{
 		$this->app               = $app;
 		$this->db                = $db;
@@ -74,6 +79,7 @@ class AtsystemFeatureAbstract
 		$this->exceptions        = $exceptions;
 		$this->skipFiltering     = $skipFiltering;
 		$this->helper            = $helper;
+		$this->parentPlugin      = $parentPlugin;
 	}
 
 	/**
@@ -271,7 +277,7 @@ class AtsystemFeatureAbstract
 	protected function setTimestamp($key)
 	{
 		JLoader::import('joomla.utilities.date');
-		$date = new JDate();
+		$date = new Date();
 
 		$pk = 'timestamp_' . $key;
 		$timestamp = $date->toUnix();

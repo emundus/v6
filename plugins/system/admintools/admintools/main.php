@@ -373,7 +373,7 @@ class plgSystemAdmintools extends JPlugin
 			}
 
 			/** @var AtsystemFeatureAbstract $o */
-			$o = new $className($this->app, $this->db, $this->params, $this->componentParams, $this->input, $this->exceptionsHandler, $this->exceptions, $this->skipFiltering, $this->pluginHelper);
+			$o = new $className($this->app, $this->db, $this->params, $this->componentParams, $this->input, $this->exceptionsHandler, $this->exceptions, $this->skipFiltering, $this->pluginHelper, $this);
 
 			if (!$o->isEnabled())
 			{
@@ -690,17 +690,19 @@ class plgSystemAdmintools extends JPlugin
 	/**
 	 * Execute a feature which is already loaded.
 	 *
-	 * @param       $name
-	 * @param array $arguments
+	 * @param   string  $name
+	 * @param   array   $arguments
 	 *
-	 * @return mixed
+	 * @return  mixed
 	 */
-	protected function runFeature($name, array $arguments)
+	public function runFeature($name, array $arguments)
 	{
 		if (!isset($this->featuresPerHook[$name]))
 		{
-			return;
+			return null;
 		}
+
+		$result = null;
 
 		foreach ($this->featuresPerHook[$name] as $plugin)
 		{
@@ -732,6 +734,70 @@ class plgSystemAdmintools extends JPlugin
 						// Resort to using call_user_func_array for many segments
 						$result = call_user_func_array(array($plugin, $name), $arguments);
 				}
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Execute a feature which is already loaded. The feature returns the boolean AND result of all of the features'
+	 * results.
+	 *
+	 * @param   string  $name
+	 * @param   bool    $default
+	 * @param   array   $arguments
+	 *
+	 * @return  bool
+	 */
+	public function runBooleanFeature($name, $default, array $arguments)
+	{
+		$result = $default;
+
+		if (!isset($this->featuresPerHook[$name]))
+		{
+			return $result;
+		}
+
+		if (!count($this->featuresPerHook[$name]))
+		{
+			return $result;
+		}
+
+		$result = true;
+
+		foreach ($this->featuresPerHook[$name] as $plugin)
+		{
+			if (method_exists($plugin, $name))
+			{
+				// Call_user_func_array is ~3 times slower than direct method calls.
+				// See the on-line PHP documentation page of call_user_func_array for more information.
+				switch (count($arguments))
+				{
+					case 0 :
+						$r = $plugin->$name();
+						break;
+					case 1 :
+						$r = $plugin->$name($arguments[0]);
+						break;
+					case 2:
+						$r = $plugin->$name($arguments[0], $arguments[1]);
+						break;
+					case 3:
+						$r = $plugin->$name($arguments[0], $arguments[1], $arguments[2]);
+						break;
+					case 4:
+						$r = $plugin->$name($arguments[0], $arguments[1], $arguments[2], $arguments[3]);
+						break;
+					case 5:
+						$r = $plugin->$name($arguments[0], $arguments[1], $arguments[2], $arguments[3], $arguments[4]);
+						break;
+					default:
+						// Resort to using call_user_func_array for many segments
+						$r = call_user_func_array(array($plugin, $name), $arguments);
+				}
+
+				$result = $result && $r;
 			}
 		}
 

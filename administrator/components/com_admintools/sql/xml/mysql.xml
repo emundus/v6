@@ -474,8 +474,8 @@ SELECT COUNT(*) FROM `#__admintools_waftemplates` WHERE `reason` = 'configmonito
 			]]></condition>
 			<query><![CDATA[
 INSERT INTO `#__admintools_waftemplates`
-(`admintools_waftemplate_id`, `reason`, `language`, `subject`, `template`, `enabled`, `email_num`, `email_numfreq`, `email_freq`, `created_on`, `created_by`, `modified_on`, `modified_by`)
-VALUES(6, 'configmonitor', '*', 'Configuration options for [AREA] modified on [SITENAME]', '<div style="background-color: #e0e0e0; padding: 10px 20px;">
+(`reason`, `language`, `subject`, `template`, `enabled`, `email_num`, `email_numfreq`, `email_freq`, `created_on`, `created_by`, `modified_on`, `modified_by`)
+VALUES('configmonitor', '*', 'Configuration options for [AREA] modified on [SITENAME]', '<div style="background-color: #e0e0e0; padding: 10px 20px;">
 <div style="background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;">
 <p>Hello,</p>
 <p>We would like to notify you that the configuration options for [AREA] on your site, [SITENAME], have been modified by user [USER]. More details about the origin of this change as follows:</p>
@@ -484,8 +484,73 @@ VALUES(6, 'configmonitor', '*', 'Configuration options for [AREA] modified on [S
 <p>Best regards,</p>
 <p>The [SITENAME] team</p>
 </div>
-<p style="font-size: x-small; color: #667;">You are receiving this automatic email message because you have a subscription in <em>[SITENAME]</em>. <span style="line-height: 1.3em;">Do not reply to this email, it''s sent from an unmonitored email address.</span></p>
 </div>', 1, 0, 0, '', '2016-12-15 10:46:00', 800, '2016-12-15 10:46:00', 800);
+			]]></query>
+		</action>
+
+		<!-- WAF Email Template for Critical Files Monitoring-->
+		<action table="#__admintools_waftemplates" canfail="1">
+			<condition type="equals" value="0"><![CDATA[
+SELECT COUNT(*) FROM `#__admintools_waftemplates` WHERE `reason` = 'criticalfiles';
+			]]></condition>
+			<query><![CDATA[
+INSERT INTO `#__admintools_waftemplates`
+(`reason`, `language`, `subject`, `template`, `enabled`, `email_num`, `email_numfreq`, `email_freq`, `created_on`, `created_by`, `modified_on`, `modified_by`)
+VALUES('criticalfiles', '*', 'Critical file modified on [SITENAME]', '<div style="background-color: #e0e0e0; padding: 10px 20px;">
+<div style="background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;">
+<p>Hello,</p>
+<p>We would like to notify you that one or more critical files have been modified on your site, [SITENAME]. The list of files modified on your site is as follows:</p>
+[INFO]
+<h3>Should I be worried?</h3>
+<p>Critical files, in the context of this email, are the files most usually targeted by hackers upon successful hacking of a site. These files can also be modified for legitimate reasons, for example when you save your site's Global Configuration or when you update Joomla! or one of its templates.</p>
+<p>You should NOT worry if you received this email after you, or another administrator you trust, performed any of the following changes on your site:</p>
+<ul>
+	<li>Restored the site from a backup</li>
+	<li>Modified the Global Configuration</li>
+	<li>Updated Joomla!</li>
+	<li>Updated a site template</li>
+</ul>
+<p>If this message was not sent to you as the result of such a desirable and expected change please review your site immediately as this would be an indication of hacking activity.</p>
+<p>Best regards,</p>
+<p>The [SITENAME] team</p>
+</div>
+</div>', 1, 0, 0, '', '2017-04-05 13:15:00', 800, '2017-04-05 13:15:00', 800);
+			]]></query>
+		</action>
+
+		<!-- WAF Email Template for Super User Monitoring-->
+		<action table="#__admintools_waftemplates" canfail="1">
+			<condition type="equals" value="0"><![CDATA[
+SELECT COUNT(*) FROM `#__admintools_waftemplates` WHERE `reason` = 'superuserslist';
+			]]></condition>
+			<query><![CDATA[
+INSERT INTO `#__admintools_waftemplates`
+(`reason`, `language`, `subject`, `template`, `enabled`, `email_num`, `email_numfreq`, `email_freq`, `created_on`, `created_by`, `modified_on`, `modified_by`)
+VALUES('superuserslist', '*', 'Super Users were added to [SITENAME]', '<div style="background-color: #e0e0e0; padding: 10px 20px;">
+<div style="background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;">
+<p>Hello,</p>
+<p>
+We would like to notify you that we detected the suspicious addition of one or more Super User accounts to your site, [SITENAME]. These new Super User accounts do not seem to have been created through the regular means, i.e. Joomla\'s &ldquo;Users&rdquo; page. Therefore they have been blocked. The new Super User accounts detected <strong>and blocked</strong> are:
+</p>
+[INFO]
+<p>
+<h3>Do I need to worry?</h3>
+<p>
+Super User accounts have full access to your site. They can modify all content, without any restriction. They can also install software which can access or modify every aspect of your site, including arbitrary files, database content and configuration settings. Only grant Super User access to people you trust.
+</p>
+<p>
+If you are receiving this email it means that these Super User accounts were created outside Joomla\'s &ldquo;Users&rdquo; page. Typically this means that a hacker found a way to bypass your site\'s or your server\'s security and tried to surreptitiously create Super User accounts for themselves. For this reason these accounts were blocked, i.e. they cannot be used to log into your site.
+</p>
+<p>
+It is possible, however, that you do receive this email in error: if you or another Super User did intend to create these Super User accounts and used a third party tool to do that. If this is the case then do not worry. Just log in to your site\'s administrator backend with your own Super User account, go to the Users page, edit the users listed further above in this email and unblock them.
+</p>
+<p>
+If you or another Super User did NOT intend to create these Super Users we recommend auditing your site and your server for any other signs of anomalous activity.
+</p>
+<p>Best regards,</p>
+<p>The [SITENAME] team</p>
+</div>
+</div>', 1, 0, 0, '', '2017-04-06 9:50:00', 800, '2017-04-06 9:50:00', 800);
 			]]></query>
 		</action>
 

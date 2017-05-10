@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -16,6 +16,7 @@ use FOF30\Factory\Exception\FormLoadData;
 use FOF30\Factory\Exception\FormLoadFile;
 use FOF30\Factory\Exception\ModelNotFound;
 use FOF30\Factory\Exception\ToolbarNotFound;
+use FOF30\Factory\Exception\FormNotFound;
 use FOF30\Factory\Exception\TransparentAuthenticationNotFound;
 use FOF30\Factory\Exception\ViewNotFound;
 use FOF30\Factory\Scaffolding\Layout\Builder as LayoutBuilder;
@@ -317,8 +318,17 @@ class BasicFactory implements FactoryInterface
 	 */
     public function form($name, $source, $viewName, array $options = array(), $replace = true, $xpath = false)
 	{
-		// Get a new form instance
-		$form = new Form($this->container, $name, $options);
+        $formClass = $this->container->getNamespacePrefix($this->getSection()) . 'Form\\Form';
+
+        try
+        {
+            $form = $this->createForm($formClass, $name, $options);
+        }
+        catch (FormNotFound $e)
+        {
+            // Not found. Return the default Toolbar
+            $form = new Form($this->container, $name, $options);
+        }
 
 		// If $source looks like raw XML data, parse it directly
 		if (strpos($source, '<form') !== false)
@@ -582,6 +592,27 @@ class BasicFactory implements FactoryInterface
 
 		return new $toolbarClass($this->container, $config);
 	}
+
+    /**
+     * Creates a Form object
+     *
+     * @param   string  $formClass     The fully qualified class name for the Form
+     * @param   string  $name          The name of the form
+     * @param   array   $options       The options values for the Form object
+     *
+     * @return  Toolbar
+     *
+     * @throws  FormNotFound  	If the $formClass does not exist
+     */
+    protected function createForm($formClass, $name, array $options = array())
+    {
+        if (!class_exists($formClass))
+        {
+            throw new FormNotFound($formClass);
+        }
+
+        return new $formClass($this->container, $name, $options);
+    }
 
 	/**
 	 * Creates a Dispatcher object

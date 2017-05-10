@@ -8,6 +8,7 @@
 defined('_JEXEC') or die;
 
 use Akeeba\AdminTools\Admin\Helper\Storage;
+use FOF30\Date\Date;
 
 class AtsystemUtilExceptionshandler
 {
@@ -245,7 +246,7 @@ class AtsystemUtilExceptionshandler
 			$url = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment'));
 
 			JLoader::import('joomla.utilities.date');
-			$date = new JDate();
+			$date = new Date();
 
 			$user = JFactory::getUser();
 
@@ -422,12 +423,23 @@ class AtsystemUtilExceptionshandler
 
 				foreach ($recipients as $recipient)
 				{
+					if (empty($recipient))
+					{
+						continue;
+					}
+
 					// This line is required because SpamAssassin is BROKEN
 					$mailer->Priority = 3;
 
 					$mailer->isHtml(true);
 					$mailer->setSender(array($mailfrom, $fromname));
-					$mailer->addRecipient($recipient);
+
+					if ($mailer->addRecipient($recipient) === false)
+					{
+						// Failed to add a recipient?
+						continue;
+					}
+
 					$mailer->setSubject($subject);
 					$mailer->setBody($body);
 					$mailer->Send();
@@ -497,14 +509,14 @@ class AtsystemUtilExceptionshandler
 		}
 
 		JLoader::import('joomla.utilities.date');
-		$jNow = new JDate();
+		$jNow = new Date();
 
 		if ($mindatestamp == 0)
 		{
 			$mindatestamp = $jNow->toUnix() - $numfreq;
 		}
 
-		$jMinDate = new JDate($mindatestamp);
+		$jMinDate = new Date($mindatestamp);
 		$minDate = $jMinDate->toSql();
 
 		$sql = $db->getQuery(true)
@@ -569,7 +581,7 @@ class AtsystemUtilExceptionshandler
 
 		JLoader::import('joomla.utilities.date');
 
-		$jMinDate = new JDate($until);
+		$jMinDate = new Date($until);
 		$minDate = $jMinDate->toSql();
 
 		$record = (object)array(
@@ -688,7 +700,7 @@ class AtsystemUtilExceptionshandler
 			$jlang->load('com_admintools', JPATH_ADMINISTRATOR, null, true);
 
 			// Let's get the most suitable email template
-			$template = $this->getEmailTemplate('ipautoban');
+			$template = $this->getEmailTemplate('ipautoban', true);
 
 			// Got no template, the user didn't published any email template, or the template doesn't want us to
 			// send a notification email. Anyway, let's stop here.
@@ -722,13 +734,20 @@ class AtsystemUtilExceptionshandler
 				$mailer->isHtml(true);
 				$mailer->setSender(array($mailfrom, $fromname));
 				$mailer->addRecipient($this->cparams->getValue('emailafteripautoban', ''));
+
+				if ($this->cparams->getValue('emailafteripautoban', '') === false)
+				{
+					// Failed to add a recipient?
+					throw new RuntimeException('Email address for auto-banned IP notification is empty', 500);
+				}
+
 				$mailer->setSubject($subject);
 				$mailer->setBody($body);
 				$mailer->Send();
 			}
 			catch (\Exception $e)
 			{
-				// Joomla 3.5 is written by incompetent bonobos
+				// Joomla! 3.5 and later throw an exception when crap happens instead of suppressing it and returning false
 			}
 		}
 	}
@@ -736,11 +755,12 @@ class AtsystemUtilExceptionshandler
 	/**
 	 * Gets the email template for a specific security exception reason
 	 *
-	 * @param   string $reason The security exception reason for which to fetch the email template
+	 * @param   string  $reason  The security exception reason for which to fetch the email template
+	 * @param   bool    $exact   Require an exact match of the reason
 	 *
 	 * @return  array
 	 */
-	public function getEmailTemplate($reason)
+	public function getEmailTemplate($reason, $exact = false)
 	{
 		// Let's get the subject and the body from email templates
 		$jlang = JFactory::getLanguage();
@@ -754,6 +774,11 @@ class AtsystemUtilExceptionshandler
 			->where($db->qn('reason') . ' IN(' . $db->q($reason) . ', ' . $db->q('all') . ')')
 			->where($db->qn('language') . ' IN(' . implode(',', $languages) . ')')
 			->where($db->qn('enabled') . ' = ' . $db->q('1'));
+
+		if ($exact)
+		{
+			$query->where($db->qn('reason') . ' = ' . $db->q($reason));
+		}
 
 		try
 		{
@@ -828,14 +853,14 @@ class AtsystemUtilExceptionshandler
 			}
 
 			JLoader::import('joomla.utilities.date');
-			$jNow = new JDate();
+			$jNow = new Date();
 
 			if ($mindatestamp == 0)
 			{
 				$mindatestamp = $jNow->toUnix() - $numfreq;
 			}
 
-			$jMinDate = new JDate($mindatestamp);
+			$jMinDate = new Date($mindatestamp);
 			$minDate = $jMinDate->toSql();
 
 			$sql = $db->getQuery(true)

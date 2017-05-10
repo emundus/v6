@@ -10,7 +10,7 @@
  */
 abstract class WFLanguage
 {
-    protected static $instance;
+    protected static $tag;
 
     /*
      * Check a lnagueg file exists and is the correct version
@@ -28,6 +28,7 @@ abstract class WFLanguage
     public static function getDir()
     {
         $language = JFactory::getLanguage();
+
         $tag = self::getTag();
 
         if ($language->getTag() == $tag) {
@@ -44,18 +45,17 @@ abstract class WFLanguage
      */
     public static function getTag()
     {
-        $language = JFactory::getLanguage();
-        $tag = $language->getTag();
+        $tag = JFactory::getLanguage()->getTag();
 
-        if (!isset(self::$instance)) {
+        if (!isset(self::$tag)) {
             if (self::check($tag)) {
-                self::$instance = $tag;
+                self::$tag = $tag;
             } else {
-                self::$instance = 'en-GB';
+                self::$tag = 'en-GB';
             }
         }
 
-        return self::$instance;
+        return self::$tag;
     }
 
     /**
@@ -78,9 +78,6 @@ abstract class WFLanguage
      */
     public static function load($prefix, $path = JPATH_SITE)
     {
-        $language = JFactory::getLanguage();
-        $tag = self::getTag();
-
-        $language->load($prefix, $path, $tag, true);
+        JFactory::getLanguage()->load($prefix, $path);
     }
 }

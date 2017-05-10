@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -67,12 +67,12 @@ class Parser
 
 	/**
 	 * if we are in parens we can be more liberal with whitespace around
-	 * operators because it must evaluate to a single value and thus is less
+	 * operators because it must resolve to a single value and thus is less
 	 * ambiguous.
 	 *
 	 * Consider:
 	 *     property1: 10 -5; // is two numbers, 10 and -5
-	 *     property2: (10 -5); // should evaluate to 5
+	 *     property2: (10 -5); // should resolve to 5
 	 */
 	protected $inParens = false;
 

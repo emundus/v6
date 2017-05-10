@@ -56,14 +56,18 @@ class AtsystemUtilFilter
 	 *
 	 * This code has been copied from FOF to lower the amount of dependencies required
 	 *
-	 * @param   array  $ipTable  The list of IP expressions
+	 * @param   array   $ipTable  The list of IP expressions
+	 * @param   string  $ip       The user's IP address, leave empty / null to get the current IP address
 	 *
 	 * @return  null|bool  True if it's in the list, null if the filtering can't proceed
 	 */
-	public static function IPinList($ipTable = array())
+	public static function IPinList($ipTable = array(), $ip = null)
 	{
 		// Get our IP address
-		$ip = static::getIp();
+		if (empty($ip))
+		{
+			$ip = static::getIp();
+		}
 
 		// No point proceeding with an empty IP list
 		if (empty($ipTable))

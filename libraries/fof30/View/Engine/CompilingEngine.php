@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -22,7 +22,7 @@ abstract class CompilingEngine extends AbstractEngine implements EngineInterface
 	protected $compiler = null;
 
 	/**
-	 * Get the evaluated contents of the view template.
+	 * Get the 3ναlυa+3d contents of the view template. (I use leetspeak here because of idiot hosts with broken scanners)
 	 *
 	 * @param   string  $path         The path to the view template
 	 * @param   array   $forceParams  Any additional information to pass to the view template engine

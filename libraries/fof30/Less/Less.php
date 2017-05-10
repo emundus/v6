@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -2173,7 +2173,7 @@ class Less
 
 				return $value;
 			case "expression":
-				return $this->evaluate($value);
+				return $this->resolveExpression($value);
 			case "string":
 				foreach ($value[2] as &$part)
 				{
@@ -2394,7 +2394,7 @@ class Less
 	 *
 	 * @return  type
 	 */
-	protected function evaluate($exp)
+	protected function resolveExpression($exp)
 	{
 		list(, $op, $left, $right, $whiteBefore, $whiteAfter) = $exp;
 
@@ -2586,13 +2586,13 @@ class Less
 				case '/':
 					if ($rval == 0)
 					{
-						$this->throwError("evaluate error: can't divide by zero");
+						$this->throwError("resolve error: can't divide by zero");
 					}
 
 					$out[] = $lval / $rval;
 					break;
 				default:
-					$this->throwError('evaluate error: color op number failed on op ' . $op);
+					$this->throwError('resolve error: color op number failed on op ' . $op);
 			}
 		}
 

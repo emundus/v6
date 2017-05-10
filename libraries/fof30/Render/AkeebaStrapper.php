@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -570,9 +570,6 @@ HTML;
 		$show_pagination	 = $form->getAttribute('show_pagination', 1);
 		$norows_placeholder	 = $form->getAttribute('norows_placeholder', '');
 
-		// Joomla! 3.x sidebar support
-		$form_class = '';
-
 		if ($show_filters)
 		{
 			JHtmlSidebar::setAction("index.php?option=" .
@@ -714,7 +711,7 @@ JS;
 			$actionUrl = \JRoute::_($uri->toString());
 		}
 
-		$html .= '<form action="'.$actionUrl.'" method="post" name="adminForm" id="adminForm" ' . $form_class . '>' . "\n";
+		$html .= '<form action="' . $actionUrl . '" method="post" name="adminForm" id="adminForm">' . "\n";
 
 		// Get and output the sidebar, if present
 		$sidebar = JHtmlSidebar::render();

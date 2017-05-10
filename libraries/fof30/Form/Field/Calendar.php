@@ -1,12 +1,14 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
 namespace FOF30\Form\Field;
 
+use FOF30\Date\Date;
+use FOF30\Date\DateDecorator;
 use FOF30\Form\FieldInterface;
 use FOF30\Form\Form;
 use FOF30\Model\DataModel;
@@ -158,7 +160,9 @@ class Calendar extends \JFormFieldCalendar implements FieldInterface
 				if ((int) $this->value)
 				{
 					// Get a date object based on the correct timezone.
-					$date = \JFactory::getDate($this->value, 'UTC');
+					$coreObject = \JFactory::getDate($this->value, 'UTC');
+					$date       = new DateDecorator($coreObject);
+
 					$date->setTimezone(new \DateTimeZone($config->get('offset')));
 
 					// Transform the date string.
@@ -172,7 +176,8 @@ class Calendar extends \JFormFieldCalendar implements FieldInterface
 				if ((int) $this->value)
 				{
 					// Get a date object based on the correct timezone.
-					$date = \JFactory::getDate($this->value, 'UTC');
+					$coreObject = \JFactory::getDate($this->value, 'UTC');
+					$date       = new DateDecorator($coreObject);
 
 					$date->setTimezone(new \DateTimeZone($user->getParam('timezone', $config->get('offset'))));
 
@@ -240,8 +245,8 @@ class Calendar extends \JFormFieldCalendar implements FieldInterface
 			}
 			else
 			{
-				$jDate = new \JDate($this->value);
-				$value = strftime($format, $jDate->getTimestamp());
+				$date  = new Date($this->value);
+				$value = strftime($format, $date->getTimestamp());
 			}
 
 			return '<span class="' . $this->id . ' ' . $class . '">' .

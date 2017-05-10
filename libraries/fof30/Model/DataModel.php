@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -9,6 +9,7 @@ namespace FOF30\Model;
 
 use FOF30\Container\Container;
 use FOF30\Controller\Exception\LockedRecord;
+use FOF30\Date\Date;
 use FOF30\Event\Dispatcher;
 use FOF30\Event\Observer;
 use FOF30\Form\Form;
@@ -2767,7 +2768,7 @@ class DataModel extends Model implements \JTableInterface
 		}
 
 		$db = $this->getDbo();
-		$date = new \JDate();
+		$date = new Date();
 
 		// Update the created_on / modified_on
 		if ($this->hasField('modified_on'))
@@ -2818,7 +2819,7 @@ class DataModel extends Model implements \JTableInterface
 
 		if ($this->hasField('locked_on'))
 		{
-			$date             = new \JDate();
+			$date             = new Date();
 			$locked_on        = $this->getFieldAlias('locked_on');
 			$this->$locked_on = $date->toSql(false, $db);
 		}

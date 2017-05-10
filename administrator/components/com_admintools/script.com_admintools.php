@@ -420,7 +420,7 @@ HTML;
 	{
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true)
-		            ->delete($db->qn('#__update_sites_extensions'))
+		            ->delete($db->qn('#__update_sites'))
 		            ->where($db->qn('location') . ' = ' . $db->q('http://cdn.akeebabackup.com/updates/fof.xml'));
 		try
 		{

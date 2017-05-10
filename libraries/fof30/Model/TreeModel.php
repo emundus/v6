@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -1253,7 +1253,7 @@ class TreeModel extends DataModel
 	}
 
 	/**
-	 * Gets the level (depth) of this node in the tree. The result is cached in $this->treeDepth for faster retrieval.
+	 * Gets the level (depth) of this node in the tree. The result is cached in $this->treeDepth for faster fetch.
 	 *
      * @throws \RuntimeException
      *

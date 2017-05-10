@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -420,99 +420,30 @@ class InstallScript
 	{
 		$db = JFactory::getDbo();
 
-		// Fix broken #__assets records
-		$query = $db->getQuery(true);
-		$query->select('id')
-			->from('#__assets')
-			->where($db->qn('name') . ' = ' . $db->q($this->componentName));
-		$db->setQuery($query);
-
 		try
 		{
-			$ids = $db->loadColumn();
+			// Fix broken #__assets records
+			$this->deleteComponentAssetRecords($db);
+
+			// Fix broken #__extensions records
+			$this->deleteComponentExtensionRecord($db);
+
+			/**
+			 * Fix broken #__menu records
+			 *
+			 * Only run on Joomla! versions lower than 3.7. Joomla! 3.7 introduced a backend menu manager which
+			 * lets the user create missing menu items. Moreover, it lets them create custom links to the component
+			 * which means that our menu deleting code would break them! So we don't run this code in newer Joomla!
+			 * versions any more.
+			 */
+			if (version_compare(JVERSION, '3.6.9999', 'le'))
+			{
+				$this->deleteComponentMenuRecord($db);
+			}
 		}
 		catch (Exception $exc)
 		{
 			return;
-		}
-
-		if (!empty($ids))
-		{
-			foreach ($ids as $id)
-			{
-				$query = $db->getQuery(true);
-				$query->delete('#__assets')
-					->where($db->qn('id') . ' = ' . $db->q($id));
-				$db->setQuery($query);
-
-				try
-				{
-					$db->execute();
-				}
-				catch (Exception $exc)
-				{
-					// Nothing
-				}
-			}
-		}
-
-		// Fix broken #__extensions records
-		$query = $db->getQuery(true);
-		$query->select('extension_id')
-			->from('#__extensions')
-			->where($db->qn('type') . ' = ' . $db->q('component'))
-			->where($db->qn('element') . ' = ' . $db->q($this->componentName));
-		$db->setQuery($query);
-		$ids = $db->loadColumn();
-
-		if (!empty($ids))
-		{
-			foreach ($ids as $id)
-			{
-				$query = $db->getQuery(true);
-				$query->delete('#__extensions')
-					->where($db->qn('extension_id') . ' = ' . $db->q($id));
-				$db->setQuery($query);
-
-				try
-				{
-					$db->execute();
-				}
-				catch (Exception $exc)
-				{
-					// Nothing
-				}
-			}
-		}
-
-		// Fix broken #__menu records
-		$query = $db->getQuery(true);
-		$query->select('id')
-			->from('#__menu')
-			->where($db->qn('type') . ' = ' . $db->q('component'))
-			->where($db->qn('menutype') . ' = ' . $db->q('main'))
-			->where($db->qn('link') . ' LIKE ' . $db->q('index.php?option=' . $this->componentName));
-		$db->setQuery($query);
-		$ids = $db->loadColumn();
-
-		if (!empty($ids))
-		{
-			foreach ($ids as $id)
-			{
-				$query = $db->getQuery(true);
-				$query->delete('#__menu')
-					->where($db->qn('id') . ' = ' . $db->q($id));
-				$db->setQuery($query);
-
-				try
-				{
-					$db->execute();
-				}
-				catch (Exception $exc)
-				{
-					// Nothing
-				}
-			}
 		}
 	}
 
@@ -1698,5 +1629,132 @@ class InstallScript
 		$dependencies = $this->getDependencies($package);
 
 		return in_array($dependency, $dependencies);
+	}
+
+	/**
+	 * Deletes the assets table records for the component
+	 *
+	 * @param   \JDatabaseDriver  $db
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0.18
+	 */
+	private function deleteComponentAssetRecords($db)
+	{
+		$query = $db->getQuery(true);
+		$query->select('id')
+			  ->from('#__assets')
+			  ->where($db->qn('name') . ' = ' . $db->q($this->componentName));
+		$db->setQuery($query);
+
+		$ids = $db->loadColumn();
+
+		if (empty($ids))
+		{
+			return;
+		}
+
+		foreach ($ids as $id)
+		{
+			$query = $db->getQuery(true);
+			$query->delete('#__assets')
+				  ->where($db->qn('id') . ' = ' . $db->q($id));
+			$db->setQuery($query);
+
+			try
+			{
+				$db->execute();
+			}
+			catch (Exception $exc)
+			{
+				// Nothing
+			}
+		}
+	}
+
+	/**
+	 * Deletes the extensions table records for the component
+	 *
+	 * @param   \JDatabaseDriver  $db
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0.18
+	 */
+	private function deleteComponentExtensionRecord($db)
+	{
+		$query = $db->getQuery(true);
+		$query->select('extension_id')
+			  ->from('#__extensions')
+			  ->where($db->qn('type') . ' = ' . $db->q('component'))
+			  ->where($db->qn('element') . ' = ' . $db->q($this->componentName));
+		$db->setQuery($query);
+		$ids = $db->loadColumn();
+
+		if (empty($ids))
+		{
+			return;
+		}
+
+		foreach ($ids as $id)
+		{
+			$query = $db->getQuery(true);
+			$query->delete('#__extensions')
+				  ->where($db->qn('extension_id') . ' = ' . $db->q($id));
+			$db->setQuery($query);
+
+			try
+			{
+				$db->execute();
+			}
+			catch (Exception $exc)
+			{
+				// Nothing
+			}
+		}
+	}
+
+	/**
+	 * Deletes the menu table records for the component
+	 *
+	 * @param   \JDatabaseDriver  $db
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0.18
+	 */
+	private function deleteComponentMenuRecord($db)
+	{
+		$query = $db->getQuery(true);
+		$query->select('id')
+			  ->from('#__menu')
+			  ->where($db->qn('type') . ' = ' . $db->q('component'))
+			  ->where($db->qn('menutype') . ' = ' . $db->q('main'))
+			  ->where($db->qn('link') . ' LIKE ' . $db->q('index.php?option=' . $this->componentName));
+		$db->setQuery($query);
+		$ids = $db->loadColumn();
+
+		if (empty($ids))
+		{
+			return;
+		}
+
+		foreach ($ids as $id)
+		{
+			$query = $db->getQuery(true);
+			$query->delete('#__menu')
+				  ->where($db->qn('id') . ' = ' . $db->q($id));
+			$db->setQuery($query);
+
+			try
+			{
+				$db->execute();
+			}
+			catch (Exception $exc)
+			{
+				// Nothing
+			}
+		}
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -19,9 +19,13 @@ class OpenSSL extends AbstractAdapter implements AdapterInterface
 	/**
 	 * The OpenSSL options for encryption / decryption
 	 *
+	 * PHP 5.3 does not have the constants OPENSSL_RAW_DATA and OPENSSL_ZERO_PADDING. In fact, the parameter
+	 * is called $raw_data and is a boolean. Since integer 1 is equivalent to boolean TRUE in PHP we can get
+	 * away with initializing this parameter with the integer 1.
+	 *
 	 * @var  int
 	 */
-	protected $openSSLOptions = 0;
+	protected $openSSLOptions = 1;
 
 	/**
 	 * The encryption method to use
@@ -32,7 +36,18 @@ class OpenSSL extends AbstractAdapter implements AdapterInterface
 
 	public function __construct()
 	{
-		$this->openSSLOptions = OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING;
+		/**
+		 * PHP 5.4 and later replaced the $raw_data parameter with the $options parameter. Instead of a boolean we need
+		 * to pass some flags. Here you go.
+		 *
+		 * Since PHP 5.3 does NOT have the relevant constants we must NOT run this bit of code under PHP 5.3.
+		 *
+		 * See http://stackoverflow.com/questions/24707007/using-openssl-raw-data-param-in-openssl-decrypt-with-php-5-3#24707117
+		 */
+		if (version_compare(PHP_VERSION, '5.4.0', 'ge'))
+		{
+			$this->openSSLOptions = OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING;
+		}
 	}
 
 	public function setEncryptionMode($mode = 'cbc', $strength = 128)

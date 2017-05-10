@@ -52,21 +52,16 @@ JHtml::_('behavior.modal');
 						</a>
 					</p>
 
-					<div class="modal fade" id="akeeba-changelog" tabindex="-1" role="dialog" aria-labelledby="changelogDialogLabel" aria-hidden="true" style="display:none;">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-									<h4 class="modal-title" id="changelogDialogLabel">
-										<?php echo \JText::_('CHANGELOG'); ?>
-									</h4>
-								</div>
-								<div class="modal-body" id="DialogBody">
-									<?php echo $this->changeLog; ?>
-
-								</div>
-							</div>
-						</div>
+					<div class="modal hide fade" id="akeeba-changelog" tabindex="-1" role="dialog" aria-labelledby="changelogDialogLabel" aria-hidden="true">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h3 class="modal-title" id="changelogDialogLabel">
+								<?php echo \JText::_('CHANGELOG'); ?>
+                            </h3>
+                        </div>
+                        <div class="modal-body" id="DialogBody">
+                            <iframe frameborder="0" width="100%" height="400px" src="index.php?option=com_admintools&view=ControlPanel&task=changelog&tmpl=component"></iframe>
+                        </div>
 					</div>
 					<!-- CHANGELOG :: END -->
 

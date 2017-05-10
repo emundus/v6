@@ -1,4 +1,43 @@
 <?php die() ?>
+Admin Tools 4.1.3
+================================================================================
+! The workaround to Joomla! 3.7's date bugs could cause a blank / error page (with an error about double timezone) under some circumstances.
+! Joomla! 3.7.0 broke backwards compatibility again, making CLI scripts fail.
+! Joomla! 3.7.0 broke the JDate package, effectively ignoring timezones, causing grave errors in date / time calculations and display
++ gh-115 Monitor critical files and receive an email when they change
++ gh-116 Monitor Super Users, receive an email when Super Users are added outside of Joomla's Users page and automatically block them
+~ Record creation date of .htaccess / nginx.conf / web.config in the user's local timezone instead of GMT in the file's header
+~ PHP File Change Scanners now display dates and times in the user's local timezone
+~ Show local timezone in the security exceptions and auto-blocked IP addresses views
+~ Suppress misleading login failure emails for blacklisted IPs.
+~ Suppress the Joomla mail system's error message when trying to send an email to an email which is empty or invalid
+~ Disable RFIShield when it's not necessary. See https://www.akeebabackup.com/home/news/1674-not-a-vulnerability-in-admin-tools.html
+~ Workaround for badly configured servers which print out notices before we have the chance to set the error reporting
+~ Workaround for NginX choking on CRLF line endings if they are accidentally present in the NginX Conf Maker generated file
+# [LOW] Work around Joomla bugs which prevented the CHANGELOG from being rendered correctly in the Control Panel page
+# [LOW] www to non-www redirection sometimes fails if the site is in a subdirectory
+# [LOW] Joomla! 3.7 added a fixed width to specific button classes in the toolbar, breaking the page layout
+# [LOW] Fixed detecting if IP workarounds are needed during QuickStart
+
+Admin Tools 4.1.2
+================================================================================
+! Joomla! 3.7.0 broke backwards compatibility again, making CLI scripts fail.
+! Joomla! 3.7.0 broke the JDate package, effectively ignoring timezones, causing grave errors in date / time calculations and display
++ gh-115 Monitor critical files and receive an email when they change
++ gh-116 Monitor Super Users, receive an email when Super Users are added outside of Joomla's Users page and automatically block them
+~ Record creation date of .htaccess / nginx.conf / web.config in the user's local timezone instead of GMT in the file's header
+~ PHP File Change Scanners now display dates and times in the user's local timezone
+~ Show local timezone in the security exceptions and auto-blocked IP addresses views
+~ Suppress misleading login failure emails for blacklisted IPs.
+~ Suppress the Joomla mail system's error message when trying to send an email to an email which is empty or invalid
+~ Disable RFIShield when it's not necessary. See https://www.akeebabackup.com/home/news/1674-not-a-vulnerability-in-admin-tools.html
+~ Workaround for badly configured servers which print out notices before we have the chance to set the error reporting
+~ Workaround for NginX choking on CRLF line endings if they are accidentally present in the NginX Conf Maker generated file
+# [LOW] Work around Joomla bugs which prevented the CHANGELOG from being rendered correctly in the Control Panel page
+# [LOW] www to non-www redirection sometimes fails if the site is in a subdirectory
+# [LOW] Joomla! 3.7 added a fixed width to specific button classes in the toolbar, breaking the page layout
+# [LOW] Fixed detecting if IP workarounds are needed during QuickStart
+
 Admin Tools 4.1.1
 ================================================================================
 ! PHP fatal error if the blocked IP was from a private network and you didn't have any plugin loading FOF 3 already installed

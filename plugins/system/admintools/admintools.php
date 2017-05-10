@@ -82,6 +82,12 @@ if (defined('JDEBUG') && JDEBUG)
 	}
 }
 
+// Include the standalone FOF 3.0 Date package
+if (!class_exists('FOF30\Date\Date', true))
+{
+	include_once JPATH_LIBRARIES . '/fof30/Date/Date.php';
+}
+
 // Import main plugin file
 if (!class_exists('AtsystemAdmintoolsMain', true))
 {

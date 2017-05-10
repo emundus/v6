@@ -1,13 +1,14 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
 namespace FOF30\Platform;
 
 use FOF30\Container\Container;
+use FOF30\Date\Date;
 use FOF30\Input\Input;
 
 defined('_JEXEC') or die;
@@ -228,7 +229,7 @@ interface PlatformInterface
 	 * @param   null    $tzOffest   The timezone offset
 	 * @param   bool    $locale     Should I try to load a specific class for current language?
 	 *
-	 * @return  \JDate object
+	 * @return  Date object
 	 */
 	public function getDate($time = 'now', $tzOffest = null, $locale = true);
 

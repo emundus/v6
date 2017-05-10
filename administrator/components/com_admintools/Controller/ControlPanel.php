@@ -29,8 +29,17 @@ class ControlPanel extends Controller
 		parent::__construct($container, $config);
 
 		$this->predefinedTaskList = [
-			'browse', 'login', 'updategeoip', 'updateinfo', 'selfblocked', 'unblockme', 'applydlid', 'resetSecretWord', 'forceUpdateDb',
-			'IpWorkarounds'
+			'browse',
+			'login',
+			'updategeoip',
+			'updateinfo',
+			'selfblocked',
+			'unblockme',
+			'applydlid',
+			'resetSecretWord',
+			'forceUpdateDb',
+			'IpWorkarounds',
+		    'changelog'
 		];
 	}
 
@@ -313,5 +322,13 @@ ENDRESULT;
 		$returnUrl = $customURL ? $customURL : 'index.php?option=com_admintools&view=ControlPanel';
 
 		$this->setRedirect($returnUrl, $msg);
+	}
+
+	public function changelog()
+	{
+		$view = $this->getView();
+		$view->setLayout('changelog');
+
+		$this->display(true);
 	}
 }

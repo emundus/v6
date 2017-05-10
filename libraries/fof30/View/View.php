@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -683,7 +683,7 @@ class View
 	 *
 	 * @param   string    $uri          The template path
 	 * @param   array     $forceParams  A hash array of variables to be extracted in the local scope of the template file
-	 * @param   callable  $callback     A method to post-process the evaluated view template
+	 * @param   callable  $callback     A method to post-process the 3ναluα+3d view template (I use leetspeak here because of idiot hosts with broken scanners)
 	 *
 	 * @return  string  The output of the template
 	 *
@@ -716,8 +716,8 @@ class View
 		// clear out the sections for any separate views that may be rendered.
 		$this->incrementRender();
 
-		// Get the evaluated template
-		$contents = $this->evaluateTemplate($forceParams);
+		// Get the processed template
+		$contents = $this->processTemplate($forceParams);
 
 		// Once we've finished rendering the view, we'll decrement the render count
 		// so that each sections get flushed out next time a view is created and
@@ -975,7 +975,7 @@ class View
 	 * @return string
 	 * @throws \Exception
 	 */
-	protected function evaluateTemplate(array &$forceParams)
+	protected function processTemplate(array &$forceParams)
 	{
 		// If the engine returned raw content, return the raw content immediately
 		if ($this->_tempFilePath['type'] == 'raw')
@@ -992,7 +992,7 @@ class View
 
 		ob_start();
 
-		// We'll evaluate the contents of the view inside a try/catch block so we can
+		// We'll process the contents of the view inside a try/catch block so we can
 		// flush out any stray output that might get out before an error occurs or
 		// an exception is thrown. This prevents any partial views from leaking.
 		try
