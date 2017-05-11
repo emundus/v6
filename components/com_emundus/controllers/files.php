@@ -704,7 +704,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $to = $file['email'];
                                 $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
                                 $body = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['message']);
-                                $body = $emails->setTagsFabrik($body);
+                                $body = $emails->setTagsFabrik($body, array($file['fnum']));
 
                                 $sender = array(
                                     $email_from_sys,
@@ -734,7 +734,6 @@ class EmundusControllerFiles extends JControllerLegacy
                                     $msg .= JText::_('EMAIL_SENT').' : '.$to.'<br>';
                                     JLog::add($to.' '.$body, JLog::INFO, 'com_emundus.email');
                                 }
-
                             }
                         }
                         foreach ($trigger['to']['recipients'] as $key => $recipient) {
@@ -749,7 +748,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             $to = $recipient['email'];
                             $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
                             $body = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['message']);
-                            $body = $emails->setTagsFabrik($body);
+                            $body = $emails->setTagsFabrik($body, $validFnums);
 
                             $sender = array(
                                     $email_from_sys,

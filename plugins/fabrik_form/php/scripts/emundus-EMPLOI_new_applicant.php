@@ -155,7 +155,7 @@ if (count($trigger_emails) > 0) {
                 $to_id = $recipient['id'];
                 $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
                 $body = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['message']);
-                $body = $emails->setTagsFabrik($body);
+                $body = $emails->setTagsFabrik($body, array($student->fnum));
 
                 //$attachment[] = $path_file;
 

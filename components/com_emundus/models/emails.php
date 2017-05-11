@@ -570,7 +570,7 @@ class EmundusModelEmails extends JModelList
                 $tags = $this->setTags($student_id, $post, $fnum);
 
                 $body = preg_replace($tags['patterns'], $tags['replacements'], $mail_body);
-                $body = $this->setTagsFabrik($body);
+                $body = $this->setTagsFabrik($body, array($fnum));
 
                 //$sent = JUtility::sendMail($mail_from, $mail_from_name, $m_to, $mail_subject, $body, $mode, $mail_cc, null, @$mail_attachments);
                 $app    = JFactory::getApplication();
