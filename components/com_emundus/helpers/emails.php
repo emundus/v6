@@ -28,7 +28,17 @@ class EmundusHelperEmails
 	function createEmailBlock($params, $users = null)
 	{
 		$jinput = JFactory::getApplication()->input;
-		$itemid = $jinput->get('Itemid', null, 'INT'); //JRequest::getVar('Itemid', null, 'GET', null, 0);
+		$itemid = $jinput->get('Itemid', null, 'INT'); 
+		$fnums = $jinput->get('fnums', null, 'RAW');
+
+		$fnumsArray = (array) json_decode($fnums);
+		if (count($fnumsArray) > 0) {
+			foreach ($fnumsArray as $key => $value) {
+				$fnums_tab[] = $value->fnum;
+			}
+			$fnums = json_encode($fnums_tab);
+		}
+
 		$current_user = JFactory::getUser();
 		$email = '<div class="em_email_block" id="em_email_block">';
 		$email.= '<input placeholder="'.JText::_( 'EMAIL_FROM' ).'" name="mail_from_name" type="text" class="inputbox input-xlarge" id="mail_from_name" value="'.$current_user->name.'" /> ';
@@ -50,16 +60,6 @@ class EmundusHelperEmails
 			$editor = JFactory::getEditor('tinymce');
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', $default_template->message, '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
-			$fnums = $jinput->get('fnums', null, 'RAW');
-			$fnumsArray = (array) json_decode($fnums);
-			if (count($fnumsArray) > 0) {
-				$fnums = '{';
-				foreach ($fnumsArray as $key => $value) {
-					$fnums .= '\"fnum\":\"'.$value->fnum.'\"';
-				}
-				$fnums .= '}';
-			}
-
 			$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
 			//$current_eval = JRequest::getVar('user', null, 'POST', 'none',0);
@@ -92,16 +92,6 @@ class EmundusHelperEmails
 			$editor = JFactory::getEditor('tinymce');
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
-			$fnums = $jinput->get('fnums', null, 'RAW');
-			$fnumsArray = (array) json_decode($fnums);
-			if (count($fnumsArray) > 0) {
-				$fnums = '{';
-				foreach ($fnumsArray as $key => $value) {
-					$fnums .= '\"fnum\":\"'.$value->fnum.'\"';
-				}
-				$fnums .= '}';
-			}
-
 			$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
 			if(is_null($users))
@@ -150,16 +140,6 @@ class EmundusHelperEmails
 			$editor = JFactory::getEditor('tinymce');
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', $default_template->message, '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
-			$fnums = $jinput->get('fnums', null, 'RAW');
-			$fnumsArray = (array) json_decode($fnums);
-			if (count($fnumsArray) > 0) {
-				$fnums = '{';
-				foreach ($fnumsArray as $key => $value) {
-					$fnums .= '\"fnum\":\"'.$value->fnum.'\"';
-				}
-				$fnums .= '}';
-			}
-
 			$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
 			if(is_null($users))
@@ -210,16 +190,6 @@ class EmundusHelperEmails
 			$editor = JFactory::getEditor('tinymce');
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
-			$fnums = $jinput->get('fnums', null, 'RAW');
-			$fnumsArray = (array) json_decode($fnums);
-			if (count($fnumsArray) > 0) {
-				$fnums = '{';
-				foreach ($fnumsArray as $key => $value) {
-					$fnums .= '\"fnum\":\"'.$value->fnum.'\"';
-				}
-				$fnums .= '}';
-			}
-
 			$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
 			$student_id = $jinput->get('jos_emundus_evaluations___student_id', null, 'INT'); //JRequest::getVar('jos_emundus_evaluations___student_id', null, 'GET', 'INT',0);
@@ -296,16 +266,6 @@ class EmundusHelperEmails
 
 			$student_id = $jinput->get('student_id', null, 'INT'); //JRequest::getVar('student_id', null, 'GET', 'INT',0);
 			$campaign_id = $jinput->get('campaign_id', null, 'INT'); //JRequest::getVar('campaign_id', null, 'GET', 'INT',0);
-			$fnums = $jinput->get('fnums', null, 'RAW');
-			$fnumsArray = (array) json_decode($fnums);
-			if (count($fnumsArray) > 0) {
-				$fnums = '{';
-				foreach ($fnumsArray as $key => $value) {
-					$fnums .= '\"fnum\":\"'.$value->fnum.'\"';
-				}
-				$fnums .= '}';
-			}
-
 			$applicant = JFactory::getUser($student_id);
 
 			$experts = "";
@@ -381,16 +341,6 @@ class EmundusHelperEmails
 			$editor = JFactory::getEditor('tinymce');
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
-			$fnums = $jinput->get('fnums', null, 'RAW');
-			$fnumsArray = (array) json_decode($fnums);
-			if (count($fnumsArray) > 0) {
-				$fnums = '{';
-				foreach ($fnumsArray as $key => $value) {
-					$fnums .= '\"fnum\":\"'.$value->fnum.'\"';
-				}
-				$fnums .= '}';
-			}
-
 			$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
 			$email_to = JRequest::getVar('sid', null, 'GET', 'none',0);
@@ -604,10 +554,8 @@ class EmundusHelperEmails
 	}
 	
 	function sendApplicantEmail() {
+		
 		$current_user = JFactory::getUser();
-        
-        $app    = JFactory::getApplication();
-	    $email_from_sys = $app->getCfg('mailfrom');
 
 		if (!EmundusHelperAccess::asAccessAction(9, 'c'))	//email applicant
 		{
@@ -625,6 +573,8 @@ class EmundusHelperEmails
 		// Model for GetCampaignWithID()
 		$model=$this->getModel('campaign');
 
+		$email_from_sys = $mainframe->getCfg('mailfrom');
+
 		$cids = JRequest::getVar( 'ud', array(), 'post', 'array' );
 		foreach ($cids as $cid){
 			$params=explode('|',$cid);
@@ -639,6 +589,9 @@ class EmundusHelperEmails
 		$fromname	= JRequest::getVar( 'mail_from_name', null, 'post' );
 		$subject	= JRequest::getVar( 'mail_subject', null, 'post' );
 		$message	= JRequest::getVar( 'mail_body','','POST','STRING',JREQUEST_ALLOWHTML); 
+		
+		$fnums = $mainframe->input->get('fnums', null, 'RAW');
+        $fnums = (array) json_decode(stripslashes($fnums));
 
 		if ($captcha !== 1) {
 			JError::raiseWarning( 500, JText::_( 'ERROR_NOT_A_VALID_POST' ) );
@@ -720,7 +673,7 @@ class EmundusHelperEmails
             $to = $user->email;
             $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
             $body = preg_replace($tags['patterns'], $tags['replacements'], $message);
-            $body = $emails->setTagsFabrik($body);
+            $body = $emails->setTagsFabrik($body, array($fnums[$i]));
 
             if (!empty($user->email)) {
                 // mail function
@@ -762,10 +715,7 @@ class EmundusHelperEmails
                 }
             }
         }
-//		$this->setRedirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent&desc=3', JText::_('REPORTS_MAILS_SENT').$info, 'message');
 		$this->setRedirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent', JText::_('REPORTS_MAILS_SENT').$info, 'message');
-
 	}
-
 }
 ?>

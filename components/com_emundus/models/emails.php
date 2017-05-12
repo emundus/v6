@@ -151,10 +151,16 @@ class EmundusModelEmails extends JModelList
         return $emails_tmpl;
     }
 
+    /*
+     *  @description    replace body message tags [constant] by value
+     *  @param          $user           Object      user object
+     *  @param          $str            String      string with tags
+     *  @param          $fnum           String      application file number
+     *  @param          $passwd         String      user password
+     *  @return         $strval         String      str with tags replace by value
+     */
     public function setBody($user, $str, $fnum=null, $passwd='')
     {
-        /*$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/','/\n/', '/\[USERNAME\]/', '/\[PASSWORD\]/', '/\[ACTIVATION_URL\]/', '/\[SITE_URL\]/');
-        $replacements = array ($user->id, $user->name, $user->email, '<br />', $user->username, $passwd, JURI::base()."index.php?option=com_user&task=activate&activation=".$user->get('activation'), JURI::base());*/
         $constants = $this->setConstants($user->id, null, $passwd);
         $strval = html_entity_decode(preg_replace($constants['patterns'], $constants['replacements'], $str), ENT_QUOTES);
 
@@ -351,7 +357,7 @@ class EmundusModelEmails extends JModelList
         else {
             $fnumsArray = $fnums;
         }
-       
+
         $tags = $file->getVariables($str);
         $idFabrik = array();
         $setupTags = array();
