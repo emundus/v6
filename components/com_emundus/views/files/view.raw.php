@@ -158,7 +158,8 @@ class EmundusViewFiles extends JViewLegacy
 
 				$this->assignRef('docs', $docs);
 				$this->assignRef('prgs', $prgs);
-				$this->assignRef('fnums', implode(',', $fnums));
+				$fnums_array = implode(',', $fnums);
+				$this->assignRef('fnums', $fnums_array);
 
 			break;
 			// get list of application files

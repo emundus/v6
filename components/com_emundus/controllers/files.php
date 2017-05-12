@@ -2206,12 +2206,8 @@ class EmundusControllerFiles extends JControllerLegacy
                 break;
             case 3:
                 // template DOCX
-                require_once JPATH_LIBRARIES.DS.'PHPWord'.DS.'src'.DS.'Autoloader.php';
+                require_once JPATH_LIBRARIES.DS.'vendor'.DS.'phpoffice'.DS.'phpword'.DS.'bootstrap.php';
                 //require_once JPATH_LIBRARIES.DS.'HTMLtoOpenXML'.DS.'HTMLtoOpenXML.php';
-
-                if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
-                    \PhpOffice\PhpWord\Autoloader::register();
-                }
 
                 
                 $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
@@ -2302,7 +2298,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                     foreach($fnumsArray as $fnum)
                     {
-                        //$preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
+                        $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$tmpl[0]['file']);
                         if(isset($fnumsInfos[$fnum]))
                         {
                             foreach($setupTags as $tag)
