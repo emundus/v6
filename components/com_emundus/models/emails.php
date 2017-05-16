@@ -277,9 +277,20 @@ class EmundusModelEmails extends JModelList
             if( strpos( $value, 'php|' ) === false ) {
                 $request = explode('|', $value);
                 if (count($request) > 1) {
-                    $query = 'SELECT '.$request[0].' FROM '.$request[1].' WHERE '.$request[2];
-                    $db->setQuery($query);
-                    $result = $db->loadResult();
+                    try
+                    {
+                        $query = 'SELECT '.$request[0].' FROM '.$request[1].' WHERE '.$request[2];
+    
+                        $db->setQuery($query);
+                        $result = $db->loadResult();
+                    }
+                    catch (Exception $e)
+                    {
+                        $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+                        JLog::add($error, JLog::ERROR, 'com_emundus');
+
+                        $result = "";
+                    }
                     if ($tag['tag'] == 'PHOTO') {
                         if (empty($result))
                             $result = 'media/com_emundus/images/icones/personal.png';
@@ -298,7 +309,7 @@ class EmundusModelEmails extends JModelList
 
         }
 
-        $tags = array('patterns' => $patterns , 'replacements' => $replacements);
+        $tags = array('patterns' => $patterns , 'replacements' => $replacements);   
 
         return $tags;
     }
@@ -361,6 +372,7 @@ class EmundusModelEmails extends JModelList
         $tags = $file->getVariables($str);
         $idFabrik = array();
         $setupTags = array();
+
         if(count($tags) > 0) {
             foreach($tags as $i => $val)
             {

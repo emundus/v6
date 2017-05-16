@@ -1,7 +1,7 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1.5: confirm_post.php 89 2016-03-24 Benjamin Rivalland
+ * @version 1.5: confirm_post.php 89 2017-05-20 Benjamin Rivalland
  * @package Fabrik
  * @copyright Copyright (C) 2016 emundus.fr. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
@@ -10,7 +10,7 @@ defined( '_JEXEC' ) or die();
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  * See COPYRIGHT.php for copyright notices and details.
- * @description Envoi automatique d'un email suivan les triggers définis
+ * @description Envoi automatique d'un email suivant les triggers définis
  */
 
 $db = JFactory::getDBO();
@@ -79,7 +79,8 @@ $post = array(
     'CAMPAIGN_YEAR' => $campaign['year'],
     'CAMPAIGN_START' => $campaign['start_date'],
     'CAMPAIGN_END' => $campaign['end_date'],
-    'CAMPAIGN_CODE' => $campaign['training']
+    'CAMPAIGN_CODE' => $campaign['training'],
+    'FNUM'          => $student->fnum
 );
 
 // Applicant cannot delete this attachments now
@@ -120,6 +121,7 @@ $code = array($student->code);
 $to_applicant = '0, 1';
 $trigger_emails = $emails->getEmailTrigger($step, $code, $to_applicant);
 
+
 if (count($trigger_emails) > 0) {
 
     foreach ($trigger_emails as $key => $trigger_email) {
@@ -128,7 +130,7 @@ if (count($trigger_emails) > 0) {
             $mailer     = JFactory::getMailer();
 
             //$post = array();
-            $tags = $emails->setTags($student->id, $post);
+            $tags = $emails->setTags($student->id, $post, $student->fnum);
 
             $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
             $from_id = 62;
@@ -137,18 +139,15 @@ if (count($trigger_emails) > 0) {
             $to_id = $recipient['id'];
             $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
             $body = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['message']);
-            //$body = $emails->setTagsFabrik($body, array($student->fnum));
-
+            $body = $emails->setTagsFabrik($body, array($student->fnum));
             //$attachment[] = $path_file;
-            $replyto = $from;
-            $replytoname = $fromname;
 
             // setup mail
             $sender = array(
                 $email_from_sys,
                 $fromname
             );
-            
+   
             $mailer->setSender($sender);
             $mailer->addReplyTo($from, $fromname);
             $mailer->addRecipient($to);
@@ -156,8 +155,8 @@ if (count($trigger_emails) > 0) {
             $mailer->isHTML(true);
             $mailer->Encoding = 'base64';
             $mailer->setBody($body);
-
             $send = $mailer->Send();
+
             if ( $send !== true ) {
                 echo 'Error sending email: ' . $send->__toString();
                 JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');

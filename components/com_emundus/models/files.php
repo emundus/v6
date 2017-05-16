@@ -220,22 +220,24 @@ class EmundusModelFiles extends JModelLegacy
 
         $this->col = array_merge($col_elt, $col_other, $this->_elements_default_name);
 
-        $elements_names = '"' . implode('", "', $this->col) . '"';
-        $result = @EmundusHelperList::getElementsDetails($elements_names);
-
-        $result = @EmundusHelperFiles::insertValuesInQueryResult($result, array("sub_values", "sub_labels"));
-
-        $this->details = new stdClass();
-        foreach ($result as $res)
-        {
-            $this->details->{$res->tab_name . '___' . $res->element_name} = array('element_id' => $res->element_id,
-                                                                                  'plugin' => $res->element_plugin,
-                                                                                  'attribs' => $res->params,
-                                                                                  'sub_values' => $res->sub_values,
-                                                                                  'sub_labels' => $res->sub_labels,
-                                                                                  'group_by' => $res->tab_group_by);
-        }
+        if (count($this->col) > 0) {
         
+            $elements_names = '"' . implode('", "', $this->col) . '"'; 
+
+            $result = @EmundusHelperList::getElementsDetails($elements_names);
+            $result = @EmundusHelperFiles::insertValuesInQueryResult($result, array("sub_values", "sub_labels"));
+
+            $this->details = new stdClass();
+            foreach ($result as $res)
+            {
+                $this->details->{$res->tab_name . '___' . $res->element_name} = array('element_id' => $res->element_id,
+                                                                                      'plugin' => $res->element_plugin,
+                                                                                      'attribs' => $res->params,
+                                                                                      'sub_values' => $res->sub_values,
+                                                                                      'sub_labels' => $res->sub_labels,
+                                                                                      'group_by' => $res->tab_group_by);
+            }
+        }
     }
 
     /**

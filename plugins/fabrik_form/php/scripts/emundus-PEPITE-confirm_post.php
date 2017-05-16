@@ -1,16 +1,16 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1.5: confirm_post.php 89 2013-09-18 Benjamin Rivalland
+ * @version 1.5: confirm_post.php 89 2017-05-20 Benjamin Rivalland
  * @package Fabrik
- * @copyright Copyright (C) 2008 D�cision Publique. All rights reserved.
+ * @copyright Copyright (C) 2017 eMundus. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  * See COPYRIGHT.php for copyright notices and details.
- * @description Envoi automatique d'un email � l'�tudiant lors de la validation de son dossier de candidature
+ * @description Envoi automatique d'un email a l'etudiant lors de la validation de son dossier de candidature
  */
 
 $db = JFactory::getDBO();
@@ -37,9 +37,10 @@ $post = array(  'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($campaign[
 				'CAMPAIGN_YEAR' => $campaign['year'],
 				'CAMPAIGN_START' => $campaign['start_date'],
 				'CAMPAIGN_END' => $campaign['end_date'],
-				'CAMPAIGN_CODE' => $campaign['training']
+				'CAMPAIGN_CODE' => $campaign['training'],
+    			'FNUM'          => $student->fnum
 			);
-$tags = $emails->setTags($student->id, $post);
+$tags = $emails->setTags($student->id, $post, $student->fnum);
 $email = $emails->getEmail("confirm_post");
 
 // Apllicant cannot delete this attachments now
@@ -75,7 +76,8 @@ $fromname =$email->name;
 $recipient[] = $student->email;
 $subject = $email->subject;
 //$body = preg_replace($patterns, $replacements, $email->message);
-$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message); 
+$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+$body = $emails->setTagsFabrik($body, array($student->fnum));
 $mode = 1;
 
 //$attachment[] = $path_file;
