@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="2.5" method="upgrade" group="hikashop">
+	<name>Hikashop Add to Cart notification Plugin</name>
+	<creationDate>16 mai 2017</creationDate>
+	<version>3.0.1</version>
+	<author>Obsidev</author>
+	<authorEmail>dev@hikashop.com</authorEmail>
+	<authorUrl>http://www.hikashop.com</authorUrl>
+	<copyright>(C) 2011-2017 OBSIDEV. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>This plugin display notifications when a product is added to the cart</description>
+	<files>
+		<filename plugin="cartnotify">cartnotify.php</filename>
+		<folder>media</folder>
+	</files>
+	<params addpath="/components/com_hikashop/params">
+		<param name="notification_reference" type="list" default="global" label="HIKA_CARTNOTIFICATION_REFERENCE_LBL" description="HIKA_CARTNOTIFICATION_REFERENCE_DESC">
+			<option value="global">HIKA_CARTNOTIF_REF_GLOBAL</option>
+			<option value="button">HIKA_CARTNOTIF_REF_BUTTON</option>
+			<option value="popup">HIKA_CARTNOTIF_REF_POPUP</option>
+		</param>
+		<param name="notification_position" type="list" default="top right" label="HIKA_CARTNOTIFICATION_POSITION_LBL" description="HIKA_CARTNOTIFICATION_POSITION_DESC">
+			<option value="top right">HIKA_CARTNOTIF_POS_TOPRIGHT</option>
+			<option value="top center">HIKA_CARTNOTIF_POS_TOPCENTER</option>
+			<option value="top left">HIKA_CARTNOTIF_POS_TOPLEFT</option>
+			<option value="right">HIKA_CARTNOTIF_POS_RIGHT</option>
+			<option value="bottom right">HIKA_CARTNOTIF_POS_BOTTOMRIGHT</option>
+			<option value="bottom center">HIKA_CARTNOTIF_POS_BOTTOMCENTER</option>
+			<option value="bottom left">HIKA_CARTNOTIF_POS_BOTTOMLEFT</option>
+			<option value="left">HIKA_CARTNOTIF_POS_LEFT</option>
+		</param>
+		<param name="delay" type="text" size="50" default="5000" label="HIKA_CARTNOTIFICATION_DELAY_LBL" description="HIKA_CARTNOTIFICATION_DELAY_DESC" />
+	</params>
+	<config>
+		<fields name="params" addfieldpath="/components/com_hikashop/fields">
+			<fieldset name="basic">
+				<field name="notification_reference" type="list" default="global" label="HIKA_CARTNOTIFICATION_REFERENCE_LBL" description="HIKA_CARTNOTIFICATION_REFERENCE_DESC">
+					<option value="global">HIKA_CARTNOTIF_REF_GLOBAL</option>
+					<option value="button">HIKA_CARTNOTIF_REF_BUTTON</option>
+					<option value="popup">HIKA_CARTNOTIF_REF_POPUP</option>
+				</field>
+				<field name="notification_position" type="list" default="top right" label="HIKA_CARTNOTIFICATION_POSITION" description="HIKA_CARTNOTIFICATION_POSITION_DESC">
+					<option value="top right">HIKA_CARTNOTIF_POS_TOPRIGHT</option>
+					<option value="top center">HIKA_CARTNOTIF_POS_TOPCENTER</option>
+					<option value="top left">HIKA_CARTNOTIF_POS_TOPLEFT</option>
+					<option value="right">HIKA_CARTNOTIF_POS_RIGHT</option>
+					<option value="bottom right">HIKA_CARTNOTIF_POS_BOTTOMRIGHT</option>
+					<option value="bottom center">HIKA_CARTNOTIF_POS_BOTTOMCENTER</option>
+					<option value="bottom left">HIKA_CARTNOTIF_POS_BOTTOMLEFT</option>
+					<option value="left">HIKA_CARTNOTIF_POS_LEFT</option>
+				</field>
+				<field name="delay" type="text" size="50" default="5000" label="HIKA_CARTNOTIFICATION_DELAY_LBL" description="HIKA_CARTNOTIFICATION_DELAY_DESC" />
+			</fieldset>
+		</fields>
+	</config>
+</extension>

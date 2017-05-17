@@ -2220,35 +2220,35 @@ function checkFields(){
 	var name = document.getElementById('hikashop_contact_name');
 	if(name != null){
 		if(name.value == ''){
-			name.className = name.className.replace('hikashop_red_border','') + ' hikashop_red_border';
+			name.className = name.className.replace('invalid','') + ' invalid';
 			send = false;
 		}else{
-			name.className=name.className.replace('hikashop_red_border','');
+			name.className=name.className.replace('invalid','');
 		}
 	}
 	var email = document.getElementById('hikashop_contact_email');
 	if(email != null){
 		if(email.value == ''){
-			email.className = email.className.replace('hikashop_red_border','') + ' hikashop_red_border';
+			email.className = email.className.replace('invalid','') + ' invalid';
 			send = false;
 		}else{
 			email.value = email.value.replace(/ /g,\"\");
 			var filter = /^([a-z0-9_'&\.\-\+])+\@(([a-z0-9\-])+\.)+([a-z0-9]{2,14})+$/i;
 			if(!email || !filter.test(email.value)){
-				email.className = email.className.replace('hikashop_red_border','') + ' hikashop_red_border';
+				email.className = email.className.replace('invalid','') + ' invalid';
 				return false;
 			}else{
-				email.className=email.className.replace('hikashop_red_border','');
+				email.className=email.className.replace('invalid','');
 			}
 		}
 	}
 	var altbody = document.getElementById('hikashop_contact_altbody');
 	if(altbody != null){
 		if(altbody.value == ''){
-			altbody.className = altbody.className.replace('hikashop_red_border','') + ' hikashop_red_border';
+			altbody.className = altbody.className.replace('invalid','') + ' invalid';
 			send = false;
 		}else{
-			altbody.className=altbody.className.replace('hikashop_red_border','');
+			altbody.className=altbody.className.replace('invalid','');
 		}
 	}
 	if(!hikashopCheckChangeForm('contact','hikashop_contact_form')){
@@ -2263,19 +2263,19 @@ window.hikashop.ready(function(){
 	var name = document.getElementById('hikashop_contact_name');
 	if(name != null){
 		name.onclick=function(){
-			name.className=name.className.replace('hikashop_red_border','');
+			name.className=name.className.replace('invalid','');
 		}
 	}
 	var email = document.getElementById('hikashop_contact_email');
 	if(email != null){
 		email.onclick=function(){
-			email.className=email.className.replace('hikashop_red_border','');
+			email.className=email.className.replace('invalid','');
 		}
 	}
 	var altbody = document.getElementById('hikashop_contact_altbody');
 	if(altbody != null){
 		altbody.onclick=function(){
-			altbody.className=altbody.className.replace('hikashop_red_border','');
+			altbody.className=altbody.className.replace('invalid','');
 		}
 	}
 });

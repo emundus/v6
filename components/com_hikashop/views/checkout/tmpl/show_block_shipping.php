@@ -159,7 +159,7 @@ if(empty($this->ajax)) { ?>
 </div>
 <script type="text/javascript">
 if(!window.checkout) window.checkout = {};
-window.Oby.registerAjax(['checkout.shipping.updated','cart.updated'], function(params){
+window.Oby.registerAjax(['checkout.shipping.updated','cart.updated','checkout.user.updated'], function(params){
 	if(params && (params.cart_empty || (params.resp && params.resp.empty))) return;
 	window.checkout.refreshShipping(<?php echo (int)$this->step; ?>, <?php echo (int)$this->module_position; ?>);
 });

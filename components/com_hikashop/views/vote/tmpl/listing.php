@@ -109,13 +109,13 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 <?php
 				}
 ?>
-		<td class="hika_comment_listing_useful" title="<?php echo JText::_('HIKA_USEFUL'); ?>" onclick="hikashop_vote_useful(<?php echo $elt->vote_id;?>,1);"></td>
+		<td class="hika_comment_listing_useful" title="<?php echo JText::_('HIKA_USEFUL'); ?>" onclick="if(!window.Oby.hasClass(this, 'next_button_disabled')) hikashop_vote_useful(<?php echo $elt->vote_id;?>,1); window.Oby.addClass(this, 'next_button_disabled');"></td>
 <?php if($row->useful_style == 'thumbs'){?>
 		<td class="hika_comment_listing_useful_p"><?php
 			echo $hika_useless;
 		?></td>
 <?php } ?>
-		<td class="hika_comment_listing_useless" title="Useless" onclick="hikashop_vote_useful(<?php echo $elt->vote_id;?>,2);"></td>
+		<td class="hika_comment_listing_useless" title="Useless" onclick="if(!window.Oby.hasClass(this, 'next_button_disabled')) hikashop_vote_useful(<?php echo $elt->vote_id;?>,2); window.Oby.addClass(this, 'next_button_disabled');"></td>
 <?php
 			} else if($row->useful_style == "thumbs") {
 ?>

@@ -29,9 +29,13 @@ class orderController extends hikashopController {
 		return false;
 	}
 
-	protected function isLogged($message = true) {
-		$user_id = hikashop_loadUser(false);
-		if(!empty($user_id))
+	protected function isLogged($message = true, $guest_authorized = true) {
+		$user = JFactory::getUser();
+		if(!$user->guest)
+			return true;
+
+		$hk_user_id = hikashop_loadUser(false);
+		if(!empty($hk_user_id) && $guest_authorized)
 			return true;
 
 		$app = JFactory::getApplication();
@@ -79,7 +83,7 @@ class orderController extends hikashopController {
 	}
 
 	public function listing() {
-		if(!$this->isLogged())
+		if(!$this->isLogged(true, false))
 			return false;
 
 		return parent::listing();

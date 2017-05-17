@@ -103,9 +103,11 @@ switch($quantityLayout) {
 ?>
 		<div class="hikashop_product_quantity_div hikashop_product_quantity_input_div_select"><?php
 				$values = array();
-				foreach($this->row->all_prices as $price) {
-					$price_min_qty = max((int)$price->price_min_quantity, $min_quantity);
-					$values[$price_min_qty] = $price_min_qty;
+				if(!empty($this->row->all_prices)){
+					foreach($this->row->all_prices as $price) {
+						$price_min_qty = max((int)$price->price_min_quantity, $min_quantity);
+						$values[$price_min_qty] = $price_min_qty;
+					}
 				}
 				if(empty($values)) {
 					$r = range($min_quantity, $max_quantity, $increment);

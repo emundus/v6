@@ -80,7 +80,7 @@ class CartController extends hikashopController {
 					$menus->setActive($Itemid);
 					$menu = $menus->getItem($Itemid);
 				}
-				if(isset($menu->params) && is_object($menu->params))
+				if(is_object($menu) && is_object($menu->params))
 					$cart_type = $menu->params->get('cart_type');
 			}
 
@@ -248,7 +248,7 @@ window.hikashop.ready(function(){
 			return false;
 		}
 
-		$translation = $destCart->cart_type == 'wishlist' ? 'PRODUCT_SUCCESSFULLY_ADDED_TO_WISHLIST' : 'PRODUCT_SUCCESSFULLY_ADDED_TO_CART';
+		$translation = $addto_type == 'wishlist' ? 'PRODUCT_SUCCESSFULLY_ADDED_TO_WISHLIST' : 'PRODUCT_SUCCESSFULLY_ADDED_TO_CART';
 		$app->enqueueMessage(JText::_($translation));
 
 		$app->redirect( hikashop_completeLink('cart&task=show&cid='.$ret, false, true) );

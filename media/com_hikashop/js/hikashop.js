@@ -868,8 +868,8 @@
 				if(className) o.removeClass(el, className);
 
 				var resp = Oby.evalJSON(xhr.responseText);
-				var cart_id = (resp && resp.ret) ? resp.ret : parseInt(xhr.responseText);
-				if(cart_id === NaN)
+				var cart_id = (resp && (resp.ret || resp.ret === 0)) ? resp.ret : parseInt(xhr.responseText);
+				if(isNaN(cart_id))
 					return;
 
 				var triggers = window.Oby.fireAjax(cart_type+'.updated', {id: cart_id, el: el, product_id: product_id, type: cart_type, resp: resp});
