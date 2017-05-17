@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,6 +11,15 @@ defined('_JEXEC') or die('Restricted access');
 class plgHikashopMassaction_category extends JPlugin
 {
 	var $message = '';
+
+	function __construct(&$subject, $config){
+		parent::__construct($subject, $config);
+		$this->massaction = hikashop_get('class.massaction');
+		$this->massaction->datecolumns = array( 'category_created',
+												'category_modified'
+											);
+		$this->category = hikashop_get('class.category');
+	}
 
 	function onMassactionTableLoad(&$externalValues){
 		$obj = new stdClass();
@@ -20,13 +29,43 @@ class plgHikashopMassaction_category extends JPlugin
 		$externalValues[] = $obj;
 	}
 
-	function __construct(&$subject, $config){
-		parent::__construct($subject, $config);
-		$this->massaction = hikashop_get('class.massaction');
-		$this->massaction->datecolumns = array( 'category_created',
-												'category_modified'
-											);
-		$this->category = hikashop_get('class.category');
+	function onMassactionTableTriggersLoad(&$table, &$triggers, &$triggers_html, &$loadedData) {
+		if($table->table != 'category')
+			return true;
+
+		$triggers['onBeforeCategoryCreate']=JText::_('BEFORE_A_CATEGORY_IS_CREATED');
+		$triggers['onBeforeCategoryUpdate']=JText::_('BEFORE_A_CATEGORY_IS_UPDATED');
+		$triggers['onBeforeCategoryDelete']=JText::_('BEFORE_A_CATEGORY_IS_DELETED');
+		$triggers['onAfterCategoryCreate']=JText::_('AFTER_A_CATEGORY_IS_CREATED');
+		$triggers['onAfterCategoryUpdate']=JText::_('AFTER_A_CATEGORY_IS_UPDATED');
+		$triggers['onAfterCategoryDelete']=JText::_('AFTER_A_CATEGORY_IS_DELETED');
+	}
+
+	function onMassactionTableFiltersLoad(&$table,&$filters,&$filters_html,&$loadedData){
+		if($table->table != 'category')
+			return true;
+
+		$type = 'filter';
+		$tables = array('category','parent_category');
+
+		$filters['categoryType']=JText::_('CATEGORY_TYPE');
+		$loadedData->massaction_filters['__num__'] = new stdClass();
+		$loadedData->massaction_filters['__num__']->type = 'category';
+		$loadedData->massaction_filters['__num__']->data = array();
+		$loadedData->massaction_filters['__num__']->name = 'categoryType';
+		$loadedData->massaction_filters['__num__']->data['type'] = 'all';
+		$loadedData->massaction_filters['__num__']->html = '';
+
+		foreach($loadedData->massaction_filters as $key => &$value) {
+			if($value->name != 'categoryType' || ($table->table != $loadedData->massaction_table && is_int($key)))
+				continue;
+
+			$value->type = 'category';
+			$category = hikashop_get('type.category');
+			$category->onchange='countresults(\''.$table->table.'\','.$key.');';
+			$output = $category->display('filter['.$table->table.']['.$key.'][categoryType][type]',$value->data['type']);
+			$filters_html[$value->name] = $this->massaction->initDefaultDiv($value, $key, $type, $table->table, $loadedData, $output);
+		}
 	}
 
 	function onProcessCategoryMassFilterlimit(&$elements, &$query,$filter,$num){

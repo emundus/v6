@@ -1,15 +1,16 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 class plgSearchHikashop_categories extends JPlugin{
-	function plgSearchHikashop_categories(&$subject, $config){
+
+	function __construct(&$subject, $config){
 		$this->loadLanguage('plg_search_hikashop_categories');
 		$this->loadLanguage('plg_search_hikashop_categories_override');
 		parent::__construct($subject, $config);

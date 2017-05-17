@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,14 +11,6 @@ defined('_JEXEC') or die('Restricted access');
 class plgHikashopMassaction_product extends JPlugin
 {
 	var $message = '';
-
-	function onMassactionTableLoad(&$externalValues){
-		$obj = new stdClass();
-		$obj->table ='product';
-		$obj->value ='product';
-		$obj->text =JText::_('PRODUCT');
-		$externalValues[] = $obj;
-	}
 
 	function __construct(&$subject, $config){
 		parent::__construct($subject, $config);
@@ -29,7 +21,100 @@ class plgHikashopMassaction_product extends JPlugin
 												'product_modified',
 												'product_last_seen_date'
 											);
-		$this->product = hikashop_get('class.product');
+		$this->productClass = hikashop_get('class.product');
+	}
+
+	function onMassactionTableLoad(&$externalValues){
+		$obj = new stdClass();
+		$obj->table ='product';
+		$obj->value ='product';
+		$obj->text =JText::_('PRODUCT');
+		$externalValues[] = $obj;
+	}
+
+	function onMassactionTableTriggersLoad(&$table, &$triggers, &$triggers_html, &$loadedData) {
+		if($table->table != 'product')
+			return true;
+
+		$triggers['onBeforeProductCreate']=JText::_('BEFORE_A_PRODUCT_IS_CREATED');
+		$triggers['onBeforeProductUpdate']=JText::_('BEFORE_A_PRODUCT_IS_UPDATED');
+		$triggers['onBeforeProductDelete']=JText::_('BEFORE_A_PRODUCT_IS_DELETED');
+		$triggers['onBeforeProductCopy']=JText::_('BEFORE_A_PRODUCT_IS_COPIED');
+		$triggers['onAfterProductCreate']=JText::_('AFTER_A_PRODUCT_IS_CREATED');
+		$triggers['onAfterProductUpdate']=JText::_('AFTER_A_PRODUCT_IS_UPDATED');
+		$triggers['onAfterProductDelete']=JText::_('AFTER_A_PRODUCT_IS_DELETED');
+		$triggers['onAfterProductCopy']=JText::_('AFTER_A_PRODUCT_IS_COPIED');
+	}
+
+	function onMassactionTableFiltersLoad(&$table,&$filters,&$filters_html,&$loadedData){
+		if($table->table != 'product')
+			return true;
+
+		$type = 'filter';
+		$tables = array('product','price','category','characteristic','product_related','product_option');
+
+		$filters['productType']=JText::_('PRODUCT_TYPE');
+		$loadedData->massaction_filters['__num__'] = new stdClass();
+		$loadedData->massaction_filters['__num__']->type = 'product';
+		$loadedData->massaction_filters['__num__']->data = array();
+		$loadedData->massaction_filters['__num__']->name = 'productType';
+		$loadedData->massaction_filters['__num__']->data['type'] = 'all';
+		$loadedData->massaction_filters['__num__']->html = '';
+
+		foreach($loadedData->massaction_filters as $key => &$value) {
+			if($value->name != 'productType' || ($table->table != $loadedData->massaction_table && is_int($key)))
+				continue;
+
+			$value->type = 'product';
+			$product = hikashop_get('type.product');
+			$product->onchange='countresults(\''.$table->table.'\','.$key.');';
+			$output = $product->display('filter['.$table->table.']['.$key.'][productType][type]',$value->data['type'], 'chzn-done not-processed');
+			$filters_html[$value->name] = $this->massaction->initDefaultDiv($value, $key, $type, $table->table, $loadedData, $output);
+		}
+
+		$filters['csvImport']=JText::_('CSV_IMPORT');
+		$loadedData->massaction_filters['__num__'] = new stdClass();
+		$loadedData->massaction_filters['__num__']->type = 'product';
+		$loadedData->massaction_filters['__num__']->data = array();
+		$loadedData->massaction_filters['__num__']->name = 'csvImport';
+		$loadedData->massaction_filters['__num__']->data['path'] = '';
+		$loadedData->massaction_filters['__num__']->data['pathType'] = '';
+		$loadedData->massaction_filters['__num__']->data['type'] = '';
+		$loadedData->massaction_filters['__num__']->html = '';
+
+		foreach($loadedData->massaction_filters as $key => &$value) {
+			if($value->name != 'csvImport' || ($table->table != $loadedData->massaction_table && is_int($key)))
+				continue;
+
+			$value->type = 'product';
+			$data = $value->data;
+
+			if($data['type'] == 'in' || empty($data['type'])){
+				$typeIn1 = ' selected="selected" ';
+				$typeIn2 = '';
+			}
+			else{
+				$typeIn2 = ' selected="selected" ';
+				$typeIn1 = '';
+			}
+			$checkedSave = '';
+			if(isset($data['save']))
+				$checkedSave = 'checked="checked"';
+			$checkedAdd = '';
+			if(isset($data['add']))
+				$checkedAdd = 'checked="checked"';
+
+			$output = '<select class="chzn-done not-processed" name="filter['.$table->table.']['.$key.'][csvImport][type]" onchange="countresults(\''.$table->table.'\','.$key.')"><option value="in" '.$typeIn1.'>'.JText::_('IN_CSV').'</option><option value="out" '.$typeIn2.'>'.JText::_('NOT_IN_CSV').'</option></select>';
+			$output .= '<select class="chzn-done not-processed" name="filter['.$table->table.']['.$key.'][csvImport][pathType]" id="productfilter'.$key.'csvImport_pathType" onchange="hikashop_switchmode(this,'.$key.');"><option value="upload">'.JText::_('HIKA_FILE_MODE_UPLOAD').'</option><option value="path" selected="selected">'.JText::_('HIKA_FILE_MODE_PATH').'</option></select>';
+			$output .= '<span id="productfilter'.$key.'csvImport_path"><input onchange="countresults(\''.$table->table.'\','.$key.')" type="input" value="'.$data['path'].'" size="50" id="productfilter'.$key.'csvImport_path_value" name="filter['.$table->table.']['.$key.'][csvImport][path]"/><input type="button" value="'.JText::_('VERIFY_FILE').'" onclick="hikashop_verifycsvcolumns('.$key.');"/></span>';
+			$output .= '<span id="productfilter'.$key.'csvImport_upload" style="display: none;"><input onchange="countresults(\''.$table->table.'\','.$key.')" type="file" size="50" id="productfilter'.$key.'csvImport_upload" name="filter_'.$table->table.'_'.$key.'_csvImport_upload"/>';
+			$output .= '<span id="productfilter'.$key.'csvImport_txt">'.JText::sprintf('MAX_UPLOAD',(hikashop_bytes(ini_get('upload_max_filesize')) > hikashop_bytes(ini_get('post_max_size'))) ? ini_get('post_max_size') : ini_get('upload_max_filesize')).'</span></span>';
+			$output .= '<br/><input type="checkbox" value="1" id="importCsvSave" name="filter['.$table->table.']['.$key.'][csvImport][save]" '.$checkedSave.'/><label for="importCsvSave">'.JText::_('SAVE_ON_CSV_IMPORT_MASSACTION').'</label>';
+			$output .= '<br/><input type="checkbox" value="1" id="importCsvAdd" name="filter['.$table->table.']['.$key.'][csvImport][add]" '.$checkedAdd.'/><label for="importCsvAdd">'.JText::_('ADD_ON_CSV_IMPORT_MASSACTION').'</label>';
+			$output .= '<div id="productfilter'.$key.'csvImport_verify"></div>';
+
+			$filters_html[$value->name] = $this->massaction->initDefaultDiv($value, $key, $type, $table->table, $loadedData, $output);
+		}
 	}
 
 	function onProcessProductMassFilterlimit(&$elements, &$query,$filter,$num){
@@ -88,7 +173,7 @@ class plgHikashopMassaction_product extends JPlugin
 		}else{
 			$db = JFactory::getDBO();
 			if(!empty($filter['value']) || $filter['value'] == '0'){
-				$query->leftjoin[] = hikashop_table('price').' AS hk_price ON hk_price.price_product_id = hk_product.product_id';
+				$query->leftjoin['hk_price'] = hikashop_table('price').' AS hk_price ON hk_price.price_product_id = hk_product.product_id';
 				if($filter['type'] == 'price_currency_id' && !is_int($filter['value'])){
 					$nquery = 'SELECT currency_id FROM '.hikashop_table('currency').' WHERE currency_symbol = '.$db->quote($filter['value']).' OR currency_code = '.$db->quote($filter['value']).' OR currency_name = '.$db->quote($filter['value']);
 					$db->setQuery($nquery);
@@ -439,9 +524,9 @@ class plgHikashopMassaction_product extends JPlugin
 
 					$nbPrices = count($price_values) - 1;
 					if(!isset($data->elements[$id]->price_min_quantity)){
-						$data->elements[$id]->price_min_quantity = '1';
+						$data->elements[$id]->price_min_quantity = '0';
 						if($nbPrices)
-							$data->elements[$id]->price_min_quantity = $data->elements[$id]->price_min_quantity.str_repeat('|1',$nbPrices);
+							$data->elements[$id]->price_min_quantity = $data->elements[$id]->price_min_quantity.str_repeat('|0',$nbPrices);
 					}
 					if(!isset($data->elements[$id]->price_access)){
 						$data->elements[$id]->price_access = 'all';
@@ -449,11 +534,18 @@ class plgHikashopMassaction_product extends JPlugin
 							$data->elements[$id]->price_access = $data->elements[$id]->price_access.str_repeat('|all',$nbPrices);
 					}
 
+					if(!isset($data->elements[$id]->price_users)){
+						$data->elements[$id]->price_users = '';
+						if($nbPrices)
+							$data->elements[$id]->price_users = $data->elements[$id]->price_users.str_repeat('|',$nbPrices);
+					}
+
 					$price_min_quantities = explode('|',$data->elements[$id]->price_min_quantity);
 					$price_accesses = explode('|',$data->elements[$id]->price_access);
+					$price_users = explode('|',$data->elements[$id]->price_users);
 					foreach($price_values as $k => $price_value){
 						$data->elements[$id]->prices[$k] = new stdClass();
-						$data->elements[$id]->prices[$k]->price_value = $price_value;
+						$data->elements[$id]->prices[$k]->price_value = hikashop_toFloat($price_value);
 					}
 					foreach($price_currencies as $k => $price_currency){
 						if(!is_int($price_currency)){
@@ -468,11 +560,15 @@ class plgHikashopMassaction_product extends JPlugin
 					foreach($price_accesses as $k => $price_access){
 						$data->elements[$id]->prices[$k]->price_access = $price_access;
 					}
+					foreach($price_users as $k => $price_user){
+						$data->elements[$id]->prices[$k]->price_users = $price_user;
+					}
 				}
 				unset($data->elements[$id]->price_value);
 				unset($data->elements[$id]->price_currency_id);
 				unset($data->elements[$id]->price_min_quantity);
 				unset($data->elements[$id]->price_access);
+				unset($data->elements[$id]->price_users);
 
 				if(isset($data->elements[$id]->files_path) || isset($data->elements[$id]->files_id)){
 					$this->massaction->updateFiles($data->elements[$id], $id, 'file');
@@ -776,10 +872,11 @@ class plgHikashopMassaction_product extends JPlugin
 							$data->price_value = 0;
 							$data->price_min_quantity = 0;
 							$data->price_access = 'all';
+							$data->price_users = '';
 							$data->$action['type'] = $action['value'];
-							$values[] = (int)$data->price_currency_id.','.(int)$data->price_product_id.','.(float)$data->price_value.','.(int)$data->price_min_quantity.','.$db->quote($data->price_access);
+							$values[] = (int)$data->price_currency_id.','.(int)$data->price_product_id.','.(float)$data->price_value.','.(int)$data->price_min_quantity.','.$db->quote($data->price_access).','.$db->quote($data->price_users);
 						}
-						$query = 'INSERT INTO '.hikashop_table('price').' (price_currency_id,price_product_id,price_value,price_min_quantity,price_access) VALUES ('.implode('),(',$values).')';
+						$query = 'INSERT INTO '.hikashop_table('price').' (price_currency_id,price_product_id,price_value,price_min_quantity,price_access,price_users) VALUES ('.implode('),(',$values).')';
 						$db->setQuery($query);
 						$db->query();
 					}
@@ -821,14 +918,20 @@ class plgHikashopMassaction_product extends JPlugin
 		}
 		$max = 500;
 		if($action['type'] == 'remove'){
+
+			foreach($elements as &$element){
+				if(array_search($action['value'], $element->categories) !== false) {
+				    unset($element->categories[$key]);
+				}
+			}unset($element);
+
 			$deleteQuery = 'DELETE FROM '.hikashop_table('product_category').' WHERE category_id IN('.implode(',',$action['value']).') AND product_id IN(';
 			if(count($ids) > $max){
 				$c = ceil((int)count($ids) / $max);
 				for($i = 0; $i < $c; $i++){
 					$offset = $max * $i;
 					$id = array_slice($ids, $offset, $max);
-					$deleteQuery = $deleteQuery . implode(',',$id) .')';
-					$db->setQuery($deleteQuery);
+					$db->setQuery($deleteQuery . implode(',',$id) .')');
 					$db->query();
 				}
 			}else{
@@ -857,7 +960,7 @@ class plgHikashopMassaction_product extends JPlugin
 
 			$deleteQuery = 'DELETE FROM '.hikashop_table('product_category').' WHERE product_id IN(';
 			$deleteIds = array();
-			$insertQuery = 'INSERT INTO '.hikashop_table('product_category').' (category_id, product_id) VALUES';
+			$insertQuery = 'INSERT IGNORE INTO '.hikashop_table('product_category').' (category_id, product_id) VALUES';
 			$insertValues = array();
 			foreach($elements as $element){
 				if($element->product_type != 'main') continue;
@@ -878,13 +981,22 @@ class plgHikashopMassaction_product extends JPlugin
 				}
 			}
 			if(!empty($deleteIds)){
+
+				foreach($elements as &$element){
+					foreach($deleteIds as $deleteId){
+						if(($key = array_search($deleteId, $element->categories)) !== false) {
+						    if(isset($element->categories[$key]))
+								unset($element->categories[$key]);
+						}
+					}
+				}unset($element);
+
 				if(count($deleteIds) > $max){
 					$c = ceil((int)count($deleteIds) / $max);
 					for($i = 0; $i < $c; $i++){
 						$offset = $max * $i;
 						$id = array_slice($deleteIds, $offset, $max);
-						$deleteQuery = $deleteQuery . implode(',',$id) .')';
-						$db->setQuery($deleteQuery);
+						$db->setQuery($deleteQuery . implode(',',$id) .')');
 						$db->query();
 					}
 				}else{
@@ -899,8 +1011,7 @@ class plgHikashopMassaction_product extends JPlugin
 					for($i = 0; $i < $c; $i++){
 						$offset = $max * $i;
 						$id = array_slice($insertValues, $offset, $max);
-						$insertQuery = $insertQuery . implode(',',$id);
-						$db->setQuery($insertQuery);
+						$db->setQuery($insertQuery . implode(',',$id));
 						$db->query();
 					}
 				}else{
@@ -1174,7 +1285,7 @@ class plgHikashopMassaction_product extends JPlugin
 	}
 
 	function onBeforeProductUpdate(&$element,&$do){
-		$getProduct = $this->product->get($element->product_id);
+		$getProduct = $this->productClass->get($element->product_id);
 
 		$product = clone $element;
 		if(!empty($getProduct) && is_object($getProduct)){
@@ -1194,7 +1305,7 @@ class plgHikashopMassaction_product extends JPlugin
 	}
 
 	function onAfterProductUpdate(&$element){
-		$getProduct = $this->product->get($element->product_id);
+		$getProduct = $this->productClass->get($element->product_id);
 
 		$product = clone $element;
 		if(!empty($getProduct) && is_object($getProduct)){
@@ -1218,7 +1329,7 @@ class plgHikashopMassaction_product extends JPlugin
 		if(!is_array($ids)) $clone = array($ids);
 		else $clone = $ids;
 		foreach($clone as $id){
-			$products[$id] = $this->product->get($id);
+			$products[$id] = $this->productClass->get($id);
 		}
 		$this->deletedProducts =& $products;
 		$this->massaction->trigger('onBeforeProductDelete',$products);

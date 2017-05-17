@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -101,6 +101,7 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 		if(!isset($this->payment_params->details)) $this->payment_params->details = 1;
 
 		if(!empty($this->payment_params->details)){
+			$vars_without_details = $vars;
 			$i = 1;
 			$tax = 0;
 			$config =& hikashop_config();
@@ -117,7 +118,7 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 				$i++;
 			}
 			if(bccomp($tax,0,5)){
-				$vars['TAXAMT'] = round($tax+$order->order_shipping_tax+$order->order_payment_tax-$order->order_discount_tax,(int)$this->currency->currency_locale['int_frac_digits']);
+				$vars['TAXAMT'] = round($tax + @$order->order_shipping_tax + @$order->order_payment_tax - $order->order_discount_tax, (int)$this->currency->currency_locale['int_frac_digits']);
 			}
 			if(!empty($order->cart->coupon)){
 				$discount = - round($order->order_discount_price,(int)$this->currency->currency_locale['int_frac_digits']);
@@ -129,19 +130,22 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 				$i++;
 			}
 
-			if(!empty($order->order_payment_price) && bccomp($order->order_payment_price,0,5)){
+			if(!empty($order->order_payment_price) && bccomp($order->order_payment_price, 0, 5)) {
 				$vars["L_NAME".$i] = JText::_('HIKASHOP_PAYMENT');
 				$vars["L_NUMBER".$i] = 'payment';
-				$vars["L_AMT".$i] = round($order->order_payment_price-$order->order_payment_tax,(int)$this->currency->currency_locale['int_frac_digits']);
+				$vars["L_AMT".$i] = round($order->order_payment_price - @$order->order_payment_tax, (int)$this->currency->currency_locale['int_frac_digits']);
 				$vars["L_QTY".$i] = 1;
-				$vars["L_TAXAMT".$i] = round($order->order_payment_tax,(int)$this->currency->currency_locale['int_frac_digits']);
+				$vars["L_TAXAMT".$i] = round(@$order->order_payment_tax, (int)$this->currency->currency_locale['int_frac_digits']);
 				$i++;
 			}
 
 			if(!empty($order->order_shipping_price) && bccomp($order->order_shipping_price,0,5)){
-				$vars['SHIPPINGAMT'] = round($order->order_shipping_price,(int)$this->currency->currency_locale['int_frac_digits']);
+				$vars['SHIPPINGAMT'] = round($order->order_shipping_price, (int)$this->currency->currency_locale['int_frac_digits']);
 			}
 			$vars['ITEMAMT']=$vars['AMT']-(@$vars['TAXAMT']+@$vars['SHIPPINGAMT']);
+			if($vars['ITEMAMT']==0){
+				$vars = $vars_without_details;
+			}
 		}
 
 		if( $this->payment_params->ask_ccv ) {
@@ -159,6 +163,7 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 		curl_setopt($session, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($session, CURLOPT_VERBOSE,        1);
 		curl_setopt($session, CURLOPT_FOLLOWLOCATION, 0);
+		curl_setopt($session, CURLOPT_SSLVERSION, 6);
 		curl_setopt($session, CURLOPT_FAILONERROR,    true);
 
 		$httpsHikashop = str_replace('http://','https://', HIKASHOP_LIVE);

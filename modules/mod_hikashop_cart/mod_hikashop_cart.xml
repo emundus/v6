@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="2.5" method="upgrade">
 	<name>Hikashop Cart Module</name>
-	<creationDate>11 avril 2016</creationDate>
-	<version>2.6.2</version>
+	<creationDate>23 avril 2017</creationDate>
+	<version>3.0.1</version>
 	<author>Hikari Software</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>Cart display for Hikashop</description>
 	<files>
@@ -21,19 +21,10 @@
 	<config>
 		<fields name="params" addfieldpath="/components/com_hikashop/fields">
 			<fieldset name="basic">
-				<field
-					name="moduleclass_sfx"
-					type="text"
-					label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
-					description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC" />
+				<field name="moduleclass_sfx" type="text" label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL" description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC" />
 			</fieldset>
 			<fieldset name="hk_options" label="Hikashop Options">
-				<field
-					id="hikashopmodule"
-					name="hikashopcartmodule"
-					type="hikashopmodule"
-					label="hikashop"
-					description="HikaShop options" />
+				<field id="hikashopmodule" name="hikashopcartmodule" type="hikashopmodule" label="hikashop" description="HikaShop options" />
 			</fieldset>
 		</fields>
 	</config>

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -19,6 +19,7 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		'transaction_key' => array('AUTHORIZE_TRANSACTION_KEY', 'input'),
 		'md5_hash' => array('AUTHORIZE_MD5_HASH', 'input'),
 		'capture' => array('INSTANTCAPTURE', 'boolean','1'),
+		'duplicate_window' => array('DUPLICATE_WINDOW', 'input'),
 		'notification' => array('ALLOW_NOTIFICATIONS_FROM_X', 'boolean','1'),
 		'details' => array('SEND_DETAILS_OF_ORDER', 'boolean','1'),
 		'api' => array('API', 'list',array(
@@ -98,8 +99,9 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		$request = curl_init($this->payment_params->url);
 		curl_setopt($request, CURLOPT_HEADER, 0);
 		curl_setopt($request, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($request, CURLOPT_POST, true);
 		curl_setopt($request, CURLOPT_POSTFIELDS, $post_string);
-		curl_setopt($request, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_setopt($request, CURLOPT_SSL_VERIFYPEER, false);
 		$post_response = curl_exec($request);
 
 		if(empty($post_response)){
@@ -202,6 +204,9 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		);
 		$vars["x_relay_response"] = 'FALSE';
 		$vars["x_customer_ip"] = $order->order_ip;
+		if(!empty($this->payment_params->duplicate_window) && strlen($this->payment_params->duplicate_window) > 0 && is_numeric($this->payment_params->duplicate_window)) {
+			$vars["x_duplicate_window"] = $this->payment_params->duplicate_window;
+		}
 		if(!isset($this->payment_params->capture))
 			$this->payment_params->capture=1;
 		if($this->payment_params->capture){

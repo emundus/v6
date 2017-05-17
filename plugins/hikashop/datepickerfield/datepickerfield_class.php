@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -156,6 +156,7 @@ class hikashopDatepickerfield {
 		hikashop_loadJsLib('jquery');
 		$doc = JFactory::getDocument();
 		$lang = JFactory::getLanguage();
+		$app = JFactory::getApplication();
 		$tag = $lang->getTag();
 		$conversionTable = array(
 			'af-ZA' => 'af',
@@ -208,53 +209,66 @@ class hikashopDatepickerfield {
 		}else{
 			$tag = 'en-GB';
 		}
-		$doc->addScript('//jquery-ui.googlecode.com/svn/tags/latest/ui/minified/i18n/jquery-ui-i18n.min.js');
+		if($app->isAdmin()) {
+			$base = '..';
+		} else {
+			$base = JURI::base(true);
+		}
+		if(HIKASHOP_J25) {
+			$doc->addScript($base.'/plugins/hikashop/datepickerfield/jquery-ui-i18n.js');
+		} else {
+			$doc->addScript($base.'/plugins/hikashop/jquery-ui-i18n.js');
+		}
 
 		$js = '
-hkjQuery(function() {
-	var excludeWDays = function(date, w, d, dt, rg) {
-		var day = date.getDay(),
-			md = (date.getMonth()+1) * 100 + date.getDate(),
-			fd = date.getFullYear() * 10000 + md,
-			r = true;
-		if(w) { for(var i = w.length - 1; r && i >= 0; i--) { r = (day != w[i]); }}
-		if(d) { for(var i = d.length - 1; r && i >= 0; i--) { r = (md != d[i]); }}
-		if(dt) { for(var i = dt.length - 1; r && i >= 0; i--) { r = (fd != dt[i]); }}
-		if(rg) { for(var i = rg.length - 1; r && i >= 0; i--) {
-			if(rg[i][2] == 2)
-				r = (md < rg[i][0] || md > rg[i][1]);
-			else
-				r = (fd < rg[i][0] || fd > rg[i][1]);
-		}}
-		return [r, \'\'];
-	};
-	hkjQuery(".hikashop_datepicker").each(function(){
-		var t = hkjQuery(this), options = {};
-		if(t.attr("data-options")) {
-			options = Oby.evalJSON( t.attr("data-options") );
-		}
-		if(options["exclude"] || options["excludeDays"] || options["excludeDates"] || options["excludeRanges"]) {
-			options["beforeShowDay"] = function(date){ return excludeWDays(date, options["exclude"], options["excludeDays"], options["excludeDates"], options["excludeRanges"]); };
-		}
-		options["altField"] = "#"+t.attr("data-picker");
-		options["altFormat"] = "yy/mm/dd";
-		hkjQuery.datepicker.setDefaults(hkjQuery.datepicker.regional[\''.$tag.'\']);
-		t.datepicker(options);
+window.hikashopDatepicker_excludeWDays = function(date, w, d, dt, rg) {
+	var day = date.getDay(),
+		md = (date.getMonth()+1) * 100 + date.getDate(),
+		fd = date.getFullYear() * 10000 + md,
+		r = true;
+	if(w) { for(var i = w.length - 1; r && i >= 0; i--) { r = (day != w[i]); }}
+	if(d) { for(var i = d.length - 1; r && i >= 0; i--) { r = (md != d[i]); }}
+	if(dt) { for(var i = dt.length - 1; r && i >= 0; i--) { r = (fd != dt[i]); }}
+	if(rg) { for(var i = rg.length - 1; r && i >= 0; i--) {
+		if(rg[i][2] == 2)
+			r = (md < rg[i][0] || md > rg[i][1]);
+		else
+			r = (fd < rg[i][0] || fd > rg[i][1]);
+	}}
+	return [r, \'\'];
+};
+window.hikashopDatepicker = function(el) {
+	if(typeof(el) == "string")
+		el = hkjQuery("#" + el);
+	var options = {};
+	if(el.attr("data-options")) {
+		options = Oby.evalJSON( el.attr("data-options") );
+	}
+	if(options["exclude"] || options["excludeDays"] || options["excludeDates"] || options["excludeRanges"]) {
+		options["beforeShowDay"] = function(date){ return window.hikashopDatepicker_excludeWDays(date, options["exclude"], options["excludeDays"], options["excludeDates"], options["excludeRanges"]); };
+	}
+	options["altField"] = "#"+el.attr("data-picker");
+	options["altFormat"] = "yy/mm/dd";
+	hkjQuery.datepicker.setDefaults(hkjQuery.datepicker.regional[\''.$tag.'\']);
+	el.datepicker(options);
 
-		t.change(function(){
-			var e = hkjQuery(this), format = e.datepicker("option", "dateFormat");
-			if(e.val() == "") {
-				hkjQuery("#"+e.attr("data-picker")).val("");
-			} else {
-				try{
-					hkjQuery.datepicker.parseDate(format, e.val());
-				}catch(ex) {
-					hkjQuery("#"+e.attr("data-picker")).val("");
+	el.change(function(){
+		var e = hkjQuery(this), format = e.datepicker("option", "dateFormat"), dateValue = e.val();
+		if(dateValue == "") {
+			hkjQuery("#"+e.attr("data-picker")).val("");
+		} else {
+			try{
+				if(options["dateFormat"] && options["dateFormat"].indexOf("d") == -1 && options["dateFormat"].indexOf("D") == -1){
+					dateValue = "01/"+dateValue;
+					format = "dd/"+format;
 				}
+				hkjQuery.datepicker.parseDate(format, dateValue);
+			}catch(ex) {
+				hkjQuery("#"+e.attr("data-picker")).val("");
 			}
-		});
+		}
 	});
-});';
+};';
 
 		$doc->addScriptDeclaration($js);
 		$doc->addStyleSheet('//code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css');
@@ -490,20 +504,28 @@ hkjQuery(function() {
 			$dateOptions = '';
 		}
 
+		$datepicker_id = $id . '_input';
+
 		if(empty($datepicker_options['inline'])) {
 			if(($app->isAdmin() && HIKASHOP_BACK_RESPONSIVE) || (!$app->isAdmin() && HIKASHOP_RESPONSIVE)) {
 				$ret = '<div class="input-append">'.
-					'<input type="text" id="'.$id.'_input" data-picker="'.$id.'" data-options="'.$dateOptions.'" class="hikashop_datepicker" value="'.$txtValue.'"/>'.
-					'<button class="btn" onclick="document.getElementById(\''.$id.'_input\').focus();return false;"><i class="icon-calendar"></i></button>'.
+					'<input type="text" id="'.$datepicker_id.'" data-picker="'.$id.'" data-options="'.$dateOptions.'" class="hikashop_datepicker" value="'.$txtValue.'"/>'.
+					'<button class="btn" onclick="document.getElementById(\''.$datepicker_id.'\').focus();return false;"><i class="icon-calendar"></i></button>'.
 					'</div>';
 			} else {
-				$ret = '<input type="text" data-picker="'.$id.'" data-options="'.$dateOptions.'" class="hikashop_datepicker" value="'.$txtValue.'"/>';
+				$ret = '<input type="text" id="'.$datepicker_id.'" data-picker="'.$id.'" data-options="'.$dateOptions.'" class="hikashop_datepicker" value="'.$txtValue.'"/>';
 			}
 		} else {
-			$ret = '<div data-picker="'.$id.'" data-options="'.$dateOptions.'" class="hikashop_datepicker" value="'.$txtValue.'"></div>';
+			$ret = '<div id="'.$datepicker_id.'" data-picker="'.$id.'" data-options="'.$dateOptions.'" class="hikashop_datepicker" value="'.$txtValue.'"></div>';
 		}
 
 		$ret .= '<input type="hidden" value="'.$this->serializeDate($value).'" name="'.$map.'" id="'.$id.'"/>';
+
+		$ret .= '
+<script type="text/javascript">
+window.hikashop.ready(function(){ window.hikashopDatepicker("'.$datepicker_id.'"); });
+</script>
+';
 
 		return $ret;
 	}

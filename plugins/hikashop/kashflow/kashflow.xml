@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashop">
 	<name>Hikashop - Kashflow invoice synchronization plugin</name>
-	<creationDate>11 avril 2016</creationDate>
-	<version>2.6.2</version>
+	<creationDate>23 avril 2017</creationDate>
+	<version>3.0.1</version>
 	<author>HikaShop Team</author>
 	<authorEmail>team@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>This plugin synchronizes the invoices of HikaShop to the Kashflow online service</description>
 	<files>
@@ -24,6 +24,7 @@
 		<param name="coupon_nominal_code" type="text" size="50" default="0" label="SHIPPING_COSTS_NOMINAL_CODE" description="KASHFLOW_SHIPPING_COSTS_NOMINAL_CODE" />
 		<param name="shipping_nominal_code" type="text" size="50" default="0" label="COUPONS_NOMINAL_CODE" description="KASHFLOW_COUPONS_NOMINAL_CODE" />
 		<param name="project_id" type="text" size="50" default="0" label="PROJECT_ID" description="KASHFLOW_PROJECT_ID" />
+		<param name="main_currency" type="text" size="3" default="GBP" label="MAIN_CURRENCY" description="MAIN_CURRENCY" />
 	</params>
 	<config>
 		<fields name="params" addfieldpath="/components/com_hikashop/fields">
@@ -38,6 +39,7 @@
 				<field name="coupon_nominal_code" type="text" size="50" default="0" label="SHIPPING_COSTS_NOMINAL_CODE" description="KASHFLOW_SHIPPING_COSTS_NOMINAL_CODE" />
 				<field name="shipping_nominal_code" type="text" size="50" default="0" label="COUPONS_NOMINAL_CODE" description="KASHFLOW_COUPONS_NOMINAL_CODE" />
 				<field name="project_id" type="text" size="50" default="0" label="PROJECT_ID" description="KASHFLOW_PROJECT_ID" />
+				<field name="main_currency" type="text" size="3" default="GBP" label="MAIN_CURRENCY" description="MAIN_CURRENCY" />
 			</fieldset>
 		</fields>
 	</config>

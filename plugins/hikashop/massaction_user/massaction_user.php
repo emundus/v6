@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,6 +11,14 @@ defined('_JEXEC') or die('Restricted access');
 class plgHikashopMassaction_user extends JPlugin
 {
 	var $message = '';
+
+	function __construct(&$subject, $config){
+		parent::__construct($subject, $config);
+		$this->massaction = hikashop_get('class.massaction');
+		$this->massaction->datecolumns = array('user_created');
+		$this->user = hikashop_get('class.user');
+		$this->db = JFactory::getDBO();
+	}
 
 	function onMassactionTableLoad(&$externalValues){
 		$obj = new stdClass();
@@ -20,11 +28,95 @@ class plgHikashopMassaction_user extends JPlugin
 		$externalValues[] = $obj;
 	}
 
-	function __construct(&$subject, $config){
-		parent::__construct($subject, $config);
-		$this->massaction = hikashop_get('class.massaction');
-		$this->massaction->datecolumns = array('user_created');
-		$this->user = hikashop_get('class.user');
+	function onMassactionTableTriggersLoad(&$table, &$triggers, &$triggers_html, &$loadedData) {
+		if($table->table != 'user')
+			return true;
+
+		$triggers['onBeforeUserCreate']=JText::_('BEFORE_A_USER_IS_CREATED');
+		$triggers['onBeforeUserUpdate']=JText::_('BEFORE_A_USER_IS_UPDATED');
+		$triggers['onBeforeUserDelete']=JText::_('BEFORE_A_USER_IS_DELETED');
+		$triggers['onAfterUserCreate']=JText::_('AFTER_A_USER_IS_CREATED');
+		$triggers['onAfterUserUpdate']=JText::_('AFTER_A_USER_IS_UPDATED');
+		$triggers['onAfterUserDelete']=JText::_('AFTER_A_USER_IS_DELETED');
+	}
+
+	function onMassactionTableFiltersLoad(&$table,&$filters,&$filters_html,&$loadedData){
+		if($table->table != 'user')
+			return true;
+
+		$type = 'filter';
+		$tables = array('user','address');
+
+		$filters['haveDontHave']=JText::_('HIKA_HAVE_DONT_HAVE');
+		$loadedData->massaction_filters['__num__'] = new stdClass();
+		$loadedData->massaction_filters['__num__']->type = 'user';
+		$loadedData->massaction_filters['__num__']->data = array('have'=>'have','type'=>'','order_status'=>'created');
+		$loadedData->massaction_filters['__num__']->name = 'haveDontHave';
+		$loadedData->massaction_filters['__num__']->html = '';
+
+		$this->db->setQuery('SELECT `category_name` FROM '.hikashop_table('category').' WHERE `category_type` = '.$this->db->quote('status').' AND `category_name` != '.$this->db->quote('order status'));
+		if(!HIKASHOP_J25){
+			$orderStatuses = $this->db->loadResultArray();
+		} else {
+			$orderStatuses = $this->db->loadColumn();
+		}
+		foreach($loadedData->massaction_filters as $key => &$value) {
+			if($value->name != 'haveDontHave' || ($table->table != $loadedData->massaction_table && is_int($key)))
+				continue;
+
+			$value->type = 'user';
+
+			$output= '<select class="chzn-done not-processed" name="filter['.$table->table.']['.$key.'][haveDontHave][have]" id="userfilter'.$key.'haveDontHavetype" onchange="countresults(\''.$table->table.'\','.$key.')">';
+			$datas = array('have'=>'HIKA_HAVE','donthave'=>'HIKA_DONT_HAVE');
+			$display = 'style="display: none;"';
+			foreach($datas as $k => $data){
+				$selected = '';
+				if($k == $value->data['have']) $selected = 'selected="selected"';
+				if($value->data['have'] == 'order_status') $display = '';
+				$output.= '<option value="'.$k.'" '.$selected.'>'.JText::_(''.$data.'').'</option>';
+			}
+			$output.= '</select>';
+
+			$output.= '<select class="chzn-done not-processed" name="filter['.$table->table.']['.$key.'][haveDontHave][type]" id="userfilter'.$key.'haveDontHavetype" onchange="showSubSelect(this.value,'.$key.'); countresults(\''.$table->table.'\','.$key.')">';
+			$datas = array('order'=>'HIKASHOP_ORDER','order_status'=>'ORDER_STATUS','address'=>'ADDRESS');
+			$display = 'style="display: none;"';
+			foreach($datas as $k => $data){
+				$selected = '';
+				if($k == $value->data['type']) $selected = 'selected="selected"';
+				if($value->data['type'] == 'order_status') $display = '';
+				$output.= '<option value="'.$k.'" '.$selected.'>'.JText::_(''.$data.'').'</option>';
+			}
+			$output.= '</select>';
+
+			$output .= '<select class="chzn-done not-processed" id="userfilter'.$key.'haveDontHaveorderStatus" '.$display.' name="filter['.$table->table.']['.$key.'][haveDontHave][order_status]" onchange="countresults(\''.$table->table.'\','.$key.')">';
+			if(is_array($orderStatuses)){
+				foreach($orderStatuses as $orderStatus){
+					$selected = '';
+					if($orderStatus == $value->data['order_status']) $selected = 'selected="selected"';
+					$output.='<option value="'.$orderStatus.'" '.$selected.'>'.JText::_($orderStatus).'</option>';
+				}
+			}
+			$output.= '</select>';
+			$output.= '<input type="hidden" id="userfilter'.$key.'haveDontHavehide" name="filter['.$table->table.']['.$key.'][haveDontHave][show]" value="0"/>';
+
+			$filters_html['haveDontHave'] = $this->massaction->initDefaultDiv($value, $key, $type, $table->table, $loadedData, $output);
+		}
+		$filters_html['haveDontHave'] .= '
+			<script type="text/javascript">
+				var d = document;
+				var hide = d.getElementById(\'userfilter'.$key.'haveDontHavehide\').value;
+				if(hide != 0){d.getElementById(hide).style.display = \'inline-block\';}
+				function showSubSelect(type, k){
+					if(type == \'order_status\'){
+						d.getElementById(\'userfilter\'+k+\'haveDontHaveorderStatus\').style.display = \'inline-block\';
+						d.getElementById(\'userfilter\'+k+\'haveDontHavehide\').value = \'userfilter\'+k+\'haveDontHaveorderStatus\';
+					}else{
+						d.getElementById(\'userfilter\'+k+\'haveDontHaveorderStatus\').style.display = \'none\';
+						d.getElementById(\'userfilter\'+k+\'haveDontHavehide\').value = \'0\';
+					}
+				}
+			</script>
+		';
 	}
 
 	function onProcessUserMassFilterlimit(&$elements, &$query,$filter,$num){

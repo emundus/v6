@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -68,8 +68,8 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 				}
 
 				$vars['address_override'] = $this->payment_params->address_override;
-				$vars['first_name'] = @ $order->cart-> $address_type->address_firstname;
-				$vars['last_name'] = @ $order->cart-> $address_type->address_lastname;
+				$vars['billing_first_name'] = @ $order->cart-> $address_type->address_firstname;
+				$vars['billing_last_name'] = @ $order->cart-> $address_type->address_lastname;
 				$address1 = '';
 				$address2 = '';
 
@@ -86,16 +86,16 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 					}
 				}
 
-				$vars['address1'] = $address1;
-				$vars['address2'] = $address2;
-				$vars['zip'] = @ $order->cart-> $address_type->address_post_code;
-				$vars['city'] = @ $order->cart-> $address_type->address_city;
+				$vars['billing_address1'] = $address1;
+				$vars['billing_address2'] = $address2;
+				$vars['billing_zip'] = @ $order->cart-> $address_type->address_post_code;
+				$vars['billing_city'] = @ $order->cart-> $address_type->address_city;
 				if ((!isset ($order->cart-> $address_type->address_state->zone_code_3) || is_numeric($order->cart-> $address_type->address_state->zone_code_3)) && !empty ($order->cart-> $address_type->address_country->zone_name)) {
-					$vars['state'] = @ $order->cart-> $address_type->address_state->zone_name;
+					$vars['billing_state'] = @ $order->cart-> $address_type->address_state->zone_name;
 				} else {
-					$vars['state'] = @ $order->cart-> $address_type->address_state->zone_code_3;
+					$vars['billing_state'] = @ $order->cart-> $address_type->address_state->zone_code_3;
 				}
-				$vars['country'] = @ $order->cart-> $address_type->address_country->zone_code_2;
+				$vars['billing_country'] = @ $order->cart-> $address_type->address_country->zone_code_2;
 				$vars['email'] = $this->user->user_email;
 				$vars['night_phone_b'] = @ $order->cart-> $address_type->address_telephone;
 
@@ -120,6 +120,7 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 				$tax = 0;
 				$config = & hikashop_config();
 				$group = $config->get('group_options', 0);
+				$subtotal = 0;
 				foreach ($order->cart->products as $product) {
 					if ($group && $product->order_product_option_parent_id)
 						continue;

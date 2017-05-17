@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -27,6 +27,7 @@ class plgHikashopDatepickerfield extends JPlugin
 		$opt = new stdClass();
 		$opt->name = 'datepicker_options';
 		$opt->text = JText::_('DATE_PICKER_OPTIONS');
+		$opt->own_block = true;
 		$opt->obj = 'fieldOpt_datepicker_options';
 
 		$options[$opt->name] = $opt;

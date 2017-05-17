@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="1.5" method="upgrade" group="system">
 	<name>System - Hikashop Social Plugin</name>
-	<creationDate>11 avril 2016</creationDate>
-	<version>2.6.2</version>
+	<creationDate>23 avril 2017</creationDate>
+	<version>3.0.1</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>This plugin enables you to add a Facebook "like" button and a Twitter button</description>
 	<files>
@@ -60,6 +60,10 @@
 		<param name="fb_verb" type="list" default="0" label="HIKA_VERB_TO_DISPLAY" description="VERB_TO_DISPLAY">
 			<option value="0">SOCIAL_VERB_LIKE</option>
 			<option value="1">SOCIAL_VERB_RECOMMEND</option>
+		</param>
+		<param name="fb_mode" type="list" default="fb-like" label="HIKA_DISPLAY_MODE" description="DISPLAY_MODE_FOR_XFBML">
+			<option value="fb-like">HIKA_DEFAULT</option>
+			<option value="fb-share-button">SHARE_BUTTON_ONLY</option>
 		</param>
 		<param name="fb_theme" type="list" default="0" label="HIKA_COLOR_THEME" description="COLOR_THEME">
 			<option value="0">THEME_LIGHT</option>
@@ -167,6 +171,10 @@
 				<field name="fb_verb" type="list" default="0" label="HIKA_VERB_TO_DISPLAY" description="VERB_TO_DISPLAY">
 					<option value="0">SOCIAL_VERB_LIKE</option>
 					<option value="1">SOCIAL_VERB_RECOMMEND</option>
+				</field>
+				<field name="fb_mode" type="list" default="fb-like" label="HIKA_DISPLAY_MODE" description="DISPLAY_MODE_FOR_XFBML">
+					<option value="fb-like">HIKA_DEFAULT</option>
+					<option value="fb-share-button">SHARE_BUTTON_ONLY</option>
 				</field>
 				<field name="fb_theme" type="list" default="0" label="HIKA_COLOR_THEME" description="COLOR_THEME">
 					<option value="0">THEME_LIGHT</option>

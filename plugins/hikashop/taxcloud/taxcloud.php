@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -230,8 +230,11 @@ class plgHikaShopTaxcloud extends JPlugin {
 			hikashop_display($e->getMessage());
 			$ret = false;
 		}
-		if(@$ret->Messages->ResponseMessage->ResponseType == "Error")
+		if(@$ret->Messages->ResponseMessage->ResponseType == "Error"){
+			if(empty($ret->Messages->ResponseMessage->Message))
+				$ret->Messages->ResponseMessage->Message = 'Unkown error';
 			$this->display_errors(@$ret->Messages->ResponseMessage->Message);
+		}
 		return true;
 	}
 
@@ -524,7 +527,7 @@ class plgHikaShopTaxcloud extends JPlugin {
 
 	}
 
-	public function onHikashopCheckDB($configController, $createTable, $custom_fields, $structure){
+	public function onHikashopBeforeCheckDB(&$createTable, &$custom_fields, &$structure, &$helper){
 		$structure['#__hikashop_product']['product_taxability_code'] = '`product_taxability_code` INT(10) NOT NULL DEFAULT 0';
 	}
 
@@ -1211,6 +1214,9 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 			if($this->debug && empty($useCache))
 				var_dump($cart->total->prices[0]);
 		} else {
+			if(empty($ret->Messages->ResponseMessage->Message)){
+				$ret->Messages->ResponseMessage->Message = "Unknown error. The tax calculation service is probably down.";
+			}
 			$this->display_errors(@$ret->Messages->ResponseMessage->Message);
 		}
 
@@ -1257,30 +1263,35 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 			'zip5' => $this->plugin_options['origin_zip5'],
 			'zip4' => $this->plugin_options['origin_zip4']
 		);
-		$ret = $this->soap->__soapCall('verifyAddress', array($parameters));
-
-		if(!empty($ret) && !empty($ret->VerifyAddressResult)) {
-			$errNumber = $ret->VerifyAddressResult->ErrNumber;
-			if($errNumber === '0') {
-				echo '<fieldset><h1>Check Address</h1><table width="100%" style="width:100%"><thead><tr>'.
-					'<th>Name</th>'.
-					'<th>Original value</th>'.
-					'<th>Processed value</th>'.
-					'</thead><tbody>'.
-					'<tr><td>Address 1</td><td>'.$this->plugin_options['origin_address1'].'</td><td>'.@$ret->VerifyAddressResult->Address1.'</td></tr>'.
-					'<tr><td>Address 2</td><td>'.$this->plugin_options['origin_address2'].'</td><td>'.@$ret->VerifyAddressResult->Address2.'</td></tr>'.
-					'<tr><td>City</td><td>'.$this->plugin_options['origin_city'].'</td><td>'.@$ret->VerifyAddressResult->City.'</td></tr>'.
-					'<tr><td>State</td><td>'.$this->plugin_options['origin_state'].'</td><td>'.@$ret->VerifyAddressResult->State.'</td></tr>'.
-					'<tr><td>Zip5</td><td>'.$this->plugin_options['origin_zip5'].'</td><td>'.@$ret->VerifyAddressResult->Zip5.'</td></tr>'.
-					'<tr><td>Zip4</td><td>'.$this->plugin_options['origin_zip4'].'</td><td>'.@$ret->VerifyAddressResult->Zip4.'</td></tr>'.
-					'</tbody></table></fieldset>';
+		try{
+			$ret = $this->soap->__soapCall('verifyAddress', array($parameters));
+			if(!empty($ret) && !empty($ret->VerifyAddressResult)) {
+				$errNumber = $ret->VerifyAddressResult->ErrNumber;
+				if($errNumber === '0') {
+					echo '<fieldset><h1>Check Address</h1><table width="100%" style="width:100%"><thead><tr>'.
+						'<th>Name</th>'.
+						'<th>Original value</th>'.
+						'<th>Processed value</th>'.
+						'</thead><tbody>'.
+						'<tr><td>Address 1</td><td>'.$this->plugin_options['origin_address1'].'</td><td>'.@$ret->VerifyAddressResult->Address1.'</td></tr>'.
+						'<tr><td>Address 2</td><td>'.$this->plugin_options['origin_address2'].'</td><td>'.@$ret->VerifyAddressResult->Address2.'</td></tr>'.
+						'<tr><td>City</td><td>'.$this->plugin_options['origin_city'].'</td><td>'.@$ret->VerifyAddressResult->City.'</td></tr>'.
+						'<tr><td>State</td><td>'.$this->plugin_options['origin_state'].'</td><td>'.@$ret->VerifyAddressResult->State.'</td></tr>'.
+						'<tr><td>Zip5</td><td>'.$this->plugin_options['origin_zip5'].'</td><td>'.@$ret->VerifyAddressResult->Zip5.'</td></tr>'.
+						'<tr><td>Zip4</td><td>'.$this->plugin_options['origin_zip4'].'</td><td>'.@$ret->VerifyAddressResult->Zip4.'</td></tr>'.
+						'</tbody></table></fieldset>';
+				} else {
+					echo '<fieldset><h1>Check Address Error</h1><p>'.$ret->VerifyAddressResult->ErrDescription.'</p></fieldset>';
+				}
 			} else {
-				echo '<fieldset><h1>Check Address Error</h1><p>'.$ret->VerifyAddressResult->ErrDescription.'</p></fieldset>';
+				echo '<fieldset><h1>Check Address Error</h1><p>';
+				var_dump($ret);
+				echo '</p></fieldset>';
 			}
-		} else {
-			echo '<fieldset><h1>Check Address Error</h1><p>';
-			var_dump($ret);
-			echo '</p></fieldset>';
+		}catch(Exception $e){
+			echo '<fieldset><h1>Check Address Error</h1><p><pre>';
+			var_dump($e);
+			echo '</pre></p></fieldset>';
 		}
 	}
 

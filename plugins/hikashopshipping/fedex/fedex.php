@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -116,6 +116,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 			$currency = hikashop_get('class.currency');
 
 			$receivedMethods=$this->_getRates($rate, $order, $heavyProduct, $null);
+
 			if(empty($receivedMethods)) {
 				$messages['no_rates'] = JText::_('NO_SHIPPING_METHOD_FOUND');
 				continue;
@@ -128,14 +129,32 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 				$local_usable_rates[$i]->shipping_price += round($method['value'], 2);
 				$selected_method = '';
 				$name = '';
+				$description ='';
+
 				foreach($this->fedex_methods as $fedex_method) {
 					if($fedex_method['code'] == $method['code'] && ($method['old_currency_code'] == 'CAD' || !isset($fedex_method['double']))) {
 						$name = $fedex_method['name'];
 						$selected_method = $fedex_method['key'];
+
+						$typeKey = str_replace(' ','_', strtoupper($fedex_method['name']));
+						$shipping_name = JText::_($typeKey);
+
+						if($shipping_name != $typeKey)
+							$name = $shipping_name;
+						else
+							$name = $fedex_method['name'];
+
+						$shipping_description = JText::_($typeKey.'_DESCRIPTION');
+						if($shipping_description != $typeKey.'_DESCRIPTION')
+							$description .= $shipping_description;
 						break;
 					}
 				}
 				$local_usable_rates[$i]->shipping_name=$name;
+
+				if($description != '')
+					$local_usable_rates[$i]->shipping_description .= $description;
+
 				if(!empty($selected_method))
 					$local_usable_rates[$i]->shipping_id .= '-' . $selected_method;
 				$sep = '';
@@ -302,6 +321,14 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 		$data['sender_phone']=@$rate->shipping_params->sender_phone;
 		$data['sender_address']=@$rate->shipping_params->sender_address;
 		$data['sender_city']=@$rate->shipping_params->sender_city;
+		$data['weight']=0;
+		$data['height']=0;
+		$data['length']=0;
+		$data['width']=0;
+		if(isset($order->full_total->prices[0]))
+			$data['price'] = $order->full_total->prices[0]->price_value_with_tax;
+		else
+			$data['price']=0;
 
 		$state_zone = '';
 		$state_zone=@$rate->shipping_params->sender_state;
@@ -327,196 +354,98 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 		$data['XMLpackage']='';
 		$data['pickup_type']=@$rate->shipping_params->pickup_type;
 		$this->nbpackage = 0;
-		if(!$rate->shipping_params->group_package || $rate->shipping_params->group_package == 0){
-			$data['weight']=0;
-			$data['height']=0;
-			$data['length']=0;
-			$data['width']=0;
-			$data['price']=0;
 
-			foreach($order->products as $product){
-				if($product->product_parent_id==0){
-					if(isset($product->variants)){
-						foreach($product->variants as $variant){
-							$caracs=parent::_convertCharacteristics($variant, $data);
-							$data['weight_unit']=$caracs['weight_unit'];
-							$data['dimension_unit']=$caracs['dimension_unit'];
-							$data['weight']+=round($caracs['weight'],2)*$variant->cart_product_quantity;
-							if($caracs['height'] != '' && $caracs['height'] != '0.00' && $caracs['height'] != 0){
-								$data['height']+=round($caracs['height'],2)*$variant->cart_product_quantity;
-								$data['length']+=round($caracs['length'],2)*$variant->cart_product_quantity;
-								$data['width']+=round($caracs['width'],2)*$variant->cart_product_quantity;
-							}
+		$ground_limit = array(
+			'FEDEX_GROUND',
+			'FEDEX_2_DAY',
+			'FIRST_OVERNIGHT',
+			'STANDARD_OVERNIGHT',
+			'SMART_POST',
+			'PRIORITY_OVERNIGHT'
+		);
+		$international_limit = array(
+			'INTERNATIONAL_GROUND',
+			'INTERNATIONAL_ECONOMY',
+			'INTERNATIONAL_ECONOMY_DISTRIBUTION',
+			'INTERNATIONAL_FIRST',
+			'EUROPE_FIRST_INTERNATIONAL_PRIORITY',
+			'INTERNATIONAL_FIRST',
+			'INTERNATIONAL_PRIORITY',
+			'INTERNATIONAL_PRIORITY_DISTRIBUTION'
+		);
 
-							$data['price']+=$variant->prices[0]->price_value_with_tax*$variant->cart_product_quantity;
-						}
-					}
-					else{
-						$caracs=parent::_convertCharacteristics($product, $data);
-						$data['weight_unit']=$caracs['weight_unit'];
-						$data['dimension_unit']=$caracs['dimension_unit'];
-						$data['weight']+=round($caracs['weight'],2)*$product->cart_product_quantity;
-						if($caracs['height'] != '' && $caracs['height'] != '0.00' && $caracs['height'] != 0){
-							$data['height']+=round($caracs['height'],2)*$product->cart_product_quantity;
-							$data['length']+=round($caracs['length'],2)*$product->cart_product_quantity;
-							$data['width']+=round($caracs['width'],2)*$product->cart_product_quantity;
-						}
-						$data['price']+=$product->prices[0]->price_value_with_tax*$product->cart_product_quantity;
-					}
-				}
-				if(($this->freight==true && $this->classicMethod==false) || ($heavyProduct==true && $this->freight==true))
-					$data['XMLpackage'].=$this->_createPackage($data, $product, $rate, $order );
-				else
-					$data['XMLpackage'].=$this->_createPackage($data, $product, $rate, $order, true );
-			}
-
-			$usableMethods=$this->_FEDEXrequestMethods($data,$rate);
-			return $usableMethods;
-		}
-		else{
-			$data['weight']=0;
-			$data['height']=0;
-			$data['length']=0;
-			$data['width']=0;
-			$data['price']=0;
-			$current_package = array();
-
-			$limitation = array(
-				'length' => 150,
-				'weight' => 119,
-				'dimension' => 300
-			);
-			if(!empty($rate->shipping_params->methods)) {
-				foreach($rate->shipping_params->methods as $k => $v) {
-					$l_lenght = 0; $l_weight = 0; $l_dimension = 0;
-					switch($v) {
-						case 'FEDEX_GROUND':
-							$l_length = 150;
-							$l_weight =108;
-							$l_dimension=165;
-							break;
-						case 'FEDEX_EXPRESS_SAVER':
-							$l_length = 150;
-							$l_weight =119;
-							$l_dimension=130;
-							break;
-					}
-
-					if($l_length > 0 && $limitation['length'] > $l_length) {
-						$limitation['length'] = $l_length;
-					}
-					if($l_weight > 0 && $limitation['weight'] > $l_weight) {
-						$limitation['weight'] = $l_weight;
-					}
-					if($l_dimension > 0 && $limitation['dimension'] > $l_dimension) {
-						$limitation['dimension'] = $l_dimension;
-					}
+		$limit = array(
+			'y' => 119,
+			'w' => 150,
+			'length_girth' => 165
+		);
+		if(!empty($rate->shipping_params->methods)) {
+			foreach($rate->shipping_params->methods as $k => $service_name) {
+				$l_lenght = 0; $l_weight = 0; $l_dimension = 0;
+				if($service_name == 'FEDEX_GROUND')
+					$limit['y'] = 108;
+				if($service_name == 'GROUND_HOME_DELIVERY')
+					$limit['w'] = 70;
+				if(in_array($service_name,$international_limit))
+					$limit['length_girth'] = 130;
 				}
 			}
 
-			foreach($order->products as $product){
-				if($product->product_parent_id==0){
-					if(isset($product->variants)){
-						foreach($product->variants as $variant){
-							for($i=0;$i<$variant->cart_product_quantity;$i++){
-								$caracs=parent::_convertCharacteristics($variant, $data);
-								$current_package = parent::groupPackages($data, $caracs);
-								if($data['weight']+round($caracs['weight'],2)>$limitation['weight'] || $current_package['dim']>$limitation['dimension'] || $data['width']>$limitation['length']){
-									$data['XMLpackage'].=$this->_createPackage($data, $product, $rate, $order, true );
-									$data['weight']=round($caracs['weight'],2);
-									$data['height']=$current_package['y'];
-									$data['length']=$current_package['z'];
-									$data['width']=$current_package['x'];
-									$data['price']=$variant->prices[0]->price_value_with_tax;
-								}
-								else{
-									$data['weight']+=round($caracs['weight'],2);
-									$data['height']=max($data['height'],$current_package['y']);
-									$data['length']=max($data['length'],$current_package['z']);
-									$data['width']+=$current_package['x'];
-									$data['price']+=$variant->prices[0]->price_value_with_tax;
-								}
-							}
-						}
-					}
-					else{
-						for($i=0;$i<$product->cart_product_quantity;$i++){
-							$caracs=parent::_convertCharacteristics($product, $data);
-							$current_package = parent::groupPackages($data, $caracs);
-							if($data['weight']+round($caracs['weight'],2)>$limitation['weight'] || $current_package['dim']>$limitation['dimension'] || $data['width']>$limitation['length']){
-								$this->nbpackage++;
-								$data['XMLpackage'].=$this->_createPackage($data, $product, $rate, $order, true );
-								$data['weight']=round($caracs['weight'],2);
-								$data['height']=$current_package['y'];
-								$data['length']=$current_package['z'];
-								$data['width']=$current_package['x'];
-								$data['price']=$product->prices[0]->price_value_with_tax;
-							}
-							else{
-								$data['weight']+=round($caracs['weight'],2);
-								$data['height']=max($data['height'],$current_package['y']);
-								$data['length']=max($data['length'],$current_package['z']);
-								$data['width']+=$current_package['x'];
-								$data['price']+=$product->prices[0]->price_value_with_tax;
-							}
-						}
-					}
-				}
-			}
-			if (($data['weight']+$data['height']+$data['length']+$data['width'])>0){
-				$this->nbpackage++;
-				$data['XMLpackage'].=$this->_createPackage($data, $product, $rate, $order, true);
-			}
-			$usableMethods=$this->_FEDEXrequestMethods($data,$rate);
-		}
-		if(empty($usableMethods)){
+		if(!$rate->shipping_params->group_package || $rate->shipping_params->group_package == 0)
+			$limit['unit'] = 1;
+
+
+		$required_dimensions = array('w');
+		if(@$rate->shipping_params->use_dimensions == 1)
+			$required_dimensions = array('w','x','y','z');
+
+		$packages = $this->getOrderPackage($order, array('weight_unit' => 'lb', 'volume_unit' => 'in', 'limit' => $limit, 'required_dimensions' => $required_dimensions));
+
+		if(empty($packages))
 			return false;
-		}
-		$currencies=array();
-		foreach($usableMethods as $method){
-			$currencies[$method['currency_code']]='"'.$method['currency_code'].'"';
-		}
-		$db = JFactory::getDBO();
-		$query='SELECT currency_code, currency_id FROM '.hikashop_table('currency').' WHERE currency_code IN ('.implode(',',$currencies).')';
-		$db->setQuery($query);
-		$currencyList = $db->loadObjectList();
-		$currencyList=reset($currencyList);
-		foreach($usableMethods as $i => $method){
-			$usableMethods[$i]['currency_id']=$currencyList->currency_id;
-		}
-		$usableMethods = parent::_currencyConversion($usableMethods, $order);
 
+		$this->package_added = 0;
+		$this->nbpackage = 0;
 
+		if(isset($packages['w']) && isset($packages['x']) && isset($packages['y']) && isset($packages['z'])) {
+			$this->nbpackage++;
+			$data['weight'] = $packages['w'];
+			$data['height'] = $packages['z'];
+			$data['length'] = $packages['y'];
+			$data['width'] = $packages['x'];
+			$data['weight_unit'] = 'LB';
+			$data['dimension_unit'] = 'IN';
+			$data['quantity'] = 1;
+
+			if(($this->freight==true && $this->classicMethod==false) || ($heavyProduct==true && $this->freight==true))
+				$data['XMLpackage'].=$this->_createPackage($data, $rate, $order);
+			else
+				$data['XMLpackage'].=$this->_createPackage($data, $rate, $order, true);
+		} else {
+			foreach($packages as $package){
+				if(!isset($package['w']) || $package['w'] == 0 || !isset($package['x']) || $package['x'] == 0 || !isset($package['y']) || $package['y'] == 0 || !isset($package['z']) || $package['z'] == 0)
+					continue;
+				$this->nbpackage++;
+				$data['weight'] = $package['w'];
+				$data['height'] = $package['z'];
+				$data['length'] = $package['y'];
+				$data['width'] = $package['x'];
+				$data['weight_unit'] = 'LB';
+				$data['dimension_unit'] = 'IN';
+				$data['quantity'] = 1;
+
+				if(($this->freight==true && $this->classicMethod==false) || ($heavyProduct==true && $this->freight==true))
+					$data['XMLpackage'].=$this->_createPackage($data, $rate, $order);
+				else
+					$data['XMLpackage'].=$this->_createPackage($data, $rate, $order, true);
+			}
+		}
+
+		$usableMethods=$this->_FEDEXrequestMethods($data,$rate);
 		return $usableMethods;
 	}
 
-	function _createPackage(&$data, &$product, &$rate, &$order, $includeDimension=false){
-		if(empty($data['weight'])){
-			$caracs=parent::_convertCharacteristics($product, $data);
-			$data['weight_unit']=$caracs['weight_unit'];
-			$data['dimension_unit']=$caracs['dimension_unit'];
-			$data['weight']=round($caracs['weight'],2);
-			if($caracs['height'] != '' && $caracs['height'] != '0.00' && $caracs['height'] != 0){
-				$data['height']=round($caracs['height'],2);
-				$data['length']=round($caracs['length'],2);
-				$data['width']=round($caracs['width'],2);
-			}
-		}
-		if($data['weight_unit'] == 'KGS') $data['weight_unit'] = 'KG';
-		if($data['weight_unit'] == 'LBS') $data['weight_unit'] = 'LB';
-		$currencyClass=hikashop_get('class.currency');
-		$config =& hikashop_config();
-		$this->main_currency = $config->get('main_currency',1);
-		$currency = hikashop_getCurrency();
-		if(isset($data['price'])){
-			$price=$data['price'];
-		}
-		else{
-			$price=$product->prices[0]->price_value;
-		}
-		if(@$this->shipping_currency_id!=@$data['currency'] && !empty($data['currency'])){
-			$price=$currencyClass->convertUniquePrice($price, $this->shipping_currency_id,@$data['currency']);
-		}
+	function _createPackage(&$data, &$rate, &$order, $includeDimension=false){
 		if(!empty($rate->shipping_params->weight_approximation)){
 			$data['weight']=$data['weight']+$data['weight']*$rate->shipping_params->weight_approximation/100;
 		}
@@ -538,7 +467,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 			$options='<PackageServiceOptions>
 						<InsuredValue>
 							<CurrencyCode>'.$data['currency_code'].'</CurrencyCode>
-							<MonetaryValue>'.$price.'</MonetaryValue>
+							<MonetaryValue>'.$data['price'].'</MonetaryValue>
 						</InsuredValue>
 					</PackageServiceOptions>';
 		}
@@ -781,6 +710,18 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 			}
 		}
 		return $shipment;
+	}
+
+	function processPackageLimit($limit_key, $limit_value, $product, $qty, $package, $units) {
+		switch($limit_key) {
+			case 'length_girth':
+				$max_qty = (($limit_value - $product['z']) / 2 - $product['y']) / $product['x'];
+				if(!$max_qty || $max_qty < 1)
+					return false;
+				return (int)floor($max_qty);
+				break;
+		}
+		return parent::processPackageLimit($limit_key, $limit_value , $product, $qty, $package, $units);
 	}
 
 	function printSuccess($client, $response) {

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -19,7 +19,7 @@ class plgButtonHikashopproduct extends JPlugin
 
 	function onDisplay($name, $asset='', $author='') {
 		$extension = JRequest::getCmd('option');
-		if(!in_array($extension, array('com_content', 'com_tz_portfolio', 'com_k2')))
+		if(!in_array($extension, array('com_content', 'com_tz_portfolio', 'com_k2', 'com_jevents')))
 			return;
 		if(!defined('DS'))
 			define('DS', DIRECTORY_SEPARATOR);
@@ -144,7 +144,6 @@ class plgButtonHikashopproduct extends JPlugin
 			$pageInfo->limit->start = 0;
 			$app->setUserState('com_content.productbutton.limitstart',0);
 		}
-
 		$Select = 'SELECT * FROM '. hikashop_table('product');
 		$Where = ' WHERE product_type=\'main\' AND product_access=\'all\' AND product_published=1 ';
 		$orderBY = ' ORDER BY product_id ASC';
@@ -155,17 +154,19 @@ class plgButtonHikashopproduct extends JPlugin
 			$filter = '('.implode(" LIKE $searchVal OR ",$searchMap)." LIKE $searchVal".')';
 			$filters[] =  $filter;
 		}
-		if(is_array($filters) && count($filters)){
+		if(is_array($filters) && count($filters))
 			$filters = ' AND '.implode(' AND ',$filters);
-		}else{
+		else
 			$filters = '';
-		}
+
 		$db->setQuery($Select . $Where . $filters . $orderBY,(int)$pageInfo->limit->start,(int)$pageInfo->limit->value);
 		$products = $db->loadObjectList();
-		$db->setQuery('SELECT COUNT(product_id) FROM '. hikashop_table('product').' WHERE product_type=\'main\' AND product_access=\'all\' AND product_published=1'. $filters );
-		$nbrow = $db->loadResult();
+
+		$nbrow = count($products);
+
 		$db->setQuery('SELECT * FROM '. hikashop_table('price') .' ORDER BY price_product_id ASC');
 		$prices = $db->loadObjectList();
+
 		if(HIKASHOP_J30) {
 			$pagination = hikashop_get('helper.pagination', $nbrow, $pageInfo->limit->start, $pageInfo->limit->value);
 		} else {
@@ -175,18 +176,22 @@ class plgButtonHikashopproduct extends JPlugin
 
 		$scriptV1 = "function insertTag(tag){ window.parent.jInsertEditorText(tag,'text'); return true;}";
 		$scriptV2 = "function insertTag(tag){ window.parent.jInsertEditorText(tag,'".str_replace(array('\\','\''), array('\\\\', '\\\''), $editor_name)."'); return true;}";
+
 		if (!HIKASHOP_PHP5) {
 			$doc =& JFactory::getDocument();
 		}else{
 			$doc = JFactory::getDocument();
 		}
-		if(version_compare(JVERSION,'1.6.0','<')) $doc->addScriptDeclaration( $scriptV1 );
-		else $doc->addScriptDeclaration( $scriptV2 );
+		if(version_compare(JVERSION,'1.6.0','<'))
+			$doc->addScriptDeclaration( $scriptV1 );
+		else
+			$doc->addScriptDeclaration( $scriptV2 );
 
 		$config =& hikashop_config();
 		$pricetaxType = hikashop_get('type.pricetax');
 		$discountDisplayType = hikashop_get('type.discount_display');
 ?>
+
 	<script language="JavaScript" type="text/javascript">
 		function divhidder(){
 			if (document.getElementById('price').checked) {

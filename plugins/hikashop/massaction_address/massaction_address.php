@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,44 +11,74 @@ defined('_JEXEC') or die('Restricted access');
 class plgHikashopMassaction_address extends JPlugin
 {
 	var $message = '';
+	var $massaction = null;
+	var $addressClass = null;
+
+	function __construct(&$subject, $config) {
+		parent::__construct($subject, $config);
+	}
+
+	function init() {
+		static $init = false;
+		if($init) return;
+		$init = true;
+		$this->massaction = hikashop_get('class.massaction');
+		$this->massaction->datecolumns = array();
+		$this->addressClass = hikashop_get('class.address');
+	}
 
 	function onMassactionTableLoad(&$externalValues){
 		$obj = new stdClass();
-		$obj->table ='address';
-		$obj->value ='address';
-		$obj->text =JText::_('ADDRESS');
+		$obj->table = 'address';
+		$obj->value = 'address';
+		$obj->text = JText::_('ADDRESS');
 		$externalValues[] = $obj;
 	}
 
-	function __construct(&$subject, $config){
-		parent::__construct($subject, $config);
-		$this->massaction = hikashop_get('class.massaction');
-		$this->massaction->datecolumns = array();
-		$this->address = hikashop_get('class.address');
+	function onMassactionTableTriggersLoad(&$table, &$triggers, &$triggers_html, &$loadedData) {
+		if($table->table != 'address')
+			return;
+		$triggers['onBeforeAddressCreate']=JText::_('BEFORE_AN_ADDRESS_IS_CREATED');
+		$triggers['onBeforeAddressUpdate']=JText::_('BEFORE_AN_ADDRESS_IS_UPDATED');
+		$triggers['onBeforeAddressDelete']=JText::_('BEFORE_AN_ADDRESS_IS_DELETED');
+		$triggers['onAfterAddressCreate']=JText::_('AFTER_AN_ADDRESS_IS_CREATED');
+		$triggers['onAfterAddressUpdate']=JText::_('AFTER_AN_ADDRESS_IS_UPDATED');
+		$triggers['onAfterAddressDelete']=JText::_('AFTER_AN_ADDRESS_IS_DELETED');
 	}
 
-	function onProcessAddressMassFilterlimit(&$elements, &$query,$filter,$num){
+	function onMassactionTableFiltersLoad(&$table,&$filters,&$filters_html,&$loadedData){
+		if($table->table != 'address')
+			return true;
+
+		$type = 'filter';
+		$tables = array('address','user');
+	}
+
+	function onProcessAddressMassFilterlimit(&$elements, &$query, $filter, $num) {
 		$query->start = (int)$filter['start'];
 		$query->value = (int)$filter['value'];
 	}
 
-	function onProcessAddressMassFilterordering(&$elements, &$query,$filter,$num){
-		if(!empty($filter['value'])){
-			if(isset($query->ordering['default']))
-				unset($query->ordering['default']);
-			$query->ordering[] = $filter['value'];
-		}
+	function onProcessAddressMassFilterordering(&$elements, &$query, $filter, $num) {
+		if(empty($filter['value']))
+			return;
+		$this->init();
+		if(isset($query->ordering['default']))
+			unset($query->ordering['default']);
+		$query->ordering[] = $filter['value'];
 	}
 
-	function onProcessAddressMassFilterdirection(&$elements, &$query,$filter,$num){
+	function onProcessAddressMassFilterdirection(&$elements, &$query, $filter, $num) {
+		$this->init();
 		if(empty($query->ordering))
 			$query->ordering['default'] = 'address_id';
 		$query->direction = $filter['value'];
 	}
 
 	function onProcessAddressMassFilteraddressColumn(&$elements,&$query,$filter,$num){
-		if(empty($filter['type']) || $filter['type']=='all') return;
-		if(!isset($this->massaction))$this->massaction = hikashop_get('class.massaction');
+		if(empty($filter['type']) || $filter['type'] == 'all')
+			return;
+		$this->init();
 		if(count($elements)){
 			foreach($elements as $k => $element){
 				$in = $this->massaction->checkInElement($element, $filter);
@@ -70,18 +100,20 @@ class plgHikashopMassaction_address extends JPlugin
 					$query->where[] = $this->massaction->getRequest($filter,'hk_address');
 				}
 			}
-		 }
+		}
 	}
 
 	function onCountAddressMassFilteraddressColumn(&$query,$filter,$num){
+		$this->init();
 		$elements = array();
 		$this->onProcessAddressMassFilteraddressColumn($elements,$query,$filter,$num);
 		return JText::sprintf('SELECTED_PRODUCTS',$query->count('hk_address.address_id'));
 	}
 
 	function onProcessAddressMassFilteruserColumn(&$elements,&$query,$filter,$num){
-		if(empty($filter['type']) || $filter['type']=='all') return;
-		if(!isset($this->massaction))$this->massaction = hikashop_get('class.massaction');
+		if(empty($filter['type']) || $filter['type']=='all')
+			return;
+		$this->init();
 		if(count($elements)){
 			foreach($elements as $k => $element){
 				$userClass = hikashop_get('class.user');
@@ -108,6 +140,7 @@ class plgHikashopMassaction_address extends JPlugin
 		$this->onProcessAddressMassFilteruserColumn($elements,$query,$filter,$num);
 		return JText::sprintf('SELECTED_PRODUCTS',$query->count('hk_address.address_id'));
 	}
+
 	function onProcessAddressMassFilteraccessLevel(&$elements,&$query,$filter,$num){
 		if(empty($filter['type']) || $filter['type']=='all') return;
 		if(count($elements)){
@@ -129,6 +162,7 @@ class plgHikashopMassaction_address extends JPlugin
 				$query->where[] = 'hk_user.user_cms_id'.' '.$filter['type'].' ('.implode(',',$users).')';
 		 }
 	}
+
 	function onCountAddressMassFilteraccessLevel(&$query,$filter,$num){
 		$elements = array();
 		$this->onProcessAddressMassFilteraccessLevel($elements,$query,$filter,$num);
@@ -136,6 +170,7 @@ class plgHikashopMassaction_address extends JPlugin
 	}
 
 	function onProcessAddressMassActiondisplayResults(&$elements,&$action,$k){
+		$this->init();
 		$params = $this->massaction->_displayResults('address',$elements,$action,$k);
 		$params->action_id = $k;
 		$js = '';
@@ -144,7 +179,9 @@ class plgHikashopMassaction_address extends JPlugin
 			echo hikashop_getLayout('massaction','results',$params,$js);
 		}
 	}
+
 	function onProcessAddressMassActionexportCsv(&$elements,&$action,$k){
+		$this->init();
 		$formatExport = $action['formatExport']['format'];
 		$path = $action['formatExport']['path'];
 		$email = $action['formatExport']['email'];
@@ -182,7 +219,9 @@ class plgHikashopMassaction_address extends JPlugin
 			$mailClass->sendMail($mail);
 		}
 	}
+
 	function onProcessAddressMassActionupdateValues(&$elements,&$action,$k){
+		$this->init();
 		$db = JFactory::getDBO();
 		$current = 'address';
 		$current_id = $current.'_id';
@@ -224,6 +263,7 @@ class plgHikashopMassaction_address extends JPlugin
 			$db->query();
 		}
 	}
+
 	function onProcessAddressMassActiondeleteElements(&$elements,&$action,$k){
 		$ids = array();
 		$addressClass = hikashop_get('class.address');
@@ -251,11 +291,13 @@ class plgHikashopMassaction_address extends JPlugin
 
 	function onBeforeAddressCreate(&$element,&$do){
 		$elements = array($element);
+		$this->init();
 		$this->massaction->trigger('onBeforeAddressCreate',$elements);
 	}
 
 	function onBeforeAddressUpdate(&$element,&$do){
-		$address = $this->address->get($element->address_id);
+		$this->init();
+		$address = $this->addressClass->get($element->address_id);
 
 		foreach($address as $key => $value){
 			if(isset($element->$key) && $address->$key != $element->$key){
@@ -268,11 +310,13 @@ class plgHikashopMassaction_address extends JPlugin
 
 	function onAfterAddressCreate(&$element){
 		$elements = array($element);
+		$this->init();
 		$this->massaction->trigger('onAfterAddressCreate',$elements);
 	}
 
 	function onAfterAddressUpdate(&$element){
-		$address = $this->address->get($element->address_id);
+		$this->init();
+		$address = $this->addressClass->get($element->address_id);
 
 		foreach($address as $key => $value){
 			if(isset($element->$key) && $address->$key != $element->$key){
@@ -284,15 +328,17 @@ class plgHikashopMassaction_address extends JPlugin
 	}
 
 	function onAfterAddressDelete(&$ids){
+		$this->init();
 		$this->massaction->trigger('onAfterAddressDelete',$this->deletedAdress);
 	}
 
 	function onBeforeAddressDelete($elements,$do){
+		$this->init();
 		$addresses = array();
 		if(!is_array($elements)) $clone = array($elements);
 		else $clone = $elements;
 		foreach($clone as $id){
-			$addresses[] = $this->address->get($id);
+			$addresses[] = $this->addressClass->get($id);
 		}
 		$this->deletedAdress = &$addresses;
 		$this->massaction->trigger('onBeforeAddressDelete',$addresses);

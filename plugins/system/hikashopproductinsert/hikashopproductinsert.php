@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -55,7 +55,7 @@ class plgSystemHikashopproductInsert extends JPlugin {
 
 		$body = JResponse::getBody();
 		$alternate_body = false;
-		if(empty($body)) {
+		if(empty($body) && method_exists($app,'getBody')) {
 			$body = $app->getBody();
 			$alternate_body = true;
 		}
@@ -91,19 +91,55 @@ class plgSystemHikashopproductInsert extends JPlugin {
 			}
 		}
 
-		$product_query = 'SELECT * FROM ' . hikashop_table('product') . ' WHERE product_id IN (' . implode(',', $ids) . ') AND product_access=\'all\' AND product_published=1 AND product_type=\'main\'';
+		$product_query = 'SELECT * FROM ' . hikashop_table('product') . ' WHERE product_id IN (' . implode(',', $ids) . ') AND product_access='.$db->quote('all').' AND product_published=1';
 		$db->setQuery($product_query);
 		$products = $db->loadObjectList();
 
-		$db->setQuery('SELECT * FROM '.hikashop_table('variant').' WHERE variant_product_id IN ('.implode(',',$ids).')');
+		$db->setQuery('SELECT * FROM '.hikashop_table('variant').' AS v LEFT JOIN '.hikashop_table('characteristic').' AS c ON v.variant_characteristic_id = c.characteristic_id WHERE variant_product_id IN ('.implode(',',$ids).')');
 		$variants = $db->loadObjectList();
-		if(!empty($variants)) {
-			foreach($products as $k => $product) {
-				foreach($variants as $variant){
-					if($product->product_id == $variant->variant_product_id) {
-						$products[$k]->has_options = true;
-						break;
+
+		$parent_ids = array();
+
+		foreach($products as $product) {
+			$product->characteristic_name = false;
+
+			if($product->product_type == 'variant'){
+				$product->has_options = false;
+				$parent_ids[] = $product->product_parent_id;
+			}
+
+			if(empty($variants))
+				continue;
+
+			foreach($variants as $variant){
+				if($product->product_id == $variant->variant_product_id && $product->product_type == 'main') {
+					$product->has_options = true;
+					break;
+				}
+				if($product->product_id == $variant->variant_product_id && $product->product_type == 'variant') {
+					if(empty($product->product_name)){
+						$product->product_name = $variant->characteristic_value;
+						$product->characteristic_name = true;
 					}
+					break;
+				}
+			}
+		}
+
+
+		if(!empty($parent_ids)){
+			$productClass = hikashop_get('class.product');
+			$productClass->getProducts($parent_ids);
+
+			foreach($products as $product){
+				if($product->product_type == 'variant' && isset($product->product_parent_id) && in_array($product->product_parent_id, $parent_ids)){
+					if(!isset($productClass->products[$product->product_parent_id]))
+						continue;
+
+					if($product->characteristic_name)
+						$product->product_name = $productClass->products[$product->product_parent_id]->product_name.': ' . $product->product_name;
+					if(empty($product->product_description))
+						$product->product_description = $productClass->products[$product->product_parent_id]->product_description;
 				}
 			}
 		}

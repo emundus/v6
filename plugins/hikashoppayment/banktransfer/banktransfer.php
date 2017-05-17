@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,7 +18,7 @@ class plgHikashoppaymentBanktransfer extends hikashopPaymentPlugin {
 		'return_url' => array('RETURN_URL', 'input'),
 	);
 
-	function onAfterOrderConfirm(&$order,&$methods,$method_id) {
+	public function onAfterOrderConfirm(&$order,&$methods,$method_id) {
 		parent::onAfterOrderConfirm($order,$methods,$method_id);
 		if($order->order_status != $this->payment_params->order_status)
 			$this->modifyOrder($order->order_id, $this->payment_params->order_status, (bool)@$this->payment_params->status_notif_email, false);
@@ -39,12 +39,12 @@ class plgHikashoppaymentBanktransfer extends hikashopPaymentPlugin {
 
 	}
 
-	function getPaymentDefaultValues(&$element) {
-		$element->payment_name='Bank transfer';
-		$element->payment_description='You can pay by sending us a bank transfer.';
-		$element->payment_images='Bank_transfer';
+	public function getPaymentDefaultValues(&$element) {
+		$element->payment_name = 'Bank transfer';
+		$element->payment_description = 'You can pay by sending us a bank transfer.';
+		$element->payment_images = 'Bank_transfer';
 
-		$element->payment_params->information='Account owner: XXXXX<br/>
+		$element->payment_params->information = 'Account owner: XXXXX<br/>
 <br/>
 Owner address:<br/>
 <br/>

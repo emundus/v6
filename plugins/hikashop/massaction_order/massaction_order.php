@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,15 +11,6 @@ defined('_JEXEC') or die('Restricted access');
 class plgHikashopMassaction_order extends JPlugin
 {
 	var $message = '';
-
-	function onMassactionTableLoad(&$externalValues){
-		$obj = new stdClass();
-		$obj->table ='order';
-		$obj->value ='order';
-		$obj->text =JText::_('HIKASHOP_ORDER');
-		$externalValues[] = $obj;
-
-	}
 
 	function __construct(&$subject, $config){
 		parent::__construct($subject, $config);
@@ -29,6 +20,106 @@ class plgHikashopMassaction_order extends JPlugin
 												'order_invoice_created'
 											);
 		$this->order = hikashop_get('class.order');
+		$this->db = JFactory::getDBO();
+	}
+
+	function onMassactionTableLoad(&$externalValues){
+		$obj = new stdClass();
+		$obj->table ='order';
+		$obj->value ='order';
+		$obj->text =JText::_('HIKASHOP_ORDER');
+		$externalValues[] = $obj;
+	}
+
+	function onMassactionTableTriggersLoad(&$table, &$triggers, &$triggers_html, &$loadedData) {
+		if($table->table != 'order')
+			return true;
+
+		$triggers['onBeforeOrderCreate']=JText::_('BEFORE_AN_ORDER_IS_CREATED');
+		$triggers['onBeforeOrderUpdate']=JText::_('BEFORE_AN_ORDER_IS_UPDATED');
+		$triggers['onBeforeOrderDelete']=JText::_('BEFORE_AN_ORDER_IS_DELETED');
+		$triggers['onAfterOrderCreate']=JText::_('AFTER_AN_ORDER_IS_CREATED');
+		$triggers['onAfterOrderUpdate']=JText::_('AFTER_AN_ORDER_IS_UPDATED');
+		$triggers['onAfterOrderDelete']=JText::_('AFTER_AN_ORDER_IS_DELETED');
+	}
+
+	function onMassactionTableFiltersLoad(&$table,&$filters,&$filters_html,&$loadedData){
+		if($table->table != 'order')
+			return true;
+
+		$type = 'filter';
+		$tables = array('order','order_product','address','user');
+
+		$filters['orderStatus']=JText::_('ORDER_STATUS');
+		$loadedData->massaction_filters['__num__'] = new stdClass();
+		$loadedData->massaction_filters['__num__']->type = 'order';
+		$loadedData->massaction_filters['__num__']->data = array();
+		$loadedData->massaction_filters['__num__']->name = 'orderStatus';
+		$loadedData->massaction_filters['__num__']->html = '';
+
+		$this->db->setQuery('SELECT `category_name` FROM '.hikashop_table('category').' WHERE `category_type` = '.$this->db->quote('status').' AND `category_name` != '.$this->db->quote('order status'));
+		if(!HIKASHOP_J25){
+			$orderStatuses = $this->db->loadResultArray();
+		} else {
+			$orderStatuses = $this->db->loadColumn();
+		}
+		foreach($loadedData->massaction_filters as $key => &$value) {
+
+			if(!isset($value->data['type'])) $value->data['type'] = 'all';
+
+			if($value->name != 'orderStatus' || ($table->table != $loadedData->massaction_table && is_int($key)))
+				continue;
+
+			$value->type = 'order';
+
+			$output = '<select class="chzn-done not-processed" name="filter['.$table->table.']['.$key.'][orderStatus][type]" onchange="countresults(\''.$table->table.'\','.$key.')">';
+			if(is_array($orderStatuses)){
+				foreach($orderStatuses as $orderStatus){
+					$selected = '';
+					if($orderStatus == $value->data['type']) $selected = 'selected="selected"';
+					$output .= '<option value="'.$orderStatus.'" '.$selected.'>'.JText::_($orderStatus).'</option>';
+				}
+			}
+			$output .= '</select>';
+
+			$filters_html[$value->name] = $this->massaction->initDefaultDiv($value, $key, $type, $table->table, $loadedData, $output);
+		}
+
+		$filters['totalPurchase']=JText::_('USER_TOTAL_PURCHASE');
+		$loadedData->massaction_filters['__num__'] = new stdClass();
+		$loadedData->massaction_filters['__num__']->type = 'order';
+		$loadedData->massaction_filters['__num__']->data = array();
+		$loadedData->massaction_filters['__num__']->name = 'totalPurchase';
+		$loadedData->massaction_filters['__num__']->html = '';
+
+		$totalTypes = array('orderQty' => 'ORDER_TOTAL_QUANTITY', 'orderAmount' => 'ORDER_TOTAL_AMOUNT', 'productTotal' => 'PRODUCT_TOTAL_QUANTITY');
+		foreach($loadedData->massaction_filters as $key => &$value) {
+			if(!isset($value->data['type'])) $value->data['type'] = 'orderQty';
+			if(!isset($value->data['operator'])) $value->data['operator'] = '=';
+			if(!isset($value->data['value'])) $value->data['value'] = '';
+			if($value->name != 'totalPurchase' || ($table->table != $loadedData->massaction_table && is_int($key)))
+				continue;
+			$value->type = 'order';
+			$output = '<select class="chzn-done not-processed" name="filter['.$table->table.']['.$key.'][totalPurchase][type]" onchange="countresults(\''.$table->table.'\','.$key.')">';
+			if(is_array($totalTypes)){
+				foreach($totalTypes as $selectKey => $selectValue){
+					$selected = '';
+					if($selectKey == $value->data['type']) $selected = 'selected="selected"';
+					$output .= '<option value="'.$selectKey.'" '.$selected.'>'.JText::_($selectValue).'</option>';
+				}
+			}
+			$output .= '</select>';
+			$cOperators = array('=','!=','>','<','>=','<=');
+			$output .= '<select class="chzn-done not-processed" name="filter['.$table->table.']['.$key.'][totalPurchase][operator]" onchange="countresults(\''.$table->table.'\',\''.$key.'\')">';
+			foreach($cOperators as $cOperator){
+				$selected = '';
+				if($cOperator == $value->data['operator']) $selected = 'selected="selected"';
+				$output .= '<option value="'.$cOperator.'" '.$selected.'>'.JText::_($cOperator).'</option>';
+			}
+			$output .= '</select>';
+			$output .= ' <input class="inputbox" type="text" name="filter['.$table->table.']['.$key.'][totalPurchase][value]" size="50" value="'.$value->data['value'].'" onchange="countresults(\''.$table->table.'\',\''.$key.'\')" />';
+			$filters_html[$value->name] = $this->massaction->initDefaultDiv($value, $key, $type, $table->table, $loadedData, $output);
+		}
 	}
 
 	function onProcessOrderMassFilterlimit(&$elements, &$query,$filter,$num){
@@ -215,8 +306,10 @@ class plgHikashopMassaction_order extends JPlugin
 				$users = $db->loadResultArray();
 			else
 				$users = $db->loadColumn();
-			if(!empty($users))
+			if(!empty($users)){
+				$query->leftjoin['user'] = hikashop_table('user').' as hk_user ON hk_order.order_user_id = hk_user.user_id';
 				$query->where[] = 'hk_user.user_cms_id'.' '.$filter['type'].' ('.implode(',',$users).')';
+			}
 		}
 	}
 	function onCountOrderMassFilteraccessLevel(&$query,$filter,$num){
@@ -340,6 +433,10 @@ class plgHikashopMassaction_order extends JPlugin
 		if(preg_match('/order_product/',$action['type'])) $alias = array('order_product');
 		$queryTables = array($current);
 		$possibleTables = array($current, 'order_product');
+
+		if(!in_array($alias[0],$possibleTables))
+			$alias[0] = 'order';
+
 		if(!isset($this->massaction))$this->massaction = hikashop_get('class.massaction');
 		$value = $this->massaction->updateValuesSecure($action,$possibleTables,$queryTables);
 		JArrayHelper::toInteger($ids);
@@ -503,11 +600,15 @@ class plgHikashopMassaction_order extends JPlugin
 		foreach($elements as $element){
 			$user_ids[] = $element->order_user_id;
 		}
+		if(empty($user_ids))
+			return false;
 
 		$db = JFactory::getDBO();
 		$db->setQuery('SELECT user_cms_id FROM '.hikashop_table('user').' WHERE user_id IN ('.implode(',',$user_ids).') AND user_cms_id != 0');
 		if(!HIKASHOP_J25){
 			$user_ids = $db->loadResultArray();
+			if(empty($user_ids))
+				return false;
 
 			$db->setQuery('SELECT id FROM '.hikashop_table('core_acl_aro',false).' WHERE value IN ('.implode(',',$user_ids).')');
 			$user_ids = $db->loadResultArray();
@@ -523,6 +624,9 @@ class plgHikashopMassaction_order extends JPlugin
 
 		}else {
 			$user_ids = $db->loadColumn();
+			if(empty($user_ids))
+				return false;
+
 			foreach($user_ids as $user_id){
 				$values[$user_id] = '('.$user_id.','.$action['value'].')';
 			}
@@ -585,13 +689,14 @@ class plgHikashopMassaction_order extends JPlugin
 	}
 
 	function onBeforeOrderUpdate(&$order,&$do){
+		$o = clone $order;
 		if(!empty($order->old)){
 			foreach($order->old as $key => $value) {
-				if(!isset($order->$key))
-					$order->$key = $value;
+				if(!isset($o->$key))
+					$o->$key = $value;
 			}
 		}
-		$orders = array($order);
+		$orders = array($o);
 		$this->massaction->trigger('onBeforeOrderUpdate',$orders);
 	}
 

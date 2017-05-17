@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,38 +11,43 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.plugin.plugin');
 class plgSystemHikashopuser extends JPlugin {
 
-	function __construct(&$subject, $config) {
+	public function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);
-		if(!isset($this->params)){
+
+		if(!isset($this->params)) {
 			$plugin = JPluginHelper::getPlugin('system', 'hikashopuser');
-			if(version_compare(JVERSION,'2.5','<')){
+			if(version_compare(JVERSION,'2.5','<')) {
 				jimport('joomla.html.parameter');
 				$this->params = new JParameter($plugin->params);
 			} else {
 				$this->params = new JRegistry($plugin->params);
 			}
 		}
-		$app = JFactory::getApplication();
-		$this->cart = $app->getUserState('com_hikashop.cart_id');
-		$this->wishlist = $app->getUserState('com_hikashop.wishlist_id');
-		$this->currency = $app->getUserState('com_hikashop.currency_id');
-		$this->entries = $app->getUserState('com_hikashop.entries_fields');
-		$this->checkout_fields_ok = $app->getUserState( 'com_hikashop.checkout_fields_ok',0);
-		$this->checkout_fields = $app->getUserState( 'com_hikashop.checkout_fields');
 
 		$app = JFactory::getApplication();
-		if($app->isAdmin() && @$_GET['option'] == 'com_plugins' && @$_GET['view']=='plugin' && (@$_GET['layout']=='edit' || @$_GET['task']=='edit')){
+		$this->currency = $app->getUserState('com_hikashop.currency_id');
+		$this->entries = $app->getUserState('com_hikashop.entries_fields');
+
+		$jsession = JFactory::getSession();
+		$this->session = $jsession->getId();
+
+		$this->cart = $app->getUserState('com_hikashop.cart_id');
+		$this->wishlist = $app->getUserState('com_hikashop.wishlist_id');
+		$this->checkout_fields = $app->getUserState( 'com_hikashop.checkout_fields');
+		$this->checkout_fields_ok = $app->getUserState( 'com_hikashop.checkout_fields_ok', 0);
+
+		if($app->isAdmin() && @$_GET['option'] == 'com_plugins' && @$_GET['view'] == 'plugin' && (@$_GET['layout'] == 'edit' || @$_GET['task'] == 'edit')) {
 			$lang = JFactory::getLanguage();
 			$lang->load('com_hikashop', JPATH_SITE, null, true);
 		}
 	}
 
-	function onContentPrepare( $context, &$article, &$params, $limitstart = 0) {
+	public function onContentPrepare($context, &$article, &$params, $limitstart = 0) {
 		if($context == 'com_content.article')
-			$this->onPrepareContent( $article, $params, $limitstart );
+			$this->onPrepareContent($article, $params, $limitstart);
 	}
 
-	function onPrepareContent( &$article, &$params, $limitstart ) {
+	public function onPrepareContent(&$article, &$params, $limitstart) {
 		if(JRequest::getString('tmpl') != 'component')
 			return true;
 
@@ -56,9 +61,7 @@ class plgSystemHikashopuser extends JPlugin {
 		$params->set('show_page_heading',false);
 	}
 
-	function onAfterCartUpdate($parent, $cart, $product_id, $quantity, $add, $type,$resetCartWhenUpdate,$force,$updated){
-		if(!$updated) return;
-
+	public function onAfterCartSave(&$cart) {
 		if(!HIKASHOP_J30) return;
 
 		$plugin = JPluginHelper::getPlugin('system', 'cache');
@@ -70,165 +73,141 @@ class plgSystemHikashopuser extends JPlugin {
 			'caching'		=> false,
 		);
 
-		$cache		= JCache::getInstance('page', $options);
+		$cache = JCache::getInstance('page', $options);
 		$cache->clean();
 	}
 
-	function onUserBeforeSave($user, $isnew, $new){
+	public function onUserBeforeSave($user, $isnew, $new) {
 		return $this->onBeforeStoreUser($user, $isnew);
 	}
-	function onUserAfterSave($user, $isnew, $success, $msg){
+	public function onUserAfterSave($user, $isnew, $success, $msg) {
 		return $this->onAfterStoreUser($user, $isnew, $success, $msg);
 	}
-	function onUserAfterDelete($user, $success, $msg){
+	public function onUserAfterDelete($user, $success, $msg) {
 		return $this->onAfterDeleteUser($user, $success, $msg);
 	}
-	function onUserLogin($user, $options){
+	public function onUserLogin($user, $options) {
 		return $this->onLoginUser($user, $options);
 	}
 
-	function onBeforeStoreUser($user, $isnew){
+	public function onBeforeStoreUser($user, $isnew) {
 		$this->oldUser = $user;
 		return true;
 	}
-	function onAfterStoreUser($user, $isnew, $success, $msg){
-		if($success===false || !is_array($user)) return false;
+
+	public function onAfterStoreUser($user, $isnew, $success, $msg) {
+		if($success === false || !is_array($user))
+			return false;
+
 		if(!defined('DS'))
 			define('DS', DIRECTORY_SEPARATOR);
-		if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')) return true;
+		if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php'))
+			return true;
+
 		$userClass = hikashop_get('class.user');
 		$hikaUser = new stdClass();
 		$hikaUser->user_email = trim(strip_tags($user['email']));
 		$hikaUser->user_cms_id = (int)$user['id'];
-		if(!empty($hikaUser->user_cms_id)){
-			$hikaUser->user_id = $userClass->getID($hikaUser->user_cms_id,'cms');
+		if(!empty($hikaUser->user_cms_id)) {
+			$hikaUser->user_id = $userClass->getID($hikaUser->user_cms_id, 'cms');
 		}
-		if(empty($hikaUser->user_id) && !empty($hikaUser->user_email)){
-			$hikaUser->user_id = $userClass->getID($hikaUser->user_email,'email');
+		if(empty($hikaUser->user_id) && !empty($hikaUser->user_email)) {
+			$hikaUser->user_id = $userClass->getID($hikaUser->user_email, 'email');
 		}
-		$formData = JRequest::getVar('data', array(), '', 'array');
-		$in_checkout=!empty($_REQUEST['option']) && $_REQUEST['option'] == 'com_hikashop' && !empty($_REQUEST['ctrl']) && $_REQUEST['option'] == 'checkout';
-		if(!empty($formData) && !empty($formData['user']) && !$in_checkout) {
 
+		$formData = JRequest::getVar('data', array(), '', 'array');
+
+		$in_checkout = !empty($_REQUEST['option']) && $_REQUEST['option'] == 'com_hikashop' && !empty($_REQUEST['ctrl']) && $_REQUEST['option'] == 'checkout';
+
+		if(!empty($formData) && !empty($formData['user']) && !$in_checkout) {
 			$display = $this->params->get('fields_on_user_profile');
 			if(is_null($display))
 				$display = 1;
 			if(empty($display) || $display=='0')
 				return;
-
 			$oldUser = null;
 			$fieldsClass = hikashop_get('class.field');
 			$element = $fieldsClass->getInput('user', $oldUser);
-			if(!empty($element)){
+			if(!empty($element)) {
 				foreach($element as $key => $value) {
 					$hikaUser->$key = $value;
 				}
 			}
 		}
-		$userClass->save($hikaUser,true);
+
+		$userClass->save($hikaUser, true);
 		return true;
 	}
-	function onAfterDeleteUser($user, $success, $msg){
-		if($success===false || !is_array($user)) return false;
+
+	public function onAfterDeleteUser($user, $success, $msg) {
+		if($success === false || !is_array($user))
+			return false;
+
 		if(!defined('DS'))
 			define('DS', DIRECTORY_SEPARATOR);
-		if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')) return true;
+		if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php'))
+			return true;
+
 		$userClass = hikashop_get('class.user');
 		$user_id = $userClass->getID($user['email'],'email');
-		if(!empty($user_id)){
+		if(!empty($user_id)) {
 			$userClass->delete($user_id,true);
 		}
 		return true;
 	}
 
-	function restoreSession(&$user_id){
+	public function restoreSession(&$user_id, $options) {
 		$app = JFactory::getApplication();
-		$cart = $app->getUserState('com_hikashop.cart_id');
-		if(empty($cart) && !empty($this->cart))
-			$app->setUserState('com_hikashop.cart_id',$this->cart);
-		if(!empty($cart) || !empty($this->cart)){
-			if(!defined('DS'))
-				define('DS', DIRECTORY_SEPARATOR);
-			if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')) return true;
-			$db = JFactory::getDBO();
-			$cart_id = $cart;
-			if(empty($cart_id))
-				$cart_id = $this->cart;
-			$db->setQuery('UPDATE '.hikashop_table('cart').' SET user_id = '.(int)$user_id.' WHERE cart_type = '.$db->quote('cart').' AND cart_id = '.(int)$cart_id);
-			$db->query();
-			$config = hikashop_config();
-			if( !$app->isAdmin() && !$config->get('enable_multicart') && !empty($user_id) ){
-				$db->setQuery('SELECT cart_id FROM #__hikashop_cart WHERE user_id='.(int)$user_id.' AND cart_type = '.$db->Quote('cart'));
-				$ids = $db->loadObjectList('cart_id');
-				if(isset($ids[$this->cart]))
-					unset($ids[$this->cart]);
-				if(count($ids)){
-					$db->setQuery('DELETE FROM '.hikashop_table('cart').' WHERE cart_id IN ('.implode(',',array_keys($ids)).')');
-					$db->Query();
-				}
-			}
-		}
-		$wishlist = $app->getUserState('com_hikashop.wishlist_id');
-		if(empty($wishlist) && !empty($this->wishlist)){
-			$app->setUserState('com_hikashop.wishlist_id',$this->wishlist);
-			if(!defined('DS'))
-				define('DS', DIRECTORY_SEPARATOR);
-			if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')) return true;
-			$cartClass = hikashop_get('class.cart');
-			$cart_type = JRequest::getString('cart_type','cart');
-			JRequest::setVar('cart_type','wishlist');
-			$cartClass->initCart();
-			JRequest::setVar('cart_type',$cart_type);
-		}
-		$entries = $app->getUserState('com_hikashop.entries_fields');
-		if(empty($entries) && !empty($this->entries)){
-			$app->setUserState('com_hikashop.entries_fields',$this->entries);
-		}
+		if($app->isAdmin())
+			return;
+
 		$currency = $app->getUserState('com_hikashop.currency_id');
-		if(empty($currency) && !empty($this->currency)){
-			$app->setUserState('com_hikashop.currency_id',$this->currency);
-		}
+		if(empty($currency) && !empty($this->currency))
+			$app->setUserState('com_hikashop.currency_id', $this->currency);
+
+		$entries = $app->getUserState('com_hikashop.entries_fields');
+		if(empty($entries) && !empty($this->entries))
+			$app->setUserState('com_hikashop.entries_fields', $this->entries);
+
 		$checkout_fields_ok = $app->getUserState('com_hikashop.checkout_fields_ok');
-		if(empty($checkout_fields_ok) && !empty($this->checkout_fields_ok)){
-			$app->setUserState('com_hikashop.checkout_fields_ok',$this->checkout_fields_ok);
-		}
+		if(empty($checkout_fields_ok) && !empty($this->checkout_fields_ok))
+			$app->setUserState('com_hikashop.checkout_fields_ok', $this->checkout_fields_ok);
+
 		$checkout_fields = $app->getUserState('com_hikashop.checkout_fields');
-		if(empty($checkout_fields) && !empty($this->checkout_fields)){
-			$app->setUserState('com_hikashop.checkout_fields',$this->checkout_fields);
-		}
-		if(!empty($this->checkout_fields)){
-			foreach($this->checkout_fields as $k =>$v){
-				if(!isset($_REQUEST['data']['order'][$k])){
-					$_POST['data']['order'][$k] = $_REQUEST['data']['order'][$k] = $v;
-				}
+		if(empty($checkout_fields) && !empty($this->checkout_fields))
+			$app->setUserState('com_hikashop.checkout_fields', $this->checkout_fields);
+		if(!empty($this->checkout_fields)) {
+			foreach($this->checkout_fields as $k => $v) {
+				if(isset($_REQUEST['data']['order'][$k]))
+					continue;
+				$_POST['data']['order'][$k] = $_REQUEST['data']['order'][$k] = $v;
 			}
 		}
 	}
-	function onLoginUser($user, $options){
 
+	public function onLoginUser($user, $options) {
 		$app = JFactory::getApplication();
 
 		if($app->isAdmin())
 			return true;
 
-
 		$user_id = 0;
-		if(empty($user['id'])){
-			if(!empty($user['username'])){
+		if(empty($user['id'])) {
+			if(!empty($user['username'])) {
 				jimport('joomla.user.helper');
 				$instance = new JUser();
 				if($id = intval(JUserHelper::getUserId($user['username'])))  {
 					$instance->load($id);
 				}
-				if ($instance->get('block') == 0) {
-					$user_id=$instance->id;
+				if($instance->get('block') == 0) {
+					$user_id = $instance->id;
 				}
 			}
 		} else {
 			$user_id = $user['id'];
 		}
 
-		$this->restoreSession($user_id);
+		$this->restoreSession($user_id, $options);
 
 		if(empty($user_id))
 			return true;
@@ -243,6 +222,9 @@ class plgSystemHikashopuser extends JPlugin {
 		if(empty($hika_user_id))
 			return true;
 
+		if($options !== null)
+			$this->moveCarts($hika_user_id);
+
 		$addressClass = hikashop_get('class.address');
 		$addresses = $addressClass->getByUser($hika_user_id);
 		if(empty($addresses) || !count($addresses))
@@ -250,30 +232,62 @@ class plgSystemHikashopuser extends JPlugin {
 
 		$address = reset($addresses);
 		$field = 'address_country';
-		if(!empty($address->address_state)){
+		if(!empty($address->address_state)) {
 			$field = 'address_state';
 		}
-		$app->setUserState( HIKASHOP_COMPONENT.'.shipping_address', $address->address_id );
-		$app->setUserState( HIKASHOP_COMPONENT.'.billing_address', $address->address_id );
+		$app->setUserState(HIKASHOP_COMPONENT.'.shipping_address', $address->address_id );
+		$app->setUserState(HIKASHOP_COMPONENT.'.billing_address', $address->address_id );
 
 		$zoneClass = hikashop_get('class.zone');
 		$zone = $zoneClass->get($address->$field);
 		if(!empty($zone)){
 			$zone_id = $zone->zone_id;
-			$app->setUserState( HIKASHOP_COMPONENT.'.zone_id', $zone->zone_id );
+			$app->setUserState(HIKASHOP_COMPONENT.'.zone_id', $zone->zone_id );
 		}
 	}
 
-	function onUserLogout($user){
+	protected function moveCarts($hika_user_id) {
+		if(empty($hika_user_id))
+			return true;
+
+		$db = JFactory::getDBO();
+
+		$query = 'SELECT COUNT(*) AS `carts` FROM #__hikashop_cart WHERE session_id = '.$db->Quote($this->session).' AND cart_type = \'cart\';';
+		$db->setQuery($query);
+		$carts = (int)$db->loadResult();
+		if($carts == 0)
+			return;
+
+		$query = 'UPDATE #__hikashop_cart SET cart_current = 0 WHERE user_id = '.(int)$hika_user_id.' AND cart_type = \'cart\';';
+		$db->setQuery($query);
+		$db->query();
+
+		$query = 'UPDATE #__hikashop_cart SET user_id = '.(int)$hika_user_id.
+			' WHERE session_id = '.$db->Quote($this->session).' AND cart_type = \'cart\';';
+		$db->setQuery($query);
+		$db->query();
+
+		if(!class_exists('hikashopCartClass'))
+			return;
+		$cartClass = hikashop_get('class.cart');
+		$cartClass->get('reset_cache');
+
+		if(!class_exists('hikashopCheckoutHelper'))
+			return;
+		$checkoutHelper = hikashopCheckoutHelper::get();
+		$checkoutHelper->getCart(true);
+	}
+
+	public function onUserLogout($user) {
 		return $this->onLogoutUser($user);
 	}
 
-	function onLogoutUser($user){
-		$options=null;
+	public function onLogoutUser($user) {
+		$options = null;
 		return $this->onLoginUser($user, $options);
 	}
 
-	function onAfterRoute() {
+	public function onAfterRoute() {
 		$app = JFactory::getApplication();
 		if($app->isAdmin())
 			return;
@@ -320,7 +334,7 @@ class plgSystemHikashopuser extends JPlugin {
 		}
 	}
 
-	function onAfterRender() {
+	public function onAfterRender() {
 		$app = JFactory::getApplication();
 		if($app->isAdmin())
 			return;

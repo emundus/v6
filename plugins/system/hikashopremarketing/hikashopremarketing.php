@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -70,18 +70,87 @@ class plgSystemHikashopremarketing extends JPlugin
 		$product_query = 'SELECT * FROM ' . hikashop_table('product') .
 			' WHERE product_id IN (' . implode(',', $para) . ') AND product_access = '.$db->Quote('all').' AND product_published = 1 AND product_type = '.$db->Quote('main');
 		$db->setQuery($product_query);
-		$products = $db->loadObjectList();
+		$products = $db->loadObjectList('product_id');
 		foreach($products as $k => $product) {
-			$tags[(int)$product->product_id] = $product->product_code;
+			$val = $this->_additionalParameter($product,'ecomm_prodid');
+			if($val)
+				$tags[(int)$product->product_id] = $val;
 		}
 
 		if (count($tags) == 0)
 			return true;
 
+		$params = array('ecomm_prodid: [\''.implode('\',\'', $tags) .'\']', 'ecomm_pagetype: \'product\'');
+
+		$zone_id = hikashop_getZone();
+		$currencyClass = hikashop_get('class.currency');
+		$config =& hikashop_config();
+		$main_currency = (int)$config->get('main_currency',1);
+		$price_displayed = $this->params->get('price_displayed');
+		switch($price_displayed){
+			case 'expensive':
+				$currencyClass->getListingPrices($products,$zone_id,$main_currency,'range');
+				$tmpPrice = 0;
+				foreach($products as $product){
+					if(isset($product->prices[0]->price_value)){
+						if(count($product->prices)>1){
+							for($i=0;$i<count($product->prices);$i++){
+								if($product->prices[$i]->price_value > $tmpPrice){
+									$tmpPrice = $product->prices[$i]->price_value;
+									$key = $i;
+								}
+							}
+							$product->prices[0] = $product->prices[$key];
+							for($i=1;$i<count($product->prices);$i++){
+								unset($product->prices[$i]);
+							}
+						}
+					}
+				}
+				break;
+			case 'average':
+				$currencyClass->getListingPrices($products,$zone_id,$main_currency,'range');
+				$tmpPrice = 0;
+				$tmpTaxPrice = 0;
+				foreach($products as $product){
+					if(isset($product->prices[0]->price_value)){
+						if(count($product->prices) > 1){
+							for($i=0;$i<count($product->prices);$i++){
+								if($product->prices[$i]->price_value > $tmpPrice){
+									$tmpPrice += $product->prices[$i]->price_value;
+									$tmpTaxPrice += @$product->prices[$i]->price_value_with_tax;
+								}
+							}
+							$product->prices[0]->price_value = $tmpPrice/count($product->prices);
+							$product->prices[0]->price_value_with_tax = $tmpTaxPrice/count($product->prices);
+							for($i=1;$i<count($product->prices);$i++){
+								unset($product->prices[$i]);
+							}
+						}
+					}
+				}
+				break;
+			case 'unit':
+			case 'cheapest':
+			default:
+				$currencyClass->getListingPrices($products,$zone_id,$main_currency,$price_displayed);
+				break;
+		}
+		$colum = 'price_value';
+		if($config->get('price_with_tax')){
+			$colum = 'price_value_with_tax';
+		}
+		foreach($products as $product){
+			if(!empty($product->prices) && count($product->prices)){
+				$params[]='ecomm_totalvalue: '.round($product->prices[0]->$colum,2);
+				break;
+			}
+		}
+
 		$js = '<!-- Google code for remarketingtag -->
 <script type="text/javascript">
 
-var google_tag_params = {ecomm_prodid: [\''.implode('\',\'', $tags) .'\'], ecomm_pagetype: \'product\' };
+var google_tag_params = {'.implode(', ',$params).' };
 var google_conversion_id = '.(int)$this->params->get('adwordsid').';
 var google_custom_params = window.google_tag_params;
 var google_remarketing_only = true;
@@ -102,5 +171,25 @@ var google_remarketing_only = true;
 		} else {
 			JResponse::setBody($body);
 		}
+	}
+
+	function _additionalParameter(&$product, $param) {
+		static $fields = false;
+
+		if($fields === false) {
+			$fieldsClass = hikashop_get('class.field');
+			$data = null;
+			$fields = $fieldsClass->getFields('all', $data, 'product');
+		}
+
+		if(empty($this->params[$param])) {
+			$this->params[$param] = 'product_code';
+		}
+
+		$column = $this->params[$param];
+
+		if(empty($product->$column))
+			return false;
+		return $product->$column;
 	}
 }

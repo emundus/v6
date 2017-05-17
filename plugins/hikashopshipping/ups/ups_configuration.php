@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -155,7 +155,7 @@ function ups_addRow() {
 				<td>
 					<?php $countryList=$country->display("warehouse[$i][country]", @$row->country, false , "style='width:100px;'"); echo $countryList; ?>
 				</td>
-				<td align="center">
+				<td class="hk_center">
 					<span id="warehouse_<?php echo $i;?>_zone">
 						<?php if(!empty($row->zone_name)){ echo $row->zone_name;} ?>
 						<input type="hidden" name="warehouse[<?php echo $i;?>][zone]" value="<?php echo @$row->zone ?>"/>
@@ -174,7 +174,7 @@ function ups_addRow() {
 					$currencyList=$currency->display("warehouse[$i][currency]", @$row->currency, 'id="warehouse_'.$i.'_currency"  name="warehouse['.$i.'][currency]"');
 					echo $currencyList;
 				?></td>
-				<td align="center">
+				<td class="hk_center">
 					<a href="#" onclick="return deleteRow('warehouse_<?php echo $i;?>_zip','warehouse_<?php echo $i;?>_zip_input','warehouse_<?php echo $i;?>');"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png"/></a>
 				</td>
 			</tr>
@@ -208,7 +208,7 @@ function ups_addRow() {
 				<td>
 					<?php $countryList=$country->display("warehouse[##][country]", '', false , 'style="width:100px;" class="chzn-done"','warehouse_##_country_input'); echo $countryList; ?>
 				</td>
-				<td align="center">
+				<td class="hk_center">
 					<span id="warehouse_##_zone">
 						<input type="hidden" name="warehouse[##][zone]" value=""/>
 					</span>
@@ -226,7 +226,7 @@ function ups_addRow() {
 					$currencyList=$currency->display("warehouse[##][currency]", '', 'name="warehouse[##][curency]" class="chzn-done"','warehouse_##_currency_input');
 					echo $currencyList;
 				?></td>
-				<td align="center">
+				<td class="hk_center">
 					<a href="#" onclick="return deleteRow('warehouse_##_zip','warehouse_##_zip_input','warehouse_##');"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png"/></a>
 				</td>
 			</tr>

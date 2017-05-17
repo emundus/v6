@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,7 +12,7 @@ class plgHikashopKashflow extends JPlugin{
 	var $message = '';
 	var $params = null;
 
-	public function plgHikashopKashflow(&$subject, $config){
+	public function __construct(&$subject, $config){
 		parent::__construct($subject, $config);
 		$pluginsClass = hikashop_get('class.plugins');
 		$plugin = $pluginsClass->getByName('hikashop','kashflow');
@@ -116,7 +116,7 @@ class plgHikashopKashflow extends JPlugin{
 				"SuppressTotal" => 1,
 				"ProjectID" => (int)@$this->params['project_id'],
 				"CurrencyCode" => $this->getCurrencyCode($data->order_currency_id),
-				"ExchangeRate" => 1,
+				"ExchangeRate" => $this->getCurrencyRate($data->order_currency_id),
 				"Paid" => 0,
 				"CustomerID" => $customer_id,
 				"EstimateCategory" => "",
@@ -224,6 +224,32 @@ class plgHikashopKashflow extends JPlugin{
 		}
 		return $currency_code;
 	}
+
+	private function getCurrencyRate($currency_id){
+		if(!$currency_id){
+			return 1;
+		}
+
+		$class = hikashop_get('class.currency');
+		$dbCurrencyData = $class->get($currency_id);
+
+		if(!$dbCurrencyData){
+			return 1;
+		}
+
+		if(@$this->params['main_currency']==$dbCurrencyData->currency_code){
+			return 1;
+		}
+
+		$dbMainCurrencyData = $class->get(@$this->params['main_currency']);
+
+		if(!$dbMainCurrencyData){
+			return 1;
+		}
+
+		return $dbCurrencyData->currency_rate/$dbMainCurrencyData->currency_rate;
+	}
+
 
 	private function getCustomerCurrency(&$customer,&$order){
 		if(!empty($customer['CurrencyID'])){

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -256,12 +256,11 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 			$parcels = array();
 			if(empty($order->shipping_address_full)) {
 				$cart = hikashop_get('class.cart');
-				$app = JFactory::getApplication();
-				$address = $app->getUserState( HIKASHOP_COMPONENT.'.shipping_address');
-				$cart->loadAddress($order->shipping_address_full, $address, 'object', 'shipping');
+				if(isset($order->shipping_address->address_id))
+					$cart->loadAddress($order->shipping_address_full, $order->shipping_address->address_id, 'object', 'shipping');
 			}
 
-			if(isset($packages['w'])){
+			if(isset($packages['w']) && $packages['w'] > 0){
 				if($packages['w'] > $max_weight) {
 					$messages['items_weight_over_limit'] = JText::_('ITEMS_WEIGHT_TOO_BIG_FOR_SHIPPING_METHODS');
 					$cache_messages['items_weight_over_limit'] = JText::_('ITEMS_WEIGHT_TOO_BIG_FOR_SHIPPING_METHODS');
@@ -298,6 +297,9 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 				$parcels[] = $parcel;
 			}else{
 				foreach($packages as $package){
+					if((!isset($package['w']) || $package['w'] <= 0))
+						continue;
+
 					if($package['w'] > $max_weight) {
 						$messages['items_weight_over_limit'] = JText::_('ITEMS_WEIGHT_TOO_BIG_FOR_SHIPPING_METHODS');
 						$cache_messages['items_weight_over_limit'] = JText::_('ITEMS_WEIGHT_TOO_BIG_FOR_SHIPPING_METHODS');
@@ -531,6 +533,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 		} else {
 			$rateResult = $response_xml->xpath('Package/Postage');
 			$usps_rate_arr = $this->xml2array($rateResult);
+
 			foreach($usps_rate_arr as $k => $v) {
 				$usps_rates = array(
 					'Service' => html_entity_decode($v['MailService']),
@@ -547,7 +550,15 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 			if(empty($rates[$type])) {
 				$info = new stdClass();
 				$info = (!HIKASHOP_PHP5) ? $rate : clone($rate);
+
+				$typeKey = str_replace(' ','_', $type);
+				$shipping_name = JText::_($typeKey);
+
+				if($shipping_name != $typeKey)
+					$info->shipping_name = $shipping_name;
+				else
 				$info->shipping_name = preg_replace('#sup.*?sup#', '', $info->shipping_name.' : '. $this->pluginConfig['services'][2][$type]);
+
 				$shipping_description = JText::_($type.'_DESCRIPTION');
 				if($shipping_description != $type.'_DESCRIPTION') {
 					$info->shipping_description .= $shipping_description;

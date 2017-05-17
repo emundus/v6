@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -133,7 +133,7 @@ class plgSystemHikashopproducttag extends JPlugin {
 				$product_page_parts[1] = preg_replace($pattern,$replacement,$product_page_parts[1]);
 
 				$pattern='/class="hika_vote_listing_username"/';
-				$replacement='class="hika_vote_listing_username" itemprop="name"';
+				$replacement='class="hika_vote_listing_username" itemprop="author"';
 				$product_page_parts[1] = preg_replace($pattern,$replacement,$product_page_parts[1]);
 			}
 

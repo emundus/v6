@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -302,11 +302,11 @@ defined('_JEXEC') or die('Restricted access');
 	<tr>
 		<td class="key">
 			<label for="data[shipping][shipping_params][dim_approximation_l]">
-				<?php echo JText::_( 'SHIPPING_BOX_DIMENSIONS' ); ?>
+				<?php echo JText::_( 'DIMENSION_APPROXIMATION' ); ?>
 			</label>
 		</td>
 		<td>
-			<label for="data[shipping][shipping_params][dim_approximation_l]"><?php echo JText::_( 'PRODUCT_LENGTH' ); ?></label> <input size="5" type="text" name="data[shipping][shipping_params][dim_approximation_l]" value="<?php echo @$this->element->shipping_params->dim_approximation_l; ?>" /> x <label for="data[shipping][shipping_params][dim_approximation_w]"><?php echo JText::_( 'PRODUCT_WIDTH' ); ?></label> <input size="5" type="text" name="data[shipping][shipping_params][dim_approximation_w]" value="<?php echo @$this->element->shipping_params->dim_approximation_w; ?>" /> x <label for="data[shipping][shipping_params][dim_approximation_h]"><?php echo JText::_( 'PRODUCT_HEIGHT' ); ?></label> <input size="5" type="text" name="data[shipping][shipping_params][dim_approximation_h]" value="<?php echo @$this->element->shipping_params->dim_approximation_h; ?>" />
+			<label for="data[shipping][shipping_params][dim_approximation_l]"><?php echo JText::_( 'PRODUCT_LENGTH' ); ?></label> <input size="5" type="text" name="data[shipping][shipping_params][dim_approximation_l]" value="<?php echo @$this->element->shipping_params->dim_approximation_l; ?>" /> %</br> <label for="data[shipping][shipping_params][dim_approximation_w]"><?php echo JText::_( 'PRODUCT_WIDTH' ); ?></label> <input size="5" type="text" name="data[shipping][shipping_params][dim_approximation_w]" value="<?php echo @$this->element->shipping_params->dim_approximation_w; ?>" /> %</br> <label for="data[shipping][shipping_params][dim_approximation_h]"><?php echo JText::_( 'PRODUCT_HEIGHT' ); ?></label> <input size="5" type="text" name="data[shipping][shipping_params][dim_approximation_h]" value="<?php echo @$this->element->shipping_params->dim_approximation_h; ?>" />%
 		</td>
 	</tr>
 	<tr>

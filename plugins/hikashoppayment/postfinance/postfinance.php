@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.2
+ * @version	3.0.1
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -34,7 +34,7 @@ class plgHikashoppaymentPostfinance extends hikashopPaymentPlugin {
 
 		$home_url = HIKASHOP_LIVE.'index.php';
 		$notify_url = $home_url.'?option=com_hikashop&ctrl=checkout&task=notify&notif_payment=postfinance&tmpl=component&lang='.$this->locale.$this->url_itemid;
-		$return_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=after_end&order_id='.$order->order_id.$this->url_itemid;
+		$return_url = $home_url.'?option=com_hikashop&ctrl=checkout&task=after_end&order_id='.$order->order_id.$this->url_itemid;
 
 		$languages = array(
 			'en' => 'en_US',
@@ -138,10 +138,11 @@ class plgHikashoppaymentPostfinance extends hikashopPaymentPlugin {
 		}
 
 		$result = array();
+
 		$acceptedKeys = array(
-			'AAVADDRESS','AAVCHECK','AAVZIP','ACCEPTANCE','ALIAS','AMOUNT','BIN','BRAND','CARDNO','CCCTY','CN','COMPLUS','CREATION_STATUS','CURRENCY','CVCCHECK','DCC_COMMPERCENTAGE','DCC_CONVAMOUNT',
-			'DCC_CONVCCY','DCC_EXCHRATE','DCC_EXCHRATESOURCE','DCC_EXCHRATETS','DCC_INDICATOR','DCC_MARGINPERCENTAGE','DCC_VALIDHOURS','DIGESTCARDNO','ECI','ED','ENCCARDNO','IP','IPCTY',
-			'NBREMAILUSAGE','NBRIPUSAGE','NBRIPUSAGE_ALLTX','NBRUSAGE','NCERROR','ORDERID','PAYID','PM','SCO_CATEGORY','SCORING','STATUS','SUBBRAND','SUBSCRIPTION_ID','TRXDATE','VC'
+			'AAVADDRESS', 'AAVCHECK', 'AAVMAIL', 'AAVNAME', 'AAVPHONE', 'AAVZIP', 'ACCEPTANCE', 'AMOUNT', 'BIC', 'BIN', 'BRAND', 'CARDNO', 'CCCTY', 'CN', 'COLLECTOR_BIC', 'COLLECTOR_IBAN', 'COMPLUS',
+			'CREDITDEBIT', 'CURRENCY', 'CVCCHECK', 'ECI', 'ED', 'EMAIL', 'FXAMOUNT', 'FXCURRENCY', 'IP', 'IPCTY', 'MANDATEID', 'MOBILEMODE', 'NCERROR', 'ORDERID', 'PAYID', 'PAYIDSUB', 'PAYLIBIDREQUEST',
+			'PAYLIBTRANSID', 'PAYMENT_REFERENCE', 'PM', 'SEQUENCETYPE', 'SIGNDATE', 'STATUS', 'SUBBRAND', 'TRXDATE', 'VC', 'WALLET'
 		);
 		foreach($_REQUEST as $key => $value) {
 			if($value != '' && in_array(strtoupper($key), $acceptedKeys)) {
@@ -205,7 +206,7 @@ class plgHikashoppaymentPostfinance extends hikashopPaymentPlugin {
 		$email->subject = JText::sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER', $this->name) . ' invalid response';
 
 		if($txtSha !== $shasign) {
-			$email->body = JText::_("Hello,\r\n A Postfinance notification was refused because the signature was invalid")."\r\n\r\n".$order_text;
+			$email->body = JText::_("Hello,\r\nA Postfinance notification was refused because the signature was invalid")."\r\n\r\n".$order_text;
 			if($element->payment_params->debug) {
 				$this->writeToLog('invalid signature (status: ' . (int)$result['STATUS'] . ')');
 			}
@@ -218,6 +219,8 @@ class plgHikashoppaymentPostfinance extends hikashopPaymentPlugin {
 
 		if($dbOrder->order_status != $this->payment_params->invalid_status)
 			$this->modifyOrder($order_id, $this->payment_params->invalid_status, false, $email);
+		else
+			$this->modifyOrder($order_id, null, false, $email);
 
 		$this->app->enqueueMessage('Transaction Failed with the status number : '.$result['STATUS']);
 		$this->app->redirect($cancel_url);
