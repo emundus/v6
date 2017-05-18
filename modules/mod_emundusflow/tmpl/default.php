@@ -47,7 +47,7 @@ if ($forms>=100 && $attachments>=100 && $sent==0) {
     <i class="large payment outline icon"></i>
     <div class="content">
       <div class="description"><?php echo  $paid>0?JText::_('APPLICATION_PAID'):JText::_('APPLICATION_NOT_PAID'); ?></div>
-      <div class="description"><?php echo  $paid>0?'':'<a href="'.$checkout_url.'" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>'; ?></div>
+      <div class="description"><?php echo  ($paid==0 && $forms>=100 && $attachments>=100)?'<a href="'.$checkout_url.'" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>':''; ?></div>
     </div>
   </div>
 <?php } ?>

@@ -8,10 +8,10 @@ if (!empty($tab)) {
 <?php
 if(isset($user->profile) && $user->profile>0) {
 
-    $title = '';
+    $title = $module_title;
 
-    if($show_title == 1)
-        $title = $user->profile_label;
+    if($show_programme_title == 1)
+        $title .= ' '.$user->profile_label;
     if($show_profile_link == 1)
         $title .= ' '.$btn_profile;
     if($show_start_link == 1)

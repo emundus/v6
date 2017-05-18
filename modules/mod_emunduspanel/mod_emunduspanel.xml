@@ -23,10 +23,18 @@
 			<fieldset addfieldpath="/modules/mod_emunduspanel/elements" name="basic">
 				<field
 					name="show_title"
+					type="text"
+					default="My Forms"
+					label="MOD_EMUNDUSPANEL_TITLE_LABEL"
+					description="MOD_EMUNDUSPANEL_TITLE_DESC" 
+					size="60">
+				</field>
+				<field
+					name="show_programme_title"
 					type="radio"
 					default="1"
-					label="MOD_EMUNDUSPANEL_TITLE_LABEL"
-					description="MOD_EMUNDUSPANEL_TITLE_DESC">
+					label="MOD_EMUNDUSPANEL_PROGRAMME_TITLE_LABEL"
+					description="MOD_EMUNDUSPANEL_PROGRAMME_TITLE_DESC">
 					<option
 						value="0">JNo</option>
 					<option

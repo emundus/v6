@@ -25,29 +25,30 @@ if ($jinput->get('view') == 'form') {
 	$user = JFactory::getUser();
 
 	$params = JComponentHelper::getParams('com_emundus');
-	$application_fee  = $params->get('application_fee', 0);
+	$application_fee = $params->get('application_fee', 0);
 
 	$application = new EmundusModelApplication;
-	
+	$attachments = $application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
+	$forms = $application->getFormsProgress($user->id, $user->profile, $user->fnum);
+
 	if ($application_fee == 1) {
 		$fnumInfos = EmundusModelFiles::getFnumInfos($user->fnum);
 		if (count($fnumInfos) > 0) {
 			$paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
 
-			if (!$paid) {
+			if (!$paid && $attachments >= 100 && $forms >= 100) {
 				$checkout_url = $application->getHikashopCheckoutUrl($user->profile);
 				$mainframe->redirect(JRoute::_($checkout_url));
+			} else {
+				$mainframe->redirect( "index.php?option=com_emundus&view=checklist&Itemid=".$itemid, JText::_('INCOMPLETE_APPLICATION'));
 			}
 		} else {
 			$mainframe->redirect('index.php');
 		}
 
-	}
-	
-	$attachments = $application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
-	$forms = $application->getFormsProgress($user->id, $user->profile, $user->fnum);
+	}	
 
-	if($attachments < 100 || $forms < 100 ){
+	if($attachments < 100 || $forms < 100){
 		$mainframe->redirect( "index.php?option=com_emundus&view=checklist&Itemid=".$itemid, JText::_('INCOMPLETE_APPLICATION'));
 	}
 }

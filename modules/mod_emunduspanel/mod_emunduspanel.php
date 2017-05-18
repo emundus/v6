@@ -37,7 +37,8 @@ else $user_menutype = 'mainmenu';
 $folder = $params->get('folder', '');
 $show_profile_link = $params->get('show_profile_link', 1);
 $show_start_link = $params->get('show_start_link', 1);
-$show_title = $params->get('show_title', 1);
+$show_programme_title = $params->get('show_programme_title', 1);
+$show_title = $params->get('show_title', 'My Form');
 $text = $params->get($user_menutype, '');
 $img = $params->get($user_menutype.'_img', '');
 $is_text = $params->get($user_menutype.'_text', '');
@@ -129,6 +130,7 @@ if (!empty($t__)) {
 		$tab_temp = array();
 
 		if($user->applicant == 1){
+			$module_title = $show_title;
 			$link = $res[0]->link.'&Itemid='.$res[0]->id;
 			if (!empty($fnum)) { 
 				$app->redirect( $link );
@@ -136,6 +138,7 @@ if (!empty($t__)) {
 			}
 			$btn_start = '<a class="btn btn-warning" role="button" href="'.JRoute::_($link).'"><i class="right arrow icon"></i>'.JText::_('START').'</a>';
 		}else{
+			$module_title = '';
 			$btn_start = '';
 		}
 		foreach($res as $r){

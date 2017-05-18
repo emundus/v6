@@ -296,6 +296,7 @@
          */
         public function onUserLogout($user, $options = array())
         {
+            include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
             $my      = JFactory::getUser();
             $session = JFactory::getSession();
             $app     =  JFactory::getApplication();
@@ -341,13 +342,16 @@
                 }
             }
             
+            if (EmundusHelperAccess::isApplicant($my->id)) {
+                if ($defaultLocale == 'en-GB') 
+                    $url = $ametys_url;
+                else
+                    $url = $ametys_url;
 
-            if ($defaultLocale == 'en-GB') 
-                $url = $ametys_url;
-            else
-                $url = $ametys_url;
-
-            $app->redirect( $url );
+                $app->redirect( $url );
+            } else {
+                $app->redirect( '/administrator' );
+            }
             //return true;
         }
 
