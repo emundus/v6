@@ -131,10 +131,36 @@ echo $description;
 <hr>
 <?php endif; ?>
 
+<?php if ($poll_url != "") : ?>
+<div class="modal fade" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-form" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      </div>
+      <div class="modal-body">
+        <h4 class="modal-title" id="em-modal-form-title"><?php echo JText::_('LOADING');?></h4>
+        <img src="<?php echo JURI::Base(); ?>media/com_emundus/images/icones/loader-line.gif">
+      </div>
+    </div>
+  </div>
+</div>
+<?php endif; ?>
+
 <script type="text/javascript">
 function deletefile(fnum){
   if (confirm("<?php echo JText::_('CONFIRM_DELETE_FILE'); ?>")) {
     document.location.href="<?php echo JRoute::_(JURI::Base().'index.php?option=com_emundus&task=deletefile&fnum='); ?>"+fnum;
   }
 }
+
+var filled_poll_id = <?php echo $filled_poll_id; ?>;
+var poll_url = "<?php echo $poll_url; ?>";
+
+
+if(filled_poll_id == 0 && poll_url != ""){
+  $(".modal-body").html('<iframe src="'+poll_url+'" style="width:'+window.getWidth()*0.8+'px; height:'+window.getHeight()*0.8+'px; border:none"></iframe>');
+  setTimeout(function(){$('#em-modal-form').modal({backdrop:true, keyboard:true},'toggle');}, 1000);
+}
+
 </script>

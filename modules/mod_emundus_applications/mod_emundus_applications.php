@@ -31,6 +31,8 @@ $Itemid 					= $app->input->getInt('Itemid', null, 'int');
 
 $eMConfig 					= JComponentHelper::getParams('com_emundus');
 $applicant_can_renew 		= $eMConfig->get('applicant_can_renew', '0');
+$display_poll 				= $eMConfig->get('display_poll', 0);
+$display_poll_id 			= $eMConfig->get('display_poll_id', null);
 
 $description		 		= JText::_($params->get('description', ''));
 $show_add_application 		= $params->get('show_add_application', 1);
@@ -46,6 +48,7 @@ $applications		= modemundusApplicationsHelper::getApplications($params);
 $linknames 			= $params->get('linknames', 0);
 $moduleclass_sfx 	= htmlspecialchars($params->get('moduleclass_sfx'));
 $user 				= JFactory::getUser();
+$user->fnums 		= $applications;
 
 $m_application 		= new EmundusModelApplication;
 $checklist 			= new EmundusModelChecklist;
@@ -54,9 +57,15 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$attachments 		= $m_application->getAttachmentsProgress($user->id, $user->profile, array_keys($applications));
 	$forms 				= $m_application->getFormsProgress($user->id, $user->profile, array_keys($applications));
 
-	$confirm_form_url 	= $checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum; 
-}
+	$confirm_form_url 	= $checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
 
-$user->fnums = $applications;
+	if ($display_poll == 1 && $display_poll_id > 0) {
+		$filled_poll_id = modemundusApplicationsHelper::getPoll();
+		$poll_url = 'index.php?option=com_fabrik&view=form&formid='.$display_poll_id.'&usekey=fnum&rowid='.$user->fnum.'&tmpl=component';
+	} else {
+		$poll_url = '';
+		$filled_poll_id = 0;
+	}
+}
 
 require JModuleHelper::getLayoutPath('mod_emundus_applications', $params->get('layout', 'default'));
