@@ -1,8 +1,8 @@
 <?php
 /**
  * @package		Joomla.Site
- * @subpackage	mod_emundus_applications
- * @copyright	Copyright (C) 2016 eMundus SAS. All rights reserved.
+ * @subpackage	mod_users_latest
+ * @copyright	Copyright (C) 2005 - 2014 Open Source Matters, Inc. All rights reserved.
  * @license		GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -29,7 +29,7 @@ class modemundusApplicationsHelper
 		return (array) $result;
 	}
 
-	// get poll id of the applicant
+	// get poll id ofthe appllicant
 	static function getPoll($params)
 	{
 		$user 	= JFactory::getUser();
