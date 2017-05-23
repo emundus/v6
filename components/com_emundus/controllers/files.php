@@ -2239,6 +2239,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         $groupParams = json_decode($elt['group_params']);
                         $isDate = ($elt['plugin'] == 'date');
                         $isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
+
                         if(@$groupParams->repeat_group_button == 1 || $isDatabaseJoin)
                         {
                             $fabrikValues[$elt['id']] = $model->getFabrikValueRepeat($elt, $fnumsArray, $params, $groupParams->repeat_group_button == 1);
@@ -2254,6 +2255,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $fabrikValues[$elt['id']] = $model->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
                             }
                         }
+
                         if($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton")
                         {
                             foreach($fabrikValues[$elt['id']] as $fnum => $val)
@@ -2292,9 +2294,17 @@ class EmundusControllerFiles extends JControllerLegacy
                             }
                         }
                         else
-                        {
-                            $fabrikValues[$elt['id']] = $model->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
+                        { 
+                            if(@$groupParams->repeat_group_button == 1 || $isDatabaseJoin)
+                            {
+                                $fabrikValues[$elt['id']] = $model->getFabrikValueRepeat($elt, $fnumsArray, $params, $groupParams->repeat_group_button == 1);
+                            } 
+                            else 
+                            {
+                                $fabrikValues[$elt['id']] = $model->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
+                            }
                         }
+
                     }
                     foreach($fnumsArray as $fnum)
                     {
