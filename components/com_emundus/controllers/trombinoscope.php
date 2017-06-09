@@ -127,6 +127,7 @@ class EmundusControllerTrombinoscope extends EmundusController
 
         require_once (JPATH_COMPONENT.DS.'models'.DS.'trombinoscope.php');
         $trombi = new EmundusModelTrombinoscope();
+        $programme = $trombi->getProgByFnum($post['FNUM']);
         // Marge gauche + droite
         $marge_x = $trombi->pdf_margin_left + $trombi->pdf_margin_right;
         // Marge haut + bas par défaut tcpdf
@@ -142,7 +143,7 @@ class EmundusControllerTrombinoscope extends EmundusController
         // Largeur de la page en pixels (page A4 en 92 DPI)
         $largeur_px = 690;
         // Hauteur de la page en pixels (page A4 en 92 DPI)
-        $hauteur_px = 1000;
+        $hauteur_px = 900;
         // Largeur d'une cellule
         $cell_width = (int)(($largeur_px - $marge_x - ( ($marge_css_left * $nb_col_max ) + ($marge_css_right * $nb_col_max)) ) / $nb_col_max -10);
         // Hauteur d'une cellule
@@ -152,7 +153,9 @@ class EmundusControllerTrombinoscope extends EmundusController
         $body = '<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<title>EMUNDUS SAS</title>
+<meta name="author" lang="fr" content="EMUNDUS SAS - http://www.emundus.fr" />
+<meta name="generator" content="EMUNDUS SAS - http://www.emundus.fr" />
+<title>'.$programme['label'].'</title>
 <body>
 <style>
 body {  
@@ -177,7 +180,10 @@ body {
         $ind_cell = 0;
         for ($cpt_page=0 ; $cpt_page<$nb_page_max ; $cpt_page++) {
             // Si l'on a plus d'une page, il faut insérer un délimiteur de page pour pouvoir ensuite générer le pdf page par page
-            //$body .= '<div style="border: 1pt solid black; width: 100%;">';
+            if ($cpt_page > 0) {
+                $body .= '<div style="page-break-after: always;"></div>';
+            }
+            $body .= '<h2>'.$programme['label'].'</h2>';
             for ($cpt_li=0 ; $cpt_li<$nb_li_max ; $cpt_li++) {
                 for ($cpt_col=0 ; $cpt_col<$nb_col_max && $ind_cell<$nb_cell ; $cpt_col++) {
                         //$body .= '<div class="div-cell" style="page-break-inside:avoid;">' . $tab_body[$ind_cell] . '</div>';

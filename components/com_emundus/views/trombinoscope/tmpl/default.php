@@ -42,7 +42,7 @@ $document->addStyleSheet(JURI::base()."media/com_emundus/lib/bootstrap-336/css/b
                         <div class="col-md-3"><?php echo JText::_('COM_EMUNDUS_TROMBI_GRID')?></div>
                         <div class="col-md-9">
                             <select id="trombi_grid" name="trombi_grid" class="inputbox">
-                                <option value="3x3">3 x 3</option>
+                                <option value="3x3">3 x 3 (<?php echo JText::_('COM_EMUNDUS_TROMBI_WHOSWHO');?>)</option>
                                 <option value="2x6">2 x 6 (<?php echo JText::_('COM_EMUNDUS_TROMBI_BADGE');?>)</option>
                                 <option value="5x3">5 x 3</option>
                                 <option value="5x5">5 x 5</option>
@@ -172,8 +172,8 @@ $document->addStyleSheet(JURI::base()."media/com_emundus/lib/bootstrap-336/css/b
             dataType: "json",
             data: 'string_fnums='+string_fnums+'&grid='+selected_grid+'&margin='+selected_margin+'&template='+selected_tmpl+'&format='+format,
             success: function (data) {
-                console.log('data:');
-                console.log(data);
+                //console.log('data:');
+                //console.log(data);
                 $pdf_url = data.pdf_url;
                 $('#trombi_download').attr("href", $pdf_url);
                 $('#div-download').show();

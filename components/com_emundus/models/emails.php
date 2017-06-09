@@ -58,8 +58,8 @@ class EmundusModelEmails extends JModelList
      * Get email definition to trigger on Status changes
      * @param   $step           INT The status of application
      * @param   $code           ARRAY of programme code
-     * @param   $to_applicant   INT define if trigger concern selected fnum or not
-     * @return  array    Emails templates and recipient to trigger
+     * @param   $to_applicant   STRING define if trigger concern selected fnum from list or not. Can be 0, 1
+     * @return  array           Emails templates and recipient to trigger
      */
     public function getEmailTrigger($step, $code, $to_applicant = 0)
     {
@@ -72,7 +72,6 @@ class EmundusModelEmails extends JModelList
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_group_id as eserg ON eserg.parent_id=eset.id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_user_id as eseru ON eseru.parent_id=eset.id
                   WHERE eset.step='.mysql_real_escape_string($step).' AND eset.to_applicant IN ('.$to_applicant.') AND esp.code IN ("'.implode('","', $code).'")';
-//die(str_replace('#_', 'jos', $query));
         $this->_db->setQuery( $query );
         $triggers = $this->_db->loadObjectList();
 
@@ -94,7 +93,6 @@ class EmundusModelEmails extends JModelList
                     $emails_tmpl[$trigger->id][$trigger->code]['to']['user'][] = $trigger->user_id;
                 $emails_tmpl[$trigger->id][$trigger->code]['to']['to_applicant'] = $trigger->to_applicant;
                 $emails_tmpl[$trigger->id][$trigger->code]['to']['to_current_user'] = $trigger->to_current_user;
-
             }
 
             // generate list of default recipient email + name
@@ -149,6 +147,104 @@ class EmundusModelEmails extends JModelList
         }
 
         return $emails_tmpl;
+    }
+
+    /**
+     * Send email triggered for Status 
+     * @param   $step           INT The status of application
+     * @param   $code           ARRAY of programme code
+     * @param   $to_applicant   INT define if trigger concern selected fnum or not
+     * @param   $student        Object Joomla user
+     * @return  array           Emails templates and recipient to trigger
+     */
+    public function sendEmailTrigger($step, $code, $to_applicant = 0, $student)
+    {
+        $app    = JFactory::getApplication();
+        $email_from_sys = $app->getCfg('mailfrom');
+
+
+        jimport('joomla.log.log');
+        JLog::addLogger(
+            array(
+                // Sets file name
+                'text_file' => 'com_emundus.email.php'
+            ),
+            // Sets messages of all log levels to be sent to the file
+            JLog::ALL,
+            array('com_emundus')
+        );
+
+        $trigger_emails = $this->getEmailTrigger($step, $code, $to_applicant);
+
+        if (count($trigger_emails) > 0) {
+            // get current applicant course
+            include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
+            $campaigns = new EmundusModelCampaign;
+            $campaign = $campaigns->getCampaignByID($student->campaign_id);
+            $post = array( 
+                'APPLICANT_ID'  => $student->id,
+                'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($campaign['end_date'])),
+                'APPLICANTS_LIST' => '',
+                'EVAL_CRITERIAS' => '',
+                'EVAL_PERIOD' => '',
+                'CAMPAIGN_LABEL' => $campaign['label'],
+                'CAMPAIGN_YEAR' => $campaign['year'],
+                'CAMPAIGN_START' => $campaign['start_date'],
+                'CAMPAIGN_END' => $campaign['end_date'],
+                'CAMPAIGN_CODE' => $campaign['training'],
+                'FNUM'          => $student->fnum
+            );
+
+            foreach ($trigger_emails as $key => $trigger_email) {
+
+                foreach ($trigger_email[$student->code]['to']['recipients'] as $key => $recipient) {
+                    $mailer     = JFactory::getMailer();
+
+                    //$post = array();
+                    $tags = $this->setTags($student->id, $post, $student->fnum);
+
+                    $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
+                    $from_id = 62;
+                    $fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['name']);
+                    $to = $recipient['email'];
+                    $to_id = $recipient['id'];
+                    $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
+                    $body = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['message']);
+                    $body = $this->setTagsFabrik($body, array($student->fnum));
+                    //$attachment[] = $path_file;
+
+                    // setup mail
+                    $sender = array(
+                        $email_from_sys,
+                        $fromname
+                    );
+           
+                    $mailer->setSender($sender);
+                    $mailer->addReplyTo($from, $fromname);
+                    $mailer->addRecipient($to);
+                    $mailer->setSubject($subject);
+                    $mailer->isHTML(true);
+                    $mailer->Encoding = 'base64';
+                    $mailer->setBody($body);
+                    $send = $mailer->Send();
+
+                    if ( $send !== true ) {
+                        echo 'Error sending email: ' . $send->__toString();
+                        JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                    } else {
+                        $message = array(
+                            'user_id_from' => $from_id,
+                            'user_id_to' => $to_id,
+                            'subject' => $subject,
+                            'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+                        );
+                        $this->logEmail($message);
+                        //JLog::add($to.' '.$body, JLog::INFO, 'com_emundus');
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /*
