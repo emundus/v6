@@ -1623,7 +1623,7 @@ td {
 
     public function getApplications($uid)
     {
-        $dbo = $this->getDbo();
+        $db = $this->getDbo();
         try
         {
             $query = 'SELECT ecc.*, esc.*, ess.step, ess.value, ess.class
@@ -1633,8 +1633,8 @@ td {
                         WHERE ecc.applicant_id ='.$uid.' 
                         ORDER BY esc.end_date DESC';
     //echo str_replace('#_', 'jos', $query);
-            $dbo->setQuery($query);
-            $result = $db->loadObjectList();
+            $db->setQuery($query);
+            $result = $db->loadObjectList('fnum');
             return (array) $result;
         }
         catch(Exception $e)
@@ -1900,6 +1900,57 @@ td {
             return false;
         }
 
+        return true;
+    }
+
+    /**
+     * Duplicate all documents (files)
+     * @param $fnum             String     the fnum of application file
+     * @param $applicant        Object     the applicant user ID
+     * @return bool
+     */
+    public function sendApplication($fnum, $applicant)
+    {
+        include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+        $db = JFactory::getDBO();
+        try {
+            // Vérification que le dossier à été entièrement complété par le candidat
+            $query = 'SELECT id 
+                        FROM #__emundus_declaration
+                        WHERE fnum  like '.$db->Quote($fnum);
+            $db->setQuery( $query );
+            $db->execute();
+            $id = $db->loadResult(); 
+
+            $today = date('Y-m-d h:i:s');
+        
+            if ($id > 0) {
+                $query = 'UPDATE #__emundus_declaration SET time_date='.$db->quote($today). ', user='.$applicant->id.' WHERE id='.$id;
+            } else {
+                $query = 'INSERT INTO #__emundus_declaration (time_date, user, fnum, type_mail) 
+                                VALUE ('.$db->quote($today). ', '.$applicant->id.', '.$db->Quote($fnum).', "paid_validation")';
+            }
+
+            $db->setQuery( $query );
+            $db->execute();
+
+            // Insert data in #__emundus_campaign_candidature
+            $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=1 WHERE applicant_id='.$applicant->id.' AND campaign_id='.$applicant->campaign_id. ' AND fnum like '.$db->Quote($applicant->fnum);
+            $db->setQuery($query);
+            $db->execute();
+            
+            // Send emails defined in trigger
+            $emails = new EmundusModelEmails;
+            $step = 1;
+            $code = array($applicant->code);
+            $to_applicant = '0,1';
+            $trigger_emails = $emails->sendEmailTrigger($step, $code, $to_applicant, $applicant);
+
+        } catch (Exception $e) {
+            // catch any database errors.
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+        
         return true;
     }
 }

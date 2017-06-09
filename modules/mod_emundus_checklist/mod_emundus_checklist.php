@@ -68,9 +68,10 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$db->setQuery( $query );
 	$documents = $db->loadObjectList();
 
+	$mandatory_documents = array();
+	$optional_documents = array();
+	
 	if (count($documents) > 0) {
-		$mandatory_documents = array();
-		$optional_documents = array();
 		foreach ($documents as $document) {
 			if ($document->mandatory == 1) 
 				$mandatory_documents[] = $document;

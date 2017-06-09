@@ -2256,11 +2256,11 @@ class EmundusControllerFiles extends JControllerLegacy
                             }
                         }
 
-                        if($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton")
+                        if($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown")
                         {
                             foreach($fabrikValues[$elt['id']] as $fnum => $val)
                             {
-                                if(($elt['plugin'] == "checkbox") || ($elt['plugin'] == "radiobutton"))
+                                if($elt['plugin'] == "checkbox")
                                 {
                                     $val = json_decode($val['val']);
                                 }

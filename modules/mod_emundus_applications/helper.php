@@ -30,7 +30,7 @@ class modemundusApplicationsHelper
 	}
 
 	// get poll id ofthe appllicant
-	static function getPoll($params)
+	static function getPoll()
 	{
 		$user 	= JFactory::getUser();
 		$db		= JFactory::getDbo();

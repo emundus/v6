@@ -8,7 +8,7 @@ if (!empty($tab)) {
 <?php
 if(isset($user->profile) && $user->profile>0) {
 
-    $title = "<h2 class='title'>".$module_title."</h2>";
+    $title = "<h2 class='title'>".@$module_title."</h2>";
 
     if($show_programme_title == 1)
         $title .= ' '.$user->profile_label;

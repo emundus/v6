@@ -54,7 +54,9 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	if ($application_fee == 1) {
 		$paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
 		if ($paid == 0 ) {
-			$checkout_url = $application->getHikashopCheckoutUrl($user->profile);
+			//$checkout_url = $application->getHikashopCheckoutUrl($user->profile);
+			$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($application->getHikashopCheckoutUrl($user->profile)));
+
 		} else{
 			$checkout_url = 'index.php';
 		}
