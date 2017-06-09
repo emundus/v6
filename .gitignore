@@ -28,3 +28,6 @@ php.ini
 workspace.xml
 emundus_bdd*
 201*emundus*
+/.htaccess.*
+/*.sql.zip
+/test*
