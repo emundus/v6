@@ -14,12 +14,26 @@ defined( '_JEXEC' ) or die();
  */
 
 jimport( 'joomla.utilities.utility' );
+jimport('joomla.log.log');
+JLog::addLogger(
+    array(
+        // Sets file name
+        'text_file' => 'com_emundus.filerequest.php'
+    ),
+    // Sets messages of all log levels to be sent to the file
+    JLog::ALL,
+    // The log category/categories which should be recorded in this file
+    // In this case, it's just the one category from our extension, still
+    // we need to put it inside an array
+    array('com_emundus')
+);
 //include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
 $baseurl = JURI::root();
 
 $student_id = $formModel->getElementData('jos_emundus_references___user', false, '');
 $fnum = $formModel->getElementData('jos_emundus_references___fnum', false, '');
+$time_date = $formModel->getElementData('jos_emundus_references___time_date', false, '');
 
 $recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus_references___attachment_id_1', false, 4), 'email' => $formModel->getElementData('jos_emundus_references___Email_1', false, ''));
 $recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus_references___attachment_id_2', false, 6), 'email' => $formModel->getElementData('jos_emundus_references___Email_2', false, ''));
@@ -99,10 +113,10 @@ foreach ($recipients as $key => $recipient) {
         $query = 'SELECT count(id) as cpt FROM #__emundus_uploads WHERE user_id='.$student->id.' AND attachment_id='.$attachment_id.' AND fnum like '.$db->Quote($current_user->fnum);
         $db->setQuery( $query );
         $db->execute();
-        $is_uploaded1=$db->loadResult();
+        $is_uploaded = $db->loadResult();
 
-        if ($is_uploaded1==0) {
-            $key = md5(rand_string(20).time());
+        if ($is_uploaded == 0) {
+            $key = md5($time_date.$fnum.$student_id.$attachment_id.rand(10));
             // 2. MAJ de la table emundus_files_request
             $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum, email) 
                           VALUES (NOW(), '.$student->id.', "'.$key.'", "'.$attachment_id.'", '.$current_user->fnum.', '.$db->Quote($recipient['email']).')';
@@ -134,7 +148,7 @@ foreach ($recipients as $key => $recipient) {
 
             if ( $send !== true ) {
                 JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_NOT_SENT').' : '.$recipient['email'], 'error');
-                echo 'Error sending email: ' . $send->__toString();
+                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
             } else {
                 JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_SENT').' : '.$recipient['email'], 'message');
                 $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
