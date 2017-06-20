@@ -370,7 +370,7 @@ class plgUserEmundus extends JPlugin
         $campaign = $profiles->getCurrentCampaignInfoByApplicant($user['id']);
 //die(var_dump($campaign));
         if ($campaign["training"] == "pepite")
-            $url = "index.php?option=com_emundus&view=programme&id=65&Itemid=1521";
+            $url = "https://ideepepite.sorbonne-universites.fr/";
         else
             $url = '/';
 

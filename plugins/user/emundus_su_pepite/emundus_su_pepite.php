@@ -45,7 +45,7 @@ class plgUserEmundus_su_pepite extends JPlugin
 
         if (!$app->isAdmin()) {
             $current_user   = JFactory::getUser();
-            if (EmundusHelperAccess::isApplicant($current_user->id)) {
+            if (EmundusHelperAccess::isApplicant($current_user->id)) { 
                 if ($current_user->code == "pepite") {
                     $app->redirect(JRoute::_(JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum).'&Itemid='.$Itemid.'#em-panel'));
                     //$app->redirect("index.php?option=com_fabrik&view=form&formid=164&Itemid=1372&usekey=fnum");
@@ -77,7 +77,7 @@ class plgUserEmundus_su_pepite extends JPlugin
 
         if (!$app->isAdmin()) {
             if ($campaign["training"] == "pepite") {
-                $app->redirect("index.php?option=com_emundus&view=programme&id=86&Itemid=1521");
+                $app->redirect("https://ideepepite.sorbonne-universites.fr/");
             } else {
                 $app->redirect("index.php");
             }

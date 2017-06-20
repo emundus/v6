@@ -101,7 +101,7 @@ class plgUserEmundus_su extends JPlugin
                         $app->redirect("index.php?option=com_emundus&view=jobs&Itemid=1468");
                         break;
                     case 'pepite':
-                        $app->redirect("index.php?option=com_emundus&view=programme&id=86&Itemid=1521");
+                        $app->redirect("https://ideepepite.sorbonne-universites.fr/");
                         break;
                     default:
                         $app->redirect("index.php");
