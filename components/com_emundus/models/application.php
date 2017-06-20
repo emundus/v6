@@ -1795,20 +1795,27 @@ td {
                                 
                                 $query = 'SELECT '.implode(',', $d['element_name']).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
                                 $db->setQuery( $query );
-                                $stored = $db->loadAssoc();
+                                $stored = $db->loadAssocList();
 // var_dump($query); echo "<hr>";
-                                
-                                if (count($stored) > 0) {
-                                    // update form data
-                                    unset($stored['id']);
-                                    $stored['parent_id'] = $id;
-                                    
-                                    $query = 'INSERT INTO '.$d['table'].' (`'.implode('`,`', array_keys($stored)).'`) VALUES('.implode(',', $db->Quote($stored)).')';
+                                   
+                               if (count($stored) > 0) {
+                                    $arrayValue = [];
+
+                                    foreach($stored as $rowvalues){
+                                        unset($rowvalues['id']);
+                                        $rowvalues['parent_id'] = $id;
+                                        $arrayValue[] = '('.implode(',', $db->quote($rowvalues)).')';
+                                        $keyValue[] = $rowvalues;
+                                       
+                                    } 
+                                     unset($stored[0]['id']);
+                                         
+                                   // update form data
+                                   $query = 'INSERT INTO '.$d['table'].' (`'.implode('`,`', array_keys($stored[0])).'`)'.' VALUES '.implode(',', $arrayValue);
 //var_dump($query); echo "<hr>";
- 
                                     $db->setQuery( $query );
                                     $db->execute();
-                                }             
+                                }
                             }
                         }
                     }
