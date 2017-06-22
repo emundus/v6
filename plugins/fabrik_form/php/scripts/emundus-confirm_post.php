@@ -1,7 +1,7 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1.5: confirm_post.php 89 2017-05-20 Benjamin Rivalland
+ * @version 1.5: confirm_post.php 89 2017-06-20 Benjamin Rivalland
  * @package Fabrik
  * @copyright Copyright (C) 2016 emundus.fr. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
@@ -10,7 +10,7 @@ defined( '_JEXEC' ) or die();
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  * See COPYRIGHT.php for copyright notices and details.
- * @description Envoi automatique d'un email suivant les triggers définis
+ * @description Marquer le dossier comme envoyé + Envoi automatique d'un email suivant les triggers définis
  */
 
 $db = JFactory::getDBO();
@@ -38,8 +38,6 @@ JLog::addLogger(
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', 0);
 $application_fee = $eMConfig->get('application_fee', 0);
-
-
 
 // Application fees
 if ($application_fee == 1) {
@@ -69,19 +67,6 @@ $campaign = $campaigns->getCampaignByID($student->campaign_id);
 
 $emails = new EmundusModelEmails;
 
-$post = array( 
-    'APPLICANT_ID'  => $student->id,
-    'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($campaign['end_date'])),
-    'APPLICANTS_LIST' => '',
-    'EVAL_CRITERIAS' => '',
-    'EVAL_PERIOD' => '',
-    'CAMPAIGN_LABEL' => $campaign['label'],
-    'CAMPAIGN_YEAR' => $campaign['year'],
-    'CAMPAIGN_START' => $campaign['start_date'],
-    'CAMPAIGN_END' => $campaign['end_date'],
-    'CAMPAIGN_CODE' => $campaign['training'],
-    'FNUM'          => $student->fnum
-);
 
 // Applicant cannot delete this attachments now
 if (!$can_edit_until_deadline) {
@@ -115,63 +100,9 @@ try {
 $student->candidature_posted = 1;
 
 // Send emails defined in trigger
-$emails = new EmundusModelEmails;
 $step = 1;
 $code = array($student->code);
-$to_applicant = '0, 1';
-$trigger_emails = $emails->getEmailTrigger($step, $code, $to_applicant);
+$to_applicant = '0,1';
+$trigger_emails = $emails->sendEmailTrigger($step, $code, $to_applicant, $student);
 
-
-if (count($trigger_emails) > 0) {
-
-    foreach ($trigger_emails as $key => $trigger_email) {
-
-        foreach ($trigger_email[$student->code]['to']['recipients'] as $key => $recipient) {
-            $mailer     = JFactory::getMailer();
-
-            //$post = array();
-            $tags = $emails->setTags($student->id, $post, $student->fnum);
-
-            $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
-            $from_id = 62;
-            $fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['name']);
-            $to = $recipient['email'];
-            $to_id = $recipient['id'];
-            $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
-            $body = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['message']);
-            $body = $emails->setTagsFabrik($body, array($student->fnum));
-            //$attachment[] = $path_file;
-
-            // setup mail
-            $sender = array(
-                $email_from_sys,
-                $fromname
-            );
-   
-            $mailer->setSender($sender);
-            $mailer->addReplyTo($from, $fromname);
-            $mailer->addRecipient($to);
-            $mailer->setSubject($subject);
-            $mailer->isHTML(true);
-            $mailer->Encoding = 'base64';
-            $mailer->setBody($body);
-            $send = $mailer->Send();
-
-            if ( $send !== true ) {
-                echo 'Error sending email: ' . $send->__toString();
-                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-            } else {
-                $message = array(
-                    'user_id_from' => $from_id,
-                    'user_id_to' => $to_id,
-                    'subject' => $subject,
-                    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
-                );
-                $emails->logEmail($message);
-                //JLog::add($to.' '.$body, JLog::INFO, 'com_emundus');
-            }
-        }
-    }
-}
-
-?>  
+?>
