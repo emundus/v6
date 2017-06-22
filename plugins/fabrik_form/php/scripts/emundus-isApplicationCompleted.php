@@ -1,9 +1,9 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1: isApplicationCompleted.php 89 2016-06-02 Benjamin Rivalland
+ * @version 1: isApplicationCompleted.php 89 2017-06-02 Benjamin Rivalland
  * @package Fabrik
- * @copyright Copyright (C) 2016 eMundus. All rights reserved.
+ * @copyright Copyright (C) 2017 eMundus. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -37,11 +37,9 @@ if ($jinput->get('view') == 'form') {
 			$paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
 
 			if (!$paid && $attachments >= 100 && $forms >= 100) {
-				$checkout_url = $application->getHikashopCheckoutUrl($user->profile);
+				$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($application->getHikashopCheckoutUrl($user->profile)));
 				$mainframe->redirect(JRoute::_($checkout_url));
-			} else {
-				$mainframe->redirect( "index.php?option=com_emundus&view=checklist&Itemid=".$itemid, JText::_('INCOMPLETE_APPLICATION'));
-			}
+			} 
 		} else {
 			$mainframe->redirect('index.php');
 		}

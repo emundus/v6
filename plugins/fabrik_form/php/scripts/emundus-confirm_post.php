@@ -105,4 +105,4 @@ $code = array($student->code);
 $to_applicant = '0,1';
 $trigger_emails = $emails->sendEmailTrigger($step, $code, $to_applicant, $student);
 
-?>
+?>  
