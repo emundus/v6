@@ -218,7 +218,7 @@ class EmundusModelEmails extends JModelList
                         $email_from_sys,
                         $fromname
                     );
-           
+        
                     $mailer->setSender($sender);
                     $mailer->addReplyTo($from, $fromname);
                     $mailer->addRecipient($to);

@@ -61,8 +61,18 @@ class EmundusViewChecklist extends JViewLegacy
 			$attachments 		= $application->getAttachmentsProgress($this->_user->id, $this->_user->profile, array_keys($applications));
 			$forms 				= $application->getFormsProgress($this->_user->id, $this->_user->profile, array_keys($applications));
 
-			if((int)($attachments[$this->_user->fnum])>=100 && (int)($forms[$this->_user->fnum])>=100) {
-				$application->sendApplication($this->_user->fnum, $this->_user);
+			if((int)($attachments[$this->_user->fnum])>=100 && (int)($forms[$this->_user->fnum])>=100 && $sent != 1) {
+				$eMConfig = JComponentHelper::getParams('com_emundus');
+				$can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', 0);
+				$application_fee = $eMConfig->get('application_fee', 0);
+
+				$params = array(
+					'type_mail' => 'paid_validation',
+					'can_edit_until_deadline' => $can_edit_until_deadline,
+					'application_fee' => $application_fee
+				);
+
+				$application->sendApplication($this->_user->fnum, $this->_user, $params);
 				$applications 		= $application->getApplications($this->_user->id);
 			}
 

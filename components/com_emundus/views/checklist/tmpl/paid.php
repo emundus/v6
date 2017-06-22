@@ -3,6 +3,8 @@ defined('_JEXEC') or die('Restricted access');
 
 $Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 
+echo JText::_('PAYMENT_RECEIVED');
+
 if (!empty($this->applications)) : ?>
 <hr>
 <div class="<?php echo $moduleclass_sfx ?>"> 
@@ -49,3 +51,9 @@ if (!empty($this->applications)) : ?>
   echo JText::_('NO_FILE');
 ?>
 <?php endif; ?>
+<script type="text/javascript">
+$( document ).ready(function() {
+    $('div.rt-block.submit_form').hide();
+    $('div.rt-block.application_fee').hide();
+});
+</script>
