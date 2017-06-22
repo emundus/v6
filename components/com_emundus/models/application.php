@@ -442,7 +442,7 @@ class EmundusModelApplication extends JModelList
                 $forms .= '<br><hr><h3>';
                 $title = explode('-', $itemt->label);
                 $forms .= $title[1];
-
+ 
                 if (EmundusHelperAccess::asAccessAction(1, 'u', $this->_user->id, $fnum) &&
                     $itemt->db_table_name != "#__emundus_training")
                 {
@@ -482,7 +482,7 @@ class EmundusModelApplication extends JModelList
                     $elements = $this->_db->loadObjectList();
                     if(count($elements)>0) {
                         $forms .= '<fieldset><legend class="legend">';
-                        $forms .= $itemg->label;
+                        $forms .= JText::_($itemg->label);
                         $forms .= '</legend>';
 /*
                         if ($itemg->repeated == 0 && $itemg->repeated_1 == 0) {
@@ -557,7 +557,7 @@ class EmundusModelApplication extends JModelList
                                     }
                                     else
                                         $elt = $element->content;
-                                    $forms .= '<b>'.$element->label.': </b>'.$elt.'<br/>';
+                                    $forms .= '<b>'.JText::_($element->label).': </b>'.$elt.'<br/>';
                                 }
                             }
 
@@ -572,7 +572,7 @@ class EmundusModelApplication extends JModelList
                             $t_elt = array();
                             foreach($elements as &$element) {
                                 $t_elt[] = $element->name;
-                                $forms .= '<th scope="col">'.$element->label.'</th>';
+                                $forms .= '<th scope="col">'.JText::_($element->label).'</th>';
                             }
                             unset($element);
                             //$table = $itemt->db_table_name.'_'.$itemg->group_id.'_repeat';
@@ -621,6 +621,11 @@ class EmundusModelApplication extends JModelList
                                             }
                                             elseif ($elements[$j]->plugin == 'checkbox') {
                                                 $elt = implode(", ", json_decode (@$r_elt));
+                                            }
+                                            elseif($elements[$j]->plugin=='dropdown' || $elements[$j]->plugin=='radiobutton') {
+                                                $params = json_decode($elements[$j]->params);
+                                                $index = array_search($r_elt, $params->sub_options->sub_values);
+                                                $elt = $params->sub_options->sub_labels[$index];
                                             }
                                             else
                                                 $elt = $r_elt;
@@ -681,7 +686,7 @@ class EmundusModelApplication extends JModelList
                                         $params = json_decode($element->params);
                                         $cascadingdropdown_id = $params->cascadingdropdown_id;
                                         $r1 = explode('___', $cascadingdropdown_id);
-                                        $cascadingdropdown_label = $params->cascadingdropdown_label;
+                                        $cascadingdropdown_label = JText::_($params->cascadingdropdown_label);
                                         $r2 = explode('___', $cascadingdropdown_label);
                                         $select = !empty($params->cascadingdropdown_label_concat)?"CONCAT(".$params->cascadingdropdown_label_concat.")":$r2[1];
                                         $from = $r2[0];
@@ -695,9 +700,14 @@ class EmundusModelApplication extends JModelList
                                     elseif ($element->plugin == 'checkbox') {
                                         $elt = implode(", ", json_decode (@$element->content));
                                     }
+                                    elseif($element->plugin=='dropdown' || $element->plugin=='radiobutton') {
+                                        $params = json_decode($element->params);
+                                        $index = array_search($element->content, $params->sub_options->sub_values);
+                                        $elt = $params->sub_options->sub_labels[$index];
+                                    }
                                     else
                                         $elt = $element->content;
-                                    $forms .= '<b>'.$element->label.': </b>'.$elt.'<br/>';
+                                    $forms .= '<b>'.JText::_($element->label).': </b>'.$elt.'<br/>';
                                 }
                             }
                         }
@@ -746,7 +756,7 @@ class EmundusModelApplication extends JModelList
                 $forms .= '<br><br>';
                 $forms .= '<hr><h3>';
                 $title = explode('-', $itemt->label);
-                $forms .= $title[1];
+                $forms .= JText::_($title[1]);
 
                 /*if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) && $itemt->db_table_name != "#__emundus_training"){
                     $forms .= ' <a href="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&usekey=user&rowid='.$aid.'" alt="'.JText::_('EDIT').'" target="_blank"><i class="icon edit">'.JText::_('EDIT').'</i></a>';
@@ -777,7 +787,7 @@ class EmundusModelApplication extends JModelList
                     $elements = $this->_db->loadObjectList();
                     if(count($elements)>0) {
                         $forms .= '<hr><h4>';
-                        $forms .= $itemg->label;
+                        $forms .= JText::_($itemg->label);
                         $forms .= '</h4>';
                         if ($itemg->repeated == 0 && $itemg->repeated_1 == 0) {
                             foreach($elements as &$iteme) {
@@ -814,6 +824,12 @@ class EmundusModelApplication extends JModelList
                                     $iteme->content = implode(", ", json_decode (@$res[1]));
                                     $iteme->content_id = $res[0];
                                 }
+                                elseif($iteme->plugin=='dropdown' || $iteme->plugin=='radiobutton') {
+                                    $params = json_decode($iteme->params);
+                                    $index = array_search($res[1], $params->sub_options->sub_values);
+                                    $iteme->content = $params->sub_options->sub_labels[$index];
+                                    $iteme->content_id = $res[0];
+                                }
                             }
                         }
                         unset($iteme);
@@ -827,7 +843,7 @@ class EmundusModelApplication extends JModelList
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
                                     } else $elt = $element->content;
                                     
-                                    $forms .= '<b>'.$element->label.': </b>'.$elt.'<br/>';
+                                    $forms .= '<b>'.JText::_($element->label).': </b>'.$elt.'<br/>';
                                 }
                             }
 
@@ -842,7 +858,7 @@ class EmundusModelApplication extends JModelList
                             $t_elt = array();
                             foreach($elements as &$element) {
                                 $t_elt[] = $element->name;
-                                $forms .= '<th scope="col">'.$element->label.'</th>';
+                                $forms .= '<th scope="col">'.JText::_($element->label).'</th>';
                             }
                             unset($element);
                             //$table = $itemt->db_table_name.'_'.$itemg->group_id.'_repeat';
@@ -890,6 +906,11 @@ class EmundusModelApplication extends JModelList
                                             }
                                             elseif($elements[$j]->plugin == 'checkbox') {
                                                 $elt = implode(", ", json_decode (@$r_elt));
+                                            }
+                                            elseif($iteme->plugin=='dropdown' || $iteme->plugin=='radiobutton') {
+                                                $params = json_decode($iteme->params);
+                                                $index = array_search($r_elt, $params->sub_options->sub_values);
+                                                $elt = $params->sub_options->sub_labels[$index];
                                             }
                                             else
                                                 $elt = $r_elt;
@@ -978,10 +999,15 @@ class EmundusModelApplication extends JModelList
                                                 elseif($elements[$j]->plugin == 'checkbox') {
                                                     $elt = implode(", ", json_decode (@$r_elt));
                                                 }
+                                                elseif($elements[$j]->plugin=='dropdown' || $iteme->elements[$j]=='radiobutton') {
+                                                    $params = json_decode($elements[$j]->params);
+                                                    $index = array_search($r_elt, $params->sub_options->sub_values);
+                                                    $elt = $params->sub_options->sub_labels[$index];
+                                                }
                                                 else
                                                     $elt = $r_elt;
                                                 if (!empty($elt)) {
-                                                    $forms .= '<br><span style="color: #000071;"><b>'.$elements[$j]->label.'</b></span>: '.$elt;
+                                                    $forms .= '<br><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span>: '.$elt;
                                                 }
                                             }
                                         }
@@ -1042,9 +1068,14 @@ class EmundusModelApplication extends JModelList
                                         elseif($elements[$j]->plugin == 'checkbox') {
                                             $elt = implode(", ", json_decode (@$element->content));
                                         }
+                                        elseif($elements[$j]->plugin=='dropdown' || $iteme->elements[$j]=='radiobutton') {
+                                            $params = json_decode($elements[$j]->params);
+                                            $index = array_search($r_elt, $params->sub_options->sub_values);
+                                            $elt = $params->sub_options->sub_labels[$index];
+                                        }
                                         else
                                             $elt = $element->content;
-                                        $forms .= '<br><span style="color: #000071;"><b>'.$element->label.'</b></span>: '.$elt;
+                                        $forms .= '<br><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span>: '.$elt;
                                     }
                                 }
                             }
@@ -1078,7 +1109,7 @@ td {
         if(isset($tableuser)) {
             foreach($tableuser as $key => $itemt) {
                 //$forms .= '<br><br>';
-                $forms .= ($options['show_list_label']==1)?'<h2>'.$itemt->label.'</h2>':'';
+                $forms .= ($options['show_list_label']==1)?'<h2>'.JText::_($itemt->label).'</h2>':'';
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
@@ -1101,7 +1132,7 @@ td {
                     $this->_db->setQuery( $query );
                     $elements = $this->_db->loadObjectList();
                     if(count($elements)>0) {
-                        $forms .= ($options['show_group_label']==1)?'<h3>'.$itemg->label.'</h3>':'';
+                        $forms .= ($options['show_group_label']==1)?'<h3>'.JText::_($itemg->label).'</h3>':'';
                         foreach($elements as &$iteme) {
                             $where = 'user='.$aid;
                             $where .= $options['rowid']>0?' AND id='.$options['rowid']:'';
@@ -1119,7 +1150,7 @@ td {
                                         $date_params = json_decode($element->params);
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
                                     } else $elt = $element->content;
-                                    $forms .= '<p><b>'.$element->label.': </b>'.$elt.'</p>';
+                                    $forms .= '<p><b>'.JText::_($element->label).': </b>'.$elt.'</p>';
                                 }
                             }
 
@@ -1134,7 +1165,7 @@ td {
                             $t_elt = array();
                             foreach($elements as &$element) {
                                 $t_elt[] = $element->name;
-                                $forms .= '<th scope="col">'.$element->label.'</th>';
+                                $forms .= '<th scope="col">'.JText::_($element->label).'</th>';
                             }
                             unset($element);
                             //$table = $itemt->db_table_name.'_'.$itemg->group_id.'_repeat';
@@ -1181,6 +1212,11 @@ td {
                                         }
                                         elseif($elements[$j]->plugin == 'checkbox') {
                                             $elt = implode(", ", json_decode (@$r_elt));
+                                        }
+                                        elseif($elements[$j]->plugin=='dropdown' || $iteme->elements[$j]=='radiobutton') {
+                                            $params = json_decode($elements[$j]->params);
+                                            $index = array_search($r_elt, $params->sub_options->sub_values);
+                                            $elt = $params->sub_options->sub_labels[$index];
                                         }
                                         else
                                             $elt = $r_elt;
@@ -1236,9 +1272,14 @@ td {
                                     elseif($element->plugin == 'checkbox') {
                                         $elt = implode(", ", json_decode (@$element->content));
                                     }
+                                    elseif($element->plugin=='dropdown' || $iteme->element=='radiobutton') {
+                                        $params = json_decode($element->params);
+                                        $index = array_search($element->content, $params->sub_options->sub_values);
+                                        $elt = $params->sub_options->sub_labels[$index];
+                                    }
                                     else
                                         $elt = $element->content;
-                                    $forms .= '<p><b>'.$element->label.': </b>'.$elt.'</p>';
+                                    $forms .= '<p><b>'.JText::_($element->label).': </b>'.$elt.'</p>';
                                 }
                             }
                         }
@@ -1324,13 +1365,20 @@ td {
         }
     }
 
-    public function getAttachmentsByFnum($fnum, $attachment_id=null)
+    public function getAttachmentsByFnum($fnum, $ids, $attachment_id=null)
     {
         try
         {
             $query = "SELECT * FROM #__emundus_uploads WHERE fnum like ".$this->_db->quote($fnum);
             if (isset($attachment_id)) {
                 $query .= " AND attachment_id=".$attachment_id;
+                if (count($ids > 0)){
+                $query .= " AND id in (".implode(',', $ids).")";
+                }
+            }
+
+            if (count($ids > 0)){
+                $query .= " AND id in (".implode(',', $ids).")";
             }
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
