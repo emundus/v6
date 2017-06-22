@@ -847,7 +847,7 @@ class EmundusModelApplication extends JModelList
                                 }
                             }
 
-                            // TABLEAU DE PLUSIEURS LIGNES
+                        // TABLEAU DE PLUSIEURS LIGNES avec plus de 7 lignes
                         } elseif (($itemg->repeated > 0 || $itemg->repeated_1 > 0) && count($elements)<7){
                             $forms .= '<p><table class="adminlist">
                               <thead>
@@ -925,7 +925,7 @@ class EmundusModelApplication extends JModelList
                             }
                             $forms .= '</tbody></table></p>';
 
-                            // AFFICHAGE EN LIGNE
+                        // TABLEAU DE PLUSIEURS LIGNES sans tenir compte du nombre de lignes
                         }elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0) {
 
                             //-- Entrée du tableau -- */
@@ -1017,7 +1017,7 @@ class EmundusModelApplication extends JModelList
                                 }
                             }
 
-                            // AFFICHAGE EN LIGNE
+                        // AFFICHAGE EN LIGNE
                         } else {
                             foreach($elements as $element) {
                                 if (!empty($element->content)) {
@@ -1068,12 +1068,12 @@ class EmundusModelApplication extends JModelList
                                         elseif($elements[$j]->plugin == 'checkbox') {
                                             $elt = implode(", ", json_decode (@$element->content));
                                         }
-                                        elseif($elements[$j]->plugin=='dropdown' || $iteme->elements[$j]=='radiobutton') {
-                                            $params = json_decode($elements[$j]->params);
-                                            $index = array_search($r_elt, $params->sub_options->sub_values);
+                                        elseif($element->plugin=='dropdown' || $iteme->element=='radiobutton') {
+                                            $params = json_decode($element->params);
+                                            $index = array_search($element->content, $params->sub_options->sub_values);
                                             $elt = $params->sub_options->sub_labels[$index];
                                         }
-                                        else
+                                        else ///////////////////////************
                                             $elt = $element->content;
                                         $forms .= '<br><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span>: '.$elt;
                                     }
