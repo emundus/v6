@@ -72,7 +72,6 @@ class EmundusModelApplication extends JModelList
         foreach ($details as $detail) {
             $detail->element_value = $values[$detail->element_id];
         }
-//var_dump($details);
         return $details;
     }
 
@@ -153,7 +152,6 @@ class EmundusModelApplication extends JModelList
             ORDER BY esa.ordering, eu.timedate ASC';
         }
         $this->_db->setQuery( $query );
-        //die( str_replace ('#_', 'jos', $query));
         return $this->_db->loadObjectList();
     }
 
@@ -165,7 +163,6 @@ class EmundusModelApplication extends JModelList
                 WHERE ec.applicant_id ="'.$id.'" 
                 ORDER BY ec.date DESC ';
         $this->_db->setQuery( $query );
-        // echo str_replace ('#_', 'jos', $query);
         return $this->_db->loadObjectList();
     }
 
@@ -191,7 +188,6 @@ class EmundusModelApplication extends JModelList
                 WHERE ec.fnum like '.$this->_db->Quote($fnum).' 
                 ORDER BY ec.date ASC ';
         $this->_db->setQuery( $query );
-        // echo str_replace ('#_', 'jos', $query);
         return $this->_db->loadObjectList();
     }
 
@@ -202,7 +198,6 @@ class EmundusModelApplication extends JModelList
         if($result==$this->_user->id){
             $query = 'DELETE FROM #__emundus_comments WHERE id = '.$id;
             $this->_db->setQuery($query);
-//die(str_replace ('#_', 'jos', $query));
             return $this->_db->Query();
         }else{
             return -1;
@@ -431,7 +426,6 @@ class EmundusModelApplication extends JModelList
 
     // Get form to display in application page layout view
     public function getForms($aid, $fnum = 0, $pid = 9) {
-        //$tableuser = @EmundusHelperList::getFormsList($aid, $fnum);
         $tableuser = @EmundusHelperMenu::buildMenuQuery($pid);
 
         $forms = '';
@@ -454,8 +448,6 @@ class EmundusModelApplication extends JModelList
                         $forms .= ' <button type="button" id="'.$itemt->form_id.'" class="btn btn btn-info btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
                     else
                         $forms .= ' <button type="button" id="'.$itemt->form_id.'" class="btn btn-default btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&'.$itemt->db_table_name.'___fnum='.$fnum.'&'.$itemt->db_table_name.'___user_raw='.$aid.'&'.$itemt->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
-
-
                 }
 
                 $forms .= '</h3>';
@@ -484,52 +476,7 @@ class EmundusModelApplication extends JModelList
                         $forms .= '<fieldset><legend class="legend">';
                         $forms .= JText::_($itemg->label);
                         $forms .= '</legend>';
-/*
-                        if ($itemg->repeated == 0 && $itemg->repeated_1 == 0) {
-                            foreach($elements as &$iteme) {                    
-                                try { 
-                                    $query = 'SELECT `id`, `'.$iteme->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
-                                    $this->_db->setQuery( $query );
-                                    $res = $this->_db->loadRow();
-                                    
-                                    $iteme->content = @$res[1];
-                                    $iteme->content_id = @$res[0];
 
-                                    if ($iteme->plugin == 'databasejoin') {
-                                        $params = json_decode($iteme->params);
-                                        if($params->database_join_display_type == 'checkbox'){
-                                            $query = 'SELECT `id`, GROUP_CONCAT('.$iteme->name.', ", ") as '.$iteme->name .'
-                                                        FROM `'.$itemt->db_table_name.'_repeat_'.$iteme->name.'` 
-                                                        WHERE parent_id='.$iteme->content_id.' GROUP BY parent_id';
-                                            try {
-                                                $this->_db->setQuery( $query );
-                                                $res = $this->_db->loadRow();
-                                                $iteme->content = @$res[1];
-                                                $iteme->content_id = @$res[0];
-                                            } catch (Exception $e) {
-                                                echo $e->getMessage();
-                                            }
-                                        } else{
-                                            $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
-                                            $from = $params->join_db_name;
-                                            $where = $params->join_key_column.'='.$this->_db->Quote($iteme->content);
-                                            $query = "SELECT id, ".$select." FROM ".$from." WHERE ".$where;
-                                            $query = preg_replace('#{thistable}#', $from, $query);
-                                            $query = preg_replace('#{my->id}#', $aid, $query);
-                                            $this->_db->setQuery( $query );
-                                            $res = $this->_db->loadRow();
-                                            $iteme->content = @$res[1];
-                                            $iteme->content_id = @$res[0];
-                                        }
-                                     } 
-                                } catch (Exception $e) {
-                                    echo $e->getMessage();
-                                }
-                            }
-                        }
-
-                        unset($iteme);
-*/
                         if ($itemg->group_id == 14) {
 
                             foreach($elements as &$element) {
@@ -557,7 +504,7 @@ class EmundusModelApplication extends JModelList
                                     }
                                     else
                                         $elt = $element->content;
-                                    $forms .= '<b>'.JText::_($element->label).': </b>'.$elt.'<br/>';
+                                    $forms .= '<b>'.JText::_($element->label).': </b>'.JText::_($elt).'<br/>';
                                 }
                             }
 
@@ -590,7 +537,6 @@ class EmundusModelApplication extends JModelList
                             $this->_db->setQuery($query);
                             $repeated_elements = $this->_db->loadObjectList();
                             unset($t_elt);
-//print_r($repeated_elements);
                             $forms .= '</tr></thead>';
                             // -- Ligne du tableau --
                             if (count($repeated_elements)>0) {
@@ -636,7 +582,7 @@ class EmundusModelApplication extends JModelList
                                             }
                                             $forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.$delete_link.' '.$elt.'</div></td>';
                                             $delete_link = true;*/
-                                            $forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'"> '.$elt.'</div></td>';
+                                            $forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'"> '.JText::_($elt).'</div></td>';
                                         }
                                         $j++;
                                     }
@@ -707,7 +653,7 @@ class EmundusModelApplication extends JModelList
                                     }
                                     else
                                         $elt = $element->content;
-                                    $forms .= '<b>'.JText::_($element->label).': </b>'.$elt.'<br/>';
+                                    $forms .= '<b>'.JText::_($element->label).': </b>'.JText::_($elt).'<br/>';
                                 }
                             }
                         }
@@ -843,7 +789,7 @@ class EmundusModelApplication extends JModelList
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
                                     } else $elt = $element->content;
                                     
-                                    $forms .= '<b>'.JText::_($element->label).': </b>'.$elt.'<br/>';
+                                    $forms .= '<b>'.JText::_($element->label).': </b>'.JText::_($elt).'<br/>';
                                 }
                             }
 
@@ -876,7 +822,6 @@ class EmundusModelApplication extends JModelList
                             $this->_db->setQuery($query);
                             $repeated_elements = $this->_db->loadObjectList();
                             unset($t_elt);
-//print_r($repeated_elements);
                             $forms .= '</tr></thead><tbody>';
 
                             // -- Ligne du tableau --
@@ -916,7 +861,7 @@ class EmundusModelApplication extends JModelList
                                                 $elt = $r_elt;
                                             // trick to prevent from blank value in PDF when string is to long without spaces (usually emails)
                                             $elt = str_replace('@', '<br>@', $elt);
-                                            $forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.$elt.'</div></td>';
+                                            $forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.JText::_($elt).'</div></td>';
                                         }
                                         $j++;
                                     }
@@ -1150,7 +1095,7 @@ td {
                                         $date_params = json_decode($element->params);
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
                                     } else $elt = $element->content;
-                                    $forms .= '<p><b>'.JText::_($element->label).': </b>'.$elt.'</p>';
+                                    $forms .= '<p><b>'.JText::_($element->label).': </b>'.JText::_($elt).'</p>';
                                 }
                             }
 
@@ -1179,12 +1124,11 @@ td {
                             else
                                 $query = 'SELECT '.implode(",", $t_elt).', id FROM '.$table.'
                                     WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.')';
-                            //$forms .= $query;
                             $this->_db->setQuery($query);
                             $repeated_elements = $this->_db->loadObjectList();
                             unset($t_elt);
-//print_r($repeated_elements);
                             $forms .= '</tr></thead><tbody>';
+
                             // -- Ligne du tableau --
                             foreach ($repeated_elements as $r_element) {
                                 $forms .= '<tr>';
@@ -1221,7 +1165,7 @@ td {
                                         else
                                             $elt = $r_elt;
 
-                                        $forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.$elt.'</div></td>';
+                                        $forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.JText::_($elt).'</div></td>';
                                     }
                                     $j++;
                                 }
@@ -1279,7 +1223,7 @@ td {
                                     }
                                     else
                                         $elt = $element->content;
-                                    $forms .= '<p><b>'.JText::_($element->label).': </b>'.$elt.'</p>';
+                                    $forms .= '<p><b>'.JText::_($element->label).': </b>'.JText::_($elt).'</p>';
                                 }
                             }
                         }
@@ -1680,7 +1624,6 @@ td {
                         LEFT JOIN #__emundus_setup_status AS ess ON ess.step=ecc.status
                         WHERE ecc.applicant_id ='.$uid.' 
                         ORDER BY esc.end_date DESC';
-    //echo str_replace('#_', 'jos', $query);
             $db->setQuery($query);
             $result = $db->loadObjectList('fnum');
             return (array) $result;
@@ -1702,7 +1645,6 @@ td {
                         LEFT JOIN #__emundus_setup_status AS ess ON ess.step=ecc.status
                         WHERE ecc.fnum like '.$dbo->Quote($fnum).' 
                         ORDER BY esc.end_date DESC';
-    //echo str_replace('#_', 'jos', $query);
             $dbo->setQuery($query);
             $result = $dbo->loadObject();
             return $result;
@@ -1730,7 +1672,6 @@ td {
                         AND ho.order_status like "confirmed"  
                         AND ho.order_created >= '.strtotime($fnumInfos['start_date']).' 
                         AND ho.order_created <= '.strtotime($fnumInfos['end_date']);
-//echo str_replace('#_', 'jos', $query);
             $dbo->setQuery($query);
             $result = $dbo->loadObject();
             return $result;
@@ -1756,7 +1697,6 @@ td {
             $query = 'SELECT CONCAT(link, "&Itemid=", id) as url
                         FROM #__menu
                         WHERE alias like "checkout'.$pid.'"';
-//echo str_replace('#_', 'jos', $query);
             $dbo->setQuery($query);
             $url = $dbo->loadResult();
             return $url;
@@ -1790,13 +1730,11 @@ td {
             }
 
             $forms = @EmundusHelperMenu::buildMenuQuery($pid);
-//echo "<hr><pre>";
 
             foreach ($forms as $key => $form) {
                 $query = 'SELECT * FROM '.$form->db_table_name.' WHERE fnum like '.$db->Quote($fnum_from);
                 $db->setQuery( $query );
                 $stored = $db->loadAssoc();
-//var_dump($query); var_dump($stored); echo "<hr>STORED";
                 if (count($stored) > 0) {
                     // update form data
                     $parent_id = $stored['id'];
@@ -1808,8 +1746,6 @@ td {
                     $db->execute();
                     $id = $db->insertid();
 
-//var_dump($query); echo "<hr>";
- 
                     // liste des groupes pour le formulaire d'une table
                     $query = 'SELECT ff.id, ff.group_id, fe.name, fg.id, fg.label, (IF( ISNULL(fj.table_join), fl.db_table_name, fj.table_join)) as `table`, fg.params as `gparams`
                                 FROM #__fabrik_formgroup ff
@@ -1819,11 +1755,9 @@ td {
                                 LEFT JOIN #__fabrik_joins AS fj ON (fj.group_id = fe.group_id AND fj.list_id != 0 AND fj.element_id = 0)
                                 WHERE ff.form_id = "'.$form->form_id.'" 
                                 ORDER BY ff.ordering';
-//echo str_replace("#_", "jos", $query);
 
                     $db->setQuery( $query );
                     $groups = $db->loadObjectList();
-//var_dump($groups); echo "<hr>";
 
                     // get data and update current form
                     $data   = array();
@@ -1844,7 +1778,6 @@ td {
                                 $query = 'SELECT '.implode(',', $d['element_name']).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
                                 $db->setQuery( $query );
                                 $stored = $db->loadAssocList();
-// var_dump($query); echo "<hr>";
                                    
                                if (count($stored) > 0) {
                                     $arrayValue = [];
@@ -1859,8 +1792,7 @@ td {
                                      unset($stored[0]['id']);
                                          
                                    // update form data
-                                   $query = 'INSERT INTO '.$d['table'].' (`'.implode('`,`', array_keys($stored[0])).'`)'.' VALUES '.implode(',', $arrayValue);
-//var_dump($query); echo "<hr>";
+                                    $query = 'INSERT INTO '.$d['table'].' (`'.implode('`,`', array_keys($stored[0])).'`)'.' VALUES '.implode(',', $arrayValue);
                                     $db->setQuery( $query );
                                     $db->execute();
                                 }
