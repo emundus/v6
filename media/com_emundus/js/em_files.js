@@ -226,12 +226,20 @@ function addElement() {
                     if (groupe != null && (groupe != groupe_tmp)) {
                         options += '</optgroup>';
                     }
+
                     if (groupe != groupe_tmp) {
-                        options += '<optgroup label=">> ' + groupe_tmp + '">';
+                        options += '<optgroup label=">> ' + Joomla.JText._(groupe_tmp) + '">';
                         groupe = groupe_tmp;
                     }
+   
+                    if(Joomla.JText._(result.options[i].element_label) == "undefined"){
+                        var elt_label = result.options[i].element_label;
+                    } else{
+                        var elt_label = Joomla.JText._(result.options[i].element_label);
+                    }
 
-                    options += '<option class="emundus_search_elm" value="' + result.options[i].id + '">' + result.options[i].element_label + '</option>';
+
+                    options += '<option class="emundus_search_elm" value="' + result.options[i].id + '">' + elt_label + '</option>';
                 }
                 $('#' + newId + ' #elements').append(options);
                 $(".chzn-select").chosen({
@@ -1577,10 +1585,17 @@ $(document).ready(function()
                                                                 }
                                                                 if(grId != result.elts[d].group_id)
                                                                 {
-                                                                    item += '<optgroup label=">> '+result.elts[d].group_label+'">'
+                                                                    item += '<optgroup label=">> '+Joomla.JText._(result.elts[d].group_label)+'">'
                                                                 }
                                                                 grId = result.elts[d].group_id
-                                                                item += '<option value="'+result.elts[d].id+'" data-value="'+result.elts[d].element_label+'">'+result.elts[d].element_label+'</option>';
+
+                                                                if(Joomla.JText._(result.elts[d].element_label) == "undefined"){
+                                                                    var elt_label = result.elts[d].element_label;
+                                                                } else{
+                                                                    var elt_label = Joomla.JText._(result.elts[d].element_label);
+                                                                }
+
+                                                                item += '<option value="'+result.elts[d].id+'" data-value="'+result.elts[d].element_label+'">'+elt_label+'</option>';
                                                             }
                                                             $('#elements-popup').append(data);
                                                             $('#em-export-form').append(item);
