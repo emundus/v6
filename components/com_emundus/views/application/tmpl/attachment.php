@@ -42,7 +42,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                     if ($can_export)
                         $checkbox = '<input type="checkbox" name="em_application_attachments_all" id="em_application_attachments_all" />';
 
-                    echo '<table class="table table-hover">
+                    echo '<table class="table table-hover attachments_table">
                         <thead>
                             <tr>
                               <th>'.$checkbox.'#</th>
@@ -239,14 +239,17 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
     {
         var checkedInput = getJsonChecked();
         var checked = getChecked();
+   console.log(checkedInput);
         /*String.prototype.fmt = function (hash) {
             var string = this, key;
             for (key in hash) string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]); return string;
         }*/
 
         //var url = $(this).attr('link')+'&ids='+encodeURIComponent(JSON.stringify(checkedInput));
-        var url = "index.php?option=com_emundus&controller=application&task=exportpdf&fnum=<?php echo $this->fnum; ?>&student_id=<?php echo $this->student_id; ?>&ids="+checkedInput;
+        var url = "index.php?option=com_emundus&controller=application&task=exportpdf&fnum=<?php echo $this->fnum; ?>&student_id=<?php echo $this->student_id; ?>&ids="+checked;
         //url = url.fmt({ids: checkedInput});
+
+  
 
         if(checked.length > 0)
         {

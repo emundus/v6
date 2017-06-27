@@ -1436,7 +1436,6 @@ class EmundusControllerFiles extends JControllerLegacy
             die(JText::_('RESTRICTED_ACCESS'));
 
         $model = $this->getModel('Files');
-
         $session    = JFactory::getSession();
         $fnums_post = $session->get('fnums_export');
         if (count($fnums_post) == 0) {
@@ -1452,6 +1451,10 @@ class EmundusControllerFiles extends JControllerLegacy
         $attachment = $jinput->getInt('attachment', 0);
         $assessment = $jinput->getInt('assessment', 0);
         $decision   = $jinput->getInt('decision', 0);
+        $ids        = $jinput->getVar('ids',null);
+
+        $attach_ids = '"'.$ids.'"';
+        $ids_attachments = str_replace(',', '","', $attach_ids);    
 
         $validFnums = array();
         foreach ($fnums_post as $fnum) {
@@ -1459,6 +1462,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $validFnums[] = $fnum;
             }
         }
+
         $fnumsInfo = $model->getFnumsInfos($validFnums);
         if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $file)) {
             $files_list = array(JPATH_BASE . DS . 'tmp' . DS . $file);
@@ -1477,7 +1481,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                     $tmpArray = array();
                     $model = $this->getModel('application');
-                    $files = $model->getAttachmentsByFnum($fnum);
+                    $files = $model->getAttachmentsByFnum($fnum,array($ids_attachments));
 
                     EmundusHelperExport::getAttchmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
                 }
@@ -1495,7 +1499,8 @@ class EmundusControllerFiles extends JControllerLegacy
             // all PDF in one file
             require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
             $pdf = new ConcatPdf();
-            $pdf->setFiles($files_list);
+
+            $pdf->setFiles($files_list);  //echo "<pre>"; var_dump($files_list); die();
             $pdf->concat();
             if (isset($tmpArray)) {
                 foreach ($tmpArray as $fn) {
@@ -1526,6 +1531,7 @@ class EmundusControllerFiles extends JControllerLegacy
             exit();
         }
     }
+
 
     public function export_xls_from_csv() {
         /** PHPExcel */
