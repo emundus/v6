@@ -46,6 +46,7 @@ $img = explode(',',$img);
 $col = 0;
 $t__ = '';
 $i = 1;
+$module_title = '';
 
 if(is_array($text) && !empty($text)){
 	foreach($text as $t){
@@ -160,7 +161,6 @@ if (!empty($t__)) {
 			$tab[] = $str;
 		}
 		$col = count($tab);
-
 	}
 
 }
