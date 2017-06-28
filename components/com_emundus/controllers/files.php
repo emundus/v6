@@ -1136,22 +1136,19 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums = $jinput->getVar('fnums', null);
         $fnums = (array) json_decode(stripslashes($fnums));
         $ids = $jinput->getVar('ids', null);
-        $ids = (array) json_decode(stripslashes($ids));
+        //$ids = (array) stripslashes($ids);
         $action_id = $jinput->getVar('action_id', null);
         $crud = $jinput->getVar('crud', null);
 
         $model = $this->getModel('Files');
 
-        if(!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
-        {
+        if(!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all") {
             $fnums = $model->getAllFnums();
         }
 
         $validFnums = array();
-        foreach($fnums as $fnum)
-        {
-            if(EmundusHelperAccess::asAccessAction($action_id, $crud, $this->_user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all')
-            {
+        foreach($fnums as $fnum) {
+            if(EmundusHelperAccess::asAccessAction($action_id, $crud, $this->_user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all') {
                 $validFnums[] = $fnum;
             }
         }
@@ -1438,9 +1435,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $model = $this->getModel('Files');
         $session    = JFactory::getSession();
         $fnums_post = $session->get('fnums_export');
-        if (count($fnums_post) == 0) {
+        if (count($fnums_post) == 0)
             $fnums_post = array($session->get('application_fnum'));
-        }
         
         $jinput     = JFactory::getApplication()->input;
         $file       = $jinput->getVar('file', null, 'STRING');
@@ -1453,20 +1449,19 @@ class EmundusControllerFiles extends JControllerLegacy
         $decision   = $jinput->getInt('decision', 0);
         $ids        = $jinput->getVar('ids',null);
 
-        $attach_ids = '"'.$ids.'"';
-        $ids_attachments = str_replace(',', '","', $attach_ids);    
+        //$attach_ids = '"'.$ids.'"';
+        //$ids_attachments = str_replace(',', '","', $attach_ids);    
 
         $validFnums = array();
         foreach ($fnums_post as $fnum) {
-            if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum)) {
+            if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum))
                 $validFnums[] = $fnum;
-            }
         }
 
         $fnumsInfo = $model->getFnumsInfos($validFnums);
-        if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $file)) {
+        if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $file))
             $files_list = array(JPATH_BASE . DS . 'tmp' . DS . $file);
-        } else
+        else
             $files_list = array();
 
 
@@ -1477,20 +1472,19 @@ class EmundusControllerFiles extends JControllerLegacy
                     $files_list[] =
                         EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms);
                 }
-                if ($attachment) {
 
+                if ($attachment) {
                     $tmpArray = array();
                     $model = $this->getModel('application');
-                    $files = $model->getAttachmentsByFnum($fnum,array($ids_attachments));
+                    $files = $model->getAttachmentsByFnum($fnum, $ids);
 
-                    EmundusHelperExport::getAttchmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
+                    EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
                 }
-                if ($assessment) {
+
+                if ($assessment)
                     $files_list[] = EmundusHelperExport::getEvalPDF($fnum);
-                }
-                if ($decision) {
+                if ($decision)
                     $files_list[] = EmundusHelperExport::getDecisionPDF($fnum);
-                }
             }
         }
         $start = $i;

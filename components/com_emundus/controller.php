@@ -196,7 +196,7 @@ class EmundusController extends JControllerLegacy {
                     $model = $this->getModel('application');
                     $files = $model->getAttachmentsByFnum($fnum);
 
-                    EmundusHelperExport::getAttchmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
+                    EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
                 }
                 if($eval_post) {
                     EmundusHelperExport::getEvalPDF($files_list,$fnum);

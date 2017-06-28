@@ -125,7 +125,7 @@ class EmundusHelperExport
         return preg_match('/Encrypt ([0-9]+) /', $s);
     }
 
-	public static function getAttchmentPDF(&$exports, &$tmpArray, $files, $sid)
+	public static function getAttachmentPDF(&$exports, &$tmpArray, $files, $sid)
 	{
 		foreach($files as $file)
 		{

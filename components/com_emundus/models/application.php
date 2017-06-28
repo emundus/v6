@@ -1309,22 +1309,17 @@ td {
         }
     }
 
-    public function getAttachmentsByFnum($fnum, $ids=array(), $attachment_id=null) 
-    {
-        try
-        {
+    public function getAttachmentsByFnum($fnum, $ids=null, $attachment_id=null) {
+        try {
             $query = "SELECT * FROM #__emundus_uploads WHERE fnum like ".$this->_db->quote($fnum);
 
-            if (isset($attachment_id) && !empty($attachment_id)) {
+            if (isset($attachment_id) && !empty($attachment_id)) 
                 $query .= " AND attachment_id=".$attachment_id;
-            }
 
-            if (count($ids > 0)){
-                $query .= " AND id in (".implode(',', $ids).")";
-            }
+            if (!empty($ids))
+                $query .= " AND id in ($ids)";
 
             $this->_db->setQuery($query);
-
             return $this->_db->loadObjectList();
         }
         catch(Exception $e)
