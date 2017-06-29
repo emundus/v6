@@ -37,7 +37,7 @@ $applicants 			 = explode(',',$id_applicants);
 $offset=JFactory::getApplication()->get('offset', 'UTC');
 try {
     $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
-    $dateTime = $dateTime->setTimezone(new DateTimeZone($this->offset));
+    $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
     $now = $dateTime->format('Y-m-d H:i:s');
     //echo "::".$this->now;
 } catch(Exception $e) {
