@@ -29,16 +29,24 @@ $mainframe = JFactory::getApplication();
 $jinput = $mainframe->input;
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
+$copy_application_form = $eMConfig->get('copy_application_form', 0);
 $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
 $id_applicants 			 = $eMConfig->get('id_applicants', '0');
 $applicants 			 = explode(',',$id_applicants);
 
+$offset=JFactory::getApplication()->get('offset', 'UTC');
+try {
+    $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+    $dateTime = $dateTime->setTimezone(new DateTimeZone($this->offset));
+    $now = $dateTime->format('Y-m-d H:i:s');
+    //echo "::".$this->now;
+} catch(Exception $e) {
+    echo $e->getMessage() . '<br />';
+}
+
 $fnum = $jinput->get('rowid', null);
 $itemid = $jinput->get('Itemid'); 
 $reload = $jinput->get('r', 0); 
-
-$eMConfig = JComponentHelper::getParams('com_emundus');
-$copy_application_form = $eMConfig->get('copy_application_form', 0);
 
 
 if(!EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
@@ -74,7 +82,7 @@ else {
 		// Si l'application Form a été envoyee par le candidat : affichage vue details
 		if($user->candidature_posted > 0 && $user->candidature_incomplete == 0 && $can_edit_until_deadline == 0) {
 			$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
-		} elseif(strtotime(date("Y-m-d H:m:i")) > strtotime($user->end_date) && !in_array($user->id, $applicants) ) {
+		} elseif(strtotime(date($now)) > strtotime($user->end_date) && !in_array($user->id, $applicants) ) {
 			JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', utf8_encode(JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($user->end_date) ))));
 			$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
 		} else {
