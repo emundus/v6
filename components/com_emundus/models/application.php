@@ -678,6 +678,7 @@ class EmundusModelApplication extends JModelList
     // @param   int fnum application file number
     // @return  string HTML to send to PDF librairie
     function getFormsPDF($aid, $fnum=0) {
+        //add gid and only get certain groups
         $tableuser = @EmundusHelperList::getFormsList($aid, $fnum);
 
         $forms = "<style>
@@ -720,6 +721,7 @@ class EmundusModelApplication extends JModelList
 
                 /*-- Liste des groupes -- */
                 foreach($groupes as $keyg => $itemg) {
+                    // If itemg is in gid
 
                     // liste des items par groupe
                     $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
@@ -1316,7 +1318,7 @@ td {
             if (isset($attachment_id) && !empty($attachment_id)) 
                 $query .= " AND attachment_id=".$attachment_id;
 
-            if (!empty($ids))
+            if (!empty($ids) && $ids != "null")
                 $query .= " AND id in ($ids)";
 
             $this->_db->setQuery($query);

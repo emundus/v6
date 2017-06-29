@@ -471,10 +471,16 @@ class EmundusModelUsers extends JModelList
     }
 
     public function getCurrentCampaigns() {
+        $config = JFactory::getConfig();
+        
+        $jdate = JFactory::getDate();
+        $jdate->setOffset($config->getValue('offset'));
+        $now = $jdate->toSql();
+
         $db = JFactory::getDBO();
         $query = 'SELECT sc.id, sc;label
         FROM #__emundus_setup_campaigns AS sc
-        WHERE sc.published=1 AND end_date > NOW()';
+        WHERE sc.published=1 AND end_date > "'.$now.'"';
         $db->setQuery( $query );
         // echo str_replace('#_','jos',$query);
         return $db->loadColumn();

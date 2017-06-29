@@ -15,11 +15,12 @@ defined( '_JEXEC' ) or die();
 
 $db = JFactory::getDBO();
 $student =  JFactory::getUser();
-$app    = JFactory::getApplication();
+$app = JFactory::getApplication();
 $email_from_sys = $app->getCfg('mailfrom');
 
 include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
+include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'files.php');
 //include_once(JPATH_BASE.'/components/com_emundus/models/groups.php');
 jimport('joomla.log.log');
 JLog::addLogger(
@@ -35,9 +36,13 @@ JLog::addLogger(
     array('com_emundus')
 );
 
+// Get params set in eMundus component configuration 
 $eMConfig = JComponentHelper::getParams('com_emundus');
-$can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', 0);
-$application_fee = $eMConfig->get('application_fee', 0);
+$can_edit_until_deadline    = $eMConfig->get('can_edit_until_deadline', 0);
+$application_fee            = $eMConfig->get('application_fee', 0);
+$application_form_order     = $eMConfig->get('application_form_order', null);
+$attachment_order           = $eMConfig->get('candidacy_form_order', null);
+$application_form_name      = $eMConfig->get('application_form_name', "application_form_pdf");
 
 // Application fees
 if ($application_fee == 1) {
@@ -105,5 +110,19 @@ $step = 1;
 $code = array($student->code);
 $to_applicant = '0,1';
 $trigger_emails = $emails->sendEmailTrigger($step, $code, $to_applicant, $student);
+
+//build filename from tags
+
+// Format filename
+$application_form_name = preg_replace("/[^A-Za-z0-9]/", "", $application_form_name);
+$application_form_name = strtolower($application_form_name);
+
+//explode orders into arrays
+$application_form_order = explode(',',$application_form_order);
+$attachment_order = explode(',',$attachment_order);
+
+// Call (eMundus or files controller or model?) function (expoort_pdf or generate_pdf?)
+$filesController = new EmundusControllerFiles;
+$filesController->generate_pdf($application_form_order, $attachment_order, $application_form_name);
 
 ?>  

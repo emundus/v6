@@ -49,6 +49,10 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	$user =  JFactory::getUser($user_id);
 	$db = JFactory::getDBO();
 	$config = JFactory::getConfig();
+        
+	$jdate = JFactory::getDate();
+	$jdate->setOffset($config->getValue('offset'));
+	$now = $jdate->toSql();
 
 	$files = array();
 
@@ -65,7 +69,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	$courses = $db->loadAssocList();
 	*/
 	$query = "SELECT * FROM #__emundus_setup_teaching_unity 
-				WHERE published=1 AND date_start>NOW() AND code IN (".$db->Quote($letters[0]['training']).") 
+				WHERE published=1 AND date_start>'".$now."' AND code IN (".$db->Quote($letters[0]['training']).") 
 				ORDER BY date_start ASC";
 	$db->setQuery($query);
 	$courses = $db->loadAssocList();
@@ -359,6 +363,10 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 	$user = & JFactory::getUser($user_id);
 	$db = &JFactory::getDBO();
 	$config = JFactory::getConfig();
+        
+	$jdate = JFactory::getDate();
+	$jdate->setOffset($config->getValue('offset'));
+	$now = $jdate->toSql();
 
 	$files = array();
 
@@ -368,7 +376,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 //print_r($letters);
 	//$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE published=1 AND date_start>NOW() AND code=".$db->Quote($letters[0]['training']). " ORDER BY date_start ASC";
 	$query = "SELECT * FROM #__emundus_setup_teaching_unity 
-				WHERE published=1 AND date_start>NOW() AND code IN (".$letters[0]['training'].") 
+				WHERE published=1 AND date_start>'".$now."' AND code IN (".$letters[0]['training'].") 
 				ORDER BY date_start ASC";
 	$db->setQuery($query);
 	$courses = $db->loadAssocList();
@@ -579,6 +587,7 @@ function data_to_img($match) {
 }
 
 function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1) {
+	// add gid
 	jimport( 'joomla.html.parameter' );
 	set_time_limit(0);
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
@@ -618,6 +627,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     $forms ='';
 	if ($form_post) {
         $forms = $application->getFormsPDF($user_id, $fnum);
+		//add gid
     }
 
 	// Create PDF object

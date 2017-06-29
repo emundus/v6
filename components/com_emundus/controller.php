@@ -163,13 +163,15 @@ class EmundusController extends JControllerLegacy {
             die( JText::_('RESTRICTED_ACCESS') );
 
         $jinput = JFactory::getApplication()->input;
-        $fnums_post = $jinput->getVar('fnums', null);
-        $form_post = $jinput->getVar('forms', null);
-        $doc_post = $jinput->getVar('attachment', null);
-        $eval_post = $jinput->getVar('assessment', 0);
-        $decision_post = $jinput->getVar('decision', 0);
+        $fnums_post     = $jinput->getVar('fnums', null);
+        $form_post      = $jinput->getVar('forms', null);
+        $doc_post       = $jinput->getVar('attachment', null);
+        $eval_post      = $jinput->getVar('assessment', 0);
+        $decision_post  = $jinput->getVar('decision', 0);
+        
         $fnums_post = (array) json_decode(stripslashes($fnums_post));
         $model = $this->getModel('Files');
+        
         if(!is_array($fnums_post) || count($fnums_post) == 0 || @$fnums_post[0] == "all") {
             $fnums = $model->getAllFnums();
         } else {

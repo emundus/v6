@@ -1425,15 +1425,15 @@ class EmundusControllerFiles extends JControllerLegacy
      * Add lines to temp PDF file
      * @return String json
      */
-    public function generate_pdf()
-    {
+    public function generate_pdf($application_form_order = null, $attachment_order = null, $application_form_name = "application_form_pdf") {
         $current_user = JFactory::getUser();
 
         if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
             die(JText::_('RESTRICTED_ACCESS'));
 
         $model = $this->getModel('Files');
-        $session    = JFactory::getSession();
+        
+        $session = JFactory::getSession();
         $fnums_post = $session->get('fnums_export');
         if (count($fnums_post) == 0)
             $fnums_post = array($session->get('application_fnum'));
@@ -1447,7 +1447,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $attachment = $jinput->getInt('attachment', 0);
         $assessment = $jinput->getInt('assessment', 0);
         $decision   = $jinput->getInt('decision', 0);
-        $ids        = $jinput->getVar('ids',null);
+        $ids        = $jinput->getVar('ids', null);
 
         //$attach_ids = '"'.$ids.'"';
         //$ids_attachments = str_replace(',', '","', $attach_ids);    
@@ -1471,6 +1471,8 @@ class EmundusControllerFiles extends JControllerLegacy
                 if ($forms) {
                     $files_list[] =
                         EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms);
+                } elseif (!empty($application_form_order)) {
+                    // buildformpdf but with gid
                 }
 
                 if ($attachment) {
@@ -1479,6 +1481,15 @@ class EmundusControllerFiles extends JControllerLegacy
                     $files = $model->getAttachmentsByFnum($fnum, $ids);
 
                     EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
+                } elseif (!empty($attachment_order)) {
+                    foreach ($attachment_order as $attachment_type_id) {
+                        // Get file attachements corresponding to fnum and type id
+                        $tmpArray = array();
+                        $model = $this->getModel('application');
+                        $files = $model->getAttachmentsByFnum($fnum, $ids);
+
+                        
+                    }                    
                 }
 
                 if ($assessment)
