@@ -1,11 +1,8 @@
 <?php
-	defined('_JEXEC') or die('Access Deny');
+    defined('_JEXEC') or die('Access Deny');
 
-    //JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models', 'EmundusModel');
-
-
-	class modEmundusCampaignHelper
-	{
+    class modEmundusCampaignHelper
+    {
         private $totalCurrent;
         private $totalFutur;
         private $totalPast;
@@ -17,18 +14,24 @@
             $this->totalFutur=0;
             $this->totalPast=0;
             $this->total=0;
+            $this->offset=JFactory::getApplication()->get('offset', 'UTC');
+            try {
+                $dateTime = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+                $dateTime = $dateTime->setTimezone(new DateTimeZone($this->offset));
+                $this->now = $dateTime->format('Y-m-d H:i:s');
+            } catch(Exception $e) {
+                echo $e->getMessage() . '<br />';
+            }
         }
 
         /* **** CURRENT **** */
-        public function getCurrent($condition) {
-            $config = JFactory::getConfig();
-		    $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
-            
+        public function getCurrent($condition)
+        {
             $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+            $query  = $db->getQuery(true);
             $query->select('ca.*, pr.apply_online, pr.code');
             $query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
-            $query->where('ca.training = pr.code AND ca.published=1 AND "'.$now.'" <= ca.end_date and "'.$now.'">= ca.start_date '.$condition);
+            $query->where('ca.training = pr.code AND ca.published=1 AND "'.$this->now.'" <= ca.end_date and Now()>= ca.start_date '.$condition);
 
             //
             $db->setQuery($query);
@@ -41,8 +44,8 @@
 
         public function getPaginationCurrent($condition) {
             $mainframe      = JFactory::getApplication();
-            $limitstart 	= $mainframe->getUserStateFromRequest('global.list.limitstart', 'limitstart', 0, 'int');
-            $limitstart 	= (2 != 0 ? (floor($limitstart / 2) * 2) : 0);
+            $limitstart     = $mainframe->getUserStateFromRequest('global.list.limitstart', 'limitstart', 0, 'int');
+            $limitstart     = (2 != 0 ? (floor($limitstart / 2) * 2) : 0);
             $mainframe->setUserState('limitstart', $limitstart);
             jimport('joomla.html.pagination');
             $pagination = new JPagination(modEmundusCampaignHelper::getTotalCurrent($condition), $mainframe->getUserState('limitstart'), 2 );
@@ -50,15 +53,13 @@
         }
 
         /* **** PAST **** */
-        public function getPast($condition) {
-            $config = JFactory::getConfig();
-		    $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
-            
+        public function getPast($condition)
+        {
             $db = JFactory::getDbo();
-            $query	= $db->getQuery(true);
+            $query  = $db->getQuery(true);
             $query->select('ca.*, pr.apply_online');
             $query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
-            $query->where('ca.training = pr.code AND ca.published=1 AND "'.$now.'" >= ca.end_date '.$condition);
+            $query->where('ca.training = pr.code AND ca.published=1 AND "'.$this->now.'" >= ca.end_date '.$condition);
 
             $db->setQuery($query);
             $list = (array) $db->loadObjectList();
@@ -69,15 +70,13 @@
 
 
         /* **** FUTUR **** */
-        public function getFutur($condition) {
-            $config = JFactory::getConfig();
-		    $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
-            
+        public function getFutur($condition)
+        {
             $db = JFactory::getDbo();
-            $query	= $db->getQuery(true);
+            $query  = $db->getQuery(true);
             $query->select('ca.*, pr.apply_online');
             $query->from('#__emundus_setup_campaigns as ca,#__emundus_setup_programmes as pr');
-            $query->where('ca.training = pr.code AND ca.published=1 AND "'.$now.'" <= ca.start_date '.$condition);
+            $query->where('ca.training = pr.code AND ca.published=1 AND "'.$this->now.'" <= ca.start_date '.$condition);
 
             $db->setQuery($query);
             $list = (array) $db->loadObjectList();
@@ -91,7 +90,7 @@
         public function getProgram($condition)
         {
             $db = JFactory::getDbo();
-            $query	= $db->getQuery(true);
+            $query  = $db->getQuery(true);
             $query->select('ca.*, pr.apply_online');
             $query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
             $query->where('ca.training = pr.code AND ca.published=1 '.$condition);
