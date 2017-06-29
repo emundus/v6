@@ -178,11 +178,11 @@ class EmundusControllerGroups extends JControllerLegacy {
 	function defaultEmail($reqids = null) {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user = JFactory::getUser();
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+		$config = JFactory::getConfig();
+		$menu = JSite::getMenu()->getActive();
+		$access =! empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
 			die("You are not allowed to access to this page.");
-		}
 		$mainframe = JFactory::getApplication();
 		$db = JFactory::getDBO();
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
@@ -207,7 +207,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 
 		$users = array_merge_recursive($users_1, $users_2);
 
-		// Récupération des données du mail
+		// Rï¿½cupï¿½ration des donnï¿½es du mail
 		$query = 'SELECT id, subject, emailfrom, name, message
 						FROM #__emundus_setup_emails
 						WHERE lbl="assessors_set"';
@@ -289,8 +289,11 @@ class EmundusControllerGroups extends JControllerLegacy {
 				// mail function
 				if (JUtility::sendMail($from, $obj[0]->name, $user->email, $obj[0]->subject, $body, 1)) {
 				//if ($body === 0) {
+					// Due to the server being located in France but the platform possibly being elsewhere, we have to adapt to the timezone.
+					$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
+
 					$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
-						VALUES ('".$from_id."', '".$user->id."', '".$obj[0]->subject."', '".$body."', NOW())";
+						VALUES ('".$from_id."', '".$user->id."', '".$obj[0]->subject."', '".$body."', '".$now."')";
 					$db->setQuery( $sql );
 					$db->query();
 				} else {
@@ -308,11 +311,11 @@ class EmundusControllerGroups extends JControllerLegacy {
 	function customEmail() {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user = JFactory::getUser();
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+		$config = JFactory::getConfig();
+		$menu = JSite::getMenu()->getActive();
+		$access = !empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
 			die("You are not allowed to access to this page.");
-		}
 		$mainframe = JFactory::getApplication();
 		$db = JFactory::getDBO();
 		$ag_id = JRequest::getVar('mail_group', null, 'POST', 'none',0);
@@ -422,8 +425,9 @@ class EmundusControllerGroups extends JControllerLegacy {
 			// mail function
 			JUtility::sendMail($from, $fromname, $user->email, $subject, $body, 1);
 
+			$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
 			$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
-				VALUES ('".$from_id."', '".$user->id."', '".$subject."', '".$body."', NOW())";
+				VALUES ('".$from_id."', '".$user->id."', '".$subject."', '".$body."', '".$now."')";
 			$db->setQuery( $sql );
 			$db->query();
 			

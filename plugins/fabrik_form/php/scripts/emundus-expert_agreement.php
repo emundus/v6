@@ -107,7 +107,10 @@ if (!rename(JPATH_SITE.$upload->filename, EMUNDUS_PATH_ABS.$user_id.DS.$nom))
 $db->setQuery('UPDATE #__emundus_uploads SET filename="'.$nom.'" WHERE id='.$upload->id);
 $db->query();
 */
-$query = 'UPDATE #__emundus_files_request SET uploaded=1, firstname="'.ucfirst($firstname).'", lastname="'.strtoupper($lastname).'", modified_date=NOW() WHERE keyid like "'.$key_id.'"';
+$config = JFactory::getConfig();
+$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
+
+$query = 'UPDATE #__emundus_files_request SET uploaded=1, firstname="'.ucfirst($firstname).'", lastname="'.strtoupper($lastname).'", modified_date="'.$now.'" WHERE keyid like "'.$key_id.'"';
 $db->setQuery( $query );
 
 $db->execute();

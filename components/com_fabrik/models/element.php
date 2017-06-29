@@ -4444,12 +4444,10 @@ class PlgFabrik_Element extends FabrikPlugin
 	 *
 	 * @return  string    sql query part e,g, "key = value"
 	 */
-	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
-	{
+	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal') {
 		$this->encryptFieldName($key);
 
-		switch ($condition)
-		{
+		switch ($condition) {
 			case 'earlierthisyear':
 				$query = ' DAYOFYEAR(' . $key . ') <= DAYOFYEAR(now()) ';
 				break;
@@ -4481,8 +4479,7 @@ class PlgFabrik_Element extends FabrikPlugin
 				$query = '(MONTH(' . $key . ') = MONTH(CURDATE()) AND  DAY(' . $key . ') = DAY(CURDATE())) ';
 				break;
 			default:
-				if ($this->isJoin())
-				{
+				if ($this->isJoin()) {
 					// Query the joined table concatenating into one field
 					$joinTable = $this->getJoinModel()->getJoin()->table_join;
 
@@ -4493,9 +4490,7 @@ class PlgFabrik_Element extends FabrikPlugin
 					$query = "($key = '$value' OR $key LIKE '$value" . GROUPSPLITTER . "%' OR
 					$key LIKE '" . GROUPSPLITTER . "$value" . GROUPSPLITTER . "%' OR
 					$key LIKE '%" . GROUPSPLITTER . "$value')";
-				}
-				else
-				{
+				} else {
 					$query = " $key $condition $value ";
 				}
 

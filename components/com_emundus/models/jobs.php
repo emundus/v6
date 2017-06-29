@@ -187,6 +187,8 @@ class EmundusModelJobs extends JModelList
 	protected function getListQuery()
 	{
         $user = JFactory::getUser();
+		$config = JFactory::getConfig();
+		$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
 		// Create a new query object.
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -224,48 +226,40 @@ class EmundusModelJobs extends JModelList
             $query->where('a.valide_comite = 1');
             $query->where('a.published = 1');
             $query->where('a.state = 1');
-            $query->where('a.date_limite >= NOW()');
+            $query->where('a.date_limite >= "'.$now.'"');
             $query->where('esc.published = 1');
-            $query->where('esc.start_date <= NOW()');
-            $query->where('esc.end_date > NOW()');
+            $query->where('esc.start_date <= "'.$now).'"';
+            $query->where('esc.end_date > "'.$now.'"');
         }
 
         // Filter by search in title
         $search = $this->getState('filter.search');
-        if (!empty($search))
-        {
-            if (stripos($search, 'id:') === 0)
-            {
+        if (!empty($search)) {
+            if (stripos($search, 'id:') === 0) {
                 $query->where('a.id = ' . (int) substr($search, 3));
-            }
-            else
-            {
+            } else {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
                 $query->where('( a.service LIKE '.$search.'  OR  a.intitule_poste LIKE '.$search.'  OR  a.domaine LIKE '.$search.' OR #__categories_1753001.title like '.$search.' )');
             }
         }
 
-        // Filter by domaine
+        // Filter by domain
         $domaine = $this->getState('filter.domaine');
-        if (!empty($domaine))
-        {
+        if (!empty($domaine)) {
             $domaine = $db->Quote($db->escape($domaine, true));
             $query->where(' a.domaine LIKE '.$domaine);
         }
 
 		//Filtering etablissement
 		$filter_etablissement = $this->state->get("filter.etablissement");
-		if ($filter_etablissement) {
+		if ($filter_etablissement)
 			$query->where("a.etablissement = '".$db->escape($filter_etablissement)."'");
-		}
 
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering');
 		$orderDirn = $this->state->get('list.direction');
-		if ($orderCol && $orderDirn && ($orderCol!='step' && $user->guest))
-		{
+		if ($orderCol && $orderDirn && ($orderCol!='step' && $user->guest))		
 			$query->order($db->escape($orderCol . ' ' . $orderDirn));
-		}
 //echo $query->dump();
 		return $query;
 	}

@@ -71,11 +71,9 @@ $obj_letter=$db->loadRowList();
 // Génération de l'id du prochain fichier qui devra être ajouté par le referent
 
 // 1. Génération aléatoire de l'ID
-function rand_string($len, $chars = 'abcdefghijklmnopqrstuvwxyz0123456789')
-{
+function rand_string($len, $chars = 'abcdefghijklmnopqrstuvwxyz0123456789') {
     $string = '';
-    for ($i = 0; $i < $len; $i++)
-    {
+    for ($i = 0; $i < $len; $i++) {
         $pos = rand(0, strlen($chars)-1);
         $string .= $chars{$pos};
     }
@@ -91,6 +89,9 @@ $patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[UPLOAD_URL\]/', 
 // setup mail
 $app    = JFactory::getApplication();
 $email_from_sys = $app->getCfg('mailfrom');
+$config = JFactory::getConfig();
+$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
+
 $subject = $obj[0]->subject;
 $from = $obj[0]->emailfrom;
 $fromname =$obj[0]->name;
@@ -102,9 +103,8 @@ $sender = array(
     $fromname
 );
 $attachment = array();
-if (!empty($obj_letter[0][0])) {
+if (!empty($obj_letter[0][0]))
     $attachment[] = JPATH_BASE.str_replace("\\", "/", $obj_letter[0][0]);
-}
 
 
 foreach ($recipients as $key => $recipient) {
@@ -119,7 +119,7 @@ foreach ($recipients as $key => $recipient) {
             $key = md5($time_date.$fnum.$student_id.$attachment_id.rand(10));
             // 2. MAJ de la table emundus_files_request
             $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum, email) 
-                          VALUES (NOW(), '.$student->id.', "'.$key.'", "'.$attachment_id.'", '.$current_user->fnum.', '.$db->Quote($recipient['email']).')';
+                          VALUES ("'.$now.'", '.$student->id.', "'.$key.'", "'.$attachment_id.'", '.$current_user->fnum.', '.$db->Quote($recipient['email']).')';
             $db->setQuery( $query );
             $db->execute();
             
@@ -152,7 +152,7 @@ foreach ($recipients as $key => $recipient) {
             } else {
                 JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_SENT').' : '.$recipient['email'], 'message');
                 $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-                            VALUES ('62', '-1', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
+                            VALUES ('62', '-1', ".$db->quote($subject).", ".$db->quote($body).", ".$db->quote($now).")";
                 $db->setQuery( $sql );
                 try {
                     $db->execute();

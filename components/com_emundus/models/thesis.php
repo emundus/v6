@@ -282,12 +282,14 @@ class EmundusModelThesis extends JModelItem {
         $user = JFactory::getUser($user_id);
         $current_user = JFactory::getUser();
         $db = JFactory::getDbo();
+        $config = JFactory::getConfig();
+        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
 
         // 0. Get the thesis infos
         $query = "SELECT * FROM #__emundus_thesis WHERE id=$thesis_id";
         $db->setQuery($query);
         $thesis = $db->loadObject();
-        if($thesis->campaign_id>0 && $thesis->state==1 && $thesis->published==1) {
+        if ($thesis->campaign_id>0 && $thesis->state==1 && $thesis->published==1) {
             // 1. Check if a fnum exist without thesis
             $query = "SELECT ecc.fnum 
                         FROM #__emundus_campaign_candidature as ecc
@@ -298,66 +300,62 @@ class EmundusModelThesis extends JModelItem {
             $fnum = $db->loadResult();
 
             // 2. Create a new fnum for campaign link to the thesis ID
-            if(!isset($fnum) || empty($fnum)){
+            if (!isset($fnum) || empty($fnum)) {
                 $fnum = @EmundusHelperFiles::createFnum($thesis->campaign_id, $user->id);
 
-                try
-                {
+                try {
+                    
                     $query = "INSERT INTO #__emundus_campaign_candidature (`date_time` ,`applicant_id` ,`user_id` ,`campaign_id` ,`submitted` ,`date_submitted` ,`cancelled` ,`fnum` ,`status` ,`published`)
-                              VALUES(NOW(), $user->id, $current_user->id, $thesis->campaign_id, 0, NULL, 0, '$fnum', 0, 1)";
+                              VALUES('$now', $user->id, $current_user->id, $thesis->campaign_id, 0, NULL, 0, '$fnum', 0, 1)";
                     $db->setQuery($query);
                     $db->execute();
                     $insertid = $db->insertid();
-                }
-                catch(Exception $e)
-                {
+
+                } catch(Exception $e) {
                     return false;
                 }
             }
             // 3. Insert a new line in #__emundus_thesis_candidature to link user/fnum/thesis_ib
            //if($insertid > 0) {
-            try
-            {
+            try {
                 // 4. Get infos from previous submission
                 $query = "SELECT * FROM #__emundus_thesis_candidat WHERE user=$user->id order by date_time DESC";
                 $db->setQuery($query);
                 $lastthesis = $db->loadAssoc();
 
-                if(count($lastthesis)>0){
+                if (count($lastthesis)>0) {
                     $column = "";
                     $values = "";
-                    foreach($lastthesis as $key => $value){
+                    foreach ($lastthesis as $key => $value) {
                         if($key != 'id' && $key != 'date_time' && $key != 'doctoral_school' && $key != 'thesis_proposal' && $key != 'fnum') {
                             $column .= $key.',';
                             $values .= $db->Quote($value).',';
                         }
                     }
                     $column .= 'date_time, doctoral_school, thesis_proposal, fnum, thesis_proposal, supervisor_thesis_proposal, supervisor_email_thesis_proposal';
-                    $values .= "NOW(), $thesis->doctoral_school, $thesis_id, '$fnum', '$thesis->thesis_supervisor', '$thesis->thesis_supervisor_email'";
+                    $values .= "'$now', $thesis->doctoral_school, $thesis_id, '$fnum', '$thesis->thesis_supervisor', '$thesis->thesis_supervisor_email'";
                     $query = "INSERT INTO #__emundus_thesis_candidat ($column) VALUES($values)";
                 } else {
                     $query = "INSERT INTO #__emundus_thesis_candidat (`date_time` ,`user` ,`fnum` ,`thesis_proposal`, `supervisor_thesis_proposal`, `supervisor_email_thesis_proposal`)
-                          VALUES(NOW(), $user->id, $db->Quote($fnum), $thesis_id, '$thesis->thesis_supervisor', '$thesis->thesis_supervisor_email')";
+                          VALUES('$now', $user->id, $db->Quote($fnum), $thesis_id, '$thesis->thesis_supervisor', '$thesis->thesis_supervisor_email')";
                 }
 
                 $db->setQuery($query);
                 $db->execute();
                 $insertid = $db->insertid();
-            }
-            catch(Exception $e)
-            {
+            
+            } catch(Exception $e) {
                 return false;
             }
-            if($insertid > 0) {
+
+            if ($insertid > 0) {
                 // 3. Set user session session
                 $user->fnum = $fnum;
                 $user->campaign_id = $thesis->campaign_id;
-
                 return $fnum;
             }
            // }
-        } else
-            return false;
+        } else return false;
     }
 
     /**

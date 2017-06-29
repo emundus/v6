@@ -104,25 +104,20 @@ class FabrikAdminControllerPlugin extends FabControllerForm
 		$cid = ArrayHelper::toInteger($cid);
 
 		if (empty($cid))
-		{
 			return;
-		}
 
 		$query = $db->getQuery();
 		$query->select('id, plugin')->from('#__{package}_cron');
 
 		if (!empty($cid))
-		{
 			$query->where(' id IN (' . implode(',', $cid) . ')');
-		}
 
 		$db->setQuery($query);
 		$rows = $db->loadObjectList();
 		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 		$c = 0;
 
-		foreach ($rows as $row)
-		{
+		foreach ($rows as $row) {
 			// Load in the plugin
 			$plugin = $pluginManager->getPlugIn($row->plugin, 'cron');
 			$plugin->setId($row->id);

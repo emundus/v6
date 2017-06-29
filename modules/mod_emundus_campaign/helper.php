@@ -20,13 +20,15 @@
         }
 
         /* **** CURRENT **** */
-        public function getCurrent($condition)
-        {
+        public function getCurrent($condition) {
+            $config = JFactory::getConfig();
+		    $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
+            
             $db = JFactory::getDbo();
-            $query	= $db->getQuery(true);
+            $query = $db->getQuery(true);
             $query->select('ca.*, pr.apply_online, pr.code');
             $query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
-            $query->where('ca.training = pr.code AND ca.published=1 AND Now() <= ca.end_date and Now()>= ca.start_date '.$condition);
+            $query->where('ca.training = pr.code AND ca.published=1 AND "'.$now.'" <= ca.end_date and "'.$now.'">= ca.start_date '.$condition);
 
             //
             $db->setQuery($query);
@@ -48,13 +50,15 @@
         }
 
         /* **** PAST **** */
-        public function getPast($condition)
-        {
+        public function getPast($condition) {
+            $config = JFactory::getConfig();
+		    $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
+            
             $db = JFactory::getDbo();
             $query	= $db->getQuery(true);
             $query->select('ca.*, pr.apply_online');
             $query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
-            $query->where('ca.training = pr.code AND ca.published=1 AND Now() >= ca.end_date '.$condition);
+            $query->where('ca.training = pr.code AND ca.published=1 AND "'.$now.'" >= ca.end_date '.$condition);
 
             $db->setQuery($query);
             $list = (array) $db->loadObjectList();
@@ -65,13 +69,15 @@
 
 
         /* **** FUTUR **** */
-        public function getFutur($condition)
-        {
+        public function getFutur($condition) {
+            $config = JFactory::getConfig();
+		    $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
+            
             $db = JFactory::getDbo();
             $query	= $db->getQuery(true);
             $query->select('ca.*, pr.apply_online');
             $query->from('#__emundus_setup_campaigns as ca,#__emundus_setup_programmes as pr');
-            $query->where('ca.training = pr.code AND ca.published=1 AND Now() <= ca.start_date '.$condition);
+            $query->where('ca.training = pr.code AND ca.published=1 AND "'.$now.'" <= ca.start_date '.$condition);
 
             $db->setQuery($query);
             $list = (array) $db->loadObjectList();

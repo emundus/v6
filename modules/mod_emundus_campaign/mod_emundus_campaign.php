@@ -20,23 +20,23 @@ $mod_em_campaign_order=$params->get('mod_em_campaign_orderby');
 $mod_em_campaign_order_type=$params->get('mod_em_campaign_order_type');
 $mod_em_campaign_itemid=$params->get('mod_em_campaign_itemid');
 $mod_em_campaign_itemid2=$params->get('mod_em_campaign_itemid2');
-$showcampaign =$params->get('mod_em_campaign_param_showcampaign');
-$showprogramme =$params->get('mod_em_campaign_param_showprogramme');
+$showcampaign=$params->get('mod_em_campaign_param_showcampaign');
+$showprogramme=$params->get('mod_em_campaign_param_showprogramme');
 
 $condition ='';
 
 $session = JFactory::getSession();
 
-if (isset($_GET['order_date']) && !empty($_GET['order_date'])) {
+if (isset($_GET['order_date']) && !empty($_GET['order_date']))
     $session->set('order_date', $_GET['order_date']);
-} else if(empty($order)){
+else if(empty($order))
     $session->set('order_date', $mod_em_campaign_order);
-}
-if (isset($_GET['order_time']) && !empty($_GET['order_time'])) {
+
+if (isset($_GET['order_time']) && !empty($_GET['order_time']))
     $session->set('order_time', $_GET['order_time']);
-} else if(empty($order)){
+else if(empty($order))
     $session->set('order_time', $mod_em_campaign_order_type);
-}
+
 $order = $session->get('order_date');
 $ordertime = $session->get('order_time');
 
@@ -48,18 +48,16 @@ if(isset($_POST['searchword']) && !empty($_POST['searchword'])) {
 
 switch ($mod_em_campaign_groupby) {
     case 'month':
-        if ($order=="start_date") {
+        if ($order=="start_date")
             $condition .= ' ORDER BY start_date';
-        } else {
+        else
             $condition .= ' ORDER BY end_date';
-        }
         break;
     case 'program':
-        if ($order=="start_date") {
+        if ($order=="start_date")
             $condition .= ' ORDER BY training, start_date';
-        } else {
+        else
             $condition .= ' ORDER BY training, end_date';
-        }
         break;
 }
 

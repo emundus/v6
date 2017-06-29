@@ -246,7 +246,10 @@ class EmundusModelJob extends JModelItem {
     public function apply($user_id, $job_id) {
         $user = JFactory::getUser($user_id);
         $current_user = JFactory::getUser();
+        $config = JFactory::getConfig();
         $db = JFactory::getDbo();
+
+        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
 
         // 0. Get the job infos
         $query = "SELECT * FROM #__emundus_emploi_etudiant WHERE id=$job_id";
@@ -266,54 +269,51 @@ class EmundusModelJob extends JModelItem {
             if(!isset($fnum) || empty($fnum)){
                 $fnum = @EmundusHelperFiles::createFnum($job->campaign_id, $user->id);
 
-                try
-                {
+                try {
+
                     $query = "INSERT INTO #__emundus_campaign_candidature (`date_time` ,`applicant_id` ,`user_id` ,`campaign_id` ,`submitted` ,`date_submitted` ,`cancelled` ,`fnum` ,`status` ,`published`)
-                              VALUES(NOW(), $user->id, $current_user->id, $job->campaign_id, 0, NULL, 0, '$fnum', 0, 1)";
+                              VALUES('$now', $user->id, $current_user->id, $job->campaign_id, 0, NULL, 0, '$fnum', 0, 1)";
                     $db->setQuery($query);
                     $db->execute();
                     $insertid = $db->insertid();
-                }
-                catch(Exception $e)
-                {
+                
+                } catch(Exception $e) {
                     return false;
                 }
             }
             // 3. Insert a new line in #__emundus_emploi_etudiant_candidature to link user/fnum/job_ib
            //if($insertid > 0) {
-            try
-            {
+            try {
                 // 4. Get infos from previous submission
                 $query = "SELECT * FROM #__emundus_emploi_etudiant_candidat WHERE user=$user->id order by date_time DESC";
                 $db->setQuery($query);
                 $lastjob = $db->loadAssoc();
 
-                if(count($lastjob)>0){
+                if (count($lastjob)>0) {
                     $column = "";
                     $values = "";
-                    foreach($lastjob as $key => $value){
-                        if($key != 'id' && $key != 'date_time' && $key != 'etablissement' && $key != 'fiche_emploi' && $key != 'fnum') {
+                    foreach ($lastjob as $key => $value) {
+                        if ($key != 'id' && $key != 'date_time' && $key != 'etablissement' && $key != 'fiche_emploi' && $key != 'fnum') {
                             $column .= $key.',';
                             $values .= $db->Quote($value).',';
                         }
                     }
                     $column .= 'date_time, etablissement, fiche_emploi, fnum';
-                    $values .= "NOW(), $job->etablissement, $job_id, '$fnum'";
+                    $values .= "'$now', $job->etablissement, $job_id, '$fnum'";
                     $query = "INSERT INTO #__emundus_emploi_etudiant_candidat ($column) VALUES($values)";
                 } else {
                     $query = "INSERT INTO #__emundus_emploi_etudiant_candidat (`date_time` ,`user` ,`fnum` ,`etablissement` ,`fiche_emploi`)
-                          VALUES(NOW(), $user->id, '$fnum', $job->etablissement, $job_id)";
+                          VALUES('$now', $user->id, '$fnum', $job->etablissement, $job_id)";
                 }
 
                 $db->setQuery($query);
                 $db->execute();
                 $insertid = $db->insertid();
             }
-            catch(Exception $e)
-            {
+            catch(Exception $e) {
                 return false;
             }
-            if($insertid > 0) {
+            if ($insertid > 0) {
                 // 3. Set user session session
                 $user->fnum = $fnum;
                 $user->campaign_id = $job->campaign_id;
@@ -321,8 +321,7 @@ class EmundusModelJob extends JModelItem {
                 return $fnum;
             }
            // }
-        } else
-            return false;
+        } else return false;
     }
 
 }

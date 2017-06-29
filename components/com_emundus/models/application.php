@@ -1891,9 +1891,11 @@ td {
      * @param $applicant        Object     the applicant user ID
      * @return bool
      */
-    public function sendApplication($fnum, $applicant)
-    {
+    public function sendApplication($fnum, $applicant) {
         include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+        $config = JFactory::getConfig();
+        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
+        
         $db = JFactory::getDBO();
         try {
             // Vérification que le dossier à été entièrement complété par le candidat
@@ -1906,18 +1908,17 @@ td {
 
             $today = date('Y-m-d h:i:s');
         
-            if ($id > 0) {
+            if ($id > 0)
                 $query = 'UPDATE #__emundus_declaration SET time_date='.$db->quote($today). ', user='.$applicant->id.' WHERE id='.$id;
-            } else {
+            else
                 $query = 'INSERT INTO #__emundus_declaration (time_date, user, fnum, type_mail) 
                                 VALUE ('.$db->quote($today). ', '.$applicant->id.', '.$db->Quote($fnum).', "paid_validation")';
-            }
 
             $db->setQuery( $query );
             $db->execute();
 
             // Insert data in #__emundus_campaign_candidature
-            $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=1 WHERE applicant_id='.$applicant->id.' AND campaign_id='.$applicant->campaign_id. ' AND fnum like '.$db->Quote($applicant->fnum);
+            $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted="'.$now.'", status=1 WHERE applicant_id='.$applicant->id.' AND campaign_id='.$applicant->campaign_id. ' AND fnum like '.$db->Quote($applicant->fnum);
             $db->setQuery($query);
             $db->execute();
             

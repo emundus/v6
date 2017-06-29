@@ -1001,8 +1001,8 @@ class hikashopImportvm1Helper extends hikashopImportHelper
 	}
 
 
-	function importProductPrices()
-	{
+	function importProductPrices() {
+
 		if( $this->db == null )
 			return false;
 

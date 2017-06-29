@@ -105,24 +105,23 @@ class  plgSystemEmundus_ametys extends JPlugin
      * @param   Object user
      * @return  array  of connection tables id, description
      */
-    public function syncCart($user)
-    {
+    public function syncCart($user) {
         $app        =  JFactory::getApplication();
         $db         = JFactory::getDBO();
         $dbAmetys   = $this->getAmetysDBO();
+
+        $config = JFactory::getConfig();
+        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
 
         // get selected programmes in Ametys cart
         $query = 'SELECT p.cdmCode, p.id_ODF_export_program, p.title
             FROM ODFCartProgramsUserPref up, ODF_export_program p
             WHERE up.login like "'.$user->email.'"
             AND p.id_ODF_export_program = up.contentId';
-        try
-        {
+        try {
             $dbAmetys->setQuery($query);
             $cartProgrammes = $dbAmetys->loadAssocList('cdmCode');
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             JLog::add($e->getMessage(), JLog::INFO, 'com_emundus_syncAmetys');
             return $e->getMessage();
         }
@@ -130,14 +129,11 @@ class  plgSystemEmundus_ametys extends JPlugin
         $query = 'SELECT * FROM #__emundus_campaign_candidature as ec 
                     LEFT JOIN #__emundus_setup_campaigns as esc ON ec.campaign_id=esc.id 
                     WHERE ec.applicant_id = '.$user->id.' 
-                    AND NOW() BETWEEN esc.start_date AND esc.end_date';
-        try
-        {
+                    AND "'.$now.'" BETWEEN esc.start_date AND esc.end_date';
+        try {
             $db->setQuery($query);
             $files = $db->loadAssocList();
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             JLog::add($e->getMessage(), JLog::INFO, 'com_emundus_syncAmetys');
             return $e->getMessage();
         }
@@ -156,14 +152,11 @@ class  plgSystemEmundus_ametys extends JPlugin
             $query = 'SELECT * 
                         FROM #__emundus_setup_campaigns
                         WHERE training IN ('.implode(',', $db->quote(array_keys($cartProgrammes))).') 
-                        AND NOW() BETWEEN start_date AND end_date';
-            try
-            {
+                        AND "'.$now.'" BETWEEN start_date AND end_date';
+            try {
                 $db->setQuery($query);
                 $campaigns = $db->loadAssocList('training');
-            }
-            catch(Exception $e)
-            {
+            } catch(Exception $e) {
                 JLog::add($e->getMessage(), JLog::INFO, 'com_emundus_syncAmetys');
                 return $e->getMessage();
             }

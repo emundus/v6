@@ -48,7 +48,7 @@ JLog::addLogger(
 $db->setQuery('SELECT student_id, attachment_id, keyid FROM #__emundus_files_request WHERE keyid="'.mysql_real_escape_string($key_id).'"');
 $file_request=$db->loadObject();
 
-if($files['jos_emundus_uploads___filename']['size'] == 0){
+if ($files['jos_emundus_uploads___filename']['size'] == 0) {
 		$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid=68&jos_emundus_uploads___user_id[value]='.$sid.'&jos_emundus_uploads___attachment_id[value]='.$file_request->attachment_id.'&sid='.$sid.'&keyid='.$key_id;
 		if($files['jos_emundus_uploads___filename']['error'] == 4)
 			JError::raiseWarning(500, JText::_('WARNING: No file selected, please select a file','error')); // no file
@@ -58,7 +58,7 @@ if($files['jos_emundus_uploads___filename']['size'] == 0){
 		exit();
 }
 
-if($user_id != $file_request->student_id || $attachment_id != $file_request->attachment_id) {
+if ($user_id != $file_request->student_id || $attachment_id != $file_request->attachment_id) {
 	// die('data1:'.$file_request->student_id.'-'.$user_id.'-'.$file_request->attachment_id.'-'.$attachment_id.'-'.$key_id.'-'.$db->getErrorMsg());
 	JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_ACCESS_DENIED"), JLog::ERROR, 'com_emundus');
 	header('Location: '.$baseurl.'index.php');
@@ -68,7 +68,7 @@ if($user_id != $file_request->student_id || $attachment_id != $file_request->att
 $student = &JUser::getInstance($user_id);
 
 
-if(!isset($student)) {
+if (!isset($student)) {
 	// die('data2:'.$key_id.'-'.$user_id.'-'.$attachment_id);
 	JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_STUDENT_NOT_SET"), JLog::ERROR, 'com_emundus');
 	header('Location: '.$baseurl.'index.php');
@@ -170,9 +170,12 @@ $obj=$db->loadObject();
     	JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_CANNOT_SEND_EMAIL").$send->__toString(), JLog::ERROR, 'com_emundus');
         echo 'Error sending email: ' . $send->__toString(); die();
     } else {
+		$config = JFactory::getConfig();
+		$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
+
         $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-				VALUES ('62', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
-        $db->setQuery( $sql );
+				VALUES ('62', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", '".$now."'";
+        $db->setQuery($sql);
         $db->execute();
     }
 	

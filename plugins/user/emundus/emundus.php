@@ -72,11 +72,9 @@ class plgUserEmundus extends JPlugin
         $dir = EMUNDUS_PATH_ABS.$user['id'].DS;
         if(!$dh = @opendir($dir))
             return false;
-        while (false !== ($obj = readdir($dh)))
-        {
+        while (false !== ($obj = readdir($dh))) {
             if($obj == '.' || $obj == '..') continue;
-            if(!@unlink($dir.$obj))
-            {
+            if(!@unlink($dir.$obj)) {
                 JFactory::getApplication()->enqueueMessage(JText::_("FILE_NOT_FOUND")." : ".$obj."\n", 'error');
             }
         }
@@ -244,6 +242,7 @@ class plgUserEmundus extends JPlugin
         include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
         include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 
+        $config         = JFactory::getConfig();
         $app            = JFactory::getApplication();
         $current_user   = JFactory::getUser();
         $session        = JFactory::getSession();
@@ -292,6 +291,16 @@ class plgUserEmundus extends JPlugin
                     //$current_user->applicant                = 1;
                     $session_user->applicant                = 1;
                     //$current_user->start_date               = $profile["start_date"];
+
+                    // User dates need to be converted to the server timezone 
+                    $userdt_start = new DateTime($profile["start_date"], new DateTimeZone($config->get('offset')));
+                    $userdt_end = new DateTime($profile["end_date"], new DateTimeZone($config->get('offset')));
+                    /*$timezone = $user->getParam('timezone');
+                    if ($timezone) {
+                        $userdt_start->setTimezone($timezone);
+                        $userdt_end->setTimezone($timezone);
+                    }*/
+                    
                     $session_user->start_date               = $profile["start_date"];
                     //$current_user->end_date                 = $profile["end_date"];
                     $session_user->end_date                 = $profile["end_date"];
@@ -300,7 +309,7 @@ class plgUserEmundus extends JPlugin
                     //$current_user->candidature_end          = $profile["end_date"];
                     $session_user->candidature_end          = $profile["end_date"];
                     //$current_user->candidature_posted       = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] ==0  || @$profile["date_submitted"] == NULL)?0:1;
-                    $session_user->candidature_posted       = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] ==0  || @$profile["date_submitted"] == NULL)?0:1;
+                    $session_user->candidature_posted       = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] == 0  || @$profile["date_submitted"] == NULL)?0:1;
                     //$current_user->candidature_incomplete   = (count($incomplete)==0)?0:1;
                     $session_user->candidature_incomplete   = (count($incomplete)==0)?0:1;
                     //$current_user->schoolyear               = $profile["year"];

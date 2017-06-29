@@ -28,7 +28,9 @@ $cid 		= JRequest::getVar('cid', null,'GET');
 $email 		= JRequest::getVar('email', null,'GET');
 $attachment_id  = $jinput->get('jos_emundus_uploads___attachment_id');
 $fnum 			= $jinput->get('jos_emundus_uploads___fnum');
-$mailer = JFactory::getMailer();
+$mailer 	= JFactory::getMailer();
+$config 	= JFactory::getConfig();
+$now 		= new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $formid = $eMConfig->get('expert_fabrikformid', '110');
@@ -45,14 +47,13 @@ $m_profile = new EmundusModelProfile;
 
 //$params =& $this->getParams();
 
-if (empty($email) || !isset($email)) {
+if (empty($email) || !isset($email))
 	die("NO_EMAIL_FOUND");
-}
 
 $db->setQuery('SELECT student_id, attachment_id, keyid FROM #__emundus_files_request WHERE keyid="'.mysql_real_escape_string($key_id).'"');
 $file_request=$db->loadObject();
 
-if($files['jos_emundus_uploads___filename']['size'] == 0){
+if ($files['jos_emundus_uploads___filename']['size'] == 0) {
 		$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid='.$formid.'&jos_emundus_uploads___user_id[value]='.$sid.'&jos_emundus_uploads___attachment_id[value]='.$file_request->attachment_id.'&sid='.$sid.'&keyid='.$key_id.'&cid='.$campaign_id.'&email='.$email;
 		if($files['jos_emundus_uploads___filename']['error'] == 4)
 			JError::raiseWarning(500, JText::_('WARNING: No file selected, please select a file','error')); // no file
@@ -63,7 +64,7 @@ if($files['jos_emundus_uploads___filename']['size'] == 0){
 }
 
 
-if($user_id != $file_request->student_id || $attachment_id != $file_request->attachment_id) {
+if ($user_id != $file_request->student_id || $attachment_id != $file_request->attachment_id) {
 	// die('data1:'.$file_request->student_id.'-'.$user_id.'-'.$file_request->attachment_id.'-'.$attachment_id.'-'.$key_id.'-'.$db->getErrorMsg());
 	header('Location: '.$baseurl.'index.php');
 	exit();
@@ -72,7 +73,7 @@ if($user_id != $file_request->student_id || $attachment_id != $file_request->att
 $student = JUser::getInstance($user_id);
 
 
-if(!isset($student)) {
+if (!isset($student)) {
 	// die('data2:'.$key_id.'-'.$user_id.'-'.$attachment_id);
 	header('Location: '.$baseurl.'index.php');
 	exit();
@@ -104,7 +105,7 @@ if(!isset($attachement_params->displayed) || $attachement_params->displayed === 
 	$nom.= "_locked";
 $nom .= $attachement_params->lbl.rand().'.'.end(explode('.', $upload->filename));
 
-if(!file_exists(EMUNDUS_PATH_ABS.$user_id)) {
+if (!file_exists(EMUNDUS_PATH_ABS.$user_id)) {
 	if (!mkdir(EMUNDUS_PATH_ABS.$user_id, 0777, true) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user_id.DS.'index.html')) 
 			die(JError::raiseWarning(500, 'Unable to create user file'));
 }
@@ -115,7 +116,7 @@ if (!rename(JPATH_SITE.$upload->filename, EMUNDUS_PATH_ABS.$user_id.DS.$nom))
 
 $db->setQuery('UPDATE #__emundus_uploads SET filename="'.$nom.'" WHERE id='.$upload->id);
 $db->execute();
-$query = 'UPDATE #__emundus_files_request SET uploaded=1, filename="'.$nom.'", modified_date=NOW() WHERE keyid like "'.$key_id.'"';
+$query = 'UPDATE #__emundus_files_request SET uploaded=1, filename="'.$nom.'", modified_date="'.$now.'" WHERE keyid like "'.$key_id.'"';
 $db->setQuery( $query );
 
 $db->execute();
@@ -155,9 +156,8 @@ if ($uid > 0) {
 		$usertype = $m_users->found_usertype($acl_aro_groups[0]);
 		$user->usertype=$usertype;
 
-		if ( !$user->save() ) {
+		if (!$user->save())
 		 	JFactory::getApplication()->enqueueMessage(JText::_('CAN_NOT_SAVE_USER').'<BR />'.$user->getError(), 'error');
-		}
 
 		$query = "UPDATE #__emundus_users SET profile=".$profile['profile_id']." WHERE user_id=".$user->id;
 		$db->setQuery( $query );

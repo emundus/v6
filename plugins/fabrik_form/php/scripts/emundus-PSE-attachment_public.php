@@ -23,6 +23,9 @@ $db = JFactory::getDBO();
 $current_user = JFactory::getUser();
 $mailer = JFactory::getMailer();
 
+$config = JFactory::getConfig();
+$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
+
 $files 	= JRequest::get('FILES');
 
 $key_id 	 	= $jinput->get('keyid');
@@ -120,8 +123,7 @@ if (in_array($attachment_id, $references_id)) {
 		$db->setQuery('UPDATE #__emundus_campaign_candidature SET status=1 WHERE fnum like '.$db->Quote($fnum));
 		$db->execute();
 	}
-} else
-	$email_tmpl = "attachment";
+} else $email_tmpl = "attachment";
 
 // Récupération des données du mail
 $query = 'SELECT id, subject, emailfrom, name, message
@@ -166,7 +168,7 @@ if ( $send !== true ) {
     echo 'Error sending email: ' . $send->__toString(); die();
 } else {
     $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-			VALUES ('62', '".$student->id."', '".$subject."', '".$body."', NOW())";
+			VALUES ('62', '".$student->id."', '".$subject."', '".$body."', '".$now."')";
     $db->setQuery( $sql );
     $db->execute();
 }

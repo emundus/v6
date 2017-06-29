@@ -60,23 +60,24 @@ foreach ( $attachments as $row ) {
 // Génération de l'id du prochain fichier qui devra être ajouté par la banque
 
 // 1. Génération aléatoire de l'ID
-function rand_string($len, $chars = 'abcdefghijklmnopqrstuvwxyz0123456789')
-{
+function rand_string($len, $chars = 'abcdefghijklmnopqrstuvwxyz0123456789') {
     $string = '';
-    for ($i = 0; $i < $len; $i++)
-    {
+    for ($i = 0; $i < $len; $i++) {
         $pos = rand(0, strlen($chars)-1);
         $string .= $chars{$pos};
     }
     return $string;
 }
 
+$config = JFactory::getConfig();
+$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
+
 $key = md5(rand_string(20).time());
 $attachment_id = 11;
 
 // 2. MAJ de la table emundus_files_request
 $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id) 
-					  VALUES (NOW(), '.$student_id.', "'.$key.'", "'.$attachment_id.'")';
+					  VALUES ("'.$now.'", '.$student_id.', "'.$key.'", "'.$attachment_id.'")';
 $db->setQuery( $query );
 $db->execute();
 
@@ -124,8 +125,7 @@ $mailer->setBody($body);
 $mailer->addAttachment($attachment);
 
 $send = $mailer->Send();
-if ( $send !== true ) {
+if ($send !== true)
     echo 'Error sending email: ' . $send->__toString(); die();
-}
 
 ?>

@@ -439,8 +439,7 @@ class FabrikAdminModelPackage extends FabModelAdmin
 	 *
 	 * @return  string    path name to created file
 	 */
-	protected function makeComponentManifestClass($row)
-	{
+	protected function makeComponentManifestClass($row) {
 		$return            = array();
 		$return[]          = "<?php ";
 		$row->id           = null;

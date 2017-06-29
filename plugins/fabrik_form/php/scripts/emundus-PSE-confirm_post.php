@@ -18,6 +18,8 @@ $student =  JFactory::getUser();
 $mailer = JFactory::getMailer();
 $app    = JFactory::getApplication();
 $email_from_sys = $app->getCfg('mailfrom');
+$config = JFactory::getConfig();
+$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
 include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/groups.php');
@@ -62,13 +64,12 @@ $db->setQuery('SELECT count(id) FROM #__emundus_uploads WHERE fnum like '.$db->Q
 $nb_references=$db->loadResult();
 
 
-if ($nb_references >= 2 || strpos($campaign['training'], "summer") !== false) {
-	$db->setQuery('UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=2 WHERE fnum like '.$db->Quote($student->fnum));
-} else {
-	$db->setQuery('UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=1 WHERE fnum like '.$db->Quote($student->fnum));
-}
+if ($nb_references >= 2 || strpos($campaign['training'], "summer") !== false)
+	$db->setQuery('UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted="'.$now.'", status=2 WHERE fnum like '.$db->Quote($student->fnum));
+else
+	$db->setQuery('UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted="'.$now.'", status=1 WHERE fnum like '.$db->Quote($student->fnum));
 /*
-$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=1 WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
+$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted="'.$now.'", status=1 WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);*/
 try {
 	$db->execute();
@@ -76,7 +77,7 @@ try {
 	// catch any database errors.
 }
 
-$query = 'UPDATE #__emundus_declaration SET time_date=NOW() WHERE user='.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
+$query = 'UPDATE #__emundus_declaration SET time_date="'.$now.'" WHERE user='.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
 try {
 	$db->execute();
@@ -116,11 +117,11 @@ $mailer->Encoding = 'base64';
 $mailer->setBody($body);
 
 $send = $mailer->Send();
-if ( $send !== true ) {
+if ($send !== true) {
     echo 'Error sending email: ' . $send->__toString(); die();
 } else {
     $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-				VALUES ('".$from_id."', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
+				VALUES ('".$from_id."', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", '".$now."')";
     $db->setQuery( $sql );
     try {
         $db->execute();
@@ -130,7 +131,7 @@ if ( $send !== true ) {
 }
 
 unset($recipient);
-if ($alert_new_applicant==1) {
+if ($alert_new_applicant == 1) {
 	// get evaluators groups for current applicant course
 	$groups = new EmundusModelGroups;
 	$group_list = $groups->getGroupsIdByCourse($campaign['training']);
@@ -184,7 +185,7 @@ if ($alert_new_applicant==1) {
                 echo 'Error sending email: ' . $send->__toString(); die();
             } else {
                 $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-							VALUES ('".$from_id."', '".$eval_user->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
+							VALUES ('".$from_id."', '".$eval_user->id."', ".$db->quote($subject).", ".$db->quote($body).", '".$now."')";
                 $db->setQuery( $sql );
                 try {
                     $db->execute();

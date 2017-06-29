@@ -83,6 +83,8 @@ class EmundusModelUsers extends JModelList
     {
         $session        = JFactory::getSession();
         $params         = $session->get('filt_params');
+        $config         = JFactory::getConfig();
+        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
 
         $final_grade    = @$params['finalgrade'];
         $search         = @$params['s'];
@@ -98,78 +100,74 @@ class EmundusModelUsers extends JModelList
         $edit = JRequest::getVar('edit', 0, 'GET', 'none', 0);
         $list_user="";
 
-        if(!empty($schoolyears) && (empty($campaigns) || $campaigns[0]=='%') && $schoolyears[0]!='%'){
+        if (!empty($schoolyears) && (empty($campaigns) || $campaigns[0]=='%') && $schoolyears[0]!='%') {
             $list_user="";
             $applicant_schoolyears = $this->getUserListWithSchoolyear($schoolyears);
             $i=0;
             $nb_element = count($applicant_schoolyears);
-            if($nb_element==0){
+            if ($nb_element==0) {
                 $list_user.="EMPTY";
-            }else{
-                foreach($applicant_schoolyears as $applicant){
-                    if(++$i === $nb_element){
+            } else {
+                foreach ($applicant_schoolyears as $applicant) {
+                    if (++$i === $nb_element)
                         $list_user.=$applicant;
-                    }else if($applicant!=NULL){
+                    else if ($applicant!=NULL)
                         $list_user.=$applicant.", ";
-                    }
                 }
             }
-        }else if(!empty($campaigns) && $campaigns[0]!='%' && (empty($schoolyears) || $schoolyears[0]=='%') ){
+        } else if(!empty($campaigns) && $campaigns[0]!='%' && (empty($schoolyears) || $schoolyears[0]=='%')) {
             $list_user="";
             $applicant_campaigns = $this->getUserListWithCampaign($campaigns);
             $i=0;
             $nb_element = count($applicant_campaigns);
-            if($nb_element==0){
+            if ($nb_element==0) {
                 $list_user.="EMPTY";
-            }else{
-                foreach($applicant_campaigns as $applicant){
-                    if(++$i === $nb_element){
+            } else {
+                foreach ($applicant_campaigns as $applicant) {
+                    if (++$i === $nb_element)
                         $list_user.=$applicant;
-                    }else if($applicant!=NULL){
+                    else if ($applicant!=NULL)
                         $list_user.=$applicant.", ";
-                    }
                 }
             }
-        }else if(!empty($campaigns) && $campaigns[0]!='%' &&  !empty($schoolyears) && $schoolyears[0]!='%'){
+        } else if (!empty($campaigns) && $campaigns[0]!='%' &&  !empty($schoolyears) && $schoolyears[0]!='%') {
             //$applicant_schoolyears = $this->getUserListWithSchoolyear($schoolyears);
             $i=0;
             $list_user='';
-            foreach($schoolyears as $schoolyear){
-                foreach($campaigns as $campaign){
+            foreach ($schoolyears as $schoolyear) {
+                foreach ($campaigns as $campaign) {
                     $compare = $this->compareCampaignANDSchoolyear($campaign,$schoolyear);
                     // var_dump($compare.$campaign);
-                    if($compare!=0){
+                    if ($compare!=0) {
                         $applicant_campaigns = $this->getUserListWithCampaign($campaign);
                         //$nb_element = count($applicant_campaigns);
-                        foreach($applicant_campaigns as $applicant){
+                        foreach ($applicant_campaigns as $applicant) {
                             $list_user.=$applicant.", ";
                         }
                     }
                 }
             }
-            if($list_user==''){
+            if ($list_user=='') {
                 $list_user='EMPTY';
-            }else{
+            } else {
                 $taille = strlen($list_user);
                 $list_user=substr($list_user,0,$taille-2);
             }
         }
 
-        if(!empty($groupEval))
-        {
+        if (!empty($groupEval)) {
             $list_user="";
             $applicant_groupEval = $this->getUserListWithGroupsEval($groupEval);
             $i=0;
             $nb_element = count($applicant_groupEval);
-            if($nb_element==0){
+            if ($nb_element==0) {
                 $list_user.="EMPTY";
-            }else{
-                foreach($applicant_groupEval as $applicant){
-                    if(++$i === $nb_element){
+            } else {
+                foreach ($applicant_groupEval as $applicant) {
+                    if (++$i === $nb_element)
                         $list_user.=$applicant;
-                    }else if($applicant!=NULL){
+                    else if ($applicant != NULL)
                         $list_user.=$applicant.", ";
-                    }
                 }
             }
         }
@@ -184,18 +182,18 @@ class EmundusModelUsers extends JModelList
                     LEFT JOIN #__categories AS cat ON cat.id = e.university_id
                     LEFT JOIN #__user_profiles AS up ON ( u.id = up.user_id AND up.profile_key like "emundus_profiles.newsletter")';
 
-        if(isset($programme) && !empty($programme) && $programme[0] != '%') {
+        if (isset($programme) && !empty($programme) && $programme[0] != '%') {
             $query .= ' LEFT JOIN #__emundus_campaign_candidature AS ecc ON u.id = ecc.applicant_id
                         LEFT JOIN #__emundus_setup_campaigns as esc ON ecc.campaign_id=esc.id ';
         }
 
-        if(isset($final_grade) && !empty($final_grade)) {
+        if (isset($final_grade) && !empty($final_grade)) {
             $query .= 'LEFT JOIN #__emundus_final_grade AS efg ON u.id = efg.student_id ';
         }
 
         $query .= ' where 1=1 AND u.id != 1 ';
 
-        if(isset($programme) && !empty($programme) && $programme[0] != '%') {
+        if (isset($programme) && !empty($programme) && $programme[0] != '%') {
             $query .= ' AND ( esc.training IN ("'.implode('","', $programme).'")
                             OR u.id IN (
                                 select _eg.user_id
@@ -206,31 +204,30 @@ class EmundusModelUsers extends JModelList
                             )';
         }
 
-        if($edit==1)
+        if ($edit==1) {
             $query.= ' u.id='.mysql_real_escape_string($uid);
-        else
-        {
+        } else {
             $and = true;
             /*var_dump($this->filts_details['profile']);
             if(isset($this->filts_details['profile']) && !empty($this->filts_details['profile'])){
                 $query.= ' AND e.profile IN ('.implode(',', $this->filts_details['profile']).') ';
                 $and = true;
             }*/
-            if(isset($profile) && !empty($profile) && is_numeric($profile))
-            {
+            if (isset($profile) && !empty($profile) && is_numeric($profile)) {
                 $query.= ' AND e.profile = '.mysql_real_escape_string($profile);
                 $and = true;
             }
-            if(isset($final_grade) && !empty($final_grade))
-            {
-                if($and) $query .= ' AND ';
-                else { $and = true; $query .='WHERE '; }
+            if (isset($final_grade) && !empty($final_grade)) {
+                if ($and) $query .= ' AND ';
+                else { $and = true;  $query .='WHERE '; }
+                    
                 $query.= 'efg.Final_grade = "'.mysql_real_escape_string($final_grade).'"';
                 $and = true;
             }
-            if(isset($search) && !empty($search)) {
-                if($and) $query .= ' AND ';
+            if (isset($search) && !empty($search)) {
+                if ($and) $query .= ' AND ';
                 else { $and = true; $query .=' '; }
+                
                 $query .= '(e.lastname LIKE "%'.mysql_real_escape_string($search).'%"
                             OR e.firstname LIKE "%'.mysql_real_escape_string($search).'%" 
                             OR u.email LIKE "%'.mysql_real_escape_string($search).'%" 
@@ -243,28 +240,26 @@ class EmundusModelUsers extends JModelList
                 else { $and = true; $query .='WHERE '; }
                 $query.= 'e.schoolyear="'.mysql_real_escape_string($schoolyears).'"';
             }*/
-            if(isset($spam_suspect) &&  !empty($spam_suspect) && $spam_suspect == 1) {
-                if($and) $query .= ' AND ';
+            if (isset($spam_suspect) &&  !empty($spam_suspect) && $spam_suspect == 1) {
+                if ($and) $query .= ' AND ';
                 else { $and = true; $query .=' '; }
-                $query .= 'u.lastvisitDate="0000-00-00 00:00:00" AND TO_DAYS(NOW()) - TO_DAYS(u.registerDate) > 7';
+                
+                $query .= 'u.lastvisitDate="0000-00-00 00:00:00" AND TO_DAYS("'.$now.'") - TO_DAYS(u.registerDate) > 7';
             }
-            if(!empty($list_user)) {
-                if($and) {
-                    $query .= ' AND ';
-                }else{
-                    $and = true; $query .=' ';
-                }
+            if (!empty($list_user)) {
+                if ($and) $query .= ' AND ';
+                else { $and = true; $query .=' '; }
 
-                if($list_user=='EMPTY'){
+                if ($list_user=='EMPTY')
                     $query.= 'u.id IN (null) ';
-                }else{
+                else
                     $query.= 'u.id IN ( '.$list_user.' )';
-                }
             }
 
-            if(isset($newsletter) &&  !empty($newsletter)) {
-                if($and) $query .= ' AND ';
+            if (isset($newsletter) &&  !empty($newsletter)) {
+                if ($and) $query .= ' AND ';
                 else { $and = true; $query .=' '; }
+
                 $query .= 'profile_value like "%'.$newsletter.'%"';
             }
         }
@@ -477,12 +472,13 @@ class EmundusModelUsers extends JModelList
         return EmundusHelperFilters::getCurrentCampaignsID();
     }
 
-    public function getCurrentCampaigns()
-    {
+    public function getCurrentCampaigns() {
+        $config = JFactory::getConfig();
+        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
         $db = JFactory::getDBO();
         $query = 'SELECT sc.id, sc;label
         FROM #__emundus_setup_campaigns AS sc
-        WHERE sc.published=1 AND end_date > NOW()';
+        WHERE sc.published=1 AND end_date > "'.$now.'"';
         $db->setQuery( $query );
         // echo str_replace('#_','jos',$query);
         return $db->loadColumn();
@@ -674,8 +670,7 @@ class EmundusModelUsers extends JModelList
         return $this->data;
     }
 
-    public function adduser($user, $other_params)
-    {
+    public function adduser($user, $other_params) {
         // add to jos_emundus_users; jos_users; jos_emundus_groups; jos_users_profiles; jos_users_profiles_history
         $mainframe  = JFactory::getApplication();
         $db         = JFactory::getDBO();
@@ -684,54 +679,49 @@ class EmundusModelUsers extends JModelList
         $authorize  = JFactory::getACL();
         $document   = JFactory::getDocument();
 
+        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
 
-        if ( !$user->save() )
-        {
+        if (!$user->save()) {
             JFactory::getApplication()->enqueueMessage(JText::_('CAN_NOT_SAVE_USER').'<BR />'.$user->getError(), 'error');
             $res = array('msg' => $user->getError());
             return $res;
-        }else{
-            $firstname=$other_params['firstname'];
-            $lastname=$other_params['lastname'];
-            $profile = $other_params['profile'];
-            $groups = $other_params['em_groups'];
-            $campaigns = $other_params['em_campaigns'];
-            $news = $other_params['news'];
-            $univ_id=$other_params['univ_id'];
+        } else {
+            $firstname =    $other_params['firstname'];
+            $lastname =     $other_params['lastname'];
+            $profile =      $other_params['profile'];
+            $groups =       $other_params['em_groups'];
+            $campaigns =    $other_params['em_campaigns'];
+            $news =         $other_params['news'];
+            $univ_id =      $other_params['univ_id'];
 
-            if(empty($univ_id)){
+            if (empty($univ_id)) {
                 $query="INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user->id.",'".date('Y-m-d H:i:s')."','".$firstname."','".$lastname."',".$profile.",'',0,'','','',0)";
                 $db->setQuery($query);
                 $db->Query() or die($db->getErrorMsg());
-            }else{
+            } else {
                 $query="INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user->id.",'".date('Y-m-d H:i:s')."','".$firstname."','".$lastname."',".$profile.",'',0,'','','','".$univ_id."')";
                 $db->setQuery($query);
                 $db->Query() or die($db->getErrorMsg());
             }
 
-            if(!empty($groups))
-            {
-                foreach($groups as $group)
-                {
+            if (!empty($groups)) {
+                foreach ($groups as $group) {
                     $query="INSERT INTO `#__emundus_groups` VALUES ('',".$user->id.",".$group.")";
                     $db->setQuery($query);
                     $db->Query() or die($db->getErrorMsg());
                 }
             }
 
-            if(!empty($campaigns))
-            {
+            if (!empty($campaigns)) {
                 $connected = JFactory::getUser()->id;
-                foreach($campaigns as $campaign)
-                {
-                    $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`) VALUES ('.$user->id.', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
+                foreach ($campaigns as $campaign) {
+                    $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`) VALUES ('.$user->id.', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT("'.$now.'",\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
                     $db->setQuery( $query );
                     $db->Query();
                 }
             }
 
-            if($news == 1)
-            {
+            if ($news == 1) {
                 $query="INSERT INTO `#__user_profiles` (`user_id`, `profile_key`, `profile_value`, `ordering`) VALUES (".$user->id.", 'emundus_profiles.newsletter', '1', 4)";
                 $db->setQuery($query);
                 $db->query() or die($db->getErrorMsg());
@@ -1116,32 +1106,25 @@ class EmundusModelUsers extends JModelList
         }
     }
 
-    public function changeBlock($users, $state)
-    {
-        try
-        {
+    public function changeBlock($users, $state) {
+        $config = JFactory::getConfig();
+        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
+        try {
             $db = $this->getDbo();
-            foreach ($users as $uid)
-            {
+            foreach ($users as $uid) {
                 $uid = intval($uid);
                 $query = "UPDATE #__users SET block = ".$state." WHERE id =". $uid;
                 $db->setQuery($query);
                 $db->query();
                 if($state == 0)
-                {
                     $db->setQuery('UPDATE #__emundus_users SET disabled  = '.$state.' WHERE user_id = '.$uid);
-                }
                 else
-                {
-                    $db->setQuery('UPDATE #__emundus_users SET disabled  = '.$state.', disabled_date = NOW() WHERE user_id = '.$uid);
-                }
+                    $db->setQuery('UPDATE #__emundus_users SET disabled  = '.$state.', disabled_date = "'.$now.'" WHERE user_id = '.$uid);
                 $res = $db->query();
             }
             return $res;
 
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             error_log($e->getMessage(), 0);
             return false;
         }
@@ -1440,19 +1423,17 @@ class EmundusModelUsers extends JModelList
         }
     }
 
-    public function editUser($user)
-    {
-        try
-        {
+    public function editUser($user) {
+        try {
             $u = JFactory::getUser($user['id']);
+            $config = JFactory::getConfig();
+            $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
 
-            if (!$u->bind( $user ))
-            {
+            if (!$u->bind($user)) {
                 $res = array('msg' => $u->getError());
                 return $res;
             }
-            if ( !$u->save() )
-            {
+            if (!$u->save()) {
                 $res = array('msg' =>$u->getError());
                 return $res;
             }
@@ -1471,18 +1452,15 @@ class EmundusModelUsers extends JModelList
 
             $db->setQuery('delete from #__user_profiles where user_id = ' .$user['id'].' and profile_key like "emundus_profiles.newsletter"');
             $db->query();
-            if(!empty($user['em_groups']))
-            {
+            if (!empty($user['em_groups'])) {
                 $groups = explode(',', $user['em_groups']);
-                foreach($groups as $group)
-                {
+                foreach ($groups as $group) {
                     $query="INSERT INTO `#__emundus_groups` VALUES ('',".$user['id'].",".$group.")";
                     $db->setQuery($query);
                     $db->query() or die($db->getErrorMsg());
                 }
             }
-            if(!empty($user['em_campaigns']))
-            {
+            if (!empty($user['em_campaigns'])) {
                 $connected = JFactory::getUser()->id;
                 $campaigns = explode(',', $user['em_campaigns']);
 
@@ -1490,27 +1468,23 @@ class EmundusModelUsers extends JModelList
                 $db->setQuery($query);
                 $campaigns_id = $db->loadColumn();
 
-                foreach($campaigns as $campaign)
-                {
+                foreach ($campaigns as $campaign) {
                     if (!in_array($campaign, $campaigns_id)) {
-                        $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`) VALUES ('.$user['id'].', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
+                        $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`) VALUES ('.$user['id'].', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT("'.$now.'",\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
                         $db->setQuery( $query );
                         $db->query();
                     }
                 }
             }
 
-            if($user['news'] == 1)
-            {
+            if ($user['news'] == 1) {
                 $query="INSERT INTO `#__user_profiles` (`user_id`, `profile_key`, `profile_value`, `ordering`) VALUES (".$user['id'].", 'emundus_profiles.newsletter', '1', 4)";
                 $db->setQuery($query);
                 $db->query();
             }
             return true;
 
-        }
-        catch(Exeption $e)
-        {
+        } catch(Exeption $e) {
             error_log($e->getMessage(), 0);
             return false;
         }

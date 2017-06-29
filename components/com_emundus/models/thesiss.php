@@ -183,9 +183,11 @@ class EmundusModelThesiss extends JModelList
 	 * @return    JDatabaseQuery
 	 * @since    1.6
 	 */
-	protected function getListQuery()
-	{
+	protected function getListQuery() {
         $user = JFactory::getUser();
+		$config = JFactory::getConfig();
+		$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
+
 		// Create a new query object.
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -212,7 +214,7 @@ class EmundusModelThesiss extends JModelList
 		// @TODO activate when application form will be created
         if (!JFactory::getUser()->guest) {
         	
-           $query->select('etc.user as student_id, etc.fnum, etc.date_time');
+           	$query->select('etc.user as student_id, etc.fnum, etc.date_time');
             $query->join('LEFT', '#__emundus_thesis_candidat AS etc ON etc.thesis_proposal = a.id and etc.user='.$user->id);
 
             $query->select('ess.step, ess.value as application_status,ess.class');
@@ -220,27 +222,22 @@ class EmundusModelThesiss extends JModelList
             $query->join('LEFT', '#__emundus_setup_status AS ess ON ess.step = ecc.status');
         }
 
-        if (!JFactory::getUser()->authorise('core.edit.state', 'com_emundus'))
-        {
+        if (!JFactory::getUser()->authorise('core.edit.state', 'com_emundus')) {
             //$query->where('a.valide_comite = 1');
             $query->where('a.published = 1');
             $query->where('a.valide = 1');
             $query->where('a.state = 1');
-            //$query->where('a.date_limite >= NOW()');
-            $query->where('esc.start_date <= NOW()');
-            $query->where('esc.end_date > NOW()');
+            //$query->where('a.date_limite >= "'.$now.'"');
+            $query->where('esc.start_date <= "'.$now.'"');
+            $query->where('esc.end_date > "'.$now.'"');
         }
 
         // Filter by search in title
         $search = $this->getState('filter.search');
-        if (!empty($search))
-        {
-            if (stripos($search, 'id:') === 0)
-            {
+        if (!empty($search)) {
+            if (stripos($search, 'id:') === 0) {
                 $query->where('a.id = ' . (int) substr($search, 3));
-            }
-            else
-            {
+            } else {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
                 $query->where('( a.titre LIKE '.$search.'  OR  a.key_words LIKE '.$search.'  OR  a.domain LIKE '.$search.' OR #__categories_1753001.title like '.$search.' )');
             }
@@ -257,18 +254,15 @@ class EmundusModelThesiss extends JModelList
 		//Filtering doctoral_school
 		$filter_doctoral_school = $this->state->get("filter.doctoral_school");
 
-		if ($filter_doctoral_school) {
+		if ($filter_doctoral_school)
 			$query->where("a.doctoral_school = '".$db->escape($filter_doctoral_school)."'");
-		}
 
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering');
 		$orderDirn = $this->state->get('list.direction');
 		if ($orderCol && $orderDirn && ($orderCol!='step' && $user->guest))
-		{
 			$query->order($db->escape($orderCol . ' ' . $orderDirn));
-		}
-//echo $query->dump();
+		//echo $query->dump();
 		return $query;
 	}
 

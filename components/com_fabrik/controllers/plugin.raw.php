@@ -98,17 +98,14 @@ class FabrikControllerPlugin extends JControllerLegacy
 		$query->select('id, plugin')->from('#__{package}_cron');
 
 		if (!empty($cid))
-		{
 			$query->where(' id IN (' . implode(',', $cid) . ')');
-		}
 
 		$db->setQuery($query);
 		$rows = $db->loadObjectList();
 		$viewModel = JModelLegacy::getInstance('view', 'FabrikFEModel');
 		$c = 0;
 
-		foreach ($rows as $row)
-		{
+		foreach ($rows as $row) {
 			// Load in the plugin
 			$plugin = $pluginManager->getPlugIn($row->plugin, 'cron');
 			$plugin->setId($row->id);

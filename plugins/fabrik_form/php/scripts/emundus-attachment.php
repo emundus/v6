@@ -140,8 +140,11 @@ if ($inform_applicant_by_email == 1) {
     if ( $send !== true ) {
         echo 'Error sending email: ' . $send->__toString(); die();
     } else {
+		$config = JFactory::getConfig();
+		$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
+
         $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-					VALUES ('".$from_id."', '".$student->id."', '".$subject."', '".$body."', NOW())";
+					VALUES ('".$from_id."', '".$student->id."', '".$subject."', '".$body."', '".$now."')";
         $db->setQuery( $sql );
         try {
             $db->execute();

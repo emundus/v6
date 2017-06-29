@@ -56,24 +56,30 @@ class EmundusHelperFilters {
 		return $results;
 	}
 	
-	public function getCurrentCampaign(){
+	public function getCurrentCampaign() {
+		$config = JFactory::getConfig();
+        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
+		
 		$db = JFactory::getDBO();
 		$query = 'SELECT DISTINCT year as schoolyear 
 		FROM #__emundus_setup_campaigns 
-		WHERE published = 1 AND end_date > DATE_ADD(NOW(), INTERVAL -'.$nb_months_registration_period_access.' MONTH) ORDER BY schoolyear DESC';
+		WHERE published = 1 AND end_date > DATE_ADD("'.$now.'", INTERVAL -'.$nb_months_registration_period_access.' MONTH) ORDER BY schoolyear DESC';
 		$db->setQuery( $query ); 
 		return $db->loadResultArray();
 	}
 
-	public function getCurrentCampaignsID(){
+	public function getCurrentCampaignsID() {
+		$config = JFactory::getConfig();
+        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
+		
 		$db = JFactory::getDBO();
 		$query = 'SELECT id 
 		FROM #__emundus_setup_campaigns 
-		WHERE published = 1 AND end_date > DATE_ADD(NOW(), INTERVAL -'.$nb_months_registration_period_access.' MONTH)
+		WHERE published = 1 AND end_date > DATE_ADD("'.$now.'", INTERVAL -'.$nb_months_registration_period_access.' MONTH)
 		ORDER BY year DESC';
 		$db->setQuery( $query );
 		return $db->loadResultArray();

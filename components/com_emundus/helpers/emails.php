@@ -396,6 +396,7 @@ class EmundusHelperEmails
 	
 	function sendGroupEmail(){
 		$current_user = JFactory::getUser();
+		$config = JFactory::getConfig();
 		
 		$app    = JFactory::getApplication();
 	    $email_from_sys = $app->getCfg('mailfrom');
@@ -533,8 +534,9 @@ class EmundusHelperEmails
 		            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
                     echo 'Error sending email: ' . $send->__toString(); die();
                 } else {
+					$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
                     $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-						VALUES ('".$from_id."', '".$user->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
+						VALUES ('".$from_id."', '".$user->id."', ".$db->quote($subject).", ".$db->quote($body).", ".$db->quote($now).")";
                     $db->setQuery( $sql );
                     try {
                         $db->execute();
@@ -556,6 +558,7 @@ class EmundusHelperEmails
 	function sendApplicantEmail() {
 		
 		$current_user = JFactory::getUser();
+		$config = JFactory::getConfig();
 
 		if (!EmundusHelperAccess::asAccessAction(9, 'c'))	//email applicant
 		{
@@ -698,8 +701,9 @@ class EmundusHelperEmails
                     echo 'Error sending email: ' . $send->__toString();
                     die();
                 } else {
+					$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
                     $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-						VALUES ('" . $from_id . "', '" . $user->id . "', " . $db->quote($subject) . ", " . $db->quote($body) . ", NOW())";
+						VALUES ('" . $from_id . "', '" . $user->id . "', " . $db->quote($subject) . ", " . $db->quote($body) . ", ".$db->quote($now).")";
                     $db->setQuery($sql);
                     try {
                         $db->execute();
