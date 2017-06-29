@@ -178,7 +178,6 @@ class EmundusControllerGroups extends JControllerLegacy {
 	function defaultEmail($reqids = null) {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user = JFactory::getUser();
-		$config = JFactory::getConfig();
 		$menu = JSite::getMenu()->getActive();
 		$access =! empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
@@ -290,10 +289,9 @@ class EmundusControllerGroups extends JControllerLegacy {
 				if (JUtility::sendMail($from, $obj[0]->name, $user->email, $obj[0]->subject, $body, 1)) {
 				//if ($body === 0) {
 					// Due to the server being located in France but the platform possibly being elsewhere, we have to adapt to the timezone.
-					$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
 
 					$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
-						VALUES ('".$from_id."', '".$user->id."', '".$obj[0]->subject."', '".$body."', '".$now."')";
+						VALUES ('".$from_id."', '".$user->id."', '".$obj[0]->subject."', '".$body."', NOW())";
 					$db->setQuery( $sql );
 					$db->query();
 				} else {
@@ -311,7 +309,6 @@ class EmundusControllerGroups extends JControllerLegacy {
 	function customEmail() {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user = JFactory::getUser();
-		$config = JFactory::getConfig();
 		$menu = JSite::getMenu()->getActive();
 		$access = !empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
@@ -425,9 +422,8 @@ class EmundusControllerGroups extends JControllerLegacy {
 			// mail function
 			JUtility::sendMail($from, $fromname, $user->email, $subject, $body, 1);
 
-			$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
 			$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
-				VALUES ('".$from_id."', '".$user->id."', '".$subject."', '".$body."', '".$now."')";
+				VALUES ('".$from_id."', '".$user->id."', '".$subject."', '".$body."', NOW())";
 			$db->setQuery( $sql );
 			$db->query();
 			

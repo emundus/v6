@@ -72,7 +72,12 @@ switch ($ordertime) {
 }
 
 /*case 'out':
-    $condition =' AND Now() >= ca.end_date and Now()<= ca.start_date';
+        $config = JFactory::getConfig();
+        $jdate = JFactory::getDate();
+        $jdate->setOffset($config->getValue('offset'));
+        $now = $jdate->toSql();
+
+    $condition =' AND "'.$now.'" >= ca.end_date and "'.$now.'"<= ca.start_date';
     break;*/
 
 $helper = new modEmundusCampaignHelper;

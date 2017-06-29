@@ -2080,12 +2080,10 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 	 *
 	 * @return  string    sql query part e,g, "key = value"
 	 */
-	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
-	{
+	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal') {
 		$this->encryptFieldName($key);
 
-		switch ($condition)
-		{
+		switch ($condition) {
 			case 'earlierthisyear':
 				$query = ' DAYOFYEAR(' . $key . ') <= DAYOFYEAR(now()) ';
 				break;
@@ -2121,17 +2119,14 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 				$params = $this->getParams();
 				$format = $params->get('date_table_format');
 
-				if ($format == '%a' || $format == '%A')
-				{
+				if ($format == '%a' || $format == '%A') {
 					/**
 					 * special cases where we want to search on a given day of the week
 					 * note it wont work with ranged searches
 					 */
 					$this->strftimeTFormatToMySQL($format);
 					$key = "DATE_FORMAT( $key , '$format')";
-				}
-				elseif ($format == '%Y %B')
-				{
+				} elseif ($format == '%Y %B') {
 					/* $$$ hugh - testing horrible hack for different languages, initially for andorapro's site
 					 * Problem is, he has multiple language versions of the site, and needs to filter tables
 					 * by "%Y %B" dropdown (i.e. "2010 November") in multiple languages.
@@ -2144,20 +2139,17 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 					 */
 					$matches = array();
 
-					if (preg_match('#\d\d\d\d\s+(\S+)\b#', $value, $matches))
-					{
+					if (preg_match('#\d\d\d\d\s+(\S+)\b#', $value, $matches)) {
 						$this_month = $matches[1];
-						$en_month   = $this->_monthToEnglish($this_month);
-						$value      = str_replace($this_month, $en_month, $value);
+						$en_month = $this->_monthToEnglish($this_month);
+						$value = str_replace($this_month, $en_month, $value);
 						$this->strftimeTFormatToMySQL($format);
 						$key = "DATE_FORMAT( $key , '$format')";
 					}
 				}
 
 				if ($type == 'querystring' && JString::strtolower($value) == 'now')
-				{
 					$value = 'NOW()';
-				}
 
 				$query = " $key $condition $value ";
 				break;

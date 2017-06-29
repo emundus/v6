@@ -282,8 +282,6 @@ class EmundusModelThesis extends JModelItem {
         $user = JFactory::getUser($user_id);
         $current_user = JFactory::getUser();
         $db = JFactory::getDbo();
-        $config = JFactory::getConfig();
-        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
 
         // 0. Get the thesis infos
         $query = "SELECT * FROM #__emundus_thesis WHERE id=$thesis_id";
@@ -306,7 +304,7 @@ class EmundusModelThesis extends JModelItem {
                 try {
                     
                     $query = "INSERT INTO #__emundus_campaign_candidature (`date_time` ,`applicant_id` ,`user_id` ,`campaign_id` ,`submitted` ,`date_submitted` ,`cancelled` ,`fnum` ,`status` ,`published`)
-                              VALUES('$now', $user->id, $current_user->id, $thesis->campaign_id, 0, NULL, 0, '$fnum', 0, 1)";
+                              VALUES(NOW(), $user->id, $current_user->id, $thesis->campaign_id, 0, NULL, 0, '$fnum', 0, 1)";
                     $db->setQuery($query);
                     $db->execute();
                     $insertid = $db->insertid();
@@ -333,11 +331,11 @@ class EmundusModelThesis extends JModelItem {
                         }
                     }
                     $column .= 'date_time, doctoral_school, thesis_proposal, fnum, thesis_proposal, supervisor_thesis_proposal, supervisor_email_thesis_proposal';
-                    $values .= "'$now', $thesis->doctoral_school, $thesis_id, '$fnum', '$thesis->thesis_supervisor', '$thesis->thesis_supervisor_email'";
+                    $values .= "NOW(), $thesis->doctoral_school, $thesis_id, '$fnum', '$thesis->thesis_supervisor', '$thesis->thesis_supervisor_email'";
                     $query = "INSERT INTO #__emundus_thesis_candidat ($column) VALUES($values)";
                 } else {
                     $query = "INSERT INTO #__emundus_thesis_candidat (`date_time` ,`user` ,`fnum` ,`thesis_proposal`, `supervisor_thesis_proposal`, `supervisor_email_thesis_proposal`)
-                          VALUES('$now', $user->id, $db->Quote($fnum), $thesis_id, '$thesis->thesis_supervisor', '$thesis->thesis_supervisor_email')";
+                          VALUES(NOW(), $user->id, $db->Quote($fnum), $thesis_id, '$thesis->thesis_supervisor', '$thesis->thesis_supervisor_email')";
                 }
 
                 $db->setQuery($query);

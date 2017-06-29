@@ -185,8 +185,12 @@ class EmundusModelThesiss extends JModelList
 	 */
 	protected function getListQuery() {
         $user = JFactory::getUser();
-		$config = JFactory::getConfig();
-		$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
+		$config     = JFactory::getConfig();
+        
+		// Get current date and set it to timezone defined in settings
+        $jdate = JFactory::getDate();
+        $jdate->setOffset($config->getValue('offset'));
+        $now = $jdate->toSql();
 
 		// Create a new query object.
 		$db    = $this->getDbo();
@@ -227,9 +231,9 @@ class EmundusModelThesiss extends JModelList
             $query->where('a.published = 1');
             $query->where('a.valide = 1');
             $query->where('a.state = 1');
-            //$query->where('a.date_limite >= "'.$now.'"');
+            //$query->where('a.date_limite >= NOW()');
             $query->where('esc.start_date <= "'.$now.'"');
-            $query->where('esc.end_date > "'.$now.'"');
+            $query->where('esc.end_date > "'.$now'"');
         }
 
         // Filter by search in title

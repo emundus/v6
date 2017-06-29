@@ -69,15 +69,12 @@ function rand_string($len, $chars = 'abcdefghijklmnopqrstuvwxyz0123456789') {
     return $string;
 }
 
-$config = JFactory::getConfig();
-$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
-
 $key = md5(rand_string(20).time());
 $attachment_id = 11;
 
 // 2. MAJ de la table emundus_files_request
 $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id) 
-					  VALUES ("'.$now.'", '.$student_id.', "'.$key.'", "'.$attachment_id.'")';
+					  VALUES (NOW(), '.$student_id.', "'.$key.'", "'.$attachment_id.'")';
 $db->setQuery( $query );
 $db->execute();
 

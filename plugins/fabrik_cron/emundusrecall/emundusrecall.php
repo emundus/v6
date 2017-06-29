@@ -46,8 +46,7 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron
 	 * @return  int  number of records updated
 	 */
 
-	public function process(&$data)
-	{
+	public function process(&$data) {
 		$app = JFactory::getApplication();
 		jimport('joomla.mail.helper');
 
@@ -67,24 +66,24 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron
 					LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id 
 					WHERE ecc.status = 0 AND u.block = 0 AND esc.published = 1 AND DATEDIFF( esc.end_date , now()) IN ('.$reminder_deadline.')';
 	
-		if (isset($reminder_programme_id) && !empty($reminder_programme_id)) {
+		if (isset($reminder_programme_id) && !empty($reminder_programme_id))
 			$query .= ' AND esc.training IN ('.$reminder_programme_code.')';
-		}
 
 		$db->setQuery($query);
 
 		$applicants = $db->loadObjectList();
 
-// Generate emails from template and store it in message table
+		// Generate emails from template and store it in message table
 		if (count($applicants > 0)) {
 			include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
 			$emails = new EmundusModelEmails;
 			$email = $emails->getEmailById($reminder_mail_id);
 			
 			foreach ($applicants as $applicant) {
-				$mailer     = JFactory::getMailer();
+				$mailer = JFactory::getMailer();
 
-				$post = array(  'FNUM'      => $applicant->fnum,
+				$post = array(  
+							'FNUM' => $applicant->fnum,
 			                'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($applicant->end_date)),
 			                'CAMPAIGN_LABEL' => $applicant->label,
 			                'CAMPAIGN_START' => $applicant->start_date,
@@ -118,9 +117,10 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron
                 $mailer->isHTML(true);
                 $mailer->Encoding = 'base64';
                 $mailer->setBody($body);
-// Send emails
-               $send = $mailer->Send();
-                if ( $send !== true ) {
+
+				// Send emails
+               	$send = $mailer->Send();
+                if ($send !== true) {
                     $this->log .= "\n Error sending email : " . $to;
                 } else {
                     $message = array(

@@ -29,8 +29,6 @@ $email 		= JRequest::getVar('email', null,'GET');
 $attachment_id  = $jinput->get('jos_emundus_uploads___attachment_id');
 $fnum 			= $jinput->get('jos_emundus_uploads___fnum');
 $mailer 	= JFactory::getMailer();
-$config 	= JFactory::getConfig();
-$now 		= new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $formid = $eMConfig->get('expert_fabrikformid', '110');
@@ -116,7 +114,7 @@ if (!rename(JPATH_SITE.$upload->filename, EMUNDUS_PATH_ABS.$user_id.DS.$nom))
 
 $db->setQuery('UPDATE #__emundus_uploads SET filename="'.$nom.'" WHERE id='.$upload->id);
 $db->execute();
-$query = 'UPDATE #__emundus_files_request SET uploaded=1, filename="'.$nom.'", modified_date="'.$now.'" WHERE keyid like "'.$key_id.'"';
+$query = 'UPDATE #__emundus_files_request SET uploaded=1, filename="'.$nom.'", modified_date=NOW() WHERE keyid like "'.$key_id.'"';
 $db->setQuery( $query );
 
 $db->execute();

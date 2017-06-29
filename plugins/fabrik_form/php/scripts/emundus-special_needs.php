@@ -25,13 +25,10 @@ $query = 'SELECT special_needs_file FROM #__emundus_languages WHERE user='.$user
 $db->setQuery($query);
 $upload=$db->loadResult();
 
-$config = JFactory::getConfig();
-$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
-
 $filename = explode('/', $upload);
 
 if (!empty($filename[5])) {
-	$query="INSERT INTO #__emundus_uploads (user_id,attachment_id,filename,description,can_be_deleted,can_be_viewed, timedate, campaign_id) values(".$user->id.",".$attachment_id.",".$db->Quote($filename[5]).",'',".$can_be_deleted.",".$can_be_viewed.", ".$db->quote($now).", ".$user->campaign_id.")";
+	$query="INSERT INTO #__emundus_uploads (user_id,attachment_id,filename,description,can_be_deleted,can_be_viewed, timedate, campaign_id) values(".$user->id.",".$attachment_id.",".$db->Quote($filename[5]).",'',".$can_be_deleted.",".$can_be_viewed.", NOW(), ".$user->campaign_id.")";
 
 	$db->setQuery($query);
 	try {

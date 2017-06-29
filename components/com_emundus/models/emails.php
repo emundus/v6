@@ -567,7 +567,6 @@ class EmundusModelEmails extends JModelList
     public function sendMail($type=null, $fnum=null)
     {
         $jinput = JFactory::getApplication()->input;
-        $config = JFactory::getConfig();
 
         //$mail_type = JRequest::getVar('mail_type', null, 'POST', 'VARCHAR',0);
         $mail_type = $jinput->get('mail_type', null, 'CMD');
@@ -664,14 +663,13 @@ class EmundusModelEmails extends JModelList
             if (!empty($mail_attachments))
                 $mail_attachments = explode(',', $mail_attachments); 
 
-            $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
             foreach ($mail_to as $m_to) {
                 $key1 = md5($this->rand_string(20).time());
                 $m_to = trim($m_to);
                 // 2. MAJ de la table emundus_files_request
                 $attachment_id = $documentid; // document avec clause de confidentialité
                 $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, campaign_id, email, fnum)
-                            VALUES ('.$this->_db->quote($now).', '.$student_id.', "'.$key1.'", "'.$attachment_id.'", '.$campaign_id.', '.$this->_db->quote($m_to).', '.$this->_db->quote($fnum).')';
+                            VALUES (NOW(), '.$student_id.', "'.$key1.'", "'.$attachment_id.'", '.$campaign_id.', '.$this->_db->quote($m_to).', '.$this->_db->quote($fnum).')';
                 $this->_db->setQuery( $query );
                 $this->_db->query();
 
@@ -775,10 +773,8 @@ class EmundusModelEmails extends JModelList
     // @description Log email send by the system or via the system
     // @param $row array of data
     public function logEmail($row) {
-        $config = JFactory::getConfig();
-        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
         $query = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-                        VALUES (".$this->_db->quote($row['user_id_from']).", ".$this->_db->quote($row['user_id_to']).", ".$this->_db->quote($row['subject']).", ".$this->_db->quote($row['message']).", ".$this->_db->quote($now).")";
+                        VALUES (".$this->_db->quote($row['user_id_from']).", ".$this->_db->quote($row['user_id_to']).", ".$this->_db->quote($row['subject']).", ".$this->_db->quote($row['message']).", NOW());
         $this->_db->setQuery( $query );
         $this->_db->query();
 

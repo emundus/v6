@@ -170,11 +170,8 @@ $obj=$db->loadObject();
     	JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_CANNOT_SEND_EMAIL").$send->__toString(), JLog::ERROR, 'com_emundus');
         echo 'Error sending email: ' . $send->__toString(); die();
     } else {
-		$config = JFactory::getConfig();
-		$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
-
-        $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-				VALUES ('62', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", '".$now."'";
+		$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
+				VALUES ('62', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW()";
         $db->setQuery($sql);
         $db->execute();
     }

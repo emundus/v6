@@ -1893,8 +1893,6 @@ td {
      */
     public function sendApplication($fnum, $applicant) {
         include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
-        $config = JFactory::getConfig();
-        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
         
         $db = JFactory::getDBO();
         try {
@@ -1918,7 +1916,7 @@ td {
             $db->execute();
 
             // Insert data in #__emundus_campaign_candidature
-            $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted="'.$now.'", status=1 WHERE applicant_id='.$applicant->id.' AND campaign_id='.$applicant->campaign_id. ' AND fnum like '.$db->Quote($applicant->fnum);
+            $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=1 WHERE applicant_id='.$applicant->id.' AND campaign_id='.$applicant->campaign_id. ' AND fnum like '.$db->Quote($applicant->fnum);
             $db->setQuery($query);
             $db->execute();
             

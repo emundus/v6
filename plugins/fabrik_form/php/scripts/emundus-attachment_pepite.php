@@ -1,8 +1,5 @@
 <?php
 
-$config = JFactory::getConfig();
-$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
-
 $user_id = $formModel->getElementData('jos_emundus_pepite_projet1___user', false, '');
 $fnum = $formModel->getElementData('jos_emundus_pepite_projet1___fnum', false, '');
 $cid = substr($fnum, 14, 7);
@@ -25,14 +22,14 @@ $f2 = explode(DS, $a48);
 $db 	= JFactory::getDBO();
 if (!empty($a49)) {
 	$query 	= "INSERT INTO `#__emundus_uploads` (`user_id`, `fnum`, `attachment_id`, `filename`, `timedate`, `campaign_id`) 
-				VALUES (".$user_id[0].", '".$fnum."', 49, '".$f1[5]."', '".$now."', ".$cid.")";
+				VALUES (".$user_id[0].", '".$fnum."', 49, '".$f1[5]."', NOW(), ".$cid.")";
 	$db->setQuery( $query );
 	$db->execute();
 }
 
 if (!empty($a48)) {
 	$query 	= "INSERT INTO `#__emundus_uploads` (`user_id`, `fnum`, `attachment_id`, `filename`, `timedate`, `campaign_id`) 
-				VALUES (".$user_id[0].", '".$fnum."', 48, '".$f2[5]."', '".$now."', ".$cid.")";
+				VALUES (".$user_id[0].", '".$fnum."', 48, '".$f2[5]."', NOW(), ".$cid.")";
 	$db->setQuery( $query );
 	$db->execute();
 }

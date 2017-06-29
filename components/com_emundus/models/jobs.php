@@ -188,7 +188,12 @@ class EmundusModelJobs extends JModelList
 	{
         $user = JFactory::getUser();
 		$config = JFactory::getConfig();
-		$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
+        
+		// Get the application date and set it to the timezone defined in settings
+        $jdate = JFactory::getDate();
+        $jdate->setOffset($config->getValue('offset'));
+        $now = $jdate->toSql();
+
 		// Create a new query object.
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -228,7 +233,7 @@ class EmundusModelJobs extends JModelList
             $query->where('a.state = 1');
             $query->where('a.date_limite >= "'.$now.'"');
             $query->where('esc.published = 1');
-            $query->where('esc.start_date <= "'.$now).'"';
+            $query->where('esc.start_date <= "'.$now.'"');
             $query->where('esc.end_date > "'.$now.'"');
         }
 

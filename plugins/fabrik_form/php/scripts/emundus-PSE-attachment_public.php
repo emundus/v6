@@ -23,9 +23,6 @@ $db = JFactory::getDBO();
 $current_user = JFactory::getUser();
 $mailer = JFactory::getMailer();
 
-$config = JFactory::getConfig();
-$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
-
 $files 	= JRequest::get('FILES');
 
 $key_id 	 	= $jinput->get('keyid');
@@ -168,7 +165,7 @@ if ( $send !== true ) {
     echo 'Error sending email: ' . $send->__toString(); die();
 } else {
     $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-			VALUES ('62', '".$student->id."', '".$subject."', '".$body."', '".$now."')";
+			VALUES ('62', '".$student->id."', '".$subject."', '".$body."', NOW())";
     $db->setQuery( $sql );
     $db->execute();
 }

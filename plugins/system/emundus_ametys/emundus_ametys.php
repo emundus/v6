@@ -109,9 +109,11 @@ class  plgSystemEmundus_ametys extends JPlugin
         $app        =  JFactory::getApplication();
         $db         = JFactory::getDBO();
         $dbAmetys   = $this->getAmetysDBO();
-
-        $config = JFactory::getConfig();
-        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
+        $config     = JFactory::getConfig();
+        
+        $jdate = JFactory::getDate();
+        $jdate->setOffset($config->getValue('offset'));
+        $now = $jdate->toSql();
 
         // get selected programmes in Ametys cart
         $query = 'SELECT p.cdmCode, p.id_ODF_export_program, p.title
@@ -129,7 +131,7 @@ class  plgSystemEmundus_ametys extends JPlugin
         $query = 'SELECT * FROM #__emundus_campaign_candidature as ec 
                     LEFT JOIN #__emundus_setup_campaigns as esc ON ec.campaign_id=esc.id 
                     WHERE ec.applicant_id = '.$user->id.' 
-                    AND "'.$now.'" BETWEEN esc.start_date AND esc.end_date';
+                    AND '.$now.' BETWEEN esc.start_date AND esc.end_date';
         try {
             $db->setQuery($query);
             $files = $db->loadAssocList();
@@ -152,7 +154,7 @@ class  plgSystemEmundus_ametys extends JPlugin
             $query = 'SELECT * 
                         FROM #__emundus_setup_campaigns
                         WHERE training IN ('.implode(',', $db->quote(array_keys($cartProgrammes))).') 
-                        AND "'.$now.'" BETWEEN start_date AND end_date';
+                        AND '.$now.' BETWEEN start_date AND end_date';
             try {
                 $db->setQuery($query);
                 $campaigns = $db->loadAssocList('training');

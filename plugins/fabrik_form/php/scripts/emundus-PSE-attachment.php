@@ -20,9 +20,6 @@ $jinput 		= $mainframe->input;
 $baseurl 		= JURI::base();
 $db 			= JFactory::getDBO();
 
-$config = JFactory::getConfig();
-$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
-
 $references_id = array(4, 6, 21, 19);
 
 $aid = $_REQUEST['jos_emundus_uploads___attachment_id'];
@@ -154,7 +151,7 @@ if ($inform_applicant_by_email == 1) {
         die();
     } else {
         $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-					VALUES ('".$from_id."', '".$student->id."', '".$subject."', '".$body."', '".$now."')";
+					VALUES ('".$from_id."', '".$student->id."', '".$subject."', '".$body."', NOW())";
         $db->setQuery( $sql );
         $db->execute();
     }

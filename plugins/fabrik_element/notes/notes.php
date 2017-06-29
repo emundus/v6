@@ -397,8 +397,7 @@ class PlgFabrik_ElementNotes extends PlgFabrik_ElementDatabasejoin
 	 *
 	 * @return  void
 	 */
-	public function onAjax_addNote()
-	{
+	public function onAjax_addNote() {
 		$input = $this->app->input;
 		$this->loadMeForAjax();
 		$return = new stdClass;
@@ -411,29 +410,22 @@ class PlgFabrik_ElementNotes extends PlgFabrik_ElementDatabasejoin
 		$rowId = $this->getFormModel()->getRowId();
 
 		// Jaanus - avoid inserting data when the form is 'new' not submitted ($rowId == '')
-		if ($rowId !== '')
-		{
+		if ($rowId !== '') {
 			$query->insert($table)->set($col . ' = ' . $db->q($v));
 			$user = $params->get('userid', '');
 
 			if ($user !== '')
-			{
 				$query->set($db->qn($user) . ' = ' . (int) $this->user->get('id'));
-			}
 
 			$fk = $params->get('join_fk_column', '');
 
 			if ($fk !== '')
-			{
 				$query->set($db->qn($fk) . ' = ' . $db->q($input->get('rowid')));
-			}
 
 			$date = $params->get('notes_date', '');
 
 			if ($date !== '')
-			{
 				$query->set($db->qn($date) . ' = NOW()');
-			}
 
 			$db->setQuery($query);
 			$db->execute();

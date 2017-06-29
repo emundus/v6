@@ -83,8 +83,6 @@ class EmundusModelUsers extends JModelList
     {
         $session        = JFactory::getSession();
         $params         = $session->get('filt_params');
-        $config         = JFactory::getConfig();
-        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
 
         $final_grade    = @$params['finalgrade'];
         $search         = @$params['s'];
@@ -244,7 +242,7 @@ class EmundusModelUsers extends JModelList
                 if ($and) $query .= ' AND ';
                 else { $and = true; $query .=' '; }
                 
-                $query .= 'u.lastvisitDate="0000-00-00 00:00:00" AND TO_DAYS("'.$now.'") - TO_DAYS(u.registerDate) > 7';
+                $query .= 'u.lastvisitDate="0000-00-00 00:00:00" AND TO_DAYS(NOW()) - TO_DAYS(u.registerDate) > 7';
             }
             if (!empty($list_user)) {
                 if ($and) $query .= ' AND ';
@@ -473,12 +471,10 @@ class EmundusModelUsers extends JModelList
     }
 
     public function getCurrentCampaigns() {
-        $config = JFactory::getConfig();
-        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
         $db = JFactory::getDBO();
         $query = 'SELECT sc.id, sc;label
         FROM #__emundus_setup_campaigns AS sc
-        WHERE sc.published=1 AND end_date > "'.$now.'"';
+        WHERE sc.published=1 AND end_date > NOW()';
         $db->setQuery( $query );
         // echo str_replace('#_','jos',$query);
         return $db->loadColumn();
@@ -679,8 +675,6 @@ class EmundusModelUsers extends JModelList
         $authorize  = JFactory::getACL();
         $document   = JFactory::getDocument();
 
-        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
-
         if (!$user->save()) {
             JFactory::getApplication()->enqueueMessage(JText::_('CAN_NOT_SAVE_USER').'<BR />'.$user->getError(), 'error');
             $res = array('msg' => $user->getError());
@@ -715,7 +709,7 @@ class EmundusModelUsers extends JModelList
             if (!empty($campaigns)) {
                 $connected = JFactory::getUser()->id;
                 foreach ($campaigns as $campaign) {
-                    $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`) VALUES ('.$user->id.', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT("'.$now.'",\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
+                    $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`) VALUES ('.$user->id.', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
                     $db->setQuery( $query );
                     $db->Query();
                 }
@@ -1107,8 +1101,6 @@ class EmundusModelUsers extends JModelList
     }
 
     public function changeBlock($users, $state) {
-        $config = JFactory::getConfig();
-        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
         try {
             $db = $this->getDbo();
             foreach ($users as $uid) {
@@ -1119,7 +1111,7 @@ class EmundusModelUsers extends JModelList
                 if($state == 0)
                     $db->setQuery('UPDATE #__emundus_users SET disabled  = '.$state.' WHERE user_id = '.$uid);
                 else
-                    $db->setQuery('UPDATE #__emundus_users SET disabled  = '.$state.', disabled_date = "'.$now.'" WHERE user_id = '.$uid);
+                    $db->setQuery('UPDATE #__emundus_users SET disabled  = '.$state.', disabled_date = NOW() WHERE user_id = '.$uid);
                 $res = $db->query();
             }
             return $res;
@@ -1426,8 +1418,6 @@ class EmundusModelUsers extends JModelList
     public function editUser($user) {
         try {
             $u = JFactory::getUser($user['id']);
-            $config = JFactory::getConfig();
-            $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
 
             if (!$u->bind($user)) {
                 $res = array('msg' => $u->getError());
@@ -1470,7 +1460,7 @@ class EmundusModelUsers extends JModelList
 
                 foreach ($campaigns as $campaign) {
                     if (!in_array($campaign, $campaigns_id)) {
-                        $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`) VALUES ('.$user['id'].', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT("'.$now.'",\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
+                        $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`) VALUES ('.$user['id'].', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
                         $db->setQuery( $query );
                         $db->query();
                     }

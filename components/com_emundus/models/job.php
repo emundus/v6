@@ -246,10 +246,7 @@ class EmundusModelJob extends JModelItem {
     public function apply($user_id, $job_id) {
         $user = JFactory::getUser($user_id);
         $current_user = JFactory::getUser();
-        $config = JFactory::getConfig();
         $db = JFactory::getDbo();
-
-        $now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
 
         // 0. Get the job infos
         $query = "SELECT * FROM #__emundus_emploi_etudiant WHERE id=$job_id";
@@ -272,7 +269,7 @@ class EmundusModelJob extends JModelItem {
                 try {
 
                     $query = "INSERT INTO #__emundus_campaign_candidature (`date_time` ,`applicant_id` ,`user_id` ,`campaign_id` ,`submitted` ,`date_submitted` ,`cancelled` ,`fnum` ,`status` ,`published`)
-                              VALUES('$now', $user->id, $current_user->id, $job->campaign_id, 0, NULL, 0, '$fnum', 0, 1)";
+                              VALUES(NOW(), $user->id, $current_user->id, $job->campaign_id, 0, NULL, 0, '$fnum', 0, 1)";
                     $db->setQuery($query);
                     $db->execute();
                     $insertid = $db->insertid();
@@ -299,11 +296,11 @@ class EmundusModelJob extends JModelItem {
                         }
                     }
                     $column .= 'date_time, etablissement, fiche_emploi, fnum';
-                    $values .= "'$now', $job->etablissement, $job_id, '$fnum'";
+                    $values .= "NOW(), $job->etablissement, $job_id, '$fnum'";
                     $query = "INSERT INTO #__emundus_emploi_etudiant_candidat ($column) VALUES($values)";
                 } else {
                     $query = "INSERT INTO #__emundus_emploi_etudiant_candidat (`date_time` ,`user` ,`fnum` ,`etablissement` ,`fiche_emploi`)
-                          VALUES('$now', $user->id, '$fnum', $job->etablissement, $job_id)";
+                          VALUES('NOW(), $user->id, '$fnum', $job->etablissement, $job_id)";
                 }
 
                 $db->setQuery($query);

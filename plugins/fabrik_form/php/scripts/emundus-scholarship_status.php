@@ -16,9 +16,6 @@ $baseurl = JURI::base();
 $db =& JFactory::getDBO();
 $mailer = JFactory::getMailer();
 
-$config = JFactory::getConfig();
-$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
-
 $r_scholarship_request = $_REQUEST['jos_emundus_scholarship___scholarship_request'];
 $r_scholarship_status = $_REQUEST['jos_emundus_scholarship___scholarship_status'];
 $r_student_id = $_REQUEST['jos_emundus_scholarship___user'];
@@ -75,7 +72,7 @@ $result = '<p><h3>'.$r_scholarship_request.' : '.$r_scholarship_status[0].'</h3>
         echo 'Error sending email: ' . $send->__toString(); die();
     } else {
         $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-				VALUES ('".$from_id."', '".$student->id."', '".$subject."', '".$body."', '".$now."')";
+				VALUES ('".$from_id."', '".$student->id."', '".$subject."', '".$body."', NOW())";
         $db->setQuery( $sql );
         try {
             $db->execute();

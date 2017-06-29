@@ -44,8 +44,6 @@ class EmundusModelEmailalert extends JModelList{
 	}
 	
 	function getMailtosend(){
-		$config = JFactory::getConfig();
-		
 		//reminder end of candidature email
 		$p_remind = $this->_eMConfig->get('particular_remind', '14,7,1');
 		$remind_mail = $this->_eMConfig->get('reminder_mail_id');
@@ -62,7 +60,6 @@ class EmundusModelEmailalert extends JModelList{
 		
 		//liste d'envoi -- Rappel periodique ou rappel plus frequent avant fin de candidature
 		// @TODO Prendre en compte la table #__emundus_campaign_candidature !!
-		$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
 		$query = 'SELECT u.id, u.name, u.email, ee.date_time, ee.email_id, ee.periode, esp.candidature_end, ed.validated, ese.subject, ed.time_date
 					FROM #__users u 
 					LEFT JOIN #__emundus_declaration as ed ON ed.user=u.id 
@@ -73,8 +70,8 @@ class EmundusModelEmailalert extends JModelList{
 					JOIN #__emundus_setup_profiles esp ON esp.id = eu.profile
 					WHERE  ed.validated IS NULL AND u.usertype ="Registered" AND eu.schoolyear IN ("'.implode('","',$this->getCurrentCampaign()).'") 
 					AND ( 
-						 (ed.time_date IS NULL AND (DATEDIFF( esp.candidature_end , "'.$now.'") > 0) AND (DATEDIFF( "'.$now.'" , ee.date_time ) >= ee.periode) AND (ed.validated is null OR ed.validated!=1) AND ee.email_id = '.$remind_mail.')
-						 OR ((DATEDIFF( esp.candidature_end , "'.$now.'" IN ('.$p_remind.')) AND (ed.validated is null OR ed.validated!=1) AND ee.email_id = '.$remind_mail.')';
+						 (ed.time_date IS NULL AND (DATEDIFF( esp.candidature_end , NOW() > 0) AND (DATEDIFF(NOW() , ee.date_time ) >= ee.periode) AND (ed.validated is null OR ed.validated!=1) AND ee.email_id = '.$remind_mail.')
+						 OR ((DATEDIFF( esp.candidature_end , NOW() IN ('.$p_remind.')) AND (ed.validated is null OR ed.validated!=1) AND ee.email_id = '.$remind_mail.')';
 		//if necessary report remind
 		if(!empty($remind_days)){
 			$query .= ' OR u.id IN (
@@ -84,7 +81,7 @@ class EmundusModelEmailalert extends JModelList{
 				INNER JOIN jos_emundus_emailalert ee ON ee.user_id = u.id 
 				INNER JOIN jos_emundus_final_grade efg ON efg.student_id = u.id 
 				WHERE efg.final_grade = 4 
-				AND DATEDIFF("'.$now.'",('.$end_candidature.' WHERE user = u.id)) IN ('.$remind_days.')
+				AND DATEDIFF(NOW(),('.$end_candidature.' WHERE user = u.id)) IN ('.$remind_days.')
 				AND u.id NOT IN(
 								SELECT user_id
 								FROM #__emundus_uploads
@@ -128,13 +125,12 @@ class EmundusModelEmailalert extends JModelList{
 			$patterns = array ('/\[NAME]/','/\[SIGNATURE]/','/\[USERNAME]/','/\[SITE_URL]/','/\[DEADLINE]/');
 			$replacements = array ($student->name,$cfromname,$student->username,JURI::base(), strftime("%A %d %B %Y %H:%M", strtotime($profile[0]->candidature_end) ).' (GMT)');
 			$body = preg_replace($patterns,$replacements,$body);	
-			$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($conf->get('offset')));
 			$query = 'INSERT INTO #__messages (user_id_from,user_id_to,date_time,state,subject,message)
 						VALUES (62,'.$student->id.',"'.$date.'",1,"'.$subject.'",'.$this->_db->quote($body).')';
 			$this->_db->setQuery( $query );
 
 			if($this->_db->query() == 1){
-				$query = 'UPDATE #__emundus_emailalert SET date_time = "'.$now.'" WHERE user_id ='.$student->id.' AND email_id ='.$mail_id;
+				$query = 'UPDATE #__emundus_emailalert SET date_time = NOW() WHERE user_id ='.$student->id.' AND email_id ='.$mail_id;
 				$this->_db->setQuery($query);
 				$this->_db->Query();
 			}

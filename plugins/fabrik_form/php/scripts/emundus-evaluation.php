@@ -31,9 +31,7 @@ if(!empty($result)) {
 	if ($cpt == 0) {
 		$query = 'INSERT INTO #__emundus_final_grade (user, student_id, final_grade, type_grade, campaign_id) VALUE ('.$user->id.', '.$aid->id.', '.$result.', "candidature", '.$campaign_id.')';
 	} else {
-		$config = JFactory::getConfig();
-		$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
-		$query = 'UPDATE #__emundus_final_grade SET user='.$user->id.', final_grade='.(int)$result.', time_date="'.$now.'" 
+		$query = 'UPDATE #__emundus_final_grade SET user='.$user->id.', final_grade='.(int)$result.', time_date=NOW() 
 					WHERE campaign_id='.(int)$campaign_id.' 
 					AND student_id='.$aid->id;
 	}

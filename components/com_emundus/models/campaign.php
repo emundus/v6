@@ -56,7 +56,10 @@ class EmundusModelCampaign extends JModelList
 	
 	function _buildQuery() {
 		$config = JFactory::getConfig();
-		$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
+		
+		$jdate = JFactory::getDate();
+        $jdate->setOffset($config->getValue('offset'));
+        $now = $jdate->toSql();
 
 		$query = 'SELECT id, label, year, description, start_date, end_date 
 		FROM #__emundus_setup_campaigns 
@@ -169,11 +172,9 @@ class EmundusModelCampaign extends JModelList
 	}
 
 	function setSelectedCampaign($cid, $aid) {
-		$config = JFactory::getConfig();
-		$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
 
 		$query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `campaign_id`, `fnum`) 
-		VALUES ('.$aid.', '.$cid.', CONCAT(DATE_FORMAT("'.$now.'",\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
+		VALUES ('.$aid.', '.$cid.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
 		$this->_db->setQuery( $query );
 		try {
 			$this->_db->Query();
@@ -182,11 +183,8 @@ class EmundusModelCampaign extends JModelList
 		}
 	}
 
-	function setResultLetterSent($aid, $campaign_id) {
-		$config = JFactory::getConfig();
-		$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
-		
-		$query = 'UPDATE #__emundus_final_grade SET result_sent=1, date_result_sent="'.$now.'" WHERE student_id='.$aid.' AND campaign_id='.$campaign_id;
+	function setResultLetterSent($aid, $campaign_id) {		
+		$query = 'UPDATE #__emundus_final_grade SET result_sent=1, date_result_sent=NOW() WHERE student_id='.$aid.' AND campaign_id='.$campaign_id;
 		$this->_db->setQuery( $query );
 		try {
 			$this->_db->Query();

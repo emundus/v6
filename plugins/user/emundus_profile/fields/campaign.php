@@ -19,6 +19,11 @@ class JFormFieldCampaign extends JFormField
     protected function getInput() {
         $course = JRequest::getVar('course', '', '', 'str');
         $course = !empty($course)?$course:"%";
+        $config     = JFactory::getConfig();
+        
+        $jdate = JFactory::getDate();
+        $jdate->setOffset($config->getValue('offset'));
+        $now = $jdate->toSql();
 
         $db = JFactory::getDBO();
         $query = "SELECT esc.id, CONCAT(esc.label,' (',esc.year,')') AS label 
@@ -26,8 +31,8 @@ class JFormFieldCampaign extends JFormField
                     LEFT JOIN #__emundus_setup_programmes as esp ON esp.code=esc.training
                     WHERE esc.published=1 
                     AND esp.apply_online=1 
-                    AND NOW() >= esc.start_date 
-                    AND esc.end_date >= NOW()
+                    AND '".$now."' >= esc.start_date 
+                    AND esc.end_date >= '".$now."'
                     AND esc.training like ".$db->Quote($course)." 
                     ORDER BY esc.label";
         $db->setQuery($query);

@@ -23,9 +23,6 @@ include_once(JPATH_BASE.'/components/com_emundus/models/groups.php');
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $alert_new_applicant = $eMConfig->get('alert_new_applicant');
 
-$config = JFactory::getConfig();
-$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
-
 // get current applicant course
 $campaigns = new EmundusModelCampaign;
 $campaign = $campaigns->getCampaignByID($student->campaign_id);
@@ -57,7 +54,7 @@ try {
 
 // Confirm candidature
 // Insert data in #__emundus_campaign_candidature
-$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted="'.$now.'", status=1 WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
+$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=1 WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
 try {
 	$db->execute();
@@ -65,7 +62,7 @@ try {
 } catch (Exception $e) {
 	// catch any database errors.
 }
-$query = 'UPDATE #__emundus_declaration SET time_date="'.$now.'" WHERE user='.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
+$query = 'UPDATE #__emundus_declaration SET time_date=NOW() WHERE user='.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
 try {
 	$db->execute();
@@ -110,7 +107,7 @@ if ( $send !== true ) {
     echo 'Error sending email: ' . $send->__toString(); die();
 } else {
     $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-				VALUES ('".$from_id."', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", '".$now."')";
+				VALUES ('".$from_id."', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
     $db->setQuery( $sql );
     try {
         $db->execute();
@@ -176,7 +173,7 @@ if ($alert_new_applicant==1) {
             } else {
                 $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 						VALUES ('" . $from_id . "', '" . $eval_user->id . "', " . $db->quote($subject) . ", " .
-                    $db->quote($body) . ", '".$now."')";
+                    $db->quote($body) . ", NOW())";
                 $db->setQuery($sql);
                 try {
                     $db->execute();

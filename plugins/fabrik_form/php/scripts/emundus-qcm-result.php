@@ -17,9 +17,6 @@ $db   	= JFactory::getDBO();
 $mainframe = JFactory::getApplication();
 $jinput = $mainframe->input;
 
-$config = JFactory::getConfig();
-$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
-
 $query = "SELECT answer_code FROM `data_qcm` WHERE answer_result=1";
 $db->setQuery( $query );
 $goods = $db->loadColumn();
@@ -35,7 +32,7 @@ foreach($answers as $answer) {
     }
 }
 
-$query = "UPDATE `jos_emundus_qcm` set qcm_date_submitted='".$now."', result=".$result.", qcm_time_elapsed=ROUND(time_to_sec((TIMEDIFF('".$now."', time_date))) / 60) WHERE fnum like ".$db->Quote($user->fnum);
+$query = "UPDATE `jos_emundus_qcm` set qcm_date_submitted=NOW(), result=".$result.", qcm_time_elapsed=ROUND(time_to_sec((TIMEDIFF(NOW(), time_date))) / 60) WHERE fnum like ".$db->Quote($user->fnum);
 $db->setQuery( $query );
 $db->execute();
 

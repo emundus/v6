@@ -66,18 +66,15 @@ try {
     // catch any database errors.
 }
 
-$config = JFactory::getConfig();
-$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
-
 // Insert data in #__emundus_campaign_candidature
-$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted="'.$now.'", status=1 WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
+$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=1 WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
 try {
     $db->execute();
 } catch (Exception $e) {
     // catch any database errors.
 }
-$query = 'UPDATE #__emundus_declaration SET time_date="'.$now.'" WHERE user='.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
+$query = 'UPDATE #__emundus_declaration SET time_date=NOW() WHERE user='.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
 try {
     $db->execute();

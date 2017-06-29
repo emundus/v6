@@ -201,9 +201,9 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 		
 	//////////////////////////  SET FILES REQUEST  /////////////////////////////
 	// 
-	// Génération de l'id du prochain fichier qui devra être ajouté par le referent
+	// Gï¿½nï¿½ration de l'id du prochain fichier qui devra ï¿½tre ajoutï¿½ par le referent
 	
-	// 1. Génération aléatoire de l'ID
+	// 1. Gï¿½nï¿½ration alï¿½atoire de l'ID
 	private function rand_string($len, $chars = 'abcdefghijklmnopqrstuvwxyz0123456789')
 	{
 		$string = '';
@@ -221,16 +221,15 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 	 * @return  array  of messages
 	 */
 
-	public function onAjax_getOptions()
-	{	
-		$baseurl 		= JURI::root();
-		$db 			=& JFactory::getDBO();
+	public function onAjax_getOptions() {	
+		$baseurl = JURI::root();
+		$db =& JFactory::getDBO();
 		$this->_user = & JFactory::getUser();
 				
 		$recipient = JRequest::getVar('email');
 		$attachment_id = JRequest::getVar('attachment_id');
 
-		if( !empty($attachment_id) ){ 
+		if (!empty($attachment_id)) { 
 			require(JPATH_LIBRARIES.DS.'emundus'.DS.'email.class.php');
 			$email = new Email( $recipient );
 			$results = $email->checkEmail_results;
@@ -238,8 +237,8 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 				$response = array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_FORMAT_ERROR').'</span>');
 				die(json_encode($response));
 			}
-			if( !($results['gethostbyname']==1 && $results['customCheckEmailWith_Dnsrr']==1 ) && 
-				!($results['checkEmailWith_Dnsrr']==1 && $results['customCheckEmailWith_Mxrr']==1 ) ){
+			if (!($results['gethostbyname']==1 && $results['customCheckEmailWith_Dnsrr']==1) && 
+				!($results['checkEmailWith_Dnsrr']==1 && $results['customCheckEmailWith_Mxrr']==1)) {
 					$response = array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_DOMAIN_ERROR').'</span>');
 					die(json_encode($response));
 			}
@@ -248,15 +247,15 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 			die(json_encode($response));
 		}
 	
-		// Récupération des données du mail
+		// Rï¿½cupï¿½ration des donnï¿½es du mail
 		$query = 'SELECT id, subject, emailfrom, name, message
 						FROM #__emundus_setup_emails
 						WHERE lbl="referent_letter"';
 		$db->setQuery( $query );
 		$db->query();
-		$obj=$db->loadObjectList() or die(json_encode(array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('ERROR_DB_SETUP_EMAIL').'</span>')));
+		$obj = $db->loadObjectList() or die(json_encode(array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('ERROR_DB_SETUP_EMAIL').'</span>')));
 		
-		// Récupération de la pièce jointe : modele de lettre
+		// Rï¿½cupï¿½ration de la piï¿½ce jointe : modele de lettre
 		$query = 'SELECT esp.reference_letter
 						FROM #__emundus_users as eu 
 						LEFT JOIN #__emundus_setup_profiles as esp on esp.id = eu.profile 
@@ -271,10 +270,10 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 			// MAJ de la table emundus_files_request
 			$query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id) 
 								  VALUES (NOW(), '.$this->_user->id.', "'.$key1.'", '.$attachment_id.')';
-			$db->setQuery( $query );
+			$db->setQuery($query);
 			$db->query() or die(json_encode(array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('ERROR_DB_FILE_REQUEST').'</span>')));
 
-			// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
+			// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de rï¿½fï¿½rence
 			$link_upload1 = $baseurl.'index.php?option=com_fabrik&view=form&formid=68&keyid='.$key1.'&sid='.$this->_user->id;
 
 			///////////////////////////////////////////////////////
@@ -282,7 +281,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 
 			// Mail 
 			$from = $obj[0]->emailfrom;
-			$fromname =$obj[0]->name;
+			$fromname = $obj[0]->name;
 			$from_id = $obj[0]->id;
 			
 			$subject = $obj[0]->subject;
@@ -298,7 +297,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 			$body1 = preg_replace($patterns, $replacements, $obj[0]->message);
 			unset($replacements);
 			
-			if(JUtility::sendMail($from, $fromname, $recipient, $subject, $body1, $mode, null, null, $attachment, $replyto, $replytoname)) {
+			if (JUtility::sendMail($from, $fromname, $recipient, $subject, $body1, $mode, null, null, $attachment, $replyto, $replytoname)) {
 				$sql = 'INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) VALUES (62, -1, "'.$subject.'", "'.$db->quote($body1).'", NOW())';
 				$db->setQuery( $sql );
 				$db->query() or die(json_encode(array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('ERROR_DB_MESSAGE').'</span>')));

@@ -16,8 +16,6 @@ defined( '_JEXEC' ) or die();
 $db 			= JFactory::getDBO();
 $user 			= JFactory::getUser();
 $application 	= JFactory::getApplication();
-$config 		= JFactory::getConfig();
-$now 			= new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->getValue('offset')));
 
 $registration_periode  	= $_POST['jos_emundus_setup_teaching_unity___registration_periode'][0];
 
@@ -31,7 +29,7 @@ if ($registration_periode[0] == 1) {
 	$schoolyear 	= $_POST['jos_emundus_setup_teaching_unity___schoolyear'][0];
 
 	$query = "INSERT INTO `#__emundus_setup_campaigns` (`date_time`, `user`, `label`, `description`, `start_date`, `end_date`, `profile_id`, `training`, `year`, `published`) 
-				VALUES (".$db->quote($now).", ".$user->id.", ".$db->quote($label).", ".$db->quote($note).", ".$db->quote($now).", DATE_SUB('".$end_date."', INTERVAL 1 MONTH), ".$profile_id.", ".$db->quote($code).", ".$db->quote($schoolyear).", 1)";
+				VALUES (NOW(), ".$user->id.", ".$db->quote($label).", ".$db->quote($note).", NOW(), DATE_SUB('".$end_date."', INTERVAL 1 MONTH), ".$profile_id.", ".$db->quote($code).", ".$db->quote($schoolyear).", 1)";
 	$db->setQuery( $query );
 	$db->execute() or die($query);
 	$id = $db->insertid();

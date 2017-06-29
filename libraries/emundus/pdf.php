@@ -49,7 +49,6 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	$user =  JFactory::getUser($user_id);
 	$db = JFactory::getDBO();
 	$config = JFactory::getConfig();
-	$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
 
 	$files = array();
 
@@ -66,7 +65,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	$courses = $db->loadAssocList();
 	*/
 	$query = "SELECT * FROM #__emundus_setup_teaching_unity 
-				WHERE published=1 AND date_start>'".$now."' AND code IN (".$db->Quote($letters[0]['training']).") 
+				WHERE published=1 AND date_start>NOW() AND code IN (".$db->Quote($letters[0]['training']).") 
 				ORDER BY date_start ASC";
 	$db->setQuery($query);
 	$courses = $db->loadAssocList();
@@ -360,7 +359,6 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 	$user = & JFactory::getUser($user_id);
 	$db = &JFactory::getDBO();
 	$config = JFactory::getConfig();
-	$now = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone($config->get('offset')));
 
 	$files = array();
 
@@ -368,9 +366,9 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 	$letters = $evaluations->getLettersTemplateByID($letter_id);
 
 //print_r($letters);
-	//$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE published=1 AND date_start>$now AND code=".$db->Quote($letters[0]['training']). " ORDER BY date_start ASC";
+	//$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE published=1 AND date_start>NOW() AND code=".$db->Quote($letters[0]['training']). " ORDER BY date_start ASC";
 	$query = "SELECT * FROM #__emundus_setup_teaching_unity 
-				WHERE published=1 AND date_start>'".$now."' AND code IN (".$letters[0]['training'].") 
+				WHERE published=1 AND date_start>NOW() AND code IN (".$letters[0]['training'].") 
 				ORDER BY date_start ASC";
 	$db->setQuery($query);
 	$courses = $db->loadAssocList();

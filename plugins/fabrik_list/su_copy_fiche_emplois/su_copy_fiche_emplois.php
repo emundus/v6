@@ -87,12 +87,18 @@ class PlgFabrik_ListSu_copy_fiche_emplois extends PlgFabrik_List
 		$formModel = $model->getFormModel();
 		$user = JFactory::getUser();
 		$db = FabrikWorker::getDbo();
+		$config = JFactory::getConfig();
+        
+        $jdate = JFactory::getDate();
+        $jdate->setOffset($config->getValue('offset'));
+        $now = $jdate->toSql();
+
 		$query = 'SELECT id 
 					FROM #__emundus_setup_campaigns
 					WHERE published=1 
 					AND training like "utc-dfp-dri" 
-					AND start_date<=NOW() 
-					AND end_date>NOW() 
+					AND start_date<="'.$now.'" 
+					AND end_date>"'.$now.'" 
 					LIMIT 0,1';
 		$db->setQuery($query);
 		$campaign_id = $db->loadResult();
