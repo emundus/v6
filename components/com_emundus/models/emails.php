@@ -159,7 +159,7 @@ class EmundusModelEmails extends JModelList
      */
     public function sendEmailTrigger($step, $code, $to_applicant = 0, $student)
     {
-        $app    = JFactory::getApplication();
+        $app = JFactory::getApplication();
         $email_from_sys = $app->getCfg('mailfrom');
 
 
@@ -774,7 +774,7 @@ class EmundusModelEmails extends JModelList
     // @param $row array of data
     public function logEmail($row) {
         $query = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-                        VALUES (".$this->_db->quote($row['user_id_from']).", ".$this->_db->quote($row['user_id_to']).", ".$this->_db->quote($row['subject']).", ".$this->_db->quote($row['message']).", NOW());
+                        VALUES (".$this->_db->quote($row['user_id_from']).", ".$this->_db->quote($row['user_id_to']).", ".$this->_db->quote($row['subject']).", ".$this->_db->quote($row['message']).", NOW())";
         $this->_db->setQuery( $query );
         $this->_db->query();
 

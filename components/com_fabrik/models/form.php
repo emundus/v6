@@ -2505,7 +2505,7 @@ class FabrikFEModelForm extends FabModelForm
 
 		if ($form->published == '1')
 		{
-			if ($now >= $publishUp || $form->publish_up == '' || $form->publish_up == $nullDate)
+		if ($now >= $publishUp || $form->publish_up == '' || $form->publish_up == $nullDate)
 			{
 				if ($now <= $publishDown || $form->publish_down == '' || $form->publish_down == $nullDate)
 				{

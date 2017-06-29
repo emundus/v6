@@ -426,7 +426,7 @@ class EmundusModelApplication extends JModelList
 
     // Get form to display in application page layout view
     public function getForms($aid, $fnum = 0, $pid = 9) {
-        $tableuser = @EmundusHelperMenu::buildMenuQuery($pid);
+        $tableuser = EmundusHelperMenu::buildMenuQuery($pid);
 
         $forms = '';
 
@@ -677,10 +677,10 @@ class EmundusModelApplication extends JModelList
     // @param   int applicant user id
     // @param   int fnum application file number
     // @return  string HTML to send to PDF librairie
-    function getFormsPDF($aid, $fnum=0) {
+    function getFormsPDF($aid, $fnum=0, $gid=0) {
         //add gid and only get certain groups
         $tableuser = @EmundusHelperList::getFormsList($aid, $fnum);
-
+        
         $forms = "<style>
                     table{
                         border-spacing: 1px;
@@ -1318,14 +1318,12 @@ td {
             if (isset($attachment_id) && !empty($attachment_id)) 
                 $query .= " AND attachment_id=".$attachment_id;
 
-            if (!empty($ids) && $ids != "null")
+            if (!empty($ids) && $ids != "null") 
                 $query .= " AND id in ($ids)";
 
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             error_log($e->getMessage(), 0);
             return false;
         }

@@ -27,24 +27,23 @@ jimport('joomla.application.component.helper');
 class EmundusHelperExport
 {
 	
-	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 1 ) {
+	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 1, $application_form_pdf = 'application_form_pdf' ) {
 		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';
 
-		if (!file_exists($file)) {
+		if (!file_exists($file))
 			$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
-			$application_form_pdf = 'application_form_pdf';
-		} else {
+		else
 			$application_form_pdf = 'application_form_pdf_'.str_replace('-', '_', $fnumInfos['training']);
-		}
+
 		if (!file_exists(EMUNDUS_PATH_ABS.$sid)) {
 			mkdir(EMUNDUS_PATH_ABS.$sid);
 			chmod(EMUNDUS_PATH_ABS.$sid, 0755);
 		}
-
+		
 		require_once($file);
 
-		application_form_pdf($sid, $fnum, false, $form_post);
-		return  EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_application.pdf';
+		application_form_pdf($sid, $fnum, false, $form_post, $application_form_pdf);
+		return EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_application.pdf';
 	}
 
     /**
@@ -121,11 +120,9 @@ class EmundusHelperExport
         return preg_match('/Encrypt ([0-9]+) /', $s);
     }
 
-	public static function getAttachmentPDF(&$exports, &$tmpArray, $files, $sid)
-	{
-		foreach($files as $file)
-		{
-            if (strrpos($file->filename, 'application_form')=== false) {
+	public static function getAttachmentPDF(&$exports, &$tmpArray, $files, $sid) {
+		foreach($files as $file) {
+            if (strrpos($file->filename, 'application_form') === false) {
                 $exFileName = explode('.', $file->filename);
                 $filePath = EMUNDUS_PATH_ABS.$file->user_id.DS.$file->filename;
                 if(file_exists($filePath)) {

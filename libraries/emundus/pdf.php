@@ -593,12 +593,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
-	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
-	//require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
-	//require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
-	include_once(JPATH_COMPONENT.DS.'models'.DS.'application.php');
-	include_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
+	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 
 	$config = JFactory::getConfig(); 
 	$offset = $config->get('offset');
@@ -616,7 +614,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$fnum 			= empty($fnum)?$user->fnum:$fnum;
 
 	//$export_pdf = $eMConfig->get('export_pdf');
-
 	//$user_profile = $m_users->getCurrentUserProfile($user_id);
 	
 	$infos = $m_profile->getFnumDetails($fnum);
@@ -626,10 +623,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$htmldata = '';
     $forms ='';
 	if ($form_post) {
-        $forms = $application->getFormsPDF($user_id, $fnum);
+		$forms = $application->getFormsPDF($user_id, $fnum);
 		//add gid
     }
-
 	// Create PDF object
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 	$pdf->SetCreator(PDF_CREATOR);
@@ -800,12 +796,9 @@ $htmldata .= '
 			$data = array('key' => $keys, 'value' => $values);
 			$application->uploadAttachment($data);
 
-		}else{
+		} else
 			$pdf->Output(EMUNDUS_PATH_ABS.@$item->user_id.DS.$fnum.'_application.pdf', 'FI');
-		}
-	}else{
+	} else
 		$pdf->Output(EMUNDUS_PATH_ABS.@$item->user_id.DS.$fnum.'_application.pdf', 'F');
-	}
-
 }
 ?>

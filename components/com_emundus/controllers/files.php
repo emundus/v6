@@ -1425,7 +1425,7 @@ class EmundusControllerFiles extends JControllerLegacy
      * Add lines to temp PDF file
      * @return String json
      */
-    public function generate_pdf($application_form_order = null, $attachment_order = null, $application_form_name = "application_form_pdf") {
+    public function generate_pdf() {
         $current_user = JFactory::getUser();
 
         if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
@@ -1448,7 +1448,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $assessment = $jinput->getInt('assessment', 0);
         $decision   = $jinput->getInt('decision', 0);
         $ids        = $jinput->getVar('ids', null);
-
+        
         //$attach_ids = '"'.$ids.'"';
         //$ids_attachments = str_replace(',', '","', $attach_ids);    
 
@@ -1471,8 +1471,6 @@ class EmundusControllerFiles extends JControllerLegacy
                 if ($forms) {
                     $files_list[] =
                         EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms);
-                } elseif (!empty($application_form_order)) {
-                    // buildformpdf but with gid
                 }
 
                 if ($attachment) {
@@ -1481,15 +1479,6 @@ class EmundusControllerFiles extends JControllerLegacy
                     $files = $model->getAttachmentsByFnum($fnum, $ids);
 
                     EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
-                } elseif (!empty($attachment_order)) {
-                    foreach ($attachment_order as $attachment_type_id) {
-                        // Get file attachements corresponding to fnum and type id
-                        $tmpArray = array();
-                        $model = $this->getModel('application');
-                        $files = $model->getAttachmentsByFnum($fnum, $ids);
-
-                        
-                    }                    
                 }
 
                 if ($assessment)
@@ -1524,17 +1513,15 @@ class EmundusControllerFiles extends JControllerLegacy
                       'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
                       'file' => $file, 'msg' => JText::_('FILES_ADDED').' : '.$fnum);
             $result = array('status' => true, 'json' => $dataresult);
-            echo json_encode((object)$result);
-            exit();
         } else {
             $dataresult =
                 array('start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms,
                       'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
                       'file' => $file, 'msg' => JText::_('ERROR_NO_FILE_TO_ADD').' : '.$fnum);
             $result = array('status' => false, 'json' => $dataresult);
-            echo json_encode((object) $result);
-            exit();
         }
+        echo json_encode((object) $result);
+        exit();
     }
 
 

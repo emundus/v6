@@ -18,10 +18,12 @@ $student =  JFactory::getUser();
 $app = JFactory::getApplication();
 $email_from_sys = $app->getCfg('mailfrom');
 
-include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
-include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
-include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'files.php');
-//include_once(JPATH_BASE.'/components/com_emundus/models/groups.php');
+include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
+
 jimport('joomla.log.log');
 JLog::addLogger(
     array(
@@ -41,18 +43,19 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
 $can_edit_until_deadline    = $eMConfig->get('can_edit_until_deadline', 0);
 $application_fee            = $eMConfig->get('application_fee', 0);
 $application_form_order     = $eMConfig->get('application_form_order', null);
-$attachment_order           = $eMConfig->get('candidacy_form_order', null);
+$attachment_order           = $eMConfig->get('attachment_order', null);
 $application_form_name      = $eMConfig->get('application_form_name', "application_form_pdf");
+
+$application = new EmundusModelApplication;
+$filesModel = new EmundusModelFiles;
+$campaigns = new EmundusModelCampaign;
+$emails = new EmundusModelEmails;
 
 // Application fees
 if ($application_fee == 1) {
     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
-    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
-    $application = new EmundusModelApplication;
-
-    $fnumInfos = EmundusModelFiles::getFnumInfos($student->fnum);
+    $fnumInfos = $filesModel->getFnumInfos($student->fnum);
     if (count($fnumInfos) > 0) {
         $paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
 
@@ -60,18 +63,10 @@ if ($application_fee == 1) {
             $checkout_url = $application->getHikashopCheckoutUrl($student->profile);
             $mainframe->redirect(JRoute::_($checkout_url));
         }
-    } else {
-        $mainframe->redirect('index.php');
-    }
-
+    } else $mainframe->redirect('index.php');
 }
-
 // get current applicant course
-$campaigns = new EmundusModelCampaign;
 $campaign = $campaigns->getCampaignByID($student->campaign_id);
-
-$emails = new EmundusModelEmails;
-
 
 // Applicant cannot delete this attachments now
 if (!$can_edit_until_deadline) {
@@ -111,18 +106,78 @@ $code = array($student->code);
 $to_applicant = '0,1';
 $trigger_emails = $emails->sendEmailTrigger($step, $code, $to_applicant, $student);
 
-//build filename from tags
+// TODO: Build filename from tags
 
 // Format filename
-$application_form_name = preg_replace("/[^A-Za-z0-9]/", "", $application_form_name);
+$application_form_name = preg_replace('/[^A-Za-z0-9 _ .-]/','', $application_form_name);
 $application_form_name = strtolower($application_form_name);
 
-//explode orders into arrays
-$application_form_order = explode(',',$application_form_order);
-$attachment_order = explode(',',$attachment_order);
+$fnum = $student->fnum;
+$fnumInfo = $filesModel->getFnumInfos($student->fnum);
 
-// Call (eMundus or files controller or model?) function (expoort_pdf or generate_pdf?)
-$filesController = new EmundusControllerFiles;
-$filesController->generate_pdf($application_form_order, $attachment_order, $application_form_name);
+if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $application_form_name))
+    $files_list = array(JPATH_BASE . DS . 'tmp' . DS . $application_form_name);
+else $files_list = array();
+
+$start = 0;
+$limit = 1;
+
+if (is_numeric($fnum) && !empty($fnum)) {
+    if (!empty($application_form_order)) {
+        $application_form_order = explode(',',$application_form_order);
+        // buildformpdf but with gid
+        $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms);
+    } else
+        $files_list[] = EmundusHelperExport::buildFormPDF($fnumInfo, $fnumInfo['applicant_id'], $fnum, 1, $application_form_name);
+
+    if (!empty($attachment_order)) {
+        $attachment_order = explode(',',$attachment_order);
+        foreach ($attachment_order as $attachment_id) {
+            // Get file attachements corresponding to fnum and type id
+            $files[] = $application->getAttachmentsByFnum($fnum, null, $attachment_id);
+        } 
+    } else {
+        // Get all file attachements corresponding to fnum
+        $files = $application->getAttachmentsByFnum($fnum, null, null);
+    }
+    foreach ($files as $file) {
+        $tmpArray = array();
+        EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $file, $fnumsInfo[$fnum]['applicant_id']);
+    }
+}
+
+if (count($files_list) > 0) {
+    // all PDF in one file
+    require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+    $pdf = new ConcatPdf();
+
+    $pdf->setFiles($files_list);
+    $pdf->concat();
+    if (isset($tmpArray)) {
+        foreach ($tmpArray as $fn) {
+            unlink($fn);
+        }
+    }
+    // Ouput pdf, this is where we give him his name
+    $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $application_form_name.".pdf", 'F');
+
+    $dataresult = [
+        'start' => $start, 
+        'limit' => $limit,  
+        'forms' => $forms,
+        'msg' => JText::_('FILES_ADDED').' : '.$fnum
+    ];
+    $result = ['status' => true, 'json' => $dataresult];
+} else {
+    $dataresult = [
+        'start' => $start, 
+        'limit' => $limit, 
+        'forms' => $forms,
+        'msg' => JText::_('ERROR_NO_FILE_TO_ADD').' : '.$fnum
+    ];
+    $result = ['status' => false, 'json' => $dataresult];
+}
+echo json_encode((object) $result);
+exit();
 
 ?>  
