@@ -59,6 +59,12 @@ if ($locallang == "fr-FR") {
                     $oldmonth = '';
                     
                     foreach($currentCampaign as $resul) {
+                        $dteStart = new DateTime($now); 
+                        $dteEnd   = new DateTime($resul->end_date);
+                        $dteDiff  = $dteStart->diff($dteEnd); 
+                        $j = $dteDiff->format("%a"); 
+                        $h = $dteDiff->format("%H"); 
+
                         if ($order == "start_date") {
                             $month = strftime("%B %Y", strtotime($resul->start_date));
                         } else {
@@ -109,7 +115,7 @@ if ($locallang == "fr-FR") {
                                         <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?> :</b><br />
                                         <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
                                         <?php echo date('d/m/Y H:i', strtotime($resul->start_date)); ?><br>
-                                        <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
+                                        <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
                                         <?php echo date('d/m/Y H:i', strtotime($resul->end_date)); ?>
                                     </fieldset>
                                 </div>

@@ -66,7 +66,7 @@ switch ($ordertime) {
     case 'asc':
         $condition .=' ASC';
         break;
-	case 'desc':
+    case 'desc':
         $condition .=' DESC';
         break;
 }
@@ -81,6 +81,7 @@ $currentCampaign = $helper->getCurrent($condition);
 $pastCampaign = $helper->getPast($condition);
 $futurCampaign = $helper->getFutur($condition);
 $allCampaign = $helper->getProgram($condition);
+$now = $helper->now;
 
 jimport('joomla.html.pagination');
 $session = JFactory::getSession();

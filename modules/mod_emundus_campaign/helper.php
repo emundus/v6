@@ -16,9 +16,10 @@
             $this->total=0;
             $this->offset=JFactory::getApplication()->get('offset', 'UTC');
             try {
-                $dateTime = new DateTime(date("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+                $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
                 $dateTime = $dateTime->setTimezone(new DateTimeZone($this->offset));
                 $this->now = $dateTime->format('Y-m-d H:i:s');
+                //echo "::".$this->now;
             } catch(Exception $e) {
                 echo $e->getMessage() . '<br />';
             }
