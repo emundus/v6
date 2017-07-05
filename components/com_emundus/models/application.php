@@ -699,16 +699,6 @@ class EmundusModelApplication extends JModelList
                     </style>";
         if(isset($tableuser)) {
             foreach($tableuser as $key => $itemt) {
-                $forms .= '<br><br>';
-                $forms .= '<hr><h3>';
-                $title = explode('-', $itemt->label);
-                $forms .= JText::_($title[1]);
-
-                /*if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) && $itemt->db_table_name != "#__emundus_training"){
-                    $forms .= ' <a href="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&usekey=user&rowid='.$aid.'" alt="'.JText::_('EDIT').'" target="_blank"><i class="icon edit">'.JText::_('EDIT').'</i></a>';
-                }*/
-
-                $forms .= '</h3>';
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
@@ -719,6 +709,22 @@ class EmundusModelApplication extends JModelList
                             ORDER BY ff.ordering';
                 $this->_db->setQuery( $query );
                 $groupes = $this->_db->loadObjectList();
+
+                if (count($groupes) > 0) {
+                    $forms .= '<br><br>';
+                    $forms .= '<hr><h3>';
+                    $title = explode('-', $itemt->label);
+                    if (empty($title[1]))
+                        $forms .= JText::_($itemt->label);
+                    else
+                        $forms .= JText::_($title[1]);
+                }
+
+                /*if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) && $itemt->db_table_name != "#__emundus_training"){
+                    $forms .= ' <a href="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&usekey=user&rowid='.$aid.'" alt="'.JText::_('EDIT').'" target="_blank"><i class="icon edit">'.JText::_('EDIT').'</i></a>';
+                }*/
+
+                $forms .= '</h3>';
 
                 /*-- Liste des groupes -- */
                 foreach($groupes as $keyg => $itemg) {

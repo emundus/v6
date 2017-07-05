@@ -271,6 +271,23 @@ class EmundusModelEmails extends JModelList
     }
 
     /*
+    *  @description    Replace all accented characters by something else
+    *  @param          $str              string
+    *  @return         string            String with accents stripped
+    */
+    public function stripAccents($str) {
+        $unwanted_array = [
+            'Š'=>'S', 'š'=>'s', 'Ž'=>'Z', 'ž'=>'z', 'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
+            'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U',
+            'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss', 'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'a', 'ç'=>'c',
+            'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o',
+            'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'þ'=>'b', 'ÿ'=>'y' 
+        ];
+        $str = strtr( $str, $unwanted_array );
+        return $str;
+    }
+
+    /*
      *  @description    get tags with Fabrik elementd IDs
      *  @param          $body           string
      *  @return         array           array of application file elements IDs
@@ -370,18 +387,15 @@ class EmundusModelEmails extends JModelList
         foreach ($tags as $tag) {
             $patterns[] = '/\['.$tag['tag'].'\]/';
             $value = preg_replace($constants['patterns'], $constants['replacements'], $tag['request']);
-            if( strpos( $value, 'php|' ) === false ) {
+            if (strpos( $value, 'php|' ) === false) {
                 $request = explode('|', $value);
                 if (count($request) > 1) {
-                    try
-                    {
+                    try {
                         $query = 'SELECT '.$request[0].' FROM '.$request[1].' WHERE '.$request[2];
     
                         $db->setQuery($query);
                         $result = $db->loadResult();
-                    }
-                    catch (Exception $e)
-                    {
+                    } catch (Exception $e) {
                         $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
                         JLog::add($error, JLog::ERROR, 'com_emundus');
 
@@ -396,8 +410,7 @@ class EmundusModelEmails extends JModelList
                     $replacements[] = $result;
                 } else
                     $replacements[] = $request[0];
-                }
-            else {
+            } else {
                 $request = explode('|', $value);
                 $val = $this->setTagsFabrik($request[1], array($fnum));
                 $replacements[] = eval("$val");

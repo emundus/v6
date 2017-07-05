@@ -45,6 +45,8 @@ $application_fee            = $eMConfig->get('application_fee', 0);
 $application_form_order     = $eMConfig->get('application_form_order', null);
 $attachment_order           = $eMConfig->get('attachment_order', null);
 $application_form_name      = $eMConfig->get('application_form_name', "application_form_pdf");
+$export_pdf                 = $eMConfig->get('export_application_pdf', 0);
+$export_path                = $eMConfig->get('export_path', null);
 
 $application = new EmundusModelApplication;
 $filesModel = new EmundusModelFiles;
@@ -105,86 +107,87 @@ $code = array($student->code);
 $to_applicant = '0,1';
 $trigger_emails = $emails->sendEmailTrigger($step, $code, $to_applicant, $student);
 
-$fnum = $student->fnum;
-$fnumInfo = $filesModel->getFnumInfos($student->fnum);
+// If pdf exporting is activated
+if ($export_pdf == 1) {
+    $fnum = $student->fnum;
+    $fnumInfo = $filesModel->getFnumInfos($student->fnum);
+    $files_list = array();
 
-$files_list = array();
+    // Build pdf file
+    if (is_numeric($fnum) && !empty($fnum)) {
+        // Check if application form is in custom order
+        if (!empty($application_form_order)) {
+            $application_form_order = explode(',',$application_form_order);
+            $files_list[] = EmundusHelperExport::buildFormPDF($fnumInfo, $fnumInfo['applicant_id'], $fnum, 1, $application_form_order);
+        } else
+            $files_list[] = EmundusHelperExport::buildFormPDF($fnumInfo, $fnumInfo['applicant_id'], $fnum, 1);
 
-$start = 0;
-$limit = 1;
-
-// Build pdf file
-if (is_numeric($fnum) && !empty($fnum)) {
-    // Check if application form is in custom order
-    if (!empty($application_form_order)) {
-        $application_form_order = explode(',',$application_form_order);
-        // buildformpdf but with gid
-        $files_list[] = EmundusHelperExport::buildFormPDF($fnumInfo, $fnumInfo['applicant_id'], $fnum, 1, $application_form_order);
-    } else
-        $files_list[] = EmundusHelperExport::buildFormPDF($fnumInfo, $fnumInfo['applicant_id'], $fnum, 1);
-
-    // Check if pdf attachements are in custom order
-    if (!empty($attachment_order)) {
-        $attachment_order = explode(',',$attachment_order);
-        foreach ($attachment_order as $attachment_id) {
-            // Get file attachements corresponding to fnum and type id
-            $files[] = $application->getAttachmentsByFnum($fnum, null, $attachment_id);
-        } 
-    } else {
-        // Get all file attachements corresponding to fnum
-        $files[] = $application->getAttachmentsByFnum($fnum, null, null);
-    }
-    // Break up the file array and get the attachement files
-    foreach ($files as $file) {
-        $tmpArray = array();
-        EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $file, $fnumsInfo[$fnum]['applicant_id']);
-    }
-}
-
-if (count($files_list) > 0) {
-    // all PDF in one file
-    require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
-    $pdf = new ConcatPdf();
-
-    $pdf->setFiles($files_list);
-    $pdf->concat();
-    if (isset($tmpArray)) {
-        foreach ($tmpArray as $fn) {
-            unlink($fn);
+        // Check if pdf attachements are in custom order
+        if (!empty($attachment_order)) {
+            $attachment_order = explode(',',$attachment_order);
+            foreach ($attachment_order as $attachment_id) {
+                // Get file attachements corresponding to fnum and type id
+                $files[] = $application->getAttachmentsByFnum($fnum, null, $attachment_id);
+            } 
+        } else {
+            // Get all file attachements corresponding to fnum
+            $files[] = $application->getAttachmentsByFnum($fnum, null, null);
+        }
+        // Break up the file array and get the attachement files
+        foreach ($files as $file) {
+            $tmpArray = array();
+            EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $file, $fnumsInfo[$fnum]['applicant_id']);
         }
     }
 
-    // TODO: Build filename from tags
-    
+    if (count($files_list) > 0) {
+        // all PDF in one file
+        require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+        $pdf = new ConcatPdf();
 
-    // Format filename
-    $application_form_name = preg_replace('/[^A-Za-z0-9 _ .-]/','', $application_form_name);
-    $application_form_name = strtolower($application_form_name);
-    
-    // If a file exists with that name, delete it
-    if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $application_form_name))
-        unlink(JPATH_BASE . DS . 'tmp' . DS . $application_form_name);  
+        $pdf->setFiles($files_list);
+        $pdf->concat();
+        if (isset($tmpArray)) {
+            foreach ($tmpArray as $fn) {
+                unlink($fn);
+            }
+        }
 
-    // Ouput pdf with desired file name
-    $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $application_form_name.".pdf", 'F');
+        // Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
+        $post = array('FNUM' => $fnum);
+        $tags = $emails->setTags($student->id, $post);
+        $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
+        $application_form_name = $emails->setTagsFabrik($application_form_name, array($fnum));
+        
+        // Format filename
+        $application_form_name = $emails->stripAccents($application_form_name);
+        $application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/','', $application_form_name);
+        $application_form_name = preg_replace('/\s/', '', $application_form_name);
+        $application_form_name = strtolower($application_form_name);
+        
+        // If a file exists with that name, delete it
+        if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $application_form_name))
+            unlink(JPATH_BASE . DS . 'tmp' . DS . $application_form_name);  
 
-    $dataresult = [
-        'start' => $start, 
-        'limit' => $limit,  
-        'forms' => $forms,
-        'msg' => JText::_('FILES_ADDED').' : '.$fnum
-    ];
-    $result = ['status' => true, 'json' => $dataresult];
-} else {
-    $dataresult = [
-        'start' => $start, 
-        'limit' => $limit, 
-        'forms' => $forms,
-        'msg' => JText::_('ERROR_NO_FILE_TO_ADD').' : '.$fnum
-    ];
-    $result = ['status' => false, 'json' => $dataresult];
+        // Ouput pdf with desired file name
+        $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $application_form_name.".pdf", 'F');
+
+        // If export path is defined
+        if (!empty($export_path)) {
+            if (!file_exists(JPATH_BASE.DS.$export_path)) {
+                mkdir(JPATH_BASE.DS.$export_path);
+                chmod(JPATH_BASE.DS.$export_path, 0755);
+            }
+            if (file_exists(JPATH_BASE.DS.$export_path.$application_form_name.".pdf")) {
+                unlink(JPATH_BASE.DS.$export_path.$application_form_name.".pdf");
+            }
+            copy(JPATH_BASE.DS.'tmp'.DS.$application_form_name.".pdf", JPATH_BASE.DS.$export_path.$application_form_name.".pdf");
+        }
+        if (file_exists(JPATH_BASE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf"))
+                    unlink(JPATH_BASE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf");
+        copy(JPATH_BASE.DS.'tmp'.DS.$application_form_name.".pdf", JPATH_BASE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf");
+    }
 }
-echo json_encode((object) $result);
-exit();
+
 
 ?>  
