@@ -434,8 +434,11 @@ class EmundusModelApplication extends JModelList
         if(isset($tableuser)) {
             foreach($tableuser as $key => $itemt) {
                 $forms .= '<br><hr><h3>';
-                $title = explode('-', $itemt->label);
-                $forms .= $title[1];
+                $title = explode('-', JText::_($itemt->label));
+                if (empty($title[1]))
+                    $forms .= $itemt->label;
+                else
+                    $forms .= $title[1];
  
                 if (EmundusHelperAccess::asAccessAction(1, 'u', $this->_user->id, $fnum) &&
                     $itemt->db_table_name != "#__emundus_training")
@@ -780,7 +783,7 @@ class EmundusModelApplication extends JModelList
                                 elseif($iteme->plugin=='dropdown' || $iteme->plugin=='radiobutton') {
                                     $params = json_decode($iteme->params);
                                     $index = array_search($res[1], $params->sub_options->sub_values);
-                                    $iteme->content = $params->sub_options->sub_labels[$index];
+                                    $iteme->content = JText::_($params->sub_options->sub_labels[$index]);
                                     $iteme->content_id = $res[0];
                                 }
                             }
@@ -794,7 +797,7 @@ class EmundusModelApplication extends JModelList
                                     if ($element->plugin=='date' && $element->content>0) {
                                         $date_params = json_decode($element->params);
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
-                                    } else $elt = $element->content;
+                                    } else $elt = JText::_($element->content);
                                     
                                     $forms .= '<b>'.JText::_($element->label).': </b>'.JText::_($elt).'<br/>';
                                 }
@@ -862,10 +865,10 @@ class EmundusModelApplication extends JModelList
                                             elseif ($iteme->plugin=='dropdown' || $iteme->plugin=='radiobutton') {
                                                 $params = json_decode($iteme->params);
                                                 $index = array_search($r_elt, $params->sub_options->sub_values);
-                                                $elt = $params->sub_options->sub_labels[$index];
+                                                $elt = JText::_($params->sub_options->sub_labels[$index]);
                                             }
                                             else
-                                                $elt = $r_elt;
+                                                $elt = JText::_($r_elt);
                                             // trick to prevent from blank value in PDF when string is to long without spaces (usually emails)
                                             $elt = str_replace('@', '<br>@', $elt);
                                             $forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.JText::_($elt).'</div></td>';
@@ -929,7 +932,7 @@ class EmundusModelApplication extends JModelList
                                                     $query = preg_replace('#{thistable}#', $from, $query);
                                                     $query = preg_replace('#{my->id}#', $aid, $query);
                                                     $this->_db->setQuery( $query );
-                                                    $elt = $this->_db->loadResult();
+                                                    $elt = JText::_($this->_db->loadResult());
                                                 }
                                                 elseif ($element->plugin=='cascadingdropdown') {
                                                     $params = json_decode($elements[$j]->params);
@@ -944,22 +947,22 @@ class EmundusModelApplication extends JModelList
                                                     $query = preg_replace('#{thistable}#', $from, $query);
                                                     $query = preg_replace('#{my->id}#', $aid, $query);
                                                     $this->_db->setQuery( $query );
-                                                    $elt = $this->_db->loadResult();
+                                                    $elt = JText::_($this->_db->loadResult());
                                                 }
                                                 elseif ($elements[$j]->plugin=='textarea') 
-                                                    $elt = '<br>'.$r_elt;
+                                                    $elt = '<br>'.JText::_($r_elt);
                                                 elseif ($elements[$j]->plugin == 'checkbox') {
-                                                    $elt = implode(", ", json_decode (@$r_elt));
+                                                    $elt = JText::_(implode(", ", json_decode (@$r_elt)));
                                                 }
                                                 elseif ($elements[$j]->plugin=='dropdown' || $iteme->elements[$j]=='radiobutton') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $index = array_search($r_elt, $params->sub_options->sub_values);
-                                                    $elt = $params->sub_options->sub_labels[$index];
+                                                    $elt = JText::_($params->sub_options->sub_labels[$index]);
                                                 }
                                                 else
-                                                    $elt = $r_elt;
+                                                    $elt = JText::_($r_elt);
                                                 if (!empty($elt)) {
-                                                    $forms .= '<br><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span>: '.$elt;
+                                                    $forms .= '<br><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span>: '.JText::_($elt);
                                                 }
                                             }
                                         }
@@ -986,7 +989,7 @@ class EmundusModelApplication extends JModelList
                                             $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
 
                                             if ($params->database_join_display_type == 'checkbox'){
-                                                $elt = implode(", ", json_decode (@$element->content));
+                                                $elt = JText::_(implode(", ", json_decode (@$element->content)));
                                             } else {
                                                 $from = $params->join_db_name;
                                                 $where = $params->join_key_column.'='.$this->_db->Quote($element->content);
@@ -994,7 +997,7 @@ class EmundusModelApplication extends JModelList
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
                                                 $this->_db->setQuery( $query );
-                                                $elt = $this->_db->loadResult();
+                                                $elt = JText::_($this->_db->loadResult());
                                             }
                                         }
                                         elseif ($element->plugin=='cascadingdropdown') {
@@ -1010,21 +1013,21 @@ class EmundusModelApplication extends JModelList
                                             $query = preg_replace('#{thistable}#', $from, $query);
                                             $query = preg_replace('#{my->id}#', $aid, $query);
                                             $this->_db->setQuery( $query );
-                                            $elt = $this->_db->loadResult();
+                                            $elt = JText::_($this->_db->loadResult());
                                         }
                                         elseif ($element->plugin=='textarea')
-                                            $elt = '<br>'.$element->content;
+                                            $elt = '<br>'.JText::_($element->content);
                                         elseif ($elements[$j]->plugin == 'checkbox') {
-                                            $elt = implode(", ", json_decode (@$element->content));
+                                            $elt = JText::_(implode(", ", json_decode (@$element->content)));
                                         }
                                         elseif ($element->plugin=='dropdown' || $iteme->element=='radiobutton') {
                                             $params = json_decode($element->params);
                                             $index = array_search($element->content, $params->sub_options->sub_values);
-                                            $elt = $params->sub_options->sub_labels[$index];
+                                            $elt = JText::_($params->sub_options->sub_labels[$index]);
                                         }
                                         else ///////////////////////************
-                                            $elt = $element->content;
-                                        $forms .= '<br><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span>: '.$elt;
+                                            $elt = JText::_($element->content);
+                                        $forms .= '<br><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span>: '.JText::_($elt);
                                     }
                                 }
                             }

@@ -284,9 +284,7 @@ class EmundusViewApplication extends JViewLegacy
 							
 							$forms = $model->getforms(intval($fnumInfos['applicant_id']), $fnum, $pid);
 							$this->assignRef('forms', $forms);
-						}
-						else
-						{
+						} else {
 							echo JText::_("RESTRICTED_ACCESS");
 							exit();
 						}
