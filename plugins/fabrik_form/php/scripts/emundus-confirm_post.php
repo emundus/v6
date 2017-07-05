@@ -68,7 +68,8 @@ if ($application_fee == 1) {
 // get current applicant course
 $campaign = $campaigns->getCampaignByID($student->campaign_id);
 
-// Applicant cannot delete this attachments now
+// Database UPDATE data
+//// Applicant cannot delete this attachments now
 if (!$can_edit_until_deadline) {
     $query = 'UPDATE #__emundus_uploads SET can_be_deleted = 0 WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
     $db->setQuery( $query );
@@ -79,8 +80,6 @@ if (!$can_edit_until_deadline) {
         JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
     }
 }
-
-// Insert data in #__emundus_campaign_candidature
 $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=1 WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
 try {
@@ -106,30 +105,25 @@ $code = array($student->code);
 $to_applicant = '0,1';
 $trigger_emails = $emails->sendEmailTrigger($step, $code, $to_applicant, $student);
 
-// TODO: Build filename from tags
-
-// Format filename
-$application_form_name = preg_replace('/[^A-Za-z0-9 _ .-]/','', $application_form_name);
-$application_form_name = strtolower($application_form_name);
-
 $fnum = $student->fnum;
 $fnumInfo = $filesModel->getFnumInfos($student->fnum);
 
-if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $application_form_name))
-    $files_list = array(JPATH_BASE . DS . 'tmp' . DS . $application_form_name);
-else $files_list = array();
+$files_list = array();
 
 $start = 0;
 $limit = 1;
 
+// Build pdf file
 if (is_numeric($fnum) && !empty($fnum)) {
+    // Check if application form is in custom order
     if (!empty($application_form_order)) {
         $application_form_order = explode(',',$application_form_order);
         // buildformpdf but with gid
-        $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms);
+        $files_list[] = EmundusHelperExport::buildFormPDF($fnumInfo, $fnumInfo['applicant_id'], $fnum, 1, $application_form_order);
     } else
-        $files_list[] = EmundusHelperExport::buildFormPDF($fnumInfo, $fnumInfo['applicant_id'], $fnum, 1, $application_form_name);
+        $files_list[] = EmundusHelperExport::buildFormPDF($fnumInfo, $fnumInfo['applicant_id'], $fnum, 1);
 
+    // Check if pdf attachements are in custom order
     if (!empty($attachment_order)) {
         $attachment_order = explode(',',$attachment_order);
         foreach ($attachment_order as $attachment_id) {
@@ -138,8 +132,9 @@ if (is_numeric($fnum) && !empty($fnum)) {
         } 
     } else {
         // Get all file attachements corresponding to fnum
-        $files = $application->getAttachmentsByFnum($fnum, null, null);
+        $files[] = $application->getAttachmentsByFnum($fnum, null, null);
     }
+    // Break up the file array and get the attachement files
     foreach ($files as $file) {
         $tmpArray = array();
         EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $file, $fnumsInfo[$fnum]['applicant_id']);
@@ -158,7 +153,19 @@ if (count($files_list) > 0) {
             unlink($fn);
         }
     }
-    // Ouput pdf, this is where we give him his name
+
+    // TODO: Build filename from tags
+    
+
+    // Format filename
+    $application_form_name = preg_replace('/[^A-Za-z0-9 _ .-]/','', $application_form_name);
+    $application_form_name = strtolower($application_form_name);
+    
+    // If a file exists with that name, delete it
+    if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $application_form_name))
+        unlink(JPATH_BASE . DS . 'tmp' . DS . $application_form_name);  
+
+    // Ouput pdf with desired file name
     $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $application_form_name.".pdf", 'F');
 
     $dataresult = [

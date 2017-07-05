@@ -27,14 +27,16 @@ jimport('joomla.application.component.helper');
 class EmundusHelperExport
 {
 	
-	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 1, $application_form_pdf = 'application_form_pdf' ) {
+	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 1, $application_form_order = null ) {
 		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';
 
-		if (!file_exists($file))
+		if (!file_exists($file)) {
 			$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
-		else
+			$application_form_pdf = 'application_form_pdf';
+		} else {
 			$application_form_pdf = 'application_form_pdf_'.str_replace('-', '_', $fnumInfos['training']);
-
+		}
+		
 		if (!file_exists(EMUNDUS_PATH_ABS.$sid)) {
 			mkdir(EMUNDUS_PATH_ABS.$sid);
 			chmod(EMUNDUS_PATH_ABS.$sid, 0755);
@@ -42,7 +44,7 @@ class EmundusHelperExport
 		
 		require_once($file);
 
-		application_form_pdf($sid, $fnum, false, $form_post, $application_form_pdf);
+		application_form_pdf($sid, $fnum, false, $form_post, $application_form_order);
 		return EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_application.pdf';
 	}
 
@@ -232,20 +234,13 @@ class EmundusHelperExport
 		$pdf->SetFont('helvetica', '', 8);
 		$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 		$pdf->AddPage();
-		if(in_array(strtolower($ext), $imgExt))
-		{
+		if(in_array(strtolower($ext), $imgExt)) {
 			$pdf->setJPEGQuality(75);
 			if($ext == 'svg')
-			{
 				$pdf->ImageSVG(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
-			}
 			else
-			{
 				$pdf->Image(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
-			}
-		}
-		else
-		{
+		} else {
 			$htmlData = JText::_('ENCRYPTED_FILE').' : ';
 			$htmlData .= '<a href="'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';
 			$pdf->startTransaction();

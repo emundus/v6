@@ -586,8 +586,7 @@ function data_to_img($match) {
     return "$img$fn$end";  // new <img> tag
 }
 
-function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1) {
-	// add gid
+function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $application_form_order = null) {
 	jimport( 'joomla.html.parameter' );
 	set_time_limit(0);
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
@@ -622,10 +621,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	// Get form HTML
 	$htmldata = '';
     $forms ='';
-	if ($form_post) {
-		$forms = $application->getFormsPDF($user_id, $fnum);
-		//add gid
-    }
+	if ($form_post)
+		$forms = $application->getFormsPDF($user_id, $fnum, $application_form_order);
+	
 	// Create PDF object
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 	$pdf->SetCreator(PDF_CREATOR);
@@ -658,9 +656,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     // manage logo by programme
     $ext = substr($logo, -3);
     $logo_prg = substr($logo, 0, -4).'-'.$item->training.'.'.$ext;
-    if (is_file($logo_prg)) {
+    if (is_file($logo_prg))
     	$logo = $logo_prg;
-    }
 
 	//get title
 	$title = $config->get('sitename');
