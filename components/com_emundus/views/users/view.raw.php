@@ -26,7 +26,7 @@ class EmundusViewUsers extends JViewLegacy
 	var $_db = null;
     var $filts_details = null;
 
-	function __construct($config = array()){
+	function __construct($config = array()) {
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
@@ -48,8 +48,7 @@ class EmundusViewUsers extends JViewLegacy
         $filts_values	= explode(',', $menu_params->get('em_filters_values'));
         //$filts_types  	= explode(',', $menu_params->get('em_filters_options'));
 
-        foreach ($filts_names as $key => $filt_name)
-        {
+        foreach ($filts_names as $key => $filt_name) {
             if (array_key_exists($key, $filts_values) && !empty($filts_values[$key]))
                 $this->filts_details[$filt_name] = explode('|', $filts_values[$key]);
             else
@@ -74,8 +73,7 @@ class EmundusViewUsers extends JViewLegacy
 		$this->assignRef('lists', $lists);
 	}
 
-	private function _loadFilter()
-	{
+	private function _loadFilter() {
         $userModel = new EmundusModelUsers();
         $model = new EmundusModelFiles;
         $model->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
@@ -86,7 +84,6 @@ class EmundusViewUsers extends JViewLegacy
         // reset filter
         $filters = @EmundusHelperFiles::resetFilter();
         $this->assignRef('filters', $filters);
-
 	}
 
 	private function _loadUserForm()
@@ -160,13 +157,11 @@ class EmundusViewUsers extends JViewLegacy
 	function display($tpl = null)
 	{
 
-		if(!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+		if(!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
 			die("ACCESS_DENIED");
-		}
 
 		$layout = JFactory::getApplication()->input->getString('layout', null); 
-		switch  ($layout)
-		{
+		switch ($layout) {
 			case 'user':
 				$this->_loadData();
 				break;

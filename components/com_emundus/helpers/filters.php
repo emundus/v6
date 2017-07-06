@@ -41,8 +41,7 @@ class EmundusHelperFilters {
 						else
 							$results[$key][$option] = '';
 					}
-				}
-				else {
+				} else {
 					$params = json_decode($result->params);
 					foreach ($options as $option) {
 						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options))
@@ -115,8 +114,7 @@ class EmundusHelperFilters {
 		return $syear[0];
 	}
 
-	public function getCampaignByID($id)
-	{
+	public function getCampaignByID($id) {
 		$db = JFactory::getDBO();
 		$query = 'SELECT * FROM #__emundus_setup_campaigns WHERE id='.$id;
 		$db->setQuery( $query );
@@ -124,7 +122,7 @@ class EmundusHelperFilters {
 		return $db->loadAssoc();
 	}
 
-	public function getApplicants(){
+	public function getApplicants() {
 		$db = JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label
 		FROM #__emundus_setup_profiles esp 
@@ -133,7 +131,7 @@ class EmundusHelperFilters {
 		return $db->loadObjectList('id');
 	}
 	
-	function getProfiles(){
+	function getProfiles() {
 		$db = JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft 
 		FROM #__emundus_setup_profiles esp 
@@ -143,7 +141,7 @@ class EmundusHelperFilters {
 		return $db->loadObjectList('id');
 	}
 	
-	function getEvaluators(){
+	function getEvaluators() {
 		$db = JFactory::getDBO();
 		$query = 'SELECT u.id, u.name
 		FROM #__users u
@@ -156,7 +154,7 @@ class EmundusHelperFilters {
 		return $db->loadObjectList('id');
 	}
 	
-	function getGroupsEval(){
+	function getGroupsEval() {
 		$db = JFactory::getDBO();
 		$query = 'SELECT ege.group_id
 		FROM #__emundus_groups_eval ege
@@ -166,7 +164,7 @@ class EmundusHelperFilters {
 		return $db->loadObjectList();
 	}
 
-	function getGroups(){
+	function getGroups() {
 		$db = JFactory::getDBO();
 		$query = 'SELECT esg.id, esg.label  
 		FROM #__emundus_setup_groups esg
@@ -176,7 +174,7 @@ class EmundusHelperFilters {
 		return $db->loadObjectList('id');
 	}
 	
-	function getSchoolyears(){
+	function getSchoolyears() {
 		$db = JFactory::getDBO();
 		$query = 'SELECT DISTINCT(year) as schoolyear
 			FROM #__emundus_setup_campaigns 
@@ -186,14 +184,14 @@ class EmundusHelperFilters {
 		return $db->loadResultArray();
 	}
 	
-	function getFinal_grade(){
+	function getFinal_grade() {
 		$db = JFactory::getDBO();
 		$query = 'SELECT name, params FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
 		$db->setQuery( $query );
 		return @EmundusHelperFilters::insertValuesInQueryResult($db->loadAssocList('name'), array("sub_values", "sub_labels"));
 	}
 	
-	function getMissing_doc(){
+	function getMissing_doc() {
 		$db = JFactory::getDBO();
 		$query = 'SELECT DISTINCT(esap.attachment_id), esa.value
 				FROM #__emundus_setup_attachment_profiles esap
@@ -202,7 +200,7 @@ class EmundusHelperFilters {
 		return $db->loadObjectList();
 	}
 
-	function getEvaluation_doc($result){
+	function getEvaluation_doc($result) {
 		$db = JFactory::getDBO();
 		$query = 'SELECT *
 				FROM #__emundus_setup_attachments esa
@@ -247,12 +245,10 @@ class EmundusHelperFilters {
 		$profiles 	= $user->getApplicantProfiles();
 		$plist 		= $profile->getProfileIDByCourse($programme);
 
-		foreach ($profiles as $profile)
-		{
+		foreach ($profiles as $profile) {
 			if (count($plist)==0 || (count($plist)>0 && in_array($profile->id, $plist))) {
 				$menu_list = $menu->buildMenuQuery($profile->id); 
-				foreach ($menu_list as $m)
-				{
+				foreach ($menu_list as $m) {
 					$fl[] = $m->table_id;
 				}
 			}
@@ -286,7 +282,7 @@ class EmundusHelperFilters {
 	* @param 	int 	Does the element are hidden in Fabrik list ; if 0, show only displayed Fabrik Items ? 
 	* @return   array 	list of Fabrik element ID used in evaluation form
 	**/
-	function getElementsByGroups($groups, $show_in_list_summary=1, $hidden=0){
+	function getElementsByGroups($groups, $show_in_list_summary=1, $hidden=0) {
 		$db = JFactory::getDBO();
 		$query = 'SELECT element.name, element.label, element.plugin, element.id as element_id, groupe.id, groupe.label AS group_label, element.params,
 				INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias
@@ -314,7 +310,7 @@ class EmundusHelperFilters {
 	* @param 	int 	Does the element are shown in Fabrik list ? 
 	* @return   array 	list of Fabrik element ID used in evaluation form
 	**/
-	function getAllElementsByGroups($groups){
+	function getAllElementsByGroups($groups) {
 		$db = JFactory::getDBO();
 		$query = 'SELECT element.name, element.label, element.plugin, element.id as element_id, groupe.id, groupe.label AS group_label, element.params,
 				INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias
@@ -332,7 +328,7 @@ class EmundusHelperFilters {
 		return $db->loadObjectList();
 	}
 	
-	function getElementsOther($tables){
+	function getElementsOther($tables) {
 		$db = JFactory::getDBO();
 		$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id as group_id, groupe.label AS group_label, element.params AS element_attribs,
 			INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label 
@@ -340,11 +336,11 @@ class EmundusHelperFilters {
 				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id 
 				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
 				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id';
-		if(!empty($tables) && !empty($tables[0])) {
+		if (!empty($tables) && !empty($tables[0])) {
 			$query .= ' WHERE tab.id IN(';
 			$first = true;
-			foreach($tables as $table){
-				if ($first){
+			foreach ($tables as $table) {
+				if ($first) {
 					$query .= $table;
 					$first = false;
 				}
@@ -352,8 +348,7 @@ class EmundusHelperFilters {
 			}
 			$query .= ') AND ';
 		}
-		else
-			$query .= ' WHERE ';
+		else $query .= ' WHERE ';
 		$query .= 'element.name NOT IN ("id", "time_date", "user", "student_id", "type_grade", "final_grade")
 				ORDER BY group_id';
 		$db->setQuery($query);
@@ -361,7 +356,7 @@ class EmundusHelperFilters {
 		return $db->loadObjectList();
 	}
 	
-	function getElementsValuesOther($element_id){
+	function getElementsValuesOther($element_id) {
 		//jimport( 'joomla.registry.format.json' );
 		$db = JFactory::getDBO();
 		$query = 'SELECT params FROM #__fabrik_elements element WHERE id='.$element_id;
@@ -372,7 +367,7 @@ class EmundusHelperFilters {
 		return $sub->sub_options;
 	}
 
-	function getElementsName($elements_id){ 
+	function getElementsName($elements_id) { 
 		$db = JFactory::getDBO();
 		$query = 'SELECT element.name AS element_name, element.id, tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias
 				FROM #__fabrik_elements element
@@ -384,14 +379,14 @@ class EmundusHelperFilters {
 		return  $db->loadObjectList();
 	}
 	
-	function buildOptions($element_name, $params){ 
-		if(!empty($params->join_key_column)) {
+	function buildOptions($element_name, $params) { 
+		if (!empty($params->join_key_column)) {
 			$db = JFactory::getDBO();
-			if($element_name == 'result_for')
+			if ($element_name == 'result_for')
 				$query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' WHERE published=1';
-			elseif($element_name == 'campaign_id')
+			elseif ($element_name == 'campaign_id')
 				$query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name;
-			elseif($element_name=='training_id')
+			elseif ($element_name=='training_id')
 				$query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' ORDER BY '.$params->join_db_name.'.date_start ';
 			else
 				$query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' '.$params->database_join_where_sql;
@@ -415,16 +410,16 @@ class EmundusHelperFilters {
 	** @return string The query WHERE.
 	*/
 	function setWhere($search, $search_values, &$query) {
-		if(isset($search) && !empty($search)) {
+		if (isset($search) && !empty($search)) {
 			$i = 0;
 			foreach ($search as $s) {
-				if( (!empty($search_values[$i]) || isset($search_values[$i])) && $search_values[$i]!="" ){
+				if ((!empty($search_values[$i]) || isset($search_values[$i])) && $search_values[$i]!="") {
 					$tab = explode('.', $s);
 					if (count($tab)>1) {
-						if($tab[0]=='jos_emundus_training'){
+						if ($tab[0]=='jos_emundus_training'){
 							$query .= ' AND ';
 							$query .= ' search_'.$tab[0].'.id like "%'.$search_values[$i].'%"';
-						}else{
+						} else {
 							$query .= ' AND ';
 							$query .= $tab[0].'.'.$tab[1].' like "%'.$search_values[$i].'%"';
 						}
@@ -448,18 +443,19 @@ class EmundusHelperFilters {
 //echo "<hr>".$selected->element_plugin;
 //echo " : ".$search_value;
 		$current_filter = "";
-		if(!empty($selected)) {
-			if($selected->element_plugin == "databasejoin"){
+		if (!empty($selected)) {
+			if ($selected->element_plugin == "databasejoin"){
 				$query_paramsdefs = JPATH_BASE.DS.'plugins'.DS.'fabrik_element'.DS.'databasejoin'.DS.'field.xml';
 				$query_params = new JParameter($selected->element_attribs, $query_paramsdefs);
 				$query_params = json_decode($query_params);
 				$option_list =  @EmundusHelperFilters::buildOptions($selected->element_name, $query_params);
 				$current_filter .= '<select name="'.$elements_values.'[]" id="'.$elements_values.'" onChange="document.adminForm.task.value=\'\'; javascript:submit()">
 				<option value="">'.JText::_('PLEASE_SELECT').'</option>';
-				if(!empty($option_list)){
-					foreach($option_list as $value){
+				if (!empty($option_list)) {
+					foreach ($option_list as $value) {
 						$current_filter .= '<option value="'.$value->elt_key.'"';
-						if ($value->elt_key == $search_value) $current_filter .= ' selected';
+						if ($value->elt_key == $search_value) 
+							$current_filter .= ' selected';
 						$current_filter .= '>'.$value->elt_val.'</option>';
 					}
 				}
@@ -471,10 +467,11 @@ class EmundusHelperFilters {
 				$option_list =  @EmundusHelperFilters::buildOptions($selected->element_name, $query_params);
 				$current_filter .= '<select name="'.$elements_values.'[]" id="'.$elements_values.'" onChange="document.adminForm.task.value=\'\'; javascript:submit()">
 				<option value="">'.JText::_('PLEASE_SELECT').'</option>';
-				if(!empty($option_list)){
-					foreach($option_list as $value){
+				if (!empty($option_list)) {
+					foreach ($option_list as $value) {
 						$current_filter .= '<option value="'.$value->elt_key.'"';
-						if ($value->elt_key == $search_value) $current_filter .= ' selected';
+						if ($value->elt_key == $search_value) 
+							$current_filter .= ' selected';
 						$current_filter .= '>'.$value->elt_val.'</option>';
 					}
 				}
@@ -970,10 +967,9 @@ class EmundusHelperFilters {
 		return $filters;
 	}
 */
-	function getEmundusFilters()
-	{
+	function getEmundusFilters() {
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-		if(isset($itemid) && !empty($itemid)){
+		if (isset($itemid) && !empty($itemid)) {
 			$user = JFactory::getUser();
 			$db = JFactory::getDBO();
 			$query = 'SELECT * FROM #__emundus_filters WHERE user='.$user->id.' AND item_id='.$itemid;

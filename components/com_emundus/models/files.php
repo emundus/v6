@@ -1523,18 +1523,46 @@ DELETE 06/06/2016
      * @return mixed
      * @throws Exception
      */
-    public function getAllTags()
-    {
+    public function getAllTags() {
         $query = 'select * from #__emundus_setup_action_tag where 1';
         $db = $this->getDbo();
 
-        try
-        {
+        try {
             $db->setQuery($query);
             return $db->loadAssocList();
+        } catch(Exception $e) {
+            throw $e;
         }
-        catch(Exception $e)
-        {
+    }
+
+    /**
+     * @return mixed
+     * @throws Exception
+     */
+    public function getAllGroups() {
+        $query = 'select * from #__emundus_setup_groups where published=1';
+        $db = $this->getDbo();
+
+        try {
+            $db->setQuery($query);
+            return $db->loadAssocList();
+        } catch(Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * @return mixed
+     * @throws Exception
+     */
+    public function getAllInstitutions() {
+        $query = 'select * from #__categories where extension="com_contact" order by lft';
+        $db = $this->getDbo();
+
+        try {
+            $db->setQuery($query);
+            return $db->loadAssocList();
+        } catch(Exception $e) {
             throw $e;
         }
     }

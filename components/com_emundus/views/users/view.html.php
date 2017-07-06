@@ -42,55 +42,55 @@ class EmundusViewUsers extends JViewLegacy
 		parent::__construct($config);
 	}
 
-            private function _loadData()
-        {
-            $userModel = new EmundusModelUsers();
-            $users = $userModel->getUsers();
-            $this->assignRef('users', $users);
+    private function _loadData() {
+		$userModel = new EmundusModelUsers();
+		$users = $userModel->getUsers();
+		$this->assignRef('users', $users);
 
-            $pagination = $userModel->getPagination();
-            $this->assignRef('pagination', $pagination);
+		$pagination = $userModel->getPagination();
+		$this->assignRef('pagination', $pagination);
 
-            $lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
-            $lists['order']   = JFactory::getSession()->get( 'filter_order' );
-            $this->assignRef('lists', $lists);
-        }
+		$lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
+		$lists['order']   = JFactory::getSession()->get( 'filter_order' );
+		$this->assignRef('lists', $lists);
+	}
 
-            private function _loadFilter()       {
+    private function _loadFilter() {
+		$menu 		= JSite::getMenu()->getActive();
+		$access 	= !empty($menu)?$menu->access : 0;
+		$state 		= EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access)  ? '' : NULL;
+		$session 	= JFactory::getSession();
+		$params 	= $session->get('filt_params');
+		$state 		= $params;
+		
+		$filts_details	= [
+			'profile_users'		=> 1,
+			'evaluator_group'	=> 1,
+			'schoolyear'		=> 1,
+			'campaign'			=> 1,
+			'programme'			=> 1,
+			//'finalgrade'		=> $state,
+			'newsletter'		=> 1,
+			'group'             => 1,
+			'institution'       => 1,
+			'spam_suspect'		=> 1,
+			'not_adv_filter'	=> 1,
+		];
+		$filts_options 	= [
+			'profile_users'		=> NULL,
+			'evaluator_group'	=> NULL,
+			'schoolyear'		=> NULL,
+			'campaign'			=> NULL,
+			'programme'			=> NULL,
+			//'finalgrade'		=> NULL,
+			'newsletter'		=> NULL,
+			'spam_suspect'		=> NULL,
+			'not_adv_filter'	=> NULL,
+		];
 
-                $menu = JSite::getMenu()->getActive();
-                $access = !empty($menu)?$menu->access : 0;
-
-                $state			= EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access)  ? '' : NULL;
-                $session = JFactory::getSession();
-                $params = $session->get('filt_params');
-                $state = $params;
-                $filts_details	= array('profile_users'		=> 1,
-                                          'groups' 			=> 1,
-                                          'evaluator_group'	=> 1,
-                                          'schoolyear'		=> 1,
-                                          'campaign'		=> 1,
-                                          'programme'		=> 1,
-                                          //'finalgrade'		=> $state,
-                                          'newsletter'		=> 1,
-                                          'spam_suspect'	=> 1,
-                                          'not_adv_filter'	=> 1,
-                );
-                $filts_options 	= array('profile_users'		=> NULL,
-                                          'evaluator_group'	=> NULL,
-                                          'evaluator_group'	=> NULL,
-                                          'schoolyear'		=> NULL,
-                                          'campaign'		=> NULL,
-                                          'programme'		=> NULL,
-                                          //'finalgrade'		=> NULL,
-                                          'newsletter'		=> NULL,
-                                          'spam_suspect'	=> NULL,
-                                          'not_adv_filter'	=> NULL,
-                );
-
-                $filters = EmundusHelperFiles::createFilterBlock($filts_details, $filts_options, array());
-                $this->assignRef('filters', $filters);
-            }
+		$filters = EmundusHelperFiles::createFilterBlock($filts_details, $filts_options, array());
+		$this->assignRef('filters', $filters);
+	}
 
 	private function _loadUserForm()
 	{

@@ -93,6 +93,8 @@ class EmundusModelUsers extends JModelList
         $spam_suspect   = @$params['spam_suspect'];
         $profile        = @$params['profile'];
         $newsletter     = @$params['newsletter'];
+        $group          = @$params['group'];
+        $institution    = @$params['institution'];
 
         $uid = JRequest::getVar('rowid', null, 'GET', 'none', 0);
         $edit = JRequest::getVar('edit', 0, 'GET', 'none', 0);
@@ -201,6 +203,12 @@ class EmundusModelUsers extends JModelList
                                 )
                             )';
         }
+        
+        if (isset($group) && !empty($group) && $group[0] != '%')
+            $query .= ' AND u.id IN( SELECT jeg.user_id FROM #__emundus_groups as jeg WHERE jeg.group_id IN ('.implode(',', $group).')) ';
+
+        if (isset($institution) && !empty($institution) && $institution[0] != '%')
+            $query .= ' AND u.id IN( SELECT jeu.user_id FROM #__emundus_users as jeu WHERE jeu.university_id IN ('.implode(',', $institution).')) ';
 
         if ($edit==1) {
             $query.= ' u.id='.mysql_real_escape_string($uid);

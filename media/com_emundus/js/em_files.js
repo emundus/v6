@@ -757,29 +757,26 @@ $(document).ready(function()
             var id = $(this).attr('id');
 
             if (id != 'elements') {
-                if ($('#' + id).attr('multiple') != undefined) {
+                if ($('#' + id).attr('multiple') != undefined)
                     var multi = true;
-                } else {
+                else
                     var multi = false;
-                }
+
                 var test = id.split('-');
                 test.pop();
-                if (test.join('-') == 'em-adv-fil') {
+                if (test.join('-') == 'em-adv-fil')
                     var elements_son = true;
-                } else {
+                else
                     var elements_son = false;
-                }
 
                 if (multi) {
                     var value = $('#' + id).val();
                     if (value != null && value.length > 1 && value[0] == '%') {
-                        if ((lastVal.hasOwnProperty(id) && lastVal[id][0] != '%'))
-                        {
+                        if ((lastVal.hasOwnProperty(id) && lastVal[id][0] != '%')) {
                             $('#' + id + ' option:selected').removeAttr('selected');
                             $('#' + id + ' option')[0].selected = true;
                             $('.chzn-select').trigger('chosen:updated');
-                        } else
-                        {
+                        } else {
                             $('#' + id + ' option')[0].selected = false;
                             $('#' + id + ' option')[0].removeAttribute('selected');
                             $('#' + id + '_chosen .chosen-choices .search-choice a[data-option-array-index="0"]').click();
@@ -788,7 +785,6 @@ $(document).ready(function()
                     }
                 }
                 search();
-
             } else {
                 var father = $(this).parent('fieldset').attr('id');
                 getSearchBox($(this).val(), father);

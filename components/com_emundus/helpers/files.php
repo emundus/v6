@@ -66,23 +66,18 @@ class EmundusHelperFiles
 
     }
 
-    public  function setMenuFilter()
-    {
+    public function setMenuFilter() {
         //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
-        $current_user = JFactory::getUser();
-
-        $menu = @JSite::getMenu();
-        $current_menu  = $menu->getActive();
-        $menu_params = $menu->getParams(@$current_menu->id);
-
-        $m_files = new EmundusModelFiles();
+        $current_user   = JFactory::getUser();
+        $menu           = @JSite::getMenu();
+        $current_menu   = $menu->getActive();
+        $menu_params    = $menu->getParams(@$current_menu->id);
+        $m_files        = new EmundusModelFiles();
 
         if (!JFactory::getSession()->has('filt_params'))
-        {
             JFactory::getSession()->set('filt_params', array());
-        }
 
         JFactory::getSession()->set('filt_menu', array());
         $params = JFactory::getSession()->get('filt_params');
@@ -92,74 +87,73 @@ class EmundusHelperFiles
         $filts_names    = explode(',', $menu_params->get('em_filters_names'));
         $filts_values   = explode(',', $menu_params->get('em_filters_values'));
         $filts_types    = explode(',', $menu_params->get('em_filters_options'));
-/*echo "<pre>";
-var_dump($filts_names);
-var_dump($filts_values);
-echo "<hr>";
-echo "</pre>";
-*/
+
         // All types of filters
-        $filts_details  = array('profile'           => NULL,
-                                  'evaluator'           => NULL,
-                                  'evaluator_group' => NULL,
-                                  'schoolyear'          => NULL,
-                                  'campaign'            => NULL,
-                                  'programme'           => NULL,
-                                  'missing_doc'     => NULL,
-                                  'complete'            => NULL,
-                                  'finalgrade'          => NULL,
-                                  'validate'            => NULL,
-                                  'other'               => NULL,
-                                  'status'              => NULL,
-                                  'published'          => NULL,
-                                  'adv_filter'          => NULL,
-                                  'newsletter'          => NULL,
-                                  'spam_suspect'        => NULL,
-                                  'not_adv_filter'  => NULL);
-        $filts_options  = array('profile'           => NULL,
-                                  'evaluator'           => NULL,
-                                  'evaluator_group' => NULL,
-                                  'schoolyear'          => NULL,
-                                  'campaign'            => NULL,
-                                  'programme'           => NULL,
-                                  'missing_doc'     => NULL,
-                                  'complete'            => NULL,
-                                  'finalgrade'          => NULL,
-                                  'validate'            => NULL,
-                                  'other'               => NULL,
-                                  'status'              => NULL,
-                                  'published'          => NULL,
-                                  'adv_filter'          => NULL,
-                                  'newsletter'          => NULL,
-                                  'spam_suspect'        => NULL,
-                                  'not_adv_filter'      => NULL);
+        $filts_details  = [
+            'profile'           => NULL,
+            'evaluator'         => NULL,
+            'evaluator_group'   => NULL,
+            'schoolyear'        => NULL,
+            'campaign'          => NULL,
+            'programme'         => NULL,
+            'missing_doc'       => NULL,
+            'complete'          => NULL,
+            'finalgrade'        => NULL,
+            'validate'          => NULL,
+            'other'             => NULL,
+            'status'            => NULL,
+            'published'         => NULL,
+            'adv_filter'        => NULL,
+            'newsletter'        => NULL,
+            'group'             => NULL,
+            'institution'       => NULL,
+            'spam_suspect'      => NULL,
+            'not_adv_filter'    => NULL
+        ];
+        $filts_options  = [
+            'profile'           => NULL,
+            'evaluator'         => NULL,
+            'evaluator_group'   => NULL,
+            'schoolyear'        => NULL,
+            'campaign'          => NULL,
+            'programme'         => NULL,
+            'missing_doc'       => NULL,
+            'complete'          => NULL,
+            'finalgrade'        => NULL,
+            'validate'          => NULL,
+            'other'             => NULL,
+            'status'            => NULL,
+            'published'         => NULL,
+            'adv_filter'        => NULL,
+            'newsletter'        => NULL,
+            'group'             => NULL,
+            'institution'       => NULL,
+            'spam_suspect'      => NULL,
+            'not_adv_filter'    => NULL
+        ];
         /*  $validate_id    = explode(',', $menu_params->get('em_validate_id'));
             $columnSupl = explode(',', $menu_params->get('em_actions'));*/
 
-        $filter_multi_list = array('schoolyear', 'campaign', 'programme', 'status', 'profile_users');
+        $filter_multi_list = array('schoolyear', 'campaign', 'programme', 'status', 'profile_users', 'group', 'institution');
 
         //$tab_params = array();
-        foreach ($filts_names as $key => $filt_name)
-        {
-            if(!is_null($filts_values[$key]) && isset($filts_values[$key]) && empty($params[$filt_name])){
-
-                if(in_array($filt_name, $filter_multi_list)) {
+        foreach ($filts_names as $key => $filt_name) {
+            
+            if (!is_null($filts_values[$key]) && isset($filts_values[$key]) && empty($params[$filt_name])) {
+                if (in_array($filt_name, $filter_multi_list)) {
                     $params[$filt_name] = array();
                     $params[$filt_name] = explode('|', $filts_values[$key]);
                     $params[$filt_name] = array_unique($params[$filt_name]);
-                }
-                else {
-                    $params[$filt_name] = $filts_values[$key];
-                }
+                } else $params[$filt_name] = $filts_values[$key];
             }
+
             if (array_key_exists($key, $filts_values)) {
-                if(in_array($filt_name, $filter_multi_list))
+                if (in_array($filt_name, $filter_multi_list))
                     $filts_details[$filt_name] = explode('|', $filts_values[$key]);
                 else
                     $filts_details[$filt_name] = $filts_values[$key];
-            }
-            else
-                $filts_details[$filt_name] = '';
+            } else $filts_details[$filt_name] = '';
+            
             if (array_key_exists($key, $filts_types)) {
                 if ($filts_types[$key] == "hidden") {
                     if(in_array($filt_name, $filter_multi_list))
@@ -168,8 +162,8 @@ echo "</pre>";
                         $params[$filt_name] = $filts_values[$key];
                 }
                 $filts_options[$filt_name] = $filts_types[$key];
-            } else
-                $filts_options[$filt_name] = '';
+            } else $filts_options[$filt_name] = '';
+        
         }
 
 /*        var_dump($filts_details['programme']);
@@ -177,24 +171,31 @@ echo "</pre>";
         var_dump($params);
         echo "<hr>";*/
         // on force avec la valeur du filtre défini dans les options de menu
-        if (count($filts_details['status'])>0 && isset($filts_details['status'][0]) && !empty($filts_details['status'][0])) {
+        if (count($filts_details['status'])>0 && isset($filts_details['status'][0]) && !empty($filts_details['status'][0]))
             $params['status'] = $filts_details['status'];
-        }
-        if (count($filts_details['programme'])>0 && isset($filts_details['programme'][0]) && !empty($filts_details['programme'][0])) {
+
+        if (count($filts_details['group'])>0 && isset($filts_details['group'][0]) && !empty($filts_details['group'][0]))
+            $params['group'] = $filts_details['group'];
+
+        if (count($filts_details['institution'])>0 && isset($filts_details['institution'][0]) && !empty($filts_details['institution'][0]))
+            $params['institution'] = $filts_details['institution'];
+
+        // Else statement is present due to the fact that programmes are group limited
+        if (count($filts_details['programme']) > 0 && isset($filts_details['programme'][0]) && !empty($filts_details['programme'][0])) {
             $params['programme'] = $filts_details['programme'];
         } else {
             // ONLY FILES LINKED TO MY GROUP
             $programme = count($this->code)>0?$this->code:null;
             //////////////////////////////////////////
-      //var_dump($params['programme']);
+            //var_dump($params['programme']);
             if (count(@$params['programme']) == 0 || @$params['programme'][0] == '%') {
                 $params['programme'] = $programme;
                 $filts_details['programme'] = $programme;
-            } elseif(count($filts_details['programme']) == 0 || empty($filts_details['programme'])) {
+            } elseif (count($filts_details['programme']) == 0 || empty($filts_details['programme'])) {
                 $filts_details['programme'] = $programme;
             }
             $codes = $m_files->getAssociatedProgrammes($current_user->id);
-            if(count($codes)>0) {
+            if (count($codes)>0) {
                 $params['programme'] = array_merge($params['programme'], $codes);
                 $filts_details['programme'] = array_merge($filts_details['programme'], $codes);
             }
@@ -213,8 +214,7 @@ echo "</pre>";
     /*
     ** @description Clear session and reinit values by default
     */
-    public  function resetFilter()
-    {
+    public function resetFilter() {
         $filters = @EmundusHelperFiles::setMenuFilter();
         return @EmundusHelperFiles::createFilterBlock($filters['filts_details'], $filters['filts_options'], $filters['tables']);
     }
@@ -824,7 +824,7 @@ echo "</pre>";
     ** @param array $tables List of the tables contained in "Other filters" dropbox.
     ** @return string HTML to display in page for filter block.
     */  //$filts_details, $filts_options, $tables
-    public  function createFilterBlock($params, $types, $tables){
+    public function createFilterBlock($params, $types, $tables){
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
         $files = new EmundusModelFiles();
 
@@ -836,8 +836,7 @@ echo "</pre>";
         $session     = JFactory::getSession();
         $filt_params = $session->get('filt_params');
         $select_id   = $session->get('select_filter');
-        if (!is_null($select_id))
-        {
+        if (!is_null($select_id)) {
             $research_filter = @EmundusHelperFiles::getEmundusFilters($select_id);
             $filter =  json_decode($research_filter->constraints, true);
             $filt_params = $filter['filter'];
@@ -846,7 +845,6 @@ echo "</pre>";
         $current_s              = @$filt_params['s'];
         $current_profile        = @$filt_params['profile'];
         $current_eval           = @$filt_params['user'];
-        //$current_group            = @$filt_params['group'];
         $miss_doc               = @$filt_params['missing_doc'];
         $current_finalgrade     = @$filt_params['finalgrade'];
         $current_schoolyear     = @$filt_params['schoolyear'];
@@ -862,6 +860,8 @@ echo "</pre>";
         $current_group_eval     = @$filt_params['evaluator_group'];
         $current_user_profile   = @$filt_params['profile_users'];
         $newsletter             = @$filt_params['newsletter'];
+        $current_group          = @$filt_params['group'];
+        $current_institution    = @$filt_params['institution'];
         $spam_suspect           = @$filt_params['spam_suspect'];
         $filters = '';
         // Quick filter
@@ -879,7 +879,7 @@ echo "</pre>";
         $filters .= $quick;
 
         $filters .= '<fieldset class="em_filters_filedset">';
-        if(@$params['profile'] !== NULL){
+        if (@$params['profile'] !== NULL) {
             $profile = '';
             $hidden = $types['profile'] != 'hidden' ? false : true;
             if ($types['profile'] != 'hidden')
@@ -888,20 +888,20 @@ echo "</pre>";
             $profile .= '           <select class="chzn-select em-filt-select" id="select_profile" name="profile" '.($types['profile'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'">
                          <option value="0">'.JText::_('ALL').'</option>';
             $profiles = @EmundusHelperFiles::getApplicants();
-            foreach($profiles as $prof)
-            {
+            foreach ($profiles as $prof) {
                 $profile .= '<option value="'.$prof->id.'"';
                 if(!empty($current_profile) && (in_array($prof->id, $current_profile) || $prof->id == $current_profile))
                     $profile .= ' selected="true"';
                 $profile .= '>'.$prof->label.'</option>';
             }
             $profile .= '</select>';
-            if ($types['profile'] != 'hidden') $profile .= '</div>';
+            if ($types['profile'] != 'hidden')
+                $profile .= '</div>';
             $filters .= $profile;
         }
         //if($debug==1) $div .= '<input name="view_calc" type="checkbox" onclick="document.pressed=this.name" value="1" '.$view_calc==1?'checked=checked':''.' />';
 
-        if(@$params['profile_users'] !== NULL){
+        if (@$params['profile_users'] !== NULL) {
             $hidden = $types['profile_users'] != 'hidden' ? false : true;
             $profile_user = '';
             if ($types['profile_users'] != 'hidden')
@@ -912,19 +912,21 @@ echo "</pre>";
             $profile_users = @EmundusHelperFiles::getProfiles();
             $prefilter = count($filt_params['profile_users'])>0?true:false;
 
-            foreach($profile_users as $profu) {
-                if(!$prefilter || ($prefilter && in_array($profu->id, $params['profile_users']))) {
+            foreach ($profile_users as $profu) {
+                if (!$prefilter || ($prefilter && in_array($profu->id, $params['profile_users']))) {
                     $profile_user .= '<option value="' . $profu->id . '"';
-                    if($current_user_profile == $profu->id) $profile_user .= ' selected="true"';
+                    if ($current_user_profile == $profu->id) 
+                        $profile_user .= ' selected="true"';
                     $profile_user .= '>' . $profu->label . '</option>';
                 }
             }
             $profile_user .= '</select>';
-            if ($types['profile_users'] != 'hidden') $profile_user .= '</div><script>$(document).ready(function() {$("#select_profile_users").chosen({width: "75%"}); })</script>';
+            if ($types['profile_users'] != 'hidden')
+                $profile_user .= '</div><script>$(document).ready(function() {$("#select_profile_users").chosen({width: "75%"}); })</script>';
             $filters .= $profile_user;
         }
 
-        if(@$params['evaluator'] !== NULL){
+        if (@$params['evaluator'] !== NULL) {
             $eval = '';
             $hidden = $types['evaluator'] != 'hidden' ? false : true;
             if ($types['evaluator'] != 'hidden')
@@ -934,17 +936,19 @@ echo "</pre>";
             $eval .= '<select class="chzn-select em-filt-select" id="select_user" name="user" '.($types['evaluator'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
                       <option value="0">'.JText::_('ALL').'</option>';
             $evaluators = @EmundusHelperFiles::getEvaluators();
-            foreach($evaluators as $evaluator) {
+            foreach ($evaluators as $evaluator) {
                 $eval .= '<option value="'.$evaluator->id.'"';
-                if($current_eval == $evaluator->id) $eval .= ' selected="true"';
+                if($current_eval == $evaluator->id)
+                    $eval .= ' selected="true"';
                 $eval .= '>'.$evaluator->name.'</option>';
             }
             $eval .= '</select>';
-            if ($types['evaluator'] != 'hidden') $eval .= '</div></div>';
+            if ($types['evaluator'] != 'hidden')
+                $eval .= '</div></div>';
             $filters .= $eval;
         }
 
-        if($params['evaluator_group'] !== NULL){
+        if ($params['evaluator_group'] !== NULL) {
             $group_eval = '';
             $hidden = $types['evaluator_group'] != 'hidden' ? false : true;
             if ($types['evaluator_group'] != 'hidden')
@@ -954,17 +958,19 @@ echo "</pre>";
             $group_eval .= '<select class="chzn-select em-filt-select" id="select_groups" name="evaluator_group" '.($types['evaluator_group'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '"" ').'>
                             <option value="0">'.JText::_('ALL').'</option>';
             $groups = @EmundusHelperFiles::getGroups();
-            foreach($groups as $group) {
+            foreach ($groups as $group) {
                 $group_eval .= '<option value="'.$group->id.'"';
-                if($current_group_eval == $group->id) $group_eval .= ' selected="true"';
+                if($current_group_eval == $group->id)
+                    $group_eval .= ' selected="true"';
                 $group_eval .= '>'.$group->label.'</option>';
             }
             $group_eval .= '</select>';
-            if ($types['evaluator_group'] != 'hidden') $group_eval .= '</div></div>';
+            if ($types['evaluator_group'] != 'hidden')
+                $group_eval .= '</div></div>';
             $filters .= $group_eval;
         }
 
-        if(@$params['finalgrade'] !== NULL){
+        if (@$params['finalgrade'] !== NULL) {
             $hidden = $types['finalgrade'] != 'hidden' ? false : true;
             $finalgrade = @EmundusHelperFiles::getFinal_grade();
             $final_gradeList = explode('|', $finalgrade['final_grade']['sub_labels']);
@@ -972,25 +978,28 @@ echo "</pre>";
             foreach($sub_values as $sv) $p_grade[]="/".$sv."/";
             unset($sub_values);
             $final_grade = '';
-            if ($types['finalgrade'] != 'hidden') $final_grade .= '<div class="em_filters" id="finalgrade">
-                                                                   <div class="em_label"><label class="control-label">'.JText::_('FINAL_GRADE_FILTER').'</label></div>
-                                                                   <div class="em_filtersElement">';
+            if ($types['finalgrade'] != 'hidden') 
+                $final_grade .= '<div class="em_filters" id="finalgrade">
+                                    <div class="em_label"><label class="control-label">'.JText::_('FINAL_GRADE_FILTER').'</label></div>
+                                    <div class="em_filtersElement">';
             $final_grade .= '<select class="chzn-select em-filt-select" id="select_finalgrade" name="finalgrade" '.($types['finalgrade'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
                              <option value="0">'.JText::_('PLEASE_SELECT').'</option>';
             $groupe ="";
-            for($i=0; $i<count($final_gradeList); $i++) {
+            for ($i=0; $i<count($final_gradeList); $i++) {
                 $val = substr($p_grade[$i],1,1);
                 $final_grade .= '<option value="'.$val.'"';
-                if($val == $current_finalgrade) $final_grade .= ' selected="true"';
+                if($val == $current_finalgrade) 
+                    $final_grade .= ' selected="true"';
                 $final_grade .= '>'.$final_gradeList[$i].'</option>';
             }
             unset($val); unset($i);
             $final_grade .= '</select>';
-            if ($types['finalgrade'] != 'hidden') $final_grade .= '</div></div>';
+            if ($types['finalgrade'] != 'hidden') 
+                $final_grade .= '</div></div>';
             $filters .= $final_grade;
         }
 
-        if(@$params['missing_doc'] !== NULL){
+        if (@$params['missing_doc'] !== NULL) {
             $hidden = $types['missing_doc'] != 'hidden' ? false : true;
             $missing_docList = @EmundusHelperFiles::getMissing_doc();
             $missing_doc = '';
@@ -1002,10 +1011,10 @@ echo "</pre>";
                                     <div class="em_filtersElement">';
             $missing_doc .= '<select class="chzn-select em-filt-select" id="select_missing_doc" name="missing_doc" '.(@$types['missing_doc'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
                                 <option value="0">'.JText::_('ALL').'</option>';
-            foreach($missing_docList as $md)
-            {
+            foreach ($missing_docList as $md) {
                 $missing_doc .= '<option value="'.$md->attachment_id.'"';
-                if($miss_doc == $md->attachment_id) $missing_doc .= ' selected="true"';
+                if($miss_doc == $md->attachment_id) 
+                    $missing_doc .= ' selected="true"';
                 $missing_doc .= '>'.$md->value.'</option>';
             }
             $missing_doc .= '</select>';
@@ -1016,7 +1025,7 @@ echo "</pre>";
             $filters .= $missing_doc;
         }
 
-        if(@$params['complete'] !== NULL){
+        if (@$params['complete'] !== NULL) {
             $complete = '';
             $hidden = $types['complete'] != 'hidden' ? false : true;
             if ($types['complete'] != 'hidden')
@@ -1026,36 +1035,43 @@ echo "</pre>";
             $complete .= '<select class="chzn-select em-filt-select" id="select_complete" name="complete" '.($types['complete'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
                             <option value="0">'.JText::_('ALL').'</option>';
             $complete .= '<option value="1"';
-            if($complete_application == 1) $complete .= ' selected="true"';
+            if($complete_application == 1)
+                $complete .= ' selected="true"';
             $complete .= '>'.JText::_('YES').'</option>';
             $complete .= '<option value="2"';
-            if($complete_application == 2) $complete .= ' selected="true"';
+            if($complete_application == 2)
+                $complete .= ' selected="true"';
             $complete .= '>'.JText::_('NO').'</option>';
             $complete .= '</select>';
-            if ($types['complete'] != 'hidden') $complete .= '</div></div>';
+            if ($types['complete'] != 'hidden')
+                $complete .= '</div></div>';
             $filters .= $complete;
         }
 
-        if(@$params['validate'] !== NULL){
+        if (@$params['validate'] !== NULL) {
             $validate = '';
             $hidden = $types['validate'] != 'hidden' ? false : true;
-            if ($types['validate'] != 'hidden') $validate .= '<div class="em_filters" id="validate">
-                                                              <div class="em_label"><label class="control-label">'.JText::_('VALIDATED_APPLICATION').'</label></div>
-                                                              <div class="em_filtersElement">';
+            if ($types['validate'] != 'hidden') 
+                $validate .= '<div class="em_filters" id="validate">
+                                <div class="em_label"><label class="control-label">'.JText::_('VALIDATED_APPLICATION').'</label></div>
+                                <div class="em_filtersElement">';
             $validate .= '<select class="chzn-select em-filt-select" id="select_validate" name="validate" '.($types['validate'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
                             <option value="0">'.JText::_('ALL').'</option>';
             $validate .= '<option value="1"';
-            if($validate_application == 1) $validate .= ' selected="true"';
+            if ($validate_application == 1) 
+                $validate .= ' selected="true"';
             $validate .= '>'.JText::_('VALIDATED').'</option>';
             $validate .= '<option value="2"';
-            if($validate_application == 2) $validate .= ' selected="true"';
+            if ($validate_application == 2) 
+                $validate .= ' selected="true"';
             $validate .= '>'.JText::_('UNVALIDATED').'</option>';
             $validate .= '</select>';
-            if ($types['validate'] != 'hidden') $validate .= '</div></div>';
+            if ($types['validate'] != 'hidden') 
+                $validate .= '</div></div>';
             $filters .= $validate;
         }
 
-        if(@$params['campaign'] !== NULL){
+        if (@$params['campaign'] !== NULL) {
             $hidden = $types['campaign'] != 'hidden' ? false : true;
             $campaignList = @EmundusHelperFiles::getCampaigns();
             $campaign = '';
@@ -1070,12 +1086,13 @@ echo "</pre>";
             }
             $campaign .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_campaigns" name="campaign" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;"> ' : '>');
             $campaign .= '<option value="%" ';
-            if((@$current_campaign[0] == "%" || empty($current_campaign[0])) && count(@$current_campaign)<2) $campaign .= ' selected="true"';
+            if ((@$current_campaign[0] == "%" || empty($current_campaign[0])) && count(@$current_campaign)<2) 
+                $campaign .= ' selected="true"';
             $campaign .= '>'.JText::_('ALL').'</option>';
 
-            foreach($campaignList as $c) {
+            foreach ($campaignList as $c) {
                 $campaign .= '<option value="'.$c->id.'"';
-                if(!empty($current_campaign) && in_array($c->id, $current_campaign))
+                if (!empty($current_campaign) && in_array($c->id, $current_campaign))
                     $campaign .= ' selected="true"';
                 $campaign .= '>'.$c->label.' - '.$c->year.'</option>';
             }
@@ -1087,7 +1104,7 @@ echo "</pre>";
             $filters .= $campaign;
         }
 
-        if($params['schoolyear'] !== NULL){
+        if ($params['schoolyear'] !== NULL) {
             $schoolyearList = @EmundusHelperFiles::getSchoolyears();
             $schoolyear = '';
             $hidden = $types['schoolyear'] != 'hidden' ? false : true;
@@ -1099,11 +1116,12 @@ echo "</pre>";
 
             $schoolyear .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_schoolyears" name="schoolyear" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;"> ' : '>');
             $schoolyear .= '<option value="%" ';
-            if( ($current_schoolyear[0]=="%" || empty($current_schoolyear[0])) && count($current_schoolyear)<2 ) $schoolyear .= ' selected="true"';
+            if (($current_schoolyear[0]=="%" || empty($current_schoolyear[0])) && count($current_schoolyear)<2 )
+                $schoolyear .= ' selected="true"';
             $schoolyear .= '>'.JText::_('ALL').'</option>';
-            foreach($schoolyearList as $key=>$value) {
+            foreach ($schoolyearList as $key=>$value) {
                 $schoolyear .= '<option value="'.$value->schoolyear.'"';
-                if( !empty($current_schoolyear) && in_array($value->schoolyear, $current_schoolyear) )
+                if (!empty($current_schoolyear) && in_array($value->schoolyear, $current_schoolyear))
                     $schoolyear .= ' selected="true"';
                 $schoolyear .= '>'.$value->schoolyear.'</option>';
             }
@@ -1115,7 +1133,7 @@ echo "</pre>";
             $filters .= $schoolyear;
         }
 
-        if(@$params['programme'] !== NULL){
+        if (@$params['programme'] !== NULL) {
             $hidden = $types['programme'] != 'hidden' ? false : true;
             $programmeList = @EmundusHelperFiles::getProgrammes($params['programme']);
             $programme = '';
@@ -1126,12 +1144,14 @@ echo "</pre>";
             }
             $programme .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_programmes" name="programme" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" >' : '>');
             $programme .= '<option value="%" ';
-            if( (@$current_programme[0] == "%" || empty($current_programme[0])) && count(@$current_programme)<2 ) $programme .= ' selected="true"';
+            if ((@$current_programme[0] == "%" || empty($current_programme[0])) && count(@$current_programme)<2 ) 
+                $programme .= ' selected="true"';
             $programme .= '>'.JText::_('ALL').'</option>';
 
-            foreach($programmeList as $p) {
+            foreach ($programmeList as $p) {
                 $programme .= '<option value="'.$p->code.'"';
-                if(!empty($current_programme) && in_array($p->code, $current_programme)) $programme .= ' selected="true"';
+                if (!empty($current_programme) && in_array($p->code, $current_programme))
+                    $programme .= ' selected="true"';
                 $programme .= '>'.$p->label.' - '.$p->code.'</option>';
             }
             $programme .= '</select>';
@@ -1142,7 +1162,7 @@ echo "</pre>";
             $filters .= $programme;
         }
 
-        if(@$params['status'] !== NULL){
+        if (@$params['status'] !== NULL) {
             $hidden = $types['status'] != 'hidden' ? false : true;
             $statusList = @EmundusHelperFiles::getStatus();
             $status = '';
@@ -1153,12 +1173,14 @@ echo "</pre>";
             }
             $status .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_status" name="status" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" >' : '>');
             $status .= '<option value="%" ';
-            if( (@$current_status[0] == "%" || !isset($current_status[0])) && (count(@$current_status)<2 )) $status .= ' selected="true"';
+            if ((@$current_status[0] == "%" || !isset($current_status[0])) && (count(@$current_status)<2 )) 
+                $status .= ' selected="true"';
             $status .= '>'.JText::_('ALL').'</option>';
 
-            foreach($statusList as $p) {
+            foreach ($statusList as $p) {
                 $status .= '<option value="'.$p->step.'"';
-                if(!empty($current_status) && in_array($p->step, $current_status)) $status .= ' selected="true"';
+                if(!empty($current_status) && in_array($p->step, $current_status)) 
+                    $status .= ' selected="true"';
                 $status .= '>'.$p->value.'</option>';
             }
             $status .= '</select>';
@@ -1169,7 +1191,7 @@ echo "</pre>";
             $filters .= $status;
         }
 
-        if($params['published'] !== NULL){
+        if ($params['published'] !== NULL) {
             $hidden = $types['published'] != 'hidden' ? false : true;
             $published='';
             if (!$hidden) {
@@ -1207,7 +1229,8 @@ echo "</pre>";
             }
             $tag .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_tags" name="tag" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" >' : '>');
             $tag .= '<option value="%" ';
-            if( (@$current_tag[0] == "%" || !isset($current_tag[0])) && (count(@$current_tag)<2 )) $tag .= ' selected="true"';
+            if ((@$current_tag[0] == "%" || !isset($current_tag[0])) && (count(@$current_tag)<2 )) 
+                $tag .= ' selected="true"';
             $tag .= '>'.JText::_('ALL').'</option>';
 
             foreach($tagList as $p) {
@@ -1224,7 +1247,7 @@ echo "</pre>";
         }
 
         //Advance filter builtin
-        if(@$params['adv_filter'] !== NULL){
+        if (@$params['adv_filter'] !== NULL) {
             $filters .= '</fieldset><fieldset class="em_filters_adv_filter">';
 
             $hidden = $types['adv_filter'] != 'hidden' ? false : true;
@@ -1234,37 +1257,30 @@ echo "</pre>";
             $adv_filter .= '<div><button class="btn btn-default btn-sm" type="button" id="add-filter"><span class="glyphicon glyphicon-th-list"></span> '.JText::_('ADD_FILTER_COLUMN').'</button></div><input type="hidden" value="'.count($search).'" id="nb-adv-filter" />';
             $adv_filter .= '<div id="advanced-filters" class="form-group">';
 
-            if (!empty($search))
-            {
+            if (!empty($search)) {
                 $i=1;
                 $selected_adv = "";
-                foreach($search as $key => $val)
-                {
+                foreach($search as $key => $val) {
                     $adv_filter .= '<fieldset id="em-adv-father-'.$i.'">';
                     $adv_filter .= '<select class="chzn-select em-filt-select" id="elements" name="elements">
                     <option value="">'.JText::_('PLEASE_SELECT').'</option>';
                     $menu ="";
                     $groupe ="";
 
-                    foreach($elements as $element)
-                    {
+                    foreach($elements as $element) {
                         $menu_tmp = $element->title;
 
-                        if ($menu != $menu_tmp)
-                        {
+                        if ($menu != $menu_tmp) {
                             $adv_filter .= '<optgroup label="________________________________"><option disabled class="emundus_search_elm" value="-">'.strtoupper($menu_tmp).'</option></optgroup>';
                             $menu = $menu_tmp;
                         }
 
                         if (isset($groupe_tmp) && ($groupe != $groupe_tmp))
-                        {
                             $adv_filter .= '</optgroup>';
-                        }
 
                         $groupe_tmp = $element->group_label;
 
-                        if ($groupe != $groupe_tmp)
-                        {
+                        if ($groupe != $groupe_tmp) {
                             $adv_filter .= '<optgroup label=">> '.$groupe_tmp.'">';
                             $groupe = $groupe_tmp;
                         }
@@ -1273,8 +1289,7 @@ echo "</pre>";
 
                         $adv_filter .= '<option class="emundus_search_elm" value="'.$element->id.'"';
                         $table_name = (isset($element->table_join)?$element->table_join:$element->table_name);
-                        if($table_name.'.'.$element->element_name == $key)
-                        {
+                        if($table_name.'.'.$element->element_name == $key) {
                             $selected_adv = $element;
                             $adv_filter .= ' selected=true ';
                         }
@@ -1296,7 +1311,7 @@ echo "</pre>";
         }
 
         //Other filters builtin
-        if(@$params['other'] !== NULL && !empty($tables) && $tables[0] != ""){
+        if (@$params['other'] !== NULL && !empty($tables) && $tables[0] != "") {
             $filters .= '</fieldset><fieldset class="em_filters_other">';
             $hidden = $types['other'] != 'hidden' ? false : true;
             $other_elements = @EmundusHelperFiles::getElementsOther($tables);
@@ -1343,7 +1358,7 @@ echo "</pre>";
             $filters .= $other_filter;
         }
 
-        if(@$params['newsletter'] !== NULL){
+        if (@$params['newsletter'] !== NULL) {
             $hidden = $types['newsletter'] != 'hidden' ? false : true;
             $filters.= '<div class="em_filters" id="newsletter">
                         <div class="em_label"><label class="control-label">'.JText::_('NEWSLETTER').'</label></div>';
@@ -1361,16 +1376,76 @@ echo "</pre>";
             $filters.='</div>';
         }
 
-        if(@$params['spam_suspect'] !== NULL){
+        if (@$params['group'] !== NULL) {
+            $hidden = $types['group'] != 'hidden' ? false : true;
+            $groupList = $files->getAllGroups();
+            $group = '';
+            if (!$hidden) {
+                $group .= '<div id="group">
+                    <div class="em_label"><label class="control-label">'.JText::_('GROUP').' <a href="javascript:clearchosen(\'#select_multiple_groups\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a></label></div>
+                    <div class="em_filtersElement">';
+            }
+            $group .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_groups" name="group" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" >' : '>');
+            $group .= '<option value="%" ';
+            if ((@$group[0] == "%" || empty($group[0])) && count(@$group) < 2) 
+                $group .= ' selected="true"';
+            $group .= '>'.JText::_('ALL').'</option>';
+
+            foreach ($groupList as $p) {
+                $group .= '<option value="'.$p['id'].'"';
+                if (!empty($current_group) && in_array($p['id'], $current_group))
+                    $group .= ' selected="true"';
+                $group .= '>'.$p['label'].'</option>';
+            }
+            $group .= '</select>';
+            if (!$hidden) {
+                $group .= '</div></div>';
+                $group .= '<script>$(document).ready(function() {$("#select_multiple_groups").chosen({width: "75%"});})</script>';
+            }
+            $filters .= $group;
+        }
+
+        if (@$params['institution'] !== NULL) {
+            $hidden = $types['institution'] != 'hidden' ? false : true;
+            $institutionList = $files->getAllInstitutions();
+            $institution = '';
+            if (!$hidden) {
+                $institution .= '<div id="group">
+                    <div class="em_label"><label class="control-label">'.JText::_('UNIVERSITY').' <a href="javascript:clearchosen(\'#select_multiple_institutions\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a></label></div>
+                    <div class="em_filtersElement">';
+            }
+            $institution .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_institutions" name="institution" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" >' : '>');
+            $institution .= '<option value="%" ';
+            if ((@$institution[0] == "%" || empty($institution[0])) && count(@$institution) < 2) 
+                $institution .= ' selected="true"';
+            $institution .= '>'.JText::_('ALL').'</option>';
+
+            foreach ($institutionList as $p) {
+                $institution .= '<option value="'.$p['id'].'"';
+                if (!empty($current_institution) && in_array($p['id'], $current_institution))
+                    $institution .= ' selected="true"';
+                $institution .= '>'.$p['title'].'</option>';
+            }
+            $institution .= '</select>';
+            if (!$hidden) {
+                $institution .= '</div></div>';
+                $institution .= '<script>$(document).ready(function() {$("#select_multiple_institutions").chosen({width: "75%"});})</script>';
+            }
+            $filters .= $institution;
+        }
+
+        if (@$params['spam_suspect'] !== NULL) {
             $hidden = $types['spam_suspect'] != 'hidden' ? false : true;
             $filters.= '<div class="em_filters" id="spam_suspect"><div class="em_label"><label class="control-label">'.JText::_('SPAM_SUSPECT').'</label></div>';
             $filters .= '<div class="em_filtersElement">
                         <select class="chzn-select em-filt-select" id="select_spam-suspect" name="spam_suspect" '.($types['spam_suspect'] == 'hidden' ? 'style="visibility:hidden" ' : '').'>
                             <option value="0"';
-            if(@$spam_suspect == 0) $filters .= ' selected';
+            if (@$spam_suspect == 0)
+                $filters .= ' selected';
             $filters.='>'.JText::_("ALL").'</option>
                             <option value="1"';
-            if(@$spam_suspect == 1) $filters .= ' selected';
+            if (@$spam_suspect == 1) 
+                $filters .= ' selected';
             $filters.='>'.JText::_("JYES").'</option>
                         </select>
                     </div>';
@@ -1405,18 +1480,12 @@ echo "</pre>";
                                 <label for="select_filter" class="control-label">'.JText::_('SELECT_FILTER').'</label>
                                 <select class="chzn-select" id="select_filter" name="select_filter" >
                                     <option value="0">'.JText::_('PLEASE_SELECT_FILTER').'</option>';
-        if(!empty($research_filters))
-        {
-            foreach($research_filters as $filter)
-            {
+        if (!empty($research_filters)) {
+            foreach ($research_filters as $filter) {
                 if($select_id==$filter->id)
-                {
                     $filters .= '<option value="'.$filter->id.'" selected="true" >'.$filter->name.'</option>';
-                }
                 else
-                {
                     $filters .= '<option value="'.$filter->id.'">'.$filter->name.'</option>';
-                }
             }
         }
         $filters .= '</select>';
@@ -1445,14 +1514,11 @@ echo "</pre>";
         $itemid = JFactory::getApplication()->input->get('Itemid');
         $user = JFactory::getUser();
         $db = JFactory::getDBO();
-        if (is_null($id) && !empty($itemid))
-        {
+        if (is_null($id) && !empty($itemid)) {
             $query = 'SELECT * FROM #__emundus_filters WHERE user='.$user->id.' AND item_id='.$itemid;
             $db->setQuery( $query );
             return $db->loadObjectlist();
-        }
-        elseif(!empty($id))
-        {
+        } elseif(!empty($id)) {
             $query = 'SELECT * FROM #__emundus_filters WHERE id='.$id;
             $db->setQuery( $query );
             return $db->loadObject();
@@ -1460,10 +1526,9 @@ echo "</pre>";
         else return array();
     }
 
-    public  function createTagsList($tags)
-    {
+    public  function createTagsList($tags) {
         $tagsList = array();
-        foreach($tags as $tag){
+        foreach ($tags as $tag) {
             $tagsList[$tag['fnum']] .= '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
         }
         return $tagsList;

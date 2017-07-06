@@ -314,10 +314,8 @@ class EmundusControllerUsers extends JControllerLegacy {
 	}
 
 
-	public function setfilters()
-	{
-		try
-		{
+	public function setfilters() {
+		try {
 			$jinput = JFactory::getApplication()->input;
 			$filterName = $jinput->getString('id', null);
 			$elements = $jinput->getString('elements', null);
@@ -325,48 +323,34 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 			@EmundusHelperFiles::clearfilter();
 
-			if($multi == "true")
-			{
+			if ($multi == "true")
 				$filterval = $jinput->get('val', array(), 'ARRAY');
-			}
 			else
-			{
 				$filterval = $jinput->getString('val', null);
-			}
 
 			$session = JFactory::getSession();
 			$params = $session->get('filt_params');
 
-			if($elements == 'false')
-			{
+			if ($elements == 'false') {
 				$params[$filterName] = $filterval;
-			}
-			else
-			{
+			} else {
 				$vals = (array)json_decode(stripslashes($filterval));
 
-				if(isset($vals[0]->name))
-				{
-					foreach ($vals as $val)
-					{
-						if($val->adv_fil)
+				if (isset($vals[0]->name)) {
+					foreach ($vals as $val) {
+						if ($val->adv_fil)
 							$params['elements'][$val->name] = $val->value;
 						else
 							$params[$val->name] = $val->value;
 					}
-
-				}
-				else
-					$params['elements'][$filterName] = $filterval;
+				} else $params['elements'][$filterName] = $filterval;
 			}
 			$session->set('filt_params', $params);
 
 			$session->set('limitstart', 0);
 			echo json_encode((object)(array('status' => true)));
 			exit();
-		}
-		catch (Exception $e)
-		{
+		} catch (Exception $e) {
 			error_log($e->getMessage(), 0);
 			error_log($e->getLine(), 0);
 			error_log($e->getTraceAsString(), 0);

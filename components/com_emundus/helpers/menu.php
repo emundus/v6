@@ -27,20 +27,15 @@ class EmundusHelperMenu{
 		ORDER BY menu.lft';
 		
 		//die(str_replace('#_', 'jos', $query));
-		 try
-	        {
-	        	$_db->setQuery( $query );
-	            return $_db->loadObjectList();
-	        }
-	        catch(Exception $e)
-	        {
-	            throw new $e->getMessage();
-	        }
-
+		try {
+	        $_db->setQuery( $query );
+	        return $_db->loadObjectList();
+	    } catch(Exception $e) {
+	        throw new $e->getMessage();
+	    }
 	}
 
-	function buildMenuListQuery($profile)
-	{
+	function buildMenuListQuery($profile) {
 		$_db = JFactory::getDBO();
 		$query = 'SELECT fbtables.db_table_name
 		FROM #__menu AS menu 
@@ -50,17 +45,12 @@ class EmundusHelperMenu{
 		WHERE fbtables.published = 1 AND menu.parent_id !=1
 		ORDER BY menu.lft';
 		
-		try
-	        {
-	        	$_db->setQuery( $query );
-				//die($query);
-				return $_db->loadResultArray();
-	        }
-	        catch(Exception $e)
-	        {
-	            throw new $e->getMessage();
-	        }
+		try {
+	    	$_db->setQuery( $query );
+			return $_db->loadResultArray();
+	    } catch(Exception $e) {
+	        throw new $e->getMessage();
+	    }
 	}
-
 }
 ?>
