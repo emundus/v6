@@ -1,9 +1,9 @@
 <?php
 /**
  * @package     Joomla.Plugin
- * @subpackage  User.profile
+ * @subpackage  User.emundus_profile
  *
- * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2017 eMundus, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -19,11 +19,11 @@ class JFormFieldCampaign extends JFormField
     protected function getInput() {
         $course = JRequest::getVar('course', '', '', 'str');
         $course = !empty($course)?$course:"%";
-        $config     = JFactory::getConfig();
-        
-        $jdate = JFactory::getDate();
-        $jdate->setOffset($config->getValue('offset'));
-        $now = $jdate->toSql();
+
+        $offset = JFactory::getApplication()->get('offset', 'UTC');
+        $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+        $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+        $now = $dateTime->format('Y-m-d H:i:s');
 
         $db = JFactory::getDBO();
         $query = "SELECT esc.id, CONCAT(esc.label,' (',esc.year,')') AS label 
@@ -31,8 +31,8 @@ class JFormFieldCampaign extends JFormField
                     LEFT JOIN #__emundus_setup_programmes as esp ON esp.code=esc.training
                     WHERE esc.published=1 
                     AND esp.apply_online=1 
-                    AND '".$now."' >= esc.start_date 
-                    AND esc.end_date >= '".$now."'
+                    AND ".$db->Quote($now)."  >= esc.start_date 
+                    AND esc.end_date >= ".$db->Quote($now)." 
                     AND esc.training like ".$db->Quote($course)." 
                     ORDER BY esc.label";
         $db->setQuery($query);
@@ -44,16 +44,10 @@ class JFormFieldCampaign extends JFormField
             $list .= '<option value="'.$campaign['id'].'">'.$campaign['label'].'</option>';
         }
         $list .= '</select>';
-        /*
-                $please_select = array(null => JText::_('PLEASE_SELECT'));
-                $campaigns = $please_select + $campaigns;
-                $list = JHTML::_('select.genericlist', $campaigns, $this->element['name'], 'onChange="changeFunc()"', 'id', 'label');
-        */
-        $script = "<script>function changeFunc(){alert('good')}</script>";
-
+        
         $div = '<div id="em_campaign_info"><div>';
 
-        return $script.$list.$div;
+        return $list.$div;
     }
 }
 ?>
