@@ -1,0 +1,16 @@
+DROP TABLE IF EXISTS `#__securitycheckpro`;
+DROP TABLE IF EXISTS `#__securitycheckpro_db`;
+DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
+DROP TABLE IF EXISTS `#__securitycheckpro_dynamic_blacklist`;
+DROP TABLE IF EXISTS `#__securitycheckpro_own_logs`;
+DROP TABLE IF EXISTS `#__securitycheckpro_vuln_components`;
+DROP TABLE IF EXISTS `#__securitycheckpro_sessions`;
+DROP TABLE IF EXISTS `#__securitycheckpro_emails`;
+DROP TABLE IF EXISTS `#__securitycheckpro_file_permissions`;
+DROP TABLE IF EXISTS `#__securitycheckpro_file_manager`;
+DROP TABLE IF EXISTS `#__securitycheckpro_storage`;
+DROP TABLE IF EXISTS `#__securitycheckpro_rules`;
+DROP TABLE IF EXISTS `#__securitycheckpro_rules_logs`;
+DROP TABLE IF EXISTS `#__securitycheckpro_update_database`;
+DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
+DROP TABLE IF EXISTS `#__securitycheckpro_url_inspector_logs`;
