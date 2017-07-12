@@ -39,13 +39,13 @@ class plgUserEmundus_su_csc extends JPlugin
         // In this example the boolean variable $success would be set to true if the login routine succeeds
         // ThirdPartyApp::loginUser($user['username'], $user['password']);
 
-        $app            = JFactory::getApplication();
+        $app = JFactory::getApplication();
 
         include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
 
         if (!$app->isAdmin()) {
-            $current_user   = JFactory::getUser();
+            $current_user = JFactory::getSession()->get('emundusUser');
             if (EmundusHelperAccess::isApplicant($current_user->id)) {
                 if ($current_user->code == "utc-dfp-dri") {
                     $app->redirect("index.php?option=com_content&view=article&id=83&Itemid=1570");

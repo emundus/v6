@@ -25,7 +25,7 @@ class EmundusViewTrombinoscope extends JViewLegacy
         $document->addScript(JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
 */
         $current_user = JFactory::getUser();
-        if( !EmundusHelperAccess::asPartnerAccessLevel($current_user->id) )
+        if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id) )
             die( JText::_('RESTRICTED_ACCESS') );
 
         $app = JFactory::getApplication();

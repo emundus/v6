@@ -7,6 +7,7 @@
 
 namespace FOF30\Platform\Base;
 
+use Exception;
 use FOF30\Container\Container;
 use FOF30\Input\Input;
 use FOF30\Platform\PlatformInterface;
@@ -359,5 +360,17 @@ abstract class Platform implements PlatformInterface
 	public function getPlatformVersion()
 	{
 		return '';
+	}
+
+	/**
+	 * Handle an exception in a way that results to an error page.
+	 *
+	 * @param   Exception  $exception  The exception to handle
+	 *
+	 * @throws  Exception  Possibly rethrown exception
+	 */
+	public function showErrorPage(Exception $exception)
+	{
+		throw $exception;
 	}
 }

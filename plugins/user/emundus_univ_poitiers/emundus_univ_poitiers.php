@@ -40,7 +40,8 @@ class plgUserEmundus_univ_poitiers extends JPlugin
         // ThirdPartyApp::loginUser($user['username'], $user['password']);
         include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
         $app            = JFactory::getApplication();
-        $current_user   = JFactory::getUser();
+        $session        = JFactory::getSession();
+        $current_user   = $session->get('emundusUser');
         
         if (!$app->isAdmin() && EmundusHelperAccess::isApplicant($current_user->id) ) {
             
@@ -74,8 +75,8 @@ class plgUserEmundus_univ_poitiers extends JPlugin
 
                 $current_user->menutype = $p->menutype;
                 $current_user->profile = $p->id;
+                $session->set('emundusUser',$current_user);
 
-                $session = JFactory::getSession();
                 $session_user = $session->get('user');
                 $session_user->menutype = $p->menutype;
                 $session_user->profile = $p->id;

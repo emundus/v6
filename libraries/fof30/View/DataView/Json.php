@@ -10,18 +10,37 @@ namespace FOF30\View\DataView;
 use FOF30\Hal\Document;
 use FOF30\Hal\Link;
 use FOF30\Model\DataModel;
-use FOF30\View\Exception\AccessForbidden;
 
 defined('_JEXEC') or die;
 
 class Json extends Raw implements DataViewInterface
 {
+	/**
+	 * Record listing offset (how many records to skip before starting showing some)
+	 *
+	 * @var   int
+	 */
 	protected $limitStart = 0;
 
+	/**
+	 * Record listing limit (how many records to show)
+	 *
+	 * @var   int
+	 */
 	protected $limit = 10;
 
+	/**
+	 * Total number of records in the result set
+	 *
+	 * @var   int
+	 */
 	protected $total = 0;
 
+	/**
+	 * The record being displayed
+	 *
+	 * @var   DataModel
+	 */
 	protected $item = null;
 
 	/**

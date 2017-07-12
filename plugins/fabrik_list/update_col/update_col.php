@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.list.updatecol
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -23,7 +23,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.updatecol
  * @since       3.0
  */
-class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
+class PlgFabrik_ListUpdate_col extends PlgFabrik_List
 {
 	/**
 	 * Button prefix
@@ -148,24 +148,38 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 			for ($i = 0; $i < count($values['elementid']); $i ++)
 			{
 				$id = $values['elementid'][$i];
+
+				// meh, nasty hack to handle autocomplete values, which currently aren't working in this plugin
+				if (array_key_exists('auto-complete' . $id, $output))
+				{
+					$values['value'][$i] = $output['auto-complete' . $id];
+				}
+
 				$elementModel = $formModel->getElement($id, true);
 				$elementName = $elementModel->getFullName(false, false);
 
 				// Was this element already pre-set?  Use array_search() rather than in_array() as we'll need the index if it exists.
-				$index = array_search($elementName, $update->coltoupdate);
+				if (isset($update) && isset($update->coltoupdate) && is_array($update->coltoupdate))
+				{
+					$index = array_search($elementName, $update->coltoupdate);
+				}
+				else
+				{
+					$index = false;
+				}
 
 				if ($index === false)
 				{
 					// nope, wasn't preset, so just add it to the updates
 					$update->coltoupdate[] = $elementName;
 					$update->update_value[] = $values['value'][$i];
-					$update->udate_eval[] = '0';
+					$update->update_eval[] = '0';
 				}
 				else
 				{
 					// yes it was preset, so use the $index to modify the existing value
 					$update->update_value[$index] = $values['value'][$i];
-					$update->udate_eval[$index] = '0';
+					$update->update_eval[$index] = '0';
 				}
 			}
 		}
@@ -227,6 +241,11 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 			$this->_process($model, $userCol, (int) $this->user->get('id'), false);
 		}
 
+		if ($params->get('update_email_after_update', '1') == '0')
+		{
+			$this->sendEmails($ids);
+		}
+
 		if (!empty($update))
 		{
 			foreach ($update->coltoupdate as $i => $col)
@@ -235,7 +254,10 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 			}
 		}
 
-		$this->sendEmails($ids);
+		if ($params->get('update_email_after_update', '1') == '1')
+		{
+			$this->sendEmails($ids);
+		}
 
 		$this->msg = $params->get('update_message', '');
 
@@ -391,7 +413,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		$tbl = array_shift(explode('.', $emailColumn));
 		$db = $this->_db;
 		$userIdsEmails = array();
-		$query = $db->getQuery();
+		$query = $db->getQuery(true);
 		$query->select('#__users.id AS id, #__users.email AS email')
 		->from('#__users')->join('LEFT', $tbl . ' ON #__users.id = ' . $emailColumn)
 		->where($item->db_primary_key . ' IN (' . $ids . ')');
@@ -511,7 +533,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		$opts->form = $this->userSelectForm();
 		$opts->renderOrder = $this->renderOrder;
 		$opts = json_encode($opts);
-		$this->jsInstance = "new FbListUpdateCol($opts)";
+		$this->jsInstance = "new FbListUpdate_col($opts)";
 
 		return true;
 	}
@@ -557,8 +579,8 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		$prefix = 'fabrik___update_col[list_' . $listRef . '][';
 		$elements = '<select class="inputbox key update_col_elements" size="1" name="' . $prefix . 'key][]">' . implode("\n", $options) . '</select>';
 		$j3 = FabrikWorker::j3();
-		$addImg = $j3 ? 'plus.png' : 'add.png';
-		$removeImg = $j3 ? 'remove.png' : 'del.png';
+		$addImg = $j3 ? 'plus' : 'add.png';
+		$removeImg = $j3 ? 'remove' : 'del.png';
 
 
 		$layout = $this->getLayout('form');
@@ -586,4 +608,15 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 
 		return $col . '-' . $this->renderOrder;
 	}
+
+	/**
+	 * Load the AMD module class name
+	 * 
+	 * @return string
+	 */
+	public function loadJavascriptClassName_result()
+	{
+		return 'FbListUpdateCol';
+	}
+
 }

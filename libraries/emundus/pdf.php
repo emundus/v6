@@ -46,7 +46,6 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
 	$current_user =  JFactory::getUser();
-	$user =  JFactory::getUser($user_id);
 	$db = JFactory::getDBO();
 	$config = JFactory::getConfig();
         
@@ -360,7 +359,6 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
 	$current_user = & JFactory::getUser();
-	$user = & JFactory::getUser($user_id);
 	$db = &JFactory::getDBO();
 	$config = JFactory::getConfig();
         
@@ -609,7 +607,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$app 			= JFactory::getApplication();
 	//$eMConfig 		= JComponentHelper::getParams('com_emundus');
 	$current_user 	= JFactory::getUser();
-	$user 			= JFactory::getUser($user_id);
+	$user 			= $m_profile->getEmundusUser($user_id);
 	$fnum 			= empty($fnum)?$user->fnum:$fnum;
 
 	//$export_pdf = $eMConfig->get('export_pdf');

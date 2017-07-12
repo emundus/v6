@@ -8,6 +8,7 @@
 defined('_JEXEC') or die;
 
 use Akeeba\AdminTools\Admin\Helper\Storage;
+use FOF30\Container\Container;
 use FOF30\Date\Date;
 
 class AtsystemUtilExceptionshandler
@@ -18,10 +19,14 @@ class AtsystemUtilExceptionshandler
 	/** @var   Storage  Component parameters */
 	protected $cparams = null;
 
+	/** @var   Container  The component's container */
+	protected $container;
+
 	public function __construct(JRegistry &$params, Storage &$cparams)
 	{
-		$this->params = $params;
-		$this->cparams = $cparams;
+		$this->params    = $params;
+		$this->cparams   = $cparams;
+		$this->container = Container::getInstance('com_admintools');
 	}
 
 	/**
@@ -108,13 +113,19 @@ class AtsystemUtilExceptionshandler
 		if ($this->cparams->getValue('use403view', 0))
 		{
 			// Using a view
-			if (!JFactory::getSession()->get('block', false, 'com_admintools'))
+			if (!$this->container->platform->getSessionVar('block', false, 'com_admintools'))
 			{
+
 				// This is inside an if-block so that we don't end up in an infinite redirection loop
-				JFactory::getSession()->set('block', true, 'com_admintools');
-				JFactory::getSession()->set('message', $message, 'com_admintools');
-				JFactory::getSession()->close();
-				JFactory::getApplication()->redirect(JUri::base());
+				$this->container->platform->setSessionVar('block', true, 'com_admintools');
+				$this->container->platform->setSessionVar('message', $message, 'com_admintools');
+
+				if (!$this->container->platform->isCli())
+				{
+					JFactory::getSession()->close();
+				}
+
+				$this->container->platform->redirect(JUri::base());
 			}
 		}
 		else
@@ -179,7 +190,7 @@ class AtsystemUtilExceptionshandler
 		// Make sure we don't have a list in the administrator white list
 		if ($this->cparams->getValue('ipwl', 0) == 1)
 		{
-			$db = JFactory::getDbo();
+			$db = $this->container->db;
 			$sql = $db->getQuery(true)
 					->select($db->qn('ip'))
 					->from($db->qn('#__admintools_adminiplist'));
@@ -243,12 +254,12 @@ class AtsystemUtilExceptionshandler
 		)
 		{
 			$uri = JUri::getInstance();
-			$url = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment'));
+			$url = $uri->toString(['scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment']);
 
 			JLoader::import('joomla.utilities.date');
 			$date = new Date();
 
-			$user = JFactory::getUser();
+			$user      = $this->container->platform->getUser();
 
 			if ($user->guest)
 			{
@@ -259,13 +270,13 @@ class AtsystemUtilExceptionshandler
 				$username = $user->username . ' (' . $user->name . ' <' . $user->email . '>)';
 			}
 
-			$country = '';
+			$country   = '';
 			$continent = '';
 
 			if (class_exists('AkeebaGeoipProvider'))
 			{
-				$geoip = new AkeebaGeoipProvider();
-				$country = $geoip->getCountryCode($ip);
+				$geoip     = new AkeebaGeoipProvider();
+				$country   = $geoip->getCountryCode($ip);
 				$continent = $geoip->getContinent($ip);
 			}
 
@@ -283,7 +294,7 @@ class AtsystemUtilExceptionshandler
 		if ($this->cparams->getValue('logbreaches', 0) && !in_array($reason, $reasons_nolog))
 		{
 			// Logging to file
-			$config = JFactory::getConfig();
+			$config = $this->container->platform->getConfig();
 
 			$logpath = $config->get('log_path');
 
@@ -331,7 +342,7 @@ class AtsystemUtilExceptionshandler
 			}
 
 			// ...and write a record to the log table
-			$db = JFactory::getDbo();
+			$db = $this->container->db;
 			$logEntry = (object)array(
 				'logdate'   => $date->toSql(),
 				'ip'        => $ip,
@@ -361,7 +372,7 @@ class AtsystemUtilExceptionshandler
 			$jlang->load('com_admintools', JPATH_ADMINISTRATOR, null, true);
 
 			// Get the site name
-			$config = JFactory::getConfig();
+			$config = $this->container->platform->getConfig();
 
 			$sitename = $config->get('sitename');
 
@@ -480,7 +491,7 @@ class AtsystemUtilExceptionshandler
 		}
 
 		// Check for repeat offenses
-		$db = JFactory::getDbo();
+		$db = $this->container->db;
 		$strikes = $this->cparams->getValue('tsrstrikes', 3);
 		$numfreq = $this->cparams->getValue('tsrnumfreq', 1);
 		$frequency = $this->cparams->getValue('tsrfrequency', 'hour');
@@ -649,7 +660,7 @@ class AtsystemUtilExceptionshandler
 			$jlang->load('com_admintools', JPATH_ADMINISTRATOR, null, true);
 
 			// Get the site name
-			$config = JFactory::getConfig();
+			$config = $this->container->platform->getConfig();
 
 			$sitename = $config->get('sitename');
 
@@ -764,7 +775,7 @@ class AtsystemUtilExceptionshandler
 	{
 		// Let's get the subject and the body from email templates
 		$jlang = JFactory::getLanguage();
-		$db = JFactory::getDbo();
+		$db = $this->container->db;
 		$languages = array($db->q('*'), $db->q('en-GB'), $db->q($jlang->getDefault()));
 		$stack = array();
 
@@ -943,13 +954,7 @@ SPAMASSASSINSUCKS;
 			return;
 		}
 
-		// Double check we can load the container class
-		if (!class_exists('\FOF30\Container\Container'))
-		{
-			return;
-		}
-
-		$params = \FOF30\Container\Container::getInstance('com_admintools')->params;
+		$params = $this->container->params;
 
 		// Run the check only if IP workarounds are off AND the flag is set to 0 (ie not detected)
 		// There's no need to run this check if the user decided to ignore the warning (value: -1) or we already detected something (value: 1)

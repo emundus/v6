@@ -625,7 +625,7 @@ class EmundusHelperList{
 		$eval=array();
 		
 		foreach($users as $user) {
-			if(!in_array($user['user_id'],$ids)){
+			if (!in_array($user['user_id'],$ids)) {
 				$ids[] = $user['user_id'];
 			}
 			$assessors = EmundusHelperList::assessorsList($user['user_id'],$user['campaign_id']); // applicant + campaign

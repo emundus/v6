@@ -41,13 +41,13 @@ class plgUserEmundus_su_forminnov extends JPlugin
 
         $app            = JFactory::getApplication();
         $db             = JFactory::getDBO();
-        $current_user   = JFactory::getUser();
+        $session        = JFactory::getSession();
 
         include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
 
         if (!$app->isAdmin()) {
-            $current_user   = JFactory::getUser();
+            $current_user = $session->get('emundusUser');
             if (EmundusHelperAccess::isApplicant($current_user->id)) {
                 if ($current_user->code == "forminnov") {
                     $sid = $current_user->id;
@@ -79,6 +79,7 @@ class plgUserEmundus_su_forminnov extends JPlugin
 
                     $current_user->menutype = $p->menutype;
                     $current_user->profile = $p->id;
+                    $session->set('emundusUser',$current_user);
                 }
             } 
         } 

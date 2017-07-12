@@ -512,8 +512,8 @@ class DataController extends Controller
 
 		// Get temporary data from the session, set if the save failed and we're redirected back here
 		$sessionKey = $this->viewName . '.savedata';
-		$itemData = $this->container->session->get($sessionKey, null, $this->container->componentName);
-		$this->container->session->set($sessionKey, null, $this->container->componentName);
+		$itemData = $this->container->platform->getSessionVar($sessionKey, null, $this->container->componentName);
+		$this->container->platform->setSessionVar($sessionKey, null, $this->container->componentName);
 
 		if (!empty($itemData))
 		{
@@ -596,8 +596,8 @@ class DataController extends Controller
 
 		// Get temporary data from the session, set if the save failed and we're redirected back here
 		$sessionKey = $this->viewName . '.savedata';
-		$itemData = $this->container->session->get($sessionKey, null, $this->container->componentName);
-		$this->container->session->set($sessionKey, null, $this->container->componentName);
+		$itemData = $this->container->platform->getSessionVar($sessionKey, null, $this->container->componentName);
+		$this->container->platform->setSessionVar($sessionKey, null, $this->container->componentName);
 
 		if (!empty($itemData))
 		{
@@ -846,7 +846,7 @@ class DataController extends Controller
 
 		// Remove any saved data
 		$sessionKey = $this->viewName . '.savedata';
-		$this->container->session->set($sessionKey, null, $this->container->componentName);
+		$this->container->platform->setSessionVar($sessionKey, null, $this->container->componentName);
 
 		// Redirect to the display task
 		if ($customURL = $this->input->getBase64('returnurl', ''))
@@ -1489,7 +1489,7 @@ class DataController extends Controller
 			$itemData = $model->getData();
 
 			$sessionKey = $this->viewName . '.savedata';
-			$this->container->session->set($sessionKey, $itemData, $this->container->componentName);
+			$this->container->platform->setSessionVar($sessionKey, $itemData, $this->container->componentName);
 
 			// Redirect on error
 			$id = $model->getId();
@@ -1517,7 +1517,7 @@ class DataController extends Controller
 		else
 		{
 			$sessionKey = $this->viewName . '.savedata';
-			$this->container->session->set($sessionKey, null, $this->container->componentName);
+			$this->container->platform->setSessionVar($sessionKey, null, $this->container->componentName);
 		}
 
 		return $status;

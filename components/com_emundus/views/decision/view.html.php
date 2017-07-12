@@ -33,7 +33,7 @@ class EmundusViewDecision extends JViewLegacy
     public function display($tpl = null)
     {
         $current_user = JFactory::getUser();
-        if( !EmundusHelperAccess::asPartnerAccessLevel($current_user->id) )
+        if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
             die( JText::_('RESTRICTED_ACCESS') );
 
         $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);

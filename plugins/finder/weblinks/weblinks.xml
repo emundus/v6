@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.1" type="plugin" group="finder" method="upgrade">
+<extension version="3.5" type="plugin" group="finder" method="upgrade">
 	<name>plg_finder_weblinks</name>
 	<author>Joomla! Project</author>
-	<creationDate>2016-03-22</creationDate>
-	<copyright>(C) 2005 - 2016 Open Source Matters. All rights reserved.</copyright>
+	<creationDate>2017-03-08</creationDate>
+	<copyright>(C) 2005 - 2017 Open Source Matters. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
 	<authorEmail>admin@joomla.org</authorEmail>
 	<authorUrl>www.joomla.org</authorUrl>
-	<version>3.5.0</version>
+	<version>3.6.0</version>
 	<description>PLG_FINDER_WEBLINKS_XML_DESCRIPTION</description>
 	<files>
-		<file plugin="weblinks">weblinks.php</file>
+		<folder>language</folder>
+<file plugin="weblinks">weblinks.php</file>
 <file>weblinks.xml</file>
-<folder>language</folder>
 	</files>
 	<languages folder="administrator/language">
 		

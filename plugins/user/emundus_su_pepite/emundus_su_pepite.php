@@ -44,7 +44,7 @@ class plgUserEmundus_su_pepite extends JPlugin
 
 
         if (!$app->isAdmin()) {
-            $current_user   = JFactory::getUser();
+            $current_user = JFactory::getSession()->get('emundusUser');
             if (EmundusHelperAccess::isApplicant($current_user->id)) { 
                 if ($current_user->code == "pepite") {
                     $app->redirect(JRoute::_(JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum).'&Itemid='.$Itemid.'#em-panel'));

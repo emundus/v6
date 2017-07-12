@@ -1,29 +1,37 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<extension group="system" method="upgrade" type="plugin" version="1.6">
-    <name>System - Gantry</name>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension version="2.5" type="plugin" group="system" method="upgrade">
+    <name>System - Gantry 4</name>
     <author>RocketTheme, LLC</author>
-    <creationDate>September 14, 2016</creationDate>
-    <copyright>(C) 2005 - 2016 RocketTheme, LLC. All rights reserved.</copyright>
+    <creationDate>July  7, 2017</creationDate>
+    <copyright>(C) 2005 - 2017 RocketTheme, LLC. All rights reserved.</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>support@rockettheme.com</authorEmail>
     <authorUrl>http://www.rockettheme.com</authorUrl>
-    <version>4.1.32</version>
-    <description>Gantry System Plugin for Joomla</description>
+    <version>4.1.33</version>
+    <description>Gantry 4 system plugin. Needs to be enabled at all times.</description>
     <files>
-        <folder>overrides</folder>
-        <folder>fields</folder>
-        <folder>language</folder>
-        <filename>index.html</filename>
         <filename plugin="gantry">gantry.php</filename>
         <filename>functions.php</filename>
-        <filename>checksums</filename>
+        <filename>MD5SUMS</filename>
+        <folder>overrides</folder>
+        <folder>fields</folder>
     </files>
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_system_gantry.ini</language>
+    </languages>
     <config>
         <fields name="params">
-            <fieldset addfieldpath="/plugins/system/gantry/fields" label="PLG_SYSTEM_GANTRY_FIELD_LABEL_DEBUG" name="debug">
-                <field description="PLG_SYSTEM_GANTRY_DEBUG_LOG_LOCATION_DESC" label="PLG_SYSTEM_GANTRY_DEBUG_LOG_LOCATION_LABEL" logfile="gantry.php" name="debugloglocation" type="debuglink"/>
+            <fieldset name="debug" label="PLG_SYSTEM_GANTRY_FIELD_LABEL_DEBUG"
+                      addfieldpath="/plugins/system/gantry/fields">
+                <field name="debugloglocation" type="debuglink"
+                       description="PLG_SYSTEM_GANTRY_DEBUG_LOG_LOCATION_DESC"
+                       label="PLG_SYSTEM_GANTRY_DEBUG_LOG_LOCATION_LABEL"
+                       logfile="gantry.php"/>
 
-                <field default="63" description="PLG_SYSTEM_GANTRY_DEBUG_LOG_LEVEL_DESC" label="PLG_SYSTEM_GANTRY_DEBUG_LOG_LEVEL_LABEL" name="debugloglevel" type="list">
+                <field name="debugloglevel" type="list"
+                       description="PLG_SYSTEM_GANTRY_DEBUG_LOG_LEVEL_DESC"
+                       label="PLG_SYSTEM_GANTRY_DEBUG_LOG_LEVEL_LABEL"
+                       default="63">
                     <option value="15">PLG_SYSTEM_GANTRY_DEBUG_LOG_LEVEL_DISABLED</option>
                     <option value="15">PLG_SYSTEM_GANTRY_DEBUG_LOG_LEVEL_ERRORS_ONLY</option>
                     <option value="63">PLG_SYSTEM_GANTRY_DEBUG_LOG_LEVEL_NORMAL</option>

@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -432,6 +432,27 @@ class PlgFabrik_Form extends FabrikPlugin
 	}
 
 	/**
+	 * Set redirect URL for process plugins that navigate to a 3rd party site
+	 * and then return to the site E.g Paypal.
+	 *
+	 * @param string $url
+	 */
+	protected function setDelayedRedirect($url)
+	{
+		$formModel = $this->model;
+		$context = $formModel->getRedirectContext();
+
+		/* $$$ hugh - fixing issue with new redirect, which now needs to be an array.
+		 * Not sure if we need to preserve existing session data, or just create a new surl array,
+		 * to force ONLY redirect to PayPal?
+		 */
+		$urls = (array) $this->session->get($context . 'url', array());
+		$urls[$this->renderOrder] = $url;
+		$this->session->set($context . 'url', $urls);
+		$this->session->set($context . 'redirect_content_how', 'samepage');
+	}
+
+	/**
 	 * Get the class to manage the plugin
 	 * to ensure that the file is loaded only once
 	 *
@@ -457,8 +478,8 @@ class PlgFabrik_Form extends FabrikPlugin
 
 		if (empty($jsClasses[$script]))
 		{
-			$formModel->formPluginShim[] = $script;
-			$jsClasses[$script]          = 1;
+			$formModel->formPluginShim[ucfirst($name)] = $script;
+			$jsClasses[$script]                        = 1;
 		}
 	}
 
@@ -548,8 +569,40 @@ class PlgFabrik_Form extends FabrikPlugin
 	}
 
 	/**
+	 * Get an element name
+	 *
+	 * @param   string $pname Params property name to look up
+	 * @param   bool   $short Short (true) or full (false) element name, default false/full
+	 *
+	 * @return    string    element full name
+	 */
+	public function getFieldName($pname, $short = false)
+	{
+		$params = $this->getParams();
+
+		if ($params->get($pname) == '')
+		{
+			return '';
+		}
+
+		$value = $params->get($pname);
+
+		if (is_numeric($value))
+		{
+			$elementModel = FabrikWorker::getPluginManager()->getElementPlugin($value);
+
+			return $short ? $elementModel->getElement()->name : $elementModel->getFullName();
+		}
+		else
+		{
+			return $short ? FabrikString::shortColName($value) : FabrikString::safeColNameToArrayKey($value);
+		}
+	}
+
+	/**
 	 * Replace a plugin parameter value with data parsed via parseMessageForPlaceholder
-	 * @param string $pName  Parameter name
+	 *
+	 * @param string $pName Parameter name
 	 *
 	 * @return string
 	 */

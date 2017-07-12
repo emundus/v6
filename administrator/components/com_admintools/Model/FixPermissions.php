@@ -80,10 +80,11 @@ class FixPermissions extends Model
 		$this->customperms = $db->setQuery($query)->loadAssocList('path');
 
 		// Add cache, tmp and log to the exceptions
+		$jConfig          = $this->container->platform->getConfig();
 		$this->skipDirs[] = rtrim(JPATH_CACHE, '/');
 		$this->skipDirs[] = rtrim(JPATH_ROOT . '/cache', '/');
-		$this->skipDirs[] = rtrim(JFactory::getConfig()->get('tmp_path', JPATH_ROOT . '/tmp'), '/');
-		$this->skipDirs[] = rtrim(JFactory::getConfig()->get('log_path', JPATH_ROOT . '/logs'), '/');
+		$this->skipDirs[] = rtrim($jConfig->get('tmp_path', JPATH_ROOT . '/tmp'), '/');
+		$this->skipDirs[] = rtrim($jConfig->get('log_path', JPATH_ROOT . '/logs'), '/');
 		$this->skipDirs[] = JPATH_ADMINISTRATOR . '/logs';
 		$this->skipDirs[] = JPATH_ADMINISTRATOR . '/log';
 		$this->skipDirs[] = JPATH_ROOT . '/logs';

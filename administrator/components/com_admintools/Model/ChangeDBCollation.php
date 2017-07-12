@@ -37,7 +37,7 @@ class ChangeDBCollation extends Model
 	public function changeCollation($new_collation = 'utf8_general_ci')
 	{
 		// Make sure we have at least MySQL 4.1.2
-		$db = $this->container->db;
+		$db            = $this->container->db;
 		$old_collation = $db->getCollation();
 
 		if ($old_collation == 'N/A (mySQL < 4.1.2)')
@@ -48,15 +48,15 @@ class ChangeDBCollation extends Model
 
 		// Get the character set's name from the collation
 		$collationParts = explode('_', $new_collation);
-		$charSet = $collationParts[0];
+		$charSet        = $collationParts[0];
 
 		// Get this database's name and try to change its collation
-		$conf = JFactory::getConfig();
+		$conf   = $this->container->platform->getConfig();
 		$dbname = $db->qn($conf->get('db'));
 
-		$queries = array(
-			"ALTER DATABASE $dbname CHARACTER SET = $charSet COLLATE = $new_collation"
-		);
+		$queries = [
+			"ALTER DATABASE $dbname CHARACTER SET = $charSet COLLATE = $new_collation",
+		];
 
 		// We need to loop through all Joomla! tables
 		$tables = $this->findTables();
@@ -67,7 +67,7 @@ class ChangeDBCollation extends Model
 			{
 				// Convert the table
 				$quotedTableName = $db->qn($tableName);
-				$sql = "ALTER TABLE $quotedTableName CONVERT TO CHARACTER SET $charSet COLLATE $new_collation";
+				$sql             = "ALTER TABLE $quotedTableName CONVERT TO CHARACTER SET $charSet COLLATE $new_collation";
 
 				$queries[] .= $sql;
 
@@ -75,23 +75,23 @@ class ChangeDBCollation extends Model
 				$sql = "SHOW FULL COLUMNS FROM $quotedTableName";
 				$db->setQuery($sql);
 				$columns = $db->loadAssocList();
-				$mods = array(); // array to hold individual MODIFY COLUMN commands
+				$mods    = []; // array to hold individual MODIFY COLUMN commands
 
 				if (is_array($columns))
 				{
 					foreach ($columns as $column)
 					{
 						// Make sure we are redefining only columns which do support a collation
-						$col = (object)$column;
+						$col = (object) $column;
 
 						if (empty($col->Collation))
 						{
 							continue;
 						}
 
-						$null = $col->Null == 'YES' ? 'NULL' : 'NOT NULL';
+						$null    = $col->Null == 'YES' ? 'NULL' : 'NOT NULL';
 						$default = is_null($col->Default) ? '' : "DEFAULT '" . $db->escape($col->Default) . "'";
-						$mods[] = "MODIFY COLUMN `{$col->Field}` {$col->Type} $null $default COLLATE $new_collation";
+						$mods[]  = "MODIFY COLUMN `{$col->Field}` {$col->Type} $null $default COLLATE $new_collation";
 					}
 				}
 

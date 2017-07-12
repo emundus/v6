@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -295,7 +295,7 @@ class FabrikPlugin extends JPlugin
 		$type    = str_replace('fabrik_', '', $this->_type);
 
 		$form         = $this->getPluginForm($repeatCounter);
-		$repeatScript = '';
+		$repeatScript = array();
 
 		// Copy over the data into the params array - plugin fields can have data in either
 		// jform[params][name] or jform[name]
@@ -1002,14 +1002,14 @@ class FabrikPlugin extends JPlugin
 	 *
 	 * @return  string  JS code to ini adminplugin class
 	 */
-	public function onGetAdminJs($name, $label, $html)
+/*	public function onGetAdminJs($name, $label, $html)
 	{
 		$opts   = $this->getAdminJsOpts($html);
 		$opts   = json_encode($opts);
 		$script = "new fabrikAdminPlugin('$name', '$label', $opts)";
 
 		return $script;
-	}
+	}*/
 
 	/**
 	 * Get the options to ini the J Admin js plugin controller class

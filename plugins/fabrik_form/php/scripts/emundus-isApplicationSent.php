@@ -24,7 +24,7 @@ JLog::addLogger(
     array('com_emundus')
 );
 
-$user = JFactory::getUser();
+$user = JFactory::getSession()->get('emundusUser');
 $mainframe = JFactory::getApplication();
 $jinput = $mainframe->input;
 
@@ -49,7 +49,7 @@ $itemid = $jinput->get('Itemid');
 $reload = $jinput->get('r', 0); 
 
 
-if(!EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
+if (!EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
  	if ($jinput->get('tmpl')=='component') {
         JHTML::stylesheet( JURI::Base().'media/com_fabrik/css/fabrik.css' );
         JHTML::stylesheet( JURI::Base().'media/system/css/modal.css' );
@@ -59,8 +59,8 @@ if(!EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
         $doc->addScript(JURI::Base()."templates/rt_afterburner2/js/rokmediaqueries.js");
     }
     //echo "<script>$('rt-header').remove(); $('rt-footer').remove(); $('gf-menu-toggle').remove();</script>";
-} else{
-    if (($user->fnum != $fnum && $fnum != -1) && !empty($fnum)) { 
+} else {
+    if (($user->fnum != $fnum && $fnum != -1) && !empty($fnum)) {
         JError::raiseNotice('ERROR', JText::_('ERROR...'));
         $mainframe->redirect(JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$user->fnum);
     }
@@ -72,13 +72,11 @@ if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){
 //	echo '<a href="index.php?option=com_emundus&view=application&sid='.$student_id.'"><h1>'.$student->name.'</h1></a>';
 	echo !empty($rowid)?'<h4 style="text-align:right">#'.$fnum.'</h4>':'';
 
-}
-else {
+} else {
 	if (empty($user->fnum) && !isset($user->fnum) && EmundusHelperAccess::isApplicant($user->id))
 		$mainframe->redirect("index.php?option=com_emundus&view=renew_application");
 	
 	if ($jinput->get('view') == 'form' && empty($fnum) && !isset($fnum)) {
-		
 		// Si l'application Form a été envoyee par le candidat : affichage vue details
 		if($user->candidature_posted > 0 && $user->candidature_incomplete == 0 && $can_edit_until_deadline == 0) {
 			$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
@@ -98,9 +96,7 @@ else {
 }
 
 if (EmundusHelperAccess::isApplicant($user->id) && $copy_application_form == 1 && isset($user->fnum)) {
-
 	if (empty($formModel->getRowId())) {
-
 		$db 		= JFactory::getDBO();
 		$table 		= $listModel->getTable();
 		$table_elements  	= $formModel->getElementOptions(false, 'name', false, false, array(), '', true);

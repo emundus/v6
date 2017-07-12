@@ -14,7 +14,7 @@ defined( '_JEXEC' ) or die();
  */
 
 $db = JFactory::getDBO();
-$student =  JFactory::getUser();
+$student =  JFactory::getSession()->get('emundusUser');
 
 //$mailer = JFactory::getMailer();
 include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');

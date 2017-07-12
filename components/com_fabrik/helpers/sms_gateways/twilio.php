@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.form.sms
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -32,7 +32,6 @@ class Twilio extends JObject
 
 	public function process($message = '', $opts)
 	{
-		jimport('vendor.twilio.sdk.Services.Twilio');
 		$username = FArrayHelper::getValue($opts, 'sms-username');
 		$token = FArrayHelper::getValue($opts, 'sms-password');
 		$smsto = FArrayHelper::getValue($opts, 'sms-to');
@@ -41,23 +40,22 @@ class Twilio extends JObject
 		$smsfrom = FArrayHelper::getValue($opts, 'sms-from');
 		$smstos = explode(",", $smsto);
 
-		$client = new Services_Twilio($username, $token);
+		$client = new Twilio\Rest\Client($username, $token);
 
 		foreach ($smstos as $smsto)
 		{
 			try {
-				$call = $client->account->messages->create(
+				$call = $client->messages->create(
+					$smsto,
 					array(
 						'From' => $smsfrom,
-						'To' => $smsto,
 						'Body' => $message
 					)
 				);
 			}
-			catch (Services_Twilio_RestException $e)
+			catch (SException $e)
 			{
-				//echo $e->getMessage();
-
+				JFactory::getApplication()->enqueueMessage('TWILIO_ERROR');
 				return false;
 			}
 		}

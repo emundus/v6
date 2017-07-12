@@ -2,7 +2,7 @@
 defined('_JEXEC') or die('Restricted access'); 
 JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
 
-$user = JFactory::getUser();
+$user = JFactory::getSession()->get('emundusUser');
 $_db = JFactory::getDBO();
 
 $query='SELECT id, link FROM #__menu WHERE alias like "checklist%" AND menutype like "%'.$user->menutype.'"';

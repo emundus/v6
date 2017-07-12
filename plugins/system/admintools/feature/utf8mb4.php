@@ -16,7 +16,7 @@ class AtsystemFeatureUtf8mb4 extends AtsystemFeatureAbstract
 
 	public function onAfterInitialise()
 	{
-		$db = JFactory::getDbo();
+		$db = $this->container->db;
 
 		// If it's not MySQL I don't have to do anything at all
 		if (stristr($db->name, 'mysql') === false)

@@ -49,6 +49,8 @@
 
 		<field name="introduction"
 		       type="editor"
+		       buttons="true"
+		       hide="readmore,pagebreak"
 		       filter="FabrikAdminHelper::filterText"
 		       rows="3"
 		       cols="30"
@@ -218,6 +220,8 @@
 
 			<field name="outro"
 			       type="editor"
+			       buttons="true"
+			       hide="readmore,pagebreak"
 			       filter="FabrikAdminHelper::filterText"
 			       rows="3"
 			       cols="30"
@@ -425,6 +429,18 @@
 			>
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
+			</field>
+
+			<field name="search-mode-advanced-default"
+			       type="list"
+			       default="all"
+			       label="COM_FABRIK_FIELD_ADVANCED_SEARCH_ALL_MODE_DEFAULT_LABEL"
+			       description="COM_FABRIK_FIELD_ADVANCED_SEARCH_ALL_MODE_DEFAULT_DESC"
+			>
+				<option value="all">COM_FABRIK_ALL_OF_THESE_TERMS</option>
+				<option value="any">COM_FABRIK_ANY_OF_THESE_TERMS</option>
+				<option value="exact">COM_FABRIK_EXACT_TERMS</option>
+				<option value="none">COM_FABRIK_NONE_OF_THESE_TERMS</option>
 			</field>
 
 			<field name="list_search_elements"
@@ -691,6 +707,17 @@
 				<option value="remove">COM_FABRIK_REMOVE</option>
 			</field>
 
+			<field name="csv_clean_html"
+			       type="list"
+			       default="leave"
+			       label="COM_FABRIK_FIELD_CSV_CLEAN_HTML_LABEL"
+			       description="COM_FABRIK_FIELD_CSV_CLEAN_HTML_DESC"
+			>
+				<option value="leave">COM_FABRIK_LEAVE_HTML</option>
+				<option value="replaceli">COM_FABRIK_REPLACE_LI</option>
+				<option value="remove">COM_FABRIK_REMOVE_HTML</option>
+			</field>
+
 			<field name="csv_custom_qs"
 			       type="text"
 			       class="input-xxlarge"
@@ -837,9 +864,20 @@
 			       class="input-mini"
 			       size="20"
 			       default=""
-			       label="COM_FABRIK_FIELD_CSV_LOCAL_DELIMITER"
-			       description="COM_FABRIK_FIELD_LOCAL_DELIMITER_DESC"
+			       label="COM_FABRIK_FIELD_CSV_LOCAL_DELIMITER_LABEL"
+			       description="COM_FABRIK_FIELD_CSV_LOCAL_DELIMITER_DESC"
 			/>
+
+			<field name="csv_end_of_line"
+			       type="radio"
+			       class="btn-group"
+			       default="n"
+			       label="COM_FABRIK_FIELD_CSV_END_OF_LINE_LABEL"
+			       description="COM_FABRIK_FIELD_CSV_END_OF_LINE_DESC"
+			>
+				<option value="n">n</option>
+				<option value="r">r</option>
+			</field>
 
 		</fieldset>
 
@@ -1127,7 +1165,7 @@
 
 			<field name="list_detail_link_icon"
 			       type="text"
-			       default="search.png"
+			       default="search"
 			       class="input-large"
 			       size="30"
 			       label="COM_FABRIK_DETAIL_LINK_ICON_LABEL"
@@ -1161,6 +1199,15 @@
 			       description="COM_FABRIK_EDIT_DESC"
 			/>
 
+			<field name="list_edit_link_icon"
+			       type="text"
+			       default="edit"
+			       class="input-large"
+			       size="30"
+			       label="COM_FABRIK_EDIT_LINK_ICON_LABEL"
+			       description="COM_FABRIK_EDIT_LINK_ICON_DESC"
+			/>
+
 			<field name="checkboxLocation"
 			       type="radio"
 			       class="btn-group"
@@ -1171,6 +1218,14 @@
 				<option value="beginning">COM_FABRIK_BEGINNING</option>
 				<option value="end">COM_FABRIK_END</option>
 			</field>
+
+			<field name="hidecheckbox"
+			       type="checkbox"
+			       id="hidecheckbox"
+			       label="COM_FABRIK_FIELD_CHECKBOX_HIDE_LABEL"
+			       description="COM_FABRIK_FIELD_CHECKBOX_HIDE_DESC"
+			       default="0"
+			/>
 
 			<field name="addurl"
 			       type="text"
@@ -1186,6 +1241,24 @@
 			       size="30"
 			       label="COM_FABRIK_FIELD_ADD_BUTTON_LABEL_LABEL"
 			       description="COM_FABRIK_FIELD_ADD_BUTTON_LABEL_DESC"
+			/>
+
+			<field name="list_add_icon"
+			       type="text"
+			       default="plus"
+			       class="input-large"
+			       size="30"
+			       label="COM_FABRIK_ADD_ICON_LABEL"
+			       description="COM_FABRIK_ADD_ICON_DESC"
+			/>
+
+			<field name="list_delete_icon"
+			       type="text"
+			       default="delete"
+			       class="input-large"
+			       size="30"
+			       label="COM_FABRIK_DELETE_ICON_LABEL"
+			       description="COM_FABRIK_DELETE_ICON_DESC"
 			/>
 
 		</fieldset>
@@ -1353,6 +1426,17 @@
 			       default="1"
 			       label="COM_FABRIK_FIELD_PROCESS_JPLUGINS_LABEL"
 			       description="COM_FABRIK_FIELD_PROCESS_JPLUGINS_DESC"
+			>
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field name="cloak_emails"
+			       type="radio"
+			       class="btn-group"
+			       default="0"
+			       label="COM_FABRIK_FIELD_CLOAK_EMAILS_LABEL"
+			       description="COM_FABRIK_FIELD_CLOAK_EMAILS_DESC"
 			>
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
@@ -1537,7 +1621,7 @@
 			       type="text"
 			       description="COM_FABRIK_DASHBOARD_ICON_DESC"
 			       label="COM_FABRIK_DASHBOARD_ICON_LABEL"
-			       />
+			/>
 		</fieldset>
 
 		<fieldset name="joins">

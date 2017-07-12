@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  com_users
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2017 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -16,45 +16,33 @@ JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
 JHtml::_('formbehavior.chosen', 'select');
 
-$user       = JFactory::getUser();
-$listOrder  = $this->escape($this->state->get('list.ordering'));
-$listDirn   = $this->escape($this->state->get('list.direction'));
-
-JText::script('COM_USERS_GROUPS_CONFIRM_DELETE');
-
-$groupsWithUsers = array();
-
-foreach ($this->items as $i => $item)
-{
-	if ($item->user_count > 0)
-	{
-		array_push($groupsWithUsers, $i);
-	}
-}
+$user        = JFactory::getUser();
+$listOrder   = $this->escape($this->state->get('list.ordering'));
+$listDirn    = $this->escape($this->state->get('list.direction'));
+$debugGroups = $this->state->get('params')->get('debugGroups', 1);
 
 JText::script('COM_USERS_GROUPS_CONFIRM_DELETE');
 
 JFactory::getDocument()->addScriptDeclaration('
 		Joomla.submitbutton = function(task) {
 			if (task == "groups.delete") {
-				var f = document.adminForm;
-				var cb = "";
-				var groupsWithUsers = [' . implode(',', $groupsWithUsers) . '];
-				for (index = 0; index < groupsWithUsers.length; ++index) {
-					cb = f["cb" + groupsWithUsers[index]];
-					if (cb && cb.checked) {
+				var i, cids = document.getElementsByName("cid[]");
+				for (i = 0; i < cids.length; i++) {
+					if (cids[i].checked && cids[i].parentNode.getAttribute("data-usercount") != 0) {
 						if (confirm(Joomla.JText._("COM_USERS_GROUPS_CONFIRM_DELETE"))) {
 							Joomla.submitform(task);
 						}
-						return;
+						return false;
 					}
 				}
 			}
+
 			Joomla.submitform(task);
+			return false;
 		};
 ');
 ?>
-<form action="<?php echo JRoute::_('index.php?option=com_users&view=groups');?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_users&view=groups'); ?>" method="post" name="adminForm" id="adminForm">
 <?php if (!empty( $this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
@@ -62,7 +50,7 @@ JFactory::getDocument()->addScriptDeclaration('
 	<div id="j-main-container" class="span10">
 <?php else : ?>
 	<div id="j-main-container">
-<?php endif;?>
+<?php endif; ?>
 		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this, 'options' => array('filterButton' => false))); ?>
 		<div class="clearfix"> </div>
 		<?php if (empty($this->items)) : ?>
@@ -73,23 +61,28 @@ JFactory::getDocument()->addScriptDeclaration('
 			<table class="table table-striped" id="groupList">
 				<thead>
 					<tr>
-						<th width="1%">
+						<th width="1%" class="nowrap">
 							<?php echo JHtml::_('grid.checkall'); ?>
 						</th>
-						<th>
+						<th class="nowrap">
 							<?php echo JHtml::_('searchtools.sort', 'COM_USERS_HEADING_GROUP_TITLE', 'a.title', $listDirn, $listOrder); ?>
 						</th>
-						<th width="20%" class="center">
-							<?php echo JText::_('COM_USERS_HEADING_USERS_IN_GROUP'); ?>
+						<th width="1%" class="nowrap center">
+							<span class="icon-publish hasTooltip" aria-hidden="true" title="<?php echo JText::_('COM_USERS_COUNT_ENABLED_USERS'); ?>"></span>
+							<span class="hidden-phone"><?php echo JText::_('COM_USERS_COUNT_ENABLED_USERS'); ?></span>
 						</th>
-						<th width="5%">
+						<th width="1%" class="nowrap center">
+							<span class="icon-unpublish hasTooltip" aria-hidden="true" title="<?php echo JText::_('COM_USERS_COUNT_DISABLED_USERS'); ?>"></span>
+							<span class="hidden-phone"><?php echo JText::_('COM_USERS_COUNT_DISABLED_USERS'); ?></span>
+						</th>
+						<th width="1%" class="nowrap hidden-phone">
 							<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
 						</th>
 					</tr>
 				</thead>
 				<tfoot>
 					<tr>
-						<td colspan="4">
+						<td colspan="5">
 							<?php echo $this->pagination->getListFooter(); ?>
 						</td>
 					</tr>
@@ -100,42 +93,47 @@ JFactory::getDocument()->addScriptDeclaration('
 					$canEdit   = $user->authorise('core.edit', 'com_users');
 
 					// If this group is super admin and this user is not super admin, $canEdit is false
-					if (!$user->authorise('core.admin') && (JAccess::checkGroup($item->id, 'core.admin')))
+					if (!$user->authorise('core.admin') && JAccess::checkGroup($item->id, 'core.admin'))
 					{
 						$canEdit = false;
 					}
 					$canChange = $user->authorise('core.edit.state', 'com_users');
 				?>
 					<tr class="row<?php echo $i % 2; ?>">
-						<td class="center">
+						<td class="center" data-usercount="<?php echo $item->user_count; ?>">
 							<?php if ($canEdit) : ?>
 								<?php echo JHtml::_('grid.id', $i, $item->id); ?>
 							<?php endif; ?>
 						</td>
 						<td>
-							<?php echo str_repeat('<span class="gi">|&mdash;</span>', $item->level) ?>
+							<?php echo JLayoutHelper::render('joomla.html.treeprefix', array('level' => $item->level + 1)); ?>
 							<?php if ($canEdit) : ?>
-							<a href="<?php echo JRoute::_('index.php?option=com_users&task=group.edit&id=' . $item->id);?>">
+							<a href="<?php echo JRoute::_('index.php?option=com_users&task=group.edit&id=' . $item->id); ?>">
 								<?php echo $this->escape($item->title); ?></a>
 							<?php else : ?>
 								<?php echo $this->escape($item->title); ?>
 							<?php endif; ?>
-							<?php if (JDEBUG) : ?>
-								<div class="small"><a href="<?php echo JRoute::_('index.php?option=com_users&view=debuggroup&group_id=' . (int) $item->id);?>">
-								<?php echo JText::_('COM_USERS_DEBUG_GROUP');?></a></div>
+							<?php if ($debugGroups) : ?>
+								<div class="small"><a href="<?php echo JRoute::_('index.php?option=com_users&view=debuggroup&group_id=' . (int) $item->id); ?>">
+								<?php echo JText::_('COM_USERS_DEBUG_GROUP'); ?></a></div>
 							<?php endif; ?>
 						</td>
-						<td class="center">
-							<?php echo $item->user_count ? '<a class="badge badge-success" href="' . JRoute::_('index.php?option=com_users&view=users&filter[group_id]=' . $item->id) . '">' . $item->user_count . '</a>' : '<span class="badge">0</span>'; ?>
+						<td class="center btns">
+							<a class="badge <?php if ($item->count_enabled > 0) echo 'badge-success'; ?>" href="<?php echo JRoute::_('index.php?option=com_users&view=users&filter[group_id]=' . (int) $item->id . '&filter[state]=0'); ?>">
+								<?php echo $item->count_enabled; ?></a>
 						</td>
-						<td>
+						<td class="center btns">
+							<a class="badge <?php if ($item->count_disabled > 0) echo 'badge-important'; ?>" href="<?php echo JRoute::_('index.php?option=com_users&view=users&filter[group_id]=' . (int) $item->id . '&filter[state]=1'); ?>">
+								<?php echo $item->count_disabled; ?></a>
+						</td>
+						<td class="hidden-phone">
 							<?php echo (int) $item->id; ?>
 						</td>
 					</tr>
 					<?php endforeach; ?>
 				</tbody>
 			</table>
-		<?php endif;?>
+		<?php endif; ?>
 
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />

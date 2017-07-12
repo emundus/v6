@@ -7,6 +7,9 @@
 
 // Protect from unauthorized access
 defined('_JEXEC') or die;
+
+/** @var \Akeeba\AdminTools\Admin\View\AdminPassword\Html $this */
+
 ?>
 <p class="alert alert-info">
 	<?php echo \JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_INTRO'); ?>
@@ -20,7 +23,7 @@ defined('_JEXEC') or die;
 	<input type="hidden" name="option" value="com_admintools"/>
 	<input type="hidden" name="view" value="AdminPassword"/>
 	<input type="hidden" name="task" id="task" value="protect"/>
-	<input type="hidden" name="<?php echo \JFactory::getSession()->getFormToken(); ?>" value="1"/>
+	<input type="hidden" name="<?php echo $this->container->platform->getToken(true); ?>" value="1"/>
 
 	<p class="help-block"><?php echo \JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_INFO'); ?></p>
 
@@ -56,7 +59,7 @@ defined('_JEXEC') or die;
 		<?php if ($this->adminLocked): ?>
 			&nbsp;&nbsp;
 			<a class="btn btn-success"
-			   href="index.php?option=com_admintools&view=AdminPassword&task=unprotect&<?php echo \JFactory::getSession()->getFormToken(); ?>=1"
+			   href="index.php?option=com_admintools&view=AdminPassword&task=unprotect&<?php echo $this->container->platform->getToken(true); ?>=1"
 			>
 				<?php echo \JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_UNPROTECT'); ?>
 			</a>

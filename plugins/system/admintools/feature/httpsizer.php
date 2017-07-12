@@ -17,7 +17,7 @@ class AtsystemFeatureHttpsizer extends AtsystemFeatureAbstract
 	public function isEnabled()
 	{
 		// We only use this feature in the front-end
-		if ($this->helper->isBackend())
+		if ($this->container->platform->isBackend())
 		{
 			return false;
 		}

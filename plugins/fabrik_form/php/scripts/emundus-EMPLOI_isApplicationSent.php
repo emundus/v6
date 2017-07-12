@@ -14,7 +14,7 @@ defined( '_JEXEC' ) or die();
  */
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
-$user = JFactory::getUser();
+$user = JFactory::getSession()->get('emundusUser');
 $mainframe = JFactory::getApplication();
 $jinput = $mainframe->input;
 $eMConfig = JComponentHelper::getParams('com_emundus');

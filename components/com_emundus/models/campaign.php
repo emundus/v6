@@ -30,7 +30,7 @@ class EmundusModelCampaign extends JModelList
 		$mainframe = JFactory::getApplication();
 		
 		$this->_db = JFactory::getDBO();
-		$this->_user = JFactory::getUser();
+		$this->_user = JFactory::getSession()->get('emundusUser');
 		
 		// Get pagination request variables
 		$filter_order			= $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'label', 'cmd' );

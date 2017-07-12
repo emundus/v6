@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: belatedpng.php 2381 2012-08-15 04:14:26Z btowles $
+ * @version   $Id: belatedpng.php 30564 2017-04-26 07:39:28Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Rockettheme Reaction Template uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system
@@ -41,7 +41,7 @@ class GantryFeatureBelatedPNG extends GantryFeature
 		global $gantry;
 
 		if ($gantry->browser->name == 'ie' && $gantry->browser->shortversion == '6') {
-			$fixes = $gantry->belatedPNG;
+			$fixes = isset($gantry->belatedPNG) ? $gantry->belatedPNG : null;
 
 			$gantry->addScript('belated-png.js');
 			$gantry->addInlineScript($this->_belatedPNG($fixes));

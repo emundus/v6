@@ -29,7 +29,7 @@ defined('_JEXEC') or die;
 	<input type="hidden" name="view" value="ChangeDBCollation"/>
 	<input type="hidden" name="task" value="apply"/>
 	<input type="hidden" name="tmpl" value="component"/>
-	<input type="hidden" name="<?php echo $this->escape(JFactory::getSession()->getFormToken()); ?>" value="1"/>
+	<input type="hidden" name="<?php echo $this->container->platform->getToken(true); ?>" value="1"/>
 
 	<div class="control-group">
 		<label class="control-label" for="inputCollation"><?php echo $this->escape(trim(JText::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_CHOOSE'), ' -–')); ?></label>

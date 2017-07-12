@@ -2,7 +2,7 @@
 /**
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.form.logs
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -137,7 +137,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 		$params        = $this->getParams();
 		$formModel     = $this->getModel();
 		$input         = $this->app->input;
-		$db            = FabrikWorker::getDBO();
+		$db            = JFactory::getDBO();
 		$rowId         = $input->get('rowid', '', 'string');
 		$loading       = strstr($messageType, 'form.load');
 		$http_referrer = $input->server->get('HTTP_REFERER', 'no HTTP_REFERER', 'string');
@@ -304,7 +304,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 			$labtyp        = array_combine($clabels, $ctypes);
 
 			$w          = new FabrikWorker;
-			$custom_msg = $w->parseMessageForPlaceHolder($custom_msg);
+			$custom_msg = $w->parseMessageForPlaceHolder($custom_msg, null, true, false, null, false);
 			$regex      = '/((?!("[^"]*))([ |\w|+|.])+(?=[^"]*"\b)|(?!\b"[^"]*)( +)+(?=([^"]*)$)|(?=\b"[^"]*)( +)+(?=[^"]*"\b))/';
 			$excl_cdata = preg_replace($regex, '', $custom_msg);
 			$cdata      = preg_split('/["]{1,}/', $excl_cdata);

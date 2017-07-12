@@ -98,7 +98,7 @@ class EmergencyOffline extends Model
 
 		if (!@file_exists($offlineFile))
 		{
-			$jreg     = JFactory::getConfig();
+			$jreg     = $this->container->platform->getConfig();
 			$message  = JText::_($jreg->get('offline_message'));
 			$sitename = $jreg->get('sitename');
 

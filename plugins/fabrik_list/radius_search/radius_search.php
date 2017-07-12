@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.list.radiussearch
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -21,7 +21,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.radiussearch
  * @since       3.0
  */
-class PlgFabrik_ListRadius_Search extends PlgFabrik_List
+class PlgFabrik_ListRadius_search extends PlgFabrik_List
 {
 	/**
 	 * Place coordinates
@@ -144,6 +144,7 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 		JText::script('PLG_VIEW_RADIUS_NO_GEOLOCATION_AVAILABLE');
 		JText::script('COM_FABRIK_SEARCH');
 		JText::script('PLG_LIST_RADIUS_SEARCH');
+		JText::script('PLG_LIST_RADIUS_SEARCH_BUTTON');
 
 		$mapElement = $this->getMapElement();
 		$mapName = $mapElement->getFullName(true, false);
@@ -500,13 +501,26 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 		$opts->geoCodeAsType = $params->get('geocode_as_type', 1);
 		$opts->renderOrder = $this->renderOrder;
 		$opts->offset_y = (int)$params->get('window_offset_y', '0');
+		$config = JComponentHelper::getParams('com_fabrik');
+		$apiKey = $config->get('google_api_key', '');
+		$opts->key = empty($apiKey) ? false : $apiKey;
 		$opts = json_encode($opts);
-		$this->jsInstance = "new FbListRadiusSearch($opts)";
+		$this->jsInstance = "new FbListRadius_search($opts)";
 
 		JText::script('PLG_LIST_RADIUS_SEARCH_CLEAR_CONFIRM');
 		JText::script('PLG_LIST_RADIUS_SEARCH_GEOCODE_ERROR');
 
 		return true;
+	}
+
+	/**
+	 * Load the AMD module class name
+	 *
+	 * @return string
+	 */
+	public function loadJavascriptClassName_result()
+	{
+		return 'FbListRadiusSearch';
 	}
 
 	/**

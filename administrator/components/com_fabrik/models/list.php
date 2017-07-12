@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
@@ -14,8 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 
 require_once 'fabmodeladmin.php';
 
-use \Joomla\Utilities\ArrayHelper;
-use \Joomla\Registry\Registry;
+use Joomla\Registry\Registry;
+use Joomla\Utilities\ArrayHelper;
 
 /**
  * Fabrik Admin List Model
@@ -299,6 +299,7 @@ class FabrikAdminModelList extends FabModelAdmin
 				$aConditions[] = JHTML::_('select.option', 'in', 'IN');
 				$aConditions[] = JHTML::_('select.option', 'not_in', 'NOT IN');
 				$aConditions[] = JHTML::_('select.option', 'exists', 'EXISTS');
+				$aConditions[] = JHTML::_('select.option', 'thisyear', FText::_('COM_FABRIK_THIS_YEAR'));
 				$aConditions[] = JHTML::_('select.option', 'earlierthisyear', FText::_('COM_FABRIK_EARLIER_THIS_YEAR'));
 				$aConditions[] = JHTML::_('select.option', 'laterthisyear', FText::_('COM_FABRIK_LATER_THIS_YEAR'));
 
@@ -308,6 +309,7 @@ class FabrikAdminModelList extends FabModelAdmin
 				$aConditions[] = JHTML::_('select.option', 'thismonth', FText::_('COM_FABRIK_THIS_MONTH'));
 				$aConditions[] = JHTML::_('select.option', 'lastmonth', FText::_('COM_FABRIK_LAST_MONTH'));
 				$aConditions[] = JHTML::_('select.option', 'nextmonth', FText::_('COM_FABRIK_NEXT_MONTH'));
+				$aConditions[] = JHTML::_('select.option', 'nextweek1', FText::_('COM_FABRIK_NEXT_WEEK1'));
 				$aConditions[] = JHTML::_('select.option', 'birthday', FText::_('COM_FABRIK_BIRTHDAY_TODAY'));
 
 				break;
@@ -644,6 +646,9 @@ class FabrikAdminModelList extends FabModelAdmin
 
 		$params = new Registry($row->get('params'));
 
+		$isView = $this->setIsView($params);
+		$data['params']['isView'] = (string) $isView;
+
 		$this->setState('list.id', $id);
 		$this->setState('list.form_id', $row->get('form_id'));
 		$feModel = $this->getFEModel();
@@ -690,6 +695,9 @@ class FabrikAdminModelList extends FabModelAdmin
 
 			// Mysql will force db table names to lower case even if you set the db name to upper case - so use clean()
 			$newTable = FabrikString::clean($newTable);
+
+			// can't have table names ending in _
+            $newTable = rtrim($newTable, '_');
 
 			// Check the entered database table doesn't already exist
 			if ($newTable != '' && $this->databaseTableExists($newTable))
@@ -793,6 +801,47 @@ class FabrikAdminModelList extends FabModelAdmin
 	}
 
 	/**
+	 * Tests if the table is in fact a view
+	 *
+	 * @return  bool	true if table is a view
+	 */
+	public function setIsView($params)
+	{
+		$isView = $params->get('isview', null);
+
+		if (!is_null($isView) && (int) $isView >= 0)
+		{
+			return $isView;
+		}
+
+		$feModel = $this->getFEModel();
+
+		$db = FabrikWorker::getDbo();
+		$table = $this->getTable();
+		$cn = $feModel->getConnection();
+		$c = $cn->getConnection();
+		$dbName = $c->database;
+
+		if ($table->db_table_name == '')
+		{
+			return;
+		}
+
+		// @todo JQueryBuilder this?
+		$sql = " SELECT table_name, table_type, engine FROM INFORMATION_SCHEMA.tables " . "WHERE table_name = " . $db->q($table->db_table_name)
+			. " AND table_type = 'view' AND table_schema = " . $db->q($dbName);
+		$db->setQuery($sql);
+		$row = $db->loadObjectList();
+		$isView = empty($row) ? "0" : "1";
+		$feModel->setIsView($isView);
+
+		// Store and save param for following tests
+		$params->set('isview', $isView);
+
+		return $isView;
+	}
+
+	/**
 	 * Make an array of elements and a presumed index size, map is then used in creating indexes
 	 *
 	 * @param   Registry $params
@@ -814,7 +863,18 @@ class FabrikAdminModelList extends FabModelAdmin
 			foreach ($elementModels as $element)
 			{
 				// Int and DATETIME elements cant have a index size attribute
-				$colType = $element->getFieldDescription();
+
+				try
+				{
+					$colType = $element->getFieldDescription();
+				}
+				catch (exception $e)
+				{
+					// some corner case, like an unpublished join to a non existent database, so make something up
+					$map[$element->getFullName(false, false)] = '';
+					$map[$element->getElement()->get('id')]   = '';
+					continue;
+				}
 
 				if (JString::stristr($colType, 'int'))
 				{
@@ -2341,7 +2401,7 @@ class FabrikAdminModelList extends FabModelAdmin
 		$o                      = (object) $a;
 		$o->admin_template      = 'admin';
 		$o->detaillink          = 0;
-		$o->empty_data_msg      = 'No data found';
+		$o->empty_data_msg      = FText::_('COM_FABRIK_LIST_NO_DATA_MSG');
 		$o->pdf                 = '';
 		$o->rss                 = 0;
 		$o->feed_title          = '';

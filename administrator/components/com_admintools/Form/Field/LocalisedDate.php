@@ -18,14 +18,15 @@ class LocalisedDate extends Text
 	public function getRepeatable()
 	{
 		static $tz = null;
+		$container = $this->form->getContainer();
 
 		if (is_null($tz))
 		{
-			$timezone = \JFactory::getUser()->getParam('timezone', \JFactory::getConfig()->get('offset', 'GMT'));
+			$timezone = $container->platform->getUser()->getParam('timezone', $container->platform->getConfig()->get('offset', 'GMT'));
 			$tz = new \DateTimeZone($timezone);
 		}
 
-		$date = $this->form->getContainer()->platform->getDate($this->value, 'UTC');
+		$date      = $container->platform->getDate($this->value, 'UTC');
 		$date->setTimezone($tz);
 		
 		$format = isset($this->element['format']) ? $this->element['format'] : 'DATE_FORMAT_LC2';

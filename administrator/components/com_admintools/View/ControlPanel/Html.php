@@ -287,7 +287,7 @@ class Html extends BaseView
 		if (defined('ADMINTOOLS_PRO') && ADMINTOOLS_PRO)
 		{
 			$this->frontEndSecretWordIssue = $controlPanelModel->getFrontendSecretWordError();
-			$this->newSecretWord           = \JFactory::getSession()->get('newSecretWord', null, 'admintools.cpanel');
+			$this->newSecretWord           = $this->container->platform->getSessionVar('newSecretWord', null, 'admintools.cpanel');
 			$this->jwarnings               = $controlPanelModel->checkJoomlaConfiguration();
 		}
 

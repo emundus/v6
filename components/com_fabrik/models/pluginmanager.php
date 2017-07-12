@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -410,11 +410,6 @@ class FabrikFEModelPluginmanager extends FabModel
 				return array();
 			}
 
-			$db = FabrikWorker::getDbo(true);
-			$query = $db->getQuery(true);
-			$select = '*, e.name AS name, e.id AS id, e.published AS published, e.label AS label,'
-			. 'e.plugin, e.params AS params, e.access AS access, e.ordering AS ordering';
-
 			/**
 			 * Changed this code to use two separate queries, rather than joining #__extensions on the
 			 * plugin name, as the J! 3.5 release changed collation of J! table, and this breaks the
@@ -422,6 +417,10 @@ class FabrikFEModelPluginmanager extends FabModel
 			 */
 
 			// build list of plugins used on this form ...
+			$db = FabrikWorker::getDbo(true);
+			$query = $db->getQuery(true);
+			$select = '*, e.name AS name, e.id AS id, e.published AS published, e.label AS label,'
+				. 'e.plugin, e.params AS params, e.access AS access, e.ordering AS ordering';
 			$query->select($select);
 			$query->from('#__{package}_elements AS e');
 			$query->where('group_id IN (' . implode(',', $groupIds) . ')');

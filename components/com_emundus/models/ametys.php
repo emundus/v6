@@ -40,7 +40,6 @@ class EmundusModelAmetys extends JModelLegacy
         $mainframe = JFactory::getApplication();
 
         // Get current menu parameters
-        $current_user = JFactory::getUser();
         $menu = @JSite::getMenu();
         $current_menu = $menu->getActive();
 

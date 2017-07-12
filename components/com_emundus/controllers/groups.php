@@ -51,9 +51,8 @@ class EmundusControllerGroups extends JControllerLegacy {
 		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
 			die("You are not allowed to access to this page.");
-		}
 		$db = JFactory::getDBO();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$ag_id = JRequest::getVar('assessor_group', null, 'POST', 'none',0);
@@ -62,13 +61,12 @@ class EmundusControllerGroups extends JControllerLegacy {
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 		
-		if(empty($ids) && !empty($reqids)) {
+		if(empty($ids) && !empty($reqids))
 			$ids = $reqids;
-		}
 		JArrayHelper::toInteger( $ids, null );
-		if(!empty($ids)) {
+		if (!empty($ids)) {
 			foreach ($ids as $id) {				
-				if(!empty($ag_id) && isset($ag_id)) {
+				if (!empty($ag_id) && isset($ag_id)) {
 					$db->setQuery('SELECT * FROM #__emundus_groups_eval WHERE applicant_id='.$id.' AND group_id='.$ag_id);
 					$cpt = $db->loadResultArray();
 					
@@ -111,9 +109,8 @@ class EmundusControllerGroups extends JControllerLegacy {
 		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
 			die("You are not allowed to access to this page.");
-		}
 		$db = JFactory::getDBO();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$ag_id = JRequest::getVar('assessor_group', null, 'POST', 'none',0);
@@ -441,7 +438,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 
         $model = $this->getModel('groups');   
 
-        if( !EmundusHelperAccess::asCoordinatorAccessLevel($user->id) )
+        if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id) )
         {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));

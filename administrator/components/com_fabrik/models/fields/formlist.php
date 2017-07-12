@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Form
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -112,6 +112,25 @@ class JFormFieldFormList extends JFormFieldList
 			$this->form->setValue('form', null, $this->value);
 		}
 
-		return parent::getInput();
+		if ((int) $this->form->getValue('id') == 0 || !$this->element['readonlyonedit'])
+		{
+			return parent::getInput();
+		}
+		else
+		{
+			$options = (array) $this->getOptions();
+			$v       = '';
+
+			foreach ($options as $opt)
+			{
+				if ($opt->value == $this->value)
+				{
+					$v = $opt->text;
+				}
+			}
+		}
+
+		return '<input type="hidden" value="' . $this->value . '" name="' . $this->name . '" />' . '<input type="text" value="' . $v
+		. '" name="form_justalabel" class="readonly" readonly="true" />';
 	}
 }

@@ -59,7 +59,14 @@
 				label="COM_FABRIK_MENU_LIST_TMPL_LABEL"
 				description="COM_FABRIK_MENU_LIST_TMPL_DESC"
 			/>
-				
+
+			<field name="fabriklayout"
+				   type="fabriktemplate"
+				   view="form"
+				   label="COM_FABRIK_MENU_LIST_FORM_TMPL_LABEL"
+				   description="COM_FABRIK_MENU_LIST_FORM_TMPL_DESC"
+			/>
+
 			<field name="resetfilters"
 				type="radio"
 				class="btn-group"
@@ -129,6 +136,7 @@
 								<option value="lessthanequals">LESS THAN OR EQUALS</option>
 								<option value="in">IN</option>
 								<option value="not_in">NOT IN</option>
+								<option value="thisyear">COM_FABRIK_THIS_YEAR</option>
 								<option value="earlierthisyear">COM_FABRIK_EARLIER_THIS_YEAR</option>
 								<option value="laterthisyear">COM_FABRIK_LATER_THIS_YEAR</option>
 								<option value="yesterday">COM_FABRIK_YESTERDAY</option>
@@ -137,6 +145,7 @@
 								<option value="thismonth">COM_FABRIK_THIS_MONTH</option>
 								<option value="lastmonth">COM_FABRIK_LAST_MONTH</option>
 								<option value="nextmonth">COM_FABRIK_NEXT_MONTH</option>
+								<option value="nextweek1">COM_FABRIK_NEXT_WEEK1</option>
 								<option value="birthday">COM_FABRIK_BIRTHDAY_TODAY</option>
 						</field>
 						
@@ -173,6 +182,67 @@
 				description="COM_FABRIK_FIELD_ROWS_PER_PAGE_DESC"
 			/>
 			
+			<field name="popup_width"
+				type="text"
+				default="340"
+				class="input-mini"
+				size="5"
+				label="COM_FABRIK_MENU_CSV_POPUP_WIDTH_LABEL"
+				description="COM_FABRIK_MENU_CSV_POPUP_WIDTH_DESC"
+			/>	
+
+			<field name="popup_opts_width"
+				type="text"
+				default="200"
+				class="input-mini"
+				size="5"
+				label="COM_FABRIK_MENU_CSV_POPUP_OPTS_WIDTH_LABEL"
+				description="COM_FABRIK_MENU_CSV_POPUP_OPTS_WIDTH_DESC"
+			/>
+			
+			<field name="csv_import_extensions"
+			       type="text"
+			       class="input-medium"
+			       size="20"
+			       default="txt,csv,tsv"
+			       label="COM_FABRIK_FIELD_CSV_IMPORT_EXTENSIONS_LABEL"
+			       description="COM_FABRIK_FIELD_CSV_IMPORT_EXTENSIONS_DESC"
+			/>              
+            
+		        <field name="csv_import_sil_only"
+ 				type="radio"
+ 				class="btn-group"
+ 				default="0"
+ 				description="COM_FABRIK_FIELD_CSV_IMPORT_SIL_ONLY_DESC"
+ 				label="COM_FABRIK_FIELD_CSV_IMPORT_SIL_ONLY_LABEL"
+ 			>
+ 					<option value="0">JNO</option>
+ 					<option value="1">JYES</option>
+ 			</field>            
+            
+			<field name="csv_import_dropdata"
+				type="radio"
+				class="btn-group"
+				default="0"
+				description="COM_FABRIK_FIELD_CSV_IMPORT_DROPDATA_DESC"
+				label="COM_FABRIK_FIELD_CSV_IMPORT_DROPDATA_LABEL"
+			>
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+            
+            
+			<field name="csv_import_overwrite"
+				type="radio"
+				class="btn-group"
+				default="0"
+				description="COM_FABRIK_FIELD_CSV_IMPORT_OVERWRITE_DESC"
+				label="COM_FABRIK_FIELD_CSV_IMPORT_OVERWRITE_LABEL"
+			>
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
 			<!-- <field name="query_string"
 				type="text"
 				class="input-xlarge"

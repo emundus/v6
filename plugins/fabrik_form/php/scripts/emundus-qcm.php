@@ -24,7 +24,7 @@ JLog::addLogger(
     array('com_emundus')
 );
 
-$user = JFactory::getUser();
+$user = JFactory::getSession()->get('emundusUser');
 $mainframe = JFactory::getApplication();
 $jinput = $mainframe->input;
 

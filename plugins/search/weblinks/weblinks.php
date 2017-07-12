@@ -1,9 +1,9 @@
 <?php
 /**
- * @package     Joomla.Plugin
- * @subpackage  Search.weblinks
+ * @package     Joomla.Administrator
+ * @subpackage  Weblinks
  *
- * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2017 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -174,7 +174,7 @@ class PlgSearchWeblinks extends JPlugin
 		$case_when1 .= ' ELSE ';
 		$case_when1 .= $c_id . ' END as catslug';
 
-		$query->select('a.title AS title, \'\' AS created, a.url, a.description AS text, ' . $case_when . "," . $case_when1)
+		$query->select('a.title AS title, a.created AS created, a.url, a.description AS text, ' . $case_when . "," . $case_when1)
 		->select($query->concatenate(array($db->quote($searchWeblinks), 'c.title'), " / ") . ' AS section')
 		->select('\'1\' AS browsernav')
 		->from('#__weblinks AS a')

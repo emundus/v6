@@ -76,7 +76,8 @@ trait ViewAliases
 		{
 			$url = JUri::getInstance();
 			$url->setVar('view', $this->view);
-			JFactory::getApplication()->redirect($url, 301);
+
+			$this->container->platform->redirect($url, 301);
 		}
 	}
 }

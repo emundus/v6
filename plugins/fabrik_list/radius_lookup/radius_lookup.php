@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.list.radiussearch
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -24,7 +24,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @since       3.2
  */
 
-class PlgFabrik_ListRadius_Lookup extends PlgFabrik_List
+class PlgFabrik_ListRadius_lookup extends PlgFabrik_List
 {
 	/**
 	 * Build the radius search HTML
@@ -292,9 +292,18 @@ class PlgFabrik_ListRadius_Lookup extends PlgFabrik_List
 		$opts->myloc = $params->get('myloc', 1) == 1 ? true : false;
 		$opts->renderOrder = $this->renderOrder;
 		$opts = json_encode($opts);
-		$this->jsInstance = "new FbListRadiusLookup($opts)";
-
+		$this->jsInstance = "new FbListRadius_lookup($opts)";
 		return true;
+	}
+
+	/**
+	 * Load the AMD module class name
+	 *
+	 * @return string
+	 */
+	public function loadJavascriptClassName_result()
+	{
+		return 'FbListRadius_lookup';
 	}
 
 	/**

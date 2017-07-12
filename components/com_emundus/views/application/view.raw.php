@@ -41,7 +41,7 @@ class EmundusViewApplication extends JViewLegacy
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 
-		$this->_user = JFactory::getUser();
+		$this->_user = JFactory::getSession()->get('emundusUser');
 		$this->_db = JFactory::getDbo();
 		parent::__construct($config);
 	}

@@ -1,7 +1,7 @@
 /**
  * Admin Modal Repeat Editor
  *
- * @copyright: Copyright (C) 2005-2015, fabrikar.com - All rights reserved.
+ * @copyright: Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -180,8 +180,8 @@ var FabrikModalRepeat = new Class({
 
         // Reapply values as renaming radio buttons
         this._setRadioValues(radiovals, target);
-        this.resizeWin(false, target);
         this.resetChosen(clone);
+        this.resizeWin(false, target);
     },
 
     /**
@@ -241,7 +241,8 @@ var FabrikModalRepeat = new Class({
 
             jQuery(clone).find('select').chosen({
                 disable_search_threshold: 10,
-                allow_single_deselect   : true
+                allow_single_deselect   : true,
+                width: '265px'
             });
         }
     },

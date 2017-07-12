@@ -94,8 +94,8 @@ class EmundusViewFiles extends JViewLegacy
 				$fnum = $app->input->getString("fnum", "0");
 				$display = $app->input->getString('display', 'none'); 
 				$menu = @JSite::getMenu();
-				$current_menu  = $menu->getActive();
-				if(isset($current_menu) && !empty($current_menu)) {
+				$current_menu = $menu->getActive();
+				if (isset($current_menu) && !empty($current_menu)) {
 					$params = $menu->getParams($current_menu->id);
 				
 					if($fnum === "0")

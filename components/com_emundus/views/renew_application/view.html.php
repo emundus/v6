@@ -41,14 +41,14 @@ class EmundusViewRenew_application extends JViewLegacy
     function display($tpl = null)
     {
 
-		if ( $this->_user->guest) 
+		if ($this->_user->guest) 
 			die(JText::_('ACCESS_DENIED'));
 		
 		$document = JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 
-		$eMConfig 					= JComponentHelper::getParams('com_emundus');
-		$applicant_can_renew 		= $eMConfig->get('applicant_can_renew', '0');
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
 		$this->assignRef('applicant_can_renew', $applicant_can_renew);
 
 		$current_user = JFactory::getUser();

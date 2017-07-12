@@ -727,9 +727,7 @@ class Controller
 	{
 		if ($this->redirect)
 		{
-			$app = \JFactory::getApplication();
-			$app->enqueueMessage($this->message, $this->messageType);
-			$app->redirect($this->redirect);
+			$this->container->platform->redirect($this->redirect, 301, $this->message, $this->messageType);
 
 			return true;
 		}
@@ -909,33 +907,44 @@ class Controller
 				break;
 		}
 
-		$hasToken = false;
-		$session  = $this->container->session;
+		// Check for a session token
+		$token    = $this->container->platform->getToken(false);
+		$hasToken = $this->input->get($token, false, 'none') == 1;
 
-		// Joomla! 2.5+ (Platform 12.1+) method
-		if (method_exists($session, 'getToken'))
+		if (!$hasToken)
 		{
-			$token    = $session->getToken();
+			$hasToken = $this->input->get('_token', null, 'none') == $token;
+		}
+
+		if ($hasToken)
+		{
+			$view = $this->input->getCmd('view');
+			$task = $this->input->getCmd('task');
+			\JLog::add(
+				"FOF: You are using a legacy session token in (view, task)=($view, $task). Support for legacy tokens will go away. Use form tokens instead.",
+				\JLog::WARNING,
+				'deprecated'
+			);
+		}
+
+		// Check for a form token
+		if (!$hasToken)
+		{
+			$token    = $this->container->platform->getToken(true);
 			$hasToken = $this->input->get($token, false, 'none') == 1;
 
 			if (!$hasToken)
 			{
+				$view = $this->input->getCmd('view');
+				$task = $this->input->getCmd('task');
+				\JLog::add(
+					"FOF: You are using the insecure _token form variable in (view, task)=($view, $task). Support for it will go away. Submit a variable with the token as the name and a value of 1 instead.",
+					\JLog::WARNING,
+					'deprecated'
+				);
+
+
 				$hasToken = $this->input->get('_token', null, 'none') == $token;
-			}
-		}
-
-		// Joomla! 2.5+ formToken method
-		if (!$hasToken)
-		{
-			if (method_exists($session, 'getFormToken'))
-			{
-				$token    = $session->getFormToken();
-				$hasToken = $this->input->get($token, false, 'none') == 1;
-
-				if (!$hasToken)
-				{
-					$hasToken = $this->input->get('_token', null, 'none') == $token;
-				}
 			}
 		}
 

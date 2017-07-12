@@ -9,6 +9,7 @@ namespace FOF30\Model\DataModel\Behaviour;
 
 use FOF30\Event\Observer;
 use FOF30\Model\DataModel;
+use Joomla\Registry\Registry;
 use JRegistry;
 
 defined('_JEXEC') or die;
@@ -44,7 +45,7 @@ class RelationFilters extends Observer
 				$filterState['value'] = '1';
 			}
 
-			$options = new JRegistry($filterState);
+			$options = class_exists('JRegistry') ? new JRegistry($filterState) : new Registry($filterState);
 
 			$filter = new DataModel\Filter\Relation($model->getDbo(), $relationName, $subQuery);
 			$methods = $filter->getSearchMethods();

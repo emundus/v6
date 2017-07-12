@@ -33,11 +33,9 @@ class plgUserEmundus extends JPlugin
      * @return  boolean
      * @since   1.6
      */
-    public function onUserAfterDelete($user, $succes, $msg)
-    {
-        if (!$succes) {
+    public function onUserAfterDelete($user, $succes, $msg) {
+        if (!$succes)
             return false;
-        }
 
         $db = JFactory::getDbo();
         $db->setQuery(
@@ -48,35 +46,30 @@ class plgUserEmundus extends JPlugin
 
         $db->setQuery('SHOW TABLES');
         $tables = $db->loadColumn();
-        foreach($tables as $table)
-        {
-            if(strpos($table, 'emundus_')===FALSE) continue;
-            if(strpos($table, 'emundus_group_assoc')>0) continue;
-            if(strpos($table, 'emundus_tag_assoc')>0) continue;
-            if(strpos($table, 'emundus_stats')>0) continue;
-            if(strpos($table, '_repeat')>0) continue;
-            if(strpos($table, 'setup_')>0 || strpos($table, '_country')>0 || strpos($table, '_users')>0 || strpos($table, '_evaluation_weight')>0 || strpos($table, '_acl')>0) continue;
-            if(strpos($table, '_files_request')>0 || strpos($table, '_evaluations')>0 || strpos($table, '_final_grade')>0 || strpos($table, '_emundus_academic_transcrip')>0 || strpos($table, '_emundus_mobility')>0) {
+        foreach($tables as $table) {
+            if (strpos($table, '_messages')>0)
+                $db->setQuery('DELETE FROM '.$table.' WHERE user_id_from = '.(int) $user['id'].' OR user_id_to = '.(int) $user['id']);
+            if (strpos($table, 'emundus_') === FALSE) continue;
+            if (strpos($table, 'emundus_group_assoc')>0) continue;
+            if (strpos($table, 'emundus_tag_assoc')>0) continue;
+            if (strpos($table, 'emundus_stats')>0) continue;
+            if (strpos($table, '_repeat')>0) continue;
+            if (strpos($table, 'setup_')>0 || strpos($table, '_country')>0 || strpos($table, '_users')>0 || strpos($table, '_acl')>0) continue;
+            if (strpos($table, '_files_request')>0 || strpos($table, '_evaluations')>0 || strpos($table, '_final_grade')>0)
                 $db->setQuery('DELETE FROM '.$table.' WHERE student_id = '.(int) $user['id']);
-            } elseif(strpos($table, '_uploads')>0 || strpos($table, '_groups')>0 || strpos($table, '_emundus_confirmed_applicants')>0 || strpos($table, '_emundus_learning_agreement')>0 || strpos($table, '_emundus_users')>0 || strpos($table, '_emundus_emailalert')>0) {
+            elseif (strpos($table, '_uploads')>0 || strpos($table, '_groups')>0 || strpos($table, '_emundus_users')>0 || strpos($table, '_emundus_emailalert')>0)
                 $db->setQuery('DELETE FROM '.$table.' WHERE user_id = '.(int) $user['id']);
-            } elseif(strpos($table, '_emundus_comments')>0 || strpos($table, '_emundus_campaign_candidature')>0) {
+            elseif (strpos($table, '_emundus_comments')>0 || strpos($table, '_emundus_campaign_candidature')>0)
                 $db->setQuery('DELETE FROM '.$table.' WHERE applicant_id = '.(int) $user['id']);
-            } elseif(strpos($table, '_groups_eval')>0) {
-                $db->setQuery('DELETE FROM '.$table.' WHERE user_id = '.(int) $user['id'].' OR applicant_id = '.(int) $user['id']);
-            } else {
-                $db->setQuery('DELETE FROM '.$table.' WHERE user = '.(int) $user['id']);
-            }
             $db->Query();
         }
         $dir = EMUNDUS_PATH_ABS.$user['id'].DS;
-        if(!$dh = @opendir($dir))
+        if (!$dh = @opendir($dir))
             return false;
         while (false !== ($obj = readdir($dh))) {
-            if($obj == '.' || $obj == '..') continue;
-            if(!@unlink($dir.$obj)) {
+            if ($obj == '.' || $obj == '..') continue;
+            if (!@unlink($dir.$obj))
                 JFactory::getApplication()->enqueueMessage(JText::_("FILE_NOT_FOUND")." : ".$obj."\n", 'error');
-            }
         }
         closedir($dh);
         @rmdir($dir);
@@ -107,7 +100,7 @@ class plgUserEmundus extends JPlugin
         $mail_to_user   = $this->params->get('mail_to_user', 1);
         $db = JFactory::getDBO();
 
-        if( count($details) > 0 ) {
+        if (count($details) > 0) {
             //$profile = @isset($details['emundus_profile']['profile'])?@$details['emundus_profile']['profile']:@$details['profile'];
             $campaign_id = @isset($details['emundus_profile']['campaign'])?$details['emundus_profile']['campaign']:@$details['campaign'];
             $name = @isset($details['emundus_profile']['name'])?$details['emundus_profile']['name']:$details['name'];
@@ -186,12 +179,12 @@ class plgUserEmundus extends JPlugin
                 }
 
                 // Insert data in #__emundus_users_profiles_history
-                $db->setQuery('INSERT INTO #__emundus_users_profiles_history (user_id, profile_id, var) VALUES ('.$user['id'].','.$profile.',"profile")');
+                /*$db->setQuery('INSERT INTO #__emundus_users_profiles_history (user_id, profile_id, var) VALUES ('.$user['id'].','.$profile.',"profile")');
                 try {
                     $db->Query();
                 } catch (Exception $e) {
                     // catch any database errors.
-                }
+                }*/
                 if (isset($campaign_id) && !empty($campaign_id)) {
                     // Insert data in #__emundus_campaign_candidature
                     $query = 'INSERT INTO #__emundus_campaign_candidature (`applicant_id`, `campaign_id`, `fnum`) VALUES ('.$user['id'].','.$campaign_id.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
@@ -238,112 +231,23 @@ class plgUserEmundus extends JPlugin
         // The most common use of this routine would be logging the user into a third party application
         // In this example the boolean variable $success would be set to true if the login routine succeeds
         // ThirdPartyApp::loginUser($user['username'], $user['password']);
-        
-        include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
-        include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 
-        $config         = JFactory::getConfig();
         $app            = JFactory::getApplication();
         $current_user   = JFactory::getUser();
-        $session        = JFactory::getSession();
-        $session_user   = $session->get('user');
 
         if (!$app->isAdmin()) {
-            
-            $db             = JFactory::getDBO();
-
+            $db = JFactory::getDBO();
             include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
 
-            $profiles = new EmundusModelProfile;
-            $users = new EmundusModelUsers;
-
-            $p = $profiles->isProfileUserSet($current_user->id);
-            $campaign = $profiles->getCurrentCampaignInfoByApplicant($current_user->id);
-            $incomplete = $profiles->getCurrentIncompleteCampaignByApplicant($current_user->id);
+            $profiles   = new EmundusModelProfile;
+            $p          = $profiles->isProfileUserSet($current_user->id);
+            $campaign   = $profiles->getCurrentCampaignInfoByApplicant($current_user->id);
             
-            if( ($p['cpt'] == 0 || empty($p['profile']) || !isset($p['profile']) || empty($campaign)) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id) ) 
+            if (($p['cpt'] == 0 || empty($p['profile']) || !isset($p['profile']) || empty($campaign)) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) 
                 $app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
-            //$mainframe->redirect("index.php?option=com_emundus&view=campaign");
-            else {
-
-                $profile = $profiles->getProfileByApplicant($current_user->id);
-                //$current_user->firstname                = $profile["firstname"];
-                $session_user->firstname                = $profile["firstname"];
-                //$current_user->lastname                 = strtoupper($profile["lastname"]);
-                $session_user->lastname                 = strtoupper($profile["lastname"]);
-                //$current_user->emGroups                 = array_keys($users->getUserGroups($current_user->id));
-                $session_user->emGroups                 = array_keys($users->getUserGroups($current_user->id));
-
-                if (EmundusHelperAccess::isApplicant($current_user->id)) {
-                    $profile        = $profiles->getProfileByCampaign($campaign["id"]);
-
-                    if( empty($p['profile']) || empty($campaign["id"]) || !isset($p['profile']) || !isset($campaign["id"]) )
-                        $app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
-
-                    //$current_user->profile                  = $profile["profile_id"];
-                    $session_user->profile                  = $profile["profile_id"];
-                    //$current_user->profile_label            = $profile["label"];
-                    $session_user->profile_label            = $profile["label"];
-                    //$current_user->menutype                 = $profile["menutype"];
-                    $session_user->menutype                 = $profile["menutype"];
-                    //$current_user->university_id            = null;
-                    $session_user->university_id            = null;
-                    //$current_user->applicant                = 1;
-                    $session_user->applicant                = 1;
-                    //$current_user->start_date               = $profile["start_date"];                   
-                    $session_user->start_date               = $profile["start_date"];
-                    //$current_user->end_date                 = $profile["end_date"];
-                    $session_user->end_date                 = $profile["end_date"];
-                    //$current_user->candidature_start        = $profile["start_date"];
-                    $session_user->candidature_start        = $profile["start_date"];
-                    //$current_user->candidature_end          = $profile["end_date"];
-                    $session_user->candidature_end          = $profile["end_date"];
-                    //$current_user->candidature_posted       = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] ==0  || @$profile["date_submitted"] == NULL)?0:1;
-                    $session_user->candidature_posted       = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] == 0  || @$profile["date_submitted"] == NULL)?0:1;
-                    //$current_user->candidature_incomplete   = (count($incomplete)==0)?0:1;
-                    $session_user->candidature_incomplete   = (count($incomplete)==0)?0:1;
-                    //$current_user->schoolyear               = $profile["year"];
-                    $session_user->schoolyear               = $profile["year"];
-                    //$current_user->code                     = $profile["training"];
-                    $session_user->code                     = $profile["training"];
-                    //$current_user->campaign_id              = $campaign["id"];
-                    $session_user->campaign_id              = $campaign["id"];
-                    //$current_user->campaign_name            = $profile["label"];
-                    $session_user->campaign_name            = $profile["label"];
-                    //$current_user->fnum                     = $campaign["fnum"];
-                    $session_user->fnum                     = $campaign["fnum"];
-                    //$current_user->fnums                    = $profiles->getApplicantFnums($current_user->id, null, $profile["start_date"], $profile["end_date"]);
-                    $session_user->fnums                    = $profiles->getApplicantFnums($current_user->id, null, $profile["start_date"], $profile["end_date"]);
-                    //$current_user->status                   = @$campaign["status"];
-                    $session_user->status                   = @$campaign["status"];
-
-                } else {
-                    //$current_user->profile                  = $profile["profile"];
-                    $session_user->profile                  = $profile["profile"];
-                    //$current_user->profile_label            = $profile["profile_label"];
-                    $session_user->profile_label            = $profile["profile_label"];
-                    //$current_user->menutype                 = $profile["menutype"];
-                    $session_user->menutype                 = $profile["menutype"];
-                    //$current_user->university_id            = $profile["university_id"];
-                    $session_user->university_id            = $profile["university_id"];
-                    //$current_user->applicant                = 0;
-                    $session_user->applicant                = 0;
-                }
-
-                //if ($current_user->code == "csc") {
-                //    $app->redirect("index.php?option=com_content&view=article&id=83&Itemid=1570");
-                //} else {
-                //    $jinput = $app->input;
-                //    $lang = $jinput->get('lang', '', 'RAW');
-                //    $url = !empty($lang)?"index.php?lang=".$lang:"index.php";
-                //    $app->redirect($url);
-                //}
-                //$app->redirect('/');
-            }
-        } 
-    //var_dump($current_user); die();  
-        $session->set('user', $session_user);
-
+            else
+                $profiles->initEmundusSession();
+        }
         return true;
     }
 
@@ -358,6 +262,8 @@ class plgUserEmundus extends JPlugin
      */
     public function onUserLogout($user, $options = array())
     {
+
+
         $my         = JFactory::getUser();
         $session    = JFactory::getSession();
         $app        = JFactory::getApplication();

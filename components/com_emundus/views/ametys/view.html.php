@@ -35,8 +35,8 @@ class EmundusViewAmetys extends JViewLegacy
     	// put it in com_emundus/emundus.php
 
     	$current_user = JFactory::getUser();
-		if( !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id) )
-			die( JText::_('RESTRICTED_ACCESS') );
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id))
+			die(JText::_('RESTRICTED_ACCESS'));
 
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_emundus');

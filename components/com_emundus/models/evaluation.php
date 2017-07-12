@@ -1074,22 +1074,16 @@ class EmundusModelEvaluation extends JModelList
 						 );
 		$leftJoin = '';
 		if (count($this->_elements)>0) {
-			foreach ($this->_elements as $elt)
-			{
+			foreach ($this->_elements as $elt) {
 				if(!isset($lastTab))
-				{
 					$lastTab = array();
-				}
 				if(!in_array($elt->tab_name, $lastTab))
-				{ 
 					$leftJoin .= 'left join ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = c.fnum ';
-				}
 				$lastTab[] = $elt->tab_name;
 			}
 		}
-		if (count($this->_elements_default)>0) {
+		if (count($this->_elements_default)>0)
 			$query .= ', '.implode(',', $this->_elements_default);
-		}
 
 		$query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eu.lastname," ",eu.firstname) AS evaluator';
 		
@@ -1109,9 +1103,7 @@ class EmundusModelEvaluation extends JModelList
 			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum ';
 
 		if (!empty($leftJoin))
-		{
 			$query .= $leftJoin;
-		}
 		$query .= ' LEFT JOIN #__emundus_users as eu on eu.user_id = jos_emundus_evaluations.user ';
 		$query .= $q['join'];
 		$query .= ' where 1 = 1 ' . $q['q'];

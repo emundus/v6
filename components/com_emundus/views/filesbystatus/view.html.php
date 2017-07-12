@@ -31,7 +31,7 @@ class EmundusViewFilesbystatus extends JViewLegacy
     public function display($tpl = null)
     {
 		$current_user = JFactory::getUser();
-		if( !EmundusHelperAccess::asPartnerAccessLevel($current_user->id) )
+		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id) )
 			die( JText::_('RESTRICTED_ACCESS') );
 
     	// translation to load in javacript file ; /media/com_emundus/em_files.js

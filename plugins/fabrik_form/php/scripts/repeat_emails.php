@@ -12,9 +12,8 @@ function repeat_emails($params, &$formModel) {
 	$email_from_name = "Hugh Messenger";
 	$email_subject = "Hi {fab_sponsors___sponsor_name}";
 
-	$user						= JFactory::getUser();
-	$config					= JFactory::getConfig();
-	$db 						= JFactory::getDbo();
+	$config	= JFactory::getConfig();
+	$db = JFactory::getDbo();
     $mailer = JFactory::getMailer();
 	$w = new FabrikWorker();
 

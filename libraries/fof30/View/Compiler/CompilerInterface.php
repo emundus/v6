@@ -22,8 +22,8 @@ interface CompilerInterface
 	/**
 	 * Compile a view template into PHP and HTML
 	 *
-	 * @param   array  $path         The absolute filesystem path of the view template
-	 * @param   array  $forceParams  Any parameters to force (only for engines returning raw HTML)
+	 * @param   string  $path         The absolute filesystem path of the view template
+	 * @param   array   $forceParams  Any parameters to force (only for engines returning raw HTML)
 	 *
 	 * @return mixed
 	 */

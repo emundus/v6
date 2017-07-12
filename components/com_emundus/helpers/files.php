@@ -275,14 +275,13 @@ class EmundusHelperFiles
             return $db->loadResultArray();
         } catch (Exception $e) {
             throw new   Exception;
-
         }
     }
 
     public  function getCurrentCampaignsID(){
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
-        $config     = JFactory::getConfig();
+        $config = JFactory::getConfig();
         
         $jdate = JFactory::getDate();
         $jdate->setOffset($config->getValue('offset'));
@@ -478,8 +477,7 @@ class EmundusHelperFiles
      * @param array $fabrik_elements
      * @return array
      */
-    public static function getElements($code = array(), $fabrik_elements = array())
-    {
+    public static function getElements($code = array(), $fabrik_elements = array()) {
         require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
@@ -488,10 +486,10 @@ class EmundusHelperFiles
         $user       = new EmundusModelUsers;
         $profile    = new EmundusModelProfile;
 
-        $db         = JFactory::getDBO();
+        $db = JFactory::getDBO();
         
 
-        if(count($code) == 0) {
+        if (count($code) == 0) {
             $params = JFactory::getSession()->get('filt_params');
             $programme = $params['programme'];
             $campaigns = @$params['campaign'];
@@ -524,9 +522,8 @@ class EmundusHelperFiles
                 }
             }
 
-            if (count($fl) == 0) {
+            if (count($fl) == 0)
                 return array();
-            }
 
             $query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
                     INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias, joins.table_join, menu.title
@@ -538,10 +535,10 @@ class EmundusHelperFiles
                     LEFT JOIN #__fabrik_joins AS joins ON tab.id = joins.list_id AND groupe.id=joins.group_id
                     INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)';
             $where = 'WHERE tab.published = 1';
-            if( count($fabrik_elements) > 0 ) {
+            if (count($fabrik_elements) > 0 ) {
                 $where .= ' AND element.id IN (' . implode(',', $fabrik_elements) . ') ';
                 $order ='';
-            }else {
+            } else {
                 $where .= ' AND (tab.id IN ( ' . implode(',', $fl) . ' ))
                         AND element.published=1
                         AND element.hidden=0
@@ -677,9 +674,9 @@ class EmundusHelperFiles
         return $sub->sub_options;
     }
 
-    public  function getElementsName($elements_id)
-    {
+    public function getElementsName($elements_id) {
         if (!empty($elements_id) && isset($elements_id)) {
+            
             $db = JFactory::getDBO();
             $query = 'SELECT element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.id, element.plugin as element_plugin, groupe.id as group_id, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias, joins.table_join
                     FROM #__fabrik_elements element
@@ -690,18 +687,16 @@ class EmundusHelperFiles
                     WHERE element.id IN ('.ltrim($elements_id, ',').')
                     ORDER BY formgroup.ordering, element.ordering ';
             $db->setQuery($query);
-//echo '<hr>'.str_replace('#_', 'jos', $query); 
             //$elementsIdTab = array_fill_keys(explode(',', $elements_id), "");
             $elementsIdTab = array();
             //$res0 = $db->loadObjectList();
             $res = $db->loadObjectList('id');
-            foreach($res as $kId => $r)
-            {
+            foreach ($res as $kId => $r) {
                 $elementsIdTab[$kId] = $r;
             }
             return $elementsIdTab;
-        } else
-            return array();
+        
+        } else return array();
     }
 
     public  function buildOptions($element_name, $params)
@@ -1594,21 +1589,16 @@ class EmundusHelperFiles
 
         $user = JFactory::getUser();
         if($fnum === null)
-        {
             $actions = $userModel->getUserACL($user->id);
-        }
         else
-        {
             $actions = $userModel->getUserACL($user->id, $fnum);
-        }
         $levels = $user->getAuthorisedViewLevels();
         asort($levels);
 
         $key = 'menu_items'.$params.implode(',', $levels).'.'.$active->id;
         $cache = JFactory::getCache('mod_menu', '');
 
-        if (!($items = $cache->get($key)))
-        {
+        if (!($items = $cache->get($key))) {
             // Initialise variables.
             $path       = $active->tree;
             $start      = 0;
@@ -1618,20 +1608,14 @@ class EmundusHelperFiles
 
             $lastitem   = 0;
             if ($items) {
-
-                foreach($items as $i => $item)
-                {
+                foreach($items as $i => $item) {
                     $note = explode('|', $item->note);
-                    if (count($note)>1)
-                    {
-                        if(EmundusHelperAccess::asAccessAction($note[0], $note[1], $user->id, $fnum))
-                        {
+                    if (count($note)>1) {
+                        if (EmundusHelperAccess::asAccessAction($note[0], $note[1], $user->id, $fnum)) {
                             $actions[$note[0]]['multi'] = @$note[2];
                             $actions[$note[0]]['grud'] = @$note[1];
                             $item->action = $actions[$note[0]];
-                        }
-                        else
-                        {
+                        } else {
                             unset($items[$i]);
                             continue;
                         }

@@ -34,7 +34,7 @@ class EmundusModelApplication extends JModelList
         $this->_mainframe = JFactory::getApplication();
 
         $this->_db = JFactory::getDBO();
-        $this->_user = JFactory::getUser();
+        $this->_user = JFactory::getSession()->get('emundusUser');
     }
 
     public function getApplicantInfos($aid, $param)

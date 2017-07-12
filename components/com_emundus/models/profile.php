@@ -405,5 +405,116 @@ class EmundusModelProfile extends JModelList
         }
     }
 
+	/**
+	 * Creates an object in the session that acts as a replacement for the default Joomla user
+	 */
+	public function initEmundusSession() {
+		include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
+		include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
+		
+		$users 			= new EmundusModelUsers;
+		$current_user 	= JFactory::getUser();
+		$profile 		= $this->getProfileByApplicant($current_user->id);
+		$session        = JFactory::getSession();
+		foreach ($session->get('user') as $key => $value) {
+			$emundusSession->{$key} = $value;
+		}
+		
+		$emundusSession->firstname 	= $profile["firstname"];
+		$emundusSession->lastname   = strtoupper($profile["lastname"]);
+		$emundusSession->emGroups   = array_keys($users->getUserGroups($current_user->id));
+
+		if (EmundusHelperAccess::isApplicant($current_user->id)) {
+			$campaign 	= $this->getCurrentCampaignInfoByApplicant($current_user->id);
+            $incomplete = $this->getCurrentIncompleteCampaignByApplicant($current_user->id);
+			$p 			= $this->isProfileUserSet($current_user->id);
+			$profile 	= $this->getProfileByCampaign($campaign["id"]);
+
+			if (empty($p['profile']) || empty($campaign["id"]) || !isset($p['profile']) || !isset($campaign["id"]) )
+				$app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
+
+			$emundusSession->profile             	= $profile["profile_id"];
+			$emundusSession->profile_label          = $profile["label"];
+			$emundusSession->menutype               = $profile["menutype"];
+			$emundusSession->university_id          = null;
+			$emundusSession->applicant              = 1;
+			$emundusSession->start_date             = $profile["start_date"];
+			$emundusSession->end_date               = $profile["end_date"];
+			$emundusSession->candidature_start      = $profile["start_date"];
+			$emundusSession->candidature_end        = $profile["end_date"];
+			$emundusSession->candidature_posted     = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] == 0  || @$profile["date_submitted"] == NULL)?0:1;
+			$emundusSession->candidature_incomplete = (count($incomplete)==0)?0:1;
+			$emundusSession->schoolyear             = $profile["year"];
+			$emundusSession->code                   = $profile["training"];
+			$emundusSession->campaign_id            = $campaign["id"];
+			$emundusSession->campaign_name          = $profile["label"];
+			$emundusSession->fnum                   = $campaign["fnum"];
+			$emundusSession->fnums                  = $this->getApplicantFnums($current_user->id, null, $profile["start_date"], $profile["end_date"]);
+			$emundusSession->status                 = @$campaign["status"];
+		} else {
+			$emundusSession->profile                = $profile["profile"];
+			$emundusSession->profile_label          = $profile["profile_label"];
+			$emundusSession->menutype               = $profile["menutype"];
+			$emundusSession->university_id          = $profile["university_id"];
+			$emundusSession->applicant              = 0;
+		}
+		$session->set('emundusUser', $emundusSession);
+	}
+
+	/**
+	 * Returns an object based on supplied user_id that acts as a replacement for the default Joomla user method
+	 */
+	public function getEmundusUser($user_id) {
+		include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
+		include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
+		
+		$users 			= new EmundusModelUsers;
+		$current_user 	= JFactory::getUser($user_id);
+		$profile 		= $this->getProfileByApplicant($current_user->id);
+		foreach ($current_user as $key => $value) {
+			$emundus_user->{$key} = $value;
+		}
+		
+		$emundus_user->firstname  = $profile["firstname"];
+		$emundus_user->lastname   = strtoupper($profile["lastname"]);
+		$emundus_user->emGroups   = array_keys($users->getUserGroups($current_user->id));
+
+		if (EmundusHelperAccess::isApplicant($current_user->id)) {
+			$campaign 	= $this->getCurrentCampaignInfoByApplicant($current_user->id);
+            $incomplete = $this->getCurrentIncompleteCampaignByApplicant($current_user->id);
+			$p 			= $this->isProfileUserSet($current_user->id);
+			$profile 	= $this->getProfileByCampaign($campaign["id"]);
+
+			if (empty($p['profile']) || empty($campaign["id"]) || !isset($p['profile']) || !isset($campaign["id"]) )
+				$app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
+
+			$emundus_user->profile 				  = $profile["profile_id"];
+			$emundus_user->profile_label          = $profile["label"];
+			$emundus_user->menutype               = $profile["menutype"];
+			$emundus_user->university_id          = null;
+			$emundus_user->applicant              = 1;
+			$emundus_user->start_date             = $profile["start_date"];
+			$emundus_user->end_date               = $profile["end_date"];
+			$emundus_user->candidature_start      = $profile["start_date"];
+			$emundus_user->candidature_end        = $profile["end_date"];
+			$emundus_user->candidature_posted     = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] == 0  || @$profile["date_submitted"] == NULL)?0:1;
+			$emundus_user->candidature_incomplete = (count($incomplete)==0)?0:1;
+			$emundus_user->schoolyear             = $profile["year"];
+			$emundus_user->code                   = $profile["training"];
+			$emundus_user->campaign_id            = $campaign["id"];
+			$emundus_user->campaign_name          = $profile["label"];
+			$emundus_user->fnum                   = $campaign["fnum"];
+			$emundus_user->fnums                  = $this->getApplicantFnums($current_user->id, null, $profile["start_date"], $profile["end_date"]);
+			$emundus_user->status                 = @$campaign["status"];
+		} else {
+			$emundus_user->profile                = $profile["profile"];
+			$emundus_user->profile_label          = $profile["profile_label"];
+			$emundus_user->menutype               = $profile["menutype"];
+			$emundus_user->university_id          = $profile["university_id"];
+			$emundus_user->applicant              = 0;
+		}
+		return $emundus_user;
+	}
 }
+
 ?>

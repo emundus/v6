@@ -26,7 +26,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     var $_db = null;
 
     function __construct($config = array()){
-        $this->_user = JFactory::getUser();
+        $this->_user = JFactory::getSession()->get('emundusUser');
         $this->_db = JFactory::getDBO();
         parent::__construct($config);
     }
@@ -46,13 +46,10 @@ class EmundusControllerProgramme extends JControllerLegacy {
 
         $model = $this->getModel('programme');   
 
-        if( !EmundusHelperAccess::asCoordinatorAccessLevel($user->id) )
-        {
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        }
-        else
-        {
+        } else {
             $programmes = $model->getProgrammes();
 
             if(count($programmes) > 0)

@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.isemail
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -60,7 +60,21 @@ class PlgFabrik_ValidationruleIsEmail extends PlgFabrik_Validationrule
 		}
 
 		// $$$ hugh - let's try using new helper func instead of rolling our own.
-		return FabrikWorker::isEmail($email);
+		if (FabrikWorker::isEmail($email))
+		{
+			if ($params->get('isemail-check_mx', '0') === '1')
+			{
+				list($user, $domain) = explode('@', $data);
+				if (!checkdnsrr($domain, 'MX')) {
+					return false;
+				}
+			}
+			return true;
+		}
+		else
+		{
+			return false;
+		};
 	}
 
 	/**

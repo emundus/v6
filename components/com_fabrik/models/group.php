@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -331,7 +331,6 @@ class FabrikFEModelGroup extends FabModel
 			$query->select('form_id')->from('#__{package}_formgroup')->where('group_id = ' . (int) $this->getId());
 			$db->setQuery($query);
 			$this->formsIamIn = $db->loadColumn();
-			$db->execute();
 		}
 
 		return $this->formsIamIn;
@@ -364,7 +363,14 @@ class FabrikFEModelGroup extends FabModel
 				 * $$$ rob Using @ for now as in inline edit in podion you get multiple notices when
 				* saving the status element
 				*/
-				$this->elements = @$allGroups[$this->getId()]->elements;
+				/* Bauer note: this error prevents adding new elements 
+				 * in a new list (where Id is not yet known) in php 7 
+				 */
+				// $this->elements = @$allGroups[$this->getId()]->elements;
+				$thisId = $this->getId();
+				if(!empty($thisId)){
+					$this->elements = $allGroups[$thisId]->elements;
+				}
 			}
 		}
 
@@ -421,7 +427,7 @@ class FabrikFEModelGroup extends FabModel
 		{
 			$element->startRow = true;
 			$element->endRow = 1;
-			$element->span = ' span12';
+			$element->span = FabrikHelperHTML::getGridSpan('12');
 			$element->column = ' style="clear:both;width:100%;"';
 			$rowIx = -1;
 
@@ -465,7 +471,7 @@ class FabrikFEModelGroup extends FabModel
 		$element->column .= '" ';
 		$spans = $this->columnSpans();
 		$spanKey = $rowIx % $colCount;
-		$element->span = $element->hidden ? '' : FArrayHelper::getValue($spans, $spanKey, 'span' . floor(12 / $colCount));
+		$element->span = $element->hidden ? '' : FArrayHelper::getValue($spans, $spanKey, FabrikHelperHTML::getGridSpan(floor(12 / $colCount)));
 
 		if (!$element->hidden)
 		{
@@ -522,7 +528,7 @@ class FabrikFEModelGroup extends FabModel
 					$w = floor(($w / 100) * 12);
 				}
 
-				$w = ' span' . $w;
+				$w = ' ' . FabrikHelperHTML::getGridSpan($w);
 			}
 		}
 
@@ -1029,13 +1035,16 @@ class FabrikFEModelGroup extends FabModel
 		$group->displaystate = ($group->canRepeat == 1 && $formModel->isEditable()) ? 1 : 0;
 		$group->maxRepeat = (int) $params->get('repeat_max');
 		$group->minRepeat = $params->get('repeat_min', '') === '' ? 1 : (int) $params->get('repeat_min', '');
+		$group->numRepeatElement = $params->get('repeat_num_element', '');
 		$group->showMaxRepeats  = $params->get('show_repeat_max', '0') == '1';
 		$group->minMaxErrMsg = $params->get('repeat_error_message', '');
 		$group->minMaxErrMsg = FText::_($group->minMaxErrMsg);
 		$group->canAddRepeat = $this->canAddRepeat();
 		$group->canDeleteRepeat = $this->canDeleteRepeat();
-		$group->intro = $text = FabrikString::translate($params->get('intro'));
-		$group->outro = FText::_($params->get('outro'));
+		$intro = FabrikString::translate($params->get('intro'));
+		$group->intro = $formModel->parseIntroOutroPlaceHolders($intro, $group->editable, $formModel->isNewRecord());
+		$outro = FText::_($params->get('outro'));
+		$group->outro = $formModel->parseIntroOutroPlaceHolders($outro, $group->editable, $formModel->isNewRecord());
 		$group->columns = $params->get('group_columns', 1);
 		$group->splitPage = $params->get('split_page', 0);
 		$group->showLegend = $this->showLegend($group);
@@ -1053,7 +1062,7 @@ class FabrikFEModelGroup extends FabModel
 
 		return $group;
 	}
-
+	
 	/**
 	 * Get the label positions, if set to global then return form's label positions
 	 *

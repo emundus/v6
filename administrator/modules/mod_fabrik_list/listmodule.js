@@ -1,7 +1,7 @@
 /**
  * List in a Module
  *
- * @copyright: Copyright (C) 2005-2015, fabrikar.com - All rights reserved.
+ * @copyright: Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -15,10 +15,10 @@ var fabrikTableModule = new Class({
 
 		window.addEvent('load', function(e){
 			this.blocks = document.id(id).getElements('.fabrik_block');
-			if(window.getHeight() - 70  > this.blocks[1].getStyle("height").toInt() && this.blocks[1].getStyle("height").toInt() != 0){
-				var h = this.blocks[1].getStyle("height").toInt() ;
+			if(jQuery(window).height() - 70  > this.blocks[1].getStyle("height").toInt() && this.blocks[1].getStyle("height").toInt() != 0){
+				var h = this.blocks[1].getStyle('height').toInt() ;
 			}else{
-				var h = window.getHeight() - 70;
+				var h = jQuery(window).height() - 70;
 			}
 			this.winname = id + '_window';
 			this.form = this.blocks[1].getElement('form');

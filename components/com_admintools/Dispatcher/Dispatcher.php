@@ -90,11 +90,11 @@ class Dispatcher extends AdminDispatcher
 		}
 
 		// Am I in the Block view?
-		$inBlockView = $this->container->session->get('block', false, 'com_admintools');
+		$inBlockView = $this->container->platform->getSessionVar('block', false, 'com_admintools');
 
 		if ($inBlockView)
 		{
-			$this->container->session->set('block', false, 'com_admintools');
+			$this->container->platform->setSessionVar('block', false, 'com_admintools');
 
 			// We have to go through JFactory to alter the application's input!
 			$input = JFactory::getApplication()->input;

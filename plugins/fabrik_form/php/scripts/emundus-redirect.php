@@ -32,7 +32,7 @@ JLog::addLogger(
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $copy_application_form = $eMConfig->get('copy_application_form', 0);
 
-$user 	= JFactory::getUser();
+$user 	= JFactory::getSession()->get('emundusUser');
 $db 	= JFactory::getDBO();
 
 if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){
@@ -215,7 +215,7 @@ if ($copy_application_form == 1 && isset($user->fnum)) {
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
-$user 	=  JFactory::getUser();
+$user 	=  JFactory::getSession()->get('emundusUser');
 $jinput = JFactory::getApplication()->input;
 $formid = $jinput->get('formid');
 

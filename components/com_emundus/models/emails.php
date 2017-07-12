@@ -27,7 +27,7 @@ class EmundusModelEmails extends JModelList
     {
         parent::__construct();
         $this->_db = JFactory::getDBO();
-        $this->_user = JFactory::getUser();
+        $this->_user = JFactory::getSession()->get('emundusUser');
     }
 
     /**
@@ -136,7 +136,7 @@ class EmundusModelEmails extends JModelList
                     }
 
                     if ($tmpl['to']['to_current_user'] == 1) {
-                        $current_user = JFactory::getUser();
+                        $current_user = JFactory::getSession()->get('emundusUser');
                         $recipients[$current_user->id] = array('id' => $current_user->id, 'name' => $current_user->name, 'email' => $current_user->email, 'university_id' => $current_user->university_id);
                     }
 

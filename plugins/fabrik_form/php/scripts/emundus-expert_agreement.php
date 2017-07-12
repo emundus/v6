@@ -138,9 +138,9 @@ if ($uid > 0) {
 		$db->setQuery( $query );
 		$db->execute();
 
-		$query = "INSERT INTO #__emundus_users_profiles_history (user_id, profile_id, var) VALUES (".$user->id.", ".$profile['profile_id'].", 'profile')";
+		/*$query = "INSERT INTO #__emundus_users_profiles_history (user_id, profile_id, var) VALUES (".$user->id.", ".$profile['profile_id'].", 'profile')";
 		$db->setQuery( $query );
-		$db->execute();
+		$db->execute();*/
 	
 	// Modification du profil courant en profil Expert
 		$user->groups=$acl_aro_groups;

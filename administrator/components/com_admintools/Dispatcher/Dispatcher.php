@@ -121,7 +121,7 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
         if (!$model->accessAllowed($view))
         {
             $url = ($view == 'cpanel') ? 'index.php' : 'index.php?option=com_admintools&view=ControlPanel';
-            \JFactory::getApplication()->redirect($url, \JText::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_NOTAUTHORIZED'), 'error');
+            $this->container->platform->redirect($url, 303, \JText::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_NOTAUTHORIZED'), 'error');
 
             return;
         }

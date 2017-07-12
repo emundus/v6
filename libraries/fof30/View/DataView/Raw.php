@@ -11,6 +11,7 @@ use FOF30\Container\Container;
 use FOF30\Model\DataModel;
 use FOF30\Model\DataModel\Collection;
 use FOF30\View\View;
+use Joomla\Registry\Registry;
 
 defined('_JEXEC') or die;
 
@@ -25,7 +26,7 @@ class Raw extends View implements DataViewInterface
 	/** @var \JPagination The pagination object */
 	protected $pagination = null;
 
-	/** @var \JRegistry Page parameters object, for front-end views */
+	/** @var \JRegistry|Registry Page parameters object, for front-end views */
 	protected $pageParams = null;
 
 	/** @var Collection The records loaded (browse views) */
@@ -219,7 +220,7 @@ class Raw extends View implements DataViewInterface
 	/**
 	 * Get the Joomla! page parameters
 	 *
-	 * @return \JRegistry
+	 * @return \JRegistry|Registry
 	 */
 	public function getPageParams()
 	{

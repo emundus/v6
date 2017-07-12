@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -366,7 +366,7 @@ class FabrikWorker
 		$matches3 = array();
 
 		// E.g. now
-		preg_match("/[now|ago|midnight|yesterday|today]/i", $date, $matches);
+		preg_match("/(now|ago|midnight|yesterday|today)/i", $date, $matches);
 
 		// E.g. +2 Week
 		preg_match("/[+|-][0-9]* (week\b|year\b|day\b|month\b)/i", $date, $matches2);
@@ -703,6 +703,12 @@ class FabrikWorker
 							if (array_key_exists($tmpElName, $searchData) && is_array($searchData[$tmpElName]) && array_key_exists($repeatCounter, $searchData[$tmpElName]))
 							{
 								$tmpVal = $searchData[$tmpElName][$repeatCounter];
+
+								if (is_array($tmpVal))
+								{
+									$tmpVal = implode(',', $tmpVal);
+								}
+
 								$msg    = str_replace('{' . $tmpElName . '}', $tmpVal, $msg);
 							}
 						}
@@ -768,6 +774,7 @@ class FabrikWorker
 				if (!$unsafe)
 				{
 					$msg = self::replaceWithUnsafe($msg);
+					$msg = self::replaceWithSession($msg);
 				}
 
 				$msg = preg_replace("/{}/", "", $msg);
@@ -842,8 +849,8 @@ class FabrikWorker
 					}
 					elseif (is_array($val))
 					{
-						//$msg = str_replace('{$' . $prefix . '->' . $key . '}', implode(',', $val), $msg);
-						//$msg = str_replace('{$' . $prefix . '-&gt;' . $key . '}', implode(',', $val), $msg);
+						$msg = str_replace('{$' . $prefix . '->' . $key . '}', implode(',', $val), $msg);
+						$msg = str_replace('{$' . $prefix . '-&gt;' . $key . '}', implode(',', $val), $msg);
 					}
 				}
 			}
@@ -894,6 +901,29 @@ class FabrikWorker
 	}
 
 	/**
+	 * Utility function for replacing language tags.
+	 * {lang} - Joomla code for user's selected language, like en-GB
+	 * {langtag} - as {lang} with with _ instead of -
+	 * {shortlang} - first two letters of {lang}, like en
+	 * {multilang} - multilang URL code
+	 *
+	 * @param   string $msg Message to parse
+	 *
+	 * @return    string    parsed message
+	 */
+	public static function replaceWithLanguageTags($msg)
+	{
+		$replacements = self::langReplacements();
+
+		foreach ($replacements as $key => $value)
+		{
+			$msg = str_replace($key, $value, $msg);
+		}
+
+		return $msg;
+	}
+
+	/**
 	 * Called from parseMessageForPlaceHolder to iterate through string to replace
 	 * {placeholder} with unsafe data
 	 *
@@ -908,6 +938,66 @@ class FabrikWorker
 		foreach ($replacements as $key => $value)
 		{
 			$msg = str_replace($key, $value, $msg);
+		}
+
+		return $msg;
+	}
+
+	/**
+	 * Called from parseMessageForPlaceHolder to iterate through string to replace
+	 * {placeholder} with session data
+	 *
+	 * @param   string $msg Message to parse
+	 *
+	 * @return    string    parsed message
+	 */
+	public static function replaceWithSession($msg)
+	{
+		if (strstr($msg, '{$session->'))
+		{
+			$session   = JFactory::getSession();
+			$sessionData = array(
+				'id' => $session->getId(),
+				'token' => $session->get('session.token'),
+				'formtoken' => JSession::getFormToken()
+			);
+
+			foreach ($sessionData as $key => $value)
+			{
+				$msg = str_replace('{$session->' . $key . '}', $value, $msg);
+			}
+
+			$msg = preg_replace_callback(
+				'/{\$session-\>(.*?)}/',
+				function($matches) use ($session) {
+					$bits       = explode(':', $matches[1]);
+
+					if (count($bits) > 1)
+					{
+						$sessionKey = $bits[1];
+						$nameSpace  = $bits[0];
+					}
+					else
+					{
+						$sessionKey = $bits[0];
+						$nameSpace  = 'default';
+					}
+
+					$val        = $session->get($sessionKey, '', $nameSpace);
+
+					if (is_string($val))
+					{
+						return $val;
+					}
+					else if (is_numeric($val))
+					{
+						return (string) $val;
+					}
+
+					return '';
+				},
+				$msg
+			);
 		}
 
 		return $msg;
@@ -945,11 +1035,6 @@ class FabrikWorker
 		$config    = JFactory::getConfig();
 		$session   = JFactory::getSession();
 		$token     = $session->get('session.token');
-		$lang      = JFactory::getLanguage()->getTag();
-		$lang      = str_replace('-', '_', $lang);
-		$shortlang = explode('_', $lang);
-		$shortlang = $shortlang[0];
-		$multilang = FabrikWorker::getMultiLangURLCode();
 
 		$replacements = array(
 			'{$jConfig_live_site}' => COM_FABRIK_LIVESITE,
@@ -960,9 +1045,6 @@ class FabrikWorker
 			'{where_i_came_from}' => $app->input->server->get('HTTP_REFERER', '', 'string'),
 			'{date}' => date('Ymd'),
 			'{mysql_date}' => date('Y-m-d H:i:s'),
-			'{lang}' => $lang,
-			'{multilang}' => $multilang,
-			'{shortlang}' => $shortlang,
 			'{session.token}' => $token,
 		);
 
@@ -974,6 +1056,29 @@ class FabrikWorker
 				$replacements['{$_SERVER-&gt;' . $key . '}'] = $val;
 			}
 		}
+
+		return array_merge($replacements, self::langReplacements());
+	}
+
+	/**
+	 * Returns array of language tag replacements
+	 *
+	 * @return array
+	 */
+	public static function langReplacements()
+	{
+		$langtag   = JFactory::getLanguage()->getTag();
+		$lang      = str_replace('-', '_', $langtag);
+		$shortlang = explode('_', $lang);
+		$shortlang = $shortlang[0];
+		$multilang = FabrikWorker::getMultiLangURLCode();
+
+		$replacements = array(
+			'{lang}' => $lang,
+			'{langtag}' => $langtag,
+			'{multilang}' => $multilang,
+			'{shortlang}' => $shortlang,
+		);
 
 		return $replacements;
 	}
@@ -1790,10 +1895,11 @@ class FabrikWorker
 	 * Test if a string is a compatible date
 	 *
 	 * @param   string $d Date to test
+     * @param   bool   $notNull  don't allow null / empty dates
 	 *
 	 * @return    bool
 	 */
-	public static function isDate($d)
+	public static function isDate($d, $notNull = true)
 	{
 		$db         = self::getDbo();
 		$aNullDates = array('0000-00-000000-00-00', '0000-00-00 00:00:00', '0000-00-00', '', $db->getNullDate());
@@ -1804,7 +1910,7 @@ class FabrikWorker
 			return false;
 		}
 
-		if (in_array($d, $aNullDates))
+		if ($notNull && in_array($d, $aNullDates))
 		{
 			return false;
 		}
@@ -1889,6 +1995,187 @@ class FabrikWorker
 	}
 
 	/**
+	 * Function to send an email
+	 *
+	 * @param   string   $from         From email address
+	 * @param   string   $fromName     From name
+	 * @param   mixed    $recipient    Recipient email address(es)
+	 * @param   string   $subject      email subject
+	 * @param   string   $body         Message body
+	 * @param   boolean  $mode         false = plain text, true = HTML
+	 * @param   mixed    $cc           CC email address(es)
+	 * @param   mixed    $bcc          BCC email address(es)
+	 * @param   mixed    $attachment   Attachment file name(s)
+	 * @param   mixed    $replyTo      Reply to email address(es)
+	 * @param   mixed    $replyToName  Reply to name(s)
+	 * @param   array    $headers      Optional custom headers, assoc array keyed by header name
+	 *
+	 * @return  boolean  True on success
+	 *
+	 * @since   11.1
+	 */
+	public static function sendMail($from, $fromName, $recipient, $subject, $body, $mode = false,
+		$cc = null, $bcc = null, $attachment = null, $replyTo = null, $replyToName = null, $headers = array())
+	{
+		// do a couple of tweaks to improve spam scores
+
+		// Get a JMail instance
+		$mailer = JFactory::getMailer();
+
+		// If html, make sure there's an <html> tag
+		if ($mode)
+		{
+			if (!stristr($body, '<html>'))
+			{
+				$body = '<html>' . $body . '</html>';
+			}
+		}
+
+		/**
+		 * if simple single email recipient with no name part, fake out name part to avoid TO_NO_BKRT hit in spam filters
+		 * (don't do it for sendmail, as sendmail only groks simple emails in To header!)
+		 */
+		$recipientName = '';
+		if ($mailer->Mailer !== 'sendmail' && is_string($recipient) && !strstr($recipient, '<'))
+		{
+			$recipientName = $recipient;
+		}
+
+		$mailer->setSubject($subject);
+		$mailer->setBody($body);
+		$mailer->Encoding = 'base64';
+
+		// Are we sending the email as HTML?
+		$mailer->isHtml($mode);
+
+		try
+		{
+			$mailer->addRecipient($recipient, $recipientName);
+		}
+		catch (Exception $e)
+		{
+			return false;
+		}
+
+		try
+		{
+			$mailer->addCc($cc);
+		}
+		catch (Exception $e)
+		{
+			// not sure if we should bail if Cc is bad, for now just soldier on
+		}
+
+		try
+		{
+			$mailer->addBcc($bcc);
+		}
+		catch (Exception $e)
+		{
+			// not sure if we should bail if Bcc is bad, for now just soldier on
+		}
+
+		if (!empty($attachment))
+		{
+			try
+			{
+				$mailer->addAttachment($attachment);
+			}
+			catch (Exception $e)
+			{
+				// most likely file didn't exist, ignore
+			}
+		}
+
+		$autoReplyTo = false;
+
+		// Take care of reply email addresses
+		if (is_array($replyTo))
+		{
+			$numReplyTo = count($replyTo);
+
+			for ($i = 0; $i < $numReplyTo; $i++)
+			{
+				try
+				{
+					$mailer->addReplyTo($replyTo[$i], $replyToName[$i]);
+				}
+				catch (Exception $e)
+				{
+					// carry on
+				}
+			}
+		}
+		elseif (isset($replyTo))
+		{
+			try
+			{
+				$mailer->addReplyTo($replyTo, $replyToName);
+			}
+			catch (Exception $e)
+			{
+				// carry on
+			}
+		}
+		else
+		{
+			$autoReplyTo = true;
+		}
+
+		try
+		{
+			$mailer->setSender(array($from, $fromName, $autoReplyTo));
+		}
+		catch (Exception $e)
+		{
+			return false;
+		}
+
+		/**
+		 * Set the plain text AltBody, which forces the PHP mailer class to make this
+		 * a multipart MIME type, with an alt body for plain text.  If we don't do this,
+		 * the default behavior is to send it as just text/html, which causes spam filters
+		 * to downgrade it.
+		 * @@@trob: insert \n before  <br to keep newlines(strip_tag may then strip <br> or <br /> etc, decode html
+		 */
+		if ($mode)
+		{
+			$body = str_ireplace(array("<br />","<br>","<br/>"), "\n<br />", $body);
+			$body = html_entity_decode($body);
+			$mailer->AltBody = JMailHelper::cleanText(strip_tags($body));
+		}
+
+		foreach ($headers as $headerName => $headerValue) {
+			$mailer->addCustomHeader($headerName, $headerValue);
+		}
+
+		$config = JComponentHelper::getParams('com_fabrik');
+
+		if ($config->get('verify_peer', '1') === '0')
+		{
+			$mailer->SMTPOptions = array(
+				'ssl' =>
+					array(
+						'verify_peer' => false,
+						'verify_peer_name' => false,
+						'allow_self_signed' => true
+					)
+			);
+		}
+
+		try
+		{
+			$ret = $mailer->Send();
+		}
+		catch (Exception $e)
+		{
+			return false;
+		}
+
+		return $ret;
+	}
+
+	/**
 	 * Get a JS go back action e.g 'onclick="history.back()"
 	 *
 	 * @return string
@@ -1925,6 +2212,8 @@ class FabrikWorker
 	 */
 	public static function itemId($listId = null)
 	{
+		static $listIds = array();
+
 		$app = JFactory::getApplication();
 
 		if (!$app->isAdmin())
@@ -1932,19 +2221,31 @@ class FabrikWorker
 			// Attempt to get Itemid from possible list menu item.
 			if (!is_null($listId))
 			{
-				$db         = JFactory::getDbo();
-				$myLanguage = JFactory::getLanguage();
-				$myTag      = $myLanguage->getTag();
-				$qLanguage  = !empty($myTag) ? ' AND ' . $db->q($myTag) . ' = ' . $db->qn('m.language') : '';
-				$query      = $db->getQuery(true);
-				$query->select('m.id AS itemId')->from('#__extensions AS e')
-					->leftJoin('#__menu AS m ON m.component_id = e.extension_id')
-					->where('e.name = "com_fabrik" and e.type = "component" and m.link LIKE "%listid=' . $listId . '"' . $qLanguage);
-				$db->setQuery($query);
-
-				if ($itemId = $db->loadResult())
+				if (!array_key_exists($listId, $listIds))
 				{
-					return $itemId;
+					$db         = JFactory::getDbo();
+					$myLanguage = JFactory::getLanguage();
+					$myTag      = $myLanguage->getTag();
+					$qLanguage  = !empty($myTag) ? ' AND ' . $db->q($myTag) . ' = ' . $db->qn('m.language') : '';
+					$query      = $db->getQuery(true);
+					$query->select('m.id AS itemId')->from('#__extensions AS e')
+						->leftJoin('#__menu AS m ON m.component_id = e.extension_id')
+						->where('e.name = "com_fabrik" and e.type = "component" and m.link LIKE "%listid=' . $listId . '"' . $qLanguage);
+					$db->setQuery($query);
+
+					if ($itemId = $db->loadResult())
+					{
+						$listIds[$listId] = $itemId;
+					}
+					else{
+						$listIds[$listId] = false;
+					}
+				}
+				else{
+					if ($listIds[$listId] !== false)
+					{
+						return $listIds[$listId];
+					}
 				}
 			}
 
@@ -1980,55 +2281,81 @@ class FabrikWorker
 	 *
 	 * @return  string
 	 */
-	public static function getMenuOrRequestVar($name, $val = '', $mambot = false, $priority = 'menu', $opts = array())
-	{
-		$app   = JFactory::getApplication();
-		$input = $app->input;
+    public static function getMenuOrRequestVar($name, $val = '', $mambot = false, $priority = 'menu', $opts = array())
+    {
+        $app   = JFactory::getApplication();
+        $input = $app->input;
 
-		if ($priority === 'menu')
-		{
+        if ($priority === 'menu')
+        {
 
-			$val = $input->get($name, $val, 'string');
+            $val = $input->get($name, $val, 'string');
 
-			if (!$app->isAdmin())
-			{
-				if (!$mambot)
-				{
-					$menus = $app->getMenu();
-					$menu  = $menus->getActive();
+            if (!$app->isAdmin())
+            {
+                if (!$mambot)
+                {
+                    $menus = $app->getMenu();
+                    $menu  = $menus->getActive();
 
-					if (is_object($menu))
-					{
-						$menuListId  = ArrayHelper::getValue($menu->query, 'listid', '');
-						$checkListId = ArrayHelper::getValue($opts, 'listid', $menuListId);
+                    if (is_object($menu))
+                    {
+                        $match = true;
 
-						if ((int) $menuListId === (int) $checkListId)
-						{
-							$val = $menu->params->get($name, $val);
-						}
-					}
-				}
-			}
-		}
-		else
-		{
-			if (!$app->isAdmin())
-			{
-				$menus = $app->getMenu();
-				$menu  = $menus->getActive();
+                        if (array_key_exists('listid', $opts)) {
+                            $menuListId = ArrayHelper::getValue($menu->query, 'listid', '');
+                            $checkListId = ArrayHelper::getValue($opts, 'listid', $menuListId);
+                            $match = (int) $menuListId === (int) $checkListId;
+                        }
+                        else if (array_key_exists('formid', $opts)) {
+                            $menuFormId  = ArrayHelper::getValue($menu->query, 'formid', '');
+                            $checkFormId = ArrayHelper::getValue($opts, 'formid', $menuFormId);
+                            $match = (int) $menuFormId === (int) $checkFormId;
+                        }
 
-				// If there is a menu item available AND the view is not rendered in a content plugin
-				if (is_object($menu) && !$mambot)
-				{
-					$val = $menu->params->get($name, $val);
-				}
-			}
+                        if ($match)
+                        {
+                            $val = $menu->params->get($name, $val);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (!$app->isAdmin())
+            {
+                $menus = $app->getMenu();
+                $menu  = $menus->getActive();
 
-			$val = $input->get($name, $val, 'string');
-		}
+                // If there is a menu item available AND the view is not rendered in a content plugin
+                if (is_object($menu) && !$mambot)
+                {
+                    $match = true;
 
-		return $val;
-	}
+                    if (array_key_exists('listid', $opts)) {
+                        $menuListId = ArrayHelper::getValue($menu->query, 'listid', '');
+                        $checkListId = ArrayHelper::getValue($opts, 'listid', $menuListId);
+                        $match = (int) $menuListId === (int) $checkListId;
+                    }
+                    else if (array_key_exists('formid', $opts)) {
+                        $menuFormId  = ArrayHelper::getValue($menu->query, 'formid', '');
+                        $checkFormId = ArrayHelper::getValue($opts, 'formid', $menuFormId);
+                        $match = (int) $menuFormId === (int) $checkFormId;
+                    }
+
+                    if ($match)
+                    {
+                        $val = $menu->params->get($name, $val);
+                    }
+                }
+            }
+
+            $val = $input->get($name, $val, 'string');
+        }
+
+        return $val;
+    }
 
 	/**
 	 * Access control function for determining if the user can perform
@@ -2101,17 +2428,26 @@ class FabrikWorker
 	/**
 	 * Can Fabrik render PDF - required the DOMPDF library to be installed in Joomla libraries folder
 	 *
+	 * @param  bool  $puke  throw an exception if can't
+	 *
 	 * @throws RuntimeException
 	 *
 	 * @return bool
 	 */
-	public static function canPdf()
+	public static function canPdf($puke = true)
 	{
-		$file = JPATH_LIBRARIES . '/dompdf/dompdf_config.inc.php';
+		$file = COM_FABRIK_LIBRARY . '/vendor/dompdf/dompdf/autoload.inc.php';
 
 		if (!JFile::exists($file))
 		{
-			throw new RuntimeException(FText::_('COM_FABRIK_NOTICE_DOMPDF_NOT_FOUND'));
+			if ($puke)
+			{
+				throw new RuntimeException(FText::_('COM_FABRIK_NOTICE_DOMPDF_NOT_FOUND'));
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		return true;
@@ -2262,5 +2598,32 @@ class FabrikWorker
 		}
 
 		return $default;
+	}
+
+	/**
+	 * Get a getID3 instance - check if library installed, if not, toss an exception
+	 *
+	 * @return  object|bool  - getid3 object or false if lib not installed
+	 */
+	public static function getID3Instance()
+	{
+		$getID3 = false;
+
+		if (JFile::exists(COM_FABRIK_LIBRARY . '/libs/getid3/getid3/getid3.php'))
+		{
+			ini_set('display_errors', true);
+			require_once COM_FABRIK_LIBRARY . '/libs/getid3/getid3/getid3.php';
+			require_once COM_FABRIK_LIBRARY . '/libs/getid3/getid3/getid3.lib.php';
+
+			getid3_lib::IncludeDependency(COM_FABRIK_LIBRARY . '/libs/getid3/getid3/extension.cache.mysqli.php', __FILE__, true);
+			$config   = JFactory::getConfig();
+			$host     = $config->get('host');
+			$database = $config->get('db');
+			$username = $config->get('user');
+			$password = $config->get('password');
+			$getID3   = new getID3_cached_mysqli($host, $database, $username, $password);
+		}
+
+		return $getID3;
 	}
 }

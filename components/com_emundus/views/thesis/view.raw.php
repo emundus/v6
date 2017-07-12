@@ -39,7 +39,7 @@ class EmundusViewThesis extends JViewLegacy {
 
         if (!empty($this->item)) {
             
-		$this->form		= $this->get('Form');
+		$this->form	= $this->get('Form');
         }
 
 
@@ -54,9 +54,8 @@ class EmundusViewThesis extends JViewLegacy {
 
             $authorised = $user->authorise('core.create', 'com_emundus');
 
-            if ($authorised !== true) {
+            if ($authorised !== true)
                 throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
-            }
         }
 
         $this->_prepareDocument();

@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.image
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -113,7 +113,10 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 	 */
 	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
-		$w = new FabrikWorker;
+        $profiler = JProfiler::getInstance('Application');
+        JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
+
+        $w = new FabrikWorker;
 		$data = FabrikWorker::JSONtoData($data, true);
 		$params = $this->getParams();
 		$pathset = false;
@@ -340,8 +343,8 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 			$layoutData->images = $images;
 			$layoutData->image = $image;
 		}
-
-		$layoutData->linkURL = $params->get('link_url', '');
+		
+		$layoutData->linkURL = $w->parseMessageForPlaceHolder($params->get('link_url', ''), $data);
 
 
 		return $layout->render($layoutData);
@@ -449,6 +452,11 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 		$params = $this->getParams();
 		$canSelect = ($params->get('image_front_end_select', '0') && JString::substr($value, 0, 4) !== 'http');
 		$defaultImg = $params->get('imagepath');
+
+		if (JFile::exists($defaultImg) || JFile::exists(COM_FABRIK_BASE . $defaultImg))
+		{
+			$defaultImg = dirname($defaultImg);
+		}
 
 		// Changed first || from a && - http://fabrikar.com/forums/index.php?threads/3-1rc1-image-list-options-bug.36585/#post-184266
 		if ($canSelect || (JFolder::exists($defaultImg) || JFolder::exists(COM_FABRIK_BASE . $defaultImg)))

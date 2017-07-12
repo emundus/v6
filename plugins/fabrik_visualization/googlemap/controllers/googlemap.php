@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.googlemap
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -20,25 +20,20 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik.visualization.googlemap
  * @since       3.0
  */
-
 class FabrikControllerVisualizationgooglemap extends FabrikControllerVisualization
 {
 	/**
 	 * Ajax markers
 	 *
-	 * @param   string  $tmpl  Template
+	 * @param   string $tmpl Template
 	 *
 	 * @return  void
 	 */
-
 	public function ajax_getMarkers($tmpl = 'default')
 	{
 		$viewName = 'googlemap';
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$usersConfig = JComponentHelper::getParams('com_fabrik');
-		$model = $this->getModel($viewName);
-		$id = $input->getInt('visualizationid', 0);
+		$model    = $this->getModel($viewName);
+		$id       = $this->input->getInt('visualizationid', 0);
 		$model->setId($id);
 		$model->onAjax_getMarkers();
 	}

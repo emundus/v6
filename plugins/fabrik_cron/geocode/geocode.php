@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.cron.geocode
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -74,6 +74,9 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 		$primary_key_element = FabrikString::shortColName($table->db_primary_key);
 		$primary_key_element_long = $table_name . '___' . $primary_key_element . '_raw';
 
+		$config = JComponentHelper::getParams('com_fabrik');
+		$apiKey = $config->get('google_api_key', '');
+
 		$connection = (int) $params->get('connection');
 
 		/*
@@ -96,6 +99,7 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 		$geocode_is_empty = $params->get('geocode_is_empty');
 		$geocode_zoom_level = $params->get('geocode_zoom_level', '4');
 		$geocode_map_element_long = $params->get('geocode_map_element');
+		$geocode_map_element_long_raw = $geocode_map_element_long . '_raw';
 		$geocode_map_element = FabrikString::shortColName($geocode_map_element_long);
 		$geocode_addr1_element_long = $params->get('geocode_addr1_element');
 		$geocode_addr1_element = $geocode_addr1_element_long ? FabrikString::shortColName($geocode_addr1_element_long) : '';
@@ -139,11 +143,11 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 
 					if ($geocode_when == '1')
 					{
-						$do_geocode = empty($row->$geocode_map_element_long) || $row->$geocode_map_element_long == $geocode_is_empty;
+						$do_geocode = empty($row->$geocode_map_element_long_raw) || $row->$geocode_map_element_long_raw == $geocode_is_empty;
 					}
 					elseif ($geocode_when == '2')
 					{
-						$do_geocode = empty($row->$geocode_map_element_long);
+						$do_geocode = empty($row->$geocode_map_element_long_raw);
 					}
 
 					if ($do_geocode)
@@ -214,7 +218,8 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 						{
 							// OK!  Lets try and geocode it ...
 							$total_attempts++;
-							$res = $gmap->getLatLng($full_addr);
+							$full_addr = urlencode($full_addr);
+							$res = $gmap->getLatLng($full_addr, 'array', $apiKey);
 
 							if ($res['status'] == 'OK')
 							{

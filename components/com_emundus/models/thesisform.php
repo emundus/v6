@@ -59,45 +59,36 @@ class EmundusModelThesisForm extends JModelForm
 	 *
 	 * @return	mixed	Object on success, false on failure.
 	 */
-	public function &getData($id = null)
-	{
-		if ($this->_item === null)
-		{
+	public function &getData($id = null) {
+		if ($this->_item === null) {
 			$this->_item = false;
 
-			if (empty($id)) {
+			if (empty($id))
 				$id = $this->getState('thesis.id');
-			}
 
 			// Get a level row instance.
 			$table = $this->getTable();
 
 			// Attempt to load the row.
-			if ($table->load($id))
-			{
+			if ($table->load($id)) {
                 
                 $user = JFactory::getUser();
                 $id = $table->id;
-                if($id){
-	$canEdit = $user->authorise('core.edit', 'com_emundus.thesis.'.$id) || $user->authorise('core.create', 'com_emundus.thesis.'.$id);
-}
-else{
-	$canEdit = $user->authorise('core.edit', 'com_emundus') || $user->authorise('core.create', 'com_emundus');
-}
-                if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus.thesis.'.$id)) {
+                if ($id)
+					$canEdit = $user->authorise('core.edit', 'com_emundus.thesis.'.$id) || $user->authorise('core.create', 'com_emundus.thesis.'.$id);
+				else
+					$canEdit = $user->authorise('core.edit', 'com_emundus') || $user->authorise('core.create', 'com_emundus');
+                
+				if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus.thesis.'.$id)) 
                     $canEdit = $user->id == $table->created_by;
-                }
 
-                if (!$canEdit) {
+                if (!$canEdit)
                     JError::raiseError('500', JText::_('JERROR_ALERTNOAUTHOR'));
-                }
                 
 				// Check published state.
-				if ($published = $this->getState('filter.published'))
-				{
-					if ($table->state != $published) {
+				if ($published = $this->getState('filter.published')) {
+					if ($table->state != $published)
 						return $this->_item;
-					}
 				}
 
 				// Convert the JTable to a clean JObject.
@@ -229,18 +220,16 @@ else{
         $state = (!empty($data['state'])) ? 1 : 0;
         $user = JFactory::getUser();
 
-        if($id) {
+        if ($id) {
             //Check the user can edit this item
             $authorised = $user->authorise('core.edit', 'com_emundus.thesis.'.$id) || $authorised = $user->authorise('core.edit.own', 'com_emundus.thesis.'.$id);
-            if($user->authorise('core.edit.state', 'com_emundus.thesis.'.$id) !== true && $state == 1){ //The user cannot edit the state of the item.
+            if($user->authorise('core.edit.state', 'com_emundus.thesis.'.$id) !== true && $state == 1) //The user cannot edit the state of the item.
                 $data['state'] = 0;
-            }
         } else {
             //Check the user can create new items in this section
             $authorised = $user->authorise('core.create', 'com_emundus');
-            if($user->authorise('core.edit.state', 'com_emundus.thesis.'.$id) !== true && $state == 1){ //The user cannot edit the state of the item.
+            if($user->authorise('core.edit.state', 'com_emundus.thesis.'.$id) !== true && $state == 1) //The user cannot edit the state of the item.
                 $data['state'] = 0;
-            }
         }
 
         if ($authorised !== true) {
@@ -249,12 +238,8 @@ else{
         }
         
         $table = $this->getTable();
-        if ($table->save($data) === true) {
-            return $table->id;
-        } else {
-            return false;
-        }
-        
+        if ($table->save($data) === true) return $table->id;
+		else return false;
 	}
     
      function delete($data)
@@ -265,12 +250,9 @@ else{
             return false;
         }
         $table = $this->getTable();
-        if ($table->delete($data['id']) === true) {
-            return $id;
-        } else {
-            return false;
-        }
-        
+        if ($table->delete($data['id']) === true) return $id;
+        else return false;
+
         return true;
     }
     

@@ -2,7 +2,7 @@
 /**
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.form.email
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -11,6 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+require_once COM_FABRIK_FRONTEND . '/helpers/pdf.php';
 
 /**
  * Send email upon form submission
@@ -69,6 +70,8 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		$input = $this->app->input;
 		jimport('joomla.mail.helper');
 		$w = new FabrikWorker;
+
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$emailTemplate = JPath::clean(JPATH_SITE . '/plugins/fabrik_form/email/tmpl/' . $params->get('email_template', ''));
 
@@ -79,8 +82,16 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		 */
 		if ($this->alreadySent() || !$this->shouldProcess('email_conditon', null, $params))
 		{
-			return;
+			return true;
 		}
+
+		// set up some useful placeholders for links to form
+		$this->data['fabrik_editurl'] = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $this->package . '&amp;view=form&amp;formid=' . $formModel->get('id') . '&amp;rowid='
+			. $input->get('rowid', '', 'string');
+		$this->data['fabrik_viewurl'] = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $this->package . '&amp;view=details&amp;formid=' . $formModel->get('id') . '&amp;rowid='
+			. $input->get('rowid', '', 'string');
+		$this->data['fabrik_editlink'] = '<a href="' . $this->data['fabrik_editurl'] . '">' . FText::_('EDIT') . '</a>';
+		$this->data['fabrik_viewlink'] = '<a href="' . $this->data['fabrik_viewurl'] . '">' . FText::_('VIEW') . '</a>';
 
 		/**
 		 * Added option to run content plugins on message text.  Note that rather than run it one time at the
@@ -107,12 +118,12 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 			// $$$ hugh - added ability for PHP template to return false to abort, same as if 'condition' was was false
 			if ($messageTemplate === false)
 			{
-				return;
+				return true;
 			}
 
 			if ($runContentPlugins === true)
 			{
-				FabrikHelperHTML::runContentPlugins($messageTemplate);
+				FabrikHelperHTML::runContentPlugins($messageTemplate, false);
 			}
 
 			$messageTemplate = str_replace('{content}', $content, $messageTemplate);
@@ -125,15 +136,13 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 			if ($runContentPlugins === true)
 			{
-				FabrikHelperHTML::runContentPlugins($messageText);
+				FabrikHelperHTML::runContentPlugins($messageText, false);
 			}
 
 			$messageText = str_replace('{content}', $content, $messageText);
 			$messageText = str_replace('{template}', $messageTemplate, $messageText);
 			$messageText = $w->parseMessageForPlaceholder($messageText, $this->data, false);
 		}
-
-		$message = '';
 
 		if (!empty($messageText))
 		{
@@ -160,16 +169,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		// $$$ hugh - test stripslashes(), should be safe enough.
 		$message = stripslashes($message);
 
-		$editURL = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $this->package . '&amp;view=form&amp;fabrik=' . $formModel->get('id') . '&amp;rowid='
-			. $input->get('rowid', '', 'string');
-		$viewURL = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $this->package . '&amp;view=details&amp;fabrik=' . $formModel->get('id') . '&amp;rowid='
-			. $input->get('rowid', '', 'string');
-		$editLink = '<a href="' . $editURL . '">' . FText::_('EDIT') . '</a>';
-		$viewLink = '<a href="' . $viewURL . '">' . FText::_('VIEW') . '</a>';
-		$message = str_replace('{fabrik_editlink}', $editLink, $message);
-		$message = str_replace('{fabrik_viewlink}', $viewLink, $message);
-		$message = str_replace('{fabrik_editurl}', $editURL, $message);
-		$message = str_replace('{fabrik_viewurl}', $viewURL, $message);
+		FabrikPDFHelper::fullPaths($message);
 
 
 		// $$$ rob if email_to is not a valid email address check the raw value to see if that is
@@ -287,6 +287,16 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 			$userIds = array();
 		}
 
+		$customHeadersEval = $params->get('email_headers_eval', '');
+		$customHeaders = array();
+
+		if (!empty($customHeadersEval))
+		{
+			$customHeadersEval = $w->parseMessageForPlaceholder($customHeadersEval, $this->data, false);
+			$customHeaders = @eval($customHeadersEval);
+			FabrikWorker::logEval($customHeadersEval, 'Caught exception on eval in email custom headers : %s');
+		}
+
 		// Send email
 		foreach ($emailTo as $email)
 		{
@@ -316,12 +326,38 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 				$this->pdfAttachment($thisAttachments);
 
-				// Get a JMail instance (have to get a new instance otherwise the recipients are appended to previously added recipients)
-				$mail = JFactory::getMailer();
-				$res = $mail->sendMail(
-					$emailFrom, $emailFromName, $email, $thisSubject, $thisMessage,
-					$htmlEmail, $cc, $bcc, $thisAttachments, $returnPath, $returnPathName
+				/*
+				 * Sanity check for attachment files existing.  Could have base folder paths for things
+				 * like file upload elements with no file.  As of J! 3.5.1, the J! mailer tosses an exception
+				 * if files don't exist.  We catch that in the sendMail helper, but remove non-files here anyway
+				 */
+
+				foreach ($thisAttachments as $aKey => $attachFile)
+				{
+					if (!JFile::exists($attachFile))
+					{
+						unset($thisAttachments[$aKey]);
+					}
+				}
+
+				JDEBUG ? $profiler->mark("email: sendMail start: " . $email) : null;
+
+				$res = FabrikWorker::sendMail(
+					$emailFrom,
+					$emailFromName,
+					$email,
+					$thisSubject,
+					$thisMessage,
+					$htmlEmail,
+					$cc,
+					$bcc,
+					$thisAttachments,
+					$returnPath,
+					$returnPathName,
+					$customHeaders
 				);
+
+				JDEBUG ? $profiler->mark("email: sendMail end: " . $email) : null;
 
 				/*
 				 * $$$ hugh - added some error reporting, but not sure if 'invalid address' is the appropriate message,
@@ -352,6 +388,8 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		}
 
 		$this->updateRow();
+
+		JDEBUG ? $profiler->mark("email: end: onAfterProcess") : null;
 
 		return true;
 	}
@@ -396,6 +434,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 		/** @var FabrikFEModelForm $model */
 		$model = $this->getModel();
+		$model->setRowId($this->data['rowid']);
 		$document = JFactory::getDocument();
 		$docType = $document->getType();
 		$document->setType('pdf');
@@ -416,19 +455,27 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 		try
 		{
+			// Require files and set up DOM pdf
+			require_once JPATH_SITE . '/components/com_fabrik/helpers/pdf.php';
+			require_once JPATH_SITE . '/components/com_fabrik/controllers/details.php';
+
+			// if DOMPDF isn't installed, this will throw an exception which we should catch
+			$domPdf = FabrikPDFHelper::iniDomPdf(true);
+
 			$model->getFormCss();
 
 			foreach ($document->_styleSheets as $url => $ss)
 			{
+				if (!strstr($url, COM_FABRIK_LIVESITE))
+				{
+					$url = COM_FABRIK_LIVESITE . $url;
+				}
+
 				$url = htmlspecialchars_decode($url);
 				$formCss[] = file_get_contents($url);
 			}
 
-			// Require files and set up DOM pdf
-			require_once JPATH_SITE . '/components/com_fabrik/helpers/pdf.php';
-			require_once JPATH_SITE . '/components/com_fabrik/controllers/details.php';
-			FabrikPDFHelper::iniDomPdf();
-			$domPdf = new DOMPDF;
+
 			$size = strtoupper($params->get('pdf_size', 'A4'));
 			$orientation = $params->get('pdf_orientation', 'portrait');
 			$domPdf->set_paper($size, $orientation);
@@ -441,7 +488,19 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 			 * here instead of poking in to the _model, but I don't think there is a setModel for controllers?
 			 */
 			$controller->_model = $model;
-			$controller->_model->data = $this->getProcessData();
+
+			/**
+			 * Unfortunately, we need to reload the data, so it's in the right format.  Can't use the
+			 * submitted data.  "One of these days" we need to have a serious look at normalizing the data formats,
+			 * so submitted data is in the same format (once processed) as data read from the database.
+			 */
+			$model->data = null;
+			$controller->_model->data = $model->getData();
+
+			/*
+			 * Allows us to bypass "view records" ACL settings for creating the details view
+			 */
+			$model->getListModel()->setLocalPdf();
 
 			// Store in output buffer
 			ob_start();
@@ -455,6 +514,8 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 			}
 
 			// Load the HTML into DOMPdf and render it.
+			// $$$trob: convert as in libraries\joomla\document\pdf\pdf.php
+			$html = mb_convert_encoding($html,'HTML-ENTITIES','UTF-8');
 			$domPdf->load_html($html);
 			$domPdf->render();
 

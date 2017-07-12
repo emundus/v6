@@ -16,8 +16,6 @@ defined( '_JEXEC' ) or die();
 $app            = JFactory::getApplication();
 $db             = JFactory::getDBO();
 
-$current_user   = JFactory::getUser();
-
 $menutype = $fabrikFormData['menutype'][0];
 $published = $fabrikFormData['published'];
 $label = $fabrikFormData['label_raw'];

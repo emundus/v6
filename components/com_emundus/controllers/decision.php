@@ -37,7 +37,7 @@ class EmundusControllerDecision extends JControllerLegacy
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 
 
-        $this->_user = JFactory::getUser();
+        $this->_user = JFactory::getSession()->get('emundusUser');
         $this->_db = JFactory::getDBO();
 
         parent::__construct($config);
@@ -55,22 +55,18 @@ class EmundusControllerDecision extends JControllerLegacy
     }
 
 ////// EMAIL APPLICANT WITH CUSTOM MESSAGE///////////////////
-    public function applicantEmail()
-    {
+    public function applicantEmail() {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
         @EmundusHelperEmails::sendApplicantEmail();
     }
 
-    public function clear()
-    {
+    public function clear() {
         @EmundusHelperFiles::clear();
         echo json_encode((object)(array('status' => true)));
         exit;
     }
 
-    public function setfilters()
-    {
-
+    public function setfilters() {
         $jinput = JFactory::getApplication()->input;
         $filterName = $jinput->getString('id', null);
         $elements = $jinput->getString('elements', null);
@@ -78,54 +74,38 @@ class EmundusControllerDecision extends JControllerLegacy
 
         @EmundusHelperFiles::clearfilter();
 
-        if($multi == "true")
-        {
+        if ($multi == "true")
             $filterval = $jinput->get('val', array(), 'ARRAY');
-        }
         else
-        {
             $filterval = $jinput->getString('val', null);
-        }
 
         $session = JFactory::getSession();
         $params = $session->get('filt_params');
 
-        if($elements == 'false')
-        {
+        if ($elements == 'false') {
             $params[$filterName] = $filterval;
-        }
-        else
-        {
+        } else {
             $vals = (array)json_decode(stripslashes($filterval));
 
-            if(isset($vals[0]->name))
-            {
-                foreach ($vals as $val)
-                {
-                    if($val->adv_fil)
+            if (isset($vals[0]->name)) {
+                foreach ($vals as $val) {
+                    if ($val->adv_fil)
                         $params['elements'][$val->name] = $val->value;
-                    else
-                        $params[$val->name] = $val->value;
+                    else $params[$val->name] = $val->value;
                 }
-
             }
-            else
-                $params['elements'][$filterName] = $filterval;
+            else $params['elements'][$filterName] = $filterval;
         }
 
         $session->set('filt_params', $params);
 
-
         $session->set('limitstart', 0);
         echo json_encode((object)(array('status' => true)));
         exit();
-
     }
 
-    public function loadfilters()
-    {
-        try
-        {
+    public function loadfilters() {
+        try {
             $jinput = JFactory::getApplication()->input;
             $id = $jinput->getInt('id', null);
             $filter = @EmundusHelperFiles::getEmundusFilters($id);
@@ -198,29 +178,25 @@ class EmundusControllerDecision extends JControllerLegacy
 
     public function savefilters()
     {
-        $name = JRequest::getVar('name', null, 'POST', 'none',0);
-        $current_user = JFactory::getUser();
-        $user_id = $current_user->id;
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-
-        $filt_params = JFactory::getSession()->get('filt_params');
-        $adv_params = JFactory::getSession()->get('adv_cols');
-        $constraints = array('filter'=>$filt_params, 'col'=>$adv_params);
+        $name           = JRequest::getVar('name', null, 'POST', 'none',0);
+        $current_user   = JFactory::getUser();
+        $user_id        = $current_user->id;
+        $itemid         = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $filt_params    = JFactory::getSession()->get('filt_params');
+        $adv_params     = JFactory::getSession()->get('adv_cols');
+        $constraints    = array('filter'=>$filt_params, 'col'=>$adv_params);
 
         $constraints = json_encode($constraints);
 
-        if(empty($itemid))
-        {
+        if (empty($itemid))
             $itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
-        }
 
         $time_date = (date('Y-m-d H:i:s'));
 
         $query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('".$time_date."',".$user_id.",'".$name."',".$this->_db->quote($constraints).",".$itemid.")";
         $this->_db->setQuery( $query );
 
-        try
-        {
+        try {
             $this->_db->Query();
             $query = 'select f.id, f.name from #__emundus_filters as f where f.time_date = "'.$time_date.'" and user = '.$user_id.' and name="'.$name.'" and item_id="'.$itemid.'"';
             $this->_db->setQuery($query);
@@ -228,9 +204,7 @@ class EmundusControllerDecision extends JControllerLegacy
             echo json_encode((object)(array('status' => true, 'filter' => $result)));
             exit;
 
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             echo json_encode((object)(array('status' => false)));
             exit;
         }
@@ -245,13 +219,10 @@ class EmundusControllerDecision extends JControllerLegacy
         $this->_db->setQuery( $query );
         $result=$this->_db->Query();
 
-        if($result!=1)
-        {
+        if ($result!=1) {
             echo json_encode((object)(array('status' => false)));
             exit;
-        }
-        else
-        {
+        } else {
             echo json_encode((object)(array('status' => true)));
             exit;
         }
@@ -347,25 +318,21 @@ class EmundusControllerDecision extends JControllerLegacy
 */
     public function addcomment()
     {
-        $jinput = JFactory::getApplication()->input;
-        $user = JFactory::getUser()->id;
-        $fnums = $jinput->getString('fnums', null);
-        $title = $jinput->getString('title', '');
-        $comment = $jinput->getString('comment', null);
-        $fnums = (array) json_decode(stripslashes($fnums));
-        $appModel = $this->getModel('Application');
+        $jinput     = JFactory::getApplication()->input;
+        $user       = JFactory::getUser()->id;
+        $fnums      = $jinput->getString('fnums', null);
+        $title      = $jinput->getString('title', '');
+        $comment    = $jinput->getString('comment', null);
+        $fnums      = (array) json_decode(stripslashes($fnums));
+        $appModel   = $this->getModel('Application');
 
 
-        if(is_array($fnums))
-        {
-            foreach($fnums as $fnum)
-            {
-                if(EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum))
-                {
+        if (is_array($fnums)) {
+            foreach ($fnums as $fnum) {
+                if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
                     $aid = intval(substr($fnum, 21, 7));
                     $res = $appModel->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum)));
-                    if($res !== true && !is_numeric($res))
-                    {
+                    if ($res !== true && !is_numeric($res)) {
                         echo json_encode((array('status' => false, 'msg' => JText::_('ERROR'))));
                         exit;
                     }
@@ -375,16 +342,12 @@ class EmundusControllerDecision extends JControllerLegacy
             echo json_encode((array('status' => true, 'msg' => JText::_('COMMENT_SUCCESS'))));
             exit;
 
-        }
-        else
-        {
+        } else {
             //all result find by the request
             $model = $this->getmodel('Files');
             $fnums = $model->getAllFnums();
-            foreach($fnums as $fnum)
-            {
-                if(EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum))
-                {
+            foreach ($fnums as $fnum) {
+                if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
                     $aid = intval(substr($fnum, 14, count($fnum)));
                     $appModel->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum)));
                 }
@@ -934,19 +897,17 @@ class EmundusControllerDecision extends JControllerLegacy
     public function generate_array() {
         $current_user = JFactory::getUser();
 
-        if( !@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)
-        )
+        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
             die( JText::_('RESTRICTED_ACCESS') );
 
         $model = $this->getModel('Files');
         $modelApp = $this->getModel('Application');
         $modelEval = $this->getModel('Evaluation');
 
-        $session     = JFactory::getSession();
+        $session = JFactory::getSession();
         $fnums = $session->get('fnums_export');
-		if (count($fnums) == 0) {
+		if (count($fnums) == 0)
             $fnums = array($session->get('application_fnum'));
-        }
 		
         $jinput = JFactory::getApplication()->input;
 
@@ -979,7 +940,7 @@ class EmundusControllerDecision extends JControllerLegacy
 
         // re-order elements
         $ordered_elements = array();
-        foreach($col as $c){
+        foreach ($col as $c) {
             $ordered_elements[$c] = $elements[$c];
         }
         $fnumsArray = $model->getFnumArray($fnums, $ordered_elements, 0, $start, $limit);
@@ -1247,8 +1208,8 @@ class EmundusControllerDecision extends JControllerLegacy
         }
 
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-        $objWriter->save(JPATH_BASE . DS . 'tmp' . DS . JFactory::getUser()->id . '_extraction.xls');
-        $link = JFactory::getUser()->id . '_extraction.xls';
+        $objWriter->save(JPATH_BASE . DS . 'tmp' . DS . $current_user->id . '_extraction.xls');
+        $link = $current_user->id . '_extraction.xls';
         if (!unlink(JPATH_BASE . DS . "tmp" . DS . $csv)) {
             $result = array('status' => false, 'msg' => 'ERROR_DELETE_CSV');
             echo json_encode((object)$result);
@@ -1262,12 +1223,11 @@ class EmundusControllerDecision extends JControllerLegacy
         exit();
     }
 
-        public function export_xls($fnums, $objs, $element_id)
-    {
+    public function export_xls($fnums, $objs, $element_id) {
         $mainframe = JFactory::getApplication();
         $current_user = JFactory::getUser();
 
-        if( !EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+        if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
             die( JText::_('RESTRICTED_ACCESS') );
 
         @set_time_limit(10800);
@@ -1381,34 +1341,27 @@ class EmundusControllerDecision extends JControllerLegacy
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $i++;
 
-        foreach($elements as $fKey => $fLine)
-        {
-            if($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id')
-            {
+        foreach ($elements as $fKey => $fLine) {
+            if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id') {
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, strip_tags($fLine->element_label));
                 $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
 
                 $i++;
             }
         }
-        foreach($colOpt as $kOpt => $vOpt)
-        {
+        foreach ($colOpt as $kOpt => $vOpt) {
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_(strtoupper(strip_tags($kOpt))));
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
 
             $i++;
         }
         $line = 2;
-        foreach($fnumsArray as $fnunLine)
-        {
+        foreach ($fnumsArray as $fnunLine) {
             $col = 0;
 
-            foreach($fnunLine as $k => $v)
-            {
+            foreach ($fnunLine as $k => $v) {
                 if ($k != 'code' && $k != 'campaign_id' && $k != 'jos_emundus_campaign_candidature___campaign_id') {
-
-                    if($k === 'fnum')
-                    {
+                    if ($k === 'fnum') {
                         $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow($col, $line, (string) $v, PHPExcel_Cell_DataType::TYPE_STRING);
                         $col++;
                         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $line, $status[$v]['value']);

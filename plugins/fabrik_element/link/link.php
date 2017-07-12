@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.link
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -48,7 +48,10 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 	 */
 	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
-		$listModel = $this->getlistModel();
+        $profiler = JProfiler::getInstance('Application');
+        JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
+
+        $listModel = $this->getlistModel();
 		$params = $this->getParams();
 		$target = $params->get('link_target', '');
 		$smart_link = $params->get('link_smart_link', false);
@@ -105,7 +108,13 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 
 		if (is_array($data))
 		{
-			if (count($data) == 1)
+			// for historical reasons ...
+			if (count($data) === 0)
+			{
+				$data['label'] = '';
+				$data['link'] = '';
+			}
+			else if (count($data) === 1)
 			{
 				$data['label'] = FArrayHelper::getValue($data, 'link');
 			}
@@ -123,6 +132,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 				&& substr(JString::strtolower($href), 0, 7) != 'http://'
 				&& substr(JString::strtolower($href), 0, 8) != 'https://'
 				&& substr(JString::strtolower($href), 0, 6) != 'ftp://'
+				&& substr(JString::strtolower($href), 0, 7) != 'mailto:'
 				)
 			{
 					$href = 'http://' . $href;
@@ -145,7 +155,9 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 					$opts['title'] = strip_tags($w->parseMessageForPlaceHolder($title, $data));
 				}
 
-				return FabrikHelperHTML::a($href, $lbl, $opts);
+				$normalize = $params->get('link_normalize', '0') === '1';
+
+				return FabrikHelperHTML::a($href, $lbl, $opts, $normalize);
 			}
 			else
 			{
@@ -249,7 +261,9 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 				$opts['title'] = strip_tags($w->parseMessageForPlaceHolder($title, $data));
 			}
 
-			return FabrikHelperHTML::a($href, $lbl, $opts);
+			$normalize = $params->get('link_normalize', '0') === '1';
+
+			return FabrikHelperHTML::a($href, $lbl, $opts, $normalize);
 		}
 
 		$labelname = FabrikString::rtrimword($name, '[]') . '[label]';
@@ -422,6 +436,8 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 	{
 		$name = $this->getFullName(true, false);
 		$group = $this->getGroup();
+		$value = $this->getValue($data, $c);
+		$value = FabrikWorker::JSONtoData($value, true);
 
 		if ($group->canRepeat())
 		{
@@ -432,13 +448,13 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 				$values[$name]['data']['link'] = array();
 			}
 
-			$values[$name]['data']['label'][$c] = FArrayHelper::getValue($data, 'label');
-			$values[$name]['data']['link'][$c] = FArrayHelper::getValue($data, 'link');
+			$values[$name]['data']['label'][$c] = FArrayHelper::getValue($value, 'label');
+			$values[$name]['data']['link'][$c] = FArrayHelper::getValue($value, 'link');
 		}
 		else
 		{
-			$values[$name]['data']['label'] = FArrayHelper::getValue($data, 'label');
-			$values[$name]['data']['link'] = FArrayHelper::getValue($data, 'link');
+			$values[$name]['data']['label'] = FArrayHelper::getValue($value, 'label');
+			$values[$name]['data']['link'] = FArrayHelper::getValue($value, 'link');
 		}
 	}
 
@@ -514,26 +530,5 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 		}
 
 		return false;
-	}
-
-	/**
-	 * Get the class to manage the form element
-	 * to ensure that the file is loaded only once
-	 *
-	 * @param   array   &$srcs   Scripts previously loaded
-	 * @param   string  $script  Script to load once class has loaded
-	 * @param   array   &$shim   Dependant class names to load before loading the class - put in requirejs.config shim
-	 *
-	 * @return void
-	 */
-
-	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
-	{
-		// Whilst link isn't really an element list we can use its js AddNewEvent method
-		$s = new stdClass;
-		$s->deps = array('fab/elementlist');
-		$shim['element/link/link'] = $s;
-
-		parent::formJavascriptClass($srcs, $script, $shim);
 	}
 }

@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.nvd3_chart
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -51,8 +51,8 @@ class FabrikViewNvd3_Chart extends JViewLegacy
 		$srcs = FabrikHelperHTML::framework();
 		FabrikHelperHTML::styleSheet('plugins/fabrik_visualization/nvd3_chart/lib/novus-nvd3/src/nv.d3.css');
 
-		$srcs[] = 'media/com_fabrik/js/listfilter.js';
-		$srcs[] = 'media/com_fabrik/js/advanced-search.js';
+		$srcs['FbListFilter'] = 'media/com_fabrik/js/listfilter.js';
+		$srcs['AdvancedSearch'] = 'media/com_fabrik/js/advanced-search.js';
 
 		$lib = COM_FABRIK_LIVESITE . 'plugins/fabrik_visualization/nvd3_chart/lib/novus-nvd3/';
 		$document->addScript($lib . 'lib/d3.v2.js');
@@ -101,7 +101,7 @@ class FabrikViewNvd3_Chart extends JViewLegacy
 		FabrikHelperHTML::script($srcs, $js);
 
 		$text = $this->loadTemplate();
-		FabrikHelperHTML::runContentPlugins($text);
+		FabrikHelperHTML::runContentPlugins($text, true);
 		echo $text;
 	}
 }

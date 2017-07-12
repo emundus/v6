@@ -33,7 +33,7 @@ class EmundusViewThesis extends JViewLegacy {
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
 
-        if( $user->applicant ) 
+        if ($user->applicant) 
             $applications = $this->get('Applied');
         else
             $applications = null;
@@ -53,12 +53,10 @@ class EmundusViewThesis extends JViewLegacy {
 
 
         if ($this->_layout == 'edit') {
-
             $authorised = $user->authorise('core.create', 'com_emundus');
 
-            if ($authorised !== true) {
+            if ($authorised !== true)
                 throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
-            }
         }
 
         $this->_prepareDocument();

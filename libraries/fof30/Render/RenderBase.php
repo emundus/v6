@@ -10,6 +10,7 @@ namespace FOF30\Render;
 use FOF30\Container\Container;
 use FOF30\Form\Form;
 use FOF30\Model\DataModel;
+use Joomla\Registry\Registry;
 
 defined('_JEXEC') or die;
 
@@ -28,7 +29,7 @@ abstract class RenderBase implements RenderInterface
 	/** @var   int  The priority of this renderer in case we have multiple available ones */
 	protected $priority = 0;
 
-	/** @var   \JRegistry  A registry object holding renderer options */
+	/** @var   \JRegistry|Registry  A registry object holding renderer options */
 	protected $optionsRegistry = null;
 
 	/**
@@ -38,7 +39,7 @@ abstract class RenderBase implements RenderInterface
 	{
 		$this->container = $container;
 
-		$this->optionsRegistry = new \JRegistry();
+		$this->optionsRegistry = class_exists('JRegistry') ? new \JRegistry() : new Registry();
 	}
 
 	/**

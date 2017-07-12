@@ -2,7 +2,7 @@
 /**
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.form.notification
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -70,8 +70,8 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 
 		if ($params->get('notification_ajax', 0) == 1)
 		{
-			$src[] = 'media/com_fabrik/js/fabrik.js';
-			$src[] = '/plugins/fabrik_form/notification/notify.js';
+			$src['Fabrik'] = 'media/com_fabrik/js/fabrik.js';
+			$src['Notify'] = '/plugins/fabrik_form/notification/notify.js';
 			FabrikHelperHTML::script($src, "var notify = new Notify('$id', $opts);");
 		}
 

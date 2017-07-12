@@ -26,10 +26,11 @@ class EmundusController extends JControllerLegacy {
         //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+        include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
         //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
         //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 
-        $this->_user = JFactory::getUser();
+        $this->_user = JFactory::getSession()->get('emundusUser');
         $this->_db = JFactory::getDBO();
 
         parent::__construct($config);
@@ -67,7 +68,7 @@ class EmundusController extends JControllerLegacy {
     }
 
     function pdf() {
-        $user = JFactory::getUser();
+        $user = JFactory::getSession()->get('emundusUser');
         $jinput = JFactory::getApplication()->input;
         $student_id = $jinput->get('user', null, 'string');
         $fnum = $jinput->get('fnum', null, 'string');
@@ -105,7 +106,7 @@ class EmundusController extends JControllerLegacy {
     }
 
     function pdf_emploi(){
-        $user = JFactory::getUser();
+        $user = JFactory::getSession()->get('emundusUser');
         $student_id = JRequest::getVar('user', null, 'GET', 'none',0);
         $fnum = JRequest::getVar('fnum', null, 'GET', 'none',0);
         $rowid = explode('-', JRequest::getVar('rowid', null, 'GET', 'none',0));
@@ -130,7 +131,7 @@ class EmundusController extends JControllerLegacy {
     }
 
     function pdf_thesis(){
-        $user = JFactory::getUser();
+        $user = JFactory::getSession()->get('emundusUser');
         $student_id = JRequest::getVar('user', null, 'GET', 'none',0);
         $fnum = JRequest::getVar('fnum', null, 'GET', 'none',0);
         $rowid = explode('-', JRequest::getVar('rowid', null, 'GET', 'none',0));
@@ -158,7 +159,7 @@ class EmundusController extends JControllerLegacy {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 
-        $current_user = JFactory::getUser();
+        $current_user = JFactory::getSession()->get('emundusUser');
         if(!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
             die( JText::_('RESTRICTED_ACCESS') );
 
@@ -232,10 +233,10 @@ class EmundusController extends JControllerLegacy {
     */
     function deletefile() {
         //@TODO ADD COMMENT ON DELETE
-        $app    = JFactory::getApplication();
+        $app = JFactory::getApplication();
+        $modelProfile = new EmundusModelProfile;
 
         $student_id    = JRequest::getVar('sid', null, 'GET', 'none',0);
-        
         $layout        = JRequest::getVar('layout', null, 'GET', 'none',0);
         $format        = JRequest::getVar('format', null, 'GET', 'none',0);
         $itemid        = JRequest::getVar('Itemid', null, 'GET', 'none',0);
@@ -244,7 +245,7 @@ class EmundusController extends JControllerLegacy {
         if (empty($fnum))
             $app->redirect(JURI::Base().'index.php');
         
-        $current_user  = JFactory::getUser();
+        $current_user  = JFactory::getSession()->get('emundusUser');
         $chemin = EMUNDUS_PATH_ABS;
         $modelFiles = $this->getModel('files');
 
@@ -254,7 +255,7 @@ class EmundusController extends JControllerLegacy {
             
         } elseif(EmundusHelperAccess::asAccessAction(1, 'd', $current_user->id, $fnum) || 
                  EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
-            $user = JFactory::getUser($student_id);
+            $user = $modelProfile->getEmundusUser($student_id);
 
         } else {
             JError::raiseError(500, JText::_('ACCESS_DENIED'));
@@ -282,6 +283,7 @@ class EmundusController extends JControllerLegacy {
         //@TODO ADD COMMENT ON DELETE
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $copy_application_form = $eMConfig->get('copy_application_form', 0);
+        $modelProfile = new EmundusModelProfile;
 
         $student_id    = JRequest::getVar('sid', null, 'GET', 'none',0);
         $upload_id     = JRequest::getVar('uid', null, 'GET', 'none',0);
@@ -292,7 +294,7 @@ class EmundusController extends JControllerLegacy {
         $format        = JRequest::getVar('format', null, 'GET', 'none',0);
         $itemid        = JRequest::getVar('Itemid', null, 'GET', 'none',0);
         $fnum          = JRequest::getVar('fnum', null, 'GET', 'none',0);
-        $current_user  = JFactory::getUser();
+        $current_user  = JFactory::getSession()->get('emundusUser');
         $chemin = EMUNDUS_PATH_ABS;
         $db     = JFactory::getDBO();
 
@@ -309,7 +311,7 @@ class EmundusController extends JControllerLegacy {
             
         } elseif(EmundusHelperAccess::asAccessAction(4, 'd', $current_user->id, $fnum) || 
                  EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
-            $user = JFactory::getUser($student_id);
+            $user = $modelProfile->getEmundusUser($student_id);
             $fnums = $db->Quote($fnum);
         } else {
             JError::raiseError(500, JText::_('ACCESS_DENIED'));
@@ -369,27 +371,22 @@ class EmundusController extends JControllerLegacy {
                         echo '{"status":true, "message":"'.$message.'"}';
                     else 
                         $this->setRedirect($url, $message, 'message');
-                }
-                catch(Exception $e)
-                {
+                } catch(Exception $e) {
                     $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
                     JLog::add($error, JLog::ERROR, 'com_emundus');
-                    if ($format == "raw") {
+                    if ($format == "raw")
                         echo '{"status":false,"message":"'.$error.'"}';
-                    } else
-                        JError::raiseError(500, $e->getMessage());
+                    else JError::raiseError(500, $e->getMessage());
 
                     return false;
                 }
             }
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
             JLog::add($error, JLog::ERROR, 'com_emundus');
-            if ($format == "raw") {
+            if ($format == "raw")
                 echo '{"aid":"0","status":false,"message":"'.$error.'" }';
-            } else JError::raiseError(500, $e->getMessage());
+            else JError::raiseError(500, $e->getMessage());
 
             return false;
         }
@@ -405,12 +402,12 @@ class EmundusController extends JControllerLegacy {
         $app    = JFactory::getApplication();
         $Itemid = $app->input->getInt('Itemid', null, 'int');
         $fnum   = JRequest::getVar('fnum', null, 'GET', 'none', 0);
-        if (empty($fnum)) {
+        if (empty($fnum))
             $app->redirect(JURI::Base().'index.php');
-        }
         $redirect   = JRequest::getVar('redirect', null, 'GET');
         $redirect   = (!empty($redirect))?base64_decode($redirect):'index.php';
-        $aid    = JFactory::getUser();
+        $session    = JFactory::getSession();
+        $aid        = $session->get('emundusUser');
 
         $model = new EmundusModelProfile;
         $infos = $model->getFnumDetails($fnum);
@@ -435,6 +432,8 @@ class EmundusController extends JControllerLegacy {
         $aid->fnum          = $fnum;
         $aid->status        = $application['status'];
 
+        $session->set('emundusUser', $aid);
+
         //JError::raiseNotice('PERIOD', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($aid->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($aid->end_date) )));
         $this->setRedirect($redirect);
     }
@@ -445,6 +444,7 @@ class EmundusController extends JControllerLegacy {
         $copy_application_form = $eMConfig->get('copy_application_form', 0);
         $can_submit_encrypted = $eMConfig->get('can_submit_encrypted', 1);
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+        $modelProfile = new EmundusModelProfile;
 
         $db = JFactory::getDBO();
 
@@ -456,7 +456,7 @@ class EmundusController extends JControllerLegacy {
         $fnum       = JRequest::getVar('fnum', null, 'GET', 'none',0);
         
         $fnums = array();
-        $current_user = JFactory::getUser();
+        $current_user = JFactory::getSession()->get('emundusUser');
         $modelFiles = $this->getModel('files');
 
         if (EmundusHelperAccess::isApplicant($current_user->id)) {
@@ -468,9 +468,9 @@ class EmundusController extends JControllerLegacy {
             else 
                 $fnums[] = $fnum;
 
-        } elseif(EmundusHelperAccess::asAccessAction(4, 'c', $current_user->id, $fnum) || 
+        } elseif (EmundusHelperAccess::asAccessAction(4, 'c', $current_user->id, $fnum) || 
                  EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
-            $user = JFactory::getUser($student_id);
+            $user = $modelProfile->getEmundusUser($student_id);
             $fnums[] = $fnum;
         } else {
             JError::raiseError(500, JText::_('ACCESS_DENIED'));
@@ -499,7 +499,7 @@ class EmundusController extends JControllerLegacy {
         $query = '';
         $nb = 0;
 
-        if(!file_exists(EMUNDUS_PATH_ABS.$user->id)) {
+        if (!file_exists(EMUNDUS_PATH_ABS.$user->id)) {
             if (!mkdir(EMUNDUS_PATH_ABS.$user->id) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html')){
                 $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> Unable to create user file';
                 JLog::add($error, JLog::ERROR, 'com_emundus');
@@ -830,8 +830,8 @@ class EmundusController extends JControllerLegacy {
      ** Update profile for Applicants
      ***********************************/
     function updateprofile() {
-        $user = JFactory::getUser();
-        if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
+        $user = JFactory::getSession()->get('emundusUser');
+        if (!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
             $this->setRedirect(JRoute::_('index.php'), JText::_('Only administrator can access this function.'), 'error');
             return;
         }
@@ -841,14 +841,14 @@ class EmundusController extends JControllerLegacy {
         $attachment_required = JRequest::getVar('ar', $default=null, $hash= 'POST', $type= 'array', $mask=0);
         $attachment_bank_needed = JRequest::getVar('ab', $default=null, $hash= 'POST', $type= 'array', $mask=0);
         $profile_id = JRequest::getVar('pid', $default=null, $hash= 'POST', $type= 'none', $mask=0);
-        if($profile_id != JRequest::getVar('rowid', $default=null, $hash= 'GET', $type= 'none', $mask=0) || !is_numeric($profile_id) || floor($profile_id) != $profile_id || $profile_id <= 0) {
+        if ($profile_id != JRequest::getVar('rowid', $default=null, $hash= 'GET', $type= 'none', $mask=0) || !is_numeric($profile_id) || floor($profile_id) != $profile_id || $profile_id <= 0) {
             $this->setRedirect('index.php', 'Error', 'error');
             return;
         }
-        if(!empty($attachment_selected)) {
+        if (!empty($attachment_selected)) {
             $attachments = array();
             $a = new stdClass();
-            foreach($attachment_id as $id) {
+            foreach ($attachment_id as $id) {
                 $a->selected = @in_array($id, $attachment_selected);
                 $a->displayed = @in_array($id, $attachment_displayed);
                 $a->required = @in_array($id, $attachment_required);
@@ -863,10 +863,10 @@ class EmundusController extends JControllerLegacy {
 // ATTACHMENTS
         $db->setQuery('DELETE FROM #__emundus_setup_attachment_profiles WHERE profile_id = '.$profile_id);
         $db->execute() or die($db->getErrorMsg());
-        if(isset($attachments)) {
+        if (isset($attachments)) {
             $query = 'INSERT INTO #__emundus_setup_attachment_profiles (`profile_id`, `attachment_id`, `displayed`, `mandatory`, `bank_needed`) VALUES';
-            foreach($attachments as $id => $attachment) {
-                if(!$attachment->selected) continue;
+            foreach ($attachments as $id => $attachment) {
+                if (!$attachment->selected) continue;
                 $query .= '('.$profile_id.', '.$id.', ';
                 $query .= $attachment->displayed?'1':'0';
                 $query .= ', ';
@@ -889,17 +889,17 @@ class EmundusController extends JControllerLegacy {
      */
     function send_elements_csv() {
         $view = JRequest::getVar('v', null, 'GET');
+        
         // Starting a session.
-        $session =& JFactory::getSession();
-        $cid = $session->get( 'uid' );
-        $quick_search = $session->get( 'quick_search' );
-
-        $user =& JFactory::getUser();
+        $session        =& JFactory::getSession();
+        $cid            = $session->get('uid');
+        $quick_search   = $session->get('quick_search');
+        $user           = $session->get('emundusUser');
+        
         $menu=JSite::getMenu()->getActive();
         $access=!empty($menu)?$menu->access : 0;
-        if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access)) {
+        if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access))
             die(JText::_('ACCESS_DENIED'));
-        }
         require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_csv'.DS.'csv_'.$view.'.php');
         $elements = JRequest::getVar('ud', null, 'POST', 'array', 0);
 
@@ -933,20 +933,20 @@ class EmundusController extends JControllerLegacy {
 
         // Starting a session.
         $session = JFactory::getSession();
-        if($cid) $session->set( 'uid', $cid );
-        if($profile) $session->set( 'profile', $profile );
-        if($finalgrade) $session->set( 'finalgrade', $finalgrade );
-        if($quick_search) $session->set( 'quick_search', $quick_search );
-        if($gid) $session->set( 'groups', $gid );
-        if($evaluator) $session->set( 'evaluator', $evaluator );
-        if($engaged) $session->set( 'engaged', $engaged );
-        if($schoolyears) $session->set( 'schoolyears', $schoolyears );
-        if($miss_doc) $session->set( 'missing_doc', $miss_doc );
-        if($search) $session->set( 's_elements', $search );
-        if($search_values) $session->set( 's_elements_values', $search_values );
-        if($comments) $session->set( 'comments', $comments );
-        if($complete) $session->set( 'complete', $complete );
-        if($validate) $session->set( 'validate', $validate );
+        if ($cid)           $session->set( 'uid', $cid );
+        if ($profile)       $session->set( 'profile', $profile );
+        if ($finalgrade)    $session->set( 'finalgrade', $finalgrade );
+        if ($quick_search)  $session->set( 'quick_search', $quick_search );
+        if ($gid)           $session->set( 'groups', $gid );
+        if ($evaluator)     $session->set( 'evaluator', $evaluator );
+        if ($engaged)       $session->set( 'engaged', $engaged );
+        if ($schoolyears)   $session->set( 'schoolyears', $schoolyears );
+        if ($miss_doc)      $session->set( 'missing_doc', $miss_doc );
+        if ($search)        $session->set( 's_elements', $search );
+        if ($search_values) $session->set( 's_elements_values', $search_values );
+        if ($comments)      $session->set( 'comments', $comments );
+        if ($complete)      $session->set( 'complete', $complete );
+        if ($validate)      $session->set( 'validate', $validate );
 
         $this->setRedirect('index.php?option=com_emundus&view=export_select_columns&v='.$view.'&Itemid='.$itemid);
     }
@@ -1016,9 +1016,7 @@ class EmundusController extends JControllerLegacy {
             $mimetype = finfo_file($finfo, $filename);
             finfo_close($finfo);
             return $mimetype;
-        } else {
-            return 'application/octet-stream';
-        }
+        } else return 'application/octet-stream';
     }
 
     /**
@@ -1034,7 +1032,7 @@ class EmundusController extends JControllerLegacy {
         $uid = $urltab[$cpt-2];
         $file = $urltab[$cpt-1];
 
-        $current_user = JFactory::getUser();
+        $current_user = JFactory::getSession()->get('emundusUser');
 
         if ( !EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id != $uid) ) {
             JError::raiseWarning( 500, JText::_( 'ACCESS_DENIED' ) );
@@ -1044,9 +1042,8 @@ class EmundusController extends JControllerLegacy {
                 $query = 'SELECT can_be_viewed FROM #__emundus_uploads WHERE user_id = '.$uid.' AND filename like '.$db->Quote($file);
                 $db->setQuery( $query );
                 $can_be_viewed = $db->loadResult();
-                if ($can_be_viewed != 1) {
+                if ($can_be_viewed != 1)
                     die(JText::_( 'ACCESS_DENIED' ));
-                }
             }
             $file = JPATH_BASE.DS.$url;
             if (file_exists($file)) {
@@ -1093,7 +1090,7 @@ class EmundusController extends JControllerLegacy {
 
     function sendmail($nb_email_per_batch = null) {
         $app = JFactory::getApplication();
-        $user = JFactory::getUser();
+        $user = JFactory::getSession()->get('emundusUser');
         $db = JFactory::getDBO();
         $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
         $keyid = JRequest::getVar('keyid', null, 'GET', 'none',0);
@@ -1115,12 +1112,12 @@ class EmundusController extends JControllerLegacy {
             $db->setQuery( $query );
             $db->execute();
 
-            if($db->getNumRows() == 0) {
+            if ($db->getNumRows() == 0) {
                 $this->setRedirect('index.php?option=com_fabrik&view=table&tableid=90&Itemid='.$itemid);
             } else {
                 $mail=$db->loadObjectList();
 
-                foreach($mail as $m) {
+                foreach ($mail as $m) {
                     $mail_subject = $m->subject;
                     //$from = JFactory::getUser($m->user_id_from);
                     $emailfrom = $app->getCfg('mailfrom');
@@ -1154,15 +1151,14 @@ class EmundusController extends JControllerLegacy {
     }
 
     function sendmail_expert() {
-        if ( !EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) ) {
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
             die(JError::raiseWarning( 500, JText::_( 'ACCESS_DENIED' ) ));
-        }
         $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-        $sid = JRequest::getVar('sid', null, 'GET', 'INT',0);
-        $fnum = JRequest::getVar('fnum', null, 'GET');
+        $sid    = JRequest::getVar('sid', null, 'GET', 'INT',0);
+        $fnum   = JRequest::getVar('fnum', null, 'GET');
         //$campaign_id = JRequest::getVar('campaign_id', null, 'POST', 'INT',0);
-        $model = $this->getModel('emails');
-        $email = $model->sendmail('expert', $fnum);
+        $model  = $this->getModel('emails');
+        $email  = $model->sendmail('expert', $fnum);
 
         exit();
         /*
@@ -1180,24 +1176,24 @@ class EmundusController extends JControllerLegacy {
     function ajax_validation() {
         //$menu=JSite::getMenu()->getActive(); die(print_r($menu));
         //$access=!empty($menu)?$menu->access : 0;
-        $user = JFactory::getUser();
-        if (!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
+        $user = JFactory::getSession()->get('emundusUser');
+        if (!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id))
             die(JText::_('ACCESS_DENIED'));
-        }
-        $uid = JRequest::getVar('uid', null, 'GET', 'INT');
-        $validate = JRequest::getVar('validate', null, 'GET', 'INT');
-        $cible = JRequest::getVar('cible', null, 'GET', 'CMD');
-        $data = explode('.', $cible);
+        $uid        = JRequest::getVar('uid', null, 'GET', 'INT');
+        $validate   = JRequest::getVar('validate', null, 'GET', 'INT');
+        $cible      = JRequest::getVar('cible', null, 'GET', 'CMD');
+        $data       = explode('.', $cible);
+
         if(count($data)>3)  $and = ' AND `campaign_id`='.$data[3];
         else $and = '';
         if($data[0] == "jos_emundus_final_grade") $column = "student_id";
         else $column = 'user';
 
 //      print_r($data);
-        if(!empty($uid) && is_numeric($uid)) {
-            $value = abs((int)$validate-1);
-            $db = JFactory::getDBO();
-            $query = 'UPDATE `'.$data[0].'` SET `'.$data[1].'`='.$db->Quote($value).' WHERE `'.$column.'` = '.$db->Quote((int)$uid). $and;
+        if (!empty($uid) && is_numeric($uid)) {
+            $value  = abs((int)$validate-1);
+            $db     = JFactory::getDBO();
+            $query  = 'UPDATE `'.$data[0].'` SET `'.$data[1].'`='.$db->Quote($value).' WHERE `'.$column.'` = '.$db->Quote((int)$uid). $and;
             $db->setQuery($query);
             $db->execute();
             if ($value > 0) {

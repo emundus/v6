@@ -14,38 +14,41 @@ defined( '_JEXEC' ) or die();
  */
 include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
-$app            = JFactory::getApplication();
-$db             = JFactory::getDBO();
+$app = JFactory::getApplication();
+$db = JFactory::getDBO();
 
-$current_user   = JFactory::getUser();
+$session = JFactory::getSession();
+$current_user   = $session->get('emundusUser');
 
 $user_id = $fabrikFormData['user_raw'][0];
 $axe = $fabrikFormData['axe_raw'][0];
 
 if($axe == "AXE 1")
-  $profile = 1026;
+    $profile = 1026;
 elseif($axe == "AXE 2")
-  $profile = 1027;
+    $profile = 1027;
 else
-  $profile = 1028;
+    $profile = 1028;
   
 if (EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) 
-  $sid = $user_id;
+    $sid = $user_id;
 else {
-  $sid = $current_user->id;
-  
-  $query = 'SELECT * 
+    $sid = $current_user->id;
+
+    $query = 'SELECT * 
             FROM #__emundus_setup_profiles as esp 
             WHERE esp.id = '.$profile;
-  try {
-      $db->setQuery($query);
-      $p = $db->loadObject();
-  } catch (Exception $e) {
-      // catch any database errors.
-  }
-  
-  $current_user->menutype = $p->menutype;
-  $current_user->profile = $p->id;
+    try {
+        $db->setQuery($query);
+        $p = $db->loadObject();
+    } catch (Exception $e) {
+    // catch any database errors.
+    }
+
+    $current_user->menutype = $p->menutype;
+    $current_user->profile = $p->id;
+
+    $session->set('emundusUser',$current_user);
 
 }
 

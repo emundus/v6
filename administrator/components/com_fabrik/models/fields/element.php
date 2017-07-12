@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Form
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -60,15 +60,14 @@ class JFormFieldElement extends JFormFieldList
 			$fabrikElements = array();
 		}
 
-		$src[] = 'administrator/components/com_fabrik/views/namespace.js';
-		$c     = (int) @$this->form->repeatCounter;
-		$table = $this->getAttribute('table');
+		$src['Namespace'] = 'administrator/components/com_fabrik/views/namespace.js';
+		$c                = (int) @$this->form->repeatCounter;
+		$table            = $this->getAttribute('table');
 
 		if ($table == '')
 		{
 			$table = $this->form->getValue('params.list_id');
 		}
-
 
 		$includeCalculations = (int) $this->getAttribute('include_calculations');
 		$published           = (int) $this->getAttribute('published');
@@ -112,7 +111,7 @@ class JFormFieldElement extends JFormFieldList
 		$script[]                   = "FabrikAdmin.model.fields.element['$this->id'] = p;";
 		$script                     = implode("\n", $script);
 		$fabrikElements[$this->id]  = true;
-		$src[]                      = 'administrator/components/com_fabrik/models/fields/element.js';
+		$src['AdmininElelent']      = 'administrator/components/com_fabrik/models/fields/element.js';
 		FabrikHelperHTML::script($src, $script);
 
 		if ($mode === 'gui')

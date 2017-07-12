@@ -7,6 +7,7 @@
 
 namespace FOF30\Dispatcher;
 
+use Exception;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
 use FOF30\Dispatcher\Exception\AccessForbidden;
@@ -125,23 +126,23 @@ class Dispatcher
 
 		// Get the event names (different for CLI)
 		$onBeforeEventName = 'onBeforeDispatch';
-		$onAfterEventName = 'onAfterDispatch';
+		$onAfterEventName  = 'onAfterDispatch';
 
 		if ($this->container->platform->isCli())
 		{
 			$onBeforeEventName = 'onBeforeDispatchCLI';
-			$onAfterEventName = 'onAfterDispatchCLI';
+			$onAfterEventName  = 'onAfterDispatchCLI';
 		}
 
 		try
 		{
 			$result = $this->triggerEvent($onBeforeEventName);
-			$error = '';
+			$error  = '';
 		}
 		catch (\Exception $e)
 		{
 			$result = false;
-			$error = $e->getMessage();
+			$error  = $e->getMessage();
 		}
 
 		if ($result === false)
@@ -153,7 +154,7 @@ class Dispatcher
 
 			$this->transparentAuthenticationLogout();
 
-			throw new AccessForbidden;
+			$this->container->platform->showErrorPage(new AccessForbidden);
 		}
 
 		// Get and execute the controller
@@ -166,20 +167,30 @@ class Dispatcher
 			$this->input->set('task', $task);
 		}
 
-		$this->controller = $this->container->factory->controller($view, $this->config);
-		$status = $this->controller->execute($task);
+		try
+		{
+			$this->controller = $this->container->factory->controller($view, $this->config);
+			$status           = $this->controller->execute($task);
+		}
+		catch (Exception $e)
+		{
+			$this->container->platform->showErrorPage($e);
 
-        if($status !== false)
-        {
-            try
-            {
-                $this->triggerEvent($onAfterEventName);
-            }
-            catch(\Exception $e)
-            {
-                $status = false;
-            }
-        }
+			// Redundant; just to make code sniffers happy
+			return;
+		}
+
+		if ($status !== false)
+		{
+			try
+			{
+				$this->triggerEvent($onAfterEventName);
+			}
+			catch (\Exception $e)
+			{
+				$status = false;
+			}
+		}
 
 		if (($status === false))
 		{
@@ -190,7 +201,7 @@ class Dispatcher
 
 			$this->transparentAuthenticationLogout();
 
-			throw new AccessForbidden;
+			$this->container->platform->showErrorPage(new AccessForbidden);
 		}
 
 		$this->transparentAuthenticationLogout();

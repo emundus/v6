@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -42,8 +42,7 @@ class PlgFabrik_Cronphp extends PlgFabrik_Cron
 	 * Do the plugin action
 	 *
 	 * @param   array   &$data       array data to process
-	 * @param   object  &$listModel  plugin's list model
-	 *
+	 * @param   object  &$listModel  List model
 	 * @return  int  number of records run, you can set this by setting the varaible $processed
 	 * in either your included script in php code.
 	 */

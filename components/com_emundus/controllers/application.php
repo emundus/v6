@@ -50,20 +50,19 @@ class EmundusControllerApplication extends JControllerLegacy
     public function delete_attachments() {
         $user = JFactory::getUser();
         //$allowed = array("Super Users", "Administrator", "Editor");
-        if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) 
+            die(JText::_("ACCESS_DENIED"));
 
         //$db   = JFactory::getDBO();
         $attachments = JRequest::getVar('attachments', null, 'POST', 'array', 0);
-
-        $user_id = JRequest::getVar('sid', null, 'POST', 'none', 0);
-
-        $view = JRequest::getVar('view', null, 'POST', 'none', 0);
-        $tmpl = JRequest::getVar('tmpl', null, 'POST', 'none', 0);
+        $user_id     = JRequest::getVar('sid', null, 'POST', 'none', 0);
+        $view        = JRequest::getVar('view', null, 'POST', 'none', 0);
+        $tmpl        = JRequest::getVar('tmpl', null, 'POST', 'none', 0);
 
         $url = !empty($tmpl)?'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'&tmpl='.$tmpl.'#attachments':'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'&tmpl=component#attachments';
         // die(var_dump($attachments));
-        JArrayHelper::toInteger( $attachments, 0 );
-        if (count( $attachments ) == 0) {
+        JArrayHelper::toInteger($attachments, 0);
+        if (count($attachments) == 0) {
             JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
             //$mainframe->redirect($url);
             exit;
@@ -74,10 +73,10 @@ class EmundusControllerApplication extends JControllerLegacy
         foreach ($attachments as $id) {
             $upload = $model->getUploadByID($id);
             $attachment = $model->getAttachmentByID($upload['attachment_id']);
-            if( EmundusHelperAccess::asAccessAction(4, 'd', $user->id, $upload['fnum']) ) {
+            if (EmundusHelperAccess::asAccessAction(4, 'd', $user->id, $upload['fnum']) ) {
                 $result = $model->deleteAttachment($id);
 
-                if($result != 1){
+                if ($result != 1) {
                     echo JText::_('ATTACHMENT_DELETE_ERROR').' : '.$attachment['value'].' : '.$upload['filename'];
                 } else {
                     $file = EMUNDUS_PATH_ABS.$user_id.DS.$upload['filename'];

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension version="2.5" type="package" method="upgrade">
+    <name>pkg_gantry</name>
+    <packagename>gantry</packagename>
+    <version>4.1.33</version>
+    <creationDate>July  7, 2017</creationDate>
+    <author>RocketTheme, LLC</author>
+    <authorEmail>support@rockettheme.com</authorEmail>
+    <authorUrl>http://www.rockettheme.com</authorUrl>
+    <copyright>(C) 2005 - 2017 RocketTheme, LLC. All rights reserved.</copyright>
+    <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+    <description>PKG_GANTRY_DESCRIPTION</description>
+
+    <scriptfile>install.php</scriptfile>
+
+    <files folder="packages">
+        <!-- Mandatory system plugin -->
+        <file type="plugin"    group="system"     id="gantry"              enabled="1">plg_system_gantry-4.1.33.zip</file>
+        <!-- Gantry framework library -->
+        <file type="library"                      id="gantry"              enabled="1">lib_gantry-4.1.33.zip</file>
+        <!-- Administration component -->
+        <file type="component"                    id="com_gantry"          enabled="1">com_gantry-4.1.33.zip</file>
+    </files>
+
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.pkg_gantry.sys.ini</language>
+    </languages>
+
+    <updateservers>
+        <server type="extension" priority="1" name="Gantry">http://updates.gantry.org/4.0/joomla/pkg_gantry.xml</server>
+        <server type="collection" priority="2" name="Gantry">http://updates.gantry.org/4.0/joomla/list.xml</server>
+    </updateservers>
+</extension>

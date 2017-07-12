@@ -148,28 +148,20 @@ class EmundusHelperAccess {
 		if (!is_null($fnum) && !empty($fnum))
 		{
 			$canAccess = $userModel->getUserActionByFnum($action_id, $fnum, $user_id, $crud);
-			if($canAccess > 0)
-			{
+			if ($canAccess > 0)
 				return true;
-			}
-			elseif($canAccess == 0 || $canAccess === null)
-			{
-				$groups = JFactory::getUser()->emGroups;
+			elseif($canAccess == 0 || $canAccess === null) {
+				$groups = JFactory::getSession()->get('emundusUser')->emGroups;
 
 				if (count($groups)>0) 
 					return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
 				else 
 					return false;	
-			}
-			else
-			{
+			} else
 				return false;
-			}
 		}
 		else
-		{
-			return EmundusHelperAccess::canAccessGroup(JFactory::getUser()->emGroups, $action_id, $crud);
-		}
+			return EmundusHelperAccess::canAccessGroup(JFactory::getSession()->get('emundusUser')->emGroups, $action_id, $crud);
 	}
 
 	static function canAccessGroup($gids, $action_id, $crud, $fnum = null)

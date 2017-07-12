@@ -32,14 +32,14 @@ class EmundusViewApplication extends JViewLegacy{
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 		
-		$this->_user = JFactory::getUser();
+		$this->_user = JFactory::getSession()->get('emundusUser');
 		$this->_db = JFactory::getDBO();
 		
 		parent::__construct($config);
 	}
     function display($tpl = null){	
 
-    	if( !EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) )
+    	if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 			die( JText::_('RESTRICTED_ACCESS') );
 	
         $document = JFactory::getDocument();

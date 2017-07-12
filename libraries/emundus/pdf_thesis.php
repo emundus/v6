@@ -17,9 +17,6 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 
 	$menu = new EmundusHelperMenu;
 
-	$current_user =  JFactory::getUser();
-	$user =  JFactory::getUser($user_id); 
-
 	$application = new EmundusModelApplication;
 
 	// Element Fabrik ID list to display in PDF
@@ -107,11 +104,9 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	}
 */
 
-	if($output){
+	if ($output)
 		$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.'fiche_'.$rowid.'.pdf', 'FI');
-	}else{
+	else
 		$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.'fiche_'.$rowid.'.pdf', 'FI');
-	}
-
 }
 ?>

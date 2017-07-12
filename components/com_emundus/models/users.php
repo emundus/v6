@@ -35,24 +35,21 @@ class EmundusModelUsers extends JModelList
         parent::__construct();
 
         $session = JFactory::getSession();
-        if (!$session->has('filter_order'))
-        {
+        if (!$session->has('filter_order')) {
             $session->set('filter_order', 'id');
             $session->set('filter_order_Dir', 'desc');
         }
+        
         $mainframe = JFactory::getApplication();
 
-        if(!$session->has('limit'))
-        {
+        if (!$session->has('limit')) {
             $limit = $mainframe->getCfg('list_limit');
             $limitstart = 0;
             $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
             $session->set('limit', $limit);
             $session->set('limitstart', $limitstart);
-        }
-        else
-        {
+        } else {
             $limit      = intval($session->get('limit'));
             $limitstart = intval($session->get('limitstart'));
             $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
@@ -62,8 +59,7 @@ class EmundusModelUsers extends JModelList
         }
     }
 
-    public function _buildContentOrderBy()
-    {
+    public function _buildContentOrderBy() {
         $session = JFactory::getSession();
         $params = $session->get('filt_params');
         $filter_order     = @$params['filter_order'];
@@ -71,16 +67,15 @@ class EmundusModelUsers extends JModelList
 
         $can_be_ordering = array ('user', 'id', 'lastname', 'firstname', 'username', 'email', 'profile', 'block', 'lastvisitDate', 'registerDate', 'newsletter', 'groupe', 'university');
 
-        if(!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)){
+        if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering))
             $orderby = ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
-        } else
+        else
             $orderby = ' ORDER BY u.id DESC';
 
         return $orderby;
     }
 
-    public function _buildQuery()
-    {
+    public function _buildQuery() {
         $session        = JFactory::getSession();
         $params         = $session->get('filt_params');
 
@@ -101,44 +96,44 @@ class EmundusModelUsers extends JModelList
         $list_user="";
 
         if (!empty($schoolyears) && (empty($campaigns) || $campaigns[0]=='%') && $schoolyears[0]!='%') {
-            $list_user="";
+            $list_user = "";
             $applicant_schoolyears = $this->getUserListWithSchoolyear($schoolyears);
-            $i=0;
+            $i = 0;
             $nb_element = count($applicant_schoolyears);
-            if ($nb_element==0) {
+            if ($nb_element == 0) {
                 $list_user.="EMPTY";
             } else {
                 foreach ($applicant_schoolyears as $applicant) {
                     if (++$i === $nb_element)
-                        $list_user.=$applicant;
-                    else if ($applicant!=NULL)
-                        $list_user.=$applicant.", ";
+                        $list_user .= $applicant;
+                    elseif ($applicant!=NULL)
+                        $list_user .= $applicant.", ";
                 }
             }
-        } else if(!empty($campaigns) && $campaigns[0]!='%' && (empty($schoolyears) || $schoolyears[0]=='%')) {
-            $list_user="";
+        } elseif (!empty($campaigns) && $campaigns[0]!='%' && (empty($schoolyears) || $schoolyears[0]=='%')) {
+            
+            $list_user = "";
             $applicant_campaigns = $this->getUserListWithCampaign($campaigns);
-            $i=0;
+            $i = 0;
             $nb_element = count($applicant_campaigns);
-            if ($nb_element==0) {
+            if ($nb_element == 0) {
                 $list_user.="EMPTY";
             } else {
                 foreach ($applicant_campaigns as $applicant) {
                     if (++$i === $nb_element)
-                        $list_user.=$applicant;
-                    else if ($applicant!=NULL)
-                        $list_user.=$applicant.", ";
+                        $list_user .= $applicant;
+                    else if ($applicant != NULL)
+                        $list_user .= $applicant.", ";
                 }
             }
-        } else if (!empty($campaigns) && $campaigns[0]!='%' &&  !empty($schoolyears) && $schoolyears[0]!='%') {
+        } elseif (!empty($campaigns) && $campaigns[0]!='%' &&  !empty($schoolyears) && $schoolyears[0]!='%') {
             //$applicant_schoolyears = $this->getUserListWithSchoolyear($schoolyears);
-            $i=0;
-            $list_user='';
+            $i = 0;
+            $list_user = '';
             foreach ($schoolyears as $schoolyear) {
                 foreach ($campaigns as $campaign) {
                     $compare = $this->compareCampaignANDSchoolyear($campaign,$schoolyear);
-                    // var_dump($compare.$campaign);
-                    if ($compare!=0) {
+                    if ($compare != 0) {
                         $applicant_campaigns = $this->getUserListWithCampaign($campaign);
                         //$nb_element = count($applicant_campaigns);
                         foreach ($applicant_campaigns as $applicant) {
@@ -147,27 +142,27 @@ class EmundusModelUsers extends JModelList
                     }
                 }
             }
-            if ($list_user=='') {
-                $list_user='EMPTY';
+            if ($list_user == '') {
+                $list_user = 'EMPTY';
             } else {
                 $taille = strlen($list_user);
-                $list_user=substr($list_user,0,$taille-2);
+                $list_user = substr($list_user, 0, $taille-2);
             }
         }
 
         if (!empty($groupEval)) {
-            $list_user="";
+            $list_user = "";
             $applicant_groupEval = $this->getUserListWithGroupsEval($groupEval);
-            $i=0;
+            $i = 0;
             $nb_element = count($applicant_groupEval);
             if ($nb_element==0) {
                 $list_user.="EMPTY";
             } else {
                 foreach ($applicant_groupEval as $applicant) {
                     if (++$i === $nb_element)
-                        $list_user.=$applicant;
-                    else if ($applicant != NULL)
-                        $list_user.=$applicant.", ";
+                        $list_user .= $applicant;
+                    elseif ($applicant != NULL)
+                        $list_user .= $applicant.", ";
                 }
             }
         }
@@ -210,7 +205,7 @@ class EmundusModelUsers extends JModelList
         if (isset($institution) && !empty($institution) && $institution[0] != '%')
             $query .= ' AND u.id IN( SELECT jeu.user_id FROM #__emundus_users as jeu WHERE jeu.university_id IN ('.implode(',', $institution).')) ';
 
-        if ($edit==1) {
+        if ($edit == 1) {
             $query.= ' u.id='.mysql_real_escape_string($uid);
         } else {
             $and = true;
@@ -275,19 +270,16 @@ class EmundusModelUsers extends JModelList
         return $query;
     }
 
-    public function getUsers()
-    {
+    public function getUsers() {
         $session = JFactory::getSession();
         // Lets load the data if it doesn't already exist
-        try
-        {
+        try {
+            
             $query = $this->_buildQuery();
             $query .= $this->_buildContentOrderBy();
-//echo '<hr>'.str_replace ('#_', 'jos', $query);
             return $this->_getList( $query ,$session->get('limitstart'), $session->get('limit'));
-        }
-        catch(Exception $e)
-        {
+        
+        } catch(Exception $e) {
             throw $e;
         }
     }
@@ -739,9 +731,9 @@ class EmundusModelUsers extends JModelList
             $db->setQuery($query);
             $db->Query() or die($db->getErrorMsg());
 
-            $query="INSERT INTO `#__emundus_users_profiles_history` VALUES ('','".date('Y-m-d H:i:s')."',".$user->id.",".$profile.",'profile')";
+            /*$query="INSERT INTO `#__emundus_users_profiles_history` VALUES ('','".date('Y-m-d H:i:s')."',".$user->id.",".$profile.",'profile')";
             $db->setQuery($query);
-            $db->Query() or die($db->getErrorMsg());
+            $db->Query() or die($db->getErrorMsg());*/
 
             $query="INSERT INTO `#__user_profiles`
                     VALUES  (".$user->id.",'emundus_profile.firstname', ".$db->Quote('"'.$firstname.'"').", '2'),
@@ -871,12 +863,11 @@ class EmundusModelUsers extends JModelList
     {
         $current_user = JFactory::getUser();
         $crud_where = '';
-        foreach($crud as $key=>$value){
+        foreach ($crud as $key=>$value) {
             $crud_where .= ' AND '.$key.'='.$value;
         }
 
-        try
-        {
+        try {
             $db = $this->getDbo();
             $query = 'SELECT DISTINCT fnum
                         FROM #__emundus_group_assoc
@@ -891,9 +882,7 @@ class EmundusModelUsers extends JModelList
             $fnum_2 = $db->loadColumn();
 
             return (count($fnum_1>0) && count($fnum_2))?array_merge($fnum_1, $fnum_2):((count($fnum_1)>0)?$fnum_1:$fnum_2);
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             throw $e;
         }
     }
@@ -905,26 +894,21 @@ class EmundusModelUsers extends JModelList
      * @param   $action_id  int     Allowed action ID
      * @param   $crud       array   Array of type access (create, read, update, delete)
      */
-    public function getFnumsGroupAssoc($group_id, $action_id, $crud = array())
-    {
+    public function getFnumsGroupAssoc($group_id, $action_id, $crud = array()) {
         $crud_where = '';
-        foreach($crud as $key=>$value){
+        foreach ($crud as $key=>$value) {
             $crud_where .= ' AND '.$key.'='.$value;
         }
 
-        try
-        {
+        try {
             $db = $this->getDbo();
             $query = 'SELECT DISTINCT fnum
                         FROM #__emundus_group_assoc
                         WHERE action_id = '.$action_id.' '.$crud_where.' AND group_id ='.$group_id;
             $db->setQuery($query);
             $fnum = $db->loadColumn();
-
             return $fnum;
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             throw $e;
         }
     }
@@ -938,12 +922,11 @@ class EmundusModelUsers extends JModelList
     {
         $current_user = JFactory::getUser();
         $crud_where = '';
-        foreach($crud as $key=>$value){
+        foreach ($crud as $key=>$value) {
             $crud_where .= ' AND '.$key.'='.$value;
         }
 
-        try
-        {
+        try {
             $db = $this->getDbo();
             $query = 'SELECT DISTINCT fnum
                         FROM #__emundus_users_assoc
@@ -952,9 +935,7 @@ class EmundusModelUsers extends JModelList
             $fnum = $db->loadColumn();
 
             return $fnum;
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             throw $e;
         }
     }
@@ -973,8 +954,7 @@ class EmundusModelUsers extends JModelList
         foreach ($fnums_info as $key => $value) {
             $training[] = $value['training'];
         }
-        try
-        {
+        try {
             $db = $this->getDbo();
             // All manually associated applicant to user with action evaluation set to create=1
             $query = 'SELECT DISTINCT u.id, u.name, u.email
@@ -1019,9 +999,7 @@ class EmundusModelUsers extends JModelList
             }
 
             return (count($user_assoc>0) && count($group_assoc))?array_merge($user_assoc, $group_assoc):((count($user_assoc)>0)?$user_assoc:$group_assoc);
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             return $e->getMessage();
         }
     }
@@ -1044,13 +1022,10 @@ class EmundusModelUsers extends JModelList
                     ORDER BY act.ordering';
         $db = $this->getDbo();
 
-        try
-        {
+        try {
             $db->setQuery($query);
             return $db->loadAssocList();
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             return $e->getMessage();
         }
     }
@@ -1070,21 +1045,18 @@ class EmundusModelUsers extends JModelList
         }
     }
 
-    public function addGroup($gname, $gdesc, $actions, $progs)
-    {
-        try
-        {
+    public function addGroup($gname, $gdesc, $actions, $progs) {
+        try {
             $query = "insert into #__emundus_setup_groups (`label`,`description`, `published`) values ('$gname', '$gdesc', 1)";
             $db = $this->getDbo();
 
-            try
-            {
+            try {
                 $db->setQuery($query);
                 $db->query();
                 $gid = $db->insertid();
                 $str = "";
-                foreach ($progs as $prog)
-                {
+
+                foreach ($progs as $prog) {
                     $str .= "($gid, '$prog'),";
                 }
                 $str = rtrim($str, ",");
@@ -1092,24 +1064,21 @@ class EmundusModelUsers extends JModelList
                 $db->setQuery($query);
                 $db->query();
                 $str = "";
-                foreach ($actions as $action)
-                {
+                
+                foreach ($actions as $action) {
                     $act = (array) $action;
                     $str .= "($gid, ".implode(',', $act)."),";
                 }
                 $str = rtrim($str, ",");
                 $query = "insert into #__emundus_acl (`group_id`, `action_id`, `c`, `r`, `u`, `d`) values $str";
                 $db->setQuery($query);
+                
                 return $db->query();
-            }
-            catch(Exception $e)
-            {
+            } catch(Exception $e) {
                 echo $e->getMessage();
                 return null;
             }
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             return false;
         }
     }
@@ -1250,16 +1219,12 @@ class EmundusModelUsers extends JModelList
     // get user ACL
     public function getUserACL($uid = null, $fnum = null)
     {
-        try
-        {
-            $user = JFactory::getUser();
+        try {
+            $user = JFactory::getSession()->get('emundusUser');
             if(is_null($uid))
-            {
                 $uid = $user->id;
-            }
             $acl = array();
-            if($fnum === null)
-            {
+            if($fnum === null) {
                 $query = "SELECT esc.training as course, eua.action_id, eua.c, eua.r, eua.u, eua.d, g.group_id
                         FROM #__emundus_users_assoc AS eua
                         LEFT JOIN #__emundus_campaign_candidature AS ecc on ecc.fnum = eua.fnum
@@ -1271,17 +1236,13 @@ class EmundusModelUsers extends JModelList
                 $userACL =  $db->loadAssocList();
     
                 if (count($userACL) > 0) {
-                    foreach ($userACL as $key => $value)
-                    {
-                        if(isset($acl[$value['action_id']]))
-                        {
+                    foreach ($userACL as $key => $value) {
+                        if (isset($acl[$value['action_id']])) {
                             $acl[$value['action_id']]['c'] = max($acl[$value['action_id']]['c'],$value['c']);
                             $acl[$value['action_id']]['r'] = max($acl[$value['action_id']]['r'],$value['r']);
                             $acl[$value['action_id']]['u'] = max($acl[$value['action_id']]['d'],$value['u']);
                             $acl[$value['action_id']]['d'] = max($acl[$value['action_id']]['d'],$value['d']);
-                        }
-                        else
-                        {
+                        } else {
                             $acl[$value['action_id']]['c'] = $value['c'];
                             $acl[$value['action_id']]['r'] = $value['r'];
                             $acl[$value['action_id']]['u'] = $value['u'];
@@ -1289,8 +1250,7 @@ class EmundusModelUsers extends JModelList
                         }
                     }
                 }
-                if(!empty($user->emGroups))
-                {
+                if (!empty($user->emGroups)) {
                     $query = "SELECT esgc.course, acl.action_id, acl.c, acl.r, acl.u, acl.d, acl.group_id
                         FROM #__emundus_setup_groups_repeat_course AS esgc
                         LEFT JOIN #__emundus_acl AS acl ON acl.group_id = esgc.parent_id
@@ -1298,19 +1258,14 @@ class EmundusModelUsers extends JModelList
                     $db = $this->getDbo();
                     $db->setQuery($query);
                     $userACL =  $db->loadAssocList();
-                    if (count($userACL) > 0)
-                    {
-                        foreach ($userACL as $key => $value)
-                        {
-                            if(isset($acl[$value['action_id']]))
-                            {
+                    if (count($userACL) > 0) {
+                        foreach ($userACL as $key => $value) {
+                            if (isset($acl[$value['action_id']])) {
                                 $acl[$value['action_id']]['c'] = max($acl[$value['action_id']]['c'],$value['c']);
                                 $acl[$value['action_id']]['r'] = max($acl[$value['action_id']]['r'],$value['r']);
                                 $acl[$value['action_id']]['u'] = max($acl[$value['action_id']]['d'],$value['u']);
                                 $acl[$value['action_id']]['d'] = max($acl[$value['action_id']]['d'],$value['d']);
-                            }
-                            else
-                            {
+                            } else {
                                 $acl[$value['action_id']]['c'] = $value['c'];
                                 $acl[$value['action_id']]['r'] = $value['r'];
                                 $acl[$value['action_id']]['u'] = $value['u'];
@@ -1321,9 +1276,7 @@ class EmundusModelUsers extends JModelList
                 }
 
                 return $acl;
-            }
-            else
-            {
+            } else {
                 $db = $this->getDbo();
                 $query = "SELECT eua.action_id, eua.c, eua.r, eua.u, eua.d
                         FROM #__emundus_users_assoc AS eua
@@ -1335,19 +1288,14 @@ class EmundusModelUsers extends JModelList
             }
 
 
-        }
-        catch(Exeption $e)
-        {
+        } catch(Exeption $e) {
             return false;
         }
-
     }
 
     // get programme associated to user groups
-    public function getUserGroupsProgrammeAssoc($uid)
-    {
-        try
-        {
+    public function getUserGroupsProgrammeAssoc($uid) {
+        try {
             $query = "SELECT DISTINCT (esgc.course)
                       FROM #__emundus_groups as g
                       LEFT JOIN #__emundus_setup_groups AS esg ON g.group_id = esg.id
@@ -1357,9 +1305,7 @@ class EmundusModelUsers extends JModelList
             $db->setQuery($query);
 
             return $db->loadColumn();
-        }
-        catch(Exeption $e)
-        {
+        } catch(Exeption $e) {
             return false;
         }
     }

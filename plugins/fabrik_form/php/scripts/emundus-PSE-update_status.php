@@ -16,7 +16,7 @@ defined( '_JEXEC' ) or die();
 $baseurl = JURI::base();
 $db = JFactory::getDBO();
 
-$current_user = JFactory::getUser();
+$current_user = JFactory::getSession()->get('emundusUser');
 
 $files 	= JRequest::get('FILES');
 

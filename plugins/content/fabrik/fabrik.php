@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Content.fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -22,23 +22,6 @@ jimport('joomla.plugin.plugin');
  */
 class PlgContentFabrik extends JPlugin
 {
-	/**
-	 * Constructor
-	 *
-	 * For php4 compatibility we must not use the __constructor as a constructor for plugins
-	 * because func_get_args ( void ) returns a copy of all passed arguments NOT references.
-	 * This causes problems with cross-referencing necessary for the observer design pattern.
-	 *
-	 * @param   object &$subject The object to observe
-	 * @param   object $params   The object that holds the plugin parameters
-	 *
-	 * @since       1.5
-	 */
-	public function plgContentFabrik(&$subject, $params = null)
-	{
-		parent::__construct($subject, $params);
-	}
-
 	/**
 	 *  Prepare content method
 	 *
@@ -379,6 +362,12 @@ class PlgContentFabrik extends JPlugin
 				$rows  = $model->getData();
 				$group = array_shift($rows);
 				$row   = array_shift($group);
+
+				if (empty($row))
+				{
+					return;
+				}
+
 				$res   = $row->$element;
 			}
 			else
@@ -391,7 +380,8 @@ class PlgContentFabrik extends JPlugin
 					$element = $element . '_raw';
 				}
 				// $$$ hugh - need to pass all row data, or calc elements that use {placeholders} won't work
-				$defaultData = is_object($row) ? get_object_vars($row) : $row;
+				//$defaultData = is_object($row) ? get_object_vars($row) : $row;
+				$defaultData = is_object($row) ? FArrayHelper::fromObject($row, true) : $row;
 
 				/* $$$ hugh - if we don't do this, our passed data gets blown away when render() merges the form data
 				 * not sure why, but apparently if you do $foo =& $bar and $bar is NULL ... $foo ends up NULL

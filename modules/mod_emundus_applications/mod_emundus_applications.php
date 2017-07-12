@@ -47,7 +47,7 @@ $show_progress_documents 	= $params->get('show_progress_documents', '#EA5012');
 $applications		= modemundusApplicationsHelper::getApplications($params);
 $linknames 			= $params->get('linknames', 0);
 $moduleclass_sfx 	= htmlspecialchars($params->get('moduleclass_sfx'));
-$user 				= JFactory::getUser();
+$user 				= JFactory::getSession()->get('emundusUser');
 $user->fnums 		= $applications;
 
 $m_application 		= new EmundusModelApplication;

@@ -456,7 +456,7 @@ HTML;
 		$subtitle_key = 'COM_ADMINTOOLS_TITLE_' . strtoupper($this->container->input->getCmd('view', 'cpanel'));
 		JToolbarHelper::title(JText::_('com_admintools') . ' &ndash; <small>' . JText::_($subtitle_key) . '</small>', 'admintools');
 
-		$canScan = JFactory::getUser()->authorise('core.manage', 'com_admintools');
+		$canScan = $this->container->platform->getUser()->authorise('core.manage', 'com_admintools');
 
 		if ($canScan)
 		{

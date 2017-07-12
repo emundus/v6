@@ -13,7 +13,7 @@ require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 
 $current_user = JFactory::getUser();
 
-if(EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
+if (EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
 
 	$student_id = 62; 
 	$itemid = JRequest::getVar('Itemid', null, 'GET', 'INT',0); 

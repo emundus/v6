@@ -25,8 +25,6 @@ $params->def('logout', 1);
 
 $type 	= @modExtLoginHelper::getType();
 $return	= @modExtLoginHelper::getReturnURL($params, $type);
-
-$user = JFactory::getUser();
 			
 require(JModuleHelper::getLayoutPath('mod_extlogin'));
 

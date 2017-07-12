@@ -1,2 +1,3 @@
 /*! Fabrik */
-var FbYouTube=new Class({Extends:FbElement,initialize:function(a,b){this.setPlugin("fabrikyoutube"),this.parent(a,b)}});
+
+define(["jquery","fab/element"],function(a,b){window.FbYouTube=new Class({Extends:b,initialize:function(a,b){this.setPlugin("fabrikyoutube"),this.parent(a,b)}})});

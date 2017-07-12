@@ -41,7 +41,7 @@ $recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus
 $recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus_references___attachment_id_4', false, 19), 'email' => $formModel->getElementData('jos_emundus_references___Email_4', false, ''));
 
 $student = JFactory::getUser($student_id[0]);
-$current_user = JFactory::getUser();
+$current_user = JFactory::getSession()->get('emundusUser');
 if (empty($current_user->fnum) || !isset($current_user->fnum)) {
     $current_user->fnum = $fnum;
 }
@@ -114,7 +114,7 @@ foreach ($recipients as $key => $recipient) {
         $is_uploaded = $db->loadResult();
 
         if ($is_uploaded == 0) {
-            $key = md5(date().$fnum.$student_id.$attachment_id.rand(100));
+            $key = md5($time_date.$fnum.$student_id.$attachment_id.rand(10));
             // 2. MAJ de la table emundus_files_request
             $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum, email) 
                           VALUES (NOW(), '.$student->id.', "'.$key.'", "'.$attachment_id.'", '.$current_user->fnum.', '.$db->Quote($recipient['email']).')';

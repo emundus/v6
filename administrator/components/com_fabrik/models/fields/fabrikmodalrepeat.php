@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Form
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -49,9 +49,14 @@ class JFormFieldFabrikModalrepeat extends JFormField
 		$xml = $this->element->children()->asXML();
 		$subForm->load($xml);
 		$j3 = FabrikWorker::j3();
+		
+		if (!isset($this->form->repeatCounter))
+		{
+			$this->form->repeatCounter = 0;
+		}
 
 		// Needed for repeating modals in gmaps viz
-		$subForm->repeatCounter = (int) @$this->form->repeatCounter;
+		$subForm->repeatCounter = (int) $this->form->repeatCounter;
 
 		/**
 		 * f3 hack
@@ -122,7 +127,7 @@ class JFormFieldFabrikModalrepeat extends JFormField
 
 		// As JForm will render child fieldsets we have to hide it via CSS
 		$fieldSetId = str_replace('jform_params_', '', $modalId);
-		$css = '#' . $fieldSetId . ' { display: none; }';
+		$css = 'a[href="#' . $fieldSetId . '"] { display: none!important; }';
 		$document->addStyleDeclaration($css);
 
 		$path = 'templates/' . $app->getTemplate() . '/images/menu/';
@@ -187,11 +192,6 @@ class JFormFieldFabrikModalrepeat extends JFormField
 		if (!array_key_exists($modalId, $modalRepeat))
 		{
 			$modalRepeat[$modalId] = array();
-		}
-
-		if (!isset($this->form->repeatCounter))
-		{
-			$this->form->repeatCounter = 0;
 		}
 
 		if (!array_key_exists($this->form->repeatCounter, $modalRepeat[$modalId]))

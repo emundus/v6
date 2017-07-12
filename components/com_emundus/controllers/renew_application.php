@@ -36,7 +36,7 @@ class EmundusControllerRenew_application extends JControllerLegacy
 	function export_zip(){
 		$user = JRequest::getVar('uid', null, 'GET', 'none',0);
 		$current_user = JFactory::getUser();
-		if ( $user == $current_user->id ) {
+		if ($user == $current_user->id) {
 			require_once('libraries/emundus/zip.php');
 			zip_file(array($user));
 			unlink(EMUNDUS_PATH_ABS.$user.DS.'application.pdf');
@@ -51,13 +51,13 @@ class EmundusControllerRenew_application extends JControllerLegacy
 	 */
 	function cancel_renew(){ 
 		$session = JFactory::getSession();
-		$current_user = JFactory::getUser();
+		$current_user = $session->get('emundusUser');
 		$profile = $this->getModel('profile');
 		$campaign = $this->getModel('campaign');
 
 		$previous_profiles = $campaign->getCampaignByApplicant($current_user->id);
 
-		if(count($previous_profiles) > 0) {
+		if (count($previous_profiles) > 0) {
 			$profile->updateProfile($current_user->id, $previous_profiles[0]);
 			//$current_user->firstname 			= @$res->firstname;
 			//$current_user->lastname	 			= @$res->lastname;
@@ -75,6 +75,7 @@ class EmundusControllerRenew_application extends JControllerLegacy
 		}
 		
 		//$session->restart();
+		$session->set('emundusUser',$current_user);
 		$this->setRedirect('index.php', JText::_('RENEW_CANCEL'), 'message');
 
 	}
@@ -83,18 +84,16 @@ class EmundusControllerRenew_application extends JControllerLegacy
 	 * File new application. Define what to do
 	 */
 	function new_application() { 
-		$current_user = JFactory::getUser();
-		$model = $this->getModel('renew_application');
-		$application = $this->getModel('application');
-		$user = JRequest::getVar('uid', null, 'GET', 'none',0);
-		$profile = JRequest::getVar('up', null, 'GET', 'none',0);
+		$current_user 	= JFactory::getSession()->get('emundusUser');
+		$model 			= $this->getModel('renew_application');
+		$application 	= $this->getModel('application');
+		$user 			= JRequest::getVar('uid', null, 'GET', 'none',0);
+		$profile 		= JRequest::getVar('up', null, 'GET', 'none',0);
 
-		if (empty($user) || !isset($user)) {
+		if (empty($user) || !isset($user))
 			$user = JFactory::getUser()->id;
-		}
-		if (empty($up) || !isset($up)) {
+		if (empty($up) || !isset($up))
 			$profile = 0;
-		}
 
 		//1.update the applicant's schoolyear to empty and profile to 0
 		$model->updateUser($user, $profile);
@@ -124,12 +123,12 @@ class EmundusControllerRenew_application extends JControllerLegacy
 	 * Renew application. Define what to do/delete
 	 */
 	function edit_user(){ 
-		//$session = JFactory::getSession();
-		$current_user = JFactory::getUser();
-		$model = $this->getModel('renew_application');
-		$application = $this->getModel('application');
-		$user = JRequest::getVar('uid', null, 'GET', 'none',0);
-		$profile = JRequest::getVar('up', null, 'GET', 'none',0);
+		$session 		= JFactory::getSession();
+		$current_user 	= $session->get('emundusUser');
+		$model 			= $this->getModel('renew_application');
+		$application 	= $this->getModel('application');
+		$user 			= JRequest::getVar('uid', null, 'GET', 'none',0);
+		$profile 		= JRequest::getVar('up', null, 'GET', 'none',0);
 		
 		//1.generated zip file & application pdf file
 		$this->export_zip();
@@ -141,7 +140,8 @@ class EmundusControllerRenew_application extends JControllerLegacy
 		$this->deleteReferents();
 		
 		//4.delete others informations about the applicant
-		if($model->isCompleteApplication($user)) $this->deleteInformations();
+		if ($model->isCompleteApplication($user)) 
+			$this->deleteInformations();
 		
 		//5.update the applicant's schoolyear
 		$model->updateUser($user, $profile);
@@ -172,12 +172,12 @@ class EmundusControllerRenew_application extends JControllerLegacy
 		$current_user->schoolyear			= "";
 		$current_user->campaign_id			= 0;
 		
-		//$session->restart();
+		$session->set('emundusUser',$current_user);
 		$this->setRedirect('index.php', sprintf(JText::_('RENEW_OK'), $model->getSchoolyear($profile)), 'message');
 
 	}
 	
-	//Supprimer ce qui correspond aux référents (+learning agreement) ==> OKOKOKOKOKOK
+	//Supprimer ce qui correspond aux rï¿½fï¿½rents (+learning agreement) ==> OKOKOKOKOKOK
 	function deleteReferents(){
 		$user = JRequest::getVar('uid', null, 'GET', 'none',0);
 		$model = $this->getModel('renew_application');
@@ -185,17 +185,17 @@ class EmundusControllerRenew_application extends JControllerLegacy
 		
 		//first reference letter
 		$file = $model->getLinkAttachments(4, $user);
-		if(!empty($file))
+		if (!empty($file))
 			$files_name = implode(",",$file);
 
 		//Second reference letter
 		$file = $model->getLinkAttachments(6, $user);
-		if(!empty($file))
+		if (!empty($file))
 			$files_name .= ','.implode(',',$file);
 
 		//optionnal reference letter
 		$file = $model->getLinkAttachments(21, $user);
-		if(!empty($file))
+		if (!empty($file))
 			$files_name .= ','.implode(',',$file);
 		
 		//Learning agreement	
@@ -206,12 +206,12 @@ class EmundusControllerRenew_application extends JControllerLegacy
 		//list of files to delete
 		$array_files_name = explode(',',$files_name);
 		
-		if(!empty($files_name)){
-			foreach($array_files_name as $filename){
+		if (!empty($files_name)){
+			foreach ($array_files_name as $filename){
 				//delete in database
 				$model->deleteAttachment($filename);
 				//delete file if exist
-				if(file_exists(EMUNDUS_PATH_ABS.$user.DS.$filename)){
+				if (file_exists(EMUNDUS_PATH_ABS.$user.DS.$filename)){
 					unlink(EMUNDUS_PATH_ABS.$user.DS.$filename);
 					//echo EMUNDUS_PATH_ABS.$user.DS.$filename.' OK OK';
 				}

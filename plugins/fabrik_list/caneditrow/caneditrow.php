@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.list.caneditrow
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -55,6 +55,15 @@ class PlgFabrik_ListCaneditrow extends PlgFabrik_List
 		if (is_null($row) || is_null($row[0]))
 		{
 			return true;
+		}
+
+		// if this is a form submission, check to see if they want us running or not
+		if ($this->app->input->get('task', '') === 'form.process')
+		{
+			if ($params->get('caneditrow_on_submit', '1') === '0')
+			{
+				return true;
+			}
 		}
 
 		if (is_array($row[0]))
@@ -158,8 +167,18 @@ class PlgFabrik_ListCaneditrow extends PlgFabrik_List
 		$opts = $this->getElementJSOptions();
 		$opts->acl = $this->acl;
 		$opts = json_encode($opts);
-		$this->jsInstance = "new FbListCanEditRow($opts)";
+		$this->jsInstance = "new FbListCaneditrow($opts)";
 
 		return true;
+	}
+
+	/**
+	 * Load the AMD module class name
+	 *
+	 * @return string
+	 */
+	public function loadJavascriptClassName_result()
+	{
+		return 'FbListCaneditrow';
 	}
 }

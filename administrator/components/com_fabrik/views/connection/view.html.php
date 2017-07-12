@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.0
  */
@@ -72,7 +72,7 @@ class FabrikAdminViewConnection extends JViewLegacy
 		FabrikAdminHelper::setViewLayout($this);
 
 		$srcs = FabrikHelperHTML::framework();
-		$srcs[] = 'media/com_fabrik/js/fabrik.js';
+		$srcs['Fabrik'] = 'media/com_fabrik/js/fabrik.js';
 
 		FabrikHelperHTML::iniRequireJS();
 		FabrikHelperHTML::script($srcs);

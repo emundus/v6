@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -51,13 +51,16 @@ class FabrikFEModelCSVExport extends FabModel
 	public $model;
 
 	/**
-	 * Get csv export step
+	 * Get csv export step from params or URL
 	 *
 	 * @return  integer  Export step
 	 */
 	public function getStep()
 	{
-		return (int) $this->model->getParams()->get('csv_export_step', $this->step);
+		$input = $this->app->input;
+		$step_param = $this->model->getParams()->get('csv_export_step', $this->step);
+		$step_url = $input->get('csv_export_step', $step_param);
+		return (int) $step_url;
 	}
 
 	/**
@@ -121,7 +124,13 @@ class FabrikFEModelCSVExport extends FabModel
 		if ($this->delimiter === '\t') {
 			$this->delimiter = "\t";
 		}
-
+		$end_of_line		= $this->model->getParams()->get('csv_end_of_line');
+		if ($end_of_line == 'r') {
+			$end_of_line = "\r";
+		}
+		else {
+			$end_of_line = "\n";
+		}
 		if ($start === 0)
 		{
 			$headings = $this->getHeadings();
@@ -135,7 +144,7 @@ class FabrikFEModelCSVExport extends FabModel
 				return;
 			}
 
-			$str .= implode($headings, $this->delimiter) . "\n";
+			$str .= implode($headings, $this->delimiter) . $end_of_line;
 		}
 
 		$incRaw       = $input->get('incraw', true);
@@ -204,11 +213,22 @@ class FabrikFEModelCSVExport extends FabModel
 
 				if ($params->get('csv_format_json', '1') === '1')
 				{
-					array_walk($a, array($this, 'implodeJSON'), "\n");
+					array_walk($a, array($this, 'implodeJSON'), $end_of_line);
+				}
+
+				$this->model->csvExportRow = $a;
+				$pluginResults = FabrikWorker::getPluginManager()->runPlugins('onExportCSVRow', $this->model, 'list', $a);
+				if (in_array(false, $pluginResults))
+				{
+					continue;
+				}
+				else
+				{
+					$a = $this->model->csvExportRow;
 				}
 
 				$str .= implode($this->delimiter, array_map(array($this, 'quote'), array_values($a)));
-				$str .= "\n";
+				$str .= $end_of_line;
 			}
 		}
 
@@ -394,6 +414,13 @@ class FabrikFEModelCSVExport extends FabModel
 		jimport('joomla.filesystem.file');
 		$filename = $this->getFileName();
 		$filePath = $this->getFilePath();
+		// Do additional processing if post-processing php file exists
+		$listid = $this->app->input->getInt('listid');
+		// Allows for custom csv file processing. Included php file should kill php processing
+		// with die; or exit; to prevent continuation of this script (normal download). See Wiki.
+		if(file_exists(JPATH_PLUGINS.'/fabrik_list/listcsv/scripts/list_'.$listid.'_csv_export.php')){	
+   			require(JPATH_PLUGINS.'/fabrik_list/listcsv/scripts/list_'.$listid.'_csv_export.php');
+		}
 		$document = JFactory::getDocument();
 		$document->setMimeEncoding('application/zip');
 		$str = $this->getCSVContent();
@@ -414,7 +441,6 @@ class FabrikFEModelCSVExport extends FabModel
 		$this->app->setBody($str);
 		echo $this->app->toString(false);
 		JFile::delete($filePath);
-
 		// $$$ rob 21/02/2012 - need to exit otherwise Chrome give 349 download error
 		exit;
 	}
@@ -519,6 +545,27 @@ class FabrikFEModelCSVExport extends FabModel
 	 */
 	protected function quote($n)
 	{
+		$cleanhtml = $this->model->getParams()->get('csv_clean_html', 'leave');
+		
+		switch ($cleanhtml)
+		{
+			default:
+			case 'leave':
+				break;
+			
+			case 'remove':
+				$n = strip_tags($n);
+				$n =  html_entity_decode($n);
+				break;
+				
+			case 'replaceli':
+				$n = str_replace ('<li>', '', $n);
+				$n = str_replace ('</li>', "\n", $n);
+				$n = strip_tags($n);
+				$n =  html_entity_decode($n);
+				break;
+		}
+		
 		$doubleQuote  = $this->model->getParams()->get('csv_double_quote', '1') === '1';
 		if ($doubleQuote == true)
 		{
@@ -682,6 +729,17 @@ class FabrikFEModelCSVExport extends FabModel
 		if ($input->get('inccalcs') == 1)
 		{
 			array_unshift($h, FText::_('Calculation'));
+		}
+
+		$this->model->csvExportHeadings = $h;
+		$pluginResults = FabrikWorker::getPluginManager()->runPlugins('onExportCSVHeadings', $this->model, 'list', $a);
+		if (in_array(false, $pluginResults))
+		{
+			return false;
+		}
+		else
+		{
+			$h = $this->model->csvExportHeadings;
 		}
 
 		$h = array_map(array($this, "quote"), $h);

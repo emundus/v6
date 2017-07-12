@@ -20,7 +20,7 @@ class AtsystemFeatureUrlredir extends AtsystemFeatureAbstract
 	 */
 	public function isEnabled()
 	{
-		if (!$this->helper->isFrontend())
+		if (!$this->container->platform->isFrontend())
 		{
 			return false;
 		}
@@ -69,7 +69,7 @@ class AtsystemFeatureUrlredir extends AtsystemFeatureAbstract
 			}
 		}
 
-		$db = JFactory::getDbo();
+		$db = $this->container->db;
 
 		$sql = $db->getQuery(true)
 			->select(array($db->qn('source'), $db->qn('keepurlparams')))
@@ -169,27 +169,7 @@ class AtsystemFeatureUrlredir extends AtsystemFeatureAbstract
 
 			$targetURL = $new->toString();
 
-			if (class_exists('JApplicationCms') && class_exists('JApplicationWeb')
-				&& ($this->app instanceof JApplicationCms)
-				&& ($this->app instanceof JApplicationWeb))
-			{
-				/**
-				 * Since Joomla! 3.3 or 3.4 JApplicationSite extends JApplicationCms and the redirect() method has two
-				 * parameters, URL and HTTP code. In theory the method still supports calling it with four parameters
-				 * for b/c but unfortunately the core code is unsurprisingly broken: the fourth parameter $moved is
-				 * never translated from a boolean (moved yes/no) to an HTTP code integer (301 or 303). As a result
-				 * JApplicationWeb ends up issuing a 303 temporary redirection instead of a 301 permanent redirection.
-				 * The only way to work around this Joomla bug is to check if the application object extends
-				 * JApplicationCms and JApplicationWeb which means that we can call the two-parameter version of the
-				 * redirect method.
-				 */
-				$this->app->redirect($targetURL, 301);
-
-				return;
-			}
-
-			// If you're here, you have an ancient Joomla version and we have to use the four parameter method...
-			$this->app->redirect($targetURL, '', 'message', true);
+			$this->container->platform->redirect($targetURL, 301);
 		}
 	}
 }

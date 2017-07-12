@@ -1,16 +1,20 @@
 /**
  * UserGroup Element
  *
- * @copyright: Copyright (C) 2005-2015, fabrikar.com - All rights reserved.
+ * @copyright: Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbUsergroup = new Class({
+define(['jquery', 'fab/element'], function (jQuery, FbElement) {
+    window.FbUsergroup = new Class({
 
-	Extends: FbElement,
+        Extends: FbElement,
 
-	initialize: function (element, options) {
-		this.setPlugin('fabrikusergroup');
-		this.parent(element, options);
-	}
+        initialize: function (element, options) {
+            this.setPlugin('fabrikusergroup');
+            this.parent(element, options);
+        }
+    });
+
+    return window.FbUsergroup;
 });

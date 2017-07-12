@@ -168,7 +168,7 @@ class ControlPanel extends Model
 		$params->save();
 
 		// Install or update database
-		$db          = \JFactory::getDbo();
+		$db          = $this->container->db;
 		$dbInstaller = new Installer($db, JPATH_ADMINISTRATOR . '/components/com_admintools/sql/xml');
 
 		$dbInstaller->updateSchema();
@@ -356,14 +356,13 @@ class ControlPanel extends Model
 		catch (\RuntimeException $e)
 		{
 			// Ah, the current Secret Word is bad. Create a new one if necessary.
-			$session = \JFactory::getSession();
-			$newSecret = $session->get('newSecretWord', null, 'admintools.cpanel');
+			$newSecret = $this->container->platform->getSessionVar('newSecretWord', null, 'admintools.cpanel');
 
 			if (empty($newSecret))
 			{
 				$random = new \Akeeba\Engine\Util\RandomValue();
 				$newSecret = $random->generateString(32);
-				$session->set('newSecretWord', $newSecret, 'admintools.cpanel');
+				$this->container->platform->setSessionVar('newSecretWord', $newSecret, 'admintools.cpanel');
 			}
 
 			return $e->getMessage();
@@ -396,7 +395,7 @@ class ControlPanel extends Model
 		}
 
 		//First of all, do we have a VALID log folder?
-		$config  = \JFactory::getConfig();
+		$config  = $this->container->platform->getConfig();
 		$log_dir = $config->get('log_path');
 
 		if (!$log_dir || !@is_writable($log_dir))

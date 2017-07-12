@@ -31,13 +31,13 @@ class modEmundusMenuHelper
 		// If no active menu, use default
 		$active = ($menu->getActive()) ? $menu->getActive() : $menu->getDefault();
 
-		$user = JFactory::getUser();
 		$levels = $user->getAuthorisedViewLevels();
+		// $user is redefined using emundus user session here because getAuthorisedViewLevels is part of the JUser object
+		$user = JFactory::getSession()->get('emundusUser');
 		asort($levels);
 		$key = 'menu_items'.$params.implode(',', $levels).'.'.$active->id;
 		$cache = JFactory::getCache('mod_emundusmenu', '');
-		if (!($items = $cache->get($key)) && isset($user->menutype))
-		{
+		if (!($items = $cache->get($key)) && isset($user->menutype)) {
 			// Initialise variables.
 			$list		= array();
 			$db			= JFactory::getDbo();

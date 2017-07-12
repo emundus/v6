@@ -61,43 +61,33 @@ class EmundusModelJobForm extends JModelForm
 	 */
 	public function &getData($id = null)
 	{
-		if ($this->_item === null)
-		{
+		if ($this->_item === null) {
 			$this->_item = false;
 
-			if (empty($id)) {
+			if (empty($id))
 				$id = $this->getState('job.id');
-			}
 
 			// Get a level row instance.
 			$table = $this->getTable();
 
 			// Attempt to load the row.
-			if ($table->load($id))
-			{
-                
+			if ($table->load($id)) {
                 $user = JFactory::getUser();
                 $id = $table->id;
-                if($id){
-	$canEdit = $user->authorise('core.edit', 'com_emundus.job.'.$id) || $user->authorise('core.create', 'com_emundus.job.'.$id);
-}
-else{
-	$canEdit = $user->authorise('core.edit', 'com_emundus') || $user->authorise('core.create', 'com_emundus');
-}
-                if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus.job.'.$id)) {
+                if ($id)
+					$canEdit = $user->authorise('core.edit', 'com_emundus.job.'.$id) || $user->authorise('core.create', 'com_emundus.job.'.$id);
+				else
+					$canEdit = $user->authorise('core.edit', 'com_emundus') || $user->authorise('core.create', 'com_emundus');
+                
+				if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus.job.'.$id))
                     $canEdit = $user->id == $table->created_by;
-                }
-
-                if (!$canEdit) {
+                if (!$canEdit)
                     JError::raiseError('500', JText::_('JERROR_ALERTNOAUTHOR'));
-                }
                 
 				// Check published state.
-				if ($published = $this->getState('filter.published'))
-				{
-					if ($table->state != $published) {
+				if ($published = $this->getState('filter.published')) {
+					if ($table->state != $published)
 						return $this->_item;
-					}
 				}
 
 				// Convert the JTable to a clean JObject.
@@ -232,15 +222,13 @@ else{
         if($id) {
             //Check the user can edit this item
             $authorised = $user->authorise('core.edit', 'com_emundus.job.'.$id) || $authorised = $user->authorise('core.edit.own', 'com_emundus.job.'.$id);
-            if($user->authorise('core.edit.state', 'com_emundus.job.'.$id) !== true && $state == 1){ //The user cannot edit the state of the item.
+            if($user->authorise('core.edit.state', 'com_emundus.job.'.$id) !== true && $state == 1) //The user cannot edit the state of the item.
                 $data['state'] = 0;
-            }
         } else {
             //Check the user can create new items in this section
             $authorised = $user->authorise('core.create', 'com_emundus');
-            if($user->authorise('core.edit.state', 'com_emundus.job.'.$id) !== true && $state == 1){ //The user cannot edit the state of the item.
+            if($user->authorise('core.edit.state', 'com_emundus.job.'.$id) !== true && $state == 1) //The user cannot edit the state of the item.
                 $data['state'] = 0;
-            }
         }
 
         if ($authorised !== true) {
@@ -249,29 +237,23 @@ else{
         }
         
         $table = $this->getTable();
-        if ($table->save($data) === true) {
+        if ($table->save($data) === true)
             return $table->id;
-        } else {
-            return false;
-        }
-        
+        else return false;        
 	}
     
-     function delete($data)
-    {
+    function delete($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int)$this->getState('job.id');
-        if(JFactory::getUser()->authorise('core.delete', 'com_emundus.job.'.$id) !== true){
+        if(JFactory::getUser()->authorise('core.delete', 'com_emundus.job.'.$id) !== true) {
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }
         $table = $this->getTable();
-        if ($table->delete($data['id']) === true) {
+        if ($table->delete($data['id']) === true)
             return $id;
-        } else {
-            return false;
-        }
+        else return false;        
         
-        return true;
+		return true;
     }
     
 }

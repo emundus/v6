@@ -29,7 +29,8 @@ function zip_file($cids) {
 		$users[]=$params[0];
 	}
 	//JRequest::getVar('view', null, 'GET', 'none',0);
-	if ((!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id)) && $view != 'renew_application') die( JText::_('RESTRICTED_ACCESS') );
+	if ((!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id)) && $view != 'renew_application') 
+		die( JText::_('RESTRICTED_ACCESS') );
 	
 	$form_pdf = "application.pdf";
 	$zip = new ZipArchive();

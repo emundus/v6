@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.0
  */
@@ -16,8 +16,9 @@ $group = $this->group;
 ?>
 <tr class="fabrikSubGroupElements fabrikSubGroup">
 <?php foreach ($this->elements as $element) :
+	$style = $element->hidden ? 'style="display:none"' : '';
 	?>
-	<td class="<?php echo $element->containerClass; ?>">
+	<td class="<?php echo $element->containerClass; ?>" <?php echo $style?>>
 	<?php
 	if ($this->tipLocation == 'above') :
 	?>

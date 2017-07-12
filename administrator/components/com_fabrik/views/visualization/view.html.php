@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -74,11 +74,11 @@ class FabrikAdminViewVisualization extends JViewLegacy
 		$this->addToolbar();
 		FabrikAdminHelper::setViewLayout($this);
 
-		$source   = FabrikHelperHTML::framework();
-		$source[] = 'media/com_fabrik/js/fabrik.js';
-		$source[] = 'administrator/components/com_fabrik/views/namespace.js';
-		$source[] = 'administrator/components/com_fabrik/views/pluginmanager.js';
-		$source[] = 'administrator/components/com_fabrik/views/visualization/adminvisualization.js';
+		$source                       = FabrikHelperHTML::framework();
+		$source['Fabrik']             = FabrikHelperHTML::mediaFile('fabrik.js');
+		$source['Namespace']          = 'administrator/components/com_fabrik/views/namespace.js';
+		$source['PluginManager']      = 'administrator/components/com_fabrik/views/pluginmanager.js';
+		$source['AdminVisualization'] = 'administrator/components/com_fabrik/views/visualization/adminvisualization.js';
 
 		$shim                                           = array();
 		$dep                                            = new stdClass;
@@ -95,7 +95,7 @@ class FabrikAdminViewVisualization extends JViewLegacy
 		Fabrik.controller = new AdminVisualization(options);
 ";
 
-		FabrikHelperHTML::script($source, $js);
+		FabrikHelperHTML::script($source, $js, '-min.js');
 		parent::display($tpl);
 	}
 

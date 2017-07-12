@@ -7,6 +7,8 @@
 
 namespace Akeeba\AdminTools\Admin\Helper;
 
+use FOF30\Container\Container;
+
 defined('_JEXEC') or die;
 
 class ServerTechnology
@@ -223,6 +225,7 @@ HTML;
 
 		echo $message;
 
-		\JFactory::getApplication()->close();
+		$container = Container::getInstance('com_admintools');
+		$container->platform->closeApplication();
 	}
 }

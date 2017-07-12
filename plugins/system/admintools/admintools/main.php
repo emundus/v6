@@ -6,6 +6,7 @@
  */
 
 use Akeeba\AdminTools\Admin\Helper\Storage;
+use FOF30\Container\Container;
 use FOF30\Utils\Ip;
 
 defined('_JEXEC') or die;
@@ -18,6 +19,12 @@ class AtsystemAdmintoolsMain
 
 }
 
+if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
+{
+	// FOF 3.0 is not installed
+	return;
+}
+
 /**
  * This class acts as a proxy to the feature classes
  *
@@ -28,9 +35,6 @@ class plgSystemAdmintools extends JPlugin
 {
 	/** @var   Storage   Component parameters */
 	protected $componentParams = null;
-
-	/** @var \Akeeba\AdminTools\Admin\Helper\Plugin Common helper for all plugin features */
-	protected $pluginHelper = null;
 
 	/** @var   array  Maps plugin hooks (onSomethingSomething) to feature objects */
 	protected $featuresPerHook = array();
@@ -47,9 +51,14 @@ class plgSystemAdmintools extends JPlugin
 	/** @var   bool   Should I skip filtering (because of whitelisted IPs, WAF Exceptions etc) */
 	public $skipFiltering = false;
 
+	/** @var   JApplicationCms  The application we're runnign in */
 	public $app = null;
 
+	/** @var   JDatabaseDriver  The Joomla! database driver */
 	public $db = null;
+
+	/** @var   Container  The component container */
+	protected $container;
 
 	/**
 	 * Initialises the System - Admin Tools plugin
@@ -65,14 +74,16 @@ class plgSystemAdmintools extends JPlugin
 		// Call the parent constructor
 		parent::__construct($subject, $config);
 
+		$this->container = Container::getInstance('com_admintools');
+
 		// Under Joomla 2.5 we have to explicitly load the application and the database,
 		// the parent class won't do that for us.
-		if(is_null($this->app))
+		if (is_null($this->app))
 		{
 			$this->app = JFactory::getApplication();
 		}
 
-		if(is_null($this->db))
+		if (is_null($this->db))
 		{
 			$this->db = JFactory::getDbo();
 		}
@@ -82,9 +93,6 @@ class plgSystemAdmintools extends JPlugin
 
 		// Load the component parameters
 		$this->loadComponentParameters();
-
-		// Load plugin helper
-		$this->loadPluginHelper();
 
 		// Work around IP issues with transparent proxies etc
 		$this->workaroundIP();
@@ -270,13 +278,6 @@ class plgSystemAdmintools extends JPlugin
 		$this->componentParams = Storage::getInstance();
 	}
 
-	protected function loadPluginHelper()
-	{
-		require_once JPATH_ADMINISTRATOR . '/components/com_admintools/Helper/Plugin.php';
-
-		$this->pluginHelper = new \Akeeba\AdminTools\Admin\Helper\Plugin();
-	}
-
 	/**
 	 * Work around non-transparent proxy and reverse proxy IP issues
 	 *
@@ -306,12 +307,6 @@ class plgSystemAdmintools extends JPlugin
 
 		if (!$enableWorkarounds)
 		{
-			return;
-		}
-
-		if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
-		{
-			// FOF 3.0 is not installed
 			return;
 		}
 
@@ -373,7 +368,7 @@ class plgSystemAdmintools extends JPlugin
 			}
 
 			/** @var AtsystemFeatureAbstract $o */
-			$o = new $className($this->app, $this->db, $this->params, $this->componentParams, $this->input, $this->exceptionsHandler, $this->exceptions, $this->skipFiltering, $this->pluginHelper, $this);
+			$o = new $className($this->app, $this->db, $this->params, $this->componentParams, $this->input, $this->exceptionsHandler, $this->exceptions, $this->skipFiltering, $this->container, $this);
 
 			if (!$o->isEnabled())
 			{
@@ -455,8 +450,9 @@ class plgSystemAdmintools extends JPlugin
 	 */
 	protected function loadWAFExceptions()
 	{
-		$jConfig = JFactory::getConfig();
-		$isSEF   = $jConfig->get('sef', 0);
+		$container = \FOF30\Container\Container::getInstance('com_admintools');
+		$jConfig   = $container->platform->getConfig();
+		$isSEF     = $jConfig->get('sef', 0);
 
 		$option = $this->input->getCmd('option', '');
 		$view   = $this->input->getCmd('view', '');
@@ -482,7 +478,7 @@ class plgSystemAdmintools extends JPlugin
 
 		if (empty($this->exceptions))
 		{
-			$this->exceptions = array();
+			$this->exceptions = [];
 		}
 		else
 		{
@@ -515,7 +511,7 @@ class plgSystemAdmintools extends JPlugin
 		// Get the URI path without the language prefix
 		$uriPathNoLanguage = $uriPath;
 
-		if ($this->pluginHelper->isFrontend())
+		if ($this->container->platform->isFrontend())
 		{
 			/** @var \JApplicationSite $app */
 			$app = \JFactory::getApplication();
@@ -538,7 +534,7 @@ class plgSystemAdmintools extends JPlugin
 		}
 
 		// Load all WAF exceptions for SEF URLs
-		$db = JFactory::getDbo();
+		$db = $this->db;
 		$this->exceptions = array();
 		$exceptions = array();
 		$view = $this->input->getCmd('view', '');
@@ -587,7 +583,7 @@ class plgSystemAdmintools extends JPlugin
 	 */
 	protected function loadWAFExceptionsByOption($option, $view)
 	{
-		$db = JFactory::getDbo();
+		$db = $this->db;
 
 		$sql = $db->getQuery(true)
 				  ->select($db->qn('query'))

@@ -35,7 +35,6 @@ class JFormFieldCreatedby extends JFormField
 		// Initialize variables.
 		$html = array();
         
-        
 		//Load user
 		$user_id = $this->value;
 		if ($user_id) {

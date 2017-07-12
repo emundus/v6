@@ -14,7 +14,7 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-$user = JFactory::getUser();
+$user = JFactory::getSession()->get('emundusUser');
 
 if (isset($user->fnum) && !empty($user->fnum)) {
 

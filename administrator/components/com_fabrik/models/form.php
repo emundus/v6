@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
@@ -135,10 +135,10 @@ class FabrikAdminModelForm extends FabModelAdmin
 	{
 		$input                                = $this->app->input;
 		$jForm                                = $input->get('jform', array(), 'array');
-		$data['params']['plugins']            = (array) FArrayHelper::getValue($jForm, 'plugin');
-		$data['params']['plugin_locations']   = (array) FArrayHelper::getValue($jForm, 'plugin_locations');
-		$data['params']['plugin_events']      = (array) FArrayHelper::getValue($jForm, 'plugin_events');
-		$data['params']['plugin_description'] = (array) FArrayHelper::getValue($jForm, 'plugin_description');
+		$data['params']['plugins']            = array_values((array) FArrayHelper::getValue($jForm, 'plugin'));
+		$data['params']['plugin_locations']   = array_values((array) FArrayHelper::getValue($jForm, 'plugin_locations'));
+		$data['params']['plugin_events']      = array_values((array) FArrayHelper::getValue($jForm, 'plugin_events'));
+		$data['params']['plugin_description'] = array_values((array) FArrayHelper::getValue($jForm, 'plugin_description'));
 
 		/**
 		 * Move back into the main data array some values we are rendering as

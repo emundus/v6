@@ -85,9 +85,8 @@ class CleanTempDirectory extends Model
 			
 			$stack = base64_encode($stack);
 		}
-		
-		$session = JFactory::getSession();
-		$session->set('cleantmp_stack', $stack, 'admintools');
+
+		$this->container->platform->setSessionVar('cleantmp_stack', $stack, 'admintools');
 	}
 
 	/**
@@ -95,8 +94,7 @@ class CleanTempDirectory extends Model
 	 */
 	private function resetStack()
 	{
-		$session = JFactory::getSession();
-		$session->set('cleantmp_stack', '', 'admintools');
+		$this->container->platform->setSessionVar('cleantmp_stack', '', 'admintools');
 		
 		$this->folderStack = array();
 		$this->filesStack = array();
@@ -109,8 +107,7 @@ class CleanTempDirectory extends Model
 	 */
 	private function loadStack()
 	{
-		$session = JFactory::getSession();
-		$stack = $session->get('cleantmp_stack', '', 'admintools');
+		$stack = $this->container->platform->getSessionVar('cleantmp_stack', '', 'admintools');
 
 		if (empty($stack))
 		{
@@ -147,7 +144,7 @@ class CleanTempDirectory extends Model
 	 */
 	public function getDirectories($root = null)
 	{
-		$jreg = JFactory::getConfig();
+		$jreg = $this->container->platform->getConfig();
 		$tmpdir = $jreg->get('tmp_path');
 
 		if (empty($root))
@@ -185,7 +182,7 @@ class CleanTempDirectory extends Model
 	 */
 	public function getFiles($root = null)
 	{
-		$jreg   = JFactory::getConfig();
+		$jreg   = $this->container->platform->getConfig();
 		$tmpdir = $jreg->get('tmp_path');
 
 		if (empty($root))

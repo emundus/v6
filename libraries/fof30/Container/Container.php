@@ -17,6 +17,7 @@ use FOF30\Template\Template;
 use FOF30\TransparentAuthentication\TransparentAuthentication as TransparentAuth;
 use FOF30\View\Compiler\Blade;
 use JDatabaseDriver;
+use Joomla\Registry\Registry;
 use JSession;
 
 defined('_JEXEC') or die;
@@ -632,6 +633,13 @@ class Container extends ContainerBase
 		{
 			$this['session'] = function ()
 			{
+				\JLog::add(
+					__CLASS__ . ': The session property is deprecated. Use ->platform->getSessionVar/setSessionVar instead',
+					\JLog::WARNING,
+					'deprecated'
+				);
+
+
 				return \JFactory::getSession();
 			};
 		}
@@ -752,7 +760,16 @@ class Container extends ContainerBase
 			$db->setQuery($query);
 
 			$json = $db->loadResult();
-			$params = new \JRegistry($json);
+
+			if (class_exists('JRegistry'))
+			{
+				$params = new \JRegistry($json);
+			}
+			else
+			{
+				$params = new Registry($json);
+			}
+
 			$version = $params->get('version', $version);
 			$date = $params->get('creationDate', $date);
 		}

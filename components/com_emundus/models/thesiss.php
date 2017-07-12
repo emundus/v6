@@ -137,25 +137,21 @@ class EmundusModelThesiss extends JModelList
         $this->setState('filter.doctoral_school', $doctoral_school);
 
 		// Receive & set filters
-		if ($filters = $app->getUserStateFromRequest($this->context . '.filter', 'filter', array(), 'array'))
-		{
-			foreach ($filters as $name => $value)
-			{
+		if ($filters = $app->getUserStateFromRequest($this->context . '.filter', 'filter', array(), 'array')) {
+			foreach ($filters as $name => $value) {
 				$this->setState('filter.' . $name, $value);
 			}
 		}
 
 		$ordering = $app->input->get('filter_order');
-		if (!empty($ordering))
-		{
+		if (!empty($ordering)) {
 			$list             = $app->getUserState($this->context . '.list');
 			$list['ordering'] = $app->input->get('filter_order');
 			$app->setUserState($this->context . '.list', $list);
 		}
 
 		$orderingDirection = $app->input->get('filter_order_Dir');
-		if (!empty($orderingDirection))
-		{
+		if (!empty($orderingDirection)) {
 			$list              = $app->getUserState($this->context . '.list');
 			$list['direction'] = $app->input->get('filter_order_Dir');
 			$app->setUserState($this->context . '.list', $list);
@@ -164,14 +160,10 @@ class EmundusModelThesiss extends JModelList
 		$list = $app->getUserState($this->context . '.list');
 
 		if (empty($list['ordering']))
-        {
             $list['ordering'] = 'ordering';
-        }
 
         if (empty($list['direction']))
-        {
             $list['direction'] = 'asc';
-        }
 
 		$this->setState('list.ordering', $list['ordering']);
 		$this->setState('list.direction', $list['direction']);
@@ -233,7 +225,7 @@ class EmundusModelThesiss extends JModelList
             $query->where('a.state = 1');
             //$query->where('a.date_limite >= NOW()');
             $query->where('esc.start_date <= "'.$now.'"');
-            $query->where('esc.end_date > "'.$now'"');
+            $query->where('esc.end_date > "'.$now.'"');
         }
 
         // Filter by search in title
@@ -278,8 +270,10 @@ class EmundusModelThesiss extends JModelList
         $db = JFactory::getDbo();
         $current_user = JFactory::getUser();
         if (!$current_user->guest) {
-	        try
-	        {
+			// Because eMundus user is only set upon login: we cannot check if guest
+			// Alternatively: we can change the if to check if the emundusUser object is set
+			$current_user = JFactory::getSession()->get('emundusUser');
+	        try {
 	            $query = "SELECT *
 	                      FROM #__emundus_thesis_candidat etc
 	                      LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.fnum = etc.fnum
@@ -288,9 +282,7 @@ class EmundusModelThesiss extends JModelList
 	            $db->setQuery($query);
 	//echo str_replace('#_', 'jos', $query);
 	            return $db->loadObjectList();
-	        }
-	        catch(Exception $e)
-	        {
+	        } catch(Exception $e) {
 	            throw $e;
 	            return false;
 	        }
@@ -302,16 +294,15 @@ class EmundusModelThesiss extends JModelList
 	public function getItems()
 	{
 		$items = parent::getItems();
-		foreach($items as $item){
+		foreach ($items as $item) {
 
 			if (isset($item->doctoral_school) && $item->doctoral_school != '') {
-				if(is_object($item->doctoral_school)){
+				if(is_object($item->doctoral_school))
 					$item->doctoral_school = JArrayHelper::fromObject($item->doctoral_school);
-				}
 				$values = (is_array($item->doctoral_school)) ? $item->doctoral_school : explode(',',$item->doctoral_school);
 
 				$textValue = array();
-				foreach ($values as $value){
+				foreach ($values as $value) {
 					$db = JFactory::getDbo();
 					$query = $db->getQuery(true);
 					$query
@@ -320,16 +311,12 @@ class EmundusModelThesiss extends JModelList
 							->where($db->quoteName('id') . ' = ' . $db->quote($db->escape($value)));
 					$db->setQuery($query);
 					$results = $db->loadObject();
-					if ($results) {
+					if ($results)
 						$textValue[] = $results->title;
-					}
 				}
-
 			    $item->doctoral_school = !empty($textValue) ? implode(', ', $textValue) : $item->doctoral_school;
-
 			}
-}
-
+		}
 		return $items;
 	}
 

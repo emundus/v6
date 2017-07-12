@@ -4,14 +4,14 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \Joomla\Registry\Registry;
+use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 
 jimport('joomla.application.component.model');
@@ -96,7 +96,7 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 		}
 
 		$params = $this->getParams();
-		$condition = $params->get($this->pluginName . '-validation_condition');
+		$condition = trim($params->get($this->pluginName . '-validation_condition'));
 
 		if ($condition == '')
 		{
@@ -119,9 +119,17 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 			{
 				$name = $element->getFullName(true, false);
 				$elementData = ArrayHelper::getValue($post, $name, array());
-				$post[$name] = ArrayHelper::getValue($elementData, $repeatCounter, '');
-				$rawData = ArrayHelper::getValue($post, $name . '_raw', array());
-				$post[$name . '_raw'] = ArrayHelper::getValue($rawData, $repeatCounter, '');
+				// things like buttons don't submit data, so check for empty
+				if (!empty($elementData))
+				{
+					$post[$name]          = ArrayHelper::getValue($elementData, $repeatCounter, '');
+					$rawData              = ArrayHelper::getValue($post, $name . '_raw', array());
+					$post[$name . '_raw'] = ArrayHelper::getValue($rawData, $repeatCounter, '');
+				}
+				else{
+					$post[$name] = '';
+					$post[$name . '_raw'] = '';
+				}
 			}
 		}
 		else
@@ -129,8 +137,12 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 			$post = null;
 		}
 
+		// unused by us, but available for user's to use
+		$formModel = $this->elementModel->getFormModel();
 		$condition = trim($w->parseMessageForPlaceHolder($condition, $post));
+		FabrikWorker::clearEval();
 		$res = @eval($condition);
+		FabrikWorker::logEval($res, 'Caught exception on eval in validation condition : %s');
 
 		if (is_null($res))
 		{
@@ -285,6 +297,7 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 	public function iconImage()
 	{
 		$plugin = JPluginHelper::getPlugin('fabrik_validationrule', $this->pluginName);
+		$elIcon = $this->params->get('icon', '');
 
 		/**
 		 * $$$ hugh - this code doesn't belong here, but am working on an issue whereby if a validation rule plugin
@@ -304,9 +317,13 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 		}
 		*/
 
-		$params = new Registry($plugin->params);
+		if (empty($elIcon))
+		{
+			$params = new Registry($plugin->params);
+			$elIcon = $params->get('icon', 'star');
+		}
 
-		return $params->get('icon', 'star');
+		return $elIcon;
 	}
 
 	/**
@@ -319,8 +336,12 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 	 */
 	public function getHoverText($c = null, $tmpl = '')
 	{
-		$name = $this->elementModel->validator->getIcon($c);
-		$i = FabrikHelperHTML::image($name, 'form', $tmpl, array('class' => $this->pluginName));
+		$i = '';
+		if ($this->params->get('show_icon', '1') === '1')
+		{
+			$name = $this->elementModel->validator->getIcon($c);
+			$i    = FabrikHelperHTML::image($name, 'form', $tmpl, array('class' => $this->pluginName));
+		}
 
 		return $i . ' ' . $this->getLabel();
 	}

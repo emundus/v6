@@ -9,17 +9,20 @@
 // AUTOLOAD CODE BLOCK (MAY BE CHANGED OR REMOVED)
 jQuery.slimbox.scanPage = function() {
 	if (!/series60|symbian|windows ce|blackberry/i.test(navigator.userAgent)) {
-		jQuery(function($) {
-			$("a[rel^='lightbox']").slimbox({/* Put custom options here */}, null, function(el) {
-				return (this == el) || ((this.rel.length > 8) && (this.rel == el.rel));
+		if (typeof(Lightbox) !== 'undefined') {
+			jQuery(function ($) {
+				$("a[rel^='lightbox']").slimbox({/* Put custom options here */}, null, function (el) {
+					return (this == el) || ((this.rel.length > 8) && (this.rel == el.rel));
+				});
 			});
-		});
+		}
 	}
 };
 
 window.addEvent("domready", jQuery.slimbox.scanPage);
 
-window.addEvent('fabrik.loaded', function() {
-	Fabrik.addEvent('fabrik.list.update', jQuery.slimbox.scanPage);
-	Fabrik.addEvent('fabrik.cdd.update', jQuery.slimbox.scanPage);
+
+require(['fab/fabrik'], function (Fabrik) {
+		Fabrik.addEvent('fabrik.list.update', jQuery.slimbox.scanPage);
+		Fabrik.addEvent('fabrik.cdd.update', jQuery.slimbox.scanPage);
 });

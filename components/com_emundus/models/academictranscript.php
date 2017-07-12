@@ -31,7 +31,7 @@ class EmundusModelAcademicTranscript extends JModelList
 	
 	function getStudentLearningUnits()
 	{
-		$current_user = JFactory::getUser();
+		$current_user = JFactory::getSession()->get('emundusUser');
 		$student_id = JRequest::getVar('student_id', null, 'GET', 'none', 0);
 
 		if($current_user->profile == 4 || $current_user->profile == 5)

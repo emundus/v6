@@ -36,14 +36,15 @@ class EmundusViewExport_select_columns extends JViewLegacy
 	}
 	
 	
-    function display($tpl = null)
-    {
+    function display($tpl = null) {
+
         $jinput = JFactory::getApplication()->input;
-        $prg = $jinput->get('code', null);
-        $view = $jinput->get('viewcall', null);
-        $code = array();
+        $prg    = $jinput->get('code', null);
+        $view   = $jinput->get('viewcall', null);
+        $code   = array();
         $code[] = $prg;
-		$current_user = JFactory::getUser();
+		
+        $current_user = JFactory::getUser();
 
         if ($view == "evaluation") {
             $session = JFactory::getSession();

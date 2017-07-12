@@ -51,7 +51,7 @@ class EmundusModelRenew_application extends JModelList {
 		$db = JFactory::getDBO();
 		$db->setQuery('SELECT * FROM #__emundus_declaration WHERE user='.$user);
 		$db->query();
-		if($db->getNumRows() == 1) return true;
+		if ($db->getNumRows() == 1) return true;
 		else return false;
 	}
 	

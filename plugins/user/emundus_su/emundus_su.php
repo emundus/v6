@@ -45,7 +45,7 @@ class plgUserEmundus_su extends JPlugin
 
 
         if (!$app->isAdmin()) {
-            $current_user   = JFactory::getUser();
+            $current_user = JFactory::getSession()->get('emundusUser');
             if (EmundusHelperAccess::isApplicant($current_user->id)) {
                 switch ($current_user->code) {
                     case 'pcsc':

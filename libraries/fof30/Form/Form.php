@@ -13,6 +13,7 @@ use FOF30\Model\DataModel;
 use FOF30\View\DataView\DataViewInterface;
 use JFactory;
 use JForm;
+use Joomla\Registry\Registry;
 use JText;
 use SimpleXMLElement;
 
@@ -169,7 +170,7 @@ class Form extends JForm
 	 * Returns a reference to the protected $data object, allowing direct
 	 * access to and manipulation of the form's data.
 	 *
-	 * @return   \JRegistry  The form's data registry
+	 * @return   \JRegistry|Registry  The form's data registry
 	 *
 	 * @since 2.0
 	 */
@@ -869,7 +870,7 @@ class Form extends JForm
 	 */
 	public function bind($data)
 	{
-		$this->data = new \JRegistry();
+		$this->data = class_exists('JRegistry') ? new \JRegistry() : new Registry();
 
 		if (is_object($data) && ($data instanceof DataModel))
 		{

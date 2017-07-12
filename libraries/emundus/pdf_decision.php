@@ -27,7 +27,7 @@ function pdf_decision($user_id, $fnum = null, $output = true, $name = null) {
 	$config 		= JFactory::getConfig();
 	//$eMConfig 		= JComponentHelper::getParams('com_emundus');
 	//$current_user 	= JFactory::getUser();
-	$user 			= JFactory::getUser($user_id);
+	$user 			= $m_profile->getEmundusUser($user_id);
 	$fnum 			= empty($fnum)?$user->fnum:$fnum;
 
 	//$export_pdf = $eMConfig->get('export_pdf');

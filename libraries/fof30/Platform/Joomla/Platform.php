@@ -7,11 +7,18 @@
 
 namespace FOF30\Platform\Joomla;
 
+use Exception;
+use FOF30\Container\Container;
 use FOF30\Date\Date;
 use FOF30\Date\DateDecorator;
 use FOF30\Inflector\Inflector;
 use FOF30\Input\Input;
 use FOF30\Platform\Base\Platform as BasePlatform;
+use JApplicationCms;
+use JApplicationWeb;
+use JCache;
+use Joomla\Registry\Registry;
+use JUri;
 
 defined('_JEXEC') or die;
 
@@ -24,25 +31,58 @@ defined('_JEXEC') or die;
  */
 class Platform extends BasePlatform
 {
-	/** @var null|bool Is this a CLI application? */
+	/**
+	 * Is this a CLI application?
+	 *
+	 * @var   bool
+	 */
 	protected static $isCLI = null;
 
-	/** @var null|bool Is this an administrator application? */
+	/**
+	 * Is this an administrator application?
+	 *
+	 * @var   bool
+	 */
 	protected static $isAdmin = null;
+
+	/**
+	 * A fake session storage for CLI apps. Since CLI applications cannot have a session we are using a Registry object
+	 * we manage internally.
+	 *
+	 * @var   Registry
+	 */
+	protected static $fakeSession = null;
 
 	/**
 	 * The table and table field cache object, used to speed up database access
 	 *
-	 * @var  \JRegistry|null
+	 * @var  \JRegistry|Registry|null
 	 */
 	private $_cache = null;
 
 	/**
+	 * Public constructor.
+	 *
+	 * Overridden to cater for CLI applications not having access to a session object.
+	 *
+	 * @param   \FOF30\Container\Container  $c  The component container
+	 */
+	public function __construct(Container $c)
+	{
+		parent::__construct($c);
+
+		if ($this->isCli())
+		{
+			self::$fakeSession = new Registry();
+		}
+	}
+
+	/**
 	 * Checks if the current script is run inside a valid CMS execution
 	 *
-	 * @see PlatformInterface::checkExecution()
+	 * @see     PlatformInterface::checkExecution()
 	 *
-	 * @return bool
+	 * @return  bool
 	 */
 	public function checkExecution()
 	{
@@ -61,7 +101,7 @@ class Platform extends BasePlatform
 	 */
 	public function raiseError($code, $message)
 	{
-		throw new \Exception($message, $code);
+		$this->showErrorPage(new \Exception($message, $code));
 	}
 
 	/**
@@ -115,6 +155,7 @@ class Platform extends BasePlatform
 		return array(
 			'root'   => JPATH_ROOT,
 			'public' => JPATH_SITE,
+			'media'  => JPATH_SITE . '/media',
 			'admin'  => JPATH_ADMINISTRATOR,
 			'tmp'    => \JFactory::getConfig()->get('tmp_path'),
 			'log'    => \JFactory::getConfig()->get('log_path')
@@ -271,7 +312,7 @@ class Platform extends BasePlatform
 		if ($this->isBackend())
 		{
 			// Master access check for the back-end, Joomla! 1.6 style.
-			$user = \JFactory::getUser();
+			$user = $this->getUser();
 
 			if (!$user->authorise('core.manage', $component)
 				&& !$user->authorise('core.admin', $component)
@@ -298,7 +339,7 @@ class Platform extends BasePlatform
 	{
 		// If I'm in CLI and I have an ID, let's load the User directly, otherwise JFactory will check the session
 		// (which doesn't exists in CLI)
-		if($this->isCli() && $id)
+		if ($this->isCli() && $id)
 		{
 			return \JUser::getInstance($id);
 		}
@@ -403,7 +444,14 @@ class Platform extends BasePlatform
 
 		if ($isCLI)
 		{
-			return $input->get($request, $default, $type);
+			$ret = $input->get($request, $default, $type);
+
+			if ($ret === $default)
+			{
+				$input->set($request, $ret);
+			}
+
+			return $ret;
 		}
 
 		$app = \JFactory::getApplication();
@@ -623,7 +671,7 @@ class Platform extends BasePlatform
 	 *
 	 * @param   boolean $force Should I forcibly reload the registry?
 	 *
-	 * @return  \JRegistry
+	 * @return  \JRegistry|Registry
 	 */
 	private function &getCacheObject($force = false)
 	{
@@ -634,11 +682,19 @@ class Platform extends BasePlatform
 			$cache = \JFactory::getCache('fof', '');
 			$this->_cache = $cache->get('cache', 'fof');
 
-			if (!is_object($this->_cache) || !($this->_cache instanceof \JRegistry))
+			\JLoader::import('joomla.registry.registry');
+
+			$isRegistry = is_object($this->_cache);
+
+			if ($isRegistry)
 			{
-				// Create a new JRegistry object
-				\JLoader::import('joomla.registry.registry');
-				$this->_cache = new \JRegistry;
+				$isRegistry = class_exists('JRegistry') ? ($this->_cache instanceof \JRegistry) : ($this->_cache instanceof Registry);
+			}
+
+			if (!$isRegistry)
+			{
+				// Create a new Registry object
+				$this->_cache = class_exists('JRegistry') ? new \JRegistry() : new Registry();
 			}
 		}
 
@@ -652,7 +708,7 @@ class Platform extends BasePlatform
 	 */
 	private function saveCache()
 	{
-		// Get the JRegistry object of our cached data
+		// Get the Registry object of our cached data
 		$registry = $this->getCacheObject();
 
 		$cache = \JFactory::getCache('fof', '');
@@ -679,7 +735,7 @@ class Platform extends BasePlatform
 	/**
 	 * Returns an object that holds the configuration of the current site.
 	 *
-	 * @return  \JRegistry
+	 * @return  \JRegistry|Registry
 	 *
 	 * @codeCoverageIgnore
 	 */
@@ -773,7 +829,9 @@ class Platform extends BasePlatform
 		$options = array('remember' => false);
 		$parameters = array('username' => $this->getUser()->username);
 
-		return $app->triggerEvent('onLogoutUser', array($parameters, $options));
+		$ret = $app->triggerEvent('onLogoutUser', array($parameters, $options));
+
+		return !in_array(false, $ret, true);
 	}
 
 	/**
@@ -890,6 +948,204 @@ class Platform extends BasePlatform
 	 */
 	public function closeApplication($code = 0)
 	{
+		// Necessary workaround for broken System - Page Cache plugin in Joomla! 3.7.0
+		$this->bugfixJoomlaCachePlugin();
+
 		\JFactory::getApplication()->close($code);
+	}
+
+	/**
+	 * Perform a redirection to a different page, optionally enqueuing a message for the user.
+	 *
+	 * @param   string  $url     The URL to redirect to
+	 * @param   int     $status  (optional) The HTTP redirection status code, default 303 (See Other)
+	 * @param   string  $msg     (optional) A message to enqueue
+	 * @param   string  $type    (optional) The message type, e.g. 'message' (default), 'warning' or 'error'.
+	 *
+	 * @return  void
+	 *
+	 * @throws  \Exception
+	 */
+	public function redirect($url, $status = 303, $msg = '', $type = 'message')
+	{
+		// Necessary workaround for broken System - Page Cache plugin in Joomla! 3.7.0
+		$this->bugfixJoomlaCachePlugin();
+
+		$app = \JFactory::getApplication();
+
+		if (class_exists('JApplicationCms') && class_exists('JApplicationWeb')
+			&& ($app instanceof JApplicationCms)
+			&& ($app instanceof JApplicationWeb))
+		{
+			// In modern Joomla! versions we have versatility on setting the message and the redirection HTTP code
+			if (!empty($msg))
+			{
+				if (empty($type))
+				{
+					$type = 'message';
+				}
+
+				$app->enqueueMessage($msg, $type);
+			}
+
+			$app->redirect($url, $status);
+		}
+
+		/**
+		 * If you're here, you have an ancient Joomla version and we have to use the legacy four parameter method...
+		 * Note that we can't set a custom HTTP code, we can only tell it if it's a permanent redirection or not.
+		 */
+		$app->redirect($url, $msg, $type, $status == 301);
+	}
+
+	/**
+	 * Handle an exception in a way that results to an error page. We use this under Joomla! to work around a bug in
+	 * Joomla! 3.7 which results in error pages leading to white pages because Joomla's System - Page Cache plugin is
+	 * broken.
+	 *
+	 * @param   Exception  $exception  The exception to handle
+	 *
+	 * @throws  Exception  We rethrow the exception
+	 */
+	public function showErrorPage(Exception $exception)
+	{
+		// Necessary workaround for broken System - Page Cache plugin in Joomla! 3.7.0
+		$this->bugfixJoomlaCachePlugin();
+
+		throw $exception;
+	}
+
+	/**
+	 * Set a variable in the user session
+	 *
+	 * @param   string  $name       The name of the variable to set
+	 * @param   string  $value      (optional) The value to set it to, default is null
+	 * @param   string  $namespace  (optional) The variable's namespace e.g. the component name. Default: 'default'
+	 *
+	 * @return  void
+	 */
+	public function setSessionVar($name, $value = null, $namespace = 'default')
+	{
+		if ($this->isCli())
+		{
+			self::$fakeSession->set("$namespace.$name", $value);
+
+			return;
+		}
+
+		\JFactory::getSession()->set($name, $value, $namespace);
+	}
+
+	/**
+	 * Get a variable from the user session
+	 *
+	 * @param   string  $name       The name of the variable to set
+	 * @param   string  $default    (optional) The default value to return if the variable does not exit, default: null
+	 * @param   string  $namespace  (optional) The variable's namespace e.g. the component name. Default: 'default'
+	 *
+	 * @return  mixed
+	 */
+	public function getSessionVar($name, $default = null, $namespace = 'default')
+	{
+		if ($this->isCli())
+		{
+			return self::$fakeSession->get("$namespace.$name", $default);
+		}
+
+		return \JFactory::getSession()->get($name, $default, $namespace);
+	}
+
+	/**
+	 * Unset a variable from the user session
+	 *
+	 * @param   string  $name       The name of the variable to unset
+	 * @param   string  $namespace  (optional) The variable's namespace e.g. the component name. Default: 'default'
+	 *
+	 * @return  void
+	 */
+	public function unsetSessionVar($name, $namespace = 'default')
+	{
+		$this->setSessionVar($name, null, $namespace);
+	}
+
+	/**
+	 * Return the session token. Two types of tokens can be returned:
+	 *
+	 * Session token ($formToken == false): Used for anti-spam protection of forms. This is specific to a session
+	 *   object.
+	 *
+	 * Form token ($formToken == true): A secure hash of the user ID with the session token. Both the session and the
+	 *   user are fetched from the application container. They are interpolated with the site's secret and passed
+	 *   through MD5, making this harder to spoof than the plain old session token.
+	 *
+	 * @param   bool  $formToken  Should I return a form token?
+	 * @param   bool  $forceNew   Should I force the creation of a new token?
+	 *
+	 * @return  mixed
+	 */
+	public function getToken($formToken = false, $forceNew = false)
+	{
+		// For CLI apps we implement our own fake token system
+		if ($this->isCli())
+		{
+			$token = $this->getSessionVar('session.token');
+
+			// Create a token
+			if (is_null($token) || $forceNew)
+			{
+				$token = \JUserHelper::genRandomPassword(32);
+				$this->setSessionVar('session.token', $token);
+			}
+
+			if (!$formToken)
+			{
+				return $token;
+			}
+
+			$user = $this->getUser();
+
+			return \JApplicationHelper::getHash($user->id . $token);
+		}
+
+		// Web application, go through the regular Joomla! API.
+		if ($formToken)
+		{
+			return \JSession::getFormToken($forceNew);
+		}
+
+		return \JFactory::getSession()->getToken($forceNew);
+	}
+
+	/**
+	 * Joomla! 3.7 has a broken System - Page Cache plugin. When this plugin is enabled it FORCES the caching of all
+	 * pages as soon as Joomla! starts loading, before the plugin has a chance to request to not be cached. Event worse,
+	 * in case of a redirection, it doesn't try to remove the cache lock. This means that the next request will be
+	 * treated as though the result of the page should be cached. Since there is NO cache content for the page Joomla!
+	 * returns an empty response with a 200 OK header. This will, of course, get in the way of every single attempt to
+	 * perform a redirection in the frontend of the site.
+	 */
+	private function bugfixJoomlaCachePlugin()
+	{
+		// Only Joomla! 3.7 and later is broken.
+		if (version_compare(JVERSION, '3.6.999', 'le'))
+		{
+			return;
+		}
+
+		// Only do something when the System - Cache plugin is activated
+		if (!class_exists('PlgSystemCache'))
+		{
+			return;
+		}
+
+		// Forcibly uncache the current request
+		$options = array(
+			'defaultgroup' => 'page',
+			'browsercache' => false,
+			'caching'      => false,
+		);
+
+		$cache_key = JUri::getInstance()->toString();
+		JCache::getInstance('page', $options)->cache->remove($cache_key, 'page');
 	}
 }

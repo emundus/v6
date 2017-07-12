@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.0
  */
@@ -112,7 +112,7 @@ $listDirn  = $this->state->get('list.direction');
 							<?php
 							if ($item->checked_out && ($item->checked_out != $user->get('id')))
 							{
-								echo $item->label;
+								echo FText::_($item->label);
 							}
 							else
 							{

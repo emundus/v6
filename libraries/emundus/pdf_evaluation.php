@@ -27,8 +27,8 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null) {
     $config         = JFactory::getConfig();
     //$eMConfig         = JComponentHelper::getParams('com_emundus');
     //$current_user     = JFactory::getUser();
-    $user           = JFactory::getUser($user_id);
-    $fnum           = empty($fnum)?$user->fnum:$fnum;
+    $user = $m_profile->getEmundusUser($user_id);
+    $fnum = empty($fnum)?$user->fnum:$fnum;
 
     //$export_pdf = $eMConfig->get('export_pdf');
     //$user_profile = $m_users->getCurrentUserProfile($user_id);
@@ -146,10 +146,9 @@ $htmldata .= '
         $path = $name;
 
     @chdir('tmp');
-    if($output){
+    if ($output)
         $pdf->Output($path, 'FI');
-    }else{
+    else
         $pdf->Output($path, 'F');
-    }
 }
 ?>

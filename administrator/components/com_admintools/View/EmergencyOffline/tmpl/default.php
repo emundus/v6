@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
 		<input type="hidden" name="view" value="EmergencyOffline"/>
 		<input type="hidden" name="task" value="offline"/>
 		<input type="submit" class="btn btn-large btn-danger" value="<?php echo \JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_SETOFFLINE'); ?>"/>
-		<input type="hidden" name="<?php echo $this->escape(JFactory::getSession()->getFormToken()); ?>" value="1"/>
+		<input type="hidden" name="<?php echo $this->container->platform->getToken(true); ?>" value="1"/>
 	</form>
 
 <?php if ( ! ($this->offline)): ?>
@@ -31,7 +31,7 @@ defined('_JEXEC') or die;
 		<input type="hidden" name="view" value="EmergencyOffline"/>
 		<input type="hidden" name="task" value="online"/>
 		<input type="submit" class="btn btn-large btn-success" value="<?php echo \JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_UNAPPLY'); ?>"/>
-		<input type="hidden" name="<?php echo \JFactory::getSession()->getFormToken(); ?>" value="1"/>
+		<input type="hidden" name="<?php echo $this->container->platform->getToken(true); ?>" value="1"/>
 	</form>
 	<p><?php echo \JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_PREUNAPPLY'); ?></p>
 	<p><?php echo \JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_PREUNAPPLYMANUAL'); ?></p>

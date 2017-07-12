@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -193,10 +193,11 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 * @param   string  $value          Search string - already quoted if specified in filter array options
 	 * @param   string  $originalValue  Original filter value without quotes or %'s applied
 	 * @param   string  $type           Filter type advanced/normal/prefilter/search/querystring/searchall
-	 *
+	 * @param   string  $evalFilter     evaled (only used for multiselect types)
+	 *                                  
 	 * @return  string	sql query part e,g, "key = value"
 	 */
-	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
+	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal', $evalFilter = '0')
 	{
 		$element = $this->getElement();
 		$condition = JString::strtoupper($condition);
@@ -205,7 +206,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 
 		if ($element->filter_type == 'checkbox' || $element->filter_type == 'multiselect')
 		{
-			$str = $this->filterQueryMultiValues($key, $condition, $originalValue);
+			$str = $this->filterQueryMultiValues($key, $condition, $originalValue, $evalFilter, $type);
 		}
 		else
 		{
@@ -246,12 +247,26 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 * @param $key
 	 * @param $condition
 	 * @param $originalValue
+	 * @param $evalFilter
+	 * @param $type
 	 *
 	 * @return string
 	 */
-	protected function filterQueryMultiValues ($key, $condition, $originalValue)
+	protected function filterQueryMultiValues ($key, $condition, $originalValue, $evalFilter, $type)
 	{
 		$str = array();
+
+		/**
+		 * Grrrr.  For some reason, $evalFilter is getting set in element filter session when it shouldn't.
+		 * This code was only meant for eval'ing of prefilters, so until i can work out why eval is getting set,
+		 * just restrict this to prefilter types
+		 */
+		if ($evalFilter && ($type === 'prefilter' || $type === 'menuprefilter'))
+		{
+			$originalValue = stripslashes(htmlspecialchars_decode($originalValue, ENT_QUOTES));
+			$originalValue = @eval($originalValue);
+			FabrikWorker::logEval($originalValue, 'Caught exception on eval of elementList::filterQueryMultiValues() ' . $key . ': %s');
+		}
 
 		if ($condition === 'NOT IN')
 		{
@@ -338,7 +353,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 *
 	 * @return  string	Filter HTML
 	 */
-	public function getFilter($counter = 0, $normal = true)
+	public function getFilter($counter = 0, $normal = true, $container = '')
 	{
 		$element = $this->getElement();
 		$values = $this->getSubOptionValues();
@@ -354,7 +369,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 
 			if ($params->get('filter_groupby') != -1)
 			{
-				ArrayHelper::sortObjects($rows, $params->get('filter_groupby', 'text'));
+				$rows = ArrayHelper::sortObjects($rows, $params->get('filter_groupby', 'text'));
 			}
 
 			$this->getFilterDisplayValues($default, $rows);
@@ -397,7 +412,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 
 			case 'auto-complete':
 				$defaultLabel = $this->getLabelForValue($default);
-				$autoComplete = $this->autoCompleteFilter($default, $v, $defaultLabel, $normal);
+				$autoComplete = $this->autoCompleteFilter($default, $v, $defaultLabel, $normal, $container);
 				$return = array_merge($return, $autoComplete);
 				break;
 		}
@@ -584,7 +599,10 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 */
 	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
-		$params = $this->getParams();
+        $profiler = JProfiler::getInstance('Application');
+        JDEBUG ? $profiler->mark("renderListData: parent: start: {$this->element->name}") : null;
+
+        $params = $this->getParams();
 		$listModel = $this->getListModel();
 		$multiple = $this->isMultiple();
 		$mergeGroupRepeat = ($this->getGroup()->canRepeat() && $this->getListModel()->mergeJoinedData());
@@ -655,6 +673,12 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 				{
 					$lis[] = $l;
 				}
+				else
+				{
+					// was trying to fix issue with empty merged repeat rows not having height but messes CSV export
+					//$lis[] = '&nbsp;';
+					$lis[] = '';
+				}
 			}
 
 			if (!empty($lis))
@@ -674,33 +698,19 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 			}
 		}
 
-		$condensed = array();
+		$layout = FabrikHelperHTML::getLayout('fabrik-element-elementlist-details',
+			array(COM_FABRIK_FRONTEND . '/layouts/element'));
 
-		if ($condense)
-		{
-			foreach ($uls as $ul)
-			{
-				$condensed[] = $ul[0];
-			}
+		$displayData = array(
+			'uls' => $uls,
+			'condense' => $condense,
+			'addHtml' => $addHtml,
+			'sepChar' => ArrayHelper::getValue($opts, 'sepChar', ' ')
+		);
 
-			return $addHtml ? '<ul class="fabrikRepeatData"><li>' . implode('</li><li>', $condensed) . '</li></ul>' : implode(' ', $condensed);
-		}
-		else
-		{
-			$html = array();
-			$html[] = $addHtml ? '<ul class="fabrikRepeatData"><li>' : '';
+        JDEBUG ? $profiler->mark("renderListData: parent: end: {$this->element->name}") : null;
 
-			foreach ($uls as $ul)
-			{
-				$html[] = $addHtml ? '<ul class="fabrikRepeatData"><li>' : '';
-				$html[] = $addHtml ? implode('</li><li>', $ul) : implode(' ', $ul);
-				$html[] = $addHtml ? '</li></ul>' : '';
-			}
-
-			$html[] = $addHtml ? '</li></ul>' : '';
-
-			return $addHtml ? implode('', $html) : implode(' ', $html);
-		}
+		return $layout->render((object) $displayData);
 	}
 
 	/**
@@ -714,7 +724,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	public function renderListData_csv($data, &$thisRow)
 	{
 		$this->renderWithHTML = false;
-		$d = $this->renderListData($data, $thisRow);
+		$d = $this->renderListData($data, $thisRow, array('sepChar' => "\n"));
 
 		if ($this->isJoin())
 		{
@@ -1011,16 +1021,13 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	 */
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
-		$ext = FabrikHelperHTML::isDebug() ? '.js' : '-min.js';
-		$files = array('media/com_fabrik/js/element' . $ext, 'media/com_fabrik/js/elementlist' . $ext);
+		$mediaFolder = FabrikHelperHTML::getMediaFolder();
+		$files = array(
+			'Element' => $mediaFolder . '/element.js',
+			'ElementList' => $mediaFolder . '/elementlist.js'
+		);
 
-		foreach ($files as $file)
-		{
-			if (!in_array($file, $srcs))
-			{
-				$srcs[] = $file;
-			}
-		}
+		$srcs = array_merge($srcs, $files);
 
 		parent::formJavascriptClass($srcs, $script, $shim);
 	}

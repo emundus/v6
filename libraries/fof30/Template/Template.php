@@ -57,16 +57,42 @@ class Template
 			return;
 		}
 
-		$method = 'addStyleSheet' . (!empty($version) ? 'Version' : '');
+		// Make sure we have attributes
+		if (empty($attribs) || !is_array($attribs))
+		{
+			$attribs = [];
+		}
 
+		$url      = $this->parsePath($uri);
 		$document = $this->container->platform->getDocument();
+
+		// Joomla! 3.7+ uses a single method for everything
+		if (version_compare(JVERSION, '3.6.999', 'ge'))
+		{
+			$options = [
+				'version' => $version,
+			];
+
+			$attribs['type'] = $type;
+
+			if (!empty($media))
+			{
+				$attribs['media'] = $media;
+			}
+
+			$document->addStyleSheet($url, $options, $attribs);
+
+			return;
+		}
+
+		// Joomla! 3.6 and lower have separate methods for versioned and non-versioned files
+		$method = 'addStyleSheet' . (!empty($version) ? 'Version' : '');
 
 		if (!method_exists($document, $method))
 		{
 			return;
 		}
 
-		$url = $this->container->template->parsePath($uri);
 
 		if (empty($version))
 		{
@@ -108,16 +134,37 @@ class Template
 			return;
 		}
 
-		$method = 'addScript' . (!empty($version) ? 'Version' : '');
-
+		$url      = $this->container->template->parsePath($uri);
 		$document = $this->container->platform->getDocument();
+
+		// Joomla! 3.7+ uses a single method for everything
+		if (version_compare(JVERSION, '3.6.999', 'ge'))
+		{
+			$options = [
+				'version' => $version,
+			];
+
+			$attribs['defer'] = $defer;
+			$attribs['async'] = $async;
+
+			if (!empty($media))
+			{
+				$attribs['mime'] = $type;
+			}
+
+			$document->addScript($url, $options, $attribs);
+
+			return;
+		}
+
+		// Joomla! 3.6 and lower have separate methods for versioned and non-versioned files
+		$method = 'addScript' . (!empty($version) ? 'Version' : '');
 
 		if (!method_exists($document, $method))
 		{
 			return;
 		}
 
-		$url = $this->container->template->parsePath($uri);
 
 		if (empty($version))
 		{
@@ -167,9 +214,9 @@ class Template
 		if (is_null($sanityCheck))
 		{
 			// Make sure the cache directory exists
-			if (!is_dir($platformDirs['public'] . '/media/lib_fof/compiled/'))
+			if (!is_dir($platformDirs['media'] . '/lib_fof/compiled/'))
 			{
-				$sanityCheck = $filesystem->folderCreate($platformDirs['public'] . '/media/lib_fof/compiled/');
+				$sanityCheck = $filesystem->folderCreate($platformDirs['media'] . '/lib_fof/compiled/');
 			}
 			else
 			{
@@ -203,7 +250,7 @@ class Template
 		$id = md5(filemtime($localFile) . filectime($localFile) . $localFile);
 
 		// Get the cached file path
-		$cachedPath = $platformDirs['public'] . '/media/lib_fof/compiled/' . $id . '.css';
+		$cachedPath = $platformDirs['media'] . '/lib_fof/compiled/' . $id . '.css';
 
 		// Get the LESS compiler
 		$lessCompiler = new Less;
@@ -333,11 +380,13 @@ class Template
 	 * implementing features of your component as plugins and they need to provide HTML output, e.g. some of the
 	 * integration plugins we use in Akeeba Subscriptions.
 	 *
-	 * The valid protocols are:
+	 * The valid protocols are ( @see self::getAltPaths ):
 	 * media://		The media directory or a media override
 	 * plugin://	Given as plugin://pluginType/pluginName/template, e.g. plugin://system/example/something
 	 * admin://		Path relative to administrator directory (no overrides)
 	 * site://		Path relative to site's root (no overrides)
+	 * auto://      Automatically guess if it should be site:// or admin://
+	 * module://	The module directory or a template override (must be module://moduleName/templateName)
 	 *
 	 * @param   string   $path       Fancy path
 	 * @param   boolean  $localFile  When true, it returns the local path, not the URL
@@ -346,6 +395,32 @@ class Template
 	 */
 	public function parsePath($path, $localFile = false)
 	{
+		// Make sure the path has a protocol we can parse. Otherwise just return the raw path.
+		$protocol          = '';
+		$separatorPosition = strpos($path, '://');
+
+		if ($separatorPosition === false)
+		{
+			return $path;
+		}
+
+		$protocol = substr($path, 0, $separatorPosition);
+
+		switch ($protocol)
+		{
+			case 'media':
+			case 'plugin':
+			case 'module':
+			case 'auto':
+			case 'admin':
+			case 'site':
+				break;
+
+			default:
+				return $path;
+		}
+
+		// Get the platform directories through the container
 		$platformDirs = $this->container->platform->getPlatformBaseDirs();
 
 		if ($localFile)
@@ -360,7 +435,7 @@ class Template
 		$altPaths = $this->getAltPaths($path);
 		$filePath = $altPaths['normal'];
 
-		// If JDEBUG is enabled, prefer that path, else prefer an alternate path if present
+		// If JDEBUG is enabled, prefer the debug path, else prefer an alternate path if present
 		if (defined('JDEBUG') && JDEBUG && isset($altPaths['debug']))
 		{
 			if (file_exists($platformDirs['public'] . '/' . $altPaths['debug']))
@@ -396,6 +471,7 @@ class Template
 	 * site://		Path relative to site's root (no alternate)
 	 * auto://      Automatically guess if it should be site:// or admin://
 	 * plugin://	The plugin directory or a template override (must be plugin://pluginType/pluginName/templateName)
+	 * module://	The module directory or a template override (must be module://moduleName/templateName)
 	 *
 	 * @param   string  $path  Fancy path
 	 *
@@ -412,7 +488,7 @@ class Template
 		else
 		{
 			$protocol = $protoAndPath[0];
-			$path = $protoAndPath[1];
+			$path     = $protoAndPath[1];
 		}
 
 		if ($protocol == 'auto')
@@ -428,39 +504,55 @@ class Template
 				// Do we have a media override in the template?
 				$pathAndParams = explode('?', $path, 2);
 
-				$ret = array(
-					'normal'	 => 'media/' . $pathAndParams[0],
-					'alternate'	 => $this->container->platform->getTemplateOverridePath('media:/' . $pathAndParams[0], false),
-				);
+				$ret = [
+					'normal'    => 'media/' . $pathAndParams[0],
+					'alternate' => $this->container->platform->getTemplateOverridePath('media:/' . $pathAndParams[0], false),
+				];
 				break;
 
 			case 'plugin':
 				// The path is pluginType/pluginName/viewTemplate
-				$pathInfo = explode('/', $path);
-				$pluginType = isset($pathInfo[0]) ? $pathInfo[0] : 'system';
-				$pluginName = isset($pathInfo[1]) ? $pathInfo[1] : 'foobar';
+				$pathInfo     = explode('/', $path);
+				$pluginType   = isset($pathInfo[0]) ? $pathInfo[0] : 'system';
+				$pluginName   = isset($pathInfo[1]) ? $pathInfo[1] : 'foobar';
 				$viewTemplate = isset($pathInfo[2]) ? $pathInfo[2] : 'default';
 
 				$pluginSystemName = 'plg_' . $pluginType . '_' . $pluginName;
 
-				$ret = array(
-					'normal'	 => 'plugins/' . $pluginType . '/' . $pluginName . '/tmpl/' . $viewTemplate,
-					'alternate'	 => $this->container->platform->getTemplateOverridePath('auto:/' . $pluginSystemName . '/' . $viewTemplate, false),
-				);
+				$ret = [
+					'normal'    => 'plugins/' . $pluginType . '/' . $pluginName . '/tmpl/' . $viewTemplate,
+					'alternate' => $this->container->platform->getTemplateOverridePath('auto:/' . $pluginSystemName . '/' . $viewTemplate, false),
+				];
+
+				break;
+
+			case 'module':
+				// The path is moduleName/viewTemplate
+				$pathInfo     = explode('/', $path, 2);
+				$moduleName   = isset($pathInfo[0]) ? $pathInfo[0] : 'foobar';
+				$viewTemplate = isset($pathInfo[1]) ? $pathInfo[1] : 'default';
+
+				$moduleSystemName = 'mod_' . $moduleName;
+				$basePath         = $this->container->platform->isBackend() ? 'administrator/' : '';
+
+				$ret = [
+					'normal'    => $basePath . 'modules/' . $moduleSystemName . '/tmpl/' . $viewTemplate,
+					'alternate' => $this->container->platform->getTemplateOverridePath('auto:/' . $moduleSystemName . '/' . $viewTemplate, false),
+				];
 
 				break;
 
 			case 'admin':
-				$ret = array(
-					'normal' => 'administrator/' . $path
-				);
+				$ret = [
+					'normal' => 'administrator/' . $path,
+				];
 				break;
 
 			default:
 			case 'site':
-				$ret = array(
-					'normal' => $path
-				);
+				$ret = [
+					'normal' => $path,
+				];
 				break;
 		}
 
@@ -468,7 +560,7 @@ class Template
 		$filesystem = $this->container->filesystem;
 		$ext        = $filesystem->getExt($ret['normal']);
 
-		if (in_array($ext, array('css', 'js')))
+		if (in_array($ext, ['css', 'js']))
 		{
 			$file = basename($filesystem->stripExt($ret['normal']));
 
@@ -488,10 +580,10 @@ class Template
 			}
 
 			// Clone the $ret array so we can manipulate the 'normal' path a bit
-			$t1 = (object) $ret;
+			$t1   = (object) $ret;
 			$temp = clone $t1;
 			unset($t1);
-			$temp = (array)$temp;
+			$temp       = (array) $temp;
 			$normalPath = explode('/', $temp['normal']);
 			array_pop($normalPath);
 			$normalPath[] = $filename;
@@ -588,101 +680,113 @@ class Template
 	}
 
 	/**
-	 * Merges the current url with new or changed parameters.
+	 * Performs SEF routing on a non-SEF URL, returning the SEF URL.
 	 *
-	 * This method merges the route string with the url parameters defined
-	 * in current url. The parameters defined in current url, but not given
-	 * in route string, will automatically reused in the resulting url.
-	 * But only these following parameters will be reused:
+	 * When the $merge option is set to true the option, view, layout and format parameters of the current URL and the
+	 * requested route will be merged. For example, assuming that current url is
+	 * http://example.com/index.php?option=com_foo&view=cpanel
+	 * then
+	 * $template->route('view=categories&layout=tree');
+	 * will result to
+	 * http://example.com/index.php?option=com_foo&view=categories&layout=tree
 	 *
-	 * option, view, layout, format
-	 *
-	 * Example:
-	 *
-	 * Assuming that current url is:
-	 * http://fobar.com/index.php?option=com_foo&view=cpanel
-	 *
-	 * <code>
-	 * <?php echo F0FTemplateutils::route('view=categories&layout=tree'); ?>
-	 * </code>
-	 *
-	 * Result:
-	 * http://fobar.com/index.php?option=com_foo&view=categories&layout=tree
+	 * If $merge is unspecified (null) we will auto-detect the intended behavior. If you haven't specified option and
+	 * one of view or task we will merge. Otherwise no merging takes place. This covers most use cases of FOF 3.0.
 	 *
 	 * @param   string  $route  The parameters string
+	 * @param   bool    $merge  Should I perform parameter merging?
 	 *
 	 * @return  string  The human readable, complete url
 	 */
-	public function route($route = '')
+	public function route($route = '', $merge = null)
 	{
 		$route = trim($route);
 
-		// Special cases
-
-		if ($route == 'index.php' || $route == 'index.php?')
+		/**
+		 * Backwards compatibility with FOF 3.0: if the merge option is unspecified we will auto-detect the behaviour.
+		 * If option and either one of view or task are present we won't merge.
+		 */
+		if (is_null($merge))
 		{
-			$result = $route;
+			$hasOption = (strpos($route, 'option=') !== false);
+			$hasView  = (strpos($route, 'view=') !== false);
+			$hasTask  = (strpos($route, 'task=') !== false);
+
+			$merge = !($hasOption && ($hasView || $hasTask));
 		}
-		elseif (substr($route, 0, 1) == '&')
+
+		if ($merge)
 		{
-			$url = \JURI::getInstance();
-			$vars = array();
-			parse_str($route, $vars);
+			// Handle special cases before trying to merge
+			if ($route == 'index.php' || $route == 'index.php?')
+			{
+				$result = 'index.php';
+			}
+			elseif (substr($route, 0, 1) == '&')
+			{
+				$url = \JURI::getInstance();
+				$vars = array();
+				parse_str($route, $vars);
 
-			$url->setQuery(array_merge($url->getQuery(true), $vars));
+				$url->setQuery(array_merge($url->getQuery(true), $vars));
 
-			$result = 'index.php?' . $url->getQuery();
+				$result = 'index.php?' . $url->getQuery();
+			}
+			else
+			{
+				$url = \JURI::getInstance();
+				$props = $url->getQuery(true);
+
+				// Strip 'index.php?'
+				if (substr($route, 0, 10) == 'index.php?')
+				{
+					$route = substr($route, 10);
+				}
+
+				// Parse route
+				$parts = array();
+				parse_str($route, $parts);
+				$result = array();
+
+				// Check to see if there is component information in the route if not add it
+
+				if (!isset($parts['option']) && isset($props['option']))
+				{
+					$result[] = 'option=' . $props['option'];
+				}
+
+				// Add the layout information to the route only if it's not 'default'
+
+				if (!isset($parts['view']) && isset($props['view']))
+				{
+					$result[] = 'view=' . $props['view'];
+
+					if (!isset($parts['layout']) && isset($props['layout']))
+					{
+						$result[] = 'layout=' . $props['layout'];
+					}
+				}
+
+				// Add the format information to the URL only if it's not 'html'
+
+				if (!isset($parts['format']) && isset($props['format']) && $props['format'] != 'html')
+				{
+					$result[] = 'format=' . $props['format'];
+				}
+
+				// Reconstruct the route
+
+				if (!empty($route))
+				{
+					$result[] = $route;
+				}
+
+				$result = 'index.php?' . implode('&', $result);
+			}
 		}
 		else
 		{
-			$url = \JURI::getInstance();
-			$props = $url->getQuery(true);
-
-			// Strip 'index.php?'
-			if (substr($route, 0, 10) == 'index.php?')
-			{
-				$route = substr($route, 10);
-			}
-
-			// Parse route
-			$parts = array();
-			parse_str($route, $parts);
-			$result = array();
-
-			// Check to see if there is component information in the route if not add it
-
-			if (!isset($parts['option']) && isset($props['option']))
-			{
-				$result[] = 'option=' . $props['option'];
-			}
-
-			// Add the layout information to the route only if it's not 'default'
-
-			if (!isset($parts['view']) && isset($props['view']))
-			{
-				$result[] = 'view=' . $props['view'];
-
-				if (!isset($parts['layout']) && isset($props['layout']))
-				{
-					$result[] = 'layout=' . $props['layout'];
-				}
-			}
-
-			// Add the format information to the URL only if it's not 'html'
-
-			if (!isset($parts['format']) && isset($props['format']) && $props['format'] != 'html')
-			{
-				$result[] = 'format=' . $props['format'];
-			}
-
-			// Reconstruct the route
-
-			if (!empty($route))
-			{
-				$result[] = $route;
-			}
-
-			$result = 'index.php?' . implode('&', $result);
+			$result = $route;
 		}
 
 		return \JRoute::_($result);

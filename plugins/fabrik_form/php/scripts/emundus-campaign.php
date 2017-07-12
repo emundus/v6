@@ -16,7 +16,7 @@ include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
 $mprofile 	= new EmundusModelProfile;
 $app 		= JFactory::getApplication();
 $db 		= JFactory::getDBO();
-$user 		= JFactory::getUser();
+$user 		= JFactory::getSession()->get('emundusUser');
 
 $campaign_id = $_REQUEST['jos_emundus_campaign_candidature___campaign_id'];
 $fnum_tmp 	 = $_REQUEST['jos_emundus_campaign_candidature___fnum'];

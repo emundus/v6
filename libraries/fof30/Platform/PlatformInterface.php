@@ -7,9 +7,11 @@
 
 namespace FOF30\Platform;
 
+use Exception;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
 use FOF30\Input\Input;
+use Joomla\Registry\Registry;
 
 defined('_JEXEC') or die;
 
@@ -311,7 +313,7 @@ interface PlatformInterface
 	/**
 	 * Returns an object that holds the configuration of the current site.
 	 *
-	 * @return  \JRegistry
+	 * @return  Registry
 	 */
 	public function getConfig();
 
@@ -412,4 +414,75 @@ interface PlatformInterface
 	 * @return  void
 	 */
 	public function closeApplication($code = 0);
+
+	/**
+	 * Perform a redirection to a different page, optionally enqueuing a message for the user.
+	 *
+	 * @param   string  $url     The URL to redirect to
+	 * @param   int     $status  (optional) The HTTP redirection status code, default 301
+	 * @param   string  $msg     (optional) A message to enqueue
+	 * @param   string  $type    (optional) The message type, e.g. 'message' (default), 'warning' or 'error'.
+	 *
+	 * @return  void
+	 *
+	 * @throws  \Exception
+	 */
+	public function redirect($url, $status = 301, $msg = null, $type = 'message');
+
+	/**
+	 * Handle an exception in a way that results to an error page.
+	 *
+	 * @param   Exception  $exception  The exception to handle
+	 *
+	 * @throws  Exception  Possibly rethrown exception
+	 */
+	public function showErrorPage(Exception $exception);
+
+	/**
+	 * Set a variable in the user session
+	 *
+	 * @param   string  $name       The name of the variable to set
+	 * @param   string  $value      (optional) The value to set it to, default is null
+	 * @param   string  $namespace  (optional) The variable's namespace e.g. the component name. Default: 'default'
+	 *
+	 * @return  void
+	 */
+	public function setSessionVar($name, $value = null, $namespace = 'default');
+
+	/**
+	 * Get a variable from the user session
+	 *
+	 * @param   string  $name       The name of the variable to set
+	 * @param   string  $default    (optional) The default value to return if the variable does not exit, default: null
+	 * @param   string  $namespace  (optional) The variable's namespace e.g. the component name. Default: 'default'
+	 *
+	 * @return  mixed
+	 */
+	public function getSessionVar($name, $default = null, $namespace = 'default');
+
+	/**
+	 * Unset a variable from the user session
+	 *
+	 * @param   string  $name       The name of the variable to unset
+	 * @param   string  $namespace  (optional) The variable's namespace e.g. the component name. Default: 'default'
+	 *
+	 * @return  void
+	 */
+	public function unsetSessionVar($name, $namespace = 'default');
+
+	/**
+	 * Return the session token. Two types of tokens can be returned:
+	 *
+	 * Session token ($formToken == false): Used for anti-spam protection of forms. This is specific to a session
+	 *   object.
+	 *
+	 * Form token ($formToken == true): A secure hash of the user ID with the session token. Both the session and the
+	 *   user are fetched from the application container.
+	 *
+	 * @param   bool  $formToken  Should I return a form token?
+	 * @param   bool  $forceNew   Should I force the creation of a new token?
+	 *
+	 * @return  mixed
+	 */
+	public function getToken($formToken = false, $forceNew = false);
 }

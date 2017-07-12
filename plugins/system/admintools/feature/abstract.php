@@ -8,6 +8,7 @@
 defined('_JEXEC') or die;
 
 use Akeeba\AdminTools\Admin\Helper\Storage;
+use FOF30\Container\Container;
 use FOF30\Date\Date;
 
 class AtsystemFeatureAbstract
@@ -29,9 +30,6 @@ class AtsystemFeatureAbstract
 
 	/** @var   bool   Should I skip filtering (because of whitelisted IPs, WAF Exceptions etc) */
 	protected $skipFiltering = false;
-
-	/** @var \Akeeba\AdminTools\Admin\Helper\Plugin Common helper for all plugin features */
-	protected $helper = null;
 
 	/** @var   JApplicationWeb  The CMS application */
 	protected $app = null;
@@ -55,6 +53,13 @@ class AtsystemFeatureAbstract
 	private $timestamps = array();
 
 	/**
+	 * The container of the component
+	 *
+	 * @var   \FOF30\Container\Container
+	 */
+	protected $container;
+
+	/**
 	 * Public constructor. Creates the feature class.
 	 *
 	 * @param   JApplication                              $app               The CMS application
@@ -65,11 +70,12 @@ class AtsystemFeatureAbstract
 	 * @param   AtsystemUtilExceptionshandler             $exceptionsHandler Security exceptions handler class (or null if the feature is not implemented)
 	 * @param   array                                     $exceptions        A list of WAF exceptions
 	 * @param   bool                                      $skipFiltering     Should I skip the filtering?
-	 * @param   \Akeeba\AdminTools\Admin\Helper\Plugin    $helper            Common helper for all plugin features
+	 * @param   Container                                 $container         The component container
 	 * @param   plgSystemAdmintools                       $parentPlugin      The plugin we belong to
 	 */
-	public function __construct($app, $db, JRegistry &$params, Storage &$componentParams, JInput &$input, &$exceptionsHandler, array &$exceptions, &$skipFiltering, $helper, $parentPlugin)
+	public function __construct($app, $db, JRegistry &$params, Storage &$componentParams, JInput &$input, &$exceptionsHandler, array &$exceptions, &$skipFiltering, $container, $parentPlugin)
 	{
+		$this->container         = $container;
 		$this->app               = $app;
 		$this->db                = $db;
 		$this->params            = $params;
@@ -78,7 +84,6 @@ class AtsystemFeatureAbstract
 		$this->exceptionsHandler = $exceptionsHandler;
 		$this->exceptions        = $exceptions;
 		$this->skipFiltering     = $skipFiltering;
-		$this->helper            = $helper;
 		$this->parentPlugin      = $parentPlugin;
 	}
 
@@ -112,13 +117,13 @@ class AtsystemFeatureAbstract
 	protected function isAdminAccessAttempt($onlySubmit = false)
 	{
 		// Not back-end at all. Bail out.
-		if (!$this->helper->isBackend())
+		if (!$this->container->platform->isBackend())
 		{
 			return false;
 		}
 
 		// If the user is already logged in we don't have a login attempt
-		$user = JFactory::getUser();
+		$user = $this->container->platform->getUser();
 
 		if (!$user->guest)
 		{
@@ -170,7 +175,7 @@ class AtsystemFeatureAbstract
 		$myURI->setQuery('');
 
 		// Redirect
-		$this->app->redirect($myURI->toString());
+		$this->container->platform->redirect($myURI->toString());
 	}
 
 	/**
@@ -282,7 +287,7 @@ class AtsystemFeatureAbstract
 		$pk = 'timestamp_' . $key;
 		$timestamp = $date->toUnix();
 		$oldTimestamp = $this->getTimestamp($key); // Make sure the array is populated, do not remove
-		$db = JFactory::getDbo();
+		$db = $this->container->db;
 
 		// This is necessary because using an UPDATE query results in Joomla!
 		// throwing a JLIB_APPLICATION_ERROR_COMPONENT_NOT_LOADING or blank

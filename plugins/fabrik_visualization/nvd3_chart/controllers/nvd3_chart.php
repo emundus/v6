@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.nvd3_chart
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -20,7 +20,6 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik.visualization.nvd3_chart
  * @since       3.0
  */
-
 class FabrikControllerVisualizationNvd3_Chart extends FabrikControllerVisualization
 {
 }

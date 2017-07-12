@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -47,21 +47,9 @@ class FabrikViewForm extends FabrikViewFormBase
 
 		$listModel = $model->getListModel();
 
-		if (!$model->canPublish())
+		if (!$this->canAccess())
 		{
-			if (!$this->app->isAdmin())
-			{
-				echo FText::_('COM_FABRIK_FORM_NOT_PUBLISHED');
-
-				return false;
-			}
-		}
-
-		$this->access = $model->checkAccessFromListSettings();
-
-		if ($this->access == 0)
-		{
-			$this->app->enqueueMessage(FText::_('JERROR_ALERTNOAUTHOR'), 'error');
+			return false; 
 		}
 
 		if (is_object($listModel))

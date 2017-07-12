@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.media
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -20,7 +20,6 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik.visualization.media
  * @since       3.0
  */
-
 class FabrikControllerVisualizationmedia extends FabrikControllerVisualization
 {
 	/**
@@ -31,10 +30,8 @@ class FabrikControllerVisualizationmedia extends FabrikControllerVisualization
 	public function getPlaylist()
 	{
 		$model = $this->getModel('media');
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$usersConfig = JComponentHelper::getParams('com_fabrik');
-		$id = $input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0)), 'get');
+		$conf  = JComponentHelper::getParams('com_fabrik');
+		$id    = $this->input->getInt('id', $conf->get('visualizationid', $this->input->getInt('visualizationid', 0)));
 		$model->setId($id);
 		$model->getVisualization();
 		echo $model->getPlaylist();

@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.list.inlineedit
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -89,10 +89,10 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 	 */
 	public function loadJavascriptClass_result()
 	{
-		$ext = FabrikHelperHTML::isDebug() ? '.js' : '-min.js';
+		$mediaFolder = FabrikHelperHTML::getMediaFolder();
 		$src = parent::loadJavascriptClass_result();
-
-		return array($src, 'media/com_fabrik/js/element' . $ext);
+		$src['element'] = $mediaFolder . '/element.js';
+		return $src;
 	}
 
 	/**
@@ -206,8 +206,18 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 		$opts->showSave = (bool) $params->get('inline_show_save', true);
 		$opts->loadFirst = (bool) $params->get('inline_load_first', false);
 		$opts = json_encode($opts);
-		$this->jsInstance = "new FbListInlineEdit($opts)";
+		$this->jsInstance = "new FbListInlineedit($opts)";
 
 		return true;
+	}
+
+	/**
+	 * Load the AMD module class name
+	 *
+	 * @return string
+	 */
+	public function loadJavascriptClassName_result()
+	{
+		return 'FbListInlineedit';
 	}
 }

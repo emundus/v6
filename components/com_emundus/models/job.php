@@ -216,7 +216,7 @@ class EmundusModelJob extends JModelItem {
         $db->setQuery($query);
         $attachments = $db->loadObjectList();
 
-        if(count($attachments)>0){
+        if (count($attachments)>0) {
             foreach($attachments as $attachment){
                 unlink(EMUNDUS_PATH_ABS.$attachment->user_id.DS.$attachment->filename);
             }
@@ -244,7 +244,9 @@ class EmundusModelJob extends JModelItem {
      * @since   1.6
      */
     public function apply($user_id, $job_id) {
-        $user = JFactory::getUser($user_id);
+        include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
+        $modelProfile = new EmundusModelProfile;
+        $user = $modelProfile->getEmundusUser($user_id);
         $current_user = JFactory::getUser();
         $db = JFactory::getDbo();
 

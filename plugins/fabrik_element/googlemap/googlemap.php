@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.googlemap
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -64,7 +64,10 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 	 */
 	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
-		$listModel = $this->getListModel();
+        $profiler = JProfiler::getInstance('Application');
+        JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
+
+        $listModel = $this->getListModel();
 		$params = $this->getParams();
 		$w = (int) $params->get('fb_gm_table_mapwidth');
 		$h = (int) $params->get('fb_gm_table_mapheight');
@@ -101,7 +104,7 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 			}
 		}
 
-		return $this->renderListDataFinal($data);
+		return $this->renderListDataFinal($data, $opts);
 	}
 
 	/**
@@ -272,49 +275,6 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 	}
 
 	/**
-	 * Get the class to manage the form element
-	 * to ensure that the file is loaded only once
-	 *
-	 * @param   array   &$srcs   Scripts previously loaded
-	 * @param   string  $script  Script to load once class has loaded
-	 * @param   array   &$shim   Dependant class names to load before loading the class - put in requirejs.config shim
-	 *
-	 * @return void|boolean
-	 */
-	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
-	{
-		$params = $this->getParams();
-		$geocode = $params->get('fb_gm_geocode', '0');
-		$geocode_event = $params->get('fb_gm_geocode_event', 'button');
-
-		$s = new stdClass;
-		$s->deps = array('fab/element');
-
-		if ($geocode !== '0' && $geocode_event === 'change')
-		{
-			$folder = 'fab/lib/debounce/';
-			$s->deps[] = $folder . 'jquery.ba-throttle-debounce';
-		}
-
-		if (count($s->deps) > 1)
-		{
-			if (array_key_exists('element/googlemap/googlemap', $shim))
-			{
-				$shim['element/googlemap/googlemap']->deps = array_merge($shim['element/googlemap/googlemap']->deps, $s->deps);
-			}
-			else
-			{
-				$shim['element/googlemap/googlemap'] = $s;
-			}
-		}
-
-		parent::formJavascriptClass($srcs, $script, $shim);
-
-		return false;
-	}
-
-
-	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
 	 * @param   int  $repeatCounter  Repeat group counter
@@ -339,7 +299,7 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		$this->OSRefJs();
 
 		$mapShown = $this->isEditable() || (!$this->isEditable() && $v != '');
-
+		$opts->mapShown = $mapShown;
 		$opts->lat = (float) $o->coords[0];
 		$opts->lon = (float) $o->coords[1];
 		$opts->lat_dms = (float) $dms->coords[0];
@@ -385,6 +345,9 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 					$opts->geocode_fields[] = $field_id;
 				}
 			}
+
+			// remove any duplicates in case they have misunderstood and selected the same element for all fields
+			$opts->geocode_fields = array_values(array_unique($opts->geocode_fields));
 		}
 
 		$opts->reverse_geocode = $params->get('fb_gm_reverse_geocode', '0') == '0' ? false : true;
@@ -443,6 +406,10 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		{
 			$opts->directionsFrom = false;
 		}
+
+		$config = JComponentHelper::getParams('com_fabrik');
+		$apiKey = $config->get('google_api_key', '');
+		$opts->key = empty($apiKey) ? false : $apiKey;
 
 		return array('FbGoogleMap', $id, $opts);
 	}
@@ -533,6 +500,7 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		if (!isset(self::$usestatic))
 		{
 			$params = $this->getParams();
+			$static = $params->get('fb_gm_staticmap');
 
 			// Requires you to have installed the pda plugin
 			// http://joomup.com/blog/2007/10/20/pdaplugin-joomla-15/
@@ -542,7 +510,7 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 			}
 			else
 			{
-				self::$usestatic = ($params->get('fb_gm_staticmap') == '1' && !$this->isEditable());
+				self::$usestatic = ($static == '1' || $static == '3') && !$this->isEditable();
 			}
 		}
 
@@ -808,7 +776,7 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		$layout = $this->getLayout('static');
 		$displayData = new stdClass;
 
-		if (!$tableView || ($tableView && $params->get('fb_gm_staticmap_tableview', '0') === '1'))
+		if ((!$tableView && $params->get('fb_gm_staticmap') == '1') || ($tableView && $params->get('fb_gm_staticmap_tableview', '0') === '1'))
 		{
 			$displayData->src = Fabimage::cacheRemote($src, $folder, $file);
 
@@ -955,5 +923,48 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		}
 
 		return $this->default;
+	}
+
+
+	/**
+	 * Used to format the data when shown in the form's email
+	 *
+	 * @param   mixed $value         element's data
+	 * @param   array $data          form records data
+	 * @param   int   $repeatCounter repeat group counter
+	 *
+	 * @return  string    formatted value
+	 */
+	public function getEmailValue($value, $data = array(), $repeatCounter = 0)
+	{
+		if ($this->inRepeatGroup && is_array($value))
+		{
+			$val = array();
+
+			foreach ($value as $v2)
+			{
+				$val[] = $this->getIndEmailValue($v2, $data, $repeatCounter);
+			}
+		}
+		else
+		{
+			$val = $this->getIndEmailValue($value, $data, $repeatCounter);
+		}
+
+		return $val;
+	}
+
+	/**
+	 * Turn form value into email formatted value
+	 *
+	 * @param   mixed $value         Element value
+	 * @param   array $data          Form data
+	 * @param   int   $repeatCounter Group repeat counter
+	 *
+	 * @return  string  email formatted value
+	 */
+	protected function getIndEmailValue($value, $data = array(), $repeatCounter = 0)
+	{
+		return $this->_staticMap($value, null, null, null, $repeatCounter, false, $data);
 	}
 }

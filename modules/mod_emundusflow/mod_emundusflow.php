@@ -14,7 +14,7 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-$user = JFactory::getUser();
+$user = JFactory::getSession()->get('emundusUser');
 
 if (isset($user->fnum) && !empty($user->fnum)) {
 
@@ -27,9 +27,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
 	// overide css
 	$header_class = $params->get('header_class', '');
-	if (!empty($header_class)) {
+	if (!empty($header_class))
 		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$header_class.".css" );
-	}
 	$jinput = JFactory::getApplication()->input;
 	$option = $jinput->get('option');
 	$view = $jinput->get('view');

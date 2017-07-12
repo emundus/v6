@@ -43,7 +43,7 @@ class CheckTempAndLogDirectories extends Model
 	 */
 	private function checkTmpFolder()
 	{
-		$config = JFactory::getConfig();
+		$config = $this->container->platform->getConfig();
 		$tmpDir = $config->get('tmp_path');
 
 		// If the folder is ok, let's stop here
@@ -124,7 +124,7 @@ Deny from all
 
 	private function checkLogFolder()
 	{
-		$config = JFactory::getConfig();
+		$config = $this->container->platform->getConfig();
 		$logDir = $config->get('log_path');
 
 		// If the folder is ok, let's stop here
@@ -280,7 +280,7 @@ Deny from all
 
 	private function saveConfigurationValue($key, $value)
 	{
-		$config = JFactory::getConfig();
+		$config = $this->container->platform->getConfig();
 		$config->set($key, $value);
 
 		// Attempt to write the configuration file as a PHP class named JConfig.

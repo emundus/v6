@@ -22,7 +22,7 @@ if (!empty($path))
 	<input type="hidden" name="option" value="com_admintools"/>
 	<input type="hidden" name="view" value="ConfigureFixPermissions"/>
 	<input type="hidden" name="task" value="savedefaults"/>
-	<input type="hidden" name="<?php echo $this->escape(JFactory::getSession()->getFormToken()); ?>" value="1"/>
+	<input type="hidden" name="<?php echo $this->container->platform->getToken(true); ?>" value="1"/>
 
 	<h4><?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_DEFAULTS'); ?></h4>
 
@@ -78,7 +78,7 @@ if (!empty($path))
 	<input type="hidden" name="view" value="ConfigureFixPermissions"/>
 	<input type="hidden" name="task" value="saveperms"/>
 	<input type="hidden" name="path" value="<?php echo $this->escape($this->at_path); ?>"/>
-	<input type="hidden" name="<?php echo $this->escape(JFactory::getSession()->getFormToken()); ?>" value="1"/>
+	<input type="hidden" name="<?php echo $this->container->platform->getToken(true); ?>" value="1"/>
 
 	<input type="submit" class="btn btn-success" value="<?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_SAVEPERMS'); ?>"/>
 	<input type="submit" class="btn btn-warning"

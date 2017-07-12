@@ -18,7 +18,7 @@ $lang = JFactory::getLanguage();
 	<input type="hidden" name="option" value="com_admintools"/>
 	<input type="hidden" name="view" value="SEOAndLinkTools"/>
 	<input type="hidden" name="task" value="save"/>
-	<input type="hidden" name="<?php echo $this->escape(JFactory::getSession()->getFormToken()); ?>" value="1"/>
+	<input type="hidden" name="<?php echo $this->container->platform->getToken(true); ?>" value="1"/>
 
 	<fieldset>
 		<legend><?php echo \JText::_('COM_ADMINTOOLS_LBL_SEOANDLINKTOOLS_OPTGROUP_MIGRATION'); ?></legend>

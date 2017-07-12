@@ -12,7 +12,7 @@ defined( '_JEXEC' ) or die();
  * See COPYRIGHT.php for copyright notices and details.
  * @description Calcul du resultat du QCM
  */
-$user = JFactory::getUser();
+$user = JFactory::getSession()->get('emundusUser');
 $db   	= JFactory::getDBO();
 $mainframe = JFactory::getApplication();
 $jinput = $mainframe->input;

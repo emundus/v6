@@ -120,14 +120,14 @@ if ($campaign_id > 0)
 	}
 			
 	// Insert data in #__emundus_users_profiles_history
-	$query = 'INSERT INTO #__emundus_users_profiles_history (user_id, profile_id, var) VALUES ('.$user->id.','.$profile.',"profile")';
+	/*$query = 'INSERT INTO #__emundus_users_profiles_history (user_id, profile_id, var) VALUES ('.$user->id.','.$profile.',"profile")';
 	$db->setQuery($query);
 	try {
 		$db->execute();
 	} catch (Exception $e) {
 		// catch any database errors.
 		exit();
-	}
+	}*/
 
 	//$app->redirect('index.php?option=com_emundus&view=files&Itemid='.$itemid.'#'.$fnum);
 }

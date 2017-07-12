@@ -26,7 +26,7 @@ class EmundusControllerThesis extends EmundusController {
     public function apply()
     {
         $app = JFactory::getApplication();
-        $user = JFactory::getUser();
+        $user = JFactory::getSession()->get('emundusUser');
 
         // Get the previous edit id (if any) and the current edit id.
         //$previousId = (int) $app->getUserState('com_emundus.edit.thesis.id');
@@ -63,7 +63,7 @@ class EmundusControllerThesis extends EmundusController {
     public function display($cachable = false, $urlparams = false)
     {
         $app = JFactory::getApplication();
-        $user = JFactory::getUser();
+        $user = JFactory::getSession()->get('emundusUser');
 
         $thesisId = $app->input->getInt('id', null, 'array');
         $fnum = $app->input->get('fnum', null, 'ALNUM');
@@ -86,7 +86,7 @@ class EmundusControllerThesis extends EmundusController {
     public function cancel()
     {
         $app = JFactory::getApplication();
-        $user = JFactory::getUser();
+        $user = JFactory::getSession()->get('emundusUser');
 
         $thesisId = $app->input->getInt('id', null, 'array');
         $fnum = $app->input->get('fnum', null, 'ALNUM');
@@ -123,14 +123,12 @@ class EmundusControllerThesis extends EmundusController {
         $model = $this->getModel('Thesis', 'EmundusModel');
 
         // Check out the item
-        if ($editId) {
+        if ($editId)
             $model->checkout($editId);
-        }
 
         // Check in the previous user.
-        if ($previousId && $previousId !== $editId) {
+        if ($previousId && $previousId !== $editId)
             $model->checkin($previousId);
-        }
 
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesisform&layout=edit', false));
@@ -147,7 +145,7 @@ class EmundusControllerThesis extends EmundusController {
         $app = JFactory::getApplication();
 
         //Checking if the user can remove object
-        $user = JFactory::getUser();
+        $user = JFactory::getSession()->get('emundusUser');
         if ($user->authorise('core.edit', 'com_emundus') || $user->authorise('core.edit.state', 'com_emundus')) {
             $model = $this->getModel('Thesis', 'EmundusModel');
 
@@ -159,9 +157,8 @@ class EmundusControllerThesis extends EmundusController {
             $return = $model->publish($id, $state);
 
             // Check for errors.
-            if ($return === false) {
+            if ($return === false)
                 $this->setMessage(JText::sprintf('Save failed: %s', $model->getError()), 'warning');
-            }
 
             // Clear the profile id from the session.
             $app->setUserState('com_emundus.edit.thesis.id', null);
@@ -174,9 +171,7 @@ class EmundusControllerThesis extends EmundusController {
             $menu = & JSite::getMenu();
             $item = $menu->getActive();
             $this->setRedirect(JRoute::_($item->link, false));
-        } else {
-            throw new Exception(500);
-        }
+        } else throw new Exception(500);
     }
 
     public function remove() {
@@ -185,7 +180,7 @@ class EmundusControllerThesis extends EmundusController {
         $app = JFactory::getApplication();
 
         //Checking if the user can remove object
-        $user = JFactory::getUser();
+        $user = JFactory::getSession()->get('emundusUser');
         if ($user->authorise($user->authorise('core.delete', 'com_emundus'))) {
             $model = $this->getModel('Thesis', 'EmundusModel');
 
@@ -201,9 +196,8 @@ class EmundusControllerThesis extends EmundusController {
                 $this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
             } else {
                 // Check in the profile.
-                if ($return) {
+                if ($return)
                     $model->checkin($return);
-                }
 
                 // Clear the profile id from the session.
                 $app->setUserState('com_emundus.edit.thesis.id', null);
@@ -218,9 +212,7 @@ class EmundusControllerThesis extends EmundusController {
             $menu = & JSite::getMenu();
             $item = $menu->getActive();
             $this->setRedirect(JRoute::_($item->link, false));
-        } else {
-            throw new Exception(500);
-        }
+        } else throw new Exception(500);
     }
 
 }

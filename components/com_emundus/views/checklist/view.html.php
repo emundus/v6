@@ -28,12 +28,11 @@ class EmundusViewChecklist extends JViewLegacy
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 		
-		$this->_user = JFactory::getUser();
+		$this->_user = JFactory::getSession()->get('emundusUser');
 		$this->_db = JFactory::getDBO();
 
-		if (!EmundusHelperAccess::isApplicant($this->_user->id)) {
+		if (!EmundusHelperAccess::isApplicant($this->_user->id))
 			die(JText::_('ACCESS_DENIED'));
-		}
 		
 		parent::__construct($config);
 	}

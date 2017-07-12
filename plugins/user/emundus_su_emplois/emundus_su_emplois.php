@@ -43,7 +43,7 @@ class plgUserEmundus_su_emplois extends JPlugin
 
 
         if (!$app->isAdmin()) {
-            $current_user   = JFactory::getUser();
+            $current_user = JFactory::getSession()->get('emundusUser');
             if (EmundusHelperAccess::isApplicant($current_user->id)) {
                 if ($current_user->code == "utc-dfp-dri") {
                     $app->redirect("index.php?option=com_emundus&view=jobs&Itemid=1468");

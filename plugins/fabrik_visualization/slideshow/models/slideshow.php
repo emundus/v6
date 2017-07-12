@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.slideshow
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -213,6 +213,13 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 				}
 
 				$picData = str_replace("\\", "/", $picData);
+
+                // just in case ...
+                if (!JFile::exists(JPATH_SITE . $picData))
+                {
+                    continue;
+                }
+
 				$pic_opts = array();
 
 				if (!empty($slideshow_viz_caption) && isset($pic->$slideshow_viz_caption))
@@ -240,6 +247,8 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 				}
 			}
 		}
+
+		$this->totalPics = count($js_opts);
 
 		return $js_opts;
 	}

@@ -17,7 +17,7 @@ require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 
 $current_user = JFactory::getUser();
-if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
+if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	echo "<script>window.setTimeout('closeme();', 1500); function closeme() { parent.SqueezeBox.close(); }</script>";
 	die('<h1><img src="'.$this->baseurl.'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>');
 } else {

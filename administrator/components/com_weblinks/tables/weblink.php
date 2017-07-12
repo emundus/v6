@@ -1,9 +1,9 @@
 <?php
 /**
  * @package     Joomla.Administrator
- * @subpackage  com_weblinks
+ * @subpackage  Weblinks
  *
- * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2017 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -45,7 +45,7 @@ class WeblinksTableWeblink extends JTable
 	/**
 	 * Overload the store method for the Weblinks table.
 	 *
-	 * @param   boolean	Toggle whether null values should be updated.
+	 * @param   boolean  $updateNulls  Toggle whether null values should be updated.
 	 *
 	 * @return  boolean  True on success, false on failure.
 	 *
@@ -122,7 +122,7 @@ class WeblinksTableWeblink extends JTable
 			return false;
 		}
 
-		// check for valid name
+		// Check for valid name
 		if (trim($this->title) == '')
 		{
 			$this->setError(JText::_('COM_WEBLINKS_ERR_TABLES_TITLE'));

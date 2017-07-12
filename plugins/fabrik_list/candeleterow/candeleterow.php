@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.list.candeleterow
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -45,6 +45,7 @@ class PlgFabrik_ListCandeleterow extends PlgFabrik_List
 	public function onCanDelete($row)
 	{
 		$params = $this->getParams();
+		static $results = array();
 
 		// If $row is null, we were called from the table's canEdit() in a per-table rather than per-row context,
 		// and we don't have an opinion on per-table delete permissions, so just return true.
@@ -62,6 +63,29 @@ class PlgFabrik_ListCandeleterow extends PlgFabrik_List
 			$data = $row[0];
 		}
 
+		if (isset($data->__pk_val))
+		{
+			$pkVal = $data->__pk_val;
+		}
+		else
+		{
+			$dbPrimaryKey = $this->getModel()->getPrimaryKey(true);
+			if (isset($data->$dbPrimaryKey))
+			{
+				$pkVal = $data->$dbPrimaryKey;
+			}
+			else
+			{
+				// probably a new form, so nope, no rowid, can't delete
+				return false;
+			}
+		}
+
+		if (array_key_exists($pkVal, $results))
+		{
+			return $results[$pkVal];
+		}
+
 		$field = str_replace('.', '___', $params->get('candeleterow_field'));
 
 		// If they provided some PHP to eval, we ignore the other settings and just run their code
@@ -70,7 +94,7 @@ class PlgFabrik_ListCandeleterow extends PlgFabrik_List
 		// $$$ rob if no can delete field selected in admin return true
 		if (trim($field) == '' && trim($canDeleteRowEval) == '')
 		{
-			return true;
+			$results[$pkVal] = true;
 		}
 
 		if (!empty($canDeleteRowEval))
@@ -81,8 +105,7 @@ class PlgFabrik_ListCandeleterow extends PlgFabrik_List
 			FabrikWorker::clearEval();
 			$canDeleteRowEval = @eval($canDeleteRowEval);
 			FabrikWorker::logEval($canDeleteRowEval, 'Caught exception on eval in can delete row : %s');
-
-			return $canDeleteRowEval;
+			$results[$pkVal] = $canDeleteRowEval;
 		}
 		else
 		{
@@ -97,22 +120,24 @@ class PlgFabrik_ListCandeleterow extends PlgFabrik_List
 
 			if (!isset($data->$field))
 			{
-				return false;
+				$results[$pkVal] = false;
 			}
-
-			switch ($operator)
+			else
 			{
-				case '=':
-				default:
-
-					return $data->$field == $value;
-					break;
-				case "!=":
-
-					return $data->$field != $value;
-					break;
+				switch ($operator)
+				{
+					case '=':
+					default:
+						$results[$pkVal] = $data->$field == $value;
+						break;
+					case "!=":
+						$results[$pkVal] = $data->$field != $value;
+						break;
+				}
 			}
 		}
+
+		return $results[$pkVal];
 	}
 
 	/**

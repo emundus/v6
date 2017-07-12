@@ -32,7 +32,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
         //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
         //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
         
-        $this->_user = JFactory::getUser();
+        $this->_user = JFactory::getSession()->get('emundusUser');
         $this->_db = JFactory::getDBO();
         
         parent::__construct($config);
@@ -69,24 +69,18 @@ class EmundusControllerCampaign extends JControllerLegacy {
         $mcampaign = $this->getModel('campaign');   
         $mprogramme = $this->getModel('programme');   
 
-        if( !EmundusHelperAccess::asCoordinatorAccessLevel($user->id) )
-        {
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        }
-        else
-        {
+        } else {
             $programmes = $mprogramme->getProgrammes(1);
 
-            if (count($programmes) > 0) {
+            if (count($programmes) > 0)
                 $result = $mcampaign->addCampaignsForProgrammes($data, $programmes);
-            } else {
-                $result = false;
-            }
-            if($result === false)
+            else $result = false;
+            if ($result === false)
                 $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_CAMPAIGNS'), 'data' => $result);
-            else
-                $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_CAMPAIGNS_ADDED'), 'data' => $result);
+            else $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_CAMPAIGNS_ADDED'), 'data' => $result);
         }
         echo json_encode((object)$tab);
         exit;

@@ -28,6 +28,14 @@
 				label="PLG_LIST_EMAIL_IMAGE_LABEL"
 				repeat="true" size="20"
 			/>
+
+			<field name="list_email_additional_qs"
+			       type="text"
+			       default=""
+			       description="PLG_LIST_EMAIL_ADDITIONAL_QS_DESC"
+			       label="PLG_LIST_EMAIL_ADDITIONAL_QS_LABEL"
+			       repeat="true" size="20"
+			/>
 							
 			<field name="emailtable_condition"
 				type="fabrikeditor"
@@ -231,6 +239,14 @@
 				table="params_emailtable_to_table_table"
 				label="PLG_LIST_EMAIL_TO_TABLE_NAME_LABEL"
 				description="PLG_LIST_EMAIL_TO_TABLE_NAME_DESC"
+			/>
+
+			<field name="emailtable_to_table_where"
+			       description="PLG_LIST_EMAIL_TO_TABLE_WHERE_LABEL"
+			       label="PLG_LIST_EMAIL_TO_TABLE_WHERE_LABEL"
+			       repeat="true"
+			       type="fabrikeditor"
+			       mode="sql"
 			/>
 			
 		</fieldset>

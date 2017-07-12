@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.1
  */
@@ -38,7 +38,7 @@ if ($this->canGroupBy) :
 		$displayData->links[] = '<a data-groupby="' . $obj->group_by . '" href="' . $url . '">' . $obj->label . '</a>';
 	endforeach;
 
-	$layout = FabrikHelperHTML::getLayout('fabrik-nav-dropdown');
+	$layout = $this->getModel()->getLayout('fabrik-nav-dropdown');
 	echo $layout->render($displayData);
 	?>
 
@@ -89,7 +89,7 @@ if ($this->showCSVImport || $this->showCSV) :?>
 	if ($this->showCSV) :
 		$displayData->links[] = '<a href="#" class="csvExportButton">' . FabrikHelperHTML::icon('icon-upload', FText::_('COM_FABRIK_EXPORT_TO_CSV')) . '</a>';
 	endif;
-	$layout = FabrikHelperHTML::getLayout('fabrik-nav-dropdown');
+	$layout = $this->getModel()->getLayout('fabrik-nav-dropdown');
 	echo $layout->render($displayData);
 	?>
 

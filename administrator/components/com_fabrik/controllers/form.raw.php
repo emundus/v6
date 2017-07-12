@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
@@ -50,6 +50,20 @@ class FabrikAdminControllerForm extends JControllerForm
 	}
 
 	/**
+	 * Save a form's page to the session table
+	 *
+	 * @return  null
+	 */
+	public function savepage()
+	{
+		$input     = $this->input;
+		$model     = $this->getModel('Formsession', 'FabrikFEModel');
+		$formModel = $this->getModel('Form', 'FabrikFEModel');
+		$formModel->setId($input->getInt('formid'));
+		$model->savePage($formModel);
+	}
+
+	/**
 	 * Handle saving posted form data from the admin pages
 	 *
 	 * @return  void
@@ -86,7 +100,7 @@ class FabrikAdminControllerForm extends JControllerForm
 			// If its in a module with ajax or in a package or inline edit
 			if ($input->get('fabrik_ajax'))
 			{
-				if ($input->getInt('elid') !== 0)
+				if ($input->getInt('elid', 0) !== 0)
 				{
 					// Inline edit
 					$eMsgs = array();

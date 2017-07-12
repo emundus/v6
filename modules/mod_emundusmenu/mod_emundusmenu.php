@@ -26,25 +26,23 @@ foreach($files as $file) {
 */
 $display_applicant_menu = $params->get('display_applicant_menu', 1);
 
-$user	= JFactory::getUser();
+$user = JFactory::getSession()->get('emundusUser');
 
 if (!empty($user->fnum) && $display_applicant_menu==0)
 	return;
 
 $list = array();
-if (isset($user->menutype)) {	
-	$list	= modEmundusMenuHelper::getList($params);
-}
-$app	= JFactory::getApplication();
-$menu	= $app->getMenu();
+if (isset($user->menutype))
+	$list = modEmundusMenuHelper::getList($params);
+$app = JFactory::getApplication();
+$menu = $app->getMenu();
 $active	= $menu->getActive();
 $active_id = isset($active) ? $active->id : $menu->getDefault()->id;
-$path	= isset($active) ? $active->tree : array();
-$showAll	= $params->get('showAllChildren');
-$class_sfx	= htmlspecialchars($params->get('class_sfx'));
+$path = isset($active) ? $active->tree : array();
+$showAll = $params->get('showAllChildren');
+$class_sfx = htmlspecialchars($params->get('class_sfx'));
 
-if(count($list)) {
+if (count($list))
 	require JModuleHelper::getLayoutPath('mod_emundusmenu', $params->get('layout', 'default'));
-}
 
 ?>

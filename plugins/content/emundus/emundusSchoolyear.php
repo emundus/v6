@@ -73,8 +73,8 @@ class plgContentemundusSchoolyear extends JPlugin
 	function checkProcess( $match )
 	{
 		global $mainframe;
-		$user =& JFactory::getUser();
-		if($user->profile <= 2) {
+		$user =& JFactory::getSession()->get('emundusUser');
+		if ($user->profile <= 2) {
 			JHTML::_('behavior.tooltip'); 
 			JHTML::_('behavior.modal');
 			$baseurl = JURI::base();
@@ -88,12 +88,10 @@ class plgContentemundusSchoolyear extends JPlugin
 			$match = trim($match, "}");
 			$match = explode(" ", $match);
 			array_shift($match);
-			$user = JFactory::getUser();
 	
 			foreach ($match as $m) {
 				$m = explode("=", $m);
-				switch ($m[0])
-				{
+				switch ($m[0]) {
 					case 'usekey':
 						$usekey = $m[1];
 						break;

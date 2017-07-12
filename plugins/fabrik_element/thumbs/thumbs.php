@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.thumbs
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -70,7 +70,10 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 	 */
 	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
-		$input = $this->app->input;
+        $profiler = JProfiler::getInstance('Application');
+        JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
+
+        $input = $this->app->input;
 		$j3 = FabrikWorker::j3();
 		$params = $this->getParams();
 		$imagePath = COM_FABRIK_LIVESITE . 'plugins/fabrik_element/thumbs/images/';
@@ -252,7 +255,7 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 			return '';
 		}
 
-		$listId = $this->getlistModel()->getTable()->id;
+		$listId = $this->getListModel()->getTable()->id;
 		$formModel = $this->getFormModel();
 		$formId = isset($this->formid) ? $this->formid : $formModel->getId();
 		$rowId = $input->getInt('commentId', $formModel->getRowId());
@@ -738,7 +741,7 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 	{
 		$db = FabrikWorker::getDbo();
 		$query = "CREATE TABLE IF NOT EXISTS  `#__{package}_thumbs` (
-	`user_id` VARCHAR( 255 ) NOT NULL ,
+	`user_id` VARCHAR( 40 ) NOT NULL ,
 	`listid` INT( 6 ) NOT NULL ,
 	`formid` INT( 6 ) NOT NULL ,
 	`row_id` INT( 6 ) NOT NULL ,

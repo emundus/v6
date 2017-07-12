@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -33,7 +33,7 @@ class FabrikControllerList extends JControllerLegacy
 	/**
 	 * Display the view
 	 *
-	 * @param   object          $model      List model
+	 * @param   object|boolean  $model      List model
 	 * @param   array|boolean   $urlparams  An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
 	 *
 	 * @return  null
@@ -293,6 +293,13 @@ class FabrikControllerList extends JControllerLegacy
 		$format = $input->get('format', 'html');
 		$defaultRef = 'index.php?option=com_' . $package . '&view=list&listid=' . $model->getId() . '&format=' . $format;
 
+		$itemid = $input->get('Itemid', '');
+
+		if (!empty($itemid))
+		{
+			$defaultRef .= '&Itemid=' . $itemid;
+		}
+
 		if ($format !== 'raw')
 		{
 			$ref = $input->post->get('fabrik_referrer', $defaultRef, 'string');
@@ -305,7 +312,7 @@ class FabrikControllerList extends JControllerLegacy
 		}
 		else
 		{
-			$ref = $defaultRef;
+			$ref = $defaultRef . '&setListRefFromRequest=1&listref=' . $model->getRenderContext();
 		}
 
 		$app->redirect($ref);

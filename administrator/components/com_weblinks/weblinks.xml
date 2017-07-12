@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="3.1" method="upgrade">
+<extension type="component" version="3.5" method="upgrade">
 	<name>com_weblinks</name>
 	<author>Joomla! Project</author>
-	<creationDate>2016-03-22</creationDate>
-	<copyright>(C) 2005 - 2016 Open Source Matters. All rights reserved.</copyright>
+	<creationDate>2017-03-08</creationDate>
+	<copyright>(C) 2005 - 2017 Open Source Matters. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>admin@joomla.org</authorEmail>
 	<authorUrl>www.joomla.org</authorUrl>
-	<version>3.5.0</version>
+	<version>3.6.0</version>
 	<description>COM_WEBLINKS_XML_DESCRIPTION</description>
 	<scriptfile>script.php</scriptfile>
 
@@ -34,14 +34,14 @@
 	</update>
 
 	<files folder="components/com_weblinks">
-		<file>weblinks.php</file>
-<folder>helpers</folder>
+		<file>controller.php</file>
 <folder>controllers</folder>
-<file>controller.php</file>
-<folder>views</folder>
-<file>router.php</file>
+<folder>helpers</folder>
 <file>metadata.xml</file>
 <folder>models</folder>
+<file>router.php</file>
+<folder>views</folder>
+<file>weblinks.php</file>
 	</files>
 	<languages folder="language">
 		<language tag="en-GB">en-GB/en-GB.com_weblinks.ini</language>
@@ -59,18 +59,18 @@
 				view="categories" img="class:weblinks-cat" alt="Weblinks/Categories">com_weblinks_categories</menu>
 		</submenu>
 		<files folder="administrator/components/com_weblinks">
-			<file>weblinks.php</file>
-<folder>helpers</folder>
-<folder>tables</folder>
-<folder>controllers</folder>
-<file>controller.php</file>
-<folder>views</folder>
-<file>weblinks.xml</file>
-<folder>sql</folder>
-<file>script.php</file>
+			<file>access.xml</file>
 <file>config.xml</file>
-<file>access.xml</file>
+<file>controller.php</file>
+<folder>controllers</folder>
+<folder>helpers</folder>
 <folder>models</folder>
+<file>script.php</file>
+<folder>sql</folder>
+<folder>tables</folder>
+<folder>views</folder>
+<file>weblinks.php</file>
+<file>weblinks.xml</file>
 		</files>
 		<languages folder="administrator/language">
 			<language tag="en-GB">en-GB/en-GB.com_weblinks.ini</language>

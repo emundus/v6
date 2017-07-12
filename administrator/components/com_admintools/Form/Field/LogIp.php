@@ -26,7 +26,7 @@ class LogIp extends Text
 
 		$html = '<a href="'.$link.'" target="_blank" class="btn btn-mini btn-info"><i class="icon-search icon-white"></i></a>&nbsp;';
 
-		$token = \JFactory::getSession()->getFormToken();
+		$token = $this->form->getContainer()->platform->getToken(true);
 
 		if($item->block)
 		{

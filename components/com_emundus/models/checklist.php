@@ -39,7 +39,7 @@ class EmundusModelChecklist extends JModelList
 			$res = $this->_db->loadObject();
 			$this->_user->profile = $res->profile;
 		} else {
-			$this->_user = JFactory::getUser();
+			$this->_user = JFactory::getSession()->get('emundusUser');
 		}
 		//echo $this->_user->usertype;
 	}

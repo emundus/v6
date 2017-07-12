@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.list.download
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -141,6 +141,11 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 			foreach ($ids AS $id)
 			{
 				$row = $model->getRow($id);
+
+				if (!$model->canView($row))
+				{
+					continue;
+				}
 
 				foreach ($downloadFiles as $dl)
 				{
@@ -366,6 +371,13 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 
 		foreach ($ids as $rowId)
 		{
+			$row = $model->getRow($rowId);
+
+			if (!$model->canView($row))
+			{
+				continue;
+			}
+
 			$p = tempnam($this->config->get('tmp_path'), 'download_');
 
 			if (empty($p))
@@ -377,6 +389,12 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 			$p .= '.pdf';
 
 			$url        = COM_FABRIK_LIVESITE . 'index.php?option=com_fabrik&view=details&formid=' . $formId . '&rowid=' . $rowId . '&format=pdf';
+
+			if (FabrikHelperHTML::isDebug())
+			{
+				$url .= '&XDEBUG_SESSION_START=PHPSTORM';
+			}
+
 			$pdfContent = file_get_contents($url);
 
 			JFile::write($p, $pdfContent);
@@ -385,5 +403,15 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 		}
 
 		return $pdfFiles;
+	}
+
+	/**
+	 * Load the AMD module class name
+	 *
+	 * @return string
+	 */
+	public function loadJavascriptClassName_result()
+	{
+		return 'FbListDownload';
 	}
 }

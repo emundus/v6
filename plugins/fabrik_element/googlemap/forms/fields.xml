@@ -188,7 +188,8 @@
 				default="1"
 				description="PLG_ELEMENT_GOOGLE_MAP_STATIC_MAP_DESC"
 				label="PLG_ELEMENT_GOOGLE_MAP_STATIC_MAP_LABEL">
-					<option value="1">PLG_ELEMENT_GOOGLE_MAP_STATIC</option>
+					<option value="1">PLG_ELEMENT_GOOGLE_MAP_STATIC_CACHED</option>
+					<option value="3">PLG_ELEMENT_GOOGLE_MAP_STATIC</option>
 					<option value="2">PLG_ELEMENT_GOOGLE_MAP_FULL</option>
 			</field>
 
@@ -240,6 +241,16 @@
 				label="PLG_ELEMENT_GOOGLE_MAP_LATLNG_OSREF_LABEL">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
+			</field>
+
+			<field name="fb_gm_auto_center"
+			       type="radio"
+			       default="0"
+			       class="btn-group"
+			       description="PLG_ELEMENT_GOOGLE_MAP_AUTO_CENTER_DESC"
+			       label="PLG_ELEMENT_GOOGLE_MAP_AUTO_CENTER_LABEL">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
 			</field>
 
 		</fieldset>

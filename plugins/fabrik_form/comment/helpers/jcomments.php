@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.form.comment
- * @copyright   Copyright (C) 2005-2016 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -114,7 +114,7 @@ class jc_com_fabrik_1 extends JCommentsPlugin
 
 		$user      = JFactory::getUser();
 		$info      = self::jcObjectInfo($objectId, $objectGroup, $language);
-		$jObjectId = $info->id;
+		$jObjectId = isset($info->id) ? $info->id : null;
 		$row       = JTable::getInstance('Objects', 'JCommentsTable');
 		$data      = array(
 			'access' => 1,

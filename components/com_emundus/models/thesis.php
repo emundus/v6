@@ -52,20 +52,16 @@ class EmundusModelThesis extends JModelItem {
      */
     public function getApplied(){
         $db = JFactory::getDbo();
-        $current_user = JFactory::getUser();
-        try
-        {
+        $current_user = JFactory::getSession()->get('emundusUser');
+        try {
             $query = "SELECT *
                       FROM #__emundus_thesis_candidat etc
                       LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.fnum = etc.fnum
                       WHERE etc.fnum like \"$current_user->fnum\"
                       AND ecc.campaign_id = $current_user->campaign_id";
             $db->setQuery($query);
-//echo str_replace('#_', 'jos', $query);
             return $db->loadObjectList();
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             throw $e;
             return false;
         }
@@ -82,9 +78,8 @@ class EmundusModelThesis extends JModelItem {
         if ($this->_item === null) {
             $this->_item = false;
 
-            if (empty($id)) {
+            if (empty($id))
                 $id = $this->getState('thesis.id');
-            }
 
             // Get a level row instance.
             $table = $this->getTable();
@@ -93,9 +88,8 @@ class EmundusModelThesis extends JModelItem {
             if ($table->load($id)) {
                 // Check published state.
                 if ($published = $this->getState('filter.published')) {
-                    if ($table->state != $published) {
+                    if ($table->state != $published)
                         return $this->_item;
-                    }
                 }
 
                 // Convert the JTable to a clean JObject.
@@ -107,18 +101,16 @@ class EmundusModelThesis extends JModelItem {
         }
 
 
-        if ( isset($this->_item->user) ) {
+        if (isset($this->_item->user))
             $this->_item->user_name = JFactory::getUser($this->_item->user)->name;
-        }
 
         if (isset($this->_item->doctoral_school) && $this->_item->doctoral_school != '') {
-            if(is_object($this->_item->doctoral_school)){
+            if(is_object($this->_item->doctoral_school))
                 $this->_item->doctoral_school = JArrayHelper::fromObject($this->_item->doctoral_school);
-            }
             $values = (is_array($this->_item->doctoral_school)) ? $this->_item->doctoral_school : explode(',',$this->_item->doctoral_school);
 
             $textValue = array();
-            foreach ($values as $value){
+            foreach ($values as $value) {
                 $db = JFactory::getDbo();
                 $query = $db->getQuery(true);
                 $query
@@ -127,9 +119,8 @@ class EmundusModelThesis extends JModelItem {
                     ->where('id = ' . $db->quote($db->escape($value)));
                 $db->setQuery($query);
                 $results = $db->loadObject();
-                if ($results) {
+                if ($results)
                     $textValue[] = $results->title;
-                }
             }
 
             $this->_item->doctoral_school = !empty($textValue) ? implode(', ', $textValue) : $this->_item->doctoral_school;
@@ -279,7 +270,9 @@ class EmundusModelThesis extends JModelItem {
      * @since   1.6
      */
     public function apply($user_id, $thesis_id) {
-        $user = JFactory::getUser($user_id);
+        include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
+        $modelProfile = new EmundusModelProfile;
+        $user = $modelProfile->getEmundusUser($user_id);
         $current_user = JFactory::getUser();
         $db = JFactory::getDbo();
 

@@ -17,7 +17,6 @@ include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 
 $db = JFactory::getDBO();
 $app = JFactory::getApplication();
-$user =  JFactory::getUser();
 
 $referents = JAccess::getUsersByGroup(23);
 $university = $fabrikFormData['doctoral_school_raw'][0];

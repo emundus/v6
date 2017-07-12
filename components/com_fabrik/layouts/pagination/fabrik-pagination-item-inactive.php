@@ -4,13 +4,22 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.4.2
  */
 
-$d = $displayData;
+$d    = $displayData;
 $item = $d->item;
+$app  = JFactory::getApplication();
 
-?>
-<a title="<?php echo $item->text; ?>" href="<?php echo $item->link; ?>" class="pagenav"><?php echo $item->text; ?></a>
+if ($app->isAdmin()) :
+	?>
+	<span><?php echo $item->text; ?></span>
+	<?php
+else :
+	?>
+
+	<span class="pagenav"><?php echo $item->text; ?></span>
+	<?php
+endif;

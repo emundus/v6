@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.form.php
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -302,6 +302,38 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 
 		return true;
 	}
+
+	/**
+	 * Run for each element's canUse.  Return false to make an element read only
+	 *
+	 * @param  array  $args  array containing element model being tested
+	 *
+	 * @return  bool
+	 */
+	public function onElementCanUse($args)
+	{
+		$params = $this->getParams();
+
+		if ($params->get('only_process_curl') == 'onElementCanUse')
+		{
+			$formModel = $this->getModel();
+			$elementModel = FArrayHelper::getValue($args, 0, false);
+			if ($elementModel)
+			{
+				$w          = new FabrikWorker;
+				$code       = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $formModel->data, true, true);
+				$php_result = eval($code);
+
+				if ($php_result === false)
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
 
 	/**
 	 * Run during form rendering, when all the form's JS is assembled and ready

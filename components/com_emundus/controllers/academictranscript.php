@@ -23,13 +23,13 @@ class EmundusControllerAcademicTranscript extends JControllerLegacy {
 
 	function display($cachable = false, $urlparams = false) {
 		// Set a default view if none exists
-		if ( ! JRequest::getCmd( 'view' ) ) {
+		if (! JRequest::getCmd( 'view' )) {
 			$default = 'academicTranscript';
 			JRequest::setVar('view', $default );
 		}
 		$user = JFactory::getUser();
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
+		$menu = JSite::getMenu()->getActive();
+		$access = !empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			parent::display();
 		}
@@ -39,23 +39,21 @@ class EmundusControllerAcademicTranscript extends JControllerLegacy {
 	function update() {
 		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
 		$user = JFactory::getUser();
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+		$menu = JSite::getMenu()->getActive();
+		$access = !empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
 			die("You are not allowed to access to this page.");
-		}
 		$db = JFactory::getDBO();
-		$user = JFactory::getUser();
-		$student_id = JRequest::getVar('student_id', null, 'POST', 'none', 0);
-		$grades = JRequest::getVar('grade', null, 'POST', 'array', 0);
-		$obtained = JRequest::getVar('obtained', null, 'POST', 'array', 0);
+		$student_id 	= JRequest::getVar('student_id', null, 'POST', 'none', 0);
+		$grades 		= JRequest::getVar('grade', null, 'POST', 'array', 0);
+		$obtained 		= JRequest::getVar('obtained', null, 'POST', 'array', 0);
 		//die(print_r($obtained));
 		
 		$db->setQuery('DELETE FROM `#__emundus_academic_transcript` WHERE student_id='.$student_id);
 		$db->Query() or die($db->getErrorMsg());
 		
 		$i=0;
-		foreach($grades as $grade) {
+		foreach ($grades as $grade) {
 			$tui = explode('___', key($grades));
 			
 			if (isset($grade) && $grade != '') {

@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.coverflow
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -102,7 +102,7 @@ class FabrikModelCoverflow extends FabrikFEModelVisualization
 		$json = json_encode($eventData);
 		$str = "var coverflow = new FbVisCoverflow($json);";
 		$srcs = FabrikHelperHTML::framework();
-		$srcs[] = $this->srcBase . 'coverflow/coverflow.js';
+		$srcs['Coverflow'] = $this->srcBase . 'coverflow/coverflow.js';
 		FabrikHelperHTML::script($srcs, $str);
 	}
 

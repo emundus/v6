@@ -14,7 +14,6 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-$user =& JFactory::getUser();
 $db =& JFactory::getDBO();
 
 $query = 'SELECT title FROM #__categories WHERE section = "com_contact_details" ORDER BY ordering';

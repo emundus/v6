@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -31,6 +31,11 @@ endif;
 <?php if ($this->tablePicker != '') { ?>
 	<div style="text-align:right"><?php echo FText::_('COM_FABRIK_LIST') ?>: <?php echo $this->tablePicker; ?></div>
 <?php }
+
+if ($this->params->get('show_page_heading')) :
+	echo '<h1>' . $this->params->get('page_heading') . '</h1>';
+endif;
+
 if ($this->showTitle == 1) { ?>
 	<h1><?php echo $this->table->label;?></h1>
 <?php }?>
@@ -48,7 +53,7 @@ if ($this->showFilters) {
 }
 ?>
 
-<div class="fabrikDataContainer">
+<div class="fabrikDataContainer" data-cols="<?php echo $columns;?>">
 
 <?php foreach ($this->pluginBeforeList as $c) {
 	echo $c;
@@ -81,7 +86,8 @@ if ($this->showFilters) {
 	foreach ($group as $this->_row) :
 		$items[] = $this->loadTemplate('row');
 	endforeach;
-	echo FabrikHelperHTML::bootstrapGrid($items, $columns, 'well', true);
+	$class = 'fabrik_row well row-striped ' . $this->_row->class;
+	echo FabrikHelperHTML::bootstrapGrid($items, $columns, $class, true, $this->_row->id);
 	?>
 	</div>
 	<?php

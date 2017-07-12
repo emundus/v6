@@ -3,7 +3,7 @@ defined('_JEXEC') or die('Restricted access');
 
 JHTML::_('behavior.modal'); 
 
-$user = JFactory::getUser();
+$user = JFactory::getSession()->get('emundusUser');
 $chemin = EMUNDUS_PATH_REL;
 $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 

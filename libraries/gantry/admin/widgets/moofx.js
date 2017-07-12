@@ -1,145 +1,1584 @@
 /*
- * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
- * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
- */
-(function(c){var a={},b=function(f){var e=a[f];if(!e){e=a[f]={};var d=e.exports={};c[f].call(d,b,e,d,window);}return e.exports;};window.moofx=b("0");})({"0":function(c,e,b,f){var a=c("1"),g=c("2");
-var d=typeof document!=="undefined"?c("7"):c("b");d.requestFrame=function(h){g.request(h);return this;};d.cancelFrame=function(h){g.cancel(h);return this;
-};d.color=a;e.exports=d;},"1":function(j,e,w,q){var k={maroon:"#800000",red:"#ff0000",orange:"#ffA500",yellow:"#ffff00",olive:"#808000",purple:"#800080",fuchsia:"#ff00ff",white:"#ffffff",lime:"#00ff00",green:"#008000",navy:"#000080",blue:"#0000ff",aqua:"#00ffff",teal:"#008080",black:"#000000",silver:"#c0c0c0",gray:"#808080",transparent:"#0000"};
-var d=function(z,y,c,x){if(x==null||x===""){x=1;}z=parseFloat(z);y=parseFloat(y);c=parseFloat(c);x=parseFloat(x);if(!(z<=255&&z>=0&&y<=255&&y>=0&&c<=255&&c>=0&&x<=1&&x>=0)){return null;
-}return[Math.round(z),Math.round(y),Math.round(c),x];};var v=function(D){if(D.length===3){D+="f";}if(D.length===4){var C=D.charAt(0),B=D.charAt(1),z=D.charAt(2),x=D.charAt(3);
-D=C+C+B+B+z+z+x+x;}if(D.length===6){D+="ff";}var y=[];for(var A=0,c=D.length;A<c;A+=2){y.push(parseInt(D.substr(A,2),16)/(A===6?255:1));}return y;};var l=function(y,x,c){if(c<0){c+=1;
-}if(c>1){c-=1;}if(c<1/6){return y+(x-y)*6*c;}if(c<1/2){return x;}if(c<2/3){return y+(x-y)*(2/3-c)*6;}return y;};var a=function(A,E,z,D){var c,C,B;if(D==null||D===""){D=1;
-}A=parseFloat(A)/360;E=parseFloat(E)/100;z=parseFloat(z)/100;D=parseFloat(D)/1;if(A>1||A<0||E>1||E<0||z>1||z<0||D>1||D<0){return null;}if(E===0){c=C=B=z;
-}else{var x=z<0.5?z*(1+E):z+E-z*E;var y=2*z-x;c=l(y,x,A+1/3);B=l(y,x,A);C=l(y,x,A-1/3);}return[c*255,B*255,C*255,D];};var p=[];for(var t in k){p.push(t);
-}var m="(?:#([a-f0-9]{3,8}))",f="\\s*([.\\d%]+)\\s*",b="(?:,\\s*([.\\d]+)\\s*)?",s="\\("+[f,f,f]+b+"\\)",g="(?:rgb)a?",o="(?:hsl)a?",n="("+p.join("|")+")";
-var h=RegExp(m,"i"),u=RegExp(g+s,"i"),i=RegExp(o+s,"i");var r=function(c,y){if(c==null){return null;}c=(c+"").replace(/\s+/,"");var x=k[c];if(x){return r(x,y);
-}else{if(x=c.match(h)){c=v(x[1]);}else{if(x=c.match(u)){c=x.slice(1);}else{if(x=c.match(i)){c=a.apply(null,x.slice(1));}else{return null;}}}}if(!(c&&(c=d.apply(null,c)))){return null;
-}if(y){return c;}if(c[3]===1){c.splice(3,1);}return"rgb"+(c.length===4?"a":"")+"("+c+")";};r.x=RegExp([n,m,g+s,o+s].join("|"),"gi");e.exports=r;},"2":function(c,b,f,a){var h=c("3");
-var d=a.requestAnimationFrame||a.webkitRequestAnimationFrame||a.mozRequestAnimationFrame||a.oRequestAnimationFrame||a.msRequestAnimationFrame||function(k){return setTimeout(k,1000/60);
-};var i=[];var g=function(o){var n=i.splice(0,i.length);for(var m=0,k=n.length;m<k;m++){n[m](o||(o=+new Date()));}};var j=function(l){var k=h.indexOf(i,l);
-if(k>-1){i.splice(k,1);}};var e=function(l){var k=i.push(l);if(k===1){d(g);}return function(){j(l);};};f.request=e;f.cancel=j;},"3":function(f,e,h,c){var k=f("4")["array"];
-var l=("pop,push,reverse,shift,sort,splice,unshift,concat,join,slice,toString,indexOf,lastIndexOf,forEach,every,some,filter,map,reduce,reduceRight").split(",");
-for(var g={},j=0,b,a;b=l[j++];){if(a=Array.prototype[b]){g[b]=a;}}if(!g.filter){g.filter=function(q,p){var o=[];for(var n=0,m=this.length>>>0;n<m;n++){if(n in this){var r=this[n];
-if(q.call(p,r,n,this)){o.push(r);}}}return o;};}if(!g.indexOf){g.indexOf=function(o,p){for(var m=this.length>>>0,n=p<0?Math.max(0,m+p):p||0;n<m;n++){if(n in this&&this[n]===o){return n;
-}}return -1;};}if(!g.map){g.map=function(q,p){var r=this.length>>>0,o=Array(r);for(var n=0,m=r;n<m;n++){if(n in this){o[n]=q.call(p,this[n],n,this);}}return o;
-};}if(!g.every){g.every=function(p,o){for(var n=0,m=this.length>>>0;n<m;n++){if(n in this&&!p.call(o,this[n],n,this)){return false;}}return true;};}if(!g.some){g.some=function(p,o){for(var n=0,m=this.length>>>0;
-n<m;n++){if(n in this&&p.call(o,this[n],n,this)){return true;}}return false;};}if(!g.forEach){g.forEach=function(p,o){for(var n=0,m=this.length>>>0;n<m;
-n++){if(n in this){p.call(o,this[n],n,this);}}};}var d=Object.prototype.toString;k.isArray=Array.isArray||function(i){return d.call(i)==="[object Array]";
-};e.exports=k.implement(g);},"4":function(d,c,e,b){var a=d("5"),j=d("6");var k=Array.prototype.slice;var m=a({constructor:function m(i){this.valueOf=function(){return i;
-};this.toString=function(){return i+"";};this.is=function(n){return i===n;};}});var h=function(i){if(i==null||i instanceof m){return i;}var n=h[j(i)];return n?new n(i):i;
-};var l=function(){var i=a({inherits:m});return a({constructor:function(n){return new i(n);},define:function(n,o){var p=o.value;this[n]=function(q){return arguments.length>1?p.apply(q,k.call(arguments,1)):p.call(q);
-};i.prototype[n]=function(){return h(p.apply(this.valueOf(),arguments));};a.define(this.prototype,n,o);return this;}});};for(var g="string,number,array,object,date,function,regexp".split(","),f=g.length;
-f--;){h[g[f]]=l();}c.exports=h;},"5":function(g,d,h,c){var p=function(e,q){return Object.hasOwnProperty.call(e,q);};var n=function(e,s,r){for(var q in e){if(s.call(r,e[q],q,e)===false){break;
-}}return e;};if(!{valueOf:0}.propertyIsEnumerable("valueOf")){var f="constructor,toString,valueOf,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString".split(",");
-var l=Object.prototype;n=function(e,u,s){for(var r in e){if(u.call(s,e[r],r,e)===false){return e;}}for(var q=0;r=f[q];q++){var t=e[r];if((t!==l[r]||p(e,r))&&u.call(s,t,r,e)===false){break;
-}}return e;};}var k=Object.create||function(e){var q=function(){};q.prototype=e;return new q();};var o=Object.getOwnPropertyDescriptor;var j=Object.defineProperty;
-try{var i={a:1};o(i,"a");j(i,"a",{value:2});}catch(m){o=function(e,q){return{value:e[q]};};j=function(e,q,r){e[q]=r.value;return e;};}var b=function(e){n(e,function(r,q){if(q!=="constructor"&&q!=="define"&&q!=="inherits"){this.define(q,o(e,q)||{writable:true,enumerable:true,configurable:true,value:r});
-}},this);return this;};var a=function(q){var r=q.inherits;var e=p(q,"constructor")?q.constructor:r?function(){return r.apply(this,arguments);}:function(){};
-if(r){var t=r.prototype;var s=e.prototype=k(t);e.parent=t;s.constructor=e;}e.define=q.define||r&&r.define||function(u,v){j(this.prototype,u,v);return this;
-};e.implement=b;return e.implement(q);};a.has=p;a.each=n;a.create=k;a.define=j;d.exports=a;},"6":function(b,d,a,f){var g=Object.prototype.toString,c=/number|object|array|string|function|date|regexp|boolean/;
-var e=function(i){if(i==null){return"null";}var h=g.call(i).slice(8,-1).toLowerCase();if(h==="number"&&isNaN(i)){return"null";}if(c.test(h)){return h;}return"object";
-};d.exports=e;},"7":function(k,h,ae,d){var O=k("1"),b=k("2");var ad=b.cancel,X=b.request;var E=k("5"),o=k("3"),z=k("8");var aj=z.camelize,aa=z.clean,P=z.capitalize;
-var N=o.map,c=o.forEach,F=o.indexOf;var m=k("a");var H=k("b");var R={};var l=function(e){return R[e]||(R[e]=z.hyphenate(e));};var ag=function(e){return Math.round(e*1000)/1000;
-};var w=d.getComputedStyle?function(ar){var e=getComputedStyle(ar);return function(at){return e?e.getPropertyValue(l(at)):"";};}:function(ar){var e=ar.currentStyle;
-return function(at){return e?e[aj(at)]:"";};};var s=document.createElement("div");var L="border:none;margin:none;padding:none;visibility:hidden;position:absolute;height:0;";
-var ah=function(ar,e){var au=ar.parentNode,at=1;if(au){s.style.cssText=L+("width:100"+e+";");au.appendChild(s);at=s.offsetWidth/100;au.removeChild(s);}return at;
-};var I=function(e){var ar=e.length;if(ar===1){e.push(e[0],e[0],e[0]);}else{if(ar===2){e.push(e[0],e[1]);}else{if(ar===3){e.push(e[1]);}}}return e;};var q="([-.\\d]+)(%|cm|mm|in|px|pt|pc|em|ex|ch|rem|vw|vh|vm)",t=q+"?",ak="none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|inherit";
-var f=RegExp(q,"g"),ao=RegExp(t),J=RegExp(t,"g"),C=RegExp(ak);var V=function(e){return e==null?"":e+"";};var j=function(ar,e){if(ar==null||ar===""){return e?"1":"";
-}return isFinite(ar=+ar)?ar<0?"0":ar+"":"1";};try{s.style.color="rgba(0,0,0,0.5)";}catch(am){}var af=/^rgba/.test(s.style.color);var v=function(ar,e){var av="rgba(0,0,0,1)",au;
-if(!ar||!(au=O(ar,true))){return e?av:"";}if(e){return"rgba("+au+")";}var at=au[3];if(at===0){return"transparent";}return !af||at===1?"rgb("+au.slice(0,3)+")":"rgba("+au+")";
-};var Z=function(at,e){if(at==null||at===""){return e?"0px":"";}var ar=z.match(at,ao);return ar?ar[1]+(ar[2]||"px"):at;};var i=function(at,e){if(at==null||at===""){return e?"none":"";
-}var ar=at.match(C);return ar?at:e?"none":"";};var U=function(au,ar){var av="0px none rgba(0,0,0,1)";if(au==null||au===""){return ar?av:"";}if(au===0||au==="none"){return ar?av:au+"";
-}var aw;au=au.replace(O.x,function(ax){aw=ax;return"";});var at=au.match(C),e=au.match(J);return aa([Z(e?e[0]:"",ar),i(at?at[0]:"",ar),v(aw,ar)].join(" "));
-};var u=function(ar,e){if(ar==null||ar===""){return e?"0px 0px 0px 0px":"";}return aa(I(N(aa(ar).split(" "),function(at){return Z(at,e);})).join(" "));
-};var a=function(au,at,e){var aw="rgba(0,0,0,0)",av=e===3?aw+" 0px 0px 0px":aw+" 0px 0px 0px 0px";if(au==null||au===""){return at?av:"";}if(au==="none"){return at?av:au;
-}var ar=[],au=aa(au).replace(O.x,function(ax){ar.push(ax);return"";});return N(au.split(","),function(aC,az){var aB=v(ar[az],at),ax=/inset/.test(aC),aA=aC.match(J)||["0px"];
-aA=N(aA,function(aD){return Z(aD,at);});while(aA.length<e){aA.push("0px");}var ay=ax?["inset",aB]:[aB];return ay.concat(aA).join(" ");}).join(", ");};var G=function(ar,e){if(ar==null||ar===""){return"";
-}return ar.replace(O.x,function(at){return v(at,e);}).replace(f,function(at){return Z(at,e);});};var p={},r={},y={},S={};var M=function(e){return p[e]||(p[e]=function(){var ar=S[e]||e,at=y[e]||G;
-return function(){return at(w(this)(ar),true);};}());};var Y=function(e){return r[e]||(r[e]=function(){var ar=S[e]||e,at=y[e]||G;return function(au){this.style[ar]=at(au,false);
-};}());};var A=["Top","Right","Bottom","Left"],aq=["TopLeft","TopRight","BottomRight","BottomLeft"];c(A,function(ar){var e="border"+ar;c(["margin"+ar,"padding"+ar,e+"Width",ar.toLowerCase()],function(at){y[at]=Z;
-});y[e+"Color"]=v;y[e+"Style"]=i;y[e]=U;p[e]=function(){return[M(e+"Width").call(this),M(e+"Style").call(this),M(e+"Color").call(this)].join(" ");};});
-c(aq,function(e){y["border"+e+"Radius"]=Z;});y.color=y.backgroundColor=v;y.width=y.height=y.minWidth=y.minHeight=y.maxWidth=y.maxHeight=y.fontSize=y.backgroundSize=Z;
-c(["margin","padding"],function(e){y[e]=u;p[e]=function(){return N(A,function(ar){return M(e+ar).call(this);},this).join(" ");};});y.borderWidth=u;y.borderStyle=function(ar,e){if(ar==null||ar===""){return e?I(["none"]).join(" "):"";
-}ar=aa(ar).split(" ");return aa(I(N(ar,function(at){i(at,e);})).join(" "));};y.borderColor=function(ar,e){if(!ar||!(ar=z.match(ar,O.x))){return e?I(["rgba(0,0,0,1)"]).join(" "):"";
-}return aa(I(N(ar,function(at){return v(at,e);})).join(" "));};c(["Width","Style","Color"],function(e){p["border"+e]=function(){return N(A,function(ar){return M("border"+ar+e).call(this);
-},this).join(" ");};});y.borderRadius=u;p.borderRadius=function(){return N(aq,function(e){return M("border"+e+"Radius").call(this);},this).join(" ");};
-y.border=U;p.border=function(){var at;for(var e=0;e<A.length;e++){var ar=M("border"+A[e]).call(this);if(at&&ar!==at){return null;}at=ar;}return at;};y.zIndex=V;
-y.opacity=j;var ab=s.style.MsFilter!=null&&"MsFilter"||s.style.filter!=null&&"filter";if(ab&&s.style.opacity==null){var x=/alpha\(opacity=([\d.]+)\)/i;
-r.opacity=function(ar){ar=(ar=j(ar))==="1"?"":"alpha(opacity="+Math.round(ar*100)+")";var e=w(this)(ab);return this.style[ab]=x.test(e)?e.replace(x,ar):e+" "+ar;
-};p.opacity=function(){var e=w(this)(ab).match(x);return(!e?1:e[1]/100)+"";};}var Q=y.boxShadow=function(ar,e){return a(ar,e,4);};var K=y.textShadow=function(ar,e){return a(ar,e,3);
-};c(["Webkit","Moz","ms","O",null],function(e){c(["transition","transform","transformOrigin","transformStyle","perspective","perspectiveOrigin","backfaceVisibility"],function(ar){var at=e?e+P(ar):ar;
-if(e==="ms"){R[at]="-ms-"+l(ar);}if(s.style[at]!=null){S[ar]=at;}});});var n=S.transition,D=S.transform;if(n==="OTransition"){n=null;}var ac,W;if(!n&&D){(function(){var av=k("d");
-var ar="\\s*([-\\d\\w.]+)\\s*";var au=RegExp("matrix\\("+[ar,ar,ar,ar,ar,ar]+"\\)");var ax=function(az){var aA=av.apply(null,az.match(au).slice(1))||[[0,0],0,0,[0,0]];
-return["translate("+N(aA[0],function(aB){return ag(aB)+"px";})+")","rotate("+ag(aA[1]*180/Math.PI)+"deg)","skewX("+ag(aA[2]*180/Math.PI)+"deg)","scale("+N(aA[3],ag)+")"].join(" ");
-};var at=function(az){return az||"0px";},e=function(az){return az||"1";},ay=function(az){return az||"0deg";};var aw={translate:function(aA){if(!aA){aA="0px,0px";
-}var az=aA.split(",");if(!az[1]){az[1]="0px";}return N(az,aa)+"";},translateX:at,translateY:at,scale:function(aA){if(!aA){aA="1,1";}var az=aA.split(",");
-if(!az[1]){az[1]=az[0];}return N(az,aa)+"";},scaleX:e,scaleY:e,rotate:ay,skewX:ay,skewY:ay};W=E({constructor:function(aA){var aB=this.names=[];var az=this.values=[];
-aA.replace(/(\w+)\(([-.\d\s\w,]+)\)/g,function(aD,aC,aE){aB.push(aC);az.push(aE);});},identity:function(){var az=[];c(this.names,function(aA){var aB=aw[aA];
-if(aB){az.push(aA+"("+aB()+")");}});return az.join(" ");},sameType:function(az){return this.names.toString()===az.names.toString();},decompose:function(){var aA=this.toString();
-s.style.cssText=L+l(D)+":"+aA+";";document.body.appendChild(s);var az=w(s)(D);if(!az||az==="none"){az="matrix(1, 0, 0, 1, 0, 0)";}document.body.removeChild(s);
-return ax(az);}});W.prototype.toString=function(aA){var az=this.values,aB=[];c(this.names,function(aC,aD){var aE=aw[aC];if(!aE){return;}var aF=aE(az[aD]);
-if(!aA||aF!==aE()){aB.push(aC+"("+aF+")");}});return aB.length?aB.join(" "):"none";};W.union=function(aC,aB){if(aC===aB){return;}var az,aA;if(aC==="none"){aA=new W(aB);
-aB=aA.toString();aC=aA.identity();az=new W(aC);}else{if(aB==="none"){az=new W(aC);aC=az.toString();aB=az.identity();aA=new W(aB);}else{az=new W(aC);aC=az.toString();
-aA=new W(aB);aB=aA.toString();}}if(aC===aB){return;}if(!az.sameType(aA)){aC=az.decompose();aB=aA.decompose();}if(aC===aB){return;}return[aC,aB];};ac=y.transform=function(az){if(!az||az==="none"){return"none";
-}return new W(au.test(az)?ax(az):az).toString(true);};p.transform=function(){var az=this.style;return az[D]||(az[D]=ac(w(this)(D)));};})();}var an=function(at,au,ax){var aw=y[au]||G,av=M(au).call(at),ax=aw(ax,true);
-if(av===ax){return;}if(aw===Z||aw===U||aw===u){var e=ax.match(f),ar=0;if(e){av=av.replace(f,function(aB,aE,aC){var ay=e[ar++],aD=ay.match(ao),aA=aD[2];
-if(aC!==aA){var az=aC==="px"?aE:ah(at,aC)*aE;return ag(az/ah(at,aA))+aA;}return aB;});}if(ar>0){Y(au).call(at,av);}}else{if(aw===ac){return W.union(av,ax);
-}}return av!==ax?[av,ax]:null;};var T=E({inherits:H,constructor:function T(at,au){var ar=M(au),e=Y(au);this.get=function(){return ar.call(at);};this.set=function(av){return e.call(at,av);
-};T.parent.constructor.call(this,this.set);this.node=at;this.property=au;}});var ai;ai=E({inherits:T,constructor:function ai(){return ai.parent.constructor.apply(this,arguments);
-},start:function(at){this.stop();if(this.duration===0){this.cancel(at);return this;}var e=an(this.node,this.property,at);if(!e){this.cancel(at);return this;
-}ai.parent.start.apply(this,e);if(!this.cancelStep){return this;}var ar=y[this.property]||G;if((ar===Q||ar===K||ar===G)&&this.templateFrom!==this.templateTo){this.cancelStep();
-delete this.cancelStep;this.cancel(at);}return this;},parseEquation:function(e){if(typeof e==="string"){return ai.parent.parseEquation.call(this,e);}}});
-var ap=function(au,ar,e,av){var at=F(ar,au);if(at!==-1){ar.splice(at,1);e.splice(at,1);av.splice(at,1);}};var al=E({inherits:T,constructor:function al(ar,at){al.parent.constructor.call(this,ar,at);
-this.hproperty=l(S[at]||at);var e=this;this.bSetTransitionCSS=function(au){e.setTransitionCSS(au);};this.bSetStyleCSS=function(au){e.setStyleCSS(au);};
-this.bComplete=function(){e.complete();};},start:function(ar){this.stop();if(this.duration===0){this.cancel(ar);return this;}var e=an(this.node,this.property,ar);
-if(!e){this.cancel(ar);return this;}this.to=e[1];this.cancelSetTransitionCSS=X(this.bSetTransitionCSS);return this;},setTransitionCSS:function(e){delete this.cancelSetTransitionCSS;
-this.resetCSS(true);this.cancelSetStyleCSS=X(this.bSetStyleCSS);},setStyleCSS:function(ar){delete this.cancelSetStyleCSS;var e=this.duration;this.cancelComplete=setTimeout(this.bComplete,e);
-this.endTime=ar+e;this.set(this.to);},complete:function(){delete this.cancelComplete;this.resetCSS();this.callback(this.endTime);},stop:function(e){if(this.cancelExit){this.cancelExit();
-delete this.cancelExit;}else{if(this.cancelSetTransitionCSS){this.cancelSetTransitionCSS();delete this.cancelSetTransitionCSS;}else{if(this.cancelSetStyleCSS){this.cancelSetStyleCSS();
-delete this.cancelSetStyleCSS;if(e){this.resetCSS();}}else{if(this.cancelComplete){clearTimeout(this.cancelComplete);delete this.cancelComplete;if(e){this.resetCSS();
-this.set(this.get());}}}}}return this;},resetCSS:function(ar){var aw=w(this.node),av=(aw(n+"Property").replace(/\s+/g,"")||"all").split(","),au=(aw(n+"Duration").replace(/\s+/g,"")||"0s").split(","),e=(aw(n+"TimingFunction").replace(/\s+/g,"")||"ease").match(/cubic-bezier\([\d-.,]+\)|([a-z-]+)/g);
-ap("all",av,au,e);ap(this.hproperty,av,au,e);if(ar){av.push(this.hproperty);au.push(this.duration+"ms");e.push("cubic-bezier("+this.equation+")");}var at=this.node.style;
-at[n+"Property"]=av;at[n+"Duration"]=au;at[n+"TimingFunction"]=e;},parseEquation:function(e){if(typeof e==="string"){return al.parent.parseEquation.call(this,e,true);
-}}});var g=n?al:ai;var B=function(e,ar){return typeof e==="function"?H(e):m(e,ar);};m.implement({animate:function(au,ar,e){var aA=au,aB=ar;if(typeof au==="string"){aA={};
-aA[au]=ar;aB=e;}if(aB==null){aB={};}var aw=typeof aB;aB=aw==="function"?{callback:aB}:aw==="string"||aw==="number"?{duration:aB}:aB;var az=aB.callback||function(){},av=0,at=0;
-aB.callback=function(aC){if(++av===at){az(aC);}};for(var ay in aA){var ax=aA[ay],ay=aj(ay);this.forEach(function(aE){at++;var aD=m(aE),aC=aD._animations||(aD._animations={});
-var aF=aC[ay]||(aC[ay]=new g(aE,ay));aF.setOptions(aB).start(ax);});}return this;},style:function(e,aw){var ar=e;if(typeof e==="string"){ar={};ar[e]=aw;
-}for(var au in ar){var at=ar[au],av=Y(au=aj(au));this.forEach(function(az){var ay=m(az),ax=ay._animations,aA;if(ax&&(aA=ax[au])){aA.stop(true);}av.call(az,at);
-});}return this;},compute:function(at){at=aj(at);var e=this[0];if(at==="transform"&&ac){return w(e)(D);}var ar=M(at).call(e);return ar!=null?ar.replace(f,function(au,aw,av){return av==="px"?au:ah(e,av)*aw+"px";
-}):"";}});B.parse=function(at,ar,e){return(y[aj(at)]||G)(ar,e);};h.exports=B;},"8":function(c,d,a,e){var b=c("9");b.implement({clean:function(){return b.trim((this+"").replace(/\s+/g," "));
-},camelize:function(){return(this+"").replace(/-\D/g,function(f){return f.charAt(1).toUpperCase();});},hyphenate:function(){return(this+"").replace(/[A-Z]/g,function(f){return"-"+f.toLowerCase();
-});},capitalize:function(){return(this+"").replace(/\b[a-z]/g,function(f){return f.toUpperCase();});},escape:function(){return(this+"").replace(/([-.*+?^${}()|[\]\/\\])/g,"\\$1");
-},number:function(){return parseFloat(this);}});if(typeof JSON!=="undefined"){b.implement({decode:function(){return JSON.parse(this);}});}d.exports=b;},"9":function(e,d,g,c){var j=e("4")["string"];
-var k=("charAt,charCodeAt,concat,contains,endsWith,indexOf,lastIndexOf,localeCompare,match,replace,search,slice,split,startsWith,substr,substring,toLocaleLowerCase,toLocaleUpperCase,toLowerCase,toString,toUpperCase,trim,valueOf").split(",");
-for(var f={},h=0,b,a;b=k[h++];){if(a=String.prototype[b]){f[b]=a;}}if(!f.trim){f.trim=function(){return(this+"").replace(/^\s+|\s+$/g,"");};}d.exports=j.implement(f);
-},a:function(g,f,h,e){var d=g("5"),j=g("3").prototype;var k=0;var c=function(l){return l===e?"global":l.uniqueNumber||(l.uniqueNumber="n:"+(k++).toString(36));
-};var b={};var i=d({constructor:function i(p,o){if(p==null){return this&&this.constructor===i?new a():null;}var x=p;if(p.constructor!==a){x=new a();var v;
-if(typeof p==="string"){if(!x.search){return null;}x[x.length++]=o||document;return x.search(p);}if(p.nodeType||p===e){x[x.length++]=p;}else{if(p.length){var w={};
-for(var u=0,r=p.length;u<r;u++){var m=i(p[u],o);if(m&&m.length){for(var t=0,s=m.length;t<s;t++){var q=m[t];v=c(q);if(!w[v]){x[x.length++]=q;w[v]=true;}}}}}}}if(!x.length){return null;
-}if(x.length===1){v=c(x[0]);return b[v]||(b[v]=x);}return x;}});var a=d({inherits:i,constructor:function a(){this.length=0;},unlink:function(){return this.map(function(m,l){delete b[c(m)];
-return m;});},forEach:j.forEach,map:j.map,filter:j.filter,every:j.every,some:j.some});f.exports=i;},b:function(h,b,r,n){var c=h("5"),a=h("2").request,k=h("c");
-var q=h("3").map;var g="([\\d.]+)(s|ms)?",j="cubic-bezier\\(([-.\\d]+),([-.\\d]+),([-.\\d]+),([-.\\d]+)\\)";var p=RegExp(g),e=RegExp(j),m=RegExp(j,"g");
-var i={"default":"cubic-bezier(0.25, 0.1, 0.25, 1.0)",linear:"cubic-bezier(0, 0, 1, 1)","ease-in":"cubic-bezier(0.42, 0, 1.0, 1.0)","ease-out":"cubic-bezier(0, 0, 0.58, 1.0)","ease-in-out":"cubic-bezier(0.42, 0, 0.58, 1.0)"};
-i.ease=i["default"];var o=function(u,t,s){return(t-u)*s+u;};var l=function(t){var s=[];var u=(t+"").replace(/[-.\d]+/g,function(v){s.push(+v);return"@";
-});return[s,u];};var f=c({constructor:function f(u,t){this.setOptions(t);this.render=u||function(){};var s=this;this.bStep=function(v){return s.step(v);
-};this.bExit=function(v){s.exit(v);};},setOptions:function(s){if(s==null){s={};}if(!(this.duration=this.parseDuration(s.duration||"500ms"))){throw new Error("invalid duration");
-}if(!(this.equation=this.parseEquation(s.equation||"default"))){throw new Error("invalid equation");}this.callback=s.callback||function(){};return this;
-},parseDuration:function(u){if(u=(u+"").match(p)){var t=+u[1],s=u[2]||"ms";if(s==="s"){return t*1000;}if(s==="ms"){return t;}}},parseEquation:function(t,v){var u=typeof t;
-if(u==="function"){return t;}else{if(u==="string"){t=i[t]||t;var s=t.replace(/\s+/g,"").match(e);if(s){t=q(s.slice(1),function(w){return +w;});if(v){return t;
-}if(t.toString()==="0,0,1,1"){return function(w){return w;};}u="object";}}}if(u==="object"){return k(t[0],t[1],t[2],t[3],1000/60/this.duration/4);}},cancel:function(s){this.to=s;
-this.cancelExit=a(this.bExit);},exit:function(s){this.render(this.to);delete this.cancelExit;this.callback(s);},start:function(x,w){this.stop();if(this.duration===0){this.cancel(w);
-return this;}this.isArray=false;this.isNumber=false;var v=typeof x,u=typeof w;if(v==="object"&&u==="object"){this.isArray=true;}else{if(v==="number"&&u==="number"){this.isNumber=true;
-}}var t=l(x),s=l(w);this.from=t[0];this.to=s[0];this.templateFrom=t[1];this.templateTo=s[1];if(this.from.length!==this.to.length||this.from.toString()===this.to.toString()){this.cancel(w);
-return this;}delete this.time;this.length=this.from.length;this.cancelStep=a(this.bStep);return this;},stop:function(){if(this.cancelExit){this.cancelExit();
-delete this.cancelExit;}else{if(this.cancelStep){this.cancelStep();delete this.cancelStep;}}return this;},step:function(s){this.time||(this.time=s);var y=(s-this.time)/this.duration;
-if(y>1){y=1;}var B=this.equation(y),z=this.from,A=this.to,x=this.templateTo;for(var v=0,u=this.length;v<u;v++){var w=z[v],C=A[v];x=x.replace("@",C!==w?o(w,C,B):C);
-}this.render(this.isArray?x.split(","):this.isNumber?+x:x,y);if(y!==1){this.cancelStep=a(this.bStep);}else{delete this.cancelStep;this.callback(s);}}});
-var d=function(t){var s=new f(t);return{start:function(x,w,u){var v=typeof u;s.setOptions(v==="function"?{callback:u}:v==="string"||v==="number"?{duration:u}:u).start(x,w);
-return this;},stop:function(){s.stop();return this;}};};d.prototype=f.prototype;b.exports=d;},c:function(b,c,a,d){c.exports=function(h,j,f,i,l){var g=function(n){var m=1-n;
-return 3*m*m*n*h+3*m*n*n*f+n*n*n;};var e=function(n){var m=1-n;return 3*m*m*n*j+3*m*n*n*i+n*n*n;};var k=function(n){var m=1-n;return 3*(2*(n-1)*n+m*m)*h+3*(-n*n*n+2*m*n)*f;
-};return function(p){var m=p,u,s,q,n,r,o;for(q=m,o=0;o<8;o++){n=g(q)-m;if(Math.abs(n)<l){return e(q);}r=k(q);if(Math.abs(r)<0.000001){break;}q=q-n/r;}u=0,s=1,q=m;
-if(q<u){return e(u);}if(q>s){return e(s);}while(u<s){n=g(q);if(Math.abs(n-m)<l){return e(q);}if(m>n){u=q;}else{s=q;}q=(s-u)*0.5+u;}return e(q);};};},d:function(e,d,f,b){var c=function(j){return Math.sqrt(j[0]*j[0]+j[1]*j[1]);
-};var g=function(k){var j=c(k);return j?[k[0]/j,k[1]/j]:[0,0];};var a=function(k,j){return k[0]*j[0]+k[1]*j[1];};var i=Math.atan2;var h=function(k,j,m,l){return[m*k[0]+l*j[0],m*k[1]+l*j[1]];
-};d.exports=function(t,s,r,q,p,o){if(t*q-s*r===0){return false;}var j=[p,o];var k=[[t,s],[r,q]];var l=[c(k[0])];k[0]=g(k[0]);var u=a(k[0],k[1]);k[1]=h(k[1],k[0],1,-u);
-l[1]=c(k[1]);u/=l[1];var n=i(k[0][1],k[0][0]);return[j,n,u,l];};}});
+---
+provides: moofx
+version: 3.1.0
+description: A CSS3-enabled javascript animation library
+homepage: http://moofx.it
+author: Valerio Proietti <@kamicane> (http://mad4milk.net)
+license: MIT (http://mootools.net/license.txt)
+includes: cubic-bezier by Arian Stolwijk (https://github.com/arian/cubic-bezier)
+...
+*/
+
+(function(modules) {
+    var cache = {}, require = function(id) {
+        var module = cache[id];
+        if (!module) {
+            module = cache[id] = {};
+            var exports = module.exports = {};
+            modules[id].call(exports, require, module, exports, window);
+        }
+        return module.exports;
+    };
+    window["moofx"] = require("0");
+})({
+    "0": function(require, module, exports, global) {
+        /*          .-   3
+.-.-..-..-.-|-._.
+' ' '`-'`-' ' ' '
+*/
+                "use strict";
+
+        // color and timer
+        var color = require("1"), frame = require("2");
+
+        // if we're in a browser we need ./browser, otherwise ./fx
+        var moofx = typeof document !== "undefined" ? require("7") : require("b");
+
+        moofx.requestFrame = function(callback) {
+            frame.request(callback);
+            return this;
+        };
+
+        moofx.cancelFrame = function(callback) {
+            frame.cancel(callback);
+            return this;
+        };
+
+        moofx.color = color;
+
+        // and export moofx
+        module.exports = moofx;
+    },
+    "1": function(require, module, exports, global) {
+        /*
+color
+*/
+                "use strict";
+
+        var colors = {
+            maroon: "#800000",
+            red: "#ff0000",
+            orange: "#ffA500",
+            yellow: "#ffff00",
+            olive: "#808000",
+            purple: "#800080",
+            fuchsia: "#ff00ff",
+            white: "#ffffff",
+            lime: "#00ff00",
+            green: "#008000",
+            navy: "#000080",
+            blue: "#0000ff",
+            aqua: "#00ffff",
+            teal: "#008080",
+            black: "#000000",
+            silver: "#c0c0c0",
+            gray: "#808080",
+            transparent: "#0000"
+        };
+
+        var RGBtoRGB = function(r, g, b, a) {
+            if (a == null || a === "") a = 1;
+            r = parseFloat(r);
+            g = parseFloat(g);
+            b = parseFloat(b);
+            a = parseFloat(a);
+            if (!(r <= 255 && r >= 0 && g <= 255 && g >= 0 && b <= 255 && b >= 0 && a <= 1 && a >= 0)) return null;
+            return [ Math.round(r), Math.round(g), Math.round(b), a ];
+        };
+
+        var HEXtoRGB = function(hex) {
+            if (hex.length === 3) hex += "f";
+            if (hex.length === 4) {
+                var h0 = hex.charAt(0), h1 = hex.charAt(1), h2 = hex.charAt(2), h3 = hex.charAt(3);
+                hex = h0 + h0 + h1 + h1 + h2 + h2 + h3 + h3;
+            }
+            if (hex.length === 6) hex += "ff";
+            var rgb = [];
+            for (var i = 0, l = hex.length; i < l; i += 2) rgb.push(parseInt(hex.substr(i, 2), 16) / (i === 6 ? 255 : 1));
+            return rgb;
+        };
+
+        // HSL to RGB conversion from:
+        // http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
+        // thank you!
+        var HUEtoRGB = function(p, q, t) {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1 / 6) return p + (q - p) * 6 * t;
+            if (t < 1 / 2) return q;
+            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+            return p;
+        };
+
+        var HSLtoRGB = function(h, s, l, a) {
+            var r, b, g;
+            if (a == null || a === "") a = 1;
+            h = parseFloat(h) / 360;
+            s = parseFloat(s) / 100;
+            l = parseFloat(l) / 100;
+            a = parseFloat(a) / 1;
+            if (h > 1 || h < 0 || s > 1 || s < 0 || l > 1 || l < 0 || a > 1 || a < 0) return null;
+            if (s === 0) {
+                r = b = g = l;
+            } else {
+                var q = l < .5 ? l * (1 + s) : l + s - l * s;
+                var p = 2 * l - q;
+                r = HUEtoRGB(p, q, h + 1 / 3);
+                g = HUEtoRGB(p, q, h);
+                b = HUEtoRGB(p, q, h - 1 / 3);
+            }
+            return [ r * 255, g * 255, b * 255, a ];
+        };
+
+        var keys = [];
+
+        for (var c in colors) keys.push(c);
+
+        var shex = "(?:#([a-f0-9]{3,8}))", sval = "\\s*([.\\d%]+)\\s*", sop = "(?:,\\s*([.\\d]+)\\s*)?", slist = "\\(" + [ sval, sval, sval ] + sop + "\\)", srgb = "(?:rgb)a?", shsl = "(?:hsl)a?", skeys = "(" + keys.join("|") + ")";
+
+        var xhex = RegExp(shex, "i"), xrgb = RegExp(srgb + slist, "i"), xhsl = RegExp(shsl + slist, "i");
+
+        var color = function(input, array) {
+            if (input == null) return null;
+            input = (input + "").replace(/\s+/, "");
+            var match = colors[input];
+            if (match) {
+                return color(match, array);
+            } else if (match = input.match(xhex)) {
+                input = HEXtoRGB(match[1]);
+            } else if (match = input.match(xrgb)) {
+                input = match.slice(1);
+            } else if (match = input.match(xhsl)) {
+                input = HSLtoRGB.apply(null, match.slice(1));
+            } else return null;
+            if (!(input && (input = RGBtoRGB.apply(null, input)))) return null;
+            if (array) return input;
+            if (input[3] === 1) input.splice(3, 1);
+            return "rgb" + (input.length === 4 ? "a" : "") + "(" + input + ")";
+        };
+
+        color.x = RegExp([ skeys, shex, srgb + slist, shsl + slist ].join("|"), "gi");
+
+        module.exports = color;
+    },
+    "2": function(require, module, exports, global) {
+        /*
+requestFrame / cancelFrame
+*/
+                "use strict";
+
+        var array = require("3");
+
+        var requestFrame = global.requestAnimationFrame || global.webkitRequestAnimationFrame || global.mozRequestAnimationFrame || global.oRequestAnimationFrame || global.msRequestAnimationFrame || function(callback) {
+            return setTimeout(callback, 1e3 / 60);
+        };
+
+        var callbacks = [];
+
+        var iterator = function(time) {
+            var split = callbacks.splice(0, callbacks.length);
+            for (var i = 0, l = split.length; i < l; i++) split[i](time || (time = +new Date()));
+        };
+
+        var cancel = function(callback) {
+            var io = array.indexOf(callbacks, callback);
+            if (io > -1) callbacks.splice(io, 1);
+        };
+
+        var request = function(callback) {
+            var i = callbacks.push(callback);
+            if (i === 1) requestFrame(iterator);
+            return function() {
+                cancel(callback);
+            };
+        };
+
+        exports.request = request;
+
+        exports.cancel = cancel;
+    },
+    "3": function(require, module, exports, global) {
+        /*
+array
+ - array es5 shell
+*/
+                "use strict";
+
+        var array = require("4")["array"];
+
+        var names = ("pop,push,reverse,shift,sort,splice,unshift,concat,join,slice,toString,indexOf,lastIndexOf,forEach,every,some" + ",filter,map,reduce,reduceRight").split(",");
+
+        for (var methods = {}, i = 0, name, method; name = names[i++]; ) if (method = Array.prototype[name]) methods[name] = method;
+
+        if (!methods.filter) methods.filter = function(fn, context) {
+            var results = [];
+            for (var i = 0, l = this.length >>> 0; i < l; i++) if (i in this) {
+                var value = this[i];
+                if (fn.call(context, value, i, this)) results.push(value);
+            }
+            return results;
+        };
+
+        if (!methods.indexOf) methods.indexOf = function(item, from) {
+            for (var l = this.length >>> 0, i = from < 0 ? Math.max(0, l + from) : from || 0; i < l; i++) {
+                if (i in this && this[i] === item) return i;
+            }
+            return -1;
+        };
+
+        if (!methods.map) methods.map = function(fn, context) {
+            var length = this.length >>> 0, results = Array(length);
+            for (var i = 0, l = length; i < l; i++) {
+                if (i in this) results[i] = fn.call(context, this[i], i, this);
+            }
+            return results;
+        };
+
+        if (!methods.every) methods.every = function(fn, context) {
+            for (var i = 0, l = this.length >>> 0; i < l; i++) {
+                if (i in this && !fn.call(context, this[i], i, this)) return false;
+            }
+            return true;
+        };
+
+        if (!methods.some) methods.some = function(fn, context) {
+            for (var i = 0, l = this.length >>> 0; i < l; i++) {
+                if (i in this && fn.call(context, this[i], i, this)) return true;
+            }
+            return false;
+        };
+
+        if (!methods.forEach) methods.forEach = function(fn, context) {
+            for (var i = 0, l = this.length >>> 0; i < l; i++) {
+                if (i in this) fn.call(context, this[i], i, this);
+            }
+        };
+
+        var toString = Object.prototype.toString;
+
+        array.isArray = Array.isArray || function(self) {
+            return toString.call(self) === "[object Array]";
+        };
+
+        module.exports = array.implement(methods);
+    },
+    "4": function(require, module, exports, global) {
+        /*
+shell
+*/
+                "use strict";
+
+        var prime = require("5"), type = require("6");
+
+        var slice = Array.prototype.slice;
+
+        var ghost = prime({
+            constructor: function ghost(self) {
+                this.valueOf = function() {
+                    return self;
+                };
+                this.toString = function() {
+                    return self + "";
+                };
+                this.is = function(object) {
+                    return self === object;
+                };
+            }
+        });
+
+        var shell = function(self) {
+            if (self == null || self instanceof ghost) return self;
+            var g = shell[type(self)];
+            return g ? new g(self) : self;
+        };
+
+        var register = function() {
+            var g = prime({
+                inherits: ghost
+            });
+            return prime({
+                constructor: function(self) {
+                    return new g(self);
+                },
+                define: function(key, descriptor) {
+                    var method = descriptor.value;
+                    this[key] = function(self) {
+                        return arguments.length > 1 ? method.apply(self, slice.call(arguments, 1)) : method.call(self);
+                    };
+                    g.prototype[key] = function() {
+                        return shell(method.apply(this.valueOf(), arguments));
+                    };
+                    prime.define(this.prototype, key, descriptor);
+                    return this;
+                }
+            });
+        };
+
+        for (var types = "string,number,array,object,date,function,regexp".split(","), i = types.length; i--; ) shell[types[i]] = register();
+
+        module.exports = shell;
+    },
+    "5": function(require, module, exports, global) {
+        /*
+prime
+ - prototypal inheritance
+*/
+                "use strict";
+
+        var has = function(self, key) {
+            return Object.hasOwnProperty.call(self, key);
+        };
+
+        var each = function(object, method, context) {
+            for (var key in object) if (method.call(context, object[key], key, object) === false) break;
+            return object;
+        };
+
+        if (!{
+            valueOf: 0
+        }.propertyIsEnumerable("valueOf")) {
+            // fix for stupid IE enumeration bug
+            var buggy = "constructor,toString,valueOf,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString".split(",");
+            var proto = Object.prototype;
+            each = function(object, method, context) {
+                for (var key in object) if (method.call(context, object[key], key, object) === false) return object;
+                for (var i = 0; key = buggy[i]; i++) {
+                    var value = object[key];
+                    if ((value !== proto[key] || has(object, key)) && method.call(context, value, key, object) === false) break;
+                }
+                return object;
+            };
+        }
+
+        var create = Object.create || function(self) {
+            var constructor = function() {};
+            constructor.prototype = self;
+            return new constructor();
+        };
+
+        var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+
+        var define = Object.defineProperty;
+
+        try {
+            var obj = {
+                a: 1
+            };
+            getOwnPropertyDescriptor(obj, "a");
+            define(obj, "a", {
+                value: 2
+            });
+        } catch (e) {
+            getOwnPropertyDescriptor = function(object, key) {
+                return {
+                    value: object[key]
+                };
+            };
+            define = function(object, key, descriptor) {
+                object[key] = descriptor.value;
+                return object;
+            };
+        }
+
+        var implement = function(proto) {
+            each(proto, function(value, key) {
+                if (key !== "constructor" && key !== "define" && key !== "inherits") this.define(key, getOwnPropertyDescriptor(proto, key) || {
+                    writable: true,
+                    enumerable: true,
+                    configurable: true,
+                    value: value
+                });
+            }, this);
+            return this;
+        };
+
+        var prime = function(proto) {
+            var superprime = proto.inherits;
+            // if our nice proto object has no own constructor property
+            // then we proceed using a ghosting constructor that all it does is
+            // call the parent's constructor if it has a superprime, else an empty constructor
+            // proto.constructor becomes the effective constructor
+            var constructor = has(proto, "constructor") ? proto.constructor : superprime ? function() {
+                return superprime.apply(this, arguments);
+            } : function() {};
+            if (superprime) {
+                var superproto = superprime.prototype;
+                // inherit from superprime
+                var cproto = constructor.prototype = create(superproto);
+                // setting constructor.parent to superprime.prototype
+                // because it's the shortest possible absolute reference
+                constructor.parent = superproto;
+                cproto.constructor = constructor;
+            }
+            // inherit (kindof inherit) define
+            constructor.define = proto.define || superprime && superprime.define || function(key, descriptor) {
+                define(this.prototype, key, descriptor);
+                return this;
+            };
+            // copy implement (this should never change)
+            constructor.implement = implement;
+            // finally implement proto and return constructor
+            return constructor.implement(proto);
+        };
+
+        prime.has = has;
+
+        prime.each = each;
+
+        prime.create = create;
+
+        prime.define = define;
+
+        module.exports = prime;
+    },
+    "6": function(require, module, exports, global) {
+        /*
+type
+*/
+                "use strict";
+
+        var toString = Object.prototype.toString, types = /number|object|array|string|function|date|regexp|boolean/;
+
+        var type = function(object) {
+            if (object == null) return "null";
+            var string = toString.call(object).slice(8, -1).toLowerCase();
+            if (string === "number" && isNaN(object)) return "null";
+            if (types.test(string)) return string;
+            return "object";
+        };
+
+        module.exports = type;
+    },
+    "7": function(require, module, exports, global) {
+        /*
+MooFx
+*/
+                "use strict";
+
+        // requires
+        var color = require("1"), frame = require("2");
+
+        var cancelFrame = frame.cancel, requestFrame = frame.request;
+
+        var prime = require("5"), array = require("3"), string = require("8");
+
+        var camelize = string.camelize, clean = string.clean, capitalize = string.capitalize;
+
+        var map = array.map, forEach = array.forEach, indexOf = array.indexOf;
+
+        var elements = require("a");
+
+        var fx = require("b");
+
+        // util
+        var hyphenated = {};
+
+        var hyphenate = function(self) {
+            return hyphenated[self] || (hyphenated[self] = string.hyphenate(self));
+        };
+
+        var round = function(n) {
+            return Math.round(n * 1e3) / 1e3;
+        };
+
+        // compute > node > property
+        var compute = global.getComputedStyle ? function(node) {
+            var cts = getComputedStyle(node);
+            return function(property) {
+                return cts ? cts.getPropertyValue(hyphenate(property)) : "";
+            };
+        } : /*(css3)?*/ function(node) {
+            var cts = node.currentStyle;
+            return function(property) {
+                return cts ? cts[camelize(property)] : "";
+            };
+        };
+
+        /*:null*/
+        // pixel ratio retriever
+        var test = document.createElement("div");
+
+        var cssText = "border:none;margin:none;padding:none;visibility:hidden;position:absolute;height:0;";
+
+        // returns the amount of pixels that takes to make one of the unit
+        var pixelRatio = function(element, u) {
+            var parent = element.parentNode, ratio = 1;
+            if (parent) {
+                test.style.cssText = cssText + ("width:100" + u + ";");
+                parent.appendChild(test);
+                ratio = test.offsetWidth / 100;
+                parent.removeChild(test);
+            }
+            return ratio;
+        };
+
+        // mirror 4 values
+        var mirror4 = function(values) {
+            var length = values.length;
+            if (length === 1) values.push(values[0], values[0], values[0]); else if (length === 2) values.push(values[0], values[1]); else if (length === 3) values.push(values[1]);
+            return values;
+        };
+
+        // regular expressions strings
+        var sLength = "([-.\\d]+)(%|cm|mm|in|px|pt|pc|em|ex|ch|rem|vw|vh|vm)", sLengthNum = sLength + "?", sBorderStyle = "none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|inherit";
+
+        // regular expressions
+        var rgLength = RegExp(sLength, "g"), rLengthNum = RegExp(sLengthNum), rgLengthNum = RegExp(sLengthNum, "g"), rBorderStyle = RegExp(sBorderStyle);
+
+        // normalize > css
+        var parseString = function(value) {
+            return value == null ? "" : value + "";
+        };
+
+        var parseOpacity = function(value, normalize) {
+            if (value == null || value === "") return normalize ? "1" : "";
+            return isFinite(value = +value) ? value < 0 ? "0" : value + "" : "1";
+        };
+
+        try {
+            test.style.color = "rgba(0,0,0,0.5)";
+        } catch (e) {}
+
+        var rgba = /^rgba/.test(test.style.color);
+
+        var parseColor = function(value, normalize) {
+            var black = "rgba(0,0,0,1)", c;
+            if (!value || !(c = color(value, true))) return normalize ? black : "";
+            if (normalize) return "rgba(" + c + ")";
+            var alpha = c[3];
+            if (alpha === 0) return "transparent";
+            return !rgba || alpha === 1 ? "rgb(" + c.slice(0, 3) + ")" : "rgba(" + c + ")";
+        };
+
+        var parseLength = function(value, normalize) {
+            if (value == null || value === "") return normalize ? "0px" : "";
+            var match = string.match(value, rLengthNum);
+            return match ? match[1] + (match[2] || "px") : value;
+        };
+
+        var parseBorderStyle = function(value, normalize) {
+            if (value == null || value === "") return normalize ? "none" : "";
+            var match = value.match(rBorderStyle);
+            return match ? value : normalize ? "none" : "";
+        };
+
+        var parseBorder = function(value, normalize) {
+            var normalized = "0px none rgba(0,0,0,1)";
+            if (value == null || value === "") return normalize ? normalized : "";
+            if (value === 0 || value === "none") return normalize ? normalized : value + "";
+            var c;
+            value = value.replace(color.x, function(match) {
+                c = match;
+                return "";
+            });
+            var s = value.match(rBorderStyle), l = value.match(rgLengthNum);
+            return clean([ parseLength(l ? l[0] : "", normalize), parseBorderStyle(s ? s[0] : "", normalize), parseColor(c, normalize) ].join(" "));
+        };
+
+        var parseShort4 = function(value, normalize) {
+            if (value == null || value === "") return normalize ? "0px 0px 0px 0px" : "";
+            return clean(mirror4(map(clean(value).split(" "), function(v) {
+                return parseLength(v, normalize);
+            })).join(" "));
+        };
+
+        var parseShadow = function(value, normalize, len) {
+            var transparent = "rgba(0,0,0,0)", normalized = len === 3 ? transparent + " 0px 0px 0px" : transparent + " 0px 0px 0px 0px";
+            if (value == null || value === "") return normalize ? normalized : "";
+            if (value === "none") return normalize ? normalized : value;
+            var colors = [], value = clean(value).replace(color.x, function(match) {
+                colors.push(match);
+                return "";
+            });
+            return map(value.split(","), function(shadow, i) {
+                var c = parseColor(colors[i], normalize), inset = /inset/.test(shadow), lengths = shadow.match(rgLengthNum) || [ "0px" ];
+                lengths = map(lengths, function(m) {
+                    return parseLength(m, normalize);
+                });
+                while (lengths.length < len) lengths.push("0px");
+                var ret = inset ? [ "inset", c ] : [ c ];
+                return ret.concat(lengths).join(" ");
+            }).join(", ");
+        };
+
+        var parse = function(value, normalize) {
+            if (value == null || value === "") return "";
+            // cant normalize "" || null
+            return value.replace(color.x, function(match) {
+                return parseColor(match, normalize);
+            }).replace(rgLength, function(match) {
+                return parseLength(match, normalize);
+            });
+        };
+
+        // get && set
+        var getters = {}, setters = {}, parsers = {}, aliases = {};
+
+        var getter = function(key) {
+            return getters[key] || (getters[key] = function() {
+                var alias = aliases[key] || key, parser = parsers[key] || parse;
+                return function() {
+                    return parser(compute(this)(alias), true);
+                };
+            }());
+        };
+
+        var setter = function(key) {
+            return setters[key] || (setters[key] = function() {
+                var alias = aliases[key] || key, parser = parsers[key] || parse;
+                return function(value) {
+                    this.style[alias] = parser(value, false);
+                };
+            }());
+        };
+
+        // parsers
+        var trbl = [ "Top", "Right", "Bottom", "Left" ], tlbl = [ "TopLeft", "TopRight", "BottomRight", "BottomLeft" ];
+
+        forEach(trbl, function(d) {
+            var bd = "border" + d;
+            forEach([ "margin" + d, "padding" + d, bd + "Width", d.toLowerCase() ], function(n) {
+                parsers[n] = parseLength;
+            });
+            parsers[bd + "Color"] = parseColor;
+            parsers[bd + "Style"] = parseBorderStyle;
+            // borderDIR
+            parsers[bd] = parseBorder;
+            getters[bd] = function() {
+                return [ getter(bd + "Width").call(this), getter(bd + "Style").call(this), getter(bd + "Color").call(this) ].join(" ");
+            };
+        });
+
+        forEach(tlbl, function(d) {
+            parsers["border" + d + "Radius"] = parseLength;
+        });
+
+        parsers.color = parsers.backgroundColor = parseColor;
+
+        parsers.width = parsers.height = parsers.minWidth = parsers.minHeight = parsers.maxWidth = parsers.maxHeight = parsers.fontSize = parsers.backgroundSize = parseLength;
+
+        // margin + padding
+        forEach([ "margin", "padding" ], function(name) {
+            parsers[name] = parseShort4;
+            getters[name] = function() {
+                return map(trbl, function(d) {
+                    return getter(name + d).call(this);
+                }, this).join(" ");
+            };
+        });
+
+        // borders
+        // borderDIRWidth, borderDIRStyle, borderDIRColor
+        parsers.borderWidth = parseShort4;
+
+        parsers.borderStyle = function(value, normalize) {
+            if (value == null || value === "") return normalize ? mirror4([ "none" ]).join(" ") : "";
+            value = clean(value).split(" ");
+            return clean(mirror4(map(value, function(v) {
+                parseBorderStyle(v, normalize);
+            })).join(" "));
+        };
+
+        parsers.borderColor = function(value, normalize) {
+            if (!value || !(value = string.match(value, color.x))) return normalize ? mirror4([ "rgba(0,0,0,1)" ]).join(" ") : "";
+            return clean(mirror4(map(value, function(v) {
+                return parseColor(v, normalize);
+            })).join(" "));
+        };
+
+        forEach([ "Width", "Style", "Color" ], function(name) {
+            getters["border" + name] = function() {
+                return map(trbl, function(d) {
+                    return getter("border" + d + name).call(this);
+                }, this).join(" ");
+            };
+        });
+
+        // borderRadius
+        parsers.borderRadius = parseShort4;
+
+        getters.borderRadius = function() {
+            return map(tlbl, function(d) {
+                return getter("border" + d + "Radius").call(this);
+            }, this).join(" ");
+        };
+
+        // border
+        parsers.border = parseBorder;
+
+        getters.border = function() {
+            var pvalue;
+            for (var i = 0; i < trbl.length; i++) {
+                var value = getter("border" + trbl[i]).call(this);
+                if (pvalue && value !== pvalue) return null;
+                pvalue = value;
+            }
+            return pvalue;
+        };
+
+        // zIndex
+        parsers.zIndex = parseString;
+
+        // opacity
+        parsers.opacity = parseOpacity;
+
+        /*(css3)?*/
+        var filterName = test.style.MsFilter != null && "MsFilter" || test.style.filter != null && "filter";
+
+        if (filterName && test.style.opacity == null) {
+            var matchOp = /alpha\(opacity=([\d.]+)\)/i;
+            setters.opacity = function(value) {
+                value = (value = parseOpacity(value)) === "1" ? "" : "alpha(opacity=" + Math.round(value * 100) + ")";
+                var filter = compute(this)(filterName);
+                return this.style[filterName] = matchOp.test(filter) ? filter.replace(matchOp, value) : filter + " " + value;
+            };
+            getters.opacity = function() {
+                var match = compute(this)(filterName).match(matchOp);
+                return (!match ? 1 : match[1] / 100) + "";
+            };
+        }
+
+        /*:*/
+        var parseBoxShadow = parsers.boxShadow = function(value, normalize) {
+            return parseShadow(value, normalize, 4);
+        };
+
+        var parseTextShadow = parsers.textShadow = function(value, normalize) {
+            return parseShadow(value, normalize, 3);
+        };
+
+        // Aliases
+        forEach([ "Webkit", "Moz", "ms", "O", null ], function(prefix) {
+            forEach([ "transition", "transform", "transformOrigin", "transformStyle", "perspective", "perspectiveOrigin", "backfaceVisibility" ], function(style) {
+                var cc = prefix ? prefix + capitalize(style) : style;
+                if (prefix === "ms") hyphenated[cc] = "-ms-" + hyphenate(style);
+                if (test.style[cc] != null) aliases[style] = cc;
+            });
+        });
+
+        var transitionName = aliases.transition, transformName = aliases.transform;
+
+        // manually disable css3 transitions in Opera, because they do not work properly.
+        if (transitionName === "OTransition") transitionName = null;
+
+        // this takes care of matrix decomposition on browsers that support only 2d transforms but no CSS3 transitions.
+        // basically, IE9 (and Opera as well, since we disabled CSS3 transitions manually)
+        var parseTransform2d, Transform2d;
+
+        /*(css3)?*/
+        if (!transitionName && transformName) (function() {
+            var unmatrix = require("d");
+            var v = "\\s*([-\\d\\w.]+)\\s*";
+            var rMatrix = RegExp("matrix\\(" + [ v, v, v, v, v, v ] + "\\)");
+            var decomposeMatrix = function(matrix) {
+                var d = unmatrix.apply(null, matrix.match(rMatrix).slice(1)) || [ [ 0, 0 ], 0, 0, [ 0, 0 ] ];
+                return [ "translate(" + map(d[0], function(v) {
+                    return round(v) + "px";
+                }) + ")", "rotate(" + round(d[1] * 180 / Math.PI) + "deg)", "skewX(" + round(d[2] * 180 / Math.PI) + "deg)", "scale(" + map(d[3], round) + ")" ].join(" ");
+            };
+            var def0px = function(value) {
+                return value || "0px";
+            }, def1 = function(value) {
+                return value || "1";
+            }, def0deg = function(value) {
+                return value || "0deg";
+            };
+            var transforms = {
+                translate: function(value) {
+                    if (!value) value = "0px,0px";
+                    var values = value.split(",");
+                    if (!values[1]) values[1] = "0px";
+                    return map(values, clean) + "";
+                },
+                translateX: def0px,
+                translateY: def0px,
+                scale: function(value) {
+                    if (!value) value = "1,1";
+                    var values = value.split(",");
+                    if (!values[1]) values[1] = values[0];
+                    return map(values, clean) + "";
+                },
+                scaleX: def1,
+                scaleY: def1,
+                rotate: def0deg,
+                skewX: def0deg,
+                skewY: def0deg
+            };
+            Transform2d = prime({
+                constructor: function(transform) {
+                    var names = this.names = [];
+                    var values = this.values = [];
+                    transform.replace(/(\w+)\(([-.\d\s\w,]+)\)/g, function(match, name, value) {
+                        names.push(name);
+                        values.push(value);
+                    });
+                },
+                identity: function() {
+                    var functions = [];
+                    forEach(this.names, function(name) {
+                        var fn = transforms[name];
+                        if (fn) functions.push(name + "(" + fn() + ")");
+                    });
+                    return functions.join(" ");
+                },
+                sameType: function(transformObject) {
+                    return this.names.toString() === transformObject.names.toString();
+                },
+                // this is, basically, cheating.
+                // retrieving the matrix value from the dom, rather than calculating it
+                decompose: function() {
+                    var transform = this.toString();
+                    test.style.cssText = cssText + hyphenate(transformName) + ":" + transform + ";";
+                    document.body.appendChild(test);
+                    var m = compute(test)(transformName);
+                    if (!m || m === "none") m = "matrix(1, 0, 0, 1, 0, 0)";
+                    document.body.removeChild(test);
+                    return decomposeMatrix(m);
+                }
+            });
+            Transform2d.prototype.toString = function(clean) {
+                var values = this.values, functions = [];
+                forEach(this.names, function(name, i) {
+                    var fn = transforms[name];
+                    if (!fn) return;
+                    var value = fn(values[i]);
+                    if (!clean || value !== fn()) functions.push(name + "(" + value + ")");
+                });
+                return functions.length ? functions.join(" ") : "none";
+            };
+            Transform2d.union = function(from, to) {
+                if (from === to) return;
+                // nothing to do
+                var fromMap, toMap;
+                if (from === "none") {
+                    toMap = new Transform2d(to);
+                    to = toMap.toString();
+                    from = toMap.identity();
+                    fromMap = new Transform2d(from);
+                } else if (to === "none") {
+                    fromMap = new Transform2d(from);
+                    from = fromMap.toString();
+                    to = fromMap.identity();
+                    toMap = new Transform2d(to);
+                } else {
+                    fromMap = new Transform2d(from);
+                    from = fromMap.toString();
+                    toMap = new Transform2d(to);
+                    to = toMap.toString();
+                }
+                if (from === to) return;
+                // nothing to do
+                if (!fromMap.sameType(toMap)) {
+                    from = fromMap.decompose();
+                    to = toMap.decompose();
+                }
+                if (from === to) return;
+                // nothing to do
+                return [ from, to ];
+            };
+            // this parser makes sure it never gets "matrix"
+            parseTransform2d = parsers.transform = function(transform) {
+                if (!transform || transform === "none") return "none";
+                return new Transform2d(rMatrix.test(transform) ? decomposeMatrix(transform) : transform).toString(true);
+            };
+            // this getter makes sure we read from the dom only the first time
+            // this way we save the actual transform and not "matrix"
+            // setting matrix() will use parseTransform2d as well, thus setting the decomposed matrix
+            getters.transform = function() {
+                var s = this.style;
+                return s[transformName] || (s[transformName] = parseTransform2d(compute(this)(transformName)));
+            };
+        })();
+
+        /*:*/
+        // tries to match from and to values
+        var prepare = function(node, property, to) {
+            var parser = parsers[property] || parse, from = getter(property).call(node), // "normalized" by the getter
+            to = parser(to, true);
+            // normalize parsed property
+            if (from === to) return;
+            if (parser === parseLength || parser === parseBorder || parser === parseShort4) {
+                var toAll = to.match(rgLength), i = 0;
+                // this should always match something
+                if (toAll) from = from.replace(rgLength, function(fromFull, fromValue, fromUnit) {
+                    var toFull = toAll[i++], toMatched = toFull.match(rLengthNum), toUnit = toMatched[2];
+                    if (fromUnit !== toUnit) {
+                        var fromPixels = fromUnit === "px" ? fromValue : pixelRatio(node, fromUnit) * fromValue;
+                        return round(fromPixels / pixelRatio(node, toUnit)) + toUnit;
+                    }
+                    return fromFull;
+                });
+                if (i > 0) setter(property).call(node, from);
+            } else if (parser === parseTransform2d) {
+                // IE9/Opera
+                return Transform2d.union(from, to);
+            }
+            /*:*/
+            return from !== to ? [ from, to ] : null;
+        };
+
+        // BrowserAnimation
+        var BrowserAnimation = prime({
+            inherits: fx,
+            constructor: function BrowserAnimation(node, property) {
+                var _getter = getter(property), _setter = setter(property);
+                this.get = function() {
+                    return _getter.call(node);
+                };
+                this.set = function(value) {
+                    return _setter.call(node, value);
+                };
+                BrowserAnimation.parent.constructor.call(this, this.set);
+                this.node = node;
+                this.property = property;
+            }
+        });
+
+        var JSAnimation;
+
+        /*(css3)?*/
+        JSAnimation = prime({
+            inherits: BrowserAnimation,
+            constructor: function JSAnimation() {
+                return JSAnimation.parent.constructor.apply(this, arguments);
+            },
+            start: function(to) {
+                this.stop();
+                if (this.duration === 0) {
+                    this.cancel(to);
+                    return this;
+                }
+                var fromTo = prepare(this.node, this.property, to);
+                if (!fromTo) {
+                    this.cancel(to);
+                    return this;
+                }
+                JSAnimation.parent.start.apply(this, fromTo);
+                if (!this.cancelStep) return this;
+                // the animation would have started but we need additional checks
+                var parser = parsers[this.property] || parse;
+                // complex interpolations JSAnimation can't handle
+                // even CSS3 animation gracefully fail with some of those edge cases
+                // other "simple" properties, such as `border` can have different templates
+                // because of string properties like "solid" and "dashed"
+                if ((parser === parseBoxShadow || parser === parseTextShadow || parser === parse) && this.templateFrom !== this.templateTo) {
+                    this.cancelStep();
+                    delete this.cancelStep;
+                    this.cancel(to);
+                }
+                return this;
+            },
+            parseEquation: function(equation) {
+                if (typeof equation === "string") return JSAnimation.parent.parseEquation.call(this, equation);
+            }
+        });
+
+        /*:*/
+        // CSSAnimation
+        var remove3 = function(value, a, b, c) {
+            var index = indexOf(a, value);
+            if (index !== -1) {
+                a.splice(index, 1);
+                b.splice(index, 1);
+                c.splice(index, 1);
+            }
+        };
+
+        var CSSAnimation = prime({
+            inherits: BrowserAnimation,
+            constructor: function CSSAnimation(node, property) {
+                CSSAnimation.parent.constructor.call(this, node, property);
+                this.hproperty = hyphenate(aliases[property] || property);
+                var self = this;
+                this.bSetTransitionCSS = function(time) {
+                    self.setTransitionCSS(time);
+                };
+                this.bSetStyleCSS = function(time) {
+                    self.setStyleCSS(time);
+                };
+                this.bComplete = function() {
+                    self.complete();
+                };
+            },
+            start: function(to) {
+                this.stop();
+                if (this.duration === 0) {
+                    this.cancel(to);
+                    return this;
+                }
+                var fromTo = prepare(this.node, this.property, to);
+                if (!fromTo) {
+                    this.cancel(to);
+                    return this;
+                }
+                this.to = fromTo[1];
+                // setting transition styles immediately will make good browsers behave weirdly
+                // because DOM changes are always deferred, so we requestFrame
+                this.cancelSetTransitionCSS = requestFrame(this.bSetTransitionCSS);
+                return this;
+            },
+            setTransitionCSS: function(time) {
+                delete this.cancelSetTransitionCSS;
+                this.resetCSS(true);
+                // firefox flickers if we set css for transition as well as styles at the same time
+                // so, other than deferring transition styles we defer actual styles as well on a requestFrame
+                this.cancelSetStyleCSS = requestFrame(this.bSetStyleCSS);
+            },
+            setStyleCSS: function(time) {
+                delete this.cancelSetStyleCSS;
+                var duration = this.duration;
+                // we use setTimeout instead of transitionEnd because some browsers (looking at you foxy)
+                // incorrectly set event.propertyName, so we cannot check which animation we are canceling
+                this.cancelComplete = setTimeout(this.bComplete, duration);
+                this.endTime = time + duration;
+                this.set(this.to);
+            },
+            complete: function() {
+                delete this.cancelComplete;
+                this.resetCSS();
+                this.callback(this.endTime);
+            },
+            stop: function(hard) {
+                if (this.cancelExit) {
+                    this.cancelExit();
+                    delete this.cancelExit;
+                } else if (this.cancelSetTransitionCSS) {
+                    // if cancelSetTransitionCSS is set, means nothing is set yet
+                    this.cancelSetTransitionCSS();
+                    //so we cancel and we're good
+                    delete this.cancelSetTransitionCSS;
+                } else if (this.cancelSetStyleCSS) {
+                    // if cancelSetStyleCSS is set, means transition css has been set, but no actual styles.
+                    this.cancelSetStyleCSS();
+                    delete this.cancelSetStyleCSS;
+                    // if its a hard stop (and not another start on top of the current animation)
+                    // we need to reset the transition CSS
+                    if (hard) this.resetCSS();
+                } else if (this.cancelComplete) {
+                    // if cancelComplete is set, means style and transition css have been set, not yet completed.
+                    clearTimeout(this.cancelComplete);
+                    delete this.cancelComplete;
+                    // if its a hard stop (and not another start on top of the current animation)
+                    // we need to reset the transition CSS set the current animation styles
+                    if (hard) {
+                        this.resetCSS();
+                        this.set(this.get());
+                    }
+                }
+                return this;
+            },
+            resetCSS: function(inclusive) {
+                var rules = compute(this.node), properties = (rules(transitionName + "Property").replace(/\s+/g, "") || "all").split(","), durations = (rules(transitionName + "Duration").replace(/\s+/g, "") || "0s").split(","), equations = (rules(transitionName + "TimingFunction").replace(/\s+/g, "") || "ease").match(/cubic-bezier\([\d-.,]+\)|([a-z-]+)/g);
+                remove3("all", properties, durations, equations);
+                remove3(this.hproperty, properties, durations, equations);
+                if (inclusive) {
+                    properties.push(this.hproperty);
+                    durations.push(this.duration + "ms");
+                    equations.push("cubic-bezier(" + this.equation + ")");
+                }
+                var nodeStyle = this.node.style;
+                nodeStyle[transitionName + "Property"] = properties;
+                nodeStyle[transitionName + "Duration"] = durations;
+                nodeStyle[transitionName + "TimingFunction"] = equations;
+            },
+            parseEquation: function(equation) {
+                if (typeof equation === "string") return CSSAnimation.parent.parseEquation.call(this, equation, true);
+            }
+        });
+
+        // elements methods
+        var BaseAnimation = transitionName ? CSSAnimation : JSAnimation;
+
+        var moofx = function(x, y) {
+            return typeof x === "function" ? fx(x) : elements(x, y);
+        };
+
+        elements.implement({
+            // {properties}, options or
+            // property, value options
+            animate: function(A, B, C) {
+                var styles = A, options = B;
+                if (typeof A === "string") {
+                    styles = {};
+                    styles[A] = B;
+                    options = C;
+                }
+                if (options == null) options = {};
+                var type = typeof options;
+                options = type === "function" ? {
+                    callback: options
+                } : type === "string" || type === "number" ? {
+                    duration: options
+                } : options;
+                var callback = options.callback || function() {}, completed = 0, length = 0;
+                options.callback = function(t) {
+                    if (++completed === length) callback(t);
+                };
+                for (var property in styles) {
+                    var value = styles[property], property = camelize(property);
+                    this.forEach(function(node) {
+                        length++;
+                        var self = elements(node), anims = self._animations || (self._animations = {});
+                        var anim = anims[property] || (anims[property] = new BaseAnimation(node, property));
+                        anim.setOptions(options).start(value);
+                    });
+                }
+                return this;
+            },
+            // {properties} or
+            // property, value
+            style: function(A, B) {
+                var styles = A;
+                if (typeof A === "string") {
+                    styles = {};
+                    styles[A] = B;
+                }
+                for (var property in styles) {
+                    var value = styles[property], set = setter(property = camelize(property));
+                    this.forEach(function(node) {
+                        var self = elements(node), anims = self._animations, anim;
+                        if (anims && (anim = anims[property])) anim.stop(true);
+                        set.call(node, value);
+                    });
+                }
+                return this;
+            },
+            compute: function(property) {
+                property = camelize(property);
+                var node = this[0];
+                // return default matrix for transform, instead of parsed (for consistency)
+                if (property === "transform" && parseTransform2d) return compute(node)(transformName);
+                var value = getter(property).call(node);
+                // unit conversion to `px`
+                return value != null ? value.replace(rgLength, function(match, value, unit) {
+                    return unit === "px" ? match : pixelRatio(node, unit) * value + "px";
+                }) : "";
+            }
+        });
+
+        moofx.parse = function(property, value, normalize) {
+            return (parsers[camelize(property)] || parse)(value, normalize);
+        };
+
+        module.exports = moofx;
+    },
+    "8": function(require, module, exports, global) {
+        /*
+string methods
+ - string shell
+*/
+                "use strict";
+
+        var string = require("9");
+
+        string.implement({
+            clean: function() {
+                return string.trim((this + "").replace(/\s+/g, " "));
+            },
+            camelize: function() {
+                return (this + "").replace(/-\D/g, function(match) {
+                    return match.charAt(1).toUpperCase();
+                });
+            },
+            hyphenate: function() {
+                return (this + "").replace(/[A-Z]/g, function(match) {
+                    return "-" + match.toLowerCase();
+                });
+            },
+            capitalize: function() {
+                return (this + "").replace(/\b[a-z]/g, function(match) {
+                    return match.toUpperCase();
+                });
+            },
+            escape: function() {
+                return (this + "").replace(/([-.*+?^${}()|[\]\/\\])/g, "\\$1");
+            },
+            number: function() {
+                return parseFloat(this);
+            }
+        });
+
+        if (typeof JSON !== "undefined") string.implement({
+            decode: function() {
+                return JSON.parse(this);
+            }
+        });
+
+        module.exports = string;
+    },
+    "9": function(require, module, exports, global) {
+        /*
+string
+ - string es5 shell
+*/
+                "use strict";
+
+        var string = require("4")["string"];
+
+        var names = ("charAt,charCodeAt,concat,contains,endsWith,indexOf,lastIndexOf,localeCompare,match,replace,search,slice,split" + ",startsWith,substr,substring,toLocaleLowerCase,toLocaleUpperCase,toLowerCase,toString,toUpperCase,trim,valueOf").split(",");
+
+        for (var methods = {}, i = 0, name, method; name = names[i++]; ) if (method = String.prototype[name]) methods[name] = method;
+
+        if (!methods.trim) methods.trim = function() {
+            return (this + "").replace(/^\s+|\s+$/g, "");
+        };
+
+        module.exports = string.implement(methods);
+    },
+    a: function(require, module, exports, global) {
+        /*
+elements
+*/
+                "use strict";
+
+        var prime = require("5"), array = require("3").prototype;
+
+        // uniqueID
+        var uniqueIndex = 0;
+
+        var uniqueID = function(n) {
+            return n === global ? "global" : n.uniqueNumber || (n.uniqueNumber = "n:" + (uniqueIndex++).toString(36));
+        };
+
+        var instances = {};
+
+        // elements prime
+        var $ = prime({
+            constructor: function $(n, context) {
+                if (n == null) return this && this.constructor === $ ? new elements() : null;
+                var self = n;
+                if (n.constructor !== elements) {
+                    self = new elements();
+                    var uid;
+                    if (typeof n === "string") {
+                        if (!self.search) return null;
+                        self[self.length++] = context || document;
+                        return self.search(n);
+                    }
+                    if (n.nodeType || n === global) {
+                        self[self.length++] = n;
+                    } else if (n.length) {
+                        // this could be an array, or any object with a length attribute,
+                        // including another instance of elements from another interface.
+                        var uniques = {};
+                        for (var i = 0, l = n.length; i < l; i++) {
+                            // perform elements flattening
+                            var nodes = $(n[i], context);
+                            if (nodes && nodes.length) for (var j = 0, k = nodes.length; j < k; j++) {
+                                var node = nodes[j];
+                                uid = uniqueID(node);
+                                if (!uniques[uid]) {
+                                    self[self.length++] = node;
+                                    uniques[uid] = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!self.length) return null;
+                // when length is 1 always use the same elements instance
+                if (self.length === 1) {
+                    uid = uniqueID(self[0]);
+                    return instances[uid] || (instances[uid] = self);
+                }
+                return self;
+            }
+        });
+
+        var elements = prime({
+            inherits: $,
+            constructor: function elements() {
+                this.length = 0;
+            },
+            unlink: function() {
+                return this.map(function(node, i) {
+                    delete instances[uniqueID(node)];
+                    return node;
+                });
+            },
+            // straight es5 prototypes (or emulated methods)
+            forEach: array.forEach,
+            map: array.map,
+            filter: array.filter,
+            every: array.every,
+            some: array.some
+        });
+
+        module.exports = $;
+    },
+    b: function(require, module, exports, global) {
+        /*
+fx
+*/
+                "use strict";
+
+        var prime = require("5"), requestFrame = require("2").request, bezier = require("c");
+
+        var map = require("3").map;
+
+        var sDuration = "([\\d.]+)(s|ms)?", sCubicBezier = "cubic-bezier\\(([-.\\d]+),([-.\\d]+),([-.\\d]+),([-.\\d]+)\\)";
+
+        var rDuration = RegExp(sDuration), rCubicBezier = RegExp(sCubicBezier), rgCubicBezier = RegExp(sCubicBezier, "g");
+
+        // equations collection
+        var equations = {
+            "default": "cubic-bezier(0.25, 0.1, 0.25, 1.0)",
+            linear: "cubic-bezier(0, 0, 1, 1)",
+            "ease-in": "cubic-bezier(0.42, 0, 1.0, 1.0)",
+            "ease-out": "cubic-bezier(0, 0, 0.58, 1.0)",
+            "ease-in-out": "cubic-bezier(0.42, 0, 0.58, 1.0)"
+        };
+
+        equations.ease = equations["default"];
+
+        var compute = function(from, to, delta) {
+            return (to - from) * delta + from;
+        };
+
+        var divide = function(string) {
+            var numbers = [];
+            var template = (string + "").replace(/[-.\d]+/g, function(number) {
+                numbers.push(+number);
+                return "@";
+            });
+            return [ numbers, template ];
+        };
+
+        var Fx = prime({
+            constructor: function Fx(render, options) {
+                // set options
+                this.setOptions(options);
+                // renderer
+                this.render = render || function() {};
+                // bound functions
+                var self = this;
+                this.bStep = function(t) {
+                    return self.step(t);
+                };
+                this.bExit = function(time) {
+                    self.exit(time);
+                };
+            },
+            setOptions: function(options) {
+                if (options == null) options = {};
+                if (!(this.duration = this.parseDuration(options.duration || "500ms"))) throw new Error("invalid duration");
+                if (!(this.equation = this.parseEquation(options.equation || "default"))) throw new Error("invalid equation");
+                this.callback = options.callback || function() {};
+                return this;
+            },
+            parseDuration: function(duration) {
+                if (duration = (duration + "").match(rDuration)) {
+                    var time = +duration[1], unit = duration[2] || "ms";
+                    if (unit === "s") return time * 1e3;
+                    if (unit === "ms") return time;
+                }
+            },
+            parseEquation: function(equation, array) {
+                var type = typeof equation;
+                if (type === "function") {
+                    // function
+                    return equation;
+                } else if (type === "string") {
+                    // cubic-bezier string
+                    equation = equations[equation] || equation;
+                    var match = equation.replace(/\s+/g, "").match(rCubicBezier);
+                    if (match) {
+                        equation = map(match.slice(1), function(v) {
+                            return +v;
+                        });
+                        if (array) return equation;
+                        if (equation.toString() === "0,0,1,1") return function(x) {
+                            return x;
+                        };
+                        type = "object";
+                    }
+                }
+                if (type === "object") {
+                    // array
+                    return bezier(equation[0], equation[1], equation[2], equation[3], 1e3 / 60 / this.duration / 4);
+                }
+            },
+            cancel: function(to) {
+                this.to = to;
+                this.cancelExit = requestFrame(this.bExit);
+            },
+            exit: function(time) {
+                this.render(this.to);
+                delete this.cancelExit;
+                this.callback(time);
+            },
+            start: function(from, to) {
+                this.stop();
+                if (this.duration === 0) {
+                    this.cancel(to);
+                    return this;
+                }
+                this.isArray = false;
+                this.isNumber = false;
+                var fromType = typeof from, toType = typeof to;
+                if (fromType === "object" && toType === "object") {
+                    this.isArray = true;
+                } else if (fromType === "number" && toType === "number") {
+                    this.isNumber = true;
+                }
+                var from_ = divide(from), to_ = divide(to);
+                this.from = from_[0];
+                this.to = to_[0];
+                this.templateFrom = from_[1];
+                this.templateTo = to_[1];
+                if (this.from.length !== this.to.length || this.from.toString() === this.to.toString()) {
+                    this.cancel(to);
+                    return this;
+                }
+                delete this.time;
+                this.length = this.from.length;
+                this.cancelStep = requestFrame(this.bStep);
+                return this;
+            },
+            stop: function() {
+                if (this.cancelExit) {
+                    this.cancelExit();
+                    delete this.cancelExit;
+                } else if (this.cancelStep) {
+                    this.cancelStep();
+                    delete this.cancelStep;
+                }
+                return this;
+            },
+            step: function(now) {
+                this.time || (this.time = now);
+                var factor = (now - this.time) / this.duration;
+                if (factor > 1) factor = 1;
+                var delta = this.equation(factor), from = this.from, to = this.to, tpl = this.templateTo;
+                for (var i = 0, l = this.length; i < l; i++) {
+                    var f = from[i], t = to[i];
+                    tpl = tpl.replace("@", t !== f ? compute(f, t, delta) : t);
+                }
+                this.render(this.isArray ? tpl.split(",") : this.isNumber ? +tpl : tpl, factor);
+                if (factor !== 1) {
+                    this.cancelStep = requestFrame(this.bStep);
+                } else {
+                    delete this.cancelStep;
+                    this.callback(now);
+                }
+            }
+        });
+
+        var fx = function(render) {
+            var ffx = new Fx(render);
+            return {
+                start: function(from, to, options) {
+                    var type = typeof options;
+                    ffx.setOptions(type === "function" ? {
+                        callback: options
+                    } : type === "string" || type === "number" ? {
+                        duration: options
+                    } : options).start(from, to);
+                    return this;
+                },
+                stop: function() {
+                    ffx.stop();
+                    return this;
+                }
+            };
+        };
+
+        fx.prototype = Fx.prototype;
+
+        module.exports = fx;
+    },
+    c: function(require, module, exports, global) {
+                module.exports = function(x1, y1, x2, y2, epsilon) {
+            var curveX = function(t) {
+                var v = 1 - t;
+                return 3 * v * v * t * x1 + 3 * v * t * t * x2 + t * t * t;
+            };
+            var curveY = function(t) {
+                var v = 1 - t;
+                return 3 * v * v * t * y1 + 3 * v * t * t * y2 + t * t * t;
+            };
+            var derivativeCurveX = function(t) {
+                var v = 1 - t;
+                return 3 * (2 * (t - 1) * t + v * v) * x1 + 3 * (-t * t * t + 2 * v * t) * x2;
+            };
+            return function(t) {
+                var x = t, t0, t1, t2, x2, d2, i;
+                // First try a few iterations of Newton's method -- normally very fast.
+                for (t2 = x, i = 0; i < 8; i++) {
+                    x2 = curveX(t2) - x;
+                    if (Math.abs(x2) < epsilon) return curveY(t2);
+                    d2 = derivativeCurveX(t2);
+                    if (Math.abs(d2) < 1e-6) break;
+                    t2 = t2 - x2 / d2;
+                }
+                t0 = 0, t1 = 1, t2 = x;
+                if (t2 < t0) return curveY(t0);
+                if (t2 > t1) return curveY(t1);
+                // Fallback to the bisection method for reliability.
+                while (t0 < t1) {
+                    x2 = curveX(t2);
+                    if (Math.abs(x2 - x) < epsilon) return curveY(t2);
+                    if (x > x2) t0 = t2; else t1 = t2;
+                    t2 = (t1 - t0) * .5 + t0;
+                }
+                // Failure
+                return curveY(t2);
+            };
+        };
+    },
+    d: function(require, module, exports, global) {
+        /*
+Unmatrix 2d
+ - a crude implementation of the slightly bugged pseudo code in http://www.w3.org/TR/css3-2d-transforms/#matrix-decomposition
+*/
+                "use strict";
+
+        // returns the length of the passed vector
+        var length = function(a) {
+            return Math.sqrt(a[0] * a[0] + a[1] * a[1]);
+        };
+
+        // normalizes the length of the passed point to 1
+        var normalize = function(a) {
+            var l = length(a);
+            return l ? [ a[0] / l, a[1] / l ] : [ 0, 0 ];
+        };
+
+        // returns the dot product of the passed points
+        var dot = function(a, b) {
+            return a[0] * b[0] + a[1] * b[1];
+        };
+
+        // returns the principal value of the arc tangent of
+        // y/x, using the signs of both arguments to determine
+        // the quadrant of the return value
+        var atan2 = Math.atan2;
+
+        var combine = function(a, b, ascl, bscl) {
+            return [ ascl * a[0] + bscl * b[0], ascl * a[1] + bscl * b[1] ];
+        };
+
+        module.exports = function(a, b, c, d, tx, ty) {
+            // Make sure the matrix is invertible
+            if (a * d - b * c === 0) return false;
+            // Take care of translation
+            var translate = [ tx, ty ];
+            // Put the components into a 2x2 matrix
+            var m = [ [ a, b ], [ c, d ] ];
+            // Compute X scale factor and normalize first row.
+            var scale = [ length(m[0]) ];
+            m[0] = normalize(m[0]);
+            // Compute shear factor and make 2nd row orthogonal to 1st.
+            var skew = dot(m[0], m[1]);
+            m[1] = combine(m[1], m[0], 1, -skew);
+            // Now, compute Y scale and normalize 2nd row.
+            scale[1] = length(m[1]);
+            // m[1] = normalize(m[1]) //
+            skew /= scale[1];
+            // Now, get the rotation out
+            var rotate = atan2(m[0][1], m[0][0]);
+            return [ translate, rotate, skew, scale ];
+        };
+    }
+});

@@ -18,7 +18,8 @@ include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 $app            = JFactory::getApplication();
 $db             = JFactory::getDBO();
 
-$current_user   = JFactory::getUser();
+$session = JFactory::getSession();
+$current_user = $session->get('emundusUser');
 
 $user_id = $fabrikFormData['user_raw'][0];
 $profile = $fabrikFormData['profile_raw'][0];
@@ -82,8 +83,8 @@ if (EmundusHelperAccess::isApplicant($current_user->id)) {
 
     $current_user->menutype = $p->menutype;
     $current_user->profile = $p->id;
+    $session->set('emundusUser',$current_user);
 
-    $session = JFactory::getSession();
     $session_user = $session->get('user');
     $session_user->menutype = $p->menutype;
     $session_user->profile = $p->id;

@@ -17,7 +17,7 @@ require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 
 $current_user = JFactory::getUser();
-if( !EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnums->fnum) ) {
+if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnums->fnum) ) {
 	echo "<script>window.setTimeout('closeme();', 1500); function closeme() { parent.SqueezeBox.close(); }</script>";
 	die('<h1>'.JText::_("RESTRICTED_ACCESS").'</h1>');
 } else {

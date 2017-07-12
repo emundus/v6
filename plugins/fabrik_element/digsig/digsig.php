@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.digsig
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -65,10 +65,10 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 			$val = json_encode($val);
 		}
 
-		$basePath      = COM_FABRIK_BASE . '/plugins/fabrik_element/digsig/layouts/';
-		$layoutData    = new stdClass;
-		$input         = $this->app->input;
-		$format        = $input->get('format');
+		$basePath   = COM_FABRIK_BASE . '/plugins/fabrik_element/digsig/layouts/';
+		$layoutData = new stdClass;
+		$input      = $this->app->input;
+		$format     = $input->get('format');
 
 		$layoutData->id            = $id;
 		$layoutData->digsig_width  = $digsig_width;
@@ -87,10 +87,13 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 				$formId    = $formModel->getId();
 				$rowId     = ArrayHelper::getValue($data, $pk);
 				$elementId = $this->getId();
+				$pdfSecret = $params->get('digsig_pdf_secret', '');
 
 				$layoutData->link = COM_FABRIK_LIVESITE
-					. 'index.php?option=com_' . $this->package . '&amp;task=plugin.pluginAjax&amp;plugin=digsig&amp;method=ajax_signature_to_image&amp;'
-					. 'format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
+					. 'index.php?option=com_' . $this->package
+					. '&amp;task=plugin.pluginAjax&amp;plugin=digsig&amp;method=ajax_signature_to_image&amp;'
+					. 'format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId
+					. '&amp;repeatcount=0&amp;pdf_secret=' . $pdfSecret;
 
 				$layout = new JLayoutFile('fabrik-element-digsig-details-pdf', $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
 			}
@@ -111,15 +114,18 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string    $data      Elements data
-	 * @param   stdClass  &$thisRow  All the data in the lists current row
-	 * @param   array     $opts      Rendering options
+	 * @param   string   $data     Elements data
+	 * @param   stdClass &$thisRow All the data in the lists current row
+	 * @param   array    $opts     Rendering options
 	 *
-	 * @return  string	formatted value
+	 * @return  string    formatted value
 	 */
 	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
-		if ($this->dataConsideredEmpty($data, 0))
+        $profiler = JProfiler::getInstance('Application');
+        JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
+
+        if ($this->dataConsideredEmpty($data, 0))
 		{
 			return '';
 		}
@@ -187,12 +193,23 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 		$this->loadMeForAjax();
 		$this->getElement();
 		$params        = $this->getParams();
-		$digsig_width  = (int) $params->get('digsig_list_width', '200');
-		$digsig_height = (int) $params->get('digsig_list_height', '75');
+		$digsig_width  = (int) $params->get('digsig_form_width', '400');
+		$digsig_height = (int) $params->get('digsig_form_height', '250');
 		$this->lang->load('com_fabrik.plg.element.fabrikdigsig', JPATH_ADMINISTRATOR);
 		$url = 'index.php';
 
-		if (!$this->canView())
+		$pdfSecretQS = $this->app->input->get('pdf_secret', '');
+
+		if (!empty($pdfSecretQS))
+		{
+			if ($pdfSecretQS !== $params->get('digsig_pdf_secret', ''))
+			{
+				$this->app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_PERMISSION'));
+				$this->app->redirect($url);
+				exit;
+			}
+		}
+		else if (!$this->canView())
 		{
 			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_PERMISSION'));
 			$this->app->redirect($url);
@@ -203,7 +220,7 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 
 		if (empty($rowId))
 		{
-			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_FDIGSIG_NO_SUCH_FILE'));
+			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
 			$this->app->redirect($url);
 			exit;
 		}
@@ -320,8 +337,9 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	 */
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
+		$key     = FabrikHelperHTML::isDebug() ? 'element/digsig/digsig' : 'element/digsig/digsig-min';
 		$s       = new stdClass;
-		$s->deps = array('fab/element');
+		$s->deps = array();
 
 		$folder           = 'element/digsig/libs/signature-pad/';
 		$digsigShim       = new stdClass;
@@ -334,7 +352,7 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 		$s->deps[]               = $folder . 'json2';
 		$shim[$folder . 'json2'] = $digsigShim;
 
-		$shim['element/digsig/digsig'] = $s;
+		$shim[$key] = $s;
 
 		FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE . 'plugins/fabrik_element/digsig/libs/signature-pad/jquery.signaturepad.css');
 
@@ -348,8 +366,8 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	 * Is the element consider to be empty for purposes of rendering on the form,
 	 * i.e. for assigning classes, etc.  Can be overridden by individual elements.
 	 *
-	 * @param   array  $data           Data to test against
-	 * @param   int    $repeatCounter  Repeat group #
+	 * @param   array $data          Data to test against
+	 * @param   int   $repeatCounter Repeat group #
 	 *
 	 * @return  bool
 	 */

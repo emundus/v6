@@ -9,6 +9,7 @@ namespace Akeeba\AdminTools\Admin\Helper;
 
 // Protect from unauthorized access
 use Exception;
+use FOF30\Container\Container;
 use JFactory;
 use Joomla\Registry\Registry;
 
@@ -21,6 +22,9 @@ class Storage
 {
 	/** @var  Registry  The internal values registry */
 	private $config = null;
+
+	/** @var Container The component's container */
+	private $container;
 
 	/** @var  Storage  Singleton instance */
 	static $instance = null;
@@ -45,6 +49,7 @@ class Storage
 	 */
 	public function __construct()
 	{
+		$this->container = Container::getInstance('com_admintools');
 		$this->load();
 	}
 
@@ -104,7 +109,7 @@ class Storage
 	 */
 	public function load()
 	{
-		$db    = JFactory::getDbo();
+		$db    = $this->container->db;
 		$query = $db->getQuery(true)
 					->select($db->quoteName('value'))
 					->from($db->quoteName('#__admintools_storage'))
@@ -142,7 +147,7 @@ class Storage
 	 */
 	public function save()
 	{
-		$db   = JFactory::getDbo();
+		$db   = $this->container->db;
 		$data = $this->config->toArray();
 		$data = json_encode($data);
 

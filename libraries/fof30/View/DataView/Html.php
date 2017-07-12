@@ -23,7 +23,9 @@ class Html extends Raw implements DataViewInterface
 	 * Runs before rendering the view template, echoing HTML to put before the
 	 * view template's generated HTML
 	 *
-	 * @return void
+	 * @return  void
+	 *
+	 * @throws \Exception
 	 */
 	protected function preRender()
 	{
@@ -46,7 +48,7 @@ class Html extends Raw implements DataViewInterface
 		}
 
 		$renderer = $this->container->renderer;
-		$renderer->preRender($view, $task, $this->container);
+		$renderer->preRender($view, $task);
 	}
 
 	/**
@@ -54,6 +56,8 @@ class Html extends Raw implements DataViewInterface
 	 * view template's generated HTML
 	 *
 	 * @return  void
+	 *
+	 * @throws \Exception
 	 */
 	protected function postRender()
 	{
@@ -64,7 +68,7 @@ class Html extends Raw implements DataViewInterface
 
 		if ($renderer instanceof RenderInterface)
 		{
-			$renderer->postRender($view, $task, $this->container);
+			$renderer->postRender($view, $task);
 		}
 	}
 

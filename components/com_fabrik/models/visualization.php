@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -23,7 +23,6 @@ require_once JPATH_SITE . '/components/com_fabrik/models/plugin.php';
  * @package  Fabrik
  * @since    3.0
  */
-
 class FabrikFEModelVisualization extends FabModel
 {
 	protected $pluginParams = null;
@@ -291,7 +290,8 @@ class FabrikFEModelVisualization extends FabModel
 			if ($params->get('advanced-filter', '0'))
 			{
 				$table = $listModel->getTable();
-				$url = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $this->package . '&amp;view=list&amp;layout=_advancedsearch&amp;tmpl=component&amp;listid='
+				$url = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $this->package .
+					'&amp;format=partial&amp;view=list&amp;layout=_advancedsearch&amp;tmpl=component&amp;listid='
 					. $table->id . '&amp;nextview=' . $this->app->input->get('view', 'list')
 					. '&scope&amp;=' . $this->app->scope;
 
@@ -302,7 +302,7 @@ class FabrikFEModelVisualization extends FabModel
 
 		$title = '<span>' . FText::_('COM_FABRIK_ADVANCED_SEARCH') . '</span>';
 		$opts = array('alt' => FText::_('COM_FABRIK_ADVANCED_SEARCH'), 'class' => 'fabrikTip', 'opts' => "{notice:true}", 'title' => $title);
-		$img = FabrikHelperHTML::image('find.png', 'list', '', $opts);
+		$img = FabrikHelperHTML::image('find', 'list', '', $opts);
 
 		if (count($links) === 1)
 		{
@@ -437,7 +437,7 @@ class FabrikFEModelVisualization extends FabModel
 			$listParams = $listModel->getParams();
 			$preFilter = FArrayHelper::getValue($preFilters, $c);
 			$preFilter = ArrayHelper::fromObject(json_decode($preFilter));
-			$conditions = (array) $preFilter['filter-conditions'];
+			$conditions = FArrayHelper::getValue($preFilter, 'filter-conditions', array(), 'array');
 
 			if (!empty($conditions))
 			{
@@ -453,6 +453,7 @@ class FabrikFEModelVisualization extends FabModel
 				$listParams->set('filter-value', $preFilter['filter-value']);
 				$listParams->set('filter-access', $preFilter['filter-access']);
 				$listParams->set('filter-eval', $preFilter['filter-eval']);
+				$listParams->set('filter-join', $preFilter['filter-join']);
 			}
 
 			$c ++;
@@ -600,5 +601,29 @@ class FabrikFEModelVisualization extends FabModel
 		}
 
 		return in_array($row->access, $groups);
+	}
+
+	/**
+	 * Load the JS files into the document
+	 *
+	 * @param   array  &$scripts  Js script sources to load in the head
+	 *
+	 * @return null
+	 */
+	public function getCustomJsAction(&$scripts)
+	{
+		$views = array(
+			'visualization',
+			'viz'
+		);
+		$scriptsKey = 'viz_' . $this->getId();
+
+		foreach ($views as $view)
+		{
+			if (JFile::exists(COM_FABRIK_FRONTEND . '/js/' . $view . '_' . $this->getId() . '.js'))
+			{
+				$scripts[$scriptsKey] = 'components/com_fabrik/js/' . $view . '_' . $this->getId() . '.js';
+			}
+		}
 	}
 }

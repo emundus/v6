@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.youtube
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -37,7 +37,10 @@ class PlgFabrik_ElementYoutube extends PlgFabrik_Element
 	 */
 	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
-		return $this->constructVideoPlayer($data, 'list');
+        $profiler = JProfiler::getInstance('Application');
+        JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
+
+        return $this->constructVideoPlayer($data, 'list');
 	}
 
 	/**
@@ -114,6 +117,8 @@ class PlgFabrik_ElementYoutube extends PlgFabrik_Element
 	private function constructVideoPlayer($value, $mode = 'form')
 	{
 		$params = $this->getParams();
+		$uri    = JUri::getInstance();
+		$scheme = $uri->getScheme();
 
 		// Player size
 		if (($params->get('display_in_table') == 0) && $mode == 'list')
@@ -156,7 +161,7 @@ class PlgFabrik_ElementYoutube extends PlgFabrik_Element
 		$rel = $params->get('include_related') == 0 ? '&rel=0' : '';
 
 		// Enable delayed cookies
-		$url = $params->get('enable_delayed_cookies') == 1 ? 'http://www.youtube-nocookie.com/v/' : 'http://www.youtube.com/v/';
+		$url = $params->get('enable_delayed_cookies') == 1 ? $scheme . '://www.youtube-nocookie.com/v/' : $scheme . '://www.youtube.com/v/';
 
 		// autoplay & fullscreen
 		$autoplay = $params->get('youtube_autoplay', '1');

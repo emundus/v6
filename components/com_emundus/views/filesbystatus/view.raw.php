@@ -44,7 +44,7 @@ class EmundusViewFilesbystatus extends JViewLegacy
 
     	$current_user = JFactory::getUser();
 
-		if( !EmundusHelperAccess::asPartnerAccessLevel($current_user->id) )
+		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id) )
 			die( JText::_('RESTRICTED_ACCESS') );
 	   	
 	   	$app = JFactory::getApplication();

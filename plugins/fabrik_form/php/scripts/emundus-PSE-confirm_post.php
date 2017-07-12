@@ -14,7 +14,7 @@ defined( '_JEXEC' ) or die();
  */
 
 $db = JFactory::getDBO();
-$student =  JFactory::getUser();
+$student = JFactory::getSession()->get('emundusUser');
 $mailer = JFactory::getMailer();
 $app    = JFactory::getApplication();
 $email_from_sys = $app->getCfg('mailfrom');

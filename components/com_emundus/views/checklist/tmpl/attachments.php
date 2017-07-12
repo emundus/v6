@@ -8,7 +8,7 @@ JHTML::stylesheet( 'light2.css', JURI::Base().'templates/rt_afterburner/css/' );
 JHTML::stylesheet( 'general.css', JURI::Base().'templates/system/css/' );
 JHTML::stylesheet( 'system.css', JURI::Base().'templates/system/css/' );
 
-$current_user = JFactory::getUser();
+$current_user = JFactory::getSession()->get('emundusUser');
 
 $student_id = JRequest::getVar('sid', null, 'GET', 'none',0);		
 if ($student_id > 0 && JFactory::getUser()->usertype != 'Registered') 
@@ -34,7 +34,7 @@ else
     <input name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ATTACHMENT'); ?>"/>
     <?php 
 foreach($this->attachments as $attachment) { 
-	if ($attachment->nb==0) {
+  if ($attachment->nb==0) {
 		$class= $attachment->mandatory?'need_missing':'need_missing_fac';
 	} else {
 		$class= 'need_ok';

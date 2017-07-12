@@ -17,7 +17,8 @@ include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 $app            = JFactory::getApplication();
 $db             = JFactory::getDBO();
 
-$current_user   = JFactory::getUser();
+$session = JFactory::getSession():
+$current_user = $session->get('emundusUser');
 
 $user_id = $fabrikFormData['user_raw'][0];
 $fnum = $fabrikFormData['fnum_raw'][0];
@@ -56,6 +57,8 @@ else {
   
   $current_user->menutype = $p->menutype;
   $current_user->profile = $p->id;
+
+  $session->set('emundusUser',$current_user);
 
 }
 

@@ -1,26 +1,136 @@
-/*
- * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
- * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
- */
-var InputsExclusion=[".content_vote"];var InputsMorph={version:1.7,init:function(){InputsMorph.rtl=document.id(document.body).getStyle("direction")=="rtl";
-InputsMorph.list=new Hash({all:[]});var a=$$("input[type=radio]");var d=$$(InputsExclusion.join(" input[type=radio], ")+" input[type=radio]");d.each(function(b){a=a.erase(b);
-});a.each(function(b,c){InputsMorph.setArray("list","all",b);if(InputsMorph.list.has(b.name)){InputsMorph.setArray("list",b.name,b);}else{InputsMorph.list.set(b.name,[b]);
-}InputsMorph.morph(b,"radios").addEvent(b,"radios");});a=$$("input[type=checkbox]");d=$$(InputsExclusion.join(" input[type=checkbox], ")+" input[type=checkbox]");
-d.each(function(b){a=a.erase(b);});a.each(function(b,c){InputsMorph.setArray("list","all",b);if(InputsMorph.list.has(b.name)){InputsMorph.setArray("list",b.name,b);
-}else{InputsMorph.list.set(b.name,[b]);}InputsMorph.morph(b,"checks").addEvent(b,"checks");});},morph:function(e,d){var h=e.getNext(),g=e.getParent(),f=e.name.replace("[","").replace("]","");
-if(h&&h.get("tag")=="label"){e.setStyles({position:"absolute",left:"-10000px"});if(InputsMorph.rtl&&Browser.Engine.gecko){e.setStyles({position:"absolute",right:"-10000px"});
-}else{e.setStyles({position:"absolute",left:"-10000px"});}if(InputsMorph.rtl&&(Browser.Engine.presto||Browser.Engine.trident)){e.setStyle("display","none");
-}if(Browser.Engine.trident5){e.setStyle("display","none");}h.addClass("rok"+d+" rok"+f);if(e.checked){h.addClass("rok"+d+"-active");}}else{if(g&&g.get("tag")=="label"){if(InputsMorph.rtl&&Browser.Engine.gecko){e.setStyles({position:"absolute",right:"-10000px"});
-}else{e.setStyles({position:"absolute",left:"-10000px"});}if(InputsMorph.rtl&&(Browser.Engine.presto||Browser.Engine.trident)){e.setStyle("display","none");
-}g.addClass("rok"+d+" rok"+f);if(e.checked){g.addClass("rok"+d+"-active");}}}return InputsMorph;},addEvent:function(e,d){e.addEvent("click",function(){if(Browser.Engine.presto||Browser.Engine.trident){if(e.opera){InputsMorph.switchReplacement(e,d);
-}e.opera=(d=="checks")?false:true;}else{InputsMorph.switchReplacement(e,d);}});if(Browser.Engine.presto||Browser.Engine.trident||(e.getNext()&&!e.getNext().getProperty("for"))){var g=e.getNext(),f=e.getParent();
-if(g&&g.get("tag")=="label"&&(Browser.Engine.trident||(Browser.Engine.presto&&!e.opera))){g.addEvent("click",function(){if((Browser.Engine.presto||Browser.Engine.trident)&&!e.opera){e.opera=true;
-}e.fireEvent("click");});}else{if(f&&f.get("tag")=="label"||(e.getParent()&&!e.getParent().getProperty("for"))){f.addEvent("click",function(){e.fireEvent("click");
-});}}}return InputsMorph;},switchReplacement:function(l,k){if(k=="checks"){var j=l.getNext(),c=l.getParent(),a="rok"+k+"-active";var i=((j)?j.get("tag")=="label":false);
-var b=((c)?c.get("tag")=="label":false);if(i||b){if(i){if(j.hasClass(a)&&i){j.removeClass(a);if(l.checked){l.checked=false;}}else{if(!j.hasClass(a)&&i){j.addClass(a);
-if(!l.checked){l.checked=true;}}}}else{if(b){if(c.hasClass(a)&&b){c.removeClass(a);if(l.checked){l.checked=false;}}else{if(!c.hasClass(a)&&b){c.addClass(a);
-if(!l.checked){l.checked=true;}}}}}}}else{InputsMorph.list.get(l.name).each(function(e){var d=e.getNext(),f=e.getParent();var h=l.getNext(),g=l.getParent();
-if(d){$$(d).removeClass("rok"+k+"-active");}if(f){$$(f).removeClass("rok"+k+"-active");}if(d&&d.get("tag")=="label"&&h==d){e.setProperty("checked","checked");
-d.addClass("rok"+k+"-active");}else{if(f&&f.get("tag")=="label"&&g==f){f.addClass("rok"+k+"-active");e.setProperty("checked","checked");}}});}},setArray:function(f,e,h){var g=InputsMorph[f].get(e);
-g.push(h);return InputsMorph[f].set(e,g);}};window.addEvent("domready",InputsMorph.init);
+
+var InputsExclusion = ['.content_vote'];
+
+var InputsMorph = {
+	version: 1.7,
+	init: function() {
+		InputsMorph.rtl = document.id(document.body).getStyle('direction') == 'rtl';
+		InputsMorph.list = new Hash({
+			'all': []
+		});
+		var b = $$('input[type=radio]');
+		var c = $$(InputsExclusion.join(' input[type=radio], ') + ' input[type=radio]');
+		c.each(function(a) {
+			b = b.erase(a);
+		});
+		b.each(function(a, i) {
+			InputsMorph.setArray('list', 'all', a);
+			if (InputsMorph.list.has(a.name)) InputsMorph.setArray('list', a.name, a);
+			else InputsMorph.list.set(a.name, [a]);
+			InputsMorph.morph(a, 'radios').addEvent(a, 'radios');
+		});
+		b = $$('input[type=checkbox]');
+		c = $$(InputsExclusion.join(' input[type=checkbox], ') + ' input[type=checkbox]');
+		c.each(function(a) {
+			b = b.erase(a);
+		});
+		b.each(function(a, i) {
+			InputsMorph.setArray('list', 'all', a);
+			if (InputsMorph.list.has(a.name)) InputsMorph.setArray('list', a.name, a);
+			else InputsMorph.list.set(a.name, [a]);
+			InputsMorph.morph(a, 'checks').addEvent(a, 'checks');
+		});
+	},
+	morph: function(a, b) {
+		var c = a.getNext(),
+			parent = a.getParent(),
+			name = a.name.replace('[', '').replace(']', '');
+		if (c && c.get('tag') == 'label') {
+			a.setStyles({'position': 'absolute', 'left': '-10000px'});
+
+			if (InputsMorph.rtl && Browser.Engine.gecko) a.setStyles({'position': 'absolute', 'right': '-10000px'});
+			else a.setStyles({'position': 'absolute', 'left': '-10000px'});
+
+			if (InputsMorph.rtl && (Browser.Engine.presto || Browser.Engine.trident)) {a.setStyle('display', 'none');}
+			if (Browser.Engine.trident5) a.setStyle('display', 'none');
+
+			c.addClass('rok' + b + ' rok' + name);
+			if (a.checked) c.addClass('rok' + b + '-active');
+		} else if (parent && parent.get('tag') == 'label') {
+
+			if (InputsMorph.rtl && Browser.Engine.gecko) a.setStyles({'position': 'absolute', 'right': '-10000px'});
+			else a.setStyles({'position': 'absolute', 'left': '-10000px'});
+
+			if (InputsMorph.rtl && (Browser.Engine.presto || Browser.Engine.trident)) {a.setStyle('display', 'none');}
+
+			parent.addClass('rok' + b + ' rok' + name);
+			if (a.checked) parent.addClass('rok' + b + '-active');
+		}
+		return InputsMorph;
+	},
+	addEvent: function(a, b) {
+		a.addEvent('click', function() {
+			if (Browser.Engine.presto || Browser.Engine.trident) {
+				if (a.opera) {InputsMorph.switchReplacement(a, b);}
+				a.opera = (b == 'checks') ? false : true;
+			} else InputsMorph.switchReplacement(a, b);
+		});
+		if (Browser.Engine.presto || Browser.Engine.trident || (a.getNext() && !a.getNext().getProperty('for'))) {
+			var c = a.getNext(),
+				parent = a.getParent();
+			if (c && c.get('tag') == 'label' && (Browser.Engine.trident || (Browser.Engine.presto && !a.opera))) {
+				c.addEvent('click', function() {
+					if ((Browser.Engine.presto || Browser.Engine.trident) && !a.opera) a.opera = true;
+					a.fireEvent('click');
+				});
+			} else if (parent && parent.get('tag') == 'label' || (a.getParent() && !a.getParent().getProperty('for'))) {
+				parent.addEvent('click', function() {
+					a.fireEvent('click');
+				});
+			}
+		}
+		return InputsMorph;
+	},
+	switchReplacement: function(d, e) {
+		if (e == 'checks') {
+			var f = d.getNext(),
+				parent = d.getParent(),
+				cls = "rok" + e + "-active";
+			var g = ((f) ? f.get('tag') == 'label' : false);
+			var h = ((parent) ? parent.get('tag') == 'label' : false);
+			if (g || h) {
+				if (g) {
+					if (f.hasClass(cls) && g) {
+						f.removeClass(cls);
+						if (d.checked) d.checked = false;
+					}
+					else if (!f.hasClass(cls) && g) {
+						f.addClass(cls);
+						if (!d.checked) d.checked = true;
+					}
+				} else if (h) {
+					if (parent.hasClass(cls) && h) {
+						parent.removeClass(cls);
+						if (d.checked) d.checked = false;
+					}
+					else if (!parent.hasClass(cls) && h) {
+						parent.addClass(cls);
+						if (!d.checked) d.checked = true;
+					}
+				}
+			}
+		} else {
+			InputsMorph.list.get(d.name).each(function(a) {
+				var b = a.getNext(),
+					parent = a.getParent();
+				var c = d.getNext(),
+					radioparent = d.getParent();
+				if (b) $$(b).removeClass('rok' + e + '-active');
+				if (parent) $$(parent).removeClass('rok' + e + '-active');
+				if (b && b.get('tag') == 'label' && c == b) {
+					a.setProperty('checked', 'checked');
+					b.addClass('rok' + e + '-active');
+				} else if (parent && parent.get('tag') == 'label' && radioparent == parent) {
+					parent.addClass('rok' + e + '-active');
+					a.setProperty('checked', 'checked');
+				}
+			});
+		}
+	},
+	setArray: function(a, b, c) {
+		var d = InputsMorph[a].get(b);
+		d.push(c);
+		return InputsMorph[a].set(b, d);
+	}
+};
+window.addEvent('domready', InputsMorph.init);

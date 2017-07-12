@@ -1,9 +1,9 @@
 <?php
 /**
- * @package     Joomla.Site
- * @subpackage  mod_weblinks
+ * @package     Joomla.Administrator
+ * @subpackage  Weblinks
  *
- * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2017 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -57,6 +57,9 @@ class ModWeblinksHelper
 
 		$catid	= (int) $params->get('catid', 0);
 		$model->setState('category.id', $catid);
+		$model->setState('category.group', $params->get('groupby', 0));
+		$model->setState('category.ordering', $params->get('groupby_ordering', 'c.lft'));
+		$model->setState('category.direction', $params->get('groupby_direction', 'ASC'));
 
 		// Create query object
 		$db = JFactory::getDbo();

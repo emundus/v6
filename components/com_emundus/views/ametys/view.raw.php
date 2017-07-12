@@ -39,7 +39,7 @@ class EmundusViewAmetys extends JViewLegacy
     public function display($tpl = null)
     {
     	$current_user = JFactory::getUser();
-		if( !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id) )
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id))
 			die( JText::_('RESTRICTED_ACCESS') );
 
 	   	$app = JFactory::getApplication();

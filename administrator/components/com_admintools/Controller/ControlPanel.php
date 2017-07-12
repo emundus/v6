@@ -163,7 +163,7 @@ ENDRESULT;
 		echo '###' . $result . '###';
 
 		// Cut the execution short
-		JFactory::getApplication()->close();
+		$this->container->platform->closeApplication();
 	}
 
 	public function selfblocked()
@@ -177,7 +177,7 @@ ENDRESULT;
 
 		echo '###' . $result . '###';
 
-		JFactory::getApplication()->close();
+		$this->container->platform->closeApplication();
 	}
 
 	public function unblockme()
@@ -239,14 +239,13 @@ ENDRESULT;
 	{
 		$this->csrfProtection();
 
-		$session   = JFactory::getSession();
-		$newSecret = $session->get('newSecretWord', null, 'admintools.cpanel');
+		$newSecret = $this->container->platform->getSessionVar('newSecretWord', null, 'admintools.cpanel');
 
 		if (empty($newSecret))
 		{
 			$random    = new RandomValue();
 			$newSecret = $random->generateString(32);
-			$session->set('newSecretWord', $newSecret, 'admintools.cpanel');
+			$this->container->platform->setSessionVar('newSecretWord', $newSecret, 'admintools.cpanel');
 		}
 
 		$this->container->params->set('frontend_secret_word', $newSecret);

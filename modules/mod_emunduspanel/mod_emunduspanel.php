@@ -20,20 +20,22 @@ $document = JFactory::getDocument();
 $document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
 // overide css
 $header_class = $params->get('header_class', '');
-if (!empty($header_class)) {
+if (!empty($header_class))
 	$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$header_class.".css" );
-}
 $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 
 $db	= JFactory::getDBO();
-$user = JFactory::getUser();
+$user = JFactory::getSession()->get('emundusUser');
 
 $app = JFactory::getApplication();
 $fnum = $app->input->getString('fnum', null);
 
 
-if(isset($user->menutype)) $user_menutype = $user->menutype;
-else $user_menutype = 'mainmenu';
+if(isset($user->menutype)) 
+	$user_menutype = $user->menutype;
+else 
+	$user_menutype = 'mainmenu';
+
 $folder = $params->get('folder', '');
 $show_profile_link = $params->get('show_profile_link', 1);
 $show_start_link = $params->get('show_start_link', 1);
@@ -48,13 +50,15 @@ $t__ = '';
 $i = 1;
 $module_title = '';
 
-if(is_array($text) && !empty($text)){
-	foreach($text as $t){
-		if(count($text) != $i) $t__ .= $t.',';
-		else $t__ .= $t;
+if (is_array($text) && !empty($text)) {
+	foreach ($text as $t) {
+		if(count($text) != $i) 
+			$t__ .= $t.',';
+		else 
+			$t__ .= $t;
 		$i++;
 	}
-}else{
+} else {
 	$t__ = $text;
 }
 

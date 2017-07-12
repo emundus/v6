@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Form
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 // No direct access
@@ -77,9 +77,9 @@ class JFormFieldFabrikContentTypeList extends JFormFieldList
 
 		$str .= '</div>';
 		$script = 'new FabrikContentTypeList(\'' . $this->id . '\');';
-		$src = array(
-				'media/com_fabrik/js/fabrik.js',
-				'administrator/components/com_fabrik/models/fields/fabrikcontenttypelist.js'
+		$src    = array(
+			'Fabrik' => 'media/com_fabrik/js/fabrik.js',
+			'ContentTypeList' => 'administrator/components/com_fabrik/models/fields/fabrikcontenttypelist.js'
 		);
 		FabrikHelperHTML::script($src, $script);
 

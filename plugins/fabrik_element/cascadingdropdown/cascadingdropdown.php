@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.cascadingdropdown
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -60,7 +60,6 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 			FabrikHelperHTML::autoComplete($id, $this->getElement()->id, $this->getFormModel()->getId(), 'cascadingdropdown', $autoOpts);
 		}
 
-		FabrikHelperHTML::script('media/com_fabrik/js/lib/Event.mock.js');
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$opts->showPleaseSelect = $this->showPleaseSelect();
 		$opts->watch = $this->getWatchId($repeatCounter);
@@ -128,7 +127,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		$join = $this->getJoin();
 		$db = $this->getDb();
 
-		if (($params->get('cascadingdropdown_label_concat') != '') && $this->app->input->get('override_join_val_column_concat') != 1)
+		if (($params->get('cascadingdropdown_label_concat') != '') && $this->app->input->get('override_join_val_column_concat', '0') !== '1')
 		{
 			$val = $params->get('cascadingdropdown_label_concat');
 
@@ -614,13 +613,14 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 	 * Get the full name of the element to observe. When this element changes
 	 * state, the cdd should perform an ajax lookup to update its options
 	 *
+	 * @param   bool  $repeat  include repeat []
 	 * @return  string
 	 */
-	protected function getWatchFullName()
+	protected function getWatchFullName($repeat = true)
 	{
 		$elementModel = $this->getWatchElement();
 
-		return $elementModel->getFullName();
+		return $elementModel->getFullName(true, $repeat);
 	}
 
 	/**
@@ -670,6 +670,11 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 
 				// Load the matched element
 				$this->watchElement = $pluginManager->getElementPlugin($matched[0]);
+
+				if (!$this->watchElement)
+				{
+					throw new RuntimeException('No watch element found for cdd: ' . $this->getElement()->id . ', trying to find children of: ' . $watch, 500);
+				}
 			}
 		}
 
@@ -700,7 +705,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		}
 
 		$params = $this->getParams();
-		$watch = $this->getWatchFullName();
+		$watch = $this->getWatchFullName(false);
 		$whereVal = null;
 		$groups = $this->getFormModel()->getGroupsHiarachy();
 		$formModel = $this->getFormModel();
@@ -827,6 +832,11 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 
 		$filter = $params->get('cascadingdropdown_filter');
 
+		if (!empty($this->autocomplete_where))
+		{
+			$where .= $where !== '' ? ' AND ' . $this->autocomplete_where : $this->autocomplete_where;
+		}
+
 		/* $$$ hugh - temporary hack to work around this issue:
 		 * http://fabrikar.com/forums/showthread.php?p=71288#post71288
 		 * ... which is basically that if they are using {placeholders} in their
@@ -850,11 +860,6 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		$join = $this->getJoin();
 		$where = $this->parseThisTable($where, $join);
 
-		if (!empty($this->autocomplete_where))
-		{
-			$where .= $where !== '' ? ' AND ' . $this->autocomplete_where : $this->autocomplete_where;
-		}
-
 		$data = array_merge($data, $placeholders);
 		$where = $w->parseMessageForRepeats($where, $data, $this, $repeatCounter);
 		$where = $w->parseMessageForPlaceHolder($where, $data);
@@ -865,7 +870,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
 		$val = $params->get('cascadingdropdown_label_concat');
 
-		if (!empty($val))
+		if (!empty($val) && $this->app->input->get('override_join_val_column_concat', '0') !== '1')
 		{
 			$val = $this->parseThisTable($val, $join);
 			$val = $w->parseMessageForPlaceHolder($val, $data);
@@ -963,7 +968,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		$params = $this->getParams();
 		$join = $this->getJoin();
 
-		if ($params->get('cascadingdropdown_label_concat') == '')
+		if ($params->get('cascadingdropdown_label_concat') == '' || $this->app->input->get('override_join_val_column_concat', '0') === '1')
 		{
 			return $this->getLabelParamVal();
 		}
@@ -1073,24 +1078,6 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 
 			return "Fabrik.filter_{$container}.addFilter('$element->plugin', new CascadeFilter('$observerId', $opts));\n";
 		}
-	}
-
-	/**
-	 * Get the class to manage the form element
-	 * to ensure that the file is loaded only once
-	 *
-	 * @param   array   &$srcs   Scripts previously loaded
-	 * @param   string  $script  Script to load once class has loaded
-	 * @param   array   &$shim   Dependant class names to load before loading the class - put in requirejs.config shim
-	 *
-	 * @return void
-	 */
-	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
-	{
-		$s = new stdClass;
-		$s->deps = array('fab/element', 'element/databasejoin/databasejoin', 'fab/encoder');
-		$shim['element/cascadingdropdown/cascadingdropdown'] = $s;
-		parent::formJavascriptClass($srcs, $script, $shim);
 	}
 
 	/**

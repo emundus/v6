@@ -151,8 +151,8 @@ class EmundusHelperExport
 
     public static function getEvalPDF($fnum)
     {
-        $user       = JFactory::getUser();
-        if(!EmundusHelperAccess::asPartnerAccessLevel($user->id))
+        $user = JFactory::getUser();
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id))
             die(JText::_('ACCESS_DENIED'));
 
         require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
@@ -172,9 +172,8 @@ class EmundusHelperExport
 
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_evaluation_'.$campaign['training'].'.php';
 
-        if (!file_exists($file)) {
+        if (!file_exists($file))
             $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_evaluation.php';
-        }
 
         require_once($file);
 
@@ -183,10 +182,9 @@ class EmundusHelperExport
         return $tmpName;
     }
 
-    public static function getDecisionPDF($fnum)
-    {
-        $user       = JFactory::getUser();
-        if(!EmundusHelperAccess::asPartnerAccessLevel($user->id))
+    public static function getDecisionPDF($fnum) {
+        $user = JFactory::getUser();
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id))
             die(JText::_('ACCESS_DENIED'));
 
         require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
@@ -206,9 +204,8 @@ class EmundusHelperExport
 
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_decision_'.$campaign['training'].'.php';
 
-        if (!file_exists($file)) {
+        if (!file_exists($file))
             $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_decision.php';
-        }
 
         require_once($file);
         pdf_decision($user->id, $fnum, false, $tmpName);
@@ -234,9 +231,9 @@ class EmundusHelperExport
 		$pdf->SetFont('helvetica', '', 8);
 		$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 		$pdf->AddPage();
-		if(in_array(strtolower($ext), $imgExt)) {
+		if (in_array(strtolower($ext), $imgExt)) {
 			$pdf->setJPEGQuality(75);
-			if($ext == 'svg')
+			if ($ext == 'svg')
 				$pdf->ImageSVG(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
 			else
 				$pdf->Image(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);

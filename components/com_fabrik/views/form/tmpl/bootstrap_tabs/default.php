@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.1
  */
@@ -66,14 +66,23 @@ echo $this->plugintop;
 <?php
 $i = 0;
 $tabs = array();
+$is_err = false;
 
 foreach ($this->groups as $group) :
+	foreach ($group->elements as $element) {
+		if ($element->error != '') {
+			$is_err = true;
+			break;
+		}
+	}
+	$err_class = $is_err ? 'fabrikErrorGroup' : '';
 	$tabId = $this->form->id . '_' . (int)$this->rowid . '_' . $i;
 	// If this is multi-page then groups are consolidated until a group with a page break
 	// So we should only show a tab if: it is first tab, or if it is a page break
 	if (!$model->isMultiPage() || $i === 0 || $group->splitPage) :
+		$is_err = false;
 		$tab = new stdClass;
-		$tab->class = $i === 0 ? 'active' : '';
+		$tab->class = $i === 0 ? 'active ' . $err_class : $err_class;
 		$tab->css = $group->css;
 		$tab->href = 'group-tab' . $tabId;
 		$tab->id = 'group' . $group->id . '_tab';

@@ -1,49 +1,343 @@
-/*
- * DD_belatedPNG: Adds IE6 support: PNG images for CSS background-image and HTML <IMG/>.
- * Author: Drew Diller
- * Email: drew.diller@gmail.com
- * URL: http://www.dillerdesign.com/experiment/DD_belatedPNG/
- * Version: 0.0.8a
- * Licensed under the MIT License: http://dillerdesign.com/experiment/DD_belatedPNG/#license
- *
- * Example usage:
- * DD_belatedPNG.fix('.png_bg'); // argument is a CSS selector
- * DD_belatedPNG.fixPng( someNode ); // argument is an HTMLDomElement
- */
-var DD_belatedPNG={ns:"DD_belatedPNG",imgSize:{},delay:10,nodesFixed:0,createVmlNameSpace:function(){if(document.namespaces&&!document.namespaces[this.ns]){document.namespaces.add(this.ns,"urn:schemas-microsoft-com:vml");
-}},createVmlStyleSheet:function(){var c,d;c=document.createElement("style");c.setAttribute("media","screen");document.documentElement.firstChild.insertBefore(c,document.documentElement.firstChild.firstChild);
-if(c.styleSheet){c=c.styleSheet;c.addRule(this.ns+"\\:*","{behavior:url(#default#VML)}");c.addRule(this.ns+"\\:shape","position:absolute;");c.addRule("img."+this.ns+"_sizeFinder","behavior:none; border:none; position:absolute; z-index:-1; top:-10000px; visibility:hidden;");
-this.screenStyleSheet=c;d=document.createElement("style");d.setAttribute("media","print");document.documentElement.firstChild.insertBefore(d,document.documentElement.firstChild.firstChild);
-d=d.styleSheet;d.addRule(this.ns+"\\:*","{display: none !important;}");d.addRule("img."+this.ns+"_sizeFinder","{display: none !important;}");}},readPropertyChange:function(){var d,f,e;
-d=event.srcElement;if(!d.vmlInitiated){return;}if(event.propertyName.search("background")!=-1||event.propertyName.search("border")!=-1){DD_belatedPNG.applyVML(d);
-}if(event.propertyName=="style.display"){f=(d.currentStyle.display=="none")?"none":"block";for(e in d.vml){if(d.vml.hasOwnProperty(e)){d.vml[e].shape.style.display=f;
-}}}if(event.propertyName.search("filter")!=-1){DD_belatedPNG.vmlOpacity(d);}},vmlOpacity:function(c){if(c.currentStyle.filter.search("lpha")!=-1){var d=c.currentStyle.filter;
-d=parseInt(d.substring(d.lastIndexOf("=")+1,d.lastIndexOf(")")),10)/100;c.vml.color.shape.style.filter=c.currentStyle.filter;c.vml.image.fill.opacity=d;
-}},handlePseudoHover:function(b){setTimeout(function(){DD_belatedPNG.applyVML(b);},1);},fix:function(e){if(this.screenStyleSheet){var f,d;f=e.split(",");
-for(d=0;d<f.length;d++){this.screenStyleSheet.addRule(f[d],"behavior:expression(DD_belatedPNG.fixPng(this))");}}},applyVML:function(b){b.runtimeStyle.cssText="";
-this.vmlFill(b);this.vmlOffsets(b);this.vmlOpacity(b);if(b.isImg){this.copyImageBorders(b);}},attachHandlers:function(h){var m,n,j,l,a,k;m=this;n={resize:"vmlOffsets",move:"vmlOffsets"};
-if(h.nodeName=="A"){l={mouseleave:"handlePseudoHover",mouseenter:"handlePseudoHover",focus:"handlePseudoHover",blur:"handlePseudoHover"};for(a in l){if(l.hasOwnProperty(a)){n[a]=l[a];
-}}}for(k in n){if(n.hasOwnProperty(k)){j=function(){m[n[k]](h);};h.attachEvent("on"+k,j);}}h.attachEvent("onpropertychange",this.readPropertyChange);},giveLayout:function(b){b.style.zoom=1;
-if(b.currentStyle.position=="static"){b.style.position="relative";}},copyImageBorders:function(d){var f,e;f={borderStyle:true,borderWidth:true,borderColor:true};
-for(e in f){if(f.hasOwnProperty(e)){d.vml.color.shape.style[e]=d.currentStyle[e];}}},vmlFill:function(l){if(!l.currentStyle){return;}else{var m,k,j,h,i,n;
-m=l.currentStyle;}for(h in l.vml){if(l.vml.hasOwnProperty(h)){l.vml[h].shape.style.zIndex=m.zIndex;}}l.runtimeStyle.backgroundColor="";l.runtimeStyle.backgroundImage="";
-k=true;if(m.backgroundImage!="none"||l.isImg){if(!l.isImg){l.vmlBg=m.backgroundImage;l.vmlBg=l.vmlBg.substr(5,l.vmlBg.lastIndexOf('")')-5);}else{l.vmlBg=l.src;
-}j=this;if(!j.imgSize[l.vmlBg]){i=document.createElement("img");j.imgSize[l.vmlBg]=i;i.className=j.ns+"_sizeFinder";i.runtimeStyle.cssText="behavior:none; position:absolute; left:-10000px; top:-10000px; border:none; margin:0; padding:0;";
-n=function(){this.width=this.offsetWidth;this.height=this.offsetHeight;j.vmlOffsets(l);};i.attachEvent("onload",n);i.src=l.vmlBg;i.removeAttribute("width");
-i.removeAttribute("height");document.body.insertBefore(i,document.body.firstChild);}l.vml.image.fill.src=l.vmlBg;k=false;}l.vml.image.fill.on=!k;l.vml.image.fill.color="none";
-l.vml.color.shape.style.backgroundColor=m.backgroundColor;l.runtimeStyle.backgroundImage="none";l.runtimeStyle.backgroundColor="transparent";},vmlOffsets:function(x){var t,b,y,w,u,c,v,o,q,s,p;
-t=x.currentStyle;b={W:x.clientWidth+1,H:x.clientHeight+1,w:this.imgSize[x.vmlBg].width,h:this.imgSize[x.vmlBg].height,L:x.offsetLeft,T:x.offsetTop,bLW:x.clientLeft,bTW:x.clientTop};
-y=(b.L+b.bLW==1)?1:0;w=function(a,g,f,h,e,d){a.coordsize=h+","+e;a.coordorigin=d+","+d;a.path="m0,0l"+h+",0l"+h+","+e+"l0,"+e+" xe";a.style.width=h+"px";
-a.style.height=e+"px";a.style.left=g+"px";a.style.top=f+"px";};w(x.vml.color.shape,(b.L+(x.isImg?0:b.bLW)),(b.T+(x.isImg?0:b.bTW)),(b.W-1),(b.H-1),0);w(x.vml.image.shape,(b.L+b.bLW),(b.T+b.bTW),(b.W),(b.H),1);
-u={X:0,Y:0};if(x.isImg){u.X=parseInt(t.paddingLeft,10)+1;u.Y=parseInt(t.paddingTop,10)+1;}else{for(q in u){if(u.hasOwnProperty(q)){this.figurePercentage(u,b,q,t["backgroundPosition"+q]);
-}}}x.vml.image.fill.position=(u.X/b.W)+","+(u.Y/b.H);c=t.backgroundRepeat;v={T:1,R:b.W+y,B:b.H,L:1+y};o={X:{b1:"L",b2:"R",d:"W"},Y:{b1:"T",b2:"B",d:"H"}};
-if(c!="repeat"||x.isImg){s={T:(u.Y),R:(u.X+b.w),B:(u.Y+b.h),L:(u.X)};if(c.search("repeat-")!=-1){p=c.split("repeat-")[1].toUpperCase();s[o[p].b1]=1;s[o[p].b2]=b[o[p].d];
-}if(s.B>b.H){s.B=b.H;}x.vml.image.shape.style.clip="rect("+s.T+"px "+(s.R+y)+"px "+s.B+"px "+(s.L+y)+"px)";}else{x.vml.image.shape.style.clip="rect("+v.T+"px "+v.R+"px "+v.B+"px "+v.L+"px)";
-}},figurePercentage:function(k,l,i,h){var g,j;j=true;g=(i=="X");switch(h){case"left":case"top":k[i]=0;break;case"center":k[i]=0.5;break;case"right":case"bottom":k[i]=1;
-break;default:if(h.search("%")!=-1){k[i]=parseInt(h,10)/100;}else{j=false;}}k[i]=Math.ceil(j?((l[g?"W":"H"]*k[i])-(l[g?"w":"h"]*k[i])):parseInt(h,10));
-if(k[i]%2===0){k[i]++;}return k[i];},fixPng:function(l){l.style.behavior="none";var i,e,j,h,k;if(l.nodeName=="BODY"||l.nodeName=="TD"||l.nodeName=="TR"){return;
-}l.isImg=false;if(l.nodeName=="IMG"){if(l.src.toLowerCase().search(/\.png$/)!=-1){l.isImg=true;l.style.visibility="hidden";}else{return;}}else{if(l.currentStyle.backgroundImage.toLowerCase().search(".png")==-1){return;
-}}i=DD_belatedPNG;l.vml={color:{},image:{}};e={shape:{},fill:{}};for(h in l.vml){if(l.vml.hasOwnProperty(h)){for(k in e){if(e.hasOwnProperty(k)){j=i.ns+":"+k;
-l.vml[h][k]=document.createElement(j);}}l.vml[h].shape.stroked=false;l.vml[h].shape.appendChild(l.vml[h].fill);l.parentNode.insertBefore(l.vml[h].shape,l);
-}}l.vml.image.shape.fillcolor="none";l.vml.image.fill.type="tile";l.vml.color.fill.on=false;i.attachHandlers(l);i.giveLayout(l);i.giveLayout(l.offsetParent);
-l.vmlInitiated=true;i.applyVML(l);}};try{document.execCommand("BackgroundImageCache",false,true);}catch(r){}DD_belatedPNG.createVmlNameSpace();DD_belatedPNG.createVmlStyleSheet();
+
+var DD_belatedPNG = {
+    ns: "DD_belatedPNG",
+    imgSize: {},
+    delay: 10,
+    nodesFixed: 0,
+    createVmlNameSpace: function () {
+        if (document.namespaces && !document.namespaces[this.ns]) {
+            document.namespaces.add(this.ns, "urn:schemas-microsoft-com:vml");
+        }
+    },
+    createVmlStyleSheet: function () {
+        var b, a;
+        b = document.createElement("style");
+        b.setAttribute("media", "screen");
+        document.documentElement.firstChild.insertBefore(b, document.documentElement.firstChild.firstChild);
+        if (b.styleSheet) {
+            b = b.styleSheet;
+            b.addRule(this.ns + "\\:*", "{behavior:url(#default#VML)}");
+            b.addRule(this.ns + "\\:shape", "position:absolute;");
+            b.addRule("img." + this.ns + "_sizeFinder", "behavior:none; border:none; position:absolute; z-index:-1; top:-10000px; visibility:hidden;");
+            this.screenStyleSheet = b;
+            a = document.createElement("style");
+            a.setAttribute("media", "print");
+            document.documentElement.firstChild.insertBefore(a, document.documentElement.firstChild.firstChild);
+            a = a.styleSheet;
+            a.addRule(this.ns + "\\:*", "{display: none !important;}");
+            a.addRule("img." + this.ns + "_sizeFinder", "{display: none !important;}");
+        }
+    },
+    readPropertyChange: function () {
+        var b, c, a;
+        b = event.srcElement;
+        if (!b.vmlInitiated) {
+            return;
+        }
+        if (event.propertyName.search("background") != -1 || event.propertyName.search("border") != -1) {
+            DD_belatedPNG.applyVML(b);
+        }
+        if (event.propertyName == "style.display") {
+            c = (b.currentStyle.display == "none") ? "none" : "block";
+            for (a in b.vml) {
+                if (b.vml.hasOwnProperty(a)) {
+                    b.vml[a].shape.style.display = c;
+                }
+            }
+        }
+        if (event.propertyName.search("filter") != -1) {
+            DD_belatedPNG.vmlOpacity(b);
+        }
+    },
+    vmlOpacity: function (b) {
+        if (b.currentStyle.filter.search("lpha") != -1) {
+            var a = b.currentStyle.filter;
+            a = parseInt(a.substring(a.lastIndexOf("=") + 1, a.lastIndexOf(")")), 10) / 100;
+            b.vml.color.shape.style.filter = b.currentStyle.filter;
+            b.vml.image.fill.opacity = a;
+        }
+    },
+    handlePseudoHover: function (a) {
+        setTimeout(function () {
+            DD_belatedPNG.applyVML(a);
+        }, 1);
+    },
+    fix: function (a) {
+        if (this.screenStyleSheet) {
+            var c, b;
+            c = a.split(",");
+            for (b = 0; b < c.length; b++) {
+                this.screenStyleSheet.addRule(c[b], "behavior:expression(DD_belatedPNG.fixPng(this))");
+            }
+        }
+    },
+    applyVML: function (a) {
+        a.runtimeStyle.cssText = "";
+        this.vmlFill(a);
+        this.vmlOffsets(a);
+        this.vmlOpacity(a);
+        if (a.isImg) {
+            this.copyImageBorders(a);
+        }
+    },
+    attachHandlers: function (i) {
+        var d, c, g, e, b, f;
+        d = this;
+        c = {
+            resize: "vmlOffsets",
+            move: "vmlOffsets"
+        };
+        if (i.nodeName == "A") {
+            e = {
+                mouseleave: "handlePseudoHover",
+                mouseenter: "handlePseudoHover",
+                focus: "handlePseudoHover",
+                blur: "handlePseudoHover"
+            };
+            for (b in e) {
+                if (e.hasOwnProperty(b)) {
+                    c[b] = e[b];
+                }
+            }
+        }
+        for (f in c) {
+            if (c.hasOwnProperty(f)) {
+                g = function() {
+                    d[c[f]](i);
+                };
+                i.attachEvent("on" + f, g);
+            }
+        }
+        i.attachEvent("onpropertychange", this.readPropertyChange);
+    },
+    giveLayout: function (a) {
+        a.style.zoom = 1;
+        if (a.currentStyle.position == "static") {
+            a.style.position = "relative";
+        }
+    },
+    copyImageBorders: function (b) {
+        var c, a;
+        c = {
+            borderStyle: true,
+            borderWidth: true,
+            borderColor: true
+        };
+        for (a in c) {
+            if (c.hasOwnProperty(a)) {
+                b.vml.color.shape.style[a] = b.currentStyle[a];
+            }
+        }
+    },
+    vmlFill: function (e) {
+        if (!e.currentStyle) {
+            return;
+        } else {
+            var d, f, g, b, a, c;
+            d = e.currentStyle;
+        }
+        for (b in e.vml) {
+            if (e.vml.hasOwnProperty(b)) {
+                e.vml[b].shape.style.zIndex = d.zIndex;
+            }
+        }
+        e.runtimeStyle.backgroundColor = "";
+        e.runtimeStyle.backgroundImage = "";
+        f = true;
+        if (d.backgroundImage != "none" || e.isImg) {
+            if (!e.isImg) {
+                e.vmlBg = d.backgroundImage;
+                e.vmlBg = e.vmlBg.substr(5, e.vmlBg.lastIndexOf('")') - 5);
+            } else {
+                e.vmlBg = e.src;
+            }
+            g = this;
+            if (!g.imgSize[e.vmlBg]) {
+                a = document.createElement("img");
+                g.imgSize[e.vmlBg] = a;
+                a.className = g.ns + "_sizeFinder";
+                a.runtimeStyle.cssText = "behavior:none; position:absolute; left:-10000px; top:-10000px; border:none; margin:0; padding:0;";
+                c = function () {
+                    this.width = this.offsetWidth;
+                    this.height = this.offsetHeight;
+                    g.vmlOffsets(e)
+                };
+                a.attachEvent("onload", c);
+                a.src = e.vmlBg;
+                a.removeAttribute("width");
+                a.removeAttribute("height");
+                document.body.insertBefore(a, document.body.firstChild);
+            }
+            e.vml.image.fill.src = e.vmlBg;
+            f = false
+        }
+        e.vml.image.fill.on = !f;
+        e.vml.image.fill.color = "none";
+        e.vml.color.shape.style.backgroundColor = d.backgroundColor;
+        e.runtimeStyle.backgroundImage = "none";
+        e.runtimeStyle.backgroundColor = "transparent";
+    },
+    vmlOffsets: function (d) {
+        var h, n, a, e, g, m, f, l, j, i, k;
+        h = d.currentStyle;
+        n = {
+            W: d.clientWidth + 1,
+            H: d.clientHeight + 1,
+            w: this.imgSize[d.vmlBg].width,
+            h: this.imgSize[d.vmlBg].height,
+            L: d.offsetLeft,
+            T: d.offsetTop,
+            bLW: d.clientLeft,
+            bTW: d.clientTop
+        };
+        a = (n.L + n.bLW == 1) ? 1 : 0;
+        e = function (b, p, q, c, s, u) {
+            b.coordsize = c + "," + s;
+            b.coordorigin = u + "," + u;
+            b.path = "m0,0l" + c + ",0l" + c + "," + s + "l0," + s + " xe";
+            b.style.width = c + "px";
+            b.style.height = s + "px";
+            b.style.left = p + "px";
+            b.style.top = q + "px";
+        };
+        e(d.vml.color.shape, (n.L + (d.isImg ? 0 : n.bLW)), (n.T + (d.isImg ? 0 : n.bTW)), (n.W - 1), (n.H - 1), 0);
+        e(d.vml.image.shape, (n.L + n.bLW), (n.T + n.bTW), (n.W), (n.H), 1);
+        g = {
+            X: 0,
+            Y: 0
+        };
+        if (d.isImg) {
+            g.X = parseInt(h.paddingLeft, 10) + 1;
+            g.Y = parseInt(h.paddingTop, 10) + 1;
+        } else {
+            for (j in g) {
+                if (g.hasOwnProperty(j)) {
+                    this.figurePercentage(g, n, j, h["backgroundPosition" + j]);
+                }
+            }
+        }
+        d.vml.image.fill.position = (g.X / n.W) + "," + (g.Y / n.H);
+        m = h.backgroundRepeat;
+        f = {
+            T: 1,
+            R: n.W + a,
+            B: n.H,
+            L: 1 + a
+        };
+        l = {
+            X: {
+                b1: "L",
+                b2: "R",
+                d: "W"
+            },
+            Y: {
+                b1: "T",
+                b2: "B",
+                d: "H"
+            }
+        };
+        if (m != "repeat" || d.isImg) {
+            i = {
+                T: (g.Y),
+                R: (g.X + n.w),
+                B: (g.Y + n.h),
+                L: (g.X)
+            };
+            if (m.search("repeat-") != -1) {
+                k = m.split("repeat-")[1].toUpperCase();
+                i[l[k].b1] = 1;
+                i[l[k].b2] = n[l[k].d];
+            }
+            if (i.B > n.H) {
+                i.B = n.H;
+            }
+            d.vml.image.shape.style.clip = "rect(" + i.T + "px " + (i.R + a) + "px " + i.B + "px " + (i.L + a) + "px)";
+        } else {
+            d.vml.image.shape.style.clip = "rect(" + f.T + "px " + f.R + "px " + f.B + "px " + f.L + "px)";
+        }
+    },
+    figurePercentage: function (d, c, f, a) {
+        var b, e;
+        e = true;
+        b = (f == "X");
+        switch (a) {
+        case "left":
+        case "top":
+            d[f] = 0;
+            break;
+        case "center":
+            d[f] = 0.5;
+            break;
+        case "right":
+        case "bottom":
+            d[f] = 1;
+            break;
+        default:
+            if (a.search("%") != -1) {
+                d[f] = parseInt(a, 10) / 100;
+            } else {
+                e = false;
+            }
+        }
+        d[f] = Math.ceil(e ? ((c[b ? "W" : "H"] * d[f]) - (c[b ? "w" : "h"] * d[f])) : parseInt(a, 10));
+        if (d[f] % 2 === 0) {
+            d[f]++;
+        }
+        return d[f];
+    },
+    fixPng: function (c) {
+        c.style.behavior = "none";
+        var g, b, f, a, d;
+        if (c.nodeName == "BODY" || c.nodeName == "TD" || c.nodeName == "TR") {
+            return;
+        }
+        c.isImg = false;
+        if (c.nodeName == "IMG") {
+            if (c.src.toLowerCase().search(/\.png$/) != -1) {
+                c.isImg = true;
+                c.style.visibility = "hidden";
+            } else {
+                return;
+            }
+        } else {
+            if (c.currentStyle.backgroundImage.toLowerCase().search(".png") == -1) {
+                return;
+            }
+        }
+        g = DD_belatedPNG;
+        c.vml = {
+            color: {},
+            image: {}
+        };
+        b = {
+            shape: {},
+            fill: {}
+        };
+        for (a in c.vml) {
+            if (c.vml.hasOwnProperty(a)) {
+                for (d in b) {
+                    if (b.hasOwnProperty(d)) {
+                        f = g.ns + ":" + d;
+                        c.vml[a][d] = document.createElement(f);
+                    }
+                }
+                c.vml[a].shape.stroked = false;
+                c.vml[a].shape.appendChild(c.vml[a].fill);
+                c.parentNode.insertBefore(c.vml[a].shape, c);
+            }
+        }
+        c.vml.image.shape.fillcolor = "none";
+        c.vml.image.fill.type = "tile";
+        c.vml.color.fill.on = false;
+        g.attachHandlers(c);
+        g.giveLayout(c);
+        g.giveLayout(c.offsetParent);
+        c.vmlInitiated = true;
+        g.applyVML(c);
+    }
+};
+try {
+    document.execCommand("BackgroundImageCache", false, true);
+} catch (r) {}
+DD_belatedPNG.createVmlNameSpace();
+DD_belatedPNG.createVmlStyleSheet();

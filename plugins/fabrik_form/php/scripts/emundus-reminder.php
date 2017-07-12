@@ -18,7 +18,7 @@ $db =& JFactory::getDBO();
 $eMConfig =& JComponentHelper::getParams('com_emundus');
 $remind_report_mail = $eMConfig->get('report_remind_mail_id');
 
-$student = & JFactory::getUser();
+$student = & JFactory::getSession()->get('emundusUser');
 $student->candidature_posted = 1;
 
 $patterns = array ('/\[NAME]/','/\[SIGNATURE]/','/\[CANDIDATURE_START]/','/\[SITE_URL]/','/\[DEADLINE]/');

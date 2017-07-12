@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.form.juser
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -68,28 +68,6 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 	protected $blockfield = '';
 
 	/**
-	 * Get an element name
-	 *
-	 * @param   string $pname Params property name to look up
-	 * @param   bool   $short Short (true) or full (false) element name, default false/full
-	 *
-	 * @return    string    element full name
-	 */
-	private function getFieldName($pname, $short = false)
-	{
-		$params = $this->getParams();
-
-		if ($params->get($pname) == '')
-		{
-			return '';
-		}
-
-		$elementModel = FabrikWorker::getPluginManager()->getElementPlugin($params->get($pname));
-
-		return $short ? $elementModel->getElement()->name : $elementModel->getFullName();
-	}
-
-	/**
 	 * Synchronize J! users with F! table if empty
 	 *
 	 * @return  void
@@ -98,6 +76,12 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 	{
 		$params    = $this->getParams();
 		$formModel = $this->getModel();
+
+		// don't do anything if this is a details view
+		if ($this->app->input->get('view') === 'details')
+		{
+			return;
+		}
 
 		if ($params->get('synchro_users') == 1)
 		{
@@ -161,12 +145,20 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 			}
 		}
 
+		$rowId = FabrikWorker::getMenuOrRequestVar('rowid');
+		$loadCurrentUser = $rowId === '-1' && $this->getFieldName('juser_sync_load_current_user');
+
 		// If we are editing a user, we need to make sure the password field is cleared
-		if (FabrikWorker::getMenuOrRequestVar('rowid'))
+		if ($rowId > 0 || $loadCurrentUser)
 		{
 			$this->passwordfield                            = $this->getFieldName('juser_field_password');
 			$formModel->data[$this->passwordfield]          = '';
 			$formModel->data[$this->passwordfield . '_raw'] = '';
+
+			if ($userId == null && $loadCurrentUser)
+			{
+				$userId = JFactory::getUser()->id;
+			}
 
 			// $$$$ hugh - testing 'sync on edit'
 			if ($params->get('juser_sync_on_edit', 0) == 1)
@@ -356,6 +348,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 		$usersConfig    = JComponentHelper::getParams('com_users');
 		$userActivation = $usersConfig->get('useractivation');
+		$sendpassword   = $usersConfig->get('sendpassword', 1);
 
 		// Initialize some variables
 		$me = $this->user;
@@ -435,6 +428,9 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		$this->emailfield = $this->getFieldName('juser_field_email');
 		$this->emailvalue = $this->getFieldValue('juser_field_email', $formModel->formData);
 
+		$this->requireresetfield = $this->getFieldName('juser_field_requirereset');
+		$this->requireresetvalue = $this->getFieldValue('juser_field_requirereset', $formModel->formData);
+
 		$data['id'] = $originalId;
 
 		$data['gid']  = $this->setGroupIds($me, $user);
@@ -480,13 +476,21 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 			$user->set('registerDate', $this->date->toSql());
 			$this->setActivation($data);
 		}
+		else
+		{
+			if (!empty($this->requireresetfield))
+			{
+				$data['requireReset'] = $this->requireresetvalue;
+			}
+		}
+
 
 		$this->trimNamePassword($user, $data);
 
 		// End new
 		if (!$user->bind($data))
 		{
-			$this->app->enqueueMessage(FText::_('CANNOT SAVE THE USER INFORMATION'), 'message');
+			$this->app->enqueueMessage(FText::_('CANNOT BIND THE USER INFORMATION'), 'message');
 			$this->app->enqueueMessage($user->getError(), 'error');
 
 			return false;
@@ -532,38 +536,126 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 					// Set the link to confirm the user email.
 					$data['activate'] = $base . JRoute::_('index.php?option=com_users&task=registration.activate&token=' . $data['activation'], false);
 
-					$emailSubject = JText::sprintf('COM_USERS_EMAIL_ACCOUNT_DETAILS', $data['name'], $data['sitename']);
-
-					$emailBody = JText::sprintf('COM_USERS_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY', $data['name'], $data['sitename'],
-						$data['siteurl'] . 'index.php?option=com_users&task=registration.activate&token=' . $data['activation'], $data['siteurl'],
-						$data['username'], $data['password_clear']
+					$emailSubject = JText::sprintf(
+						'COM_USERS_EMAIL_ACCOUNT_DETAILS',
+						$data['name'],
+						$data['sitename']
 					);
+
+					if ($sendpassword)
+					{
+						$emailBody = JText::sprintf(
+							'COM_USERS_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY',
+							$data['name'],
+							$data['sitename'],
+							$data['siteurl'] . 'index.php?option=com_users&task=registration.activate&token=' . $data['activation'],
+							$data['siteurl'],
+							$data['username'],
+							$data['password_clear']
+						);
+					}
+					else
+					{
+						$emailBody = JText::sprintf(
+							'COM_USERS_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY_NOPW',
+							$data['name'],
+							$data['sitename'],
+							$data['siteurl'] . 'index.php?option=com_users&task=registration.activate&token=' . $data['activation'],
+							$data['siteurl'],
+							$data['username']
+						);
+					}
 				}
 				elseif ($userActivation == 1 && !$bypassActivation && !$autoLogin)
 				{
 					// Set the link to activate the user account.
 					$data['activate'] = $base . JRoute::_('index.php?option=com_users&task=registration.activate&token=' . $data['activation'], false);
 
-					$emailSubject = JText::sprintf('COM_USERS_EMAIL_ACCOUNT_DETAILS', $data['name'], $data['sitename']);
-
-					$emailBody = JText::sprintf('COM_USERS_EMAIL_REGISTERED_WITH_ACTIVATION_BODY', $data['name'], $data['sitename'],
-						$data['siteurl'] . 'index.php?option=com_users&task=registration.activate&token=' . $data['activation'], $data['siteurl'],
-						$data['username'], $data['password_clear']
+					$emailSubject = JText::sprintf(
+						'COM_USERS_EMAIL_ACCOUNT_DETAILS',
+						$data['name'],
+						$data['sitename']
 					);
+
+					if ($sendpassword)
+					{
+						$emailBody = JText::sprintf(
+							'COM_USERS_EMAIL_REGISTERED_WITH_ACTIVATION_BODY',
+							$data['name'],
+							$data['sitename'],
+							$data['siteurl'] . 'index.php?option=com_users&task=registration.activate&token=' . $data['activation'],
+							$data['siteurl'],
+							$data['username'],
+							$data['password_clear']
+						);
+					}
+					else
+					{
+						$emailBody = JText::sprintf(
+							'COM_USERS_EMAIL_REGISTERED_WITH_ACTIVATION_BODY_NOPW',
+							$data['name'],
+							$data['sitename'],
+							$data['siteurl'] . 'index.php?option=com_users&task=registration.activate&token=' . $data['activation'],
+							$data['siteurl'],
+							$data['username']
+						);
+					}
 				}
 				elseif ($autoLogin)
 				{
 					$emailSubject = JText::sprintf('COM_USERS_EMAIL_ACCOUNT_DETAILS', $data['name'], $data['sitename']);
 
-					$emailBody = JText::sprintf('PLG_FABRIK_FORM_JUSER_AUTO_LOGIN_BODY', $data['name'], $data['sitename'],
-						$data['siteurl'],
-						$data['username'], $data['password_clear']
-					);
+					if ($sendpassword)
+					{
+						$emailBody = JText::sprintf(
+							'PLG_FABRIK_FORM_JUSER_AUTO_LOGIN_BODY',
+							$data['name'],
+							$data['sitename'],
+							$data['siteurl'],
+							$data['username'],
+							$data['password_clear']
+						);
+					}
+					else
+					{
+						$emailBody = JText::sprintf(
+							'PLG_FABRIK_FORM_JUSER_AUTO_LOGIN_BODY',
+							$data['name'],
+							$data['sitename'],
+							$data['siteurl'],
+							$data['username'],
+							'xxxxxxxxxxxx'
+						);
+					}
 				}
 				elseif ($params->get('juser_bypass_accountdetails') != 1)
 				{
-					$emailSubject = JText::sprintf('COM_USERS_EMAIL_ACCOUNT_DETAILS', $data['name'], $data['sitename']);
-					$emailBody    = JText::sprintf('COM_USERS_EMAIL_REGISTERED_BODY', $data['name'], $data['sitename'], $data['siteurl']);
+					$emailSubject = JText::sprintf(
+						'COM_USERS_EMAIL_ACCOUNT_DETAILS',
+						$data['name'],
+						$data['sitename']
+					);
+
+					if ($sendpassword)
+					{
+						$emailBody = JText::sprintf(
+							'COM_USERS_EMAIL_REGISTERED_BODY',
+							$data['name'],
+							$data['sitename'],
+							$data['siteurl'],
+							$data['username'],
+							$data['password_clear']
+						);
+					}
+					else
+					{
+						$emailBody = JText::sprintf(
+							'COM_USERS_EMAIL_REGISTERED_BODY_NOPW',
+							$data['name'],
+							$data['sitename'],
+							$data['siteurl']
+						);
+					}
 				}
 
 				// Send the registration email.
@@ -717,6 +809,18 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 			$data['block']      = 0;
 		}
 
+		if (empty($this->requireresetfield))
+		{
+			if ($params->get('juser_require_reset', '') === '1')
+			{
+				$data['requireReset'] = 1;
+			}
+		}
+		else
+		{
+			$data['requireReset'] = $this->requireresetvalue;
+		}
+
 		return $data;
 	}
 
@@ -784,7 +888,8 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		$isNew          = $user->get('id') < 1;
 		$params         = $this->getParams();
 		$this->gidfield = $this->getFieldName('juser_field_usertype');
-		$defaultGroup   = (int) $params->get('juser_field_default_group');
+		// if editing, set the default to the existing user's groups
+		$defaultGroup   = $isNew ? (array) $params->get('juser_field_default_group') : $user->groups;
 		$groupIds       = (array) $this->getFieldValue('juser_field_usertype', $formModel->formData, $defaultGroup);
 
 		// If the group ids where encrypted (e.g. user can't edit the element) they appear as an object in groupIds[0]
@@ -816,8 +921,12 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		}
 		else
 		{
-			// If editing an existing user and no gid field being used,  use default group id
-			$data[] = $defaultGroup;
+			/*
+			 * Mo 'usertype' field was set, so use default, which is either the default ocnfigured
+			 * in the plugin (for new users), or an existing users current groups.
+			 *
+			 */
+			$data = (array) $defaultGroup;
 		}
 
 		return $data;

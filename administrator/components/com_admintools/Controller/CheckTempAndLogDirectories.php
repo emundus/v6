@@ -51,6 +51,6 @@ class CheckTempAndLogDirectories extends Controller
 
 		echo '###'.json_encode($json).'###';
 
-		\JFactory::getApplication()->close();
+		$this->container->platform->closeApplication();
 	}
 }

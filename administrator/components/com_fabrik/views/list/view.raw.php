@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -28,10 +28,12 @@ class FabrikAdminViewList extends JViewLegacy
 	/**
 	 * Display a json object representing the table data.
 	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
 	 * @return  void
 	 */
 
-	public function display()
+	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
@@ -41,7 +43,7 @@ class FabrikAdminViewList extends JViewLegacy
 		$item = $model->getTable();
 		$params = $model->getParams();
 		$model->render();
-		$this->emptyDataMessage = $params->get('empty_data_msg');
+		$this->emptyDataMessage = FText::_($params->get('empty_data_msg', 'COM_FABRIK_LIST_NO_DATA_MSG'));
 		$rowid = $input->getString('rowid', '', 'string');
 		list($this->headings, $groupHeadings, $this->headingClass, $this->cellClass) = $this->get('Headings');
 		$data = $model->getData();
@@ -86,7 +88,7 @@ class FabrikAdminViewList extends JViewLegacy
 				'headings' => $this->headings,
 				'formid' => $model->getTable()->form_id,
 				'lastInsertedRow' => JFactory::getSession()->get('lastInsertedRow', 'test'));
-		$d['nav'] = $nav->getProperties();
+		$d['nav'] = get_object_vars($nav);
 		$d['htmlnav'] = $params->get('show-table-nav', 1) ? $nav->getListFooter($model->getId(), $this->getTmpl()) : '';
 		$d['calculations'] = $model->getCalculations();
 		$msg = $app->getMessageQueue();

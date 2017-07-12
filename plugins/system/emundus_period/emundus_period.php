@@ -94,7 +94,7 @@ class  plgSystemEmundus_period extends JPlugin
         include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
         $app        =  JFactory::getApplication();
-        $user       =  JFactory::getUser();
+        $user       =  JFactory::getSession()->get('emundusUser');
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
@@ -105,7 +105,7 @@ class  plgSystemEmundus_period extends JPlugin
         define('EMUNDUS_PHOTO_AID', 10);
 
         if ( !$app->isAdmin() && isset($user->id) && !empty($user->id) && EmundusHelperAccess::isApplicant($user->id) ) {
-     
+
             $id_applicants  = $eMConfig->get('id_applicants', '0');
             $applicants     = explode(',', $id_applicants);
             $r              = JRequest::getVar('r', null, 'GET', 'none',0);

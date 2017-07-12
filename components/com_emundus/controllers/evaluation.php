@@ -37,7 +37,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 
 
-        $this->_user = JFactory::getUser();
+        $this->_user = JFactory::getSession()->get('emundusUser');
         $this->_db = JFactory::getDBO();
 
         parent::__construct($config);
@@ -934,8 +934,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
     public function generate_array() {
         $current_user = JFactory::getUser();
 
-        if( !@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)
-        )
+        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
             die( JText::_('RESTRICTED_ACCESS') );
 
         $model = $this->getModel('Files');

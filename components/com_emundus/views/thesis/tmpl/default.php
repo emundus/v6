@@ -114,7 +114,9 @@ $tmpl = $app->input->get('tmpl', null, 'CMD');
             <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&controller=thesis&task=apply&id=' . $this->item->id.'&tmpl='.$tmpl, false, 2); ?>';" class="btn btn-info glyphicon glyphicon-circle-arrow-right" type="button"> <?php echo JText::_('COM_EMUNDUS_THESIS_APPLY'); ?></button>
         <?php endif; ?>
         <?php if(is_null($tmpl)): ?>
+            <?php $user = JFactory::getSession()->get('emundusUser'); ?>
             <a class="btn btn-default" href="index.php?option=com_fabrik&view=form&formid=232&previous=<?php echo $this->item->id; ?>&Itemid=<?php echo $itemid; ?>&usekey=fnum&rowid=<?php echo $user->fnum; ?>" role="button"><?php echo JText::_('COM_EMUNDUS_THESIS_CHANGE'); ?></a>
+            <?php $user = JFactory::getUser(); ?>
         <?php endif; ?>
     <?php endif; ?>
     

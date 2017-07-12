@@ -10,7 +10,7 @@ defined( '_JEXEC' ) or die();
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  * See COPYRIGHT.php for copyright notices and details.
- * @description Vérification avant envoie du dossier que le dossier est bien complet
+ * @description Vï¿½rification avant envoie du dossier que le dossier est bien complet
  */
 
 $mainframe = JFactory::getApplication();
@@ -22,7 +22,7 @@ if ($jinput->get('view') == 'form') {
 	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
-	$user = JFactory::getUser();
+	$user = JFactory::getSession()->get('emundusUser');
 
 	$params = JComponentHelper::getParams('com_emundus');
 	$application_fee = $params->get('application_fee', 0);

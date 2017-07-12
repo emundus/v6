@@ -81,8 +81,7 @@ class MasterPassword extends Model
             $masterHash = md5($masterHash);
 
             // Compare the master pw with the one the user entered
-            $session  = \JFactory::getSession();
-            $userHash = $session->get('userpwhash', '', 'admintools');
+            $userHash = $this->container->platform->getSessionVar('userpwhash', '', 'admintools');
 
             if ($userHash != $masterHash)
             {
@@ -121,8 +120,7 @@ class MasterPassword extends Model
         }
 
         $masterHash = md5($masterHash);
-        $session    = \JFactory::getSession();
-        $userHash   = $session->get('userpwhash', '', 'admintools');
+        $userHash   = $this->container->platform->getSessionVar('userpwhash', '', 'admintools');
 
         return ($masterHash == $userHash);
     }
@@ -136,9 +134,8 @@ class MasterPassword extends Model
      */
     public function setUserPassword($passwd)
     {
-        $session  = \JFactory::getSession();
         $userHash = md5($passwd);
-        $session->set('userpwhash', $userHash, 'admintools');
+	    $this->container->platform->setSessionVar('userpwhash', $userHash, 'admintools');
     }
 
     /**

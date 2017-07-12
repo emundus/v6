@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: gantry.class.php 30069 2016-03-08 17:45:33Z matias $
+ * @version   $Id: gantry.class.php 30566 2017-04-28 10:24:41Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Gantry uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system
@@ -222,7 +222,7 @@ class Gantry
 	 */
 	public function __sleep()
 	{
-		return $this->__cacheables;
+		return array_unique($this->__cacheables);
 	}
 
 	/**

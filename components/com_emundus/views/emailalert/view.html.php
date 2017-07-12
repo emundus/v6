@@ -37,7 +37,8 @@ class EmundusViewEmailalert extends JViewLegacy{
 	{	
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) die("You are not allowed to access to this page.");
+		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) 
+			die("You are not allowed to access to this page.");
 		//if (!$this->get('Key')) die("You are not allowed to access to this page.");
 		
 		$users = $this->get('mailtosend');

@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.tags
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -84,9 +84,6 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 		{
 			$tmp = $this->_getOptions($data, $repeatCounter, true);
 
-			// Include jQuery
-			JHtml::_('jquery.framework');
-
 			// Requires chosen to work
 			JText::script('JGLOBAL_KEEP_TYPING');
 			JText::script('JGLOBAL_LOOKING_FOR');
@@ -94,13 +91,12 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 			JText::script('JGLOBAL_SELECT_AN_OPTION');
 			JText::script('JGLOBAL_SELECT_NO_RESULTS_MATCH');
 
-			$ext = FabrikHelperHTML::isDebug() ? '.min.js' : '.js';
-			JHtml::_('script', 'jui/chosen.jquery' . $ext, false, true, false, false);
+			// Note: the Chosen js should be loaded via require statement
 			JHtml::_('stylesheet', 'jui/chosen.css', false, true);
-			JHtml::_('script', 'jui/ajax-chosen' . $ext, false, true, false, false);
 
 			$bootstrapClass = $params->get('bootstrap_class', 'span12');
 			$attr = 'multiple="multiple" class="inputbox ' . $bootstrapClass. ' small"';
+			$attr .= ' data-placeholder="' . JText::_('JGLOBAL_SELECT_SOME_OPTIONS') . '"';
 			$selected = $tmp;
 			$str[] = JHtml::_('select.genericlist', $tmp, $name, trim($attr), 'value', 'text', $selected, $id);
 
@@ -363,11 +359,17 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 	 */
 	public function onFinalStoreRow(&$data)
 	{
+		$params = $this->getParams();
 		$name = $this->getFullName(true, false);
 		$rawName = $name . '_raw';
 		$db = FabrikWorker::getDbo(true);
 		$formData =& $this->getFormModel()->formDataWithTableName;
 		$tagIds = (array) $formData[$rawName];
+
+		if (!class_exists('TagsModelTag'))
+		{
+			require_once JPATH_ADMINISTRATOR . '/components/com_tags/models/tag.php';
+		}
 
 		foreach ($tagIds as $tagKey => &$tagId)
 		{
@@ -380,14 +382,93 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 			// New tag added
 			if (strstr($tagId, '#fabrik#'))
 			{
-				$tagId = $db->quote(str_replace('#fabrik#', '', $tagId));
-				$query = $db->getQuery(true);
-				$query->insert($this->getDbName())->set('level = 1, published = 1, parent_id = 1, created_user_id = ' . (int) $this->user->get('id'))
-				->set('created_time = ' . $db->q($this->date->toSql()), ', language = "*", version = 1')
-				->set('path = ' . $tagId . ', title = ' . $tagId . ', alias = ' . $tagId);
-				$db->setQuery($query);
-				$db->execute();
-				$tagId = $db->insertid();
+				$tagId = str_replace('#fabrik#', '', $tagId);
+				/**
+				 * We need to use the J! com_tags model to save, so it can handle the nested set stuff
+				 */
+				$tagsTableName = $params->get('tags_dbname', '');
+				$jTagsTableName = $db->getPrefix() . 'tags';
+				if ($tagsTableName === '' || $tagsTableName === $jTagsTableName)
+				{
+					JTable::addIncludePath(COM_FABRIK_BASE . '/administrator/components/com_tags/tables');
+
+					$tagModel = new TagsModelTag;
+
+					/*
+					 * JSONified list of form data from built in backed tag creation, from xdebug session
+					 *
+					 * Can get rid of this comment once we're sure the $data we set up has the required fields
+					 *
+					 * {"id":0,
+					 * "hits":"0",
+					 * "parent_id":"1",
+					 * "title":"test102",
+					 * "note":"",
+					 * "description":"",
+					 * "published":"1",
+					 * "access":"1",
+					 * "metadesc":"",
+					 * "metakey":"",
+					 * "alias":"",
+					 * "created_user_id":"",
+					 * "created_by_alias":"",
+					 * "created_time":null,
+					 * "modified_user_id":null,
+					 * "modified_time":null,
+					 * "language":"*",
+					 * "version_note":"",
+					 * "params":
+					 *  {"tag_layout":"",
+					 *      "tag_link_class":"label label-info"
+					 * },
+					 * "images":{
+					 *  "image_intro":"",
+					 *  "float_intro":"",
+					 *  "image_intro_alt":"",
+					 *  "image_intro_caption":"",
+					 *  "image_fulltext":"",
+					 *  "float_fulltext":"",
+					 *  "image_fulltext_alt":"",
+					 *  "image_fulltext_caption":""
+					 * },
+					 * "metadata":{
+					 *  "author":"",
+					 *  "robots":""
+					 * },
+					 * "tags":null}
+					 */
+
+					$data = array(
+						'id'              => '',
+						'level'           => 1,
+						'published'       => 1,
+						'parent_id'       => 1,
+						'created_user_id' => (int) $this->user->get('id'),
+						'created_time'    => $this->date->toSql(),
+						'language'        => "*",
+						'version'         => 1,
+						'path'            => $tagId,
+						'title'           => $tagId,
+						'alias'           => $tagId
+					);
+
+					$tagModel->save($data);
+					$tagId = $tagModel->getState($tagModel->getName() . '.id');
+				}
+				else
+				{
+					/*
+					 * For Jaanus's non J! tables, do it the "old" way
+					 */
+					$tagId = $db->quote($tagId);
+					$query = $db->getQuery(true);
+					$query->insert($this->getDbName())->set('level = 1, published = 1, parent_id = 1, created_user_id = ' . (int) $this->user->get('id'))
+					->set('created_time = ' . $db->q($this->date->toSql()), ', language = "*", version = 1')
+					->set('path = ' . $tagId . ', title = ' . $tagId . ', alias = ' . $tagId);
+					$db->setQuery($query);
+					$db->execute();
+					$tagId = $db->insertid();
+				}
 			}
 		}
 
@@ -471,16 +552,57 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 	protected function tagListURL()
 	{
 		$listModel = $this->getListModel();
+		$listId = $listModel->getId();
 
 		if ($this->app->isAdmin())
 		{
-			$url = 'index.php?option=com_fabrik&amp;task=list.view&amp;listid=' . $listModel->getId();
+			$url = 'index.php?option=com_fabrik&task=list.view&listid=' . $listId . '&limitstart' . $listId . '=0';
 		}
 		else
 		{
-			$url = 'index.php?option=com_' . $this->package . '&amp;view=list&amp;listid=' . $listModel->getId();
+			$url = 'index.php?option=com_' . $this->package . '&view=list&listid=' . $listId . '&limitstart' . $listId . '=0';
 			$url = JRoute::_($url);
 		}
 		return $url;
+	}
+
+	/**
+	 * Get the class to manage the form element
+	 * to ensure that the file is loaded only once
+	 *
+	 * @param   array   &$srcs   Scripts previously loaded
+	 * @param   string  $script  Script to load once class has loaded
+	 * @param   array   &$shim   Dependant class names to load before loading the class - put in requirejs.config shim
+	 *
+	 * @return void|boolean
+	 */
+	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
+	{
+		$key = FabrikHelperHTML::isDebug() ? 'element/tags/tags' : 'element/tags/tags-min';
+
+		$s = new stdClass;
+
+		// Even though fab/element is now an AMD defined module we should still keep it in here
+		// otherwise (not sure of the reason) jQuery.mask is not defined in field.js
+
+		// Seems OK now - reverting to empty array
+		$s->deps = array();
+
+		$folder = 'media/jui/js/';
+		$s->deps[] = $folder . 'ajax-chosen';
+
+		if (array_key_exists($key, $shim))
+		{
+			$shim[$key]->deps = array_merge($shim[$key]->deps, $s->deps);
+		}
+		else
+		{
+			$shim[$key] = $s;
+		}
+
+		parent::formJavascriptClass($srcs, $script, $shim);
+
+		// $$$ hugh - added this, and some logic in the view, so we will get called on a per-element basis
+		return false;
 	}
 }

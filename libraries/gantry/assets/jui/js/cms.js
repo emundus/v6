@@ -1,7 +1,18 @@
-/*
- * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2016 RocketTheme, LLC
- * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+/**
+ * @copyright  Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
-if(typeof(Joomla)==="undefined"){var Joomla={};}Joomla.setcollapse=function(c,b,a){if(!document.getElementById("collapse-"+b)){document.getElementById("container-collapse").innerHTML='<div class="collapse fade" id="collapse-'+b+'"><iframe class="iframe" src="'+c+'" height="'+a+'" width="100%"></iframe></div>';
-}};
+
+// Only define the Joomla namespace if not defined.
+if (typeof(Joomla) === 'undefined') {
+	var Joomla = {};
+}
+
+/**
+ * Sets the HTML of the container-collapse element
+ */
+Joomla.setcollapse = function(url, name, height) {
+    if (!document.getElementById('collapse-' + name)) {
+        document.getElementById('container-collapse').innerHTML = '<div class="collapse fade" id="collapse-' + name + '"><iframe class="iframe" src="' + url + '" height="'+ height + '" width="100%"></iframe></div>';
+    }
+}

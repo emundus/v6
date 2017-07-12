@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -17,9 +17,9 @@ defined('_JEXEC') or die();
 $app = JFactory::getApplication();
 $input = $app->input;
 ?>
-<form method="post" action="<?php echo $this->action?>" class="advancedSeach_<?php echo $this->listref?>">
+<form method="post" action="<?php echo $this->action?>" class="advancedSearch_<?php echo $this->listref?>">
 	<a class="addbutton advanced-search-add btn-success btn" href="#">
-		<?php echo FabrikHelperHTML::image('plus.png', 'list', $this->tmpl);?>
+		<?php echo FabrikHelperHTML::image('plus', 'list', $this->tmpl);?>
 		<?php echo FText::_('COM_FABRIK_ADD')?>
 	</a>
 	<div id="advancedSearchContainer">
@@ -36,7 +36,7 @@ $input = $app->input;
 				<?php if (FabrikWorker::j3()) : ?>
 					<div class="button-group">
 						<a class="advanced-search-remove-row btn btn-danger" href="#">
-							<?php echo FabrikHelperHTML::image('minus.png', 'list', $this->tmpl);?>
+							<?php echo FabrikHelperHTML::image('minus', 'list', $this->tmpl);?>
 						</a>
 					</div>
 				<?php else: ?>

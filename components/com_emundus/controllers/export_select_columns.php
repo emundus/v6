@@ -35,8 +35,6 @@ ini_set('display_startup_errors', TRUE);*/
 		$session = JFactory::getSession();
 		$cid = $session->get( 'uid' );
 		$quick_search = $session->get( 'quick_search' );
-		
-		$user = JFactory::getUser();
 
 		//require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_xls'.DS.'xls_'.$view.'.php');
 		$elements = JRequest::getVar('ud', null, 'POST', 'array', 0);

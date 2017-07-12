@@ -28,7 +28,6 @@ class EmundusViewJobform extends JViewLegacy {
     public function display($tpl = null) {
 
         $app = JFactory::getApplication();
-        $user = JFactory::getUser();
 
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
