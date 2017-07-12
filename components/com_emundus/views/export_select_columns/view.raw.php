@@ -35,7 +35,6 @@ class EmundusViewExport_select_columns extends JViewLegacy
 		parent::__construct($config);
 	}
 	
-	
     function display($tpl = null) {
 
         $jinput = JFactory::getApplication()->input;
