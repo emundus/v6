@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	
+	<languages>
+		<language tag="en-GB">language/en-GB/en-GB.com_securitycheckpro.ini</language>
+		<language tag="es-ES">language/es-ES/es-ES.com_securitycheckpro.ini</language>		
+	</languages>
+	
+	<fieldset name="component" label="COM_SECURITYCHECKPRO_CONFIG_COMPONENT_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_COMPONENT_DESCRIPTION">
+		<field name="downloadid" type="text" default="" size="30" label="COM_SECURITYCHECKPRO_CONFIG_DOWNLOADID_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_DOWNLOADID_DESCRIPTION"/>		
+	</fieldset>
+	
+	<fieldset name="tuning" type="text" default="" size="30" label="COM_SECURITYCHECKPRO_CONFIG_TUNING_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_TUNING_DESCRIPTION">
+		<field name="memory_limit" type="text" default="512M" size="5" label="COM_SECURITYCHECKPRO_CONFIG_MEMORY_LIMIT_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_MEMORY_LIMIT_DESCRIPTION" />
+		<field name="secret_key_length" type="radio" default="20" label="COM_SECURITYCHECKPRO_CONFIG_SECRET_KEY_LENGTH_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_SECRET_KEY_LENGTH_DESCRIPTION">
+			<option value="5">5</option>
+			<option value="10">10</option>
+			<option value="15">15</option>
+			<option value="20">20</option>
+		</field>
+		<field name="scan_executables_only" type="radio" default="0" label="COM_SECURITYCHECKPRO_CONFIG_FILE_SCAN_EXECUTABLES_ONLY_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_SCAN_EXECUTABLES_ONLY_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+		<field name="remove_meta_tag" type="radio" default="1" label="COM_SECURITYCHECKPRO_CONFIG_FILE_REMOVE_META_TAG_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_REMOVE_META_TAG_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+		<field name="geoip_automatic_updates" type="radio" default="0" label="COM_SECURITYCHECKPRO_GEOBLOCK_AUTOMATIC_UPDATES_LABEL" description="COM_SECURITYCHECKPRO_GEOBLOCK_AUTOMATIC_UPDATES_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+		<field name="check_acl_security" type="radio" default="1" label="COM_SECURITYCHECKPRO_CHECK_ACL_SECURITY_LABEL" description="COM_SECURITYCHECKPRO_CHECK_ACL_SECURITY_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+		<field name="determine_option_accurately" type="radio" default="1" label="COM_SECURITYCHECKPRO_DETERMINE_OPTION_ACCURATELY_LABEL" description="COM_SECURITYCHECKPRO_DETERMINE_OPTION_ACCURATELY_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+	</fieldset>
+	
+	<fieldset name="FileManager" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_DESCRIPTION">
+		<field name="file_manager_path" type="folderlist" default="JPATH_ROOT" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_PATH_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_PATH_DESCRIPTION" directory="" filter="" exclude="" stripext="" hide_none="true"/>
+		<field name="file_manager_path_exceptions" type="textarea" default="" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_PATH_EXCEPTIONS_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_PATH_EXCEPTIONS_DESCRIPTION" class="span12" />
+		<field name="file_manager_recursive_folder_exceptions" type="radio" default="0" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_RECURSIVE_FOLDER_EXCEPTIONS_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_RECURSIVE_FOLDER_EXCEPTIONS_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+		<field name="file_manager_include_exceptions_in_database" type="radio" default="1" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_EXCEPTIONS_IN_DATABASE_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_EXCEPTIONS_IN_DATABASE_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+
+		<field name="change_permissions_option" type="radio" default="chmod" label="COM_SECURITYCHECKPRO_CHANGE_PERMISSIONS_OPTION_LABEL" description="COM_SECURITYCHECKPRO_CHANGE_PERMISSIONS_OPTION_DESCRIPTION">
+			<option value="chmod">Chmod</option>
+			<option value="ftp">Ftp</option>
+		</field>
+		<field name="delete_log_file" type="radio" default="1" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_DELETE_LOG_FILE_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_DELETE_LOG_FILE_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+	</fieldset>
+	
+	<fieldset name="FileIntegrity" label="COM_SECURITYCHECKPRO_CONFIG_FILE_INTEGRITY_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_INTEGRITY_DESCRIPTION">
+		<field name="file_integrity_hash_alg" type="list" default="SHA1" label="COM_SECURITYCHECKPRO_CONFIG_FILE_INTEGRITY_HASH_ALG_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_INTEGRITY_HASH_ALG_DESCRIPTION">
+			<option value="MD5">MD5</option>
+			<option value="SHA1">SHA1</option>			
+		</field>
+		<field name="file_integrity_path_exceptions" type="textarea" default="" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_PATH_EXCEPTIONS_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_INTEGRITY_PATH_EXCEPTIONS_DESCRIPTION" class="span12"/>
+		<field name="file_integrity_recursive_folder_exceptions" type="radio" default="0" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_RECURSIVE_FOLDER_EXCEPTIONS_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_RECURSIVE_FOLDER_EXCEPTIONS_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+		<field name="file_integrity_include_exceptions_in_database" type="radio" default="1" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_EXCEPTIONS_IN_DATABASE_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_EXCEPTIONS_IN_DATABASE_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+		<field name="look_for_malware" type="radio" default="1" label="COM_SECURITYCHECKPRO_CONFIG_MALWARE_LOOK_FOR_MALWARE_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_MALWARE_LOOK_FOR_MALWARE_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+		<field name="move_to_quarantine" type="radio" default="0" label="COM_SECURITYCHECKPRO_MOVE_TO_QUARANTINE_LABEL" description="COM_SECURITYCHECKPRO_MOVE_TO_QUARANTINE_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+		<field name="send_email_on_wrong_integrity" type="radio" default="1" label="COM_SECURITYCHECKPRO_CONFIG_SEND_EMAIL_WRONG_INTEGRITY_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_SEND_EMAIL_WRONG_INTEGRITY_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+		<field name="email_subject_on_wrong_integrity" type="text" default="" size="50" label="COM_SECURITYCHECKPRO_CONFIG_EMAIL_SUBJECT_ON_WRONG_INTEGRITY_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_EMAIL_SUBJECT_ON_WRONG_INTEGRITY_DESCRIPTION" />		
+	</fieldset>
+	
+	<fieldset name="Malwarescan" label="COM_SECURITYCHECKPRO_CONFIG_MALWARE_SCAN_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_MALWARE_SCAN_DESCRIPTION">
+		<field name="malwarescan_file_extensions" type="textarea" default="php,php3,php4,php5,phps,html,htaccess,js" label="COM_SECURITYCHECKPRO_CONFIG_MALWARE_SCAN_FILE_EXTENSIONS_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_MALWARE_SCAN_FILE_EXTENSIONS_DESCRIPTION" rows="5" cols="50" />
+		<field name="use_filemanager_exceptions" type="radio" default="0" label="COM_SECURITYCHECKPRO_CONFIG_MALWARE_USE_FILEMANAGER_EXCEPTIONS_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_MALWARE_USE_FILEMANAGER_EXCEPTIONS_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+		<field name="deep_scan" type="radio" default="0" label="COM_SECURITYCHECKPRO_CONFIG_MALWARE_DEEP_SCAN_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_MALWARE_DEEP_SCAN_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+		<field name="malwarescan_path_exceptions" type="textarea" default="" label="COM_SECURITYCHECKPRO_CONFIG_MALWARESCAN_PATH_EXCEPTIONS_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_MALWARESCAN_PATH_EXCEPTIONS_DESCRIPTION" class="span12" />
+		<field name="opswat_key" type="text" default="" size="30" label="COM_SECURITYCHECKPRO_CONFIG_OPSWAT_KEY_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_OPSWAT_KEY_DESCRIPTION">			
+		</field>
+		<field name="online_submission_type" type="list" default="Hashes" label="COM_SECURITYCHECKPRO_CONFIG_ONLINE_SUBMISSION_TYPE_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_ONLINE_SUBMISSION_TYPE_DESCRIPTION">
+			<option value="Files">Files</option>
+			<option value="Hashes">Hashes</option>			
+		</field>
+		<field name="timeline" type="list" default="7" label="COM_SECURITYCHECKPRO_CONFIG_TIMELINE_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_TIMELINE_DESCRIPTION">
+			<option value="1">1</option>
+			<option value="7">7</option>
+			<option value="30">30</option>
+			<option value="10000">10000</option>
+		</field>
+		<field name="log_files_stored" type="text" default="5" size="3" label="COM_SECURITYCHECKPRO_CONFIG_LOG_FILES_STORED_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_LOG_FILES_STORED_DESCRIPTION" />
+	</fieldset>
+	
+	<fieldset name="performance" label="COM_SECURITYCHECKPRO_CONFIG_PERFORMANCE_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_PERFORMANCE_DESCRIPTION">
+		<field name="tables_to_check" type="list" default="All" label="COM_SECURITYCHECKPRO_CONFIG_DBCHECK_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_DBCHECK_DESCRIPTION">
+			<option value="All">COM_SECURITYCHECKPRO_ALL</option>
+			<option value="Myisam">COM_SECURITYCHECKPRO_ONLY_MYISAM</option>			
+		</field>		
+	</fieldset>
+	
+	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
+		<field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" class="inputbox"	validate="rules" filter="rules" component="com_securitycheckpro" section="component" />		
+	</fieldset>
+	
+</config>
