@@ -133,6 +133,9 @@ RewriteRule (tmp)/(.*)\.(.*)$ index.php?option=com_emundus&task=getfile&u=$1/$2.
 ## End emundus file uploaded protection
 
 ##### Some security
+## Block Server Side Includes - SSI
+RewriteRule \.shtml$ - [F,L]
+
 ## Begin Securitycheck Pro Prevent access to .ht files
 <FilesMatch "^.ht">
 Order deny,allow
