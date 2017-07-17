@@ -227,5 +227,5 @@ class FabrikAutoloader
 }
 
 // PSR-4 Auto-loader.
-//$loader     = require JPATH_LIBRARIES . '/fabrik/vendor/autoload.php';
+$loader     = require JPATH_LIBRARIES . '/fabrik/vendor/autoload.php';
 $autoLoader = new FabrikAutoloader();

@@ -2,8 +2,17 @@
 /**
 */
 
-// ensure this file is being included by a parent file
+use CB\Database\Table\PluginTable;
+use CB\Database\Table\TabTable;
+use CB\Database\Table\UserTable;
+use CBLib\Language\CBTxt;
+
 if ( ! ( defined( '_VALID_CB' ) || defined( '_JEXEC' ) || defined( '_VALID_MOS' ) ) ) { die( 'Direct Access to this location is not allowed.' ); }
+
+global $_PLUGINS;
+
+// TODO: This should be in a function: We should have no code in files outside of classes:
+$_PLUGINS->loadPluginGroup( 'user' );
 
 class getFabrikTab extends cbTabHandler {
 
@@ -57,12 +66,23 @@ class getFabrikTab extends cbTabHandler {
 		$session->set('fabrik.plugin.' . $social_hash . '.profile_id', $user->get('id'));
 		// do the old style one without the hash for backward compat
 		$session->set('fabrik.plugin.profile_id', $user->get('id'));
-		$txt = rtrim($txt, '}') . " fabrik_social_profile_hash=" . $social_hash . '}';
+
+		if (empty($txt))
+		{
+			$txt = '{fabrik_social_profile_hash=' . $social_hash . '}';
+		}
+		else
+		{
+			$txt = rtrim($txt, '}') . " fabrik_social_profile_hash=" . $social_hash . '}';
+		}
 
 		//do some dynamic replacesments with the owner's data
 		foreach ($user as $k=>$v) {
 			if (strstr( $txt, "{\$my->$k}" )) {
 				$txt = str_replace("{\$my->$k}", $v, $txt);
+			}
+			else if (strstr( $txt, "[\$my->$k]" )) {
+				$txt = str_replace("[\$my->$k]", $v, $txt);
 			}
 			// $$$ hugh - might as well stuff the entire CB user object in the session
 			$session->set('fabrik.plugin.' . $social_hash . '.' . $k, $v);
