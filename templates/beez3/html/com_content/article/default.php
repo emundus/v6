@@ -13,7 +13,7 @@ $app = JFactory::getApplication();
 $templateparams = $app->getTemplate(true)->params;
 $images = json_decode($this->item->images);
 $urls = json_decode($this->item->urls);
-$user = JFactory::getUser();
+$user    = JFactory::getUser();
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers');
 JHtml::_('behavior.caption');
 
