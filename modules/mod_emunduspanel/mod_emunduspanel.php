@@ -25,6 +25,7 @@ if (!empty($header_class))
 $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 
 $db	= JFactory::getDBO();
+$current_user = JFactory::getuser();
 $user = JFactory::getSession()->get('emundusUser');
 
 $app = JFactory::getApplication();
@@ -120,7 +121,7 @@ if (!empty($t__)) {
 		$col = count($tab);
 	}
 
-} elseif(!$user->guest) { 
+} elseif(!$current_user->guest) { 
 	$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id, m.params
               FROM #__menu m
               WHERE published=1
@@ -169,6 +170,6 @@ if (!empty($t__)) {
 
 }
 
-if (count(@$user->fnums) > 0 || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+if (count(@$user->fnums) > 0 || EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 	require(JModuleHelper::getLayoutPath('mod_emunduspanel'));
 }
