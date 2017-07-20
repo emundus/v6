@@ -225,17 +225,20 @@ function addElement() {
                         options += '</optgroup>';
                     }
 
+                    if(Joomla.JText._(groupe_tmp) != "undefined" && Joomla.JText._(groupe_tmp) != "")
+                        group_label = Joomla.JText._(groupe_tmp);
+                    else 
+                        group_label = groupe_tmp;
+
                     if (groupe != groupe_tmp) {
-                        options += '<optgroup label=">> ' + Joomla.JText._(groupe_tmp) + '">';
+                        options += '<optgroup label="- ' + group_label + ' -">';
                         groupe = groupe_tmp;
                     }
-   
-                    if(Joomla.JText._(result.options[i].element_label) == "undefined"){
-                        var elt_label = result.options[i].element_label;
-                    } else{
-                        var elt_label = Joomla.JText._(result.options[i].element_label);
-                    }
-
+                    
+                    if(Joomla.JText._(groupe_tmp) != "undefined" && Joomla.JText._(groupe_tmp) != "")
+                        elt_label = Joomla.JText._(result.options[i].element_label);
+                    else 
+                        elt_label = result.options[i].element_label;
 
                     options += '<option class="emundus_search_elm" value="' + result.options[i].id + '">' + elt_label + '</option>';
                 }
