@@ -43,20 +43,20 @@ class EmundusViewAdmission extends JViewLegacy
 		parent::__construct($config);
 	}
 
-    public function display($tpl = null)
-    {
+    public function display($tpl = null) {
+
         if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
             die (JText::_('RESTRICTED_ACCESS'));
 
 	    $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 
-	    $menu = @JSite::getMenu();
-		$current_menu  = $menu->getActive();
-		$menu_params = $menu->getParams(@$current_menu->id);
-		
-		$columnSupl = explode(',', $menu_params->get('em_actions'));
-		$jinput = JFactory::getApplication()->input;
-		$layout = $jinput->getString('layout', 0);
+	    $menu 			= @JSite::getMenu();
+		$current_menu  	= $menu->getActive();
+		$menu_params 	= $menu->getParams(@$current_menu->id);
+		$columnSupl 	= explode(',', $menu_params->get('em_actions'));
+
+		$jinput 	= JFactory::getApplication()->input;
+		$layout 	= $jinput->getString('layout', 0);
 
 		switch ($layout) {
 			case 'menuactions': 
@@ -209,6 +209,7 @@ class EmundusViewAdmission extends JViewLegacy
 								$userObj->type 			= $elements[$key]['plugin'];
 								$userObj->status_class 	= $user['status_class'];
 								$userObj->id 			= $elements[$key]['fabrik_id'];
+								$userObj->params 		= $elements[$key]['params'];
 								$line[$key] 			= $userObj;
 							
 							} else {

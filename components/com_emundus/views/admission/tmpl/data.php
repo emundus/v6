@@ -24,6 +24,9 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 			<thead>
 			<tr>
 				<?php foreach($this->datas[0] as $kl => $v): ?>
+					<?php if($kl == "jos_emundus_final_grade.user"): ?>
+					<!-- Skips extra collumn -->
+					<?php else :?>
 					<th title="<?php echo JText::_($v)?>" id="<?php echo $kl?>" >
 						<p class="em-cell">
 							<?php if($kl == 'check'): ?>
@@ -49,6 +52,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 							<?php endif;?>
 						</p>
 					</th>
+					<?php endif; ?>
 				<?php endforeach; ?>
 			</tr>
 			</thead>
@@ -59,6 +63,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 					<tr>
 						<?php $cfnum = $line['fnum']->val; ?>
 						<?php foreach ($line as $k => $value):?>
+
 							<?php if($k != 'evaluation_id'): ?>
 
 							<td <?php if($k == 'check' && $value->class != null) {echo 'class="'.$value->class.'"';}?>>
@@ -77,15 +82,28 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 										<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>">
 											<span class="glyphicon glyphicon-folder-open" title="<?php echo $value->val ?>">  <?php echo JFactory::getUser((int)substr($value->val, -7))->name; ?></span>
 										</a>
+									<?php elseif ($k == 'admission_id' || $k == 'recorded_by') :?>
 									<?php else:?>
 										
 										<?php if ($value->type == 'text' ) :?>
 											<?php echo strip_tags($value->val); ?>
 										<?php elseif ($value->type == 'textarea') :?>
 											<textarea rows="4" cols="2" id="<?php echo $cfnum.'-'.$value->id; ?>"><?php echo $value->val ?></textarea>
-											<span class="glyphicon glyphicon-ok em-textarea" id="<?php echo $cfnum.'-'.$value->id; ?>" aria-hidden="true" style="color:green;"></span>
+											<span class="glyphicon glyphicon-floppy-disk em-textarea" id="<?php echo $cfnum.'-'.$value->id.'-span'; ?>" aria-hidden="true" style="color:black;"></span>
 										<?php elseif ($value->type == 'date') :?>
-											<h5 class="em-date"><strong><?php echo $value->val ?></strong></h5>
+											<h5 class="em-date">
+												<strong>
+													<?php 
+														if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") {
+															echo "No date";
+														} else {
+															$params = json_decode($value->params);
+															$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
+															echo $formatted_date->format($params->date_form_format);
+														}
+													?>
+												</strong>
+											</h5>
 										<?php elseif ($value->type == 'radiobutton') :?>
 											<?php if ($value->val == 'yes' || $value->val == '1') :?>
 												<span class="glyphicon glyphicon-ok em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true" style="color:green;"></span>
@@ -96,7 +114,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 											<?php endif; ?>
 										<?php elseif ($value->type == 'field'):?>
 											<input class="admission_input" type="text" id="<?php echo $cfnum.'-'.$value->id; ?>" name="<?php echo $value->val ?>" value="<?php echo $value->val ?>"></input>
-											<span class="glyphicon glyphicon-ok em-field" id="<?php echo $cfnum.'-'.$value->id; ?>" aria-hidden="true" style="color:green;"></span>
+											<span class="glyphicon glyphicon-floppy-disk em-field" id="<?php echo $cfnum.'-'.$value->id.'-span'; ?>" aria-hidden="true" style="color:black;"></span>
 										<?php else :?>
 											<?php echo $value->val; ?>
 										<?php endif; ?>
