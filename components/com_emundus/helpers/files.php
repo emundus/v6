@@ -482,9 +482,10 @@ class EmundusHelperFiles
         require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
 
-        $menu       = new EmundusHelperMenu;
-        $user       = new EmundusModelUsers;
-        $profile    = new EmundusModelProfile;
+
+        $h_menu     = new EmundusHelperMenu;
+        $m_user     = new EmundusModelUsers;
+        $m_profile  = new EmundusModelProfile;
 
         $db = JFactory::getDBO();
         
@@ -495,10 +496,10 @@ class EmundusHelperFiles
             $campaigns = @$params['campaign'];
 
             // get profiles for selected programmes or campaigns
-            $plist = $profile->getProfileIDByCourse($programme); 
-            $plist = count($plist) == 0 ? $profile->getProfileIDByCampaign($campaigns) : $plist;
+            $plist = $m_profile->getProfileIDByCourse($programme);
+            $plist = count($plist) == 0 ? $m_profile->getProfileIDByCampaign($campaigns) : $plist;
         } else {
-            $plist = $profile->getProfileIDByCourse($code);
+            $plist = $m_profile->getProfileIDByCourse($code);
         }
 
         if ($plist) {
@@ -507,13 +508,14 @@ class EmundusHelperFiles
             $menutype = array();
 
             // get all profiles
-            $profiles = $user->getApplicantProfiles();
+            $profiles = $m_user->getApplicantProfiles();
+
 
             foreach ($profiles as $profile) {
                 if (is_array($plist)) {
 
                     if (count($plist) == 0 || (count($plist) > 0 && in_array($profile->id, $plist))) {
-                        $menu_list = $menu->buildMenuQuery($profile->id);
+                        $menu_list = $h_menu->buildMenuQuery($profile->id);
                         foreach ($menu_list as $m) {
                             $fl[] = $m->table_id;
                             $menutype[$profile->id] = $m->menutype;
@@ -535,10 +537,15 @@ class EmundusHelperFiles
                     LEFT JOIN #__fabrik_joins AS joins ON tab.id = joins.list_id AND groupe.id=joins.group_id
                     INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)';
             $where = 'WHERE tab.published = 1';
+            
+            
             if (count($fabrik_elements) > 0 ) {
+            
                 $where .= ' AND element.id IN (' . implode(',', $fabrik_elements) . ') ';
                 $order ='';
+            
             } else {
+            
                 $where .= ' AND (tab.id IN ( ' . implode(',', $fl) . ' ))
                         AND element.published=1
                         AND element.hidden=0
@@ -548,10 +555,12 @@ class EmundusHelperFiles
                 $order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
             }
 
+            
             $query .= ' ' . $join . ' ' . $where . ' ' . $order;
             //echo str_replace('#_', 'jos', $query);
 
             try {
+           
                 $db->setQuery($query);
                 $elements = $db->loadObjectList('id');
                 $elts = array();
@@ -562,13 +571,13 @@ class EmundusHelperFiles
                     }
                 }
                 return $elts;
+            
             } catch (Exception $e) {
                 echo $e->getMessage();
                 return array();
             }
-        } else {
-            return array();
-        }
+
+        } else return array();
     }
 
     /**
@@ -576,31 +585,30 @@ class EmundusHelperFiles
      * @param   int     Fabrik ID ?
      * @return  Object  Fabrik element
      **/
-    function getElementById($element_id){
+    function getElementById($element_id) {
         $db = JFactory::getDBO();
         $query = 'SELECT * FROM #__fabrik_elements element WHERE id='.$element_id;
         $db->setQuery($query);
         return $db->loadObject();
     }
 
-    public  function getPhotos($model, $baseUrl)
-    {
-        try
-        {
-            $pictures = array();
+    public function getPhotos() {
 
-            $photos = $model->getPhotos();
-            foreach ($photos as $photo)
-            {
-                $folder = $baseUrl.EMUNDUS_PATH_REL.$photo['user_id'];
+        $m_files = new EmundusModelFiles;
+
+        try {
+
+            $pictures = array();
+            $photos = $m_files->getPhotos();
+
+            foreach ($photos as $photo) {
+                $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
                 $pictures[$photo['fnum']] = '<a href="'.$folder.'/'.$photo['filename'].'" target="_blank"><img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></a>';
             }
 
-
             return $pictures;
-        }
-        catch (Exception $e)
-        {
+        
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -686,18 +694,81 @@ class EmundusHelperFiles
                     LEFT JOIN #__fabrik_joins AS joins ON tab.id = joins.list_id AND groupe.id=joins.group_id
                     WHERE element.id IN ('.ltrim($elements_id, ',').')
                     ORDER BY formgroup.ordering, element.ordering ';
-            $db->setQuery($query);
-            //$elementsIdTab = array_fill_keys(explode(',', $elements_id), "");
+            try {
+            
+                $db->setQuery($query);
+                $res = $db->loadObjectList('id');
+            
+            } catch (Exception $e) {
+                throw $e->getMessage();
+            }
+
             $elementsIdTab = array();
-            //$res0 = $db->loadObjectList();
-            $res = $db->loadObjectList('id');
             foreach ($res as $kId => $r) {
                 $elementsIdTab[$kId] = $r;
             }
+
             return $elementsIdTab;
-        
         } else return array();
     }
+
+    /*
+     *  @description    replace a tag like {fabrik_element_id} by the application form value for current application file
+     *  @param          $fum            string   application file number
+     *  @param          $element_id     string   Fabrik element ID
+     *  @return         array           array of application file elements value
+     */
+    public function getFabrikElementValue($fnum, $element_id){
+        $db = JFactory::getDBO();
+
+        $element_details = $this->getElementsDetailsByID($element_id);
+
+        $query = 'SELECT '.$element_details[0]->element_name.' FROM '.$element_details[0]->tab_name.' WHERE fnum like '.$db->Quote($fnum);
+        $db->setQuery($query);
+        $element_value = $db->loadResult();        
+
+        return $element_value;
+    }
+
+    /*
+     *  @description    replace tags like {fabrik_element_id} by the application form value for current application file
+     *  @param          $fum            string  application file number
+     *  @param          $element_ids    array   Fabrik element ID
+     *  @return         array           array of application file elements values
+     */
+    public function getFabrikElementValues($fnum, $element_ids){
+        $db = JFactory::getDBO();
+
+        $element_details = $this->getElementsDetailsByID('"'.implode('","', $element_ids).'"');
+
+        foreach ($element_details as $key => $value) {
+            $query = 'SELECT '.$value->element_name.' FROM '.$value->tab_name.' WHERE fnum like '.$db->Quote($fnum);
+            $db->setQuery($query);
+            $element_values[$value->element_id] = $db->loadResult();
+        }
+
+        return $element_values;
+    }
+
+    /*
+	 * @description	Get Fabrik elements detail from elements Fabrik ID
+	 * @param	string	$elements	list of Fabrik element comma separated.
+	 * @return	array	Array of Fabrik element params.
+	 */
+	function getElementsDetailsByID($elements) {
+		$db = JFactory::getDBO();
+
+		$query = 'SELECT element.name AS element_name, element.label AS element_label, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin,
+				element.params AS params, element.params, tab.group_by AS tab_group_by
+				FROM #__fabrik_elements element
+				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id 
+				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
+				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id 
+				WHERE element.id IN ('.$elements.')';
+		$db->setQuery($query);
+
+		return @EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels", "element_value"));
+	}
 
     public  function buildOptions($element_name, $params)
     {
@@ -1813,9 +1884,8 @@ class EmundusHelperFiles
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
         $evaluation    = new EmundusModelEvaluation();
-        $files             = new EmundusModelFiles;
+        $files         = new EmundusModelFiles;
 
-        //$fnums = '2014103012343200000630002385';
         if (!is_array($fnums)) {
             $fnumInfo = $files->getFnumInfos($fnums);
             $fnums = array($fnums);
@@ -1840,7 +1910,7 @@ class EmundusHelperFiles
                 foreach($elements as $element){
                     $k = $element->tab_name.'___'.$element->element_name;
 
-                    if( $element->element_name != 'id' &&
+                    if ($element->element_name != 'id' &&
                         $element->element_name != 'time_date' &&
                         $element->element_name != 'campaign_id' &&
                         $element->element_name != 'student_id'&&
@@ -1852,7 +1922,7 @@ class EmundusHelperFiles
                         array_key_exists($k, $eval))
                     {
                         $str .= '<tr>';
-                        if(strpos($element->element_plugin, 'textarea') !== false)
+                        if (strpos($element->element_plugin, 'textarea') !== false)
                             $str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . $eval[$k] . '</td>';
                         else
                             $str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . $eval[$k] . '</td>';
@@ -1879,6 +1949,135 @@ class EmundusHelperFiles
 
                 //$i++;
             }
+        }
+
+        return $data;
+    }
+
+    // Get Admission
+    function getAdmission($format='html', $fnums, $name = null) {
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+
+        $m_admission   = new EmundusModelAdmission();
+        $m_files       = new EmundusModelFiles;
+
+        if (!is_array($fnums)) {
+            $fnumInfo = $m_files->getFnumInfos($fnums);
+            $fnums = array($fnums);
+        } else {
+            $fnumInfo = $m_files->getFnumInfos($fnums[1]);
+        }
+
+        // Get information from the applicant form filled out by the coordinator
+        $element_id     = $m_admission->getAllAdmissionElements(0, $fnumInfo['training']);
+        $elements       = @EmundusHelperFiles::getElementsName(implode(',',$element_id));
+        $admissions     = $m_files->getFnumArray($fnums, $elements);
+
+        $data = array();
+
+        foreach ($admissions as $adm) {
+            if ($adm['jos_emundus_final_grade___time_date'] > 0) {
+                $str = '<br><hr>';
+                $str .= '<h1>Institutional Admission</h1>';
+                $str .= '<em>'.JHtml::_('date', $adm['jos_emundus_final_grade___time_date'], JText::_('DATE_FORMAT_LC')).'</em>';
+                $str .= '<h2>'.JFactory::getUser($eval['jos_emundus_final_grade___user'])->name.'</h2>';
+
+                $str .= '<br><hr>';
+                $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
+
+                foreach ($elements as $element){
+                    $k = $element->tab_name.'___'.$element->element_name;
+
+                    if ($element->element_name != 'id' &&
+                        $element->element_name != 'time_date' &&
+                        $element->element_name != 'campaign_id' &&
+                        $element->element_name != 'student_id'&&
+                        $element->element_name != 'user' &&
+                        $element->element_name != 'fnum' &&
+                        $element->element_name != 'email' &&
+                        $element->element_name != 'label' &&
+                        $element->element_name != 'code' &&
+                        array_key_exists($k, $adm)) 
+                    {
+                        $str .= '<tr>';
+                        if (strpos($element->element_plugin, 'textarea') !== false)
+                            $str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . $adm[$k] . '</td>';
+                        else
+                            $str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . $adm[$k] . '</td>';
+                        $str .= '</tr>';
+                    }
+                }
+
+                $str .= '</table>';
+                $str .= '<p></p><hr>';
+
+                if ($format != 'html') {
+                    $str = str_replace('<br>', chr(10), $str);
+                    $str = str_replace('<br />', chr(10), $str);
+                    $str = str_replace('<h1>', '* ', $str);
+                    $str = str_replace('</h1>', ' : ', $str);
+                    $str = str_replace('<b>', chr(10), $str);
+                    $str = str_replace('</b>', ' : ', $str);
+                    $str = str_replace('&nbsp;', ' ', $str);
+                    $str = strip_tags($str, '<h1>');
+                }
+
+                $data[$adm['fnum']][0] = $str;
+            }
+        }
+
+        // Get information from application form filled out by the student
+        $element_id     = $m_admission->getAllApplicantAdmissionElements(0, $fnumInfo['training']);
+        $elements       = @EmundusHelperFiles::getElementsName(implode(',',$element_id));
+        $admissions     = $m_files->getFnumArray($fnums, $elements);
+
+
+        foreach ($admissions as $adm) {
+            $str = '<br><hr>';
+            $str .= '<h1>Student Admission</h1>';
+            if (isset($name))
+                $str .= '<h2>'.$name.'</h2>';
+            $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
+
+            foreach ($elements as $element){
+                $k = $element->tab_name.'___'.$element->element_name;
+
+                if ($element->element_name != 'id' &&
+                    $element->element_name != 'time_date' &&
+                    $element->element_name != 'campaign_id' &&
+                    $element->element_name != 'student_id'&&
+                    $element->element_name != 'user' &&
+                    $element->element_name != 'fnum' &&
+                    $element->element_name != 'email' &&
+                    $element->element_name != 'label' &&
+                    $element->element_name != 'code' &&
+                    array_key_exists($k, $adm)) 
+                {
+                    $str .= '<tr>';
+                    if (strpos($element->element_plugin, 'textarea') !== false)
+                        $str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . $adm[$k] . '</td>';
+                    else
+                        $str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . $adm[$k] . '</td>';
+                    $str .= '</tr>';
+                }
+            }
+
+            $str .= '</table>';
+            $str .= '<p></p><hr>';
+
+            if ($format != 'html') {
+                $str = str_replace('<br>', chr(10), $str);
+                $str = str_replace('<br />', chr(10), $str);
+                $str = str_replace('<h1>', '* ', $str);
+                $str = str_replace('</h1>', ' : ', $str);
+                $str = str_replace('<b>', chr(10), $str);
+                $str = str_replace('</b>', ' : ', $str);
+                $str = str_replace('&nbsp;', ' ', $str);
+                $str = strip_tags($str, '<h1>');
+            }
+
+            $data[$adm['fnum']][1] = $str;
         }
 
         return $data;

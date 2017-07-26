@@ -1394,10 +1394,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $attachment = $jinput->getInt('attachment', 0);
         $assessment = $jinput->getInt('assessment', 0);
         $decision   = $jinput->getInt('decision', 0);
+        $admission  = $jinput->getInt('admission', 0);
         $ids        = $jinput->getVar('ids', null);
         
-        //$attach_ids = '"'.$ids.'"';
-        //$ids_attachments = str_replace(',', '","', $attach_ids);    
 
         $validFnums = array();
         foreach ($fnums_post as $fnum) {
@@ -1432,6 +1431,8 @@ class EmundusControllerFiles extends JControllerLegacy
                     $files_list[] = EmundusHelperExport::getEvalPDF($fnum);
                 if ($decision)
                     $files_list[] = EmundusHelperExport::getDecisionPDF($fnum);
+                if ($admission)
+                    $files_list[] = EmundusHelperExport::getAdmissionPDF($fnum);
             }
         }
         $start = $i;
@@ -1455,16 +1456,23 @@ class EmundusControllerFiles extends JControllerLegacy
             $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $file, 'F');
 
             $start = $i;
-            $dataresult =
-                array('start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms,
-                      'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-                      'file' => $file, 'msg' => JText::_('FILES_ADDED').' : '.$fnum);
+            
+            $dataresult = [
+                'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms,
+                'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
+                'admission' => $admission, 'file' => $file, 'msg' => JText::_('FILES_ADDED').' : '.$fnum
+            ];
+            
             $result = array('status' => true, 'json' => $dataresult);
+        
         } else {
-            $dataresult =
-                array('start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms,
-                      'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-                      'file' => $file, 'msg' => JText::_('ERROR_NO_FILE_TO_ADD').' : '.$fnum);
+            
+            $dataresult = [
+                'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms,
+                'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
+                'admission' => $admission, 'file' => $file, 'msg' => JText::_('ERROR_NO_FILE_TO_ADD').' : '.$fnum
+            ];
+
             $result = array('status' => false, 'json' => $dataresult);
         }
         echo json_encode((object) $result);
@@ -1632,7 +1640,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $col = explode('.', $col);
             switch ($col[0]) {
                 case "photo":
-                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($model, JURI::base());
+                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos();
                     break;
                 case "forms":
                     $colOpt['forms'] = $modelApp->getFormsProgress(null, null, $fnums);

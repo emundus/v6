@@ -48,10 +48,10 @@ $application_form_name      = $eMConfig->get('application_form_name', "applicati
 $export_pdf                 = $eMConfig->get('export_application_pdf', 0);
 $export_path                = $eMConfig->get('export_path', null);
 
-$application = new EmundusModelApplication;
-$filesModel = new EmundusModelFiles;
-$campaigns = new EmundusModelCampaign;
-$emails = new EmundusModelEmails;
+$application    = new EmundusModelApplication;
+$filesModel     = new EmundusModelFiles;
+$campaigns      = new EmundusModelCampaign;
+$emails         = new EmundusModelEmails;
 
 // Application fees
 if ($application_fee == 1) {
@@ -65,6 +65,7 @@ if ($application_fee == 1) {
             $checkout_url = $application->getHikashopCheckoutUrl($student->profile);
             $mainframe->redirect(JRoute::_($checkout_url));
         }
+    
     } else $mainframe->redirect('index.php');
 }
 // get current applicant course
@@ -75,27 +76,31 @@ $campaign = $campaigns->getCampaignByID($student->campaign_id);
 if (!$can_edit_until_deadline) {
     $query = 'UPDATE #__emundus_uploads SET can_be_deleted = 0 WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
     $db->setQuery( $query );
+    
     try {
         $db->execute();
     } catch (Exception $e) {
         // catch any database errors.
         JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
     }
+
 }
+
 $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=1 WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
+
 try {
     $db->execute();
 } catch (Exception $e) {
-    // catch any database errors.
     JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 }
+
 $query = 'UPDATE #__emundus_declaration SET time_date=NOW() WHERE user='.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
+
 try {
     $db->execute();
 } catch (Exception $e) {
-    // catch any database errors.
     JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 }
 

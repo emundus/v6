@@ -287,26 +287,20 @@ class EmundusModelFiles extends JModelLegacy
      * @param int $sort
      * @return array|int
      */
-    public function multi_array_sort($multi_array = array(), $sort_key, $sort = SORT_ASC)
-    {
-        if (is_array($multi_array))
-        {
-            foreach ($multi_array as $key => $row_array)
-            {
+    public function multi_array_sort($multi_array = array(), $sort_key, $sort = SORT_ASC) {
+        if (is_array($multi_array)) {
+            
+            foreach ($multi_array as $key => $row_array) {
                 if (is_array($row_array))
-                {
                     @$key_array[$key] = $row_array[$sort_key];
-                }
-                else
-                {
-                    return -1;
-                }
+                else return -1;
             }
-        } else {
-            return -1;
-        }
+        
+        } else return -1;
+        
         if (!empty($key_array))
             array_multisort($key_array, $sort, $multi_array);
+        
         return $multi_array;
     }
 
@@ -2323,6 +2317,36 @@ where 1 order by ga.fnum asc, g.title';
         }
         catch(Exception $e)
         {
+            return false;
+        }
+    }
+
+    /*
+    *   Get admission Fabrik formid from fnum
+    *   @param fnum     fnum to evaluate
+    *   @return int     Fabrik formid
+    */
+    /**
+     * @param $fnum
+     * @return bool|mixed
+     */
+    public function getAdmissionFormidByFnum($fnum) {
+        try {
+            
+            $db = $this->getDbo();
+            $query = "SELECT form_id
+                        FROM `#__fabrik_formgroup`
+                        WHERE group_id IN (
+                            SELECT esp.fabrik_applicant_admission_group_id
+                            FROM  `#__emundus_campaign_candidature` AS ecc
+                            LEFT JOIN `#__emundus_setup_campaigns` AS esc ON esc.id = ecc.campaign_id
+                            LEFT JOIN `#__emundus_setup_programmes` AS esp ON esp.code = esc.training
+                            WHERE ecc.fnum LIKE  " . $db->quote($fnum) .")";
+            $db->setQuery($query);
+            $res = $db->loadResult();
+            return $res;
+        
+        } catch (Exception $e) {
             return false;
         }
     }

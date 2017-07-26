@@ -215,9 +215,9 @@ class EmundusHelperFilters {
 	function setEvaluationList ($result) {
 		$option_list =  @EmundusHelperFilters::getEvaluation_doc($result);
 		$current_filter = '';
-		if(!empty($option_list)){
+		if (!empty($option_list)){
 			$current_filter = '<select name="attachment_id" id="attachment_id">';
-			foreach($option_list as $value){
+			foreach ($option_list as $value){
 				$current_filter .= '<option value="'.$value->id.'">'.$value->value.'</option>';
 			}
 			$current_filter .= '</select>';
@@ -232,22 +232,22 @@ class EmundusHelperFilters {
 	
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$export_pdf = $eMConfig->get('export_pdf');
-		
-		$menu 		= new EmundusHelperMenu;
+				
+		$h_menu 	= new EmundusHelperMenu;
 		$user 		= new EmundusModelUsers;
 		$profile 	= new EmundusModelProfile;
 
 
-		$session = JFactory::getSession(); 
-		$params = $session->get('filt_params');
-		$programme = $params['programme'];
+		$session 	= JFactory::getSession(); 
+		$params 	= $session->get('filt_params');
+		$programme 	= $params['programme'];
 
 		$profiles 	= $user->getApplicantProfiles();
 		$plist 		= $profile->getProfileIDByCourse($programme);
 
 		foreach ($profiles as $profile) {
 			if (count($plist)==0 || (count($plist)>0 && in_array($profile->id, $plist))) {
-				$menu_list = $menu->buildMenuQuery($profile->id); 
+				$menu_list = $h_menu->buildMenuQuery($profile->id); 
 				foreach ($menu_list as $m) {
 					$fl[] = $m->table_id;
 				}
@@ -270,8 +270,15 @@ class EmundusHelperFilters {
 					AND element.label!=" " 
 					AND element.label!=""  
 				ORDER BY menu.lft, formgroup.ordering, groupe.id, element.ordering';
-		$db->setQuery( $query );
-		return $db->loadObjectList('id');
+
+		try {
+		
+			$db->setQuery( $query );
+			return $db->loadObjectList('id');
+		
+		} catch (Exception $e) {
+			throw $e;
+		}
 	}
     
 
@@ -284,6 +291,7 @@ class EmundusHelperFilters {
 	**/
 	function getElementsByGroups($groups, $show_in_list_summary=1, $hidden=0) {
 		$db = JFactory::getDBO();
+
 		$query = 'SELECT element.name, element.label, element.plugin, element.id as element_id, groupe.id, groupe.label AS group_label, element.params,
 				INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias
 				FROM #__fabrik_elements element 
@@ -292,6 +300,7 @@ class EmundusHelperFilters {
 				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id 
 				INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id 
 				WHERE tab.published = 1 ';
+		
 		$query .= $show_in_list_summary==1?' AND element.show_in_list_summary = 1 ':'';
 		$query .= $hidden==0?' AND element.hidden = 0 ':'';
 		$query .= ' AND element.published=1 
@@ -300,9 +309,14 @@ class EmundusHelperFilters {
 					AND element.label != ""  
 					AND element.plugin != "display"  
 				ORDER BY formgroup.ordering, element.ordering';
-	//die(str_replace("#_", "jos", $query));
-		$db->setQuery( $query );
-		return $db->loadObjectList();
+		try {
+
+			$db->setQuery($query);
+			return $db->loadObjectList();
+
+		} catch (Exception $e) {
+			throw $e;
+		}
 	}
 	/**
 	* Get list of ALL elements declared in a list of Fabrik groups

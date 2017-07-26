@@ -56,18 +56,18 @@ class EmundusViewApplication extends JViewLegacy{
 		$current_menu  = $menu->getActive();
 		$access=!empty($current_menu)?$current_menu->access : 0;
 		
-		if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) die("ACCESS_DENIED");
+		if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) 
+			die("ACCESS_DENIED");
 
 		$menu_params = $menu->getParams($current_menu->id);
 
-		$campaign_id = JRequest::getVar('campaign_id', null, 'GET', 'none', 0);
-		$rowid = JRequest::getVar('rowid', null, 'GET', 'none', 0);
-		$aid = JRequest::getVar('sid', null, 'GET', 'none', 0);
-		$student = JFactory::getUser($aid);
+		$campaign_id 	= JRequest::getVar('campaign_id', null, 'GET', 'none', 0);
+		$rowid 			= JRequest::getVar('rowid', null, 'GET', 'none', 0);
+		$aid 			= JRequest::getVar('sid', null, 'GET', 'none', 0);
+		$student 		= JFactory::getUser($aid);
 
 		$this->assignRef('student', $student);
 		$this->assignRef('current_user', $this->_user);
-
 
 		$profile = JUserHelper::getProfile($aid);
 		$this->assignRef('profile', $profile->emundus_profile);
@@ -107,7 +107,7 @@ class EmundusViewApplication extends JViewLegacy{
 		$this->assignRef('email', $email);
 
 		//Evaluation
-		if($this->_user->profile==16)
+		if ($this->_user->profile==16)
 			$options = array('view');
 		else
 			$options = array('add', 'edit', 'delete');

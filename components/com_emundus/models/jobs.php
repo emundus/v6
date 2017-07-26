@@ -188,11 +188,10 @@ class EmundusModelJobs extends JModelList
 	{
         $user = JFactory::getUser();
 		$config = JFactory::getConfig();
-		//$tzoffset = SMARTFOOTBALLGAME_JVERSION == '30' ? $config->get('offset') : $config->get('config.offset');
         
 		// Get the application date and set it to the timezone defined in settings
         $jdate = JFactory::getDate();
-        $jdate->setTimezone($config->get('offset'));
+        $jdate->setOffset($config->getValue('offset'));
         $now = $jdate->toSql();
 
 		// Create a new query object.

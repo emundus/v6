@@ -686,7 +686,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
     public function getformelem()
     {
-         //Filters
+        //Filters
         $model = $this->getModel('Evaluation');
         $defaultElements = $model->getEvaluationElementsName(0, 0);
         //var_dump($defaultElements);die();
@@ -989,7 +989,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
             $col = explode('.', $col);
             switch ($col[0]) {
                 case "photo":
-                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($model, JURI::base());
+                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos();
                     break;
                 case "forms":
                     $colOpt['forms'] = $modelApp->getFormsProgress(null, null, $fnums);
@@ -1304,7 +1304,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
             switch ($col[0])
             {
                 case "photo":
-                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($model, JURI::base());
+                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos();
                     break;
                 case "forms":
                     $colOpt['forms'] = $modelApp->getFormsProgress(null, null, $fnums);

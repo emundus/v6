@@ -209,7 +209,7 @@ class EmundusViewFiles extends JViewLegacy
 					    switch ($col[0])
 					    {
 						    case 'photos':
-							    $colsSup['photos'] = @EmundusHelperFiles::getPhotos($model, JURI::base());
+							    $colsSup['photos'] = @EmundusHelperFiles::getPhotos();
 							    $datas[0]['PHOTOS'] = JText::_('PHOTOS');
 							    break;
 						    case 'evaluators':

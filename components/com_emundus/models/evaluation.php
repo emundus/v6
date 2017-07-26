@@ -259,6 +259,7 @@ class EmundusModelEvaluation extends JModelList
     public function getEvaluationElementsName($show_in_list_summary=1, $hidden=0)
     {
         $session = JFactory::getSession();
+		$h_list = new EmundusHelperList;
 
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getString('cfnums', null);
@@ -269,7 +270,7 @@ class EmundusModelEvaluation extends JModelList
             //$element_id = array();
             $filt_params = $session->get('filt_params');
             if (count(@$filt_params['programme'])>0) {
-                foreach ($filt_params['programme'] as $value) {
+                foreach (array_unique($filt_params['programme']) as $value) {
                     $groups = $this->getGroupsEvalByProgramme($value);
                     if (empty($groups)) {
                         $eval_elt_list = array();
@@ -278,7 +279,7 @@ class EmundusModelEvaluation extends JModelList
                         if (count($eval_elt_list)>0) {
                             foreach ($eval_elt_list as $eel) {
                                 if(isset($eel->element_id) && !empty($eel->element_id))
-                                    $elements[] = EmundusHelperList::getElementsDetailsByID($eel->element_id);
+                                    $elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
                             }
                         }
                     }

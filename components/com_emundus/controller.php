@@ -160,7 +160,7 @@ class EmundusController extends JControllerLegacy {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 
         $current_user = JFactory::getSession()->get('emundusUser');
-        if(!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
             die( JText::_('RESTRICTED_ACCESS') );
 
         $jinput = JFactory::getApplication()->input;
@@ -173,7 +173,7 @@ class EmundusController extends JControllerLegacy {
         $fnums_post = (array) json_decode(stripslashes($fnums_post));
         $model = $this->getModel('Files');
         
-        if(!is_array($fnums_post) || count($fnums_post) == 0 || @$fnums_post[0] == "all") {
+        if (!is_array($fnums_post) || count($fnums_post) == 0 || @$fnums_post[0] == "all") {
             $fnums = $model->getAllFnums();
         } else {
             $fnums = array();
@@ -182,8 +182,8 @@ class EmundusController extends JControllerLegacy {
             }
         }
         $validFnums  = array();
-        foreach($fnums as $fnum) {
-            if(EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum)) {
+        foreach ($fnums as $fnum) {
+            if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum)) {
                 $validFnums[] = $fnum;
             }
         }
@@ -194,14 +194,14 @@ class EmundusController extends JControllerLegacy {
             if (is_numeric($fnum) && !empty($fnum)) {
                 $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post);
             
-                if($doc_post) {
+                if ($doc_post) {
                     $tmpArray = array();
                     $model = $this->getModel('application');
                     $files = $model->getAttachmentsByFnum($fnum);
 
                     EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
                 }
-                if($eval_post) {
+                if ($eval_post) {
                     EmundusHelperExport::getEvalPDF($files_list,$fnum);
                 }
             }

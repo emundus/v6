@@ -471,6 +471,7 @@ class EmundusModelProfile extends JModelList
 		$users 			= new EmundusModelUsers;
 		$current_user 	= JFactory::getUser($user_id);
 		$profile 		= $this->getProfileByApplicant($current_user->id);
+		$emundus_user 	= new stdClass();
 		foreach ($current_user as $key => $value) {
 			$emundus_user->{$key} = $value;
 		}

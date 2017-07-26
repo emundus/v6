@@ -1,1 +1,1 @@
-define(['jquery', 'fab/list-plugin'], function (jQuery, FbListPlugin) {var FbListSu_copy_fiche_emplois=new Class({Extends:FbListPlugin,initialize:function(a){this.parent(a)}});	return FbListSu_copy_fiche_emplois;});
+var FbListSu_copy_fiche_emplois=new Class({Extends:FbListPlugin,initialize:function(a){this.parent(a)}});
