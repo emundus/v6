@@ -14,13 +14,12 @@ defined( '_JEXEC' ) or die();
  */
 
 jimport('joomla.log.log');
-JLog::addLogger(
-    array(
+JLog::addLogger([
         // Sets file name
         'text_file' => 'com_emundus.copy.php'
-    ),
+	],
     JLog::ALL,
-    array('com_emundus')
+    ['com_emundus']
 );
 
 $user 	= JFactory::getUser();
@@ -30,13 +29,14 @@ $db   	= JFactory::getDBO();
 $jinput = $app->input;
 $itemid = $jinput->get('Itemid'); 
 
-$fnum_from = $formModel->getElementData('jos_emundus_campaign_candidature___fnum', true);
-$campaign_id = $formModel->getElementData('jos_emundus_campaign_candidature___campaign_id', true);
-$campaign_id = is_array($campaign_id) ? $campaign_id[0] : $campaign_id;
-$copied = $formModel->getElementData('jos_emundus_campaign_candidature___copied', true);
-$applicant_id = $formModel->getElementData('jos_emundus_campaign_candidature___applicant_id', true);
-$status = $formModel->getElementData('jos_emundus_campaign_candidature___status', true);
-$status = is_array($status) ? $status[0] : $status;
+$fnum_from 		= $formModel->getElementData('jos_emundus_campaign_candidature___fnum', true);
+$campaign_id 	= $formModel->getElementData('jos_emundus_campaign_candidature___campaign_id', true);
+$campaign_id 	= is_array($campaign_id) ? $campaign_id[0] : $campaign_id;
+$copied 		= $formModel->getElementData('jos_emundus_campaign_candidature___copied', true);
+$copied 		= is_array($copied) ? $copied[0] : $copied;
+$applicant_id 	= $formModel->getElementData('jos_emundus_campaign_candidature___applicant_id', true);
+$status 		= $formModel->getElementData('jos_emundus_campaign_candidature___status', true);
+$status 		= is_array($status) ? $status[0] : $status;
 
 // create new fnum
 $fnum_to = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($applicant_id, 7, '0', STR_PAD_LEFT);
@@ -44,10 +44,10 @@ $fnum_to = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($a
 
 // 1. Get definition of fnum_from
 if ($copied == 1) {
-	try
-	{
+	
+	try {
 		$query = 'SELECT * FROM #__emundus_campaign_candidature WHERE fnum like '.$db->Quote($fnum_from);
-		$db->setQuery( $query );
+		$db->setQuery($query);
 		$application_file = $db->loadAssoc();
 
 		if (count($application_file) > 0) {
@@ -74,29 +74,35 @@ if ($copied == 1) {
 		
 		$result = EmundusModelApplication::copyApplication($fnum_from, $fnum_to, $pid);
 
-		if ($result) {
+		if ($result)
 			$result = EmundusModelApplication::copyDocuments($fnum_from, $fnum_to, $pid);
-		}
 
 // 4. Duplicate attachment for new fnum
 // TODO
-	}
-	catch(Exception $e)
-	{
+	
+	} catch(Exception $e) {
 	    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 	    JLog::add($error, JLog::ERROR, 'com_emundus');
 	}
 	
+} elseif ($copied == 2) {
+
+	// Move the file to another campaign
+	include_once(JPATH_SITE.'/components/com_emundus/models/application.php');
+	$m_application = new EmundusModelApplication;
+
+	$m_application->moveApplication($fnum_from, $fnum_to, $campaign_id);
+
 } else {
-	try
-	{
+	
+	try {
+
 		$query = 'INSERT INTO #__emundus_campaign_candidature (`applicant_id`, `user_id`, `campaign_id`, `submitted`, `date_submitted`, `cancelled`, `fnum`, `status`, `published`, `copied`) 
 					VALUES ('.$applicant_id.', '.$user->id.', '.$campaign_id.', 0, NULL, 0, '.$db->Quote($fnum_to).', 0, 1, 0)';
-		$db->setQuery( $query );
+		$db->setQuery($query);
 		$db->execute();
-	}
-	catch(Exception $e)
-	{
+	
+	} catch(Exception $e) {
 	    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 	    JLog::add($error, JLog::ERROR, 'com_emundus');
 	}

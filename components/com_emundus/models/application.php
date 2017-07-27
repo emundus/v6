@@ -2109,6 +2109,42 @@ td {
         }
     }
 
+
+    /**
+     * Move an application file from one programme to another
+     * @param $fnum_from    the fnum of the source
+     * @param $fnum_to      the fnum of the moved application
+     * @param $campaign     the programme id to move the file to
+     * @return bool
+     */
+    public function moveApplication($fnum_from, $fnum_to, $campaign) {
+        $db = JFactory::getDbo();
+        
+        try {
+        
+            $query = 'SELECT * FROM #__emundus_campaign_candidature cc WHERE fnum like ' . $db->Quote($fnum_from);
+            $db->setQuery($query);
+            $cc_line = $db->loadAssoc();
+
+            if (count($cc_line) > 0) {
+                
+                $query = 'UPDATE #__emundus_campaign_candidature SET `fnum` = '. $db->Quote($fnum_to) .', `campaign_id` = '. $db->Quote($campaign) .', `copied` = 2 WHERE `id` = ' . $db->Quote($cc_line['id']);
+                $db->setQuery($query);
+                $db->execute();
+            
+            } else return false;
+        
+        } catch (Exception $e) {
+
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        
+        }
+
+        return true;
+    }
+
     /**
      * Duplicate an application file (form data)
      * @param $fnum_from      the fnum of the source
