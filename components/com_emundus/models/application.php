@@ -1102,7 +1102,6 @@ class EmundusModelApplication extends JModelList
                         $forms .= '</h4>';
                         
                         if ($itemg->repeated == 0 && $itemg->repeated_1 == 0) {
-                            
                             foreach($elements as &$iteme) {
                                 
                                 $query = 'SELECT `id`, `'.$iteme->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
