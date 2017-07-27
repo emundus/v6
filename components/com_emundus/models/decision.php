@@ -247,16 +247,10 @@ class EmundusModelDecision extends JModelList
      * @param 	  string code of the programme
      * @return    string list of Fabrik element ID used in evaluation form
      **/
-    public function getAllDecisionElements($show_in_list_summary=1, $programme_code)
-    {
+    public function getAllDecisionElements($show_in_list_summary=1, $programme_code) {
         $session = JFactory::getSession();
 
-        //$jinput = JFactory::getApplication()->input;
-        //$fnums = $jinput->getString('cfnums', null);
-
-        if ($session->has('filt_params'))
-        {
-            //var_dump($session->get('filt_params'));
+        if ($session->has('filt_params')) {
             $elements_id = array();
             $filt_params = $session->get('filt_params');
 
@@ -274,7 +268,7 @@ class EmundusModelDecision extends JModelList
                         }
                     }
                 }
-            } else{
+            } else {
                 $groups = $this->getGroupsDecisionByProgramme($programme_code);
                 if (!empty($groups)) {
                     $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary

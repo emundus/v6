@@ -144,7 +144,7 @@ class EmundusViewDecision extends JViewLegacy
 						switch ($col[0])
 						{
 							case 'photos':
-								$colsSup['photos'] = @EmundusHelperFiles::getPhotos($decision, JURI::base());
+								$colsSup['photos'] = @EmundusHelperFiles::getPhotos();
 								$datas[0]['PHOTOS'] = JText::_('PHOTOS');
 								break;
 							case 'evaluators':

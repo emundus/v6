@@ -114,7 +114,7 @@ foreach ($recipients as $key => $recipient) {
         $is_uploaded = $db->loadResult();
 
         if ($is_uploaded == 0) {
-            $key = md5($time_date.$fnum.$student_id.$attachment_id.rand(10));
+            $key = md5(date().$fnum.$student_id.$attachment_id.rand(100));
             // 2. MAJ de la table emundus_files_request
             $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum, email) 
                           VALUES (NOW(), '.$student->id.', "'.$key.'", "'.$attachment_id.'", '.$current_user->fnum.', '.$db->Quote($recipient['email']).')';

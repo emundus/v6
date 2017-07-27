@@ -954,7 +954,7 @@ class EmundusControllerDecision extends JControllerLegacy
             $col = explode('.', $col);
             switch ($col[0]) {
                 case "photo":
-                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($model, JURI::base());
+                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos();
                     break;
                 case "forms":
                     $colOpt['forms'] = $modelApp->getFormsProgress(null, null, $fnums);
@@ -1268,7 +1268,7 @@ class EmundusControllerDecision extends JControllerLegacy
             switch ($col[0])
             {
                 case "photo":
-                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($model, JURI::base());
+                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos();
                     break;
                 case "forms":
                     $colOpt['forms'] = $modelApp->getFormsProgress(null, null, $fnums);

@@ -2,7 +2,7 @@
 <extension type="package" version="3.6" method="upgrade">
 	<name>pkg_weblinks</name>
 	<packagename>weblinks</packagename>
-	<creationDate>2017-03-08</creationDate>
+	<creationDate>December 2012</creationDate>
 	<packager>Joomla! Project</packager>
 	<copyright>(C) 2005 - 2017 Open Source Matters. All rights reserved.</copyright>
 	<packageremail>admin@joomla.org</packageremail>
@@ -10,10 +10,9 @@
 	<author>Joomla! Project</author>
 	<authorEmail>admin@joomla.org</authorEmail>
 	<authorUrl>www.joomla.org</authorUrl>
-	<version>3.6.0</version>
-	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<version>3.4.1</version>
+	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
 	<description>PKG_WEBLINKS_XML_DESCRIPTION</description>
-	<scriptfile>script.php</scriptfile>
 	<files>
 		<!-- The id for each extension is the element stored in the DB -->
 		<file type="component" id="com_weblinks">com_weblinks.zip</file>

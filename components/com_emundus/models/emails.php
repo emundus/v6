@@ -396,7 +396,7 @@ class EmundusModelEmails extends JModelList
                         $db->setQuery($query);
                         $result = $db->loadResult();
                     } catch (Exception $e) {
-                        $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+                        $error = JUri::getInstance().' :: USER ID : '.$user_id.'\n -> '.$e->getMessage();
                         JLog::add($error, JLog::ERROR, 'com_emundus');
 
                         $result = "";

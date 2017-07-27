@@ -213,6 +213,36 @@ class EmundusHelperExport
         return $tmpName;
     }
 
+	public static function getAdmissionPDF($fnum) {
+        $user = JFactory::getUser();
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id))
+            die(JText::_('ACCESS_DENIED'));
+
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+
+        $m_profile = new EmundusModelProfile();
+        $m_campaign = new EmundusModelCampaign();
+
+        $name 		= $fnum.'-admission.pdf';
+        $tmpName 	= JPATH_BASE.DS.'tmp'.DS.$name;
+
+        if (!empty($fnum)) {
+            $candidature = $m_profile->getFnumDetails($fnum);
+            $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
+        }
+
+        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_admission_'.$campaign['training'].'.php';
+
+        if (!file_exists($file))
+            $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_admission.php';
+
+        require_once($file);
+        pdf_admission($user->id, $fnum, false, $tmpName);
+
+        return $tmpName;
+    }
+
 	public static function makePDF($fileName, $ext, $aid)
 	{
 		require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');

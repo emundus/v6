@@ -37,15 +37,19 @@ class EmundusViewExport_select_columns extends JViewLegacy
 	
     function display($tpl = null) {
 
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
+
         $jinput = JFactory::getApplication()->input;
         $prg    = $jinput->get('code', null);
         $view   = $jinput->get('viewcall', null);
-        $code   = array();
-        $code[] = $prg;
+        $form   = $jinput->get('form', null);
+        
+        $code       = array();
+        $code[]     = $prg;
 		
         $current_user = JFactory::getUser();
 
-        if ($view == "evaluation") {
+        if ($view == "evaluation" || $form == "decision" || $form == "admission") {
             $session = JFactory::getSession();
             $params['programme'] = $code;
             $session->set('filt_params', $params);
@@ -54,10 +58,18 @@ class EmundusViewExport_select_columns extends JViewLegacy
         if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
             die(JText::_('ACCESS_DENIED'));
 
-        //@TODO fix bug when a different application form is created for the same programme. Need to now the campaign id, then associated profile and menu links...
-		$elements = EmundusHelperFiles::getElements($code);
-		$this->assignRef('elements', $elements);
+        $m_admission = new EmundusModelAdmission;
 
+        //@TODO fix bug when a different application form is created for the same programme. Need to now the campaign id, then associated profile and menu links...
+        if ($form == "decision")
+            $elements = $m_admission->getAdmissionElementsName(1, 1);
+        elseif ($form == "admission")
+            $elements = $m_admission->getApplicantAdmissionElementsName(0, 0);        
+        else
+		    $elements = EmundusHelperFiles::getElements($code);
+		
+        $this->assignRef('elements', $elements);
+        $this->assignRef('form', $form);
 		parent::display($tpl);
     }
 }
