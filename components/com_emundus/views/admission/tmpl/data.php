@@ -89,7 +89,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 											<?php echo strip_tags($value->val); ?>
 										<?php elseif ($value->type == 'textarea') :?>
 											<textarea rows="4" cols="2" id="<?php echo $cfnum.'-'.$value->id; ?>"><?php echo $value->val ?></textarea>
-											<span class="glyphicon glyphicon-floppy-disk em-textarea" id="<?php echo $cfnum.'-'.$value->id.'-span'; ?>" aria-hidden="true" style="color:black;"></span>
+											<span class="glyphicon glyphicon-share-alt em-textarea" id="<?php echo $cfnum.'-'.$value->id.'-span'; ?>" aria-hidden="true" style="color:black;"></span>
 										<?php elseif ($value->type == 'date') :?>
 											<h5 class="em-date">
 												<strong>
@@ -114,7 +114,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 											<?php endif; ?>
 										<?php elseif ($value->type == 'field'):?>
 											<input class="admission_input" type="text" id="<?php echo $cfnum.'-'.$value->id; ?>" name="<?php echo $value->val ?>" value="<?php echo $value->val ?>"></input>
-											<span class="glyphicon glyphicon-floppy-disk em-field" id="<?php echo $cfnum.'-'.$value->id.'-span'; ?>" aria-hidden="true" style="color:black;"></span>
+											<span class="glyphicon glyphicon-share-alt em-field" id="<?php echo $cfnum.'-'.$value->id.'-span'; ?>" aria-hidden="true" style="color:black;"></span>
 										<?php else :?>
 											<?php echo $value->val; ?>
 										<?php endif; ?>

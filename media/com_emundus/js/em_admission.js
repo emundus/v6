@@ -33,7 +33,7 @@ function updateText(id, text) {
     console.log('text');
 
 
-    $('span#' + tmp[0]+'-'+tmp[1] + '-span').addClass('glyphicon-refresh').removeClass('glyphicon-floppy-disk');
+    $('span#' + tmp[0]+'-'+tmp[1] + '-span').addClass('glyphicon-refresh').removeClass('glyphicon-share-alt');
 
     $.ajax({
         type: "POST",
@@ -45,7 +45,7 @@ function updateText(id, text) {
             value: text
         }),
         success: function (res) {
-            $('span#' + tmp[0]+'-'+tmp[1] + '-span').addClass('glyphicon-floppy-disk').removeClass('glyphicon-refresh').css('color', 'black');
+            $('span#' + tmp[0]+'-'+tmp[1] + '-span').addClass('glyphicon-share-alt').removeClass('glyphicon-refresh').css('color', 'black');
         },
         error: function (jqXHR, textStatus, errorThrown) {
             $('span#' + tmp[0]+'-'+tmp[1] + '-span').addClass('glyphicon-warning-sign').removeClass('glyphicon-refresh').css('color', 'orange');
