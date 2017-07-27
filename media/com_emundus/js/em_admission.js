@@ -78,9 +78,6 @@ function toggleRadio(id) {
     
     } else {
 
-        if ($('#' + id).hasClass('glyphicon-warning-sign-circle'))
-            $('#' + id).addClass('glyphicon-refresh').removeClass('glyphicon-warning-sign-circle').css('color', 'black');
-        else
             $('#' + id).addClass('glyphicon-refresh').removeClass('glyphicon-warning-sigg').css('color', 'black');
     
     }
