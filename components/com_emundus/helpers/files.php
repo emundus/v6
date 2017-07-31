@@ -1816,6 +1816,7 @@ class EmundusHelperFiles
         } else {
             $fnumInfo = $files->getFnumInfos($fnums[1]);
         }
+
         $element_id = $evaluation->getAllEvaluationElements(1, $fnumInfo['training']);
         $elements = @EmundusHelperFiles::getElementsName(implode(',',$element_id));
         $evaluations = $files->getFnumArray($fnums, $elements);
@@ -1869,6 +1870,9 @@ class EmundusHelperFiles
                     $str = str_replace('&nbsp;', ' ', $str);
                     $str = strip_tags($str, '<h1>');
                 }
+
+                if ($format == "simple")
+                    $str = $eval['label'].' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.JFactory::getUser($eval['jos_emundus_evaluations___user_raw'])->name;
 
                 $data[$eval['fnum']][$eval['jos_emundus_evaluations___user_raw']] = $str;
 

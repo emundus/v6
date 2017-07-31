@@ -38,6 +38,25 @@ JFactory::getSession()->set('application_layout', 'evaluation');
         </div>
         <div class="panel-body">
             <div class="content">
+                <?php if (count($this->evaluation_select) > 0):?>
+                    <label for="copy_evaltuations"><?php echo JText::_('PICK_EVAL_TO_COPY'); ?></label>
+                    <select id="copy_evaluations">
+                        <option value="0" selected><?php echo JText::_('PICK_EVAL_TO_COPY'); ?></option>
+                        <?php
+                            foreach ($this->evaluation_select as $eval) {
+                                foreach ($eval as $fnum => $evaluators) {
+                                    foreach ($evaluators as $evaluator_id => $title) {
+                                        echo "<option value='".$fnum."-".$evaluator_id."'>".$title."</option>";
+                                    }
+                                }
+                            }
+                        ?>
+                    </select>
+                <?php endif; ?>
+                <a id="formCopyButton" href='#' style="display: none;">
+                    <div class="btn button copyForm">Copy</div>
+                </a>
+                <div id="formCopy"></div>
                 <div class="form" id="form">
                     <?php if(!empty($this->url_form)):?>
                         <div class="holds-iframe"><?php echo JText::_('LOADING'); ?></div>
@@ -83,6 +102,71 @@ JFactory::getSession()->set('application_layout', 'evaluation');
             }
         });
     }
+
+    $('#copy_evaluations').on('change', function() {
+        if (this.value != 0) {
+            
+            var tmp = this.value.split('-');
+            var fnum = tmp[0];
+            var evaluator = tmp[1];
+            
+            $.ajax({
+               type: 'GET',
+               url: 'index.php?option=com_emundus&controller=evaluation&task=getevalcopy&format=raw&fnum='+fnum+'&evaluator='+evaluator,
+               success: function(result) {
+                   result = JSON.parse(result);
+
+                    if (result.status) {
+                    
+                        $('#formCopy').html(result.evaluation);
+                        $('#formCopyButton').show();
+                        $('div.copyForm').attr('id', result.formID);
+
+                    }
+
+               },
+               error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR.responseText);
+                }
+            });
+        } else {
+            $('#formCopy').html(null);
+            $('#formCopyButton').hide();
+        }
+    });
+
+    $('#formCopyButton').on('click', function(e) {
+        e.preventDefault();
+
+        // ID of form we are copying from
+        var fromID = $('div.copyForm').attr('id');
+        // ID of form we are copying to
+        var toID = $("#iframe").contents().find(".fabrikHiddenFields").find('[name="rowid"]').val(),
+            fnum = $("#iframe").contents().find('#jos_emundus_evaluations___fnum').val(),
+            student_id = parseInt(fnum.substr(-5),10);
+
+        console.log("from:" + fromID + " to: " + toID);
+
+        $.ajax({
+            type: 'POST',
+            url: 'index.php?option=com_emundus&controller=evaluation&task=copyeval',
+            data: {
+                from: fromID,
+                to: toID,
+                fnum: fnum,
+                student: student_id
+            },
+            success: function(result) {
+                if (result.status)
+                    console.log("COPY DONE! :D");
+                else
+                    console.log("COPY FAILED! D:")
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log("error");
+            }
+        })
+    });
 
     /*
 

@@ -1391,36 +1391,34 @@ $(document).ready(function()
 //
 // Menu action
 //
-    $(document).on('click', '.em-actions', function(e)
-    {
+    $(document).on('click', '.em-actions', function(e) {
+
         $.ajaxQ.abortAll();
         e.preventDefault();
+        
         var id = parseInt($(this).attr('id'));
+        
         $('#em-modal-actions').modal({backdrop:true,keyboard:true},'toggle');
         $('.modal-title').empty();
         $('.modal-title').append($(this).children('a').text());
         $('.modal-body').empty();
-        if($('.modal-dialog').hasClass('modal-lg'))
-        {
+
+        if ($('.modal-dialog').hasClass('modal-lg'))
             $('.modal-dialog').removeClass('modal-lg');
-        }
+        
         $('.modal-body').attr('act-id', id);
         $('.modal-footer').show();
-        $('.modal-lg').css({
-            width: '80%'
-        });
-        $('.modal-dialog').css({
-            width: '80%'
-        });
+        $('.modal-lg').css({ width: '80%' });
+        $('.modal-dialog').css({ width: '80%' });
 
         var fnum = $(this).attr('id').split('_')[0];
         var cid = parseInt(fnum.substr(14, 7));
         var sid = parseInt(fnum.substr(21, 7));
 
-        if($('#em-check-all-all').is(':checked')) {
+        if ($('#em-check-all-all').is(':checked')) {
             var fnums = 'all';
-        }
-        else {
+        } else {
+
             var fnums = [];
             $('.em-check:checked').each(function() {
                 fnum = $(this).attr('id').split('_')[0];
@@ -1428,7 +1426,9 @@ $(document).ready(function()
                 sid = parseInt(fnum.substr(21, 7));
                 fnums.push({fnum: fnum, cid: cid, sid:sid});
             });
+        
         }
+        
         fnums = JSON.stringify(fnums);
         fnums = encodeURIComponent(fnums);
 
@@ -1444,10 +1444,8 @@ $(document).ready(function()
             async: false,
             success: function(result)
             {
-                if(result.status)
-                {
+                if (result.status)
                     formid = result.formid;
-                }
             },
             error: function (jqXHR, textStatus, errorThrown)
             {

@@ -146,6 +146,10 @@ class EmundusViewApplication extends JViewLegacy
                 
 				case 'evaluation':
                     if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id, $fnum)) {
+
+						$params = JComponentHelper::getParams('com_emundus');
+						$can_copy_evaluations = $params->get('can_copy_evaluations', 0);
+
                         $this->student = JFactory::getUser(intval($fnumInfos['applicant_id']));
                         $evaluation = new EmundusModelEvaluation();
                         $myEval = $evaluation->getEvaluationsFnumUser($fnum, $this->_user->id);
@@ -181,6 +185,39 @@ class EmundusViewApplication extends JViewLegacy
                             $this->url_evaluation = '';
                             $this->url_form = '';
                         }
+
+						// This means that a previous evaluation of this user on any other programme can be copied to this one
+						if ($can_copy_evaluations == 1) {
+							
+							if (EmundusHelperAccess::asAccessAction(1, 'u', JFactory::getUser()->id, $fnum) || EmundusHelperAccess::asAccessAction(5, 'c', JFactory::getUser()->id, $fnum)) {
+							
+								$m_evaluation 	= new EmundusModelEvaluation;
+								$h_files 		= new EmundusHelperFiles;
+								$eval_fnums 	= array();
+								$evals 			= array();
+
+								// Gets all evaluations of this student
+								$user_evaluations = $m_evaluation->getEvaluationsByStudent($this->student->id);
+
+								foreach ($user_evaluations as $ue) {
+									$eval_fnums[] = $ue->fnum;
+								}
+
+								// Evaluation fnums need to be made unique as it is possible to have multiple evals on one fnum by different people
+								$eval_fnums = array_unique($eval_fnums);
+								
+								// Gets a title for the dropdown menu that is sorted like ['fnum']->['evaluator_id']->title
+								foreach ($eval_fnums as $eval_fnum) {
+									$evals[] = $h_files->getEvaluation('simple',$eval_fnum);
+								}
+
+								$this->assignRef('evaluation_select', $evals);
+							
+							} else {
+								echo JText::_("RESTRICTED_ACCESS");
+                        		exit();
+							}
+						}
 
                         $this->campaign_id = $fnumInfos['campaign_id'];
                         //$this->assignRef('student', $student);

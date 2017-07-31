@@ -133,19 +133,19 @@ class EmundusViewEvaluation extends JViewLegacy
 			    $this->assignRef('form_url_edit', $form_url_edit);
 			    //$form_url_add  = 'index.php?option=com_fabrik&c=form&view=form&formid=29&tableid=31&rowid=&jos_emundus_evaluations___student_id[value]=2778&jos_emundus_evaluations___campaign_id[value]=55&jos_emundus_evaluations___fnum[value]=2014092516382300000550002778&student_id=2778&tmpl=component&iframe=1';
 
-				if(!empty($users))
-				{
+				if (!empty($users)) {
+					
 					//$i = 1;
 					$taggedFile = $evaluation->getTaggedFile();
-					foreach($columnSupl as $col)
-					{
+					foreach ($columnSupl as $col) {
 						$col = explode('.', $col);
-						switch ($col[0])
-						{
+						switch ($col[0]) {
+
 							case 'photos':
 								$colsSup['photos'] = @EmundusHelperFiles::getPhotos();
 								$datas[0]['PHOTOS'] = JText::_('PHOTOS');
 								break;
+							
 							case 'evaluators':
 								$datas[0]['EVALUATORS'] = JText::_('EVALUATORS');
 								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $evaluation);
@@ -154,85 +154,82 @@ class EmundusViewEvaluation extends JViewLegacy
 					}
 
 					$i = 0;
-					foreach ($users as $user)
-					{
+					foreach ($users as $user) {
 						$usObj = new stdClass();
 						$usObj->val = 'X';
 						$line = array('check' => $usObj);
-						if(array_key_exists($user['fnum'], $taggedFile))
-						{
+						
+						if (array_key_exists($user['fnum'], $taggedFile)) {
+						
 							$class = $taggedFile[$user['fnum']]['class'];
 							$usObj->class = $taggedFile[$user['fnum']]['class'];
-						}
-						else
-						{
+						
+						} else {
 							$class = null;
 							$usObj->class = null;
-
 						}
-						foreach ($user as  $key => $value)
-						{
+						
+						foreach ($user as  $key => $value) {
 							$userObj = new stdClass();
 
-							if ($key == 'fnum')
-							{
+							if ($key == 'fnum') {
+
 								$userObj->val = $value;
 								$userObj->class = $class;
 								$userObj->type = 'fnum';
 								$line['fnum'] = $userObj;
-							}
-							elseif ($key == 'name') {
+							
+							} 
+							
+							elseif ($key == 'name' || $key == 'status_class' || $key == 'step')
 						    	continue;
-						    }
-						    elseif ($key == 'status_class') {
-                                continue;
-                            }
-                            elseif ($key == 'step') {
-                                continue;
-                            }
+
 							elseif ($key == 'evaluator') {
+								
 								if ($formid > 0 && !empty($value)) {
-									if ($evaluators_can_see_other_eval) {
+								
+									if ($evaluators_can_see_other_eval)
 										$link_view = '<a href="'.$form_url_view.$user['evaluation_id'].'" data-toggle="modal" data-target="#basicModal" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'"><span class="glyphicon icon-eye-open" title="'.JText::_('DETAILS').'">  </span></a>';
-									}
-									if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) { 
+								
+									if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) 
 										$link_edit = '<a href="'.$form_url_edit.$user['evaluation_id'].'" target="_blank"><span class="glyphicon icon-edit" title="'.JText::_('EDIT').'"> </span></a>';
-									}
+								
 									$userObj->val = @$link_view.' '.@$link_edit.' '.$value;
-								}
-								else
-									$userObj->val = $value;
+								
+								} else $userObj->val = $value;
 
 								$userObj->type = 'html';
 								$line['evaluator'] = $userObj;
-							}
-							else
-							{
+							
+							} else {
+
 								$userObj->val = $value;
 								$userObj->type = 'text';
 								$userObj->status_class = $user['status_class'];
 								$line[$key] = $userObj;
+							
 							}
-						}
-						if (count(@$colsSup)>0)
-						{
-							foreach($colsSup as $key => $obj)
-							{
+						
+						} if (count(@$colsSup) > 0) {
+							
+							foreach ($colsSup as $key => $obj) {
+								
 								$userObj = new stdClass();
-								if (!is_null($obj))
-								{
-									if(array_key_exists($user['fnum'], $obj))
-									{
+								if (!is_null($obj)) {
+									
+									if(array_key_exists($user['fnum'], $obj)) {
+
 										$userObj->val = $obj[$user['fnum']];
 										$userObj->type = 'html';
 										$userObj->fnum = $user['fnum'];
 										$line[JText::_(strtoupper($key))] = $userObj;
-									}
-									else
-									{
+									
+									} else {
+
 										$userObj->val = '';
 										$userObj->type = 'html';
 										$line[$key] = $userObj;
+									
 									}
 								}
 							}
@@ -241,11 +238,7 @@ class EmundusViewEvaluation extends JViewLegacy
 						$i++;
 					}
 
-				}
-			    else
-			    {
-				    $datas = JText::_('NO_RESULT');
-			    }
+				} else $datas = JText::_('NO_RESULT');
 
 
 			/* Get the values from the state object that were inserted in the model's construct function */

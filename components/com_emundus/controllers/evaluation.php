@@ -46,8 +46,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
     public function display($cachable = false, $urlparams = false)
     {
         // Set a default view if none exists
-        if ( ! JRequest::getCmd( 'view' ) )
-        {
+        if (!JRequest::getCmd( 'view' )){
             $default = 'files';
             JRequest::setVar('view', $default );
         }
@@ -71,26 +70,22 @@ class EmundusControllerEvaluation extends JControllerLegacy
     public function setfilters()
     {
 
-        $jinput = JFactory::getApplication()->input;
+        $jinput     = JFactory::getApplication()->input;
         $filterName = $jinput->getString('id', null);
-        $elements = $jinput->getString('elements', null);
-        $multi = $jinput->getString('multi', null);
+        $elements   = $jinput->getString('elements', null);
+        $multi      = $jinput->getString('multi', null);
 
         @EmundusHelperFiles::clearfilter();
 
-        if($multi == "true")
-        {
+        if ($multi == "true")
             $filterval = $jinput->get('val', array(), 'ARRAY');
-        }
         else
-        {
             $filterval = $jinput->getString('val', null);
-        }
 
         $session = JFactory::getSession();
         $params = $session->get('filt_params');
 
-        if($elements == 'false')
+        if ($elements == 'false')
         {
             $params[$filterName] = $filterval;
         }
@@ -476,80 +471,68 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
     public function share()
     {
-        $jinput = JFactory::getApplication()->input;
-        $fnums = $jinput->getString('fnums', null);
-        $actions = $jinput->getString('actions', null);
-        $groups = $jinput->getString('groups', null);
-        $evals = $jinput->getString('evals', null);
+        $jinput     = JFactory::getApplication()->input;
+        $fnums      = $jinput->getString('fnums', null);
+        $actions    = $jinput->getString('actions', null);
+        $groups     = $jinput->getString('groups', null);
+        $evals      = $jinput->getString('evals', null);
 
-        $actions = (array) json_decode(stripslashes($actions));
-        $fnums = (array) json_decode(stripslashes($fnums));
+        $actions    = (array) json_decode(stripslashes($actions));
+        $fnums      = (array) json_decode(stripslashes($fnums));
+        
         $model = $this->getModel('Files');
-        if(is_array($fnums))
-        {
+        
+        if (is_array($fnums)) {
+
             $validFnums = array();
-            foreach($fnums as $fnum)
-            {
-                if(EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum))
-                {
+            foreach ($fnums as $fnum) {
+                if (EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum))
                     $validFnums[] = $fnum;
-                }
             }
+            
             unset($fnums);
-            if(!empty($groups))
-            {
+            if (!empty($groups)) {
                 $groups = (array) json_decode(stripslashes($groups));
                 $res = $model->shareGroups($groups, $actions, $validFnums);
             }
 
-            if(!empty($evals))
-            {
+            if (!empty($evals)) {
                 $evals = (array) json_decode(stripslashes($evals));
                 $res = $model->shareUsers($evals, $actions, $validFnums);
             }
 
-            if($res !== false)
-            {
+            if ($res !== false)
                 $msg = JText::_('SHARE_SUCCESS');
-            }
             else
-            {
                 $msg = JText::_('SHARE_ERROR');
-            }
-        }
-        else
-        {
+        
+        } else {
+
             $fnums = $model->getAllFnums();
             $validFnums = array();
-            foreach($fnums as $fnum)
-            {
-                if(EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum))
-                {
+            foreach ($fnums as $fnum) {
+
+                if (EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum))
                     $validFnums[] = $fnum;
-                }
+
             }
+            
             unset($fnums);
-            if($groups !== null)
-            {
+            if ($groups !== null) {
                 $groups = (array) json_decode(stripslashes($groups));
                 $res = $model->shareGroups($groups, $actions, $validFnums);
             }
 
-            if($evals !== null)
-            {
+            if ($evals !== null) {
                 $evals = (array) json_decode(stripslashes($evals));
                 $res = $model->shareUsers($evals, $actions, $validFnums);
             }
 
-            if($res !== false)
-            {
+            if ($res !== false)
                 $msg = JText::_('SHARE_SUCCESS');
-            }
             else
-            {
                 $msg = JText::_('SHARE_ERROR');
 
-            }
         }
         echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
         exit;
@@ -569,81 +552,62 @@ class EmundusControllerEvaluation extends JControllerLegacy
         exit;
     }
 
-    public function updatestate()
-    {
+    public function updatestate() {
         $jinput = JFactory::getApplication()->input;
-        $fnums = $jinput->getString('fnums', null);
-        $state = $jinput->getInt('state', null);
+        $fnums  = $jinput->getString('fnums', null);
+        $state  = $jinput->getInt('state', null);
 
         $fnums = (array) json_decode(stripslashes($fnums));
-        $model = $this->getModel('Files');
-        if(is_array($fnums))
-        {
-            $validFnums = array();
+        
+        $m_files = $this->getModel('Files');
+        
+        if (is_array($fnums)) {
 
-            foreach($fnums as $fnum)
-            {
-                if(EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum))
-                {
+            $validFnums = array();
+            foreach ($fnums as $fnum) {
+                if (EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum))
                     $validFnums[] = $fnum;
-                }
             }
             $res =  $model->updateState($validFnums, $state);
-        }
-        else
-        {
+        
+        } else {
+
             $fnums = $model->getAllFnums();
             $validFnums = array();
-
-            foreach($fnums as $fnum)
-            {
-                if(EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum))
-                {
+            foreach ($fnums as $fnum) {
+                if (EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum))
                     $validFnums[] = $fnum;
-                }
             }
             $res = $model->updateState($validFnums, $state);
 
         }
 
-        if($res !== false)
-        {
+        if ($res !== false)
             $msg = JText::_('STATE_SUCCESS');
-        }
         else
-        {
             $msg = JText::_('STATE_ERROR');
 
-        }
         echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
         exit;
     }
 
-    public function unlinkevaluators()
-    {
+    public function unlinkevaluators() {
         $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->getString('fnum', null);
-        $id = $jinput->getint('id', null);
-        $group = $jinput->getString('group', null);
+        $fnum   = $jinput->getString('fnum', null);
+        $id     = $jinput->getint('id', null);
+        $group  = $jinput->getString('group', null);
 
         $model = $this->getModel('Files');
-        if($group == "true")
-        {
+        
+        if ($group == "true")
             $res = $model->unlinkEvaluators($fnum, $id, true);
-        }
         else
-        {
             $res = $model->unlinkEvaluators($fnum, $id, false);
-        }
 
-        if($res)
-        {
+        if ($res)
             $msg = JText::_('SUCCESS_SUPPR_EVAL');
-        }
         else
-        {
             $msg = JText::_('ERROR_SUPPR_EVAL');
-        }
 
         echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
         exit;
@@ -656,7 +620,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $res = false;
         $fnumInfos = null;
 
-        if($fnum != null)
+        if ($fnum != null)
         {
             $model = $this->getModel('Files');
             $fnumInfos = $model->getFnumInfos($fnum);
@@ -671,8 +635,10 @@ class EmundusControllerEvaluation extends JControllerLegacy
     public function deletefile()
     {
         $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->getString('fnum', null);
+        $fnum   = $jinput->getString('fnum', null);
+        
         $model = $this->getModel('Files');
+        
         if (EmundusHelperAccess::asAccessAction(1, 'd', $this->_user->id, $fnum))
             $res = $model->changePublished($fnum);
         else
@@ -696,38 +662,97 @@ class EmundusControllerEvaluation extends JControllerLegacy
         exit;
     }
 
-    public function send_elements()
-    {
+    // Function called by ajax on views->application->tmpl->evaluation
+    // Gets the elements and their values of an application by fnum and evaluator
+    public function getevalcopy() {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-        $current_user = JFactory::getUser();
-        if( !EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-            die( JText::_('RESTRICTED_ACCESS') );
+        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
+        
+        $user = JFactory::getUser();
+        
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id))
+            die (JText::_('RESTRICTED_ACCESS'));
+
+        $h_files = new EmundusHelperFiles;
+        $m_files = $this->getModel('files');
+        
+        $jinput     = JFactory::getApplication()->input;
+        $fnum       = $jinput->getVar('fnum', null);
+        $evaluator  = $jinput->getVar('evaluator', null);
+
+        if (isset($fnum, $evaluator) && !empty($fnum) && !empty($evaluator)) {
+            
+            $evaluation = $h_files->getEvaluation('html',$fnum);
+            $evaluation = $evaluation[$fnum][$evaluator];
+
+            $form = $m_files->getEvalByFnumAndEvaluator($fnum, $evaluator);
+            $formID = $form[0]['id'];
+
+            $result = ['status' => true, 'evaluation' => $evaluation, 'formID' => $formID];
+
+        } else $result = ['status' => false];
+
+        echo json_encode((object) $result);
+        exit();
+    }
+
+    // Function called by an Ajax script, copies a row in the evaluations table
+    public function copyeval() {
+        $user = JFactory::getUser();
+        
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id))
+            die (JText::_('RESTRICTED_ACCESS'));
 
         $jinput = JFactory::getApplication()->input;
-        $fnums = $jinput->getVar('fnums', null);
-        $fnums = (array) json_decode(stripcslashes($fnums));
-        $model = $this->getModel('Files');
-        if(!is_array($fnums) || count($fnums)==0 || @$fnums===null)
-        {
+        $fromID = $jinput->getVar('from', null);
+        $toID   = $jinput->getVar('to', null);
+        $fnum   = $jinput->getVar('fnum', null);
+        $studID = $jinput->getVar('student', null);
+
+        if (isset($fromID, $fnum) && !empty($fromID) && !empty($fnum)) {
+
+            $m_evaluation = $this->getModel('evaluation');
+            $res = $m_evaluation->copyEvaluation($fromID, $toID, $fnum, $studID, $user->id);
+
+            $result = ['status' => $res];
+
+        } else $result = ['status' => false ];
+
+        echo json_encode((object) $result);
+        exit();
+    }
+
+    public function send_elements() {
+
+        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+        
+        $current_user = JFactory::getUser();
+        
+        if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+            die (JText::_('RESTRICTED_ACCESS'));
+
+        $jinput = JFactory::getApplication()->input;
+        $fnums  = $jinput->getVar('fnums', null);
+        $fnums  = (array) json_decode(stripcslashes($fnums));
+        $model  = $this->getModel('Files');
+        
+        if (!is_array($fnums) || count($fnums)==0 || @$fnums===null)
             $fnums = $model->getAllFnums();
-        }
 
         $validFnums = array();
-        foreach($fnums as $fnum)
-        {
-            if(EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum))
-            {
+        foreach ($fnums as $fnum) {
+            if (EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum))
                 $validFnums[] = $fnum;
-            }
         }
         unset($fnums);
+
         $elts = $jinput->getString('elts', null);
         $elts = (array) json_decode(stripcslashes($elts));
         $objs = $jinput->getString('objs', null);
         $objs = (array) json_decode(stripcslashes($objs));
-        //$elts[] = 2755; // statut Fabrik ID
 
         $name = $this->export_xls($validFnums, $objs, $elts);
+        
         $result = array('status' => true, 'name' => $name);
         echo json_encode((object) $result);
         exit();
@@ -766,7 +791,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $fnum = $jinput->getString('fnum', null);
         $student_id = $jinput->getInt('student_id', $jinput->getInt('user', $this->_user->id));
 
-        if( !EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
+        if (!EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
             die(JText::_('RESTRICTED_ACCESS'));
 
         $m_profile = $this->getModel('profile');

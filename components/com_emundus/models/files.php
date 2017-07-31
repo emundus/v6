@@ -2124,17 +2124,16 @@ where 1 order by ga.fnum asc, g.title';
      * @param $fnums
      * @return bool|mixed
      */
-    public function getEvalsByFnum($fnums)
-    {
-        try
-        {
+    public function getEvalsByFnum($fnums) {
+
+        try {
+
             $db = $this->getDbo();
             $query = 'select * from #__emundus_evaluations where fnum in ("'.implode('","', $fnums).'")';
             $db->setQuery($query);
             return $db->loadAssocList('fnum');
-        }
-        catch(Exception $e)
-        {
+        
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -2157,6 +2156,27 @@ where 1 order by ga.fnum asc, g.title';
             return false;
         }
     }
+
+    /** Gets the evaluation of a user based on fnum and 
+     * @param fnum
+     * @param evaluator_id
+     * @return bool|mixed
+     */
+    public function getEvalByFnumAndEvaluator($fnum, $evaluator_id) {
+        
+        try {
+        
+            $db = $this->getDbo();
+            $query = 'SELECT * FROM #__emundus_evaluations WHERE fnum = '.$fnum.' AND user = '.$evaluator_id;
+            $db->setQuery($query);
+            return $db->loadAssocList();
+        
+        } catch(Exception $e) {
+            return false;
+        }
+    }
+
+    
 
     /**
      * @param $fnums

@@ -322,7 +322,7 @@ class EmundusModelEvaluation extends JModelList
                         }
                     }
                 }
-            } else{
+            } else {
                 $groups = $this->getGroupsEvalByProgramme($programme_code);
                 if (!empty($groups)) {
                     $eval_elt_list = $this->getAllElementsByGroups($groups); // $show_in_list_summary
@@ -370,7 +370,7 @@ class EmundusModelEvaluation extends JModelList
                         }
                     }
                 }
-            } else{
+            } else {
                 $groups = $this->getGroupsDecisionByProgramme($programme_code);
                 if (!empty($groups)) {
                     $eval_elt_list = $this->getAllElementsByGroups($groups); // $show_in_list_summary
@@ -410,33 +410,28 @@ class EmundusModelEvaluation extends JModelList
         $can_be_ordering[] = 'overall';
 
         if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering))
-        {
             return ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
-        }
 
         return '';
     }
 
-	public function multi_array_sort($multi_array = array(), $sort_key, $sort = SORT_ASC)
-	{
-		if (is_array($multi_array))
-		{
-			foreach ($multi_array as $key => $row_array)
-			{
+	public function multi_array_sort($multi_array = array(), $sort_key, $sort = SORT_ASC) {
+
+		if (is_array($multi_array)) {
+			foreach ($multi_array as $key => $row_array) {
+				
 				if (is_array($row_array))
-				{
 					@$key_array[$key] = $row_array[$sort_key];
-				}
 				else
-				{
 					return -1;
-				}
+
 			}
-		} else {
-			return -1;
-		}
+		
+		} else return -1;
+
 		if (!empty($key_array))
 			array_multisort($key_array, $sort, $multi_array);
+		
 		return $multi_array;
 	}
 
@@ -1455,12 +1450,12 @@ class EmundusModelEvaluation extends JModelList
 		return $this->_db->loadObjectList();
 	}
 
-    /*
-    * 	Get evaluations for fnum done by a user
-    *	@param fnum 		Application File number
-    *	@param user 		user
-    * 	@return array
-    */
+    /**
+     * 	Get evaluations for fnum done by a user
+     *	@param fnum 		Application File number
+     *	@param user 		user
+     * 	@return array
+    **/
     function getEvaluationsFnumUser($fnum, $user) {
         try {
             $query = 'SELECT *
@@ -1477,12 +1472,116 @@ class EmundusModelEvaluation extends JModelList
         }
     }
 
-    /*
-* 	Get evaluations for fnum done by a user
-*	@param fnum 		Application File number
-*	@param user 		user
-* 	@return array
-*/
+	/**
+     * 	Get all evaluations accross all programs for a student
+     *	@param user 		the student in question
+     * 	@return array
+    **/
+    function getEvaluationsByStudent($user) {
+        try {
+       
+	        $query = 'SELECT * FROM #__emundus_evaluations ee WHERE ee.student_id = ' . $user;
+            $this->_db->setQuery($query);
+            return $this->_db->loadObjectList();
+        
+		} catch(Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+    }
+
+	/**
+     * 	Copy a line by ID from the evaluation table and use it to overrite or create another line 
+     *	@param fromID 		line to copy data from
+	 *  @param toID  		line to copy data to
+     * 	@return boolean
+    **/
+	function copyEvaluation($fromID, $toID = null, $fnum = null, $student = null, $user = null) {
+
+		try {
+
+
+			$query = 'SELECT * FROM #__emundus_evaluations ee WHERE ee.id = ' . $this->_db->Quote($fromID);
+            $this->_db->setQuery($query);
+            $fromDATA = $this->_db->loadAssoc();
+
+			$query = 'SELECT count(*) as total FROM #__emundus_evaluations ee WHERE ee.id = ' . $this->_db->Quote($toID);
+            $this->_db->setQuery($query);
+            $toDATA = $this->_db->loadAssoc();
+		
+		} catch (Exception $e) {
+			echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+
+		// Check if we are updating an existing evaluation or adding a new one
+		if ($toDATA['total'] == 1) {
+
+			$query = "UPDATE #__emundus_evaluations as ee SET ";
+			foreach ($fromDATA as $fromK => $fromV) {
+				if ($fromK != "id" && $fromK != "time_date" && $fromK != "user" && $fromK != "fnum" && $fromK != "student_id" && isset($fromV))
+					$query .= $fromK." = ".$this->_db->Quote($fromV).", ";
+			}
+			$query = rtrim($query, ", ");
+			$query .= " WHERE id = ".$this->_db->Quote($toID);
+
+		} else {
+
+			$config = JFactory::getConfig();
+			$tz 	= $config->get('offset');
+			$jdate 	= JFactory::getDate();
+			$jdate->setTimezone(new DateTimeZone($tz));
+			$now = $jdate->toSql();
+
+
+			$query = "INSERT INTO #__emundus_evaluations ( ";
+			foreach ($fromDATA as $fromK => $fromV) {
+				$query .= $fromK.", ";
+			}
+			$query = rtrim($query, ", ");
+			$query .= ") VALUES ( ";
+
+			foreach ($fromDATA as $fromK => $fromV) {
+				
+				if ($fromK == "id" || empty($fromV))
+					$query .= "'', ";
+				elseif ($fromK == "time_date")
+					$query .= $this->_db->Quote($now).", ";
+				elseif ($fromK == "user")
+					$query .= $this->_db->Quote($user).", ";
+				elseif ($fromK == "fnum")
+					$query .= $this->_db->Quote($fnum).", ";
+				elseif ($fromK == "student_id")
+					$query .= $this->_db->Quote($student).", ";
+				else
+					$query .= $this->_db->Quote($fromV).", ";		
+			
+			}
+			$query = rtrim($query, ", ");
+			$query .= " )";
+		}
+
+		try {
+
+			$this->_db->setQuery($query);
+			$this->_db->execute();
+		
+		} catch (Exception $e) {
+			echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	* 	Get evaluations for fnum done by a user
+	*	@param fnum 		Application File number
+	*	@param user 		user
+	* 	@return array
+	**/
     function getDecisionFnum($fnum) {
         try {
             $query = 'SELECT *
