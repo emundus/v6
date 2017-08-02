@@ -145,8 +145,6 @@ JFactory::getSession()->set('application_layout', 'evaluation');
             fnum = $("#iframe").contents().find('#jos_emundus_evaluations___fnum').val(),
             student_id = parseInt(fnum.substr(-5),10);
 
-        console.log("from:" + fromID + " to: " + toID);
-
         $.ajax({
             type: 'POST',
             url: 'index.php?option=com_emundus&controller=evaluation&task=copyeval',
@@ -157,10 +155,12 @@ JFactory::getSession()->set('application_layout', 'evaluation');
                 student: student_id
             },
             success: function(result) {
+                result = JSON.parse(result);
+
                 if (result.status)
-                    console.log("COPY DONE! :D");
+                    $('div#formCopy').before('<p style="color: green">Success</p>');
                 else
-                    console.log("COPY FAILED! D:")
+                    $('div#formCopy').before('<p style="color: red">Failed</p>');
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log("error");
