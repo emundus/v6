@@ -78,7 +78,7 @@ function toggleRadio(id) {
     
     } else {
 
-            $('#' + id).addClass('glyphicon-refresh').removeClass('glyphicon-warning-sigg').css('color', 'black');
+            $('#' + id).addClass('glyphicon-refresh').removeClass('glyphicon-warning-sign').css('color', 'black');
     
     }
 
