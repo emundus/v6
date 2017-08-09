@@ -102,8 +102,7 @@ class EmundusControllerMigration extends JControllerLegacy
 			}
 
 			// Next we will copy the one with data to the ones without
-			if (!$m_migration->copyFnumTablePicker($dataFnum, $emptyFnums))
-				echo ("An Error has occured");
+			$m_migration->copyFnumTablePicker($dataFnum, $emptyFnums);
 		}
 
 		return true;

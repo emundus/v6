@@ -220,11 +220,8 @@ class EmundusModelMigration extends JModelList
 			$query = "SELECT 1 FROM ( SELECT fnum AS fnum FROM ".$table->TABLE_NAME." ) a WHERE fnum = ".$this->_db->Quote($dataFnum);
 			$this->_db->setQuery($query);
 			if ($this->_db->loadResult() == 1)
-				if (!$this->copyFnumData($dataFnum, $emptyFnums, $table->TABLE_NAME))
-					return false;
+				$this->copyFnumData($dataFnum, $emptyFnums, $table->TABLE_NAME);
 		}
-
-		return true;
 	}
 
 	// Here we look in the table defined by $tableName and find the row corresponding to $dataFnum
@@ -236,10 +233,17 @@ class EmundusModelMigration extends JModelList
 		$this->_db->setQuery($query);
 		$result = $this->_db->loadAssoc();
 
-		foreach ($emptyFnums as $emptyFnum) {
+		if (count($result > 0)) {
+			foreach ($emptyFnums as $emptyFnum) {
 
-			if (count($result > 0)) {
-				
+				// If the $emptyFnum is already in the table, then no need to copy it again.
+				$query = "SELECT 1 FROM ( SELECT fnum AS fnum FROM ".$tableName." ) a WHERE fnum = ".$this->_db->Quote($emptyFnum);
+				$this->_db->setQuery($query);
+				if ($this->_db->loadResult() == 1)
+					continue;
+
+
+				unset($result['id']);				
 				$result['fnum'] = $emptyFnum;
 			
 				// Build a query to insert the data into the rows
