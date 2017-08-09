@@ -2005,12 +2005,6 @@ where 1 order by ga.fnum asc, g.title';
     *   @param elements     array of element to get value
     *   @return array
     */
-    /**
-     * @param $fnums
-     * @param $elements
-     * @param $methode  aggregate in one cell (0) or split one data per line
-     * @return bool|mixed
-     */
     public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0, $raw=1)
     {
         try

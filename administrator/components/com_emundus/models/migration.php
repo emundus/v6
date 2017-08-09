@@ -169,6 +169,99 @@ class EmundusModelMigration extends JModelList
 		}
 		return $this->_total;
 	}
-	
+
+	// Gets all users in jos_emundus_campaign_cadidatures
+	function getUsersInCC() {		
+		
+		$query = "SELECT DISTINCT(applicant_id) FROM #__emundus_campaign_candidature ORDER BY applicant_id";
+
+		try {
+
+			$this->_db->setQuery($query);
+			return $this->_db->loadObjectList();
+
+		} catch (Exception $e) {
+			return $e->getMessage;
+		}
+	}
+
+	// Tests to see if an fnum is attached to data or not
+	// This is done by looking at personal detail as it is the first form that would be filled by a user
+	function testFnum($fnum) {
+
+		$query = "SELECT 1 FROM ( SELECT fnum AS fnum FROM #__emundus_personal_detail ) a WHERE fnum = ".$this->_db->Quote($fnum);
+		
+		$this->_db->setQuery($query);
+
+		if ($this->_db->loadResult() == 1)
+			return true;
+		else
+			return false;
+	}
+
+	/* This function lookes in all DB tables	
+	*  If $dataFnum is found in any of the tables then it calls the copy function for that table
+	*/
+	function copyFnumTablePicker($dataFnum, $emptyFnums) {
+
+		// First we get a list of all tables containing an fnum collumn
+		try {
+			
+			$query = "SELECT * FROM information_schema.columns WHERE column_name = 'fnum'";
+			$this->_db->setQuery($query);
+			$tables = $this->_db->loadObjectList();
+		
+		} catch (Exception $e) {
+			return $e->getMessage();
+		}
+
+		// Then for each of those tables we check the the $dataFnum is found in it
+		foreach ($tables as $table) {
+			$query = "SELECT 1 FROM ( SELECT fnum AS fnum FROM ".$table->TABLE_NAME." ) a WHERE fnum = ".$this->_db->Quote($dataFnum);
+			$this->_db->setQuery($query);
+			if ($this->_db->loadResult() == 1)
+				if (!$this->copyFnumData($dataFnum, $emptyFnums, $table->TABLE_NAME))
+					return false;
+		}
+
+		return true;
+	}
+
+	// Here we look in the table defined by $tableName and find the row corresponding to $dataFnum
+	// Then we create a new row for the $dataFnum and add a line containing that data for each of the $emptyFnums
+	function copyFnumData($dataFnum, $emptyFnums, $tableName) {
+
+		// Get all data from the row of the data Fnum
+		$query = "SELECT * FROM ".$tableName." WHERE fnum = ".$this->_db->Quote($dataFnum);
+		$this->_db->setQuery($query);
+		$result = $this->_db->loadAssoc();
+
+		foreach ($emptyFnums as $emptyFnum) {
+
+			if (count($result > 0)) {
+				
+				$result['fnum'] = $emptyFnum;
+			
+				// Build a query to insert the data into the rows
+				$query = 'INSERT INTO '.$tableName.' (`'.implode('`,`', array_keys($result)).'`) VALUES('.implode(',', $this->_db->Quote($result)).')';
+
+				try {
+
+					$this->_db->setQuery($query);
+					$this->_db->Query();
+					return true;
+				
+				} catch (Exception $e) {
+					echo $e->getMessage();
+				}	
+			
+			}
+		}
+
+
+		// TODO: foreach empty fnum, put the data from above into the rows of the table (key -> value == column -> value)
+		// Except for the fnum which is equal to the emptyfnum value
+
+	}
 }
 ?>
