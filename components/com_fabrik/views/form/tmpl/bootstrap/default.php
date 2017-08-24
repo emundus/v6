@@ -4,13 +4,16 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.1
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+$doc = JFactory::getDocument();
+$doc->addStyleSheet( '/media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css' );
 
 $form = $this->form;
 $model = $this->getModel();
@@ -26,7 +29,7 @@ endif;
 
 if ($this->params->get('show-title', 1)) :?>
 <div class="page-header">
-	<h1><?php echo $form->label;?></h1>
+	<h1><?php $title = explode('-', $form->label); echo $title[1]; ?></h1>
 </div>
 <?php
 endif;
@@ -44,12 +47,12 @@ echo $this->plugintop;
 </div>
 
 <div class="row-fluid nav">
-	<div class="<?php echo FabrikHelperHTML::getGridSpan(6); ?> pull-right">
+	<div class="span6 pull-right">
 		<?php
 		echo $this->loadTemplate('buttons');
 		?>
 	</div>
-	<div class="<?php echo FabrikHelperHTML::getGridSpan(6); ?>">
+	<div class="span6">
 		<?php
 		echo $this->loadTemplate('relateddata');
 		?>
@@ -104,3 +107,5 @@ echo $this->loadTemplate('actions');
 echo $form->outro;
 echo $this->pluginend;
 echo FabrikHelperHTML::keepalive();
+?>
+
