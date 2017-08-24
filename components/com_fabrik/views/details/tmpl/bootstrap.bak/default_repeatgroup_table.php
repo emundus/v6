@@ -1,6 +1,6 @@
 <?php
 /**
- * Default Form Template: Repeat group rendered as a table
+ * Bootstrap Details Template: Repeat group rendered as a table
  *
  * @package     Joomla
  * @subpackage  Fabrik

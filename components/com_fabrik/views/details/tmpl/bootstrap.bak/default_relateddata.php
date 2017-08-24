@@ -1,6 +1,6 @@
 <?php
 /**
- * Bootstrap Tabs Form Template - related data
+ * Bootstrap Details Template
  *
  * @package     Joomla
  * @subpackage  Fabrik
@@ -12,15 +12,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-if (!empty($this->linkedTables)) :?>
+if (!empty($this->linkedTables)) {?>
 	<ul class='linkedTables'>
-		<?php foreach ($this->linkedTables as $a) : ?>
+		<?php foreach ($this->linkedTables as $a) { ?>
 		<li>
 			<?php echo implode(" ", $a);?>
 			</li>
-		<?php
-		endforeach;
-		?>
+		<?php }?>
 	</ul>
-<?php
-endif;
+<?php }?>

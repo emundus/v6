@@ -1,6 +1,6 @@
 <?php
 /**
- * Bootstrap Form Template: Repeat group rendered as standard form
+ * Bootstrap Details Template: Repeat group rendered as standard form
  *
  * @package     Joomla
  * @subpackage  Fabrik
@@ -19,18 +19,18 @@ if (!$group->newGroup) :
 		<div class="fabrikSubGroup">
 		<?php
 			// Add the add/remove repeat group buttons
-			if ($group->editable && ($group->canAddRepeat || $group->canDeleteRepeat)) : ?>
-				<div class="fabrikGroupRepeater pull-right btn-group">
+			if ($group->editable) : ?>
+				<div class="fabrikGroupRepeater pull-right">
 					<?php if ($group->canAddRepeat) :?>
-						<a class="addGroup btn btn-small btn-success" href="#">
-							<i class="icon-plus fabrikTip tip-small" opts="{trigger: 'hover'}" title="<?php echo FText::_('COM_FABRIK_ADD_GROUP'); ?>"></i>
-						</a>
+					<a class="addGroup" href="#">
+						<?php echo FabrikHelperHTML::image('plus', 'form', $this->tmpl, array('class' => 'fabrikTip tip-small', 'opts' => '{trigger: "hover"}', 'title' => FText::_('COM_FABRIK_ADD_GROUP')));?>
+					</a>
 					<?php
 					endif;
 					if ($group->canDeleteRepeat) :?>
-						<a class="deleteGroup btn btn-small btn-danger" href="#">
-							<i class="icon-minus fabrikTip tip-small" opts="{trigger: 'hover'}" title="<?php echo FText::_('COM_FABRIK_DELETE_GROUP'); ?>"></i>
-						</a>
+					<a class="deleteGroup" href="#">
+						<?php echo FabrikHelperHTML::image('minus', 'form', $this->tmpl, array('class' => 'fabrikTip tip-small', 'opts' => '{trigger: "hover"}', 'title' => FText::_('COM_FABRIK_DELETE_GROUP')));?>
+					</a>
 					<?php endif;?>
 				</div>
 			<?php
