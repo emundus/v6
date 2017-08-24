@@ -1,22 +1,22 @@
-$(document).ready(function(){
+jQuery(document).ready(function(){
 	// Buttons' actions
-	$('.btn-close').click(function(e){
+	jQuery('.btn-close').click(function(e){
 		e.preventDefault();
-		$(this).parent().parent().parent().fadeOut();
+		jQuery(this).parent().parent().parent().fadeOut();
 	});
-	$('.btn-minimize').click(function(e){
+	jQuery('.btn-minimize').click(function(e){
 		e.preventDefault();
-		var $target = $(this).parent().parent().next('.box-content');
-		if($target.is(':visible')) $('i',$(this)).removeClass('icon-chevron-up').addClass('icon-chevron-down');
-		else 					   $('i',$(this)).removeClass('icon-chevron-down').addClass('icon-chevron-up');
-		$target.slideToggle();
+		var jQuerytarget = jQuery(this).parent().parent().next('.box-content');
+		if(jQuerytarget.is(':visible')) jQuery('i',jQuery(this)).removeClass('icon-chevron-up').addClass('icon-chevron-down');
+		else 					   jQuery('i',jQuery(this)).removeClass('icon-chevron-down').addClass('icon-chevron-up');
+		jQuerytarget.slideToggle();
 	});
 	
 	//tabs
-	$('#myTab a:first').tab('show');
-	$('#myTab a').click(function (e) {
+	jQuery('#myTab a:first').tab('show');
+	jQuery('#myTab a').click(function (e) {
 	  e.preventDefault();
-	  $(this).tab('show');
+	  jQuery(this).tab('show');
 	});
 	
 	//other things to do on document ready, seperated for ajax calls
@@ -26,118 +26,118 @@ $(document).ready(function(){
 		
 function docReady(){
 	//prevent # links from moving to top
-	$('a[href="#"][data-top!=true]').click(function(e){
+	jQuery('a[href="#"][data-top!=true]').click(function(e){
 		e.preventDefault();
 	});
 	
 	//rich text editor
-	$('.cleditor').cleditor();
+	jQuery('.cleditor').cleditor();
 	
 	//datepicker
-	$('.datepicker').datepicker();
+	jQuery('.datepicker').datepicker();
 	
 	//notifications
-	$('.noty').click(function(e){
+	jQuery('.noty').click(function(e){
 		e.preventDefault();
-		var options = $.parseJSON($(this).attr('data-noty-options'));
+		var options = jQuery.parseJSON(jQuery(this).attr('data-noty-options'));
 		noty(options);
 	});
 
 
 	//uniform - styler for checkbox, radio and file input
-	$("input:checkbox, input:radio, input:file").not('[data-no-uniform="true"],#uniform-is-ajax').uniform();
+	jQuery("input:checkbox, input:radio, input:file").not('[data-no-uniform="true"],#uniform-is-ajax').uniform();
 
 	//chosen - improves select
-	$('[data-rel="chosen"],[rel="chosen"]').chosen();
+	jQuery('[data-rel="chosen"],[rel="chosen"]').chosen();
 
 	//tabs
-	$('#myTab a:first').tab('show');
-	$('#myTab a').click(function (e) {
+	jQuery('#myTab a:first').tab('show');
+	jQuery('#myTab a').click(function (e) {
 	  e.preventDefault();
-	  $(this).tab('show');
+	  jQuery(this).tab('show');
 	});
 
 	//makes elements soratble, elements that sort need to have id attribute to save the result
-	$('.sortable').sortable({
+	jQuery('.sortable').sortable({
 		revert:true,
 		cancel:'.btn,.box-content,.nav-header',
 		update:function(event,ui){
 			//line below gives the ids of elements, you can make ajax call here to save it to the database
-			//console.log($(this).sortable('toArray'));
+			//console.log(jQuery(this).sortable('toArray'));
 		}
 	});
 
 	//slider
-	$('.slider').slider({range:true,values:[10,65]});
+	jQuery('.slider').slider({range:true,values:[10,65]});
 
 	//tooltip
-	$('[rel="tooltip"],[data-rel="tooltip"]').tooltip({"placement":"bottom",delay: { show: 400, hide: 200 }});
+	jQuery('[rel="tooltip"],[data-rel="tooltip"]').tooltip({"placement":"bottom",delay: { show: 400, hide: 200 }});
 
 	//auto grow textarea
-	$('textarea.autogrow').autogrow();
+	jQuery('textarea.autogrow').autogrow();
 
 	//popover
-	$('[rel="popover"],[data-rel="popover"]').popover();
+	jQuery('[rel="popover"],[data-rel="popover"]').popover();
 
 	//file manager
-	var elf = $('.file-manager').elfinder({
+	var elf = jQuery('.file-manager').elfinder({
 		url : 'misc/elfinder-connector/connector.php'  // connector URL (REQUIRED)
 	}).elfinder('instance');
 
 	//iOS / iPhone style toggle switch
-	$('.iphone-toggle').iphoneStyle();
+	jQuery('.iphone-toggle').iphoneStyle();
 
 	//star rating
-	$('.raty').raty({
+	jQuery('.raty').raty({
 		score : 4 //default stars
 	});
 
 	//uploadify - multiple uploads
-	$('#file_upload').uploadify({
+	jQuery('#file_upload').uploadify({
 		'swf'      : 'misc/uploadify.swf',
 		'uploader' : 'misc/uploadify.php'
 		// Put your options here
 	});
 
 	//gallery controlls container animation
-	$('ul.gallery li').hover(function(){
-		$('img',this).fadeToggle(1000);
-		$(this).find('.gallery-controls').remove();
-		$(this).append('<div class="well gallery-controls">'+
+	jQuery('ul.gallery li').hover(function(){
+		jQuery('img',this).fadeToggle(1000);
+		jQuery(this).find('.gallery-controls').remove();
+		jQuery(this).append('<div class="well gallery-controls">'+
 							'<p><a href="#" class="gallery-edit btn"><i class="icon-edit"></i></a> <a href="#" class="gallery-delete btn"><i class="icon-remove"></i></a></p>'+
 						'</div>');
-		$(this).find('.gallery-controls').stop().animate({'margin-top':'-1'},400,'easeInQuint');
+		jQuery(this).find('.gallery-controls').stop().animate({'margin-top':'-1'},400,'easeInQuint');
 	},function(){
-		$('img',this).fadeToggle(1000);
-		$(this).find('.gallery-controls').stop().animate({'margin-top':'-30'},200,'easeInQuint',function(){
-				$(this).remove();
+		jQuery('img',this).fadeToggle(1000);
+		jQuery(this).find('.gallery-controls').stop().animate({'margin-top':'-30'},200,'easeInQuint',function(){
+				jQuery(this).remove();
 		});
 	});
 
 
 	//gallery image controls example
 	//gallery delete
-	$('.thumbnails').on('click','.gallery-delete',function(e){
+	jQuery('.thumbnails').on('click','.gallery-delete',function(e){
 		e.preventDefault();
 		//get image id
-		//alert($(this).parents('.thumbnail').attr('id'));
-		$(this).parents('.thumbnail').fadeOut();
+		//alert(jQuery(this).parents('.thumbnail').attr('id'));
+		jQuery(this).parents('.thumbnail').fadeOut();
 	});
 	//gallery edit
-	$('.thumbnails').on('click','.gallery-edit',function(e){
+	jQuery('.thumbnails').on('click','.gallery-edit',function(e){
 		e.preventDefault();
 		//get image id
-		//alert($(this).parents('.thumbnail').attr('id'));
+		//alert(jQuery(this).parents('.thumbnail').attr('id'));
 	});
 
 	//gallery colorbox
-	$('.thumbnail a').colorbox({rel:'thumbnail a', transition:"elastic", maxWidth:"95%", maxHeight:"95%"});
+	jQuery('.thumbnail a').colorbox({rel:'thumbnail a', transition:"elastic", maxWidth:"95%", maxHeight:"95%"});
 
 	//gallery fullscreen
-	$('#toggle-fullscreen').button().click(function () {
-		var button = $(this), root = document.documentElement;
+	jQuery('#toggle-fullscreen').button().click(function () {
+		var button = jQuery(this), root = document.documentElement;
 		if (!button.hasClass('active')) {
-			$('#thumbnails').addClass('modal-fullscreen');
+			jQuery('#thumbnails').addClass('modal-fullscreen');
 			if (root.webkitRequestFullScreen) {
 				root.webkitRequestFullScreen(
 					window.Element.ALLOW_KEYBOARD_INPUT
@@ -146,15 +146,15 @@ function docReady(){
 				root.mozRequestFullScreen();
 			}
 		} else {
-			$('#thumbnails').removeClass('modal-fullscreen');
+			jQuery('#thumbnails').removeClass('modal-fullscreen');
 			(document.webkitCancelFullScreen ||
 				document.mozCancelFullScreen ||
-				$.noop).apply(document);
+				jQuery.noop).apply(document);
 		}
 	});
 
 	//tour
-	if($('.tour').length && typeof(tour)=='undefined')
+	if(jQuery('.tour').length && typeof(tour)=='undefined')
 	{
 		var tour = new Tour();
 		tour.addStep({
@@ -190,27 +190,27 @@ function docReady(){
 	}
 
 	//datatable
-	$('.datatable').dataTable({
+	jQuery('.datatable').dataTable({
 			"sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span12'i><'span12 center'p>>",
 			"sPaginationType": "bootstrap",
 			"oLanguage": {
 			"sLengthMenu": "_MENU_ records per page"
 			}
 		} );
-	/*$('.btn-close').click(function(e){
+	/*jQuery('.btn-close').click(function(e){
 		e.preventDefault();
-		$(this).parent().parent().parent().fadeOut();
+		jQuery(this).parent().parent().parent().fadeOut();
 	});
-	$('.btn-minimize').click(function(e){
+	jQuery('.btn-minimize').click(function(e){
 		e.preventDefault();
-		var $target = $(this).parent().parent().next('.box-content');
-		if($target.is(':visible')) $('i',$(this)).removeClass('icon-chevron-up').addClass('icon-chevron-down');
-		else 					   $('i',$(this)).removeClass('icon-chevron-down').addClass('icon-chevron-up');
-		$target.slideToggle();
+		var jQuerytarget = jQuery(this).parent().parent().next('.box-content');
+		if(jQuerytarget.is(':visible')) jQuery('i',jQuery(this)).removeClass('icon-chevron-up').addClass('icon-chevron-down');
+		else 					   jQuery('i',jQuery(this)).removeClass('icon-chevron-down').addClass('icon-chevron-up');
+		jQuerytarget.slideToggle();
 	});
-	$('.btn-setting').click(function(e){
+	jQuery('.btn-setting').click(function(e){
 		e.preventDefault();
-		$('#myModal').modal('show');
+		jQuery('#myModal').modal('show');
 	});*/
 
 
@@ -218,18 +218,18 @@ function docReady(){
 		
 	//initialize the external events for calender
 
-	$('#external-events div.external-event').each(function() {
+	jQuery('#external-events div.external-event').each(function() {
 
 		// it doesn't need to have a start or end
 		var eventObject = {
-			title: $.trim($(this).text()) // use the element's text as the event title
+			title: jQuery.trim(jQuery(this).text()) // use the element's text as the event title
 		};
 		
 		// store the Event Object in the DOM element so we can get to it later
-		$(this).data('eventObject', eventObject);
+		jQuery(this).data('eventObject', eventObject);
 		
 		// make the event draggable using jQuery UI
-		$(this).draggable({
+		jQuery(this).draggable({
 			zIndex: 999,
 			revert: true,      // will cause the event to go back to its
 			revertDuration: 0  //  original position after the drag
@@ -239,7 +239,7 @@ function docReady(){
 
 
 	//initialize the calendar
-	$('#calendar').fullCalendar({
+	jQuery('#calendar').fullCalendar({
 		header: {
 			left: 'prev,next today',
 			center: 'title',
@@ -250,10 +250,10 @@ function docReady(){
 		drop: function(date, allDay) { // this function is called when something is dropped
 		
 			// retrieve the dropped element's stored Event Object
-			var originalEventObject = $(this).data('eventObject');
+			var originalEventObject = jQuery(this).data('eventObject');
 			
 			// we need to copy it, so that multiple events don't have a reference to the same object
-			var copiedEventObject = $.extend({}, originalEventObject);
+			var copiedEventObject = jQuery.extend({}, originalEventObject);
 			
 			// assign it the date that was reported
 			copiedEventObject.start = date;
@@ -261,12 +261,12 @@ function docReady(){
 			
 			// render the event on the calendar
 			// the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
-			$('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
+			jQuery('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
 			
 			// is the "remove after drop" checkbox checked?
-			if ($('#drop-remove').is(':checked')) {
+			if (jQuery('#drop-remove').is(':checked')) {
 				// if so, remove the element from the "Draggable Events" list
-				$(this).remove();
+				jQuery(this).remove();
 			}
 			
 		}
@@ -274,7 +274,7 @@ function docReady(){
 	
 	
 	//chart with points
-	if($("#sincos").length)
+	if(jQuery("#sincos").length)
 	{
 		var sin = [], cos = [];
 
@@ -283,7 +283,7 @@ function docReady(){
 			cos.push([i, Math.cos(i)]);
 		}
 
-		var plot = $.plot($("#sincos"),
+		var plot = jQuery.plot(jQuery("#sincos"),
 			   [ { data: sin, label: "sin(x)/x"}, { data: cos, label: "cos(x)" } ], {
 				   series: {
 					   lines: { show: true  },
@@ -295,7 +295,7 @@ function docReady(){
 				 });
 
 		function showTooltip(x, y, contents) {
-			$('<div id="tooltip">' + contents + '</div>').css( {
+			jQuery('<div id="tooltip">' + contents + '</div>').css( {
 				position: 'absolute',
 				display: 'none',
 				top: y + 5,
@@ -308,15 +308,15 @@ function docReady(){
 		}
 
 		var previousPoint = null;
-		$("#sincos").bind("plothover", function (event, pos, item) {
-			$("#x").text(pos.x.toFixed(2));
-			$("#y").text(pos.y.toFixed(2));
+		jQuery("#sincos").bind("plothover", function (event, pos, item) {
+			jQuery("#x").text(pos.x.toFixed(2));
+			jQuery("#y").text(pos.y.toFixed(2));
 
 				if (item) {
 					if (previousPoint != item.dataIndex) {
 						previousPoint = item.dataIndex;
 
-						$("#tooltip").remove();
+						jQuery("#tooltip").remove();
 						var x = item.datapoint[0].toFixed(2),
 							y = item.datapoint[1].toFixed(2);
 
@@ -325,23 +325,23 @@ function docReady(){
 					}
 				}
 				else {
-					$("#tooltip").remove();
+					jQuery("#tooltip").remove();
 					previousPoint = null;
 				}
 		});
 		
 
 
-		$("#sincos").bind("plotclick", function (event, pos, item) {
+		jQuery("#sincos").bind("plotclick", function (event, pos, item) {
 			if (item) {
-				$("#clickdata").text("You clicked point " + item.dataIndex + " in " + item.series.label + ".");
+				jQuery("#clickdata").text("You clicked point " + item.dataIndex + " in " + item.series.label + ".");
 				plot.highlight(item.series, item.datapoint);
 			}
 		});
 	}
 	
 	//flot chart
-	if($("#flotchart").length)
+	if(jQuery("#flotchart").length)
 	{
 		var d1 = [];
 		for (var i = 0; i < Math.PI * 2; i += 0.25)
@@ -355,7 +355,7 @@ function docReady(){
 		for (var i = 0; i < Math.PI * 2; i += 0.1)
 			d3.push([i, Math.tan(i)]);
 		
-		$.plot($("#flotchart"), [
+		jQuery.plot(jQuery("#flotchart"), [
 			{ label: "sin(x)",  data: d1},
 			{ label: "cos(x)",  data: d2},
 			{ label: "tan(x)",  data: d3}
@@ -379,7 +379,7 @@ function docReady(){
 	}
 	
 	//stack chart
-	if($("#stackchart").length)
+	if(jQuery("#stackchart").length)
 	{
 		var d1 = [];
 		for (var i = 0; i <= 10; i += 1)
@@ -396,7 +396,7 @@ function docReady(){
 		var stack = 0, bars = true, lines = false, steps = false;
 
 		function plotWithOptions() {
-			$.plot($("#stackchart"), [ d1, d2, d3 ], {
+			jQuery.plot(jQuery("#stackchart"), [ d1, d2, d3 ], {
 				series: {
 					stack: stack,
 					lines: { show: lines, fill: true, steps: steps },
@@ -407,16 +407,16 @@ function docReady(){
 
 		plotWithOptions();
 
-		$(".stackControls input").click(function (e) {
+		jQuery(".stackControls input").click(function (e) {
 			e.preventDefault();
-			stack = $(this).val() == "With stacking" ? true : null;
+			stack = jQuery(this).val() == "With stacking" ? true : null;
 			plotWithOptions();
 		});
-		$(".graphControls input").click(function (e) {
+		jQuery(".graphControls input").click(function (e) {
 			e.preventDefault();
-			bars = $(this).val().indexOf("Bars") != -1;
-			lines = $(this).val().indexOf("Lines") != -1;
-			steps = $(this).val().indexOf("steps") != -1;
+			bars = jQuery(this).val().indexOf("Bars") != -1;
+			lines = jQuery(this).val().indexOf("Lines") != -1;
+			steps = jQuery(this).val().indexOf("steps") != -1;
 			plotWithOptions();
 		});
 	}
@@ -431,9 +431,9 @@ function docReady(){
 	{ label: "Chrome",  data: 112}
 	];
 	
-	if($("#piechart").length)
+	if(jQuery("#piechart").length)
 	{
-		$.plot($("#piechart"), data,
+		jQuery.plot(jQuery("#piechart"), data,
 		{
 			series: {
 					pie: {
@@ -454,15 +454,15 @@ function docReady(){
 			if (!obj)
 					return;
 			percent = parseFloat(obj.series.percent).toFixed(2);
-			$("#hover").html('<span style="font-weight: bold; color: '+obj.series.color+'">'+obj.series.label+' ('+percent+'%)</span>');
+			jQuery("#hover").html('<span style="font-weight: bold; color: '+obj.series.color+'">'+obj.series.label+' ('+percent+'%)</span>');
 		}
-		$("#piechart").bind("plothover", pieHover);
+		jQuery("#piechart").bind("plothover", pieHover);
 	}
 	
 	//donut chart
-	if($("#donutchart").length)
+	if(jQuery("#donutchart").length)
 	{
-		$.plot($("#donutchart"), data,
+		jQuery.plot(jQuery("#donutchart"), data,
 		{
 				series: {
 						pie: {
@@ -506,27 +506,27 @@ function docReady(){
 
 	// setup control widget
 	var updateInterval = 30;
-	$("#updateInterval").val(updateInterval).change(function () {
-		var v = $(this).val();
+	jQuery("#updateInterval").val(updateInterval).change(function () {
+		var v = jQuery(this).val();
 		if (v && !isNaN(+v)) {
 			updateInterval = +v;
 			if (updateInterval < 1)
 				updateInterval = 1;
 			if (updateInterval > 2000)
 				updateInterval = 2000;
-			$(this).val("" + updateInterval);
+			jQuery(this).val("" + updateInterval);
 		}
 	});
 
 	//realtime chart
-	if($("#realtimechart").length)
+	if(jQuery("#realtimechart").length)
 	{
 		var options = {
 			series: { shadowSize: 1 }, // drawing is faster without shadows
 			yaxis: { min: 0, max: 100 },
 			xaxis: { show: false }
 		};
-		var plot = $.plot($("#realtimechart"), [ getRandomData() ], options);
+		var plot = jQuery.plot(jQuery("#realtimechart"), [ getRandomData() ], options);
 		function update() {
 			plot.setData([ getRandomData() ]);
 			// since the axes don't change, we don't need to call plot.setupGrid()
@@ -541,7 +541,7 @@ function docReady(){
 
 
 //additional functions for data table
-$.fn.dataTableExt.oApi.fnPagingInfo = function ( oSettings )
+jQuery.fn.dataTableExt.oApi.fnPagingInfo = function ( oSettings )
 {
 	return {
 		"iStart":         oSettings._iDisplayStart,
@@ -553,7 +553,7 @@ $.fn.dataTableExt.oApi.fnPagingInfo = function ( oSettings )
 		"iTotalPages":    Math.ceil( oSettings.fnRecordsDisplay() / oSettings._iDisplayLength )
 	};
 }
-$.extend( $.fn.dataTableExt.oPagination, {
+jQuery.extend( jQuery.fn.dataTableExt.oPagination, {
 	"bootstrap": {
 		"fnInit": function( oSettings, nPaging, fnDraw ) {
 			var oLang = oSettings.oLanguage.oPaginate;
@@ -564,15 +564,15 @@ $.extend( $.fn.dataTableExt.oPagination, {
 				}
 			};
 
-			$(nPaging).addClass('pagination').append(
+			jQuery(nPaging).addClass('pagination').append(
 				'<ul>'+
 					'<li class="prev disabled"><a href="#">&larr; '+oLang.sPrevious+'</a></li>'+
 					'<li class="next disabled"><a href="#">'+oLang.sNext+' &rarr; </a></li>'+
 				'</ul>'
 			);
-			var els = $('a', nPaging);
-			$(els[0]).bind( 'click.DT', { action: "previous" }, fnClickHandler );
-			$(els[1]).bind( 'click.DT', { action: "next" }, fnClickHandler );
+			var els = jQuery('a', nPaging);
+			jQuery(els[0]).bind( 'click.DT', { action: "previous" }, fnClickHandler );
+			jQuery(els[1]).bind( 'click.DT', { action: "next" }, fnClickHandler );
 		},
 
 		"fnUpdate": function ( oSettings, fnDraw ) {
@@ -598,31 +598,31 @@ $.extend( $.fn.dataTableExt.oPagination, {
 
 			for ( i=0, iLen=an.length ; i<iLen ; i++ ) {
 				// remove the middle elements
-				$('li:gt(0)', an[i]).filter(':not(:last)').remove();
+				jQuery('li:gt(0)', an[i]).filter(':not(:last)').remove();
 
 				// add the new list items and their event handlers
 				for ( j=iStart ; j<=iEnd ; j++ ) {
 					sClass = (j==oPaging.iPage+1) ? 'class="active"' : '';
-					$('<li '+sClass+'><a href="#">'+j+'</a></li>')
-						.insertBefore( $('li:last', an[i])[0] )
+					jQuery('<li '+sClass+'><a href="#">'+j+'</a></li>')
+						.insertBefore( jQuery('li:last', an[i])[0] )
 						.bind('click', function (e) {
 							e.preventDefault();
-							oSettings._iDisplayStart = (parseInt($('a', this).text(),10)-1) * oPaging.iLength;
+							oSettings._iDisplayStart = (parseInt(jQuery('a', this).text(),10)-1) * oPaging.iLength;
 							fnDraw( oSettings );
 						} );
 				}
 
 				// add / remove disabled classes from the static elements
 				if ( oPaging.iPage === 0 ) {
-					$('li:first', an[i]).addClass('disabled');
+					jQuery('li:first', an[i]).addClass('disabled');
 				} else {
-					$('li:first', an[i]).removeClass('disabled');
+					jQuery('li:first', an[i]).removeClass('disabled');
 				}
 
 				if ( oPaging.iPage === oPaging.iTotalPages-1 || oPaging.iTotalPages === 0 ) {
-					$('li:last', an[i]).addClass('disabled');
+					jQuery('li:last', an[i]).addClass('disabled');
 				} else {
-					$('li:last', an[i]).removeClass('disabled');
+					jQuery('li:last', an[i]).removeClass('disabled');
 				}
 			}
 		}

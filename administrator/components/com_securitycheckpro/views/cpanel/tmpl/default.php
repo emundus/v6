@@ -47,7 +47,7 @@ JHTML::stylesheet($jquery_meter);
 
 // Load Javascript
 $document = JFactory::getDocument();
-$document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/jquery.js');
+//$document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/jquery.js');
 $document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/charisma.js');
 // Char libraries
 $document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/excanvas.js');
@@ -58,6 +58,8 @@ $document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/jav
 $document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/bootstrap-tab.js');
 //Jquery meter
 $document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/jquery.percentageloader-0.1.js');
+//Cookie
+$document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/js.cookie.js');
 
 // Url to be used on statistics
 $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&view=logs&datefrom=%s&dateto=%s';
@@ -73,9 +75,9 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 		{ label: "C",  data: <?php echo $this->total_user_session_protection; ?>}
 		];
 
-		if($("#piechart").length)
+		if(jQuery("#piechart").length)
 		{
-			$.plot($("#piechart"), data,
+			jQuery.plot(jQuery("#piechart"), data,
 			{
 				series: {
 						pie: {
@@ -96,9 +98,9 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 				if (!obj)
 						return;
 				percent = parseFloat(obj.series.percent).toFixed(2);
-				$("#hover").html('<span style="font-weight: bold; color: '+obj.series.color+'">'+obj.series.label+' ('+percent+'%)</span>');
+				jQuery("#hover").html('<span style="font-weight: bold; color: '+obj.series.color+'">'+obj.series.label+' ('+percent+'%)</span>');
 			}
-			$("#piechart").bind("plothover", pieHover);
+			jQuery("#piechart").bind("plothover", pieHover);
 		}
 		
 		// Mostramos el aviso de actualizaciones si hay que actualizar
@@ -120,6 +122,24 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 		
 		//Tooltip subscripcion
 		jQuery("#subscriptions_status").tooltip();
+		
+		if( Cookies.get('SCPInfoMessage') ){
+            //it is still within the day
+            //hide the div			
+           jQuery("#mensaje_informativo").hide();		  
+        } else {
+            //either cookie already expired, or user never visit the site
+            //create the cookie			
+            Cookies.set('SCPInfoMessage', 'SCPInfoMessage', { expires: 1 });
+
+            //and display the div
+           jQuery("#mensaje_informativo").show();
+		   window.setTimeout(function () {
+				jQuery("#mensaje_informativo").fadeTo(500, 0).slideUp(500, function () {
+					jQuery(this).remove();
+				});
+			}, 5000);
+        }
 		
 	});
 	
@@ -159,8 +179,55 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 	}
 		
 </script>
+<?php 
+	$valor_a_mostrar = 0; 
+	$contador = 0; 
+	$period = ""; 
+	while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
+		$aleatorio = rand(1,5);
+		switch ($aleatorio) {
+			case 1:
+				// Logs este año
+				$valor_a_mostrar = $this->this_year_logs;
+				$period = JText::_('COM_SECURITYCHECKPRO_CPANEL_THIS_YEAR');
+				break;
+			case 2:
+				// Logs mes pasado
+				$valor_a_mostrar = $this->last_month_logs;
+				$period = JText::_('COM_SECURITYCHECKPRO_CPANEL_LAST_MONTH');
+				break;
+			case 3:
+				// Logs este mes
+				$valor_a_mostrar = $this->this_month_logs;
+				$period = JText::_('COM_SECURITYCHECKPRO_CPANEL_THIS_MONTH');
+				break;
+			case 4:
+				// Logs ayer
+				$valor_a_mostrar = $this->yesterday;
+				$period = JText::_('COM_SECURITYCHECKPRO_CPANEL_YESTERDAY');
+				break;
+			case 5:
+				// Logs hoy
+				$valor_a_mostrar = $this->today;
+				$period = JText::_('COM_SECURITYCHECKPRO_CPANEL_TODAY');
+				break;
+		}
+		$contador++;
+	}
+	
+?>
 	
 <form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro');?>" method="post" name="adminForm" id="adminForm">
+
+<?php
+	if ($valor_a_mostrar != 0) {
+?>
+<div id="mensaje_informativo" class="alert alert-success">
+     <h4><?php echo JText::sprintf('COM_SECURITYCHECKPRO_INFO_MESSAGE',$valor_a_mostrar,$period) ?></h4>
+ </div>
+<?php
+	}
+?>
 
 <div id="div_update_geoblock_database" class="modal hide fade">
 	<fieldset class="uploadform" style="margin-left: 10px;">
@@ -968,9 +1035,9 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 </div>
 
 <script>
-		$(function() {
-			var $topLoader = $("#topLoader").percentageLoader({width: 100, height: 100, controllable : false, progress : 0.5, onProgressUpdate : function(val) {
-              $topLoader.setValue(Math.round(val * 100.0));
+		jQuery(function() {
+			var topLoader = jQuery("#topLoader").percentageLoader({width: 100, height: 100, controllable : false, progress : 0.5, onProgressUpdate : function(val) {
+              topLoader.setValue(Math.round(val * 100.0));
             }});
 
 			var topLoaderRunning = false;
@@ -981,7 +1048,7 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 				  return;
 				}
 				topLoaderRunning = true;
-				$topLoader.setProgress(0);
+				topLoader.setProgress(0);
 			   
 				var kb = 0;
 				// Porcentaje de cumplimiento
@@ -989,7 +1056,7 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 				
 				var animateFunc = function() {
 					kb += 5;
-					$topLoader.setProgress(kb/100);
+					topLoader.setProgress(kb/100);
 								
 					if (kb < percent) {
 						setTimeout(animateFunc, 55);

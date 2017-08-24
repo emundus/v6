@@ -1085,7 +1085,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 
 		if ($params->get('wysiwyg', true))
 		{
-			$editor = JEditor::getInstance($this->config->get('editor'));
+			$editor = JFactory::getEditor();
 
 			return $editor->display('message', $msg, '100%', '200px', 75, 10, true, 'message');
 		}
