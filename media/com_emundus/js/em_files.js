@@ -54,19 +54,16 @@ function search() {
         value: $('#text_s').val(),
         adv_fil : false
     }];
-    var i = 1;
 
-    while ($('#em-adv-fil-' + i).attr('name') !== undefined) {
-        //if ($('#em-adv-fil-' + i).attr('type') == 'text') {
-        var name = $('#em-adv-fil-' + i).attr('name');
+    $('[id^=em-adv-fil-]').each(function(){
+        var name = $(this).attr('name');
         inputs.push({
-            name: $('#em-adv-fil-' + i).attr('name'),
-            value: $('#em-adv-fil-' + i).val(),
+            name: $(this).attr('name'),
+            value: $(this).val(),
             adv_fil : true
         });
-        //}
-        i++;
-    }
+        console.log(name);
+    });
 
     $('.em_filters_filedset .chzn-select').each(function () {
         inputs.push({
@@ -81,7 +78,7 @@ function search() {
         dataType: 'json',
         url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=setfilters',
         data: ({
-            val: JSON.stringify(inputs),
+            val: JSON.stringify((Object.assign({}, inputs))),
             multi: false,
             elements: true
         }),
@@ -213,8 +210,16 @@ function addElement() {
                 var groupe = null;
 
                 for (var i=0 ; i<result.options.length ; i++) {
-                    var menu_tmp = result.options[i].title;
-                    var groupe_tmp = result.options[i].group_label;
+
+                    if (Joomla.JText._(result.options[i].title) == "undefined" || Joomla.JText._(result.options[i].title) == "")
+                        var menu_tmp = result.options[i].title;
+                    else
+                        var menu_tmp = Joomla.JText._(result.options[i].title);
+
+                    if (Joomla.JText._(result.options[i].group_label) == "undefined" || Joomla.JText._(result.options[i].group_label) == "")
+                        var groupe_tmp = result.options[i].group_label;
+                    else
+                        var groupe_tmp = Joomla.JText._(result.options[i].group_label);
 
                     if (menu != menu_tmp) {
                         options += '<optgroup label="________________________________"><option disabled class="emundus_search_elm" value="-">' + menu_tmp.toUpperCase() + '</option></optgroup>';
@@ -225,11 +230,11 @@ function addElement() {
                         options += '</optgroup>';
 
                     if (groupe != groupe_tmp) {
-                        options += '<optgroup label=">> ' + Joomla.JText._(groupe_tmp) + '">';
+                        options += '<optgroup label=">> ' + groupe_tmp + '">';
                         groupe = groupe_tmp;
                     }
    
-                    if (Joomla.JText._(result.options[i].element_label) == "undefined")
+                    if (Joomla.JText._(result.options[i].element_label) == "undefined" || Joomla.JText._(result.options[i].element_label) == "")
                         var elt_label = result.options[i].element_label;
                     else
                         var elt_label = Joomla.JText._(result.options[i].element_label);
@@ -2292,8 +2297,8 @@ $(document).ready(function()
         '<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_CREATE_PDF')+'</p></div>'+
         '</div>');
 
-        console.log(ids);
-        console.log(fnums);
+        //console.log(ids);
+        //console.log(fnums);
 
             $.ajax(
             {
@@ -2326,9 +2331,9 @@ $(document).ready(function()
 
                                         $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>...</p></div>');
 
-                                        console.log(json);
-                                        console.log(json.ids);
-                                        generate_pdf(json);
+                                        //console.log(json);
+                                        //console.log(json.ids);
+                                        //generate_pdf(json);
                                     
                                     } else {
 

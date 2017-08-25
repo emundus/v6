@@ -76,11 +76,14 @@ class EmundusHelperFiles
         $menu_params    = $menu->getParams(@$current_menu->id);
         $m_files        = new EmundusModelFiles();
 
-        if (!JFactory::getSession()->has('filt_params'))
-            JFactory::getSession()->set('filt_params', array());
+        $session = JFactory::getSession();
+        $params = $session->get('filt_params');
 
-        JFactory::getSession()->set('filt_menu', array());
-        $params = JFactory::getSession()->get('filt_params');
+  /*      if (!$session->has('filt_params'))
+            $session->set('filt_params', array());
+
+        $session->set('filt_menu', array());
+        $params = JFactory::getSession()->get('filt_params');*/
 
         //Filters
         $tables         = explode(',', $menu_params->get('em_tables_id'));
@@ -166,10 +169,6 @@ class EmundusHelperFiles
         
         }
 
-/*        var_dump($filts_details['programme']);
-        echo "<hr>";
-        var_dump($params);
-        echo "<hr>";*/
         // on force avec la valeur du filtre défini dans les options de menu
         if (count($filts_details['status'])>0 && isset($filts_details['status'][0]) && !empty($filts_details['status'][0]))
             $params['status'] = $filts_details['status'];
@@ -201,9 +200,9 @@ class EmundusHelperFiles
             }
         }
 
-        JFactory::getSession()->set('filt_params', $params);
-        JFactory::getSession()->set('filt_menu', $filts_details);
-        
+        $session->set('filt_params', $params);
+        $session->set('filt_menu', $filts_details);
+   
         $filters['filts_details'] = $filts_details;
         $filters['filts_options'] = $filts_options;
         $filters['tables'] = $tables;
@@ -751,24 +750,24 @@ class EmundusHelperFiles
     }
 
     /*
-	 * @description	Get Fabrik elements detail from elements Fabrik ID
-	 * @param	string	$elements	list of Fabrik element comma separated.
-	 * @return	array	Array of Fabrik element params.
-	 */
-	function getElementsDetailsByID($elements) {
-		$db = JFactory::getDBO();
+     * @description Get Fabrik elements detail from elements Fabrik ID
+     * @param   string  $elements   list of Fabrik element comma separated.
+     * @return  array   Array of Fabrik element params.
+     */
+    function getElementsDetailsByID($elements) {
+        $db = JFactory::getDBO();
 
-		$query = 'SELECT element.name AS element_name, element.label AS element_label, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin,
-				element.params AS params, element.params, tab.group_by AS tab_group_by
-				FROM #__fabrik_elements element
-				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id 
-				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
-				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id 
-				WHERE element.id IN ('.$elements.')';
-		$db->setQuery($query);
+        $query = 'SELECT element.name AS element_name, element.label AS element_label, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin,
+                element.params AS params, element.params, tab.group_by AS tab_group_by
+                FROM #__fabrik_elements element
+                INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id 
+                INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
+                INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id 
+                WHERE element.id IN ('.$elements.')';
+        $db->setQuery($query);
 
-		return @EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels", "element_value"));
-	}
+        return @EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels", "element_value"));
+    }
 
     public  function buildOptions($element_name, $params)
     {

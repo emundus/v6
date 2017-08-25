@@ -138,8 +138,7 @@ class EmundusControllerFiles extends JControllerLegacy
         else
         {
             $vals = (array)json_decode(stripslashes($filterval));
-
-            if(isset($vals[0]->name))
+            if(count($vals) > 0)
             {
                 foreach ($vals as $val)
                 {
@@ -155,7 +154,6 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $session->set('filt_params', $params);
-
         $session->set('limitstart', 0);
         echo json_encode((object)(array('status' => true)));
         exit();
@@ -1442,7 +1440,7 @@ class EmundusControllerFiles extends JControllerLegacy
             require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
             $pdf = new ConcatPdf();
 
-            $pdf->setFiles($files_list);  //echo "<pre>"; var_dump($files_list); die();
+            $pdf->setFiles($files_list);
             $pdf->concat();
             if (isset($tmpArray)) {
                 foreach ($tmpArray as $fn) {
