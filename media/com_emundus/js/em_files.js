@@ -2333,7 +2333,7 @@ $(document).ready(function()
 
                                         //console.log(json);
                                         //console.log(json.ids);
-                                        //generate_pdf(json);
+                                        generate_pdf(json);
                                     
                                     } else {
 
