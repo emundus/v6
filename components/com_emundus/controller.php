@@ -243,7 +243,7 @@ class EmundusController extends JControllerLegacy {
         $fnum          = JRequest::getVar('fnum', null, 'GET', 'none',0);
         
         if (empty($fnum))
-            $app->redirect(JURI::Base().'index.php');
+            $app->redirect('index.php');
         
         $current_user  = JFactory::getSession()->get('emundusUser');
         $chemin = EMUNDUS_PATH_ABS;
@@ -267,10 +267,10 @@ class EmundusController extends JControllerLegacy {
         unset($current_user->fnums[$fnum]);
 
         if (in_array($user->fnum, array_keys($user->fnums))) {
-            $app->redirect(JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$user->fnum);
+            $app->redirect('index.php?option=com_emundus&task=openfile&fnum='.$user->fnum);
         } else {
             $fnum = array_shift($current_user->fnums);
-            $app->redirect(JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$fnum->fnum);
+            $app->redirect('index.php?option=com_emundus&task=openfile&fnum='.$fnum->fnum);
         }
 
         return true;
@@ -403,7 +403,7 @@ class EmundusController extends JControllerLegacy {
         $Itemid = $app->input->getInt('Itemid', null, 'int');
         $fnum   = JRequest::getVar('fnum', null, 'GET', 'none', 0);
         if (empty($fnum))
-            $app->redirect(JURI::Base().'index.php');
+            $app->redirect(JURI::base(true).'index.php');
         $redirect   = JRequest::getVar('redirect', null, 'GET');
         $redirect   = (!empty($redirect))?base64_decode($redirect):'index.php';
         $session    = JFactory::getSession();
@@ -1206,7 +1206,7 @@ class EmundusController extends JControllerLegacy {
                 $alt = JText::_('UNVALIDATED').'::'.JText::_('UNVALIDATED_NOTE');
             }
             echo '<span class="hasTip" title="'.$alt.'">
-                    <input type="image" src="'.JURI::Base().'/media/com_emundus/images/icones/'.$img.'" onclick="validation('.$uid.', \''.$value.'\', \''.$cible.'\');" ></span> ';
+                    <input type="image" src="media/com_emundus/images/icones/'.$img.'" onclick="validation('.$uid.', \''.$value.'\', \''.$cible.'\');" ></span> ';
         } else echo JText::_('ERROR');
 
     }

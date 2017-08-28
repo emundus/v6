@@ -21,7 +21,7 @@ $document = JFactory::getDocument();
 $files = glob('templates/rt_afterburner2/css-compiled/menu*.{css}', GLOB_BRACE);
 
 foreach($files as $file) {
-  	$document->addStyleSheet( JURI::base().$file );
+  	$document->addStyleSheet($file );
 }
 */
 $display_applicant_menu = $params->get('display_applicant_menu', 1);

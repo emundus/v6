@@ -277,7 +277,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 				
 				$period_str = strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[0])).' '.JText::_('TO').' '.strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[1]));
 				
-				$replacements = array ($user->id, $user->name, $user->email, $list, JURI::base(), $eval, $period_str, '<br />');
+				$replacements = array ($user->id, $user->name, $user->email, $list, JURI::base(true), $eval, $period_str, '<br />');
 				// template replacements
 				$body = preg_replace($patterns, $replacements, $obj[0]->message);
 				unset($replacements);
@@ -412,7 +412,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 				
 			$period_str = strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[0])).' '.JText::_('TO').' '.strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[1]));
 				
-			$replacements = array ($user->id, $user->name, $user->email, $list, JURI::base(), $eval, $period_str, '<br />');
+			$replacements = array ($user->id, $user->name, $user->email, $list, JURI::base(true), $eval, $period_str, '<br />');
 			// template replacements
 			$body = preg_replace($patterns, $replacements, $message);
 	

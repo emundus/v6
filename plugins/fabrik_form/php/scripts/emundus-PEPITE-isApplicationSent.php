@@ -26,12 +26,12 @@ $fnum = $jinput->get('rowid', null);
 
 if(!EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
     if ($jinput->get('tmpl')=='component') {
-        JHTML::stylesheet( JURI::Base().'media/com_fabrik/css/fabrik.css' );
-        JHTML::stylesheet( JURI::Base().'media/system/css/modal.css' );
+        JHTML::stylesheet( JURI::base(true).'media/com_fabrik/css/fabrik.css' );
+        JHTML::stylesheet( JURI::base(true).'media/system/css/modal.css' );
         $doc = JFactory::getDocument();
-        $doc->addScript(JURI::Base()."media/com_fabrik/js/window-min.js");
-        $doc->addScript(JURI::Base()."media/com_fabrik/js/lib/form_placeholder/Form.Placeholder.js");
-        $doc->addScript(JURI::Base()."templates/rt_afterburner2/js/rokmediaqueries.js");
+        $doc->addScript("media/com_fabrik/js/window-min.js");
+        $doc->addScript("media/com_fabrik/js/lib/form_placeholder/Form.Placeholder.js");
+        $doc->addScript("templates/rt_afterburner2/js/rokmediaqueries.js");
     }
 
     //echo "<script>$('rt-header').remove(); $('rt-footer').remove(); $('gf-menu-toggle').remove();</script>";

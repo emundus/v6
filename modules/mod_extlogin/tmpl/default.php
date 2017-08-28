@@ -1,6 +1,6 @@
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access'); 
-JHTML::stylesheet( 'emundus.css', JURI::Base().'modules/mod_extlogin/style/' );
+JHTML::stylesheet( 'emundus.css', 'modules/mod_extlogin/style/' );
 $usersConfig = JComponentHelper::getParams( 'com_users' );
 
 if($type == 'logout') : ?>

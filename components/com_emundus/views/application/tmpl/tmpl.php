@@ -30,9 +30,9 @@
 				<td><?php echo JHtml::_('date', $this->student->lastvisitDate, JText::_('DATE_FORMAT_LC2')); ?></td>
 				<td><?php
 					if (isset($this->logged[0]->logoutLink))
-						echo '<img style="border:0;" src="'.JURI::Base().'/media/com_emundus/images/icones/green.png" alt="'.JText::_('ONLINE').'" title="'.JText::_('ONLINE').'" />';
+						echo '<img style="border:0;" src="'.JURI::base(true).'media/com_emundus/images/icones/green.png" alt="'.JText::_('ONLINE').'" title="'.JText::_('ONLINE').'" />';
 					else
-						echo '<img style="border:0;" src="'.JURI::Base().'/media/com_emundus/images/icones/red.png" alt="'.JText::_('OFFLINE').'" title="'.JText::_('OFFLINE').'" />';
+						echo '<img style="border:0;" src="'.JURI::base(true).'media/com_emundus/images/icones/red.png" alt="'.JText::_('OFFLINE').'" title="'.JText::_('OFFLINE').'" />';
 					?></td>
 			</tr>
 			</tbody>
@@ -44,7 +44,7 @@
 
 	<div class="title" id="em_application_emails"> <i class="dropdown icon"></i> <?php echo JText::_('EMAIL_HISTORY'); ?> </div>
 	<div class="content">
-		<div class="actions"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&amp;view=email&amp;tmpl=component&amp;sid=<?php echo $this->student->id; ?>&amp;Itemid=<?php echo $itemid; ?>">
+		<div class="actions"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(true); ?>index.php?option=com_emundus&amp;view=email&amp;tmpl=component&amp;sid=<?php echo $this->student->id; ?>&amp;Itemid=<?php echo $itemid; ?>">
 				<button class="ui button teal submit labeled icon" data-title="<?php echo JText::_('SEND_EMAIL'); ?>"> <i class="icon mail"></i><?php echo JText::_('SEND_EMAIL'); ?> </button>
 			</a> </div>
 		<?php

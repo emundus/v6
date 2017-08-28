@@ -27,7 +27,7 @@ class EmundusViewThesis extends JViewLegacy {
      */
     public function display($tpl = null) {
 
-        //JHtml::stylesheet('bootstrap.min.css', JURI::base() . 'media/com_emundus/lib/bootstrap-emundus/css/');
+        //JHtml::stylesheet('bootstrap.min.css',  'media/com_emundus/lib/bootstrap-emundus/css/');
 
         $app = JFactory::getApplication();
         $user = JFactory::getUser();

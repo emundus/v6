@@ -16,15 +16,15 @@ require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checkli
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
 $document = JFactory::getDocument();
-$document->addStyleSheet( JURI::base()."media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
-$document->addStyleSheet( JURI::base()."media/com_emundus/lib/jquery-plugin-circliful-master/css/material-design-iconic-font.min.css" );
+$document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
+$document->addStyleSheet("media/com_emundus/lib/jquery-plugin-circliful-master/css/material-design-iconic-font.min.css" );
 $document->addStyleSheet( 'https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.css' );
 
 $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script><![endif]-->');
 $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->');
-$document->addScript( JURI::base()."media/com_emundus/lib/jquery-1.12.4.min.js" );
-$document->addScript( JURI::base()."media/com_emundus/lib/bootstrap-336/js/bootstrap.min.js");
-$document->addScript( JURI::base()."media/com_emundus/lib/jquery-plugin-circliful-master/js/jquery.circliful.js" );
+$document->addScript("media/com_emundus/lib/jquery-1.12.4.min.js" );
+$document->addScript("media/com_emundus/lib/bootstrap-336/js/bootstrap.min.js");
+$document->addScript("media/com_emundus/lib/jquery-plugin-circliful-master/js/jquery.circliful.js" );
 
 $app 						= JFactory::getApplication();
 $Itemid 					= $app->input->getInt('Itemid', null, 'int');

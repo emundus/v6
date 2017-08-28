@@ -2,7 +2,7 @@
 defined('_JEXEC') or die('Restricted access'); 
 
 JHTML::_('behavior.modal'); 
-JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
+JHTML::stylesheet( 'emundus.css', 'media/com_emundus/css/' );
 
 $tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
 $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
@@ -121,6 +121,6 @@ function OnSubmitForm() {
 		return true;
 	}
 } 
-<?php JHTML::script( 'emundus.js', JURI::Base().'media/com_emundus/js/' ); ?>
+<?php JHTML::script( 'emundus.js', 'media/com_emundus/js/' ); ?>
 </script>
 </div>

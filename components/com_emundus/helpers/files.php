@@ -601,7 +601,7 @@ class EmundusHelperFiles
             $photos = $m_files->getPhotos();
 
             foreach ($photos as $photo) {
-                $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
+                $folder = JURI::base(true).EMUNDUS_PATH_REL.$photo['user_id'];
                 $pictures[$photo['fnum']] = '<a href="'.$folder.'/'.$photo['filename'].'" target="_blank"><img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></a>';
             }
 
@@ -894,9 +894,9 @@ class EmundusHelperFiles
         $files = new EmundusModelFiles();
 
         /*$document = JFactory::getDocument();
-        $document->addStyleSheet( JURI::base()."media/com_emundus/lib/chosen/chosen.min.css" );
-        $document->addScript( JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
-        $document->addScript( JURI::base()."media/com_emundus/lib/chosen/chosen.jquery.min.js" );*/
+        $document->addStyleSheet("media/com_emundus/lib/chosen/chosen.min.css" );
+        $document->addScript("media/com_emundus/lib/jquery-1.10.2.min.js" );
+        $document->addScript("media/com_emundus/lib/chosen/chosen.jquery.min.js" );*/
 
         $session     = JFactory::getSession();
         $filt_params = $session->get('filt_params');
@@ -1382,7 +1382,7 @@ class EmundusHelperFiles
             $other_elements = @EmundusHelperFiles::getElementsOther($tables);
             $other_filter = '<div class="em_filters" id="em_other_filters"><a href="javascript:addElementOther();"><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('OTHER_FILTERS').'</span>';
             $other_filter .= '<input type="hidden" value="0" id="theValue_other" />';
-            $other_filter .= '<img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag+_16x16.png" alt="'.JText::_('ADD_SEARCH_ELEMENT').'" id="add_filt"/></a>';
+            $other_filter .= '<img src="'.JURI::base(true).'media/com_emundus/images/icones/viewmag+_16x16.png" alt="'.JText::_('ADD_SEARCH_ELEMENT').'" id="add_filt"/></a>';
             $other_filter .= '<div id="otherDiv">';
 
             if (count($search_other)>0 && isset($search_other) && is_array($search_other)) {
@@ -1414,7 +1414,7 @@ class EmundusHelperFiles
                     if(!isset($search_values_other[$i])) $search_values_other[$i] = "";
                     if ($selected_other != "")
                         $other_filter .= @EmundusHelperFiles::setSearchBox($selected_other, $search_values_other[$i], "elements_values_other", $i);
-                    $other_filter .= '<a href="javascript:clearAdvanceFilter(\'filter_other'.$i.'\'); javascript:removeElement(\'filter_other'.$i.'\', 2);"><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>';
+                    $other_filter .= '<a href="javascript:clearAdvanceFilter(\'filter_other'.$i.'\'); javascript:removeElement(\'filter_other'.$i.'\', 2);"><img src="'.JURI::base(true).'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>';
                     $i++;
                     $other_filter .= '</div>';
                 }

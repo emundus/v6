@@ -36,7 +36,7 @@ class EmundusViewFiles extends JViewLegacy
 
     	// translation to load in javacript file ; /media/com_emundus/em_files.js
     	// put it in com_emundus/emundus.php
-		//JHtml::styleSheet(JURI::base()."media/com_emundus/lib/chosen/chosen.min.css");
+		//JHTML::stylesheet("media/com_emundus/lib/chosen/chosen.min.css");
 
 	    $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 

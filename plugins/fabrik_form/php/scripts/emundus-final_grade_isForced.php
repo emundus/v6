@@ -13,7 +13,7 @@ defined( '_JEXEC' ) or die();
  * @description Force la validation d'une candidature 
  * afin qu'elle apparaisse dans le listing des candidats accepté malgrés un dossier imcomplet
  
-$baseurl = JURI::base();
+$baseurl = JURI::base(true);
 */
 $sid = $_REQUEST['jos_emundus_final_grade___student_id'];
 $fgrade = $_REQUEST['jos_emundus_final_grade___Final_grade'][0];

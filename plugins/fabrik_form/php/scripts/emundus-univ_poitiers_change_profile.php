@@ -93,7 +93,7 @@ if (EmundusHelperAccess::isApplicant($current_user->id)) {
     $app->redirect("index.php?option=com_emundus&view=checklist&Itemid=1516");
 } else {
 	echo '<script>window.parent.$("html, body").animate({scrollTop : 0}, 300);</script>';
-	die('<h1><img src="'.JURI::Base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>');
+	die('<h1><img src="'.JURI::base(true).'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>');
 }
 
 

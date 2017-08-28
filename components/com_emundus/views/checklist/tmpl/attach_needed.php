@@ -1,6 +1,6 @@
 <?php 
 defined('_JEXEC') or die('Restricted access'); 
-JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
+JHTML::stylesheet( 'emundus.css', 'media/com_emundus/css/' );
 
 $user = JFactory::getSession()->get('emundusUser');
 $_db = JFactory::getDBO();

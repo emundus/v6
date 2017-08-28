@@ -40,7 +40,7 @@ class EmundusViewFiles extends JViewLegacy
 
     public function display($tpl = null)
     {
-    	JHtml::styleSheet(JURI::base()."media/com_emundus/css/emundus.css");
+    	JHTML::stylesheet("media/com_emundus/css/emundus.css");
 
     	$current_user = JFactory::getUser();
 

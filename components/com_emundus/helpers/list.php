@@ -68,7 +68,7 @@ class EmundusHelperList{
 		$current_group = JRequest::getVar('groups', null, 'POST', 'none',0);
 		 $affect = '
 		 	<fieldset>
-				<legend><img src="'.JURI::Base().'media/com_emundus/images/icones/kbackgammon_engine_22x22.png" alt="'.JText::_('BATCH').'"/> '.JText::_('AFFECT_TO_ASSESSORS').'</legend>
+				<legend><img src="'.JURI::base(true).'media/com_emundus/images/icones/kbackgammon_engine_22x22.png" alt="'.JText::_('BATCH').'"/> '.JText::_('AFFECT_TO_ASSESSORS').'</legend>
 				<div id="assessor_group">
 					<label for="ass1"><input type="radio" name="assessor" id="ass1" onclick="hidden_affect(this);" value="1">'.JText::_('ASSESSOR_GROUP_FILTER').'</label>
 					<div id="hidden_assessor_group">
@@ -480,11 +480,11 @@ class EmundusHelperList{
 					}
 					$id = $vd->tab_name.'.'.$vd->element_name.'.'.$user['user_id'];
 					@$validate[$user['user_id']] .= '<div class="em_validation" id="'.$id.'"><span class="hasTip" title="'.$alt.'">';
-					@$validate[$user['user_id']] .= '<input type="image" src="'.JURI::Base().'/media/com_emundus/images/icones/'.$img.'" onclick="validation('.$user['user_id'].',\''.$user[$vd->element_name].'\', \''.$id.'\');" >';
-					//@$validate[$user['user_id']] .= '<img src="'.JURI::Base().'/media/com_emundus/images/icones/'.$img.'" onclick="validation('.$user['user_id'].',\''.$user[$vd->element_name].'\', \''.$id.'\');" >';
+					@$validate[$user['user_id']] .= '<input type="image" src="'.JURI::base(true).'media/com_emundus/images/icones/'.$img.'" onclick="validation('.$user['user_id'].',\''.$user[$vd->element_name].'\', \''.$id.'\');" >';
+					//@$validate[$user['user_id']] .= '<img src="'.JURI::base(true).'/media/com_emundus/images/icones/'.$img.'" onclick="validation('.$user['user_id'].',\''.$user[$vd->element_name].'\', \''.$id.'\');" >';
 					@$validate[$user['user_id']] .= '</span></div> '.$vd->element_label.'<br>'; 
 				} else {
-					@$validate[$user['user_id']] .= '<img src="'.JURI::Base().'/media/com_emundus/images/icones/'.$btn.'" /> '.$vd->element_label.'<br>';
+					@$validate[$user['user_id']] .= '<img src="'.JURI::base(true).'media/com_emundus/images/icones/'.$btn.'" /> '.$vd->element_label.'<br>';
 				}
 			}
 		}
@@ -643,7 +643,7 @@ class EmundusHelperList{
 						}
 						$uList .= '</ul>';
 						if(in_array('delete',$params)){
-							$img = '<span class="editlinktip hasTip" title="'.JText::_('DELETE_ASSESSOR').' : '.$this->groups[$ass->group_id]->label.'::'.JText::_('DELETE_ASSESSOR_TXT').'"><a href="index.php?option=com_emundus&controller=evaluation&task=delassessor&aid='.$user['user_id'].'&pid='.$ass->group_id.'&uid='.$ass->user_id.'&cid='.$ass->campaign_id.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid.'"><img src="'.JURI::Base().'media/com_emundus/images/icones/clear_left_16x16.png" alt="'.JText::_('DEL_ASSESSOR').'" align="absbottom" /></a></span> ';
+							$img = '<span class="editlinktip hasTip" title="'.JText::_('DELETE_ASSESSOR').' : '.$this->groups[$ass->group_id]->label.'::'.JText::_('DELETE_ASSESSOR_TXT').'"><a href="index.php?option=com_emundus&controller=evaluation&task=delassessor&aid='.$user['user_id'].'&pid='.$ass->group_id.'&uid='.$ass->user_id.'&cid='.$ass->campaign_id.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid.'"><img src="'.JURI::base(true).'media/com_emundus/images/icones/clear_left_16x16.png" alt="'.JText::_('DEL_ASSESSOR').'" align="absbottom" /></a></span> ';
 							@$evaluator[$user['user_id']][$user['campaign_id']] .= '<span class="editlinktip hasTip" title="'.JText::_('GROUP_MEMBERS').'::'.$uList.'">'.$this->groups[$ass->group_id]->label.'</span> '.$img.'<br />';
 						}else{
 							@$evaluator[$user['user_id']][$user['campaign_id']] .= '<span class="editlinktip hasTip" title="'.JText::_('GROUP_MEMBERS').'::'.$uList.'">'.$this->groups[$ass->group_id]->label.'</span></br>';
@@ -655,7 +655,7 @@ class EmundusHelperList{
 						$eval[$user['user_id']][$user['campaign_id']][$ass->user_id]=true;
 						$usr = JUser::getInstance($ass->user_id); 
 						if(in_array('delete',$params)){
-							$img = '<span class="editlinktip hasTip" title="'.JText::_('DELETE_ASSESSOR').' : '.$this->evaluators[$ass->user_id]->name.'::'.JText::_('DELETE_ASSESSOR_TXT').'"><a href="index.php?option=com_emundus&controller=evaluation&task=delassessor&aid='.$user['user_id'].'&pid='.$ass->group_id.'&uid='.$ass->user_id.'&cid='.$ass->campaign_id.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid.'"><img src="'.JURI::Base().'media/com_emundus/images/icones/clear_left_16x16.png" alt="'.JText::_('DEL_ASSESSOR').'" align="absbottom" /></a></span> ';
+							$img = '<span class="editlinktip hasTip" title="'.JText::_('DELETE_ASSESSOR').' : '.$this->evaluators[$ass->user_id]->name.'::'.JText::_('DELETE_ASSESSOR_TXT').'"><a href="index.php?option=com_emundus&controller=evaluation&task=delassessor&aid='.$user['user_id'].'&pid='.$ass->group_id.'&uid='.$ass->user_id.'&cid='.$ass->campaign_id.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid.'"><img src="'.JURI::base(true).'media/com_emundus/images/icones/clear_left_16x16.png" alt="'.JText::_('DEL_ASSESSOR').'" align="absbottom" /></a></span> ';
 							@$evaluator[$user['user_id']][$user['campaign_id']] .= $this->evaluators[$ass->user_id]->name.' '.$img.'<br />';
 						}else{
 							@$evaluator[$user['user_id']][$user['campaign_id']] .= $this->evaluators[$ass->user_id]->name.'</br>';
@@ -766,7 +766,7 @@ class EmundusHelperList{
 					$label = JText::_('JNO');
 				}
 				$id =  "jos_emundus_final_grade.engaged.".$user['user_id'].".".$user['campaign_id'];
-				$engaged[$user['user_id']][$user['campaign_id']] = '<div class="em_validation" id="'.$id.'"><span class="hasTip" title="'.$alt.'"><input type="image" src="'.JURI::Base().'/media/com_emundus/images/icones/'.$img.'" onclick="validation('.$user['user_id'].',\''.$user['engaged'].'\', \''.$id.'\');" > '.$label.'</span></div> '; 
+				$engaged[$user['user_id']][$user['campaign_id']] = '<div class="em_validation" id="'.$id.'"><span class="hasTip" title="'.$alt.'"><input type="image" src="'.JURI::base(true).'media/com_emundus/images/icones/'.$img.'" onclick="validation('.$user['user_id'].',\''.$user['engaged'].'\', \''.$id.'\');" > '.$label.'</span></div> '; 
 			} else {
 				@$engaged[$user['user_id']][$user['campaign_id']] .= '';
 			}
@@ -853,7 +853,7 @@ class EmundusHelperList{
 	}
 	
 	function createApplicationStatutblock($params){
-        $statut = '<div id="em_comments"><img class="selectallarrow" width="38" height="22" alt="'.JText::_('FOR_SELECTION').'" src="'.JURI::Base().'media/com_emundus/images/icones/arrow_ltr.png"><textarea name="comments" id="comments" rows="1" cols="50%" onFocus="if(this.value == this.defaultValue) this.value=\'\'">'.JText::_('COMMENTS').'</textarea>';
+        $statut = '<div id="em_comments"><img class="selectallarrow" width="38" height="22" alt="'.JText::_('FOR_SELECTION').'" src="'.JURI::base(true).'media/com_emundus/images/icones/arrow_ltr.png"><textarea name="comments" id="comments" rows="1" cols="50%" onFocus="if(this.value == this.defaultValue) this.value=\'\'">'.JText::_('COMMENTS').'</textarea>';
         $statut .= '<div id="em_comments_action">';
 		if(in_array('complete',$params)) $statut .= '<input type="submit" class="green" name="push_true" value="'.JText::_('PUSH_TRUE').'" onclick="document.pressed=this.name" />';
 		if(in_array('incomplete',$params)) $statut .= '<input type="submit" class="red" name="push_false" value="'.JText::_('PUSH_FALSE').'" onclick="document.pressed=this.name" />';

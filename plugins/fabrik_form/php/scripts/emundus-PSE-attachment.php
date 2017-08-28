@@ -17,7 +17,7 @@ defined( '_JEXEC' ) or die();
 $mainframe 		= JFactory::getApplication();
 $mailer = JFactory::getMailer();
 $jinput 		= $mainframe->input;
-$baseurl 		= JURI::base();
+$baseurl 		= JURI::base(true);
 $db 			= JFactory::getDBO();
 
 $references_id = array(4, 6, 21, 19);

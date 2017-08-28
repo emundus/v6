@@ -1,6 +1,6 @@
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
-JHTML::stylesheet( 'emundus.css', JURI::Base().'modules/mod_emundusuniv/style/' );
+JHTML::stylesheet( 'emundus.css', 'modules/mod_emundusuniv/style/' );
 
 echo '<div id="emundusuniv">';
 	foreach ($univ as $u){

@@ -9,7 +9,7 @@ class EmundusModelXls_ranking extends JModelList
 
 		@set_time_limit(10800);
 		global $mainframe;
-		$baseurl = JURI::base();
+		$baseurl = JURI::base(true);
 		$db	= JFactory::getDBO();
 		jimport( 'joomla.user.user' );
 

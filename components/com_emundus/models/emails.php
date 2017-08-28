@@ -355,7 +355,7 @@ class EmundusModelEmails extends JModelList
         );
         $replacements = array(
             $user->id, $user->name, $user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
-            JURI::base()."index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), JURI::base(),
+            JURI::base(true)."index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), JURI::base(true),
             $user->id, $user->name, $user->email, $user->username, date("F j, Y"), $logo
         );
 
@@ -687,9 +687,9 @@ class EmundusModelEmails extends JModelList
                 $this->_db->query();
 
                 // 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-                $link_accept = JURI::base().'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tableid=71&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id;
-                $link_refuse = JURI::base().'index.php?option=com_fabrik&c=form&view=form&formid=168&tableid=71&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
-                //$link_refuse = JURI::base().'index.php?option=com_emundus&task=decline&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id;
+                $link_accept = JURI::base(true).'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tableid=71&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id;
+                $link_refuse = JURI::base(true).'index.php?option=com_fabrik&c=form&view=form&formid=168&tableid=71&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
+                //$link_refuse = JURI::base(true).'index.php?option=com_emundus&task=decline&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id;
 
                 $post = array(  'EXPERT_ACCEPT_LINK'    => $link_accept,
                                 'EXPERT_REFUSE_LINK'    => $link_refuse

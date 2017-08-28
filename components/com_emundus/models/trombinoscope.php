@@ -162,7 +162,7 @@ class EmundusModelTrombinoscope extends JModelLegacy
         $tmpName = JPATH_BASE.DS.'tmp'.DS.$fileName;
         $pdf->Output($tmpName, 'F');
 
-        return JURI::base().'tmp'.DS.$fileName;
+        return JURI::base(true).'tmp'.DS.$fileName;
     }
 */
     // DOMPDF
@@ -206,6 +206,6 @@ class EmundusModelTrombinoscope extends JModelLegacy
         $output = $pdf->output();
         file_put_contents($tmpName, $output);
 
-        return JURI::base().'tmp'.DS.$fileName;
+        return JURI::base(true).'tmp'.DS.$fileName;
     }
 }

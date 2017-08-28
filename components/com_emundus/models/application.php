@@ -918,7 +918,7 @@ class EmundusModelApplication extends JModelList
                                                 $elt = $r_elt;
                                             //print_r($this->_mainframe->data);
                                             /*if(EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) && !$delete_link) {
-                                                //$delete_link = '<div class="comment_icon" id="training_'.$r_element->id.'"><img src="'.JURI::Base().'/media/com_emundus/images/icones/button_cancel.png" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_CONFIRM").'"').')) {deleteData('.$r_element->id.', \''.$table.'\');}"/></div>';
+                                                //$delete_link = '<div class="comment_icon" id="training_'.$r_element->id.'"><img src="'.JURI::base(true).'media/com_emundus/images/icones/button_cancel.png" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_CONFIRM").'"').')) {deleteData('.$r_element->id.', \''.$table.'\');}"/></div>';
                                                 $delete_link = '<a class=​"ui" name="delete_course" data-title="'.JText::_('DELETE_CONFIRM').'" onClick="$(\'#confirm_type\').val(this.name); $(\'#course_id\').val('.$r_element->id.'); $(\'#course_table\').val(\''.$table.'\'); $(\'.basic.modal.confirm.course\').modal(\'show\');"><i class="trash icon"></i>​</a>​';
                                             }
                                             $forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.$delete_link.' '.$elt.'</div></td>';

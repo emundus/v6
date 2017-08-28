@@ -17,12 +17,12 @@ defined('_JEXEC') or die('Restricted access');
 require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
 $document = JFactory::getDocument();
-$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
+$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
 // overide css
 $header_class = $params->get('header_class', '');
 if (!empty($header_class))
-	$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$header_class.".css" );
-$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
+	$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$header_class.".css" );
+$document->addStyleSheet("media/com_emundus/css/emundus.css" );
 
 $db	= JFactory::getDBO();
 $current_user = JFactory::getuser();
@@ -98,9 +98,9 @@ if (!empty($t__)) {
 			$menu_params = json_decode($r->params, true);
 			$src = '';
 			if (empty($img[$j]) && !empty($menu_params['menu_image']) && empty($menu_params['menu-anchor_css']))
-				$src = JURI::base().$menu_params['menu_image'];
+				$src = JURI::base(true).$menu_params['menu_image'];
 			else
-				$src = JURI::Base().$folder.''.$img[$j];
+				$src = JURI::base(true).$folder.''.$img[$j];
 
 			$img = '';
 			if (!empty($src)) {
@@ -156,9 +156,9 @@ if (!empty($t__)) {
 			} else {
 				$glyphicon = '';
 				if (!empty($menu_params['menu_image']))
-					$icon = '<img src="'.JURI::base().$menu_params['menu_image'].'" />';
+					$icon = '<img src="'.JURI::base(true).$menu_params['menu_image'].'" />';
 				else
-					$icon = '<img src="'.JURI::Base().$folder.'files_grey.png" />';
+					$icon = '<img src="'.JURI::base(true).$folder.'files_grey.png" />';
 			}
 			
 			$str = '<a href="'.JRoute::_($r->link.'&Itemid='.$r->id).'">'.$glyphicon.$icon.' <br />'.$r->title.'</a>';

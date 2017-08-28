@@ -67,7 +67,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
 
                         echo '<tr>
                                   <td>'.$checkbox.' '.$i.'</td>
-                                  <td><a href="'.JURI::Base().$path.'" target="_blank">'.$img_dossier.' '. $img_locked.' '.$img_missing.' '.$attachment->value.'</a></td>
+                                  <td><a href="'.JURI::base(true).$path.'" target="_blank">'.$img_dossier.' '. $img_locked.' '.$img_missing.' '.$attachment->value.'</a></td>
                                   <td>'.JHtml::_('date', $attachment->timedate, JText::_('DATE_FORMAT_LC2')).'</td>
                                   <td>'.$attachment->description.'</td>
                                   <td>'.$attachment->campaign_label.'</td>
@@ -113,7 +113,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                             <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('LOADING');?></h4>
                         </div>
                         <div class="modal-body">
-                            <img src="<?php echo JURI::Base(); ?>media/com_emundus/images/icones/loader-line.gif">
+                            <img src="<?php echo JURI::base(true); ?>media/com_emundus/images/icones/loader-line.gif">
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>

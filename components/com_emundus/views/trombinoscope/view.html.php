@@ -20,10 +20,6 @@ class EmundusViewTrombinoscope extends JViewLegacy
 
     public function display($tpl = null)
     {
-       /*$document = JFactory::getDocument();
-        $document->addStyleSheet(JURI::base()."media/com_emundus/css/emundus_trombinoscope.css" );
-        $document->addScript(JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
-*/
         $current_user = JFactory::getUser();
         if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id) )
             die( JText::_('RESTRICTED_ACCESS') );

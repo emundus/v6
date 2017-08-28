@@ -26,9 +26,9 @@ class EmundusViewJobs extends JViewLegacy {
      * Display the view
      */
     public function display($tpl = null) {
-        JHtml::stylesheet('bootstrap.min.css', JURI::base() . 'media/com_emundus/lib/bootstrap-emundus/css/');
-        JHtml::script('jquery-1.10.2.min.js', JURI::base() . 'media/com_emundus/lib/');
-        JHtml::script('bootstrap.min.js', JURI::base() . 'media/com_emundus/lib/bootstrap-emundus/js/');
+        JHtml::stylesheet('bootstrap.min.css',  'media/com_emundus/lib/bootstrap-emundus/css/');
+        JHtml::script('jquery-1.10.2.min.js',  'media/com_emundus/lib/');
+        JHtml::script('bootstrap.min.js',  'media/com_emundus/lib/bootstrap-emundus/js/');
 
 
         $app = JFactory::getApplication();

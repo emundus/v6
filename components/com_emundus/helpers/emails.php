@@ -49,7 +49,7 @@ class EmundusHelperEmails
 			$email .= '<fieldset>
 				<legend> 
 					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'::'.JText::_('EMAIL_ASSESSORS_DEFAULT_TIP').'">
-						<img src="'.JURI::Base().'media/com_emundus/images/icones/mail_replayall_22x22.png" alt="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'"/>'.JText::_('EMAIL_ASSESSORS_DEFAULT').'
+						<img src="'.JURI::base(true).'media/com_emundus/images/icones/mail_replayall_22x22.png" alt="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'"/>'.JText::_('EMAIL_ASSESSORS_DEFAULT').'
 					</span>
 				</legend>
 				<div><input type="submit" class="btn btn-large btn-success" name="default_email" value="'.JText::_( 'SEND_DEFAULT_EMAIL' ).'" ></div>
@@ -199,7 +199,7 @@ class EmundusHelperEmails
 			$email .= '<fieldset>
 				<legend> 
 					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_APPLICATION_RESULT').'::'.JText::_('EMAIL_APPLICATION_RESULT_TIP').'">
-						<img src="'.JURI::Base().'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_TO').'"/> '.JText::_( 'EMAIL_TO' ).' '.$applicant->name.' &bull; <i>'.$applicant->email.'</i> 
+						<img src="'.JURI::base(true).'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_TO').'"/> '.JText::_( 'EMAIL_TO' ).' '.$applicant->name.' &bull; <i>'.$applicant->email.'</i> 
 					</span>
 				</legend>
 				<div>';
@@ -504,7 +504,7 @@ class EmundusHelperEmails
 			// template replacements (patterns)
 			$post = array(	'COURSE_LABEL' => @$programme['label'],
 							'CAMPAIGN_LABEL' => @$campaign['label'],
-							'SITE_URL' => JURI::base(),
+							'SITE_URL' => JURI::base(true),
 							'USER_EMAIL' => $user->email
 						 );
 			$tags = $emails->setTags($user->id, $post);
@@ -663,7 +663,7 @@ class EmundusHelperEmails
             // template replacements (patterns)
             $post = array('COURSE_LABEL' => @$programme['label'],
                 'CAMPAIGN_LABEL' => @$campaign['label'],
-                'SITE_URL' => JURI::base(),
+                'SITE_URL' => JURI::base(true),
                 'USER_EMAIL' => $user->email
             );
             $tags = $emails->setTags($user->id, $post);

@@ -1,6 +1,6 @@
 <?php 
 JHTML::_('behavior.modal'); 
-JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css' );
+JHTML::stylesheet( 'emundus.css', 'media/com_emundus/css' );
 defined('_JEXEC') or die('Restricted access'); 
 $path = JPATH_BASE.DS.'images'.DS.'emundus'.DS.'files'.DS;
 
@@ -15,7 +15,7 @@ $path = JPATH_BASE.DS.'images'.DS.'emundus'.DS.'files'.DS;
 
 <fieldset>
 <legend>
-<img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('FILES_NOT_FOUND_IN_SERVER'); ?>"/> 
+<img src="<?php JURI::base(true); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('FILES_NOT_FOUND_IN_SERVER'); ?>"/> 
 <?php echo JText::_('FILES_NOT_FOUND_IN_SERVER'); ?>
 </legend>
 <?php 
@@ -77,7 +77,7 @@ foreach ($this->files as $f) {
 
 <fieldset>
 <legend>
-<img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('FILES_NOT_FOUND_IN_DB'); ?>"/> 
+<img src="<?php JURI::base(true); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('FILES_NOT_FOUND_IN_DB'); ?>"/> 
 <?php echo JText::_('FILES_NOT_FOUND_IN_DB'); ?>
 </legend>
 <?php 

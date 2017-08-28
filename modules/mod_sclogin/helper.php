@@ -51,9 +51,9 @@ class modSCLoginHelper
     {
         // Load our CSS and Javascript files
         if (!$this->isJFBConnectInstalled)
-            $this->doc->addStyleSheet(JURI::base(true) . '/media/sourcecoast/css/sc_bootstrap.css');
+            $this->doc->addStyleSheet(JURI::base(true) . 'media/sourcecoast/css/sc_bootstrap.css');
 
-        $this->doc->addStyleSheet(JURI::base(true) . '/media/sourcecoast/css/common.css');
+        $this->doc->addStyleSheet(JURI::base(true) . 'media/sourcecoast/css/common.css');
 
         $paths = array();
         $paths[] = JPATH_ROOT . '/templates/' . JFactory::getApplication()->getTemplate() . '/html/mod_sclogin/themes/';
@@ -74,7 +74,7 @@ class modSCLoginHelper
             if (($browserType == 'msie') && ($browserVersion <= 9))
             {
                 // Using addCustomTag to ensure this is the last section added to the head, which ensures that jfbcJQuery has been defined
-                $this->doc->addCustomTag('<script src="' . JURI::base(true) . '/media/sourcecoast/js/jquery.placeholder.js" type="text/javascript"> </script>');
+                $this->doc->addCustomTag('<script src="' . JURI::base(true) . 'media/sourcecoast/js/jquery.placeholder.js" type="text/javascript"> </script>');
                 $this->doc->addCustomTag("<script>jfbcJQuery(document).ready(function() { jfbcJQuery('input').placeholder(); });</script>");
             }
         }
@@ -110,21 +110,21 @@ class modSCLoginHelper
         if (!$this->isJFBConnectInstalled)
         {
             if ($this->params->get('loadJQuery'))
-                $this->doc->addScript(JURI::base(true) . '/media/sourcecoast/js/jq-bootstrap-1.8.3.js');
+                $this->doc->addScript(JURI::base(true) . 'media/sourcecoast/js/jq-bootstrap-1.8.3.js');
             if  ($needsBootstrap || $this->tfaLoaded)
                 $this->doc->addScriptDeclaration('if (typeof jfbcJQuery == "undefined") jfbcJQuery = jQuery;');
         }
 
         if ($this->tfaLoaded)
         {
-            $this->doc->addScript(Juri::base(true) . '/media/sourcecoast/js/mod_sclogin.js');
+            $this->doc->addScript(Juri::base(true) . 'media/sourcecoast/js/mod_sclogin.js');
             $this->doc->addScriptDeclaration('sclogin.token = "' . JSession::getFormToken() . '";' .
                 //"jfbcJQuery(window).on('load',  function() {
                 // Can't use jQuery here because we don't know if jfbcJQuery has been loaded or not.
                 "window.onload = function() {
                     sclogin.init();
                 };
-                sclogin.base = '" . JURI::base() . "';\n"
+                sclogin.base = '" . JURI::base(true) . "';\n"
             );
         }
 

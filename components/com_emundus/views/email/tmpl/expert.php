@@ -5,12 +5,12 @@ $document = JFactory::getDocument();
 
 JHTML::_('behavior.modal'); 
 JHTML::_('behavior.tooltip'); 
-JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
-//JHTML::stylesheet( 'light2.css', JURI::Base().'templates/rt_afterburner/css/' );
-JHTML::stylesheet( 'general.css', JURI::Base().'templates/system/css/' );
-JHTML::stylesheet( 'system.css', JURI::Base().'templates/system/css/' );
+JHTML::stylesheet( 'emundus.css', 'media/com_emundus/css/' );
+//JHTML::stylesheet( 'light2.css', 'templates/rt_afterburner/css/' );
+JHTML::stylesheet( 'general.css', 'templates/system/css/' );
+JHTML::stylesheet( 'system.css', 'templates/system/css/' );
 // AJAX upload
-JHTML::script('webtoolkit.aim.js', JURI::base().'media/com_emundus/js/');
+JHTML::script('webtoolkit.aim.js', 'media/com_emundus/js/');
 
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
@@ -91,7 +91,7 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 				submit_attachment.value = "<?php echo JText::_('UPLOAD'); ?>";
     			var objJSON = JSON.parse(response);
 				var html = '<div id="em_dl_'+objJSON.id+'" class="em_dl"><a class="dO" target="_blank" href="'+objJSON.url+'"><div class="vI">'+objJSON.name+'</div> <div class="vJ"> ('+objJSON.filesize+' <?php echo JText::_("BYTES") ?>)</div></a><div class="em_email_icon" id="attachment_'+objJSON.id+'">';
-				html += '<img src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/x_8px.png" alt="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" title="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" onClick="if (confirm(\'<?php echo htmlentities(JText::_("DELETE_ATTACHMENT_CONFIRM")); ?>\')) {deleteAttachment('+objJSON.id+');}"/></div>';
+				html += '<img src="<?php echo JURI::base(true); ?>media/com_emundus/images/icones/x_8px.png" alt="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" title="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" onClick="if (confirm(\'<?php echo htmlentities(JText::_("DELETE_ATTACHMENT_CONFIRM")); ?>\')) {deleteAttachment('+objJSON.id+');}"/></div>';
 				
 				document.getElementById("em_attachment").innerHTML += html;
 
@@ -106,7 +106,7 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
  	$attachment_types = @EmundusHelperfilters::setEvaluationList(0);
  	if (!empty($attachment_types)) {
  ?>
-	<form action="<?php echo JURI::Base(); ?>index.php?option=com_emundus&controller=application&format=raw&task=upload_attachment" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart' : startCallback, 'onComplete' : completeCallback})">
+	<form action="<?php echo JURI::base(true); ?>index.php?option=com_emundus&controller=application&format=raw&task=upload_attachment" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart' : startCallback, 'onComplete' : completeCallback})">
 		<div>
 			<?php echo $attachment_types; ?>
 			<input name="campaign_id" type="hidden" value="<?php echo $this->fnums->cid; ?>" />
@@ -141,7 +141,7 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 						<div class="vJ"></div>
 					</a>
 					<div class="em_email_icon" id="attachment_'.$file['id'].'">
-						<img src="'.JURI::Base().'/media/com_emundus/images/icones/x_8px.png" alt="'.JText::_("DELETE_ATTACHMENT").'" title="'.JText::_("DELETE_ATTACHMENT").'" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_ATTACHMENT_CONFIRM").'"').')) {deleteAttachment('.$file['id'].'); document.getElementById(\'mail_attachments\').value=\'\';}"/>
+						<img src="'.JURI::base(true).'media/com_emundus/images/icones/x_8px.png" alt="'.JText::_("DELETE_ATTACHMENT").'" title="'.JText::_("DELETE_ATTACHMENT").'" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_ATTACHMENT_CONFIRM").'"').')) {deleteAttachment('.$file['id'].'); document.getElementById(\'mail_attachments\').value=\'\';}"/>
 					</div>
 				</div>
 			</div>';

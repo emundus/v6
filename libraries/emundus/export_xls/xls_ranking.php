@@ -41,7 +41,7 @@ function export_xls($uids, $element_id) {
 
 		@set_time_limit(10800);
 		global $mainframe;
-		$baseurl = JURI::base();
+		$baseurl = JURI::base(true);
 		$db	= &JFactory::getDBO();
 		jimport( 'joomla.user.user' );
 		error_reporting(0);

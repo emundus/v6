@@ -110,8 +110,6 @@ class  plgSystemEmundus_period extends JPlugin
             $applicants     = explode(',', $id_applicants);
             $r              = JRequest::getVar('r', null, 'GET', 'none',0);
 
-            $baseurl = JURI::base();
-            
             $app = JFactory::getApplication();
 
             $id = JRequest::getVar('id', null, 'GET', 'none',0);

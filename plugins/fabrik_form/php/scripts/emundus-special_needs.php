@@ -19,7 +19,7 @@ $user = & JFactory::getUser();
 $attachment_id = 30;
 
 
-$baseurl = JURI::base();
+$baseurl = JURI::base(true);
 $db =& JFactory::getDBO();
 $query = 'SELECT special_needs_file FROM #__emundus_languages WHERE user='.$user->id; 
 $db->setQuery($query);

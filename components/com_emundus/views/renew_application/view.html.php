@@ -45,7 +45,7 @@ class EmundusViewRenew_application extends JViewLegacy
 			die(JText::_('ACCESS_DENIED'));
 		
 		$document = JFactory::getDocument();
-		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
+		$document->addStyleSheet("media/com_emundus/css/emundus.css" );
 
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');

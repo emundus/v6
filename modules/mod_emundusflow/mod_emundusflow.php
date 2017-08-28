@@ -24,11 +24,11 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
 	$document = JFactory::getDocument();
-	$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
+	$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
 	// overide css
 	$header_class = $params->get('header_class', '');
 	if (!empty($header_class))
-		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$header_class.".css" );
+		$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$header_class.".css" );
 	$jinput = JFactory::getApplication()->input;
 	$option = $jinput->get('option');
 	$view = $jinput->get('view');

@@ -12,7 +12,7 @@ if (!empty($this->applications)) : ?>
   <div class="row" id="row<?php echo $application->fnum; ?>">
     <div class="col-xs-6 col-md-4">
       <p class="">
-        <a href="<?php echo JRoute::_(JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>" >
+        <a href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&Itemid='.$Itemid.'#em-panel'); ?>" >
           <?php
             echo ($application->fnum == $this->_user->fnum)?'<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> <b>'.$application->label.'</b>':$application->label;
           ?>
@@ -23,12 +23,12 @@ if (!empty($this->applications)) : ?>
       <p>
         <?php echo JText::_('FILE_NUMBER'); ?> : <i><?php echo $application->fnum; ?></i>
       </p>
-      <a class="btn btn-warning btn-xs" href="<?php echo JRoute::_(JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum).'&Itemid='.$Itemid.'#em-panel'); ?>"  role="button">
+      <a class="btn btn-warning btn-xs" href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum).'&Itemid='.$Itemid.'#em-panel'); ?>"  role="button">
           <i class="folder open outline icon"></i> <?php echo JText::_('OPEN_APPLICATION'); ?>
       </a>
 
       <?php if((int)($this->attachments[$application->fnum])>=100 && $application->status==0) : ?>
-        <a class="btn btn-xs" href="<?php echo JRoute::_(JURI::Base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($this->confirm_form_url)); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
+        <a class="btn btn-xs" href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($this->confirm_form_url)); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
       <?php endif; ?>
     </div>
 

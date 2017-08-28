@@ -269,7 +269,7 @@ class EmundusHelperExport
 				$pdf->Image(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
 		} else {
 			$htmlData = JText::_('ENCRYPTED_FILE').' : ';
-			$htmlData .= '<a href="'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';
+			$htmlData .= '<a href="'.JURI::base(true).EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base(true).EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';
 			$pdf->startTransaction();
 			$start_y = $pdf->GetY();
 			$start_page = $pdf->getPage();

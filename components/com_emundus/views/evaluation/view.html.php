@@ -31,14 +31,14 @@ class EmundusViewEvaluation extends JViewLegacy
 
     public function display($tpl = null)
     {
-	   /* JHtml::script(JURI::base() . 'media/com_emundus/lib/jquery-1.10.2.min.js');
-    	JHtml::script(JURI::base() . 'media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
-		JHtml::script(JURI::base() . 'media/com_emundus/lib/chosen/chosen.jquery.min.js' );
-	    JHTML::script(JURI::Base() . 'media/com_emundus/js/em_files.js');
+	   /* JHtml::script(JURI::base(true) . 'media/com_emundus/lib/jquery-1.10.2.min.js');
+    	JHtml::script(JURI::base(true) . 'media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
+		JHtml::script(JURI::base(true) . 'media/com_emundus/lib/chosen/chosen.jquery.min.js' );
+	    JHTML::script(JURI::base(true) . 'media/com_emundus/js/em_files.js');
 
-    	JHtml::styleSheet(JURI::base() . 'media/com_emundus/lib/chosen/chosen.min.css');
-	    JHtml::stylesheet(JURI::base() . 'media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
-	    JHtml::stylesheet(JURI::base() . 'media/com_emundus/css/emundus_files.css');
+    	JHtml::styleSheet( 'media/com_emundus/lib/chosen/chosen.min.css');
+	    JHtml::styleSheet( 'media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
+	    JHtml::styleSheet( 'media/com_emundus/css/emundus_files.css');
 */
 	    $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 	    $this->cfnum = JFactory::getApplication()->input->getString('cfnum', null);

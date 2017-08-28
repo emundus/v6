@@ -12,7 +12,7 @@ defined( '_JEXEC' ) or die();
  * See COPYRIGHT.php for copyright notices and details.
  * @description Envoi automatique d'un email à l'étudiant lors de la modifiation de l'état d'acceptation de la bourse
  */
-$baseurl = JURI::base();
+$baseurl = JURI::base(true);
 $db =& JFactory::getDBO();
 $mailer = JFactory::getMailer();
 

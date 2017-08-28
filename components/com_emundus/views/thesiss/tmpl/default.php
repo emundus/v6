@@ -180,7 +180,7 @@ $canView = $user->authorise('core.viewthesis', 'com_emundus');
                 <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('COM_EMUNDUS_THESIS_LOADING');?></h4>
             </div>
             <div class="modal-body">
-                <img src="<?php echo JURI::Base(); ?>media/com_emundus/images/icones/loader-line.gif">
+                <img src="<?php echo JURI::base(true); ?>media/com_emundus/images/icones/loader-line.gif">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-xs btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EMUNDUS_THESIS_CANCEL')?></button>
@@ -210,7 +210,7 @@ $canView = $user->authorise('core.viewthesis', 'com_emundus');
 
 
         $('.modal-footer').append('<div>' +
-        '<img src="<?php echo JURI::Base(); ?>media/com_emundus/images/icones/loader-line.gif" alt="loading" alt="loading"/>' +
+        '<img src="<?php echo JURI::base(true); ?>media/com_emundus/images/icones/loader-line.gif" alt="loading" alt="loading"/>' +
         '</div>');
         $('.modal-footer').hide();
 
@@ -225,7 +225,7 @@ $canView = $user->authorise('core.viewthesis', 'com_emundus');
         var headTag = document.getElementsByTagName("head")[0];
         var jqTag = document.createElement('script');
         jqTag.type = 'text/javascript';
-        jqTag.src = '<?php echo JURI::base() . 'media/com_emundus/lib/jquery-1.10.2.min.js'; ?>';
+        jqTag.src = '<?php echo JURI::base(true) . 'media/com_emundus/lib/jquery-1.10.2.min.js'; ?>';
         jqTag.onload = jQueryCode;
         headTag.appendChild(jqTag);
     } else {

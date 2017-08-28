@@ -17,8 +17,8 @@ JHtml::_('behavior.formvalidation');
 $lang = JFactory::getLanguage();
 $lang->load('com_emundus', JPATH_ADMINISTRATOR);
 $doc = JFactory::getDocument();
-$doc->addStyleSheet(JUri::base() . '/components/com_emundus/assets/css/form.css');
-$doc->addScript(JUri::base() . '/components/com_emundus/assets/js/form.js');
+$doc->addStyleSheet( 'components/com_emundus/assets/css/form.css');
+$doc->addScript('components/com_emundus/assets/js/form.js');
 ?>
 
 

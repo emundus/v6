@@ -19,7 +19,7 @@ $user = & JFactory::getUser();
 $attachment_id = 32;
 
 
-$baseurl = JURI::base();
+$baseurl = JURI::base(true);
 $db =& JFactory::getDBO();
 $query = 'SELECT contract FROM #__emundus_cv WHERE user='.$user->id;
 $db->setQuery($query);

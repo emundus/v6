@@ -55,7 +55,7 @@ if (count($recipients) > 0) {
             'TITRE'           => $titre,
             'LABORATORY_DIRECTOR' => $laboratory_director,
             'RESEARCH_LABORATORY' => $research_laboratory,
-            'URL_THESIS_PROPOSAL' => JURI::base().'index.php?option=com_emundus&view=thesis&id='.$thesis_id
+            'URL_THESIS_PROPOSAL' => JURI::base(true).'index.php?option=com_emundus&view=thesis&id='.$thesis_id
             );
     //
 	// email to thesis director

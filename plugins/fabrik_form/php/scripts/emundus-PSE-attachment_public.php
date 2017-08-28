@@ -18,7 +18,7 @@ return false;
 */
 $mainframe = JFactory::getApplication();
 $jinput = $mainframe->input;
-$baseurl = JURI::base();
+$baseurl = JURI::base(true);
 $db = JFactory::getDBO();
 $current_user = JFactory::getSession()->get('emundusUser');
 $mailer = JFactory::getMailer();

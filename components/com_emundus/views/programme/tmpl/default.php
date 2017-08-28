@@ -1,7 +1,7 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
-JHTML::stylesheet(JURI::Base().'media/com_emundus/css/emundus.css' );
+JHTML::stylesheet('media/com_emundus/css/emundus.css' );
 
 ?>
 

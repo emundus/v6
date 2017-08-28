@@ -123,7 +123,7 @@ class EmundusModelEmailalert extends JModelList{
 			$student = JFactory::getUser($i->id);
 			$profile = $model->getProfileByID($student->id);
 			$patterns = array ('/\[NAME]/','/\[SIGNATURE]/','/\[USERNAME]/','/\[SITE_URL]/','/\[DEADLINE]/');
-			$replacements = array ($student->name,$cfromname,$student->username,JURI::base(), strftime("%A %d %B %Y %H:%M", strtotime($profile[0]->candidature_end) ).' (GMT)');
+			$replacements = array ($student->name,$cfromname,$student->username,JURI::base(true), strftime("%A %d %B %Y %H:%M", strtotime($profile[0]->candidature_end) ).' (GMT)');
 			$body = preg_replace($patterns,$replacements,$body);	
 			$query = 'INSERT INTO #__messages (user_id_from,user_id_to,date_time,state,subject,message)
 						VALUES (62,'.$student->id.',"'.$date.'",1,"'.$subject.'",'.$this->_db->quote($body).')';

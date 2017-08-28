@@ -19,7 +19,7 @@ return false;
 $mainframe 	= JFactory::getApplication();
 $mailer     = JFactory::getMailer();
 $jinput 	= $mainframe->input;
-$baseurl 	= JURI::base();
+$baseurl 	= JURI::base(true);
 $db 		= JFactory::getDBO();
 $files 		= JRequest::get('FILES');
 $key_id 	= JRequest::getVar('keyid', null,'get');

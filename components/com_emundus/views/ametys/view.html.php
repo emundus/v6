@@ -48,15 +48,15 @@ class EmundusViewAmetys extends JViewLegacy
 		$this->assignRef('ametys_sync_default_synthesis', $ametys_sync_default_synthesis);
 
 		$document = JFactory::getDocument();
-		//$document->addScript( JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
-		//$document->addScript( JURI::base()."media/com_emundus/lib/bootstrap-336/js/bootstrap.min.js" );
-		$document->addScript( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/moment.min.js" );
-		$document->addScript( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/daterangepicker.min.js" );
-		//$document->addStyleSheet( JURI::base()."media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
-		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/daterangepicker.min.css" );
+		//$document->addScript("media/com_emundus/lib/jquery-1.10.2.min.js" );
+		//$document->addScript("media/com_emundus/lib/bootstrap-336/js/bootstrap.min.js" );
+		$document->addScript("media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/moment.min.js" );
+		$document->addScript("media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/daterangepicker.min.js" );
+		//$document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
+		$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/daterangepicker.min.css" );
 
-		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
-		//$document->addScript( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.js" );
+		$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
+		//$document->addScript("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.js" );
 
 		// overide css
 		$menu = @JSite::getMenu();
@@ -66,7 +66,7 @@ class EmundusViewAmetys extends JViewLegacy
 		$page_heading = $menu_params->get('page_heading', '');
 		$pageclass_sfx = $menu_params->get('pageclass_sfx', '');
 		if (!empty($page_heading)) {
-			$document->addStyleSheet( JURI::base()."media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$page_heading.".css" );
+			$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$page_heading.".css" );
 		}
 
 	    $this->itemId = $current_menu->id;

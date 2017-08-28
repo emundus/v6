@@ -114,7 +114,7 @@ JHTML::_('behavior.tooltip');
         <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('LOADING');?></h4>
       </div>
       <div class="modal-body">
-      	<img src="<?php echo JURI::Base(); ?>media/com_emundus/images/icones/loader-line.gif">
+      	<img src="<?php echo JURI::base(true); ?>media/com_emundus/images/icones/loader-line.gif">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
@@ -134,8 +134,8 @@ JHTML::_('behavior.tooltip');
 	var jtextArray = ['<?php echo JText::_('ENTER_COMMENT')?>',
 	                  '<?php echo JText::_('TITLE')?>',
 	                  '<?php echo JText::_('COMMENT_SENT')?>'];
-	var loading = '<?php echo JURI::Base().'media/com_emundus/images/icones/loader.gif'?>';
-	var loadingLine = '<?php echo JURI::Base().'media/com_emundus/images/icones/loader-line.gif'?>';
+	var loading = '<?php echo JURI::base(true).'media/com_emundus/images/icones/loader.gif'?>';
+	var loadingLine = '<?php echo JURI::base(true).'media/com_emundus/images/icones/loader-line.gif'?>';
 	$(document).ready(function()
 	{
 		$('.chzn-select').chosen({width:'75%'});
@@ -150,7 +150,7 @@ JHTML::_('behavior.tooltip');
         
 		$(document).on("hidden.bs.modal", function (e) {
 		    $(e.target).removeData("bs.modal").find("#basicModal .modal-content").empty();
-		    $('#basicModal .modal-content').replaceWith('<div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><?php echo JText::_("LOADING");?></h4></div><div class="modal-body"><img src="<?php echo JURI::Base(); ?>media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_("CANCEL")?></button></div></div>');
+		    $('#basicModal .modal-content').replaceWith('<div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><?php echo JText::_("LOADING");?></h4></div><div class="modal-body"><img src="<?php echo JURI::base(true); ?>media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_("CANCEL")?></button></div></div>');
 		});
 	})
 </script>

@@ -3,8 +3,7 @@
 defined('_JEXEC') or die('Access Deny');
 require_once(dirname(__FILE__).DS.'helper.php');
 
-JHtml::stylesheet(JURI::base() . 'media/com_emundus/css/mod_emundus_campaign.css');
-
+JHtml::stylesheet('media/com_emundus/css/mod_emundus_campaign.css');
 
 $mod_em_campaign_url=$params->get('mod_em_campaign_url');
 /*$mod_em_campaign_period=$params->get('mod_em_campaign_period');

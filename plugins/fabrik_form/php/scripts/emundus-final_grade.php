@@ -13,7 +13,7 @@ defined( '_JEXEC' ) or die();
  * @description Validation finale du dossier de candidature
  */
 
-$baseurl 	= JURI::base();
+$baseurl 	= JURI::base(true);
 $db 		= JFactory::getDBO();
 $jinput 	= JFactory::getApplication()->input;
 

@@ -3,10 +3,10 @@ defined('_JEXEC') or die('Restricted access');
 
 JHTML::_('behavior.modal'); 
 JHTML::_('behavior.tooltip'); 
-JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
-JHTML::stylesheet( 'light2.css', JURI::Base().'templates/rt_afterburner/css/' );
-JHTML::stylesheet( 'general.css', JURI::Base().'templates/system/css/' );
-JHTML::stylesheet( 'system.css', JURI::Base().'templates/system/css/' );
+JHTML::stylesheet( 'emundus.css', 'media/com_emundus/css/' );
+JHTML::stylesheet( 'light2.css', 'templates/rt_afterburner/css/' );
+JHTML::stylesheet( 'general.css', 'templates/system/css/' );
+JHTML::stylesheet( 'system.css', 'templates/system/css/' );
 
 $current_user = JFactory::getSession()->get('emundusUser');
 
