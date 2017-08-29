@@ -88,6 +88,12 @@ if (!class_exists('FOF30\Date\Date', true))
 	include_once JPATH_LIBRARIES . '/fof30/Date/Date.php';
 }
 
+// If Rescue Mode is enabled we MUST NOT load main.php
+if (AtsystemUtilRescueurl::isRescueMode())
+{
+	return;
+}
+
 // Import main plugin file
 if (!class_exists('AtsystemAdmintoolsMain', true))
 {

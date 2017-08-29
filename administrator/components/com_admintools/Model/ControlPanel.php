@@ -505,4 +505,121 @@ class ControlPanel extends Model
 			$params->save();
 		}
 	}
+
+	/**
+	 * Is the System - Admin Tools plugin installed?
+	 *
+	 * @return  bool
+	 *
+	 * @since  4.3.0
+	 */
+	public function isPluginInstalled()
+	{
+		$this->getPluginID();
+
+		return self::$pluginId != 0;
+	}
+
+	/**
+	 * Is the System - Admin Tools plugin currently loaded?
+	 *
+	 * @return  bool
+	 *
+	 * @since   4.3.0
+	 */
+	public function isPluginLoaded()
+	{
+		return class_exists('plgSystemAdmintools');
+	}
+
+	/**
+	 * Is the main.php file renamed?
+	 *
+	 * @return  bool
+	 *
+	 * @since   4.3.0
+	 */
+	public function isMainPhpDisabled()
+	{
+		$folder = JPATH_PLUGINS . '/system/admintools/admintools';
+
+		return @is_dir($folder) && !@file_exists($folder . '/main.php');
+	}
+
+	/**
+	 * Rename the disabled main.php file back to its proper, main.php, name.
+	 *
+	 * @return  bool
+	 *
+	 * @since   4.3.0
+	 */
+	public function reenableMainPhp()
+	{
+		$altName = $this->getRenamedMainPhp();
+
+		if (!$altName)
+		{
+			return false;
+		}
+
+		$folder = JPATH_PLUGINS . '/system/admintools/admintools';
+
+		$from = $folder . '/' . $altName;
+		$to   = $folder . '/main.php';
+
+		$res  = @rename($from, $to);
+
+		if (!$res)
+		{
+			$res = @copy($from, $to);
+
+			if ($res)
+			{
+				@unlink($from);
+			}
+		}
+
+		if (!$res)
+		{
+			$res = \JFile::copy($from, $to);
+
+			if ($res)
+			{
+				\JFile::delete($from);
+			}
+		}
+
+		return $res;
+	}
+
+	/**
+	 * Get the file name under which main.php has been renamed to
+	 *
+	 * @return  string|null
+	 *
+	 * @since   4.3.0
+	 */
+	public function getRenamedMainPhp()
+	{
+		$possibleNames = array(
+			'main-disable.php',
+			'main.php.bak',
+			'main.bak.php',
+			'main.bak',
+			'-main.php',
+		);
+
+		$folder = JPATH_PLUGINS . '/system/admintools/admintools';
+
+		foreach ($possibleNames as $baseName)
+		{
+			var_dump($folder . '/' . $baseName);
+			if (@file_exists($folder . '/' . $baseName))
+			{
+				return $baseName;
+			}
+		}
+
+		return null;
+	}
 }

@@ -21,17 +21,7 @@ class AtsystemUtilFilter
 	{
 		if (is_null(static::$ip))
 		{
-			$ip = array_key_exists('REMOTE_ADDR', $_SERVER) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '0.0.0.0';
-
-			if (!empty($ip) && ($ip != '0.0.0.0') && function_exists('inet_pton') && function_exists('inet_ntop'))
-			{
-				$myIP = @inet_pton($ip);
-
-				if ($myIP !== false)
-				{
-					$ip = inet_ntop($myIP);
-				}
-			}
+			$ip = \FOF30\Utils\Ip::getIp();
 
 			static::setIp($ip);
 		}

@@ -22,7 +22,7 @@ class lib_fof30InstallerScript
 	 *
 	 * @var   string
 	 */
-	protected $minimumPHPVersion = '5.3.3';
+	protected $minimumPHPVersion = '5.4.0';
 
 	/**
 	 * The minimum Joomla! version required to install this extension
@@ -37,6 +37,13 @@ class lib_fof30InstallerScript
 	 * @var   string
 	 */
 	protected $maximumJoomlaVersion = '3.9.99';
+
+	/**
+	 * The name of the subdirectory under JPATH_LIBRARIES where this version of FOF is installed.
+	 *
+	 * @var   string
+	 */
+	protected $libraryFolder = 'fof30';
 
 	/**
 	 * Joomla! pre-flight event. This runs before Joomla! installs or updates the component. This is our last chance to
@@ -79,7 +86,7 @@ class lib_fof30InstallerScript
 		if (!empty($this->minimumJoomlaVersion) && !version_compare(JVERSION, $this->minimumJoomlaVersion, 'ge'))
 		{
 			$jVersion = JVERSION;
-			$msg = "<p>You need Joomla! $this->minimumJoomlaVersion or later to install this package but you only have $jVersion installed.</p>";
+			$msg      = "<p>You need Joomla! $this->minimumJoomlaVersion or later to install this package but you only have $jVersion installed.</p>";
 
 			JLog::add($msg, JLog::WARNING, 'jerror');
 
@@ -90,7 +97,7 @@ class lib_fof30InstallerScript
 		if (!empty($this->maximumJoomlaVersion) && !version_compare(JVERSION, $this->maximumJoomlaVersion, 'le'))
 		{
 			$jVersion = JVERSION;
-			$msg = "<p>You need Joomla! $this->maximumJoomlaVersion or earlier to install this package but you have $jVersion installed</p>";
+			$msg      = "<p>You need Joomla! $this->maximumJoomlaVersion or earlier to install this package but you have $jVersion installed</p>";
 
 			JLog::add($msg, JLog::WARNING, 'jerror');
 
@@ -115,11 +122,16 @@ class lib_fof30InstallerScript
 	 * or updating your component. This is the last chance you've got to perform any additional installations, clean-up,
 	 * database updates and similar housekeeping functions.
 	 *
-	 * @param   string                $type   install, update or discover_update
+	 * @param   string                   $type   install, update or discover_update
 	 * @param   JInstallerAdapterLibrary $parent Parent object
 	 */
 	public function postflight($type, JInstallerAdapterLibrary $parent)
 	{
+		if ($type == 'update')
+		{
+			$this->bugfixFilesNotCopiedOnUpdate($parent);
+		}
+
 		$this->loadFOF30();
 
 		if (!defined('FOF30_INCLUDED'))
@@ -131,13 +143,13 @@ class lib_fof30InstallerScript
 		$db = JFactory::getDbo();
 
 		/** @var JInstaller $grandpa */
-		$grandpa = $parent->getParent();
-		$src = $grandpa->getPath('source');
+		$grandpa   = $parent->getParent();
+		$src       = $grandpa->getPath('source');
 		$sqlSource = $src . '/fof/sql';
 
 		// If we have an uppercase db prefix we can expect the database update to fail because we cannot detect reliably
 		// the existence of database tables. See https://github.com/joomla/joomla-cms/issues/10928#issuecomment-228549658
-		$prefix = $db->getPrefix();
+		$prefix  = $db->getPrefix();
 		$canFail = preg_match('/[A-Z]/', $prefix);
 
 		try
@@ -153,8 +165,8 @@ class lib_fof30InstallerScript
 			}
 		}
 
-        // Since we're adding common table, I have to nuke the installer cache, otherwise checks on their existence would fail
-        $dbInstaller->nukeCache();
+		// Since we're adding common table, I have to nuke the installer cache, otherwise checks on their existence would fail
+		$dbInstaller->nukeCache();
 
 		// Clear the FOF cache
 		$fakeController = \FOF30\Container\Container::getInstance('com_FOOBAR');
@@ -183,7 +195,6 @@ class lib_fof30InstallerScript
 		}
 	}
 
-
 	/**
 	 * Is this package an update to the currently installed FOF? If not (we're a downgrade) we will return false
 	 * and prevent the installation from going on.
@@ -211,28 +222,28 @@ class lib_fof30InstallerScript
 
 		if (JFile::exists($target . '/version.txt'))
 		{
-			$rawData = @file_get_contents($target . '/version.txt');
-			$rawData = ($rawData === false) ? "0.0.0\n2011-01-01\n" : $rawData;
-			$info = explode("\n", $rawData);
+			$rawData                 = @file_get_contents($target . '/version.txt');
+			$rawData                 = ($rawData === false) ? "0.0.0\n2011-01-01\n" : $rawData;
+			$info                    = explode("\n", $rawData);
 			$fofVersion['installed'] = array(
 				'version' => trim($info[0]),
-				'date'    => new JDate(trim($info[1]))
+				'date'    => new JDate(trim($info[1])),
 			);
 		}
 		else
 		{
 			$fofVersion['installed'] = array(
 				'version' => '0.0',
-				'date'    => new JDate('2011-01-01')
+				'date'    => new JDate('2011-01-01'),
 			);
 		}
 
-		$rawData = @file_get_contents($source . '/version.txt');
-		$rawData = ($rawData === false) ? "0.0.0\n2011-01-01\n" : $rawData;
-		$info = explode("\n", $rawData);
+		$rawData               = @file_get_contents($source . '/version.txt');
+		$rawData               = ($rawData === false) ? "0.0.0\n2011-01-01\n" : $rawData;
+		$info                  = explode("\n", $rawData);
 		$fofVersion['package'] = array(
 			'version' => trim($info[0]),
-			'date'    => new JDate(trim($info[1]))
+			'date'    => new JDate(trim($info[1])),
 		);
 
 		$haveToInstallFOF = $fofVersion['package']['date']->toUNIX() >= $fofVersion['installed']['date']->toUNIX();
@@ -260,7 +271,7 @@ class lib_fof30InstallerScript
 	/**
 	 * Get the dependencies for a package from the #__akeeba_common table
 	 *
-	 * @param   string  $package  The package
+	 * @param   string $package The package
 	 *
 	 * @return  array  The dependencies
 	 */
@@ -294,8 +305,8 @@ class lib_fof30InstallerScript
 	/**
 	 * Sets the dependencies for a package into the #__akeeba_common table
 	 *
-	 * @param   string  $package       The package
-	 * @param   array   $dependencies  The dependencies list
+	 * @param   string $package      The package
+	 * @param   array  $dependencies The dependencies list
 	 */
 	protected function setDependencies($package, array $dependencies)
 	{
@@ -314,9 +325,9 @@ class lib_fof30InstallerScript
 			// Do nothing if the old key wasn't found
 		}
 
-		$object = (object)array(
-			'key' => $package,
-			'value' => json_encode($dependencies)
+		$object = (object) array(
+			'key'   => $package,
+			'value' => json_encode($dependencies),
 		);
 
 		try
@@ -332,8 +343,8 @@ class lib_fof30InstallerScript
 	/**
 	 * Adds a package dependency to #__akeeba_common
 	 *
-	 * @param   string  $package     The package
-	 * @param   string  $dependency  The dependency to add
+	 * @param   string $package    The package
+	 * @param   string $dependency The dependency to add
 	 */
 	protected function addDependency($package, $dependency)
 	{
@@ -350,8 +361,8 @@ class lib_fof30InstallerScript
 	/**
 	 * Removes a package dependency from #__akeeba_common
 	 *
-	 * @param   string  $package     The package
-	 * @param   string  $dependency  The dependency to remove
+	 * @param   string $package    The package
+	 * @param   string $dependency The dependency to remove
 	 */
 	protected function removeDependency($package, $dependency)
 	{
@@ -369,8 +380,8 @@ class lib_fof30InstallerScript
 	/**
 	 * Do I have a dependency for a package in #__akeeba_common
 	 *
-	 * @param   string  $package     The package
-	 * @param   string  $dependency  The dependency to check for
+	 * @param   string $package    The package
+	 * @param   string $dependency The dependency to check for
 	 *
 	 * @return bool
 	 */
@@ -379,5 +390,144 @@ class lib_fof30InstallerScript
 		$dependencies = $this->getDependencies($package);
 
 		return in_array($dependency, $dependencies);
+	}
+
+	/**
+	 * Recursively copy a bunch of files, but only if the source and target file have a different size.
+	 *
+	 * @param   string $source Path to copy FROM
+	 * @param   string $dest   Path to copy TO
+	 *
+	 * @return  void
+	 */
+	protected function recursiveConditionalCopy($source, $dest)
+	{
+		// Make sure source and destination exist
+		if (!@is_dir($source))
+		{
+			return;
+		}
+
+		if (!@is_dir($dest))
+		{
+			if (!@mkdir($dest, 0755))
+			{
+				JFolder::create($dest, 0755);
+			}
+		}
+
+		if (!@is_dir($dest))
+		{
+			$this->log(__CLASS__ . ": Cannot create folder $dest");
+
+			return;
+		}
+
+		// List the contents of the source folder
+		try
+		{
+			$di = new DirectoryIterator($source);
+		}
+		catch (Exception $e)
+		{
+			return;
+		}
+
+		// Process each entry
+		foreach ($di as $entry)
+		{
+			// Ignore dot dirs (. and ..)
+			if ($entry->isDot())
+			{
+				continue;
+			}
+
+			$sourcePath = $entry->getPathname();
+			$fileName   = $entry->getFilename();
+
+			// If it's a directory do a recursive copy
+			if ($entry->isDir())
+			{
+				$this->recursiveConditionalCopy($sourcePath, $dest . DIRECTORY_SEPARATOR . $fileName);
+
+				continue;
+			}
+
+			// If it's a file check if it's missing or identical
+			$mustCopy   = false;
+			$targetPath = $dest . DIRECTORY_SEPARATOR . $fileName;
+
+			if (!@is_file($targetPath))
+			{
+				$mustCopy = true;
+			}
+			else
+			{
+				$sourceSize = @filesize($sourcePath);
+				$targetSize = @filesize($targetPath);
+
+				$mustCopy = $sourceSize != $targetSize;
+			}
+
+			if (!$mustCopy)
+			{
+				continue;
+			}
+
+			if (!@copy($sourcePath, $targetPath))
+			{
+				if (!JFile::copy($sourcePath, $targetPath))
+				{
+					$this->log(__CLASS__ . ": Cannot copy $sourcePath to $targetPath");
+				}
+			}
+		}
+	}
+
+	/**
+	 * Try to log a warning / error with Joomla
+	 *
+	 * @param   string $message  The message to write to the log
+	 * @param   bool   $error    Is this an error? If not, it's a warning. (default: false)
+	 * @param   string $category Log category, default jerror
+	 *
+	 * @return  void
+	 */
+	protected function log($message, $error = false, $category = 'jerror')
+	{
+		// Just in case...
+		if (!class_exists('JLog', true))
+		{
+			return;
+		}
+
+		$priority = $error ? JLog::ERROR : JLog::WARNING;
+
+		try
+		{
+			JLog::add($message, $priority, $category);
+		}
+		catch (Exception $e)
+		{
+			// Swallow the exception.
+		}
+	}
+
+	/**
+	 * Fix for Joomla bug: sometimes files are not copied on update.
+	 *
+	 * We have observed that ever since Joomla! 1.5.5, when Joomla! is performing an extension update some files /
+	 * folders are not copied properly. This seems to be a bit random and seems to be more likely to happen the more
+	 * added / modified files and folders you have. We are trying to work around it by retrying the copy operation
+	 * ourselves WITHOUT going through the manifest, based entirely on the conventions we follow.
+	 *
+	 * @param   \JInstallerAdapterComponent $parent
+	 */
+	protected function bugfixFilesNotCopiedOnUpdate($parent)
+	{
+		$source = $parent->getParent()->getPath('source') . '/fof';
+		$target = JPATH_LIBRARIES . '/' . $this->libraryFolder;
+
+		$this->recursiveConditionalCopy($source, $target);
 	}
 }

@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 
 /**
  * This trait defines the necessary properties for using the view template
- * admin:com_admintools/WebApplicationFirewall/plugin_warning
+ * admin:com_admintools/ControlPanel/plugin_warning
  *
  * Include this trait and in your onBefore<TaskName> method call
  * $this->populateSystemPluginExists();
@@ -25,22 +25,90 @@ trait SystemPluginExists
 	 *
 	 * @var  bool
 	 */
-	public $pluginExists;
+	public $pluginExists = false;
 
 	/**
 	 * Is the system plugin enabled?
 	 *
 	 * @var  bool
 	 */
-	public $pluginActive;
+	public $pluginActive = false;
+
+	/**
+	 * Is the plugin currently loaded?
+	 *
+	 * @var  bool
+	 */
+	public $pluginLoaded = false;
+
+	/**
+	 * Is main.php renamed to something else?
+	 *
+	 * @var  bool
+	 */
+	public $isMainPhpDisabled = false;
+
+	/**
+	 * What is the plugin's main.php file currently renamed to?
+	 *
+	 * @var  string
+	 */
+	public $mainPhpRenamedTo = false;
+
+	/**
+	 * Is Rescue Mode activated?
+	 *
+	 * @var  bool
+	 */
+	public $isRescueMode = false;
 
 	protected function populateSystemPluginExists()
 	{
 		/** @var ControlPanel $cPanelModel */
 		$cPanelModel = $this->container->factory->model('ControlPanel')->tmpInstance();
 
+		// Does the plugin exist in the filesystem?
 		$this->pluginExists = @file_exists(JPATH_ROOT . '/plugins/system/admintools/admintools.php');
+
+		if (!$this->pluginExists)
+		{
+			return;
+		}
+
+		// Is the plugin enabled in the database?
 		$this->pluginActive = ((int) $cPanelModel->getPluginID()) != 0;
+
+		if (!$this->pluginActive)
+		{
+			return;
+		}
+
+		// Is Rescue Mode enabled?
+		$this->isRescueMode          = class_exists('AtsystemUtilRescueurl', true) ? \AtsystemUtilRescueurl::isRescueMode() : false;
+
+		if ($this->isRescueMode)
+		{
+			return;
+		}
+
+		// Is the plugin currently loaded
+		$this->pluginLoaded = $cPanelModel->isPluginLoaded();
+
+		if ($this->pluginLoaded)
+		{
+			return;
+		}
+
+		// Is main.php renamed?
+		$this->isMainPhpDisabled = $cPanelModel->isMainPhpDisabled();
+
+		if (!$this->isMainPhpDisabled)
+		{
+			return;
+		}
+
+		// What is main.php renamed to?
+		$this->mainPhpRenamedTo = $cPanelModel->getRenamedMainPhp();
 	}
 
 }

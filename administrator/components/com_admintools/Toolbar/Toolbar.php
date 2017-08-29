@@ -310,7 +310,7 @@ HTML;
 		JToolbarHelper::divider();
 		JToolbarHelper::back('JTOOLBAR_BACK', 'index.php?option=com_admintools&view=WebApplicationFirewall');
 
-		JToolbarHelper::title(JText::_('COM_ADMINTOOLS_TITLE_DASHBOARD') . ' &ndash; <small>' . JText::_('COM_ADMINTOOLS_TITLE_GEOBLOCK') . '</small>', 'admintools');
+		JToolbarHelper::title(JText::_('COM_ADMINTOOLS_TITLE_GEOBLOCK'), 'admintools');
 	}
 
 	public function onSecurityExceptionsBrowse()
@@ -370,7 +370,7 @@ HTML;
 	public function onConfigureFixPermissionsBrowse()
 	{
 		$subtitle_key = 'COM_ADMINTOOLS_TITLE_FIXPERMSCONFIG';
-		JToolbarHelper::title(JText::_('COM_ADMINTOOLS_TITLE_DASHBOARD') . ' &ndash; <small>' . JText::_($subtitle_key) . '</small>', 'admintools');
+		JToolbarHelper::title(JText::_($subtitle_key), 'admintools');
 
 		JToolbarHelper::back('JTOOLBAR_BACK', 'index.php?option=com_admintools');
 	}
@@ -437,7 +437,7 @@ HTML;
 
 	public function onAclsBrowse()
 	{
-		JToolbarHelper::title(JText::_('COM_ADMINTOOLS_TITLE_DASHBOARD') . ' &ndash; <small>' . JText::_('COM_ADMINTOOLS_TITLE_ACL') . '</small>', 'admintools');
+		JToolbarHelper::title(JText::_('COM_ADMINTOOLS_TITLE_ACL'), 'admintools');
 		JToolbarHelper::back('JTOOLBAR_BACK', 'index.php?option=com_admintools');
 	}
 
@@ -454,7 +454,7 @@ HTML;
 	{
 		// Set toolbar title
 		$subtitle_key = 'COM_ADMINTOOLS_TITLE_' . strtoupper($this->container->input->getCmd('view', 'cpanel'));
-		JToolbarHelper::title(JText::_('com_admintools') . ' &ndash; <small>' . JText::_($subtitle_key) . '</small>', 'admintools');
+		JToolbarHelper::title(JText::_($subtitle_key), 'admintools');
 
 		$canScan = $this->container->platform->getUser()->authorise('core.manage', 'com_admintools');
 
@@ -483,7 +483,7 @@ HTML;
 
 	public function onScansEdit()
 	{
-		JToolbarHelper::title(JText::_('COM_ADMINTOOLS') . ' &ndash; <small>' . JText::_('COM_ADMINTOOLS_TITLE_SCANS_COMMENT') . '</small>', 'admintools');
+		JToolbarHelper::title(JText::_('COM_ADMINTOOLS_TITLE_SCANS_COMMENT'), 'admintools');
 
 		JToolbarHelper::apply();
 		JToolbarHelper::save();
@@ -495,7 +495,7 @@ HTML;
 		$scan_id = $this->container->input->getInt('scan_id', 0);
 
 		$subtitle_key = 'COM_ADMINTOOLS_TITLE_' . strtoupper($this->container->input->getCmd('view', 'cpanel'));
-		JToolbarHelper::title(JText::_('com_admintools') . ' &ndash; <small>' . JText::sprintf($subtitle_key, $scan_id) . '</small>', 'admintools');
+		JToolbarHelper::title(JText::sprintf($subtitle_key, $scan_id), 'admintools');
 
 		JToolbarHelper::publishList('publish', 'COM_ADMINTOOLS_LBL_SCANALERTS_MARKSAFE');
 		JToolbarHelper::unpublishList('unpublish', 'COM_ADMINTOOLS_LBL_SCANALERTS_MARKUNSAFE');

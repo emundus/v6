@@ -172,6 +172,7 @@ class ViewTemplate extends \JFormField implements FieldInterface
 
 		return $viewObject->loadAnyTemplate($sourceTemplate, array(
 			'model'        => $isRepeatable ? $this->item : $this->form->getModel(),
+			'rowid'        => $isRepeatable ? $this->rowid : null,
 			'form'         => $this->form,
 			'formType'     => $this->form->getAttribute('type', 'edit'),
 			'fieldValue'   => $this->value,

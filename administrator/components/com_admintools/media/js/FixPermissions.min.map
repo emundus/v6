@@ -1,0 +1,8 @@
+{
+"version":3,
+"file":"FixPermissions.min.js",
+"lineCount":5,
+"mappings":"A;;;;AASA,GAAsB,WAAtB,EAAI,MAAOA,OAAX,CAEC,IAAIA,OAAS,EAGe,YAA7B,EAAI,MAAOA,OAAAC,OAAX,GAECD,MAAAC,OAFD,CAEiBA,MAAAC,WAAA,EAFjB,CAMwC,YAAxC,EAAI,MAAOC,WAAAC,eAAX,GAECD,UAAAC,eAFD,CAE6B,SAChBC,QAAS,EACjB,CACCC,MAAAC,WAAAC,MAAA,EADD,CAFwB,CAF7B,CAUAR,OAAAC,OAAA,CAAcQ,QAAd,CAAAC,MAAA,CAA8B,QAAS,CAACC,CAAD,CACvC,CACwBA,CAAAC,CAAE,sCAAFA,CAEnBC,OAAJ,CAECC,MAAAC,WAAA,CAAkB,sCAAlB,CAA0D,GAA1D,CAFD,CAMCN,QAAAO,MAAAC,UAAAC,OAAA,EATF,CADA;",
+"sources":["../uncompressed/js/FixPermissions.js"],
+"names":["akeeba","jQuery","noConflict","admintools","FixPermissions","closeMe","parent","SqueezeBox","close","document","ready","$","autoCloseElement","length","window","setTimeout","forms","adminForm","submit"]
+}

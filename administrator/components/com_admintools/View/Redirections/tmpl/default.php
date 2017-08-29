@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 $model = $this->getModel();
 
 // Let's check if the system plugin is correctly installed AND published
-echo $this->loadAnyTemplate('admin:com_admintools/WebApplicationFirewall/plugin_warning');
+echo $this->loadAnyTemplate('admin:com_admintools/ControlPanel/plugin_warning');
 
 ?>
 <form name="enableForm" action="index.php" method="post">

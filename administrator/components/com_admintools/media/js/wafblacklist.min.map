@@ -1,0 +1,8 @@
+{
+"version":3,
+"file":"wafblacklist.min.js",
+"lineCount":1,
+"mappings":"AAAAA,MAAAC,OAAA,CAAcC,QAAd,CAAAC,MAAA,CAA8B,QAAS,CAACC,CAAD,CACvC,CACCA,CAAA,CAAE,aAAF,CAAAC,OAAA,CAAwB,QAAS,EAChC,CACsB,EAArB,EAAID,CAAA,CAAE,IAAF,CAAAE,IAAA,EAAJ,CAECF,CAAA,CAAE,SAAF,CAAAG,KAAA,CAAkB,UAAlB,CAA8B,UAA9B,CAAAD,IAAA,CAA8C,EAA9C,CAFD,CAMCF,CAAA,CAAE,SAAF,CAAAI,WAAA,CAAwB,UAAxB,CAPF,CADD,CAAAH,OAAA,EADD,CADA;",
+"sources":["../uncompressed/js/wafblacklist.js"],
+"names":["akeeba","jQuery","document","ready","$","change","val","attr","removeAttr"]
+}

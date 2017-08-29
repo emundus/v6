@@ -165,7 +165,7 @@ class Filesystem extends BaseFilesystem
 	public function folderFiles($path, $filter = '.', $recurse = false, $full = false, $exclude = array('.svn', 'CVS', '.DS_Store', '__MACOSX'),
 								$excludefilter = array('^\..*', '.*~'), $naturalSort = false)
 	{
-		// JFolder throws idiotic errors if the path is not a folder
+		// JFolder throws nonsense errors if the path is not a folder
 		try
 		{
 			$path = \JPath::clean($path);

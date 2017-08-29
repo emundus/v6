@@ -31,6 +31,27 @@ class Ip
 	protected static $allowIpOverrides = true;
 
 	/**
+	 * See self::detectAndCleanIP and setUseFirstIpInChain
+	 *
+	 * If this is enabled (default) self::detectAndCleanIP will return the FIRST IP in case there is an IP chaing coming
+	 * for example from an X-Forwarded-For HTTP header. When set to false it will simulate the old behavior in FOF up to
+	 * and including 3.1.1 which returned the LAST IP in the list.
+	 *
+	 * @var   bool
+	 */
+	protected static $useFirstIpInChain = true;
+
+	/**
+	 * Set the $useFirstIpInChain flag. See above.
+	 *
+	 * @param   bool  $value
+	 */
+	public static function setUseFirstIpInChain($value = true)
+	{
+		self::$useFirstIpInChain = $value;
+	}
+
+	/**
 	 * Get the current visitor's IP address
 	 *
 	 * @return string
@@ -405,20 +426,8 @@ class Ip
 		$ip = self::detectIP();
 
 		/**
-		 * If you have multiple IPs in the X-Forwarded-For header I will only ever use the LAST one. This is a security
-		 * issue. Read this https://github.com/akeeba/fof/issues/627#issuecomment-243440316
-		 *
-		 * If you want to trust arbitrary user input you can do so at your own peril. I will NOT screw up the security of
-		 * everyone's site because your server configuration returns many IP addresses. Also read the info in the two
-		 * links at the docblock.
-		 *
-		 * Remember that if you are reading this YOU ARE A DEVELOPER. Developers have the choice to NOT use the code
-		 * they don't like and substitute their own. So. You are a developer. If you understand the GRAVE SECURITY RISKS
-		 * of BLINDLY trusting USER DATA coming over the freaking Internet please be my guest and use your OWN IP
-		 * workarounds code e.g. in a system plugin's onAfterInitialize. But only do this on your own server which WILL
-		 * get trivially hacked because you do NOT remove the incoming X-Forwarded-For header (=arbitrary user input)
-		 * AND you rely on it. In so many words, you are a sucker. You can choose to be a sucker, you cannot force *me*
-		 * to be a sucker.
+		 * If you have multiple IPs in the X-Forwarded-For header I will only ever use the FIRST one. See
+		 * https://en.wikipedia.org/wiki/X-Forwarded-For#Format for an explanation.
 		 */
 		if ((strstr($ip, ',') !== false) || (strstr($ip, ' ') !== false))
 		{
@@ -426,10 +435,16 @@ class Ip
 			$ip = str_replace(',,', ',', $ip);
 			$ips = explode(',', $ip);
 			$ip = '';
+
 			while (empty($ip) && !empty($ips))
 			{
 				$ip = array_pop($ips);
 				$ip = trim($ip);
+
+				if (self::$useFirstIpInChain)
+				{
+					return $ip;
+				}
 			}
 		}
 		else
@@ -456,6 +471,12 @@ class Ip
 				return $_SERVER['HTTP_X_FORWARDED_FOR'];
 			}
 
+			// Are we using Sucuri firewall? They use a custom HTTP header
+			if (self::$allowIpOverrides && array_key_exists('HTTP_X_SUCURI_CLIENTIP', $_SERVER))
+			{
+				return $_SERVER['HTTP_X_SUCURI_CLIENTIP'];
+			}
+
 			// Do we have a client-ip header (e.g. non-transparent proxy)?
 			if (self::$allowIpOverrides && array_key_exists('HTTP_CLIENT_IP', $_SERVER))
 			{
@@ -478,6 +499,12 @@ class Ip
 		if (self::$allowIpOverrides && getenv('HTTP_X_FORWARDED_FOR'))
 		{
 			return getenv('HTTP_X_FORWARDED_FOR');
+		}
+
+		// Are we using Sucuri firewall? They use a custom HTTP header
+		if (self::$allowIpOverrides && getenv('HTTP_X_SUCURI_CLIENTIP'))
+		{
+			return getenv('HTTP_X_SUCURI_CLIENTIP');
 		}
 
 		// Do we have a client-ip header?

@@ -17,10 +17,18 @@
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
+
 		<field name="scanemail" type="text" default="" size="30"
 			   label="COM_ADMINTOOLS_LBL_JCONFIG_SCANEMAIL_LABEL"
 			   description="COM_ADMINTOOLS_LBL_JCONFIG_SCANEMAIL_DESC"
 		/>
+
+		<field name="scan_conditional_email" type="list" default="1"
+			   label="COM_ADMINTOOLS_JCONFIG_SCAN_CONDITIONAL_EMAIL_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_SCAN_CONDITIONAL_EMAIL_DESC">
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+		</field>
 
 	</fieldset>
 

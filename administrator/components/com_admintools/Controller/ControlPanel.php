@@ -39,7 +39,9 @@ class ControlPanel extends Controller
 			'resetSecretWord',
 			'forceUpdateDb',
 			'IpWorkarounds',
-		    'changelog'
+		    'changelog',
+		    'endRescue',
+			'renameMainPhp',
 		];
 	}
 
@@ -192,6 +194,14 @@ ENDRESULT;
 		$this->setRedirect('index.php?option=com_admintools', JText::_('COM_ADMINTOOLS_CONTROLPANEL_IP_UNBLOCKED'));
 	}
 
+	public function endRescue()
+	{
+		$this->container->platform->unsetSessionVar('rescue_timestamp', 'com_admintools');
+		$this->container->platform->unsetSessionVar('rescue_username', 'com_admintools');
+
+		$this->setRedirect('index.php?option=com_admintools');
+	}
+
 	/**
 	 * Applies the Download ID when the user is prompted about it in the Control Panel
 	 */
@@ -329,5 +339,23 @@ ENDRESULT;
 		$view->setLayout('changelog');
 
 		$this->display(true);
+	}
+
+	public function renameMainPhp()
+	{
+		$this->csrfProtection();
+
+		/** @var \Akeeba\AdminTools\Admin\Model\ControlPanel $model */
+		$model = $this->getModel();
+		$model->reenableMainPhp();
+
+		if ($customURL = $this->input->getBase64('returnurl', ''))
+		{
+			$customURL = base64_decode($customURL);
+		}
+
+		$returnUrl = $customURL ? $customURL : 'index.php?option=com_admintools&view=ControlPanel';
+
+		$this->setRedirect($returnUrl);
 	}
 }

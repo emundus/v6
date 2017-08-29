@@ -52,6 +52,28 @@ class Controller
 	protected $autoRouting = 0;
 
 	/**
+	 * Should I protect against state bleedover? When this is enabled the default model's state hash will be
+	 * automatically set to include the controller name i.e. `com_example.controllerName.modelName.` instead of
+	 * `com_example.modelName.`. This will happen ONLY if the preventStateBleedover flag is set, the controller and
+	 * model names are different and the model doesn't set its own hash (or override getHash altogether).
+	 *
+	 * You should only need to enable this feature when you have multiple controllers using the _same_ Model as their
+	 * default. For example, if you have a blog component with Latest and Posts Controllers, both using the Posts Model
+	 * as their default Model the state variables set in the latest posts page would bleed over to the posts page. This
+	 * can include filtering and pagination preferences, resulting in a confusing experience for the user.
+	 *
+	 * Caveat: if you are using a different Controller class for singular / plural view names you will need to override
+	 *         getModel() yourself. Otherwise the state of the singular view would be disjointed from the state of the
+	 *         plural view (since the Controller names are different). That's the reason why this feature is turned off
+	 *         by default.
+	 *
+	 * False = same behavior as FOF 3.0.0 to 3.1.1 inclusive.
+	 *
+	 * @var   bool
+	 */
+	protected $preventStateBleedover = false;
+
+	/**
 	 * Redirect message.
 	 *
 	 * @var    string
@@ -217,12 +239,12 @@ class Controller
 	public function __construct(Container $container, array $config = array())
 	{
 		// Initialise
-		$this->methods = array();
-		$this->message = null;
+		$this->methods     = array();
+		$this->message     = null;
 		$this->messageType = 'message';
-		$this->paths = array();
-		$this->redirect = null;
-		$this->taskMap = array();
+		$this->paths       = array();
+		$this->redirect    = null;
+		$this->taskMap     = array();
 
 		// Get a local copy of the container
 		$this->container = $container;
@@ -231,7 +253,7 @@ class Controller
 		$xMethods = get_class_methods('\\FOF30\\Controller\\Controller');
 
 		// Get the public methods in this class using reflection.
-		$r = new \ReflectionClass($this);
+		$r        = new \ReflectionClass($this);
 		$rMethods = $r->getMethods(\ReflectionMethod::IS_PUBLIC);
 
 		foreach ($rMethods as $rMethod)
@@ -261,7 +283,7 @@ class Controller
 		}
 
 		// Get the default values for the component and view names
-		$this->view = $this->getName();
+		$this->view   = $this->getName();
 		$this->layout = $this->input->getCmd('layout', null);
 
 		// If the default task is set, register it as such
@@ -291,13 +313,19 @@ class Controller
 		// Apply the autoRouting preference
 		if (array_key_exists('autoRouting', $config))
 		{
-			$this->autoRouting = (int)$config['autoRouting'];
+			$this->autoRouting = (int) $config['autoRouting'];
 		}
 
 		// Apply the csrfProtection preference
 		if (array_key_exists('csrfProtection', $config))
 		{
-			$this->csrfProtection = (int)$config['csrfProtection'];
+			$this->csrfProtection = (int) $config['csrfProtection'];
+		}
+
+		// Apply the preventStateBleedover preference
+		if (array_key_exists('preventStateBleedover', $config))
+		{
+			$this->preventStateBleedover = (bool) ((int) $config['preventStateBleedover']);
 		}
 	}
 
@@ -448,6 +476,7 @@ class Controller
 		{
 			// Get a JCache object
 			$option = $this->input->get('option', 'com_foobar', 'cmd');
+			/** @var \JCacheControllerView $cache */
 			$cache = \JFactory::getCache($option, 'view');
 
 			// Set up a cache ID based on component, view, task and user group assignment
@@ -564,13 +593,20 @@ class Controller
 			if (empty($name))
 			{
 				$config['modelTemporaryInstance'] = true;
+				$controllerName                   = $this->getName();
+
+				if ($controllerName != $modelName)
+				{
+					$config['hash_view'] = $controllerName;
+				}
+
 			}
 			else
 			{
 				// Other classes are loaded with persistent state disabled and their state/input blanked out
 				$config['modelTemporaryInstance'] = false;
-				$config['modelClearState'] = true;
-				$config['modelClearInput'] = true;
+				$config['modelClearState']        = true;
+				$config['modelClearInput']        = true;
 			}
 
 			$this->modelInstances[$modelName] = $this->container->factory->model(ucfirst($modelName), $config);

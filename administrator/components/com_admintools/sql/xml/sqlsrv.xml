@@ -431,8 +431,8 @@ SELECT COUNT(*) FROM #__admintools_waftemplates WHERE reason = 'configmonitor';
 			]]></condition>
 			<query><![CDATA[
 INSERT INTO #__admintools_waftemplates
-(admintools_waftemplate_id, reason, language, subject, template, enabled, email_num, email_numfreq, email_freq, created_on, created_by, modified_on, modified_by)
-VALUES(6, 'configmonitor', '*', 'Configuration options for [AREA] modified on [SITENAME]', '<div style="background-color: #e0e0e0; padding: 10px 20px;">
+(reason, language, subject, template, enabled, email_num, email_numfreq, email_freq, created_on, created_by, modified_on, modified_by)
+VALUES('configmonitor', '*', 'Configuration options for [AREA] modified on [SITENAME]', '<div style="background-color: #e0e0e0; padding: 10px 20px;">
 <div style="background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;">
 <p>Hello,</p>
 <p>We would like to notify you that the configuration options for [AREA] on your site, [SITENAME], have been modified by user [USER]. More details about the origin of this change as follows:</p>
@@ -443,6 +443,45 @@ VALUES(6, 'configmonitor', '*', 'Configuration options for [AREA] modified on [S
 </div>
 <p style="font-size: x-small; color: #667;">You are receiving this automatic email message because you have a subscription in <em>[SITENAME]</em>. <span style="line-height: 1.3em;">Do not reply to this email, it''s sent from an unmonitored email address.</span></p>
 </div>', 1, 0, 0, '', '2016-12-15 10:46:00', 800, '2016-12-15 10:46:00', 800);
+			]]></query>
+		</action>
+
+		<!-- WAF Email Template for Rescue URL -->
+		<action table="#__admintools_waftemplates" canfail="1">
+			<condition type="equals" value="0"><![CDATA[
+SELECT COUNT(*) FROM #__admintools_waftemplates WHERE reason = 'rescueurl';
+			]]></condition>
+			<query><![CDATA[
+INSERT INTO `#__admintools_waftemplates`
+(reason, language, subject, template, enabled, email_num, email_numfreq, email_freq, created_on, created_by, modified_on, modified_by)
+VALUES('rescueurl', '*', 'Rescue URL requested on [SITENAME] for [USER]', '<div style="background-color: #e0e0e0; padding: 10px 20px;">
+<div style="background-color: #f9f9f9; border-radius: 10px; padding: 5px 10px;">
+<p>Hello,</p>
+<p>We would like to notify you that user [USER] has requested a Rescue URL for your site, [SITENAME]. If you made that request yourself please click on the following link, or copy and paste the URL to your browser. This will let you log in to the administrator backend of your site where you can modify unblock yourself and / or change Admin Tools'' configuration. The Rescue URL is:</p>
+<p><a href="[RESCUEURL]" rel="alternate">[RESCUEURL]</a></p>
+<p>The information towards the end of this email lets you know what to do once you are logged into your site''s backend.</p>
+<h3>I have no idea why I''m receiving this email</h3>
+<p>Look under "What is the Rescue URL" further down. You <strong>DO NOT</strong> need to take any action and you <strong>DO NOT</strong> need to worry.</p>
+<h3>Who requested the Rescue URL?</h3>
+<p>Username: [USER]<br />IP Address: <a href="[LOOKUP]" rel="alternate">[IP]<br /></a>Country: [COUNTRY]<br />Continent: [CONTINENT]<br />User Agent: [UA]</p>
+<p> </p>
+<h3>What is the Rescue URL?</h3>
+<p>Sometimes an overzealous Admin Tools configuration can result in accidentally blocking you, a Super User from the site. Normally that would require you to rename the file of Admin Tools'' system plugin to unblock yourself. This is a bit complicated and susceptible to errors.</p>
+<p>The Rescue URL feature works around that. By accessing a special URL when you are blocked out of the site you are sent this email. The URL in this email is only valid for the same browser and IP address that made the request and only for a limited amount of time. Accessing it will get you to a <em>temporarily</em> unblocked administrator login page. This lets you access the administrator backend of your site to unblock yourself and / or modify Admin Tools settings.</p>
+<p>By default, this feature is enabled on all installations of Admin Tools. Moreover, a message about accessing the Rescue URL is displayed by default when someone gets blocked UNLESS you set up a "Custom message" in the Configure WAF page of Admin Tools. If you have no idea why you received this message it''s probably because someone saw the default IP blocked message and guessed your Super User email correctly. Don''t worry though, what they did is completely useless since they would also need access to your email account and your Super User password to access your site, i.e. they would need to have already hacked you. As it''s already documented, we strongly recommend that you change the "Custom message" to make it less obvious that your site is protected by Admin Tools. If you do not wish to use the Rescue URL feature -and are OK manually renaming files per the documentation when you get blocked- go to Extensions, Plugins and edit the options of the Admin Tools system plugin. You''ll see an option for Rescue URL. Set it to No to disable this feature.</p>
+<h3>What to do after logging in?</h3>
+<p>If your IP is blocked by Admin Tools go to Components, Admin Tools and click the big Unblock My IP button at the top of the page.</p>
+<p>If you keep getting your IP blocked without you doing anything suspicious to the best of your knowledge, the IP blocked is always the same but different than the one reported by <a href="http://www.ip-adress.eu/">http://www.ip-adress.eu/ </a><em>and</em> <a href="https://www.whatismyip.com/">https://www.whatismyip.com/</a> then your site might be behind a CDN or a reverse proxy. In this case, additionally to the instructions above, please go to Components, Admin Tools, Web Application Firewall, Configure WAF, click on the Basic Protection Features tab. Set the "Enable IP workarounds" option to Yes - no matter what the automatically detected recommendation is.</p>
+<p>If, however, your real IP address as reported by the two tool listed above keeps getting banned you should troubleshoot the reason of the ban. Go to Components, Admin Tools, Web Application Firewall, Security Exceptions Log and check the Reason and Target URL for the entries which have your IP address in the IP address field. If you are not sure what that means, please <a href="https://www.akeebabackup.com/support/admin-tools.html" rel="alternate">file a support ticket</a> remembering to copy the information from the Security Exceptions Log. Kindly note that you need to have an active subscription to receive support.</p>
+<p>If you have forgotten your Administrator Secret URL parameter go to Components, Admin Tools, Web Application Firewall, Configure WAF, click on the Basic Protection Features tab and find the "Administrator secret URL parameter" option. Change or remove all of the text in that box to reset or unset, respectively, this feature.</p>
+<h3>What to do if I still cannot log in to my site?</h3>
+<p>There are two cases where the Rescue URL feature, or renaming the Admin Tools system plugin''s file, will not help you. These are the two cases where Admin Tools has created a <em>server</em> configuration file, meaning that you are blocked by <em>your server</em>, not Admin Tools.</p>
+<p>The first is the <strong>Administrator password protection</strong> feature. Please delete the files named <code>.htaccess</code> and <code>.htpasswd</code> from your site''s <code>administrator</code> directory. </p>
+<p>The other case is when you''ve used the <strong>.htaccess Maker</strong> feature of Admin Tools. In this case there''s a <code>.htaccess</code> file in your site''s root. You may want to replace its contents with the <a href="https://raw.githubusercontent.com/joomla/joomla-cms/staging/htaccess.txt" rel="alternate">default Joomla! .htaccess file content</a>.</p>
+<p>In both cases you should not that the files have names beginning with a dot. That makes them <em>hidden</em>. You will need to enable the display of hidden files to edit / delete those files. If you are unsure how to do that please ask your host and tell them that you need to edit/delete <em>hidden</em> files. Usually they will point out an option in their hosting control panel''s file manager. </p>
+<p>In any other case your issue is unrelated to Admin Tools. Do you have another security plugin on your site? If you do, check its settings. If not, check with your host. More often than not hosts have their own server security systems which can block you out of your site.</p>
+</div>
+</div>', 1, 1, 1, 'minute', '2017-06-20 09:50:00', 800, '2017-06-20 09:50:00', 800);
 			]]></query>
 		</action>
 	</sql>

@@ -224,12 +224,15 @@ class Ordering extends \JFormField implements FieldInterface
 
 				if ($ordering)
 				{
-					// Joomla! 3.5 and later: drag and drop reordering is broken when the ordering field is not hidden
-					// because some idiot submitted that code and some moron committed it. I tried to file a PR to fix
-					// it and got the reply "can't test, won't test". OK, then. You retarded bonobos blindly accepted
-					// code which did the EXACT OPPOSITE of what it promised and broke b/c. However, you won't accept
-					// the fix to that shit from someone who knows how Joomla! works and wasted 2 hours of his time to
-					// track down your idiocy, fix it and explain why you retarded monkeys cocked it up. Fucking morons!
+					/**
+					 * Joomla! 3.5 and later: drag and drop reordering is broken when the ordering field is not hidden
+					 * because some random bloke submitted that code and some supposedly responsible adult with commit
+					 * rights committed it. I tried to file a PR to fix it and got the reply "can't test, won't test".
+					 * OK, then. You blindly accepted code which did the EXACT OPPOSITE of what it promised and broke
+					 * b/c. However, you won't accept the fix to your mess from someone who knows how Joomla! works and
+					 * wasted 2 hours of his time to track down your mistake, fix it and explain why your actions
+					 * resulted in a b/c break. You have to be kidding me!
+					 */
 					$joomla35IsBroken = version_compare(JVERSION, '3.5.0', 'ge') ? 'style="display: none"': '';
 
 					// When the developer has disabled Drag and Drop we will show the field regardless

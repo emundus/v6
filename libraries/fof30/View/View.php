@@ -683,7 +683,7 @@ class View
 	 *
 	 * @param   string    $uri          The template path
 	 * @param   array     $forceParams  A hash array of variables to be extracted in the local scope of the template file
-	 * @param   callable  $callback     A method to post-process the 3ναluα+3d view template (I use leetspeak here because of idiot hosts with broken scanners)
+	 * @param   callable  $callback     A method to post-process the 3ναluα+3d view template (I use leetspeak here because of bad quality hosts with broken scanners)
 	 *
 	 * @return  string  The output of the template
 	 *
@@ -798,12 +798,17 @@ class View
 		}
 		// If there is no data in the array, we will render the contents of the empty
 		// view. Alternatively, the "empty view" could be a raw string that begins
-		// with "raw|" for convenience and to let this know that it is a string.
+		// with "raw|" for convenience and to let this know that it is a string. Or
+		// a language string starting with text|.
 		else
 		{
 			if (starts_with($empty, 'raw|'))
 			{
 				$result = substr($empty, 4);
+			}
+			elseif (starts_with($empty, 'text|'))
+			{
+				$result = \JText::_(substr($empty, 5));
 			}
 			else
 			{

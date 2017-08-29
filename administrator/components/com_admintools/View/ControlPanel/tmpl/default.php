@@ -17,6 +17,34 @@ JHtml::_('behavior.modal');
 <div id="restOfCPanel">
 	<div class="row-fluid">
 		<div class="akeeba-cpanel span6">
+			<?php if ($this->isRescueMode): ?>
+				<div class="well well-large" id="admintools-rescue">
+					<div>
+						<h3><?php echo JText::_('COM_ADMINTOOLS_CONTROLPANEL_RESCUEMODE_HEAD') ?></h3>
+						<p>
+							<?php echo JText::_('COM_ADMINTOOLS_CONTROLPANEL_RESCUEMODE_MESSAGE'); ?>
+						</p>
+						<p>
+							<a class="btn btn-info"
+							   href="https://www.akeebabackup.com/documentation/troubleshooter/atwafissues.html"
+							   target="_blank"
+							>
+								<span class="icon icon-info"></span>
+								<?php echo JText::_('COM_ADMINTOOLS_CONTROLPANEL_RESCUEMODE_BTN_HOWTOUNBLOCK'); ?>
+							</a>
+							<a class="btn btn-danger"
+							   href="index.php?option=com_admintools&view=ControlPanel&task=endRescue"
+							>
+								<span class="icon icon-power-cord"></span>
+								<?php echo JText::_('COM_ADMINTOOLS_CONTROLPANEL_RESCUEMODE_BTN_ENDRESCUE'); ?>
+							</a>
+						</p>
+					</div>
+				</div>
+            <?php else: ?>
+                <?php echo $this->loadAnyTemplate('admin:com_admintools/ControlPanel/plugin_warning') ?>
+				<?php endif; ?>
+
 			<div id="selfBlocked" class="text-center" style="display: none;">
 				<a class="btn btn-large btn-danger" href="<?php echo \JRoute::_('index.php?option=com_admintools&view=ControlPanel&task=unblockme'); ?>">
 					<span class="icon icon-unlock"></span>

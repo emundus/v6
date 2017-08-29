@@ -161,6 +161,9 @@ class AtsystemFeatureAbstract
 	 */
 	protected function redirectAdminToHome()
 	{
+		// Rescue URL check
+		AtsystemUtilRescueurl::processRescueURL($this->exceptionsHandler);
+
 		// Get the current URI
 		$myURI = JUri::getInstance();
 		$path = $myURI->getPath();

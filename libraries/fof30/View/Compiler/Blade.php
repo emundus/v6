@@ -497,6 +497,21 @@ class Blade implements CompilerInterface
 	}
 
 	/**
+	 * Compile the plural statements into valid PHP.
+	 *
+	 * e.g. @plural('COM_FOOBAR_N_ITEMS_SAVED', $countItemsSaved)
+	 *
+	 * @see JText::plural()
+	 *
+	 * @param  string  $expression
+	 * @return string
+	 */
+	protected function compilePlural($expression)
+	{
+		return "<?php echo \\JText::plural$expression; ?>";
+	}
+
+	/**
 	 * Compile the token statements into valid PHP.
 	 *
 	 * @param  string  $expression
@@ -688,6 +703,22 @@ class Blade implements CompilerInterface
 		}
 
 		return "<?php echo \$this->loadAnyTemplate($expression); ?>";
+	}
+
+	/**
+	 * Compile the jlayout statements into valid PHP.
+	 *
+	 * @param  string  $expression
+	 * @return string
+	 */
+	protected function compileJlayout($expression)
+	{
+		if (starts_with($expression, '('))
+		{
+			$expression = substr($expression, 1, -1);
+		}
+
+		return "<?php echo \\FOF30\\Layout\\LayoutHelper::render(\$this->container, $expression); ?>";
 	}
 
 	/**

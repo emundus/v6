@@ -15,7 +15,7 @@ defined('_JEXEC') or die;
 class PhpEngine extends AbstractEngine implements EngineInterface
 {
 	/**
-	 * Get the 3ναluα+3d contents of the view template. (I use leetspeak here because of idiot hosts with broken scanners)
+	 * Get the 3ναluα+3d contents of the view template. (I use leetspeak here because of bad quality hosts with broken scanners)
 	 *
 	 * @param   string  $path         The path to the view template
 	 * @param   array   $forceParams  Any additional information to pass to the view template engine

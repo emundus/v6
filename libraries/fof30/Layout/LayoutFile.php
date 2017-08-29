@@ -36,6 +36,12 @@ class LayoutFile extends JLayoutFile
 	 */
 	protected function getPath()
 	{
+		if (is_null($this->container))
+		{
+			$component       = $this->options->get('component');
+			$this->container = Container::getInstance($component);
+		}
+
 		$filesystem = $this->container->filesystem;
 
 		if (is_null($this->fullPath) && !empty($this->layoutId))
@@ -59,14 +65,14 @@ class LayoutFile extends JLayoutFile
 			$possiblePaths = array(
 				$prefix . '/templates/' . $this->container->platform->getTemplate() . '/html/layouts/' . $filePath,
 				$this->basePath . '/' . $filePath,
-				$platformDirs['root'] . '/layouts/' . $filePath
+				$platformDirs['root'] . '/layouts/' . $filePath,
 			);
 
 			reset($files);
 
 			while ((list(, $fileName) = each($files)) && is_null($this->fullPath))
 			{
-				$r = $filesystem->pathFind($possiblePaths, $fileName);
+				$r              = $filesystem->pathFind($possiblePaths, $fileName);
 				$this->fullPath = $r === false ? null : $r;
 			}
 		}

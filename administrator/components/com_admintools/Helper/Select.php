@@ -134,6 +134,7 @@ class Select
 			$options[] = JHtml::_('select.option', 'adminloginsuccess', JText::_('COM_ADMINTOOLS_WAFEMAILTEMPLATE_REASON_ADMINLOGINSUCCESS'));
 			$options[] = JHtml::_('select.option', 'ipautoban', JText::_('COM_ADMINTOOLS_WAFEMAILTEMPLATE_REASON_IPAUTOBAN'));
 			$options[] = JHtml::_('select.option', 'configmonitor', JText::_('COM_ADMINTOOLS_WAFEMAILTEMPLATE_REASON_CONFIGMONITOR'));
+			$options[] = JHtml::_('select.option', 'rescueurl', JText::_('COM_ADMINTOOLS_WAFEMAILTEMPLATE_REASON_RESCUEURL'));
 			unset($attribs['misc']);
 		}
 

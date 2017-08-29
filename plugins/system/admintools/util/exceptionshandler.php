@@ -65,6 +65,9 @@ class AtsystemUtilExceptionshandler
 	 */
 	public function blockRequest($reason = 'other', $message = '', $extraLogInformation = '', $extraLogTableInformation = '')
 	{
+		// Rescue URL check
+		AtsystemUtilRescueurl::processRescueURL($this);
+
 		if (empty($message))
 		{
 			$customMessage = $this->cparams->getValue('custom403msg', '');
@@ -78,6 +81,8 @@ class AtsystemUtilExceptionshandler
 				$message = 'ADMINTOOLS_BLOCKED_MESSAGE';
 			}
 		}
+
+		$message = AtsystemUtilRescueurl::processBlockMessage($message);
 
 		$r = $this->logBreaches($reason, $extraLogInformation, $extraLogTableInformation);
 
@@ -445,6 +450,9 @@ class AtsystemUtilExceptionshandler
 					$mailer->isHtml(true);
 					$mailer->setSender(array($mailfrom, $fromname));
 
+					// Resets the recipients, otherwise they will pile up
+					$mailer->clearAllRecipients();
+
 					if ($mailer->addRecipient($recipient) === false)
 					{
 						// Failed to add a recipient?
@@ -452,13 +460,12 @@ class AtsystemUtilExceptionshandler
 					}
 
 					$mailer->setSubject($subject);
-					$mailer->setBody($body);
+					$mailer->setBody(AtsystemUtilRescueurl::processBlockMessage($body, $recipient));
 					$mailer->Send();
 				}
 			}
 			catch (\Exception $e)
 			{
-				// Joomla 3.5 is written by incompetent bonobos
 			}
 		}
 
@@ -739,22 +746,35 @@ class AtsystemUtilExceptionshandler
 				$mailfrom = $config->get('mailfrom');
 				$fromname = $config->get('fromname');
 
-				// This line is required because SpamAssassin is BROKEN
-				$mailer->Priority = 3;
+				$recipients = explode(',', $this->cparams->getValue('emailafteripautoban', ''));
+				$recipients = array_map('trim', $recipients);
 
-				$mailer->isHtml(true);
-				$mailer->setSender(array($mailfrom, $fromname));
-				$mailer->addRecipient($this->cparams->getValue('emailafteripautoban', ''));
-
-				if ($this->cparams->getValue('emailafteripautoban', '') === false)
+				foreach ($recipients as $recipient)
 				{
-					// Failed to add a recipient?
-					throw new RuntimeException('Email address for auto-banned IP notification is empty', 500);
-				}
+					if (empty($recipient))
+					{
+						continue;
+					}
 
-				$mailer->setSubject($subject);
-				$mailer->setBody($body);
-				$mailer->Send();
+					// This line is required because SpamAssassin is BROKEN
+					$mailer->Priority = 3;
+
+					$mailer->isHtml(true);
+					$mailer->setSender(array($mailfrom, $fromname));
+
+					// Resets the recipients, otherwise they will pile up
+					$mailer->clearAllRecipients();
+
+					if ($mailer->addRecipient($recipient) === false)
+					{
+						// Failed to add a recipient?
+						continue;
+					}
+
+					$mailer->setSubject($subject);
+					$mailer->setBody(AtsystemUtilRescueurl::processBlockMessage($body, $recipient));
+					$mailer->Send();
+				}
 			}
 			catch (\Exception $e)
 			{
@@ -895,7 +915,7 @@ class AtsystemUtilExceptionshandler
 			}
 		}
 
-		// Because SpamAssassin is a piece of shit that blacklists our domain when it misidentifies an email as spam.
+		// Because SpamAssassin blacklists our domain when it misidentifies an email as spam.
 		$replaceThat = array(
 			'<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeebabackup.com/products/admin-tools.html\">Akeeba AdminTools</a></p>',
 			'<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeebabackup.com/products/admin-tools.html\">Akeeba AdminTools</a></p>',
@@ -921,15 +941,25 @@ class AtsystemUtilExceptionshandler
 
 		if (strpos($best->template, '<html') == false)
 		{
-			$best->template = <<< SPAMASSASSINSUCKS
+			$best->template = <<< HTML
 <html>
 <head>
 <title>{$best->subject}</title>
 </head>
 $best->template
 </html>
-SPAMASSASSINSUCKS;
+HTML;
 
+		}
+
+		// Inject self-unblocking information to the default emails for security exceptions and IP autoban
+		if ($best->reason == 'all')
+		{
+			$best->template = str_replace('Reason: [REASON]</p>', 'Reason: [REASON]</p><p>[RESCUEINFO]</p>', $best->template);
+		}
+		elseif ($best->reason == 'ipautoban')
+		{
+			$best->template = str_replace('Banned until: [UNTIL]</p>', 'Banned until: [UNTIL]</p><p>[RESCUEINFO]</p>', $best->template);
 		}
 
 		// And now return the template
@@ -977,5 +1007,10 @@ SPAMASSASSINSUCKS;
 		// This IP belongs to a private network, let's raise the flag and then notify the user
 		$params->set('detected_exceptions_from_private_network', 1);
 		$params->save();
+	}
+
+	public function getComponentParam($key, $default = null)
+	{
+		return $this->cparams->getValue($key, $default);
 	}
 }

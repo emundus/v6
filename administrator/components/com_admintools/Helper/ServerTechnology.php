@@ -119,7 +119,7 @@ class ServerTechnology
 	 * Checks that the calling code is an authorised first party class.
 	 *
 	 * Third party developers abuse our code to SILENTLY update the user's security preferences. This ain't
-	 * gonna happen no more. You have caused a lot of hacked sites, you idiots! If you're reading this message just
+	 * gonna happen no more. You have caused a lot of hacked sites, you fools! If you're reading this message just
 	 * document the MANUAL steps required by your users to MANUALLY whitelist a SPECIFIC file of your extension.
 	 * Better yet, rewrite your code to NOT require direct access to arbitrary .php files. Either that or you will
 	 * get the very public blame & shame treatment. Also note that any attempt to modify this file will result in
@@ -127,7 +127,7 @@ class ServerTechnology
 	 *
 	 * @param   array  $allowedCallers
 	 *
-	 * @return  void  Dies if a 3PD developer has fucked up.
+	 * @return  void  Dies if a 3PD developer has been a naughty b45+@Rd
 	 */
 	public static function checkCaller(array $allowedCallers)
 	{

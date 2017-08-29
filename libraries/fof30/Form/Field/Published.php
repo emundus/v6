@@ -217,7 +217,11 @@ class Published extends \JFormFieldList implements FieldInterface
 		$checkbox     = $this->element['checkbox'] ? (string) $this->element['checkbox'] : 'cb';
 		$publish_up   = $this->element['publish_up'] ? (string) $this->element['publish_up'] : null;
 		$publish_down = $this->element['publish_down'] ? (string) $this->element['publish_down'] : null;
-		$enabled      = true;
+		$container    = $this->form->getContainer();
+		$privilege    = $this->element['acl_privilege'] ? $this->element['acl_privilege'] : 'core.edit.state';
+		$component    = $this->element['acl_component'] ? $this->element['acl_component'] : $container->componentName;
+		$component    = empty($component) ? null : $component;
+		$enabled      = $container->platform->getUser()->authorise($privilege, $component);
 
 		// @todo Enforce ACL checks to determine if the field should be enabled or not
 		// Get the HTML

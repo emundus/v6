@@ -2144,6 +2144,7 @@ class DataModel extends Model implements \JTableInterface
 	public function reset($useDefaults = true, $resetRelations = false)
 	{
 		$this->recordData = array();
+		$this->whereClauses = array();
 
 		foreach ($this->knownFields as $fieldName => $information)
 		{

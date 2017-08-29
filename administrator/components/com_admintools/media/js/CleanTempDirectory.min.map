@@ -1,0 +1,8 @@
+{
+"version":3,
+"file":"CleanTempDirectory.min.js",
+"lineCount":5,
+"mappings":"A;;;;AASA,GAAsB,WAAtB,EAAI,MAAOA,OAAX,CAEC,IAAIA,OAAS,EAGe,YAA7B,EAAI,MAAOA,OAAAC,OAAX,GAECD,MAAAC,OAFD,CAEiBA,MAAAC,WAAA,EAFjB,CAM4C,YAA5C,EAAI,MAAOC,WAAAC,mBAAX,GAECD,UAAAC,mBAFD,CAEiC,SACpBC,QAAS,EACjB,CACCC,MAAAC,WAAAC,MAAA,EADD,CAF4B,CAFjC,CAUAR,OAAAC,OAAA,CAAcQ,QAAd,CAAAC,MAAA,CAA8B,QAAS,CAACC,CAAD,CACvC,CACwBA,CAAAC,CAAE,gCAAFA,CAEnBC,OAAJ,CAECC,MAAAC,WAAA,CAAkB,0CAAlB,CAA8D,GAA9D,CAFD,CAMCN,QAAAO,MAAAC,UAAAC,OAAA,EATF,CADA;",
+"sources":["../uncompressed/js/CleanTempDirectory.js"],
+"names":["akeeba","jQuery","noConflict","admintools","CleanTempDirectory","closeMe","parent","SqueezeBox","close","document","ready","$","autoCloseElement","length","window","setTimeout","forms","adminForm","submit"]
+}

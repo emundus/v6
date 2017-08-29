@@ -16,12 +16,15 @@ use Akeeba\AdminTools\Admin\Model\ControlPanel;
 use Akeeba\AdminTools\Admin\Model\GeographicBlocking;
 use Akeeba\AdminTools\Admin\Model\MasterPassword;
 use Akeeba\AdminTools\Admin\Model\Stats;
+use Akeeba\AdminTools\Admin\View\Mixin\SystemPluginExists;
 use FOF30\Date\Date;
 use FOF30\View\DataView\Html as BaseView;
 use JText;
 
 class Html extends BaseView
 {
+	use SystemPluginExists;
+
 	/**
 	 * HTML of the processed CHANGELOG to display in the Changelog modal
 	 *
@@ -218,6 +221,8 @@ class Html extends BaseView
 	 */
 	protected function onBeforeMain()
 	{
+		$this->populateSystemPluginExists();
+
 		// Is this the Professional release?
 		$this->isPro = ADMINTOOLS_PRO == 1;
 
@@ -243,12 +248,13 @@ class Html extends BaseView
 		/** @var Stats $statsModel */
 		$statsModel = $this->container->factory->model('Stats')->tmpInstance();
 
-		// Is this a very old version? If it's older than 90 days let's warn the user
+		// Is this a very old version? If it's older than 180 days let's warn the user
 		$this->oldVersion = false;
+
 		$relDate          = new Date(ADMINTOOLS_DATE, 'UTC');
 		$interval         = time() - $relDate->toUnix();
 
-		if ($interval > (60 * 60 * 24 * 90))
+		if ($interval > (60 * 60 * 24 * 180))
 		{
 			$this->oldVersion = true;
 		}

@@ -1,0 +1,8 @@
+{
+"version":3,
+"file":"namespace.min.js",
+"lineCount":1,
+"mappings":"AAAA,GAAsB,WAAtB,EAAI,MAAOA,OAAX,CAEC,IAAIA,OAAS,EAGe,YAA7B,EAAI,MAAOA,OAAAC,OAAX,GAECD,MAAAC,OAFD,CAEiBA,MAAAC,WAAA,EAFjB,CAMA,IAAyB,WAAzB,EAAI,MAAOC,WAAX,CAEC,IAAIA,WAAa;",
+"sources":["../uncompressed/js/namespace.js"],
+"names":["akeeba","jQuery","noConflict","admintools"]
+}

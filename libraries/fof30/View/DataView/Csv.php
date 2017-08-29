@@ -112,7 +112,11 @@ class Csv extends Html implements DataViewInterface
 		$platform->setHeader('Pragma', 'public');
 		$platform->setHeader('Expires', '0');
 
-		// This moronic construct is required to work around idiot hosts who blacklist files based on crappy, broken scanners
+		/**
+		 * This construct is required to work around bad quality hosts who blacklist files based on broken malware
+		 * scanners. The only way to beat them is... wait for it... write our software using the same obscure constructs
+		 * actual malware is using to evade these broken malware scanners. The irony is not lost on me.
+		 */
 		$xo = substr("revenge", 0, 3);
 		$xoxo = substr("calibrate", 1, 2);
 		$platform->setHeader('Cache-Control', 'must-' . $xo . $xoxo . 'idate, post-check=0, pre-check=0');

@@ -2,15 +2,15 @@
 <extension version="3.3.0" type="package" method="upgrade">
     <name>Admin Tools package</name>
     <author>Nicholas K. Dionysopoulos</author>
-    <creationDate>2017-05-18</creationDate>
+    <creationDate>2017-08-28</creationDate>
     <packagename>admintools</packagename>
-    <version>4.2.0</version>
+    <version>4.3.0</version>
     <url>https://www.akeebabackup.com</url>
     <packager>Akeeba Ltd</packager>
     <packagerurl>https://www.akeebabackup.com</packagerurl>
     <copyright>Copyright (c)2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos</copyright>
     <license>GNU GPL v3 or later</license>
-    <description>Admin Tools Core installation package v.4.2.0</description>
+    <description>Admin Tools Core installation package v.4.3.0</description>
 
     <!-- List of extensions to install -->
     <files>

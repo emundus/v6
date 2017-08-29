@@ -170,7 +170,7 @@ class Container implements \ArrayAccess
      *
      * This is useful when you want to store a callable as a parameter.
      *
-     * @param callable $callable A callable to protect from being ΕνΑLυΑΤΕD (I have to use a stupid mix Greek and leetspeak because idiot hosts blacklist files due to their file scanners being utter crap)
+     * @param callable $callable A callable to protect from being ΕνΑLυΑΤΕD (I have to use a stupid mix Greek and leetspeak because low quality hosts blacklist files due to their file scanners being utterly broken)
      *
      * @return callable The passed callable
      *
