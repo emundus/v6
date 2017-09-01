@@ -167,33 +167,4 @@ JFactory::getSession()->set('application_layout', 'evaluation');
             }
         })
     });
-
-    /*
-
-     var url_form = '<?php echo $this->url_form; ?>';
-
-if (url_form != '') {
-    $.ajax({
-            type: "GET",
-            url: url_form,
-            dataType: 'text',
-            success: function(data) {
-                var form = data;
-                form = form.replace('<script src="/media/system/js/calendar.js" type="text/javascript"><\/script>',''); 
-                form = form.replace('<script src="/media/system/js/calendar-setup.js" type="text/javascript"><\/script>',''); 
-                form = form.replace('<script src="/media/system/js/mootools-core.js" type="text/javascript"><\/script>',''); 
-                form = form.replace('<script src="/media/system/js/core.js" type="text/javascript"><\/script>',''); 
-                form = form.replace('<script src="/media/system/js/mootools-more.js" type="text/javascript"><\/script>',''); 
-                form = form.replace('<script src="/media/com_fabrik/js/lib/art.js" type="text/javascript"><\/script>',''); 
-                form = form.replace('<script src="/libraries/gantry/js/browser-engines.js" type="text/javascript"><\/script>',''); 
-                $("#form").empty();
-                $("#form").append(form);
-                $("#form").empty();
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(jqXHR.responseText);
-            }
-        });
-}
-*/
 </script>

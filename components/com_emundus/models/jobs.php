@@ -191,8 +191,16 @@ class EmundusModelJobs extends JModelList
         
 		// Get the application date and set it to the timezone defined in settings
         $jdate = JFactory::getDate();
-        $jdate->setOffset($config->getValue('offset'));
+        $timezone = new DateTimeZone( $config->get('offset') );
+        $jdate->setTimezone($timezone);
         $now = $jdate->toSql();
+
+  /*
+ Should be the good way to set Date now to CMS timezone
+        $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+		$dateTime = $dateTime->setTimezone(new DateTimeZone($this->offset));
+		$this->now = $dateTime->format('Y-m-d H:i:s');
+*/       
 
 		// Create a new query object.
 		$db    = $this->getDbo();

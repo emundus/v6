@@ -51,9 +51,9 @@ class modSCLoginHelper
     {
         // Load our CSS and Javascript files
         if (!$this->isJFBConnectInstalled)
-            $this->doc->addStyleSheet(JURI::base(true) . 'media/sourcecoast/css/sc_bootstrap.css');
+            $this->doc->addStyleSheet('media/sourcecoast/css/sc_bootstrap.css');
 
-        $this->doc->addStyleSheet(JURI::base(true) . 'media/sourcecoast/css/common.css');
+        $this->doc->addStyleSheet('media/sourcecoast/css/common.css');
 
         $paths = array();
         $paths[] = JPATH_ROOT . '/templates/' . JFactory::getApplication()->getTemplate() . '/html/mod_sclogin/themes/';
@@ -110,14 +110,14 @@ class modSCLoginHelper
         if (!$this->isJFBConnectInstalled)
         {
             if ($this->params->get('loadJQuery'))
-                $this->doc->addScript(JURI::base(true) . 'media/sourcecoast/js/jq-bootstrap-1.8.3.js');
+                $this->doc->addScript('media/jui/js/bootstrap.min.js');
             if  ($needsBootstrap || $this->tfaLoaded)
                 $this->doc->addScriptDeclaration('if (typeof jfbcJQuery == "undefined") jfbcJQuery = jQuery;');
         }
 
         if ($this->tfaLoaded)
         {
-            $this->doc->addScript(Juri::base(true) . 'media/sourcecoast/js/mod_sclogin.js');
+            $this->doc->addScript('media/sourcecoast/js/mod_sclogin.js');
             $this->doc->addScriptDeclaration('sclogin.token = "' . JSession::getFormToken() . '";' .
                 //"jfbcJQuery(window).on('load',  function() {
                 // Can't use jQuery here because we don't know if jfbcJQuery has been loaded or not.
