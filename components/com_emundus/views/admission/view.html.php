@@ -37,7 +37,6 @@ class EmundusViewAdmission extends JViewLegacy
             die(JText::_('RESTRICTED_ACCESS'));
 
 		$document = JFactory::getDocument();
-		$document->addScript(JURI::base(true)."media/com_emundus/lib/jquery-1.10.2.min.js");
 		$document->addScript(JURI::base(true)."media/com_emundus/js/em_admission.js");
 		
         $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
