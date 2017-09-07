@@ -13,6 +13,6 @@
 
 <?php echo $this->synthesis->block; ?>
 
-<input type="hidden" id="application_fnum" value="<?php echo $this->synthesis->fnumInfos['fnum']?>">
+<input type="hidden" id="application_fnum" value="<?php echo $this->synthesis->fnum?>">
 
 

@@ -72,7 +72,6 @@ class EmundusViewApplication extends JViewLegacy
 			switch ($layout) {
 				case "synthesis":
 					$program = $model->getProgramSynthesis($fnumInfos['campaign_id']);
-					$applicant = $model->getApplicantInfos($fnumInfos['applicant_id'], array('jos_emundus_personal_detail.last_name', 'jos_emundus_personal_detail.first_name', 'jos_emundus_personal_detail.gender', 'jos_users.username', 'jos_users.email', 'jos_users.id', '#__emundus_uploads.filename'));
 					$campaignInfo = $model->getUserCampaigns($fnumInfos['applicant_id'], $fnumInfos['campaign_id']);
 					$modelEmail = new EmundusModelEmails();
 					$tag = array(
@@ -85,10 +84,8 @@ class EmundusViewApplication extends JViewLegacy
 
 					$tags = $modelEmail->setTags(intval($fnumInfos['applicant_id']), $tag);
 					$synthesis = new stdClass();
-					$synthesis->applicant = $applicant;
 					$synthesis->program = $program;
 					$synthesis->camp = $campaignInfo;
-					@$synthesis->fnumInfos = $fnumInfos;
 					$synthesis->fnum = $fnum;
 					$synthesis->block = preg_replace($tags['patterns'], $tags['replacements'], $program->synthesis);
 					// replace {fabrik_element_ids} in body
