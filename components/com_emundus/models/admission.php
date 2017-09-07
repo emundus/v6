@@ -984,20 +984,21 @@ class EmundusModelAdmission extends JModelList
 		if (count($this->_elements_default) > 0)
 			$query .= ', '.implode(',', $this->_elements_default);
 		
-		$query .= ', ad.id AS admission_id, CONCAT(eu.lastname," ",eu.firstname) AS recorded_by';
+		$query .= ', jos_emundus_admission.id AS admission_id, CONCAT(eu.lastname," ",eu.firstname) AS recorded_by';
 		
 		$query .= ' FROM #__emundus_campaign_candidature as c
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = c.status 
 					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = c.campaign_id 
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__users as u on u.id = c.applicant_id
-					LEFT JOIN #__emundus_admission as ad on ad.fnum = c.fnum 
+					LEFT JOIN #__emundus_admission as jos_emundus_admission on jos_emundus_admission.fnum = c.fnum 
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=c.fnum  ';
-		$q = $this->_buildWhere($lastTab);
+		
+					$q = $this->_buildWhere($lastTab);
 
 		if (!empty($leftJoin))
 			$query .= $leftJoin;
-		$query .= ' LEFT JOIN #__emundus_users as eu on eu.user_id = ad.user ';
+		$query .= ' LEFT JOIN #__emundus_users as eu on eu.user_id = jos_emundus_admission.user ';
 		$query .= $q['join'];
 		$query .= ' where 1 = 1 ' . $q['q'];
 
@@ -1009,7 +1010,6 @@ class EmundusModelAdmission extends JModelList
 		//$fnum_assoc = $userModel->getApplicantsAssoc(JFactory::getUser()->id);
 		$query .= ' AND (sp.code IN ("'.implode('","', $this->code).'") OR c.fnum IN ("'.implode('","', $this->fnum_assoc).'")) ';
 		//////////////////////////////////////////////////////////////
-		
 		$query .=  $this->_buildContentOrderBy();
 
 		$dbo->setQuery($query);
@@ -1355,7 +1355,7 @@ class EmundusModelAdmission extends JModelList
     */
 	function updateAdmissionByFabrikElementsId($fnum, $element_id, $value) {
 		$db = JFactory::getDBO();
-		
+			
 		$h_files = new EmundusHelperFiles;
 		$element_details = $h_files->getElementsDetailsByID($element_id);
 		
