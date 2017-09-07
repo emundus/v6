@@ -90,7 +90,7 @@ class PlgFabrik_FormJUseremundus extends plgFabrik_Form
 	 * @return	string	element full name
 	 */
 
-	private function getFieldName($pname, $short = false)
+	public function getFieldName($pname, $short = false)
 	{
 		$params = $this->getParams();
 

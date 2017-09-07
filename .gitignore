@@ -22,12 +22,12 @@ components/com_emundus.*
 components/com_emundus/*.bak
 media/com_emundus.*
 media/com_emundus/*.bak
-htaccess.BAK*
 php.ini
 /favicon.ico
 workspace.xml
 emundus_bdd*
 201*emundus*
 /.htaccess.*
+/.htaccess
 /*.sql.zip
 /test*

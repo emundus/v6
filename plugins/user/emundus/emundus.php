@@ -238,6 +238,7 @@ class plgUserEmundus extends JPlugin
         if (!$app->isAdmin()) {
             $db = JFactory::getDBO();
             include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
+            include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
             $profiles   = new EmundusModelProfile;
             $p          = $profiles->isProfileUserSet($current_user->id);
