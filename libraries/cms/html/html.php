@@ -600,6 +600,13 @@ abstract class JHtml
 	 */
 	public static function stylesheet($file, $options = array(), $attribs = array())
 	{
+
+		// Fixes warnings linked to templates sending empty options variable that wasn't an array.
+		if (!is_array($options))
+		{
+			$options = array();
+		}
+
 		// B/C before 3.7.0
 		if (!is_array($attribs))
 		{
