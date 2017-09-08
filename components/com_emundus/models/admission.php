@@ -1323,20 +1323,17 @@ class EmundusModelAdmission extends JModelList
 	function setAdmissionByFabrikElementsId($fnum, $element_id, $value) {
 		$db 	= JFactory::getDBO();
 		$user 	= JFactory::getUser();
-		$jdate 	= JFactory::getDate();
-		$config = JFactory::getConfig();
+
+		// Datetime is automatically added to the DB
 
 		$student_id = (int)substr($fnum, -7);
-		
-        $jdate->setTimezone(new DateTimeZone($config->get('offset')));
-        $now = $jdate->toSql();
 		
 		$h_files = new EmundusHelperFiles;
 		$element_details = $h_files->getElementsDetailsByID($element_id);
 		
 		try {
 
-			$query = 'INSERT INTO '.$element_details[0]->tab_name.' ('.$element_details[0]->element_name.', time_date, fnum, user, student_id) VALUES ('.$db->Quote($value).', '.$db->Quote($now).', '.$db->Quote($fnum).', '.$db->Quote($user->id).', '.$db->Quote($student_id).')';
+			$query = 'INSERT INTO '.$element_details[0]->tab_name.' ('.$element_details[0]->element_name.', fnum, user, student_id) VALUES ('.$db->Quote($value).', '.$db->Quote($fnum).', '.$db->Quote($user->id).', '.$db->Quote($student_id).')';
 			$db->setQuery($query);
 			$db->Query() or die($db->getErrorMsg());
 		
