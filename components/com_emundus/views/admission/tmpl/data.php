@@ -63,9 +63,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 					<tr>
 						<?php $cfnum = $line['fnum']->val; ?>
 						<?php foreach ($line as $k => $value):?>
-
-							<?php if($k != 'evaluation_id'): ?>
-
+						
+						<?php if($k != 'evaluation_id'): ?>
 							<td <?php if($k == 'check' && $value->class != null) {echo 'class="'.$value->class.'"';}?>>
 								<div class="em-cell" >
 									<?php if($k == 'check'): ?>
@@ -77,14 +76,14 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 												?>
 										</label>
 									<?php elseif ($k == 'status'):?>
-                                        <span class="label label-<?php echo $value->status_class ?>" title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
+										<span class="label label-<?php echo $value->status_class ?>" title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
 									<?php elseif ($k == 'fnum'):?>
 										<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>">
 											<span class="glyphicon glyphicon-folder-open" title="<?php echo $value->val ?>">  <?php echo JFactory::getUser((int)substr($value->val, -7))->name; ?></span>
 										</a>
 									<?php elseif ($k == 'admission_id' || $k == 'recorded_by') :?>
 									<?php else:?>
-										
+
 										<?php if ($value->type == 'text' ) :?>
 											<?php echo strip_tags($value->val); ?>
 										<?php elseif ($value->type == 'textarea') :?>
@@ -105,9 +104,9 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 												</strong>
 											</h5>
 										<?php elseif ($value->type == 'radiobutton') :?>
-											<?php if ($value->val == 'yes' || $value->val == '1') :?>
+											<?php if (strtolower($value->val) == 'yes' || $value->val == '1' || strtolower($value->val) == 'oui') :?>
 												<span class="glyphicon glyphicon-ok em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true" style="color:green;"></span>
-											<?php elseif ($value->val == 'no' || $value->val == '0') :?>
+											<?php elseif (strtolower($value->val) == 'no' || $value->val == '0' || strtolower($value->val) == 'non') :?>
 												<span class="glyphicon glyphicon-remove em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true" style="color:red;"></span>
 											<?php else :?>
 												<span class="glyphicon glyphicon-warning-sign em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true" style="color:orange;"></span>
@@ -115,6 +114,10 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 										<?php elseif ($value->type == 'field'):?>
 											<input class="admission_input" type="text" id="<?php echo $cfnum.'-'.$value->id; ?>" name="<?php echo $value->val ?>" value="<?php echo $value->val ?>"></input>
 											<span class="glyphicon glyphicon-share-alt em-field" id="<?php echo $cfnum.'-'.$value->id.'-span'; ?>" aria-hidden="true" style="color:black;"></span>
+										<?php elseif ($value->type == 'fileupload' && !isset($value->val)) :?>
+											<a href="<?php echo JURI::base(true).DS.$value->val ?>"> <?php echo JText::_('LINK_TO_DOWNLOAD') ?><span class="glyphicon glyphicon-save"></span> </a>
+										<?php elseif ($value->type == 'fileupload' && isset($value->val)) :?>
+											<p> No File </p>
 										<?php else :?>
 											<?php echo $value->val; ?>
 										<?php endif; ?>
@@ -122,7 +125,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									<?php endif; ?>
 								</div>
 							</td>
-  						  <?php endif; ?>
+							<?php endif; ?>
 						<?php endforeach; ?>
 					</tr>
 				<?php endif;?>
