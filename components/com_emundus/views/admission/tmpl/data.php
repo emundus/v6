@@ -116,8 +116,12 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 											<span class="glyphicon glyphicon-share-alt em-field" id="<?php echo $cfnum.'-'.$value->id.'-span'; ?>" aria-hidden="true" style="color:black;"></span>
 										<?php elseif ($value->type == 'fileupload' && !isset($value->val)) :?>
 											<a href="<?php echo JURI::base(true).DS.$value->val ?>"> <?php echo JText::_('LINK_TO_DOWNLOAD') ?><span class="glyphicon glyphicon-save"></span> </a>
-										<?php elseif ($value->type == 'fileupload' && isset($value->val)) :?>
-											<p> No File </p>
+										<?php elseif ($value->type == 'fileupload'):?>
+											<?php if (isset($value->val) && $value->val !== "") :?>
+												<a href="<?php echo $value->val ?>"> <?php echo JText::_('LINK_TO_DOWNLOAD')." " ?><span class="glyphicon glyphicon-save"></span> </a>
+											<?php else: ?>
+												<p> No File </p>
+											<?php endif; ?>
 										<?php else :?>
 											<?php echo $value->val; ?>
 										<?php endif; ?>
