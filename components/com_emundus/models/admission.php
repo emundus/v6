@@ -1333,7 +1333,19 @@ class EmundusModelAdmission extends JModelList
 		
 		try {
 
-			$query = 'INSERT INTO '.$element_details[0]->tab_name.' ('.$element_details[0]->element_name.', fnum, user, student_id) VALUES ('.$db->Quote($value).', '.$db->Quote($fnum).', '.$db->Quote($user->id).', '.$db->Quote($student_id).')';
+			$query = 'INSERT INTO '.$element_details[0]->tab_name.' ('.$element_details[0]->element_name.', fnum, user';
+			
+			// Student id info is only important for elements belonging to the final grade table
+			if ($element_details[0]->tab_name == "jos_emundus_final_grade")
+				$query .= ', student_id';
+			
+			$query .= ') VALUES ('.$db->Quote($value).', '.$db->Quote($fnum).', '.$db->Quote($user->id);
+			
+			if ($element_details[0]->tab_name == "jos_emundus_final_grade")			
+				$query .= ', '.$db->Quote($student_id);
+			
+			$query .= ')';
+			
 			$db->setQuery($query);
 			$db->Query() or die($db->getErrorMsg());
 		
