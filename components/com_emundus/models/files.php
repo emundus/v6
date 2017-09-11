@@ -2469,27 +2469,6 @@ where 1 order by ga.fnum asc, g.title';
      * @return mixed
      * @throws Exception
      */
-    public function getEvaluationAverageByFnum($fnums)
-    {
-        $dbo = $this->getDbo();
-        $query = 'SELECT AVG(overall) AS overall, fnum FROM #__emundus_evaluations WHERE fnum IN ("'.implode('","', $fnums).'") GROUP BY fnum';
-
-        try
-        {
-            $dbo->setQuery($query);
-            return $dbo->loadAssocList('fnum', 'overall');
-        }
-        catch(Exception $e)
-        {
-            throw $e;
-        }
-    }
-
-    /**
-     * @param $fnums
-     * @return mixed
-     * @throws Exception
-     */
     public function getTagsByFnum($fnums)
     {
         $dbo = $this->getDbo();

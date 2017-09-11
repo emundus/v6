@@ -1692,7 +1692,26 @@ class EmundusModelEvaluation extends JModelList
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
-    }
+	}
+	
+	/**
+     * @param $fnums
+     * @return mixed
+     * @throws Exception
+     */
+	public function getEvaluationAverageByFnum($fnums) {
+		$dbo = $this->getDbo();
+		$query = 'SELECT AVG(overall) AS overall, fnum FROM #__emundus_evaluations WHERE fnum IN ("'.implode('","', $fnums).'") GROUP BY fnum';
+ 
+		try {
+		
+			$dbo->setQuery($query);
+			return $dbo->loadAssocList('fnum', 'overall');
+		 
+		} catch(Exception $e) {
+			throw $e;
+		}
+	}
 
 }
 

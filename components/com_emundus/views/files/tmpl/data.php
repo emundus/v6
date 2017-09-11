@@ -76,7 +76,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									<?php elseif($k == "access"):?>
 										<?php echo $this->accessObj[$line['fnum']->val]?>
 									<?php elseif($k == "overall"):?>
-										<?php echo $value->val; ?>
+										<?php echo $this->colsSup['overall'][$line['fnum']->val] ?>
 									<?php elseif($k == "id_tag"):?>
 										<?php echo @$this->colsSup['id_tag'][$line['fnum']->val]?>
 									<?php else:?>

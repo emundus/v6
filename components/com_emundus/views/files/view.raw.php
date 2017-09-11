@@ -33,7 +33,8 @@ class EmundusViewFiles extends JViewLegacy
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 		
 		parent::__construct($config);
 	}
@@ -54,7 +55,9 @@ class EmundusViewFiles extends JViewLegacy
 	    $this->itemId = $app->input->getInt('Itemid', null);
 	    $this->cfnum = $app->input->getString('cfnum', null);
 	    $layout = $app->input->getString('layout', null);
-	    $model = $this->getModel('Files');
+		
+		$model 			= $this->getModel('Files');
+		$m_evaluation 	= new EmundusModelEvaluation;
 
 	    @EmundusHelperFiles::setMenuFilter();
 
@@ -164,11 +167,11 @@ class EmundusViewFiles extends JViewLegacy
 			break;
 			// get list of application files
 			default :
-			    $menu = @JSite::getMenu();
+			    $menu = $app->getMenu();
 			    $current_menu  = $menu->getActive();
-			    $menu_params = $menu->getParams($current_menu->id);
-
-			    $columnSupl = explode(',', $menu_params->get('em_other_columns'));
+				$menu_params = $menu->getParams($current_menu->id);
+				
+				$columnSupl = explode(',', $menu_params->get('em_other_columns'));
 
                 $userModel = new EmundusModelUsers();
 
@@ -217,7 +220,8 @@ class EmundusViewFiles extends JViewLegacy
 							    $colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
 							    break;
 							case 'overall':
-								$datas[0] = array_merge($datas[0], array('overall' => JText::_('EVALUATION_OVERALL')));
+								$datas[0]['overall'] = JText::_('EVALUATION_OVERALL');
+								$colsSup['overall'] = array();
 								break;
                             case 'tags':
                                 $taggedFile = $model->getTaggedFile();
@@ -329,12 +333,12 @@ class EmundusViewFiles extends JViewLegacy
 					    }*/
 					    $datas[$line['fnum']->val.'-'.$i] = $line;
 					    $i++;
-				    }
-
-				/*	if(isset($colsSup['overall']))
+					}
+					
+					if(isset($colsSup['overall']))
 					{
-						$colsSup['overall'] = $model->getEvaluationAverageByFnum($fnumArray);
-					}*/
+						$colsSup['overall'] = $m_evaluation->getEvaluationAverageByFnum($fnumArray);
+					}
 					if(isset($colsSup['id_tag']))
 					{
 						$tags = $model->getTagsByFnum($fnumArray);

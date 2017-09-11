@@ -54,7 +54,8 @@ class EmundusViewFilesbystatus extends JViewLegacy
 	    $this->itemId = $app->input->getInt('Itemid', null);
 	    $this->cfnum = $app->input->getString('cfnum', null);
 	    $layout = $app->input->getString('layout', null);
-	    $model = $this->getModel('Files');
+		$model = $this->getModel('Files');
+		$m_evaluation = $this->getModel('Evaluation');
 
 		switch  ($layout)
 		{
@@ -321,7 +322,7 @@ class EmundusViewFilesbystatus extends JViewLegacy
 
 				/*	if(isset($colsSup['overall']))
 					{
-						$colsSup['overall'] = $model->getEvaluationAverageByFnum($fnumArray);
+						$colsSup['overall'] = $m_evaluation->getEvaluationAverageByFnum($fnumArray);
 					}*/
 					if(isset($colsSup['id_tag']))
 					{
