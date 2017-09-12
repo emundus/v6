@@ -808,7 +808,7 @@ $(document).ready(function()
                         success: function(result) {
                             if (result.status) {
                                 refreshFilter();
-                                reloadData($('#view').val());
+                                //reloadData($('#view').val());
                             }
                         },
                         error: function(jqXHR, textStatus, errorThrown) {
