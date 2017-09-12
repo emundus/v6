@@ -35,8 +35,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									<input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all" style="width:20px !important;"/>
 									<span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_CHECK_ALL_ALL')?></span>
 								</label>
-							<?php elseif(@$this->lists['order'] == $kl):?>
-								<?php if(@$this->lists['order_dir'] == 'desc'):?>
+							<?php elseif($this->lists['order'] == $kl):?>
+								<?php if($this->lists['order_dir'] == 'desc'):?>
 									<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
 								<?php else:?>
 									<span class="glyphicon glyphicon-sort-by-attributes"></span>
@@ -76,6 +76,10 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 										<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>">
 											<span class="glyphicon glyphicon-folder-open" title="<?php echo $value->val ?>">  <?php echo JFactory::getUser((int)substr($value->val, -7))->name; ?></span>
 										</a>
+									<?php elseif($k == "access"):?>
+										<?php echo $this->accessObj[$line['fnum']->val]?>
+									<?php elseif($k == "id_tag"):?>
+										<?php echo @$this->colsSup['id_tag'][$line['fnum']->val]?>
 									<?php else:?>
 										<?php 
 											if($value->type == 'text' ) {

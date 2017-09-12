@@ -47,25 +47,31 @@ class EmundusModelDecision extends JModelList
 		// Get current menu parameters
 		$menu = @JSite::getMenu();
 		$current_menu = $menu->getActive();
-
 		/*
 		** @TODO : gestion du cas Itemid absent à prendre en charge dans la vue
 		*/
 
 		if (empty($current_menu))
 			return false;
+		
 		$menu_params = $menu->getParams($current_menu->id);
-
-		//$filts_names = explode(',', $menu_params->get('em_filters_names'));
-		//$filts_values = explode(',', $menu_params->get('em_filters_values'));
-
+		$em_blocks_names = explode(',', $menu_params->get('em_blocks_names'));
 		$session = JFactory::getSession();
-
-		if (!$session->has('filter_order'))
-		{
-			$session->set('filter_order', 'jos_emundus_campaign_candidature.fnum');
-			$session->set('filter_order_Dir', 'desc');
-		}
+		
+		if (!$session->has('filter_order') || $session->get('filter_order') == 'c.id') {
+			
+            if (in_array('overall', $em_blocks_names)) {
+                
+                $session->set('filter_order', 'overall');
+                $session->set('filter_order_Dir', 'desc');
+            
+            } else {
+				
+                $session->set('filter_order', 'c.id');
+                $session->set('filter_order_Dir', 'desc');
+            
+			}
+        }
 
 		if(!$session->has('limit'))
 		{
@@ -169,6 +175,8 @@ class EmundusModelDecision extends JModelList
 				}
 			}
 		}
+		if (in_array('overall', $em_blocks_names))
+			$this->_elements_default[] = ' AVG(ee.overall) as overall ';
 
 		if (count($col_elt) == 0)
 			$col_elt = array();
@@ -285,6 +293,12 @@ class EmundusModelDecision extends JModelList
 
 	public function _buildContentOrderBy()
     {
+
+		$menu = @JSite::getMenu();
+		$current_menu = $menu->getActive();
+		$menu_params = $menu->getParams($current_menu->id);
+		$em_blocks_names = explode(',', $menu_params->get('em_blocks_names'));
+
         $filter_order = JFactory::getSession()->get('filter_order');
         $filter_order_Dir = JFactory::getSession()->get('filter_order_Dir');
 
@@ -303,8 +317,9 @@ class EmundusModelDecision extends JModelList
         $can_be_ordering[] = 'status';
         $can_be_ordering[] = 'c.status';
         $can_be_ordering[] = 'u.name';
-        $can_be_ordering[] = 'eta.id_tag';
-        $can_be_ordering[] = 'overall';
+		$can_be_ordering[] = 'eta.id_tag';
+		if (in_array('overall', $em_blocks_names))
+        	$can_be_ordering[] = 'overall';
 
         if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering))
         {
@@ -954,23 +969,31 @@ class EmundusModelDecision extends JModelList
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
 
 		//$userModel = new EmundusModelUsers();
-		$session = JFactory::getSession();
-		$dbo = $this->getDbo();
-		$eMConfig = JComponentHelper::getParams('com_emundus');
-		$evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
-		$current_user = JFactory::getUser();
+		$session 	= JFactory::getSession();
+		$app 		= JFactory::getApplication();
+		$dbo 		= $this->getDbo();
+		$eMConfig 	= JComponentHelper::getParams('com_emundus');
+
+		$current_menu = $app->getMenu()->getActive();
+		$menu_params = $current_menu->params;
+        $em_blocks_names = explode(',', $menu_params->get('em_blocks_names'));
 
 		$query = 'select c.fnum, ss.value as status, ss.class as status_class, u.name ';
 		// prevent double left join on query 
-		$lastTab = array('#__emundus_setup_status', 'jos_emundus_setup_status', 
-						 '#__emundus_setup_programmes', 'jos_emundus_setup_programmes',
-						 '#__emundus_setup_campaigns', 'jos_emundus_setup_campaigns',
-						 '#__emundus_final_grade', 'jos_emundus_final_grade',
-						 '#__emundus_users', 'jos_emundus_users',
-						 '#__users', 'jos_users',
-                         '#__emundus_tag_assoc', 'jos_emundus_tag_assoc'
-						 );
+		$lastTab = [
+			'#__emundus_setup_status', 'jos_emundus_setup_status', 
+			'#__emundus_setup_programmes', 'jos_emundus_setup_programmes',
+			'#__emundus_setup_campaigns', 'jos_emundus_setup_campaigns',
+			'#__emundus_final_grade', 'jos_emundus_final_grade',
+			'#__emundus_users', 'jos_emundus_users',
+			'#__users', 'jos_users',
+			'#__emundus_tag_assoc', 'jos_emundus_tag_assoc'
+		];
+		if (in_array('overall', $em_blocks_names))
+			$lastTab[] = ['#__emundus_evaluations', 'jos_emundus_evaluations'];
+
 		$leftJoin = '';
+		
 		if (count($this->_elements)>0) {
 			foreach ($this->_elements as $elt)
 			{
@@ -996,7 +1019,12 @@ class EmundusModelDecision extends JModelList
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__users as u on u.id = c.applicant_id
 					LEFT JOIN #__emundus_final_grade as jos_emundus_final_grade on jos_emundus_final_grade.fnum = c.fnum 
-                    LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=c.fnum  ';
+					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=c.fnum  ';
+		
+		if (in_array('overall', $em_blocks_names))
+			$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = c.fnum ';
+
+
 		$q = $this->_buildWhere($lastTab);
 
 		if (!empty($leftJoin))
@@ -1016,11 +1044,15 @@ class EmundusModelDecision extends JModelList
 		$query .= ' AND (sp.code IN ("'.implode('","', $this->code).'") OR c.fnum IN ("'.implode('","', $this->fnum_assoc).'")) ';
 		//////////////////////////////////////////////////////////////
 		
+		if (in_array('overall', $em_blocks_names))	
+			$query .= ' GROUP BY c.fnum';
+
 		$query .=  $this->_buildContentOrderBy();
+			
 
 		$dbo->setQuery($query);
-		try
-		{
+		
+		try {
 			$res = $dbo->loadAssocList();
 			$this->_applicants = $res;
 
@@ -1035,10 +1067,9 @@ class EmundusModelDecision extends JModelList
 			$res = $dbo->loadAssocList();
 //echo '<hr>'.str_replace('#_', 'jos', $query).'<hr>';
 			return $res;
-		}
-		catch(Exception $e)
-		{
-			throw new JDatabaseException;
+
+		} catch (Exception $e) {
+			echo $e->getMessage();
 		}
 	}
 

@@ -50,11 +50,11 @@ class EmundusViewDecision extends JViewLegacy
 
 	    $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 
-	    $menu = @JSite::getMenu();
-		$current_menu  = $menu->getActive();
-		$menu_params = $menu->getParams(@$current_menu->id);
+	    $menu 			= @JSite::getMenu();
+		$current_menu  	= $menu->getActive();
+		$menu_params 	= $menu->getParams(@$current_menu->id);
+		$columnSupl 	= explode(',', $menu_params->get('em_blocks_names'));
 		
-		$columnSupl = explode(',', $menu_params->get('em_actions'));
 		$jinput = JFactory::getApplication()->input;
 		$layout = $jinput->getString('layout', 0);
 
@@ -111,22 +111,6 @@ class EmundusViewDecision extends JViewLegacy
 				// get applications files
 				$users = $decision->getUsers($cfnum);
 
-				// Columns
-				$defaultElements = $this->get('DefaultElements');
-				$datas = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
-				$fl = array();
-
-			    // Get eval criterion
-				if (count($defaultElements)>0) {
-					foreach ($defaultElements as $key => $elt)
-					{
-						$fl[$elt->tab_name . '.' . $elt->element_name] = $elt->element_label;
-					}
-				}
-				$fl['jos_emundus_final_grade.user'] = JText::_('RECORDED_BY');
-				// merge eval criterion on application files
-			    $datas[0] = array_merge($datas[0], $fl);
-
 			    // get evaluation form ID
 			    $formid = $decision->getDecisionFormByProgramme();
 			    $this->assignRef('formid', $formid);
@@ -138,6 +122,20 @@ class EmundusViewDecision extends JViewLegacy
 				{
 					//$i = 1;
 					$taggedFile = $decision->getTaggedFile();
+
+					// Columns
+					$defaultElements = $this->get('DefaultElements');
+					$data = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
+					$fl = array();
+
+					// Get eval criterion
+					if (count($defaultElements)>0) {
+						foreach ($defaultElements as $key => $elt)
+						{
+							$fl[$elt->tab_name . '.' . $elt->element_name] = $elt->element_label;
+						}
+					}
+
 					foreach($columnSupl as $col)
 					{
 						$col = explode('.', $col);
@@ -145,14 +143,20 @@ class EmundusViewDecision extends JViewLegacy
 						{
 							case 'photos':
 								$colsSup['photos'] = @EmundusHelperFiles::getPhotos();
-								$datas[0]['PHOTOS'] = JText::_('PHOTOS');
+								$fl['PHOTOS'] = JText::_('PHOTOS');
 								break;
-							case 'evaluators':
-								$datas[0]['EVALUATORS'] = JText::_('EVALUATORS');
-								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $decision);
+							case 'overall':
+								$fl['overall'] = JText::_('EVALUATION_OVERALL');
 								break;
 						}
 					}
+
+					$fl['jos_emundus_final_grade.user'] = JText::_('RECORDED_BY');
+					
+					
+					// merge eval criterion on application files
+					$data[0] = array_merge($data[0], $fl);
+					
 
 					$i = 0;
 					foreach ($users as $user)
@@ -230,14 +234,14 @@ class EmundusViewDecision extends JViewLegacy
 								}
 							}
 						}
-						$datas[$line['fnum']->val.'-'.$i] = $line;
+						$data[$line['fnum']->val.'-'.$i] = $line;
 						$i++;
 					}
 
 				}
 			    else
 			    {
-				    $datas = JText::_('NO_RESULT');
+				    $data = JText::_('NO_RESULT');
 			    }
 
 
@@ -250,7 +254,7 @@ class EmundusViewDecision extends JViewLegacy
 		    $this->assignRef('pagination', $pagination);
 
 			$this->assignRef('users', $users);
-			$this->assignRef('datas', $datas);
+			$this->assignRef('datas', $data);
 
 		break;
 	}

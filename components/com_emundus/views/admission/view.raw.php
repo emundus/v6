@@ -54,6 +54,7 @@ class EmundusViewAdmission extends JViewLegacy
 		$current_menu  	= $menu->getActive();
 		$menu_params 	= $menu->getParams(@$current_menu->id);
 		$columnSupl 	= explode(',', $menu_params->get('em_actions'));
+		$em_blocks_names = explode(',', $menu_params->get('em_blocks_names'));
 
 		$jinput 	= JFactory::getApplication()->input;
 		$layout 	= $jinput->getString('layout', 0);
@@ -126,7 +127,7 @@ class EmundusViewAdmission extends JViewLegacy
 
 				// Columns
 				$defaultElements = $this->get('DefaultElements');
-				$datas = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
+				$data = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
 				$fl = array();
 
 			    // Get admission criterion
@@ -137,7 +138,7 @@ class EmundusViewAdmission extends JViewLegacy
 				}
 				$fl['jos_emundus_final_grade.user'] = JText::_('RECORDED_BY');
 				// merge admission criterion on application files
-			    $datas[0] = array_merge($datas[0], $fl);
+			    $data[0] = array_merge($data[0], $fl);
 
 			    // get admisson form ID
 			    $formid = $admission->getAdmissionFormByProgramme();
@@ -154,14 +155,16 @@ class EmundusViewAdmission extends JViewLegacy
 						switch ($col[0]) {
 							case 'photos':
 								$colsSup['photos'] = @EmundusHelperFiles::getPhotos();
-								$datas[0]['PHOTOS'] = JText::_('PHOTOS');
+								$data[0]['PHOTOS'] = JText::_('PHOTOS');
 								break;
 							case 'evaluators':
-								$datas[0]['EVALUATORS'] = JText::_('EVALUATORS');
+								$data[0]['EVALUATORS'] = JText::_('EVALUATORS');
 								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $admission);
 								break;
 						}
 					}
+					if (in_array('overall', $em_blocks_names))
+						$data[0]['overall'] = JText::_('EVALUATION_OVERALL');
 
 					$i = 0;
 					foreach ($users as $user) {
@@ -176,7 +179,7 @@ class EmundusViewAdmission extends JViewLegacy
 							$class = null;
 							$usObj->class = null;
 						}
-
+						
 						foreach ($user as  $key => $value) {
 							$userObj = new stdClass();
 
@@ -203,7 +206,7 @@ class EmundusViewAdmission extends JViewLegacy
 
 							elseif ($key == 'status_class') continue;
 
-							elseif (in_array($key, array_keys($elements))) {
+							elseif (isset($elements) && in_array($key, array_keys($elements))) {
 								
 								$userObj->val 			= $value;
 								$userObj->type 			= $elements[$key]['plugin'];
@@ -240,11 +243,11 @@ class EmundusViewAdmission extends JViewLegacy
 
 							}
 						}
-						$datas[$line['fnum']->val.'-'.$i] = $line;
+						$data[$line['fnum']->val.'-'.$i] = $line;
 						$i++;
 					}
 
-				} else $datas = JText::_('NO_RESULT');
+				} else $data = JText::_('NO_RESULT');
 
 			/* Get the values from the state object that were inserted in the model's construct function */
 		    $lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
@@ -255,7 +258,7 @@ class EmundusViewAdmission extends JViewLegacy
 		    $this->assignRef('pagination', $pagination);
 
 			$this->assignRef('users', $users);
-			$this->assignRef('datas', $datas);
+			$this->assignRef('datas', $data);
 
 			break;
 		}

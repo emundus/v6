@@ -34,8 +34,8 @@ class EmundusHelperFiles
         JFactory::getSession()->set('filt_params', array());
         JFactory::getSession()->set('select_filter',null);
         JFactory::getSession()->set('adv_cols', array());
-        JFactory::getSession()->set('filter_order', 'c.fnum');
-        JFactory::getSession()->set('filter_order_Dir', 'desc');
+        JFactory::getSession()->clear('filter_order');
+        JFactory::getSession()->clear('filter_order_Dir');
         $limit = JFactory::getApplication()->getCfg('list_limit');
         $limitstart = 0;
         $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
@@ -54,8 +54,8 @@ class EmundusHelperFiles
     {
         JFactory::getSession()->set('filt_params', array());
         JFactory::getSession()->set('select_filter',null);
-        JFactory::getSession()->set('filter_order', 'c.fnum');
-        JFactory::getSession()->set('filter_order_Dir', 'desc');
+        JFactory::getSession()->clear('filter_order');
+        JFactory::getSession()->clear('filter_order_Dir');
 
         $limit = JFactory::getApplication()->getCfg('list_limit');
         $limitstart = 0;

@@ -109,9 +109,7 @@ class EmundusControllerFiles extends JControllerLegacy
     /**
      *
      */
-    public function setfilters()
-    {
-
+     public function setfilters() {
         $jinput = JFactory::getApplication()->input;
         $filterName = $jinput->getString('id', null);
         $elements = $jinput->getString('elements', null);
@@ -157,7 +155,6 @@ class EmundusControllerFiles extends JControllerLegacy
         $session->set('limitstart', 0);
         echo json_encode((object)(array('status' => true)));
         exit();
-
     }
 
     /**

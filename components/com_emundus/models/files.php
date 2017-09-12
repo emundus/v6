@@ -81,10 +81,19 @@ class EmundusModelFiles extends JModelLegacy
         $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
 
         $session = JFactory::getSession();
-        if (!$session->has('filter_order'))
-        {
-            $session->set('filter_order', 'jos_emundus_campaign_candidature.id');
-            $session->set('filter_order_Dir', 'desc');
+
+        if (!$session->has('filter_order') || $session->get('filter_order') == 'c.id') {
+            if (in_array('overall', $em_other_columns)) {
+                
+                $session->set('filter_order', 'overall');
+                $session->set('filter_order_Dir', 'desc');
+            
+            } else {
+            
+                $session->set('filter_order', 'c.id');
+                $session->set('filter_order_Dir', 'desc');
+            
+            }
         }
 
         if(!$session->has('limit'))
@@ -208,8 +217,8 @@ class EmundusModelFiles extends JModelLegacy
                 //$this->_elements_default_name[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
             }
         }
-        if(in_array('overall', $em_other_columns))
-            $this->_elements_default[] = '(SELECT AVG(ee.overall) FROM jos_emundus_evaluations as ee WHERE ee.fnum like jos_emundus_campaign_candidature.fnum GROUP BY ee.fnum) as overall ';
+        if (in_array('overall', $em_other_columns))
+            $this->_elements_default[] = ' AVG(ee.overall) as overall ';
 
         if (count($col_elt) == 0)
             $col_elt = array();
@@ -253,6 +262,11 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function _buildContentOrderBy()
     {
+        $menu = @JSite::getMenu();
+		$current_menu = $menu->getActive();
+		$menu_params = $menu->getParams($current_menu->id);
+		$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
+
         $filter_order = JFactory::getSession()->get('filter_order');
         $filter_order_Dir = JFactory::getSession()->get('filter_order_Dir');
 
@@ -271,7 +285,8 @@ class EmundusModelFiles extends JModelLegacy
         $can_be_ordering[] = 'status';
         $can_be_ordering[] = 'u.name';
         $can_be_ordering[] = 'eta.id_tag';
-        $can_be_ordering[] = 'overall';
+        if (in_array('overall', $em_other_columns))
+            $can_be_ordering[] = 'overall';
 
         if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering))
         {
@@ -346,90 +361,7 @@ class EmundusModelFiles extends JModelLegacy
         return $profiles;
     }
 
-    /**
-     * @param $tab
-     * @param $elem
-     * @return array
-     */
-/*
-DELETE 06/06/2016
-    public function setSubQuery($tab, $elem)
-    {
-        $search = JRequest::getVar('elements', NULL, 'POST', 'array', 0);
-        $search_values = JRequest::getVar('elements_values', NULL, 'POST', 'array', 0);
-        $search_other = JRequest::getVar('elements_other', NULL, 'POST', 'array', 0);
-        $search_values_other = JRequest::getVar('elements_values_other', NULL, 'POST', 'array', 0);
-
-        $db = JFactory::getDBO();
-
-        $query = 'SELECT DISTINCT(#__emundus_users.user_id), ' . $tab . '.' . $elem . ' AS ' . $tab . '___' . $elem;
-        $query .= ' FROM #__emundus_campaign_candidature
-                    LEFT JOIN #__emundus_users ON #__emundus_users.user_id=#__emundus_campaign_candidature.applicant_id
-                    LEFT JOIN #__users ON #__users.id=#__emundus_users.user_id';
-
-        // subquery JOINS
-        $joined = array('jos_emundus_users');
-        $this->setJoins($search, $query, $joined);
-        $this->setJoins($search_other, $query, $joined);
-        $this->setJoins($this->_elements_default, $query, $joined);
-
-        // subquery WHERE
-        $query .= ' WHERE #__emundus_campaign_candidature.submitted=1 AND ' .
-            $this->details->{$tab . '___' . $elem}['group_by'] . '=#__users.id';
-        $query = @EmundusHelperFiles::setWhere($search, $search_values, $query);
-        $query = @EmundusHelperFiles::setWhere($search_other, $search_values_other, $query);
-        $query = @EmundusHelperFiles::setWhere($this->_elements_default, $this->elements_values, $query);
-
-        $db->setQuery($query);
-        $obj = $db->loadObjectList();
-        $list = array();
-        $tmp = '';
-        foreach ($obj as $unit) {
-            if ($tmp != $unit->user_id)
-                $list[$unit->user_id] =
-                    @EmundusHelperList::getBoxValue($this->details->{$tab . '___' . $elem}, $unit->{$tab . '___' . $elem},
-                        $elem);
-            else
-                $list[$unit->user_id] .= ',' . @EmundusHelperList::getBoxValue($this->details->{$tab . '___' . $elem},
-                        $unit->{$tab . '___' . $elem}, $elem);
-            $tmp = $unit->user_id;
-        }
-        return $list;
-    }
-*/
-    /**
-     * @param $search
-     * @return array|string
-     */
-/*
-DELETE 06/06/2016
-    public function setSelect($search)
-    {
-        $cols = array();
-        if (!empty($search)) {
-            asort($search);
-            $i = 0;
-            $old_table = '';
-
-            foreach ($search as $c) {
-                if (!empty($c)) {
-                    $tab = explode('.', $c);
-                    if ($tab[0] == 'jos_emundus_training') {
-                        $cols[] = ' search_' . $tab[0] . '.label as ' . $tab[1] . ' ';
-                    } else {
-                        if ($this->details->{$tab[0] . '___' . $tab[1]}['group_by'])
-                            $this->subquery[$tab[0] . '___' . $tab[1]] = $this->setSubQuery($tab[0], $tab[1]);
-                        else $cols[] = $c . ' AS ' . $tab[0] . '___' . $tab[1];
-                    }
-                }
-                $i++;
-            }
-            if (count($cols > 0) && !empty($cols))
-                $cols = implode(', ', $cols);
-        }
-        return $cols;
-    }
-*/
+    
     /**
      * @param $tab
      * @param $joined
@@ -442,137 +374,7 @@ DELETE 06/06/2016
         return false;
     }
 
-    /**
-     * @param $search
-     * @param $query
-     * @param $joined
-     * @return array
-     */
-/*
-DELETE 06/06/2016
-    public function setJoins($search, &$query, &$joined)
-    {
-        $tables_list = array();
-        if (!empty($search)) {
-            $old_table = '';
-            $i = 0;
-            foreach ($search as $s) {
-                $tab = explode('.', $s);
-                if (count($tab) > 1) {
-                    if ($tab[0] != $old_table && !$this->isJoined($tab[0], $joined)) {
-                        if ($tab[0] == 'jos_emundus_groups_eval' || $tab[0] == 'jos_emundus_comments')
-                            $query .= ' LEFT JOIN ' . $tab[0] . ' ON ' . $tab[0] . '.applicant_id=#__users.id ';
-                        elseif ($tab[0] == 'jos_emundus_evaluations' || $tab[0] == 'jos_emundus_final_grade' ||
-                            $tab[0] == 'jos_emundus_academic_transcript'
-                            || $tab[0] == 'jos_emundus_bank' || $tab[0] == 'jos_emundus_files_request' ||
-                            $tab[0] == 'jos_emundus_mobility'
-                        )
-                            $query .= ' LEFT JOIN ' . $tab[0] . ' ON ' . $tab[0] . '.student_id=#__users.id ';
-                        elseif ($tab[0] == "jos_emundus_training")
-                            $query .=
-                                ' LEFT JOIN #__emundus_setup_teaching_unity AS search_' . $tab[0] . ' ON search_' .
-                                $tab[0] . '.code=#__emundus_setup_campaigns.training ';
-                        else
-                            $query .= ' LEFT JOIN ' . $tab[0] . ' ON ' . $tab[0] . '.user=#__users.id ';
-                        $joined[] = $tab[0];
-                    }
-                    $old_table = $tab[0];
-                }
-                $i++;
-            }
-        }
-        return $tables_list;
-    }
-*/
-    /**
-     * @param $tables_list
-     * @param $tables_list_other
-     * @param $tables_list_default
-     * @return string
-     */
-/*
-DELETE 06/06/2016
-    public function _buildSelect(&$tables_list, &$tables_list_other, &$tables_list_default)
-    {
-        $current_user = JFactory::getUser();
-        $search = $this->getState('elements');
-        $search_other = $this->getState('elements_other');
-        $schoolyears = $this->getState('schoolyear');
-        $programmes = $this->getState('programme');
-        $gid = $this->getState('groups');
-        $uid = $this->getState('user');
-        $miss_doc = $this->getState('missing_doc');
-        $validate_application = $this->getState('validate');
-
-        $menu = JSite::getMenu();
-        $current_menu = $menu->getActive();
-        $menu_params = $menu->getParams($current_menu->id);
-        $this->validate_details = @EmundusHelperList::getElementsDetailsByID($menu_params->get('em_validate_id'));
-        $col_validate = "";
-        foreach ($this->validate_details as $vd) {
-            $col_validate .= $vd->tab_name . '___' . $vd->element_name . ',';
-        }
-        $col_validate = substr($col_validate, 0, strlen($col_validate) - 1);
-
-        $cols = $this->setSelect($search);
-        $cols_other = $this->setSelect($search_other);
-        $cols_default = $this->setSelect($this->_elements_default);
-
-        $joined = array('jos_emundus_users', 'jos_users', 'jos_emundus_setup_profiles', 'jos_emundus_final_grade',
-                        'jos_emundus_declaration');
-
-        $query = 'SELECT #__emundus_users.user_id, #__emundus_users.user_id as user, #__emundus_users.user_id as id, #__emundus_users.lastname, #__emundus_users.firstname, #__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile, #__emundus_declaration.validated, #__emundus_campaign_candidature.date_submitted,
-        #__emundus_setup_campaigns.year as schoolyear, #__emundus_setup_campaigns.label, #__emundus_campaign_candidature.date_submitted, #__emundus_campaign_candidature.campaign_id';
-        if (!empty($cols)) $query .= ', ' . $cols;
-        if (!empty($cols_other)) $query .= ', ' . $cols_other;
-        if (!empty($cols_default)) $query .= ', ' . $cols_default;
-        if (!empty($col_validate)) $query .= ', ' . $col_validate;
-        $query .= ' FROM #__emundus_campaign_candidature
-                    LEFT JOIN #__emundus_declaration ON #__emundus_declaration.user =  #__emundus_campaign_candidature.applicant_id
-                    LEFT JOIN #__emundus_users ON #__emundus_declaration.user=#__emundus_users.user_id
-                    LEFT JOIN #__emundus_setup_campaigns ON #__emundus_setup_campaigns.id=#__emundus_campaign_candidature.campaign_id
-                    LEFT JOIN #__users ON #__users.id=#__emundus_users.user_id
-                    LEFT JOIN #__emundus_setup_profiles ON #__emundus_setup_profiles.id=#__emundus_users.profile
-                    LEFT JOIN #__emundus_final_grade ON #__emundus_final_grade.student_id=#__emundus_users.user_id';
-
-        $this->setJoins($search, $query, $joined);
-        $this->setJoins($search_other, $query, $joined);
-        $this->setJoins($this->_elements_default, $query, $joined);
-
-        if (((isset($gid) && !empty($gid)) || (isset($uid) && !empty($uid))) &&
-            !$this->isJoined('jos_emundus_groups_eval', $joined)
-        )
-            $query .= ' LEFT JOIN #__emundus_groups_eval ON #__emundus_groups_eval.applicant_id=#__users.id ';
-
-        if (!empty($miss_doc) && !$this->isJoined('jos_emundus_uploads', $joined))
-            $query .= ' LEFT JOIN #__emundus_uploads ON #__emundus_uploads.user_id=#__users.id';
-
-        if (!empty($validate_application) && !$this->isJoined('jos_emundus_declaration', $joined))
-            $query .= ' LEFT JOIN #__emundus_declaration ON #__emundus_declaration.user=#__users.id';
-
-        $query .= ' WHERE #__emundus_campaign_candidature.submitted = 1 AND #__users.block = 0 ';
-        if (empty($schoolyears))
-            $query .= ' AND #__emundus_campaign_candidature.year IN ("' . implode('","', $this->getCurrentCampaign()) . '")';
-
-        if (!empty($programmes) && isset($programmes) && $programmes[0] != "%")
-            $query .= ' AND #__emundus_setup_campaigns.training IN ("' . implode('","', $programmes) . '")';
-
-        if (!EmundusHelperAccess::isAdministrator($current_user->id) &&
-            !EmundusHelperAccess::isCoordinator($current_user->id)
-        ) {
-            $pa = EmundusHelperAccess::getProfileAccess($current_user->id);
-            $query .= ' AND (#__emundus_users.user_id IN (
-                                SELECT user_id
-                                FROM #__emundus_users_profiles
-                                WHERE profile_id in (' . implode(',', $pa) . ')) OR #__emundus_users.user_id IN (
-                                    SELECT user_id
-                                    FROM #__emundus_users
-                                    WHERE profile in (' . implode(',', $pa) . '))
-                            ) ';
-        }
-        return $query;
-    }
-*/
+    
     /**
      * @description : Generate values for array of data for all applicants
      * @param    array $search filters elements
@@ -1007,17 +809,29 @@ DELETE 06/06/2016
      */
     public function getAllUsers($limitStart=0, $limit=20)
     {
+        $app = JFactory::getApplication();
+        $current_menu = $app->getMenu()->getActive();
+        $menu_params = $current_menu->params;
+        $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
+
+
         $dbo = $this->getDbo();
         $query = 'select jos_emundus_campaign_candidature.fnum, ss.step, ss.value as status, ss.class as status_class, u.name, jos_emundus_campaign_candidature.applicant_id, jos_emundus_campaign_candidature.campaign_id ';
 
+
         // prevent double left join on query
-        $lastTab = array('#__emundus_campaign_candidature', 'jos_emundus_campaign_candidature',
-                         '#__emundus_setup_status', 'jos_emundus_setup_status',
-                         '#__emundus_setup_programmes', 'jos_emundus_setup_programmes',
-                         '#__emundus_setup_campaigns', 'jos_emundus_setup_campaigns',
-                         '#__users', 'jos_users',
-                         '#__emundus_tag_assoc', 'jos_emundus_tag_assoc'
-        );
+        $lastTab = [
+            '#__emundus_campaign_candidature', 'jos_emundus_campaign_candidature',
+            '#__emundus_setup_status', 'jos_emundus_setup_status',
+            '#__emundus_setup_programmes', 'jos_emundus_setup_programmes',
+            '#__emundus_setup_campaigns', 'jos_emundus_setup_campaigns',
+            '#__users', 'jos_users',
+            '#__emundus_tag_assoc', 'jos_emundus_tag_assoc'
+        ];
+
+        if (in_array('overall', $em_other_columns))
+            $lastTab[] = ['#__emundus_evaluations', 'jos_emundus_evaluations'];
+
         if (count($this->_elements)>0) {
             $leftJoin = '';
             foreach ($this->_elements as $elt)
@@ -1043,18 +857,20 @@ DELETE 06/06/2016
                     LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id 
                     LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training  
                     LEFT JOIN #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id
-                    LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jos_emundus_campaign_candidature.fnum  ';
+                    LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jos_emundus_campaign_candidature.fnum ';
+        
+        if (in_array('overall', $em_other_columns))
+            $query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jos_emundus_campaign_candidature.fnum ';
 
         $q = $this->_buildWhere($lastTab);
 
         if (!empty($leftJoin))
-        {
             $query .= $leftJoin;
-        }
+
         $query .= $q['join'];
         $query .= " where 1=1 ".$q['q'];
 
-        $query .= ' GROUP BY jos_emundus_campaign_candidature.id';
+        $query .= ' GROUP BY jos_emundus_campaign_candidature.fnum';
 
         $query .=  $this->_buildContentOrderBy();
 
@@ -1068,6 +884,7 @@ DELETE 06/06/2016
             {
                 $query .= " limit $limitStart, $limit ";
             }
+
             $dbo->setQuery($query);
             $res = $dbo->loadAssocList();
 //echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';

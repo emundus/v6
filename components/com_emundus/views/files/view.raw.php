@@ -41,7 +41,6 @@ class EmundusViewFiles extends JViewLegacy
 
     public function display($tpl = null)
     {
-    	JHTML::stylesheet("media/com_emundus/css/emundus.css");
 
     	$current_user = JFactory::getUser();
 
@@ -50,7 +49,7 @@ class EmundusViewFiles extends JViewLegacy
 	   	
 	   	$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_emundus');
-		$default_actions = $params->get('default_actions', 0);
+		//$default_actions = $params->get('default_actions', 0);
 
 	    $this->itemId = $app->input->getInt('Itemid', null);
 	    $this->cfnum = $app->input->getString('cfnum', null);
@@ -77,20 +76,11 @@ class EmundusViewFiles extends JViewLegacy
 			        }
 			    }
 
-			    $groupFnum = $model->getGroupsByFnums($fnums);
-			    $evalFnum = $model->getAssessorsByFnums($fnums);
 				$users = $model->getFnumsInfos($fnums);
-			    $evalGroups = $model->getEvalGroups();
-			    $actions = $model->getAllActions();
-			    $actions_evaluators = json_decode($default_actions);
+			    //$actions_evaluators = json_decode($default_actions);
 
-			    $this->assignRef('groups', $evalGroups['groups']);
-			    $this->assignRef('groupFnum', $groupFnum);
-			    $this->assignRef('evalFnum', $evalFnum);
 			    $this->assignRef('users', $users);
-			    $this->assignRef('evals', $evalGroups['users']);
-			    $this->assignRef('actions', $actions);
-			    $this->assignRef('actions_evaluators', $actions_evaluators);
+			    //$this->assignRef('actions_evaluators', $actions_evaluators);
 			break;
 			// get Menu actions
 			case 'menuactions':
@@ -190,7 +180,7 @@ class EmundusViewFiles extends JViewLegacy
 			    $users = $this->get('Users');
 
 			    $defaultElements = $this->get('DefaultElements');
-			    $datas = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'status' => JText::_('STATUS')));
+			    $data = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'status' => JText::_('STATUS')));
 			    $fl = array();
 			    $model = $this->getModel('Files');
 			    if (count($defaultElements)>0) {
@@ -200,7 +190,7 @@ class EmundusViewFiles extends JViewLegacy
 				    }
 			    }
 
-			    $datas[0] = array_merge($datas[0], $fl);
+			    $data[0] = array_merge($data[0], $fl);
 				$fnumArray = array();
 			    if(!empty($users))
 			    {
@@ -213,23 +203,22 @@ class EmundusViewFiles extends JViewLegacy
 					    {
 						    case 'photos':
 							    $colsSup['photos'] = @EmundusHelperFiles::getPhotos();
-							    $datas[0]['PHOTOS'] = JText::_('PHOTOS');
+							    $data[0]['PHOTOS'] = JText::_('PHOTOS');
 							    break;
 						    case 'evaluators':
-							    $datas[0]['EVALUATORS'] = JText::_('EVALUATORS');
+							    $data[0]['EVALUATORS'] = JText::_('EVALUATORS');
 							    $colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
 							    break;
 							case 'overall':
-								$datas[0]['overall'] = JText::_('EVALUATION_OVERALL');
-								$colsSup['overall'] = array();
+								$data[0]['overall'] = JText::_('EVALUATION_OVERALL');
 								break;
                             case 'tags':
                                 $taggedFile = $model->getTaggedFile();
-                                $datas[0]['eta.id_tag'] = JText::_('TAGS');
+                                $data[0]['eta.id_tag'] = JText::_('TAGS');
                                 $colsSup['id_tag'] = array();
                                 break;
                             case 'access':
-                                $datas[0]['access'] = JText::_('COM_EMUNDUS_ASSOCIATED_TO');
+                                $data[0]['access'] = JText::_('COM_EMUNDUS_ASSOCIATED_TO');
                                 $colsSup['access'] = array();
                                 break;
 					    }
@@ -238,7 +227,7 @@ class EmundusViewFiles extends JViewLegacy
 				    if(EmundusHelperAccess::asAccessAction(11, 'r', JFactory::getUser()->id))
 				    {
 					    $hasAccess = true;
-					    $datas[0]['access'] = JText::_("COM_EMUNDUS_ASSOCIATED_TO");
+					    $data[0]['access'] = JText::_("COM_EMUNDUS_ASSOCIATED_TO");
 				    }
 */
 				    foreach ($users as $user)
@@ -331,13 +320,13 @@ class EmundusViewFiles extends JViewLegacy
 					    {
 						    $line['access'] = "";
 					    }*/
-					    $datas[$line['fnum']->val.'-'.$i] = $line;
+					    $data[$line['fnum']->val.'-'.$i] = $line;
 					    $i++;
 					}
 					
 					if(isset($colsSup['overall']))
 					{
-						$colsSup['overall'] = $m_evaluation->getEvaluationAverageByFnum($fnumArray);
+						//$colsSup['overall'] = $m_evaluation->getEvaluationAverageByFnum($fnumArray);
 					}
 					if(isset($colsSup['id_tag']))
 					{
@@ -353,7 +342,7 @@ class EmundusViewFiles extends JViewLegacy
 			    }
 			    else
 			    {
-				    $datas = JText::_('NO_RESULT');
+				    $data = JText::_('NO_RESULT');
 			    }
 
 			    /* Get the values from the state object that were inserted in the model's construct function */
@@ -364,7 +353,7 @@ class EmundusViewFiles extends JViewLegacy
 			    $pagination = $this->get('Pagination');
 			    $this->assignRef('pagination', $pagination);
 			    $this->assignRef('users', $users);
-			    $this->assignRef('datas', $datas);
+			    $this->assignRef('datas', $data);
 
 			    $submitForm = EmundusHelperJavascript::onSubmitForm();
 				$delayAct = EmundusHelperJavascript::delayAct();
