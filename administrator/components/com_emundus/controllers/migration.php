@@ -107,4 +107,20 @@ class EmundusControllerMigration extends JControllerLegacy
 
 		return true;
 	}
+
+	// This function is meant to take all files that have been marked as validated and tag them with the 'validated' tag
+	// Script is ran by calling /administrator/index.php?option=com_emundus&controller=migration&task=movevalidationtotags in URL
+	function movevalidationtotags() {
+		$m_migration = $this->getModel('migration');
+
+		$files = $m_migration->getValidatedFiles();
+		
+		if ($files === false)
+			die('no files!');
+
+		foreach ($files as $file) {
+			$m_migration->tagValidations($file->fnum, $file->user);
+		}
+
+	}
 }

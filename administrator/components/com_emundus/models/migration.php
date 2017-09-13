@@ -267,5 +267,40 @@ class EmundusModelMigration extends JModelList
 		// Except for the fnum which is equal to the emptyfnum value
 
 	}
+
+	// Get all files from jos_emundus_declaration where files are validated
+	function getValidatedFiles() {
+
+		try {
+
+			$query = "SELECT fnum,user FROM #__emundus_declaration WHERE validated = 1";
+			$this->_db->setQuery($query);
+			return $this->_db->loadObjectList();
+
+		} catch (Exception $e) {
+			die($e->getMessage());
+			return false;
+		}
+
+	}
+
+	// Tag a file with the 'validated' tag and
+	function tagValidations($fnum, $user) {
+
+		$current_user = JFactory::getUser();
+		
+		try {
+			
+			$query = 'INSERT INTO #__emundus_tag_assoc(fnum, id_tag, applicant_id, user_id) VALUES ("'.$fnum.'", 22,'.$user.','.$current_user->id.'); ';
+			$this->_db->setQuery($query);
+			$this->_db->execute();
+            return true;
+		
+		} catch (Exception $e) {
+            die($e->getMessage());
+            return false;
+		}
+	
+	}
 }
 ?>
