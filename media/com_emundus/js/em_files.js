@@ -1054,17 +1054,18 @@ $(document).ready(function()
         }
     });
 //
-// Open Application FIle (FNUM) 
+// Open Application File (FNUM) 
 //
-    $(document).on('click', 'tbody td a .glyphicon.glyphicon-folder-open', function(e)
+    $(document).on('click', '.em_file_open', function(e)
     {
+        console.log("hahah");
         $.ajaxQ.abortAll();
         if(e.handle !== true)
         {
            addDimmer();
             e.handle = true;
             var fnum = new Object();
-            fnum.fnum = $(this).parent('a').attr('id');
+            fnum.fnum = $(this).attr('id');
             var sid = parseInt(fnum.fnum.substr(21, 7));
             var cid = parseInt(fnum.fnum.substr(14, 7));
             $('.em-check:checked').prop('checked', false);

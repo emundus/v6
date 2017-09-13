@@ -63,8 +63,6 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 					<tr>
 						<?php $cfnum = $line['fnum']->val; ?>
 						<?php foreach ($line as $k => $value):?>
-						
-						<?php if($k != 'evaluation_id'): ?>
 							<td <?php if($k == 'check' && $value->class != null) {echo 'class="'.$value->class.'"';}?>>
 								<div class="em-cell" >
 									<?php if($k == 'check'): ?>
@@ -73,15 +71,18 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 											<?php 
 												$tab = explode('-', $key);
 												echo ($tab[1] + 1 + $this->pagination->limitstart);
-												?>
+											?>
 										</label>
 									<?php elseif ($k == 'status'):?>
 										<span class="label label-<?php echo $value->status_class ?>" title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
 									<?php elseif ($k == 'fnum'):?>
-										<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>">
-											<span class="glyphicon glyphicon-folder-open" title="<?php echo $value->val ?>">  <?php echo JFactory::getUser((int)substr($value->val, -7))->name; ?></span>
+										<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
+											<div class="em_list_photo"><?php echo $value->photo; ?></div>
+											<div class="em_list_text">
+												<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
+												<div class="em_list_email"><?php echo $value->user->email; ?></div>
+											</div>
 										</a>
-									<?php elseif ($k == 'admission_id' || $k == 'recorded_by') :?>
 									<?php else:?>
 										
 										<?php if ($value->type == 'text' ) :?>
@@ -133,7 +134,6 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									<?php endif; ?>
 								</div>
 							</td>
-							<?php endif; ?>
 						<?php endforeach; ?>
 					</tr>
 				<?php endif;?>

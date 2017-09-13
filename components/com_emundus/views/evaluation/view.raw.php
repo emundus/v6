@@ -140,12 +140,6 @@ class EmundusViewEvaluation extends JViewLegacy
 					foreach ($columnSupl as $col) {
 						$col = explode('.', $col);
 						switch ($col[0]) {
-
-							case 'photos':
-								$colsSup['photos'] = @EmundusHelperFiles::getPhotos();
-								$datas[0]['PHOTOS'] = JText::_('PHOTOS');
-								break;
-							
 							case 'evaluators':
 								$datas[0]['EVALUATORS'] = JText::_('EVALUATORS');
 								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $evaluation);
@@ -177,6 +171,8 @@ class EmundusViewEvaluation extends JViewLegacy
 								$userObj->val = $value;
 								$userObj->class = $class;
 								$userObj->type = 'fnum';
+								$userObj->photo = EmundusHelperFiles::getPhotos($value);
+								$userObj->user = JFactory::getUser((int)substr($value, -7));
 								$line['fnum'] = $userObj;
 							
 							} 

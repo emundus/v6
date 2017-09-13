@@ -541,3 +541,15 @@ thead  th:hover
 .mainemundus {
     width: 100% !important;
 }
+
+/* Diplaying user photos and email in list views */
+.em_list_photo {
+    float: left;
+    display: inline-grid;
+}
+.em_list_text {
+    display: inline;
+}
+.em_list_email {
+	color: #666666
+}

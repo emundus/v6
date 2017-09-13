@@ -141,10 +141,6 @@ class EmundusViewDecision extends JViewLegacy
 						$col = explode('.', $col);
 						switch ($col[0])
 						{
-							case 'photos':
-								$colsSup['photos'] = @EmundusHelperFiles::getPhotos();
-								$fl['PHOTOS'] = JText::_('PHOTOS');
-								break;
 							case 'overall':
 								$fl['overall'] = JText::_('EVALUATION_OVERALL');
 								break;
@@ -184,6 +180,8 @@ class EmundusViewDecision extends JViewLegacy
 								$userObj->val = $value;
 								$userObj->class = $class;
 								$userObj->type = 'fnum';
+								$userObj->photo = EmundusHelperFiles::getPhotos($value);
+								$userObj->user = JFactory::getUser((int)substr($value, -7));
 								$line['fnum'] = $userObj;
 							}
 							elseif ($key == 'name') {

@@ -73,8 +73,12 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									<?php elseif($k == 'status'):?>
                                         <span class="label label-<?php echo $value->status_class ?>" title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
 									<?php elseif($k == 'fnum'):?>
-										<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>">
-											<span class="glyphicon glyphicon-folder-open" title="<?php echo $value->val ?>">  <?php echo JFactory::getUser((int)substr($value->val, -7))->name; ?></span>
+										<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
+											<div class="em_list_photo"><?php echo $value->photo; ?></div>
+											<div class="em_list_text">
+												<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
+												<div class="em_list_email"><?php echo $value->user->email; ?></div>
+											</div>
 										</a>
 									<?php elseif($k == "access"):?>
 										<?php echo $this->accessObj[$line['fnum']->val]?>

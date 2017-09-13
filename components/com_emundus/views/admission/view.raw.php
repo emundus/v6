@@ -53,8 +53,7 @@ class EmundusViewAdmission extends JViewLegacy
 	    $menu 			= @JSite::getMenu();
 		$current_menu  	= $menu->getActive();
 		$menu_params 	= $menu->getParams(@$current_menu->id);
-		$columnSupl 	= explode(',', $menu_params->get('em_actions'));
-		$em_blocks_names = explode(',', $menu_params->get('em_blocks_names'));
+		$columnSupl 	= explode(',', $menu_params->get('em_blocks_names'));
 
 		$jinput 	= JFactory::getApplication()->input;
 		$layout 	= $jinput->getString('layout', 0);
@@ -153,18 +152,15 @@ class EmundusViewAdmission extends JViewLegacy
 					foreach ($columnSupl as $col) {
 						$col = explode('.', $col);
 						switch ($col[0]) {
-							case 'photos':
-								$colsSup['photos'] = @EmundusHelperFiles::getPhotos();
-								$data[0]['PHOTOS'] = JText::_('PHOTOS');
-								break;
 							case 'evaluators':
 								$data[0]['EVALUATORS'] = JText::_('EVALUATORS');
 								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $admission);
 								break;
+							case 'overall':
+								$data[0]['overall'] = JText::_('EVALUATION_OVERALL');
+								break;
 						}
-					}
-					if (in_array('overall', $em_blocks_names))
-						$data[0]['overall'] = JText::_('EVALUATION_OVERALL');
+					}					
 
 					$i = 0;
 					foreach ($users as $user) {
@@ -187,10 +183,12 @@ class EmundusViewAdmission extends JViewLegacy
 								$userObj->val = $value;
 								$userObj->class = $class;
 								$userObj->type = 'fnum';
+								$userObj->photo = EmundusHelperFiles::getPhotos($value);
+								$userObj->user = JFactory::getUser((int)substr($value, -7));
 								$line['fnum'] = $userObj;
 							} 
 							
-							elseif ($key == 'name') continue;
+							elseif ($key == 'name' || $key == 'evaluation_id' || $key == 'admission_id' || $key == 'recorded_by' || $key == 'status_class') continue;
 						    
 							elseif ($key == 'evaluator') {
 								
@@ -203,8 +201,6 @@ class EmundusViewAdmission extends JViewLegacy
 								$userObj->type = 'html';
 								$line['evaluator'] = $userObj;
 							}
-
-							elseif ($key == 'status_class') continue;
 
 							elseif (isset($elements) && in_array($key, array_keys($elements))) {
 								

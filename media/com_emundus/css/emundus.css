@@ -725,3 +725,12 @@ display:inline;
 .modal-body {
     padding: 0px !important;
 }
+
+/* Diplaying user photos and email in list views */
+.em_list_photo {
+	float: left;
+	border-radius: 40px;
+}
+.em_list_email {
+	color: #666666
+}

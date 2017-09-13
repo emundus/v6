@@ -201,10 +201,6 @@ class EmundusViewFiles extends JViewLegacy
 					    $col = explode('.', $col);
 					    switch ($col[0])
 					    {
-						    case 'photos':
-							    $colsSup['photos'] = @EmundusHelperFiles::getPhotos();
-							    $data[0]['PHOTOS'] = JText::_('PHOTOS');
-							    break;
 						    case 'evaluators':
 							    $data[0]['EVALUATORS'] = JText::_('EVALUATORS');
 							    $colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
@@ -251,30 +247,18 @@ class EmundusViewFiles extends JViewLegacy
 					    {
 						    $userObj = new stdClass();
 
-						    if ($key == 'fnum')
-						    {
+						    if ($key == 'fnum') {
 							    $userObj->val = $value;
 							    $userObj->class = $class;
-							    $userObj->type = 'fnum';
+								$userObj->type = 'fnum';
+								$userObj->photo = EmundusHelperFiles::getPhotos($value);
+								$userObj->user = JFactory::getUser((int)substr($value, -7));
 							    $line['fnum'] = $userObj;
-						    }
-                            elseif ($key == 'name') {
-                                continue;
-                            }
-                            elseif ($key == 'status_class') {
-                                continue;
-                            }
-                            elseif ($key == 'step') {
-                                continue;
-                            }
-                            elseif ($key == 'applicant_id') {
-                                continue;
-                            }
-                            elseif ($key == 'campaign_id') {
-                                continue;
-                            }
-						    else
-						    {
+							}
+							
+							elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'applicant_id' || $key == 'campaign_id') continue;
+                            
+						    else {
 							    $userObj->val = $value;
 							    $userObj->type = 'text';
                                 $userObj->status_class = $user['status_class'];
@@ -302,18 +286,7 @@ class EmundusViewFiles extends JViewLegacy
 									    $line[$key] = $userObj;
 								    }
 							    }
-								elseif($key === 'overall')
-								{
-									$line['overall'] = "";
-								}
-                                elseif($key === 'id_tag')
-                                {
-                                    $line['id_tag'] = "";
-                                }
-                                elseif($key === 'access')
-                                {
-                                    $line['access'] = "";
-                                }
+								elseif ($key === 'overall' || $key === 'id_tag' || $key === 'access') $line[$key] = "";
 						    }
 					    }
 					   /* if($hasAccess)
