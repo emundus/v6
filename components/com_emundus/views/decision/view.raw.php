@@ -155,8 +155,7 @@ class EmundusViewDecision extends JViewLegacy
 					
 
 					$i = 0;
-					foreach ($users as $user)
-					{
+					foreach ($users as $user) {
 						$usObj = new stdClass();
 						$usObj->val = 'X';
 						$line = array('check' => $usObj);
@@ -171,12 +170,11 @@ class EmundusViewDecision extends JViewLegacy
 							$usObj->class = null;
 
 						}
-						foreach ($user as  $key => $value)
-						{
+						
+						foreach ($user as  $key => $value) {
 							$userObj = new stdClass();
 
-							if ($key == 'fnum')
-							{
+							if ($key == 'fnum') {
 								$userObj->val = $value;
 								$userObj->class = $class;
 								$userObj->type = 'fnum';
@@ -184,9 +182,9 @@ class EmundusViewDecision extends JViewLegacy
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
 								$line['fnum'] = $userObj;
 							}
-							elseif ($key == 'name') {
-						    	continue;
-						    }
+							
+							elseif ($key == 'name' || $key == 'status_class') continue;
+							
 							elseif ($key == 'evaluator') {
 								if ($evaluators_can_see_other_eval || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) 
 									$userObj->val = !empty($value)?'<a href="#" data-toggle="modal" data-target="#basicModal" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'">
@@ -198,17 +196,15 @@ class EmundusViewDecision extends JViewLegacy
 								$userObj->type = 'html';
 								$line['evaluator'] = $userObj;
 							}
-							elseif ($key == 'status_class') {
-                                continue;
-                            }
-							else
-							{
+							
+							else {
 								$userObj->val = $value;
 								$userObj->type = 'text';
 								$userObj->status_class = $user['status_class'];
 								$line[$key] = $userObj;
 							}
 						}
+						
 						if (count(@$colsSup)>0)
 						{
 							foreach($colsSup as $key => $obj)
@@ -254,10 +250,10 @@ class EmundusViewDecision extends JViewLegacy
 			$this->assignRef('users', $users);
 			$this->assignRef('datas', $data);
 
-		break;
+			break;
+		}
+		parent::display($tpl);
 	}
-	parent::display($tpl);
-}
 
 }
 

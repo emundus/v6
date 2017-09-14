@@ -232,22 +232,13 @@ class plgUserEmundus extends JPlugin
         // In this example the boolean variable $success would be set to true if the login routine succeeds
         // ThirdPartyApp::loginUser($user['username'], $user['password']);
 
-        $app            = JFactory::getApplication();
-        $current_user   = JFactory::getUser();
+        $app = JFactory::getApplication();
 
         if (!$app->isAdmin()) {
-            $db = JFactory::getDBO();
             include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
-            include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
-            $profiles   = new EmundusModelProfile;
-            $p          = $profiles->isProfileUserSet($current_user->id);
-            $campaign   = $profiles->getCurrentCampaignInfoByApplicant($current_user->id);
-            
-            if (($p['cpt'] == 0 || empty($p['profile']) || !isset($p['profile']) || empty($campaign)) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) 
-                $app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
-            else
-                $profiles->initEmundusSession();
+            $profiles = new EmundusModelProfile;
+            $profiles->initEmundusSession();
         }
         return true;
     }

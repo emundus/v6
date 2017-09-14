@@ -79,6 +79,24 @@ class EmundusModelProfile extends JModelList
             JError::raiseError(500, $e->getMessage());
         }
 	}
+
+	function getCurrentProfile($aid) {
+		$query = 'SELECT eu.*,  esp.*
+						FROM #__emundus_users AS eu 
+						LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile 
+						WHERE eu.user_id = '.$aid;
+		
+		try
+        {
+            $this->_db->setQuery( $query );
+			return $this->_db->loadAssoc();
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
+	}
 	
 	function getAttachments($p)
 	{
@@ -218,6 +236,26 @@ class EmundusModelProfile extends JModelList
         }
         catch(Exception $e)
         {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
+	}
+
+	function getCampaignInfoByFnum($fnum) {
+		$query = 'SELECT esc.*, ecc.date_time, ecc.submitted, ecc.date_submitted, ecc.fnum, esc.profile_id, esp.label, esp.menutype, ecc.submitted, ecc.status
+					FROM #__emundus_campaign_candidature AS ecc 
+					LEFT JOIN #__emundus_setup_campaigns AS esc ON ecc.campaign_id = esc.id
+					LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = esc.profile_id
+					WHERE ecc.fnum LIKE '.$fnum. ' ORDER BY ecc.date_time DESC';
+		
+		try {
+
+			$this->_db->setQuery( $query );
+			$res = $this->_db->loadAssoc();
+
+			return $res;
+
+        } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             JError::raiseError(500, $e->getMessage());
         }
@@ -411,11 +449,16 @@ class EmundusModelProfile extends JModelList
 	public function initEmundusSession() {
 		include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 		include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
+		include_once(JPATH_SITE.'/components/com_emundus/models/admission.php');
 		
 		$users 			= new EmundusModelUsers;
+		$m_admission	= new EmundusModelAdmission;
 		$current_user 	= JFactory::getUser();
-		$profile 		= $this->getProfileByApplicant($current_user->id);
 		$session        = JFactory::getSession();
+		$app			= JFactory::getApplication();
+		$profile 		= $this->getProfileByApplicant($current_user->id);
+		$emundusSession = new stdClass();
+
 		foreach ($session->get('user') as $key => $value) {
 			$emundusSession->{$key} = $value;
 		}
@@ -425,14 +468,32 @@ class EmundusModelProfile extends JModelList
 		$emundusSession->emGroups   = array_keys($users->getUserGroups($current_user->id));
 
 		if (EmundusHelperAccess::isApplicant($current_user->id)) {
-			$campaign 	= $this->getCurrentCampaignInfoByApplicant($current_user->id);
-            $incomplete = $this->getCurrentIncompleteCampaignByApplicant($current_user->id);
-			$p 			= $this->isProfileUserSet($current_user->id);
-			$profile 	= $this->getProfileByCampaign($campaign["id"]);
 
-			if (empty($p['profile']) || empty($campaign["id"]) || !isset($p['profile']) || !isset($campaign["id"]) )
+			// Get the current user profile
+			$profile = $this->getCurrentProfile($current_user->id);	
+			
+			// If the profile number is 8 that means he has been admitted
+			// This means that regardless of his other applications he must be considered admitted
+			if ($profile['profile'] != 8) {
+				$campaign = $this->getCurrentCampaignInfoByApplicant($current_user->id);
+				$profile = $this->getProfileByCampaign($campaign["id"]);
+			} else {
+				$admissionInfo = $m_admission->getAdmissionInfo($current_user->id);
+				$campaign = $this->getCampaignInfoByFnum($admissionInfo[0]->fnum);
+				$profile = $this->getProfileByCampaign($admissionInfo[0]->campaign_id);
+			}			
+
+			if (empty($campaign["id"]) || !isset($campaign["id"]) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
 				$app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
-
+			
+			// If the user is admitted then we fill the session with information about the admitted file
+			// regardeless of the current campaign
+			
+			$emundusSession->fnum               	= $campaign["fnum"];
+			$emundusSession->fnums                  = $this->getApplicantFnums($current_user->id, null, $profile["start_date"], $profile["end_date"]);
+			$emundusSession->campaign_id        	= $campaign["id"];
+			$emundusSession->status             	= @$campaign["status"];
+			$emundusSession->candidature_incomplete = ($campaign['status']==0)?0:1;
 			$emundusSession->profile             	= $profile["profile_id"];
 			$emundusSession->profile_label          = $profile["label"];
 			$emundusSession->menutype               = $profile["menutype"];
@@ -443,14 +504,10 @@ class EmundusModelProfile extends JModelList
 			$emundusSession->candidature_start      = $profile["start_date"];
 			$emundusSession->candidature_end        = $profile["end_date"];
 			$emundusSession->candidature_posted     = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] == 0  || @$profile["date_submitted"] == NULL)?0:1;
-			$emundusSession->candidature_incomplete = (count($incomplete)==0)?0:1;
 			$emundusSession->schoolyear             = $profile["year"];
 			$emundusSession->code                   = $profile["training"];
-			$emundusSession->campaign_id            = $campaign["id"];
 			$emundusSession->campaign_name          = $profile["label"];
-			$emundusSession->fnum                   = $campaign["fnum"];
-			$emundusSession->fnums                  = $this->getApplicantFnums($current_user->id, null, $profile["start_date"], $profile["end_date"]);
-			$emundusSession->status                 = @$campaign["status"];
+		
 		} else {
 			$emundusSession->profile                = $profile["profile"];
 			$emundusSession->profile_label          = $profile["profile_label"];
@@ -458,7 +515,11 @@ class EmundusModelProfile extends JModelList
 			$emundusSession->university_id          = $profile["university_id"];
 			$emundusSession->applicant              = 0;
 		}
+		
 		$session->set('emundusUser', $emundusSession);
+
+		if (isset($admissionInfo))
+			$app->redirect("index.php?option=com_fabrik&view=form&formid=272&Itemid=2720&usekey=fnum&rowid=".$campaign['fnum']);
 	}
 
 	/**

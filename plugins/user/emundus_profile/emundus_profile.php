@@ -38,7 +38,7 @@
          * @return      boolean
          * @since       2.5
          */
-		 function onContentPrepareData($context, $data)
+        function onContentPrepareData($context, $data)
         {
                 // Check we are manipulating a valid form.
                 if (!in_array($context, array('com_users.profile','com_users.registration','com_users.user','com_admin.profile'))){
@@ -109,46 +109,46 @@
 				);
 		
         foreach ($fields as $field)
-				{	
-					// Case using the users manager in admin
-					if ($name == 'com_users.user')
-					{
-						// Remove the field if it is disabled in registration and profile
-						if ($this->params->get('register-require_' . $field, 1) == 0
-							&& $this->params->get('profile-require_' . $field, 1) == 0)
-						{
-							$form->removeField($field, 'emundus_profile');
-						}
-					}
-					// Case registration
-					elseif ($name == 'com_users.registration')
-					{ 
-						// Toggle whether the field is required.
-						if ($this->params->get('register-require_' . $field, 1) > 0)
-						{
-							$form->setFieldAttribute($field, 'required', ($this->params->get('register-require_' . $field) == 2) ? 'required' : '', 'emundus_profile');
-						}
-						else
-						{
-							$form->removeField($field, 'emundus_profile');
-						}
-					}
-					// Case profile in site or admin
-					elseif ($name == 'com_users.profile' || $name == 'com_admin.profile')
-					{
-						// Toggle whether the field is required.
-						if ($this->params->get('profile-require_' . $field, 1) > 0)
-						{
-							$form->setFieldAttribute($field, 'required', ($this->params->get('profile-require_' . $field) == 2) ? 'required' : '', 'emundus_profile'); 
-						}
-						else
-						{
-							$form->removeField($field, 'emundus_profile');
-						}
-					}
-				}
+        {	
+                // Case using the users manager in admin
+                if ($name == 'com_users.user')
+                {
+                        // Remove the field if it is disabled in registration and profile
+                        if ($this->params->get('register-require_' . $field, 1) == 0
+                                && $this->params->get('profile-require_' . $field, 1) == 0)
+                        {
+                                $form->removeField($field, 'emundus_profile');
+                        }
+                }
+                // Case registration
+                elseif ($name == 'com_users.registration')
+                { 
+                        // Toggle whether the field is required.
+                        if ($this->params->get('register-require_' . $field, 1) > 0)
+                        {
+                                $form->setFieldAttribute($field, 'required', ($this->params->get('register-require_' . $field) == 2) ? 'required' : '', 'emundus_profile');
+                        }
+                        else
+                        {
+                                $form->removeField($field, 'emundus_profile');
+                        }
+                }
+                // Case profile in site or admin
+                elseif ($name == 'com_users.profile' || $name == 'com_admin.profile')
+                {
+                        // Toggle whether the field is required.
+                        if ($this->params->get('profile-require_' . $field, 1) > 0)
+                        {
+                                $form->setFieldAttribute($field, 'required', ($this->params->get('profile-require_' . $field) == 2) ? 'required' : '', 'emundus_profile'); 
+                        }
+                        else
+                        {
+                                $form->removeField($field, 'emundus_profile');
+                        }
+                }
+        }
 
-				return true;                
+        return true;                
         }
  
         function onUserAfterSave($data, $isNew, $result, $error)

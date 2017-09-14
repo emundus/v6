@@ -13,10 +13,10 @@
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'files.php');
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'list.php');
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
-require_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
+require_once(JPATH_SITE.'/components/com_emundus/helpers/files.php');
+require_once(JPATH_SITE.'/components/com_emundus/helpers/list.php');
+require_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
+require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
 
 class EmundusModelAdmission extends JModelList
 {
@@ -1416,6 +1416,21 @@ class EmundusModelAdmission extends JModelList
 			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
 	}
+
+	public function getAdmissionInfo($sid) {
+        $db = JFactory::getDBO();
+
+        try {
+
+            $query = "SELECT * FROM #__emundus_final_grade WHERE student_id = ".$sid." GROUP BY fnum ORDER BY time_date DESC";
+            $db->setQuery($query);
+            return $db->loadObjectList();
+
+        } catch (Exception $e) {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+
+    }
 
 }
 ?>

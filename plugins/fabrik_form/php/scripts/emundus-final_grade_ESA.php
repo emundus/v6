@@ -32,5 +32,16 @@ if(!empty($status[0])){
 	} catch(Exception $e) {
 	    throw $e;
 	}
+
+	$query = 'UPDATE #__emundus_users SET profile=8 WHERE user_id = '.$sid;
+
+	try {
+		
+		$db->setQuery($query);
+		$db->execute();
+	
+	} catch(Exception $e) {
+		throw $e;
+	}
 }
 ?>
