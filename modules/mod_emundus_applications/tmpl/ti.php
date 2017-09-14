@@ -162,7 +162,8 @@ echo $description;
 <script type="text/javascript">
 function deletefile(fnum){
   if (confirm("<?php echo JText::_('CONFIRM_DELETE_FILE'); ?>")) {
-    document.location.href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=deletefile&fnum='); ?>"+fnum;
+    url = "<?php echo JURI::base(true).'index.php?option=com_emundus&task=deletefile&fnum='; ?>";
+    document.location.href=url+fnum;
   }
 }
 
