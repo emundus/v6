@@ -12,6 +12,8 @@ defined('_JEXEC') or die;
 // Include the latest functions only once
 require_once dirname(__FILE__).'/helper.php';
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'admission.php');
+include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
@@ -51,6 +53,7 @@ $user 				= JFactory::getSession()->get('emundusUser');
 $user->fnums 		= $applications;
 
 $m_application 		= new EmundusModelApplication;
+$m_profile			= new EmundusModelProfile;
 $checklist 			= new EmundusModelChecklist;
 
 if (isset($user->fnum) && !empty($user->fnum)) {
@@ -59,6 +62,13 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
 	$confirm_form_url 	= $checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
 
+	// If the user can 
+	$profile = $m_profile->getCurrentProfile($user->id);
+	if ($profile['profile'] == 8) {		
+		$admissionInfo = @EmundusModelAdmission::getAdmissionInfo($user->id);
+		$admission_fnum = $admissionInfo[0]->fnum;		
+	}
+	
 	if ($display_poll == 1 && $display_poll_id > 0) {
 		$filled_poll_id = modemundusApplicationsHelper::getPoll();
 		$poll_url = 'index.php?option=com_fabrik&view=form&formid='.$display_poll_id.'&usekey=fnum&rowid='.$user->fnum.'&tmpl=component';

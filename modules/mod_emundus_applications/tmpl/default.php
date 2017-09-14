@@ -11,7 +11,11 @@ defined('_JEXEC') or die;
 echo $description;
 ?>
 <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
-  <a class="btn btn-success" href="<?php echo JURI::base(true); ?>index.php?option=com_emundus&view=renew_application"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
+  <?php if(!isset($admission_fnum)) :?>
+    <a class="btn btn-success" href="<?php echo JURI::base(true); ?>index.php?option=com_emundus&view=renew_application"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
+  <?php else :?>
+    <a class="btn btn-success" href="<?php echo JURI::base(true); ?>index.php?option=com_fabrik&view=form&formid=272&Itemid=2720&usekey=fnum&rowid=<?php echo $admission_fnum ?>"><span class="icon-plus-sign"> <?php echo JText::_('COMPLETE_ADMISSION'); ?></span></a>
+  <?php endif; ?>
 <hr>
 <?php endif; ?>
 <?php if (!empty($applications)) : ?>
@@ -35,6 +39,10 @@ echo $description;
 </div> 
 <?php endif; ?>
 <?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
-  <a class="btn btn-success" href="<?php echo JURI::base(true); ?>index.php?option=com_emundus&view=renew_application"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
+  <?php if(!isset($admission_fnum)) :?>
+    <a class="btn btn-success" href="<?php echo JURI::base(true); ?>index.php?option=com_emundus&view=renew_application"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
+  <?php else :?>
+    <a class="btn btn-success" href="<?php echo JURI::base(true); ?>index.php?option=com_fabrik&view=form&formid=272&Itemid=2720&usekey=fnum&rowid=<?php echo $admission_fnum ?>"><span class="icon-plus-sign"> <?php echo JText::_('COMPLETE_ADMISSION'); ?></span></a>
+  <?php endif; ?>
 <hr>
 <?php endif; ?>
