@@ -606,7 +606,7 @@ class EmundusHelperFiles
                 $photos = $m_files->getPhotos($fnums);
                 foreach ($photos as $photo) {
                     $folder = JURI::base(true).EMUNDUS_PATH_REL.$photo['user_id'];
-                    return '<img src="'.$folder.'/'.$photo['filename'].'" target="_blank" width="60"><img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
+                    return '<img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
                 }
             
             } else {
@@ -614,7 +614,7 @@ class EmundusHelperFiles
                 $photos = $m_files->getPhotos();
                 foreach ($photos as $photo) {
                     $folder = JURI::base(true).EMUNDUS_PATH_REL.$photo['user_id'];
-                    $pictures[$photo['fnum']] = '<img src="'.$folder.'/'.$photo['filename'].'" target="_blank" width="60"><img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
+                    $pictures[$photo['fnum']] = '<img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
                 }
                 return $pictures;
                 

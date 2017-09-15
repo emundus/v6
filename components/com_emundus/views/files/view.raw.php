@@ -217,6 +217,9 @@ class EmundusViewFiles extends JViewLegacy
                                 $data[0]['access'] = JText::_('COM_EMUNDUS_ASSOCIATED_TO');
                                 $colsSup['access'] = array();
                                 break;
+                            case 'photos':
+                                $displayPhoto = true;
+                                break;
 					    }
 				    }
 				/*	$hasAccess = false;
@@ -251,7 +254,8 @@ class EmundusViewFiles extends JViewLegacy
 							    $userObj->val = $value;
 							    $userObj->class = $class;
 								$userObj->type = 'fnum';
-								$userObj->photo = EmundusHelperFiles::getPhotos($value);
+								if ($displayPhoto) 
+									$userObj->photo = EmundusHelperFiles::getPhotos($value);
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
 							    $line['fnum'] = $userObj;
 							}
