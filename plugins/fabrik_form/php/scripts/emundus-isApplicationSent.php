@@ -73,6 +73,7 @@ if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){
 	echo !empty($rowid)?'<h4 style="text-align:right">#'.$fnum.'</h4>':'';
 
 } else {
+	
 	if (empty($user->fnum) && !isset($user->fnum) && EmundusHelperAccess::isApplicant($user->id))
 		$mainframe->redirect("index.php?option=com_emundus&view=renew_application");
 	
@@ -90,6 +91,14 @@ if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){
 					$reload++;
 					$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
 				}
+			}
+		}
+	} else {
+		if(strtotime(date($now)) > strtotime($user->end_date) && !in_array($user->id, $applicants) ) {
+			if ($reload < 5) {
+				$reload++;
+				JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', utf8_encode(JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($user->end_date) ))));
+				$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
 			}
 		}
 	}
