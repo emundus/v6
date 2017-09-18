@@ -1,0 +1,74 @@
+.fc-header-title h2 {
+	line-height: 20px;
+}
+
+.fc-header tr, .fc-header-title h2, .fc-header, .fc-header td {
+	border: 0px;
+}
+
+.fc-event-time, .fc-event-title {
+	display: block;
+	float: left;
+}
+
+#dpcalendar_component_date_picker_button,
+	#dpcalendar_component_print_button {
+	cursor: pointer;
+}
+
+.ui-datepicker {
+	z-index: 1003 !important; /* must be > than popup editor (1002) */
+}
+
+.fc-event-time {
+	white-space: nowrap;
+}
+
+.dp-container [class^="icon-"], [class*=" icon-"] {
+	margin-top: 5px;
+}
+
+#dpcalendar_view_toggle_status {
+	cursor: pointer;
+	text-align: center;
+}
+
+.dp-share-button {
+	margin-right: 20px;
+	margin-bottom: 10px;
+}
+
+.twitter-share-button {
+	max-width: 80px;
+}
+
+#___plusone_0 {
+	max-width: 60px;
+}
+
+.dpcal-fb-comments-box {
+	margin-top: 10px;
+}
+
+#dpcalendar_component_map {
+	margin-top: 10px
+}
+
+#dp-popup-window-divider {
+	margin: 0;
+}
+
+.ui-timepicker-list li {
+	height: 14px;
+	font-size: 10px;
+	line-height: 14px;
+	margin-top: 5px;
+}
+
+@media only screen and (max-width : 600px) {
+	#dpcalendar_component .fc-header td {
+		width: 100%;
+		display: block;
+		text-align: left;
+	}
+}

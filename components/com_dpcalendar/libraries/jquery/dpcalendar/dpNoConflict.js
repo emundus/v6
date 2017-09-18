@@ -1,0 +1,1 @@
+var dpjQuery = jQuery.noConflict();

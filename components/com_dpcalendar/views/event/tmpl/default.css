@@ -1,0 +1,88 @@
+.event-button, .dl-horizontal {
+	margin: 5px;
+}
+
+.dpcal-event-header {
+	border-bottom: 2px solid #DDDDDD;
+}
+
+#dp-event-details-map, .dp-event-details-map-single {
+	width: 100%;
+	height: 200px;
+}
+
+.event-label {
+	font-weight: bold;
+	text-align: left !important;
+}
+
+.event-content a {
+	white-space: nowrap;
+	overflow: hidden;
+	display: block;
+}
+
+.event-content-price-has-discount {
+	text-decoration: line-through;
+}
+
+.event-content-price-discount {
+	margin-left: 10px;
+	font-weight: bold;
+}
+
+.item-image {
+	margin-bottom: 10px;
+}
+
+.dp-share-button {
+	padding: 2px 0 0 0;
+}
+
+.twitter-share-button {
+	max-width: 80px;
+}
+
+#___plusone_0 {
+	max-width: 60px;
+}
+
+.dp-container .row {
+	margin-left: 0;
+}
+
+@media print {
+	.noprint, .event-button {
+		display: none !important;
+	}
+	a:link:after, a:visited:after {
+		display: none;
+		content: "";
+	}
+	.span1, .span2, .span3, .span4, .span5, .span6, .span7, .span8, .span9,
+		.span10, .span11, .span12 {
+		float: left !important;
+		white-space: nowrap !important;
+		margin: 0 !important;
+		padding: 0 !important;
+	}
+	.span1, .span2, .span3, .span4, .span5, .span6 {
+		max-width: 150px
+	}
+	.span7, .span8, .span9, .span10, .span11, .span12 {
+		max-width: 350px
+	}
+	dt {
+		float: left !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		max-width: 150px;
+		min-width: 150px
+	}
+	dd {
+		float: left !important;
+		margin: 0 0 0 5px !important;
+		padding: 0 !important;
+		max-width: 350px
+	}
+}

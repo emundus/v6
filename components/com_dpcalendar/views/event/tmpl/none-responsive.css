@@ -1,0 +1,20 @@
+@media screen and (max-width: 767px) {
+	.dp-container dl .event-label {
+		float: left;
+		width: 20%;
+		margin: 0;
+	}
+	.dp-container dl .event-content {
+		float: left;
+		width: 79%;
+		margin: 0;
+	}
+}
+
+@media screen and (max-width: 480px) {
+	.dp-container dl .event-label, .dp-container dl .event-content {
+		float: none;
+		width: 100%;
+		margin: 0;
+	}
+}

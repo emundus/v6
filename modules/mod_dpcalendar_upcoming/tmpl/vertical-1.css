@@ -1,0 +1,57 @@
+.dp-upcoming-calendar {
+    float: left;
+    margin-top:2px;
+    margin-bottom:2px;
+    margin-left:0px;
+    margin-right:6px;
+    width: 38px;
+    height: 42px;
+    padding:0px;
+    border-width:2px;
+    border-style:solid;
+    border-bottom-right-radius:10px;
+    border-bottom-left-radius:10px;
+    background-image:none;
+}
+ 
+.dp-upcoming-calendar-background {
+    width: 38px;
+    height: 18px;
+    margin-bottom:0px;
+    margin-right:0px;
+    margin-top: 0px;
+    margin-left: 0px;
+    padding:0px;
+}
+ 
+.dp-upcoming-text-month {
+    color: #FFFFFF;
+    padding: 0px;
+    font-family:arial,sans-serif;
+    font-weight: bold;
+    font-size: 1em;
+    line-height:1em;
+    text-align: center;
+    position: relative;
+    margin-top: -17px;
+    margin-bottom: 0px;
+    margin-left:0px;
+    margin-right:0px;
+    text-transform:uppercase;
+     
+}
+ 
+.dp-upcoming-text-day {
+    margin:0px;
+    font-family:arial,sans-serif;  
+    font-weight: bold;
+    font-size: 1.3em;
+    line-height:1.4em;
+    width: 38px;
+    text-align: center;
+    padding:0px;
+    margin-top: 4px;
+    margin-bottom: 0px;
+    margin-left:0px;
+    margin-right:0px;
+}

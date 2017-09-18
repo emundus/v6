@@ -1,0 +1,6 @@
+"title","alias","rrule","start_date","end_date","all_day","location","color","url","description"
+"Yearly","yearly","FREQ=YEARLY;UNTIL=20200514T000000Z","2007-05-23 14:12:35","2007-05-23 14:22:35","0",,"27CC37",,"Sample description"
+"single event","single-event",,"2007-05-29 22:00:00","2007-05-29 22:20:00","0",,"A32929",,
+"All day event","allday",,"2007-05-29 00:00:00","2007-05-30 00:00:00","1",,"A32929",,
+"Weekly Demo Events","weekly","FREQ=WEEKLY;BYDAY=TU,TH,SA;COUNT=1000","2015-04-10 20:00:00","2007-07-10 22:30:00","0","New York",,"http://www.digital-peak.com","<p>Desc</p><ul><li>with HTML</li><li>content</li></ul><p><strong>Strong text</strong></p>"
+"Dayli event","dayli","FREQ=DAILY","2007-07-10 20:00:00","2007-07-11 01:30:00","0","London",,"http://jooml.digital-peak.com","<p>Desc</p><ul><li>with HTML</li><li>content</li></ul><p><strong>Strong text</strong></p>"

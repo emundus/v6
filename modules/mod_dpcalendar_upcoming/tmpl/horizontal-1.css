@@ -1,0 +1,65 @@
+.dp-upcoming-calendar {
+	float: left;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	margin-right: 6px;
+	width: 42px;
+	height: 42px;
+	background-image: url('images/calendar-icon.gif');
+	background-repeat: no-repeat;
+	padding: 0px;
+}
+
+.dp-upcoming-calendar-background {
+	width: 34px;
+	height: 12px;
+	margin-bottom: 0px;
+	margin-right: 0px;
+	margin-top: 6px;
+	margin-left: 5px;
+	padding: 0px;
+}
+
+.dp-upcoming-text-month {
+	color: #FFFFFF;
+	padding: 0px;
+	font-family: arial, sans-serif;
+	font-weight: bold;
+	font-size: 0.9em;
+	line-height: 1em;
+	text-align: center;
+	position: relative;
+	margin-top: -12px;
+	margin-bottom: 0px;
+	margin-left: -1px;
+	margin-right: 0px;
+	text-transform: uppercase;
+}
+
+.dp-upcoming-text-day {
+	margin: 0px;
+	font-family: arial, sans-serif;
+	font-weight: bold;
+	font-size: 1.3em;
+	line-height: 1.4em;
+	width: 42px;
+	text-align: center;
+	padding: 0px;
+	margin-top: -2px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+}
+
+.dp-upcoming-event-width {
+	position: relative;
+	margin-left: 10px;
+	margin-right: 0px;
+	margin-bottom: 5px;
+	margin-top: 2px;
+	padding: 1px;
+	width: 18%;
+	background-color: transparent;
+	float: left;
+}
