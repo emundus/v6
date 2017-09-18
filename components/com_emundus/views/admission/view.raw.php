@@ -229,6 +229,12 @@ class EmundusViewAdmission extends JViewLegacy
 								$userObj->id 			= $elements[$key]['fabrik_id'];
 								$userObj->params 		= $elements[$key]['params'];
 								$line[$key] 			= $userObj;
+
+								// Radiobuttons are a strange beast, we need to get all of the values
+								if ($userObj->type == 'radiobutton') {
+									$params = json_decode($userObj->params);
+									$userObj->radio = array_combine($params->sub_options->sub_labels, $params->sub_options->sub_values);
+								}
 							
 							} else {
 

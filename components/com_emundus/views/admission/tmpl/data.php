@@ -111,17 +111,23 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 												</strong>
 											</h5>
 										<?php elseif ($value->type == 'radiobutton') :?>
-											<?php if(isset($value->val)) :?>
-												<?php if (strtolower($value->val) == 'yes' || $value->val == '1' || strtolower($value->val) == 'oui') :?>
-													<span class="glyphicon glyphicon-ok em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true" style="color:green;"></span>
-												<?php elseif (strtolower($value->val) == 'no' || $value->val == '0' || strtolower($value->val) == 'non') :?>
-													<span class="glyphicon glyphicon-remove em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true" style="color:red;"></span>
-												<?php else :?>
-													<p> <?php echo $value->val ?> </p>
+											<?php if(strtolower($value->val) == "yes" || strtolower($value->val) == "oui" || $value->val == 1) :?>
+												<span class="glyphicon glyphicon-ok" aria-hidden="true" style="color:green;"></span>
+											<?php elseif(strtolower($value->val) == "no" || strtolower($value->val) == "non" || $value->val == 0) :?>
+												<span class="glyphicon glyphicon-remove" aria-hidden="true" style="color:red;"></span>
+											<?php endif; ?>
+											<select name="<?php echo $cfnum.'-'.$value->id; ?>" class="em-radio" id="<?php echo $cfnum.'-'.$value->id; ?>">
+												<?php if(!isset($value->val)) :?>
+													<option value="" disabled="disabled" selected="selected"> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
 												<?php endif; ?>
-											<?php else: ?>
-												<span class="glyphicon glyphicon-warning-sign em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true" style="color:orange;"></span>
-											<?php endif; ?> 
+												<?php foreach($value->radio as $rlabel => $rval) :?>
+													<?php if($value->val == $rval) :?>
+														<option value="<?php echo $rval; ?>" selected="selected"> <?php echo $rlabel; ?> </option>
+													<?php else: ?>
+														<option value="<?php echo $rval; ?>"> <?php echo $rlabel; ?> </option>
+													<?php endif; ?>
+												<?php endforeach; ?>
+											</select>
 										<?php elseif ($value->type == 'field'):?>
 											<input class="admission_input" type="text" id="<?php echo $cfnum.'-'.$value->id; ?>" name="<?php echo $value->val ?>" value="<?php echo $value->val ?>"></input>
 											<span class="glyphicon glyphicon-share-alt em-field" id="<?php echo $cfnum.'-'.$value->id.'-span'; ?>" aria-hidden="true" style="color:black;"></span>
