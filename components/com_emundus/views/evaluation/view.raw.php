@@ -52,7 +52,7 @@ class EmundusViewEvaluation extends JViewLegacy
 		$current_menu  = $menu->getActive();
 		$menu_params = $menu->getParams(@$current_menu->id);
 		
-		$columnSupl = explode(',', $menu_params->get('em_actions'));
+		$columnSupl = explode(',', $menu_params->get('em_other_columns'));
 		$jinput = JFactory::getApplication()->input;
 		$layout = $jinput->getString('layout', 0);
 
@@ -106,6 +106,9 @@ class EmundusViewEvaluation extends JViewLegacy
 				$filters = @EmundusHelperFiles::resetFilter();
 				$this->assignRef('filters', $filters);
 
+				// Do not display photos unless specified in params
+				$displayPhoto = false;
+
 				// get applications files
 				$users = $evaluation->getUsers($cfnum);
 
@@ -141,12 +144,24 @@ class EmundusViewEvaluation extends JViewLegacy
 						$col = explode('.', $col);
 						switch ($col[0]) {
 							case 'evaluators':
-								$datas[0]['EVALUATORS'] = JText::_('EVALUATORS');
-								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $evaluation);
+								$data[0]['EVALUATORS'] = JText::_('EVALUATORS');
+								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
+								break;
+							case 'overall':
+								$data[0]['overall'] = JText::_('EVALUATION_OVERALL');
+								break;
+							case 'tags':
+								$taggedFile = $model->getTaggedFile();
+								$data[0]['eta.id_tag'] = JText::_('TAGS');
+								$colsSup['id_tag'] = array();
+								break;
+							case 'access':
+								$data[0]['access'] = JText::_('COM_EMUNDUS_ASSOCIATED_TO');
+								$colsSup['access'] = array();
 								break;
 							case 'photos':
-                                $displayPhoto = true;
-                                break;
+								$displayPhoto = true;
+								break;
 						}
 					}
 

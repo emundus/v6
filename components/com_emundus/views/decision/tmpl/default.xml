@@ -14,11 +14,11 @@
 			<field name="em_filters_names" value="profile,evaluator,evaluator_group,schoolyear,missing_doc,finalgrade,other" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_FILTERS_LIST" description="COM_EMUNDUS_FILTERS_LIST_DESC"/>
 			<field name="em_filters_values" value="" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_FILTERS_VALUES" description="COM_EMUNDUS_FILTERS_VALUES_DESC"/>
 			<field name="em_filters_options" value="" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_FILTERS_OPTIONS" description="COM_EMUNDUS_FILTERS_OPTIONS_DESC"/>
-			<field name="em_blocks_names" value="evaluator,email_evaluator,incomplete,complete,batch,email_applicant" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_BLOCKS_LIST" description="COM_EMUNDUS_BLOCKS_LIST_DESC"/>
-			<field name="em_validate_id" value="1420,1859,1860" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_VALIDATE_ID" description="COM_EMUNDUS_VALIDATE_ID_DESC"/>
-			<field name="em_actions" value="actions" type="list" rows="6" cols="40" label="COM_EMUNDUS_ACTIONS" description="COM_EMUNDUS_ACTIONS_DESC">
+			<field name="em_other_columns" value="" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_OTHER_COLUMNS" description="COM_EMUNDUS_OTHER_COLUMNS_DESC"/>
+			<field name="em_actions" value="actions" type="list" label="COM_EMUNDUS_ACTIONS" description="COM_EMUNDUS_ACTIONS_DESC">
 				<option value="actions">actions</option>
 				<option value="actions-users">actions-users</option>
+				<option value="actions-shared-files">actions-shared-files</option>
 			</field>
 		</fieldset>
 	</fields>

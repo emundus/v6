@@ -1570,8 +1570,7 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getPhotos($fnums = array())
     {
-        try
-        {
+        try {
             $db = $this->getDbo();
             $query = 'select emu.id, emu.user_id, c.fnum, emu.filename  
                         from #__emundus_uploads as emu 
@@ -1582,9 +1581,8 @@ class EmundusModelFiles extends JModelLegacy
             }
             $db->setQuery($query);
             return $db->loadAssocList('fnum');
-        }
-        catch(Exception $e)
-        {
+        
+        } catch(Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return null;

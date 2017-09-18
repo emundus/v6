@@ -53,7 +53,7 @@ class EmundusViewAdmission extends JViewLegacy
 	    $menu 			= @JSite::getMenu();
 		$current_menu  	= $menu->getActive();
 		$menu_params 	= $menu->getParams(@$current_menu->id);
-		$columnSupl 	= explode(',', $menu_params->get('em_blocks_names'));
+		$columnSupl 	= explode(',', $menu_params->get('em_other_columns'));
 
 		$jinput 	= JFactory::getApplication()->input;
 		$layout 	= $jinput->getString('layout', 0);
@@ -108,6 +108,9 @@ class EmundusViewAdmission extends JViewLegacy
 				$filters = @EmundusHelperFiles::resetFilter();
 				$this->assignRef('filters', $filters);
 
+				// Do not display photos unless specified in params
+				$displayPhoto = false;
+
 				// get applications files
 				$users = $admission->getUsers($cfnum);
 
@@ -154,10 +157,22 @@ class EmundusViewAdmission extends JViewLegacy
 						switch ($col[0]) {
 							case 'evaluators':
 								$data[0]['EVALUATORS'] = JText::_('EVALUATORS');
-								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $admission);
+								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
 								break;
 							case 'overall':
 								$data[0]['overall'] = JText::_('EVALUATION_OVERALL');
+								break;
+							case 'tags':
+								$taggedFile = $model->getTaggedFile();
+								$data[0]['eta.id_tag'] = JText::_('TAGS');
+								$colsSup['id_tag'] = array();
+								break;
+							case 'access':
+								$data[0]['access'] = JText::_('COM_EMUNDUS_ASSOCIATED_TO');
+								$colsSup['access'] = array();
+								break;
+							case 'photos':
+								$displayPhoto = true;
 								break;
 						}
 					}					
@@ -183,7 +198,8 @@ class EmundusViewAdmission extends JViewLegacy
 								$userObj->val = $value;
 								$userObj->class = $class;
 								$userObj->type = 'fnum';
-								$userObj->photo = EmundusHelperFiles::getPhotos($value);
+								if ($displayPhoto)
+									$userObj->photo = EmundusHelperFiles::getPhotos($value);
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
 								$line['fnum'] = $userObj;
 							} 

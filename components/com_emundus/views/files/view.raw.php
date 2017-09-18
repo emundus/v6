@@ -177,7 +177,10 @@ class EmundusViewFiles extends JViewLegacy
                 $this->assignRef('fnum_assoc', $model->fnum_assoc);
 
 			    // get applications files
-			    $users = $this->get('Users');
+				$users = $this->get('Users');
+				
+				// Do not display photos unless specified in params
+				$displayPhoto = false;
 
 			    $defaultElements = $this->get('DefaultElements');
 			    $data = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'status' => JText::_('STATUS')));
@@ -254,7 +257,7 @@ class EmundusViewFiles extends JViewLegacy
 							    $userObj->val = $value;
 							    $userObj->class = $class;
 								$userObj->type = 'fnum';
-								if ($displayPhoto) 
+								if ($displayPhoto)
 									$userObj->photo = EmundusHelperFiles::getPhotos($value);
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
 							    $line['fnum'] = $userObj;
