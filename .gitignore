@@ -31,3 +31,20 @@ emundus_bdd*
 /.htaccess
 /*.sql.zip
 /test*
+
+
+### macOS ###
+*.DS_Store
+.AppleDouble
+.LSOverride
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history
+
+### Linux ###
+*~
