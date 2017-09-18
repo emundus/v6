@@ -406,43 +406,31 @@ class EmundusControllerDecision extends JControllerLegacy
         exit;
     }
 
-    public function tagfile()
-    {
+    /**
+     * Add a tag to an application
+     */
+    public function tagfile() {
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getString('fnums', null);
         $tag = $jinput->getInt('tag', null);
-        $fnums = (array) json_decode(stripslashes($fnums));
-        $model = $this->getModel('Files');
+        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
+        $m_files = $this->getModel('Files');
 
-        if(is_array($fnums))
-        {
-            $model->tagFile($fnums, $tag);
-            $validFnums = array();
+        if ($fnums == "all")
+            $fnums = $m_files->getAllFnums();
 
-            foreach($fnums as $fnum)
-            {
-                if(EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
-                {
-                    $validFnums[] = $fnum;
-                }
+        $validFnums = array();
+
+        foreach($fnums as $fnum) {
+            if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum)) {
+                $validFnums[] = $fnum;
             }
-            $tagged = $model->getTaggedFile($validFnums);
         }
-        else
-        {
-            $fnums = $model->getAllFnums();
-            $validFnums = array();
+        unset($fnums);
 
-            foreach($fnums as $fnum)
-            {
-                if(EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
-                {
-                    $validFnums[] = $fnum;
-                }
-            }
-            $res = $model->tagFile($validFnums, $tag);
-            $tagged = $model->getTaggedFile($tag);
-        }
+        $res = $m_files->tagFile($validFnums, $tag);
+        $tagged = $m_files->getTaggedFile($tag);
+
         echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAG_SUCCESS'), 'tagged' => $tagged)));
         exit;
     }

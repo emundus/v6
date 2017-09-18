@@ -1497,7 +1497,12 @@ class EmundusModelFiles extends JModelLegacy
         else
         {
             $user = JFactory::getUser()->id;
-            $query .= ' t.id_tag = '.$tag. ' and t.user_id = ' . $user;
+
+            if (is_array($tag)) 
+                $query .= ' t.id_tag IN '.implode(',',$tag). ' and t.user_id = ' . $user;
+            else 
+                $query .= ' t.id_tag = '.$tag. ' and t.user_id = ' . $user;
+            
             try
             {
                 $db->setQuery($query);

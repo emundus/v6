@@ -80,6 +80,10 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 												<div class="em_list_email"><?php echo $value->user->email; ?></div>
 											</div>
 										</a>
+									<?php elseif($k == "access"):?>
+										<?php echo $this->accessObj[$line['fnum']->val]?>
+									<?php elseif($k == "id_tag"):?>
+										<?php echo $this->colsSup['id_tag'][$line['fnum']->val]?>
 									<?php else:?>
 										<?php 
 											if($value->type == 'text' ) {

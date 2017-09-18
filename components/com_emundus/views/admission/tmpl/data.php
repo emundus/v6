@@ -83,6 +83,10 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 												<div class="em_list_email"><?php echo $value->user->email; ?></div>
 											</div>
 										</a>
+									<?php elseif($k == "access"):?>
+										<?php echo $this->accessObj[$line['fnum']->val]?>
+									<?php elseif($k == "id_tag"):?>
+										<?php echo @$this->colsSup['id_tag'][$line['fnum']->val]?>
 									<?php else:?>
 										
 										<?php if ($value->type == 'text' ) :?>
@@ -94,13 +98,15 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 											<h5 class="em-date">
 												<strong>
 													<?php 
-														if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") {
-															echo "No date";
-														} else {
-															$params = json_decode($value->params);
-															$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
-															echo $formatted_date->format($params->date_form_format);
-														}
+														if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
+															<span class="glyphicon glyphicon-warning-sign em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true" style="color:orange;"></span>
+														<?php else: ?> 
+															<?php
+																$params = json_decode($value->params);
+																$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
+																echo $formatted_date->format($params->date_form_format);
+															?>
+														<?php endif; ?>
 													?>
 												</strong>
 											</h5>

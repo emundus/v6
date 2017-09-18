@@ -35,7 +35,8 @@ class EmundusViewDecision extends JViewLegacy
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
@@ -91,18 +92,19 @@ class EmundusViewDecision extends JViewLegacy
 				$params = JComponentHelper::getParams('com_emundus');
 				$evaluators_can_see_other_eval = $params->get('evaluators_can_see_other_eval', 0);
 
-				$decision = $this->getModel('Decision');
-                $userModel = new EmundusModelUsers();
+				$m_decision = $this->getModel('Decision');
+				$userModel = new EmundusModelUsers();
+				$m_files = new EmundusModelFiles();
 
-                $decision->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
-                //$decision->fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
+                $m_decision->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
+                //$m_decision->fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
                 // get all fnums manually associated to user
 		        $groups = $userModel->getUserGroups($this->_user->id, 'Column');
         		$fnum_assoc_to_groups = $userModel->getApplicationsAssocToGroups($groups);
 		        $fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
-		        $decision->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
-                $this->assignRef('code', $decision->code);
-                $this->assignRef('fnum_assoc', $decision->fnum_assoc);
+		        $m_decision->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
+                $this->assignRef('code', $m_decision->code);
+                $this->assignRef('fnum_assoc', $m_decision->fnum_assoc);
 
 				// reset filter
 				$filters = @EmundusHelperFiles::resetFilter();
@@ -112,10 +114,10 @@ class EmundusViewDecision extends JViewLegacy
 				$displayPhoto = false;
 
 				// get applications files
-				$users = $decision->getUsers($cfnum);
+				$users = $m_decision->getUsers($cfnum);
 
 			    // get evaluation form ID
-			    $formid = $decision->getDecisionFormByProgramme();
+			    $formid = $m_decision->getDecisionFormByProgramme();
 			    $this->assignRef('formid', $formid);
 			    $form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
 			    $form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
@@ -123,8 +125,8 @@ class EmundusViewDecision extends JViewLegacy
 
 				if(!empty($users))
 				{
-					//$i = 1;
-					$taggedFile = $decision->getTaggedFile();
+					$i = 0;
+					$taggedFile = $m_decision->getTaggedFile();
 
 					// Columns
 					$defaultElements = $this->get('DefaultElements');
@@ -138,6 +140,12 @@ class EmundusViewDecision extends JViewLegacy
 							$fl[$elt->tab_name . '.' . $elt->element_name] = $elt->element_label;
 						}
 					}
+					$fl['jos_emundus_final_grade.user'] = JText::_('RECORDED_BY');
+					
+					// merge eval criterion on application files
+					$data[0] = array_merge($data[0], $fl);
+
+					$fnumArray = array();
 
 					foreach($columnSupl as $col)
 					{
@@ -146,13 +154,13 @@ class EmundusViewDecision extends JViewLegacy
 						{
 							case 'evaluators':
 								$data[0]['EVALUATORS'] = JText::_('EVALUATORS');
-								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
+								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $m_decision);
 								break;
 							case 'overall':
 								$data[0]['overall'] = JText::_('EVALUATION_OVERALL');
 								break;
 							case 'tags':
-								$taggedFile = $model->getTaggedFile();
+								$taggedFile = $m_decision->getTaggedFile();
 								$data[0]['eta.id_tag'] = JText::_('TAGS');
 								$colsSup['id_tag'] = array();
 								break;
@@ -165,18 +173,13 @@ class EmundusViewDecision extends JViewLegacy
 								break;
 						}
 					}
-
-					$fl['jos_emundus_final_grade.user'] = JText::_('RECORDED_BY');
-					
-					
-					// merge eval criterion on application files
-					$data[0] = array_merge($data[0], $fl);
 					
 
-					$i = 0;
+					//$i = 0;
 					foreach ($users as $user) {
 						$usObj = new stdClass();
 						$usObj->val = 'X';
+						$fnumArray[] = $user['fnum'];
 						$line = array('check' => $usObj);
 						if(array_key_exists($user['fnum'], $taggedFile))
 						{
@@ -252,6 +255,17 @@ class EmundusViewDecision extends JViewLegacy
 						$i++;
 					}
 
+					if(isset($colsSup['id_tag']))
+					{
+						$tags = $m_files->getTagsByFnum($fnumArray);
+						$colsSup['id_tag'] = @EmundusHelperFiles::createTagsList($tags);
+					}
+
+                    if(isset($colsSup['access']))
+				    {
+					    $objAccess = $m_files->getAccessorByFnums($fnumArray);
+				    }
+
 				}
 			    else
 			    {
@@ -266,7 +280,8 @@ class EmundusViewDecision extends JViewLegacy
 		   /* $this->assignRef('actions', $actions);*/
 		    $pagination = $this->get('Pagination');
 		    $this->assignRef('pagination', $pagination);
-
+			$this->assignRef('accessObj', $objAccess);
+			$this->assignRef('colsSup', $colsSup);
 			$this->assignRef('users', $users);
 			$this->assignRef('datas', $data);
 
