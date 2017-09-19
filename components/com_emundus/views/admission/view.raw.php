@@ -153,7 +153,7 @@ class EmundusViewAdmission extends JViewLegacy
 			    $this->assignRef('form_url_edit', $form_url_edit);
 
 				if (!empty($users)) {
-					$i = 1;
+					$i = 0;
 					foreach ($columnSupl as $col) {
 						$col = explode('.', $col);
 						switch ($col[0]) {
