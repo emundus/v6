@@ -127,11 +127,12 @@
     
     });
 
-     $(document).on('click', '#addCalendar', function(e)
+    $(document).on('click', '#addCalendar', function(e)
     {
         $.ajaxQ.abortAll();
         var id = parseInt($(this).attr('id'));
-        var url ="index.php?option=com_fabrik&view=form&formid=267&tmpl=component";
+        var formID = $('#addCalendarForm').val();
+        var url = "index.php?option=com_fabrik&view=form&formid="+ formID +"&tmpl=component";
 
         $('#em-modal-form').modal({backdrop: 'static',keyboard: false},'toggle');
         //  $('#em-modal-form .modal-content').html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="em-modal-actions-title">'+Joomla.JText._('LOADING')+'</h4></div><div class="modal-body"><img src="media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'></button></div>');
@@ -158,11 +159,11 @@
 
         $(".modal-body").append('<object data="'+url+'" style="width:'+100+'%; height:'+window.getHeight()+'px; border:none"></object>');
        
-       setTimeout(function(){var btnSave = document.getElementsByClassName('btn');
+        setTimeout(function(){var btnSave = document.getElementsByClassName('btn');
         console.log(btnSave);},10000); 
-      //  btnSave[0].style.visibility ="hidden";
+        //  btnSave[0].style.visibility ="hidden";
 
-      var tt = document.getElementsByClassName('modal-body');
+        var tt = document.getElementsByClassName('modal-body');
         console.log(tt);
     
     });

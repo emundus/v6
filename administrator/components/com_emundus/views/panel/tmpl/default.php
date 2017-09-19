@@ -30,6 +30,7 @@ defined('_JEXEC') or die('RESTRICTED');
         <em>Yohan Durand</em>,<br>
         <em>Quentin Lagadec</em><br>
         <em>Florian Gohard</em><br>
+        <em>Hugo Moracchini</em><br>
       </p>
     </td>
   </tr>

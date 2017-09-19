@@ -30,11 +30,11 @@ JLog::addLogger(
 $user = JFactory::getUser();
 $mainframe = JFactory::getApplication();
 $jinput = $mainframe->input;
-$db 		= JFactory::getDBO();
+$db = JFactory::getDBO();
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
-$id_applicants 			 = $eMConfig->get('id_applicants', '0');
-$applicants 			 = explode(',',$id_applicants);
+$id_applicants = $eMConfig->get('id_applicants', '0');
+$applicants = explode(',',$id_applicants);
 
 $title = $jinput->getValue('jos_dpcalendar_extcalendars___title');
 $color = $jinput->getValue('jos_dpcalendar_extcalendars___color');
@@ -44,19 +44,16 @@ $alias = $jinput->getValue('jos_dpcalendar_extcalendars___alias');
 
 
 
-try
-{
+try {
 
 
-$create = new EmundusModelCalendar;
-$result = $create->createCalendar($title,$alias,$color);
-//$create->insertAliasColor($alias, $color[0], $title);
-$create->saveParams();
-die("<div class='col-md-12'><center><h1>Calendar Created.</h1></center></div>");
+    $create = new EmundusModelCalendar;
+    $result = $create->createCalendar($title,$alias,$color);
+    //$create->insertAliasColor($alias, $color[0], $title);
+    $create->saveParams();
+    die("<div class='col-md-12'><center><h1>Calendar Created.</h1></center></div>");
 
-}
-catch(Exception $e)
-{
+} catch(Exception $e) {
     $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
     JLog::add($error, JLog::ERROR, 'com_emundus');
 }
