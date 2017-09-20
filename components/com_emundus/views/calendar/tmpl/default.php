@@ -46,6 +46,7 @@ $sync->updateTitleForBookingsByCandidate();
 <div class="container-fluid">
 	<div class="col-md-12 main-panel">
     <input type="hidden" id="addCalendarForm" value="<?php echo $this->calendarFormId; ?>"></input>
+    <input type="hidden" id="addEventForm" value="<?php echo $this->eventFormId; ?>"></input>
     <div id="buttonCalendar" class="col-md-12">
     </div>
 

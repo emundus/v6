@@ -57,10 +57,12 @@ class EmundusViewCalendar extends JViewLegacy {
         $title = null;
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $calendarFormID = $eMConfig->get('addCalendarForm');
+        $eventFormId = $eMConfig->get('addEventForm');
 
         // Because the application sets a default page title,
         // we need to get it from the menu item itself
         $menu = $menus->getActive();
+        
         if ($menu)
             $this->params->def('page_heading', $this->params->get('page_title', $menu->title));
         else
@@ -76,9 +78,10 @@ class EmundusViewCalendar extends JViewLegacy {
         elseif ($app->getCfg('sitename_pagetitles', 0) == 2)
             $title = JText::sprintf('JPAGETITLE', $title, $app->getCfg('sitename'));
         
-            $this->document->setTitle($title);
+        $this->document->setTitle($title);
 
         $this->assignRef('calendarFormId', $calendarFormID);
+        $this->assignRef('eventFormId', $eventFormId);
         
         if ($this->params->get('menu-meta_description'))
             $this->document->setDescription($this->params->get('menu-meta_description'));

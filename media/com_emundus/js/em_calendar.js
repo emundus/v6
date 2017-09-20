@@ -86,11 +86,11 @@
 
 
 
-     $(document).on('click', '#addEvent', function(e)
-    {
+    $(document).on('click', '#addEvent', function(e) {
         $.ajaxQ.abortAll();
         var id = parseInt($(this).attr('id'));
-        var url ="index.php?option=com_fabrik&view=form&formid=266&tmpl=component";
+        var formID = $('#addEventForm').val();
+        var url ="index.php?option=com_fabrik&view=form&formid="+ formID +"&tmpl=component";
 
         $('#em-modal-form').modal({backdrop: 'static',keyboard: false},'toggle');
         //  $('#em-modal-form .modal-content').html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="em-modal-actions-title">'+Joomla.JText._('LOADING')+'</h4></div><div class="modal-body"><img src="media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'></button></div>');
@@ -98,10 +98,8 @@
         $('.modal-title').empty();
         $('.modal-title').append($(this).children('a').text());
         $('.modal-body').empty();
-        if($('.modal-dialog').hasClass('modal-lg'))
-        {
+        if ($('.modal-dialog').hasClass('modal-lg'))
             $('.modal-dialog').removeClass('modal-lg');
-        }
         $('.modal-body').attr('act-id', id);
         $('.modal-footer').show();
 
@@ -172,83 +170,74 @@
 
 
 
-         function listCalendar(){
+function listCalendar() {
 
-
-        $.ajax({
+    $.ajax({
         type: 'GET',
         url: 'index.php?option=com_fabrik&view=list&listid=276&tmpl=component',
         
         success: function(url) {
 
             //var data= 'index.php?option=com_dpcalendar&view=calendar&tmpl=component&Itemid=2667';
-        var list = $('#listCalendar').html(url);
+            var list = $('#listCalendar').html(url);
 
-      //  var t = $('.fabrik_actions.fabrik_element').append('<object id="formEventEdit" data="'+data+'" style="width:'+100+'%; height:'+window.getHeight()+'px; border:none"></object>');
+            //  var t = $('.fabrik_actions.fabrik_element').append('<object id="formEventEdit" data="'+data+'" style="width:'+100+'%; height:'+window.getHeight()+'px; border:none"></object>');
 
-        $('.btn-group').hide();
+            $('.btn-group').hide();
 
-         setInterval(function(){
-            var lien = document.getElementsByClassName('fabrik_row');
-            
-            for(var i=0;i<lien.length;i++)
-            {
-                lien[i].addEventListener('click', function() 
-                {
-                    $.ajaxQ.abortAll();
-                    var id = $(this).attr('id');
-                    var idSplit = id.split('_');
-                    var calId = idSplit[6];
-
-                    var url ="index.php?option=com_fabrik&view=form&formid=269&rowid="+calId+"&tmpl=component";
-
-                    $('#em-modal-form').modal({backdrop: 'static',keyboard: false},'toggle');
-                    //  $('#em-modal-form .modal-content').html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="em-modal-actions-title">'+Joomla.JText._('LOADING')+'</h4></div><div class="modal-body"><img src="media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'></button></div>');
-
-                    $('.modal-title').empty();
-                    $('.modal-title').append($(this).children('a').text());
-                    $('.modal-body').empty();
-                    if($('.modal-dialog').hasClass('modal-lg'))
-                        {
-                            $('.modal-dialog').removeClass('modal-lg');
-                        }
-                    $('.modal-body').attr('act-id', id);
-                    $('.modal-footer').show();
-
-                    /*$('.modal-footer').append('<div>' +
-                    '<p>'+Joomla.JText._('SENT')+'</p>' +
-                    '<img src="'+loadingLine+'" alt="loading"/>' +
-                    '</div>');*/
-                    // $('.modal-content').append('<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="em-modal-actions-title">'+Joomla.JText._('LOADING')+'</h4></div><div class="modal-body"><img src="media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'></button></div>');
-                    $('.modal-footer').hide();
-
-                    $('.modal-dialog').addClass('modal-lg');
-                    $(".modal-body").empty();
-
-                    $(".modal-body").append('<object id="formEventEdit" data="'+url+'" style="width:'+100+'%; height:'+window.getHeight()+'px; border:none"></object>');
-
-                    $('.fb_el_jos_categories___title').remove();
-
-                                   
-                }, false);
-            }
-
-        }, 500);
+            setInterval(function(){
+                var lien = document.getElementsByClassName('fabrik_row');
         
+                for (var i=0;i<lien.length;i++) {
+                    lien[i].addEventListener('click', function() {
+                        $.ajaxQ.abortAll();
+                        var id = $(this).attr('id');
+                        var idSplit = id.split('_');
+                        var calId = idSplit[6];
 
-          },
+                        var url ="index.php?option=com_fabrik&view=form&formid=269&rowid="+calId+"&tmpl=component";
+
+                        $('#em-modal-form').modal({backdrop: 'static',keyboard: false},'toggle');
+                        //  $('#em-modal-form .modal-content').html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="em-modal-actions-title">'+Joomla.JText._('LOADING')+'</h4></div><div class="modal-body"><img src="media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'></button></div>');
+
+                        $('.modal-title').empty();
+                        $('.modal-title').append($(this).children('a').text());
+                        $('.modal-body').empty();
+                        if ($('.modal-dialog').hasClass('modal-lg'))
+                            $('.modal-dialog').removeClass('modal-lg');
+                        $('.modal-body').attr('act-id', id);
+                        $('.modal-footer').show();
+
+                        /*$('.modal-footer').append('<div>' +
+                        '<p>'+Joomla.JText._('SENT')+'</p>' +
+                        '<img src="'+loadingLine+'" alt="loading"/>' +
+                        '</div>');*/
+                        // $('.modal-content').append('<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="em-modal-actions-title">'+Joomla.JText._('LOADING')+'</h4></div><div class="modal-body"><img src="media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'></button></div>');
+                        $('.modal-footer').hide();
+
+                        $('.modal-dialog').addClass('modal-lg');
+                        $(".modal-body").empty();
+
+                        $(".modal-body").append('<object id="formEventEdit" data="'+url+'" style="width:'+100+'%; height:'+window.getHeight()+'px; border:none"></object>');
+
+                        $('.fb_el_jos_categories___title').remove();
+
+                                
+                    }, false);
+                }
+
+            }, 500);
+    
+
+        },
 
         error: function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText);
         },
 
-      
-
-        
-
     });
 
-    }
+}
 
 
              function listCandidate(){
