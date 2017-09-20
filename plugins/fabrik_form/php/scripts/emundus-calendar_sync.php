@@ -30,11 +30,11 @@ JLog::addLogger(
 $user = JFactory::getUser();
 $mainframe = JFactory::getApplication();
 $jinput = $mainframe->input;
-$db 		= JFactory::getDBO();
+$db = JFactory::getDBO();
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
-$id_applicants 			 = $eMConfig->get('id_applicants', '0');
-$applicants 			 = explode(',',$id_applicants);
+$id_applicants = $eMConfig->get('id_applicants', '0');
+$applicants = explode(',',$id_applicants);
 $calendarID1 = $eMConfig->get('calendarId1');
 $calendarID2 = $eMConfig->get('calendarId2');
 $calendarID3 = $eMConfig->get('calendarId3');
@@ -59,24 +59,23 @@ $clientId = $eMConfig->get('clientId');
 $clientSecret = $eMConfig->get('clientSecret');
 
 
-$fnum = $jinput->get('rowid', null);
-$itemid = $jinput->get('Itemid'); 
-$reload = $jinput->get('rq', 0);
-$cal = $jinput->get('catid', 105);
-$valeurCatId = $jinput->getValue('jos_dpcalendar_events___catid');
-$title = $jinput->getValue('jos_dpcalendar_events___title');
-$description = $jinput->getValue('jos_dpcalendar_events___description');
-$valStartDateTime = $jinput->getValue('jos_dpcalendar_events___start_date');
-$valEndDateTime = $jinput->getValue('jos_dpcalendar_events___end_date');
-$startTime = $jinput->getValue('jos_dpcalendar_events___start_time');
-$endTime = $jinput->getValue('jos_dpcalendar_events___end_time');
-$user = $jinput->getValue('jos_dpcalendar_events___uid');
+$fnum               = $jinput->get('rowid', null);
+$itemid             = $jinput->get('Itemid'); 
+$reload             = $jinput->get('rq', 0);
+$cal                = $jinput->get('catid', 105);
+$valeurCatId        = $jinput->getValue('jos_dpcalendar_events___catid');
+$title              = $jinput->getValue('jos_dpcalendar_events___title');
+$description        = $jinput->getValue('jos_dpcalendar_events___description');
+$valStartDateTime   = $jinput->getValue('jos_dpcalendar_events___start_date');
+$valEndDateTime     = $jinput->getValue('jos_dpcalendar_events___end_date');
+$startTime          = $jinput->getValue('jos_dpcalendar_events___start_time');
+$endTime            = $jinput->getValue('jos_dpcalendar_events___end_time');
+$user               = $jinput->getValue('jos_dpcalendar_events___uid');
+
+
 $startDateTime = explode(' ', $valStartDateTime);
 $startDate = $startDateTime[0];
 $startTime = $startDateTime[1];
-
-
-
 
 $endDateTime = explode(' ', $valEndDateTime);
 $endDate = $endDateTime[0];
@@ -91,49 +90,46 @@ $valueRowId = explode('=', $rowId);
 $compareForm = $valueRowId[0];
 $eventId = $valueRowId[1];
 
-
-
-if ($valeurCatId == array('105')) {
+if ($valeurCatId == array('105'))
     $calendarID = $calendarID1;
-} elseif ($valeurCatId == array('106')){
+elseif ($valeurCatId == array('106'))
    $calendarID = $calendarID2;
- }  elseif ($valeurCatId == array('107')){
+elseif ($valeurCatId == array('107'))
    $calendarID = $calendarID3;
-} elseif ($valeurCatId == array('108')){
+elseif ($valeurCatId == array('108'))
    $calendarID = $calendarID4;
-} elseif ($valeurCatId == array('109')){
+elseif ($valeurCatId == array('109'))
    $calendarID = $calendarID5;
-} elseif ($valeurCatId == array('110')){
+elseif ($valeurCatId == array('110'))
    $calendarID = $calendarID6;
-} elseif ($valeurCatId == array('111')){
+elseif ($valeurCatId == array('111'))
    $calendarID = $calendarID7;
-} elseif ($valeurCatId == array('112')){
+elseif ($valeurCatId == array('112'))
    $calendarID = $calendarID8;
-} elseif ($valeurCatId == array('113')){
+elseif ($valeurCatId == array('113'))
    $calendarID = $calendarID9;
-} elseif ($valeurCatId == array('114')){
+elseif ($valeurCatId == array('114'))
    $calendarID = $calendarID10;
-} elseif ($valeurCatId == array('115')){
+elseif ($valeurCatId == array('115'))
    $calendarID = $calendarID11;
-} elseif ($valeurCatId == array('116')){
+elseif ($valeurCatId == array('116'))
    $calendarID = $calendarID12;
-} elseif ($valeurCatId == array('117')){
+elseif ($valeurCatId == array('117'))
    $calendarID = $calendarID13;
-}elseif ($valeurCatId == array('118')){
+elseif ($valeurCatId == array('118'))
    $calendarID = $calendarID14;
-}elseif ($valeurCatId == array('119')){
+elseif ($valeurCatId == array('119'))
    $calendarID = $calendarID15;
-}elseif ($valeurCatId == array('120')){
+elseif ($valeurCatId == array('120'))
    $calendarID = $calendarID16;
-}elseif ($valeurCatId == array('121')){
+elseif ($valeurCatId == array('121'))
    $calendarID = $calendarID17;
-}elseif ($valeurCatId == array('122')){
+elseif ($valeurCatId == array('122'))
    $calendarID = $calendarID18;
-}elseif ($valeurCatId == array('123')){
+elseif ($valeurCatId == array('123'))
    $calendarID = $calendarID19;
-}elseif ($valeurCatId == array('124')){
+elseif ($valeurCatId == array('124'))
    $calendarID = $calendarID20;
-}
 
 
 /*
@@ -142,27 +138,26 @@ echo $formModel->data["jos_emundus_qcm___question_b4_raw"]."<hr>";
 var_dump($table_elements);
 die();*/
 
-try
-{
-$sync = new EmundusModelCalendar;
+try {
+    $sync = new EmundusModelCalendar;
 
-if($compareForm == "tmpl") {
-
-    $result = $sync->createEvent($calendarID, $title, $description, $startDate, $startTime, $endDate, $endTime,$user,$valeurCatId);
-    die("<div class='col-md-12'><center><h1>Record Saved.</h1></center></div>");
-} else if ($compareForm == "rowid") {
-  if(isset($_POST['Submit'])){
-    $result = $sync->updateEvent($calendarID, $eventId, $title, $description, $startDate, $startTime, $endDate, $endTime,$user,$valeurCatId[0]);
-    die("<div class='col-md-12'><center><h1>Record Updated.</h1></center></div>");
-  }
-}
-
-
-}
-catch(Exception $e)
-{
+    if ($compareForm == "tmpl") {
+    
+        $result = $sync->createEvent($calendarID, $title, $description, $startDate, $startTime, $endDate, $endTime,$user,$valeurCatId);
+        die("<div class='col-md-12'><center><h1>Record Saved.</h1></center></div>");
+    
+    } elseif ($compareForm == "rowid") {
+    
+        if (isset($_POST['Submit'])) {
+            $result = $sync->updateEvent($calendarID, $eventId, $title, $description, $startDate, $startTime, $endDate, $endTime,$user,$valeurCatId[0]);
+            die("<div class='col-md-12'><center><h1>Record Updated.</h1></center></div>");
+        }
+    
+    }
+} catch(Exception $e) {
     $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
     JLog::add($error, JLog::ERROR, 'com_emundus');
+    die($e->getMessage());
 }
 
 

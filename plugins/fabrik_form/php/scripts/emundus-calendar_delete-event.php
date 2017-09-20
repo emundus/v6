@@ -29,12 +29,12 @@ JLog::addLogger(
 
 $user = JFactory::getUser();
 $mainframe = JFactory::getApplication();
+$db = JFactory::getDBO();
 $jinput = $mainframe->input;
-$db 		= JFactory::getDBO();
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
-$id_applicants 			 = $eMConfig->get('id_applicants', '0');
-$applicants 			 = explode(',',$id_applicants);
+$id_applicants = $eMConfig->get('id_applicants', '0');
+$applicants = explode(',',$id_applicants);
 $calendarID1 = $eMConfig->get('calendarId1');
 $calendarID2 = $eMConfig->get('calendarId2');
 $calendarID3 = $eMConfig->get('calendarId3');
@@ -90,7 +90,7 @@ if ($valeurCatId == array('105')) {
     $calendarID = $calendarID1;
 } elseif ($valeurCatId == array('106')){
    $calendarID = $calendarID2;
- }  elseif ($valeurCatId == array('107')){
+} elseif ($valeurCatId == array('107')){
    $calendarID = $calendarID3;
 } elseif ($valeurCatId == array('108')){
    $calendarID = $calendarID4;
@@ -112,32 +112,29 @@ if ($valeurCatId == array('105')) {
    $calendarID = $calendarID12;
 } elseif ($valeurCatId == array('117')){
    $calendarID = $calendarID13;
-}elseif ($valeurCatId == array('118')){
+} elseif ($valeurCatId == array('118')){
    $calendarID = $calendarID14;
-}elseif ($valeurCatId == array('119')){
+} elseif ($valeurCatId == array('119')){
    $calendarID = $calendarID15;
-}elseif ($valeurCatId == array('120')){
+} elseif ($valeurCatId == array('120')){
    $calendarID = $calendarID16;
-}elseif ($valeurCatId == array('121')){
+} elseif ($valeurCatId == array('121')){
    $calendarID = $calendarID17;
-}elseif ($valeurCatId == array('122')){
+} elseif ($valeurCatId == array('122')){
    $calendarID = $calendarID18;
-}elseif ($valeurCatId == array('123')){
+} elseif ($valeurCatId == array('123')){
    $calendarID = $calendarID19;
-}elseif ($valeurCatId == array('124')){
+} elseif ($valeurCatId == array('124')){
    $calendarID = $calendarID20;
 }
 
-try
-{
+try {
 
-$sync = new EmundusModelCalendar;
-$sync->deleteEvent($calendarID,$eventId);
-die("<div class='col-md-12'><center><h1>Record Deleted.</h1></center></div>");
+    $sync = new EmundusModelCalendar;
+    $sync->deleteEvent($calendarID,$eventId);
+    die("<div class='col-md-12'><center><h1>Record Deleted.</h1></center></div>");
 
-}
-catch(Exception $e)
-{
+} catch(Exception $e) {
     $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
     JLog::add($error, JLog::ERROR, 'com_emundus');
 }

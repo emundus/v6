@@ -115,12 +115,12 @@
 
         $(".modal-body").append('<object data="'+url+'" style="width:'+100+'%; height:'+window.getHeight()+'px; border:none"></object>');
        
-       setTimeout(function(){var btnSave = document.getElementsByClassName('btn');
+        setTimeout(function(){var btnSave = document.getElementsByClassName('btn');
         console.log(btnSave);},10000); 
-      //  btnSave[0].style.visibility ="hidden";
+        //  btnSave[0].style.visibility ="hidden";
 
-      var test = document.getElementsByName('jos_dpcalendar_events___start_date[time]');
-      console.log(test);
+        var test = document.getElementsByName('jos_dpcalendar_events___start_date[time]');
+        console.log(test);
         
     
     });
