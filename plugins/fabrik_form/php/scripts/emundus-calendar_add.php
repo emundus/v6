@@ -21,7 +21,7 @@ jimport('joomla.log.log');
 JLog::addLogger(
     array(
         // Sets file name
-        'text_file' => 'com_emundus.calendar_sync.php'
+        'text_file' => 'com_emundus.calendar_add.php'
     ),
     JLog::ALL,
     array('com_emundus')
@@ -46,16 +46,16 @@ $alias = $jinput->getValue('jos_dpcalendar_extcalendars___alias');
 
 try {
 
-
-    $create = new EmundusModelCalendar;
-    $result = $create->createCalendar($title,$alias,$color);
-    //$create->insertAliasColor($alias, $color[0], $title);
-    $create->saveParams();
+    $m_calendar = new EmundusModelCalendar;
+    $result = $m_calendar->createCalendar($title,$alias,$color);
+    //$m_calendar->insertAliasColor($alias, $color[0], $title);
+    $m_calendar->saveParams();
     die("<div class='col-md-12'><center><h1>Calendar Created.</h1></center></div>");
 
 } catch(Exception $e) {
     $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
     JLog::add($error, JLog::ERROR, 'com_emundus');
+    die($e->getMessage());
 }
 
 

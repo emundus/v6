@@ -2255,47 +2255,44 @@ function deleteUncategorisedFromSave(){
   $db->execute();
 }
 
-function createCalendar($title,$alias,$color){
-
-    if($this->getPath() != null){
-    $this->deleteUncategorised();
-    $this->deleteUncategorisedFromSave();
-    $this->initAutoIncrementCat();
-  }
-
-  $accountId = $this->getFirstCalendar();
-  $mainframe = JFactory::getApplication();
-  $jinput = $mainframe->input;
-  $eMConfig = JComponentHelper::getParams('com_emundus');
+// This function is called by the php script called on submit of the 'Crerate Calendar' fabrik form.
+function createCalendar($title,$alias,$color) {
 
 
-  $client = $this->getClient($eMConfig->get('clientId'),$eMConfig->get('clientSecret'));
-  $client->refreshToken($eMConfig->get('refreshToken'));
-  $service = new Google_Service_Calendar($client);
-  $calendar = new Google_Service_Calendar_Calendar();
-  $calendar->setSummary($title);
-  $calendar->setTimeZone('Europe/Paris');
-  
+    if ($this->getPath() != null) {
+        $this->deleteUncategorised();
+        $this->deleteUncategorisedFromSave();
+        $this->initAutoIncrementCat();
+    }
 
-  $createdCalendar = $service->calendars->insert($calendar);  
-  $calid = $createdCalendar->getId();
-
-   $this->insertCategories($title,$alias,$color,$calid);
+    $accountId = $this->getFirstCalendar();
+    $mainframe = JFactory::getApplication();
+    $jinput = $mainframe->input;
+    $eMConfig = JComponentHelper::getParams('com_emundus');
 
 
-  $db = JFactory::getDBO(); 
+    $client = $this->getClient($eMConfig->get('clientId'),$eMConfig->get('clientSecret'));
+    $client->refreshToken($eMConfig->get('refreshToken'));
+    $service = new Google_Service_Calendar($client);
+    $calendar = new Google_Service_Calendar_Calendar();
+    $calendar->setSummary($title);
+    $calendar->setTimeZone('Europe/Paris');
+    
 
-  $query = $db->getQuery(true);
+    $createdCalendar = $service->calendars->insert($calendar);  
+    $calid = $createdCalendar->getId();
 
-  $columns = array('catid','calid','title');
+    $this->insertCategories($title,$alias,$color,$calid);
 
-  $values = array($db->quote(NULL),$db->quote($calid),$db->quote($title));
+    $db = JFactory::getDBO(); 
+    $query = $db->getQuery(true);
 
-  $query->insert($db->quoteName('#__emundus_calendar'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
+    $columns = array('catid','calid','title');
+    $values = array($db->quote(NULL),$db->quote($calid),$db->quote($title));
+    $query->insert($db->quoteName('#__emundus_calendar'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
 
-  $db->setQuery($query);
-  $db->execute();
-
+    $db->setQuery($query);
+    $db->execute();
 
 }
 
@@ -2390,73 +2387,70 @@ function getCalendarSaved(){
 
 }
 
-function saveCategoriesCalendar()
-{
-  $calSaved = $this->getCalendarSaved();
-  $result = $this->getCategoriesCal();
+function saveCategoriesCalendar() {
+    $calSaved = $this->getCalendarSaved();
+    $result = $this->getCategoriesCal();
 
-  $i=0;
+    $i = 0;
 
-  foreach ($result as $calendar) {
+    foreach ($result as $calendar) {
 
-  
-  
-    $asset_id = $calendar[asset_id];
-    $parent_id = $calendar[parent_id];
-    $lft = $calendar[lft];
-    $rgt = $calendar[rgt];
-    $level = $calendar[level];
-    $path = $calendar[path];
-    $extension = $calendar[extension];
-    $title = $calendar[title];
-    $alias = $calendar[alias];
-    $note = $calendar[note];
-    $description = $calendar[description];
-    $published = $calendar[published];
-    $checked_out = $calendar[checked_out];
-    $checked_out_time = $calendar[checked_out_time];
-    $access = $calendar[access];
-    $params = $calendar[params];
-    $metadesc = $calendar[metadesc];
-    $metakey = $calendar[metakey];
-    $metadata = $calendar[metadata];
-    $created_user_id = $calendar[created_user_id];
-    $created_time = $calendar[created_time];
-    $modified_user_id = $calendar[modified_user_id];
-    $modified_time = $calendar[modified_time];
-    $hits = $calendar[hits];
-    $language = $calendar[language];
-    $version = $calendar[version];
-    $name = $calendar[name];
-    $calId = $calendar[calId];
-    $accountId = $calendar[accountId];
-    $code = $calendar[code];
+        $asset_id           = $calendar['asset_id'];
+        $parent_id          = $calendar['parent_id'];
+        $lft                = $calendar['lft'];
+        $rgt                = $calendar['rgt'];
+        $level              = $calendar['level'];
+        $path               = $calendar['path'];
+        $extension          = $calendar['extension'];
+        $title              = $calendar['title'];
+        $alias              = $calendar['alias'];
+        $note               = $calendar['note'];
+        $description        = $calendar['description'];
+        $published          = $calendar['published'];
+        $checked_out        = $calendar['checked_out'];
+        $checked_out_time   = $calendar['checked_out_time'];
+        $access             = $calendar['access'];
+        $params             = $calendar['params'];
+        $metadesc           = $calendar['metadesc'];
+        $metakey            = $calendar['metakey'];
+        $metadata           = $calendar['metadata'];
+        $created_user_id    = $calendar['created_user_id'];
+        $created_time       = $calendar['created_time'];
+        $modified_user_id   = $calendar['modified_user_id'];
+        $modified_time      = $calendar['modified_time'];
+        $hits               = $calendar['hits'];
+        $language           = $calendar['language'];
+        $version            = $calendar['version'];
+        $name               = $calendar['name'];
+        $calId              = $calendar['calId'];
+        $accountId          = $calendar['accountId'];
+        $code               = $calendar['code'];
 
-   
+    
 
-if($asset_id != $calSaved[$i][asset_id] || $parent_id != $calSaved[$i][parent_id] || $lft != $calSaved[$i][lft] || $rgt != $calSaved[$i][rgt] || $level != $calSaved[$i][level] || $path != $calSaved[$i][path] || $extension != $calSaved[$i][extension] || $title != $calSaved[$i][title] || $alias != $calSaved[$i][alias] || $note != $calSaved[$i][note] || $description != $calSaved[$i][description] || $published != $calSaved[$i][published] || $checked_out != $calSaved[$i][checked_out] || $checked_out_time != $calSaved[$i][checked_out_time] || $access != $calSaved[$i][access] || $params != $calSaved[$i][params] || $metadesc != $calSaved[$i][metadesc] || $metakey != $calSaved[$i][metakey] || $metadata != $calSaved[$i][metadata] || $created_user_id != $calSaved[$i][created_user_id] || $created_time != $calSaved[$i][created_time] || $modified_user_id != $calSaved[$i][modified_user_id] || $modified_time != $calSaved[$i][modified_time] || $hits != $calSaved[$i][hits] || $language != $calSaved[$i][language] || $version != $calSaved[$i][version] || $version != $calSaved[$i][version] || $name != $calSaved[$i][name] || $calId != $calSaved[$i][calId] || $accountId != $calSaved[$i][accountId]){
+        if ($asset_id != $calSaved[$i]['asset_id'] || $parent_id != $calSaved[$i]['parent_id'] || $lft != $calSaved[$i]['lft'] || $rgt != $calSaved[$i]['rgt'] || $level != $calSaved[$i]['level'] || $path != $calSaved[$i]['path'] || $extension != $calSaved[$i]['extension'] || $title != $calSaved[$i]['title'] || $alias != $calSaved[$i]['alias'] || $note != $calSaved[$i]['note'] || $description != $calSaved[$i]['description'] || $published != $calSaved[$i]['published'] || $checked_out != $calSaved[$i]['checked_out'] || $checked_out_time != $calSaved[$i]['checked_out_time'] || $access != $calSaved[$i]['access'] || $params != $calSaved[$i]['params'] || $metadesc != $calSaved[$i]['metadesc'] || $metakey != $calSaved[$i]['metakey'] || $metadata != $calSaved[$i]['metadata'] || $created_user_id != $calSaved[$i]['created_user_id'] || $created_time != $calSaved[$i]['created_time'] || $modified_user_id != $calSaved[$i]['modified_user_id'] || $modified_time != $calSaved[$i]['modified_time'] || $hits != $calSaved[$i]['hits'] || $language != $calSaved[$i]['language'] || $version != $calSaved[$i]['version'] || $name != $calSaved[$i]['name'] || $calId != $calSaved[$i]['calId'] || $accountId != $calSaved[$i]['accountId']) {
 
-    if($accountId == $this->getFirstCalendar()){
+            if ($accountId == $this->getFirstCalendar()) {
 
-     $db = JFactory::getDBO(); 
+                $db = JFactory::getDBO(); 
 
-    $query = $db->getQuery(true);
+                $query = $db->getQuery(true);
 
-    $columns = array('id','asset_id','parent_id','lft','rgt','level','path','extension','title','alias','note','description','published','checked_out','checked_out_time','access','params','metadesc','metakey','metadata','created_user_id','created_time','modified_user_id','modified_time','hits','language','version','name','calId','accountId','code');
+                $columns = array('id','asset_id','parent_id','lft','rgt','level','path','extension','title','alias','note','description','published','checked_out','checked_out_time','access','params','metadesc','metakey','metadata','created_user_id','created_time','modified_user_id','modified_time','hits','language','version','name','calId','accountId','code');
 
-    $values = array($db->quote(NULL),$db->quote($asset_id),$db->quote($parent_id),$db->quote($lft),$db->quote($rgt),$db->quote($level),$db->quote($path),$db->quote($extension),$db->quote($title),$db->quote($alias),$db->quote($note),$db->quote($description),$db->quote($published),$db->quote($checked_out),$db->quote($checked_out_time),$db->quote($access),$db->quote($params),$db->quote($metadesc),$db->quote($metakey),$db->quote($metadata),$db->quote($created_user_id),$db->quote($created_time),$db->quote($modified_user_id),$db->quote($modified_time),$db->quote($hits),$db->quote($language),$db->quote($version),$db->quote($name),$db->quote($calId),$db->quote($accountId),$db->quote($code));
+                $values = array($db->quote(NULL),$db->quote($asset_id),$db->quote($parent_id),$db->quote($lft),$db->quote($rgt),$db->quote($level),$db->quote($path),$db->quote($extension),$db->quote($title),$db->quote($alias),$db->quote($note),$db->quote($description),$db->quote($published),$db->quote($checked_out),$db->quote($checked_out_time),$db->quote($access),$db->quote($params),$db->quote($metadesc),$db->quote($metakey),$db->quote($metadata),$db->quote($created_user_id),$db->quote($created_time),$db->quote($modified_user_id),$db->quote($modified_time),$db->quote($hits),$db->quote($language),$db->quote($version),$db->quote($name),$db->quote($calId),$db->quote($accountId),$db->quote($code));
 
-    $query->insert($db->quoteName('#__emundus_calendar_save'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
+                $query->insert($db->quoteName('#__emundus_calendar_save'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
 
-    $db->setQuery($query);
-    $db->execute();
+                $db->setQuery($query);
+                $db->execute();
 
-  }
+            }
 
-}
+        }
     $i++;
 
-  }
+    }
 }
 
 
@@ -2489,67 +2483,65 @@ function getCalendarSavedByAccount(){
 
 }
 
-function insertCategoriesCalendar(){      
-      $calSaved = $this->getCalendarSavedByAccount();
+function insertCategoriesCalendar() {      
+    $calSaved = $this->getCalendarSavedByAccount();
 
 
-     $this->deleteCalCatToSync();
-      $this->initAutoIncrementCat();
+    $this->deleteCalCatToSync();
+    $this->initAutoIncrementCat();
 
 
-   $eMConfig = JComponentHelper::getParams('com_emundus');
-  $client = $this->getClient($eMConfig->get('clientId'),$eMConfig->get('clientSecret'));
-  $client->refreshToken($eMConfig->get('refreshToken'));
-  $service = new Google_Service_Calendar($client);     
+    $eMConfig = JComponentHelper::getParams('com_emundus');
+    $client = $this->getClient($eMConfig->get('clientId'),$eMConfig->get('clientSecret'));
+    $client->refreshToken($eMConfig->get('refreshToken'));
+    $service = new Google_Service_Calendar($client);     
 
-     foreach ($calSaved as $calendar) {
+    foreach ($calSaved as $calendar) {
 
-   
-    
-    $asset_id = $calendar[asset_id];
-    $parent_id = $calendar[parent_id];
-    $lft = $calendar[lft];
-    $rgt = $calendar[rgt];
-    $level = $calendar[level];
-    $path = $calendar[path];
-    $extension = $calendar[extension];
-    $title = $calendar[title];
-    $alias = $calendar[alias];
-    $note = $calendar[note];
-    $description = $calendar[description];
-    $published = $calendar[published];
-    $checked_out = $calendar[checked_out];
-    $checked_out_time = $calendar[checked_out_time];
-    $access = $calendar[access];
-    $params = $calendar[params];
-    $metadesc = $calendar[metadesc];
-    $metakey = $calendar[metakey];
-    $metadata = $calendar[metadata];
-    $created_user_id = $calendar[created_user_id];
-    $created_time = $calendar[created_time];
-    $modified_user_id = $calendar[modified_user_id];
-    $modified_time = $calendar[modified_time];
-    $hits = $calendar[hits];
-    $language = $calendar[language];
-    $version = $calendar[version];
-    $name = $calendar[name];
-    $calId = $calendar[calId];
-    $accountId = $calendar[accountId];
-    $code = $calendar[code];
+        $asset_id           = $calendar['asset_id'];
+        $parent_id          = $calendar['parent_id'];
+        $lft                = $calendar['lft'];
+        $rgt                = $calendar['rgt'];
+        $level              = $calendar['level'];
+        $path               = $calendar['path'];
+        $extension          = $calendar['extension'];
+        $title              = $calendar['title'];
+        $alias              = $calendar['alias'];
+        $note               = $calendar['note'];
+        $description        = $calendar['description'];
+        $published          = $calendar['published'];
+        $checked_out        = $calendar['checked_out'];
+        $checked_out_time   = $calendar['checked_out_time'];
+        $access             = $calendar['access'];
+        $params             = $calendar['params'];
+        $metadesc           = $calendar['metadesc'];
+        $metakey            = $calendar['metakey'];
+        $metadata           = $calendar['metadata'];
+        $created_user_id    = $calendar['created_user_id'];
+        $created_time       = $calendar['created_time'];
+        $modified_user_id   = $calendar['modified_user_id'];
+        $modified_time      = $calendar['modified_time'];
+        $hits               = $calendar['hits'];
+        $language           = $calendar['language'];
+        $version            = $calendar['version'];
+        $name               = $calendar['name'];
+        $calId              = $calendar['calId'];
+        $accountId          = $calendar['accountId'];
+        $code               = $calendar['code'];
 
 
-    $db = JFactory::getDBO(); 
+        $db = JFactory::getDBO(); 
 
-    $query = $db->getQuery(true);
+        $query = $db->getQuery(true);
 
-    $columns = array('id','asset_id','parent_id','lft','rgt','level','path','extension','title','alias','note','description','published','checked_out','checked_out_time','access','params','metadesc','metakey','metadata','created_user_id','created_time','modified_user_id','modified_time','hits','language','version','name','calId','accountId','code');
+        $columns = array('id','asset_id','parent_id','lft','rgt','level','path','extension','title','alias','note','description','published','checked_out','checked_out_time','access','params','metadesc','metakey','metadata','created_user_id','created_time','modified_user_id','modified_time','hits','language','version','name','calId','accountId','code');
 
-    $values = array($db->quote(NULL),$db->quote($asset_id),$db->quote($parent_id),$db->quote($lft),$db->quote($rgt),$db->quote($level),$db->quote($path),$db->quote($extension),$db->quote($title),$db->quote($alias),$db->quote($note),$db->quote($description),$db->quote($published),$db->quote($checked_out),$db->quote($checked_out_time),$db->quote($access),$db->quote($params),$db->quote($metadesc),$db->quote($metakey),$db->quote($metadata),$db->quote($created_user_id),$db->quote($created_time),$db->quote($modified_user_id),$db->quote($modified_time),$db->quote($hits),$db->quote($language),$db->quote($version),$db->quote($name),$db->quote($calId),$db->quote($accountId),$db->quote($code));
+        $values = array($db->quote(NULL),$db->quote($asset_id),$db->quote($parent_id),$db->quote($lft),$db->quote($rgt),$db->quote($level),$db->quote($path),$db->quote($extension),$db->quote($title),$db->quote($alias),$db->quote($note),$db->quote($description),$db->quote($published),$db->quote($checked_out),$db->quote($checked_out_time),$db->quote($access),$db->quote($params),$db->quote($metadesc),$db->quote($metakey),$db->quote($metadata),$db->quote($created_user_id),$db->quote($created_time),$db->quote($modified_user_id),$db->quote($modified_time),$db->quote($hits),$db->quote($language),$db->quote($version),$db->quote($name),$db->quote($calId),$db->quote($accountId),$db->quote($code));
 
-    $query->insert($db->quoteName('#__categories'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
+        $query->insert($db->quoteName('#__categories'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
 
-    $db->setQuery($query);
-    $db->execute(); 
+        $db->setQuery($query);
+        $db->execute(); 
 
   }
 
@@ -2619,29 +2611,52 @@ function getCodeCalCreated()
 }
 
 
-function insertCategories($title,$alias,$color,$calid){
-  $account = $this->getFirstCalendar();
-  $code = $this->getCodeCalCreated();
-  $colors = '{"category_layout":"","image":"","image_alt":"","color":"'.$color[0].'","etag":""}';
+function insertCategories($title,$alias,$color,$calid) {
+    $account = $this->getFirstCalendar();
+    $code = $this->getCodeCalCreated();
+    $colors = '{"category_layout":"","image":"","image_alt":"","color":"'.$color[0].'","etag":""}';
 
 
-  $db = JFactory::getDBO(); 
+    $db = JFactory::getDBO();
+    $query = $db->getQuery(true);
 
-  $query = $db->getQuery(true);
+    $columns = array('id','parent_id','lft','rgt','level','path','extension','title','alias','note','description','published','checked_out','checked_out_time','access','params','metadesc','metakey','metadata','created_user_id','created_time','modified_user_id','modified_time','hits','language','version','name','calId','accountId','code');
+    $values = [
+        $db->quote(NULL),
+        $db->quote('1'),
+        $db->quote(NULL),
+        $db->quote(NULL),
+        $db->quote('1'),
+        $db->quote($alias),
+        $db->quote('com_dpcalendar'),
+        $db->quote($title),
+        $db->quote($alias),
+        $db->quote(''),
+        $db->quote(''),
+        $db->quote('1'),
+        $db->quote('0'),
+        $db->quote(NULL),
+        $db->quote('1'),
+        $db->quote($colors),
+        $db->quote(''),
+        $db->quote(''),
+        $db->quote('{"author":"","robots":""}'),
+        $db->quote('62'),$db->quote(NULL),
+        $db->quote('62'),
+        $db->quote(NULL),
+        $db->quote('0'),
+        $db->quote('*'),
+        $db->quote('1'),
+        $db->quote('emunduscalendar'),
+        $db->quote($calid),
+        $db->quote($account),
+        $db->quote($code[0])
+    ];
+    
+    $query->insert($db->quoteName('#__categories'))->columns($db->quoteName($columns))->values(implode(',', $values));    
 
-  $columns = array('id','parent_id','lft','rgt','level','path','extension','title','alias','note','description','published','checked_out','checked_out_time','access','params','metadesc','metakey','metadata','created_user_id','created_time','modified_user_id','modified_time','hits','language','version','name','calId','accountId','code');
-
-  $values = array($db->quote(NULL),$db->quote('1'),$db->quote(NULL),$db->quote(NULL),$db->quote('1'),$db->quote($alias),$db->quote('com_dpcalendar'),$db->quote($title),$db->quote($alias),$db->quote(''),$db->quote(''),$db->quote('1'),$db->quote('0'),$db->quote(NULL),$db->quote('1'),$db->quote($colors),$db->quote(''),$db->quote(''),$db->quote('{"author":"","robots":""}'),$db->quote('62'),$db->quote(NULL),$db->quote('62'),$db->quote(NULL),$db->quote('0'),'*',$db->quote('1'),$db->quote('emunduscalendar'),$db->quote($calid),$db->quote($account),$db->quote($code[0]));
-
-  $query->insert($db->quoteName('#__categories'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
-
-  $db->setQuery($query);
-  $db->execute();
-
-  
-
-
-
+    $db->setQuery($query);
+    $db->execute();
 }
 
 function getCalId(){
@@ -2694,199 +2709,139 @@ $db = JFactory::getDBO();
 
 
 
-function saveParams(){
-
-  $eMConfig = JComponentHelper::getParams('com_emundus');
-
-$calId = $this->getCalId();
-
-if(isset($calId[0])){
-  $calId1 = $calId[0];
-} else {
-  $calId1 = NULL;
-}
-
-if(isset($calId[1])){
-  $calId2 = $calId[1];
-} else {
-  $calId2 = NULL;
-}
-
-if(isset($calId[2])){
-  $calId3 = $calId[2];
-} else {
-
-$calId3 = NULL;
-
-}
-
-if(isset($calId[3])){
-  $calId4 = $calId[3];
-} else {
-
-$calId4 = NULL;
-
-}
-
-if(isset($calId[4])){
- $calId5 = $calId[4];
-} else {
-
-$calId5 = NULL;
-
-}
-
-if(isset($calId[5])){
-  $calId6 = $calId[5];
-} else {
-
-$calId6 = NULL;
-
-}
-
-if(isset($calId[6])){
- $calId7 = $calId[6];
-} else {
-
-$calId7 = NULL;
-
-}
-
-if(isset($calId[7])){
- $calId8 = $calId[7];
-} else {
-
-$calId8 = NULL;
-
-}
-
-if(isset($calId[8])){
- $calId9 = $calId[8];
-} else {
-
-$calId9 = NULL;
-
-}
-
-if(isset($calId[9])){
-  $calId10 = $calId[9];
-} else {
-
-$calId10 = NULL;
-
-}
-
-if(isset($calId[10])){
-  $calId11 = $calId[10];
-} else {
-
-$calId11 = NULL;
-
-}
-
-if(isset($calId[11])){
-  $calId12 = $calId[11];
-} else {
-
-$calId12 = NULL;
-
-}
-
-if(isset($calId[12])){
-  $calId13 = $calId[12];
-} else {
-
-$calId13 = NULL;
-
-}
-
-if(isset($calId[13])){
-  $calId14 = $calId[13];
-} else {
-
-  $calId14 = NULL;
-
-}
-
-if(isset($calId[14])){
-  $calId15 = $calId[14];
-} else {
-
-  $calId15 = NULL;
-
-}
-
-if(isset($calId[15])){
-  $calId16 = $calId[15];
-} else {
-
-$calId16 = NULL;
-
-}
-
-if(isset($calId[16])){
-  $calId17 = $calId[16];
-} else {
-
-$calId17 = NULL;
-
-}
-
-if(isset($calId[17])){
-  $calId18 = $calId[17];
-} else {
-
-$calId18 = NULL;
-
-}
-
-if(isset($calId[18])){
-  $calId19 = $calId[18];
-} else {
-
-$calId19 = NULL;
-
-}
-
-if(isset($calId[19])){
-  $calId20 = $calId[19];
-} else {
-  $calId20 = NULL;
-}
-
-
-
-  $clientIdParams = $eMConfig->get('clientId');
-  $clientSecretParams = $eMConfig->get('clientSecret');
-  $refreshTokenParams = $eMConfig->get('refreshToken');
-
-
-  $params = '{"multi_eval":"0","evaluators_can_see":"0","evaluators_can_evaluate":"0","evaluators_can_see_other_eval":"0","default_actions":"{ \"1\":{\"id\":1, \"c\":0, \"r\":1, \"u\":0, \"d\":0}, \"4\":{\"id\":4, \"c\":1, \"r\":1, \"u\":0, \"d\":0}, \"5\":{\"id\":5, \"c\":1, \"r\":1, \"u\":1, \"d\":0}, \"6\":{\"id\":6, \"c\":1, \"r\":0, \"u\":0, \"d\":0}, \"7\":{\"id\":7, \"c\":1, \"r\":0, \"u\":0, \"d\":0}, \"8\":{\"id\":8, \"c\":1, \"r\":0, \"u\":0, \"d\":0}, \"9\":{\"id\":9, \"c\":0, \"r\":0, \"u\":0, \"d\":0}, \"10\":{\"id\":10, \"c\":1, \"r\":1, \"u\":1, \"d\":0}, \"13\":{\"id\":10, \"c\":0, \"r\":1, \"u\":0, \"d\":0}, \"14\":{\"id\":14, \"c\":1, \"r\":1, \"u\":1, \"d\":0} }","show_related_files":"0","nb_months_registration_period_access":"11","alert_new_applicant":"0","alert_new_attachment":"0","id_applicants":"","applicant_files_path":"images\/emundus\/files\/","applicant_can_renew":"0","can_edit_until_deadline":"1","application_fee":"0","copy_application_form":"0","nb_email_per_batch":"50","time_sleep_per_batch":"1000","expert_fabrikformid":"110","expert_document_id":"36","clientId":"'.$clientIdParams.'","clientSecret":"'.$clientSecretParams.'","refreshToken":"'.$refreshTokenParams.'","calendarId1":"'.$calId1.'","calendarId2":"'.$calId2.'","calendarId3":"'.$calId3.'","calendarId4":"'.$calId4.'","calendarId5":"'.$calId5.'","calendarId6":"'.$calId6.'","calendarId7":"'.$calId7.'","calendarId8":"'.$calId8.'","calendarId9":"'.$calId9.'","calendarId10":"'.$calId10.'","calendarId11":"'.$calId11.'","calendarId12":"'.$calId12.'","calendarId13":"'.$calId13.'","calendarId14":"'.$calId14.'","calendarId15":"'.$calId15.'","calendarId16":"'.$calId16.'","calendarId17":"'.$calId17.'","calendarId18":"'.$calId18.'","calendarId19":"'.$calId19.'","calendarId20":"'.$calId20.'", "ametys_integration":"0","ametys_url":"36","ametys_sync_default_eval":"229,230,231","ametys_sync_default_decision":"56","ametys_sync_default_synthesis":"[APPLICANT_NAME]"}';
-
-
-
-
-  $db = JFactory::getDbo();
- 
-$query = $db->getQuery(true);
- 
-// Fields to update.
-$fields = array(
-    $db->quoteName('params') . ' = ' . $db->quote($params),
-);
- 
-// Conditions for which records should be updated.
-$conditions = array(
-    $db->quoteName('extension_id') . ' = ' . $db->quote('11369')
-);
- 
-$query->update($db->quoteName('#__extensions'))->set($fields)->where($conditions);
- 
-$db->setQuery($query);
- 
-$result = $db->execute();
-
-
+function saveParams() {
+
+    $eMConfig = JComponentHelper::getParams('com_emundus');
+
+    $calId = $this->getCalId();
+
+    if (isset($calId[0]))
+        $calId1 = $calId[0];
+    else
+        $calId1 = NULL;
+
+    if (isset($calId[1]))
+        $calId2 = $calId[1];
+    else
+        $calId2 = NULL;
+
+    if (isset($calId[2]))
+        $calId3 = $calId[2];
+    else
+        $calId3 = NULL;
+
+    if (isset($calId[3]))
+        $calId4 = $calId[3];
+    else
+        $calId4 = NULL;
+
+    if (isset($calId[4]))
+        $calId5 = $calId[4];
+    else
+        $calId5 = NULL;
+
+    if (isset($calId[5]))
+        $calId6 = $calId[5];
+    else
+        $calId6 = NULL;
+
+    if (isset($calId[6]))
+        $calId7 = $calId[6];
+    else
+        $calId7 = NULL;
+
+    if (isset($calId[7]))
+        $calId8 = $calId[7];
+    else
+        $calId8 = NULL;
+
+    if (isset($calId[8]))
+        $calId9 = $calId[8];
+    else
+        $calId9 = NULL;
+
+    if (isset($calId[9]))
+        $calId10 = $calId[9];
+    else
+        $calId10 = NULL;
+
+    if (isset($calId[10]))
+        $calId11 = $calId[10];
+    else
+        $calId11 = NULL;
+
+    if (isset($calId[11]))
+        $calId12 = $calId[11];
+    else
+        $calId12 = NULL;
+
+    if (isset($calId[12]))
+        $calId13 = $calId[12];
+    else
+        $calId13 = NULL;
+
+    if (isset($calId[13]))
+        $calId14 = $calId[13];
+    else
+        $calId14 = NULL;
+
+    if (isset($calId[14]))
+        $calId15 = $calId[14];
+    else
+        $calId15 = NULL;
+
+    if (isset($calId[15]))
+        $calId16 = $calId[15];
+    else
+        $calId16 = NULL;
+
+    if (isset($calId[16]))
+        $calId17 = $calId[16];
+    else
+        $calId17 = NULL;
+
+    if (isset($calId[17]))
+        $calId18 = $calId[17];
+    else
+        $calId18 = NULL;
+
+    if (isset($calId[18]))
+        $calId19 = $calId[18];
+    else
+        $calId19 = NULL;
+
+    if (isset($calId[19]))
+        $calId20 = $calId[19];
+    else
+        $calId20 = NULL;
+
+
+    $clientIdParams = $eMConfig->get('clientId');
+    $clientSecretParams = $eMConfig->get('clientSecret');
+    $refreshTokenParams = $eMConfig->get('refreshToken');
+
+
+    $params = '{"multi_eval":"0","evaluators_can_see":"0","evaluators_can_evaluate":"0","evaluators_can_see_other_eval":"0","default_actions":"{ \"1\":{\"id\":1, \"c\":0, \"r\":1, \"u\":0, \"d\":0}, \"4\":{\"id\":4, \"c\":1, \"r\":1, \"u\":0, \"d\":0}, \"5\":{\"id\":5, \"c\":1, \"r\":1, \"u\":1, \"d\":0}, \"6\":{\"id\":6, \"c\":1, \"r\":0, \"u\":0, \"d\":0}, \"7\":{\"id\":7, \"c\":1, \"r\":0, \"u\":0, \"d\":0}, \"8\":{\"id\":8, \"c\":1, \"r\":0, \"u\":0, \"d\":0}, \"9\":{\"id\":9, \"c\":0, \"r\":0, \"u\":0, \"d\":0}, \"10\":{\"id\":10, \"c\":1, \"r\":1, \"u\":1, \"d\":0}, \"13\":{\"id\":10, \"c\":0, \"r\":1, \"u\":0, \"d\":0}, \"14\":{\"id\":14, \"c\":1, \"r\":1, \"u\":1, \"d\":0} }","show_related_files":"0","nb_months_registration_period_access":"11","alert_new_applicant":"0","alert_new_attachment":"0","id_applicants":"","applicant_files_path":"images\/emundus\/files\/","applicant_can_renew":"0","can_edit_until_deadline":"1","application_fee":"0","copy_application_form":"0","nb_email_per_batch":"50","time_sleep_per_batch":"1000","expert_fabrikformid":"110","expert_document_id":"36","clientId":"'.$clientIdParams.'","clientSecret":"'.$clientSecretParams.'","refreshToken":"'.$refreshTokenParams.'","calendarId1":"'.$calId1.'","calendarId2":"'.$calId2.'","calendarId3":"'.$calId3.'","calendarId4":"'.$calId4.'","calendarId5":"'.$calId5.'","calendarId6":"'.$calId6.'","calendarId7":"'.$calId7.'","calendarId8":"'.$calId8.'","calendarId9":"'.$calId9.'","calendarId10":"'.$calId10.'","calendarId11":"'.$calId11.'","calendarId12":"'.$calId12.'","calendarId13":"'.$calId13.'","calendarId14":"'.$calId14.'","calendarId15":"'.$calId15.'","calendarId16":"'.$calId16.'","calendarId17":"'.$calId17.'","calendarId18":"'.$calId18.'","calendarId19":"'.$calId19.'","calendarId20":"'.$calId20.'", "ametys_integration":"0","ametys_url":"36","ametys_sync_default_eval":"229,230,231","ametys_sync_default_decision":"56","ametys_sync_default_synthesis":"[APPLICANT_NAME]"}';
+
+
+    $db = JFactory::getDbo();
+    $query = $db->getQuery(true);
+    
+    // Fields to update.
+    $fields = array(
+        $db->quoteName('params') . ' = ' . $db->quote($params),
+    );
+    
+    // Conditions for which records should be updated.
+    $conditions = array(
+        $db->quoteName('extension_id') . ' = ' . $db->quote('11369')
+    );
+    
+    $query->update($db->quoteName('#__extensions'))->set($fields)->where($conditions);
+    
+    $db->setQuery($query);
+    
+    $result = $db->execute();
 }
 
 function getCode(){
