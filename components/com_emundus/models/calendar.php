@@ -806,18 +806,18 @@ class EmundusModelCalendar extends JModelLegacy {
             
                 if (isset($calId[19]))
                     $eMConfig->set('calendarId20', $calId[19]);
-            
-            
-                    $db = JFactory::getDBO();        
-                    
-                    $query = "UPDATE #__extensions SET params = ".$db->Quote($eMConfig->toString())." WHERE extension_id = ".$componentid;
-            
-                    try {
-                        $db->setQuery($query);
-                        $db->execute();
-                    } catch (Exception $e) {
-                        die($e->getMessage());
-                    }
+                        
+                $componentid = JComponentHelper::getComponent('com_emundus')->id;
+                $db = JFactory::getDBO();  
+                
+                $query = "UPDATE #__extensions SET params = ".$db->Quote($eMConfig->toString())." WHERE extension_id = ".$componentid;
+        
+                try {
+                    $db->setQuery($query);
+                    $db->execute();
+                } catch (Exception $e) {
+                    die($e->getMessage());
+                }
 
             }
 
