@@ -15,6 +15,7 @@
 			label="PLG_USER_EMUNDUS_PROFILE_FIELD_LASTNAME_LABEL"
 			message="PLG_USER_EMUNDUS_PROFILE_FIELD_LASTNAME_MESSAGE"
 			size="30"
+			hint="PLG_USER_EMUNDUS_PROFILE_FIELD_LASTNAME_LABEL"
 		/>
 		<field
 			name="firstname"
@@ -25,6 +26,7 @@
 			label="PLG_USER_EMUNDUS_PROFILE_FIELD_FIRSTNAME_LABEL"
 			message="PLG_USER_EMUNDUS_PROFILE_FIELD_FIRSTNAME_MESSAGE"
 			size="30"
+			hint="PLG_USER_EMUNDUS_PROFILE_FIELD_FIRSTNAME_LABEL"
 		/>
 		<field 
 			name="profile" 
@@ -36,6 +38,7 @@
 			filter="string"
 			label="PLG_USER_EMUNDUS_PROFILE_FIELD_PROFILE_LABEL"
 			message="PLG_USER_EMUNDUS_PROFILE_FIELD_PROFILE_MESSAGE"
+			hint="PLG_USER_EMUNDUS_PROFILE_FIELD_PROFILE_LABEL"
 		/>
 		<field 
 			name="campaign" 
@@ -47,6 +50,7 @@
 			filter="string"
 			label="PLG_USER_EMUNDUS_PROFILE_FIELD_CAMPAIGN_LABEL"
 			message="PLG_USER_EMUNDUS_PROFILE_FIELD_CAMPAIGN_MESSAGE"
+			hint="PLG_USER_EMUNDUS_PROFILE_FIELD_CAMPAIGN_LABEL"
 		/>
 		<field
 			name="newsletter"
@@ -54,9 +58,11 @@
 			default="1"
 			filter="string"
 			label="PLG_USER_EMUNDUS_PROFILE_FIELD_NEWSLETTER_LABEL"
-			description="PLG_USER_EMUNDUS_PROFILE_FIELD_NEWSLETTER_DESC">
+			description="PLG_USER_EMUNDUS_PROFILE_FIELD_NEWSLETTER_DESC"
+			>
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
+			
 		</field>
 		</fieldset>
 	</fields>
