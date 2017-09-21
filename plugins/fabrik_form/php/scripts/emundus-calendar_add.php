@@ -43,7 +43,6 @@ $aliasSet = $jinput->set('jos_dpcalendar_extcalendars___alias',$aliasTransform);
 $alias = $jinput->getValue('jos_dpcalendar_extcalendars___alias');
 
 
-
 try {
 
     $m_calendar = new EmundusModelCalendar;
