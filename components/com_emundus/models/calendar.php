@@ -465,6 +465,9 @@ class EmundusModelCalendar extends JModelLegacy {
         $email = $model->getEmail('booked_by_coordinator');
         $mailCand = $this->getMailCandidate($eventId);
         $idCand = $this->getUserIdCandidate($eventId);
+
+        if (empty($idCand))
+            return true;
         
         $mailer = JFactory::getMailer();
 
@@ -496,9 +499,8 @@ class EmundusModelCalendar extends JModelLegacy {
 
         $send = $mailer->Send();
         if ($send !== true) {
-            echo 'Error sending email: ' . $send->__toString(); 
+            echo 'Error sending email: '; 
             echo json_encode((object)array('status' => false, 'msg' => JText::_('EMAIL_NOT_SENT')));
-            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
             exit();
         } else {
             $message = array(
@@ -989,7 +991,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
         $db = JFactory::getDBO(); 
 
-        $query = $db->getQuery(true);
+        /*$query = $db->getQuery(true);
 
         $query->select($db->quoteName(array('user_id','state')));
 
@@ -997,7 +999,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
         $db->setQuery($query);
 
-        $ticketUsed = $db->loadAssocList();     
+        $ticketUsed = $db->loadAssocList();   */  
     
         $this->deleteDPCalEvent();
         
@@ -1096,7 +1098,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $columns = array('id', 'catid', 'uid', 'original_id', 'title', 'alias', 'rrule', 'recurrence_id', 'start_date', 'end_date', 'all_day', 'color', 'url', 'images', 'description', 'date', 'hits', 'capacity', 'capacity_used', 'max_tickets', 'booking_closing_date', 'price', 'earlybird', 'user_discount', 'booking_information', 'tax', 'ordertext', 'orderurl', 'canceltext', 'cancelurl', 'state', 'checked_out', 'checked_out_time', 'access', 'access_content', 'params', 'language', 'created', 'created_by', 'created_by_alias', 'modified', 'modified_by', 'metakey', 'metadesc', 'metadata', 'featured', 'xreference', 'publish_up', 'publish_down', 'plugintype','fnum');
 
     
-        $values = array($db->quote($eventsId),$db->quote($catID),$db->quote($userBook),$db->quote($coordinatorBook),$db->quote($title),$db->quote($title),$db->quote(NULL),$db->quote(NULL),$db->quote($startDateTimeDB),$db->quote($endDateTimeDB),$db->quote('0'),$db->quote(''),$db->quote(''),$db->quote(''),$db->quote($description),$db->quote(NULL),$db->quote('0'),$db->quote('1'),$db->quote($booking),$db->quote('1'),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote(''),$db->quote(NULL),$db->quote('1'),$db->quote('0'),$db->quote(NULL),$db->quote('1'),$db->quote('1'),$db->quote(''),'*',$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(''),$db->quote(''),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote(NULL),$db->quote(''),$db->quote($fnum));
+        $values = array($db->quote($eventsId),$db->quote($catID),$db->quote($userBook),$db->quote($coordinatorBook),$db->quote($title),$db->quote($title),$db->quote(NULL),$db->quote(NULL),$db->quote($startDateTimeDB),$db->quote($endDateTimeDB),$db->quote('0'),$db->quote(''),$db->quote(''),$db->quote(''),$db->quote($description),$db->quote(NULL),$db->quote('0'),$db->quote('1'),$db->quote($booking),$db->quote('1'),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote(''),$db->quote(NULL),$db->quote('1'),$db->quote('0'),$db->quote(NULL),$db->quote('1'),$db->quote('1'),$db->quote(''),$db->quote('*'),$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(''),$db->quote(''),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote(NULL),$db->quote(''),$db->quote($fnum));
 
         $result =  $query->insert($db->quoteName('#__dpcalendar_events'))->columns($db->quoteName($columns))->values(implode(',', $values));  
 
@@ -1259,7 +1261,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
         // $this->setTicketSaved();
         $db = JFactory::getDBO(); 
-        $query = $db->getQuery(true);
+        /*$query = $db->getQuery(true);
 
         $query->select($db->quoteName('user_id'));
         $query->from($db->quoteName('#__dpcalendar_bookings')); 
@@ -1275,7 +1277,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $query->from($db->quoteName('#__dpcalendar_tickets')); 
 
         $db->setQuery($query);
-        $ticketUsed = $db->loadAssocList();     
+        $ticketUsed = $db->loadAssocList();*/
     
         $this->deleteDPCalEvent();
         
@@ -1369,7 +1371,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $columns = array('id', 'catid', 'uid', 'original_id', 'title', 'alias', 'rrule', 'recurrence_id', 'start_date', 'end_date', 'all_day', 'color', 'url', 'images', 'description', 'date', 'hits', 'capacity', 'capacity_used', 'max_tickets', 'booking_closing_date', 'price', 'earlybird', 'user_discount', 'booking_information', 'tax', 'ordertext', 'orderurl', 'canceltext', 'cancelurl', 'state', 'checked_out', 'checked_out_time', 'access', 'access_content', 'params', 'language', 'created', 'created_by', 'created_by_alias', 'modified', 'modified_by', 'metakey', 'metadesc', 'metadata', 'featured', 'xreference', 'publish_up', 'publish_down', 'plugintype','fnum');
 
 
-        $values = array($db->quote($eventsId),$db->quote($catID[0]),$db->quote($userBook),$db->quote($coordinatorBook),$db->quote($title),$db->quote($title),$db->quote(NULL),$db->quote(NULL),$db->quote($startDateTimeDB),$db->quote($endDateTimeDB),$db->quote('0'),$db->quote(''),$db->quote(''),$db->quote(''),$db->quote($description),$db->quote(NULL),$db->quote('0'),$db->quote('1'),$db->quote($booking),$db->quote('1'),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote(''),$db->quote(NULL),$db->quote('1'),$db->quote('0'),$db->quote(NULL),$db->quote('1'),$db->quote('1'),$db->quote(''),'*',$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(''),$db->quote(''),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote(NULL),$db->quote(''),$db->quote(''));
+        $values = array($db->quote($eventsId),$db->quote($catID[0]),$db->quote($userBook),$db->quote($coordinatorBook),$db->quote($title),$db->quote($title),$db->quote(NULL),$db->quote(NULL),$db->quote($startDateTimeDB),$db->quote($endDateTimeDB),$db->quote('0'),$db->quote(''),$db->quote(''),$db->quote(''),$db->quote($description),$db->quote(NULL),$db->quote('0'),$db->quote('1'),$db->quote($booking),$db->quote('1'),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote(''),$db->quote(NULL),$db->quote('1'),$db->quote('0'),$db->quote(NULL),$db->quote('1'),$db->quote('1'),$db->quote(''),$db->quote('*'),$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(''),$db->quote(''),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote(NULL),$db->quote(''),$db->quote(''));
 
         $result =  $query->insert($db->quoteName('#__dpcalendar_events'))->columns($db->quoteName($columns))->values(implode(',', $values));  
 
@@ -1647,10 +1649,10 @@ class EmundusModelCalendar extends JModelLegacy {
                 
                 if (!empty($info)) {
                 
-                    $uid = $info[0][uid];
-                    $originalId = $info[0][original_id];
-                    $capUsed = $info[0][capacity_used];
-                    $title = $info[0][title];
+                    $uid = $info[0]['uid'];
+                    $originalId = $info[0]['original_id'];
+                    $capUsed = $info[0]['capacity_used'];
+                    $title = $info[0]['title'];
             
                     if ($uid != '61' && $originalId != '0' && $capUsed == '1' && !preg_match('(booked)',$title) == true) {
                 
@@ -1693,10 +1695,10 @@ class EmundusModelCalendar extends JModelLegacy {
 
                     $toUpdate = $this->getForUpdate($evt->id);
 
-                    $summaryDB = $toUpdate[0][title];
-                    $startDateTimeDB = $toUpdate[0][start_date];
-                    $descriptionDB = $toUpdate[0][description];
-                    $endDateTimeDB = $toUpdate[0][end_date];
+                    $summaryDB = $toUpdate[0]['title'];
+                    $startDateTimeDB = $toUpdate[0]['start_date'];
+                    $descriptionDB = $toUpdate[0]['description'];
+                    $endDateTimeDB = $toUpdate[0]['end_date'];
 
                 
 
@@ -1810,7 +1812,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
         $query->select('calid');
-        $query->from('#__dpcalendar_ticketused_events');
+        $query->from('#__dpcalendar_ticketsused_events');
 
         $db->setQuery($query);
         $result = $db->loadColumn();
@@ -1821,7 +1823,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
     function setTicketSaved() {
 
-        //set Tickets booked in DPCalendar ticketused Database
+        //set Tickets booked in DPCalendar ticketsused Database
 
         $ticketBooked = $this->getTicketDPCal();
 
@@ -1839,7 +1841,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
             $values = array($db->quote($ticket),$db->quote($validate),$db->quote($user));
 
-            $query->insert($db->quoteName('#__dpcalendar_ticketused_events'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
+            $query->insert($db->quoteName('#__dpcalendar_ticketsused_events'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
 
             $db->setQuery($query);
             $db->execute();
@@ -1850,13 +1852,13 @@ class EmundusModelCalendar extends JModelLegacy {
 
     function getTicketSaved() {
 
-        //get Tickets booked in DPCalendar ticketused Database
+        //get Tickets booked in DPCalendar ticketsused Database
 
         $db = JFactory::getDBO(); 
         $query = $db->getQuery(true);
 
         $query->select($db->quoteName('capacity_used'));
-        $query->from($db->quoteName('#__dpcalendar_ticketused_events')); 
+        $query->from($db->quoteName('#__dpcalendar_ticketsused_events')); 
 
         $db->setQuery($query);
         $results =$db->loadColumn(); 
@@ -1911,12 +1913,12 @@ class EmundusModelCalendar extends JModelLegacy {
 
     function deleteTicketSaved() {
 
-        //delete Tickets booked in DPCalendar ticketused Database
+        //delete Tickets booked in DPCalendar ticketsused Database
 
         $db = JFactory::getDBO(); 
         $query = $db->getQuery(true);
 
-        $query->delete($db->quoteName('#__dpcalendar_ticketused_events'));  
+        $query->delete($db->quoteName('#__dpcalendar_ticketsused_events'));  
 
         $db->setQuery($query);
         $result = $db->execute();
