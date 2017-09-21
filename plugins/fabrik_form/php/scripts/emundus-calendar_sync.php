@@ -90,6 +90,9 @@ $valueRowId = explode('=', $rowId);
 $compareForm = $valueRowId[0];
 $eventId = $valueRowId[1];
 
+echo '<pre>'; var_dump($valeurCatId); echo '</pre>'; die;
+
+
 if ($valeurCatId == array('105'))
     $calendarID = $calendarID1;
 elseif ($valeurCatId == array('106'))

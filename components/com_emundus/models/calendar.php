@@ -380,7 +380,7 @@ function sendMailTimesDeleteVal1($eventId) {
     $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
     $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);       
 
-    $app    = JFactory::getApplication();
+    $app = JFactory::getApplication();
     $email_from_sys = $app->getCfg('mailfrom');
 
     $sender = array(
@@ -397,12 +397,15 @@ function sendMailTimesDeleteVal1($eventId) {
     $mailer->setBody($body);
 
     $send = $mailer->Send();
-    if ( $send !== true ) {
+    if ($send !== true) {
+        
         echo 'Error sending email: ' . $send->__toString(); 
         echo json_encode((object)array('status' => false, 'msg' => JText::_('EMAIL_NOT_SENT')));
         JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
         exit();
+    
     } else {
+    
         $message = array(
             'user_id_from' => $current_user->id,
             'user_id_to' => $idCand,
@@ -410,6 +413,7 @@ function sendMailTimesDeleteVal1($eventId) {
             'message' => $body
         );
         $model->logEmail($message);
+    
     }
 }
 
@@ -489,7 +493,7 @@ function sendMailToCandidateBooked($eventId) {
     $mailer->setBody($body);
 
     $send = $mailer->Send();
-    if ( $send !== true ) {
+    if ($send !== true) {
         echo 'Error sending email: ' . $send->__toString(); 
         echo json_encode((object)array('status' => false, 'msg' => JText::_('EMAIL_NOT_SENT')));
         JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
@@ -560,7 +564,7 @@ function sendMailTimesDeleteVal2($eventId) {
     $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
     $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);       
 
-    $app    = JFactory::getApplication();
+    $app = JFactory::getApplication();
     $email_from_sys = $app->getCfg('mailfrom');
 
     $sender = array(
@@ -616,7 +620,7 @@ function deleteEvent($calendarID, $eventId) {
 
     
 
-    if($idUser != '61' && $idCoord == '0'){
+    if ($idUser != '61' && $idCoord == '0') {
 
         $this->deleteTicketsSync($eventId);
         $this->sendMailTimesDeleteVal1($eventId);
@@ -683,7 +687,7 @@ function getFnum($userBook) {
  * @return Google_Client the authorized client object
  */
 
-function authenticateClient(){
+function authenticateClient() {
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
 
@@ -701,8 +705,7 @@ function authenticateClient(){
 
 
     // If we are on the callback from google don't save
-    if ($compareURL != 'code')
-    {
+    if ($compareURL != 'code') {
         $params = $app->input->get('params', array(
             'clientId' => null,
             'clientSecret' => null
@@ -726,8 +729,7 @@ function authenticateClient(){
         
         if (empty($client)) return;
 
-        if ($compareURL != 'code')
-        {
+        if ($compareURL != 'code') {
             $app->redirect($client->createAuthUrl());
             $app->close();
         }
@@ -737,180 +739,83 @@ function authenticateClient(){
         $token = $client->authenticate($authCode);
         $tok = json_decode($token, true);
 
-        if(($tok[refresh_token]!=null)) {
+        if (($tok['refresh_token'] != null)) {
 
-            $eMConfig->set('refreshToken', $tok[refresh_token]);
+            $eMConfig->set('refreshToken', $tok['refresh_token']);
 
             $calId = $this->getCalId();
 
-            if(isset($calId[0])){
-            $calId1 = $calId[0];
-            } else {
-            $calId1 = NULL;
+            if (isset($calId[0]))
+                $eMConfig->set('calendarId1', $calId[0]);
+        
+            if (isset($calId[1]))
+                $eMConfig->set('calendarId2', $calId[1]);
+        
+            if (isset($calId[2]))
+                $eMConfig->set('calendarId3', $calId[2]);
+        
+            if (isset($calId[3]))
+                $eMConfig->set('calendarId4', $calId[3]);
+        
+            if (isset($calId[4]))
+                $eMConfig->set('calendarId5', $calId[4]);
+        
+            if (isset($calId[5]))
+                $eMConfig->set('calendarId6', $calId[5]);
+        
+            if (isset($calId[6]))
+                $eMConfig->set('calendarId7', $calId[6]);
+        
+            if (isset($calId[7]))
+                $eMConfig->set('calendarId8', $calId[7]);
+        
+            if (isset($calId[8]))
+                $eMConfig->set('calendarId9', $calId[8]);
+        
+            if (isset($calId[9]))
+                $eMConfig->set('calendarId10', $calId[9]);
+        
+            if (isset($calId[10]))
+                $eMConfig->set('calendarId11', $calId[10]);
+        
+            if (isset($calId[11]))
+                $eMConfig->set('calendarId12', $calId[11]);
+        
+            if (isset($calId[12]))
+                $eMConfig->set('calendarId13', $calId[12]);
+        
+            if (isset($calId[13]))
+                $eMConfig->set('calendarId14', $calId[13]);
+        
+            if (isset($calId[14]))
+                $eMConfig->set('calendarId15', $calId[14]);
+        
+            if (isset($calId[15]))
+                $eMConfig->set('calendarId16', $calId[15]);
+        
+            if (isset($calId[16]))
+                $eMConfig->set('calendarId17', $calId[16]);
+        
+            if (isset($calId[17]))
+                $eMConfig->set('calendarId18', $calId[17]);
+        
+            if (isset($calId[18]))
+                $eMConfig->set('calendarId19', $calId[18]);
+        
+            if (isset($calId[19]))
+                $eMConfig->set('calendarId20', $calId[19]);
+        
+        
+            // Save the parameters
+            $componentid = JComponentHelper::getComponent('com_emundus')->id;
+            $table = JTable::getInstance('extension');
+            $table->load($componentid);
+            $table->bind(array('params' => $eMConfig->toString()));
+        
+            if (!$table->save()) {
+                $this->setError('Save Error: ' . $table->getError());
+                return false;
             }
-
-            if(isset($calId[1])){
-            $calId2 = $calId[1];
-            } else {
-            $calId2 = NULL;
-            }
-
-            if(isset($calId[2])){
-            $calId3 = $calId[2];
-            } else {
-
-            $calId3 = NULL;
-
-            }
-
-            if(isset($calId[3])){
-            $calId4 = $calId[3];
-            } else {
-
-            $calId4 = NULL;
-
-            }
-
-            if(isset($calId[4])){
-            $calId5 = $calId[4];
-            } else {
-
-            $calId5 = NULL;
-
-            }
-
-            if(isset($calId[5])){
-            $calId6 = $calId[5];
-            } else {
-
-            $calId6 = NULL;
-
-            }
-
-            if(isset($calId[6])){
-            $calId7 = $calId[6];
-            } else {
-
-            $calId7 = NULL;
-
-            }
-
-            if(isset($calId[7])){
-            $calId8 = $calId[7];
-            } else {
-
-            $calId8 = NULL;
-
-            }
-
-            if(isset($calId[8])){
-            $calId9 = $calId[8];
-            } else {
-
-            $calId9 = NULL;
-
-            }
-
-            if(isset($calId[9])){
-            $calId10 = $calId[9];
-            } else {
-
-            $calId10 = NULL;
-
-            }
-
-            if(isset($calId[10])){
-            $calId11 = $calId[10];
-            } else {
-
-            $calId11 = NULL;
-
-            }
-
-            if(isset($calId[11])){
-            $calId12 = $calId[11];
-            } else {
-
-            $calId12 = NULL;
-
-            }
-
-            if(isset($calId[12])){
-            $calId13 = $calId[12];
-            } else {
-
-            $calId13 = NULL;
-
-            }
-
-            if(isset($calId[13])){
-                $calId14 = $calId[13];
-            } else {
-                $calId14 = NULL;
-            }
-
-            if(isset($calId[14])){
-                $calId15 = $calId[14];
-            } else {
-                $calId15 = NULL;
-            }
-
-            if(isset($calId[15])){
-                $calId16 = $calId[15];
-            } else {
-                $calId16 = NULL;
-            }
-
-            if(isset($calId[16])){
-                $calId17 = $calId[16];
-            } else {
-                $calId17 = NULL;
-            }
-
-            if(isset($calId[17])){
-                $calId18 = $calId[17];
-            } else {
-                $calId18 = NULL;
-            }
-
-            if(isset($calId[18])){
-                $calId19 = $calId[18];
-            } else {
-                $calId19 = NULL;
-            }
-
-            if(isset($calId[19])){
-                $calId20 = $calId[19];
-            } else {
-                $calId20 = NULL;
-            }
-
-            $clientIdParams = $eMConfig->get('clientId');
-            $clientSecretParams = $eMConfig->get('clientSecret');
-            $refreshTokenParams = $eMConfig->get('refreshToken');
-
-
-            $params = '{"multi_eval":"0","evaluators_can_see":"0","evaluators_can_evaluate":"0","evaluators_can_see_other_eval":"0","default_actions":"{ \"1\":{\"id\":1, \"c\":0, \"r\":1, \"u\":0, \"d\":0}, \"4\":{\"id\":4, \"c\":1, \"r\":1, \"u\":0, \"d\":0}, \"5\":{\"id\":5, \"c\":1, \"r\":1, \"u\":1, \"d\":0}, \"6\":{\"id\":6, \"c\":1, \"r\":0, \"u\":0, \"d\":0}, \"7\":{\"id\":7, \"c\":1, \"r\":0, \"u\":0, \"d\":0}, \"8\":{\"id\":8, \"c\":1, \"r\":0, \"u\":0, \"d\":0}, \"9\":{\"id\":9, \"c\":0, \"r\":0, \"u\":0, \"d\":0}, \"10\":{\"id\":10, \"c\":1, \"r\":1, \"u\":1, \"d\":0}, \"13\":{\"id\":10, \"c\":0, \"r\":1, \"u\":0, \"d\":0}, \"14\":{\"id\":14, \"c\":1, \"r\":1, \"u\":1, \"d\":0} }","show_related_files":"0","nb_months_registration_period_access":"11","alert_new_applicant":"0","alert_new_attachment":"0","id_applicants":"","applicant_files_path":"images\/emundus\/files\/","applicant_can_renew":"0","can_edit_until_deadline":"1","application_fee":"0","copy_application_form":"0","nb_email_per_batch":"50","time_sleep_per_batch":"1000","expert_fabrikformid":"110","expert_document_id":"36","clientId":"'.$clientIdParams.'","clientSecret":"'.$clientSecretParams.'","refreshToken":"'.$refreshTokenParams.'","calendarId1":"'.$calId1.'","calendarId2":"'.$calId2.'","calendarId3":"'.$calId3.'","calendarId4":"'.$calId4.'","calendarId5":"'.$calId5.'","calendarId6":"'.$calId6.'","calendarId7":"'.$calId7.'","calendarId8":"'.$calId8.'","calendarId9":"'.$calId9.'","calendarId10":"'.$calId10.'","calendarId11":"'.$calId11.'","calendarId12":"'.$calId12.'","calendarId13":"'.$calId13.'","calendarId14":"'.$calId14.'","calendarId15":"'.$calId15.'","calendarId16":"'.$calId16.'","calendarId17":"'.$calId17.'","calendarId18":"'.$calId18.'","calendarId19":"'.$calId19.'","calendarId20":"'.$calId20.'", "ametys_integration":"0","ametys_url":"36","ametys_sync_default_eval":"229,230,231","ametys_sync_default_decision":"56","ametys_sync_default_synthesis":"[APPLICANT_NAME]"}';
-
-            $db = JFactory::getDbo();
- 
-            $query = $db->getQuery(true);
-            
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('params') . ' = ' . $db->quote($params),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('extension_id') . ' = ' . $db->quote('11369')
-            );
-            
-            $query->update($db->quoteName('#__extensions'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            
-            $result = $db->execute();
 
         }
 
@@ -1146,15 +1051,18 @@ function getGCalEventUpdate($eventID,$catID,$candidate,$calID) {
 
     $event = $service->events->get($calID,$eventID); 
 
-    if($candidate[0] != 61){
+    if ($candidate[0] != 61) {
 
         $booking = '1';
         $userBook = $candidate[0];
         $coordinatorBook = $sessionCurrentUser->id;
+    
     } else {
+    
         $booking = '0';
         $userBook = '61';
         $coordinatorBook = '0';
+    
     }
   
     $title = $event->getSummary();
@@ -1164,9 +1072,8 @@ function getGCalEventUpdate($eventID,$catID,$candidate,$calID) {
 
     $fnum = $this->getFnum($userBook);
 
-    if($userBook == '61'){
-      $userBook == '';
-    }
+    if ($userBook == '61')
+        $userBook == '';
 
 
     //Get Date and Time for Start
@@ -1217,7 +1124,7 @@ function getGCalEventUpdate($eventID,$catID,$candidate,$calID) {
     $titles = '(booked).'. $title ;
     
 
-    if($idUser != '61' && $idCoord != '0' && !preg_match('(booked)',$title) == true){
+    if ($idUser != '61' && $idCoord != '0' && !preg_match('(booked)',$title) == true) {
 
         $event->setSummary($titles);
 
@@ -1228,7 +1135,7 @@ function getGCalEventUpdate($eventID,$catID,$candidate,$calID) {
         $this->updateTitleInDB($titles,$eventsId);
         $this->sendMailToCandidateBooked($eventsId);
 
-    } else if ($idUser == '61' && $idCoord == '0' && !preg_match('(booked)',$title) == false) {
+    } elseif ($idUser == '61' && $idCoord == '0' && !preg_match('(booked)',$title) == false) {
 
         $eventTitle = explode(' ', $titles);
 
@@ -1293,7 +1200,6 @@ function ticketInterview($calId,$userBook) {
 
 
 function confirmInterview($calId, $userBook) {
-
 
     $candidateMail = $this->getMailUser($userBook); 
   
@@ -1368,28 +1274,22 @@ function getGCalEventCreate($eventID,$catID,$candidate,$calID) {
 
     // $this->setTicketSaved();
     $db = JFactory::getDBO(); 
-
     $query = $db->getQuery(true);
 
     $query->select($db->quoteName('user_id'));
-
     $query->from($db->quoteName('#__dpcalendar_bookings')); 
 
     $db->setQuery($query);
-
     $bookUsed = $db->loadAssocList();
 
 
     $db = JFactory::getDBO(); 
-
     $query = $db->getQuery(true);
 
     $query->select($db->quoteName(array('user_id','state')));
-
     $query->from($db->quoteName('#__dpcalendar_tickets')); 
 
     $db->setQuery($query);
-
     $ticketUsed = $db->loadAssocList();     
  
     $this->deleteDPCalEvent();
@@ -1425,20 +1325,23 @@ function getGCalEventCreate($eventID,$catID,$candidate,$calID) {
     $calendarID20 = $jinput->get('calendarId20');
 
 
-        $cal = $this->getIdCalCat();
+    $cal = $this->getIdCalCat();
 
 
     $event = $service->events->get($calID,$eventID); 
 
-    if($candidate[0] != 61){
+    if ($candidate[0] != 61) {
 
         $booking = '1';
         $userBook = $candidate[0];
         $coordinatorBook = $sessionCurrentUser->id;
+    
     } else {
+    
         $booking = '0';
         $userBook = '61';
         $coordinatorBook = '0';
+    
     }
   
     $title = $event->getSummary();
@@ -1494,7 +1397,7 @@ function getGCalEventCreate($eventID,$catID,$candidate,$calID) {
 
     $titles = '(booked) ' . $title ;
 
-    if($idUser != '0' && $idCoord != '0' && !preg_match('(booked)',$title) == true){
+    if ($idUser != '0' && $idCoord != '0' && !preg_match('(booked)',$title) == true) {
 
         $event->setSummary($titles);
 
@@ -1680,21 +1583,17 @@ function getTitleDPCalEvent() {
 
 }
 
-function getUserDPCal(){
+function getUserDPCal() {
 
     $db = JFactory::getDBO(); 
-
     $query = $db->getQuery(true);
 
     $query->select($db->quoteName('user'));
-
     $query->from($db->quoteName('#__dpcalendar_events')); 
 
     $db->setQuery($query);
+    $results = $db->loadAssocList();
 
-    $results =$db->loadAssocList();
-
-  
     return $results;
 
 }
@@ -1704,15 +1603,12 @@ function getTicketDPCal() {
     //get Tickets booked in DPCalendar events Database
 
     $db = JFactory::getDBO(); 
-
     $query = $db->getQuery(true);
 
     $query->select($db->quoteName(array('id','capacity_used','original_id','uid')));
-
     $query->from($db->quoteName('#__dpcalendar_events')); 
 
     $db->setQuery($query);
-
     $results =$db->loadAssocList(); 
   
     return $results;
@@ -1785,9 +1681,7 @@ function updateTitleForBookingsByCandidate(){
                 if ($uid != '61' && $originalId != '0' && $capUsed == '1' && !preg_match('(booked)',$title) == true) {
             
                     $titles = array('(booked)',$title);
-
                     $titleBook = implode(' ', $titles);
-                
                     $evt->setSummary($titleBook);
 
                     $updatedEvent = $service->events->update($calendarlist->id, $evt->getId(), $evt);
@@ -1796,7 +1690,6 @@ function updateTitleForBookingsByCandidate(){
                 } else if ($uid == '61' && $originalId == '0' && $capUsed == '0' && !preg_match('(booked)',$title) == false) {
 
                     $titleBook = explode(' ',$title);
-            
                     $evt->setSummary($titleBook[0]);
 
                     $updatedEvent = $service->events->update($calendarlist->id, $evt->getId(), $evt);
@@ -1905,20 +1798,17 @@ function setAliasColorEm(){
 
 
 function getCategoriesCal(){
-   $db = JFactory::getDBO(); 
+    $db = JFactory::getDBO(); 
 
     $query = $db->getQuery(true);
 
     $conditions = array(
-    $db->quoteName('name') . ' = ' . $db->quote('emunduscalendar')
-);
+        $db->quoteName('name') . ' = ' . $db->quote('emunduscalendar')
+    );
 
     $query->select('*');
-
     $query->from($db->quoteName('#__categories'));
-
     $query->where($conditions);
-
     $query->order($db->quoteName('id') . 'ASC'); 
 
     $db->setQuery($query);
@@ -1961,29 +1851,28 @@ function getCategoriesCal(){
 
 function setTicketSaved() {
 
-  //set Tickets booked in DPCalendar ticketused Database
+    //set Tickets booked in DPCalendar ticketused Database
 
-  $ticketBooked = $this->getTicketDPCal();
+    $ticketBooked = $this->getTicketDPCal();
 
-  foreach ($ticketBooked as $ticketBook) {
-    
-  $ticket = $ticketBook[capacity_used];
-  $user = $ticketBook[uid];
-  $validate = $ticketBook[original_id];
+    foreach ($ticketBooked as $ticketBook) {
+        
+        $ticket     = $ticketBook[capacity_used];
+        $user       = $ticketBook[uid];
+        $validate   = $ticketBook[original_id];
 
 
-    $db = JFactory::getDBO(); 
+        $db = JFactory::getDBO(); 
+        $query = $db->getQuery(true);
 
-    $query = $db->getQuery(true);
+        $columns = array('capacity_used','user','uid');
 
-    $columns = array('capacity_used','user','uid');
+        $values = array($db->quote($ticket),$db->quote($validate),$db->quote($user));
 
-    $values = array($db->quote($ticket),$db->quote($validate),$db->quote($user));
+        $query->insert($db->quoteName('#__dpcalendar_ticketused_events'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
 
-    $query->insert($db->quoteName('#__dpcalendar_ticketused_events'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
-
-    $db->setQuery($query);
-    $db->execute();
+        $db->setQuery($query);
+        $db->execute();
 
     }
 
@@ -1991,40 +1880,36 @@ function setTicketSaved() {
 
 function getTicketSaved() {
 
-  //get Tickets booked in DPCalendar ticketused Database
+    //get Tickets booked in DPCalendar ticketused Database
 
     $db = JFactory::getDBO(); 
-
     $query = $db->getQuery(true);
 
     $query->select($db->quoteName('capacity_used'));
-
     $query->from($db->quoteName('#__dpcalendar_ticketused_events')); 
 
     $db->setQuery($query);
-
     $results =$db->loadColumn(); 
-  
 
 }
 
 
 
 
-function initAutoIncrementCat(){
-  $db = JFactory::getDBO();
+function initAutoIncrementCat() {
+    $db = JFactory::getDBO();
     $query = "ALTER TABLE `#__categories` AUTO_INCREMENT".'='."105";
     $db->setQuery($query);
     $result = $db->query();
 }
 
-function deleteCalCatToSync(){
+function deleteCalCatToSync() {
     $db = JFactory::getDBO(); 
     $query = $db->getQuery(true);
 
     $conditions = array(
-    $db->quoteName('name') . ' = ' . $db->quote('emunduscalendar')
-);
+        $db->quoteName('name') . ' = ' . $db->quote('emunduscalendar')
+    );
 
     $query->delete($db->quoteName('#__categories')); 
     $query->where($conditions); 
@@ -2035,9 +1920,8 @@ function deleteCalCatToSync(){
     $this->initAutoIncrementCat();
 }
 
-function deleteEmCal(){
-   $db = JFactory::getDBO(); 
-
+function deleteEmCal() {
+    $db = JFactory::getDBO(); 
     $query = $db->getQuery(true);
 
     $query->delete($db->quoteName('#__emundus_calendar'));  
@@ -2048,8 +1932,8 @@ function deleteEmCal(){
     $this->initAutoIncrementEmCal();
 }
 
-function initAutoIncrementEmCal(){
-  $db = JFactory::getDBO();
+function initAutoIncrementEmCal() {
+    $db = JFactory::getDBO();
     $query = "ALTER TABLE `#__emundus_calendar` AUTO_INCREMENT".'='."105";
     $db->setQuery($query);
     $result = $db->query();
@@ -2057,10 +1941,9 @@ function initAutoIncrementEmCal(){
 
 function deleteTicketSaved() {
 
-  //delete Tickets booked in DPCalendar ticketused Database
+    //delete Tickets booked in DPCalendar ticketused Database
 
-   $db = JFactory::getDBO(); 
-
+    $db = JFactory::getDBO(); 
     $query = $db->getQuery(true);
 
     $query->delete($db->quoteName('#__dpcalendar_ticketused_events'));  
@@ -2070,87 +1953,83 @@ function deleteTicketSaved() {
 
 }
 
-function getIdEventUser($calendarID,$eventId){
+function getIdEventUser($calendarID,$eventId) {
 
-   $eMConfig = JComponentHelper::getParams('com_emundus');
+    $eMConfig = JComponentHelper::getParams('com_emundus');
 
-  $client = $this->getClient($eMConfig->get('clientId'), $eMConfig->get('clientSecret'));
-  $client->refreshToken($eMConfig->get('refreshToken'));
-  $service = new Google_Service_Calendar($client);
+    $client = $this->getClient($eMConfig->get('clientId'), $eMConfig->get('clientSecret'));
+    $client->refreshToken($eMConfig->get('refreshToken'));
+    $service = new Google_Service_Calendar($client);
 
-  $event = $service->events->get($calendarID, $eventId);
-  $id = $event->getId();
+    $event = $service->events->get($calendarID, $eventId);
+    $id = $event->getId();
 
     $db = JFactory::getDBO(); 
 
     $query = $db->getQuery(true);
 
-          $conditions = array(
-    $db->quoteName('id') . ' = ' . $db->quote($id)
-); 
+    $conditions = array(
+        $db->quoteName('id') . ' = ' . $db->quote($id)
+    ); 
 
     $query->select($db->quoteName('uid'));
-
     $query->from($db->quoteName('#__dpcalendar_events'));
-
     $query->where($conditions);
 
     $db->setQuery($query);
-
     $results = $db->loadColumn();   
 
     return $results;
 
 }
 
-function bookEvent($calendarID,$eventId, $user){
-  $eMConfig = JComponentHelper::getParams('com_emundus');
+function bookEvent($calendarID,$eventId, $user) {
+    $eMConfig = JComponentHelper::getParams('com_emundus');
 
-  $client = $this->getClient($eMConfig->get('clientId'), $eMConfig->get('clientSecret'));
-  $client->refreshToken($eMConfig->get('refreshToken'));
-  $service = new Google_Service_Calendar($client);
+    $client = $this->getClient($eMConfig->get('clientId'), $eMConfig->get('clientSecret'));
+    $client->refreshToken($eMConfig->get('refreshToken'));
+    $service = new Google_Service_Calendar($client);
 
-  $event = $service->events->get($calendarID, $eventId);
-  $id = $event->getId();
+    $event = $service->events->get($calendarID, $eventId);
+    $id = $event->getId();
 
-  $session = JFactory::getSession();
-$coordinator = $session->get('user');
+    $session = JFactory::getSession();
+    $coordinator = $session->get('user');
 
 
-$db = JFactory::getDbo();
+    $db = JFactory::getDbo();
+    $query = $db->getQuery(true);
  
-$query = $db->getQuery(true);
- 
-// Fields to update.
-if($user == '--NO BODY--' || $user == NULL || $user == ' '){
-  
-  $fields = array(
-    $db->quoteName('capacity_used') . ' = ' . $db->quote('0'),
-    $db->quoteName('Validate') . ' = ' . $db->quote('0'),
-    $db->quoteName('coordinator') . ' = ' . $db->quote(' ')
-  );
+    // Fields to update.
+    if ($user == '--NO BODY--' || $user == NULL || $user == ' ') {
+    
+        $fields = array(
+            $db->quoteName('capacity_used') . ' = ' . $db->quote('0'),
+            $db->quoteName('Validate') . ' = ' . $db->quote('0'),
+            $db->quoteName('coordinator') . ' = ' . $db->quote(' ')
+        );
 
-} else {
+    } else {
 
-  $fields = array(
-      $db->quoteName('capacity_used') . ' = ' . $db->quote('1'),
-      $db->quoteName('Validate') . ' = ' . $db->quote('2'),
-      $db->quoteName('coordinator') . ' = ' . $db->quote($coordinator->name)
-  );
+        $fields = array(
+            $db->quoteName('capacity_used') . ' = ' . $db->quote('1'),
+            $db->quoteName('Validate') . ' = ' . $db->quote('2'),
+            $db->quoteName('coordinator') . ' = ' . $db->quote($coordinator->name)
+        );
 
-  $this->sendMailToCandidateBooked($eventId);
-}
+        $this->sendMailToCandidateBooked($eventId);
+    }
  
-// Conditions for which records should be updated.
-$conditions = array(
-    $db->quoteName('id') . ' = ' . $db->quote($id)
-);
- 
-$query->update($db->quoteName('#__dpcalendar_events'))->set($fields)->where($conditions);
- 
-$db->setQuery($query);
- 
-$result = $db->execute();
+    // Conditions for which records should be updated.
+    $conditions = array(
+        $db->quoteName('id') . ' = ' . $db->quote($id)
+    );
+    
+    $query->update($db->quoteName('#__dpcalendar_events'))->set($fields)->where($conditions);
+    
+    $db->setQuery($query);
+    
+    $result = $db->execute();
 
 }
 
@@ -2687,14 +2566,12 @@ $db = JFactory::getDBO();
 
 function getParams(){
 
-$db = JFactory::getDBO(); 
+    $db = JFactory::getDBO(); 
 
     $query = $db->getQuery(true);
 
     $query->select($db->quoteName('params'));
-
     $query->from($db->quoteName('#__extensions'));
-
     $query->where($db->quoteName('extension_id') . "=" . $db->quote('11369')); 
 
     $db->setQuery($query);
@@ -2702,7 +2579,6 @@ $db = JFactory::getDBO();
     $getParams = $db->loadColumn(); 
     $getParam = $getParams[0];
     
-
     return $getParam;
 
 }
@@ -2716,132 +2592,78 @@ function saveParams() {
     $calId = $this->getCalId();
 
     if (isset($calId[0]))
-        $calId1 = $calId[0];
-    else
-        $calId1 = NULL;
+        $eMConfig->set('calendarId1', $calId[0]);
 
     if (isset($calId[1]))
-        $calId2 = $calId[1];
-    else
-        $calId2 = NULL;
+        $eMConfig->set('calendarId2', $calId[1]);
 
     if (isset($calId[2]))
-        $calId3 = $calId[2];
-    else
-        $calId3 = NULL;
+        $eMConfig->set('calendarId3', $calId[2]);
 
     if (isset($calId[3]))
-        $calId4 = $calId[3];
-    else
-        $calId4 = NULL;
+        $eMConfig->set('calendarId4', $calId[3]);
 
     if (isset($calId[4]))
-        $calId5 = $calId[4];
-    else
-        $calId5 = NULL;
+        $eMConfig->set('calendarId5', $calId[4]);
 
     if (isset($calId[5]))
-        $calId6 = $calId[5];
-    else
-        $calId6 = NULL;
+        $eMConfig->set('calendarId6', $calId[5]);
 
     if (isset($calId[6]))
-        $calId7 = $calId[6];
-    else
-        $calId7 = NULL;
+        $eMConfig->set('calendarId7', $calId[6]);
 
     if (isset($calId[7]))
-        $calId8 = $calId[7];
-    else
-        $calId8 = NULL;
+        $eMConfig->set('calendarId8', $calId[7]);
 
     if (isset($calId[8]))
-        $calId9 = $calId[8];
-    else
-        $calId9 = NULL;
+        $eMConfig->set('calendarId9', $calId[8]);
 
     if (isset($calId[9]))
-        $calId10 = $calId[9];
-    else
-        $calId10 = NULL;
+        $eMConfig->set('calendarId10', $calId[9]);
 
     if (isset($calId[10]))
-        $calId11 = $calId[10];
-    else
-        $calId11 = NULL;
+        $eMConfig->set('calendarId11', $calId[10]);
 
     if (isset($calId[11]))
-        $calId12 = $calId[11];
-    else
-        $calId12 = NULL;
+        $eMConfig->set('calendarId12', $calId[11]);
 
     if (isset($calId[12]))
-        $calId13 = $calId[12];
-    else
-        $calId13 = NULL;
+        $eMConfig->set('calendarId13', $calId[12]);
 
     if (isset($calId[13]))
-        $calId14 = $calId[13];
-    else
-        $calId14 = NULL;
+        $eMConfig->set('calendarId14', $calId[13]);
 
     if (isset($calId[14]))
-        $calId15 = $calId[14];
-    else
-        $calId15 = NULL;
+        $eMConfig->set('calendarId15', $calId[14]);
 
     if (isset($calId[15]))
-        $calId16 = $calId[15];
-    else
-        $calId16 = NULL;
+        $eMConfig->set('calendarId16', $calId[15]);
 
     if (isset($calId[16]))
-        $calId17 = $calId[16];
-    else
-        $calId17 = NULL;
+        $eMConfig->set('calendarId17', $calId[16]);
 
     if (isset($calId[17]))
-        $calId18 = $calId[17];
-    else
-        $calId18 = NULL;
+        $eMConfig->set('calendarId18', $calId[17]);
 
     if (isset($calId[18]))
-        $calId19 = $calId[18];
-    else
-        $calId19 = NULL;
+        $eMConfig->set('calendarId19', $calId[18]);
 
     if (isset($calId[19]))
-        $calId20 = $calId[19];
-    else
-        $calId20 = NULL;
+        $eMConfig->set('calendarId20', $calId[19]);
 
 
-    $clientIdParams = $eMConfig->get('clientId');
-    $clientSecretParams = $eMConfig->get('clientSecret');
-    $refreshTokenParams = $eMConfig->get('refreshToken');
+    // Save the parameters
+    $componentid = JComponentHelper::getComponent('com_emundus')->id;
+    $table = JTable::getInstance('extension');
+    $table->load($componentid);
+    $table->bind(array('params' => $eMConfig->toString()));
 
+    if (!$table->save()) {
+        $this->setError('Save Error: ' . $table->getError());
+        return false;
+    }
 
-    $params = '{"multi_eval":"0","evaluators_can_see":"0","evaluators_can_evaluate":"0","evaluators_can_see_other_eval":"0","default_actions":"{ \"1\":{\"id\":1, \"c\":0, \"r\":1, \"u\":0, \"d\":0}, \"4\":{\"id\":4, \"c\":1, \"r\":1, \"u\":0, \"d\":0}, \"5\":{\"id\":5, \"c\":1, \"r\":1, \"u\":1, \"d\":0}, \"6\":{\"id\":6, \"c\":1, \"r\":0, \"u\":0, \"d\":0}, \"7\":{\"id\":7, \"c\":1, \"r\":0, \"u\":0, \"d\":0}, \"8\":{\"id\":8, \"c\":1, \"r\":0, \"u\":0, \"d\":0}, \"9\":{\"id\":9, \"c\":0, \"r\":0, \"u\":0, \"d\":0}, \"10\":{\"id\":10, \"c\":1, \"r\":1, \"u\":1, \"d\":0}, \"13\":{\"id\":10, \"c\":0, \"r\":1, \"u\":0, \"d\":0}, \"14\":{\"id\":14, \"c\":1, \"r\":1, \"u\":1, \"d\":0} }","show_related_files":"0","nb_months_registration_period_access":"11","alert_new_applicant":"0","alert_new_attachment":"0","id_applicants":"","applicant_files_path":"images\/emundus\/files\/","applicant_can_renew":"0","can_edit_until_deadline":"1","application_fee":"0","copy_application_form":"0","nb_email_per_batch":"50","time_sleep_per_batch":"1000","expert_fabrikformid":"110","expert_document_id":"36","clientId":"'.$clientIdParams.'","clientSecret":"'.$clientSecretParams.'","refreshToken":"'.$refreshTokenParams.'","calendarId1":"'.$calId1.'","calendarId2":"'.$calId2.'","calendarId3":"'.$calId3.'","calendarId4":"'.$calId4.'","calendarId5":"'.$calId5.'","calendarId6":"'.$calId6.'","calendarId7":"'.$calId7.'","calendarId8":"'.$calId8.'","calendarId9":"'.$calId9.'","calendarId10":"'.$calId10.'","calendarId11":"'.$calId11.'","calendarId12":"'.$calId12.'","calendarId13":"'.$calId13.'","calendarId14":"'.$calId14.'","calendarId15":"'.$calId15.'","calendarId16":"'.$calId16.'","calendarId17":"'.$calId17.'","calendarId18":"'.$calId18.'","calendarId19":"'.$calId19.'","calendarId20":"'.$calId20.'", "ametys_integration":"0","ametys_url":"36","ametys_sync_default_eval":"229,230,231","ametys_sync_default_decision":"56","ametys_sync_default_synthesis":"[APPLICANT_NAME]"}';
-
-
-    $db = JFactory::getDbo();
-    $query = $db->getQuery(true);
-    
-    // Fields to update.
-    $fields = array(
-        $db->quoteName('params') . ' = ' . $db->quote($params),
-    );
-    
-    // Conditions for which records should be updated.
-    $conditions = array(
-        $db->quoteName('extension_id') . ' = ' . $db->quote('11369')
-    );
-    
-    $query->update($db->quoteName('#__extensions'))->set($fields)->where($conditions);
-    
-    $db->setQuery($query);
-    
-    $result = $db->execute();
+    return true;
 }
 
 function getCode(){
@@ -2858,29 +2680,29 @@ function getCode(){
   return $code;
 }
 
-function setCodeCal1(){
-   $code = $this->getCode();
- var_dump($code);
-   $db = JFactory::getDBO();
-  $query = $db->getQuery(true);
+function setCodeCal1() {
+    $code = $this->getCode();
+    var_dump($code);
+    $db = JFactory::getDBO();
+    $query = $db->getQuery(true);
 
 
-if(isset($code[0])){
-  // Fields to update.
-    $fields = array(
-    $db->quoteName('code') . ' = ' . $db->quote($code[0]),
-);
- 
-// Conditions for which records should be updated.
-$conditions = array(
-    $db->quoteName('id') . ' = ' . $db->quote('105')
-);
-$query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
- 
-$db->setQuery($query);
- 
-$result = $db->execute();
-}
+    if (isset($code[0])) {
+        // Fields to update.
+        $fields = array(
+            $db->quoteName('code') . ' = ' . $db->quote($code[0]),
+        );
+        
+        // Conditions for which records should be updated.
+        $conditions = array(
+            $db->quoteName('id') . ' = ' . $db->quote('105')
+        );
+        $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
+        
+        $db->setQuery($query);
+        
+        $result = $db->execute();
+    }
 }
 
 
