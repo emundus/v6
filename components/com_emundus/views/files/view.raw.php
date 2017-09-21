@@ -109,14 +109,14 @@ class EmundusViewFiles extends JViewLegacy
 			break;
 
 			case 'filters':
-                $userModel = new EmundusModelUsers();
+                $m_user = new EmundusModelUsers();
 
-                $model->code = $userModel->getUserGroupsProgrammeAssoc($current_user->id);
+                $model->code = $m_user->getUserGroupsProgrammeAssoc($current_user->id);
 
                 // get all fnums manually associated to user
-		        $groups = $userModel->getUserGroups($current_user->id, 'Column');
-        		$fnum_assoc_to_groups = $userModel->getApplicationsAssocToGroups($groups);
-		        $fnum_assoc = $userModel->getApplicantsAssoc($current_user->id);
+		        $groups = $m_user->getUserGroups($current_user->id, 'Column');
+        		$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
+		        $fnum_assoc = $m_user->getApplicantsAssoc($current_user->id);
 		        $model->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
 
                 $this->assignRef('code', $model->code);
@@ -163,14 +163,15 @@ class EmundusViewFiles extends JViewLegacy
 				
 				$columnSupl = explode(',', $menu_params->get('em_other_columns'));
 
-                $userModel = new EmundusModelUsers();
-
-                $model->code = $userModel->getUserGroupsProgrammeAssoc($current_user->id);
+				$m_user = new EmundusModelUsers();
+				$h_files = new EmundushelperFiles();
+				
+                $model->code = $m_user->getUserGroupsProgrammeAssoc($current_user->id);
 
 		        // get all fnums manually associated to user
-		        $groups = $userModel->getUserGroups($current_user->id, 'Column');
-        		$fnum_assoc_to_groups = $userModel->getApplicationsAssocToGroups($groups);
-		        $fnum_assoc = $userModel->getApplicantsAssoc($current_user->id);
+		        $groups = $m_user->getUserGroups($current_user->id, 'Column');
+        		$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
+		        $fnum_assoc = $m_user->getApplicantsAssoc($current_user->id);
 		        $model->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
 
                 $this->assignRef('code', $model->code);
@@ -206,7 +207,7 @@ class EmundusViewFiles extends JViewLegacy
 					    {
 						    case 'evaluators':
 							    $data[0]['EVALUATORS'] = JText::_('EVALUATORS');
-							    $colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
+							    $colsSup['evaluators'] = $h_files->createEvaluatorList($col[1], $model);
 							    break;
 							case 'overall':
 								$data[0]['overall'] = JText::_('EVALUATION_OVERALL');
@@ -258,7 +259,7 @@ class EmundusViewFiles extends JViewLegacy
 							    $userObj->class = $class;
 								$userObj->type = 'fnum';
 								if ($displayPhoto)
-									$userObj->photo = EmundusHelperFiles::getPhotos($value);
+									$userObj->photo = $h_files->getPhotos($value);
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
 							    $line['fnum'] = $userObj;
 							}
@@ -311,7 +312,7 @@ class EmundusViewFiles extends JViewLegacy
 					if(isset($colsSup['id_tag']))
 					{
 						$tags = $model->getTagsByFnum($fnumArray);
-						$colsSup['id_tag'] = @EmundusHelperFiles::createTagsList($tags);
+						$colsSup['id_tag'] = $h_files->createTagsList($tags);
 					}
 
                     if(isset($colsSup['access']))
