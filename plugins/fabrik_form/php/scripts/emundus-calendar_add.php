@@ -27,25 +27,24 @@ JLog::addLogger(
     array('com_emundus')
 );
 
-$user = JFactory::getUser();
-$mainframe = JFactory::getApplication();
-$jinput = $mainframe->input;
-$db = JFactory::getDBO();
+$user       = JFactory::getUser();
+$mainframe  = JFactory::getApplication();
+$jinput     = $mainframe->input;
+$db         = JFactory::getDBO();
 
-$eMConfig = JComponentHelper::getParams('com_emundus');
-$id_applicants = $eMConfig->get('id_applicants', '0');
-$applicants = explode(',',$id_applicants);
+$eMConfig       = JComponentHelper::getParams('com_emundus');
+$id_applicants  = $eMConfig->get('id_applicants', '0');
+$applicants     = explode(',',$id_applicants);
 
-$title = $jinput->getValue('jos_dpcalendar_extcalendars___title');
-$color = $jinput->getValue('jos_dpcalendar_extcalendars___color');
+$title          = $jinput->getValue('jos_dpcalendar_extcalendars___title');
+$color          = $jinput->getValue('jos_dpcalendar_extcalendars___color');
 $aliasTransform = str_replace(' ', '-', $title);
-$aliasSet = $jinput->set('jos_dpcalendar_extcalendars___alias',$aliasTransform);
-$alias = $jinput->getValue('jos_dpcalendar_extcalendars___alias');
+$aliasSet       = $jinput->set('jos_dpcalendar_extcalendars___alias',$aliasTransform);
+$alias          = $jinput->getValue('jos_dpcalendar_extcalendars___alias');
 
 try {
 
     $m_calendar = new EmundusModelCalendar;
-    // TODO: Rewrite the calendar creation function.
     $result = $m_calendar->createCalendar($title, $alias, $color);
     $m_calendar->saveParams();
     die("<div class='col-md-12'><center><h1>Calendar Created.</h1></center></div>");

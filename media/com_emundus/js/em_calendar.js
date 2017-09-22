@@ -135,22 +135,15 @@ $(document).on('click', '#addCalendar', function (e) {
         backdrop: 'static',
         keyboard: false
     }, 'toggle');
-    //  $('#em-modal-form .modal-content').html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="em-modal-actions-title">'+Joomla.JText._('LOADING')+'</h4></div><div class="modal-body"><img src="media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'></button></div>');
 
     $('.modal-title').empty();
     $('.modal-title').append($(this).children('a').text());
     $('.modal-body').empty();
-    if ($('.modal-dialog').hasClass('modal-lg')) {
+    if ($('.modal-dialog').hasClass('modal-lg'))
         $('.modal-dialog').removeClass('modal-lg');
-    }
     $('.modal-body').attr('act-id', id);
     $('.modal-footer').show();
 
-    /*$('.modal-footer').append('<div>' +
-    '<p>'+Joomla.JText._('SENT')+'</p>' +
-    '<img src="'+loadingLine+'" alt="loading"/>' +
-    '</div>');*/
-    // $('.modal-content').append('<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="em-modal-actions-title">'+Joomla.JText._('LOADING')+'</h4></div><div class="modal-body"><img src="media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'></button></div>');
     $('.modal-footer').hide();
 
     $('.modal-dialog').addClass('modal-lg');
@@ -162,10 +155,6 @@ $(document).on('click', '#addCalendar', function (e) {
         var btnSave = document.getElementsByClassName('btn');
         console.log(btnSave);
     }, 10000);
-    //  btnSave[0].style.visibility ="hidden";
-
-    var tt = document.getElementsByClassName('modal-body');
-    console.log(tt);
 
 });
 

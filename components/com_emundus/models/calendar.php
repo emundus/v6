@@ -2476,8 +2476,12 @@ class EmundusModelCalendar extends JModelLegacy {
         
         $query->insert($db->quoteName('#__categories'))->columns($db->quoteName($columns))->values(implode(',', $values));    
 
-        $db->setQuery($query);
-        $db->execute();
+        try {
+            $db->setQuery($query);
+            $db->execute();
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
     }
 
     function getCalId() {
