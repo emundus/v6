@@ -112,7 +112,8 @@ class  plgSystemEmundus_ametys extends JPlugin
         $config     = JFactory::getConfig();
         
         $jdate = JFactory::getDate();
-        $jdate->setOffset($config->getValue('offset'));
+        $timezone = new DateTimeZone( $config->get('offset') );
+        $jdate->setTimezone($timezone);
         $now = $jdate->toSql();
 
         // get selected programmes in Ametys cart
