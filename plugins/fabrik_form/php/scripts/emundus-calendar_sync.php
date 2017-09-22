@@ -27,44 +27,38 @@ JLog::addLogger(
     array('com_emundus')
 );
 
-$user = JFactory::getUser();
-$mainframe = JFactory::getApplication();
-$jinput = $mainframe->input;
-$db = JFactory::getDBO();
+$user       = JFactory::getUser();
+$mainframe  = JFactory::getApplication();
+$db         = JFactory::getDBO();
+$jinput     = $mainframe->input;
 
-$eMConfig = JComponentHelper::getParams('com_emundus');
-$id_applicants = $eMConfig->get('id_applicants', '0');
-$applicants = explode(',',$id_applicants);
+$eMConfig       = JComponentHelper::getParams('com_emundus');
+$id_applicants  = $eMConfig->get('id_applicants', '0');
+$applicants     = explode(',',$id_applicants);
 
-$calendarID1    = $eMConfig->get('calendarId1');
-$calendarID2    = $eMConfig->get('calendarId2');
-$calendarID3    = $eMConfig->get('calendarId3');
-$calendarID4    = $eMConfig->get('calendarId4');
-$calendarID5    = $eMConfig->get('calendarId5');
-$calendarID6    = $eMConfig->get('calendarId6');
-$calendarID7    = $eMConfig->get('calendarId7');
-$calendarID8    = $eMConfig->get('calendarId8');
-$calendarID9    = $eMConfig->get('calendarId9');
-$calendarID10   = $eMConfig->get('calendarId10');
-$calendarID11   = $eMConfig->get('calendarId11');
-$calendarID12   = $eMConfig->get('calendarId12');
-$calendarID13   = $eMConfig->get('calendarId13');
-$calendarID14   = $eMConfig->get('calendarId14');
-$calendarID15   = $eMConfig->get('calendarId15');
-$calendarID16   = $eMConfig->get('calendarId16');
-$calendarID17   = $eMConfig->get('calendarId17');
-$calendarID18   = $eMConfig->get('calendarId18');
-$calendarID19   = $eMConfig->get('calendarId19');
-$calendarID20   = $eMConfig->get('calendarId20');
+$calendarIDs    = $eMConfig->get('calendarIds');
 $clientId       = $eMConfig->get('clientId');
 $clientSecret   = $eMConfig->get('clientSecret');
 
 
-$fnum               = $jinput->get('rowid', null);
-$itemid             = $jinput->get('Itemid'); 
-$reload             = $jinput->get('rq', 0);
-$cal                = $jinput->get('catid', 105);
-$catIdValue        = $jinput->getValue('jos_dpcalendar_events___catid');
+$fnum           = $jinput->get('rowid', null);
+$itemid         = $jinput->get('Itemid'); 
+$reload         = $jinput->get('rq', 0);
+$cal            = $jinput->get('catid', null);
+
+// The category ID is only used as a means to get to the calendarID.
+$catIdValue = $jinput->getValue('jos_dpcalendar_events___catid');
+
+// Using the category ID we can get the current calendars ID.
+$query = "SELECT calId FROM jos_categories WHERE id = ".$catIdValue[0];
+
+try {
+    $db->setQuery($query);
+    $calendarID = $db->loadResult(); 
+} catch (Exception $e) {
+    die($e->getMessage());
+}
+
 $title              = $jinput->getValue('jos_dpcalendar_events___title');
 $description        = $jinput->getValue('jos_dpcalendar_events___description');
 $valStartDateTime   = $jinput->getValue('jos_dpcalendar_events___start_date');
@@ -82,79 +76,25 @@ $endDateTime = explode(' ', $valEndDateTime);
 $endDate = $endDateTime[0];
 $endTime = $endDateTime[1];
 
-$myUrl = "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']; 
-$urlExplode = explode('?', $myUrl);
-$url = $urlExplode[1];
-$rowIdExplode = explode('&', $url);
-$rowId = $rowIdExplode[3];
-$valueRowId = explode('=', $rowId);
-$compareForm = $valueRowId[0];
-$eventId = $valueRowId[1];
+// Gets the arguements to the URI, used for knowing whether we are updating an event or making a new one.
+parse_str($_SERVER['REQUEST_URI'], $uri);
 
-$catIdValue = $catIdValue[0];
-
-// catIds aren't necessairly equal to these values, we need to find a different way of finding which calendar to update
-// Theory: this technique may actually work but there is an offset due to the calendar creation code not working and thus only partially making calendars.
-if ($catIdValue == '105')
-    $calendarID = $calendarID1;
-elseif ($catIdValue == '106')
-   $calendarID = $calendarID2;
-elseif ($catIdValue == '107')
-   $calendarID = $calendarID3;
-elseif ($catIdValue == '108')
-   $calendarID = $calendarID4;
-elseif ($catIdValue == '109')
-   $calendarID = $calendarID5;
-elseif ($catIdValue == '110')
-   $calendarID = $calendarID6;
-elseif ($catIdValue == '111')
-   $calendarID = $calendarID7;
-elseif ($catIdValue == '112')
-   $calendarID = $calendarID8;
-elseif ($catIdValue == '113')
-   $calendarID = $calendarID9;
-elseif ($catIdValue == '114')
-   $calendarID = $calendarID10;
-elseif ($catIdValue == '115')
-   $calendarID = $calendarID11;
-elseif ($catIdValue == '116')
-   $calendarID = $calendarID12;
-elseif ($catIdValue == '117')
-   $calendarID = $calendarID13;
-elseif ($catIdValue == '118')
-   $calendarID = $calendarID14;
-elseif ($catIdValue == '119')
-   $calendarID = $calendarID15;
-elseif ($catIdValue == '120')
-   $calendarID = $calendarID16;
-elseif ($catIdValue == '121')
-   $calendarID = $calendarID17;
-elseif ($catIdValue == '122')
-   $calendarID = $calendarID18;
-elseif ($catIdValue == '123')
-   $calendarID = $calendarID19;
-elseif ($catIdValue == '124')
-   $calendarID = $calendarID20;
-
-
-/*
-$table_elements  	= $formModel->getElementOptions(false, 'name', false, false, array(), '', true);
-echo $formModel->data["jos_emundus_qcm___question_b4_raw"]."<hr>";
-var_dump($table_elements);
-die();*/
+// Here we are simply checking that the calendar ID is in the params, this isn't really useful but helps add a safety check.
+if (!in_array($calendarID, explode(",", $calendarIDs)))
+    die('Error: current calendar ID cannot be found in params.');
 
 try {
     $sync = new EmundusModelCalendar;
 
-    if ($compareForm == "tmpl") {
+    if (!array_key_exists('rowid', $uri)) {
     
         $result = $sync->createEvent($calendarID, $title, $description, $startDate, $startTime, $endDate, $endTime, $user, $catIdValue);
         die("<div class='col-md-12'><center><h1>Record Saved.</h1></center></div>");
     
-    } elseif ($compareForm == "rowid") {
+    } else {
     
         if (isset($_POST['Submit'])) {
-            $result = $sync->updateEvent($calendarID, $eventId, $title, $description, $startDate, $startTime, $endDate, $endTime,$user,$catIdValue);
+            $result = $sync->updateEvent($calendarID, $uri['rowid'], $title, $description, $startDate, $startTime, $endDate, $endTime,$user,$catIdValue);
             die("<div class='col-md-12'><center><h1>Record Updated.</h1></center></div>");
         }
     

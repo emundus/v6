@@ -32,7 +32,6 @@ class EmundusModelCalendar extends JModelLegacy {
 
 
         // https://developers.google.com/google-apps/calendar/v3/reference/events/quickAdd
-        //$calendarID = '0lfn37j86rd32df9c89q3jjm58@group.calendar.google.com';
         $event = new Google_Service_Calendar_Event(array(
             'summary' => $title,
             //'location' => '800 Howard St., San Francisco, CA 94103',
@@ -99,14 +98,16 @@ class EmundusModelCalendar extends JModelLegacy {
     function getCatId($eventId) {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
+
         $conditions = array(
             $db->quoteName('id') . ' = ' . $db->quote($eventId)
         );
+        
         $query->select($db->quoteName('catid'));
         $query->from($db->quoteName('#__dpcalendar_events'));
         $query->where($conditions);
+        
         $db->setQuery($query);
-
         return $db->loadResult();
     }
 
@@ -115,14 +116,16 @@ class EmundusModelCalendar extends JModelLegacy {
 
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
+        
         $conditions = array(
             $db->quoteName('id') . ' = ' . $db->quote($catId)
         );
+        
         $query->select($db->quoteName('calId'));
         $query->from($db->quoteName('#__categories'));
         $query->where($conditions);
-        $db->setQuery($query);
 
+        $db->setQuery($query);
         return $db->loadResult();
     }
 
@@ -131,30 +134,34 @@ class EmundusModelCalendar extends JModelLegacy {
     function getValidate($calId) {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
+        
         $conditions = array(
             $db->quoteName('id') . ' = ' . $db->quote($calId)
         );
+        
         $query->select($db->quoteName('original_id'));
         $query->from($db->quoteName('#__dpcalendar_events'));
         $query->where($conditions);
+        
         $db->setQuery($query);
         $result = $db->loadResult();
-
         return $result;
     }
 
     function getUserIdCandidate($eventId) {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
+        
         $conditions = array(
             $db->quoteName('id') . ' = ' . $db->quote($eventId)
         );
+        
         $query->select($db->quoteName('uid'));
         $query->from($db->quoteName('#__dpcalendar_events'));
         $query->where($conditions);
+        
         $db->setQuery($query);
         $result = $db->loadResult();
-
         return $result;
     }
 
@@ -162,15 +169,17 @@ class EmundusModelCalendar extends JModelLegacy {
         $userid = $this->getUserIdCandidate($eventId);
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
+        
         $conditions = array(
             $db->quoteName('id') . ' = ' . $db->quote($userid)
         );
+        
         $query->select($db->quoteName('name'));
         $query->from($db->quoteName('#__users'));
         $query->where($conditions);
+        
         $db->setQuery($query);
         $result = $db->loadResult();
-
         return $result;
     }
 
@@ -178,80 +187,86 @@ class EmundusModelCalendar extends JModelLegacy {
 
     function getMailCandidate($eventId) {
         $name = $this->getUserIdCandidate($eventId);
-
         $db= JFactory::getDBO();
         $query = $db->getQuery(true);
+        
         $conditions = array(
             $db->quoteName('id') . ' = ' . $db->quote($name)
         );
+        
         $query->select($db->quoteName('email'));
         $query->from($db->quoteName('#__users'));
         $query->where($conditions);
+        
         $db->setQuery($query);
         $result = $db->loadResult();
-
         return $result;
     }
 
     function getMailUser($userBook) {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
-        $conditions = array(
-            $db->quoteName('id') . ' = ' . $db->quote($userBook));
 
+        $conditions = array(
+            $db->quoteName('id') . ' = ' . $db->quote($userBook)
+        );
+        
         $query->select($db->quoteName('email'));
         $query->from($db->quoteName('#__users'));
         $query->where($conditions);
+        
         $db->setQuery($query);
-
         return $db->loadResult();
     }
 
     function getEmailFromDelete() {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
+        
         $conditions = array(
-        $db->quoteName('lbl') . ' = ' . $db->quote('deleted_date')
+            $db->quoteName('lbl') . ' = ' . $db->quote('deleted_date')
         );
+        
         $query->select($db->quoteName('emailfrom'));
         $query->from($db->quoteName('#__emundus_setup_emails'));
         $query->where($conditions);
 
         $db->setQuery($query);
         $result = $db->loadResult();
-
         return $result;
     }
 
     function getEmailFromCandidateBooked() {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
+        
         $conditions = array(
             $db->quoteName('lbl') . ' = ' . $db->quote('booked_by_coordinator')
         );
+        
         $query->select($db->quoteName('emailfrom'));
         $query->from($db->quoteName('#__emundus_setup_emails'));
         $query->where($conditions);
 
         $db->setQuery($query);
         $result = $db->loadResult();
-
         return $result;
     }
 
     function getEmailFromDelete2() {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
+        
         $conditions = array(
-        $db->quoteName('lbl') . ' = ' . $db->quote('cancel_interview_to_candidate')
+            $db->quoteName('lbl') . ' = ' . $db->quote('cancel_interview_to_candidate')
         );
+        
         $query->select($db->quoteName('emailfrom'));
         $query->from($db->quoteName('#__emundus_setup_emails'));
         $query->where($conditions);
 
         $db->setQuery($query);
         $result = $db->loadResult();
-
         return $result;
     }
 
@@ -644,7 +659,6 @@ class EmundusModelCalendar extends JModelLegacy {
 
     function deleteEventInDB($eventId) {
         $db = JFactory::getDBO(); 
-
         $query = $db->getQuery(true);
 
         $conditions = array(
@@ -749,65 +763,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
                 $calId = $this->getCalId();
 
-                if (isset($calId[0]))
-                    $eMConfig->set('calendarId1', $calId[0]);
-            
-                if (isset($calId[1]))
-                    $eMConfig->set('calendarId2', $calId[1]);
-            
-                if (isset($calId[2]))
-                    $eMConfig->set('calendarId3', $calId[2]);
-            
-                if (isset($calId[3]))
-                    $eMConfig->set('calendarId4', $calId[3]);
-            
-                if (isset($calId[4]))
-                    $eMConfig->set('calendarId5', $calId[4]);
-            
-                if (isset($calId[5]))
-                    $eMConfig->set('calendarId6', $calId[5]);
-            
-                if (isset($calId[6]))
-                    $eMConfig->set('calendarId7', $calId[6]);
-            
-                if (isset($calId[7]))
-                    $eMConfig->set('calendarId8', $calId[7]);
-            
-                if (isset($calId[8]))
-                    $eMConfig->set('calendarId9', $calId[8]);
-            
-                if (isset($calId[9]))
-                    $eMConfig->set('calendarId10', $calId[9]);
-            
-                if (isset($calId[10]))
-                    $eMConfig->set('calendarId11', $calId[10]);
-            
-                if (isset($calId[11]))
-                    $eMConfig->set('calendarId12', $calId[11]);
-            
-                if (isset($calId[12]))
-                    $eMConfig->set('calendarId13', $calId[12]);
-            
-                if (isset($calId[13]))
-                    $eMConfig->set('calendarId14', $calId[13]);
-            
-                if (isset($calId[14]))
-                    $eMConfig->set('calendarId15', $calId[14]);
-            
-                if (isset($calId[15]))
-                    $eMConfig->set('calendarId16', $calId[15]);
-            
-                if (isset($calId[16]))
-                    $eMConfig->set('calendarId17', $calId[16]);
-            
-                if (isset($calId[17]))
-                    $eMConfig->set('calendarId18', $calId[17]);
-            
-                if (isset($calId[18]))
-                    $eMConfig->set('calendarId19', $calId[18]);
-            
-                if (isset($calId[19]))
-                    $eMConfig->set('calendarId20', $calId[19]);
+                $eMConfig->set('calendarIds', implode(",", $calId));
                         
                 $componentid = JComponentHelper::getComponent('com_emundus')->id;
                 $db = JFactory::getDBO();  
@@ -842,8 +798,6 @@ class EmundusModelCalendar extends JModelLegacy {
     }
 
 
-
-
     function getClient($clientId, $clientSecret) {
 
         $client = new Google_Client();
@@ -860,9 +814,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $uri = ! isset($_SERVER['HTTP_HOST']) ? JUri::getInstance('http://localhost') : JFactory::getURI();
         
         if (filter_var($uri->getHost(), FILTER_VALIDATE_IP))
-        {
             $uri->setHost('localhost');
-        }
         
         $client->setRedirectUri(
             $uri->toString(array(
@@ -872,9 +824,9 @@ class EmundusModelCalendar extends JModelLegacy {
                 'path'
             )) . '?option=com_emundus&view=calendar');
     
-    // Refresh the token if it's expired.
+        // Refresh the token if it's expired.
     
-    return $client;
+        return $client;
     }
     
     /**
@@ -901,12 +853,11 @@ class EmundusModelCalendar extends JModelLegacy {
         $cal = $db->loadColumn();
 
         return $cal;
-
     }
 
 
 
-    function getIdEventDB(){
+    function getIdEventDB() {
         $db = JFactory::getDBO(); 
         $query = $db->getQuery(true);
 
@@ -920,7 +871,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
     }
 
-    function getStartDateDB(){
+    function getStartDateDB() {
         $db = JFactory::getDBO(); 
         $query = $db->getQuery(true);
 
@@ -934,7 +885,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
     }
 
-    function getEndDateDB(){
+    function getEndDateDB() {
         $db = JFactory::getDBO(); 
         $query = $db->getQuery(true);
 
@@ -948,7 +899,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
     }
 
-    function getDescriptionDB(){
+    function getDescriptionDB() {
         $db = JFactory::getDBO(); 
         $query = $db->getQuery(true);
 
@@ -972,24 +923,18 @@ class EmundusModelCalendar extends JModelLegacy {
         $this->saveParams();
         $accountId = $this->getFirstCalendar();
 
-
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
         // $this->setTicketSaved();
         $db = JFactory::getDBO(); 
-
         $query = $db->getQuery(true);
 
         $query->select($db->quoteName('user_id'));
-
         $query->from($db->quoteName('#__dpcalendar_bookings')); 
 
         $db->setQuery($query);
-
         $bookUsed = $db->loadAssocList();
 
-
-        $db = JFactory::getDBO(); 
 
         /*$query = $db->getQuery(true);
 
@@ -1091,16 +1036,13 @@ class EmundusModelCalendar extends JModelLegacy {
         $endDateTimeDB = implode(' ', $arrayEndDateTime);
 
 
-        $db = JFactory::getDBO(); 
-
         $query = $db->getQuery(true);
 
         $columns = array('id', 'catid', 'uid', 'original_id', 'title', 'alias', 'rrule', 'recurrence_id', 'start_date', 'end_date', 'all_day', 'color', 'url', 'images', 'description', 'date', 'hits', 'capacity', 'capacity_used', 'max_tickets', 'booking_closing_date', 'price', 'earlybird', 'user_discount', 'booking_information', 'tax', 'ordertext', 'orderurl', 'canceltext', 'cancelurl', 'state', 'checked_out', 'checked_out_time', 'access', 'access_content', 'params', 'language', 'created', 'created_by', 'created_by_alias', 'modified', 'modified_by', 'metakey', 'metadesc', 'metadata', 'featured', 'xreference', 'publish_up', 'publish_down', 'plugintype','fnum');
-
     
         $values = array($db->quote($eventsId),$db->quote($catID),$db->quote($userBook),$db->quote($coordinatorBook),$db->quote($title),$db->quote($title),$db->quote(NULL),$db->quote(NULL),$db->quote($startDateTimeDB),$db->quote($endDateTimeDB),$db->quote('0'),$db->quote(''),$db->quote(''),$db->quote(''),$db->quote($description),$db->quote(NULL),$db->quote('0'),$db->quote('1'),$db->quote($booking),$db->quote('1'),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote(''),$db->quote(NULL),$db->quote('1'),$db->quote('0'),$db->quote(NULL),$db->quote('1'),$db->quote('1'),$db->quote(''),$db->quote('*'),$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(''),$db->quote(''),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote(NULL),$db->quote(''),$db->quote($fnum));
 
-        $result =  $query->insert($db->quoteName('#__dpcalendar_events'))->columns($db->quoteName($columns))->values(implode(',', $values));  
+        $result = $query->insert($db->quoteName('#__dpcalendar_events'))->columns($db->quoteName($columns))->values(implode(',', $values));  
 
         $db->setQuery($query);
         $db->execute();
@@ -1171,8 +1113,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $email = $this->getMailCandidate($calId);
         $name = $this->getNameCandidate($calId);
 
-        $db = JFactory::getDBO(); 
-
+        $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
         $columns = array('event_id','user_id','email','name','state');
@@ -1197,9 +1138,7 @@ class EmundusModelCalendar extends JModelLegacy {
         
         // Fields to update.
 
-
         $db = JFactory::getDBO(); 
-
         $query = $db->getQuery(true);
 
         $columns = array('user_id','uid','email','name','state','payer_id','payer_email','raw_data');
@@ -1223,7 +1162,8 @@ class EmundusModelCalendar extends JModelLegacy {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
         $conditions = array(
-            $db->quoteName('event_id') . ' = ' . $db->quote($calId));
+            $db->quoteName('event_id') . ' = ' . $db->quote($calId)
+        );
 
         $fields = array(
             $db->quoteName('booking_id') . ' = ' . $db->quote($idBook),
@@ -1364,12 +1304,10 @@ class EmundusModelCalendar extends JModelLegacy {
 
 
         //$this->insertCategories($titleCal,$aliasCal,$colorCal);
-        $db = JFactory::getDBO(); 
 
         $query = $db->getQuery(true);
 
         $columns = array('id', 'catid', 'uid', 'original_id', 'title', 'alias', 'rrule', 'recurrence_id', 'start_date', 'end_date', 'all_day', 'color', 'url', 'images', 'description', 'date', 'hits', 'capacity', 'capacity_used', 'max_tickets', 'booking_closing_date', 'price', 'earlybird', 'user_discount', 'booking_information', 'tax', 'ordertext', 'orderurl', 'canceltext', 'cancelurl', 'state', 'checked_out', 'checked_out_time', 'access', 'access_content', 'params', 'language', 'created', 'created_by', 'created_by_alias', 'modified', 'modified_by', 'metakey', 'metadesc', 'metadata', 'featured', 'xreference', 'publish_up', 'publish_down', 'plugintype','fnum');
-
 
         $values = array($db->quote($eventsId),$db->quote($catID[0]),$db->quote($userBook),$db->quote($coordinatorBook),$db->quote($title),$db->quote($title),$db->quote(NULL),$db->quote(NULL),$db->quote($startDateTimeDB),$db->quote($endDateTimeDB),$db->quote('0'),$db->quote(''),$db->quote(''),$db->quote(''),$db->quote($description),$db->quote(NULL),$db->quote('0'),$db->quote('1'),$db->quote($booking),$db->quote('1'),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote(''),$db->quote(NULL),$db->quote('1'),$db->quote('0'),$db->quote(NULL),$db->quote('1'),$db->quote('1'),$db->quote(''),$db->quote('*'),$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote('0'),$db->quote(''),$db->quote(''),$db->quote(''),$db->quote('0'),$db->quote(''),$db->quote(NULL),$db->quote(NULL),$db->quote(''),$db->quote(''));
 
@@ -1424,7 +1362,7 @@ class EmundusModelCalendar extends JModelLegacy {
         );
 
         $conditions = array(
-        $db->quoteName('id') . ' = ' . $db->quote($eventId)
+            $db->quoteName('id') . ' = ' . $db->quote($eventId)
         );
 
         $query->update($db->quoteName('#__dpcalendar_events'))->set($fields)->where($conditions);
@@ -1437,7 +1375,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $query = $db->getQuery(true);
 
         $conditions = array(
-        $db->quoteName('id') . ' = ' . $db->quote($eventId)
+            $db->quoteName('id') . ' = ' . $db->quote($eventId)
         );
 
         $query->select($db->quoteName('uid'));
@@ -1486,15 +1424,14 @@ class EmundusModelCalendar extends JModelLegacy {
     }
 
 
-    function updateTicket($user){
+    function updateTicket($user) {
 
         $db = JFactory::getDbo();
-    
         $query = $db->getQuery(true);
     
         // Fields to update.
 
-        if($user == '--NO BODY--' || $user == NULL || $user == ' '){
+        if (empty($user) || $user == '--NO BODY--' || $user == ' ') {
         
             $fields = array(
                 $db->quoteName('capacity_used') . ' = ' . $db->quote('0'),
@@ -1787,11 +1724,14 @@ class EmundusModelCalendar extends JModelLegacy {
         $query->where($conditions);
         $query->order($db->quoteName('id') . 'ASC'); 
 
-        $db->setQuery($query);
-
-        $results =$db->loadAssocList(); 
-
-        return $results;
+        try {
+        
+            $db->setQuery($query);
+            return $db->loadAssocList();
+        
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
     }
 
 
@@ -1800,24 +1740,30 @@ class EmundusModelCalendar extends JModelLegacy {
         $db = JFactory::getDBO(); 
         $query = $db->getQuery(true);
 
-
         $query->delete($db->quoteName('#__emundus_alias_color_calendar')); 
 
-        $db->setQuery($query);
-        $result = $db->execute();
+        try {
+            $db->setQuery($query);
+            $db->execute();
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
     }
 
 
     function getcalIdSaved(){
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
+        
         $query->select('calid');
         $query->from('#__dpcalendar_ticketsused_events');
 
-        $db->setQuery($query);
-        $result = $db->loadColumn();
-
-    
+        try {
+            $db->setQuery($query);
+            $result = $db->loadColumn();
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
     }
         
 
@@ -1843,8 +1789,12 @@ class EmundusModelCalendar extends JModelLegacy {
 
             $query->insert($db->quoteName('#__dpcalendar_ticketsused_events'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
 
-            $db->setQuery($query);
-            $db->execute();
+            try {
+                $db->setQuery($query);
+                $db->execute();
+            } catch (Exception $e) {
+                die($e->getMessage());
+            }
 
         }
 
@@ -1860,20 +1810,15 @@ class EmundusModelCalendar extends JModelLegacy {
         $query->select($db->quoteName('capacity_used'));
         $query->from($db->quoteName('#__dpcalendar_ticketsused_events')); 
 
-        $db->setQuery($query);
-        $results =$db->loadColumn(); 
+        try {
+            $db->setQuery($query);
+            $results = $db->loadColumn();
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
 
     }
 
-
-
-
-    function initAutoIncrementCat() {
-        $db = JFactory::getDBO();
-        $query = "ALTER TABLE `#__categories` AUTO_INCREMENT".'='."105";
-        $db->setQuery($query);
-        $result = $db->query();
-    }
 
     function deleteCalCatToSync() {
         $db = JFactory::getDBO(); 
@@ -1888,8 +1833,6 @@ class EmundusModelCalendar extends JModelLegacy {
 
         $db->setQuery($query);
         $result = $db->execute();
-
-        $this->initAutoIncrementCat();
     }
 
     function deleteEmCal() {
@@ -1900,15 +1843,6 @@ class EmundusModelCalendar extends JModelLegacy {
 
         $db->setQuery($query);
         $result = $db->execute();
-
-        $this->initAutoIncrementEmCal();
-    }
-
-    function initAutoIncrementEmCal() {
-        $db = JFactory::getDBO();
-        $query = "ALTER TABLE `#__emundus_calendar` AUTO_INCREMENT".'='."105";
-        $db->setQuery($query);
-        $result = $db->query();
     }
 
     function deleteTicketSaved() {
@@ -1948,10 +1882,12 @@ class EmundusModelCalendar extends JModelLegacy {
         $query->from($db->quoteName('#__dpcalendar_events'));
         $query->where($conditions);
 
-        $db->setQuery($query);
-        $results = $db->loadColumn();   
-
-        return $results;
+        try {
+            $db->setQuery($query);
+            return $db->loadColumn();
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
 
     }
 
@@ -1999,9 +1935,12 @@ class EmundusModelCalendar extends JModelLegacy {
         
         $query->update($db->quoteName('#__dpcalendar_events'))->set($fields)->where($conditions);
         
-        $db->setQuery($query);
-        
-        $result = $db->execute();
+        try {
+            $db->setQuery($query);
+            $db->execute();
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
 
     }
 
@@ -2022,9 +1961,12 @@ class EmundusModelCalendar extends JModelLegacy {
         
         $query->update($db->quoteName('#__dpcalendar_events'))->set($fields)->where($conditions);
         
-        $db->setQuery($query);
-        
-    $result = $db->execute();
+        try {
+            $db->setQuery($query);    
+            $db->execute();
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
 
     }
 
@@ -2036,8 +1978,12 @@ class EmundusModelCalendar extends JModelLegacy {
         $query->select($db->quoteName(array('title', 'color')));
         $query->from($db->quoteName('#__dpcalendar_extcalendars')); 
 
-        $db->setQuery($query);
-        $calId = $db->loadAssocList(); 
+        try {
+            $db->setQuery($query);
+            $calId = $db->loadAssocList();
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
 
         foreach ($calId as $result) {
 
@@ -2054,10 +2000,8 @@ class EmundusModelCalendar extends JModelLegacy {
 
     function insertAliasColor($alias, $color, $title){ 
         $accountId = $this->getFirstCalendar();
-        $cal = $this->getFirstCalendar();  
 
-        $db = JFactory::getDBO(); 
-
+        $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
         $columns = array('id','alias','color','accountId','title');
@@ -2066,34 +2010,56 @@ class EmundusModelCalendar extends JModelLegacy {
 
         $query->insert($db->quoteName('#__emundus_alias_color_calendar'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
 
-        $db->setQuery($query);
-        $db->execute();
+        try {
+            $db->setQuery($query);
+            $db->execute();
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
 
     }
 
-    function getPath(){
+    function getPath() {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
-        $conditions = array($db->quoteName('path') . ' = ' . $db->quote('uncategorised'),
-        $db->quoteName('name') . ' = ' . $db->quote('emunduscalendar'));
+        
+        $conditions = array(
+            $db->quoteName('path') . ' = ' . $db->quote('uncategorised'),
+            $db->quoteName('name') . ' = ' . $db->quote('emunduscalendar')
+        );
+
         $query->select($db->quoteName('path'));
         $query->from($db->quoteName('#__categories'));
         $query->where($conditions);
-        $db->setQuery($query);
-        return $db->loadResult();
+        
+        try {
+            $db->setQuery($query);
+            return $db->loadResult();
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
     }
 
-    function deleteUncategorised(){
+    function deleteUncategorised() {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
-        $conditions = array($db->quoteName('path') . ' = ' . ($db->quote('uncategorised')));
+        
+        $conditions = array(
+            $db->quoteName('path') . ' = ' . ($db->quote('uncategorised'))
+        );
+
         $query->delete($db->quoteName('#__categories')); 
         $query->where($conditions);
-        $db->setQuery($query);
-        $db->execute();
+        
+        try {
+            $db->setQuery($query);
+            $db->execute();
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
     }
 
-    function deleteUncategorisedFromSave(){
+    function deleteUncategorisedFromSave() {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
         $conditions = array($db->quoteName('path') . ' = ' . ($db->quote('uncategorised')));
@@ -2103,53 +2069,66 @@ class EmundusModelCalendar extends JModelLegacy {
         $db->execute();
     }
 
-    // This function is called by the php script called on submit of the 'Crerate Calendar' fabrik form.
-    function createCalendar($title,$alias,$color) {
+    // This function is called by the php script called on submit of the 'Create Calendar' fabrik form.
+    function createCalendar($title, $alias, $color) {
 
-
+        // TODO: Is this code useful?
         if ($this->getPath() != null) {
             $this->deleteUncategorised();
             $this->deleteUncategorisedFromSave();
-            $this->initAutoIncrementCat();
         }
-
-        $accountId = $this->getFirstCalendar();
-        $mainframe = JFactory::getApplication();
-        $jinput = $mainframe->input;
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-
+        
+        $db         = JFactory::getDBO();
+        $mainframe  = JFactory::getApplication();
+        $jinput     = $mainframe->input;
+        $eMConfig   = JComponentHelper::getParams('com_emundus');
 
         $client = $this->getClient($eMConfig->get('clientId'),$eMConfig->get('clientSecret'));
         $client->refreshToken($eMConfig->get('refreshToken'));
-        $service = new Google_Service_Calendar($client);
-        $calendar = new Google_Service_Calendar_Calendar();
+        
+        $service    = new Google_Service_Calendar($client);
+        $calendar   = new Google_Service_Calendar_Calendar();
+
         $calendar->setSummary($title);
         $calendar->setTimeZone('Europe/Paris');
         
-
         $createdCalendar = $service->calendars->insert($calendar);  
         $calid = $createdCalendar->getId();
 
-        $this->insertCategories($title,$alias,$color,$calid);
+        $this->insertCategories($title, $alias, $color, $calid);
 
-        $db = JFactory::getDBO(); 
+        // We are getting the category ID by looking it up using the calID
+        $query = "SELECT id FROM #__categories WHERE calId = ".$db->quote($calid);
+        
+        try {
+            $db->setquery($query);
+            $catId = $db->loadresult();
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+        
         $query = $db->getQuery(true);
-
         $columns = array('catid','calid','title');
-        $values = array($db->quote(NULL),$db->quote($calid),$db->quote($title));
+        $values = array($db->quote($catId),$db->quote($calid),$db->quote($title));
         $query->insert($db->quoteName('#__emundus_calendar'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
 
-        $db->setQuery($query);
-        $db->execute();
+        try {
+            $db->setQuery($query);
+            $db->execute();
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
 
     }
 
-    function getFirstCalendar(){
+    function getFirstCalendar() {
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
+        
         $client = $this->getClient($eMConfig->get('clientId'),$eMConfig->get('clientSecret'));
         $client->refreshToken($eMConfig->get('refreshToken'));
         $service = new Google_Service_Calendar($client); 
+        
         $calendarList = $service->calendarList->listCalendarList();
         $calList = array_reverse($calendarList->getItems());
 
@@ -2166,13 +2145,12 @@ class EmundusModelCalendar extends JModelLegacy {
         return $calId;
     }
 
-    function getAliasColorEm(){
+    function getAliasColorEm() {
 
         $calendar = $this->getFirstCalendar();
         $eMConfig = JComponentHelper::getParams('com_emundus');  
 
         $db = JFactory::getDBO(); 
-
         $query = $db->getQuery(true);  
 
         $conditions = array(
@@ -2189,21 +2167,21 @@ class EmundusModelCalendar extends JModelLegacy {
 
         foreach ($results as $result) {
 
-            $color = $result[color];
-            $alias = $result[alias];
-            $accountId = $result[accountId];
-            $title = $result[title];
+            $color = $result['color'];
+            $alias = $result['alias'];
+            $accountId = $result['accountId'];
+            $title = $result['title'];
 
             $resultFinal[] = $alias . ' / ' . $color . ' / ' . $accountId . ' / ' . $title;
         } 
 
         
-    return $results;    
+        return $results;    
 
 
     }
 
-    function getCalendarSaved(){
+    function getCalendarSaved() {
         $db = JFactory::getDBO(); 
 
         $query = $db->getQuery(true);
@@ -2217,17 +2195,19 @@ class EmundusModelCalendar extends JModelLegacy {
         $query->where($conditions);
         $query->order($db->quoteName('id') . 'ASC'); 
 
-        $db->setQuery($query);
-        $results = $db->loadAssocList();   
-
-        return $results;
+        try {
+            $db->setQuery($query);
+            return $db->loadAssocList();  
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
 
     }
 
     function saveCategoriesCalendar() {
         $calSaved = $this->getCalendarSaved();
         $result = $this->getCategoriesCal();
-
+        
         $i = 0;
 
         foreach ($result as $calendar) {
@@ -2270,7 +2250,6 @@ class EmundusModelCalendar extends JModelLegacy {
                 if ($accountId == $this->getFirstCalendar()) {
 
                     $db = JFactory::getDBO(); 
-
                     $query = $db->getQuery(true);
 
                     $columns = array('id','asset_id','parent_id','lft','rgt','level','path','extension','title','alias','note','description','published','checked_out','checked_out_time','access','params','metadesc','metakey','metadata','created_user_id','created_time','modified_user_id','modified_time','hits','language','version','name','calId','accountId','code');
@@ -2279,8 +2258,12 @@ class EmundusModelCalendar extends JModelLegacy {
 
                     $query->insert($db->quoteName('#__emundus_calendar_save'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
 
-                    $db->setQuery($query);
-                    $db->execute();
+                    try {
+                        $db->setQuery($query);
+                        $db->execute();
+                    } catch (Exception $e) {
+                        die($e->getMessage());
+                    }
 
                 }
 
@@ -2292,31 +2275,26 @@ class EmundusModelCalendar extends JModelLegacy {
 
 
 
-    function getCalendarSavedByAccount(){
+    function getCalendarSavedByAccount() {
 
         $db = JFactory::getDBO(); 
-
         $query = $db->getQuery(true);
 
-    $conditions = array(
+        $conditions = array(
             $db->quoteName('accountId') . ' = ' . $db->quote($this->getFirstCalendar())
         ); 
 
         $query->select('*');
-
         $query->from($db->quoteName('#__emundus_calendar_save'));
-
         $query->where($conditions);
-
         $query->order($db->quoteName('id') . 'ASC'); 
 
-        $db->setQuery($query);
-
-        $results =$db->loadAssocList();   
-
-
-        return $results;
-
+        try {
+            $db->setQuery($query);
+            return $db->loadAssocList();
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
 
     }
 
@@ -2325,7 +2303,6 @@ class EmundusModelCalendar extends JModelLegacy {
 
 
         $this->deleteCalCatToSync();
-        $this->initAutoIncrementCat();
 
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -2377,10 +2354,14 @@ class EmundusModelCalendar extends JModelLegacy {
 
             $query->insert($db->quoteName('#__categories'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
 
-            $db->setQuery($query);
-            $db->execute(); 
+            try {
+                $db->setQuery($query);
+                $db->execute();
+            } catch (Exception $e) {
+                die($e->getMessage());
+            }
 
-    }
+        }
 
     }
 
@@ -2421,8 +2402,12 @@ class EmundusModelCalendar extends JModelLegacy {
 
                 $query->insert($db->quoteName('#__emundus_calendar'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
 
-                $db->setQuery($query);
-                $db->execute();
+                try {
+                    $db->setQuery($query);
+                    $db->execute();
+                } catch (Exception $e) {
+                    die($e->getMessage());
+                }
             }
 
         }
@@ -2432,18 +2417,22 @@ class EmundusModelCalendar extends JModelLegacy {
     function getCodeCalCreated() {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
+        
         $query->select('code');
         $query->from('#__dpcalendar_extcalendars');
         $query->order($db->quoteName('id') . 'DESC');
-        $db->setQuery($query);
+        
+        try {
+            $db->setQuery($query);
+            return $db->loadColumn();
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
 
-        $code = $db->loadColumn();
-
-        return $code;
     }
 
 
-    function insertCategories($title,$alias,$color,$calid) {
+    function insertCategories($title, $alias, $color, $calid) {
         $account = $this->getFirstCalendar();
         $code = $this->getCodeCalCreated();
         $colors = '{"category_layout":"","image":"","image_alt":"","color":"'.$color[0].'","etag":""}';
@@ -2491,7 +2480,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $db->execute();
     }
 
-    function getCalId(){
+    function getCalId() {
 
         $db = JFactory::getDBO(); 
         $query = $db->getQuery(true);
@@ -2500,19 +2489,20 @@ class EmundusModelCalendar extends JModelLegacy {
             $db->quoteName('name') . ' = ' . $db->quote('emunduscalendar')
         ); 
 
-
         $query->select($db->quoteName('calid'));
         $query->from($db->quoteName('#__categories'));
         $query->where($conditions);
         $query->order($db->quoteName('id') . 'ASC'); 
 
-        $db->setQuery($query);
-        $calId = $db->loadColumn();
-        
-        return $calId;
+        try {
+            $db->setQuery($query);
+            return $db->loadColumn();
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
     }
 
-    function getParams(){
+    function getParams() {
 
         $db = JFactory::getDBO(); 
 
@@ -2522,13 +2512,14 @@ class EmundusModelCalendar extends JModelLegacy {
         $query->from($db->quoteName('#__extensions'));
         $query->where($db->quoteName('extension_id') . "=" . $db->quote('11369')); 
 
-        $db->setQuery($query);
-
-        $getParams = $db->loadColumn(); 
-        $getParam = $getParams[0];
+        try {
+            $db->setQuery($query);
+            $getParams = $db->loadColumn(); 
+            return $getParams[0];
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
         
-        return $getParam;
-
     }
 
 
@@ -2537,70 +2528,12 @@ class EmundusModelCalendar extends JModelLegacy {
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
+        // This gets all of the calIds in the categories table.
         $calId = $this->getCalId();        
 
-        if (isset($calId[0]))
-            $eMConfig->set('calendarId1', $calId[0]);
+        // We simply need to collapse the array in order to have the params good to go.
+        $eMConfig->set('calendarIds', implode(",",$calId));
 
-        if (isset($calId[1]))
-            $eMConfig->set('calendarId2', $calId[1]);
-
-        if (isset($calId[2]))
-            $eMConfig->set('calendarId3', $calId[2]);
-
-        if (isset($calId[3]))
-            $eMConfig->set('calendarId4', $calId[3]);
-
-        if (isset($calId[4]))
-            $eMConfig->set('calendarId5', $calId[4]);
-
-        if (isset($calId[5]))
-            $eMConfig->set('calendarId6', $calId[5]);
-
-        if (isset($calId[6]))
-            $eMConfig->set('calendarId7', $calId[6]);
-
-        if (isset($calId[7]))
-            $eMConfig->set('calendarId8', $calId[7]);
-
-        if (isset($calId[8]))
-            $eMConfig->set('calendarId9', $calId[8]);
-
-        if (isset($calId[9]))
-            $eMConfig->set('calendarId10', $calId[9]);
-
-        if (isset($calId[10]))
-            $eMConfig->set('calendarId11', $calId[10]);
-
-        if (isset($calId[11]))
-            $eMConfig->set('calendarId12', $calId[11]);
-
-        if (isset($calId[12]))
-            $eMConfig->set('calendarId13', $calId[12]);
-
-        if (isset($calId[13]))
-            $eMConfig->set('calendarId14', $calId[13]);
-
-        if (isset($calId[14]))
-            $eMConfig->set('calendarId15', $calId[14]);
-
-        if (isset($calId[15]))
-            $eMConfig->set('calendarId16', $calId[15]);
-
-        if (isset($calId[16]))
-            $eMConfig->set('calendarId17', $calId[16]);
-
-        if (isset($calId[17]))
-            $eMConfig->set('calendarId18', $calId[17]);
-
-        if (isset($calId[18]))
-            $eMConfig->set('calendarId19', $calId[18]);
-
-        if (isset($calId[19]))
-            $eMConfig->set('calendarId20', $calId[19]);
-        
-
-        // Save the parameters
         $componentid = JComponentHelper::getComponent('com_emundus')->id;
 
         $db = JFactory::getDBO();        
@@ -2610,7 +2543,6 @@ class EmundusModelCalendar extends JModelLegacy {
         try {
             $db->setQuery($query);
             $db->execute();
-            return true;
         } catch (Exception $e) {
             die($e->getMessage());
         }
@@ -2623,523 +2555,14 @@ class EmundusModelCalendar extends JModelLegacy {
         $query->select($db->quoteName('code'));
         $query->from($db->quoteName('#__emundus_setup_programmes'));
 
-        $db->setQuery($query);
-
-        $code = $db->loadColumn(); 
-
-        return $code;
-    }
-
-    function setCodeCal1() {
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-
-        if (isset($code[0])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[0]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('105')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
+        try {
             $db->setQuery($query);
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal2() {
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        
-        
-        if (isset($code[1])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[1]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('106')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal3(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-
-        if (isset($code[2])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[2]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('107')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal4(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-        if (isset($code[3])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[3]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('108')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            $result = $db->execute();
+            return $db->loadColumn();
+        } catch (Exception $e) {
+            die($e->getMessage());
         }
 
     }
-
-
-    function setCodeCal5(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-
-        if (isset($code[4])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[4]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('109')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal6(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-
-        if (isset($code[5])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[5]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('110')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal7(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-
-        if (isset($code[6])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[6]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('111')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal8(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-
-        if (isset($code[7])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[7]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('112')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal9(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-
-        if (isset($code[8])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[8]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('113')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal10(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-        if (isset($code[9])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[9]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('114')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal11(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-
-        if (isset($code[10])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[10]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('115')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal12(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-
-        if (isset($code[11])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[11]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('116')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal13(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-
-        if (isset($code[12])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[12]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('117')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal14(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-
-        if (isset($code[13])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[13]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('118')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal15(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-
-        if (isset($code[14])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[14]),
-            );
-
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('119')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-
-            $db->setQuery($query);
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal16(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-
-        if (isset($code[15])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[15]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('120')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal17(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-
-        if (isset($code[16])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[16]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('121')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal18(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-
-        if (isset($code[17])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[17]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('122')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal19(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-
-        if (isset($code[18])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[18]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('123')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            
-            $result = $db->execute();
-        }
-    }
-
-
-    function setCodeCal20(){
-        $code = $this->getCode();
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-
-        if (isset($code[19])) {
-            // Fields to update.
-            $fields = array(
-                $db->quoteName('code') . ' = ' . $db->quote($code[19]),
-            );
-            
-            // Conditions for which records should be updated.
-            $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote('124')
-            );
-            $query->update($db->quoteName('#__categories'))->set($fields)->where($conditions);
-            
-            $db->setQuery($query);
-            
-            $result = $db->execute();
-        }
-    }
-
-
-
-    /*function linkPrograms(){
-    $this->setCodeCal1();
-    $this->setCodeCal2();
-    $this->setCodeCal3();
-    $this->setCodeCal4();
-    $this->setCodeCal5();
-    $this->setCodeCal6();
-    $this->setCodeCal7();
-    $this->setCodeCal8();
-    $this->setCodeCal9();
-    $this->setCodeCal10();
-    $this->setCodeCal11();
-    $this->setCodeCal12();
-    $this->setCodeCal13();
-    $this->setCodeCal14();
-    $this->setCodeCal15();
-    $this->setCodeCal16();
-    $this->setCodeCal17();
-    $this->setCodeCal18();
-    $this->setCodeCal19();
-    $this->setCodeCal20();
-    }*/
-    
-
-
-
 }
 
 

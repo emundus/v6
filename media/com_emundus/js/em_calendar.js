@@ -122,7 +122,7 @@ $(document).on('click', '#addEvent', function (e) {
         var btnSave = document.getElementsByClassName('btn');
         //  btnSave[0].style.visibility ="hidden";   
 
-    })
+    }, 10000)
 });
 
 $(document).on('click', '#addCalendar', function (e) {

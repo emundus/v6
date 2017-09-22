@@ -42,12 +42,11 @@ $aliasTransform = str_replace(' ', '-', $title);
 $aliasSet = $jinput->set('jos_dpcalendar_extcalendars___alias',$aliasTransform);
 $alias = $jinput->getValue('jos_dpcalendar_extcalendars___alias');
 
-
 try {
 
     $m_calendar = new EmundusModelCalendar;
-    $result = $m_calendar->createCalendar($title,$alias,$color);
-    //$m_calendar->insertAliasColor($alias, $color[0], $title);
+    // TODO: Rewrite the calendar creation function.
+    $result = $m_calendar->createCalendar($title, $alias, $color);
     $m_calendar->saveParams();
     die("<div class='col-md-12'><center><h1>Calendar Created.</h1></center></div>");
 
