@@ -1,7 +1,7 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1.5: emundus-expert_check.php 89 2012-11-05 Benjamin Rivalland
+ * @version 1.5: emundus-expert_check.php 89 2017-10-01 Benjamin Rivalland
  * @package Fabrik
  * @copyright Copyright (C) 2008-2013 eMundus SAS. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
@@ -24,9 +24,10 @@ $baseurl 	= JURI::base(true);
 
 $db 		= JFactory::getDBO();
 
-$query = 'SELECT * FROM #__emundus_files_request  WHERE keyid ="'.$key_id.'" AND student_id='.$sid.' AND uploaded=0';
+$query = 'SELECT * FROM #__emundus_files_request  WHERE keyid like "'.$key_id.'" AND student_id='.$sid.' AND (uploaded=0 OR uploaded IS NULL)';
 $db->setQuery( $query );
 $obj=$db->loadObject();
+
 
 if (isset($obj)) {
 	$s = $jinput->get->get('s');
