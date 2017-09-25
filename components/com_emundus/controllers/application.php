@@ -366,32 +366,6 @@ class EmundusControllerApplication extends JControllerLegacy
         exit;
     }
 
-    public function getfirstmenuelement() {
-        $user = JFactory::getUser(); 
-        
-        if(!EmundusHelperAccess::asPartnerAccessLevel($user->id))
-            die(JText::_("ACCESS_DENIED"));
-
-        $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->get('fnum', null, 'STRING');
-
-        $model = $this->getModel('Application');
-        $menus = $model->getActionMenu();
-        $res = false;
-        
-        if (EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum)) {
-            if ($menus !== false) {
-                $res = true;
-            }
-            $tab = array('status' => $res, 'menu' => $menus[0]);
-        } else {
-            $tab = array('status' => false, 'msg' => JText::_('RESTRICTED_ACCESS'));
-        }
-        
-        echo json_encode((object)$tab);
-        exit;
-    }
-
     public function deleteattachement()
     {
         $jinput = JFactory::getApplication()->input;
