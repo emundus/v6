@@ -155,11 +155,11 @@ p.description  {
 	/*width:100%;*/
 }
 #attachment_list_mand {
-	width: 47%;
+	/*width: 47%;*/
 	float:left;
 }
 #attachment_list_opt {
-	width: 47%;
+	/*width: 47%;*/
 	float: right;
 }
 #attachment_list h2{
