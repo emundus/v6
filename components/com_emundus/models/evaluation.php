@@ -706,6 +706,7 @@ class EmundusModelEvaluation extends JModelList
             $params['published'] = 1;
 
 		$query = array('q' => '', 'join' => '');
+		
 		if(!empty($params))
 		{
 			foreach($params as $key => $value)
@@ -842,17 +843,11 @@ class EmundusModelEvaluation extends JModelList
 					case 'schoolyear':
 						if (!empty($value))
 						{
-								if (($value[0] == "%") || empty($value[0]))
+							if (($value[0] == "%") || empty($value[0]))
 								$query['q'] .= '';
 							else
 							{
 								$query['q'] .= ' and esc.year IN ("' . implode('","', $value) . '") ';
-								/*if(!isset($query['campaign']))
-								{
-									$query['campaign'] = true;
-									if (!array_key_exists('jos_emundus_setup_campaigns', $tableAlias))
-										$query['join'] .= ' left join #__emundus_setup_campaigns as esc on esc.id = c.campaign_id ';
-								}*/
 							}
 						}
 						break;
@@ -864,14 +859,6 @@ class EmundusModelEvaluation extends JModelList
 							else
 							{
 								$query['q'] .= ' and sp.code IN ("' . implode('","', $value) . '") ';
-								/*if (!isset($query['campaign']))
-								{
-									$query['campaign'] = true;
-									if (!array_key_exists('jos_emundus_setup_campaigns', $tableAlias))
-										$query['join'] .= ' left join #__emundus_setup_campaigns as esc on esc.id = c.campaign_id ';
-								}*/
-								/*if (!array_key_exists('jos_emundus_setup_programmes', $tableAlias))
-									$query['join'] .= ' left join #__emundus_setup_programmes as sp on sp.code like esc.training ';*/
 							}
 
 						}
@@ -960,27 +947,22 @@ class EmundusModelEvaluation extends JModelList
 						}
 						break;
 					case 'validate':
-							if(!empty($value))
-							{
-								if ($value == 1)
-									$query['q'] .= ' and #__emundus_declaration.validated = 1 ';
-								else
-									$query['q'] .= ' and #__emundus_declaration.validated = 0 ';
-							}
+						if(!empty($value))
+						{
+							if ($value == 1)
+								$query['q'] .= ' and #__emundus_declaration.validated = 1 ';
+							else
+								$query['q'] .= ' and #__emundus_declaration.validated = 0 ';
+						}
 						break;
 					case 'status':
 						if ($value)
 						{
-							if ( $value[0] == "%" || !isset($value[0])  || empty($value[0]) ) 
+							if ( $value[0] == "%" || !isset($value[0]) ) 
 								$query['q'] .= ' ';
 							else
 							{
 								$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
-								/*if(!isset($query['status']))
-								{
-									$query['status'] = true;
-									$query['join'] .= ' left join #__emundus_setup_status as ss on ss.step = c.status ';
-								}*/
 							}
 						}
 						break;
@@ -998,7 +980,7 @@ class EmundusModelEvaluation extends JModelList
                     case 'published':
                         if ($value == "-1") {
                             $query['q'] .= ' and c.published=-1 ';
-                        } elseif ($value == "0") {
+                        } elseif ($value == 0) {
                             $query['q'] .= ' and c.published=0 ';
                         } else {
                             $query['q'] .= ' and c.published=1 ';
@@ -1006,45 +988,65 @@ class EmundusModelEvaluation extends JModelList
                         break;
 				}
 			}
+		}
+
+		// force menu filter
+		if (count($filt_menu['status'])>0 && isset($filt_menu['status'][0]) && !empty($filt_menu['status'][0]) && $filt_menu['status'][0] != "%") {
+			$query['q'] .= ' AND c.status IN ("' . implode('","', $filt_menu['status']) . '") ';
 		} 
+
+		if ($filt_menu['programme'][0] == "%"){
+			$sql_code = '1=1';
+		} elseif(count($filt_menu['programme'])>0 && isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
+			$sql_code = ' sp.code IN ("'.implode('","', $filt_menu['programme']).'") ';
+		} else {
+			// ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
+			// if(count($this->code)>0)
+			$sql_code = ' sp.code IN ("'.implode('","', $this->code).'") ';
+		}
+		$sql_fnum = '';
+		if(count($this->fnum_assoc)>0)
+			$sql_fnum = ' OR c.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
+		
+		$query['q'] .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
+
 		return $query;
 	}
 
 	private function _buildSearch($str, $tableAlias = array())
 	{
 		$q = array('q' => '', 'join' => '');
-		if (is_numeric($str))
-		{
-			//possibly fnum ou uid
-			$q['q'] .= ' (u.id = ' . $str . ' or c.fnum like "'.$str.'%") ';
-			if (!in_array('jos_users', $tableAlias))
-				$q['join'] .= ' left join #__users as u on u.id = c.applicant_id ';
-			$q['users'] = true;
+        if (is_numeric($str))
+        {
+            //possibly fnum ou uid
+            $q['q'] .= ' (u.id = ' . $str . ' or c.fnum like "'.$str.'%") ';
+            if (!in_array('jos_users', $tableAlias))
+                $q['join'] .= ' left join #__users as u on u.id = c.applicant_id ';
+            $q['users'] = true;
 
-		}
-		else
-		{
-			if(filter_var($str, FILTER_VALIDATE_EMAIL) !== false)
-			{
-				//the request is an email
-				$q['q'] .= 'u.email = "'.mysql_real_escape_string($str).'"';
-				if (!in_array('jos_users', $tableAlias))
-					$q['join'] .= ' left join #__users as u on u.id = c.applicant_id ';
-				$q['users'] = true;
+        }
+        else
+        {
+            if(filter_var($str, FILTER_VALIDATE_EMAIL) !== false)
+            {
+                //the request is an email
+                $q['q'] .= 'u.email = "'.$str.'"';
+                if (!in_array('jos_users', $tableAlias))
+                    $q['join'] .= ' left join #__users as u on u.id = c.applicant_id ';
+                $q['users'] = true;
 
-			}
-			else
-			{
-				$q['q'] .= ' (ue.lastname LIKE "%' . mysql_real_escape_string($str) . '%" OR ue.firstname LIKE "%' . mysql_real_escape_string($str) . '%" OR u.email LIKE "%' . mysql_real_escape_string($str) . '%" OR u.username LIKE "%' . mysql_real_escape_string($str) . '%" ) ';
-				if (!in_array('jos_users', $tableAlias))
-					$q['join'] .= ' left join #__users as u on u.id = c.applicant_id';
-				$q['join'] .= ' left join #__emundus_users as ue on ue.user_id = c.applicant_id ';
-				$q['users'] = true;
-				$q['em_user'] = true;
-
-			}
-		}
-		return $q;
+            }
+            else
+            {
+                $q['q'] .= ' (ue.lastname LIKE "%' . ($str) . '%" OR ue.firstname LIKE "%' . ($str) . '%" OR u.email LIKE "%' . ($str) . '%" OR u.username LIKE "%' . ($str) . '%" ) ';
+                if (!in_array('jos_users', $tableAlias))
+                    $q['join'] .= ' left join #__users as u on u.id = c.applicant_id';
+                $q['join'] .= ' left join #__emundus_users as ue on ue.user_id = c.applicant_id ';
+                $q['users'] = true;
+                $q['em_user'] = true;
+            }
+        }
+        return $q;
 	}
 
 	public function getUsers($current_fnum = null)
@@ -1103,15 +1105,6 @@ class EmundusModelEvaluation extends JModelList
 		$query .= ' LEFT JOIN #__emundus_users as eu on eu.user_id = jos_emundus_evaluations.user ';
 		$query .= $q['join'];
 		$query .= ' where 1 = 1 ' . $q['q'];
-
-		if (isset($current_fnum) && !empty($current_fnum)) {
-			$query .= ' AND c.fnum like '.$dbo->Quote($current_fnum);
-		}
-		// ONLY FILES LINKED TO MY GROUPS
-		//$code = $userModel->getUserGroupsProgrammeAssoc($current_user->id);
-		//$fnum_assoc = $userModel->getApplicantsAssoc($current_user->id);
-		$query .= ' AND (sp.code IN ("'.implode('","', $this->code).'") OR c.fnum IN ("'.implode('","', $this->fnum_assoc).'")) ';
-		//////////////////////////////////////////////////////////////
 		
 		$query .=  $this->_buildContentOrderBy();
 
