@@ -380,25 +380,33 @@ function openFiles(fnum) {
 
             $.ajax({
                 type:'get',
-                url:'index.php?option=com_emundus&view=application&Itemid=' + itemId + '&format=raw&layout=form',
+                url:'index.php?option=com_emundus&controller=application&task=getfirstmenuelement',
                 dataType:'html',
-                data:({fnum:fnum.fnum}),
-                success: function(result)
-                {
-                    $('.em-dimmer').remove();
-                    $('#em-files-filters').hide();
-                    $(".main-panel .panel.panel-default").hide();
-                    $('#em-appli-block').empty();
-                    $('#em-appli-block').append(result);
-                    $('#accordion .panel.panel-default').show();
-                    $('#em-appli-menu, #em-last-open, #em-assoc-files, #em-synthesis, .em-open-files > div[id="'+fnum.fnum+'"]').show();
-                    menuBar1();
-                },
-                error: function (jqXHR, textStatus, errorThrown)
-                {
-                    console.log(jqXHR.responseText);
-                    if (jqXHR.status === 302)
-                        window.location.replace('/user');
+                success: function(result) {
+                    result = JSON.parse(result);
+                    $.ajax({
+                        type:'get',
+                        url:result.menu.link,
+                        dataType:'html',
+                        data:({fnum:fnum.fnum}),
+                        success: function(result)
+                        {
+                            $('.em-dimmer').remove();
+                            $('#em-files-filters').hide();
+                            $(".main-panel .panel.panel-default").hide();
+                            $('#em-appli-block').empty();
+                            $('#em-appli-block').append(result);
+                            $('#accordion .panel.panel-default').show();
+                            $('#em-appli-menu, #em-last-open, #em-assoc-files, #em-synthesis, .em-open-files > div[id="'+fnum.fnum+'"]').show();
+                            menuBar1();
+                        },
+                        error: function (jqXHR, textStatus, errorThrown)
+                        {
+                            console.log(jqXHR.responseText);
+                            if (jqXHR.status === 302)
+                                window.location.replace('/user');
+                        }
+                    })
                 }
             })
         },
