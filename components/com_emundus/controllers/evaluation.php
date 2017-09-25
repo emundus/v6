@@ -69,31 +69,33 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
     public function setfilters()
     {
-
-        $jinput     = JFactory::getApplication()->input;
+        $jinput = JFactory::getApplication()->input;
         $filterName = $jinput->getString('id', null);
-        $elements   = $jinput->getString('elements', null);
-        $multi      = $jinput->getString('multi', null);
+        $elements = $jinput->getString('elements', null);
+        $multi = $jinput->getString('multi', null);
 
         @EmundusHelperFiles::clearfilter();
 
-        if ($multi == "true")
+        if($multi == "true")
+        {
             $filterval = $jinput->get('val', array(), 'ARRAY');
+        }
         else
+        {
             $filterval = $jinput->getString('val', null);
+        }
 
         $session = JFactory::getSession();
         $params = $session->get('filt_params');
 
-        if ($elements == 'false')
+        if($elements == 'false')
         {
             $params[$filterName] = $filterval;
         }
         else
         {
             $vals = (array)json_decode(stripslashes($filterval));
-
-            if(isset($vals[0]->name))
+            if(count($vals) > 0)
             {
                 foreach ($vals as $val)
                 {
@@ -109,12 +111,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
         }
 
         $session->set('filt_params', $params);
-
-
         $session->set('limitstart', 0);
         echo json_encode((object)(array('status' => true)));
         exit();
-
     }
 
     public function loadfilters()
