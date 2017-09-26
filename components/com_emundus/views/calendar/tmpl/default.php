@@ -29,9 +29,11 @@
 
     $sync = new EmundusModelCalendar;
     $sync->authenticateClient();
+    // TODO: Calendar events are being wiped and calendars duplicated.
+    // This could be because the calendars are being duplicated abnd ovveriting each other / changing the IDs?
+    // It isn't sure where the issue comes from but it could be here.
     $sync->saveCategoriesCalendar();
     $sync->insertCategoriesCalendar();
-    $sync->getCalId();
     $sync->updateTitleForBookingsByCandidate();
 ?>
     <style type="text/css">

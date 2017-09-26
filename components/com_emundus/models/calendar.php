@@ -1581,15 +1581,17 @@ class EmundusModelCalendar extends JModelLegacy {
 
 
             foreach ($events as $evt) {
-            
+
+                // TODO: The ID in $evt is a goole calendar ID and not the DB ID
+                // this means that the function cannot work.
                 $info = $this->getUidOidandCapcityused($evt->id);
                 
                 if (!empty($info)) {
                 
-                    $uid = $info[0]['uid'];
+                    $uid        = $info[0]['uid'];
                     $originalId = $info[0]['original_id'];
-                    $capUsed = $info[0]['capacity_used'];
-                    $title = $info[0]['title'];
+                    $capUsed    = $info[0]['capacity_used'];
+                    $title      = $info[0]['title'];
             
                     if ($uid != '61' && $originalId != '0' && $capUsed == '1' && !preg_match('(booked)',$title) == true) {
                 
@@ -1600,7 +1602,7 @@ class EmundusModelCalendar extends JModelLegacy {
                         $updatedEvent = $service->events->update($calendarlist->id, $evt->getId(), $evt);
 
             
-                    } else if ($uid == '61' && $originalId == '0' && $capUsed == '0' && !preg_match('(booked)',$title) == false) {
+                    } elseif ($uid == '61' && $originalId == '0' && $capUsed == '0' && !preg_match('(booked)',$title) == false) {
 
                         $titleBook = explode(' ',$title);
                         $evt->setSummary($titleBook[0]);
@@ -2273,37 +2275,10 @@ class EmundusModelCalendar extends JModelLegacy {
         }
     }
 
-
-
-    function getCalendarSavedByAccount() {
-
-        $db = JFactory::getDBO(); 
-        $query = $db->getQuery(true);
-
-        $conditions = array(
-            $db->quoteName('accountId') . ' = ' . $db->quote($this->getFirstCalendar())
-        ); 
-
-        $query->select('*');
-        $query->from($db->quoteName('#__emundus_calendar_save'));
-        $query->where($conditions);
-        $query->order($db->quoteName('id') . 'ASC'); 
-
-        try {
-            $db->setQuery($query);
-            return $db->loadAssocList();
-        } catch (Exception $e) {
-            die($e->getMessage());
-        }
-
-    }
-
-    function insertCategoriesCalendar() {      
-        $calSaved = $this->getCalendarSavedByAccount();
-
+    function insertCategoriesCalendar() { 
+        $calSaved = $this->getCalendarSaved();
 
         $this->deleteCalCatToSync();
-
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $client = $this->getClient($eMConfig->get('clientId'),$eMConfig->get('clientSecret'));
