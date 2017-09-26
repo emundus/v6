@@ -6,11 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname(dirname($vendorDir));
 
 return array(
-    'Sabre\\HTTP' => array($vendorDir . '/sabre/dav/lib'),
-    'Sabre\\DAVACL' => array($vendorDir . '/sabre/dav/lib'),
-    'Sabre\\DAV' => array($vendorDir . '/sabre/dav/lib'),
-    'Sabre\\CardDAV' => array($vendorDir . '/sabre/dav/lib'),
-    'Sabre\\CalDAV' => array($vendorDir . '/sabre/dav/lib'),
     'Omnipay\\Common\\' => array($vendorDir . '/omnipay/common/src'),
     'Mustache' => array($vendorDir . '/mustache/mustache/src'),
     'Guzzle\\Tests' => array($vendorDir . '/guzzle/guzzle/tests'),

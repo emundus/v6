@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -24,7 +24,7 @@ class DPCalendarControllerLocations extends JControllerAdmin
 	{
 		$return = parent::publish();
 
-		if (JRequest::getVar('ajax') != 0)
+		if (JFactory::getApplication()->input->getVar('ajax') != 0)
 		{
 			$text = JText::plural($this->text_prefix . '_N_ITEMS_TRASHED', count(JFactory::getApplication()->input->get('cid', array(), 'array')));
 			if ($this->message == $text)

@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -79,7 +79,7 @@ class DPCalendarControllerTicketForm extends DPCalendarControllerTicket
 	protected function getRedirectToItemAppend($recordId = null, $urlVar = null)
 	{
 		$append = parent::getRedirectToItemAppend($recordId, $urlVar);
-		$itemId = JRequest::getInt('Itemid');
+		$itemId = JFactory::getApplication()->input->getInt('Itemid');
 		$return = $this->getReturnPage();
 
 		if ($itemId)

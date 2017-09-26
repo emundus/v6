@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 
@@ -158,7 +158,7 @@ JFactory::getDocument()->addStyleDeclaration('.ui-datepicker { z-index: 1003 !im
 							}?>
 							<?php if ($canEdit || $canEditOwn)
 							{ ?>
-								<a href="<?php echo JRoute::_('index.php?option=com_dpcalendar&task=event.edit&id=' . $item->id);?>"
+								<a href="<?php echo JRoute::_('index.php?option=com_dpcalendar&task=event.edit&e_id=' . $item->id);?>"
 									title="<?php echo JText::_('JACTION_EDIT');?>">
 									<?php echo $this->escape($item->title); ?></a>
 							<?php
@@ -182,7 +182,7 @@ JFactory::getDocument()->addStyleDeclaration('.ui-datepicker { z-index: 1003 !im
 								{
 									JHtml::_('dropdown.addCustomItem',
 									JText::_('COM_DPCALENDAR_VIEW_EVENTS_DROPDOWN_EDIT_ORIGINAL'),
-									JRoute::_('index.php?option=com_dpcalendar&task=event.edit&id=' . $item->original_id));
+									JRoute::_('index.php?option=com_dpcalendar&task=event.edit&e_id=' . $item->original_id));
 								}
 
 								JHtml::_('dropdown.divider');
@@ -275,5 +275,5 @@ JFactory::getDocument()->addStyleDeclaration('.ui-datepicker { z-index: 1003 !im
 </form>
 
 <div align="center" style="clear: both">
-	<?php echo sprintf(JText::_('COM_DPCALENDAR_FOOTER'), JRequest::getVar('DPCALENDAR_VERSION'));?>
+	<?php echo sprintf(JText::_('COM_DPCALENDAR_FOOTER'), JFactory::getApplication()->input->getVar('DPCALENDAR_VERSION'));?>
 </div>

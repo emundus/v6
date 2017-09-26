@@ -2,31 +2,24 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
-JLoader::import('components.com_dpcalendar.libraries.dpcalendar.view', JPATH_ADMINISTRATOR);
-
-class DPCalendarViewEvent extends DPCalendarView
+class DPCalendarViewEvent extends \DPCalendar\View\LayoutView
 {
+	protected $layoutName = 'event.form.default';
 
-	protected $state;
-
-	protected $item;
-
-	protected $form;
-
-	protected $canDo;
-
-	protected $freeInformationText;
-
-	protected function init ()
+	protected function init()
 	{
+		// Set the default model
 		$this->setModel(JModelLegacy::getInstance('AdminEvent', 'DPCalendarModel'), true);
+
 		$this->state = $this->get('State');
-		$this->item = $this->get('Item');
+		$this->event = $this->get('Item');
+
+		// Form stuff
 		$this->form = $this->get('Form');
 		$this->form->setFieldAttribute('user_id', 'type', 'hidden');
 		$this->form->setFieldAttribute('start_date', 'format', DPCalendarHelper::getComponentParameter('event_form_date_format', 'm.d.Y'));
@@ -37,47 +30,38 @@ class DPCalendarViewEvent extends DPCalendarView
 		$this->canDo = DPCalendarHelper::getActions($this->state->get('filter.category_id'));
 
 		$this->freeInformationText = '';
-		if (DPCalendarHelper::isFree())
-		{
-			$this->freeInformationText = '<br/><small class="text-warning" style="float:left">' . JText::_(
-					'COM_DPCALENDAR_ONLY_AVAILABLE_SUBSCRIBERS') . '</small>';
+		if (DPCalendarHelper::isFree()) {
+			$this->freeInformationText = '<br/><small class="text-warning" style="float:left">' .
+				JText::_('COM_DPCALENDAR_ONLY_AVAILABLE_SUBSCRIBERS') .
+				'</small>';
 		}
 	}
 
-	protected function addToolbar ()
+	protected function addToolbar()
 	{
-		JRequest::setVar('hidemainmenu', true);
+		$this->input->set('hidemainmenu', true);
 
-		$user = JFactory::getUser();
-		$userId = $user->get('id');
-		$isNew = ($this->item->id == 0);
-		$checkedOut = ! ($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-		$canDo = DPCalendarHelper::getActions($this->item->catid, 0);
+		$isNew      = ($this->event->id == 0);
+		$checkedOut = !($this->event->checked_out == 0 || $this->event->checked_out == $this->user->id);
+		$canDo      = DPCalendarHelper::getActions($this->event->catid, 0);
 
-		if (! $checkedOut && ($canDo->get('core.edit') || (count($user->getAuthorisedCategories('com_dpcalendar', 'core.create')))))
-		{
-			JToolBarHelper::apply('event.apply');
-			JToolBarHelper::save('event.save');
+		if (!$checkedOut && ($canDo->get('core.edit') || (count($this->user->getAuthorisedCategories('com_dpcalendar', 'core.create'))))) {
+			JToolbarHelper::apply('event.apply');
+			JToolbarHelper::save('event.save');
 		}
-		if (! $checkedOut && (count($user->getAuthorisedCategories('com_dpcalendar', 'core.create'))))
-		{
-			JToolBarHelper::save2new('event.save2new');
+		if (!$checkedOut && (count($this->user->getAuthorisedCategories('com_dpcalendar', 'core.create')))) {
+			JToolbarHelper::save2new('event.save2new');
 		}
-		if (! $isNew && (count($user->getAuthorisedCategories('com_dpcalendar', 'core.create')) > 0))
-		{
-			JToolBarHelper::save2copy('event.save2copy');
+		if (!$isNew && (count($this->user->getAuthorisedCategories('com_dpcalendar', 'core.create')) > 0)) {
+			JToolbarHelper::save2copy('event.save2copy');
 		}
-		if ($this->state->params->get('save_history', 1) && $user->authorise('core.edit'))
-		{
-			JToolbarHelper::versions('com_dpcalendar.event', $this->item->id);
+		if ($this->state->params->get('save_history', 1) && $this->user->authorise('core.edit')) {
+			JToolbarHelper::versions('com_dpcalendar.event', $this->event->id);
 		}
-		if (empty($this->item->id))
-		{
-			JToolBarHelper::cancel('event.cancel');
-		}
-		else
-		{
-			JToolBarHelper::cancel('event.cancel', 'JTOOLBAR_CLOSE');
+		if (empty($this->event->id)) {
+			JToolbarHelper::cancel('event.cancel');
+		} else {
+			JToolbarHelper::cancel('event.cancel', 'JTOOLBAR_CLOSE');
 		}
 		parent::addToolbar();
 	}

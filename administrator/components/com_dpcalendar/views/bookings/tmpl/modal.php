@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 
@@ -53,7 +53,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 				<?php echo JHtml::_('grid.sort', 'COM_DPCALENDAR_BOOKING_FIELD_NAME_LABEL', 'a.name', $listDirn, $listOrder); ?>
 			</th>
 			<th class="title">
-				<?php echo JHtml::_('grid.sort', 'COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL', 'a.event_title', $listDirn, $listOrder); ?>
+				<?php echo JHtml::_('grid.sort', 'COM_DPCALENDAR_EVENT', 'a.event_title', $listDirn, $listOrder); ?>
 			</th>
 			<th style="width: 10%" class="nowrap hidden-phone">
 				<?php echo JHtml::_('grid.sort', 'JGLOBAL_CREATED', 'a.book_date', $listDirn, $listOrder); ?>

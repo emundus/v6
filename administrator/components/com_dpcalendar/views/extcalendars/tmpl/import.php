@@ -2,20 +2,18 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
-DPCalendarHelper::loadLibrary(array(
-		'bootstrap' => true
-));
-JFactory::getDocument()->addScript(JURI::base() . 'components/com_dpcalendar/libraries/iframe-resizer/iframeResizer.contentWindow.min.js');
+DPCalendarHelper::loadLibrary();
+JHtml::_('script', 'com_dpcalendar/iframe-resizer/iframeResizer.contentWindow.min.js', false, true);
 
 $plugin = JFactory::getApplication()->input->getCmd('dpplugin');
-JFactory::getLanguage()->load('plg_dpcalendar_dpcalendar_' . $plugin, JPATH_PLUGINS . '/dpcalendar/dpcalendar_' . $plugin);
-JForm::addFormPath(JPATH_PLUGINS . '/dpcalendar/dpcalendar_' . $plugin.'/forms');
+JFactory::getLanguage()->load('plg_dpcalendar_' . $plugin, JPATH_PLUGINS . '/dpcalendar/' . $plugin);
+JForm::addFormPath(JPATH_PLUGINS . '/dpcalendar/' . $plugin.'/forms');
 $form = JForm::getInstance('form', 'params');
 $uri = JUri::getInstance();
 ?>

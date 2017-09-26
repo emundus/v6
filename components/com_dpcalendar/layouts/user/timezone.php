@@ -2,68 +2,72 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
+use CCL\Content\Element\Basic\Form;
+use CCL\Content\Element\Basic\Form\Input;
+use CCL\Content\Element\Basic\Form\Label;
+use CCL\Content\Element\Basic\Form\Select;
+use CCL\Content\Element\Basic\Paragraph;
+
 defined('_JEXEC') or die();
 
-if (DPCalendarHelper::getComponentParameter('enable_tz_switcher', '0') == '0')
-{
+// Check if the timezone switcher is enabled
+if (DPCalendarHelper::getComponentParameter('enable_tz_switcher', '0') == '0') {
 	return;
 }
 
-DPCalendarHelper::loadLibrary(array(
-		'chosen' => '#dpcalendar-user-timezone'
-));
+// Load chosen to make the list nicer
+DPCalendarHelper::loadLibrary(array('chosen' => '.dp-timezone-switcher'));
+
+// Load the language file
 JFactory::getLanguage()->load('com_dpcalendar', JPATH_ADMINISTRATOR . '/components/com_dpcalendar');
 
+// The regions of the timezones
 $regions = array(
-		'Africa' => DateTimeZone::AFRICA,
-		'America' => DateTimeZone::AMERICA,
-		'Antarctica' => DateTimeZone::ANTARCTICA,
-		'Aisa' => DateTimeZone::ASIA,
-		'Atlantic' => DateTimeZone::ATLANTIC,
-		'Europe' => DateTimeZone::EUROPE,
-		'Indian' => DateTimeZone::INDIAN,
-		'Pacific' => DateTimeZone::PACIFIC
+	'Africa'     => DateTimeZone::AFRICA,
+	'America'    => DateTimeZone::AMERICA,
+	'Antarctica' => DateTimeZone::ANTARCTICA,
+	'Aisa'       => DateTimeZone::ASIA,
+	'Atlantic'   => DateTimeZone::ATLANTIC,
+	'Europe'     => DateTimeZone::EUROPE,
+	'Indian'     => DateTimeZone::INDIAN,
+	'Pacific'    => DateTimeZone::PACIFIC
 );
 
+// Compile the timezones later we do with with optgroups
 $timezones = array();
-foreach ($regions as $name => $mask)
-{
+foreach ($regions as $name => $mask) {
 	$zones = DateTimeZone::listIdentifiers($mask);
-	foreach ($zones as $timezone)
-	{
+	foreach ($zones as $timezone) {
 		$timezones[$name][$timezone] = $timezone;
 	}
 }
 
-$date = DPCalendarHelper::getDate();
-$actualTimezone = JFactory::getSession()->get('user-timezone', $date->getTimezone()
-	->getName(), 'DPCalendar');
+// Get the actual timezone
+$actualTimezone = JFactory::getSession()->get('user-timezone', DPCalendarHelper::getDate()->getTimezone()->getName(), 'DPCalendar');
 
-echo '<form action="' . JRoute::_(JUri::base()) . '" method="GET">';
-echo JText::_('COM_DPCALENDAR_CHOOSE_TIMEZONE') . ': ';
-echo '<select name="tz" id="dpcalendar-user-timezone" onchange="this.form.submit()">';
-echo '<option value="UTC" ' . ($actualTimezone == 'UTC' ? 'selected="selected"' : '') . '>' . JText::_('JLIB_FORM_VALUE_TIMEZONE_UTC') . '</option>';
-foreach ($timezones as $region => $list)
-{
-	echo '<optgroup label="' . $region . '">' . "\n";
-	foreach ($list as $timezone => $name)
-	{
-		$selected = '';
-		if ($name == $actualTimezone)
-		{
-			$selected = ' selected="selected"';
-		}
-		$name = explode('/', $name, 2);
-		echo '<option value="' . $timezone . '"' . $selected . '>' . str_replace('_', ' ', $name[1]) . '</option>' . "\n";
+// Set up the form
+$form = $displayData['root']->addChild(new Form('user-timezone-form', JRoute::_(JUri::base()), 'tz-form', 'GET', array('form-validate')));
+$form->addChild(new Label('text', 'timezone'))->setContent(JText::_('COM_DPCALENDAR_CHOOSE_TIMEZONE') . ': ');
+
+// Define the select box
+$select = $form->addChild(new Select('timezone', 'tz'));
+$select->addClass('dp-timezone-switcher', true);
+$select->addAttribute('onchange', 'this.form.submit()');
+
+$select->addOption(JText::_('JLIB_FORM_VALUE_TIMEZONE_UTC'), 'UTC', $actualTimezone == 'UTC');
+foreach ($timezones as $region => $list) {
+	foreach ($list as $timezone => $name) {
+		$select->addOption($name, $timezone, $name == $actualTimezone);
 	}
-	echo '<optgroup>' . "\n";
 }
-echo '</select>';
-echo '<input type="hidden" name="task" value="profile.tz">';
-echo '<input type="hidden" name="return" value="' . base64_encode(JUri::getInstance()->toString()) . '">';
-echo '<input type="hidden" name="option" value="com_dpcalendar">';
-echo '<input type="hidden" name="view" value="profile">';
-echo '</form>';
+
+$form->addChild(new Input('task', 'hidden', 'task', 'profile.tz'));
+$form->addChild(new Input('return', 'hidden', 'return', base64_encode(JUri::getInstance()->toString())));
+$form->addChild(new Input('option', 'hidden', 'option', 'com_dpcalendar'));
+$form->addChild(new Input('view', 'hidden', 'view', 'profile'));
+
+JFactory::getDocument()->addStyleDeclaration('#' . $form->getId() . ' label, #' . $form->getId() . ' div {float: left; margin: 5px}');
+JFactory::getDocument()->addStyleDeclaration('#' . $form->getId() . ' {display: overlay; margin: 5px}');

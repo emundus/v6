@@ -2,133 +2,107 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
-if (!$events)
-{
-	echo JText::_('COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL_NO_EVENT_TEXT');
+use CCL\Content\Element\Basic\Container;
+use CCL\Content\Element\Basic\Frame;
+use CCL\Content\Element\Basic\Paragraph;
+use CCL\Content\Element\Basic\TextBlock;
+use CCL\Content\Element\Basic\Link;
+
+if (!$events) {
+	echo JText::_('MOD_DPCALENDAR_UPCOMING_NO_EVENT_TEXT');
+
 	return;
 }
 
-$document = JFactory::getDocument();
-$document->addStyleSheet(JURI::base() . 'modules/mod_dpcalendar_upcoming/tmpl/simple.css');
+// Load the stylesheet
+JHtml::_('stylesheet', 'mod_dpcalendar_upcoming/simple.css', array(), true);
 
-$id = "dpc-upcoming-" . $module->id;
-if ($params->get('show_as_popup', '0') == '1' || $params->get('show_as_popup', '0') == '3')
-{
+// The root container
+$root = new Container('dp-module-upcoming-simple-' . $module->id, array('root'), array('ccl-prefix' => 'dp-module-upcoming-simple-'));
+$root->addClass('dp-module-upcoming-root', true);
+
+if ($params->get('show_as_popup')) {
+	// Load the required JS libraries
 	DPCalendarHelper::loadLibrary(array('jquery' => true, 'dpcalendar' => true));
+	JHtml::_('behavior.modal', '.dp-module-upcoming-event-link-invalid');
+	JHtml::_('script', 'mod_dpcalendar_upcoming/default.js', false, true);
 
-	$calCode = "dpjQuery(document).ready(function() {\n";
-	$calCode .= "dpjQuery('#" . $id . "-container .dpc-upcoming-event-link').click(function (event) {\n";
-	$calCode .= "	if (jQuery(window).width() < 600) {return true;}\n";
-	$calCode .= "	event.stopPropagation();\n";
+	// The root container for the modal iframe
+	$m = $root->addChild(new Container('modal', array('modal')));
+	$m->addClass('dp-module-upcoming-modal', true);
 
-	if ($params->get('show_as_popup', '0') == '1')
-	{
-		DPCalendarHelper::loadLibrary(array('bootstrap' => true));
-
-		$calCode .= "	var link = jQuery(this).attr('href');\n";
-		$calCode .= "	jQuery('#" . $id . "').on('show', function () {\n";
-		$calCode .= "		var url = new Url(link);\n";
-		$calCode .= "		url.query.tmpl = 'component';\n";
-		$calCode .= "		jQuery('#" . $id . " iframe').attr('src', url.toString());\n";
-		$calCode .= "	});\n";
-		$calCode .= "	jQuery('#" . $id . " iframe').removeAttr('src');\n";
-		$calCode .= "	var modal = jQuery('#" . $id . "').modal();\n";
-		$calCode .= "	if (jQuery(window).width() < modal.width()) {\n";
-		$calCode .= "		modal.css({ width : jQuery(window).width() - 100 + 'px' });\n";
-		$calCode .= "	} else {\n";
-		$calCode .= "		modal.css({ 'margin-left' : '-' + modal.width() / 2 + 'px' });\n";
-		$calCode .= "	}\n";
-		?>
-		<div id="<?php echo $id;?>" class="modal hide" tabindex="-1" role="dialog" aria-hidden="true"
-			style="height:500px;width:700px;display:none">
-		    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-		  	<iframe style="width:99.6%;height:95%;border:none;"></iframe>
-		</div>
-		<?php
-	}
-	else if ($params->get('show_as_popup', '0') == '3')
-	{
-		JHtml::_('behavior.modal', '.dpc-upcoming-event-link-invalid');
-
-		$calCode .= "	var modal = jQuery('#" . $id . "');\n";
-		$calCode .= "	var width = jQuery(window).width();\n";
-		$calCode .= "	var url = new Url(jQuery(this).attr('href'));\n";
-		$calCode .= "	url.query.tmpl = 'component';\n";
-		$calCode .= "	SqueezeBox.open(url.toString(), {\n";
-		$calCode .= "		handler : 'iframe',\n";
-		$calCode .= "		size : {\n";
-		$calCode .= "			x : (width < 650 ? width - (width * 0.10) : modal.width() < 650 ? 650 : modal.width()),\n";
-		$calCode .= "			y : modal.height()\n";
-		$calCode .= "		}\n";
-		$calCode .= "	});\n";
-		?>
-		<div id="<?php echo $id;?>" style="height:500px;width:700px;display:none">
-		  	<iframe style="width:99.6%;height:95%;border:none;"></iframe>
-		</div>
-		<?php
-	}
-	$calCode .= "	return false;\n";
-	$calCode .= "});\n";
-	$calCode .= "});\n";
-	$document->addScriptDeclaration($calCode);
+	// Add the iframe which holds the content
+	$m->addChild(new Frame('frame', ''));
 }
-?>
 
-<div id="<?php echo $id; ?>-container" itemscope itemtype="http://schema.org/Thing" class="dp-upcoming">
-<?php
+// The events container
+$c = $root->addChild(new Container('events'));
+
+// The last computed heading
 $lastHeading = '';
+
+// The grouping parameter
 $grouping = $params->get('output_grouping', '');
-foreach ($events as $event){
+
+// Loop over the events
+foreach ($events as $index => $event) {
+	// The start date
 	$startDate = DPCalendarHelper::getDate($event->start_date, $event->all_day);
-	if ($grouping)
-	{
+
+	// Grouping functionality
+	if ($grouping) {
+		// Check if the actual grouping header is different than from the event before
 		$groupHeading = $startDate->format($grouping, true);
-		if ($groupHeading != $lastHeading)
-		{
+		if ($groupHeading != $lastHeading) {
+			// Add a new grouping header
 			$lastHeading = $groupHeading;
-			?>
-			<p style="clear: both;"><strong><?php echo htmlspecialchars($groupHeading);?></strong></p>
-			<?php
-		}
-	}
-	?>
-<div class="dp-upcoming-group" style="border-color:#<?php echo $event->color?>" itemscope itemtype="http://schema.org/Event">
-	<div style="clear: both;"></div>
-	<p itemprop="startDate" content="<?php echo $startDate->format('c');?>">
-		<?php echo DPCalendarHelper::getDateStringFromEvent($event, $params->get('date_format'), $params->get('time_format'));?>
-		<a href="<?php echo DPCalendarHelperRoute::getEventRoute($event->id, $event->catid)?>" itemprop="url" class="dpc-upcoming-event-link">
-			<span itemprop="name"><?php echo htmlspecialchars($event->title)?></span>
-		</a>
-	</p>
-	<?php
-	if ($params->get('show_location') && isset($event->locations))
-	{
-		foreach ($event->locations as $location)
-		{ ?>
-			<div class="dp-location"
-				data-latitude="<?php echo $location->latitude;?>" data-longitude="<?php echo $location->longitude?>"
-				data-title="<?php echo htmlspecialchars($location->title);?>">
-				<a href="http://maps.google.com/?q=<?php echo htmlspecialchars(DPCalendarHelperLocation::format($location));?>" target="_blank"><?php echo htmlspecialchars($location->title);?></a>
-			</div>
-		<?php
+			$c->addChild(new Paragraph('heading-' . ($index + 1), array('heading')))->setContent($groupHeading);
 		}
 	}
 
-	if (isset($event->locations) && $event->locations)
-	{
-		echo DPCalendarHelperSchema::location($event->locations);
+	// The event container
+	$ec = $c->addChild(new Container($event->id, array('container')));
+
+	// The container for the event details
+	$e = $ec->addChild(new Container('event', array('event')));
+
+	// Add per event the color for the calendar icon
+	JFactory::getDocument()->addStyleDeclaration('#' . $e->getId() . ' {border-color: #' . $event->color . '}');
+
+	// Add the date lement
+	$e->addChild(new Container('date'))->setContent(
+		DPCalendarHelper::getDateStringFromEvent($event, $params->get('date_format'), $params->get('time_format'))
+	);
+
+	// Add the link
+	$l = $e->addChild(new Link('link', $event->realUrl));
+
+	// Add a special class when popup is enabled
+	$l->addClass('dp-module-upcoming-modal-' . ($params->get('show_as_popup') ? 'enabled' : 'disabled'), true);
+
+	// Add the title
+	$l->addChild(new TextBlock('title'))->setContent($event->title);
+
+	// Add the location information
+	if ($params->get('show_location') && isset($event->locations) && $event->locations) {
+		foreach ($event->locations as $location) {
+			$l = $ec->addChild(new TextBlock('location-' . $location->id, array('location')));
+			$l->addAttribute('data-latitude', $location->latitude);
+			$l->addAttribute('data-longitude', $location->longitude);
+			$l->addAttribute('data-title', $location->title);
+
+			$l->addChild(new Link('link', DPCalendarHelperRoute::getLocationRoute($location)))->setContent($location->title);
+		}
 	}
 
-	echo DPCalendarHelperSchema::offer($event);
-	?>
-	<div style="clear: both;" ></div>
-</div>
-<?php
+	// Add the event schema
+	DPCalendarHelper::renderLayout('schema.event', array('event' => $event, 'root' => $ec));
 }
-?>
-</div>
+
+// Render the element tree
+echo DPCalendarHelper::renderElement($root, $params);

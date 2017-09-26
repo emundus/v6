@@ -2,42 +2,36 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
 use Omnipay\Omnipay;
 
-JLoader::import('components.com_dpcalendar.libraries.dpcalendar.paymentplugin', JPATH_ADMINISTRATOR);
-if (! class_exists('DPCalendarPaymentPlugin'))
-{
-	return;
-}
+JLoader::import('components.com_dpcalendar.helpers.dpcalendar', JPATH_ADMINISTRATOR);
 
-class PlgDPCalendarPay2Checkout extends DPCalendarPaymentPlugin
+class PlgDPCalendarPay2Checkout extends \DPCalendar\Plugin\PaymentPlugin
 {
 
-	protected function getPurchaseParameters ($gateway, $booking)
+	protected function getPurchaseParameters($gateway, $booking)
 	{
-		$params = parent::getPurchaseParameters($gateway, $booking);
+		$params                  = parent::getPurchaseParameters($gateway, $booking);
 		$params['accountNumber'] = $gateway->getAccountNumber();
-		$params['secretWord'] = $gateway->getSecretWord();
+		$params['secretWord']    = $gateway->getSecretWord();
 		$params['transactionId'] = 1;
 
 		return $params;
 	}
 
-	protected function getPaymentData ($gateway, $transactionData, $booking)
+	protected function getPaymentData($gateway, $transactionData, $booking)
 	{
 		$newStatus = 1;
-		switch ($transactionData['message_type'])
-		{
+		switch ($transactionData['message_type']) {
 			case 'ORDER_CREATED':
 			case 'FRAUD_STATUS_CHANGED':
 			case 'INVOICE_STATUS_CHANGED':
-				switch ($transactionData['invoice_status'])
-				{
+				switch ($transactionData['invoice_status']) {
 					case 'approved':
 						// "Approved" means "we're about to request the money"
 						// or something like that, dunno
@@ -74,16 +68,16 @@ class PlgDPCalendarPay2Checkout extends DPCalendarPaymentPlugin
 		}
 
 		$updates = array(
-				'processor_key' => $transactionData['invoice_id'],
-				'state' => $status,
-				'payer_email' => $transactionData['customer_email'],
-				'transaction_id' => $transactionData['message_id'],
-				'txn_type' => $balanceData['payment_type'],
-				'txn_currency' => $balanceData['cust_currency'],
-				'gross_amount' => $transactionData['invoice_cust_amount'],
-				'raw_data' => json_encode(array(
-						'transactionData' => $transactionData
-				))
+			'processor_key'  => $transactionData['invoice_id'],
+			'state'          => $status,
+			'payer_email'    => $transactionData['customer_email'],
+			'transaction_id' => $transactionData['message_id'],
+			'txn_type'       => $balanceData['payment_type'],
+			'txn_currency'   => $balanceData['cust_currency'],
+			'gross_amount'   => $transactionData['invoice_cust_amount'],
+			'raw_data'       => json_encode(array(
+				'transactionData' => $transactionData
+			))
 		);
 
 		return $updates;
@@ -93,7 +87,7 @@ class PlgDPCalendarPay2Checkout extends DPCalendarPaymentPlugin
 	 *
 	 * @return \Omnipay\TwoCheckout\Gateway
 	 */
-	protected function getPaymentGateway ()
+	protected function getPaymentGateway()
 	{
 		$gateway = Omnipay::create('TwoCheckout');
 		$gateway->setAccountNumber($this->params->get('account_number'));

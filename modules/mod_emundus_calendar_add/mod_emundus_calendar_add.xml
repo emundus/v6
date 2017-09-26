@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+	<extension type="module" version ="2.5.0" method="upgrade">
+		<name>EmundusCalendarAdd</name>
+        <author>Hugo Moracchini</author>
+        <creationDate>September 2017</creationDate>
+        <copyright>Copyright (C) 2017 eMundus. All rights reserved.</copyright>
+        <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+        <authorEmail>benjamin@emundus.fr</authorEmail>
+        <authorUrl>www.emundus.fr</authorUrl>
+        <version>6.0</version>
+		<description>MOD_EM_CALENDAR_ADD_XML_DESCRIPTION</description>
+		<files>
+			<filename>mod_emundus_calendar_add.xml</filename>
+			<filename module="mod_emundus_calendar_add">mod_emundus_calendar_add.php</filename>
+			<filename>index.html</filename>
+			<folder>tmpl</folder>
+			<folder>language</folder>
+		</files>
+		<config>
+			<fields name="params">
+				<fieldset name="basic" label="Options">
+					<field name="clientId" type="text" required="false" label="MOD_EM_CALENDAR_ADD_CLIENTID_GOOGLE_LABEL" description="MOD_EM_CALENDAR_ADD_CLIENTID_GOOGLE_DESC" class="inputbox" default="" ForcedDisplay="value"/>
+					<field name="clientSecret" type="text" required="false" label="MOD_EM_CALENDAR_ADD_CLIENTSECRET_GOOGLE_LABEL" description="MOD_EM_CALENDAR_ADD_CLIENTSECRET_GOOGLE_DESC" class="inputbox" default=""/>
+					<field name="refreshToken" type="text" required="false" label="MOD_EM_CALENDAR_ADD_REFRESHTOKEN_GOOGLE_LABEL" description="MOD_EM_CALENDAR_ADD_REFRESHTOKEN_GOOGLE_DESC" class="inputbox" default=""/>
+				</fieldset>
+			</fields>
+		</config>
+	</extension>

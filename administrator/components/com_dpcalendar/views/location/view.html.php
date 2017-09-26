@@ -2,58 +2,42 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
-JLoader::import('components.com_dpcalendar.libraries.dpcalendar.view', JPATH_ADMINISTRATOR);
-
-class DPCalendarViewLocation extends DPCalendarView
+class DPCalendarViewLocation extends \DPCalendar\View\LayoutView
 {
+	protected $layoutName = 'location.form.default';
 
-	protected $state;
-
-	protected $item;
-
-	protected $form;
-
-	public function init ()
+	public function init()
 	{
-		$this->state = $this->get('State');
-		$this->item = $this->get('Item');
-		$this->form = $this->get('Form');
+		$this->location = $this->get('Item');
+		$this->form     = $this->get('Form');
 	}
 
-	protected function addToolbar ()
+	protected function addToolbar()
 	{
-		JFactory::getApplication()->input->set('hidemainmenu', true);
+		$this->input->set('hidemainmenu', true);
 
-		$user = JFactory::getUser();
-		$userId = $user->get('id');
-		$isNew = ($this->item->id == 0);
-		$checkedOut = ! ($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-		$canDo = DPCalendarHelper::getActions();
+		$isNew      = ($this->location->id == 0);
+		$checkedOut = !($this->location->checked_out == 0 || $this->location->checked_out == $this->user->id);
+		$canDo      = DPCalendarHelper::getActions();
 
-		if (! $checkedOut && $canDo->get('core.edit'))
-		{
+		if (!$checkedOut && $canDo->get('core.edit')) {
 			JToolbarHelper::apply('location.apply');
 			JToolbarHelper::save('location.save');
 		}
-		if (! $checkedOut && $canDo->get('core.create'))
-		{
+		if (!$checkedOut && $canDo->get('core.create')) {
 			JToolbarHelper::save2new('location.save2new');
 		}
-		if (! $isNew && $canDo->get('core.create'))
-		{
+		if (!$isNew && $canDo->get('core.create')) {
 			JToolbarHelper::save2copy('location.save2copy');
 		}
-		if (empty($this->item->id))
-		{
+		if (empty($this->location->id)) {
 			JToolbarHelper::cancel('location.cancel');
-		}
-		else
-		{
+		} else {
 			JToolbarHelper::cancel('location.cancel', 'JTOOLBAR_CLOSE');
 		}
 

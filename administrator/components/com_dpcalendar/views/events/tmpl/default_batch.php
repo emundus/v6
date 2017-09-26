@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 
@@ -10,7 +10,7 @@ defined('_JEXEC') or die();
 
 $published = $this->state->get('filter.state');
 
-JFactory::getDocument()->addScript(JURI::root() . 'components/com_dpcalendar/libraries/jscolor/jscolor.js');
+JHtml::_('script', 'com_dpcalendar/jscolor/jscolor.js', false, true);
 ?>
 <div class="modal hide fade" id="collapseModal">
 	<div class="modal-header">

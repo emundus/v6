@@ -39,7 +39,7 @@ $applicants     = explode(',',$id_applicants);
 $title          = $jinput->getValue('jos_dpcalendar_extcalendars___title');
 $color          = $jinput->getValue('jos_dpcalendar_extcalendars___color');
 $aliasTransform = str_replace(' ', '-', $title);
-$aliasSet       = $jinput->set('jos_dpcalendar_extcalendars___alias',$aliasTransform);
+$aliasSet       = $jinput->set('jos_dpcalendar_extcalendars___alias', $aliasTransform);
 $alias          = $jinput->getValue('jos_dpcalendar_extcalendars___alias');
 
 try {

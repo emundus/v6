@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -48,11 +48,10 @@ class DPCalendarRouter extends JComponentRouterBase
 			}
 
 			// We need to keep the view for forms since they never have their
-			// own
-			// menu item
+			// own menu item
 			if ($view != 'form' && $view != 'davcalendar' && $view != 'booking' && $view != 'bookingform' && $view != 'bookings' && $view != 'ticket' &&
 					 $view != 'tickets' && $view != 'pay' && $view != 'message' && $view != 'callback' && $view != 'locationform' &&
-					 $view != 'ticketform')
+					 $view != 'ticketform' && $view != 'location')
 			{
 				unset($query['view']);
 			}
@@ -88,8 +87,7 @@ class DPCalendarRouter extends JComponentRouterBase
 				if ($category && ! $category->external)
 				{
 					// TODO Throw error that the category either not exists or
-					// is
-					// unpublished
+					// is unpublished
 					$path = $category->getPath();
 					$path = array_reverse($path);
 

@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -18,10 +18,10 @@ class DPCalendarModelImport extends JModelLegacy
 		JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . DS . 'components' . DS . 'com_categories' . DS . 'models');
 		JModelLegacy::addTablePath(JPATH_ADMINISTRATOR . DS . 'components' . DS . 'com_categories' . DS . 'tables');
 
-		JRequest::setVar('extension', 'com_dpcalendar');
+		JFactory::getApplication()->input->set('extension', 'com_dpcalendar');
 		JFactory::getApplication()->input->post->set('extension', 'com_dpcalendar');
 
-		$tmp = JDispatcher::getInstance()->trigger('onCalendarsFetch');
+		$tmp = JFactory::getApplication()->triggerEvent('onCalendarsFetch');
 		$calendars = array();
 		if (! empty($tmp))
 		{
@@ -34,10 +34,10 @@ class DPCalendarModelImport extends JModelLegacy
 			}
 		}
 
-		$calendarsToimport = JRequest::getVar('calendar', array());
+		$calendarsToimport = JFactory::getApplication()->input->getVar('calendar', array());
 		$existingCalendars = JModelLegacy::getInstance('Categories', 'CategoriesModel')->getItems();
-		$start = DPCalendarHelper::getDate(JRequest::getCmd('filter_search_start', null));
-		$end = DPCalendarHelper::getDate(JRequest::getCmd('filter_search_end', null));
+		$start = DPCalendarHelper::getDate(JFactory::getApplication()->input->getCmd('filter_search_start', null));
+		$end = DPCalendarHelper::getDate(JFactory::getApplication()->input->getCmd('filter_search_end', null));
 
 		$msgs = array();
 		foreach ($calendars as $cal)
@@ -73,7 +73,7 @@ class DPCalendarModelImport extends JModelLegacy
 				$category = $model->getItem($model->getState('category.id'));
 			}
 
-			$tmp = JDispatcher::getInstance()->trigger('onEventsFetch',
+			$tmp = JFactory::getApplication()->triggerEvent('onEventsFetch',
 					array(
 							$cal->id,
 							$start,
@@ -91,7 +91,7 @@ class DPCalendarModelImport extends JModelLegacy
 				{
 					foreach ($events as $event)
 					{
-						$filter = strtolower(JRequest::getVar('filter_search', ''));
+						$filter = strtolower(JFactory::getApplication()->input->getVar('filter_search', ''));
 						if (! empty($filter) && strpos(
 								strtolower($event->title . ' ' . $event->description . ' ' . $event->url . ' ' . $event->location), $filter) === false)
 						{
@@ -114,7 +114,7 @@ class DPCalendarModelImport extends JModelLegacy
 
 						unset($eventData['id']);
 						unset($eventData['locations']);
-						$eventData['alias'] = ! empty($event->alias) ? $event->alias : JApplication::stringURLSafe($event->title);
+						$eventData['alias'] = ! empty($event->alias) ? $event->alias : JApplicationHelper::stringURLSafe($event->title);
 						$eventData['catid'] = $category->id;
 
 						// Find an existing event with the same xreference

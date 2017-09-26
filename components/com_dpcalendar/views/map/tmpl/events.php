@@ -2,47 +2,45 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
+
 defined('_JEXEC') or die();
 
-$document = JFactory::getDocument();
-$document->setMimeEncoding('application/json');
+use CCL\Content\Element\Basic\Container;
+
+JFactory::getDocument()->setMimeEncoding('application/json');
 
 $data = array();
-foreach ($this->items as $event)
-{
-	$return = '&return=' . base64_encode(JRoute::_('index.php?Itemid=' . JRequest::getInt('Itemid', 0)));
+foreach ($this->items as $event) {
+	// The root container
+	$root = new Container('dp-event-desc-' . $event->id, array(), array('ccl-prefix' => 'dp-event-'));
 
-	$description = JLayoutHelper::render('event.tooltip', array(
-			'event' => $event,
-			'params' => $this->params
-	));
+	// Get the tooltip
+	DPCalendarHelper::renderLayout('event.tooltip', array('root' => $root, 'event' => $event, 'params' => $this->params));
 
 	$locations = array();
-	if (! empty($event->locations))
-	{
-		foreach ($event->locations as $location)
-		{
+	if (!empty($event->locations)) {
+		foreach ($event->locations as $location) {
 			$locations[] = array(
-					'location' => DPCalendarHelperLocation::format($location),
-					'latitude' => $location->latitude,
-					'longitude' => $location->longitude
+				'location'  => \DPCalendar\Helper\Location::format($location),
+				'latitude'  => $location->latitude,
+				'longitude' => $location->longitude
 			);
 		}
 	}
 	$data[] = array(
-			'id' => $event->id,
-			'title' => htmlspecialchars_decode($event->title),
-			'start' => DPCalendarHelper::getDate($event->start_date, $event->all_day)->format('c', true),
-			'end' => DPCalendarHelper::getDate($event->end_date, $event->all_day)->format('c', true),
-			'url' => DPCalendarHelperRoute::getEventRoute($event->id, $event->catid),
-			'editable' => JFactory::getUser()->authorise('core.edit', 'com_dpcalendar.category.' . $event->catid),
-			'color' => '#' . $event->color,
-			'allDay' => (bool) $event->all_day,
-			'description' => $description,
-			'location' => $locations
+		'id'          => $event->id,
+		'title'       => htmlspecialchars_decode($event->title),
+		'start'       => DPCalendarHelper::getDate($event->start_date, $event->all_day)->format('c', true),
+		'end'         => DPCalendarHelper::getDate($event->end_date, $event->all_day)->format('c', true),
+		'url'         => DPCalendarHelperRoute::getEventRoute($event->id, $event->catid),
+		'editable'    => JFactory::getUser()->authorise('core.edit', 'com_dpcalendar.category.' . $event->catid),
+		'color'       => '#' . $event->color,
+		'allDay'      => (bool)$event->all_day,
+		'description' => DPCalendarHelper::renderElement($root, $this->params),
+		'location'    => $locations
 	);
 }
 

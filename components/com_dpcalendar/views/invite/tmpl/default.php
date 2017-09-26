@@ -2,55 +2,36 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
-DPCalendarHelper::loadLibrary(array('chosen' => true));
+use CCL\Content\Element\Basic\Form;
 
-JHtml::_('behavior.keepalive');
-JHtml::_('behavior.formvalidation');
-JHtml::_('script', 'system/core.js', false, true);
-?>
-<script type="text/javascript">
-	Joomla.submitbutton = function(task) {
-		if (task == 'event.cancel' || document.formvalidator.isValid(document.id('invite-form'))) {
-			<?php if ($this->form->getField('description')) echo $this->form->getField('description')->save(); ?>
-			Joomla.submitform(task, document.getElementById('invite-form'));
-		} else {
-			alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
-		}
-	}
-</script>
+DPCalendarHelper::loadLibrary(array('chosen' => true, 'dpcalendar' => true));
 
-<form action="<?php echo JRoute::_('index.php?option=com_dpcalendar'); ?>"
-	method="post" name="adminForm" id="invite-form" class="form-validate dp-container">
-	<div class="btn-toolbar" style="margin-bottom:10px">
-		<div class="btn-group">
-			<button type="button" class="btn btn-primary" onclick="Joomla.submitbutton('event.invite')">
-				<i class="icon-ok"></i> <?php echo JText::_('COM_DPCALENDAR_VIEW_INVITE_SEND_BUTTON') ?>
-			</button>
-		</div>
-		<div class="btn-group">
-			<button type="button" class="btn" onclick="Joomla.submitbutton('event.cancel')">
-				<i class="icon-remove-sign icon-cancel"></i> <?php echo JText::_('JCANCEL') ?>
-			</button>
-		</div>
-	</div>
-	<div class="row-fluid row">
-		<div class="span12 col-md-12 form-horizontal">
-			<?php
-			echo $this->form->renderField('users');
-			echo $this->form->renderField('groups');
-			echo $this->form->renderField('event_id');
+JFactory::getDocument()->addStyleDeclaration('#dp-invite-actions {margin-bottom: 10px;}');
 
-			echo $this->form->renderField('captcha');
-			?>
+// The form element
+$tmpl = JFactory::getApplication()->input->getCmd('tmpl');
+if($tmpl)
+{
+	$tmpl = '&tmpl=' . $tmpl;
+}
+$this->root = new Form(
+	'dp-invite',
+	JRoute::_('index.php?option=com_dpcalendar' . $tmpl),
+	'adminForm',
+	'POST',
+	array('form-validate')
+);
 
-			<input type="hidden" name="return" value="<?php echo JFactory::getApplication()->input->getBase64('return');?>" />
-			<input type="hidden" name="task" value="" />
-			<?php echo JHtml::_('form.token'); ?>
-		</div>
-	</div>
-</form>
+// Load the header template
+$this->loadTemplate('header');
+
+// Load the form from the layout
+DPCalendarHelper::renderLayout('content.form', array('root' => $this->root, 'jform' => $this->form, 'flat' => true, 'return' => JFactory::getApplication()->input->getBase64('return')));
+
+// Render the tree
+echo DPCalendarHelper::renderElement($this->root, $this->params);

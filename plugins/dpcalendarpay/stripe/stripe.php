@@ -2,39 +2,33 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
 use Omnipay\Omnipay;
 
-JLoader::import('components.com_dpcalendar.libraries.dpcalendar.paymentplugin', JPATH_ADMINISTRATOR);
-if (! class_exists('DPCalendarPaymentPlugin'))
-{
-	return;
-}
+JLoader::import('components.com_dpcalendar.helpers.dpcalendar', JPATH_ADMINISTRATOR);
 
-class PlgDPCalendarPayStripe extends DPCalendarPaymentPlugin
+class PlgDPCalendarPayStripe extends \DPCalendar\Plugin\PaymentPlugin
 {
-
-	protected function getPurchaseParameters ($gateway, $booking)
+	protected function getPurchaseParameters($gateway, $booking)
 	{
-		$params = parent::getPurchaseParameters($gateway, $booking);
+		$params          = parent::getPurchaseParameters($gateway, $booking);
 		$params['token'] = JFactory::getApplication()->input->get('token', 1);
 
 		return $params;
 	}
 
-	public function getPaymentData ($gateway, $transactionData, $booking)
+	public function getPaymentData($gateway, $transactionData, $booking)
 	{
 		$transaction = $gateway->fetchBalanceTransaction();
 		$transaction->setBalanceTransactionReference($transactionData['balance_transaction']);
 		$response = $transaction->send();
 
 		// Error during balance fetch
-		if (! $response->isSuccessful())
-		{
+		if (!$response->isSuccessful()) {
 			return $response->getMessage();
 		}
 
@@ -44,37 +38,31 @@ class PlgDPCalendarPayStripe extends DPCalendarPaymentPlugin
 		$status = 1;
 
 		// Balance data
-		$fee = null;
+		$fee         = null;
 		$grossAmount = null;
-		$netAmount = null;
-		if (is_numeric($balanceData['fee']))
-		{
+		$netAmount   = null;
+		if (is_numeric($balanceData['fee'])) {
 			$fee = number_format($balanceData['fee'] / 100, 2);
 		}
-		if (is_numeric($balanceData['amount']))
-		{
+		if (is_numeric($balanceData['amount'])) {
 			$grossAmount = number_format($balanceData['amount'] / 100, 2);
 		}
-		if (is_numeric($balanceData['net']))
-		{
+		if (is_numeric($balanceData['net'])) {
 			$netAmount = number_format($balanceData['net'] / 100, 2);
 		}
 
 		$updates = array(
-				'processor_key' => $transactionData['balance_transaction'],
-				'state' => $status,
-				'payer_id' => $transactionData['card']['id'],
-				'payer_email' => $transactionData['card']['name'],
-				'transaction_id' => $transactionData['id'],
-				'txn_type' => $balanceData['type'],
-				'txn_currency' => $balanceData['currency'],
-				'payment_fee' => $fee,
-				'gross_amount' => $grossAmount,
-				'net_amount' => $netAmount,
-				'raw_data' => json_encode(array(
-						'transactionData' => $transactionData,
-						'balanceData' => $balanceData
-				))
+			'processor_key'  => $transactionData['balance_transaction'],
+			'state'          => $status,
+			'payer_id'       => $transactionData['card']['id'],
+			'payer_email'    => $transactionData['card']['name'],
+			'transaction_id' => $transactionData['id'],
+			'txn_type'       => $balanceData['type'],
+			'txn_currency'   => $balanceData['currency'],
+			'payment_fee'    => $fee,
+			'gross_amount'   => $grossAmount,
+			'net_amount'     => $netAmount,
+			'raw_data'       => json_encode(array('transactionData' => $transactionData, 'balanceData' => $balanceData))
 		);
 
 		return $updates;
@@ -84,7 +72,7 @@ class PlgDPCalendarPayStripe extends DPCalendarPaymentPlugin
 	 *
 	 * @return \Omnipay\Stripe\Gateway
 	 */
-	protected function getPaymentGateway ()
+	protected function getPaymentGateway()
 	{
 		$gateway = Omnipay::create('Stripe');
 		$gateway->setApiKey($this->params->get('data-skey'));

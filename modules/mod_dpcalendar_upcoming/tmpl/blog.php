@@ -2,214 +2,217 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
-if (!$events)
-{
-	echo JText::_('COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL_NO_EVENT_TEXT');
+use CCL\Content\Element\Basic\Container;
+use CCL\Content\Element\Basic\Frame;
+use CCL\Content\Element\Basic\Meta;
+use CCL\Content\Element\Basic\Paragraph;
+use CCL\Content\Element\Basic\TextBlock;
+use CCL\Content\Element\Basic\Link;
+use CCL\Content\Element\Component\Badge;
+use CCL\Content\Element\Basic\Heading;
+use CCL\Content\Element\Component\Icon;
+use CCL\Content\Element\Component\Grid;
+use CCL\Content\Element\Component\Grid\Row;
+use CCL\Content\Element\Component\Grid\Column;
+
+if (!$events) {
+	echo JText::_('MOD_DPCALENDAR_UPCOMING_NO_EVENT_TEXT');
+
 	return;
 }
 
-$document = JFactory::getDocument();
-$document->addStyleSheet(JURI::base() . 'modules/mod_dpcalendar_upcoming/tmpl/default.css');
+// Load the stylesheet
+JHtml::_('stylesheet', 'mod_dpcalendar_upcoming/blog.css', array(), true);
 
-$id = "dpc-upcoming-" . $module->id;
-if ($params->get('show_as_popup', '0') == '1' || $params->get('show_as_popup', '0') == '3')
-{
+// The root container
+$root = new Container('dp-module-upcoming-blog-' . $module->id, array('root'), array('ccl-prefix' => 'dp-module-upcoming-blog-'));
+$root->addClass('dp-module-upcoming-root', true);
+
+if ($params->get('show_as_popup')) {
+	// Load the required JS libraries
 	DPCalendarHelper::loadLibrary(array('jquery' => true, 'dpcalendar' => true));
+	JHtml::_('behavior.modal', '.dp-module-upcoming-event-link-invalid');
+	JHtml::_('script', 'mod_dpcalendar_upcoming/default.js', false, true);
 
-	$calCode = "dpjQuery(document).ready(function() {\n";
-	$calCode .= "dpjQuery('#" . $id . "-container .dpc-upcoming-event-link').click(function (event) {\n";
-	$calCode .= "	if (jQuery(window).width() < 600) {return true;}\n";
-	$calCode .= "	event.stopPropagation();\n";
+	// The root container for the modal iframe
+	$m = $root->addChild(new Container('modal', array('modal')));
+	$m->addClass('dp-module-upcoming-modal', true);
 
-	if ($params->get('show_as_popup', '0') == '1')
-	{
-		DPCalendarHelper::loadLibrary(array('bootstrap' => true));
-
-		$calCode .= "	var link = jQuery(this).attr('href');\n";
-		$calCode .= "	jQuery('#" . $id . "').on('show', function () {\n";
-		$calCode .= "		var url = new Url(link);\n";
-		$calCode .= "		url.query.tmpl = 'component';\n";
-		$calCode .= "		jQuery('#" . $id . " iframe').attr('src', url.toString());\n";
-		$calCode .= "	});\n";
-		$calCode .= "	jQuery('#" . $id . " iframe').removeAttr('src');\n";
-		$calCode .= "	var modal = jQuery('#" . $id . "').modal();\n";
-		$calCode .= "	if (jQuery(window).width() < modal.width()) {\n";
-		$calCode .= "		modal.css({ width : jQuery(window).width() - 100 + 'px' });\n";
-		$calCode .= "	} else {\n";
-		$calCode .= "		modal.css({ 'margin-left' : '-' + modal.width() / 2 + 'px' });\n";
-		$calCode .= "	}\n";
-		?>
-		<div id="<?php echo $id;?>" class="modal hide" tabindex="-1" role="dialog" aria-hidden="true"
-			style="height:500px;width:700px;display:none">
-		    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-		  	<iframe style="width:99.6%;height:95%;border:none;"></iframe>
-		</div>
-		<?php
-	}
-	else if ($params->get('show_as_popup', '0') == '3')
-	{
-		JHtml::_('behavior.modal', '.dpc-upcoming-event-link-invalid');
-
-		$calCode .= "	var modal = jQuery('#" . $id . "');\n";
-		$calCode .= "	var width = jQuery(window).width();\n";
-		$calCode .= "	var url = new Url(jQuery(this).attr('href'));\n";
-		$calCode .= "	url.query.tmpl = 'component';\n";
-		$calCode .= "	SqueezeBox.open(url.toString(), {\n";
-		$calCode .= "		handler : 'iframe',\n";
-		$calCode .= "		size : {\n";
-		$calCode .= "			x : (width < 650 ? width - (width * 0.10) : modal.width() < 650 ? 650 : modal.width()),\n";
-		$calCode .= "			y : modal.height()\n";
-		$calCode .= "		}\n";
-		$calCode .= "	});\n";
-		?>
-		<div id="<?php echo $id;?>" style="height:500px;width:700px;display:none">
-		  	<iframe style="width:99.6%;height:95%;border:none;"></iframe>
-		</div>
-		<?php
-	}
-	$calCode .= "	return false;\n";
-	$calCode .= "});\n";
-	$calCode .= "});\n";
-	$document->addScriptDeclaration($calCode);
-}
-?>
-
-<div id="<?php echo $id; ?>-container" class="row-fluid row">
-<?php
-$return = JFactory::getApplication()->input->getInt('Itemid', null);
-if (! empty($return))
-{
-	$return = JRoute::_('index.php?Itemid=' . $return);
+	// Add the iframe which holds the content
+	$m->addChild(new Frame('frame', ''));
 }
 
+// The events container
+$c = $root->addChild(new Container('events'));
+
+// The last computed heading
 $lastHeading = '';
+
+// The grouping parameter
 $grouping = $params->get('output_grouping', '');
 
-foreach ($events as $event)
-{
+// Loop over the events
+foreach ($events as $index => $event) {
+	// The start date
+	$startDate = DPCalendarHelper::getDate($event->start_date, $event->all_day);
+
+	// Grouping functionality
+	if ($grouping) {
+		// Check if the actual grouping header is different than from the event before
+		$groupHeading = $startDate->format($grouping, true);
+		if ($groupHeading != $lastHeading) {
+			// Add a new grouping header
+			$lastHeading = $groupHeading;
+			$root->addChild(new Paragraph('heading-' . ($index + 1), array('heading')))->setContent($groupHeading);
+		}
+	}
+
+	// The calendar
 	$calendar = DPCalendarHelper::getCalendar($event->catid);
 
-	$startDate = DPCalendarHelper::getDate($event->start_date, $event->all_day);
-	if ($grouping)
-	{
-		$groupHeading = $startDate->format($grouping, true);
-		if ($groupHeading != $lastHeading)
-		{
-			$lastHeading = $groupHeading;
-			?>
-				<p style="clear: both;"><strong><?php echo htmlspecialchars($groupHeading);?></strong></p>
-			<?php
-		}
-	}
-?>
-	<div itemscope itemtype="http://schema.org/Event">
-	<hr/>
-	<div>
-		<a href="<?php echo DPCalendarHelperRoute::getEventRoute($event->id, $event->catid)?>" itemprop="url" class="dpc-upcoming-event-link">
-			<span itemprop="name"><?php echo htmlspecialchars($event->title)?></span>
-		</a>
-	</div>
-	<span class="badge badge-info pull-right hidden-phone dpc-upcoming-event-hits"><?php echo JText::_('COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL_HITS');?>:<?php echo $event->hits?></span>
-	<?php if (DPCalendarHelperBooking::openForBooking($event))
-	{ ?>
-		<div class="pull-left width-20 dpc-upcoming-event-book">
-			<a href="<?php echo DPCalendarHelperRoute::getBookingFormRouteFromEvent($event, $return)?>"><i class="hasTooltip icon-plus"
-					title="<?php echo JText::_('COM_DPCALENDAR_BOOK');?>"></i></a>
-		</div>
-	<?php
-	}
-	if ($calendar->canEdit || ($calendar->canEditOwn && $event->created_by == $user->id))
-	{?>
-	<span class="pull-left width-20 dpc-upcoming-event-edit">
-		<a href="<?php echo DPCalendarHelperRoute::getFormRoute($event->id, $return);?>"><i class="hasTooltip icon-edit" title="<?php echo JText::_('JACTION_EDIT');?>"></i></a>
-	</span>
-	<?php
+	// The list item container
+	$item = $root->addChild(new Container($event->id));
+
+	// The heading of the event
+	$h = $item->addChild(new Heading('event-header', 2, array('dp-event-header')));
+	$h->setProtectedClass('dp-event-header');
+
+	// When we are shown in a modal dialog, make the title clickable
+	$link = $h->addChild(new Link('link', $event->realUrl, '_parent'));
+	$link->addChild(new TextBlock('text'))->setContent($event->title);
+
+	// Add a special class when popup is enabled
+	$link->addClass('dp-module-upcoming-modal-' . ($params->get('show_as_popup') ? 'enabled' : 'disabled'), true);
+
+	if ($params->get('show_hits', 1)) {
+		// The hits element
+		$b = $item->addChild(new Badge('hits', array('hits')));
+		$b->setContent(JText::_('MOD_DPCALENDAR_UPCOMING_BLOG_HITS') . ':' . $event->hits);
 	}
 
-	if ($calendar->canDelete || ($calendar->canEditOwn && $event->created_by == $user->id))
-	{?>
-	<span class="pull-left width-20 dpc-upcoming-event-delete"><a href="<?php echo JRoute::_(
-				'index.php?option=com_dpcalendar&task=event.delete&e_id=' . $event->id . '&return=' . base64_encode($return));?>">
-		<i class="hasTooltip icon-remove" title="<?php echo JText::_('JACTION_DELETE');?>"></i></a>
-	</span>
-	<?php
-	}?>
-	<small class="list-author dpc-upcoming-event-start" itemprop="startDate" content="<?php echo DPCalendarHelper::getDate($event->start_date, $event->all_day)->format('c');?>">
-			(<?php echo JText::_('COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL_DATE');?>: <?php echo DPCalendarHelper::getDateStringFromEvent($event, $params->get('date_format'), $params->get('time_format'));?>)
-	</small>
-	<br />
-	<small class="list-author dpc-upcoming-event-calendar">
-		<?php
-		echo JText::_('COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL_CALANDAR');?>: <?php echo $calendar != null ? $calendar->title : $event->catid;
-		?>
-	</small>
-	<small class="pull-right dpc-upcoming-event-locations">
-		<?php
-		if ($params->get('show_location') && isset($event->locations))
-		{
-			foreach ($event->locations as $location)
-			{ ?>
-				<div class="dp-location"
-					data-latitude="<?php echo $location->latitude;?>" data-longitude="<?php echo $location->longitude?>"
-					data-title="<?php echo htmlspecialchars($location->title);?>">
-					<a href="http://maps.google.com/?q=<?php echo htmlspecialchars(DPCalendarHelperLocation::format($location));?>" target="_blank"><?php echo htmlspecialchars($location->title);?></a>
-				</div>
-			<?php
-			}
-		}
+	// The location elements
+	if (isset($event->locations) && $event->locations) {
+		// The locations container
+		$ls = $item->addChild(
+			new TextBlock(
+				'locations',
+				array('locations')
+			)
+		);
 
-		if (isset($event->locations) && $event->locations)
-		{
-			echo DPCalendarHelperSchema::location($event->locations);
-		}
-		?>
-	</small>
-	<?php
-	echo DPCalendarHelperSchema::offer($event);
+		foreach ($event->locations as $location) {
+			$lc = $ls->addChild(new Container($location->id, array('location')));
 
-	$desc = JHTML::_('content.prepare', $event->description);
-	if ($params->get('description_length', null) !== null)
-	{
-		$descTruncated = JHtmlString::truncateComplex($desc, $params->get('description_length', 0));
-		if ($desc != $descTruncated)
-		{
-			$desc = $descTruncated;
+			// The link to the location
+			$l = $lc->addChild(new Link($location->id, DPCalendarHelperRoute::getLocationRoute($location)));
+			$l->addClass('location-details', true);
+			$l->addClass('location-details', true);
+			$l->addAttribute('data-latitude', $location->latitude);
+			$l->addAttribute('data-longitude', $location->longitude);
+			$l->addAttribute('data-title', $location->title);
+			$l->addAttribute('data-color', $event->color);
+			$l->setContent($location->title);
+
+			// The tooltip for the map
+			$d = $lc->addChild(new TextBlock($location->id . '-description', array('location-description')));
+			DPCalendarHelper::renderLayout('event.tooltip', array('event' => $event, 'root' => $d, 'params' => $params));
+		}
+	}
+
+	$return = JFactory::getApplication()->input->getInt('Itemid', null);
+	if (!empty($return)) {
+		$return = JRoute::_('index.php?Itemid=' . $return);
+	}
+
+	// If possible add the book link
+	if (\DPCalendar\Helper\Booking::openForBooking($event)) {
+		$l = $item->addChild(new Link('book', DPCalendarHelperRoute::getBookingFormRouteFromEvent($event, $return)));
+		$l->addChild(new Icon('book-icon', Icon::PLUS, array(), array('title' => JText::_('MOD_DPCALENDAR_UPCOMING_BLOG_BOOK'))));
+	}
+
+	// If possible add the edit link
+	if ($calendar->canEdit || ($calendar->canEditOwn && $event->created_by == $user->id)) {
+		$l = $item->addChild(new Link('edit', DPCalendarHelperRoute::getFormRoute($event->id, $return)));
+		$l->addChild(new Icon('book-icon', Icon::EDIT, array(), array('title' => JText::_('JACTION_EDIT'))));
+	}
+
+	// If possible add the delete link
+	if ($calendar->canDelete || ($calendar->canEditOwn && $event->created_by == $user->id)) {
+		$l = $item->addChild(new Link('edit',
+			JRoute::_('index.php?option=com_dpcalendar&task=event.delete&e_id=' . $event->id . '&return=' . base64_encode($return))));
+		$l->addChild(new Icon('book-icon', Icon::DELETE, array(), array('title' => JText::_('JACTION_DELETE'))));
+	}
+
+	// The date element
+	$d = $item->addChild(new TextBlock('date', array('date')));
+	$d->setContent('(' . JText::_('MOD_DPCALENDAR_UPCOMING_BLOG_DATE') . ': ');
+	$d->setContent(DPCalendarHelper::getDateStringFromEvent($event, $params->get('event_date_format', 'm.d.Y'),
+		$params->get('event_time_format', 'g:i a')), true);
+	$d->setContent(')', true);
+
+	// The calendar element
+	$c = $item->addChild(new TextBlock('calendar', array('calendar')));
+	$c->setContent(JText::_('MOD_DPCALENDAR_UPCOMING_BLOG_CALENDAR') . ': ');
+	$c->setContent($calendar != null ? $calendar->title : $event->catid, true);
+
+	// The capacity element
+	if ($event->capacity === null) {
+		$c = $item->addChild(new TextBlock('capacity', array('capacity')));
+		$c->setContent(JText::_('MOD_DPCALENDAR_UPCOMING_BLOG_CAPACITY') . ': ' . JText::_('MOD_DPCALENDAR_UPCOMING_BLOG_CAPACITY_UNLIMITED'));
+	} else {
+		if ($event->capacity > 0) {
+			$c = $item->addChild(new TextBlock('capacity', array('capacity')));
+			$c->setContent(JText::_('MOD_DPCALENDAR_UPCOMING_BLOG_CAPACITY_UNLIMITED') . ': ' . ($event->capacity - $event->capacity_used) . '/' . (int)$event->capacity);
+		}
+	}
+	$c = $item->addChild(new TextBlock('price', array('price')));
+	$c->setContent(JText::_($event->price ? 'MOD_DPCALENDAR_UPCOMING_BLOG_PAID_EVENT' : 'MOD_DPCALENDAR_UPCOMING_BLOG_FREE_EVENT'));
+
+	// The container with the event description
+	$desc = new Container('content');
+
+	// Set the event description as content
+	$desc->setContent(JHTML::_('content.prepare', $event->description));
+
+	// The description will be cut when configured
+	if ($params->get('list_description_length', null) !== null) {
+		// Truncate
+		$descTruncated = JHtmlString::truncateComplex($desc->getContent(), $params->get('list_description_length', null));
+		if ($desc != $descTruncated) {
+			// Set up for readmore
+			$desc->setContent($descTruncated);
 			$params->set('access-view', true);
 			$event->alternative_readmore = JText::_('MOD_DPCALENDAR_UPCOMING_READ_MORE');
-			$desc .= JLayoutHelper::render('joomla.content.readmore', array('item' => $event, 'params' => $params, 'link' => DPCalendarHelperRoute::getEventRoute($event->id, $event->catid)));
+			$desc                        .= JLayoutHelper::render(
+				'joomla.content.readmore',
+				array('item' => $event, 'params' => $params, 'link' => DPCalendarHelperRoute::getEventRoute($event->id, $event->catid))
+			);
 		}
 	}
 
-	$imagesOutput = JLayoutHelper::render('event.images', array('event' => $event), null, array(
-				'component' => 'com_dpcalendar',
-				'client' => 0
-		));
-	if (!$imagesOutput)
-	{
-		echo '<div class="dpc-upcoming-event-description">' . $desc , '</div>';
-	}
-	else
-	{ ?>
-		<div class="clearfix"></div>
-		<div class="row-fluid row">
-			<div class="span6 col-md-6 dpc-upcoming-event-description">
-				<?php echo $desc;?>
-			</div>
-			<div class="span6 col-md-6 dpc-upcoming-event-images">
-				<?php
-				echo $imagesOutput;
-				?>
-			</div>
-		</div>
-	<?php
-	} ?>
+	// Show the images
+	$images = new Container('images');
+	DPCalendarHelper::renderLayout('event.images', array('event' => $event, 'root' => $images));
 
-	</div>
-<?php
-}?>
-</div>
+	if (!$images->getChildren()) {
+		// No images so append the description directly
+		$item->addChild($desc);
+	} else {
+		// Add the description and images in a grid
+		$grid = $item->addChild(new Grid('details'));
+		$row  = $grid->addRow(new Row('row'));
+		$row->addColumn(new Column('description', 50))->addChild($desc);
+		$row->addColumn(new Column('images', 50))->setContent($images->getChildren());
+	}
+
+	// Add the event schema
+	DPCalendarHelper::renderLayout('schema.event', array('event' => $event, 'root' => $item));
+}
+
+// Render the element tree
+echo DPCalendarHelper::renderElement($root, $params);

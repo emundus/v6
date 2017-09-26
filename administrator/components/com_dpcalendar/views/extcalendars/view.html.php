@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -57,7 +57,7 @@ class DPCalendarViewExtCalendars extends JViewLegacy
 		{
 			$this->icon = strtolower($this->getName());
 		}
-		JToolBarHelper::title(JText::_($this->title), $this->icon);
+		JToolbarHelper::title(JText::_($this->title), $this->icon);
 		$document = JFactory::getDocument();
 		$document->addStyleDeclaration(
 				'.icon-48-' . $this->icon . ' {background-image: url(../media/com_dpcalendar/images/admin/48-' . $this->icon .
@@ -66,7 +66,7 @@ class DPCalendarViewExtCalendars extends JViewLegacy
 		$state = $this->get('State');
 		$canDo = DPCalendarHelper::getActions();
 		$user = JFactory::getUser();
-		$bar = JToolBar::getInstance('toolbar');
+		$bar = JToolbar::getInstance('toolbar');
 
 		if ($canDo->get('core.create') && JFactory::getApplication()->input->get('import') != '')
 		{

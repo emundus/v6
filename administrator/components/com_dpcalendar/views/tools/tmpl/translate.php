@@ -2,11 +2,13 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 
 defined('_JEXEC') or die();
+
+use DPCalendar\Helper\Transifex;
 
 DPCalendarHelper::loadLibrary(array('jquery' => true));
 
@@ -150,7 +152,7 @@ JFactory::getApplication()->enqueueMessage(JText::_('COM_DPCALENDAR_VIEW_TOOLS_T
 				</td>
 				<?php foreach ($languages as $language) { ?>
 					<td id="<?php echo $data->slug . '-' . $language['tag']?>" class="left">
-						<a href="http://transifex.com/projects/p/DPCalendar/translate/#<?php echo DPCalendarHelperTransifex::getLangCode($language['tag'], true) . '/' . $data->slug?>"
+						<a href="http://transifex.com/projects/p/DPCalendar/translate/#<?php echo Transifex::getLangCode($language['tag'], true) . '/' . $data->slug?>"
 							class="btn" target="_blank">
 						<?php echo JText::_('COM_DPCALENDAR_VIEW_TOOLS_TRANSLATE_TRANSLATE')?>
 						<span></span>
@@ -164,5 +166,5 @@ JFactory::getApplication()->enqueueMessage(JText::_('COM_DPCALENDAR_VIEW_TOOLS_T
 </div>
 
 <div align="center" style="clear: both">
-	<?php echo sprintf(JText::_('COM_DPCALENDAR_FOOTER'), JRequest::getVar('DPCALENDAR_VERSION'));?>
+	<?php echo sprintf(JText::_('COM_DPCALENDAR_FOOTER'), JFactory::getApplication()->input->getVar('DPCALENDAR_VERSION'));?>
 </div>

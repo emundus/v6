@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `#__dpcalendar_attendees` (
  `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
  `telephone` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
- `book_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+ `attend_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
  `remind_time` int(11) NOT NULL,
  `remind_type` tinyint(1) NOT NULL DEFAULT '1',
  `reminder_sent_date` datetime DEFAULT NULL,

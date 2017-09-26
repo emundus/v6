@@ -2,13 +2,12 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
-JFormHelper::addFieldPath(JPATH_ADMINISTRATOR . DS . 'components' . DS . 'com_categories' . DS . 'models' . DS . 'fields');
-JFormHelper::loadFieldClass('categoryedit');
+Jloader::import('components.com_categories.models.fields.categoryedit', JPATH_ADMINISTRATOR);
 
 class JFormFieldDPCalendarEdit extends JFormFieldCategoryEdit
 {
@@ -19,7 +18,7 @@ class JFormFieldDPCalendarEdit extends JFormFieldCategoryEdit
 	{
 		$app = JFactory::getApplication();
 		$calendar = null;
-		$id = $app->isAdmin() ? 0 : JRequest::getVar('id');
+		$id = $app->isAdmin() ? 0 : JFactory::getApplication()->input->getVar('id');
 		if (!empty($id))
 		{
 			$calendar = DPCalendarHelper::getCalendar($this->value);
@@ -34,7 +33,7 @@ class JFormFieldDPCalendarEdit extends JFormFieldCategoryEdit
 		if (empty($calendar) || $calendar->external)
 		{
 			JPluginHelper::importPlugin('dpcalendar');
-			$tmp = JDispatcher::getInstance()->trigger('onCalendarsFetch',
+			$tmp = JFactory::getApplication()->triggerEvent('onCalendarsFetch',
 					array(
 							null,
 							!empty($calendar->system) ? $calendar->system : null

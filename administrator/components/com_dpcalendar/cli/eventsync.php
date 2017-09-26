@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 define('_JEXEC', 1);
@@ -51,7 +51,7 @@ class DPCalendarEventSync extends JApplicationCli
 		try
 		{
 			JPluginHelper::importPlugin('dpcalendar');
-			JDispatcher::getInstance()->trigger('onEventsSync');
+			JFactory::getApplication()->triggerEvent('onEventsSync');
 
 			JLog::add('Finished with the DPCalendar event sync', JLog::DEBUG, 'com_dpcalendar');
 		}

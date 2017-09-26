@@ -2,15 +2,14 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
-JLoader::import('components.com_dpcalendar.libraries.dpcalendar.view', JPATH_SITE);
 JLoader::import('components.com_dpcalendar.helpers.schema', JPATH_ADMINISTRATOR);
 
-class DPCalendarViewList extends DPCalendarView
+class DPCalendarViewList extends \DPCalendar\View\BaseView
 {
 
 	protected $items = array();
@@ -23,9 +22,9 @@ class DPCalendarViewList extends DPCalendarView
 		$this->setModel($model, true);
 
 		$start = JFactory::getApplication()->getParams()->get('date_start');
-		if (!JRequest::getVar('date-start') && $start)
+		if (!JFactory::getApplication()->input->getVar('date-start') && $start)
 		{
-			JRequest::setVar('date-start', DPCalendarHelper::getDate($start)->format('U'));
+			JFactory::getApplication()->input->set('date-start', DPCalendarHelper::getDate($start)->format('U'));
 		}
 
 		parent::display($tpl);
@@ -82,6 +81,7 @@ class DPCalendarViewList extends DPCalendarView
 		$now = DPCalendarHelper::getDate();
 		$now->setTime(0, 0, 0);
 		$this->getModel()->setState('list.direction', $dateEnd->format('U') < $now->format('U') ? 'desc' : 'asc');
+		$this->getModel()->setState('list.limit', 100000);
 
 		$items = $this->get('Items');
 
@@ -94,8 +94,7 @@ class DPCalendarViewList extends DPCalendarView
 		{
 			$event->text = $event->description;
 			JPluginHelper::importPlugin('content');
-			$dispatcher = JEventDispatcher::getInstance();
-			$dispatcher->trigger('onContentPrepare', array(
+			JFactory::getApplication()->triggerEvent('onContentPrepare', array(
 					'com_dpcalendar.event',
 					&$event,
 					&$event->params,

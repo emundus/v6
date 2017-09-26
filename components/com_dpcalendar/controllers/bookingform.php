@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -60,7 +60,7 @@ class DPCalendarControllerBookingForm extends JControllerForm
 			{
 				continue;
 			}
-			if (!DPCalendarHelperBooking::openForBooking($event))
+			if (!\DPCalendar\Helper\Booking::openForBooking($event))
 			{
 				if (DPCalendarHelper::getDate($event->start_date)->format('U') < DPCalendarHelper::getDate()->format('U'))
 				{
@@ -153,23 +153,28 @@ class DPCalendarControllerBookingForm extends JControllerForm
 		$result = parent::save($key, $urlVar);
 
 		$return = $this->input->get('return', null, 'base64');
-		if ($result && $m = $this->input->get('paymentmethod'))
+		if ($result)
 		{
-			if ($this->input->getInt('b_id') > 0)
+			$booking = $this->getModel()->getItem($this->input->getInt('b_id'));
+			if ($booking->price > 0)
 			{
+				$m = $this->input->get('paymentmethod');
+				$tmpl = $this->input->get('tmpl');
+				if ($tmpl)
+				{
+					$tmpl = '&tmpl=' . $tmpl;
+				}
 				$this->setRedirect(
-						JUri::base() . 'index.php?option=com_dpcalendar&view=booking&layout=pay&type=' . $m . '&b_id=' . $this->input->getInt('b_id') .
-								 '&e_id=' . $this->input->getInt('e_id') . '&tmpl=' . $this->input->get('tmpl'));
+						JUri::base() . 'index.php?option=com_dpcalendar&view=booking&layout=pay&type=' . $m . '&b_id=' . $booking->id . '&e_id=' .
+								 $this->input->getInt('e_id') . $tmpl);
+			}
+			else
+			{
+				// Forward to the booking page
+				$this->setRedirect(DPCalendarHelperRoute::getBookingRoute($booking));
 			}
 		}
-		else if ($result && $isNew && $this->input->getInt('b_id') > 0)
-		{
-			// Forward to the booking page, we land here when no payment is
-			// required
-			$this->setRedirect(DPCalendarHelperRoute::getBookingRoute($this->getModel()
-				->getItem($this->input->getInt('b_id'))));
-		}
-		else if (!$result)
+		else
 		{
 			// Go back to bookingform
 			$event = $this->getModel()->getEvent(reset(array_keys($data['event_id'])));
@@ -181,10 +186,6 @@ class DPCalendarControllerBookingForm extends JControllerForm
 			{
 				$this->setRedirect(base64_decode($return));
 			}
-		}
-		else if ($return)
-		{
-			$this->setRedirect(base64_decode($return));
 		}
 
 		return $result;

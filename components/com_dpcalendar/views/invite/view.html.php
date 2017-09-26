@@ -2,21 +2,22 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
-class DPCalendarViewInvite extends JViewLegacy
+
+class DPCalendarViewInvite extends \DPCalendar\View\BaseView
 {
 
-	public function display ($tpl = null)
+	public function init()
 	{
 		JFactory::getLanguage()->load('', JPATH_ADMINISTRATOR);
 
 		if (JFactory::getUser()->authorise('dpcalendar.invite', 'com_dpcalendar') !== true)
 		{
-			JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+			$this->setError(JText::_('JERROR_ALERTNOAUTHOR'));
 			return false;
 		}
 
@@ -28,7 +29,5 @@ class DPCalendarViewInvite extends JViewLegacy
 		));
 
 		$this->form->setValue('event_id', null, JFactory::getApplication()->input->getInt('id'));
-
-		return parent::display($tpl);
 	}
 }

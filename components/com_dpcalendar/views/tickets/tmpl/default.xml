@@ -6,8 +6,9 @@
 		</message>
 	</layout>
 	<fields name="params"
-		addfieldpath="/administrator/components/com_dpcalendar/models/fields">
-		<fieldset name="event" label="COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL">
+		addfieldpath="/administrator/components/com_dpcalendar/models/fields"
+	    addrulepath="/administrator/components/com_dpcalendar/models/rules">
+		<fieldset name="event" label="COM_DPCALENDAR_EVENT">
 			<field name="event_date_format" type="text" size="80"
 				label="COM_DPCALENDAR_FIELD_CONFIG_EVENT_DATE_FORMAT_LABEL"
 				description="COM_DPCALENDAR_FIELD_CONFIG_EVENT_DATE_FORMAT_DESC" />
@@ -58,6 +59,13 @@
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
+			<field name="event_show_capacity_used" type="list" class="btn-group"
+				label="COM_DPCALENDAR_FIELD_CONFIG_EVENT_SHOW_CAPACITY_USED_LABEL"
+				description="COM_DPCALENDAR_FIELD_CONFIG_EVENT_SHOW_CAPACITY_USED_DESC">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
 			<field name="event_show_bookings" type="list" class="btn-group"
 				label="COM_DPCALENDAR_FIELD_CONFIG_EVENT_SHOW_BOOKINGS_LABEL"
 				description="COM_DPCALENDAR_FIELD_CONFIG_EVENT_SHOW_BOOKINGS_DESC">
@@ -82,10 +90,10 @@
 			<field name="event_map_zoom" type="text" size="5"
 				label="COM_DPCALENDAR_FIELD_CONFIG_CALENDAR_MAP_ZOOM_LABEL"
 				description="COM_DPCALENDAR_FIELD_CONFIG_CALENDAR_MAP_ZOOM_DESC" />
-			<field name="event_map_lat" type="text" size="5"
+			<field name="event_map_lat" type="text" validate="decimal"
 				label="COM_DPCALENDAR_FIELD_CONFIG_CALENDAR_MAP_LATITUDE_LABEL"
 				description="COM_DPCALENDAR_FIELD_CONFIG_CALENDAR_MAP_LATITUDE_DESC" />
-			<field name="event_map_long" type="text" size="5"
+			<field name="event_map_long" type="text" validate="decimal"
 				label="COM_DPCALENDAR_FIELD_CONFIG_CALENDAR_MAP_LONGITUDE_LABEL"
 				description="COM_DPCALENDAR_FIELD_CONFIG_CALENDAR_MAP_LONGITUDE_DESC" />
 		</fieldset>

@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -77,7 +77,8 @@ class DPCalendarModelAdminEvents extends JModelList
 
 		$accessId = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access');
 		$this->setState('filter.access', $accessId);
-		$authorId = $this->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');
+
+		$authorId = $this->getUserStateFromRequest($this->context . '.filter.created_by', 'filter_created_by');
 		$this->setState('filter.author_id', $authorId);
 
 		$eventType = $this->getUserStateFromRequest($this->context . '.filter.event_type', 'filter_event_type', '', 'string');
@@ -261,6 +262,7 @@ class DPCalendarModelAdminEvents extends JModelList
 		{
 			$search = DPCalendarHelper::getDateFromString($search, null, true,
 					DPCalendarHelper::getComponentParameter('event_form_date_format', 'm.d.Y'));
+			$search->setTime(0, 0);
 			$search = $db->Quote($db->escape($search->toSql(), true));
 			$query->where('a.start_date >= ' . $search);
 		}

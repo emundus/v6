@@ -1,6 +1,171 @@
 ChangeLog
 =========
 
+4.1.2 (2016-12-15)
+------------------
+
+* #340: Support for `BYYEARDAY` recurrence when `FREQ=YEARLY`. (@PHPGangsta)
+* #341: Support for `BYWEEKNO` recurrence when `FREQ=YEARLY`. (@PHPGangsta)
+* Updated to the latest windows timezone data mappings.
+* #344: Auto-detecting more Outlook 365-generated timezone identifiers.
+  (@jpirkey)
+* #348: `FreeBusyGenerator` can now accept streams.
+* Support sabre/xml 1.5 and 2.0.
+* #355: Support `DateTimeInterface` in more places where only `DateTime` was
+  supported. (@gharlan).
+* #351: Fixing an inclusive/exclusive problem with `isInTimeRange` and
+  `fastForward` with all-day events. (@strokyl, thanks you are brilliant).
+
+
+4.1.1 (2016-07-15)
+------------------
+
+* #327: Throwing `InvalidDataException` in more cases where invalid iCalendar
+  dates and times were provided. (@rsto)
+* #331: Fix dealing with multiple overridden instances falling on the same
+  date/time (@afedyk-sugarcrm).
+* #333: Fix endless loop on invalid `BYMONTH` values in recurrence.
+  (@PHPGangsta)
+* #339: Fixed a few `validate()` results when repair is off. (@PHPGangsta)
+* #338: Stripping invalid `BYMONTH=` rules during `validate()` (@PHPGangsta)
+* #336: Fix incorrect `BYSECOND=` validation. (@PHPGangsta)
+
+
+4.1.0 (2016-04-06)
+------------------
+
+* #309: When expanding recurring events, the first event should also have a
+  `RECURRENCE-ID` property.
+* #306: iTip REPLYs to the first instance of a recurring event was not handled
+  correctly.
+* Slightly better error message during validation of `N` and `ADR` properties.
+* #312: Correctly extracing timezone in the iTip broker, even when we don't
+  have a master event. (@vkomrakov-sugar).
+* When validating a component's property that must appear once and which could
+  automatically be repaired, make sure we report the change as 'repaired'.
+* Added a PHPUnitAssertions trait. This trait makes it easy to compare two
+  vcards or iCalendar objects semantically.
+* Better error message when parsing objects with an invalid `VALUE` parameter.
+
+
+4.0.3 (2016-03-12)
+------------------
+
+* #300: Added `VCard::getByType()` to quickly get a property with a specific
+  `TYPE` parameter. (@kbond)
+* #302: `UNTIL` was not encoded correctly when converting to jCal.
+  (@GrahamLinagora)
+* #303: `COUNT` is now encoded as an int in jCal instead of a string. (@strokyl)
+* #295: `RRULE` now has more validation and repair rules.
+
+
+4.0.2 (2016-01-11)
+------------------
+
+* #288: Only decode `CHARSET` if we're reading vCard 2.1. If it appears
+  in any other document, we must ignore it.
+
+
+4.0.1 (2016-01-04)
+------------------
+
+* #284: When generating `CANCEL` iTip messages, we now include `DTEND`.
+  (@kewisch)
+
+
+4.0.0 (2015-12-11)
+------------------
+
+* #274: When creating new vCards, the default vCard version is now 4.0.
+* #275: `VEVENT`, `VTODO` and `VCARD` now automatically get a `UID` and
+  `DTSTAMP` property if this was not already specified.
+* `ParseException` now extends `\Exception`.
+* `Sabre\VObject\Reader::read` now has a `$charset` argument.
+* #272: `Sabre\VObject\Recur\EventIterator::$maxInstances` is now
+  `Sabre\VObject\Settings::$maxRecurrences` and is also honored by the
+  FreeBusyGenerator.
+* #278: `expand()` did not work correctly on events with sub-components.
+
+
+4.0.0-beta1 (2015-12-02)
+------------------------
+
+* #258: Support for expanding events that use `RDATE`. (@jabdoa2)
+* #258: Correctly support TZID for events that use `RDATE`. (@jabdoa2)
+* #240: `Component\VCalendar::expand()` now returns a new expanded `VCalendar`
+  object, instead of editing the existing `VCalendar` in-place. This is a BC
+  break.
+* #265: Using the new `InvalidDataException` in place of
+  `InvalidArgumentException` and `LogicException` in all places where we fail
+  because there was something wrong with input data.
+* #227: Always add `VALUE=URI` to `PHOTO` properties.
+* #235: Always add `VALUE=URI` to `URL` properties.
+* It's now possible to override which class is used instead of
+  `Component\VCalendar` or `Component\VCard` during parsing.
+* #263: Lots of small cleanups. (@jakobsack)
+* #220: Automatically stop recurring after 3500 recurrences.
+* #41: Allow user to set different encoding than UTF-8 when decoding vCards.
+* #41: Support the `ENCODING` parameter from vCard 2.1.
+  Both ISO-8859-1 and Windows-1252 are currently supported.
+* #185: Fix encoding/decoding of `TIME` values in jCal/jCard.
+
+
+4.0.0-alpha2 (2015-09-04)
+-------------------------
+
+* Updated windows timezone file to support new mexican timezone.
+* #239: Added a `BirthdayCalendarGenerator`. (@DominikTo)
+* #250: `isInTimeRange()` now considers the timezone for floating dates and
+  times. (@armin-hackmann)
+* Added a duplicate vcard merging tool for the command line.
+* #253: `isInTimeRange()` now correctly handles events that throw the
+  `NoInstancesException` exception. (@migrax, @DominikTo)
+* #254: The parser threw an `E_NOTICE` for certain invalid objects. It now
+  correctly throws a `ParseException`.
+
+
+4.0.0-alpha1 (2015-07-17)
+-------------------------
+
+* sabre/vobject now requires PHP 5.5.
+* #244: PHP7 support.
+* Lots of speedups and reduced memory usage!
+* #160: Support for xCal a.k.a. RFC6321! (@Hywan)
+* #192: Support for xCard a.k.a. RFC6351! (@Hywan)
+* #139: We now accept `DateTimeInterface` wherever it accepted `DateTime`
+   before in arguments. This means that either `DateTime` or
+  `DateTimeImmutable` may be used everywhere.
+* #242: Full support for the `VAVAILABILITY` component, and calculating
+  `VFREEBUSY` based on `VAVAILABILITY` data.
+* #186: Fixing conversion of `UTC-OFFSET` properties when going back and
+  forward between jCal and iCalendar.
+* Properties, Components and Parameters now implement PHP's `JsonSerializable`
+  interface.
+* #139: We now _always_ return `DateTimeImmutable` from any method. This could
+  potentially have big implications if you manipulate Date objects anywhere.
+* #161: Simplified `ElementList` by extending `ArrayIterator`.
+* Removed `RecurrenceIterator` (use Recur\EventIterator instead).
+* Now using php-cs-fixer to automatically enforce and correct CS.
+* #233: The `+00:00` timezone is now recognized as UTC. (@c960657)
+* #237: Added a `destroy()` method to all documents. This method breaks any
+  circular references, allowing PHP to free up memory.
+* #197: Made accessing properties and objects by their name a lot faster. This
+  especially helps objects that have a lot of sub-components or properties,
+  such as large iCalendar objects.
+* #197: The `$children` property on components has been changed from `public`
+  to `protected`. Use the `children()` method instead to get a flat list of
+  objects.
+* #244: The `Float` and `Integer` classes have been renamed to `FloatValue`
+  and `IntegerValue` to allow PHP 7 compatibility.
+
+
+3.5.3 (2016-10-06)
+------------------
+
+* #331: Fix dealing with multiple overridden instances falling on the same
+  date/time (@afedyk-sugarcrm).
+
+
 3.5.2 (2016-04-24)
 -----------------
 
@@ -590,7 +755,7 @@ ChangeLog
 * Added: A new 'Compound' property, that can automatically split up parts for
   properties such as N, ADR, ORG and CATEGORIES.
 * Added: Splitter classes, that can split up large objects (such as exports)
-  into individual objects (thanks @DominikTO and @armin-hackmann).
+  into individual objects (thanks @DominikTo and @armin-hackmann).
 * Added: VFREEBUSY component, which allows easily checking wether timeslots are
   available.
 * Added: The Reader class now has a 'FORGIVING' option, which allows it to parse

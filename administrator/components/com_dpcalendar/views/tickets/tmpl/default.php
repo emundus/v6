@@ -2,14 +2,13 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 
 defined('_JEXEC') or die();
 
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
-JHtml::addIncludePath(JPATH_SITE . '/components/com_dpcalendar/helpers');
 
 JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
@@ -55,6 +54,9 @@ $canOrder	= $user->authorise('core.edit.state', 'com_dpcalendar');
 					<th width="1%" class="hidden-phone">
 						<input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
 					</th>
+                    <th width="10%" class="center">
+						<?php echo JText::_('COM_DPCALENDAR_UID'); ?>
+                    </th>
 					<th width="10%" class="nowrap center">
 						<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 					</th>
@@ -62,7 +64,7 @@ $canOrder	= $user->authorise('core.edit.state', 'com_dpcalendar');
 						<?php echo JHtml::_('searchtools.sort', 'COM_DPCALENDAR_BOOKING_FIELD_NAME_LABEL', 'a.name', $listDirn, $listOrder); ?>
 					</th>
 					<th class="title">
-						<?php echo JHtml::_('searchtools.sort', 'COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL', 'event_title', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('searchtools.sort', 'COM_DPCALENDAR_EVENT', 'event_title', $listDirn, $listOrder); ?>
 					</th>
 					<th width="20%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JGLOBAL_USERNAME', 'booking_name', $listDirn, $listOrder); ?>
@@ -98,13 +100,16 @@ $canOrder	= $user->authorise('core.edit.state', 'com_dpcalendar');
 					<td class="center hidden-phone">
 						<?php echo JHtml::_('grid.id', $i, $item->id); ?>
 					</td>
+                    <td class="center">
+						<?php echo $item->uid;?>
+                    </td>
 					<td class="center hidden-phone">
-						<?php echo DPCalendarHelperBooking::getStatusLabel($item);?>
+						<?php echo \DPCalendar\Helper\Booking::getStatusLabel($item);?>
 					</td>
 					<td class="nowrap">
 						<?php if ($canEdit)
 						{ ?>
-							<a href="<?php echo JRoute::_('index.php?option=com_dpcalendar&task=ticket.edit&id=' . (int) $item->id)?>">
+							<a href="<?php echo JRoute::_('index.php?option=com_dpcalendar&task=ticket.edit&t_id=' . (int) $item->id)?>">
 								<?php echo $this->escape($item->name); ?></a>
 						<?php
 						}
@@ -133,7 +138,7 @@ $canOrder	= $user->authorise('core.edit.state', 'com_dpcalendar');
 						<?php echo DPCalendarHelper::getDateStringFromEvent($item); ?>
 					</td>
 					<td class="hidden-phone">
-						<?php echo DPCalendarHelperLocation::format($item); ?>
+						<?php echo \DPCalendar\Helper\Location::format($item); ?>
 					</td>
 					<td class="hidden-phone">
 						<?php echo JHtml::_('dpcalendaricon.pdfticket', $item->uid, false);?>

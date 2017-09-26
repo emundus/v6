@@ -2,14 +2,14 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
 JLoader::import('components.com_dpcalendar.libraries.dpcalendar.view', JPATH_ADMINISTRATOR);
 
-class DPCalendarViewCpanel extends DPCalendarView
+class DPCalendarViewCpanel extends \DPCalendar\View\BaseView
 {
 
 	protected $icon = 'dpcalendar';
@@ -18,12 +18,6 @@ class DPCalendarViewCpanel extends DPCalendarView
 
 	protected function init ()
 	{
-		if (! JFactory::getApplication()->getCfg('live_site') && ! DPCalendarHelper::isFree())
-		{
-			JFactory::getApplication()->enqueueMessage(
-					'The life site entry is empty. This can cause invalid links on command line actions like the reminder notification.
-			Please define the live_site parameter in your configuration.php file if you are running DPCalendar cron jobs.');
-		}
 		if (! DPCalendarHelper::getComponentParameter('downloadid') && ! DPCalendarHelper::isFree())
 		{
 			JFactory::getApplication()->enqueueMessage(

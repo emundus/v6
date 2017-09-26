@@ -1,163 +1,198 @@
 <?php
+
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
-$params = $this->params;
-$event = $this->event;
-$calendar = DPCalendarHelper::getCalendar($event->catid);
+use CCL\Content\Element\Basic\Container;
+use CCL\Content\Element\Component\Grid;
+use CCL\Content\Element\Component\Grid\Row;
+use CCL\Content\Element\Component\Grid\Column;
+use CCL\Content\Element\Basic\Link;
+use CCL\Content\Element\Basic\DescriptionListHorizontal;
+use CCL\Content\Element\Basic\Element;
+use CCL\Content\Element\Basic\Description\Term;
+use CCL\Content\Element\Basic\Description\Description;
+use CCL\Content\Element\Basic\TextBlock;
+use CCL\Content\Element\Basic\Meta;
 
+// Global parameters
+$params    = $this->params;
+$event     = $this->event;
+$calendar  = DPCalendarHelper::getCalendar($event->catid);
 $startDate = DPCalendarHelper::getDate($event->start_date, $event->all_day);
-$endDate = DPCalendarHelper::getDate($event->end_date, $event->all_day);
-?>
-<div class="row-fluid row">
-	<div class="span7 col-md-7">
-		<?php
-		echo JMicrodata::htmlMeta(DPCalendarHelperRoute::getEventRoute($event->id, $event->catid, true), 'url');
 
-		if ($params->get('event_show_calendar', '1'))
-		{?>
-		<dl class="dl-horizontal" id="dp-event-calendar">
-			<dt class="event-label"><?php echo JText::_('COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL_CALANDAR');?>: </dt>
-			<dd class="event-content">
-				<?php
-				$calendarLink = DPCalendarHelperRoute::getCalendarRoute($event->catid);
-				if ($calendarLink)
-				{
-					if ($params->get('event_show_calendar', '1') == '2')
-					{
-						$calendarLink = $calendarLink . '#year=' . $startDate->format('Y', true) . '&month=' . $startDate->format('m', true) . '&day=' . $startDate->format('d', true);
-					}
-				?>
-					<a href="<?php echo JRoute::_($calendarLink);?>" target="_parent"><?php echo $this->escape($calendar->title);?></a>
-				<?php
-				}
-				else
-				{
-					echo $calendar != null ? $this->escape($calendar->title) : $event->catid;
-				}?>
-			</dd>
-		</dl>
-		<?php
+// The root container
+$root = $this->root->addChild(new Container('information'));
+
+/** @var Grid $grid */
+$grid = $root->addChild(new Grid('content', array('dpcalendar-locations-container')));
+$grid->setProtectedClass('dpcalendar-locations-container');
+
+/** @var Row $row */
+$row = $grid->addRow(new Row('details'));
+
+/** @var Column $column */
+$column = $row->addColumn(new Column('data', 100));
+
+// Add the calendar information
+if ($params->get('event_show_calendar', '1')) {
+	// Create the calendar link
+	$calendarLink = DPCalendarHelperRoute::getCalendarRoute($event->catid);
+	if ($calendarLink) {
+		if ($params->get('event_show_calendar', '1') == '2') {
+			// Link to month
+			$calendarLink = $calendarLink .
+				'#year=' . $startDate->format('Y', true) .
+				'&month=' . $startDate->format('m', true) .
+				'&day=' . $startDate->format('d', true);
+		}
+		// Add the link
+		$content = new Link('url', JRoute::_($calendarLink), '_parent');
+		$content->setContent($calendar->title);
+	} else {
+		// Set the name as content of the description
+		$content = $calendar != null ? $calendar->title : $event->catid;
+	}
+	DPCalendarHelper::renderLayout(
+		'content.dl',
+		array('root' => $column, 'id' => 'calendar', 'label' => 'COM_DPCALENDAR_CALENDAR', 'content' => $content)
+	);
+}
+
+// Add date
+if ($params->get('event_show_date', '1')) {
+	// Add a link to the url
+	$start = new TextBlock('start-date');
+	$start->setContent(
+		DPCalendarHelper::getDateStringFromEvent($event, $params->get('event_date_format', 'm.d.Y'), $params->get('event_time_format', 'g:i a'))
+	);
+
+	DPCalendarHelper::renderLayout(
+		'content.dl',
+		array('root' => $column, 'id' => 'date', 'label' => 'COM_DPCALENDAR_DATE', 'content' => $start)
+	);
+}
+
+// Add location information
+if ($event->locations && $params->get('event_show_location', '2')) {
+	$locations = array();
+	foreach ($event->locations as $location) {
+		// The container which holds the location data
+		$lc = new Container(
+			$location->id,
+			array(
+				'location',
+				'location-details'
+			),
+			array(
+				'data-latitude'    => $location->latitude,
+				'data-longitude'   => $location->longitude,
+				'data-title'       => $location->title,
+				'data-description' => '<a href="' . DPCalendarHelperRoute::getLocationRoute($location) . '">' . $location->title . '</a>',
+				'data-color'       => \DPCalendar\Helper\Location::getColor($location)
+			)
+		);
+		$lc->setProtectedClass('location-details');
+
+		if ($params->get('event_show_location', '2') == '1') {
+			// Link to the location view
+			$lc->addChild(new Link('link', DPCalendarHelperRoute::getLocationRoute($location)))->setContent($location->title);
+		} else if ($params->get('event_show_location', '2') == '2') {
+			// Link to the location details on the same page
+			$lc->addChild(new Link('link', $this->escape(JUri::getInstance()) . '#dp-event-locations-' . $location->id))->setContent($location->title);
 		}
 
-		if ($params->get('event_show_date', '1'))
-		{?>
-		<dl class="dl-horizontal" id="dp-event-date">
-			<dt class="event-label"><?php echo JText::_('COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL_DATE');?>: </dt>
-			<dd class="event-content" itemprop="startDate" content="<?php echo $startDate->format('c');?>">
-				<?php
-				echo DPCalendarHelper::getDateStringFromEvent($event, $params->get('event_date_format', 'm.d.Y'), $params->get('event_time_format', 'g:i a'));
+		$locations[] = $lc;
+	}
 
-				echo JMicrodata::htmlMeta(htmlspecialchars($endDate->format('c'), ENT_QUOTES), 'endDate')
-				?>
-			</dd>
-		</dl>
-		<?php
+	DPCalendarHelper::renderLayout(
+		'content.dl',
+		array('root' => $column, 'id' => 'location', 'label' => 'COM_DPCALENDAR_LOCATION', 'content' => $locations)
+	);
+}
+
+// Author
+$author = JFactory::getUser($event->created_by);
+if ($author && !$author->guest && $params->get('event_show_author', '1')) {
+	// The description list
+	$dl = $column->addChild(new DescriptionListHorizontal('author'));
+
+	// Set the term
+	$dl->setTerm(new Term('label', array('label')))->setContent(JText::_('COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL_AUTHOR'));
+	$desc = $dl->setDescription(new Description('description', array('content')));
+
+	// Set the author information as content
+	$desc->setContent($event->created_by_alias ? $event->created_by_alias : $author->name);
+
+	if (JFile::exists(JPATH_ADMINISTRATOR . '/components/com_comprofiler/plugin.foundation.php')) {
+		// Set the community builder username as content
+		include_once(JPATH_ADMINISTRATOR . '/components/com_comprofiler/plugin.foundation.php');
+		$cbUser = CBuser::getInstance($event->created_by);
+		if ($cbUser) {
+			$desc->setContent($cbUser->getField('formatname', null, 'html', 'none', 'list', 0, true));
 		}
+	} else if (isset($event->contactid) && !empty($event->contactid)) {
+		// Link to the contact
+		$needle  = 'index.php?option=com_contact&view=contact&id=' . $event->contactid;
+		$item    = JFactory::getApplication()->getMenu()->getItems('link', $needle, true);
+		$cntlink = !empty($item) ? $needle . '&Itemid=' . $item->id : $needle;
+		$desc->addChild(new Link('link', JRoute::_($cntlink)))->setContent($desc->getContent());
+		$desc->setContent('');
+	}
 
-		if ($event->locations && $params->get('event_show_location', '2'))
-		{?>
-		<dl class="dl-horizontal" id="dp-event-location">
-			<dt class="event-label"><?php echo JText::_('COM_DPCALENDAR_LOCATION');?>: </dt>
-			<dd class="event-content">
-				<?php foreach ($event->locations as $location)
-				{ ?>
-				<div class="dp-location" data-latitude="<?php echo $location->latitude;?>" data-longitude="<?php echo $location->longitude?>" data-title="<?php echo $this->escape($location->title);?>">
-					<?php
-					if ($params->get('event_show_location', '2') == '1')
-					{
-					?>
-					<a href="http://maps.google.com/?q=<?php echo $this->escape(DPCalendarHelperLocation::format($location));?>" rel="nofollow" target="_blank"><?php echo $this->escape($location->title);?></a>
-					<?php
-					}
-					else if ($params->get('event_show_location', '2') == '2')
-					{?>
-					<a href="<?php echo '#' . $this->escape($location->alias);?>"><?php echo $this->escape($location->title);?></a>
-					<?php
-					}?>
-				</div>
-				<?php echo DPCalendarHelperSchema::location(array($location), 'span');
-				}
-				?>
-			</dd>
-		</dl>
-		<?php
-		}
-		$author = JFactory::getUser($event->created_by);
-		if ($author && !$author->guest && $params->get('event_show_author', '1'))
-		{
-		?>
-		<dl class="dl-horizontal" id="dp-event-author">
-			<dt class="event-label"><?php echo JText::_('COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL_AUTHOR');?>: </dt>
-			<dd class="event-content" itemprop="performer">
-				<?php
-				$authorName = $event->created_by_alias ? $this->escape($event->created_by_alias) : $this->escape($author->name);
+	if ($avatar = DPCalendarHelper::getAvatar($author->id, $author->email, $params)) {
+		// Show the avatar
+		$desc->addChild(new Container('avatar'))->setContent($avatar);
+	}
+}
 
-				if (JFile::exists(JPATH_ADMINISTRATOR . '/components/com_comprofiler/plugin.foundation.php'))
-				{
-					include_once(JPATH_ADMINISTRATOR . '/components/com_comprofiler/plugin.foundation.php');
-					$cbUser = CBuser::getInstance($event->created_by);
-					if ($cbUser)
-					{
-						echo $cbUser->getField( 'formatname', null, 'html', 'none', 'list', 0, true );
-					}
-				}
-				else if (isset($event->contactid) && !empty($event->contactid))
-				{
-					$needle = 'index.php?option=com_contact&view=contact&id=' . $event->contactid;
-					$menu = JFactory::getApplication()->getMenu();
-					$item = $menu->getItems('link', $needle, true);
-					$cntlink = ! empty($item) ? $needle . '&Itemid=' . $item->id : $needle;
-					echo JHtml::_('link', JRoute::_($cntlink), $authorName);
-				}
-				else
-				{
-					echo $authorName;
-				}
+// Add url
+if ($event->url && $params->get('event_show_url', '1')) {
+	// Add a link to the url
+	$content = new Link('link', $event->url);
+	$content->setContent($event->url);
 
-				$avatar = DPCalendarHelper::getAvatar($author->id, $author->email, $params);
-				if ($avatar)
-				{
-					echo '<br/>' . $avatar;
-				}?>
+	DPCalendarHelper::renderLayout(
+		'content.dl',
+		array('root' => $column, 'id' => 'url', 'label' => 'COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL_URL', 'content' => $content)
+	);
+}
 
-				</dd>
-		</dl>
-		<?php
-		}
+// Information column
+$metaColumn = new Column('metadata', 40);
 
-		if ($event->url && $params->get('event_show_url', '1'))
-		{?>
-		<dl class="dl-horizontal" id="dp-event-url">
-			<dt class="event-label"><?php echo JText::_('COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL_URL');?>: </dt>
-			<dd class="event-content"><a href="<?php echo $event->url;?>" target="_blank"><?php echo $event->url?></a></dd>
-		</dl>
-		<?php
-		}
-		?>
-	</div>
+if ($params->get('event_show_images', '1')) {
+	// Show the images
+	DPCalendarHelper::renderLayout('event.images', array('event' => $event, 'root' => $metaColumn));
+}
 
-	<div class="span5 col-md-5">
-	<?php
-	if ($params->get('event_show_images', '1'))
-	{
-		echo JLayoutHelper::render('event.images', array('event' => $event));
-	} ?>
+if ($event->locations && $params->get('event_show_map', '1') == '1' && $params->get('event_show_location', '2') == '1') {
+	// Add the map container
+	$map = $metaColumn->addChild(
+		new Element(
+			'details-map',
+			array('dpcalendar-map', 'dpcalendar-fixed-map'),
+			array(
+				'data-zoom'        => $params->get('event_map_zoom', 4),
+				'data-latitude'    => $params->get('event_map_lat', 47),
+				'data-longitude'   => $params->get('event_map_long', 4),
+				'data-color'       => $event->color,
+				'data-title'       => $location->title,
+				'data-description' => '<a href="' . DPCalendarHelperRoute::getLocationRoute($location) . '">' . $location->title . '</a>',
+			)
+		)
+	);
+	$map->setProtectedClass('dpcalendar-map');
+	$map->setProtectedClass('dpcalendar-fixed-map');
+}
 
-	<?php
-	if ($event->locations && $params->get('event_show_map', '1') == '1' && $params->get('event_show_location', '2') == '1')
-	{?>
-		<div id="dp-event-details-map" class="pull-right dpcalendar-fixed-map"
-			data-zoom="<?php echo $params->get('event_map_zoom', 4);?>"
-			data-lat="<?php echo $params->get('event_map_lat', 47);?>"
-			data-long="<?php echo $params->get('event_map_long', 4);?>"
-			data-color="<?php echo $event->color;?>"></div>
-	<?php
-	} ?>
-	</div>
-</div>
+// If there are childs in the second column, add it and make the first one smaller
+if ($metaColumn->getChildren()) {
+	$column->setWidth(60);
+	$row->addColumn($metaColumn);
+}

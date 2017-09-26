@@ -2,94 +2,40 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
 JLoader::import('components.com_dpcalendar.libraries.phpqrcode.phpqrcode', JPATH_ADMINISTRATOR);
 
-class DPCalendarViewTicket extends JViewLegacy
+class DPCalendarViewTicket extends \DPCalendar\View\BaseView
 {
 
-	public function display ($tpl = null)
+	public function display($tpl = null)
 	{
-		$app = JFactory::getApplication();
-
 		JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_dpcalendar/models');
 		$model = JModelLegacy::getInstance('Ticket', 'DPCalendarModel');
 		$this->setModel($model, true);
 
-		$this->state = $this->get('State');
-
-		$this->item = $model->getItem(array(
-				'uid' => $app->input->getCmd('uid')
-		));
-		$this->event = JModelLegacy::getInstance('Event', 'DPCalendarModel')->getItem($this->item->event_id);
-		$this->booking = JModelLegacy::getInstance('Booking', 'DPCalendarModel')->getItem($this->item->booking_id);
-
-		$params = &$this->state->params;
-
-		$this->params = $params;
-		if ($this->item->id == null)
-		{
-			JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
-			return false;
-		}
-
 		parent::display($tpl);
 	}
 
-	protected function _prepareDocument ()
+	protected function init()
 	{
-		$app = JFactory::getApplication();
-		$menus = $app->getMenu();
-		$title = null;
+		$this->item = $this->getModel()->getItem(array('uid' => JFactory::getApplication()->input->getCmd('uid')));
 
-		$menu = $menus->getActive();
+		if ($this->item->id == null) {
+			$this->setError(JText::_('JERROR_ALERTNOAUTHOR'));
 
-		if (empty($this->item->id))
-		{
-			$head = JText::_('COM_DPCALENDAR_VIEW_FORM_EDIT_EVENT');
-		}
-		else
-		{
-			$head = JText::_('COM_DPCALENDAR_VIEW_FORM_EDIT_EVENT');
+			return false;
 		}
 
-		if ($menu)
-		{
-			$this->params->def('page_heading', $this->params->get('page_title', $menu->title));
-		}
-		else
-		{
-			$this->params->def('page_heading', $head);
-		}
+		$this->event   = JModelLegacy::getInstance('Event', 'DPCalendarModel')->getItem($this->item->event_id);
+		$this->booking = JModelLegacy::getInstance('Booking', 'DPCalendarModel')->getItem($this->item->booking_id);
 
-		$title = $this->params->def('page_title', $head);
-		if ($app->getCfg('sitename_pagetitles', 0) == 1)
-		{
-			$title = JText::sprintf('JPAGETITLE', $app->getCfg('sitename'), $title);
-		}
-		else if ($app->getCfg('sitename_pagetitles', 0) == 2)
-		{
-			$title = JText::sprintf('JPAGETITLE', $title, $app->getCfg('sitename'));
-		}
-		$this->document->setTitle($title);
+		$this->item->text = '';
+		JFactory::getApplication()->triggerEvent('onContentPrepare', array('com_dpcalendar.ticket', &$this->item, &$this->params, 0));
 
-		if ($this->params->get('menu-meta_description'))
-		{
-			$this->document->setDescription($this->params->get('menu-meta_description'));
-		}
-
-		if ($this->params->get('menu-meta_keywords'))
-		{
-			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
-		}
-
-		if ($this->params->get('robots'))
-		{
-			$this->document->setMetadata('robots', $this->params->get('robots'));
-		}
 	}
 }

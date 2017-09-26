@@ -2,67 +2,58 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
 JLoader::import('joomla.application.component.modeladmin');
-JTable::addIncludePath(JPATH_SITE . DS . 'components' . DS . 'com_dpcalendar' . DS . 'tables');
+JTable::addIncludePath(JPATH_SITE . '/components/com_dpcalendar/tables');
 
 class DPCalendarModelDavcalendar extends JModelAdmin
 {
-
-	public function getTable ($type = 'Davcalendar', $prefix = 'DPCalendarTable', $config = array())
+	public function getTable($type = 'Davcalendar', $prefix = 'DPCalendarTable', $config = array())
 	{
 		return JTable::getInstance($type, $prefix, $config);
 	}
 
-	public function getForm ($data = array(), $loadData = true)
+	public function getForm($data = array(), $loadData = true)
 	{
-		$app = JFactory::getApplication();
-
-		$form = $this->loadForm('com_dpcalendar.davcalendar', 'davcalendar', array(
-				'control' => 'jform',
-				'load_data' => $loadData
-		));
-		if (empty($form))
-		{
+		$form = $this->loadForm('com_dpcalendar.davcalendar', 'davcalendar', array('control'   => 'jform', 'load_data' => $loadData));
+		if (empty($form)) {
 			return false;
 		}
 
 		return $form;
 	}
 
-	protected function loadFormData ()
+	protected function loadFormData()
 	{
 		$data = JFactory::getApplication()->getUserState('com_dpcalendar.edit.davcalendar.data', array());
 
-		if (empty($data))
-		{
+		if (empty($data)) {
 			$data = $this->getItem();
 		}
 
 		return $data;
 	}
 
-	public function getReturnPage ()
+	public function getReturnPage()
 	{
 		return base64_encode($this->getState('return_page'));
 	}
 
-	protected function populateState ()
+	protected function populateState()
 	{
 		$app = JFactory::getApplication();
 
-		$pk = JRequest::getVar('c_id');
+		$pk = $app->input->getInt('c_id');
 		$this->setState('davcalendar.id', $pk);
 		$this->setState('form.id', $pk);
 
-		$return = JRequest::getVar('return', null, 'default', 'base64');
+		$return = $app->input->get('return', null, 'default', 'base64');
 
-		if (! JUri::isInternal(base64_decode($return)))
-		{
+		if (!JUri::isInternal(base64_decode($return))) {
 			$return = null;
 		}
 
@@ -71,6 +62,6 @@ class DPCalendarModelDavcalendar extends JModelAdmin
 		$params = $app->getParams();
 		$this->setState('params', $params);
 
-		$this->setState('layout', JRequest::getCmd('layout'));
+		$this->setState('layout', $app->input->getCmd('layout'));
 	}
 }

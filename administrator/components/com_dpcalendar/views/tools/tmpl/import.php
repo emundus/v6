@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 
@@ -48,7 +48,7 @@ JPluginHelper::importPlugin('dpcalendar');
 		</div>
 		<div class="clearfix"> </div>
 		<?php
-			$tmp = JDispatcher::getInstance()->trigger('onCalendarsFetch');
+			$tmp = JFactory::getApplication()->triggerEvent('onCalendarsFetch');
 			$calendars = array();
 			if (!empty($tmp))
 			{
@@ -89,5 +89,5 @@ JPluginHelper::importPlugin('dpcalendar');
 <div class="clearfix"> </div>
 
 <div align="center" style="clear: both">
-	<?php echo sprintf(JText::_('COM_DPCALENDAR_FOOTER'), JRequest::getVar('DPCALENDAR_VERSION'));?>
+	<?php echo sprintf(JText::_('COM_DPCALENDAR_FOOTER'), JFactory::getApplication()->input->getVar('DPCALENDAR_VERSION'));?>
 </div>

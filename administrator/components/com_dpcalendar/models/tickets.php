@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -98,7 +98,7 @@ class DPCalendarModelTickets extends JModelList
 		$query->join('LEFT', $db->quoteName('#__dpcalendar_bookings') . ' AS b ON b.id = a.booking_id');
 
 		// Join over the events
-		$query->select('e.catid AS event_calid, e.title as event_title, e.start_date, e.end_date, e.all_day');
+		$query->select('e.catid AS event_calid, e.title as event_title, e.start_date, e.end_date, e.all_day, e.show_end_time');
 		$query->join('LEFT', $db->quoteName('#__dpcalendar_events') . ' AS e ON e.id = a.event_id');
 
 		// Join over the users for the author.

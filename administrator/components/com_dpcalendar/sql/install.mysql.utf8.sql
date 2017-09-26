@@ -9,10 +9,11 @@ CREATE TABLE IF NOT EXISTS `#__dpcalendar_events` (
   `recurrence_id` varchar(255) DEFAULT NULL,
   `start_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `end_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `show_end_time` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `all_day` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `color` varchar(250) NOT NULL DEFAULT '',
   `url` varchar(250) NOT NULL DEFAULT '',
-  `images` text NOT NULL DEFAULT '',
+  `images` text NOT NULL,
   `description` text NOT NULL,
   `date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `hits` int(11) NOT NULL DEFAULT '0',
@@ -41,11 +42,11 @@ CREATE TABLE IF NOT EXISTS `#__dpcalendar_events` (
   `created_by_alias` varchar(255) NOT NULL DEFAULT '',
   `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `modified_by` int(10) unsigned NOT NULL DEFAULT '0',
-  `metakey` text NOT NULL,
-  `metadesc` text NOT NULL,
-  `metadata` text NOT NULL,
+  `metakey` text NULL,
+  `metadesc` text NULL,
+  `metadata` text NULL,
   `featured` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT 'Set if link is featured.',
-  `xreference` varchar(255) NOT NULL COMMENT 'A reference to enable linkages to external data sets.',
+  `xreference` varchar(255) NULL COMMENT 'A reference to enable linkages to external data sets.',
   `publish_up` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `plugintype` TEXT NOT NULL,
@@ -86,7 +87,7 @@ CREATE TABLE IF NOT EXISTS `#__dpcalendar_locations` (
   `checked_out` int(11) NOT NULL DEFAULT '0',
   `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `ordering` int(11) NOT NULL DEFAULT '0',
-  `params` text NOT NULL,
+  `params` text NULL,
   `language` char(7) NOT NULL DEFAULT '',
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `created_by` int(10) unsigned NOT NULL DEFAULT '0',
@@ -213,58 +214,110 @@ CREATE TABLE IF NOT EXISTS `#__dpcalendar_extcalendars` (
   KEY `idx_language` (`language`)
 ) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
-CREATE TABLE IF NOT EXISTS `#__dpcalendar_caldav_calendarobjects` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `calendardata` mediumblob,
-  `uri` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `calendarid` int(10) unsigned NOT NULL,
-  `lastmodified` int(11) unsigned DEFAULT NULL,
-  `etag` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `size` int(11) unsigned NOT NULL,
-  `componenttype` varchar(8) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `firstoccurence` int(11) unsigned DEFAULT NULL,
-  `lastoccurence` int(11) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `calendarid` (`calendarid`,`uri`)
-) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+CREATE TABLE #__dpcalendar_caldav_calendarobjects (
+    id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    calendardata MEDIUMBLOB,
+    uri VARBINARY(200),
+    calendarid INTEGER UNSIGNED NOT NULL,
+    lastmodified INT(11) UNSIGNED,
+    etag VARBINARY(32),
+    size INT(11) UNSIGNED NOT NULL,
+    componenttype VARBINARY(8),
+    firstoccurence INT(11) UNSIGNED,
+    lastoccurence INT(11) UNSIGNED,
+    uid VARBINARY(200),
+    UNIQUE(calendarid, uri),
+    INDEX calendarid_time (calendarid, firstoccurence)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `#__dpcalendar_caldav_calendars` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `principaluri` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `displayname` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `uri` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `ctag` int(10) unsigned NOT NULL DEFAULT '0',
-  `description` text COLLATE utf8_unicode_ci,
-  `calendarorder` int(10) unsigned NOT NULL DEFAULT '0',
-  `calendarcolor` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `timezone` text COLLATE utf8_unicode_ci,
-  `components` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `transparent` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `principaluri` (`principaluri`,`uri`)
-) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+CREATE TABLE #__dpcalendar_caldav_calendars (
+    id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    synctoken INTEGER UNSIGNED NOT NULL DEFAULT '1',
+    components VARBINARY(21)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `#__dpcalendar_caldav_principals` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `uri` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
-  `email` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `displayname` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `vcardurl` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `external_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uri` (`uri`),
-  KEY `external_id` (`external_id`)
-) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+CREATE TABLE #__dpcalendar_caldav_calendarinstances (
+    id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    calendarid INTEGER UNSIGNED NOT NULL,
+    principaluri VARBINARY(100),
+    access TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1 = owner, 2 = read, 3 = readwrite',
+    displayname VARCHAR(100),
+    uri VARBINARY(200),
+    description TEXT,
+    calendarorder INT(11) UNSIGNED NOT NULL DEFAULT '0',
+    calendarcolor VARBINARY(10),
+    timezone TEXT,
+    transparent TINYINT(1) NOT NULL DEFAULT '0',
+    share_href VARBINARY(100),
+    share_displayname VARCHAR(100),
+    share_invitestatus TINYINT(1) NOT NULL DEFAULT '2' COMMENT '1 = noresponse, 2 = accepted, 3 = declined, 4 = invalid',
+    UNIQUE(principaluri, uri),
+    UNIQUE(calendarid, principaluri),
+    UNIQUE(calendarid, share_href)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `#__dpcalendar_caldav_groupmembers` (
-    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-    `principal_id` int(10) unsigned NOT NULL,
-    `member_id` int(10) unsigned NOT NULL,
-    PRIMARY KEY (`id`),
+CREATE TABLE #__dpcalendar_caldav_calendarchanges (
+    id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    uri VARBINARY(200) NOT NULL,
+    synctoken INT(11) UNSIGNED NOT NULL,
+    calendarid INT(11) UNSIGNED NOT NULL,
+    operation TINYINT(1) NOT NULL,
+    INDEX calendarid_synctoken (calendarid, synctoken)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE #__dpcalendar_caldav_calendarsubscriptions (
+    id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    uri VARBINARY(200) NOT NULL,
+    principaluri VARBINARY(100) NOT NULL,
+    source TEXT,
+    displayname VARCHAR(100),
+    refreshrate VARCHAR(10),
+    calendarorder INT(11) UNSIGNED NOT NULL DEFAULT '0',
+    calendarcolor VARBINARY(10),
+    striptodos TINYINT(1) NULL,
+    stripalarms TINYINT(1) NULL,
+    stripattachments TINYINT(1) NULL,
+    lastmodified INT(11) UNSIGNED,
+    UNIQUE(principaluri, uri)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE #__dpcalendar_caldav_schedulingobjects (
+    id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    principaluri VARBINARY(255),
+    calendardata MEDIUMBLOB,
+    uri VARBINARY(200),
+    lastmodified INT(11) UNSIGNED,
+    etag VARBINARY(32),
+    size INT(11) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE #__dpcalendar_caldav_principals (
+    id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    uri VARBINARY(200) NOT NULL,
+    email VARBINARY(80),
+    displayname VARCHAR(80),
+    `external_id` int(11) unsigned NOT NULL,
+    UNIQUE(uri)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE #__dpcalendar_caldav_groupmembers (
+    id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    principal_id INTEGER UNSIGNED NOT NULL,
+    member_id INTEGER UNSIGNED NOT NULL,
     UNIQUE(principal_id, member_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE #__dpcalendar_caldav_propertystorage (
+    id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    path VARBINARY(1024) NOT NULL,
+    name VARBINARY(100) NOT NULL,
+    valuetype INT UNSIGNED,
+    value MEDIUMBLOB
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE UNIQUE INDEX path_property ON #__dpcalendar_caldav_propertystorage (path(600), name(100));
 
 insert into #__dpcalendar_caldav_principals (uri, email, displayname, external_id) select concat("principals/", username) as uri, email, name as displayname, id from #__users u ON DUPLICATE KEY UPDATE email=u.email, displayname=u.name;
 insert into #__dpcalendar_caldav_principals (uri, email, displayname, external_id) select concat("principals/", username, "/calendar-proxy-read") as uri, email, name as displayname, id from #__users u ON DUPLICATE KEY UPDATE email=u.email, displayname=u.name;
 insert into #__dpcalendar_caldav_principals (uri, email, displayname, external_id) select concat("principals/", username, "/calendar-proxy-write") as uri, email, name as displayname, id from #__users u ON DUPLICATE KEY UPDATE email=u.email, displayname=u.name;
-		
+

@@ -2,90 +2,110 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
-JHtml::addIncludePath(JPATH_COMPONENT . '/helpers');
+use CCL\Content\Element\Basic\Container;
 
-DPCalendarHelper::loadLibrary(array(
-		'jquery' => true,
-		'bootstrap' => true,
-		'dpcalendar' => true
-));
+// Load the needed javascript libraries
+DPCalendarHelper::loadLibrary(array('jquery' => true, 'dpcalendar' => true));
 
-$document = JFactory::getDocument();
-$document->addStyleSheet(JURI::base() . 'components/com_dpcalendar/views/event/tmpl/default.css');
+// Load the event stylesheet
+JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/views/event/default.css', array(), true);
 
+// The params
 $params = $this->params;
-if ($params->get('event_show_map', '1'))
-{
-	DPCalendarHelper::loadLibrary(array(
-			'maps' => true
-	));
-	$document->addScript(JURI::base() . 'components/com_dpcalendar/views/event/tmpl/event.js');
+
+// Load the maps javascript when needed
+if ($params->get('event_show_map', '1')) {
+	DPCalendarHelper::loadLibrary(array('maps' => true));
 }
 
-if (JFactory::getApplication()->input->getCmd('tmpl', '') == 'component')
-{
-	$document->addStyleSheet(JURI::base() . 'components/com_dpcalendar/views/event/tmpl/none-responsive.css');
-}
-
+// The event
 $event = $this->event;
 
+// Load the dpcalendar plugins
 JPluginHelper::importPlugin('dpcalendar');
 
-// User timezone when available
-echo JLayoutHelper::render('user.timezone');
-?>
-<div id="dpcal-event-container" class="dp-container" itemscope
-	itemtype="http://schema.org/Event">
-<?php
-echo JHtml::_('content.prepare', $params->get('event_textbefore'));
+// User timezone
+DPCalendarHelper::renderLayout('user.timezone', array('root' => $this->root));
 
-echo implode(' ', JDispatcher::getInstance()->trigger('onEventBeforeDisplay', array(
-		&$event
-)));
+// The text before content
+$text = JHtml::_('content.prepare', $params->get('event_textbefore'));
+if ($text) {
+	$this->root->addChild(new Container('text-before'))->setContent($text);
+}
 
-// Header with buttons and title
-echo $this->loadTemplate('header');
+// The before event content
+$text = implode(' ', JFactory::getApplication()->triggerEvent('onEventBeforeDisplay', array(&$event)));
+if ($text) {
+	$this->root->addChild(new Container('event-before-display'))->setContent($text);
+}
+
+// Header with buttons
+$this->loadTemplate('header');
+
+// Title
+$this->loadTemplate('title');
 
 // Joomla event
-echo $event->displayEvent->afterDisplayTitle;
+$text = $event->displayEvent->afterDisplayTitle;
+if ($text) {
+	$this->root->addChild(new Container('after-display-title'))->setContent($text);
+}
 
 // Informations like date calendar
-echo $this->loadTemplate('information');
+$this->loadTemplate('information');
 
 // Contains custom fields
-echo $event->displayEvent->beforeDisplayContent;
+$text = $event->displayEvent->beforeDisplayContent;
+if ($text) {
+	$this->root->addChild(new Container('before-display-content'))->setContent($text);
+}
 
 // Tags
-echo JLayoutHelper::render('joomla.content.tags', $event->tags->itemTags);
+$text = JLayoutHelper::render('joomla.content.tags', $event->tags->itemTags);
+if ($text) {
+	$this->root->addChild(new Container('tags'))->setContent($text);
+}
 
 // Booking details when available
-echo $this->loadTemplate('bookings');
+$this->loadTemplate('bookings');
 
 // Attendees
-echo $this->loadTemplate('tickets');
+$this->loadTemplate('tickets');
 
 // Description
-echo $this->loadTemplate('description');
+$this->loadTemplate('description');
 
 // Joomla event
-echo $event->displayEvent->afterDisplayContent;
+$text = $event->displayEvent->afterDisplayContent;
+if ($text) {
+	$this->root->addChild(new Container('after-display-content'))->setContent($text);
+}
 
 // Locations detail information
-echo $this->loadTemplate('locations');
+$this->loadTemplate('locations');
 
 // Load the comments
-echo $this->loadTemplate('comments');
+$this->loadTemplate('comments');
 
 // After event trigger
-echo implode(' ', JDispatcher::getInstance()->trigger('onEventAfterDisplay', array(
-		&$event
-)));
+$text = implode(' ', JFactory::getApplication()->triggerEvent('onEventAfterDisplay', array(&$event)));
+if ($text) {
+	$this->root->addChild(new Container('event-after-display'))->setContent($text);
+}
 
-echo JHtml::_('content.prepare', $params->get('event_textafter'));
-?>
-</div>
+// The text after parameter
+$text = JHtml::_('content.prepare', $params->get('event_textafter'));
+if ($text) {
+	$this->root->addChild(new Container('text-after'))->setContent($text);
+}
+
+// Add the structured data schema
+DPCalendarHelper::renderLayout('schema.event', array('event' => $event, 'root' => $this->root));
+
+// Render the tree
+echo DPCalendarHelper::renderElement($this->root, $this->params);

@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 
@@ -17,7 +17,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 
 JFactory::getDocument()->addStyleDeclaration('.ui-datepicker { z-index: 1003 !important; }');
 
-$function = JRequest::getCmd('function', 'jSelectEvent');
+$function = JFactory::getApplication()->input->getCmd('function', 'jSelectEvent');
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_dpcalendar&view=events&layout=modal&tmpl=component&function=' . $function . '&' . JSession::getFormToken() . '=1');?>" method="post" name="adminForm" id="adminForm" class="form-inline">
 <div id="filter-bar" class="btn-toolbar">

@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -42,18 +42,17 @@ $path = JPATH_ADMINISTRATOR . '/components/com_dpcalendar/dpcalendar.xml';
 if (file_exists($path))
 {
 	$manifest = simplexml_load_file($path);
-	JRequest::setVar('DPCALENDAR_VERSION', $manifest->version . ' ' . $type);
+	JFactory::getApplication()->input->set('DPCALENDAR_VERSION', $manifest->version . ' ' . $type);
 }
 else
 {
-	JRequest::setVar('DPCALENDAR_VERSION', $type);
+	JFactory::getApplication()->input->set('DPCALENDAR_VERSION', $type);
 }
 
-if (version_compare(PHP_VERSION, '5.3.0') < 0)
+if (version_compare(PHP_VERSION, '5.5.9') < 0)
 {
 	JError::raiseWarning(0,
-			'You have PHP version ' . PHP_VERSION . ' installed. This version is end of life and contains some security wholes!!
-					 		Please upgrade your PHP version to at least 5.3.x. DPCalendar can not run on this version.');
+			'You have PHP version ' . PHP_VERSION . ' installed. Please upgrade your PHP version to at least 5.5.9. DPCalendar can not run on this version.');
 	return;
 }
 

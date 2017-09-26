@@ -2,10 +2,12 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
+
+use Joomla\Utilities\ArrayHelper;
 
 JLoader::import('joomla.application.component.modeladmin');
 
@@ -16,10 +18,8 @@ class DPCalendarModelLocation extends JModelAdmin
 
 	protected function canDelete($record)
 	{
-		if (!empty($record->id))
-		{
-			if ($record->state != -2)
-			{
+		if (!empty($record->id)) {
+			if ($record->state != -2) {
 				return;
 			}
 
@@ -38,17 +38,15 @@ class DPCalendarModelLocation extends JModelAdmin
 
 		// Get the form.
 		$form = $this->loadForm('com_dpcalendar.location', 'location', array(
-				'control' => 'jform',
-				'load_data' => $loadData
+			'control'   => 'jform',
+			'load_data' => $loadData
 		));
-		if (empty($form))
-		{
+		if (empty($form)) {
 			return false;
 		}
 
 		// Modify the form based on access controls.
-		if (!$this->canEditState((object)$data))
-		{
+		if (!$this->canEditState((object)$data)) {
 			// Disable fields for display.
 			$form->setFieldAttribute('ordering', 'disabled', 'true');
 			$form->setFieldAttribute('state', 'disabled', 'true');
@@ -62,8 +60,7 @@ class DPCalendarModelLocation extends JModelAdmin
 			$form->setFieldAttribute('publish_down', 'filter', 'unset');
 		}
 
-		if (!DPCalendarHelper::isCaptchaNeeded())
-		{
+		if (!DPCalendarHelper::isCaptchaNeeded()) {
 			$form->removeField('captcha');
 		}
 
@@ -74,8 +71,7 @@ class DPCalendarModelLocation extends JModelAdmin
 	{
 		$data = JFactory::getApplication()->getUserState('com_dpcalendar.edit.location.data', array());
 
-		if (empty($data))
-		{
+		if (empty($data)) {
 			$data = $this->getItem();
 		}
 
@@ -90,44 +86,37 @@ class DPCalendarModelLocation extends JModelAdmin
 		$user = JFactory::getUser();
 
 		$table->title = htmlspecialchars_decode($table->title, ENT_QUOTES);
-		$table->alias = JApplication::stringURLSafe($table->alias);
+		$table->alias = JApplicationHelper::stringURLSafe($table->alias);
 
-		if (empty($table->alias))
-		{
-			$table->alias = JApplication::stringURLSafe($table->title);
+		if (empty($table->alias)) {
+			$table->alias = JApplicationHelper::stringURLSafe($table->title);
 		}
 
-		if (empty($table->latitude) && empty($table->longitude))
-		{
-			$latLong = DPCalendarHelperLocation::get(DPCalendarHelperLocation::format($table), false);
-			$table->latitude = $latLong->latitude;
+		if (empty($table->latitude) && empty($table->longitude)) {
+			$latLong          = \DPCalendar\Helper\Location::get(\DPCalendar\Helper\Location::format($table), false);
+			$table->latitude  = $latLong->latitude;
 			$table->longitude = $latLong->longitude;
 		}
 
-		if (empty($table->id))
-		{
+		if (empty($table->id)) {
 			// Set ordering to the last item if not set
-			if (empty($table->ordering))
-			{
+			if (empty($table->ordering)) {
 				$db = JFactory::getDbo();
 				$db->setQuery('SELECT MAX(ordering) FROM #__dpcalendar_locations');
 				$max = $db->loadResult();
 
 				$table->ordering = $max + 1;
-			}
-			else
-			{
+			} else {
 				// Set the values
-				$table->modified = $date->toSql();
+				$table->modified    = $date->toSql();
 				$table->modified_by = $user->get('id');
 			}
 
 			// Increment the content version number.
-			$table->version ++;
+			$table->version++;
 		}
 
-		if (!isset($table->state) && $this->canEditState($table))
-		{
+		if (!isset($table->state) && $this->canEditState($table)) {
 			$table->state = 1;
 		}
 	}
@@ -136,14 +125,13 @@ class DPCalendarModelLocation extends JModelAdmin
 	{
 		$app = JFactory::getApplication();
 
-		$pk = $app->input->getInt('l_id', $app->isAdmin() ? $app->input->getInt('id') : null);
+		$pk = $app->input->getInt('l_id');
 		$this->setState('location.id', $pk);
 		$this->setState('form.id', $pk);
 
-		$return = JRequest::getVar('return', null, 'default', 'base64');
+		$return = $app->input->getVar('return', null, 'default', 'base64');
 
-		if (!JUri::isInternal(base64_decode($return)))
-		{
+		if (!JUri::isInternal(base64_decode($return))) {
 			$return = null;
 		}
 
@@ -151,24 +139,20 @@ class DPCalendarModelLocation extends JModelAdmin
 
 		$params = JComponentHelper::getParams('com_dpcalendar');
 
-		if (JFactory::getApplication()->isSite())
-		{
-			$app->getParams();
+		if ($app->isSite()) {
+			$params = $app->getParams();
 		}
 		$this->setState('params', $params);
-
-		$this->setState('layout', $app->input->getCmd('layout'));
 	}
 
 	public function delete(&$pks)
 	{
 		$success = parent::delete($pks);
 
-		if ($success)
-		{
+		if ($success) {
 			// Delete associations
 			$pks = (array)$pks;
-			JArrayHelper::toInteger($pks);
+			ArrayHelper::toInteger($pks);
 			$this->_db->setQuery('delete from #__dpcalendar_events_location where location_id in (' . implode(',', $pks) . ')');
 			$this->_db->query();
 		}

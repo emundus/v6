@@ -954,30 +954,6 @@ class EmundusModelCalendar extends JModelLegacy {
 
         
         $service = new Google_Service_Calendar($client);
-        
-
-        $jinput = JFactory::getApplication()->getParams();
-        $calendarID1 = $jinput->get('calendarId1');
-        $calendarID2 = $jinput->get('calendarId2');
-        $calendarID3 = $jinput->get('calendarId3');
-        $calendarID4 = $jinput->get('calendarId4');
-        $calendarID5 = $jinput->get('calendarId5');
-        $calendarID6 = $jinput->get('calendarId6');
-        $calendarID7 = $jinput->get('calendarId7');
-        $calendarID8 = $jinput->get('calendarId8');
-        $calendarID9 = $jinput->get('calendarId9');
-        $calendarID10 = $jinput->get('calendarId10');
-        $calendarID11 = $jinput->get('calendarId11');
-        $calendarID12 = $jinput->get('calendarId12');
-        $calendarID13 = $jinput->get('calendarId13');
-        $calendarID14 = $jinput->get('calendarId14');
-        $calendarID15 = $jinput->get('calendarId15');
-        $calendarID16 = $jinput->get('calendarId16');
-        $calendarID17 = $jinput->get('calendarId17');
-        $calendarID18 = $jinput->get('calendarId18');
-        $calendarID19 = $jinput->get('calendarId19');
-        $calendarID20 = $jinput->get('calendarId20');
-
 
         $cal = $this->getIdCalCat();
 
@@ -1190,12 +1166,10 @@ class EmundusModelCalendar extends JModelLegacy {
 
     function getGCalEventCreate($eventID,$catID,$candidate,$calID) {
 
-        $session = JFactory::getSession();
-        $sessionCurrentUser = $session->get('user');
+        $user = JFactory::getUser();
 
         $this->saveParams();
         $accountId = $this->getFirstCalendar();
-
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
@@ -1219,6 +1193,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $db->setQuery($query);
         $ticketUsed = $db->loadAssocList();*/
     
+        // TODO: find out why we are deleting an event ans then creating it again later below.
         $this->deleteDPCalEvent();
         
 
@@ -1230,30 +1205,7 @@ class EmundusModelCalendar extends JModelLegacy {
         
 
         $jinput = JFactory::getApplication()->getParams();
-        $calendarID1 = $jinput->get('calendarId1');
-        $calendarID2 = $jinput->get('calendarId2');
-        $calendarID3 = $jinput->get('calendarId3');
-        $calendarID4 = $jinput->get('calendarId4');
-        $calendarID5 = $jinput->get('calendarId5');
-        $calendarID6 = $jinput->get('calendarId6');
-        $calendarID7 = $jinput->get('calendarId7');
-        $calendarID8 = $jinput->get('calendarId8');
-        $calendarID9 = $jinput->get('calendarId9');
-        $calendarID10 = $jinput->get('calendarId10');
-        $calendarID11 = $jinput->get('calendarId11');
-        $calendarID12 = $jinput->get('calendarId12');
-        $calendarID13 = $jinput->get('calendarId13');
-        $calendarID14 = $jinput->get('calendarId14');
-        $calendarID15 = $jinput->get('calendarId15');
-        $calendarID16 = $jinput->get('calendarId16');
-        $calendarID17 = $jinput->get('calendarId17');
-        $calendarID18 = $jinput->get('calendarId18');
-        $calendarID19 = $jinput->get('calendarId19');
-        $calendarID20 = $jinput->get('calendarId20');
-
-
-        $cal = $this->getIdCalCat();
-
+        $calendarIDs = $jinput->get('calendarIds');
 
         $event = $service->events->get($calID,$eventID); 
 
@@ -1261,7 +1213,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
             $booking = '1';
             $userBook = $candidate[0];
-            $coordinatorBook = $sessionCurrentUser->id;
+            $coordinatorBook = $user->id;
         
         } else {
         
@@ -1305,6 +1257,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
         //$this->insertCategories($titleCal,$aliasCal,$colorCal);
 
+        // TODO: It seems that events are being created again using the Google data.
         $query = $db->getQuery(true);
 
         $columns = array('id', 'catid', 'uid', 'original_id', 'title', 'alias', 'rrule', 'recurrence_id', 'start_date', 'end_date', 'all_day', 'color', 'url', 'images', 'description', 'date', 'hits', 'capacity', 'capacity_used', 'max_tickets', 'booking_closing_date', 'price', 'earlybird', 'user_discount', 'booking_information', 'tax', 'ordertext', 'orderurl', 'canceltext', 'cancelurl', 'state', 'checked_out', 'checked_out_time', 'access', 'access_content', 'params', 'language', 'created', 'created_by', 'created_by_alias', 'modified', 'modified_by', 'metakey', 'metadesc', 'metadata', 'featured', 'xreference', 'publish_up', 'publish_down', 'plugintype','fnum');
@@ -1319,10 +1272,10 @@ class EmundusModelCalendar extends JModelLegacy {
         $idUser = $this->getIdUser($eventsId);
         $idCoord = $this->getIdCoord($eventsId);
 
+        // TODO: Add translation.
+        $titles = JText::_("BOOKED") . $title ;
 
-        $titles = '(booked) ' . $title ;
-
-        if ($idUser != '0' && $idCoord != '0' && !preg_match('(booked)',$title) == true) {
+        if ($idUser != '0' && $idCoord != '0' && !preg_match('(booked)', $title) == true) {
 
             $event->setSummary($titles);
 
@@ -1470,7 +1423,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $query = $db->getQuery(true);
 
         $conditions = array(
-        $db->quoteName('id') . ' = ' . $db->quote("")
+            $db->quoteName('id') . ' = ' . $db->quote("")
         );
 
         $query->delete($db->quoteName('#__dpcalendar_events'));
@@ -1582,7 +1535,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
             foreach ($events as $evt) {
 
-                // TODO: The ID in $evt is a goole calendar ID and not the DB ID
+                // TODO: The ID in $evt is a google calendar ID and not the DB ID
                 // this means that the function cannot work.
                 $info = $this->getUidOidandCapcityused($evt->id);
                 
@@ -2042,43 +1995,8 @@ class EmundusModelCalendar extends JModelLegacy {
         }
     }
 
-    function deleteUncategorised() {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        
-        $conditions = array(
-            $db->quoteName('path') . ' = ' . ($db->quote('uncategorised'))
-        );
-
-        $query->delete($db->quoteName('#__categories')); 
-        $query->where($conditions);
-        
-        try {
-            $db->setQuery($query);
-            $db->execute();
-        } catch (Exception $e) {
-            die($e->getMessage());
-        }
-    }
-
-    function deleteUncategorisedFromSave() {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        $conditions = array($db->quoteName('path') . ' = ' . ($db->quote('uncategorised')));
-        $query->delete($db->quoteName('#__emundus_calendar_save')); 
-        $query->where($conditions);
-        $db->setQuery($query);
-        $db->execute();
-    }
-
     // This function is called by the php script called on submit of the 'Create Calendar' fabrik form.
     function createCalendar($title, $alias, $color) {
-
-        // TODO: Is this code useful?
-        if ($this->getPath() != null) {
-            $this->deleteUncategorised();
-            $this->deleteUncategorisedFromSave();
-        }
         
         $db         = JFactory::getDBO();
         $mainframe  = JFactory::getApplication();
@@ -2183,100 +2101,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
     }
 
-    function getCalendarSaved() {
-        $db = JFactory::getDBO(); 
-
-        $query = $db->getQuery(true);
-
-        $conditions = array(
-            $db->quoteName('accountId') . ' = ' . $db->quote($this->getFirstCalendar())
-        );
-
-        $query->select('*');
-        $query->from($db->quoteName('#__emundus_calendar_save'));
-        $query->where($conditions);
-        $query->order($db->quoteName('id') . 'ASC'); 
-
-        try {
-            $db->setQuery($query);
-            return $db->loadAssocList();  
-        } catch (Exception $e) {
-            die($e->getMessage());
-        }
-
-    }
-
-    function saveCategoriesCalendar() {
-        $calSaved = $this->getCalendarSaved();
-        $result = $this->getCategoriesCal();
-        
-        $i = 0;
-
-        foreach ($result as $calendar) {
-
-            $asset_id           = $calendar['asset_id'];
-            $parent_id          = $calendar['parent_id'];
-            $lft                = $calendar['lft'];
-            $rgt                = $calendar['rgt'];
-            $level              = $calendar['level'];
-            $path               = $calendar['path'];
-            $extension          = $calendar['extension'];
-            $title              = $calendar['title'];
-            $alias              = $calendar['alias'];
-            $note               = $calendar['note'];
-            $description        = $calendar['description'];
-            $published          = $calendar['published'];
-            $checked_out        = $calendar['checked_out'];
-            $checked_out_time   = $calendar['checked_out_time'];
-            $access             = $calendar['access'];
-            $params             = $calendar['params'];
-            $metadesc           = $calendar['metadesc'];
-            $metakey            = $calendar['metakey'];
-            $metadata           = $calendar['metadata'];
-            $created_user_id    = $calendar['created_user_id'];
-            $created_time       = $calendar['created_time'];
-            $modified_user_id   = $calendar['modified_user_id'];
-            $modified_time      = $calendar['modified_time'];
-            $hits               = $calendar['hits'];
-            $language           = $calendar['language'];
-            $version            = $calendar['version'];
-            $name               = $calendar['name'];
-            $calId              = $calendar['calId'];
-            $accountId          = $calendar['accountId'];
-            $code               = $calendar['code'];
-
-        
-
-            if ($asset_id != $calSaved[$i]['asset_id'] || $parent_id != $calSaved[$i]['parent_id'] || $lft != $calSaved[$i]['lft'] || $rgt != $calSaved[$i]['rgt'] || $level != $calSaved[$i]['level'] || $path != $calSaved[$i]['path'] || $extension != $calSaved[$i]['extension'] || $title != $calSaved[$i]['title'] || $alias != $calSaved[$i]['alias'] || $note != $calSaved[$i]['note'] || $description != $calSaved[$i]['description'] || $published != $calSaved[$i]['published'] || $checked_out != $calSaved[$i]['checked_out'] || $checked_out_time != $calSaved[$i]['checked_out_time'] || $access != $calSaved[$i]['access'] || $params != $calSaved[$i]['params'] || $metadesc != $calSaved[$i]['metadesc'] || $metakey != $calSaved[$i]['metakey'] || $metadata != $calSaved[$i]['metadata'] || $created_user_id != $calSaved[$i]['created_user_id'] || $created_time != $calSaved[$i]['created_time'] || $modified_user_id != $calSaved[$i]['modified_user_id'] || $modified_time != $calSaved[$i]['modified_time'] || $hits != $calSaved[$i]['hits'] || $language != $calSaved[$i]['language'] || $version != $calSaved[$i]['version'] || $name != $calSaved[$i]['name'] || $calId != $calSaved[$i]['calId'] || $accountId != $calSaved[$i]['accountId']) {
-
-                if ($accountId == $this->getFirstCalendar()) {
-
-                    $db = JFactory::getDBO(); 
-                    $query = $db->getQuery(true);
-
-                    $columns = array('id','asset_id','parent_id','lft','rgt','level','path','extension','title','alias','note','description','published','checked_out','checked_out_time','access','params','metadesc','metakey','metadata','created_user_id','created_time','modified_user_id','modified_time','hits','language','version','name','calId','accountId','code');
-
-                    $values = array($db->quote(NULL),$db->quote($asset_id),$db->quote($parent_id),$db->quote($lft),$db->quote($rgt),$db->quote($level),$db->quote($path),$db->quote($extension),$db->quote($title),$db->quote($alias),$db->quote($note),$db->quote($description),$db->quote($published),$db->quote($checked_out),$db->quote($checked_out_time),$db->quote($access),$db->quote($params),$db->quote($metadesc),$db->quote($metakey),$db->quote($metadata),$db->quote($created_user_id),$db->quote($created_time),$db->quote($modified_user_id),$db->quote($modified_time),$db->quote($hits),$db->quote($language),$db->quote($version),$db->quote($name),$db->quote($calId),$db->quote($accountId),$db->quote($code));
-
-                    $query->insert($db->quoteName('#__emundus_calendar_save'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
-
-                    try {
-                        $db->setQuery($query);
-                        $db->execute();
-                    } catch (Exception $e) {
-                        die($e->getMessage());
-                    }
-
-                }
-
-            }
-        $i++;
-
-        }
-    }
-
     function insertCategoriesCalendar() { 
-        $calSaved = $this->getCalendarSaved();
 
         $this->deleteCalCatToSync();
 
@@ -2313,19 +2138,15 @@ class EmundusModelCalendar extends JModelLegacy {
             $hits               = $calendar['hits'];
             $language           = $calendar['language'];
             $version            = $calendar['version'];
-            $name               = $calendar['name'];
-            $calId              = $calendar['calId'];
-            $accountId          = $calendar['accountId'];
-            $code               = $calendar['code'];
 
 
             $db = JFactory::getDBO(); 
 
             $query = $db->getQuery(true);
 
-            $columns = array('id','asset_id','parent_id','lft','rgt','level','path','extension','title','alias','note','description','published','checked_out','checked_out_time','access','params','metadesc','metakey','metadata','created_user_id','created_time','modified_user_id','modified_time','hits','language','version','name','calId','accountId','code');
+            $columns = array('id','asset_id','parent_id','lft','rgt','level','path','extension','title','alias','note','description','published','checked_out','checked_out_time','access','params','metadesc','metakey','metadata','created_user_id','created_time','modified_user_id','modified_time','hits','language','version');
 
-            $values = array($db->quote(NULL),$db->quote($asset_id),$db->quote($parent_id),$db->quote($lft),$db->quote($rgt),$db->quote($level),$db->quote($path),$db->quote($extension),$db->quote($title),$db->quote($alias),$db->quote($note),$db->quote($description),$db->quote($published),$db->quote($checked_out),$db->quote($checked_out_time),$db->quote($access),$db->quote($params),$db->quote($metadesc),$db->quote($metakey),$db->quote($metadata),$db->quote($created_user_id),$db->quote($created_time),$db->quote($modified_user_id),$db->quote($modified_time),$db->quote($hits),$db->quote($language),$db->quote($version),$db->quote($name),$db->quote($calId),$db->quote($accountId),$db->quote($code));
+            $values = array($db->quote(NULL),$db->quote($asset_id),$db->quote($parent_id),$db->quote($lft),$db->quote($rgt),$db->quote($level),$db->quote($path),$db->quote($extension),$db->quote($title),$db->quote($alias),$db->quote($note),$db->quote($description),$db->quote($published),$db->quote($checked_out),$db->quote($checked_out_time),$db->quote($access),$db->quote($params),$db->quote($metadesc),$db->quote($metakey),$db->quote($metadata),$db->quote($created_user_id),$db->quote($created_time),$db->quote($modified_user_id),$db->quote($modified_time),$db->quote($hits),$db->quote($language),$db->quote($version));
 
             $query->insert($db->quoteName('#__categories'))->columns($db->quoteName($columns))->values(implode(',', $values)); 
 

@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -19,7 +19,7 @@ class DPCalendarModelCalendar extends JModelLegacy
 		$app = JFactory::getApplication();
 		$this->setState('filter.extension', 'com_dpcalendar');
 
-		if (JRequest::getVar('ids', null) == null)
+		if (JFactory::getApplication()->input->getVar('ids', null) == null)
 		{
 			$this->setState('filter.parentIds', $this->state->get('parameters.menu', new JRegistry())
 				->get('ids'));
@@ -27,7 +27,7 @@ class DPCalendarModelCalendar extends JModelLegacy
 		}
 		else
 		{
-			$this->setState('filter.categories', explode(',', JRequest::getVar('ids', null)));
+			$this->setState('filter.categories', explode(',', JFactory::getApplication()->input->getVar('ids', null)));
 			$this->setState('filter.parentIds', $this->setState('filter.categories'));
 		}
 
@@ -96,7 +96,7 @@ class DPCalendarModelCalendar extends JModelLegacy
 			}
 
 			// Add caldav calendars when available
-			$tmp = JDispatcher::getInstance()->trigger('onCalendarsFetch', array(
+			$tmp = JFactory::getApplication()->triggerEvent('onCalendarsFetch', array(
 					null,
 					'cd'
 			));

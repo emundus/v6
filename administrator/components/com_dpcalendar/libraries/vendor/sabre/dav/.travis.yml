@@ -1,33 +1,36 @@
 language: php
 php:
-  - 5.3.3
-  - 5.3
-  - 5.4
   - 5.5
   - 5.6
-  - hhvm
+  - 7.0
+  - 7.1
 
-matrix:
-  fast_finish: true
-  allow_failures:
-    - php: hhvm
 
 env:
   matrix:
-    - VOBJECT=2 LOWEST_DEPS=""
-    - VOBJECT=2 LOWEST_DEPS="--prefer-lowest"
-    - VOBJECT=3 LOWEST_DEPS=""
-    - VOBJECT=3 LOWEST_DEPS="--prefer-lowest"
+    - LOWEST_DEPS="" TEST_DEPS=""
+    - LOWEST_DEPS="--prefer-lowest" TEST_DEPS="tests/Sabre/"
 
 services:
   - mysql
+  - postgresql
 
+sudo: false
 
 before_script:
-  - mysql -e 'create database sabredav'
-  - composer self-update
-  - if [ "$VOBJECT" == "3" ]; then cp tests/composer.vobject3.json composer.json; fi
-  - composer update --prefer-source $LOWEST_DEPS
+  - mysql -e 'create database sabredav_test'
+  - psql -c "create database sabredav_test" -U postgres
+  - psql -c "create user sabredav with PASSWORD 'sabredav';GRANT ALL PRIVILEGES ON DATABASE sabredav_test TO sabredav" -U postgres
+  #  - composer self-update
+  - composer update --prefer-dist $LOWEST_DEPS
+
+# addons:
+#    postgresql: "9.5"
 
 script:
-  - phpunit --configuration tests/phpunit.xml
+  - ./bin/phpunit --configuration tests/phpunit.xml.dist $TEST_DEPS
+  - ./bin/sabre-cs-fixer fix . --dry-run --diff
+
+cache:
+  directories:
+    - $HOME/.composer/cache

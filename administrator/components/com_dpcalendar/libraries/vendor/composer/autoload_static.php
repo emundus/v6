@@ -4,24 +4,38 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit85adee7eb2526e05820acf8c1aa4f3b0
+class ComposerStaticInit5b5f6ff92e6ba61a21e5e93b64cab3e3
 {
     public static $files = array (
-        'e40631d46120a9c38ea139981f8dab26' => __DIR__ . '/..' . '/ircmaxell/password-compat/lib/password.php',
+        '383eaff206634a77a1be54e64e6459c7' => __DIR__ . '/..' . '/sabre/uri/lib/functions.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
-        'edc6464955a37aa4d5fbf39d40fb6ee7' => __DIR__ . '/..' . '/symfony/polyfill-php55/bootstrap.php',
-        '3e2471375464aac821502deb0ac64275' => __DIR__ . '/..' . '/symfony/polyfill-php54/bootstrap.php',
+        '3569eecfeed3bcf0bad3c998a494ecb8' => __DIR__ . '/..' . '/sabre/xml/lib/Deserializer/functions.php',
+        '93aa591bc4ca510c520999e34229ee79' => __DIR__ . '/..' . '/sabre/xml/lib/Serializer/functions.php',
+        '2b9d0f43f9552984cfa82fee95491826' => __DIR__ . '/..' . '/sabre/event/lib/coroutine.php',
+        'd81bab31d3feb45bfe2f283ea3c8fdf7' => __DIR__ . '/..' . '/sabre/event/lib/Loop/functions.php',
+        'a1cce3d26cc15c00fcd0b3354bd72c88' => __DIR__ . '/..' . '/sabre/event/lib/Promise/functions.php',
+        'ebdb698ed4152ae445614b69b5e4bb6a' => __DIR__ . '/..' . '/sabre/http/lib/functions.php',
     );
 
     public static $prefixLengthsPsr4 = array (
         'S' => 
         array (
-            'Symfony\\Polyfill\\Php55\\' => 23,
-            'Symfony\\Polyfill\\Php54\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Component\\HttpFoundation\\' => 33,
             'Symfony\\Component\\EventDispatcher\\' => 34,
+            'Sabre\\Xml\\' => 10,
             'Sabre\\VObject\\' => 14,
+            'Sabre\\Uri\\' => 10,
+            'Sabre\\HTTP\\' => 11,
+            'Sabre\\Event\\' => 12,
+            'Sabre\\DAV\\' => 10,
+            'Sabre\\DAVACL\\' => 13,
+            'Sabre\\CardDAV\\' => 14,
+            'Sabre\\CalDAV\\' => 13,
+        ),
+        'P' => 
+        array (
+            'Psr\\Log\\' => 8,
         ),
         'O' => 
         array (
@@ -34,17 +48,13 @@ class ComposerStaticInit85adee7eb2526e05820acf8c1aa4f3b0
         array (
             'DPCalendar\\' => 11,
         ),
+        'C' => 
+        array (
+            'CCL\\' => 4,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Symfony\\Polyfill\\Php55\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-php55',
-        ),
-        'Symfony\\Polyfill\\Php54\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-php54',
-        ),
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
@@ -57,9 +67,45 @@ class ComposerStaticInit85adee7eb2526e05820acf8c1aa4f3b0
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher',
         ),
+        'Sabre\\Xml\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sabre/xml/lib',
+        ),
         'Sabre\\VObject\\' => 
         array (
             0 => __DIR__ . '/..' . '/sabre/vobject/lib',
+        ),
+        'Sabre\\Uri\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sabre/uri/lib',
+        ),
+        'Sabre\\HTTP\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sabre/http/lib',
+        ),
+        'Sabre\\Event\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sabre/event/lib',
+        ),
+        'Sabre\\DAV\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sabre/dav/lib/DAV',
+        ),
+        'Sabre\\DAVACL\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sabre/dav/lib/DAVACL',
+        ),
+        'Sabre\\CardDAV\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sabre/dav/lib/CardDAV',
+        ),
+        'Sabre\\CalDAV\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sabre/dav/lib/CalDAV',
+        ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
         ),
         'Omnipay\\TwoCheckout\\' => 
         array (
@@ -81,32 +127,13 @@ class ComposerStaticInit85adee7eb2526e05820acf8c1aa4f3b0
         array (
             0 => __DIR__ . '/../../..' . '/libraries/dpcalendar/DPCalendar',
         ),
+        'CCL\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/Digital-Peak/ccl/src/CCL',
+        ),
     );
 
     public static $prefixesPsr0 = array (
-        'S' => 
-        array (
-            'Sabre\\HTTP' => 
-            array (
-                0 => __DIR__ . '/..' . '/sabre/dav/lib',
-            ),
-            'Sabre\\DAVACL' => 
-            array (
-                0 => __DIR__ . '/..' . '/sabre/dav/lib',
-            ),
-            'Sabre\\DAV' => 
-            array (
-                0 => __DIR__ . '/..' . '/sabre/dav/lib',
-            ),
-            'Sabre\\CardDAV' => 
-            array (
-                0 => __DIR__ . '/..' . '/sabre/dav/lib',
-            ),
-            'Sabre\\CalDAV' => 
-            array (
-                0 => __DIR__ . '/..' . '/sabre/dav/lib',
-            ),
-        ),
         'O' => 
         array (
             'Omnipay\\Common\\' => 
@@ -135,13 +162,10 @@ class ComposerStaticInit85adee7eb2526e05820acf8c1aa4f3b0
     );
 
     public static $classMap = array (
-        'CallbackFilterIterator' => __DIR__ . '/..' . '/symfony/polyfill-php54/Resources/stubs/CallbackFilterIterator.php',
         'Datamatrix' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/barcodes/datamatrix.php',
         'Omnipay\\Omnipay' => __DIR__ . '/..' . '/omnipay/common/src/Omnipay/Omnipay.php',
         'PDF417' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/barcodes/pdf417.php',
         'QRcode' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/barcodes/qrcode.php',
-        'RecursiveCallbackFilterIterator' => __DIR__ . '/..' . '/symfony/polyfill-php54/Resources/stubs/RecursiveCallbackFilterIterator.php',
-        'SessionHandlerInterface' => __DIR__ . '/..' . '/symfony/polyfill-php54/Resources/stubs/SessionHandlerInterface.php',
         'TCPDF' => __DIR__ . '/..' . '/tecnickcom/tcpdf/tcpdf.php',
         'TCPDF2DBarcode' => __DIR__ . '/..' . '/tecnickcom/tcpdf/tcpdf_barcodes_2d.php',
         'TCPDFBarcode' => __DIR__ . '/..' . '/tecnickcom/tcpdf/tcpdf_barcodes_1d.php',
@@ -158,10 +182,10 @@ class ComposerStaticInit85adee7eb2526e05820acf8c1aa4f3b0
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit85adee7eb2526e05820acf8c1aa4f3b0::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit85adee7eb2526e05820acf8c1aa4f3b0::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit85adee7eb2526e05820acf8c1aa4f3b0::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit85adee7eb2526e05820acf8c1aa4f3b0::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit5b5f6ff92e6ba61a21e5e93b64cab3e3::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit5b5f6ff92e6ba61a21e5e93b64cab3e3::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit5b5f6ff92e6ba61a21e5e93b64cab3e3::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit5b5f6ff92e6ba61a21e5e93b64cab3e3::$classMap;
 
         }, null, ClassLoader::class);
     }

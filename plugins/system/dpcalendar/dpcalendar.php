@@ -2,105 +2,157 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
-JLoader::import('components.com_dpcalendar.libraries.dpcalendar.caldavplugin', JPATH_ADMINISTRATOR);
+JLoader::import('components.com_dpcalendar.helpers.dpcalendar', JPATH_ADMINISTRATOR);
 
-if (! class_exists('DPCalendarPluginCalDAV'))
-{
-	return;
-}
+JLoader::registerAlias('DPCalendarHelperLocation', '\\DPCalendar\\Helper\\Location', '6.0');
+JLoader::registerAlias('DPCalendarHelperBooking', '\\DPCalendar\\Helper\\Booking', '6.0');
 
-class PlgSystemDpcalendar extends DPCalendarPluginCalDAV
+class PlgSystemDpcalendar extends \DPCalendar\Plugin\CalDAVPlugin
 {
 
 	protected $identifier = 'cd';
 
-	public function onUserAfterSave ($user, $isNew, $success, $msg)
+	public function onUserAfterSave($user, $isNew, $success, $msg)
 	{
-		if (! $success)
-		{
+		if (!$success) {
 			return;
 		}
 
 		$db = JFactory::getDbo();
-		if ($isNew)
-		{
-			$db->setQuery(
-					"insert into #__dpcalendar_caldav_principals (uri, email, displayname, external_id) values (" .
-							 $db->quote('principals/' . $user['username']) . ", " . $db->quote($user['email']) . ", " . $db->quote($user['name']) .
-							 ", " . (int) $user['id'] . ')');
-			$db->query();
-			$db->setQuery(
-					"insert into #__dpcalendar_caldav_principals (uri, email, displayname, external_id) values (" .
-							 $db->quote('principals/' . $user['username'] . '/calendar-proxy-read') . ", " . $db->quote($user['email']) . ", " .
-							 $db->quote($user['name']) . ", " . (int) $user['id'] . ')');
-			$db->query();
-			$db->setQuery(
-					"insert into #__dpcalendar_caldav_principals (uri, email, displayname, external_id) values (" .
-							 $db->quote('principals/' . $user['username'] . '/calendar-proxy-write') . ", " . $db->quote($user['email']) . ", " .
-							 $db->quote($user['name']) . ", " . (int) $user['id'] . ')');
-			$db->query();
-		}
-		else
-		{
-			$db->setQuery(
-					"update #__dpcalendar_caldav_principals set email=" . $db->quote($user['email']) . ", displayname=" . $db->quote($user['name']) .
-							 " where external_id=" . (int) $user['id']);
-			$db->query();
+		if ($isNew) {
+			$query = $db->getQuery(true);
+			$query->insert('#__dpcalendar_caldav_principals');
+			$query->set('uri = ' . $db->quote('principals/' . $user['username']));
+			$query->set('email = ' . $db->quote($user['email']));
+			$query->set('displayname = ' . $db->quote($user['name']));
+			$query->set('external_id = ' . (int)$user['id']);
+			$db->setQuery($query);
+			$db->execute();
+
+			$query = $db->getQuery(true);
+			$query->insert('#__dpcalendar_caldav_principals');
+			$query->set('uri = ' . $db->quote('principals/' . $user['username'] . '/calendar-proxy-read'));
+			$query->set('email = ' . $db->quote($user['email']));
+			$query->set('displayname = ' . $db->quote($user['name']));
+			$query->set('external_id = ' . (int)$user['id']);
+			$db->setQuery($query);
+			$db->execute();
+
+			$query = $db->getQuery(true);
+			$query->insert('#__dpcalendar_caldav_principals');
+			$query->set('uri = ' . $db->quote('principals/' . $user['username'] . '/calendar-proxy-write'));
+			$query->set('email = ' . $db->quote($user['email']));
+			$query->set('displayname = ' . $db->quote($user['name']));
+			$query->set('external_id = ' . (int)$user['id']);
+			$db->setQuery($query);
+			$db->execute();
+		} else {
+			$query = $db->getQuery(true);
+			$query->update('#__dpcalendar_caldav_principals');
+			$query->set('uri = ' . $db->quote('principals/' . $user['username']));
+			$query->set('email = ' . $db->quote($user['email']));
+			$query->set('displayname = ' . $db->quote($user['name']));
+			$query->where('external_id = ' . (int)$user['id']);
+			$query->where('uri not like ' . $db->quote('principals/%/calendar-proxy-read'));
+			$query->where('uri not like ' . $db->quote('principals/%/calendar-proxy-write'));
+			$db->setQuery($query);
+			$db->execute();
+
+			$query = $db->getQuery(true);
+			$query->update('#__dpcalendar_caldav_principals');
+			$query->set('uri = ' . $db->quote('principals/' . $user['username'] . '/calendar-proxy-read'));
+			$query->set('email = ' . $db->quote($user['email']));
+			$query->set('displayname = ' . $db->quote($user['name']));
+			$query->where('external_id = ' . (int)$user['id']);
+			$query->where('uri like ' . $db->quote('principals/%/calendar-proxy-read'));
+			$db->setQuery($query);
+			$db->execute();
+
+			$query = $db->getQuery(true);
+			$query->update('#__dpcalendar_caldav_principals');
+			$query->set('uri = ' . $db->quote('principals/' . $user['username'] . '/calendar-proxy-write'));
+			$query->set('email = ' . $db->quote($user['email']));
+			$query->set('displayname = ' . $db->quote($user['name']));
+			$query->where('external_id = ' . (int)$user['id']);
+			$query->where('uri like ' . $db->quote('principals/%/calendar-proxy-write'));
+			$db->setQuery($query);
+			$db->execute();
 		}
 
 		// If the booking was added as guest user and now he registered, assign
 		// the booking to him
-		if ($isNew)
-		{
+		if ($isNew) {
 			JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_dpcalendar/models');
-			$model = JModelLegacy::getInstance('Booking', 'DPCalendarModel', array(
-					'ignore_request' => true
-			));
-			if ($model && $booking = $model->assign($user))
-			{
+			$model = JModelLegacy::getInstance('Booking', 'DPCalendarModel', array('ignore_request' => true));
+			if ($model && $booking = $model->assign($user)) {
 				$loginUrl = JRoute::_(
-						'index.php?option=com_users&view=login&return=' . base64_encode(DPCalendarHelperRoute::getBookingRoute($booking)));
-				JFactory::getApplication()->enqueueMessage(JText::sprintf('PLG_SYSTEM_DPCALENDAR_BOOKING_ASSIGNED', $booking->uid, $loginUrl));
+					'index.php?option=com_users&view=login&return=' . base64_encode(DPCalendarHelperRoute::getBookingRoute($booking)));
+				JFactory::getApplication()->enqueueMessage(JText::sprintf('PLG_SYSTEM_DPCALENDAR_BOOKING_ASSIGNED',
+					$booking->uid, $loginUrl));
 			}
 		}
 	}
 
-	public function onUserAfterDelete ($user, $success, $msg)
+	public function onUserAfterDelete($user, $success, $msg)
 	{
-		if (! $success)
-		{
+		if (!$success) {
 			return;
 		}
 
-		// Delete membership
 		$db = JFactory::getDbo();
-		$db->setQuery(
-				'delete from #__dpcalendar_caldav_groupmembers where
-				principal_id in (select id from #__dpcalendar_caldav_principals where external_id = ' . (int) $user['id'] . ') or
-				member_id in (select id from #__dpcalendar_caldav_principals where external_id = ' . (int) $user['id'] . ')');
-		$db->query();
+
+		// Delete membership
+		$query = $db->getQuery(true);
+		$query->delete('#__dpcalendar_caldav_groupmembers');
+		$query->where('principal_id in (select id from #__dpcalendar_caldav_principals where external_id = ' . (int)$user['id'] . ')');
+		$query->orWhere('member_id in (select id from #__dpcalendar_caldav_principals where external_id = ' . (int)$user['id'] . ')');
+		$db->setQuery($query);
+		$db->execute();
 
 		// Delete calendar data
-		$db->setQuery(
-				"delete from #__dpcalendar_caldav_calendarobjects where
-				calendarid in (select id from #__dpcalendar_caldav_calendars where principaluri = " . $db->quote('principals/' . $user['username']) . ")");
-		$db->query();
+		$subQuery = $db->getQuery(true);
+		$subQuery->select('id');
+		$subQuery->from('#__dpcalendar_caldav_calendarinstances');
+		$subQuery->where('principaluri = ' . $db->quote('principals/' . $user['username']));
+
+		$query = $db->getQuery(true);
+		$query->delete('#__dpcalendar_caldav_calendarobjects');
+		$query->where('calendarid in (' . $subQuery . ')');
+		$db->setQuery($query);
+		$db->execute();
 
 		// Delete calendars
-		$db->setQuery("delete from #__dpcalendar_caldav_calendars where principaluri = " . $db->quote('principals/' . $user['username']));
-		$db->query();
+		$subQuery = $db->getQuery(true);
+		$subQuery->select('calendarid');
+		$subQuery->from('#__dpcalendar_caldav_calendarinstances');
+		$subQuery->where('principaluri = ' . $db->quote('principals/' . $user['username']));
+
+		$query = $db->getQuery(true);
+		$query->delete('#__dpcalendar_caldav_calendars');
+		$query->where('id in (' . $subQuery . ')');
+		$db->setQuery($query);
+		$db->execute();
+
+		$query = $db->getQuery(true);
+		$query->delete('#__dpcalendar_caldav_calendarinstances');
+		$query->where('principaluri = ' . $db->quote('principals/' . $user['username']));
+		$db->setQuery($query);
+		$db->execute();
 
 		// Delete principals
-		$db->setQuery('delete from #__dpcalendar_caldav_principals where external_id = ' . (int) $user['id']);
-		$db->query();
+		$query = $db->getQuery(true);
+		$query->delete('#__dpcalendar_caldav_principals');
+		$query->where('external_id = ' . (int)$user['id']);
+		$db->setQuery($query);
+		$db->execute();
 	}
 
-	public function prepareForm ($eventId, $calendarId, $form, $data)
+	public function prepareForm($eventId, $calendarId, $form, $data)
 	{
 		$form->removeField('alias');
 		$form->removeField('state');
@@ -117,8 +169,8 @@ class PlgSystemDpcalendar extends DPCalendarPluginCalDAV
 		$form->removeField('earlybird');
 
 		$form->setField(
-				new SimpleXMLElement(
-						'
+			new SimpleXMLElement(
+				'
 				<field
 				name="location"
 				type="text"
@@ -129,30 +181,29 @@ class PlgSystemDpcalendar extends DPCalendarPluginCalDAV
 				size="40"
 				filter="safeHtml"
 				/>'));
-		if (isset($data->locations))
-		{
-			$form->setValue('location', null, DPCalendarHelperLocation::format($data->locations));
+		if (isset($data->locations)) {
+			$form->setValue('location', null, \DPCalendar\Helper\Location::format($data->locations));
 		}
 
 		return true;
 	}
 
-	protected function createCalDAVEvent ($uid, $icalData, $calendarId)
+	protected function createCalDAVEvent($uid, $icalData, $calendarId)
 	{
-		return $this->getBackend()->createCalendarObject($calendarId, $uid . '.ics', $icalData);
+		return $this->getBackend()->createCalendarObject(array($calendarId), $uid . '.ics', $icalData);
 	}
 
-	protected function updateCalDAVEvent ($uid, $icalData, $calendarId)
+	protected function updateCalDAVEvent($uid, $icalData, $calendarId)
 	{
-		return $this->getBackend()->updateCalendarObject($calendarId, $uid . '.ics', $icalData);
+		return $this->getBackend()->updateCalendarObject(array($calendarId), $uid . '.ics', $icalData);
 	}
 
-	protected function deleteCalDAVEvent ($uid, $calendarId)
+	protected function deleteCalDAVEvent($uid, $calendarId)
 	{
-		return $this->getBackend()->deleteCalendarObject($calendarId, $uid . '.ics');
+		return $this->getBackend()->deleteCalendarObject(array($calendarId), $uid . '.ics');
 	}
 
-	protected function getOriginalData ($uid, $calendarId)
+	protected function getOriginalData($uid, $calendarId)
 	{
 		$db = JFactory::getDbo();
 		$db->setQuery("select * from #__dpcalendar_caldav_calendarobjects where uri = " . $db->quote($db->escape($uid) . '.ics'));
@@ -161,9 +212,9 @@ class PlgSystemDpcalendar extends DPCalendarPluginCalDAV
 		return $row->calendardata;
 	}
 
-	protected function getContent ($calendarId, JDate $startDate = null, JDate $endDate = null, JRegistry $options)
+	protected function getContent($calendarId, JDate $startDate = null, JDate $endDate = null, JRegistry $options)
 	{
-		$db = JFactory::getDbo();
+		$db   = JFactory::getDbo();
 		$user = JFactory::getUser();
 
 		$join = $db->getQuery(true);
@@ -171,25 +222,23 @@ class PlgSystemDpcalendar extends DPCalendarPluginCalDAV
 		$join->from($db->quoteName('#__dpcalendar_caldav_principals') . ' memberp');
 		$join->join('inner', "#__dpcalendar_caldav_groupmembers m ON memberp.id = m.member_id");
 		$join->join('inner', "#__dpcalendar_caldav_principals linkp ON m.principal_id = linkp.id");
-		$join->where('memberp.external_id = ' . (int) $user->id);
+		$join->where('memberp.external_id = ' . (int)$user->id);
 
 		$query = $db->getQuery(true);
 
 		$query->select('e.*');
 		$query->from($db->quoteName('#__dpcalendar_caldav_calendarobjects') . ' AS e');
-		$query->join('RIGHT', '#__dpcalendar_caldav_calendars c on c.id = e.calendarid');
+		$query->join('RIGHT', '#__dpcalendar_caldav_calendarinstances c on c.id = e.calendarid');
 		$query->where('(c.principaluri = ' . $db->quote('principals/' . $user->username) . ' or c.principaluri in (' . $join . '))');
-		$query->where('c.id = ' . (int) $calendarId);
+		$query->where('c.id = ' . (int)$calendarId);
 
-		if ($startDate != null)
-		{
-			$start = $startDate->format('U');
+		if ($startDate != null) {
+			$start         = $startDate->format('U');
 			$dateCondition = 'e.firstoccurence  >= ' . $start;
-			if ($endDate !== null)
-			{
-				$end = $endDate->format('U');
+			if ($endDate !== null) {
+				$end           = $endDate->format('U');
 				$dateCondition = '(e.lastoccurence between ' . $start . ' and ' . $end . ' or e.firstoccurence between ' . $start . ' and ' . $end .
-						 ')';
+					')';
 			}
 		}
 
@@ -197,25 +246,21 @@ class PlgSystemDpcalendar extends DPCalendarPluginCalDAV
 
 		$db->setQuery($query);
 		$rows = $db->loadObjectList();
-		if (empty($rows))
-		{
+		if (empty($rows)) {
 			return array();
 		}
 
-		$text = array();
+		$text   = array();
 		$text[] = 'BEGIN:VCALENDAR';
-		foreach ($rows as $item)
-		{
-			if (empty($item->calendardata))
-			{
+		foreach ($rows as $item) {
+			if (empty($item->calendardata)) {
 				continue;
 			}
 			$start = strpos($item->calendardata, 'BEGIN:VEVENT');
-			$end = strrpos($item->calendardata, 'END:VEVENT');
-			$tmp = substr($item->calendardata, $start, $end - $start + 10);
+			$end   = strrpos($item->calendardata, 'END:VEVENT');
+			$tmp   = substr($item->calendardata, $start, $end - $start + 10);
 
-			if (strpos($tmp, 'ORGANIZER:') === false)
-			{
+			if (strpos($tmp, 'ORGANIZER:') === false) {
 				$tmp = str_replace('END:VEVENT', 'ORGANIZER:' . $user->name . PHP_EOL . 'END:VEVENT', $tmp);
 			}
 
@@ -228,45 +273,60 @@ class PlgSystemDpcalendar extends DPCalendarPluginCalDAV
 		return $text;
 	}
 
-	public function fetchCalendars ($calendarIds = null)
+	public function fetchCalendars($calendarIds = null)
 	{
-		JModelLegacy::addIncludePath(JPATH_SITE . DS . 'components' . DS . 'com_dpcalendar' . DS . 'models', 'DPCalendarModel');
+		JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_dpcalendar/models', 'DPCalendarModel');
 		$model = JModelLegacy::getInstance('Profile', 'DPCalendarModel');
 
-		$data = array();
+		$data  = array();
 		$items = $model->getItems();
-		if (empty($items))
-		{
+
+		if (empty($items)) {
 			return $data;
 		}
-		foreach ($items as $caldavCalendar)
-		{
-			$calendar = $this->createCalendar($caldavCalendar->id, $caldavCalendar->displayname, $caldavCalendar->description,
-					$caldavCalendar->calendarcolor);
+
+		foreach ($items as $caldavCalendar) {
+			$calendar = $this->createCalendar(
+				$caldavCalendar->id,
+				$caldavCalendar->displayname,
+				$caldavCalendar->description,
+				$caldavCalendar->calendarcolor
+			);
+
+			if (!empty($calendarIds) && !in_array($caldavCalendar->id, $calendarIds)) {
+				continue;
+			}
+
 			$calendar->canCreate = $caldavCalendar->canEdit;
-			$calendar->canEdit = $caldavCalendar->canEdit;
+			$calendar->canEdit   = $caldavCalendar->canEdit;
 			$calendar->canDelete = $caldavCalendar->canEdit;
-			$data[] = $calendar;
+			$data[]              = $calendar;
 		}
+
 		return $data;
 	}
 
-	private function getBackend ()
+	private function getBackend()
 	{
 		$config = JFactory::getConfig();
 
 		JLoader::import('components.com_dpcalendar.libraries.vendor.autoload', JPATH_ADMINISTRATOR);
 
-		$pdo = new \PDO('mysql:host=' . $config->get('host') . ';dbname=' . $config->get('db'), $config->get('user'), $config->get('password'));
+		$pdo = new \PDO('mysql:host=' . $config->get('host') . ';dbname=' . $config->get('db'), $config->get('user'),
+			$config->get('password'));
 		$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-		$calendarBackend = new \Sabre\CalDAV\Backend\PDO($pdo, $config->get('dbprefix') . 'dpcalendar_caldav_calendars',
-				$config->get('dbprefix') . 'dpcalendar_caldav_calendarobjects');
+		$calendarBackend                                 = new \DPCalendar\Sabre\CalDAV\Backend\DPCalendar($pdo);
+		$calendarBackend->calendarTableName              = $config->get('dbprefix') . 'dpcalendar_caldav_calendars';
+		$calendarBackend->calendarObjectTableName        = $config->get('dbprefix') . 'dpcalendar_caldav_calendarobjects';
+		$calendarBackend->calendarChangesTableName       = $config->get('dbprefix') . 'dpcalendar_caldav_calendarchanges';
+		$calendarBackend->calendarInstancesTableName     = $config->get('dbprefix') . 'dpcalendar_caldav_calendarinstances';
+		$calendarBackend->calendarSubscriptionsTableName = $config->get('dbprefix') . 'dpcalendar_caldav_calendarsubscriptions';
 
 		return $calendarBackend;
 	}
 
-	public function onInstallerBeforePackageDownload (&$url, &$headers)
+	public function onInstallerBeforePackageDownload(&$url, &$headers)
 	{
 		$uri = JUri::getInstance($url);
 
@@ -274,8 +334,7 @@ class PlgSystemDpcalendar extends DPCalendarPluginCalDAV
 		// will be triggered for all
 		// extensions with a download URL on our site
 		$host = $uri->getHost();
-		if ($host !== 'joomla.digital-peak.com')
-		{
+		if ($host !== 'joomla.digital-peak.com') {
 			return true;
 		}
 
@@ -286,14 +345,12 @@ class PlgSystemDpcalendar extends DPCalendarPluginCalDAV
 		$dlid = trim($component->params->get('downloadid', ''));
 
 		// If the download ID is invalid, return without any further action
-		if (! preg_match('/^([0-9]{1,}:)?[0-9a-f]{32}$/i', $dlid))
-		{
+		if (!preg_match('/^([0-9]{1,}:)?[0-9a-f]{32}$/i', $dlid)) {
 			return true;
 		}
 
 		// Appent the Download ID to the download URL
-		if (! empty($dlid))
-		{
+		if (!empty($dlid)) {
 			$uri->setVar('dlid', $dlid);
 			$url = $uri->toString();
 		}

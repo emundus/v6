@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -29,7 +29,7 @@ class DPCalendarControllerTicket extends JControllerLegacy
 			}
 			else if ($booking->state != 1)
 			{
-				$this->setMessage(JText::sprintf('COM_DPCALENDAR_VIEW_TICKET_BOOKING_NOT_ACTIVE', DPCalendarHelperBooking::getStatusLabel($booking)),
+				$this->setMessage(JText::sprintf('COM_DPCALENDAR_VIEW_TICKET_BOOKING_NOT_ACTIVE', \DPCalendar\Helper\Booking::getStatusLabel($booking)),
 						'error');
 			}
 			else if ($ticket->state == 2)
@@ -71,7 +71,7 @@ class DPCalendarControllerTicket extends JControllerLegacy
 			return false;
 		}
 
-		$fileName = DPCalendarHelperBooking::createTicket($ticket, JComponentHelper::getParams('com_dpcalendar'), false);
+		$fileName = \DPCalendar\Helper\Booking::createTicket($ticket, JComponentHelper::getParams('com_dpcalendar'), false);
 		if ($fileName)
 		{
 			JFactory::getApplication()->close();

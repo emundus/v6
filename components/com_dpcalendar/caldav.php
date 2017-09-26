@@ -2,11 +2,13 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 define('_JEXEC', 1);
 define('DS', DIRECTORY_SEPARATOR);
+
+use Joomla\Registry\Registry;
 
 $path = dirname(dirname(dirname(__FILE__)));
 if (isset($_SERVER["SCRIPT_FILENAME"]))
@@ -15,8 +17,8 @@ if (isset($_SERVER["SCRIPT_FILENAME"]))
 }
 
 define('JPATH_BASE', $path);
-require_once JPATH_BASE . DS . 'includes' . DS . 'defines.php';
-require_once JPATH_BASE . DS . 'includes' . DS . 'framework.php';
+require_once JPATH_BASE . '/includes/defines.php';
+require_once JPATH_BASE . '/includes/framework.php';
 
 JLoader::import('joomla.user.authentication');
 JLoader::import('joomla.application.component.helper');
@@ -30,9 +32,10 @@ class DPCalendarCalDavServer extends JApplicationCms
 
 	public function __construct(JInput $input = null, JRegistry $config = null, JApplicationWebClient $client = null)
 	{
-		parent::__construct($input, $config, $client);
+		JFactory::getConfig()->set('caching', 0);
+		JFactory::getConfig()->set('debug', false);
 
-		$this->config->set('caching', 0);
+		parent::__construct($input, $config, $client);
 	}
 
 	public function doExecute()
@@ -50,26 +53,30 @@ class DPCalendarCalDavServer extends JApplicationCms
 			JLoader::import('components.com_dpcalendar.helpers.dpcalendar', JPATH_ADMINISTRATOR);
 
 			$config = JFactory::getConfig();
-			$config->set('caching', 0);
 
 			// Load the right language
 			$siteLanguage = \JComponentHelper::getParams('com_languages')->get('site', 'en-GB');
-			\JFactory::getConfig()->set('language', $siteLanguage);
+			$config->set('language', $siteLanguage);
 
-			$pdo = new \PDO('mysql:host=' . $config->get('host') . ';dbname=' . $config->get('db'), $config->get('user'), $config->get('password'));
+			$pdo = new \PDO('mysql:host=' . $config->get('host') . ';dbname=' . $config->get('db') . ';charset=utf8', $config->get('user'), $config->get('password'));
 			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 			JFactory::getApplication()->input->set('format', 'raw');
 
 			$authBackend = new \DPCalendar\Sabre\DAV\Auth\Backend\Joomla(JFactory::getDbo());
-			$calendarBackend = new \DPCalendar\Sabre\CalDAV\Backend\DPCalendar($pdo, $config->get('dbprefix') . 'dpcalendar_caldav_calendars',
-					$config->get('dbprefix') . 'dpcalendar_caldav_calendarobjects');
-			$principalBackend = new \Sabre\DAVACL\PrincipalBackend\PDO($pdo, $config->get('dbprefix') . 'dpcalendar_caldav_principals',
-					$config->get('dbprefix') . 'dpcalendar_caldav_groupmembers');
+			$calendarBackend = new \DPCalendar\Sabre\CalDAV\Backend\DPCalendar($pdo);
+			$calendarBackend->calendarTableName = $config->get('dbprefix') . 'dpcalendar_caldav_calendars';
+			$calendarBackend->calendarObjectTableName = $config->get('dbprefix') . 'dpcalendar_caldav_calendarobjects';
+			$calendarBackend->calendarChangesTableName = $config->get('dbprefix') . 'dpcalendar_caldav_calendarchanges';
+			$calendarBackend->calendarInstancesTableName = $config->get('dbprefix') . 'dpcalendar_caldav_calendarinstances';
+			$calendarBackend->calendarSubscriptionsTableName = $config->get('dbprefix') . 'dpcalendar_caldav_calendarsubscriptions';
+			$principalBackend = new \Sabre\DAVACL\PrincipalBackend\PDO($pdo);
+			$principalBackend->tableName = $config->get('dbprefix') . 'dpcalendar_caldav_principals';
+			$principalBackend->groupMembersTableName = $config->get('dbprefix') . 'dpcalendar_caldav_groupmembers';
 
 			$tree = array(
 					new \Sabre\CalDAV\Principal\Collection($principalBackend),
-					new \Sabre\CalDAV\CalendarRootNode($principalBackend, $calendarBackend)
+					new \Sabre\CalDAV\CalendarRoot($principalBackend, $calendarBackend)
 			);
 
 			\Sabre\DAV\Server::$exposeVersion = false;
@@ -87,6 +94,8 @@ class DPCalendarCalDavServer extends JApplicationCms
 			$server->addPlugin(new \Sabre\DAV\Auth\Plugin($authBackend, 'SabreDAV'));
 			$server->addPlugin(new \Sabre\DAVACL\Plugin());
 			$server->addPlugin(new \Sabre\CalDAV\Plugin());
+			$server->addPlugin(new \Sabre\DAV\Sync\Plugin());
+			$server->addPlugin(new \Sabre\CalDAV\Schedule\Plugin());
 
 			$server->addPlugin(new \Sabre\DAV\Browser\Plugin());
 

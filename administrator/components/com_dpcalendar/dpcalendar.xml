@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="3.3" method="upgrade">
+<extension type="component" version="3.7" method="upgrade">
 	<name>com_dpcalendar</name>
 	<author>Digital Peak</author>
-	<creationDate>Feb 2017</creationDate>
-	<copyright>(C) 2007 - 2016 Digital Peak. All rights reserved.
-	</copyright>
-	<license>http://www.gnu.org/copyleft/gpl.html
-		GNU/GPL
-	</license>
+	<creationDate>Sep 2017</creationDate>
+	<copyright>(C) 2007 - 2016 Digital Peak. All rights reserved.</copyright>
+	<license>http://www.gnu.org/copyleft/gpl.htmlGNU/GPL</license>
 	<authorEmail>info@digital-peak.com</authorEmail>
 	<authorUrl>joomla.digital-peak.com</authorUrl>
-	<version>5.6.5</version>
+	<version>6.1.2</version>
 	<description>COM_DPCALENDAR_XML_DESCRIPTION</description>
-
 	<install>
 		<sql>
 			<file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
@@ -30,33 +26,30 @@
 	</uninstall>
 	<scriptfile>script.php</scriptfile>
 	<files folder="site">
-		<filename>index.html</filename>
 		<filename>htaccess.txt</filename>
 		<filename>dpcalendar.php</filename>
 		<filename>controller.php</filename>
 		<filename>router.php</filename>
-		<filename>metadata.xml</filename>
 		<filename>caldav.php</filename>
 		<folder>controllers</folder>
 		<folder>helpers</folder>
 		<folder>language</folder>
 		<folder>layouts</folder>
-		<folder>libraries</folder>
 		<folder>models</folder>
 		<folder>tables</folder>
 		<folder>views</folder>
 	</files>
 	<media destination="com_dpcalendar" folder="media">
-		<filename>index.html</filename>
+		<folder>css</folder>
 		<folder>images</folder>
+		<folder>js</folder>
 	</media>
 	<administration>
 		<menu view="cpanel">COM_DPCALENDAR</menu>
 		<submenu>
 			<menu view="cpanel">COM_DPCALENDAR_SUBMENU_CPANEL</menu>
 			<menu view="events">COM_DPCALENDAR_SUBMENU_EVENTS</menu>
-			<menu link="option=com_categories&amp;extension=com_dpcalendar"
-				view="categories">COM_DPCALENDAR_SUBMENU_CALENDARS</menu>
+			<menu link="option=com_categories&amp;extension=com_dpcalendar" view="categories">COM_DPCALENDAR_SUBMENU_CALENDARS</menu>
 			<menu view="locations">COM_DPCALENDAR_SUBMENU_LOCATIONS</menu>
 			<menu view="tickets">COM_DPCALENDAR_SUBMENU_TICKETS</menu>
 			<menu view="bookings">COM_DPCALENDAR_SUBMENU_BOOKINGS</menu>
@@ -67,7 +60,6 @@
 			<filename>access.xml</filename>
 			<filename>config.xml</filename>
 			<filename>controller.php</filename>
-			<filename>index.html</filename>
 			<filename>dpcalendar.php</filename>
 			<folder>controllers</folder>
 			<folder>cli</folder>

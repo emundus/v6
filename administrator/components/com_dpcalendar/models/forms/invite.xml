@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-	<fieldset addfieldpath="/administrator/components/com_dpcalendar/models/fields">
+	<fieldset addfieldpath="/administrator/components/com_dpcalendar/models/fields"
+		name="content">
 		<field name="users" type="sql"
 			query="select id as value, name as text from #__users" label="COM_DPCALENDAR_INVITE_FIELD_USERS_LABEL"
 			multiple="true" description="COM_DPCALENDAR_INVITE_FIELD_USERS_DESC"

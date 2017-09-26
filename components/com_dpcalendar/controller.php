@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -17,9 +17,9 @@ class DPCalendarController extends JControllerLegacy
 		$cachable = true;
 		$user = JFactory::getUser();
 
-		$id = JRequest::getVar('e_id');
-		$vName = JRequest::getCmd('view', 'calendar');
-		JRequest::setVar('view', $vName);
+		$id = JFactory::getApplication()->input->getVar('e_id');
+		$vName = JFactory::getApplication()->input->getCmd('view', 'calendar');
+		JFactory::getApplication()->input->set('view', $vName);
 
 		if ($user->get('id') || ($_SERVER['REQUEST_METHOD'] == 'POST' && $vName = 'list') || $vName = 'events')
 		{

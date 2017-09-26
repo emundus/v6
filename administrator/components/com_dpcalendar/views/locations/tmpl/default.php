@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 
@@ -127,7 +127,7 @@ if ($saveOrder)
 						} ?>
 						<?php if ($canEdit)
 						{ ?>
-							<a href="<?php echo JRoute::_('index.php?option=com_dpcalendar&task=location.edit&id=' . (int) $item->id); ?>">
+							<a href="<?php echo JRoute::_('index.php?option=com_dpcalendar&task=location.edit&l_id=' . (int) $item->id); ?>">
 								<?php echo $this->escape($item->title); ?></a>
 						<?php
 						}

@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -21,8 +21,8 @@ class DPCalendarModelExtcalendar extends JModelAdmin
 		// Alter the title for save as copy
 		if ($app->input->get('task') == 'save2copy')
 		{
-			$title = JString::increment($data['title']);
-			$alias = JString::increment($data['alias']);
+			$title = \Joomla\String\StringHelper::increment($data['title']);
+			$alias = \Joomla\String\StringHelper::increment($data['alias']);
 			$data['title'] = $title;
 			$data['alias'] = $alias;
 			$data['state'] = 0;
@@ -78,8 +78,8 @@ class DPCalendarModelExtcalendar extends JModelAdmin
 	{
 		$plugin = JFactory::getApplication()->input->getWord('dpplugin');
 
-		JFactory::getLanguage()->load('plg_dpcalendar_dpcalendar_' . $plugin, JPATH_PLUGINS . '/dpcalendar/dpcalendar_' . $plugin);
-		$form->loadFile(JPATH_PLUGINS . '/dpcalendar/dpcalendar_' . $plugin . '/forms/params.xml', false);
+		JFactory::getLanguage()->load('plg_dpcalendar_' . $plugin, JPATH_PLUGINS . '/dpcalendar/' . $plugin);
+		$form->loadFile(JPATH_PLUGINS . '/dpcalendar/' . $plugin . '/forms/params.xml', false);
 
 		return parent::preprocessForm($form, $data, $group);
 	}
@@ -102,11 +102,11 @@ class DPCalendarModelExtcalendar extends JModelAdmin
 		$user = JFactory::getUser();
 
 		$table->title = htmlspecialchars_decode($table->title, ENT_QUOTES);
-		$table->alias = JApplication::stringURLSafe($table->alias);
+		$table->alias = JApplicationHelper::stringURLSafe($table->alias);
 
 		if (empty($table->alias))
 		{
-			$table->alias = JApplication::stringURLSafe($table->title);
+			$table->alias = JApplicationHelper::stringURLSafe($table->title);
 		}
 		if (empty($table->plugin))
 		{
@@ -152,7 +152,7 @@ class DPCalendarModelExtcalendar extends JModelAdmin
 
 		// Clean the DB cache entries from the database
 		JPluginHelper::importPlugin('dpcalendar');
-		$tmp = JDispatcher::getInstance()->trigger('onCalendarsFetch');
+		$tmp = JFactory::getApplication()->triggerEvent('onCalendarsFetch');
 		if (! empty($tmp))
 		{
 			$ids = array();

@@ -2,77 +2,69 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
-JLoader::import('components.com_dpcalendar.libraries.dpcalendar.view', JPATH_SITE);
-
-class DPCalendarViewForm extends DPCalendarView
+class DPCalendarViewForm extends \DPCalendar\View\LayoutView
 {
+	protected $layoutName = 'event.form.default';
 
-	public function init ()
+	public function init()
 	{
+		$user = $this->user;
+		if ($user->guest && count($user->getAuthorisedCategories('com_dpcalendar', 'core.create')) < 1) {
+			$active = $this->app->getMenu()->getActive();
+			$link   = new JUri(JRoute::_('index.php?option=com_users&view=login&Itemid=' . $active->id, false));
+			$link->setVar('return', base64_encode('index.php?Itemid=' . $active->id));
+
+			$this->app->redirect(JRoute::_($link), JText::_('COM_DPCALENDAR_NOT_LOGGED_IN'), 'warning');
+
+			return false;
+		}
+
 		JPluginHelper::importPlugin('dpcalendar');
 
-		JFactory::getLanguage()->load('', JPATH_ADMINISTRATOR);
+		$this->app->getLanguage()->load('', JPATH_ADMINISTRATOR);
 
-		$app = JFactory::getApplication();
-		$user = JFactory::getUser();
-
-		$this->item = $this->get('Item');
-		$this->form = $this->get('Form');
-		$this->return_page = $this->get('ReturnPage');
-		$this->user = $user;
+		$this->event      = $this->get('Item');
+		$this->form       = $this->get('Form');
+		$this->returnPage = $this->get('ReturnPage');
 
 		JForm::addFieldPath(JPATH_COMPONENT_ADMINISTRATOR . '/models/files/');
 
 		$authorised = true;
-		if (empty($this->item->id))
-		{
-			$tmp = JDispatcher::getInstance()->trigger('onCalendarsFetch', array(
-					null,
-					'cd'
-			));
-			$authorised = DPCalendarHelper::canCreateEvent() || ! empty($tmp);
+		if (empty($this->event->id)) {
+			$tmp        = $this->app->triggerEvent('onCalendarsFetch', array(null, 'cd'));
+			$authorised = DPCalendarHelper::canCreateEvent() || !empty(array_filter($tmp));
 		}
 
-		if ($authorised !== true)
-		{
-			JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
-			return false;
+		if ($authorised !== true) {
+			throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
 		}
 
-		$requestParams = JRequest::getVar('jform', array());
-		if (key_exists('start_date', $requestParams))
-		{
+		$requestParams = $this->input->getVar('jform', array());
+		if (key_exists('start_date', $requestParams)) {
 			$this->form->setFieldAttribute('start_date', 'filter', null);
 			$this->form->setFieldAttribute('start_date', 'formated', true);
 			$this->form->setValue('start_date', null,
-					$requestParams['start_date'] . (key_exists('start_date_time', $requestParams) ? ' ' . $requestParams['start_date_time'] : ''));
+				$requestParams['start_date'] . (key_exists('start_date_time', $requestParams) ? ' ' . $requestParams['start_date_time'] : ''));
 		}
-		if (key_exists('end_date', $requestParams))
-		{
+		if (key_exists('end_date', $requestParams)) {
 			$this->form->setFieldAttribute('end_date', 'filter', null);
 			$this->form->setFieldAttribute('end_date', 'formated', true);
 			$this->form->setValue('end_date', null,
-					$requestParams['end_date'] . (key_exists('end_date_time', $requestParams) ? ' ' . $requestParams['end_date_time'] : ''));
+				$requestParams['end_date'] . (key_exists('end_date_time', $requestParams) ? ' ' . $requestParams['end_date_time'] : ''));
 		}
 
-		if (key_exists('title', $requestParams))
-		{
+		if (key_exists('title', $requestParams)) {
 			$this->form->setValue('title', null, $requestParams['title']);
 		}
-		if (key_exists('catid', $requestParams))
-		{
+		if (key_exists('catid', $requestParams)) {
 			$this->form->setValue('catid', null, $requestParams['catid']);
 		}
 
-		$this->freeInformationText = '';
-		if (DPCalendarHelper::isFree())
-		{
-			$this->freeInformationText = '<br/><small class="text-warning">' . JText::_('COM_DPCALENDAR_ONLY_AVAILABLE_SUBSCRIBERS') . '</small>';
-		}
+		return parent::init();
 	}
 }

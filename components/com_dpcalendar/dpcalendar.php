@@ -2,12 +2,12 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2016 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
-if (version_compare(PHP_VERSION, '5.3.0') < 0)
+if (version_compare(PHP_VERSION, '5.5.9') < 0)
 {
 	JError::raiseWarning(0,
 			'You have PHP version ' . PHP_VERSION . ' installed. This version is end of life and contains some security wholes!!
