@@ -76,11 +76,20 @@ class EmundusViewFiles extends JViewLegacy
 			        }
 			    }
 
+			    $groupFnum = $model->getGroupsByFnums($fnums);
+			    $evalFnum = $model->getAssessorsByFnums($fnums);
 				$users = $model->getFnumsInfos($fnums);
-			    //$actions_evaluators = json_decode($default_actions);
+			    $evalGroups = $model->getEvalGroups();
+			    $actions = $model->getAllActions();
+			    $actions_evaluators = json_decode($default_actions);
 
+			    $this->assignRef('groups', $evalGroups['groups']);
+			    $this->assignRef('groupFnum', $groupFnum);
+			    $this->assignRef('evalFnum', $evalFnum);
 			    $this->assignRef('users', $users);
-			    //$this->assignRef('actions_evaluators', $actions_evaluators);
+			    $this->assignRef('evals', $evalGroups['users']);
+			    $this->assignRef('actions', $actions);
+			    $this->assignRef('actions_evaluators', $actions_evaluators);
 			break;
 			// get Menu actions
 			case 'menuactions':
