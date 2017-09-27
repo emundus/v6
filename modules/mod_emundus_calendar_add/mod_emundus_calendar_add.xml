@@ -23,6 +23,9 @@
 					<field name="clientSecret" type="text" required="false" label="MOD_EM_CALENDAR_ADD_CLIENTSECRET_GOOGLE_LABEL" description="MOD_EM_CALENDAR_ADD_CLIENTSECRET_GOOGLE_DESC" class="inputbox" default=""/>
 					<field name="refreshToken" type="text" required="false" label="MOD_EM_CALENDAR_ADD_REFRESHTOKEN_GOOGLE_LABEL" description="MOD_EM_CALENDAR_ADD_REFRESHTOKEN_GOOGLE_DESC" class="inputbox" default=""/>
 				</fieldset>
+				<fieldset name="advanced">
+					<field name="layout" type="modulelayout" label="JFIELD_ALT_LAYOUT_LABEL" description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
+				</fieldset>
 			</fields>
 		</config>
 	</extension>
