@@ -50,6 +50,10 @@ $applications		= modemundusApplicationsHelper::getApplications($params);
 $linknames 			= $params->get('linknames', 0);
 $moduleclass_sfx 	= htmlspecialchars($params->get('moduleclass_sfx'));
 $user 				= JFactory::getSession()->get('emundusUser');
+if (empty($user)) {
+	$user = new stdClass();
+	$user->id = JFactory::getUser()->id;
+}
 $user->fnums 		= $applications;
 
 $m_application 		= new EmundusModelApplication;
