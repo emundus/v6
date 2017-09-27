@@ -16,46 +16,57 @@ include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
 $mprofile 	= new EmundusModelProfile;
 $app 		= JFactory::getApplication();
 $db 		= JFactory::getDBO();
-$user 		= JFactory::getSession()->get('emundusUser');
-
-$campaign_id = $_REQUEST['jos_emundus_campaign_candidature___campaign_id'];
-$fnum_tmp 	 = $_REQUEST['jos_emundus_campaign_candidature___fnum'];
-$id 		 = $_REQUEST['jos_emundus_campaign_candidature___id'];
-
-//$id 		 = $input->get('jos_emundus_campaign_candidature___id', 0, 'int');
-// create new fnum
-
-$fnum		 = date('YmdHis').str_pad($campaign_id[0], 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);
-$query 		 = 'UPDATE #__emundus_campaign_candidature SET `fnum`='.$db->Quote($fnum). ' WHERE id='.$id.' AND applicant_id='.$user->id. ' AND fnum like '.$db->Quote($fnum_tmp).' AND campaign_id='.$campaign_id[0]; 
-$db->setQuery($query);
-try {
-	$db->execute();
-} catch (Exception $e) {
-	// catch any database errors.
-	exit();
+$session 	= JFactory::getSession();
+$user 		= $session->get('emundusUser');
+if (empty($user)) {
+	$user = JFactory::getUser();
 }
 
-$query = 'SELECT esc.*,  esp.label as plabel, esp.menutype 
+$campaign_id = $data['jos_emundus_campaign_candidature___campaign_id_raw'][0];
+$fnum_tmp = $data['jos_emundus_campaign_candidature___fnum'];
+$id = $data['jos_emundus_campaign_candidature___id'];
+
+// create new fnum
+$fnum		 = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);
+try {
+	$query = 'UPDATE #__emundus_campaign_candidature 
+				SET `fnum`='.$db->Quote($fnum). ' 
+				WHERE id='.$id.' AND applicant_id='.$user->id. ' AND fnum like '.$db->Quote($fnum_tmp).' AND campaign_id='.$campaign_id; 
+	$db->setQuery($query);
+	$db->execute();
+} catch (Exception $e) {
+	JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+    JError::raiseError(500, $query);
+}
+
+
+try {
+	$query = 'SELECT esc.*,  esp.label as plabel, esp.menutype 
 				FROM #__emundus_setup_campaigns AS esc 
 				LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = esc.profile_id
-				WHERE esc.id='.$campaign_id[0];
-$db->setQuery($query);
-$campaign = $db->loadAssocList();
+				WHERE esc.id='.$campaign_id;
+	$db->setQuery($query);
+	$campaign = $db->loadAssoc();
+}
+catch(Exception $e)
+{
+    JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+   JError::raiseError(500, $query);
+}
 
 jimport( 'joomla.user.helper' );
 $user_profile = JUserHelper::getProfile($user->id)->emundus_profile;
 
-$schoolyear = $campaign[0]['year'];
-$profile = $campaign[0]['profile_id'];
-$applicant_profile = $mprofile->getProfileByApplicant($user->id);
+$schoolyear = $campaign['year'];
+$profile = $campaign['profile_id'];
 $firstname = ucfirst($user_profile['firstname']);
 $lastname = ucfirst($user_profile['lastname']);
 $registerDate = $db->Quote($user->registerDate);
-$candidature_start = $campaign[0]['start_date'];
-$candidature_end = $campaign[0]['end_date'];
-$label = $campaign[0]['plabel'];
-$campaign_label = $campaign[0]['label'];
-$menutype = $campaign[0]['menutype'];
+$candidature_start = $campaign['start_date'];
+$candidature_end = $campaign['end_date'];
+$label = $campaign['plabel'];
+$campaign_label = $campaign['label'];
+$menutype = $campaign['menutype'];
 
 // Insert data in #__emundus_users
 $p = $mprofile->isProfileUserSet($user->id);
@@ -64,13 +75,15 @@ if( $p['cpt'] == 0 )
 			values ('.$user->id.', '.$db->quote(ucfirst($firstname)).', '.$db->quote(strtoupper($lastname)).', '.$profile.', '.$db->quote($schoolyear).', '.$db->quote($user->registerDate).')';
 else 
 	$query = 'UPDATE #__emundus_users SET profile = '.$profile.', schoolyear='.$db->quote($schoolyear).' WHERE user_id = '.$user->id;
-$db->setQuery($query);
 
 try {
+	$db->setQuery($query);
 	$db->execute();
-} catch (Exception $e) {
-    echo $e;
-	exit();
+}
+catch(Exception $e)
+{
+   JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+   JError::raiseError(500, $query);
 }	
 
 // Insert data in #__emundus_users_profiles
@@ -78,29 +91,14 @@ $query = 'INSERT INTO #__emundus_users_profiles (user_id, profile_id) VALUES ('.
 $db->setQuery($query);
 try {
 	$db->execute();
-} catch (Exception $e) {
-    echo $e;
-	exit();
+}
+catch(Exception $e)
+{
+   JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+   JError::raiseError(500, $query);
 }
 
-$user->firstname 			= $firstname;
-$user->lastname	 			= $lastname;
-$user->profile	 			= $profile;
-$user->profile_label 		= $label;
-$user->menutype	 			= $menutype;
-$user->university_id		= '';
-$user->applicant			= 1;
-$user->candidature_start	= $candidature_start;
-$user->candidature_end		= $candidature_end;
-$user->candidature_posted 	= 0;
-$user->candidature_incomplete 	= 1;
-$user->schoolyear			= $schoolyear;
-$user->campaign_id			= $campaign_id[0];
-$user->fnum 				= $fnum;
-$user->fnums				= $mprofile->getApplicantFnums($user->id, null, $applicant_profile["start_date"], $applicant_profile["end_date"]);
-$user->start_date 			= $candidature_start;
-$user->end_date 			= $candidature_end;
-$user->campaign_name 		= $campaign_label;
+$mprofile->initEmundusSession();
 
 $app->redirect("index.php",  JText::_('FILE_OK'));
 
