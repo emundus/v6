@@ -31,7 +31,7 @@ JLog::addLogger(
 include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
 $baseurl = JURI::root();
 
-$student_id = $formModel->getElementData('jos_emundus_references___user', false, '');
+$student_id = $data['jos_emundus_references___user'];
 $fnum = $formModel->getElementData('jos_emundus_references___fnum', false, '');
 $time_date = $formModel->getElementData('jos_emundus_references___time_date', false, '');
 
@@ -40,7 +40,7 @@ $recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus
 $recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus_references___attachment_id_3', false, 21), 'email' => $formModel->getElementData('jos_emundus_references___Email_3', false, ''));
 $recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus_references___attachment_id_4', false, 19), 'email' => $formModel->getElementData('jos_emundus_references___Email_4', false, ''));
 
-$student = JFactory::getUser($student_id[0]);
+$student = JFactory::getUser($student_id);
 $current_user = JFactory::getSession()->get('emundusUser');
 if (empty($current_user->fnum) || !isset($current_user->fnum)) {
     $current_user->fnum = $fnum;
@@ -105,7 +105,7 @@ if (!empty($obj_letter[0][0]))
     $attachment[] = JPATH_BASE.str_replace("\\", "/", $obj_letter[0][0]);
 
 
-foreach ($recipients as $key => $recipient) {
+foreach ($recipients as $recipient) {
     if (isset($recipient['email']) && !empty($recipient['email'])) {
         $attachment_id = $recipient['attachment_id']; //ID provenant de la table emundus_attachments
         $query = 'SELECT count(id) as cpt FROM #__emundus_uploads WHERE user_id='.$student->id.' AND attachment_id='.$attachment_id.' AND fnum like '.$db->Quote($current_user->fnum);
@@ -114,7 +114,7 @@ foreach ($recipients as $key => $recipient) {
         $is_uploaded = $db->loadResult();
 
         if ($is_uploaded == 0) {
-            $key = md5(date().$fnum.$student_id.$attachment_id.rand(100));
+            $key = md5(date('Y-m-d h:m:i').'::'.$fnum.'::'.$student_id.'::'.$attachment_id.'::'.rand());
             // 2. MAJ de la table emundus_files_request
             $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum, email) 
                           VALUES (NOW(), '.$student->id.', "'.$key.'", "'.$attachment_id.'", '.$current_user->fnum.', '.$db->Quote($recipient['email']).')';
