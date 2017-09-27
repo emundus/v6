@@ -11,7 +11,7 @@ else
 ?>
 
     <div class="col-md-2">
-        <button type="button" class="btn btn-success" id="addCalendar"><?php echo JText::_("MOD_EM_CALENDAR_ADD"); ?></button>
+        <button type="button" data-toggle="modal" data-target="#em-modal-form" class="btn btn-success" id="addCalendar"><?php echo JText::_("MOD_EM_CALENDAR_ADD"); ?></button>
     </div>
 
     <div class="modal fade" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions"
@@ -81,3 +81,5 @@ else
             </div>
         </div>
     </div>
+    
+    <script src=""></script>
