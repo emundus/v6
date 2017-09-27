@@ -811,9 +811,12 @@ class EmundusModelFiles extends JModelLegacy
     {
         $app = JFactory::getApplication();
         $current_menu = $app->getMenu()->getActive();
-        $menu_params = $current_menu->params;
-        $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
-
+        if( !empty($current_menu) ) {
+            $menu_params = $current_menu->params;
+            $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
+        } else {
+            $em_other_columns = array();
+        } 
 
         $dbo = $this->getDbo();
         $query = 'select jos_emundus_campaign_candidature.fnum, ss.step, ss.value as status, ss.class as status_class, u.name, jos_emundus_campaign_candidature.applicant_id, jos_emundus_campaign_candidature.campaign_id ';
