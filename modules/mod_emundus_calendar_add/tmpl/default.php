@@ -1,22 +1,14 @@
 <?php
 defined('_JEXEC') or die; 
 
-$lang = JFactory::getLanguage();
-$locallang = $lang->getTag(); 
-if ($locallang == "fr-FR")
-    setlocale(LC_TIME, 'fr', 'fr_FR', 'french', 'fra', 'fra_FRA', 'fr_FR.ISO_8859-1', 'fra_FRA.ISO_8859-1', 'fr_FR.utf8', 'fr_FR.utf-8', 'fra_FRA.utf8', 'fra_FRA.utf-8');
-else
-    setlocale (LC_ALL, 'en_GB');
-
 ?>
 
     <div class="col-md-2">
-        <button type="button" data-toggle="modal" data-target="#em-modal-form" class="btn btn-success" id="addCalendar"><?php echo JText::_("MOD_EM_CALENDAR_ADD"); ?></button>
+        <button type="button" data-toggle="modal" data-target="#em-modal-form" class="btn btn-success"><?php echo JText::_("MOD_EM_CALENDAR_ADD"); ?></button>
     </div>
 
-    <div class="modal fade" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions"
-        aria-hidden="true" data-keyboard="false" data-backdrop="static">
-        <div class="modal-dialog modal-lg">
+    <div class="modal fade" id="em-modal-form" tabindex="-1" style="z-index:99999" role="dialog" aria-labelledby="em-modal-actions-title">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -25,7 +17,7 @@ else
                     </h4>
                 </div>
                 <div class="modal-body">
-                    <form action="mod_emundus_calendar_add.php" method="post">
+                    <form>
                         <div class="form-group">
                             <label for="em-calendar-title"><?php echo JText::_("MOD_EM_CALENDAR_TITLE"); ?></label>
                             <input type="text" class="form-control" id="em-calendar-title" aria-describedby="titleHelp">
@@ -74,7 +66,7 @@ else
                             <small id="colorHelp" class="form-text text-muted"><?php echo JText::_("MOD_EM_CALENDAR_COLOR_HELP"); ?></small>
                         </div>
 
-                        <button type="button" class="btn btn-primary" name="btnAddcal"><?php echo JText::_("MOD_EM_CALENDAR_SUBMIT"); ?></button>
+                        <button type="button" onclick="postCalendar()" class="btn btn-primary" name="btnAddcal"><?php echo JText::_("MOD_EM_CALENDAR_SUBMIT"); ?></button>
                     </form>
 
                 </div>
@@ -82,4 +74,30 @@ else
         </div>
     </div>
     
-    <script src=""></script>
+    <script>
+        function postCalendar() {
+
+            $.ajaxQ.abortAll();
+
+            var calTitle    = $("#em-calendar-title").val();
+            var calProgram  = $("#em-calendar-program").val();
+            var calColor    = $("#em-calendar-color").val();
+
+            $.ajax({
+                type: 'POST',
+                url: 'modules/mod_emundus_calendar_add/mod_emundus_calendar_add.php',
+                data: {
+                    calTitle: calTitle,
+                    calProgram: calProgram,
+                    calColor: calColor
+                },
+                dataType:'json',
+                success: function(result) {
+
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+
+                }
+            })
+        }
+    </script>
