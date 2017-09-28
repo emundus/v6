@@ -1059,7 +1059,6 @@ $(document).ready(function()
 //
     $(document).on('click', '.em_file_open', function(e)
     {
-        console.log("hahah");
         $.ajaxQ.abortAll();
         if(e.handle !== true)
         {

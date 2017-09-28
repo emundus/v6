@@ -86,7 +86,7 @@ class EmundusViewEvaluation extends JViewLegacy
 			default :
 				$jinput = JFactory::getApplication()->input;
 				$cfnum = $jinput->getString('cfnum', null);
-
+				
 				$params = JComponentHelper::getParams('com_emundus');
 				$evaluators_can_see_other_eval = $params->get('evaluators_can_see_other_eval', 0);
 

@@ -1104,7 +1104,14 @@ class EmundusModelEvaluation extends JModelList
 			$query .= $leftJoin;
 		$query .= ' LEFT JOIN #__emundus_users as eu on eu.user_id = jos_emundus_evaluations.user ';
 		$query .= $q['join'];
-		$query .= ' where 1 = 1 ' . $q['q'];
+		
+		if (empty($current_fnum))
+			$query .= ' where 1 = 1 ';
+		else
+			$query .= ' WHERE c.fnum like ' . $current_fnum;
+		
+		
+		$query .= $q['q'];
 		
 		$query .=  $this->_buildContentOrderBy();
 
