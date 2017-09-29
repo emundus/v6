@@ -2,7 +2,6 @@
 defined('_JEXEC') or die('Restricted access');
 JHTML::_('behavior.tooltip'); 
 JHTML::_('behavior.modal');
-//JHTML::stylesheet('media/com_emundus/css/emundus.css' );
 
 $eMConfig       = JComponentHelper::getParams('com_emundus');
 $current_user   = JFactory::getUser();
@@ -77,7 +76,7 @@ if (!empty($s_elements)) {
             echo '<div id="emundus_elements_'.$this->form.'" class="otherForm">';
             $tbl_tmp='';
             $grp_tmp='';
-            
+
             foreach ($this->elements as $t) {
 
                 if ($tbl_tmp == '') {
@@ -110,7 +109,7 @@ if (!empty($s_elements)) {
                 }
                 
                 echo ' <input name="ud[]" type="checkbox" id="emundus_elm_'.$t->element_id.'" class="emundusitem_'.$this->form.' otherForm" onClick="javascript:check_all(\'emundus_elm_'.$t->element_id.'\')" ';
-                if ((!empty($s_elements) && in_array($t->tab_name,$table_name) && in_array($t->element_name,$element_name))) 
+                if ((!empty($s_elements) && in_array($t->tab_name, $table_name) && in_array($t->element_name, $element_name))) 
                     echo "checked=checked";
                 
                 echo ' value="'.$t->element_id.'"/><label class="label-element" for="emundus_elm_'.$t->element_id.'">'.JText::_($t->element_label).'</label> ';
@@ -134,7 +133,7 @@ if (!empty($s_elements)) {
                     if ($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
                     $label = explode("-", $t->table_label);
                     $label = $label[1];
-                    echo ' id="emundus_checkall_tbl_'.$t->table_id.'" class="emunduspage" data-check=".emundusgroup_'.$t->table_id.'" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$t->table_id.'\')" /><label for="emundus_checkall_tbl_'.$t->table_id.'">'.$label.'</label></legend></div><div class="panel-body">
+                    echo ' id="emundus_checkall_tbl_'.$t->table_id.'" class="emunduspage" data-check=".emundusgroup_'.$t->table_id.'" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$t->table_id.'\')" /><label for="emundus_checkall_tbl_'.$t->table_id.'">'.$label.' <i>['.$t->label.']</i></label></legend></div><div class="panel-body">
                         <div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
                             <div class="panel-heading"><legend><input type="checkbox" ';
                     
@@ -147,7 +146,7 @@ if (!empty($s_elements)) {
                         if ($t->created_by_alias == 'comment' && $comments == 1) echo "checked=checked";
                     $label = explode("-", $t->table_label);
                     $label = $label[1];
-                        echo ' id="emundus_checkall_tbl_'.$t->table_id.'" class="emunduspage" data-check=".emundusgroup_'.$t->table_id.'" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$t->table_id.'\')" /><label for="emundus_checkall_tbl_'.$t->table_id.'">'.$label.'</label></legend></div><div class="panel-body">
+                        echo ' id="emundus_checkall_tbl_'.$t->table_id.'" class="emunduspage" data-check=".emundusgroup_'.$t->table_id.'" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$t->table_id.'\')" /><label for="emundus_checkall_tbl_'.$t->table_id.'">'.$label.' <i>['.$t->label.']</label></legend></div><div class="panel-body">
                             <div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
                                 <div class="panel-heading"><legend><input type="checkbox" ';
                         
