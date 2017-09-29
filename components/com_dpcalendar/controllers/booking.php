@@ -129,7 +129,7 @@ class DPCalendarControllerBooking extends JControllerLegacy
 
 	public function paycancel()
 	{
-		$this->getModel()->publish($this->input->getInt('b_id'), 3);
+		$this->getModel()->delete($this->input->getInt('b_id'));
 		$this->setRedirect(
 			JRoute::_(
 				'index.php?option=com_dpcalendar&view=booking&layout=cancel&b_id=' . $this->input->getInt('b_id') . '&ptype=' .

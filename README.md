@@ -1,5 +1,5 @@
 # v6.2
-## [Emundus](https://emundus.fr) is an online application management for Joomla 3.7
+## [Emundus](https://emundus.fr) is an online application management for Joomla 3.8
 
 ### Features include
 * Candidacy and campaign management

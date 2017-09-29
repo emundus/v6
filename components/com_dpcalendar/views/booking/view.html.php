@@ -21,9 +21,13 @@ class DPCalendarViewBooking extends \DPCalendar\View\BaseView
 
 	public function init()
 	{
-		$app = JFactory::getApplication();
+		$app = $this->app;
 
-		if (in_array($this->getLayout(), array('pay', 'order', 'complete', 'cancel'))) {
+		if ($this->getLayout() == 'cancel') {
+			return parent::init();
+		}
+
+		if (in_array($this->getLayout(), array('pay', 'order', 'complete'))) {
 			JPluginHelper::importPlugin('dpcalendarpay');
 
 			$this->plugin = $app->input->get('type');
