@@ -91,7 +91,8 @@ class EmundusViewAdmission extends JViewLegacy
 				$evaluators_can_see_other_eval = $params->get('evaluators_can_see_other_eval', 0);
 
 				$admission = $this->getModel('Admission');
-                $userModel = new EmundusModelUsers();
+				$userModel = new EmundusModelUsers();
+				$h_files = new EmundusHelperFiles();
 
                 $admission->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
                 //$admission->fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
@@ -105,7 +106,7 @@ class EmundusViewAdmission extends JViewLegacy
                 $this->assignRef('fnum_assoc', $admission->fnum_assoc);
 
 				// reset filter
-				$filters = @EmundusHelperFiles::resetFilter();
+				$filters = $h_files->resetFilter();
 				$this->assignRef('filters', $filters);
 
 				// Do not display photos unless specified in params
@@ -125,7 +126,9 @@ class EmundusViewAdmission extends JViewLegacy
 						"fabrik_id" => $elt->id
 					];
 				}
-				$elements = $eltarr;
+
+				if (isset($eltarr))
+					$elements = $eltarr;
 
 				// Columns
 				$defaultElements = $this->get('DefaultElements');
@@ -157,13 +160,13 @@ class EmundusViewAdmission extends JViewLegacy
 						switch ($col[0]) {
 							case 'evaluators':
 								$data[0]['EVALUATORS'] = JText::_('EVALUATORS');
-								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
+								$colsSup['evaluators'] = $h_files->createEvaluatorList($col[1], $admission);
 								break;
 							case 'overall':
 								$data[0]['overall'] = JText::_('EVALUATION_OVERALL');
 								break;
 							case 'tags':
-								$taggedFile = $model->getTaggedFile();
+								$taggedFile = $admission->getTaggedFile();
 								$data[0]['eta.id_tag'] = JText::_('TAGS');
 								$colsSup['id_tag'] = array();
 								break;
@@ -199,7 +202,7 @@ class EmundusViewAdmission extends JViewLegacy
 								$userObj->class = $class;
 								$userObj->type = 'fnum';
 								if ($displayPhoto)
-									$userObj->photo = EmundusHelperFiles::getPhotos($value);
+									$userObj->photo = $h_files->getPhotos($value);
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
 								$line['fnum'] = $userObj;
 							} 

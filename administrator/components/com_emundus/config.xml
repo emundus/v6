@@ -149,8 +149,7 @@
 		<field name="clientId" type="text" required="false" label="COM_EMUNDUS_CLIENTID_GOOGLE_LABEL" description="COM_EMUNDUS_CLIENTID_GOOGLE_DESC" class="inputbox" default="" ForcedDisplay="value"/>
 		<field name="clientSecret" type="text" required="false" label="COM_EMUNDUS_CLIENTSECRET_GOOGLE_LABEL" description="COM_EMUNDUS_CLIENTSECRET_GOOGLE_DESC" class="inputbox" default=""/>
 		<field name="refreshToken" type="text" required="false" label="COM_EMUNDUS_REFRESHTOKEN_GOOGLE_LABEL" description="COM_EMUNDUS_REFRESHTOKEN_GOOGLE_DESC" class="inputbox" default=""/>
-		<field name="addCalendarForm" type="text" required="false" label="COM_EMUNDUS_ADD_CALENDAR_FORM" description="COM_EMUNDUS_ADD_CALENDAR_FORM_DESC" class="inputbox" default="" ForcedDisplay="value"/>
-		<field name="addEventForm" type="text" required="false" label="COM_EMUNDUS_ADD_EVENT_FORM" description="COM_EMUNDUS_ADD_EVENT_FORM_DESC" class="inputbox" default="" ForcedDisplay="value"/>
+		<field name="parentCalId" type="text" required="false" label="COM_EMUNDUS_PARENTCAL_LABEL" description="COM_EMUNDUS_PARENTCAL_DESC" class="inputbox" default="" />
 		<field name="calendarIds" type="text" required="false" label="COM_EMUNDUS_FIELD_GOOGLE_CALENDAR_IDS_LABEL" description="COM_EMUNDUS_FIELD_GOOGLE_CALENDAR_IDS_DESC" class="inputbox" default="" query="SELECT GROUP_CONCAT(calid) FROM #__emundus_calendar GROUP BY calid" key_field="calid"/>
 	</fieldset>
 

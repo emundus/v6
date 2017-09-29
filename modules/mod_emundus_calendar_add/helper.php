@@ -15,34 +15,16 @@
 
         public function getPrograms() {
             
-            $db = JFactory::getDbo();
-            $db->setQuery('SELECT code, label FROM #__emundus_setup_programmes');
-            return $db->loadObjectList();
-        
-        }
-
-        public function google_authenticate($clientID, $clientSecret, $refreshToken) {
+            try {
+                
+                $db = JFactory::getDbo();
+                $db->setQuery('SELECT code, label FROM #__emundus_setup_programmes');
+                return $db->loadObjectList();
             
-            // Get the API client and construct the service object.
-            $client = $this->getClient($clientID, $clientSecret);
-            $client->refreshToken($refreshToken);
-            $service = new Google_Service_Calendar($client);
-
-            return $service;
+            } catch (Exception $e) {
+                die($e->getMessage());
+            }
         
-        }
-
-
-        public function google_add_calendar($google_api_service, $title) {
-
-            // Creates a new google calendar using the API.
-            $calendar = new Google_Service_Calendar_Calendar();
-            $calendar->setSummary($title);
-            $calendar->setTimeZone('Europe/Paris');
-            $createdCalendar = $google_api_service->calendars->insert($calendar);  
-            
-            return $createdCalendar->getId();
-
         }
 
     }

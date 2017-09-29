@@ -66,7 +66,7 @@ defined('_JEXEC') or die;
                             <small id="colorHelp" class="form-text text-muted"><?php echo JText::_("MOD_EM_CALENDAR_COLOR_HELP"); ?></small>
                         </div>
 
-                        <button type="button" onclick="postCalendar()" class="btn btn-primary" name="btnAddcal"><?php echo JText::_("MOD_EM_CALENDAR_SUBMIT"); ?></button>
+                        <button type="button" onclick="postCalendar()" class="btn btn-primary" id="btnCal" name="btnAddcal"><?php echo JText::_("MOD_EM_CALENDAR_SUBMIT"); ?></button>
                     </form>
 
                 </div>
@@ -75,29 +75,42 @@ defined('_JEXEC') or die;
     </div>
     
     <script>
+
+        // TODO: We need to include jQuery but when we do the calendar breaks        
+
         function postCalendar() {
 
-            $.ajaxQ.abortAll();
+            var calTitle    = $$("#em-calendar-title").get('value');
+            var calProgram  = $$("#em-calendar-program").get('value');
+            var calColor    = $$("#em-calendar-color").get('value');
 
-            var calTitle    = $("#em-calendar-title").val();
-            var calProgram  = $("#em-calendar-program").val();
-            var calColor    = $("#em-calendar-color").val();
-
-            $.ajax({
-                type: 'POST',
-                url: 'modules/mod_emundus_calendar_add/mod_emundus_calendar_add.php',
+            var ajax = new Request({
+                url: 'index.php?option=com_emundus&controller=calendar&task=createcalendar',
+                method: 'post',
                 data: {
                     calTitle: calTitle,
                     calProgram: calProgram,
                     calColor: calColor
                 },
-                dataType:'json',
-                success: function(result) {
-
+                onRequest: function(){
+                    $$('#btnCal').setStyle('background-color','#4183D7');
+                    $$('#btnCal').set('text','Loading... ');
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
-
+                onSuccess: function(result){
+                    if (result.status) {
+                        $$('#btnCal').setStyle('background-color','#26A65B');
+                        $$('#btnCal').set('text','Calendar added!');
+                    } else {
+                        $$('#btnCal').setStyle('background-color','#96281B');
+                        $$('#btnCal').set('text','Error!');
+                    }
+                },
+                onFailure: function(){
+                    $$('#btnCal').setStyle('background-color','#96281B');
+                    $$('#btnCal').set('text','Error!');
                 }
-            })
+            });
+
+            ajax.send();
         }
     </script>

@@ -20,6 +20,87 @@ define('SCOPES', implode(' ', array(
 
 class EmundusModelCalendar extends JModelLegacy {
 
+
+    public function google_authenticate($clientID, $clientSecret, $refreshToken) {
+        
+        // Get the API client and construct the service object.
+        $client = $this->getClient($clientID, $clientSecret);
+        $client->refreshToken($refreshToken);
+        $service = new Google_Service_Calendar($client);
+
+        return $service;
+    
+    }
+
+
+    public function google_add_calendar($google_api_service, $title) {
+
+        // Creates a new google calendar using the API.
+        $calendar = new Google_Service_Calendar_Calendar();
+        $calendar->setSummary($title);
+        $calendar->setTimeZone('Europe/Paris');
+        $createdCalendar = $google_api_service->calendars->insert($calendar);  
+        
+        return $createdCalendar->getId();
+
+    }
+
+    public function dpcalendar_add_calendar($title, $alias, $color, $googleId, $parentId, $program) {
+
+        $db = JFactory::getDbo();
+        $user = JFactory::getUser();
+
+        // in order to get the path we need the name of the parent calendar
+        // This is because the path is written as parentAlias/calAlias
+        try {
+            
+            $db->setQuery("SELECT alias FROM #__categories WHERE id = ".$parentId);
+            $parentAlias = $db->loadresult();
+
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+
+
+        $query = "INSERT INTO #__categories (parent_id, path, extension, title, alias, published, params, created_user_id, language) VALUES ";
+
+        $values = array();
+        // Parent_id
+        $values[] = $parentId;
+        // Path 
+        $values[] = $parentAlias."/".$alias;
+        // Extension
+        $values[] = "com_dpcalendar";
+        // Title
+        $values[] = $title;
+        // Alias
+        $values[] = $alias;
+        // Published
+        $values[] = "1";
+        // Params TODO: find out what etag param is used for
+        $values[] = "{\"image\":\"\",\"image_alt\":\"\",\"color\":\"".$color."\",\"etag\":3,\"program\":\"".$program."\",\"googleId\":\"".$googleId."\"}";
+        // Created_user_id
+        $values[] = $user->id;
+        // Language
+        $values[] = "*";
+
+        $query .= implode(",", $values);
+
+        try {
+        
+            $db->setquery($query);
+            $db->execute();
+            return true;
+
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+
+    }
+
+
+    // TODO: See which code below is worth keeping
+
     
     function createEvent($calendarID, $title, $description, $startDate, $startTime, $endDate, $endTime,$candidate,$catID) {
         $eMConfig = JComponentHelper::getParams('com_emundus');

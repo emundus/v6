@@ -90,7 +90,8 @@ class EmundusViewEvaluation extends JViewLegacy
 				$evaluators_can_see_other_eval = $params->get('evaluators_can_see_other_eval', 0);
 
 				$evaluation = $this->getModel('Evaluation');
-                $userModel = new EmundusModelUsers();
+				$userModel = new EmundusModelUsers();
+				$h_files = new EmundusHelperFiles();
 
                 $evaluation->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
                 //$evaluation->fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
@@ -145,13 +146,13 @@ class EmundusViewEvaluation extends JViewLegacy
 						switch ($col[0]) {
 							case 'evaluators':
 								$data[0]['EVALUATORS'] = JText::_('EVALUATORS');
-								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
+								$colsSup['evaluators'] = $h_files->createEvaluatorList($col[1], $evaluation);
 								break;
 							case 'overall':
 								$data[0]['overall'] = JText::_('EVALUATION_OVERALL');
 								break;
 							case 'tags':
-								$taggedFile = $model->getTaggedFile();
+								$taggedFile = $evaluation->getTaggedFile();
 								$data[0]['eta.id_tag'] = JText::_('TAGS');
 								$colsSup['id_tag'] = array();
 								break;
@@ -190,7 +191,7 @@ class EmundusViewEvaluation extends JViewLegacy
 								$userObj->class = $class;
 								$userObj->type = 'fnum';
 								if ($displayPhoto) 
-									$userObj->photo = EmundusHelperFiles::getPhotos($value);
+									$userObj->photo = $h_files->getPhotos($value);
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
 								$line['fnum'] = $userObj;
 							
