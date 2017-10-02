@@ -76,8 +76,6 @@ defined('_JEXEC') or die;
     
     <script>
 
-        // TODO: We need to include jQuery but when we do the calendar breaks        
-
         function postCalendar() {
 
             var calTitle    = $$("#em-calendar-title").get('value');

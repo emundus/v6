@@ -20,6 +20,11 @@ require_once (JPATH_COMPONENT.DS.'models'.DS.'calendar.php');
 
 class EmundusControllerCalendar extends JControllerLegacy {
 
+    /**
+    * Creates a calendar using the google API and by manually creating a category for dpcalendar to use.
+    *
+    * @return bool
+    */
     public function createcalendar() {
 
         $m_calendar = new EmundusModelCalendar();
@@ -44,9 +49,30 @@ class EmundusControllerCalendar extends JControllerLegacy {
 
         $result = $m_calendar->dpcalendar_add_calendar($calendar_title, $calendar_alias, $calendar_color, $google_calendar_id, $dpcalendar_parent_id, $calendar_program);
 
-        if ($result === true)
-            echo json_encode(['status' => true ]);
+        echo json_encode(['status' => $result]);
     
+    }
+
+    public function bookinterview() {
+
+        $m_calendar = new EmundusModelCalendar();
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
+        $event_id = $_POST["eventId"][0];
+        $user_id  = $_POST["userId"][0];
+
+        $google_client_id       = $eMConfig->get('clientId');
+        $google_secret_key      = $eMConfig->get('clientSecret');
+        $google_refresh_token   = $eMConfig->get('refreshToken');
+
+        $dpcalendar_event = $m_calendar->dpcalendar_confirm_interview($event_id, $user_id); 
+
+        $service = $m_calendar->google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
+
+        $result = $m_calendar->google_add_event($service, $event);
+
+        echo json_encode(['status' => $result]);
+
     }
 
 }  

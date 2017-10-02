@@ -13,7 +13,7 @@ defined( '_JEXEC' ) or die();
  * @description Synchronisation du calendrier DPCal avec GoogleCal
  */
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
-require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'candidatelist.php');
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'calendar.php');
 JLoader::import('components.com_dpcalendar.libraries.dpcalendar.syncplugin', JPATH_ADMINISTRATOR);
 JPluginHelper::importPlugin( 'dpcalendar' );
 
@@ -27,34 +27,12 @@ JLog::addLogger(
     array('com_emundus')
 );
 
-$user = JFactory::getUser();
-$mainframe = JFactory::getApplication();
-$jinput = $mainframe->input;
-$db 		= JFactory::getDBO();
+$user   = JFactory::getUser();
+$app    = JFactory::getApplication();
+$db     = JFactory::getDBO();
+$jinput = $app->input;
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
-$id_applicants 			 = $eMConfig->get('id_applicants', '0');
-$applicants 			 = explode(',',$id_applicants);
-$calendarID1 = $eMConfig->get('calendarId1');
-$calendarID2 = $eMConfig->get('calendarId2');
-$calendarID3 = $eMConfig->get('calendarId3');
-$calendarID4 = $eMConfig->get('calendarId4');
-$calendarID5 = $eMConfig->get('calendarId5');
-$calendarID6 = $eMConfig->get('calendarId6');
-$calendarID7 = $eMConfig->get('calendarId7');
-$calendarID8 = $eMConfig->get('calendarId8');
-$calendarID9 = $eMConfig->get('calendarId9');
-$calendarID10 = $eMConfig->get('calendarId10');
-$calendarID11 = $eMConfig->get('calendarId11');
-$calendarID12 = $eMConfig->get('calendarId12');
-$calendarID13 = $eMConfig->get('calendarId13');
-$calendarID14 = $eMConfig->get('calendarId14');
-$calendarID15 = $eMConfig->get('calendarId15');
-$calendarID16 = $eMConfig->get('calendarId16');
-$calendarID17 = $eMConfig->get('calendarId17');
-$calendarID18 = $eMConfig->get('calendarId18');
-$calendarID19 = $eMConfig->get('calendarId19');
-$calendarID20 = $eMConfig->get('calendarId20');
 
 $fnum = $jinput->get('rowid', null);
 $itemid = $jinput->get('Itemid'); 
@@ -76,10 +54,9 @@ $calId = $valueRowId[1];
 try
 {
 	
-	$confirm = new EmundusModelCandidatelist;
-	$confirm->confirmInterview($calId,$validInterview);
+	$m_calendar = new EmundusModelCalendar;
+	$m_calendar->confirmInterview($calId,$validInterview);
     die("<div class='col-md-12'><center><h1>Interview Updated.</h1></center></div>");
-	
 
 }
 catch(Exception $e)

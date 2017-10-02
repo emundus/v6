@@ -49,53 +49,113 @@ class EmundusModelCalendar extends JModelLegacy {
 
         $db = JFactory::getDbo();
         $user = JFactory::getUser();
-
+        
         // in order to get the path we need the name of the parent calendar
         // This is because the path is written as parentAlias/calAlias
         try {
             
             $db->setQuery("SELECT alias FROM #__categories WHERE id = ".$parentId);
-            $parentAlias = $db->loadresult();
+            $parentAlias = $db->loadResult();
 
         } catch (Exception $e) {
             die($e->getMessage());
         }
 
+        $category_data['id'] = 0;
+        $category_data['parent_id'] = $parentId;
+        $category_data['title'] = $title[0];
+        $category_data['alias'] = $alias[0];
+        $category_data['path'] = $parentAlias."/".$alias[0];
+        $category_data['extension'] = 'com_dpcalendar';
+        $category_data['published'] = 1;
+        $category_data['language'] = '*';
+        $category_data['params'] = array(
+            'category_layout' => '',
+            'image' => '',
+            'color' => $color[0],
+            'etag' => '1',
+            'program' => $program[0],
+            'googleId' => $googleId
+        );
+        $category_data['metadata'] = array(
+            'author' => '',
+            'robots' => ''
+        );
+        
+        return $this->createCategory($category_data);
 
-        $query = "INSERT INTO #__categories (parent_id, path, extension, title, alias, published, params, created_user_id, language) VALUES ";
+    }
 
-        $values = array();
-        // Parent_id
-        $values[] = $parentId;
-        // Path 
-        $values[] = $parentAlias."/".$alias;
-        // Extension
-        $values[] = "com_dpcalendar";
-        // Title
-        $values[] = $title;
-        // Alias
-        $values[] = $alias;
-        // Published
-        $values[] = "1";
-        // Params TODO: find out what etag param is used for
-        $values[] = "{\"image\":\"\",\"image_alt\":\"\",\"color\":\"".$color."\",\"etag\":3,\"program\":\"".$program."\",\"googleId\":\"".$googleId."\"}";
-        // Created_user_id
-        $values[] = $user->id;
-        // Language
-        $values[] = "*";
+    public function dpcalendar_confirm_interview($event_id, $user_id, $fnum) {
 
-        $query .= implode(",", $values);
+        $db = Jfactory::getDbo();
 
         try {
-        
-            $db->setquery($query);
-            $db->execute();
-            return true;
+            
+            $db->setquery("SELECT * FROM #__dpcalendar_events WHERE id = ".$event_id);
+            $event = $db->loadObject();
 
         } catch (Exception $e) {
             die($e->getMessage());
         }
 
+        $event->title = "(BOOKED) ".$event->title;
+        $event->color = "000000";
+        $event->url = ""; // TODO: Get the URL to the candidates file.
+        $event->description = ""; // TODO: Get the user's synthesis.
+        $event->booking_information = $user_id;
+        $event->checked_out = "1";
+
+    }
+
+    public function google_add_event($calendarId, $event) {
+
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $google_client_id       = $eMConfig->get('clientId');
+        $google_secret_key      = $eMConfig->get('clientSecret');
+        $google_refresh_token   = $eMConfig->get('refreshToken');
+
+        $google_api_service = google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
+
+        $event = new Google_Service_Calendar_Event([
+            'summary'       => $title,
+            'description'   => $description,
+            'start' => [
+                'dateTime'  => $startDate.'T'.$startTime.'+02:00',
+                'timeZone'  => 'Europe/Paris',
+            ],
+            'end' => [
+                'dateTime'  => $endDate.'T'.$endTime.'+02:00',
+                'timeZone'  => 'Europe/Paris',
+            ],
+        ]);
+
+        $result = $service->events->insert($calendarId, $event);
+
+    }
+
+    function createCategory($data) {
+        $data['rules'] = array(
+            'core.edit.state' => array(),
+            'core.edit.delete' => array(),
+            'core.edit.edit' => array(),
+            'core.edit.state' => array(),
+            'core.edit.own' => array(1 => true)
+        );
+    
+        $basePath = JPATH_ADMINISTRATOR.'/components/com_categories';
+        require_once $basePath.'/models/category.php';
+        
+        $config  = array('table_path' => $basePath.'/tables');
+        $m_categories = new CategoriesModelCategory($config);
+        
+        if (!$m_categories->save($data)) {
+            $err_msg = $m_categories->getError();
+            return false;
+        } else {
+            $id = $m_categories->getItem()->id;
+            return true;
+        }
     }
 
 
