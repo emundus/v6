@@ -41,37 +41,33 @@ defined('_JEXEC') or die;
 
         function bookInterview() {
 
-            var eventId = $$("#em-book-interview").get('value'),
+            var eventId = $("#em-book-interview").val(),
                 userId = <?php echo $user->id; ?>,
                 fnum = <?php echo $user->fnum; ?>;
 
-            var ajax = new Request({
+            $.ajax({
                 url: 'index.php?option=com_emundus&controller=calendar&task=bookinterview',
-                method: 'post',
-                data: {
+                type: 'POST',
+                dataType: 'json',
+                data: ({
                     eventId: eventId,
                     userId: userId,
                     fnum: fnum,
-                },
-                onRequest: function(){
-                    $$('#btnCal').setStyle('background-color','#4183D7');
-                    $$('#btnCal').set('text','Loading... ');
-                },
-                onSuccess: function(result){
+                }),
+                success: function(result){
                     if (result.status) {
-                        $$('#btnCal').setStyle('background-color','#26A65B');
-                        $$('#btnCal').set('text','Calendar added!');
+                        $('#btnCal').css('background-color','#26A65B');
+                        $('#btnCal').text('Calendar added!');
                     } else {
-                        $$('#btnCal').setStyle('background-color','#96281B');
-                        $$('#btnCal').set('text','Error!');
+                        $('#btnCal').css('background-color','#96281B');
+                        $('#btnCal').text('Error!');
                     }
                 },
-                onFailure: function(){
-                    $$('#btnCal').setStyle('background-color','#96281B');
-                    $$('#btnCal').set('text','Error!');
+                failure: function(jqXHR, textStatus, errorThrown){
+                    $('#btnCal').setStyle('background-color','#96281B');
+                    $('#btnCal').text('Error!');
                 }
             });
 
-            ajax.send();
         }
     </script>

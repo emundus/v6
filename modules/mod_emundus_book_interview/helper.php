@@ -29,15 +29,15 @@
                 
                 $query = "SELECT id, title, start_date, description 
                 FROM #__dpcalendar_events 
-                WHERE checked_out = 0
+                WHERE metakey IS NULL
                 AND start_date >= NOW()
                 AND catid IN (
                     SELECT GROUP_CONCAT(id) 
                     FROM jos_categories 
                     WHERE extension LIKE \"com_dpcalendar\"
-                    AND params LIKE '%\"program\":\"".$user->profile_label."\"%'
+                    AND params LIKE '%\"program\":\"".$user->code."\"%'
                     GROUP BY id
-                )";
+                )";                
 
                 $db->setQuery($query);
                 return $db->loadObjectList();
@@ -55,6 +55,9 @@
             try {
 
                 // Get the timestamp for the event as well as maybe some other info?
+                $db = JFactory::getDbo();
+                $db->setQuery('SELECT start_date FROM #__dpcalendar_events WHERE booking_information LIKE '.$user->id);
+                return $db->loadResult();
 
             } catch (Exception $e) {
                 die($e->getMessage());

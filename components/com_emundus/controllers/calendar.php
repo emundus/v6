@@ -57,15 +57,16 @@ class EmundusControllerCalendar extends JControllerLegacy {
 
         $m_calendar = new EmundusModelCalendar();
         $eMConfig = JComponentHelper::getParams('com_emundus');
-
-        $event_id = $_POST["eventId"][0];
-        $user_id  = $_POST["userId"][0];
+        
+        $event_id   = $_POST["eventId"];
+        $user_id    = $_POST["userId"];
+        $fnum       = $_POST["fnum"];
 
         $google_client_id       = $eMConfig->get('clientId');
         $google_secret_key      = $eMConfig->get('clientSecret');
         $google_refresh_token   = $eMConfig->get('refreshToken');
 
-        $dpcalendar_event = $m_calendar->dpcalendar_confirm_interview($event_id, $user_id); 
+        $dpcalendar_event = $m_calendar->dpcalendar_confirm_interview($event_id, $user_id, $fnum); 
 
         $service = $m_calendar->google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
 

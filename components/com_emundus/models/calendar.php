@@ -103,12 +103,12 @@ class EmundusModelCalendar extends JModelLegacy {
         $event->color = "000000";
         $event->description = $this->getSynthesis($fnum);
         $event->booking_information = $user_id;
-        $event->checked_out = "1";
+        $event->metakey = "1";
  
         try {
             
             $query = "UPDATE #__dpcalendar_events ";
-            $query .= "SET title = ".$event->title.", color = ".$event->color.", description = ".$event->description.", booking_information = ".$event->booking_infotmation.", checked_out = ".$event->checked_out;
+            $query .= "SET title = ".$db->quote($event->title).", color = ".$db->quote($event->color).", description = ".$db->quote($event->description).", booking_information = ".$db->quote($event->booking_information).", metakey = ".$db->quote($event->metakey);
             $query .= " WHERE id = ".$event_id;
 
             $db->setQuery($query);
@@ -184,11 +184,15 @@ class EmundusModelCalendar extends JModelLegacy {
     }
 
     // Helper function, gets the synthesis
-    function getSynthesis($fnum) {   
+    function getSynthesis($fnum) {
 
-        $m_profile      = $this->getModel('Profile');
-        $m_application  = $this->getModel('Application');
-        $m_email        = $this->getModel('Emails');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
+
+        $m_profile      = new EmundusModelProfile;
+        $m_application  = new EmundusModelApplication;
+        $m_email        = new EmundusModelEmails;
 
         $fnumInfos      = $m_profile->getFnumDetails($fnum);
         $program        = $m_application->getProgramSynthesis($fnumInfos['campaign_id']);
