@@ -146,13 +146,13 @@ class EmundusViewDecision extends JViewLegacy
 						{
 							case 'evaluators':
 								$data[0]['EVALUATORS'] = JText::_('EVALUATORS');
-								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
+								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $decision);
 								break;
 							case 'overall':
 								$data[0]['overall'] = JText::_('EVALUATION_OVERALL');
 								break;
 							case 'tags':
-								$taggedFile = $model->getTaggedFile();
+								$taggedFile = $decision->getTaggedFile();
 								$data[0]['eta.id_tag'] = JText::_('TAGS');
 								$colsSup['id_tag'] = array();
 								break;
