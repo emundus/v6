@@ -21,18 +21,17 @@ define('SCOPES', implode(' ', array(
 class EmundusModelCalendar extends JModelLegacy {
 
 
+    // Uses Google API credentials to initialize a google service object.
     public function google_authenticate($clientID, $clientSecret, $refreshToken) {
         
         // Get the API client and construct the service object.
         $client = $this->getClient($clientID, $clientSecret);
         $client->refreshToken($refreshToken);
-        $service = new Google_Service_Calendar($client);
-
-        return $service;
+        return new Google_Service_Calendar($client);
     
     }
 
-
+    // Creates a google calendar on Google Agenda
     public function google_add_calendar($google_api_service, $title) {
 
         // Creates a new google calendar using the API.
@@ -45,6 +44,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
     }
 
+    // Creates a local calendar to be managed by dpCalendar.
     public function dpcalendar_add_calendar($title, $alias, $color, $googleId, $parentId, $program) {
 
         $db = JFactory::getDbo();
@@ -92,7 +92,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
         try {
             
-            $db->setquery("SELECT * FROM #__dpcalendar_events WHERE id = ".$event_id);
+            $db->setQuery("SELECT * FROM #__dpcalendar_events WHERE id = ".$event_id);
             $event = $db->loadObject();
 
         } catch (Exception $e) {
@@ -101,39 +101,64 @@ class EmundusModelCalendar extends JModelLegacy {
 
         $event->title = "(BOOKED) ".$event->title;
         $event->color = "000000";
-        $event->url = ""; // TODO: Get the URL to the candidates file.
-        $event->description = ""; // TODO: Get the user's synthesis.
+        $event->description = $this->getSynthesis($fnum);
         $event->booking_information = $user_id;
         $event->checked_out = "1";
+ 
+        try {
+            
+            $query = "UPDATE #__dpcalendar_events ";
+            $query .= "SET title = ".$event->title.", color = ".$event->color.", description = ".$event->description.", booking_information = ".$event->booking_infotmation.", checked_out = ".$event->checked_out;
+            $query .= " WHERE id = ".$event_id;
+
+            $db->setQuery($query);
+            $db->execute();
+
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+
+        return $event;
 
     }
 
-    public function google_add_event($calendarId, $event) {
+    public function google_add_event($google_api_service, $event) {
 
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-        $google_client_id       = $eMConfig->get('clientId');
-        $google_secret_key      = $eMConfig->get('clientSecret');
-        $google_refresh_token   = $eMConfig->get('refreshToken');
+        // extract claendar ID from $event->params using JSON parsing.
+        $dpcalendar_event_params = json_decode($event->params);
+        $google_calendar_id = $dpcalendar_event_param->googleId;
 
-        $google_api_service = google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
+        // Convert event date to format for google calendar
+        $start_dt   = new DateTime($event->start_date);
+        $start_date = $start_dt->format('Y M j');
+        $start_time = $start_dt->format('g:i A');
+        $end_dt     = new DateTime($event->end_date);
+        $end_date   = $end_dt->format('Y M j');
+        $end_time   = $end_dt->format('g:i A');
 
+        // Build event object for Google.
         $event = new Google_Service_Calendar_Event([
-            'summary'       => $title,
-            'description'   => $description,
+            'summary'       => $event->title,
+            'description'   => $event->description,
             'start' => [
-                'dateTime'  => $startDate.'T'.$startTime.'+02:00',
+                'dateTime'  => $start_date.'T'.$start_time.'+02:00',
                 'timeZone'  => 'Europe/Paris',
             ],
             'end' => [
-                'dateTime'  => $endDate.'T'.$endTime.'+02:00',
+                'dateTime'  => $end_date.'T'.$end_time.'+02:00',
                 'timeZone'  => 'Europe/Paris',
             ],
         ]);
 
-        $result = $service->events->insert($calendarId, $event);
+        $result = $google_api_service->events->insert($google_calendar_id, $event);
+
+        if (isset($result))
+            return true;
+        else return false;
 
     }
 
+    // Helper function, creates a category.
     function createCategory($data) {
         $data['rules'] = array(
             'core.edit.state' => array(),
@@ -156,6 +181,43 @@ class EmundusModelCalendar extends JModelLegacy {
             $id = $m_categories->getItem()->id;
             return true;
         }
+    }
+
+    // Helper function, gets the synthesis
+    function getSynthesis($fnum) {   
+
+        $m_profile      = $this->getModel('Profile');
+        $m_application  = $this->getModel('Application');
+        $m_email        = $this->getModel('Emails');
+
+        $fnumInfos      = $m_profile->getFnumDetails($fnum);
+        $program        = $m_application->getProgramSynthesis($fnumInfos['campaign_id']);
+        $campaignInfo   = $m_application->getUserCampaigns($fnumInfos['applicant_id'], $fnumInfos['campaign_id']);
+        
+        $tag = array(
+            'FNUM' => $fnum,
+            'CAMPAIGN_NAME' => $fnum,
+            'APPLICATION_STATUS' => $fnum,
+            'APPLICATION_TAGS' => $fnum,
+            'APPLICATION_PROGRESS' => $fnum
+        );
+
+        $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag);
+        
+        $synthesis = new stdClass();
+        $synthesis->program = $program;
+        $synthesis->camp    = $campaignInfo;
+        $synthesis->fnum    = $fnum;
+        $synthesis->block   = preg_replace($tags['patterns'], $tags['replacements'], $program->synthesis);
+
+        $element_ids = $m_email->getFabrikElementIDs($synthesis->block);
+        if (count(@$element_ids[0])>0) {
+            $element_values = $m_email->getFabrikElementValues($fnum, $element_ids[1]);
+            $synthesis->block = $m_email->setElementValues($synthesis->block, $element_values);
+        }
+
+        return $synthesis->block;
+
     }
 
 
