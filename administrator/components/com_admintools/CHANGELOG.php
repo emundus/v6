@@ -1,4 +1,20 @@
 <?php die() ?>
+Admin Tools 4.3.1
+================================================================================
++ Added warning if HHVM is used instead of PHP
++ .htaccess / nginx.conf Maker: add support for WOFF2 in expiration time feature
++ Support for Joomla's task=viewName.taskName notation in the WAF Exceptions feature (gh-137)
++ Clicking on "Reload update information" will fix Joomla! erroneously reporting an update is available when you have the latest version installed
++ You can now define the timezone used when sending emails with security advice (gh-139)
++ WAF Blacklist rules can now apply in just the frontend of your site (default), just the backend or both (gh-138).
++ Added Console Warning feature (inform the user to prevent Self XSS) (gh-136)
+- Removed unused Options
+~ Updates now use HTTPS URLs for both the XML update stream and the package download itself
+# [MEDIUM] Rescue URL feature was not working
+# [MEDIUM] Use of TraceEnable in .htaccess would always lead to 500 error. Now using a Rewrite rule instead.
+# [LOW] Removed debug message when system plugin file is renamed
+# [LOW] Fixed blocking a specific task with WAF Blacklist feature
+
 Admin Tools 4.3.0
 ================================================================================
 + Rescue URL: unblock yourself easily if you get locked out of your site (you must be a Super User)

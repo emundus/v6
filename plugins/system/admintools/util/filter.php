@@ -21,6 +21,14 @@ class AtsystemUtilFilter
 	{
 		if (is_null(static::$ip))
 		{
+			// This function is invoked all other Admin Tools workflow. Since sometimes we divert from the regular path
+			// (ie rescue URL feature), it MAY happen that FOF is not included. So let's manually check that this is
+			// included and defined before attempting to use the Utils\Ip class
+			if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
+			{
+				throw new \RuntimeException('FOF is currently not installed');
+			}
+
 			$ip = \FOF30\Utils\Ip::getIp();
 
 			static::setIp($ip);

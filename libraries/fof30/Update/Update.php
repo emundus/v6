@@ -93,41 +93,22 @@ class Update extends Model
 		}
 
 		// Get the extension type
-		list($extensionPrefix, $extensionName) = explode('_', $this->component);
-
-		switch ($extensionPrefix)
-		{
-			default:
-			case 'com':
-				$type = 'component';
-				$name = $this->component;
-				break;
-
-			case 'pkg':
-				$type = 'package';
-				$name = $this->component;
-				break;
-		}
-
-		// Find the extension ID
-		$db = $this->container->db;
-		$query = $db->getQuery(true)
-		            ->select('*')
-		            ->from($db->qn('#__extensions'))
-		            ->where($db->qn('type') . ' = ' . $db->q($type))
-		            ->where($db->qn('element') . ' = ' . $db->q($name));
-		$db->setQuery($query);
-		$extension = $db->loadObject();
+		$extension = $this->getExtensionObject();
 
 		if (is_object($extension))
 		{
 			$this->extension_id = $extension->extension_id;
-			$data = json_decode($extension->manifest_cache, true);
 
-			if (isset($data['version']))
+			if (empty($this->version) || ($this->version == 'dev'))
 			{
-				$this->version = $data['version'];
+				$data = json_decode($extension->manifest_cache, true);
+
+				if (isset($data['version']))
+				{
+					$this->version = $data['version'];
+				}
 			}
+
 		}
 	}
 
@@ -156,6 +137,12 @@ class Update extends Model
 		if (empty($this->extension_id))
 		{
 			return $updateResponse;
+		}
+
+		// If we had to update the version number stored in the database then we should force reload the updates
+		if ($this->updatedCachedVersionNumber())
+		{
+			$force = true;
 		}
 
 		// If we are forcing the reload, set the last_check_timestamp to 0
@@ -443,5 +430,78 @@ class Update extends Model
 			// Do nothing on failure
 			return;
 		}
+	}
+
+	/**
+	 * Makes sure that the version number cached in the #__extensions table is consistent with the version number set in
+	 * this model.
+	 *
+	 * @return  bool  True if we updated the version number cached in the #__extensions table.
+	 *
+	 * @since   3.1.2
+	 */
+	public function updatedCachedVersionNumber()
+	{
+		$extension = $this->getExtensionObject();
+
+		if (!is_object($extension))
+		{
+			return false;
+		}
+
+		$data       = json_decode($extension->manifest_cache, true);
+		$mustUpdate = true;
+
+		if (isset($data['version']))
+		{
+			$mustUpdate = $this->version != $data['version'];
+		}
+
+		if (!$mustUpdate)
+		{
+			return false;
+		}
+
+		// The cached version is wrong; let's update it
+		$data['version']           = $this->version;
+		$extension->manifest_cache = json_encode($data);
+		$db                        = $this->container->db;
+		return $db->updateObject('#__extensions', $extension, ['extension_id']);
+	}
+
+	/**
+	 * Returns an object with the #__extensions table record for the current extension.
+	 *
+	 * @return  mixed
+	 */
+	private function getExtensionObject()
+	{
+		list($extensionPrefix, $extensionName) = explode('_', $this->component);
+
+		switch ($extensionPrefix)
+		{
+			default:
+			case 'com':
+				$type = 'component';
+				$name = $this->component;
+				break;
+
+			case 'pkg':
+				$type = 'package';
+				$name = $this->component;
+				break;
+		}
+
+		// Find the extension ID
+		$db    = $this->container->db;
+		$query = $db->getQuery(true)
+			->select('*')
+			->from($db->qn('#__extensions'))
+			->where($db->qn('type') . ' = ' . $db->q($type))
+			->where($db->qn('element') . ' = ' . $db->q($name));
+		$db->setQuery($query);
+		$extension = $db->loadObject();
+
+		return $extension;
 	}
 }

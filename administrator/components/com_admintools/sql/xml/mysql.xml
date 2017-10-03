@@ -221,6 +221,7 @@ CREATE TABLE `#__admintools_wafblacklists` (
 	`query_type` varchar(1) NOT NULL,
 	`query_content` varchar(255) NOT NULL,
 	`verb` varchar(6) NOT NULL,
+	`application` enum('site','admin','both') NOT NULL DEFAULT 'site',
 	`enabled` TINYINT(3) NOT NULL DEFAULT 1,
 	PRIMARY KEY (`id`)
 ) DEFAULT COLLATE utf8_general_ci;
@@ -437,6 +438,13 @@ ALTER TABLE `#__admintools_cookies` ADD PRIMARY KEY (`series`(100));
 			<condition type="missing" value="enabled" />
 			<query><![CDATA[
 ALTER TABLE `#__admintools_wafblacklists` ADD COLUMN `enabled` TINYINT(3) NOT NULL DEFAULT 1 AFTER `verb`;
+			]]></query>
+		</action>
+
+		<action table="#__admintools_wafblacklists" canfail="1">
+			<condition type="missing" value="application" />
+			<query><![CDATA[
+ALTER TABLE `#__admintools_wafblacklists` ADD COLUMN `application` enum('site','admin','both') NOT NULL DEFAULT 'site' AFTER `verb`;
 			]]></query>
 		</action>
 
