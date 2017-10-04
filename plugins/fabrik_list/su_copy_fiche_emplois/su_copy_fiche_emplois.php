@@ -158,4 +158,14 @@ class PlgFabrik_ListSu_copy_fiche_emplois extends PlgFabrik_List
 		return true;
 	}
 
+	/**
+	 * Load the AMD module class name
+	 *
+	 * @return string
+	 */
+	public function loadJavascriptClassName_result()
+	{
+		return 'FbListSu_copy_fiche_emplois';
+	}
+
 }
