@@ -80,4 +80,17 @@ class EmundusControllerCalendar extends JControllerLegacy {
 
     }
 
+    public function cancelinterview() {
+
+        $m_calendar = new EmundusModelCalendar();
+        
+        $jinput = JFactory::getApplication()->input;
+        $event_id = $jinput->get("eventId", null, "string");
+
+        $result = $m_calendar->dpcalendar_delete_interview($event_id);
+
+        // TODO: Delete Google Agenda event?
+
+    }
+
 }  

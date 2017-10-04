@@ -22,7 +22,7 @@ if (isset($user->fnum)) {
     if ($user_booked) {
 
         $next_interview = $helper->getNextInterview($user);
-        $interview_dt   = new DateTime($next_interview);
+        $interview_dt   = new DateTime($next_interview->start_date);
         $interview_date = $interview_dt->format('M j Y');
         $interview_time = $interview_dt->format('g:i A');
         require(JModuleHelper::getLayoutPath('mod_emundus_book_interview','showInterview'));    

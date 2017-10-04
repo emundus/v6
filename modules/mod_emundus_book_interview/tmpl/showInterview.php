@@ -19,11 +19,9 @@ defined('_JEXEC') or die;
                 </h4>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label for="em-calendar-title"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_ARE_YOU_SURE"); ?></label>
-                    <button type="button" onclick="cancelInterview()" class="btn btn-danger"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_CONFIRM_DELETE") ?></button>
-                    <small id="bookHelp" class="form-text text-muted"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_DELETE_HELP"); ?></small>
-                </div>
+                <label for="em-calendar-title"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_ARE_YOU_SURE"); ?></label>
+                <button type="button" onclick="cancelInterview()" class="btn btn-danger"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_CONFIRM_DELETE") ?></button>
+                <p id="bookHelp" class="form-text text-muted"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_DELETE_HELP"); ?></p>
             </div>
         </div>
     </div>
@@ -33,7 +31,31 @@ defined('_JEXEC') or die;
 
     function cancelInterview() {
 
-        // Get variables required and call controller function with ajax.
+        var eventId = <?php echo $next_interview->id; ?>;
+
+        $.ajax({
+            url: 'index.php?option=com_emundus&controller=calendar&task=cancelinterview&format=raw',
+            type: 'POST',
+            dataType: 'json',
+            data: ({
+                eventId: eventId
+            }),
+            success: function(result){
+                if (result.status) {
+                    $('#btnCal').css('background-color','#26A65B');
+                    $('#btnCal').text('Interview booked!');
+                } else {
+                    $('#btnCal').css('background-color','#96281B');
+                    $('#btnCal').text('Error!');
+                }
+            },
+            failure: function(jqXHR, textStatus, errorThrown){
+                $('#btnCal').setStyle('background-color','#96281B');
+                $('#btnCal').text('Error!');
+            }
+        });
+
+        location.reload(true);
 
     }
 

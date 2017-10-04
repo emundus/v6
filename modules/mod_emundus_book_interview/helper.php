@@ -56,8 +56,8 @@
 
                 // Get the timestamp for the event as well as maybe some other info?
                 $db = JFactory::getDbo();
-                $db->setQuery('SELECT start_date FROM #__dpcalendar_events WHERE booking_information LIKE '.$user->id);
-                return $db->loadResult();
+                $db->setQuery('SELECT id,start_date FROM #__dpcalendar_events WHERE booking_information LIKE '.$user->id);
+                return $db->loadObject();
 
             } catch (Exception $e) {
                 die($e->getMessage());

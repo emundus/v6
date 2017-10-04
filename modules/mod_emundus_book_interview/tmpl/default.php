@@ -46,7 +46,7 @@ defined('_JEXEC') or die;
                 fnum = <?php echo $user->fnum; ?>;
 
             $.ajax({
-                url: 'index.php?option=com_emundus&controller=calendar&task=bookinterview',
+                url: 'index.php?option=com_emundus&controller=calendar&task=bookinterview&format=raw',
                 type: 'POST',
                 dataType: 'json',
                 data: ({
@@ -62,13 +62,14 @@ defined('_JEXEC') or die;
                         $('#btnCal').css('background-color','#96281B');
                         $('#btnCal').text('Error!');
                     }
-                    location.reload(true);
                 },
                 failure: function(jqXHR, textStatus, errorThrown){
                     $('#btnCal').setStyle('background-color','#96281B');
                     $('#btnCal').text('Error!');
                 }
             });
+
+            location.reload(true);
 
         }
     </script>

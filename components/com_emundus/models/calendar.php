@@ -140,6 +140,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $values[] = $db->quote(" ");            // zip
         $values[] = $db->quote(" ");            // street
         $values[] = $db->quote(" ");            // number
+        $values[] = $db->quote(date("Y-m-d H:i:s"));
 
         
         try {
@@ -157,17 +158,30 @@ class EmundusModelCalendar extends JModelLegacy {
 
     public function google_add_event($google_api_service, $event) {
 
-        // extract claendar ID from $event->params using JSON parsing.
-        $dpcalendar_event_params = json_decode($event->params);
-        $google_calendar_id = $dpcalendar_event_param->googleId;
+        $db = JFactory::getDbo();
+        // Get google calendar id by getting the params from the calendar the event is attached to.
+        try {
+
+            $db->setQuery("SELECT params FROM #__categories WHERE id = ".$event->catid);
+            $dpcalendar_params = $db->loadResult();
+
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+
+
+        $dpcalendar_params = json_decode($dpcalendar_params);
+        $google_calendar_id = $dpcalendar_params->googleId;
+        
 
         // Convert event date to format for google calendar
         $start_dt   = new DateTime($event->start_date);
-        $start_date = $start_dt->format('Y M j');
-        $start_time = $start_dt->format('g:i A');
+        $start_date = $start_dt->format('Y-m-d');
+        $start_time = $start_dt->format('H:i:s');
         $end_dt     = new DateTime($event->end_date);
-        $end_date   = $end_dt->format('Y M j');
-        $end_time   = $end_dt->format('g:i A');
+        $end_date   = $end_dt->format('Y-m-d');
+        $end_time   = $end_dt->format('H:i:s');
+        
 
         // Build event object for Google.
         $event = new Google_Service_Calendar_Event([
@@ -188,6 +202,47 @@ class EmundusModelCalendar extends JModelLegacy {
         if (isset($result))
             return true;
         else return false;
+
+    }
+
+    public function dpcalendar_delete_interview($event_id) {
+
+        $db = JFactory::getDbo();
+
+        // TODO: Find out what ticket state does exactly.
+        try {
+            
+            // Here we are going to update the ticket to show it is no longer valid.
+            $db->setQuery("UPDATE #__dpcalendar_tickets SET state = 1 WHERE event_id = ". $event_id);
+            $db->execute();
+        
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+
+        // Get event
+        try {
+            
+            $db->setQuery("SELECT title FROM #__dpcalendar_events WHERE id = ".$event_id);
+            $title = $db->loadResult();
+
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+
+        $title = str_replace("(BOOKED) ", "", $title);
+
+        try {
+
+            $query = "UPDATE #__dpcalendar_events ";
+            $query .= "SET title = ".$db->Quote($event->title).", color = ".$db->Quote("").", description = ".$db->Quote("").", booking_information = ".$db->Quote("").", capacity_used = ".$db->Quote("0");
+            $query .= "WHERE  id = ".$event_id;
+
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+
+        return true;
 
     }
 

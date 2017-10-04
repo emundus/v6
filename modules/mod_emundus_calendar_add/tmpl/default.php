@@ -83,7 +83,7 @@ defined('_JEXEC') or die;
             var calColor    = $$("#em-calendar-color").get('value');
 
             var ajax = new Request({
-                url: 'index.php?option=com_emundus&controller=calendar&task=createcalendar',
+                url: 'index.php?option=com_emundus&controller=calendar&task=createcalendar&format=raw',
                 method: 'post',
                 data: {
                     calTitle: calTitle,
