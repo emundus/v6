@@ -12,20 +12,27 @@ $session = JFactory::getSession();
 $user = $session->get('emundusUser');
 $helper = new modEmundusBookInterviewHelper;
 
-// First we need to check if the user has booked.
-// If the user has not, we will display a button that opens a modal allowing them to book an event (and so we need to get the event info).
-// If the user has we will display the date of their interview.
-$user_booked = $helper->hasUserbooked($user->id);
+if (isset($user->fnum)) {
 
-if ($user_booked) {
+    // First we need to check if the user has booked.
+    // If the user has not, we will display a button that opens a modal allowing them to book an event (and so we need to get the event info).
+    // If the user has we will display the date of their interview.
+    $user_booked = $helper->hasUserbooked($user->id);
 
-    $next_interview = $helper->getNextInterview($user);
-    require(JModuleHelper::getLayoutPath('mod_emundus_book_interview','showInterview'));    
+    if ($user_booked) {
 
-} else {
+        $next_interview = $helper->getNextInterview($user);
+        $interview_dt   = new DateTime($next_interview);
+        $interview_date = $interview_dt->format('M j Y');
+        $interview_time = $interview_dt->format('g:i A');
+        require(JModuleHelper::getLayoutPath('mod_emundus_book_interview','showInterview'));    
 
-    $available_events = $helper->getEvents($user);
-    require(JModuleHelper::getLayoutPath('mod_emundus_book_interview','default'));    
+    } else {
+
+        $available_events = $helper->getEvents($user);
+        require(JModuleHelper::getLayoutPath('mod_emundus_book_interview','default'));    
+
+    }
 
 }
     

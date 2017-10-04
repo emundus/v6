@@ -89,7 +89,9 @@ class EmundusModelCalendar extends JModelLegacy {
     public function dpcalendar_confirm_interview($event_id, $user_id, $fnum) {
 
         $db = Jfactory::getDbo();
+        $user = JFactory::getUser($user_id);
 
+        // Get event
         try {
             
             $db->setQuery("SELECT * FROM #__dpcalendar_events WHERE id = ".$event_id);
@@ -102,16 +104,47 @@ class EmundusModelCalendar extends JModelLegacy {
         $event->title = "(BOOKED) ".$event->title;
         $event->color = "000000";
         $event->description = $this->getSynthesis($fnum);
-        $event->booking_information = $user_id;
-        $event->metakey = "1";
+        $event->booking_information = $user->id;
+        $event->capacity = "1";
+        $event->capacity_used = "1";
  
+        // Update dpcalendar event object.
         try {
             
             $query = "UPDATE #__dpcalendar_events ";
-            $query .= "SET title = ".$db->quote($event->title).", color = ".$db->quote($event->color).", description = ".$db->quote($event->description).", booking_information = ".$db->quote($event->booking_information).", metakey = ".$db->quote($event->metakey);
+            $query .= "SET title = ".$db->quote($event->title).", color = ".$db->quote($event->color).", description = ".$db->quote($event->description).", booking_information = ".$db->quote($event->booking_information).", capacity = ".$db->quote($event->capacity).", capacity_used = ".$db->quote($event->capacity_used);
             $query .= " WHERE id = ".$event_id;
 
             $db->setQuery($query);
+            $db->execute();
+
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+
+        // Add a new ticket. 
+        // TODO: Find out if booking_id set to 0 breaks everything
+        // TODO: Find out what uid does.
+        // TODO: Get user address?
+
+        $values = array();
+        $values[] = $db->quote("0");            // booking_id
+        $values[] = $db->quote($event->id);     // event_id
+        $values[] = $db->quote($user->id);      // user_id
+        $values[] = $db->quote("0");            // uid
+        $values[] = $db->quote($user->email);   // email
+        $values[] = $db->quote($user->name);    // name
+        $values[] = $db->quote(" ");            // country
+        $values[] = $db->quote(" ");            // province
+        $values[] = $db->quote(" ");            // city
+        $values[] = $db->quote(" ");            // zip
+        $values[] = $db->quote(" ");            // street
+        $values[] = $db->quote(" ");            // number
+
+        
+        try {
+
+            $db->setQuery("INSERT INTO #__dpcalendar_tickets (booking_id, event_id, user_id, uid, email, name, country, province, city, zip, street, number, created) VALUES (".implode(",",$values).")");
             $db->execute();
 
         } catch (Exception $e) {

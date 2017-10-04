@@ -21,7 +21,7 @@ defined('_JEXEC') or die;
                         <div class="form-group">
                             <label for="em-calendar-title"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_SELECT"); ?></label>
                             <select class="form-control" name="em-book-interview" id="em-book-interview" aria-describedby="bookHelp">
-                                <option value=""><?php echo JText::_("MOD_EM_CALENDAR_PICK_A_DATE"); ?></option>
+                                <option value=""><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_PICK_A_DATE"); ?></option>
                                 <?php foreach($available_events as $event) :?>
                                     <option value="<?php echo $event->id ?>"><?php echo $event->title." <strong>".$event->start_date."</strong> ".$event->description ?></option>
                                 <?php endforeach; ?>
@@ -57,11 +57,12 @@ defined('_JEXEC') or die;
                 success: function(result){
                     if (result.status) {
                         $('#btnCal').css('background-color','#26A65B');
-                        $('#btnCal').text('Calendar added!');
+                        $('#btnCal').text('Interview booked!');
                     } else {
                         $('#btnCal').css('background-color','#96281B');
                         $('#btnCal').text('Error!');
                     }
+                    location.reload(true);
                 },
                 failure: function(jqXHR, textStatus, errorThrown){
                     $('#btnCal').setStyle('background-color','#96281B');

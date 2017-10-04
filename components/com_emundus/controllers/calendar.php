@@ -29,11 +29,13 @@ class EmundusControllerCalendar extends JControllerLegacy {
 
         $m_calendar = new EmundusModelCalendar();
         $eMConfig = JComponentHelper::getParams('com_emundus');
+
+        $jinput = JFactory::getApplication()->input;
         
         // Calendar information is obtained via the post data
-        $calendar_title     = $_POST["calTitle"];
-        $calendar_program   = $_POST["calProgram"];
-        $calendar_color     = $_POST["calColor"];
+        $calendar_title     = $jinput->get("calTitle", null, "string");
+        $calendar_program   = $jinput->get("calProgram", null, "string");
+        $calendar_color     = $jinput->get("color", null, "string");
         $calendar_alias     = str_replace(' ', '-', $calendar_title);
 
         // Google API info is obtained via the module params
@@ -57,10 +59,12 @@ class EmundusControllerCalendar extends JControllerLegacy {
 
         $m_calendar = new EmundusModelCalendar();
         $eMConfig = JComponentHelper::getParams('com_emundus');
+
+        $jinput = JFactory::getApplication()->input;
         
-        $event_id   = $_POST["eventId"];
-        $user_id    = $_POST["userId"];
-        $fnum       = $_POST["fnum"];
+        $event_id   = $jinput->get("eventId", null, "string");
+        $user_id    = $jinput->get("userId", null, "string");
+        $fnum       = $jinput->get("fnum", null, "string");
 
         $google_client_id       = $eMConfig->get('clientId');
         $google_secret_key      = $eMConfig->get('clientSecret');
