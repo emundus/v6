@@ -9,9 +9,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Pdf;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
-require_once COM_FABRIK_FRONTEND . '/helpers/pdf.php';
 
 /**
  * Send email upon form submission
@@ -169,7 +170,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		// $$$ hugh - test stripslashes(), should be safe enough.
 		$message = stripslashes($message);
 
-		FabrikPDFHelper::fullPaths($message);
+		Pdf::fullPaths($message);
 
 
 		// $$$ rob if email_to is not a valid email address check the raw value to see if that is
@@ -440,7 +441,12 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		$document->setType('pdf');
 		$input = $this->app->input;
 
-		$orig['details'] = $input->get('view');
+		/*
+		 *  * unset the template, to make sure view display picks up the PDF one
+		 */
+		$model->tmpl = null;
+
+		$orig['view'] = $input->get('view');
 		$orig['format'] = $input->get('format');
 
 		$input->set('view', 'details');
@@ -456,30 +462,15 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		try
 		{
 			// Require files and set up DOM pdf
-			require_once JPATH_SITE . '/components/com_fabrik/helpers/pdf.php';
+			//require_once JPATH_SITE . '/components/com_fabrik/helpers/pdf.php';
 			require_once JPATH_SITE . '/components/com_fabrik/controllers/details.php';
 
 			// if DOMPDF isn't installed, this will throw an exception which we should catch
-			$domPdf = FabrikPDFHelper::iniDomPdf(true);
-
-			$model->getFormCss();
-
-			foreach ($document->_styleSheets as $url => $ss)
-			{
-				if (!strstr($url, COM_FABRIK_LIVESITE))
-				{
-					$url = COM_FABRIK_LIVESITE . $url;
-				}
-
-				$url = htmlspecialchars_decode($url);
-				$formCss[] = file_get_contents($url);
-			}
-
+			$domPdf = Pdf::iniDomPdf(true);
 
 			$size = strtoupper($params->get('pdf_size', 'A4'));
 			$orientation = $params->get('pdf_orientation', 'portrait');
 			$domPdf->set_paper($size, $orientation);
-
 
 			$controller = new FabrikControllerDetails;
 			/**
@@ -496,11 +487,28 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 			 */
 			$model->data = null;
 			$controller->_model->data = $model->getData();
-
+			$controller->_model->tmpl = null;
 			/*
 			 * Allows us to bypass "view records" ACL settings for creating the details view
 			 */
 			$model->getListModel()->setLocalPdf();
+
+			/*
+			 * get the CSS in a kinda hacky way
+			 * (moved to after setting up the model and controller, so things like tmpl have been reset)
+			 */
+			$model->getFormCss();
+
+			foreach ($document->_styleSheets as $url => $ss)
+			{
+				if (!strstr($url, COM_FABRIK_LIVESITE))
+				{
+					$url = COM_FABRIK_LIVESITE . $url;
+				}
+
+				$url = htmlspecialchars_decode($url);
+				$formCss[] = file_get_contents($url);
+			}
 
 			// Store in output buffer
 			ob_start();

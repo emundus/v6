@@ -36,6 +36,26 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             if (this.getConfirmationField().get('value') === '') {
                 this.getConfirmationField().value = this.element.value;
             }
+
+            Fabrik.addEvent('fabrik.form.doelementfx', function(form, method, id, groupfx) {
+                if (form === this.form && id === this.strElement)
+                {
+                    switch (method) {
+                        case 'disable':
+                            jQuery(this.getConfirmationField()).prop('disabled', true);
+                            break;
+                        case 'enable':
+                            jQuery(this.getConfirmationField()).prop('disabled', false);
+                            break;
+                        case 'readonly':
+                            jQuery(this.getConfirmationField()).prop('readonly', true);
+                            break;
+                        case 'notreadonly':
+                            jQuery(this.getConfirmationField()).prop('readonly', false);
+                            break;
+                    }
+                }
+            }.bind(this));
         },
 
         callvalidation: function (e) {

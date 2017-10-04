@@ -483,11 +483,12 @@ class FabrikFEModelCSVExport extends FabModel
 
 							if (count($json) == 1)
 							{
-								$default = $json['Total']->value;
+								$default = $defaultRaw = $json['Total']->value;
 							}
 							else
 							{
-								$default = json_encode($json);
+								$default = strip_tags($calcs[$calKey][$aKey]);
+								$defaultRaw = json_encode($json);
 							}
 						}
 
@@ -524,7 +525,7 @@ class FabrikFEModelCSVExport extends FabModel
 
 							if ($incRaw)
 							{
-								$calculations[$calKey][$x + 1] = $default;
+								$calculations[$calKey][$x + 1] = $defaultRaw;
 							}
 						}
 					}
@@ -582,7 +583,9 @@ class FabrikFEModelCSVExport extends FabModel
 
 		if (function_exists('iconv'))
 		{
-			return iconv('UTF-8', $csvEncoding, $n);
+			$res = iconv('UTF-8', $csvEncoding, $n);
+			//$$$ trob: if iconv returns false try mb_convert instead of returning an empty field
+			if ($res !== false) return $res;
 		}
 		return mb_convert_encoding($n, $csvEncoding, 'UTF-8');
 	}

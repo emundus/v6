@@ -41,7 +41,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                             bar = jQuery('#' + file.id).find('.bar')[0];
                         self.uploader.trigger('UploadProgress', file);
                         self.uploader.trigger('FileUploaded', file, {
-                            response: JSON.encode(response)
+                            response: JSON.stringify(response)
                         });
 
                         jQuery(bar).replaceWith(newBar);
@@ -234,10 +234,28 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
         },
 
         decloned: function (groupid) {
-            var i = jQuery('#form_' + this.form.id).find('input[name=fabrik_deletedimages[' + groupid + ']');
+            var i = jQuery('#form_' + this.form.id).find('input[name=fabrik_deletedimages[' + groupid + ']]');
             if (i.length > 0) {
                 this.makeDeletedImageField(groupid, this.options.value).inject(this.form.form);
             }
+        },
+
+        decreaseName: function (delIndex) {
+            var f = this.getOrigField();
+            if (typeOf(f) !== 'null') {
+                f.name = this._decreaseName(f.name, delIndex);
+                f.id = this._decreaseId(f.id, delIndex);
+            }
+            return this.parent(delIndex);
+        },
+
+        getOrigField: function () {
+            var p = this.element.getParent('.fabrikElement');
+            var f = p.getElement('input[name^=' + this.origId + '_orig]');
+            if (typeOf(f) === 'null') {
+                f = p.getElement('input[id^=' + this.origId + '_orig]');
+            }
+            return f;
         },
 
         /**
@@ -508,7 +526,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     'type' : 'hidden',
                     name   : name + '[crop][' + response.filepath + ']',
                     'id'   : 'coords_' + file.id,
-                    'value': JSON.encode(file.params)
+                    'value': JSON.stringify(file.params)
                 }).insertAfter(self.pluploadContainer);
 
 
@@ -761,7 +779,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                         // Avoid circular reference in chrome when saving in ajax form
                         var i = image.img;
                         delete (image.img);
-                        f.val(JSON.encode(image));
+                        f.val(JSON.stringify(image));
                         image.img = i;
                     }
                 });

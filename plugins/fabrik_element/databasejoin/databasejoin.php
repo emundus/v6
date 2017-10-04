@@ -1275,6 +1275,9 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 		$id      = $this->getHTMLId($repeatCounter);
 		$html    = array();
 
+        $layout                        = $this->getLayout('form-final');
+        $displayData                   = new stdClass;
+
 		if (!$formModel->isEditable() || !$this->isEditable())
 		{
 			// Read only element formatting...
@@ -1338,7 +1341,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 				return '';
 			}
 
-			$targetIds = $targetIds === false ? $default : $targetIds;
+			$targetIds = FArrayHelper::emptyIsh($targetIds, true) ? $default : $targetIds;
 
 			// $$$ hugh - trying to fix issue with read only multiselects submitting wrong values
 			$formModel->tmplData[$id . '_raw'] = $targetIds;
@@ -1363,7 +1366,8 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 
 			$this->addReadOnlyLinks($defaultLabels, $targetIds);
 
-			$html[] = count($defaultLabels) < 2 ? implode(' ', $defaultLabels) : '<ul><li>' . implode('<li>', $defaultLabels) . '</li></ul>';
+			$displayData->control = count($defaultLabels) < 2 ? implode(' ', $defaultLabels) : '<ul><li>' . implode('<li>', $defaultLabels) . '</li></ul>';
+            $displayData->frontEndSelect = '';
 		}
 		else
 		{
@@ -1391,18 +1395,21 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 						break;
 				}
 
-				$html[] = $this->renderFrontEndSelect($data, $repeatCounter);
+				$displayData->control = implode("\n", $html);
+                $displayData->frontEndSelect = $this->renderFrontEndSelect($data, $repeatCounter);
 			}
 			elseif ($this->canView())
 			{
 				$oData = ArrayHelper::toObject($data);
-				$html[] = $this->renderListData($default, $oData);
+				$displayData->control = $this->renderListData($default, $oData);
+				$displayData->frontEndSelect = '';
 			}
 		}
 
-		$html[] = $this->renderDescription($tmp, $default);
+		$displayData->description = $this->renderDescription($tmp, $default);
 
-		return implode("\n", $html);
+        return $layout->render($displayData);
+		//return implode("\n", $html);
 	}
 
 	/**
@@ -1718,7 +1725,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 		$targetIds  = $this->multiOptionTargetIds($data, $repeatCounter);
 		$class      = 'fabrikinput inputbox ' . $params->get('bootstrap_class', '');
 
-		if ($targetIds !== false)
+		if (!FArrayHelper::emptyIsh($targetIds, true))
 		{
 			$default = $targetIds;
 		}
@@ -1726,9 +1733,15 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 		if ($this->isEditable())
 		{
 			$multiSize     = (int) $params->get('dbjoin_multilist_size', 6);
+			$multiMax      = $params->get('dbjoin_multiselect_max', '0');
 			$advancedClass = $this->getAdvancedSelectClass();
 			$attributes    = 'class="' . $class . ' ' . $advancedClass . '" size="' . $multiSize . '" multiple="true"';
-			//$attributes    .= ' data-chosen-options=\'{"max_selected_options":3}\'';
+
+			if (!empty($advancedClass) && (int)$multiMax > 0)
+			{
+				$attributes .= ' data-chosen-options=\'{"max_selected_options":' . $multiMax . '}\'';
+			}
+
 			$html[]        = JHTML::_('select.genericlist', $tmp, $elName, $attributes, 'value', 'text', $default, $id);
 		}
 		else
@@ -1766,7 +1779,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 			// If its a new record we don't want to look up defaults in the look up table as they will not exist
 			$targetIds = $this->multiOptionTargetIds($data, $repeatCounter);
 
-			if ($targetIds !== false)
+			if (!FArrayHelper::emptyIsh($targetIds, true))
 			{
 				$default = $targetIds;
 			}
@@ -2708,6 +2721,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 		$join      = $this->getJoinModel()->getJoin();
 		$joinTable = $db->qn($join->table_join);
 		$shortName = $db->qn($this->getElement()->name);
+		$tableAlias = $join->table_join;
 
 		if (is_null($groupBy))
 		{
@@ -2726,12 +2740,13 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 			$jKey  = $this->getLabelOrConcatVal();
 			$jKey  = !strstr($jKey, 'CONCAT') ? $label : $jKey;
 			$label = str_replace($join->table_join, $to, $jKey);
+			$tableAlias = $to;
 		}
 
 		$query->select($joinTable . '.parent_id, ' . $v . ' AS value, ' . $label . ' AS text')->from($joinTable)
 			->join('LEFT', $to . ' ON ' . $key . ' = ' . $joinTable . '.' . $shortName);
 
-		$this->buildQueryWhere(array(), true, null, array('mode' => 'filter'), $query);
+		$this->buildQueryWhere(array(), true, $tableAlias, array('mode' => 'filter'), $query);
 
 		if (!is_null($condition) && !is_null($value))
 		{
@@ -2894,8 +2909,12 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 
 		if ($this->getParams()->get('database_join_display_type', 'dropdown') == 'auto-complete')
 		{
-			$autoOpts                            = array();
-			$autoOpts['max']                     = $this->getParams()->get('autocomplete_rows', '10');
+            $usersConfig           = JComponentHelper::getParams('com_fabrik');
+            $autoOpts                            = array();
+			$autoOpts['max']                     = $this->getParams()->get(
+			    'dbjoin_autocomplete_rows',
+                $usersConfig->get('autocomplete_max_rows', '10')
+            );
 			$autoOpts['storeMatchedResultsOnly'] = true;
 			FabrikHelperHTML::autoComplete($id, $this->getElement()->get('id'), $this->getFormModel()->getId(), 'databasejoin', $autoOpts);
 		}
@@ -3897,7 +3916,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 					$idName .= '.' . $repeatCounter;
 				}
 
-				$default = (array) FArrayHelper::getNestedValue($data, $idName, 'not found');
+				$default = (array) FArrayHelper::getNestedValue($data, $idName, '');
 
 				return $default;
 			}

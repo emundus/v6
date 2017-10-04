@@ -1,6 +1,6 @@
 <?php
 /**
- * Bootstrap Tabs Form Template - actions
+ * Bootstrap Details Template
  *
  * @package     Joomla
  * @subpackage  Fabrik
@@ -16,25 +16,14 @@ $form = $this->form;
 if ($this->hasActions) : ?>
 <div class="fabrikActions form-actions">
 	<div class="row-fluid">
-		<div class="span4 btn-group">
-			<?php
-			echo $form->submitButton. ' ';
-			echo $form->applyButton . ' ';
-			echo $form->copyButton;
-			?>
-		</div>
-		<?php if ($form->gobackButton . $form->resetButton . $form->deleteButton !== '') : ?>
-		<div class="span4"><!-- No Page buttons --></div>
-		<div class="span4">
-			<div class="pull-right btn-group">
-				<?php
-				echo $form->gobackButton . ' ' . $this->message;
-				echo $form->resetButton . ' ';
-				echo $form->deleteButton;
+		<div class="<?php echo FabrikHelperHTML::getGridSpan('12'); ?>">
+			<div class="btn-group">
+				<?php echo $form->prevButton . ' ' . $form->nextButton;
+				echo $form->gobackButton  . ' ' . $this->message;
 				?>
 			</div>
 		</div>
-		<?php endif; ?>
 	</div>
 </div>
-<?php endif;
+<?php
+endif;

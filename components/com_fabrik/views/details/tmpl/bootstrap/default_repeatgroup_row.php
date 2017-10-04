@@ -1,6 +1,6 @@
 <?php
 /**
- * Default Form: Repeat group rendered as a table, <tr> template
+ * Bootstrap Details: Repeat group rendered as a table, <tr> template
  *
  * @package     Joomla
  * @subpackage  Fabrik
@@ -16,8 +16,9 @@ $group = $this->group;
 ?>
 <tr class="fabrikSubGroupElements fabrikSubGroup">
 <?php foreach ($this->elements as $element) :
+	$style = $element->hidden ? 'style="display:none"' : '';
 	?>
-	<td class="<?php echo $element->containerClass; ?>">
+	<td class="<?php echo $element->containerClass; ?>" <?php echo $style; ?>>
 	<?php
 	if ($this->tipLocation == 'above') :
 	?>
@@ -42,12 +43,11 @@ $group = $this->group;
 	<?php
 	endforeach;
  	if ($group->editable) : ?>
-		<td class="fabrikGroupRepeater">
-			<div class="pull-right">
-			<?php if ($group->canAddRepeat) :
-				$add = FabrikHelperHTML::image('plus', 'form', $this->tmpl, array('class' => 'fabrikTip tip-small', 'title' => FText::_('COM_FABRIK_ADD_GROUP')));
-				?>
-				<a class="addGroup" href="#"><?php echo $add?></a>
+		<td class="fabrikGroupRepeater pull-right">
+			<?php if ($group->canAddRepeat) :?>
+			<a class="addGroup" href="#">
+				<?php echo FabrikHelperHTML::image('plus', 'form', $this->tmpl, array('class' => 'fabrikTip tip-small', 'title' => FText::_('COM_FABRIK_ADD_GROUP')));?>
+			</a>
 			<?php
 			endif;
 			if ($group->canDeleteRepeat) :?>
@@ -55,7 +55,6 @@ $group = $this->group;
 				<?php echo FabrikHelperHTML::image('minus', 'form', $this->tmpl, array('class' => 'fabrikTip tip-small', 'title' => FText::_('COM_FABRIK_DELETE_GROUP')));?>
 			</a>
 			<?php endif;?>
-			</div>
 		</td>
 	<?php endif; ?>
 </tr>

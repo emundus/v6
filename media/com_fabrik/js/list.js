@@ -518,6 +518,7 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                                         '&start=' + res.count;
                                 }
                                 else {
+                                    /*
                                     finalurl = Fabrik.liveSite + '/index.php' +
                                         '?option=com_fabrik' +
                                         '&view=list' +
@@ -525,6 +526,10 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                                         '&listid=' + self.id +
                                         '&start=' + res.count +
                                         '&Itemid=' + self.options.Itemid;
+                                        */
+                                    finalurl = self.options.csvOpts.exportLink;
+                                    finalurl += finalurl.contains('?') ? '&' : '?';
+                                    finalurl += 'start=' + res.count;
                                 }
                                 var msg = '<div class="alert alert-success" style="padding:10px;margin-bottom:3px"><h3>' + Joomla.JText._('COM_FABRIK_CSV_COMPLETE');
                                 msg += '</h3><p><a class="btn btn-success" href="' + finalurl + '">' +
@@ -804,12 +809,12 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
 
                 this.getFilters().each(function (x, f) {
                     f = jQuery(f);
-                    e = f.prop('tagName') === 'SELECT' ? 'change' : 'blur';
+                    e = f.prop('tagName') === 'SELECT' || f.prop('type') === 'checkbox' ? 'change' : 'blur';
                     if (self.options.filterMethod !== 'submitform') {
                         f.off(e);
                         f.on(e, function (e) {
                             e.preventDefault();
-                            if (f.data('initialvalue') !== f.val()) {
+                            if (f.prop('type') === 'checkbox' || f.data('initialvalue') !== f.val()) {
                                 self.doFilter();
                             }
                         });
@@ -989,7 +994,7 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                             'url'     : this.form.get('action'),
                             'data'    : data,
                             onComplete: function (json) {
-                                json = JSON.decode(json);
+                                json = JSON.parse(json);
                                 self._updateRows(json);
                                 Fabrik.loader.stop('listform_' + self.options.listRef);
                                 Fabrik['filter_listform_' + self.options.listRef].onUpdateData();
@@ -1049,6 +1054,25 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                     });
                 });
                 return keys;
+            },
+
+            /**
+             * Get the primary keys for all checked rows
+             *
+             * @since   3.7
+             *
+             * @return  array
+             */
+            getCheckedRowIds: function () {
+                var chxs = this.getForm().getElements('input[name^=ids]').filter(function (i) {
+                    return i.checked;
+                });
+
+                var ids = chxs.map(function (chx) {
+                    return chx.get('value');
+                });
+
+                return ids;
             },
 
             /**
@@ -1142,7 +1166,7 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                     'evalScripts': false,
                     onSuccess    : function (json) {
                         json = json.stripScripts();
-                        json = JSON.decode(json);
+                        json = JSON.parse(json);
                         self._updateRows(json);
                         // Fabrik.fireEvent('fabrik.list.update', [this, json]);
                     },
