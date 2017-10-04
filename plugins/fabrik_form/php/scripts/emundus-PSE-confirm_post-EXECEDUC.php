@@ -197,7 +197,7 @@ try
     // get previous selected programmes
     $query = 'SELECT r.campaign_id 
                 FROM `#__emundus_session` as s
-                LEFT JOIN `#__emundus_session_389_repeat` as r ON s.id=r.parent_id
+                LEFT JOIN `#__emundus_session_397_repeat` as r ON s.id=r.parent_id
                 WHERE s.fnum like '.$db->Quote($student->fnum);
     $db->setQuery( $query );
     $campaign_ids = $db->loadColumn();
