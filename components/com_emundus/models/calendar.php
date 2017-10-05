@@ -184,7 +184,7 @@ class EmundusModelCalendar extends JModelLegacy {
         
 
         // Build event object for Google.
-        $event = new Google_Service_Calendar_Event([
+        $google_event = new Google_Service_Calendar_Event([
             'summary'       => $event->title,
             'description'   => $event->description,
             'start' => [
@@ -197,7 +197,16 @@ class EmundusModelCalendar extends JModelLegacy {
             ],
         ]);
 
-        $result = $google_api_service->events->insert($google_calendar_id, $event);
+        $result = $google_api_service->events->insert($google_calendar_id, $google_event);
+
+        try {
+
+            $db->setquery("UPDATE #__dpcalendar_events SET params = ".$db->Quote(json_encode(["googleEventId" => $result->id]))." WHERE id = ".$event->id);
+            $db->execute();
+
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
 
         if (isset($result))
             return true;
@@ -235,14 +244,51 @@ class EmundusModelCalendar extends JModelLegacy {
         try {
 
             $query = "UPDATE #__dpcalendar_events ";
-            $query .= "SET title = ".$db->Quote($event->title).", color = ".$db->Quote("").", description = ".$db->Quote("").", booking_information = ".$db->Quote("").", capacity_used = ".$db->Quote("0");
-            $query .= "WHERE  id = ".$event_id;
+            $query .= "SET title = ".$db->Quote($title).", color = ".$db->Quote("").", description = ".$db->Quote("").", booking_information = ".$db->Quote("").", capacity_used = ".$db->Quote("0");
+            $query .= " WHERE  id = ".$event_id;
+
+            $db->setQuery($query);
+            $db->execute();
 
         } catch (Exception $e) {
             die($e->getMessage());
         }
 
         return true;
+
+    }
+
+    public function google_delete_event($event_id, $google_api_service) {
+
+        $db = JFactory::getDbo();
+
+        // First we need to get the calendar ID 
+        try {
+            
+            $db->setQuery("SELECT params FROM #__categories WHERE id = (SELECT catid FROM #__dpcalendar_events WHERE id = ".$event_id.") ");
+            $params = $db->loadResult();
+
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+
+        $dpcalendar_params = json_decode($params);
+        $google_calendar_id = $dpcalendar_params->googleId;
+
+        // then we need the Google event ID from the dpcalndar events table
+        try {
+
+            $db->setquery("SELECT params FROM #__dpcalendar_events WHERE id = ".$event_id);
+            $params = $db->loadResult();
+
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+
+        $event_params = json_decode($params);
+        $google_event_id = $event_params->googleEventId;
+
+        $google_api_service->events->delete($google_calendar_id, $google_event_id);
 
     }
 

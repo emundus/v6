@@ -55,7 +55,7 @@ defined('_JEXEC') or die;
             }
         });
 
-        location.reload(true);
+        //location.reload(true);
 
     }
 

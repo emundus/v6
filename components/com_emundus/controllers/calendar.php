@@ -87,9 +87,14 @@ class EmundusControllerCalendar extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
         $event_id = $jinput->get("eventId", null, "string");
 
-        $result = $m_calendar->dpcalendar_delete_interview($event_id);
+        $m_calendar->dpcalendar_delete_interview($event_id);
 
-        // TODO: Delete Google Agenda event?
+        $service = $m_calendar->google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
+
+        $m_calendar->google_delete_event($event_id, $service);
+
+
+        echo json_encode(['status' => $result]);
 
     }
 
