@@ -90,7 +90,8 @@ $patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[UPLOAD_URL\]/', 
 $app    = JFactory::getApplication();
 $email_from_sys = $app->getCfg('mailfrom');
 
-$subject = $obj[0]->subject;
+// $subject = $obj[0]->subject;
+
 $from = $obj[0]->emailfrom;
 $fromname =$obj[0]->name;
 $from_id = 62;
@@ -127,6 +128,7 @@ foreach ($recipients as $recipient) {
             $link_html .= 'If link does not work, please copy and paste that hyperlink in your browser : <br>'.$link_upload.'</p>';
 
             $replacements = array($student->id, $student->name, $student->email, $link_upload, $fnum_detail['label']);
+            $subject = preg_replace($patterns, $replacements, $obj[0]->subject);
             $body = preg_replace($patterns, $replacements, $obj[0]->message);
 
             $to = array($recipient['email']);
