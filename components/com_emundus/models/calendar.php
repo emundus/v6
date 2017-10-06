@@ -288,6 +288,9 @@ class EmundusModelCalendar extends JModelLegacy {
         $event_params = json_decode($params);
         $google_event_id = $event_params->googleEventId;
 
+        echo '<pre>'; var_dump($google_event_id); echo '</pre>'; die;
+        
+
         $google_api_service->events->delete($google_calendar_id, $google_event_id);
 
     }
