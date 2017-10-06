@@ -83,16 +83,18 @@ class EmundusControllerCalendar extends JControllerLegacy {
     public function cancelinterview() {
 
         $m_calendar = new EmundusModelCalendar();
+        $eMConfig = JComponentHelper::getParams('com_emundus');        
         
         $jinput = JFactory::getApplication()->input;
         $event_id = $jinput->get("eventId", null, "string");
 
-        $m_calendar->dpcalendar_delete_interview($event_id);
+        $google_client_id       = $eMConfig->get('clientId');
+        $google_secret_key      = $eMConfig->get('clientSecret');
+        $google_refresh_token   = $eMConfig->get('refreshToken');
 
         $service = $m_calendar->google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
-
         $m_calendar->google_delete_event($event_id, $service);
-
+        $result = $m_calendar->dpcalendar_delete_interview($event_id);        
 
         echo json_encode(['status' => $result]);
 

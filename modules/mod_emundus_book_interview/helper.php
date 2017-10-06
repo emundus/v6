@@ -24,13 +24,16 @@
         public function getEvents($user) {
             
             $db = JFactory::getDbo();
-
+            $offset = JFactory::getConfig()->get('offset');
+            
+            $now = date("Y-m-d H:i:s");
+            
             try {
                 
                 $query = "SELECT id, title, start_date, description 
                 FROM #__dpcalendar_events 
                 WHERE metakey IS NULL
-                AND start_date >= NOW()
+                AND start_date >= ".$db->Quote($now)."
                 AND catid IN (
                     SELECT GROUP_CONCAT(id) 
                     FROM jos_categories 
@@ -40,11 +43,22 @@
                 )";                
 
                 $db->setQuery($query);
-                return $db->loadObjectList();
+                $events = $db->loadObjectList();
 
             } catch (Exception $e) {
                 die($e->getMessage());
             }
+
+
+            foreach($events as $event) {
+
+                $interview_dt = new DateTime($event->start_date, new DateTimeZone('GMT'));
+                $interview_dt->setTimezone(new DateTimeZone($offset));
+                $event->start_date = $interview_dt->format("Y-m-d H:i:s");
+
+            }
+
+            return $events;
 
         }
 

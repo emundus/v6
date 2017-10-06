@@ -54,10 +54,9 @@ defined('_JEXEC') or die;
                     userId: userId,
                     fnum: fnum,
                 }),
-                success: function(result){
+                success: function(result) {
                     if (result.status) {
-                        $('#btnCal').css('background-color','#26A65B');
-                        $('#btnCal').text('Interview booked!');
+                        location.reload(true);                        
                     } else {
                         $('#btnCal').css('background-color','#96281B');
                         $('#btnCal').text('Error!');
@@ -68,8 +67,5 @@ defined('_JEXEC') or die;
                     $('#btnCal').text('Error!');
                 }
             });
-
-            //location.reload(true);
-
         }
     </script>

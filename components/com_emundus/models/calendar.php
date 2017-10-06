@@ -175,10 +175,15 @@ class EmundusModelCalendar extends JModelLegacy {
         
 
         // Convert event date to format for google calendar
-        $start_dt   = new DateTime($event->start_date);
+        $offset     = JFactory::getConfig()->get('offset');
+        
+        $start_dt   = new DateTime($event->start_date, new DateTimeZone('GMT'));
+        $start_dt->setTimezone(new DateTimeZone($offset));
         $start_date = $start_dt->format('Y-m-d');
         $start_time = $start_dt->format('H:i:s');
-        $end_dt     = new DateTime($event->end_date);
+        
+        $end_dt     = new DateTime($event->end_date, new DateTimeZone('GMT'));
+        $end_dt->setTimezone(new DateTimeZone($offset));
         $end_date   = $end_dt->format('Y-m-d');
         $end_time   = $end_dt->format('H:i:s');
         
@@ -188,11 +193,11 @@ class EmundusModelCalendar extends JModelLegacy {
             'summary'       => $event->title,
             'description'   => $event->description,
             'start' => [
-                'dateTime'  => $start_date.'T'.$start_time.'+02:00',
+                'dateTime'  => $start_date.'T'.$start_time,
                 'timeZone'  => 'Europe/Paris',
             ],
             'end' => [
-                'dateTime'  => $end_date.'T'.$end_time.'+02:00',
+                'dateTime'  => $end_date.'T'.$end_time,
                 'timeZone'  => 'Europe/Paris',
             ],
         ]);
@@ -265,7 +270,7 @@ class EmundusModelCalendar extends JModelLegacy {
         // First we need to get the calendar ID 
         try {
             
-            $db->setQuery("SELECT params FROM #__categories WHERE id = (SELECT catid FROM #__dpcalendar_events WHERE id = ".$event_id.") ");
+            $db->setQuery("SELECT params FROM #__categories WHERE id = (SELECT catid FROM #__dpcalendar_events WHERE id = ".$event_id.")");
             $params = $db->loadResult();
 
         } catch (Exception $e) {
@@ -287,9 +292,6 @@ class EmundusModelCalendar extends JModelLegacy {
 
         $event_params = json_decode($params);
         $google_event_id = $event_params->googleEventId;
-
-        echo '<pre>'; var_dump($google_event_id); echo '</pre>'; die;
-        
 
         $google_api_service->events->delete($google_calendar_id, $google_event_id);
 
