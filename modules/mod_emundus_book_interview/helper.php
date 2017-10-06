@@ -40,7 +40,7 @@
                     WHERE extension LIKE \"com_dpcalendar\"
                     AND params LIKE '%\"program\":\"".$user->code."\"%'
                     GROUP BY id
-                )";                
+                )";
 
                 $db->setQuery($query);
                 $events = $db->loadObjectList();

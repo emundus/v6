@@ -297,6 +297,189 @@ class EmundusModelCalendar extends JModelLegacy {
 
     }
 
+    public function email_event_booked($event_id) {
+
+        $mailer = JFactory::getMailer();
+        $config = JFactory::getConfig();
+        $user   = JFactory::getSession()->get('emundusUser');
+        $db     = JFactory::getDbo();
+        
+        $m_emails = new EmundusModelEmails;
+
+        try {
+            
+            $db->setQuery("SELECT * FROM #__dpcalendar_events WHERE id = ".$event_id);
+            $event = $db->loadObject();
+
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+
+        try {
+
+            $db->setQuery("SELECT params FROM #__categories WHERE id = ".$event->catid);
+            $params = $db->loadResult();
+
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+
+        $params = json_decode($params);
+
+        // Set event time to the correct timezone.
+        $offset     = $config->get('offset');
+        $event_dt   = new DateTime($event->start_date, new DateTimeZone('GMT'));
+        $event_dt->setTimezone(new DateTimeZone($offset));
+        $event_date = $event_dt->format('M j Y');
+        $event_time = $event_dt->format('g:i A');
+
+        // The first thing to do is that we need to send a mail to the user that just decided to book the event.
+        
+        // The post variable allows us to insert data that will be transformed by the tags.
+        // In this case we want the dates and times as well as programmes, the fnum is there possibly temporarly as we do not know whether is it used yet.
+        $post = array(
+            'FNUM'          => $user->fnum,
+            'EVENT_DATE'    => $event_date,
+            'EVENT_TIME'    => $event_time,
+            'USER_NAME'     => $user->name,
+            'PROGRAM'       => $params->program
+        );
+
+        // An array containing the tag names is created.
+        $tags = $m_emails->setTags($user->id, $post);
+        
+        // TODO: Why is this ID hardcoded?
+        $from_id = 62;
+
+        $email = $m_emails->getEmail('booking_created_user');
+
+        // Tags are replaced with their corresponding values using the PHP preg_replace function.        
+        $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
+        $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+        $body = $m_emails->setTagsFabrik($body, array($user->fnum));
+
+        $sender = array( 
+            $config->get('mailfrom'),
+            $config->get('fromname') 
+        );
+
+        // Configure email sender
+        $mailer->setSender($sender);
+        $mailer->addReplyTo($config->get('mailfrom'), $config->get('fromname'));
+        $mailer->addRecipient($user->email);
+        $mailer->setSubject($subject);
+        $mailer->isHTML(true);
+        $mailer->Encoding = 'base64';
+        $mailer->setBody($body);
+
+        // Send and log the email.
+        $send = $mailer->Send();
+        if ( $send !== true ) {
+            echo 'Error sending email: ' . $send->__toString();
+            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+        } else {
+            $message = array(
+                'user_id_from' => $from_id,
+                'user_id_to' => $user->id,
+                'subject' => $subject,
+                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user->email.'</i><br>'.$body
+            );
+            $m_emails->logEmail($message);
+            JLog::add($user->email.' '.$body, JLog::INFO, 'com_emundus');
+        }
+
+        // Part two is sending the email to the coordinators.
+        // We are using the program name to get the associated group and then getting all users inside of that group.
+        $recipients = $this->getProgramRecipients($params->program);
+
+        foreach ($recipients as $recipient) {
+
+            $post = array(
+                'FNUM'          => $recipient->fnum,
+                'EVENT_DATE'    => $event_date,
+                'EVENT_TIME'    => $event_time,
+                'USER_NAME'     => $user->name,
+                'RECIPIENT_NAME'=> $recipient->name,
+                'PROGRAM'       => $params->program
+            );
+    
+            // An array containing the tag names is created.
+            $tags = $m_emails->setTags($recipient->id, $post);
+
+            // TODO: Add this template to the DB.
+            $email = $m_emails->getEmail('booking_created_recipient');
+    
+            // Tags are replaced with their corresponding values using the PHP preg_replace function.        
+            $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
+            $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+            $body = $m_emails->setTagsFabrik($body, array($recipient->fnum));
+    
+            $sender = array( 
+                $config->get('mailfrom'),
+                $config->get('fromname') 
+            );
+    
+            // Configure email sender
+            $mailer->setSender($sender);
+            $mailer->addReplyTo($config->get('mailfrom'), $config->get('fromname'));
+            $mailer->addRecipient($recipient->email);
+            $mailer->setSubject($subject);
+            $mailer->isHTML(true);
+            $mailer->Encoding = 'base64';
+            $mailer->setBody($body);
+    
+            // Send and log the email.
+            $send = $mailer->Send();
+            if ( $send !== true ) {
+                echo 'Error sending email: ' . $send->__toString();
+                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+            } else {
+                $message = array(
+                    'user_id_from' => $from_id,
+                    'user_id_to' => $recipient->id,
+                    'subject' => $subject,
+                    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$recipient->email.'</i><br>'.$body
+                );
+                $m_emails->logEmail($message);
+                JLog::add($recipient->email.' '.$body, JLog::INFO, 'com_emundus');
+            }
+
+        }
+    
+    }
+
+    // Helper function, gets all users that are coordinators to a program.
+    function getProgramRecipients($program_name) {
+
+        $db = JFactory::getDbo();
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $profilesToNotify = $eMCofig->get('mailRecipients');
+
+        try {
+
+            $query = "SELECT user_id FROM #__emundus_groups WHERE group_id IN ( ";
+            $query .= "SELECT DISTINCT(g.id) FROM #__emundus_setup_groups AS g ";
+            $query .= "LEFT JOIN #__emundus_setup_groups_repeat_course AS gr ON gr.parent_id = g.id WHERE gr.course = ".$db->Quote($program_name).")";
+
+            $db->setQuery($query);
+            $program_user_ids = $db->loadColumn();
+
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+
+        try {
+
+            $db->setQuery("SELECT * FROM #__users AS u LEFT JOIN #__emundus_users AS eu ON eu.user_id = u.id WHERE eu.profile IN ".$profilesToNotify);
+            return $db->loadObjectList();
+
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+
+
+    }
+
     // Helper function, creates a category.
     function createCategory($data) {
         $data['rules'] = array(
@@ -365,171 +548,6 @@ class EmundusModelCalendar extends JModelLegacy {
 
 
     // TODO: See which code below is worth keeping
-
-    
-    function createEvent($calendarID, $title, $description, $startDate, $startTime, $endDate, $endTime,$candidate,$catID) {
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-
-
-        // Get the API client and construct the service object.
-        $client = $this->getClient($eMConfig->get('clientId'),$eMConfig->get('clientSecret'));
-        $client->refreshToken($eMConfig->get('refreshToken'));
-        $service = new Google_Service_Calendar($client);
-
-
-        // https://developers.google.com/google-apps/calendar/v3/reference/events/quickAdd
-        $event = new Google_Service_Calendar_Event(array(
-            'summary' => $title,
-            //'location' => '800 Howard St., San Francisco, CA 94103',
-            'description' => $description,
-            'start' => array(
-                'dateTime' => $startDate.'T'.$startTime.'+02:00',
-                'timeZone' => 'Europe/Paris',
-            ),
-            'end' => array(
-                'dateTime' => $endDate.'T'.$endTime.'+02:00',
-                'timeZone' => 'Europe/Paris',
-            ),
-        ));
-
-
-        $result = $service->events->insert($calendarID, $event);
-
-        $startDated = $result->getStart()->getDateTime();
-        $endDated = $result->getEnd()->getDateTime();
-
-        $eventID = $result->id;
-        $calID = $result->getOrganizer()->email;
-        $this->getGCalEventCreate($eventID,$catID,$candidate,$calID);
-
-        return $result;
-
-    }
-    
-    function updateEvent($calendarID, $eventId, $title, $description, $startDate, $startTime, $endDate, $endTime,$candidate,$catID) {
-        $idCalendar =  $this->getCalIdToChangeEventCal($eventId);
-
-        $titleFinal = str_replace(' ', '.', $title);
-
-        $eMConfig = JComponentHelper::getParams('com_emundus');   
-
-        // Get the API client and construct the service object.
-        $client = $this->getClient($eMConfig->get('clientId'),$eMConfig->get('clientSecret'));
-        $client->refreshToken($eMConfig->get('refreshToken'));
-        $service = new Google_Service_Calendar($client);
-
-        $event = $service->events->get($idCalendar, $eventId);
-        $event->setSummary($titleFinal);
-        $event->setDescription($description);
-
-        $start = new Google_Service_Calendar_EventDateTime();
-        $start->setDateTime($startDate.'T'.$startTime.'+02:00');
-        $event->setStart($start);
-
-        $end = new Google_Service_Calendar_EventDateTime();
-        $end->setDateTime($endDate.'T'.$endTime.'+02:00');
-        $event->setEnd($end);
-        
-        
-        $updatedEvent = $service->events->update($idCalendar, $event->getId(), $event);
-
-        $eventID = $updatedEvent->id;
-        $calID = $updatedEvent->getOrganizer()->email;
-
-        $result = $service->events->move($calID, $eventID, $calendarID);
-
-        $this->getGCalEventUpdate($eventID,$catID,$candidate,$calID);
-    }
-
-    function getCatId($eventId) {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-        $conditions = array(
-            $db->quoteName('id') . ' = ' . $db->quote($eventId)
-        );
-        
-        $query->select($db->quoteName('catid'));
-        $query->from($db->quoteName('#__dpcalendar_events'));
-        $query->where($conditions);
-        
-        $db->setQuery($query);
-        return $db->loadResult();
-    }
-
-    function getCalIdToChangeEventCal($eventId) {
-        $catId = $this->getCatId($eventId);
-
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        
-        $conditions = array(
-            $db->quoteName('id') . ' = ' . $db->quote($catId)
-        );
-        
-        $query->select($db->quoteName('calId'));
-        $query->from($db->quoteName('#__categories'));
-        $query->where($conditions);
-
-        $db->setQuery($query);
-        return $db->loadResult();
-    }
-
-
-
-    function getValidate($calId) {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        
-        $conditions = array(
-            $db->quoteName('id') . ' = ' . $db->quote($calId)
-        );
-        
-        $query->select($db->quoteName('original_id'));
-        $query->from($db->quoteName('#__dpcalendar_events'));
-        $query->where($conditions);
-        
-        $db->setQuery($query);
-        $result = $db->loadResult();
-        return $result;
-    }
-
-    function getUserIdCandidate($eventId) {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        
-        $conditions = array(
-            $db->quoteName('id') . ' = ' . $db->quote($eventId)
-        );
-        
-        $query->select($db->quoteName('uid'));
-        $query->from($db->quoteName('#__dpcalendar_events'));
-        $query->where($conditions);
-        
-        $db->setQuery($query);
-        $result = $db->loadResult();
-        return $result;
-    }
-
-    function getNameCandidate($eventId) {
-        $userid = $this->getUserIdCandidate($eventId);
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        
-        $conditions = array(
-            $db->quoteName('id') . ' = ' . $db->quote($userid)
-        );
-        
-        $query->select($db->quoteName('name'));
-        $query->from($db->quoteName('#__users'));
-        $query->where($conditions);
-        
-        $db->setQuery($query);
-        $result = $db->loadResult();
-        return $result;
-    }
-
-
 
     function getMailCandidate($eventId) {
         $name = $this->getUserIdCandidate($eventId);

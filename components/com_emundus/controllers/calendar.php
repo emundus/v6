@@ -76,7 +76,12 @@ class EmundusControllerCalendar extends JControllerLegacy {
 
         $result = $m_calendar->google_add_event($service, $dpcalendar_event);
 
-        echo json_encode(['status' => $result]);
+        if ($result) {
+            $result = $m_calendar->email_event_booked($event_id);
+            echo json_encode(['status' => $result]);
+        } else {
+            echo json_encode(['status' => false]);
+        }
 
     }
 
