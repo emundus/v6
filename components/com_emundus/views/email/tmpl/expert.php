@@ -1,20 +1,16 @@
 <?php 
 defined('_JEXEC') or die('Restricted access'); 
 
-$document = JFactory::getDocument();
-
-JHTML::_('behavior.modal'); 
-JHTML::_('behavior.tooltip'); 
-JHTML::stylesheet( 'emundus.css', 'media/com_emundus/css/' );
-//JHTML::stylesheet( 'light2.css', 'templates/rt_afterburner/css/' );
-JHTML::stylesheet( 'general.css', 'templates/system/css/' );
-JHTML::stylesheet( 'system.css', 'templates/system/css/' );
-// AJAX upload
-JHTML::script('webtoolkit.aim.js', 'media/com_emundus/js/');
-
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+
+JHTML::_('behavior.modal'); 
+JHTML::_('behavior.tooltip'); 
+
+$document = JFactory::getDocument();
+// AJAX upload
+$document->addScript('media/com_emundus/js/webtoolkit.aim.js');
 
 $current_user = JFactory::getUser();
 if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnums->fnum) ) {
@@ -36,14 +32,13 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 
 	$email = $emails->getEmail($this->default_email_tmpl);
 
+
 	$experts_email = array();
 	foreach ($this->experts_list as $key => $value) { 
 		$experts_email[] = $value['email'];
 	} 
 	?>
-<!--
-<div class="em_email_block_nav"><input type="button" name="'.JText::_('BACK').'" onclick="history.back()" value="<?php echo JText::_( 'BACK' ); ?>" ></div>
-<h1><?php echo JText::_( 'INFORM_EXPERTS' ); ?></h1>-->
+
 	<div id="attachment_list">
 	  <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" enctype="multipart/form-data" />
 	    <?php echo $this->email; ?>
@@ -51,6 +46,7 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 	</div>
 
 	<?php 
+
 	$attachments = $evaluations->getEvaluationDocuments($this->fnums->fnum, $this->fnums->cid, 0); 
 	if ( count($attachments) == 0 ) {
 		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php'); 
@@ -122,9 +118,8 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 	<?php
 	}
 	echo '<hr />'; 
-	/*	<div># of submited forms: <span id="nr">0</span></div>
-		<div>last submit response: <span id="r"></span></div>';*/
-
+	//	<div># of submited forms: <span id="nr">0</span></div>
+	//	<div>last submit response: <span id="r"></span></div>';
 /////////////////////////////////////////
 
 	echo '<ul class="em_attachments_list">';
@@ -192,5 +187,8 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 	mail_from_name.value = "<?php echo $email->name; ?>";
 
 	</script>
-<?php } 
+<?php 
+
+} 
+
 ?>

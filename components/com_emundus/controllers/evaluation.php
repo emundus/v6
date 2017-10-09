@@ -69,31 +69,33 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
     public function setfilters()
     {
-
-        $jinput     = JFactory::getApplication()->input;
+        $jinput = JFactory::getApplication()->input;
         $filterName = $jinput->getString('id', null);
-        $elements   = $jinput->getString('elements', null);
-        $multi      = $jinput->getString('multi', null);
+        $elements = $jinput->getString('elements', null);
+        $multi = $jinput->getString('multi', null);
 
         @EmundusHelperFiles::clearfilter();
 
-        if ($multi == "true")
+        if($multi == "true")
+        {
             $filterval = $jinput->get('val', array(), 'ARRAY');
+        }
         else
+        {
             $filterval = $jinput->getString('val', null);
+        }
 
         $session = JFactory::getSession();
         $params = $session->get('filt_params');
 
-        if ($elements == 'false')
+        if($elements == 'false')
         {
             $params[$filterName] = $filterval;
         }
         else
         {
             $vals = (array)json_decode(stripslashes($filterval));
-
-            if(isset($vals[0]->name))
+            if(count($vals) > 0)
             {
                 foreach ($vals as $val)
                 {
@@ -109,12 +111,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
         }
 
         $session->set('filt_params', $params);
-
-
         $session->set('limitstart', 0);
         echo json_encode((object)(array('status' => true)));
         exit();
-
     }
 
     public function loadfilters()
@@ -428,46 +427,35 @@ class EmundusControllerEvaluation extends JControllerLegacy
         exit;
     }
 
-    public function tagfile()
-    {
-        $jinput = JFactory::getApplication()->input;
-        $fnums = $jinput->getString('fnums', null);
-        $tag = $jinput->getInt('tag', null);
-        $fnums = (array) json_decode(stripslashes($fnums));
-        $model = $this->getModel('Files');
+    /**
+     * Add a tag to an application
+     */
+     public function tagfile()
+     {
+         $jinput = JFactory::getApplication()->input;
+         $fnums = $jinput->getString('fnums', null);
+         $tag = $jinput->getInt('tag', null);
+         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
+         $m_files = $this->getModel('Files');
+ 
+         if ($fnums == "all")
+             $fnums = $m_files->getAllFnums();
 
-        if(is_array($fnums))
-        {
-            $model->tagFile($fnums, $tag);
-            $validFnums = array();
-
-            foreach($fnums as $fnum)
-            {
-                if(EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
-                {
-                    $validFnums[] = $fnum;
-                }
-            }
-            $tagged = $model->getTaggedFile($tag);
-        }
-        else
-        {
-            $fnums = $model->getAllFnums();
-            $validFnums = array();
-
-            foreach($fnums as $fnum)
-            {
-                if(EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum))
-                {
-                    $validFnums[] = $fnum;
-                }
-            }
-            $res = $model->tagFile($validFnums, $tag);
-            $tagged = $model->getTaggedFile($tag);
-        }
-        echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAG_SUCCESS'), 'tagged' => $tagged)));
-        exit;
-    }
+         $validFnums = array();
+ 
+         foreach($fnums as $fnum) {
+             if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum)) {
+                 $validFnums[] = $fnum;
+             }
+         }
+         unset($fnums);
+ 
+         $res = $m_files->tagFile($validFnums, $tag);
+         $tagged = $m_files->getTaggedFile($tag);
+ 
+         echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAG_SUCCESS'), 'tagged' => $tagged)));
+         exit;
+     }
 
     public function share()
     {

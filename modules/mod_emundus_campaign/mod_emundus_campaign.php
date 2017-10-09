@@ -73,7 +73,8 @@ switch ($ordertime) {
 /*case 'out':
         $config = JFactory::getConfig();
         $jdate = JFactory::getDate();
-        $jdate->setOffset($config->getValue('offset'));
+        $timezone = new DateTimeZone( $config->get('offset') );
+        $jdate->setTimezone($timezone);
         $now = $jdate->toSql();
 
     $condition =' AND "'.$now.'" >= ca.end_date and "'.$now.'"<= ca.start_date';

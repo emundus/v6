@@ -35,7 +35,8 @@ class EmundusViewAdmission extends JViewLegacy
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
@@ -90,20 +91,20 @@ class EmundusViewAdmission extends JViewLegacy
 				$params = JComponentHelper::getParams('com_emundus');
 				$evaluators_can_see_other_eval = $params->get('evaluators_can_see_other_eval', 0);
 
-				$admission = $this->getModel('Admission');
+				$m_admission = $this->getModel('Admission');
+				$m_files = new EmundusModelFiles();
 				$userModel = new EmundusModelUsers();
-				$h_files = new EmundusHelperFiles();
 
-                $admission->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
-                //$admission->fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
+                $m_admission->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
+                //$m_admission->fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
                 // get all fnums manually associated to user
 		        $groups = $userModel->getUserGroups($this->_user->id, 'Column');
 				
         		$fnum_assoc_to_groups = $userModel->getApplicationsAssocToGroups($groups);
 		        $fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
-		        $admission->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
-                $this->assignRef('code', $admission->code);
-                $this->assignRef('fnum_assoc', $admission->fnum_assoc);
+		        $m_admission->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
+                $this->assignRef('code', $m_admission->code);
+                $this->assignRef('fnum_assoc', $m_admission->fnum_assoc);
 
 				// reset filter
 				$filters = $h_files->resetFilter();
@@ -113,10 +114,10 @@ class EmundusViewAdmission extends JViewLegacy
 				$displayPhoto = false;
 
 				// get applications files
-				$users = $admission->getUsers($cfnum);
+				$users = $m_admission->getUsers($cfnum);
 
 				// Get elements from model and proccess them to get an easy to use array containing the element type
-				$elements = $admission->getElementsVar();
+				$elements = $m_admission->getElementsVar();
 				foreach ($elements as $elt) {
 					$elt_name = $elt->tab_name."___".$elt->element_name;
 					$eltarr[$elt_name] = [
@@ -143,30 +144,30 @@ class EmundusViewAdmission extends JViewLegacy
 				}
 				$fl['jos_emundus_final_grade.user'] = JText::_('RECORDED_BY');
 				// merge admission criterion on application files
-			    $data[0] = array_merge($data[0], $fl);
+				$data[0] = array_merge($data[0], $fl);
+				$fnumArray = array();
 
 			    // get admisson form ID
-			    $formid = $admission->getAdmissionFormByProgramme();
+			    $formid = $m_admission->getAdmissionFormByProgramme();
 			    $this->assignRef('formid', $formid);
 			    $form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
 			    $form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
 			    $this->assignRef('form_url_edit', $form_url_edit);
 
 				if (!empty($users)) {
-					//$i = 1;
-					$taggedFile = $admission->getTaggedFile();
+					$i = 0;
 					foreach ($columnSupl as $col) {
 						$col = explode('.', $col);
 						switch ($col[0]) {
 							case 'evaluators':
 								$data[0]['EVALUATORS'] = JText::_('EVALUATORS');
-								$colsSup['evaluators'] = $h_files->createEvaluatorList($col[1], $admission);
+								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $m_admission);
 								break;
 							case 'overall':
 								$data[0]['overall'] = JText::_('EVALUATION_OVERALL');
 								break;
 							case 'tags':
-								$taggedFile = $admission->getTaggedFile();
+								$taggedFile = $m_admission->getTaggedFile();
 								$data[0]['eta.id_tag'] = JText::_('TAGS');
 								$colsSup['id_tag'] = array();
 								break;
@@ -180,10 +181,11 @@ class EmundusViewAdmission extends JViewLegacy
 						}
 					}					
 
-					$i = 0;
+					
 					foreach ($users as $user) {
 						$usObj = new stdClass();
 						$usObj->val = 'X';
+						$fnumArray[] = $user['fnum'];
 						$line = array('check' => $usObj);
 						
 						if (array_key_exists($user['fnum'], $taggedFile)) {
@@ -229,6 +231,12 @@ class EmundusViewAdmission extends JViewLegacy
 								$userObj->id 			= $elements[$key]['fabrik_id'];
 								$userObj->params 		= $elements[$key]['params'];
 								$line[$key] 			= $userObj;
+
+								// Radiobuttons are a strange beast, we need to get all of the values
+								if ($userObj->type == 'radiobutton') {
+									$params = json_decode($userObj->params);
+									$userObj->radio = array_combine($params->sub_options->sub_labels, $params->sub_options->sub_values);
+								}
 							
 							} else {
 
@@ -262,6 +270,17 @@ class EmundusViewAdmission extends JViewLegacy
 						$i++;
 					}
 
+					if(isset($colsSup['id_tag']))
+					{
+						$tags = $m_files->getTagsByFnum($fnumArray);
+						$colsSup['id_tag'] = @EmundusHelperFiles::createTagsList($tags);
+					}
+
+                    if(isset($colsSup['access']))
+				    {
+					    $objAccess = $m_files->getAccessorByFnums($fnumArray);
+				    }
+
 				} else $data = JText::_('NO_RESULT');
 
 			/* Get the values from the state object that were inserted in the model's construct function */
@@ -271,7 +290,8 @@ class EmundusViewAdmission extends JViewLegacy
 		   /* $this->assignRef('actions', $actions);*/
 		    $pagination = $this->get('Pagination');
 		    $this->assignRef('pagination', $pagination);
-
+			$this->assignRef('accessObj', $objAccess);
+			$this->assignRef('colsSup', $colsSup);
 			$this->assignRef('users', $users);
 			$this->assignRef('datas', $data);
 

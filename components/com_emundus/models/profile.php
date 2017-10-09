@@ -450,13 +450,15 @@ class EmundusModelProfile extends JModelList
 		include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 		include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 		include_once(JPATH_SITE.'/components/com_emundus/models/admission.php');
-		
+
 		$users 			= new EmundusModelUsers;
 		$m_admission	= new EmundusModelAdmission;
 		$current_user 	= JFactory::getUser();
 		$session        = JFactory::getSession();
 		$app			= JFactory::getApplication();
+
 		$profile 		= $this->getProfileByApplicant($current_user->id);
+
 		$emundusSession = new stdClass();
 
 		foreach ($session->get('user') as $key => $value) {
@@ -476,11 +478,16 @@ class EmundusModelProfile extends JModelList
 			// This means that regardless of his other applications he must be considered admitted
 			if ($profile['profile'] != 8) {
 				$campaign = $this->getCurrentCampaignInfoByApplicant($current_user->id);
-				$profile = $this->getProfileByCampaign($campaign["id"]);
+
+				if (!empty($campaign)) {
+					$profile = $this->getProfileByCampaign($campaign["id"]);
+				}
 			} else {
 				$admissionInfo = $m_admission->getAdmissionInfo($current_user->id);
-				$campaign = $this->getCampaignInfoByFnum($admissionInfo[0]->fnum);
-				$profile = $this->getProfileByCampaign($admissionInfo[0]->campaign_id);
+				if (!empty($admissionInfo)) {
+					$campaign = $this->getCampaignInfoByFnum($admissionInfo[0]->fnum);
+					$profile = $this->getProfileByCampaign($admissionInfo[0]->campaign_id);
+				}
 			}			
 
 			if (empty($campaign["id"]) || !isset($campaign["id"]) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id))

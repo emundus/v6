@@ -314,6 +314,7 @@ function openFiles(fnum) {
             $('#em-appli-menu .list-group').empty();
             if (result.status) {
                 var menus = result.menus;
+                var firstMenu = menus[0].link;
                 var menuList = '';
                 
                 for (var m in menus) {
@@ -331,6 +332,30 @@ function openFiles(fnum) {
                     menuList +=  '<strong>'+menus[m].title+'</strong></a>';
                 }
                 $('#em-appli-menu .list-group').append(menuList);
+
+                $.ajax({
+                    type:'get',
+                    url:firstMenu,
+                    dataType:'html',
+                    data:({fnum:fnum.fnum}),
+                    success: function(result)
+                    {
+                        $('.em-dimmer').remove();
+                        $('#em-files-filters').hide();
+                        $(".main-panel .panel.panel-default").hide();
+                        $('#em-appli-block').empty();
+                        $('#em-appli-block').append(result);
+                        $('#accordion .panel.panel-default').show();
+                        $('#em-appli-menu, #em-last-open, #em-assoc-files, #em-synthesis, .em-open-files > div[id="'+fnum.fnum+'"]').show();
+                        menuBar1();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        console.log(jqXHR.responseText);
+                        if (jqXHR.status === 302)
+                            window.location.replace('/user');
+                    }
+                })
             
             } else $('#em-appli-menu .list-group').append(result.msg);
         },
@@ -377,30 +402,6 @@ function openFiles(fnum) {
             $(".main-panel").append('<div class="em-close-minimise"><div class="btn-group pull-right"><button id="em-close-file" class="btn btn-danger btn-xs"><strong>X</strong></button></div></div><div class="clearfix"></div><div class="col-md-12" id="em-appli-block"></div>');
             $("#em-synthesis .panel-body").empty();
             $("#em-synthesis .panel-body").append(panel);
-
-            $.ajax({
-                type:'get',
-                url:'index.php?option=com_emundus&view=application&Itemid=' + itemId + '&format=raw&layout=form',
-                dataType:'html',
-                data:({fnum:fnum.fnum}),
-                success: function(result)
-                {
-                    $('.em-dimmer').remove();
-                    $('#em-files-filters').hide();
-                    $(".main-panel .panel.panel-default").hide();
-                    $('#em-appli-block').empty();
-                    $('#em-appli-block').append(result);
-                    $('#accordion .panel.panel-default').show();
-                    $('#em-appli-menu, #em-last-open, #em-assoc-files, #em-synthesis, .em-open-files > div[id="'+fnum.fnum+'"]').show();
-                    menuBar1();
-                },
-                error: function (jqXHR, textStatus, errorThrown)
-                {
-                    console.log(jqXHR.responseText);
-                    if (jqXHR.status === 302)
-                        window.location.replace('/user');
-                }
-            })
         },
         error: function(jqXHR, textStatus, errorThrown)
         {
@@ -1058,7 +1059,6 @@ $(document).ready(function()
 //
     $(document).on('click', '.em_file_open', function(e)
     {
-        console.log("hahah");
         $.ajaxQ.abortAll();
         if(e.handle !== true)
         {

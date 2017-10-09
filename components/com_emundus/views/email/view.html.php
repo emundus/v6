@@ -137,13 +137,14 @@ class EmundusViewEmail extends JViewLegacy
 			   //require_once(JPATH_BASE . '/components/com_emundus/models/users.php');
 			   	require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
 			    require_once(JPATH_BASE . '/components/com_emundus/models/application.php');
+			    
 			    $appModel = new EmundusModelApplication();
 			    $evaluations = new EmundusModelEvaluation;
 			    $eMConfig = JComponentHelper::getParams('com_emundus');
 				$reference_table = $eMConfig->get('reference_table', '#__emundus_references');
 				$reference_field = $eMConfig->get('reference_field', 'Email_1 as email');
 				$default_email_tmpl = $eMConfig->get('default_email_tmpl', 'expert');
-			    
+
 			    foreach ($fnums as $fnum)
 			    {
 				    if(EmundusHelperAccess::asAccessAction(18, 'c', $this->_user->id, $fnum->fnum))

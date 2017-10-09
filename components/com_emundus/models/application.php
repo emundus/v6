@@ -434,15 +434,15 @@ class EmundusModelApplication extends JModelList
                     FROM #__fabrik_forms AS fbforms 
                     LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = fbforms.id
                     WHERE fbforms.id = '.$formID;
-		
+        
         try {
-	    
+        
             $this->_db->setQuery($query);
-	        $table = $this->_db->loadObjectList();
-	    
+            $table = $this->_db->loadObjectList();
+        
         } catch (Exception $e) {
-	        return $e->getMessage();
-	    }
+            return $e->getMessage();
+        }
 
         $form .= '<br><hr><h3>';
         $title = explode('-', JText::_($table[0]->label));
@@ -469,7 +469,7 @@ class EmundusModelApplication extends JModelList
             else
                 $form .= ' <button type="button" id="'.$table[0]->form_id.'" class="btn btn-default btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid='.$table[0]->form_id.'&'.$table[0]->db_table_name.'___fnum='.$fnum.'&'.$table[0]->db_table_name.'___user_raw='.$aid.'&'.$table[0]->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';    
         }
-		
+        
         $form .= '</h3>';
 
         // liste des groupes pour le formulaire d'une table
@@ -2176,7 +2176,7 @@ td {
                     $parent_id = $stored['id'];
                     unset($stored['id']);
                     $stored['fnum'] = $fnum_to;
-                    
+  $q=1;                  
                     $query = 'INSERT INTO '.$form->db_table_name.' (`'.implode('`,`', array_keys($stored)).'`) VALUES('.implode(',', $db->Quote($stored)).')';
                     $db->setQuery( $query );
                     $db->execute();
@@ -2191,7 +2191,7 @@ td {
                                 LEFT JOIN #__fabrik_joins AS fj ON (fj.group_id = fe.group_id AND fj.list_id != 0 AND fj.element_id = 0)
                                 WHERE ff.form_id = "'.$form->form_id.'" 
                                 ORDER BY ff.ordering';
-
+$q=2;
                     $db->setQuery( $query );
                     $groups = $db->loadObjectList();
 
@@ -2210,7 +2210,7 @@ td {
                         }
                         if (count($data) > 0) {
                             foreach ($data as $key => $d) {
-                                
+  $q=3;                              
                                 $query = 'SELECT '.implode(',', $d['element_name']).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
                                 $db->setQuery( $query );
                                 $stored = $db->loadAssocList();
@@ -2226,7 +2226,7 @@ td {
                                        
                                     } 
                                      unset($stored[0]['id']);
-                                         
+ $q=4;                                        
                                    // update form data
                                     $query = 'INSERT INTO '.$d['table'].' (`'.implode('`,`', array_keys($stored[0])).'`)'.' VALUES '.implode(',', $arrayValue);
                                     $db->setQuery( $query );
@@ -2243,7 +2243,7 @@ td {
         catch (Exception $e)
         {
             echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$q.' :: '.$query, JLog::ERROR, 'com_emundus');
             return false;
         }
 

@@ -35,7 +35,8 @@ class EmundusViewEvaluation extends JViewLegacy
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
@@ -50,7 +51,7 @@ class EmundusViewEvaluation extends JViewLegacy
 
 	    $menu = @JSite::getMenu();
 		$current_menu  = $menu->getActive();
-		$menu_params = $menu->getParams(@$current_menu->id);
+		$menu_params = $menu->getParams($current_menu->id);
 		
 		$columnSupl = explode(',', $menu_params->get('em_other_columns'));
 		$jinput = JFactory::getApplication()->input;
@@ -85,13 +86,14 @@ class EmundusViewEvaluation extends JViewLegacy
 			default :
 				$jinput = JFactory::getApplication()->input;
 				$cfnum = $jinput->getString('cfnum', null);
-
+				
 				$params = JComponentHelper::getParams('com_emundus');
 				$evaluators_can_see_other_eval = $params->get('evaluators_can_see_other_eval', 0);
 
 				$evaluation = $this->getModel('Evaluation');
-				$userModel = new EmundusModelUsers();
 				$h_files = new EmundusHelperFiles();
+				$m_files = new EmundusModelFiles();
+                $userModel = new EmundusModelUsers();
 
                 $evaluation->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
                 //$evaluation->fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
@@ -127,7 +129,9 @@ class EmundusViewEvaluation extends JViewLegacy
 				}
 				$fl['jos_emundus_evaluations.user'] = JText::_('EVALUATOR');
 				// merge eval criterion on application files
-			    $datas[0] = array_merge($datas[0], $fl);
+				$datas[0] = array_merge($datas[0], $fl);
+				
+				$fnumArray = array();
 
 			    // get evaluation form ID
 			    $formid = $evaluation->getEvaluationFormByProgramme();
@@ -139,8 +143,8 @@ class EmundusViewEvaluation extends JViewLegacy
 
 				if (!empty($users)) {
 					
-					//$i = 1;
-					$taggedFile = $evaluation->getTaggedFile();
+					$i = 1;
+					$taggedFile = array();
 					foreach ($columnSupl as $col) {
 						$col = explode('.', $col);
 						switch ($col[0]) {
@@ -166,10 +170,11 @@ class EmundusViewEvaluation extends JViewLegacy
 						}
 					}
 
-					$i = 0;
+					//$i = 0;
 					foreach ($users as $user) {
 						$usObj = new stdClass();
 						$usObj->val = 'X';
+						$fnumArray[] = $user['fnum'];
 						$line = array('check' => $usObj);
 						
 						if (array_key_exists($user['fnum'], $taggedFile)) {
@@ -254,6 +259,14 @@ class EmundusViewEvaluation extends JViewLegacy
 						$i++;
 					}
 
+					if (isset($colsSup['id_tag'])) {
+						$tags = $m_files->getTagsByFnum($fnumArray);
+						$colsSup['id_tag'] = @EmundusHelperFiles::createTagsList($tags);
+					}
+
+                    if (isset($colsSup['access']))
+					    $objAccess = $m_files->getAccessorByFnums($fnumArray);
+
 				} else $datas = JText::_('NO_RESULT');
 
 
@@ -264,7 +277,8 @@ class EmundusViewEvaluation extends JViewLegacy
 		   /* $this->assignRef('actions', $actions);*/
 		    $pagination = $this->get('Pagination');
 		    $this->assignRef('pagination', $pagination);
-
+			$this->assignRef('accessObj', $objAccess);
+			$this->assignRef('colsSup', $colsSup);
 			$this->assignRef('users', $users);
 			$this->assignRef('datas', $datas);
 

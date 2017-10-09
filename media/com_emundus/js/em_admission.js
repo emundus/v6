@@ -57,36 +57,10 @@ function toggleRadio(id) {
     // Use ID of .em-radio to get fabrik_id and fnum
     // Written as: [fnum]-[fabrik_id]-[value]
     var tmp = id.split("-");
+    
     var fnum = tmp[0],
         fabrik_id = tmp[1],
-        value = tmp[2];
-
-
-    if (value == "no" || value == "0") {
-
-        if ($('#' + id).hasClass('glyphicon-remove-circle'))
-            $('#' + id).addClass('glyphicon-refresh').removeClass('glyphicon-remove-circle').css('color', 'black');
-        else
-            $('#' + id).addClass('glyphicon-refresh').removeClass('glyphicon-remove').css('color', 'black');
-    
-    } if (value == "yes" || value == "1") {
-            
-        if ($('#' + id).hasClass('glyphicon-ok-circle'))
-            $('#' + id).addClass('glyphicon-refresh').removeClass('glyphicon-ok-circle').css('color', 'black');
-        else
-            $('#' + id).addClass('glyphicon-refresh').removeClass('glyphicon-ok').css('color', 'black');
-    
-    } else {
-
-            $('#' + id).addClass('glyphicon-refresh').removeClass('glyphicon-warning-sign').css('color', 'black');
-    
-    }
-
-    if (value == "yes" || value == "1")
-        var newVal = "no";
-    else
-        var newVal = "yes";
-
+        newVal = $('#' + id).val();
 
     $.ajax({
         type: "POST",
@@ -98,17 +72,10 @@ function toggleRadio(id) {
             value: newVal
         }),
         success: function (res) {
-            
-            if (newVal == "no")
-                $('#' + id).addClass('glyphicon-remove').removeClass('glyphicon-refresh').css('color', 'red');
-            else
-                $('#' + id).addClass('glyphicon-ok',).removeClass('glyphicon-refresh').css('color', 'green');
-
-            $('#' + id).attr('id', fnum + '-' + fabrik_id + '-' + newVal);
-        
+            $('#' + id).css("border", "solid 1px green");
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            $('#' + id).addClass('glyphicon-warning-sign').removeClass('glyphicon-refresh').css('color', 'orange');
+            $('#' + id).css("border", "solid 1px red");
         }
     })
 }
@@ -116,7 +83,7 @@ function toggleRadio(id) {
 
 $(document).ready(function () {
 
-    $(document).on('click', '.em-radio', function (e) {
+    $(document).on('change', '.em-radio', function (e) {
         $.ajaxQ.abortAll();
         if (e.handle !== true) {
             e.handle = true;

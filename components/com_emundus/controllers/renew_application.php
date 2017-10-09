@@ -52,10 +52,11 @@ class EmundusControllerRenew_application extends JControllerLegacy
 	function cancel_renew(){ 
 		$session = JFactory::getSession();
 		$current_user = $session->get('emundusUser');
+		$user = JFactory::getUser();
 		$profile = $this->getModel('profile');
 		$campaign = $this->getModel('campaign');
 
-		$previous_profiles = $campaign->getCampaignByApplicant($current_user->id);
+		$previous_profiles = $campaign->getCampaignByApplicant($user->id);
 
 		if (count($previous_profiles) > 0) {
 			$profile->updateProfile($current_user->id, $previous_profiles[0]);

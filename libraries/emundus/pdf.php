@@ -48,9 +48,10 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	$current_user =  JFactory::getUser();
 	$db = JFactory::getDBO();
 	$config = JFactory::getConfig();
-        
+    
 	$jdate = JFactory::getDate();
-	$jdate->setOffset($config->getValue('offset'));
+	$timezone = new DateTimeZone( $config->get('offset') );
+    $jdate->setTimezone($timezone);
 	$now = $jdate->toSql();
 
 	$files = array();
@@ -363,7 +364,8 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 	$config = JFactory::getConfig();
         
 	$jdate = JFactory::getDate();
-	$jdate->setOffset($config->getValue('offset'));
+	$timezone = new DateTimeZone( $config->get('offset') );
+   	$jdate->setTimezone($timezone);
 	$now = $jdate->toSql();
 
 	$files = array();

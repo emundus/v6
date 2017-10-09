@@ -205,7 +205,6 @@ class EmundusHelperEmails
 				<div>';
 				$email .= '
 					<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />
-				<p>
 					<input name="mail_to" type="hidden" class="inputbox input-xlarge" id="mail_to" value="'.$applicant->id.'" />
 					<input name="campaign_id" type="hidden" class="inputbox" id="campaign_id" value="'.$campaign_id.'" size="100" />
 				</div>';
@@ -215,8 +214,7 @@ class EmundusHelperEmails
 				</p>
 					<input name="mail_attachments" type="hidden" class="inputbox" id="mail_attachments" value="" />
 					<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="evaluation_result" />
-				<p><div><input class="btn btn-large btn-success" type="submit" name="evaluation_result_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>
-				</p>
+				<p><div><input class="btn btn-large btn-success" type="submit" name="evaluation_result_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div></p>
 			</fieldset>';
 			
 			$email .= '<script>
@@ -282,19 +280,11 @@ class EmundusHelperEmails
 				$email .= '<input placeholder="'.JText::_( 'EMAIL_TO' ).'"  name="mail_to" type="text" class="inputbox" id="mail_to" value="'.$experts.'" size="100" style="width: 100% !important;" />';
 				$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 				$email .= '<input name="delete_attachment" type="hidden" class="inputbox" id="delete_attachment" value=0 />';
-				/*$email .= '<input name="mail_from_name" type="hidden" class="inputbox input-xlarge" id="mail_from_name" value="" size="100" style="width: 100% !important;" />';
-				$email .= '<input name="mail_from" type="hidden" class="inputbox input-xlarge" id="mail_from" value="" size="100" style="width: 100% !important;" />';
-				$email .= '<input name="campaign_id" type="hidden" class="inputbox" id="campaign_id" value="'.$campaign_id.'" />
-					<input name="student_id" type="hidden" class="inputbox" id="student_id" value="'.$student_id.'" />
-				</div>';
-				$email .= '<p><label for="mail_body"> '.JText::_( 'MESSAGE' ).' </label><br/>';*/
 				$email .= $mail_body;
 				$email .= '
-				</p>
 					<input name="mail_attachments" type="hidden" class="inputbox" id="mail_attachments" value="" />
 					<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="expert" />
-				<p><div><input class="btn btn-large btn-success" type="submit" name="expert" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>
-				</p>';
+				<p><div><input class="btn btn-large btn-success" type="submit" name="expert" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div></p>';
 			
 			$email .= '<script>
 			function getXMLHttpRequest() {
@@ -336,6 +326,7 @@ class EmundusHelperEmails
 				xhr.send("&id="+id);
 			}</script>';
 		}
+
 		if(in_array('this_applicant', $params))
 		{
 			$editor = JFactory::getEditor('tinymce');
