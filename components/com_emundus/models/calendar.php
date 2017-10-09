@@ -297,7 +297,10 @@ class EmundusModelCalendar extends JModelLegacy {
 
     }
 
-    public function email_event_booked($event_id) {
+    public function email_event($event_id, $booked = null) {
+
+        if (!isset($booked)) 
+            return false;
 
         $mailer = JFactory::getMailer();
         $config = JFactory::getConfig();
@@ -351,7 +354,10 @@ class EmundusModelCalendar extends JModelLegacy {
         // TODO: Why is this ID hardcoded?
         $from_id = 62;
 
-        $email = $m_emails->getEmail('booking_created_user');
+        if ($booked)
+            $email = $m_emails->getEmail('booking_created_user');
+        else
+            $email = $m_emails->getEmail('booking_deleted_user');
 
         // Tags are replaced with their corresponding values using the PHP preg_replace function.        
         $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
@@ -392,10 +398,15 @@ class EmundusModelCalendar extends JModelLegacy {
         // We are using the program name to get the associated group and then getting all users inside of that group.
         $recipients = $this->getProgramRecipients($params->program);
 
+        if ($booked)
+            $email = $m_emails->getEmail('booking_created_recipient');
+        else
+            $email = $m_emails->getEmail('booking_deleted_recipient');
+
         foreach ($recipients as $recipient) {
 
             $post = array(
-                'FNUM'          => $recipient->fnum,
+                'FNUM'          => $user->fnum,
                 'EVENT_DATE'    => $event_date,
                 'EVENT_TIME'    => $event_time,
                 'USER_NAME'     => $user->name,
@@ -405,21 +416,19 @@ class EmundusModelCalendar extends JModelLegacy {
     
             // An array containing the tag names is created.
             $tags = $m_emails->setTags($recipient->id, $post);
-
-            // TODO: Add this template to the DB.
-            $email = $m_emails->getEmail('booking_created_recipient');
     
             // Tags are replaced with their corresponding values using the PHP preg_replace function.        
             $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
             $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
-            $body = $m_emails->setTagsFabrik($body, array($recipient->fnum));
+            $body = $m_emails->setTagsFabrik($body, array($user->fnum));
     
-            $sender = array( 
+            $sender = array(
                 $config->get('mailfrom'),
                 $config->get('fromname') 
             );
     
             // Configure email sender
+            $mailer->ClearAllRecipients();
             $mailer->setSender($sender);
             $mailer->addReplyTo($config->get('mailfrom'), $config->get('fromname'));
             $mailer->addRecipient($recipient->email);
@@ -445,6 +454,8 @@ class EmundusModelCalendar extends JModelLegacy {
             }
 
         }
+
+        return true;
     
     }
 
@@ -453,7 +464,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
         $db = JFactory::getDbo();
         $eMConfig = JComponentHelper::getParams('com_emundus');
-        $profilesToNotify = $eMCofig->get('mailRecipients');
+        $profilesToNotify = $eMConfig->get('mailRecipients');
 
         try {
 
@@ -470,7 +481,9 @@ class EmundusModelCalendar extends JModelLegacy {
 
         try {
 
-            $db->setQuery("SELECT * FROM #__users AS u LEFT JOIN #__emundus_users AS eu ON eu.user_id = u.id WHERE eu.profile IN ".$profilesToNotify);
+            $query = "SELECT u.id, name, email FROM #__users AS u LEFT JOIN #__emundus_users AS eu ON eu.user_id = u.id WHERE eu.profile IN (".$profilesToNotify.") AND u.id IN (".implode(",", $program_user_ids).")";
+
+            $db->setQuery($query);
             return $db->loadObjectList();
 
         } catch (Exception $e) {
@@ -534,7 +547,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $synthesis->program = $program;
         $synthesis->camp    = $campaignInfo;
         $synthesis->fnum    = $fnum;
-        $synthesis->block   = preg_replace($tags['patterns'], $tags['replacements'], $program->synthesis);
+        $synthesis->block   = preg_replace($tags['patterns'], $tags['replacements'], @$program->synthesis);
 
         $element_ids = $m_email->getFabrikElementIDs($synthesis->block);
         if (count(@$element_ids[0])>0) {
@@ -548,194 +561,6 @@ class EmundusModelCalendar extends JModelLegacy {
 
 
     // TODO: See which code below is worth keeping
-
-    function getMailCandidate($eventId) {
-        $name = $this->getUserIdCandidate($eventId);
-        $db= JFactory::getDBO();
-        $query = $db->getQuery(true);
-        
-        $conditions = array(
-            $db->quoteName('id') . ' = ' . $db->quote($name)
-        );
-        
-        $query->select($db->quoteName('email'));
-        $query->from($db->quoteName('#__users'));
-        $query->where($conditions);
-        
-        $db->setQuery($query);
-        $result = $db->loadResult();
-        return $result;
-    }
-
-    function getMailUser($userBook) {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-        $conditions = array(
-            $db->quoteName('id') . ' = ' . $db->quote($userBook)
-        );
-        
-        $query->select($db->quoteName('email'));
-        $query->from($db->quoteName('#__users'));
-        $query->where($conditions);
-        
-        $db->setQuery($query);
-        return $db->loadResult();
-    }
-
-    function getEmailFromDelete() {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        
-        $conditions = array(
-            $db->quoteName('lbl') . ' = ' . $db->quote('deleted_date')
-        );
-        
-        $query->select($db->quoteName('emailfrom'));
-        $query->from($db->quoteName('#__emundus_setup_emails'));
-        $query->where($conditions);
-
-        $db->setQuery($query);
-        $result = $db->loadResult();
-        return $result;
-    }
-
-    function getEmailFromCandidateBooked() {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        
-        $conditions = array(
-            $db->quoteName('lbl') . ' = ' . $db->quote('booked_by_coordinator')
-        );
-        
-        $query->select($db->quoteName('emailfrom'));
-        $query->from($db->quoteName('#__emundus_setup_emails'));
-        $query->where($conditions);
-
-        $db->setQuery($query);
-        $result = $db->loadResult();
-        return $result;
-    }
-
-    function getEmailFromDelete2() {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        
-        $conditions = array(
-            $db->quoteName('lbl') . ' = ' . $db->quote('cancel_interview_to_candidate')
-        );
-        
-        $query->select($db->quoteName('emailfrom'));
-        $query->from($db->quoteName('#__emundus_setup_emails'));
-        $query->where($conditions);
-
-        $db->setQuery($query);
-        $result = $db->loadResult();
-        return $result;
-    }
-
-    function getMessageDeleteVal1($eventId) {
-
-        $user = $this->getNameCandidate($eventId);
-        $startdate = $this->getStartDate($eventId);
-        $enddate = $this->getEndDate($eventId);
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-        $conditions = array(
-            $db->quoteName('lbl') . ' = ' . $db->quote('deleted_date')
-        );
-
-        $query->select($db->quoteName('message'));
-        $query->from($db->quoteName('#__emundus_setup_emails'));
-        $query->where($conditions);
-
-        $db->setQuery($query);
-        $result = $db->loadAssocList();
-
-        $message = strip_tags($result[0]['message']);
-        $msgExpl = explode(']', $message);
-
-        $nameUser = substr_replace($msgExpl[0], $user , 8);
-        $array = array($nameUser,$msgExpl[1]);
-        $msg = implode('', $array);
-
-        $msgFinal = str_replace('&nbsp;', '',$msg);
-        $msgWithStartDate = str_replace('{startdate}', $startdate, $msgFinal);
-        $msgWithEndDate = str_replace('{enddate}', $enddate, $msgWithStartDate);  
-
-        return $msgWithEndDate;
-    }
-
-    function getMessageDeleteVal2($eventId) {
-
-        $user = $this->getNameCandidate($eventId);
-        $startdate = $this->getStartDate($eventId);
-        $enddate = $this->getEndDate($eventId);
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-
-        $conditions = array(
-            $db->quoteName('lbl') . ' = ' . $db->quote('cancel_interview_to_candidate')
-        );
-
-        $query->select($db->quoteName('message'));
-        $query->from($db->quoteName('#__emundus_setup_emails'));
-        $query->where($conditions);
-
-        $db->setQuery($query);
-        $result = $db->loadAssocList();
-
-        $message = strip_tags($result[0]['message']);
-        $msgExpl = explode(']', $message);
-
-        $nameUser = substr_replace($msgExpl[0], $user , 8);
-        $array = array($nameUser,$msgExpl[1]);
-        $msg = implode('', $array);
-
-        $msgFinal = str_replace('&nbsp;', '',$msg);
-        $msgWithStartDate = str_replace('{startdate}', $startdate, $msgFinal);
-        $msgWithEndDate = str_replace('{enddate}', $enddate, $msgWithStartDate);  
-
-        return $msgWithEndDate;
-    }
-
-    function updateQueryStartDateTags($eventId) {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        
-        $fields = array(
-            $db->quoteName('request') . ' = ' . $db->quote('start_date|#__dpcalendar_events|id="'.$eventId.'"'),
-        );
-        $conditions = array(
-        $db->quoteName('tag') . ' = ' . $db->quote('START_DATE')
-        );
-
-        $query->update($db->quoteName('#__emundus_setup_tags'))->set($fields)->where($conditions);
-    
-        $db->setQuery($query);
-    
-        $result = $db->execute();
-
-    }
-
-
-    function updateQueryEndDateTags($eventId) {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        $fields = array(
-            $db->quoteName('request') . ' = ' . $db->quote('end_date|#__dpcalendar_events|id="'.$eventId.'"'),
-        );
-        $conditions = array(
-        $db->quoteName('tag') . ' = ' . $db->quote('END_DATE')
-        );
-
-        $query->update($db->quoteName('#__emundus_setup_tags'))->set($fields)->where($conditions);
-    
-        $db->setQuery($query);
-    
-        $result = $db->execute();
-    }
 
     function sendMailTimesDeleteVal1($eventId) {
         // Envoi mail

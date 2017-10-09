@@ -76,12 +76,10 @@ class EmundusControllerCalendar extends JControllerLegacy {
 
         $result = $m_calendar->google_add_event($service, $dpcalendar_event);
 
-        if ($result) {
-            $result = $m_calendar->email_event_booked($event_id);
-            echo json_encode(['status' => $result]);
-        } else {
-            echo json_encode(['status' => false]);
-        }
+        if ($result)
+            $result = $m_calendar->email_event($event_id, true);
+            
+        echo json_encode(['status' => $result]);
 
     }
 
@@ -99,7 +97,10 @@ class EmundusControllerCalendar extends JControllerLegacy {
 
         $service = $m_calendar->google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
         $m_calendar->google_delete_event($event_id, $service);
-        $result = $m_calendar->dpcalendar_delete_interview($event_id);        
+        $result = $m_calendar->dpcalendar_delete_interview($event_id);
+        
+        if ($result)
+            $result = $m_calendar->email_event($event_id, false);
 
         echo json_encode(['status' => $result]);
 
