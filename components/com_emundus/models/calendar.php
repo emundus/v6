@@ -14,9 +14,6 @@ define('SCOPES', implode(' ', array(
     Google_Service_Calendar::CALENDAR) // CALENDAR_READONLY
 ));
 
- 
-// data for the function
-
 
 class EmundusModelCalendar extends JModelLegacy {
 
@@ -101,8 +98,9 @@ class EmundusModelCalendar extends JModelLegacy {
             die($e->getMessage());
         }
 
+        // TODO: Synthesis as description?
         $event->title = "(BOOKED) ".$event->title;
-        $event->description = $this->getSynthesis($fnum);
+        $event->description = $user->name;
         $event->booking_information = $user->id;
         $event->capacity = "1";
         $event->capacity_used = "1";
@@ -120,11 +118,6 @@ class EmundusModelCalendar extends JModelLegacy {
         } catch (Exception $e) {
             die($e->getMessage());
         }
-
-        // Add a new ticket. 
-        // TODO: Find out if booking_id set to 0 breaks everything
-        // TODO: Find out what uid does.
-        // TODO: Get user address?
 
         $values = array();
         $values[] = $db->quote("0");            // booking_id
@@ -222,7 +215,6 @@ class EmundusModelCalendar extends JModelLegacy {
 
         $db = JFactory::getDbo();
 
-        // TODO: Find out what ticket state does exactly.
         try {
             
             // Here we are going to update the ticket to show it is no longer valid.
@@ -363,6 +355,9 @@ class EmundusModelCalendar extends JModelLegacy {
         $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
         $body = $m_emails->setTagsFabrik($body, array($user->fnum));
 
+        // TODO: Try to get these tags out of this code, either put them in the DB or make a function that builds the emails with the template?
+        $body = preg_replace(array("/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"), array($subject, $body), $email->Template);
+
         $sender = array( 
             $config->get('mailfrom'),
             $config->get('fromname') 
@@ -420,6 +415,9 @@ class EmundusModelCalendar extends JModelLegacy {
             $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
             $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
             $body = $m_emails->setTagsFabrik($body, array($user->fnum));
+
+            // TODO: Try to get these tags out of this code, either put them in the DB or make a function that builds the emails with the template?
+            $body = preg_replace(array("/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"), array($subject, $body), $email->Template);
     
             $sender = array(
                 $config->get('mailfrom'),
@@ -556,6 +554,40 @@ class EmundusModelCalendar extends JModelLegacy {
 
         return $synthesis->block;
 
+    }
+
+    function getClient($clientId, $clientSecret) {
+    
+        $client = new Google_Client();
+        $client->setClassConfig('Google_IO_Curl', 'options', array(
+            CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4
+        ));
+        $client->setApplicationName(APPLICATION_NAME);
+        $client->setClientId($clientId);
+        $client->setClientSecret($clientSecret);
+        $client->setScopes(SCOPES);
+        $client->setAccessType('offline');
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        
+        $uri = ! isset($_SERVER['HTTP_HOST']) ? JUri::getInstance('http://localhost') : JFactory::getURI();
+        
+        if (filter_var($uri->getHost(), FILTER_VALIDATE_IP))
+            $uri->setHost('localhost');
+        
+        $client->setRedirectUri(
+            $uri->toString(
+                array(
+                    'scheme',
+                    'host',
+                    'port',
+                    'path'
+                )
+            ).'?option=com_emundus&view=calendar'
+        );
+    
+        // Refresh the token if it's expired.
+    
+        return $client;
     }
 
 }

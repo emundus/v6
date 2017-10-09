@@ -37,7 +37,7 @@ class EmundusModelEmails extends JModelList
      */
     public function getEmail($lbl)
     {
-        $query = 'SELECT * FROM #__emundus_setup_emails WHERE lbl="'.mysql_real_escape_string($lbl).'"';
+        $query = 'SELECT * FROM #__emundus_setup_emails AS se LEFT JOIN #__emundus_email_templates AS et ON et.id = se.email_tmpl WHERE se.lbl="'.mysql_real_escape_string($lbl).'"';
         $this->_db->setQuery( $query );
         return $this->_db->loadObject();
     }
