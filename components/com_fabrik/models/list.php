@@ -15,9 +15,8 @@ jimport('joomla.application.component.modelform');
 
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\Pagination;
 
-require_once COM_FABRIK_FRONTEND . '/helpers/pagination.php';
-require_once COM_FABRIK_FRONTEND . '/helpers/list.php';
 require_once COM_FABRIK_FRONTEND . '/models/list-advanced-search.php';
 
 /**
@@ -217,7 +216,7 @@ class FabrikFEModelList extends JModelForm
 	/**
 	 * Pagination
 	 *
-	 * @var FPagination
+	 * @var Pagination
 	 */
 	protected $nav = null;
 
@@ -915,6 +914,9 @@ class FabrikFEModelList extends JModelForm
 		$this->setLimits();
 		JDEBUG ? $profiler->mark('query build end') : null;
 
+		$config = JComponentHelper::getParams('com_fabrik');
+		$opts['custom_layout'] = $config->get('fabrik_check_custom_list_layout', '0');
+
 		try
 		{
 			$this->finesseData($opts);
@@ -981,6 +983,13 @@ class FabrikFEModelList extends JModelForm
 		* $$$ rob 26/09/2011 note Joomfish not currently released for J1.7
 		*/
 		$this->data = $fabrikDb->loadObjectList('', 'stdClass', false);
+
+		// fire a plugin hook before we format the data
+		$args       = new stdClass;
+		$args->data = $this->data;
+		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager->runPlugins('onLoadedData', $this, 'list', $args);
+		$pluginManager->runPlugins('onLoadedListData', $this->getFormModel(), 'form', $args);
 
 		// $$$ rob better way of getting total records
 		if ($this->mergeJoinedData())
@@ -1489,7 +1498,7 @@ class FabrikFEModelList extends JModelForm
 
 				$rowId = $this->getSlug($row);
 				$isAjax = $this->isAjaxLinks() ? '1' : '0';
-				
+
 				$editLabel = $this->editLabel($data[$groupKey][$i]);
 				$editText = $buttonAction == 'dropdown' ? $editLabel : '<span class="hidden">' . $editLabel . '</span>';
 
@@ -4050,20 +4059,20 @@ class FabrikFEModelList extends JModelForm
 			$groups = $this->user->getAuthorisedViewLevels();
 			$this->access->allow_drop = in_array($this->getParams()->get('allow_drop'), $groups);
 		}
-/*		
-		
-		// Felixkat - Commenting out as this shouldn't have got here. 
-		
+/*
+
+		// Felixkat - Commenting out as this shouldn't have got here.
+
 		// Retrieve session set in plugin-cron
 		$session = JFactory::getSession();
 		$fabrikCron = $session->get('fabrikCron', '');
-			
+
 		// If CSV import is running and Drop Data is set.....
 		if ($this->app->input->getString('cron_csvimport', '') || (is_object($fabrikCron) && $fabrikCron->dropData == 1))
 		{
 			$session = JFactory::getSession();
 			$fabrikCron = $session->get('fabrikCron', '');
-			
+
 			// If Secret is set, (this caters for external Wget), OR no querystring, i.e &fabrik_cron=1, (this caters for automatic cron)
 			if ($fabrikCron->requireJS == 1 && $fabrikCron->secret == 1 || ($this->app->input->getString('fabrik_cron') == ''))
 			{
@@ -4071,7 +4080,7 @@ class FabrikFEModelList extends JModelForm
 			}
 		// Felixkat
 		}
-*/		
+*/
 		return $this->access->allow_drop;
 	}
 
@@ -4159,7 +4168,18 @@ class FabrikFEModelList extends JModelForm
 		if (!empty($pluginCanEdit))
 		{
 			// If one plugin returns false then return false.
-			return in_array(false, $pluginCanEdit) ? false : true;
+			//return in_array(false, $pluginCanEdit) ? false : true;
+			// Testing "didn't express a preference" by allowing plugin to return null (well, neither true nor false
+			// in which case we'll drop through and let the normal ACL mechanisms have their say
+			if (in_array(true, $pluginCanEdit, true))
+			{
+				return true;
+			}
+
+			if (in_array(false, $pluginCanEdit, true))
+			{
+				return false;
+			}
 		}
 
 		$canUserDo = $this->canUserDo($row, 'allow_edit_details2');
@@ -5922,7 +5942,7 @@ class FabrikFEModelList extends JModelForm
 			}
 
 			$params = $this->getParams();
-			$this->nav = new FPagination($total, $limitStart, $limit);
+			$this->nav = new Pagination($total, $limitStart, $limit);
 
 			if ($limit == -1)
 			{
@@ -7587,7 +7607,7 @@ class FabrikFEModelList extends JModelForm
 		 * $$$ rob - correct rowid is now inserted into the form's rowid hidden field
 		* even when useing usekey and -1, we just need to check if we are adding a new record and if so set rowid to 0
 		*/
-		if ($input->get('usekey_newrecord', false))
+		if (!$isJoin && $input->get('usekey_newrecord', false))
 		{
 			$rowId = 0;
 			$origRowId = 0;
@@ -10351,6 +10371,12 @@ class FabrikFEModelList extends JModelForm
 			}
 		}
 
+		// keep XSS checkers happy
+		foreach ($qs as &$q)
+        {
+            $q = htmlspecialchars($q, ENT_QUOTES, 'UTF-8');
+        }
+
 		$action = $page . implode('&amp;', $qs);
 		$action = preg_replace("/limitstart{$this->getId()}=(\d+)?(&amp;|)/", '', $action);
 		$action = FabrikString::removeQSVar($action, 'fabrik_incsessionfilters');
@@ -12098,7 +12124,7 @@ class FabrikFEModelList extends JModelForm
 	 * @param   string  $type  form/details/list
 	 * @param   array   $paths  Optional paths to add as includes
 	 *
-	 * @return FabrikLayoutFile
+	 * @return LayoutFile
 	 */
 	public function getLayout($name, $paths = array(), $options = array())
 	{

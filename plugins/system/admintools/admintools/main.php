@@ -455,7 +455,7 @@ class plgSystemAdmintools extends JPlugin
 		$isSEF     = $jConfig->get('sef', 0);
 
 		$option = $this->input->getCmd('option', '');
-		$view   = $this->input->getCmd('view', '');
+		$view   = $this->getCurrentView();
 
 		// If we have SEF URLs enabled and an empty $option (SEF not yet parsed) OR we have an option that does not
 		// start with com_ we need to a different kind of processing. NB! If an option in the form of com_something is
@@ -489,10 +489,13 @@ class plgSystemAdmintools extends JPlugin
 		}
 	}
 
+	/**
+	 * Load the applicable WAF exceptions for this request after parsing the Joomla! SEF rules
+	 */
 	protected function loadWAFExceptionsSEF()
 	{
-		// Do you have a horrid host like the one in ticket #25473 that crashes JUri if you access it
-		// onAfterIntialize because the m0r0n5 unset two fundamental server variables? If you do, no exceptions for you
+		// Do you have a horrid host like the one in ticket #25473 that crashes JUri if you access it.
+		// onAfterIntialize because they unset two fundamental server variables? If you do, no exceptions for you :(
 		if (!isset($_SERVER) || (!isset($_SERVER['HTTP_HOST']) && !isset($_SERVER['SCRIPT_NAME'])))
 		{
 			return;
@@ -521,7 +524,7 @@ class plgSystemAdmintools extends JPlugin
 				jimport('joomla.language.helper');
 				$languages = JLanguageHelper::getLanguages('lang_code');
 
-				foreach($languages as $lang)
+				foreach ($languages as $lang)
 				{
 					$langSefCode = $lang->sef . '/';
 
@@ -534,15 +537,15 @@ class plgSystemAdmintools extends JPlugin
 		}
 
 		// Load all WAF exceptions for SEF URLs
-		$db = $this->db;
+		$db               = $this->db;
 		$this->exceptions = array();
-		$exceptions = array();
-		$view = $this->input->getCmd('view', '');
+		$exceptions       = array();
+		$view             = $this->getCurrentView();
 
 		$sql = $db->getQuery(true)
-				  ->select('*')
-				  ->from($db->qn('#__admintools_wafexceptions'))
-				  ->where('NOT(' . $db->qn('option') . ' LIKE ' . $db->q('com_%') . ')');
+			->select('*')
+			->from($db->qn('#__admintools_wafexceptions'))
+			->where('NOT(' . $db->qn('option') . ' LIKE ' . $db->q('com_%') . ')');
 
 		$db->setQuery($sql);
 
@@ -556,7 +559,7 @@ class plgSystemAdmintools extends JPlugin
 
 		foreach ($exceptions as $exception)
 		{
-			if($exception['option'])
+			if ($exception['option'])
 			{
 				if ((strpos($uriPathNoLanguage, $exception['option']) !== 0) && (strpos($uriPath, $exception['option']) !== 0))
 				{
@@ -844,5 +847,26 @@ class plgSystemAdmintools extends JPlugin
 
 		// Load and register the plugin features
 		$this->loadFeatures();
+	}
+
+	/**
+	 * Get the view declared in the application input. It recognizes both view=viewName and task=viewName.taskName
+	 * variants supported by the classic Joomla! MVC paradigm.
+	 *
+	 * @return  string
+	 *
+	 * @since   version
+	 */
+	private function getCurrentView()
+	{
+		$view = $this->input->getCmd('view', '');
+		$task = $this->input->getCmd('task', '');
+
+		if (empty($view) && (strpos($task, '.') !== false))
+		{
+			list($view, $task) = explode('.', $task, 2);
+		}
+
+		return $view;
 	}
 }

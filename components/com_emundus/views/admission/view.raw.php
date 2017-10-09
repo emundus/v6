@@ -107,7 +107,7 @@ class EmundusViewAdmission extends JViewLegacy
                 $this->assignRef('fnum_assoc', $m_admission->fnum_assoc);
 
 				// reset filter
-				$filters = @EmundusHelperFiles::resetFilter();
+				$filters = $h_files->resetFilter();
 				$this->assignRef('filters', $filters);
 
 				// Do not display photos unless specified in params
@@ -127,7 +127,9 @@ class EmundusViewAdmission extends JViewLegacy
 						"fabrik_id" => $elt->id
 					];
 				}
-				$elements = $eltarr;
+
+				if (isset($eltarr))
+					$elements = $eltarr;
 
 				// Columns
 				$defaultElements = $this->get('DefaultElements');
@@ -202,7 +204,7 @@ class EmundusViewAdmission extends JViewLegacy
 								$userObj->class = $class;
 								$userObj->type = 'fnum';
 								if ($displayPhoto)
-									$userObj->photo = EmundusHelperFiles::getPhotos($value);
+									$userObj->photo = $h_files->getPhotos($value);
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
 								$line['fnum'] = $userObj;
 							} 

@@ -55,11 +55,11 @@ class Date extends Field
 
 		if ($this->element['onchange'])
 		{
-			$attributes['onchange'] = (string) $this->element['onchange'];
+			$attributes['onChange'] = (string) $this->element['onchange'];
 		}
 		else
 		{
-			$attributes['onchange'] = 'document.adminForm.submit()';
+			$attributes['onChange'] = 'document.adminForm.submit()';
 		}
 
 		if ((string) $this->element['placeholder'])

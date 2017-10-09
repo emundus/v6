@@ -83,6 +83,8 @@ public function &getInfo()
 			}
 		}
 		$this->info['backend_protection']		= $ConfigApplied['hide_backend_url'];
+		// Existe el fichero kickstart.php
+		$this->info['kickstart_exists']		= $this->check_kickstart();	
 		$this->info['firewall_options']		= $FirewallOptions;
 		$this->info['twofactor_enabled']	= $this->get_two_factor_status();
 		$this->info['overall_joomla_configuration']		= $this->getOverall($this->info,1);
@@ -92,7 +94,7 @@ public function &getInfo()
 		$this->info['spam_protection_plugin_enabled']		= $spam_protection_plugin_enabled;
 		$this->info['firewall_options']		= $FirewallOptions;
 		$this->info['last_check']		= $values->data['last_check'];
-		$this->info['last_check_integrity']		= $values->data['last_check_integrity'];
+		$this->info['last_check_integrity']		= $values->data['last_check_integrity'];		
 		//Htaccess protection
 		$this->info['htaccess_protection']		= $ConfigApplied;
 		$this->info['overall_web_firewall']		= $this->getOverall($this->info,2);		
@@ -125,6 +127,21 @@ function get_two_factor_status() {
 	return $enabled;
 }
 
+// Chequea si el fichero kickstart.php existe en la raíz del sitio. Esto sucede cuando se restaura un sitio y se olvida (junto con algún backup) eliminarlo.
+public function check_kickstart() {
+	$found = false;	
+	$akeeba_kickstart_file = JPATH_ROOT . DIRECTORY_SEPARATOR . "kickstart.php";
+	
+	if ( file_exists($akeeba_kickstart_file) ){
+		if ( strpos(file_get_contents($akeeba_kickstart_file),"AKEEBA") !== false ) {
+			$found = true;
+		}		
+	}
+	
+	return $found;
+	
+}
+
 // Obtiene el porcentaje general de cada una de las barras de progreso
 public function getOverall($info,$opcion) {
 	// Inicializamos variables
@@ -133,6 +150,9 @@ public function getOverall($info,$opcion) {
 	switch ($opcion) {
 		// Porcentaje de progreso de  Joomla Configuration
 		case 1:
+			if ( $info['kickstart_exists'] ) {
+				return 2;
+			}
 			if ( version_compare($info['coreinstalled'],$info['corelatest'],'==') ) {
 				$overall = $overall + 10;
 			}

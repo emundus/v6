@@ -458,7 +458,18 @@ class FabrikViewFormBase extends FabrikView
 			}
 		}
 
+		// 0 = no, 1 = both, 2 = form only, 3 = details only
 		$this->showPDF = $params->get('pdf', $fbConfig->get('form_pdf', false));
+
+		if ($this->showPDF === '2' && !$model->isEditable())
+		{
+			$this->showPDF = false;
+		}
+
+		if ($this->showPDF === '3' && $model->isEditable())
+		{
+			$this->showPDF = false;
+		}
 
 		if ($this->showPDF)
 		{
@@ -744,7 +755,9 @@ class FabrikViewFormBase extends FabrikView
 
 		if ($startPage !== 0)
 		{
-			$this->app->enqueueMessage(FText::_('COM_FABRIK_RESTARTING_MULTIPAGE_FORM'));
+		    if ($this->app->input->get('view', 'form') === 'form') {
+                $this->app->enqueueMessage(FText::_('COM_FABRIK_RESTARTING_MULTIPAGE_FORM'));
+            }
 		}
 		else
 		{
@@ -912,6 +925,13 @@ class FabrikViewFormBase extends FabrikView
 		$fields[]  = '<input type="hidden" name="fabrik_ajax" value="' . (int) $model->isAjax() . '" />';
 		$fields[]  = '<input type="hidden" name="package" value="' . $this->app->getUserState('com_fabrik.package', 'fabrik') . '" />';
 		$fields[]  = '<input type="hidden" name="packageId" value="' . $model->packageId . '" />';
+
+		/*
+		if ($input->get('fabrikdebug', '') === '2')
+        {
+            $fields[]  = '<input type="hidden" name="fabrikdebug" value="2" />';
+        }
+		*/
 
 		// Allow things like join element with frontend Add to squash redirects
 		if ($input->getInt('noredirect', 0) !== 0)

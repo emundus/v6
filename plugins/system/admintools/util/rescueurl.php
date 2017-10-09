@@ -444,6 +444,8 @@ abstract class AtsystemUtilRescueurl
 		// Loop all entries until we find a matching token
 		foreach ($entries as $entry)
 		{
+			// FYI: Clean text passwords are always truncated to 72 chars. So shorten tokens will always validate
+			// https://stackoverflow.com/a/28951717/485241
 			if (!JUserHelper::verifyPassword($token, $entry->token))
 			{
 				continue;
@@ -496,37 +498,9 @@ abstract class AtsystemUtilRescueurl
 		$jlang->load('com_admintools', JPATH_ADMINISTRATOR, null, true);
 
 		$config = JFactory::getConfig();
-		$sitename = $config->get('sitename');
-
-		// Create a link to lookup the IP
-		$ip      = AtsystemUtilFilter::getIp();
-		$ip_link = $exceptionsHandler->getComponentParam('iplookupscheme', 'http') . '://' .
-			$exceptionsHandler->getComponentParam('iplookup', 'ip-lookup.net/index.php?ip={ip}');
-		$ip_link = str_replace('{ip}', $ip, $ip_link);
 
 		// Get the reason in human readable format
 		$txtReason = JText::_('ADMINTOOLS_RESCUEURL');
-
-		// Get the country and continent information
-		$country   = '';
-		$continent = '';
-
-		if (class_exists('AkeebaGeoipProvider'))
-		{
-			$geoip     = new AkeebaGeoipProvider();
-			$country   = $geoip->getCountryCode($ip);
-			$continent = $geoip->getContinent($ip);
-		}
-
-		if (empty($country))
-		{
-			$country = '(unknown country)';
-		}
-
-		if (empty($continent))
-		{
-			$continent = '(unknown continent)';
-		}
 
 		// Get the backend Rescue URL
 		list($isCli, $isAdmin) = self::isCliAdmin();
@@ -554,18 +528,10 @@ abstract class AtsystemUtilRescueurl
 			$subject = $template[0];
 			$body = $template[1];
 
-			$tokens = array(
-				'[SITENAME]'  => $sitename,
-				'[REASON]'    => $txtReason,
-				'[DATE]'      => gmdate('Y-m-d H:i:s') . " GMT",
+			$tokens = $exceptionsHandler->getEmailVariables($txtReason, [
 				'[RESCUEURL]' => $url,
 				'[USER]'      => $user->username,
-				'[IP]'        => $ip,
-				'[LOOKUP]'    => '<a href="' . $ip_link . '">IP Lookup</a>',
-				'[COUNTRY]'   => $country,
-				'[CONTINENT]' => $continent,
-				'[UA]'        => $_SERVER['HTTP_USER_AGENT']
-			);
+			]);
 
 			$subject = str_replace(array_keys($tokens), array_values($tokens), $subject);
 			$body = str_replace(array_keys($tokens), array_values($tokens), $body);

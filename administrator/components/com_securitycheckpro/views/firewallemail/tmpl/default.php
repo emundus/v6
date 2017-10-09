@@ -99,7 +99,7 @@ JHtml::_('jquery.framework');
 						<textarea cols="35" rows="3" name="email_body" ><?php echo $this->email_body ?></textarea>
 					</div>
 					<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_BODY_DESCRIPTION') ?></small></p></blockquote>
-				</div>			
+				</div>								
 		</div>
 		
 		<div class="well span4 top-block">
@@ -126,7 +126,11 @@ JHtml::_('jquery.framework');
 						<input type="text" size="30" name="email_from_name" value="<?php echo $this->email_from_name ?>" title="" />		
 					</div>
 					<blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_EMAIL_FROM_NAME_DESCRIPTION') ?></small></p></blockquote>
-				</div>			
+				</div>	
+
+				<div class="control-group">
+					<input class="btn btn-primary" type="button" id="boton_test_email" value="<?php echo JText::_('COM_SECURITYCHECKPRO_SEND_EMAIL_TEST'); ?>" onclick= "Joomla.submitbutton('send_email_test');" />
+				</div>	
 		</div>
 		
 		<div class="well span4 top-block">

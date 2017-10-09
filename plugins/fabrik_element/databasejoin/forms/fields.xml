@@ -253,13 +253,21 @@
 			       label="PLG_ELEMENT_DBJOIN_OPTIONS_PER_ROW_LABEL"
 			       size="2"/>
 
-			<field name="dbjoin_multilist_size"
+			<field name="dbjoin_multiselect_max"
 			       type="field"
 			       class="input-mini"
-			       default="6"
-			       description="PLG_ELEMENT_DBJOIN_MULTILIST_SIZE_DESC"
-			       label="PLG_ELEMENT_DBJOIN_MULTILIST_SIZE_LABEL"
+			       default="0"
+			       description="PLG_ELEMENT_DBJOIN_MULTISELECT_MAX_DESC"
+			       label="PLG_ELEMENT_DBJOIN_MULTISELECT_MAX_LABEL"
 			       size="2"/>
+
+			<field name="dbjoin_multilist_size"
+				   type="field"
+				   class="input-mini"
+				   default="6"
+				   description="PLG_ELEMENT_DBJOIN_MULTILIST_SIZE_DESC"
+				   label="PLG_ELEMENT_DBJOIN_MULTILIST_SIZE_LABEL"
+				   size="2"/>
 
 			<field name="dbjoin_autocomplete_size"
 			       type="field"
@@ -268,6 +276,14 @@
 			       description="PLG_ELEMENT_DBJOIN_AUTOCOMPLETE_SIZE_DESC"
 			       label="PLG_ELEMENT_DBJOIN_AUTOCOMPLETE_SIZE_LABEL"
 			       size="3"/>
+
+			<field name="dbjoin_autocomplete_rows"
+				   type="field"
+				   class="input-mini"
+				   default="10"
+				   description="PLG_ELEMENT_DBJOIN_AUTOCOMPLETE_ROWS_DESC"
+				   label="PLG_ELEMENT_DBJOIN_AUTOCOMPLETE_ROWS_LABEL"
+				   size="3"/>
 
 			<field name="bootstrap_class"
 			       default="input-large"
@@ -306,6 +322,7 @@
 				<option value="words">PLG_ELEMENT_DBJOIN_AUTOCOMPLETE_HOW_WORDS</option>
 				<option value="starts_with">PLG_ELEMENT_DBJOIN_AUTOCOMPLETE_HOW_STARTS_WITH</option>
 			</field>
+
 
 			<field name="clean_concat"
 			       type="radio"

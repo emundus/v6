@@ -1,0 +1,21 @@
+.dp-module-map-root .dp-module-map-actions > * {
+	margin-bottom: 5px
+}
+
+.dp-module-map-modal {
+	display: none;
+	width: 700px;
+	height: 500px;
+}
+
+.dp-module-map-modal iframe {
+	width: 99.6%;
+	height: 95%;
+	border: none;
+}
+
+@media screen and (min-width: 767px) {
+	.dp-module-map-actions .dp-module-map-location {
+		max-width: 30%;
+	}
+}

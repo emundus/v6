@@ -1466,8 +1466,8 @@ class plgSystemSecuritycheckpro extends JPlugin{
 				
 		// GeoBlocking
 		$countries = $this->geoblock_config->getValue('geoblockcountries','','geoblock');		
-		$continents = $this->geoblock_config->getValue('geoblockcontinents','','geoblock');		
-				
+		$continents = $this->geoblock_config->getValue('geoblockcontinents','','geoblock');	
+		
 		// Prioridad
 		
 		if ($priority1 == "Whitelist") {
@@ -1859,7 +1859,7 @@ class plgSystemSecuritycheckpro extends JPlugin{
 		$ip_valid = false;
 		
 		if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR']) {
-			$clientIpAddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+			$clientIpAddress = $_SERVER['HTTP_X_FORWARDED_FOR'];			
 			$result_ip_address = explode(', ',$clientIpAddress);
 			$clientIpAddress = $result_ip_address[0];			
 		} else {
@@ -1869,9 +1869,17 @@ class plgSystemSecuritycheckpro extends JPlugin{
 		}
 		$ip_valid = filter_var($clientIpAddress, FILTER_VALIDATE_IP);
 		
-		// Si la ip no es válida entonces devolvemos 'Not set'
+		// Si la ip no es válida intentamos extraer la dirección IP remota
 		if ( !$ip_valid ) {
-			$clientIpAddress = 'Not set';
+			if ( isset($_SERVER['REMOTE_ADDR']) ) {
+				$clientIpAddress = $_SERVER['REMOTE_ADDR'];			
+			}
+			
+			$ip_valid = filter_var($clientIpAddress, FILTER_VALIDATE_IP);
+			// Si la ip no es válida entonces devolvemos 'Not set'
+			if ( !$ip_valid ) {
+				$clientIpAddress = 'Not set';
+			}			
 		}
 		
 		// Devolvemos el resultado

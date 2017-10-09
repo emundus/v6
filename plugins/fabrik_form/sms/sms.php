@@ -14,7 +14,6 @@ defined('_JEXEC') or die('Restricted access');
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
-require_once COM_FABRIK_FRONTEND . '/helpers/sms.php';
 
 /**
  * Send an SMS
@@ -46,6 +45,12 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 		$data = $formModel->formData;
+
+		if (!$this->shouldProcess('sms_conditon', $data, $params))
+		{
+			return true;
+		}
+
 		$w = new FabrikWorker;
 		$opts = array();
 		$userName = $params->get('sms-username');
@@ -75,7 +80,7 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 			$gateway = $params->get('sms-gateway', 'kapow.php');
 			$input = new JFilterInput;
 			$gateway = $input->clean($gateway, 'CMD');
-			require_once JPATH_ROOT . '/components/com_fabrik/helpers/sms_gateways/' . JString::strtolower($gateway);
+            require_once JPATH_ROOT . '/libraries/fabrik/fabrik/Helpers/sms_gateways/' . StringHelper::strtolower($gateway);
 			$gateway = JFile::stripExt($gateway);
 			$this->gateway = new $gateway;
 			$this->gateway->params = $params;

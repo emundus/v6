@@ -12,8 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
-
-require_once COM_FABRIK_FRONTEND . '/helpers/image.php';
+use Fabrik\Helpers\Image;
+use Fabrik\Helpers\Uploader;
 
 define("FU_DOWNLOAD_SCRIPT_NONE", '0');
 define("FU_DOWNLOAD_SCRIPT_TABLE", '1');
@@ -994,11 +994,11 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	 */
 	public function validate($data = array(), $repeatCounter = 0)
 	{
-		$input                = $this->app->input;
-		$params               = $this->getParams();
-		$this->_validationErr = '';
-		$errors               = array();
-		$ok                   = true;
+		$input                 = $this->app->input;
+		$params                = $this->getParams();
+		$this->validationError = '';
+		$errors                = array();
+		$ok                    = true;
 
 		if ($this->isAjax())
         {
@@ -1019,6 +1019,12 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
         {
             $name  = $this->getFullName(true, false);
             $files = $input->files->get($name, array(), 'raw');
+
+            // this will happen if AJAX validating another element
+            if (empty($files))
+            {
+            	return true;
+            }
 
             if (array_key_exists($repeatCounter, $files)) {
                 $file = FArrayHelper::getValue($files, $repeatCounter);
@@ -1313,7 +1319,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			$saveParams = array();
 			$files      = array_keys($crop);
 			$storage    = $this->getStorage();
-			$oImage     = FabimageHelper::loadLib($params->get('image_library'));
+			$oImage     = Image::loadLib($params->get('image_library'));
 			$oImage->setStorage($storage);
 			$fileCounter = 0;
 
@@ -1455,11 +1461,14 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			return false;
 		}
 
+		/*
 		if ($input->getInt('fabrik_ajax') == 1)
 		{
 			// Inline edit for example no $_FILE data sent
 			return false;
 		}
+		*/
+
 		/* If we've turned on crop but not set ajax upload then the cropping wont work so we shouldn't return
 		 * otherwise no standard image processed
 		 */
@@ -1913,7 +1922,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 
 		$filePath = $this->_getFilePath($repeatGroupCounter);
 
-		if (!FabrikUploader::canUpload($file, $err, $params))
+		if (!Uploader::canUpload($file, $err, $params))
 		{
 			$this->setError($file['name'] . ': ' . FText::_($err));
 		}
@@ -1925,7 +1934,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 				case 0:
 					break;
 				case 1:
-					$filePath = FabrikUploader::incrementFileName($filePath, $filePath, 1);
+					$filePath = Uploader::incrementFileName($filePath, $filePath, 1);
 					break;
 				case 2:
 					JLog::add('Ind upload Delete file: ' . $filePath . '; user = ' . $this->user->get('id'), JLog::WARNING, 'com_fabrik.element.fileupload');
@@ -1947,7 +1956,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 
 		if (FabrikWorker::isImageExtension($filePath))
 		{
-			$oImage = FabimageHelper::loadLib($params->get('image_library'));
+			$oImage = Image::loadLib($params->get('image_library'));
 			$oImage->setStorage($storage);
 
 			if ($params->get('upload_use_wip', '0') == '1')
@@ -2187,7 +2196,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 
 		if ($element->hidden == '1')
 		{
-			return $this->getHiddenField($name, $data[$name], $id);
+			return $this->getHiddenField($name, $this->getValue($data, $repeatCounter), $id);
 		}
 
 		$str   = array();
@@ -2309,8 +2318,16 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 					$v = $v->file;
 				}
 
-				$render = $this->loadElement($v);
-				$render->render($this, $params, $v);
+                // use download script to show file rather than direct link to it
+                if ($params->get('fu_force_download_script', '0') !== '0' )
+                {
+                        $render->output = $this->downloadLink($v, $data, $repeatCounter, '');
+                }
+                else
+                {
+                    $render = $this->loadElement($v);
+                    $render->render($this, $params, $v);
+                }
 
 				if ($render->output != '')
 				{
@@ -2401,6 +2418,25 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			$str[] = $allRenders;
 			$str   = $this->plupload($str, $repeatCounter, $values);
 		}
+
+		if (!$this->isAjax()) {
+		    /*
+		     * Store any existing value for non-AJAX in a hidden element, to use after a failed validation,
+		     * otherwise we lose that value, as the data is coming from submitted data, which won't contain
+		     * original file.
+		     */
+            $nameRepeatSuffix = $groupModel->canRepeat() ? '[' . $repeatCounter . ']' : '';
+            $idRepeatSuffix = $groupModel->canRepeat() ? '_' . $repeatCounter : '';
+
+            $value = $this->getValue($data, $repeatCounter);
+            $value = is_array($value) ? json_encode($value) : $value;
+
+            $str[] = $this->getHiddenField(
+                $this->getFullName(true, false) . '_orig' . $nameRepeatSuffix,
+                $value,
+                $this->getFullName(true, false) . '_orig' . $idRepeatSuffix
+            );
+        }
 
 		array_unshift($str, '<div class="fabrikSubElementContainer">');
 		$str[] = '</div>';
@@ -2637,8 +2673,9 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	 */
 	public function onAjax_upload()
 	{
-        $input  = $this->app->input;
-        $o      = new stdClass;
+        $input     = $this->app->input;
+        $o         = new stdClass;
+        $formModel = $this->getFormModel();
         $this->setId($input->getInt('element_id'));
         $this->loadMeForAjax();
 
@@ -2651,7 +2688,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
         }
 
         // Check for request forgeries
-        if (!JSession::checkToken('request'))
+        if ($formModel->spoofCheck() && !JSession::checkToken('request'))
         {
             $o->error = FText::_('PLG_ELEMENT_FILEUPLOAD_UPLOAD_ERR');
             echo json_encode($o);
@@ -2675,7 +2712,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 
 		if (!$this->validate())
 		{
-			$o->error = $this->_validationErr;
+			$o->error = $this->validationError;
 			echo json_encode($o);
 
 			return;
@@ -2689,8 +2726,6 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		{
 			return;
 		}
-
-		require_once COM_FABRIK_FRONTEND . '/helpers/uploader.php';
 
 		// @TODO test in join
 		if (array_key_exists('file', $_FILES) || array_key_exists('join', $_FILES))
@@ -2893,7 +2928,6 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		}
 
 		$db = $this->getListModel()->getDb();
-		require_once COM_FABRIK_FRONTEND . '/helpers/uploader.php';
 		$params = $this->getParams();
 
 		if ($params->get('upload_delete_image', false))
@@ -3494,5 +3528,23 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
         return $this->getParams()->get('ajax_upload', '0') === '1';
     }
 
+	/**
+	 * Give elements a chance to reset data after a failed validation.  For instance, file upload element
+	 * needs to reset the values as they aren't submitted with the form
+	 *
+	 * @param  $data  array form data
+	 */
+	public function setValidationFailedData(&$data)
+	{
+        if (!$this->isAjax()) {
+            $origName = $this->getFullName(true, false) . '_orig';
+            $thisName = $this->getFullName(true, false);
+
+            if (array_key_exists($origName, $data)) {
+                $data[$thisName] = $data[$origName];
+                $data[$thisName . '_raw'] = $data[$origName];
+            }
+        }
+	}
 
 }

@@ -28,7 +28,7 @@ JLoader::register('BannerHelper', JPATH_ROOT . '/components/com_banners/helpers/
 			<?php $height = $item->params->get('height'); ?>
 			<?php if (BannerHelper::isImage($imageurl)) : ?>
 				<?php // Image based banner ?>
-				<?php $baseurl = strpos($imageurl, 'http') === 0 ? '' : JURI::base(true); ?>
+				<?php $baseurl = strpos($imageurl, 'http') === 0 ? '' : JUri::base(); ?>
 				<?php $alt = $item->params->get('alt'); ?>
 				<?php $alt = $alt ?: $item->name; ?>
 				<?php $alt = $alt ?: JText::_('MOD_BANNERS_BANNER'); ?>

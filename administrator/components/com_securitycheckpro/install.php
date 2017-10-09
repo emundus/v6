@@ -441,6 +441,8 @@ class com_SecuritycheckproInstallerScript {
 		if ($id) {
 			$installer = new JInstaller();
 			$result[1] = $installer->uninstall('plugin',$id,1);		
+		} else {
+			$result[1] = FALSE;
 		}
 		
 		// Uninstall  Securitycheck Pro Cron plugin
@@ -463,6 +465,8 @@ class com_SecuritycheckproInstallerScript {
 		if ($id) {
 			$installer = new JInstaller();
 			$result[2] = $installer->uninstall('plugin',$id,1);		
+		} else {
+			$result[2] = FALSE;
 		}
 		
 		// Uninstall  Securitycheck Pro URL inspector
@@ -485,6 +489,8 @@ class com_SecuritycheckproInstallerScript {
 		if ($id) {
 			$installer = new JInstaller();
 			$result[3] = $installer->uninstall('plugin',$id,1);		
+		} else {
+			$result[3] = FALSE;
 		}
 		
 		// Uninstall Installer plugin
@@ -503,12 +509,14 @@ class com_SecuritycheckproInstallerScript {
 		);
 
 		$id = $db->loadResult();
-
+		
 		if ($id) {
 			$installer = new JInstaller();
 			$result[4] = $installer->uninstall('plugin',$id,1);		
+		} else {
+			$result[4] = FALSE;
 		}
-		
+				
 		// Uninstall message
 		$this->uninstall_message($result,$status);
 		

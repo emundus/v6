@@ -14,3 +14,6 @@ DROP TABLE IF EXISTS `#__securitycheckpro_rules_logs`;
 DROP TABLE IF EXISTS `#__securitycheckpro_update_database`;
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 DROP TABLE IF EXISTS `#__securitycheckpro_url_inspector_logs`;
+DROP TABLE IF EXISTS `#__securitycheckpro_trackactions`;
+DROP TABLE IF EXISTS `#__securitycheckpro_trackactions_extensions`;
+DROP TABLE IF EXISTS `#__securitycheckpro_trackactions_tables_data`;

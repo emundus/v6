@@ -445,19 +445,6 @@ class ControlPanel extends Model
 	{
 		$internalIP = Ip::getIp();
 
-		if (array_key_exists('FOF_REMOTE_ADDR', $_SERVER))
-		{
-			$internalIP = $_SERVER['FOF_REMOTE_ADDR'];
-
-			return $internalIP;
-		}
-		elseif (function_exists('getenv') && getenv('FOF_REMOTE_ADDR'))
-		{
-			$internalIP = getenv('FOF_REMOTE_ADDR');
-
-			return $internalIP;
-		}
-
 		if ((strpos($internalIP, '::') === 0) && (strstr($internalIP, '.') !== false))
 		{
 			$internalIP = substr($internalIP, 2);
@@ -613,7 +600,6 @@ class ControlPanel extends Model
 
 		foreach ($possibleNames as $baseName)
 		{
-			var_dump($folder . '/' . $baseName);
 			if (@file_exists($folder . '/' . $baseName))
 			{
 				return $baseName;

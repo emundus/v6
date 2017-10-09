@@ -23,13 +23,7 @@ if($controller) {
 	}
 } else {
 	$controller = 'cpanel';
-	require_once(JPATH_COMPONENT.DIRECTORY_SEPARATOR.'controllers'.DIRECTORY_SEPARATOR.'cpanel.php');
-	// Handle Live Update requests
-	require_once JPATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR.'liveupdate'.DIRECTORY_SEPARATOR.'liveupdate.php';
-	if(JRequest::getCmd('view','') == 'liveupdate') {
-		LiveUpdate::handleRequest();
-		return;
-	} 
+	require_once(JPATH_COMPONENT.DIRECTORY_SEPARATOR.'controllers'.DIRECTORY_SEPARATOR.'cpanel.php');	
 }
 
 // Creamos el controlador

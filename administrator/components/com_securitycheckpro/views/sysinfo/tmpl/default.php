@@ -69,7 +69,41 @@ JHTML::_( 'behavior.framework', true );
 					<?php echo $div . "<div class=\"bar\" style=\"width: " . $this->system_info['overall_joomla_configuration'] ."%\">" . $this->system_info['overall_joomla_configuration']; ?>
 						</div>						
 					</div>			
-								
+					
+					<li>					
+						<strong><?php echo JText::_( 'COM_SECURITYCHECKPRO_AKEEBA_RESTORATION_FILES_FOUND' ); ?></strong>
+						<br/>
+						<?php 
+							if ( $this->system_info['kickstart_exists'] ) {
+								$span = "<span class=\"label label-important\">" . JText::_("COM_SECURITYCHECKPRO_YES");
+							} else {								
+								$span = "<span class=\"label label-success\">" . JText::_("COM_SECURITYCHECKPRO_NO");
+							}
+						?>						
+						</span>
+						<div class="securitycheck-bootstrap">							
+							<?php 
+								if ( !$this->system_info['kickstart_exists'] ) {
+									echo "<span class=\"label label-success\">OK</span>";
+								} else {
+									echo "<span class=\"label label-important\">" . JText::sprintf( 'COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND',1 ) . "</span>";
+							?>
+								<div id="modal_akeeba_restoration" class="modal hide fade">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+										<h3 style="color: #3986AC;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT' ); ?></</h3>
+									</div>
+									<div class="modal-body">
+										<p style="margin-left: 10px;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_AKEEBA_RESTORATION_FILES_INFO' ); ?></p>
+									</div>
+									<div class="modal-footer">
+										<button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CLOSE' ); ?></button>
+									</div>
+								</div>
+								<a href="#modal_akeeba_restoration" role="button" class="btn btn-inverse btn-mini" data-toggle="modal"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+							<?php }	?>														
+						</div>																	
+					</li> 
 					<li>					
 						<strong><?php echo JText::_( 'COM_SECURITYCHECKPRO_SECURITY_UP_TO_DATE' ); ?></strong>
 						<br/>

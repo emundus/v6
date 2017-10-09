@@ -39,7 +39,7 @@ class Updates extends Update
 
 		$config['update_component']  = 'pkg_admintools';
 		$config['update_sitename']   = 'Admin Tools Core';
-		$config['update_site']       = 'http://cdn.akeebabackup.com/updates/pkgadmintoolscore.xml';
+		$config['update_site']       = 'https://cdn.akeebabackup.com/updates/pkgadmintoolscore.xml';
 		$config['update_extraquery'] = '';
 
 		$isPro = defined('ADMINTOOLS_PRO') ? ADMINTOOLS_PRO : 0;
@@ -55,8 +55,13 @@ class Updates extends Update
 		if ($isPro)
 		{
 			$config['update_sitename']   = 'Admin Tools Professional';
-			$config['update_site']       = 'http://cdn.akeebabackup.com/updates/pkgadmintoolspro.xml';
+			$config['update_site']       = 'https://cdn.akeebabackup.com/updates/pkgadmintoolspro.xml';
 			$config['update_extraquery'] = 'dlid=' . $dlid;
+		}
+
+		if (defined('ADMINTOOLS_VERSION') && !in_array(substr(ADMINTOOLS_VERSION, 0, 3), ['dev', 'rev']))
+		{
+			$config['update_version'] = ADMINTOOLS_VERSION;
 		}
 
 		parent::__construct($config);

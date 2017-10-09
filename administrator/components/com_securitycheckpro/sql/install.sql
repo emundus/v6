@@ -328,7 +328,26 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('Joomla!','core','3.7.3','<=','3.0.0','>=','Joomla! core','Lack of Ownership Verification','Jul 25 2017','versions 1.0.0 through 3.7.3','update','3.7.4'),
 ('Joomla!','core','3.7.3','<=','3.0.0','>=','Joomla! XSS Vulnerability','Inadequate filtering of potentially malicious HTML tags','Jul 25 2017','versions 1.5.0 through 3.7.3','update','3.7.4'),
 ('com_ccnewsletter','component','2.1.9','==','3.0.0','>=','CCNewsLetter Component','SQL Injection Vulnerability','Aug 01 2017','Version 2.1.9','none','No details'),
-('com_extplorer','component','2.1.9','<=','3.0.0','>=','Extplorer Component','Directory Transversal Vulnerability','Aug 04 2017','Version 2.1.9 and previous','none','No details');
+('com_extplorer','component','2.1.9','<=','3.0.0','>=','Extplorer Component','Directory Transversal Vulnerability','Aug 04 2017','Version 2.1.9 and previous','none','No details'),
+('com_calendarplanner','component','1.0.1','==','3.0.0','>=','Calendar Planner Component','SQL Injection Vulnerability','Aug 24 2017','Version 1.0.1','update','1.0.2'),
+('mod_byebyepassword','module','1.0.4','<=','3.0.0','>=','Bye bye Password Module','Information Disclosure Vulnerability','Aug 24 2017','Version 1.0.4 and lower','none','No details'),
+('com_zcalendar','component','4.3.6','<=','3.0.0','>=','Zcalendar Component','SQL Injection Vulnerability','Aug 26 2017','Version 4.3.6 and lower','update','4.3.7'),
+('com_ccnewsletter','component','2.1.9','<=','3.0.0','>=','Ccnewsletter Component','SQL Injection Vulnerability','Aug 26 2017','Version 2.1.9 and lower','update','2.2.0'),
+('com_lmsking','component','3.2.3.19','<=','3.0.0','>=','LMS King Component','SQL Injection Vulnerability','Aug 30 2017','Version 3.2.319 and lower','update','3.2.3.20'),
+('com_twitchtv','component','1.1','==','3.0.0','>=','Twitch tv Component','SQL Injection Vulnerability','Aug 30 2017','Version 1.1','none','No details'),
+('com_kissgallery','component','1.0.0','==','3.0.0','>=','Kissgallery Component','SQL Injection Vulnerability','Aug 30 2017','Version 1.0.0','none','No details'),
+('com_registrationpro','component','4.1.3','==','3.0.0','>=','Event Registration Pro Component','SQL Injection Vulnerability','Sep 07 2017','Version 4.1.3','none','No details'),
+('com_rpl','component','1.0.0','>=','3.0.0','>=','Realtyna RPL Component','SQL Injection Vulnerability','Sep 07 2017','All versions','none','No details'),
+('com_simgenealogy','component','2.1.8','<','3.0.0','>=','Simgenealogy Component','SQL Injection Vulnerability','Sep 10 2017','Version 2.1.7 and previous','update','2.1.8'),
+('com_payplans','component','3.6.3','<','3.0.0','>=','Payplans Component','Price modification Vulnerability','Sep 13 2017','Version 3.6.2 and previous','update','3.6.3'),
+('com_joomanager','component','2.0.0','<=','3.0.0','>=','Joomanager Component','Arbitrary File Download Vulnerability','Sep 14 2017','2.0.0 and previous','none','No details'),
+('Joomla!','core','3.7.5','<=','3.0.0','>=','Joomla! Information disclosures','Bug in SQL query','Sep 19 2017','Joomla! versions 3.7.0 through 3.7.5','update','3.8.0'),
+('Joomla!','core','3.7.5','<=','3.0.0','>=','Joomla! LDAP Information disclosures','Inadequate escaping in LDAP autenthication plugin','Sep 19 2017','Joomla! versions 1.5.0 through 3.7.5','update','3.8.0'),
+('com_userextranet','component','1.3.2','<=','3.0.0','>=','UserExtranet Component','SQL Injection Vulnerability','Sep 21 2017','1.3.2 and previous','update','1.3.3'),
+('com_surveyforce','component','3.2.4','==','3.0.0','>=','Survey Force Deluxe Component','SQL Injection Vulnerability','Sep 21 2017','3.2.4','update','3.2.5'),
+('com_spmoviedb','component','1.3','==','3.0.0','>=','SP Movie Database Component','SQL Injection Vulnerability','Sep 22 2017','1.3','update','1.4'),
+('com_ns_downloadshop','component','2.2.6','==','3.0.0','>=','NS Download Shop Component','SQL Injection Vulnerability','Oct 01 2017','Version 2.2.6','none','No details'),
+('com_zhyandexmap','component','6.1.1.0','==','3.0.0','>=','Zh YandexMap Component','SQL Injection Vulnerability','Oct 01 2017','Version 6.1.1.0','none','No details');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -449,7 +468,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.0.92');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.0.101');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (
@@ -462,7 +481,7 @@ PRIMARY KEY (`id`)
 DROP TABLE IF EXISTS `#__securitycheckpro_url_inspector_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_url_inspector_logs` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ip` VARCHAR(35) NOT NULL,
+`ip` VARCHAR(100) NOT NULL,
 `uri` VARCHAR(100),
 `forbidden_words` VARCHAR(300) NOT NULL,
 `date_added` DATETIME,

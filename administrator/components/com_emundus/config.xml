@@ -145,6 +145,14 @@
 	</fieldset>
 -->	
 
+	<fieldset label="COM_EMUNDUS_CALENDAR" name="calendar" description="COM_EMUNDUS_CALENDAR_DESC">
+		<field name="clientId" type="text" required="false" label="COM_EMUNDUS_CLIENTID_GOOGLE_LABEL" description="COM_EMUNDUS_CLIENTID_GOOGLE_DESC" class="inputbox" default="" ForcedDisplay="value"/>
+		<field name="clientSecret" type="text" required="false" label="COM_EMUNDUS_CLIENTSECRET_GOOGLE_LABEL" description="COM_EMUNDUS_CLIENTSECRET_GOOGLE_DESC" class="inputbox" default=""/>
+		<field name="refreshToken" type="text" required="false" label="COM_EMUNDUS_REFRESHTOKEN_GOOGLE_LABEL" description="COM_EMUNDUS_REFRESHTOKEN_GOOGLE_DESC" class="inputbox" default=""/>
+		<field name="parentCalId" type="text" required="false" label="COM_EMUNDUS_PARENTCAL_LABEL" description="COM_EMUNDUS_PARENTCAL_DESC" class="inputbox" default="" />
+		<field name="mailRecipients" type="text" required="false" label="COM_EMUNDUS_MAILRECIPIENTS_LABEL" description="COM_EMUNDUS_MAILRECIPIENTS_DESC" class="inputbox" default="5" />
+	</fieldset>
+
 	<fieldset label="COM_EMUNDUS_INTEGRATION" name="ametys" description="COM_EMUNDUS_INTEGRATION_DESC">
 		<field name="ametys_integration" menu="hide" type="list" default="0" label="COM_EMUNDUS_AMETYS" description="COM_EMUNDUS_AMETYS_DESC">
 			<option value="0">JNO</option>

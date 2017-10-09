@@ -636,7 +636,7 @@ define(['jquery', 'fab/element', 'fab/encoder', 'fab/fabrik', 'fab/autocomplete-
                     return;
                 }
                 if (typeOf(val) === 'string') {
-                    val = JSON.decode(val);
+                    val = JSON.parse(val);
                 }
                 var h = this.form.getFormData();
                 if (typeOf(h) === 'object') {
@@ -679,7 +679,7 @@ define(['jquery', 'fab/element', 'fab/encoder', 'fab/fabrik', 'fab/autocomplete-
                         }
                     } else {
                         if (typeOf(val) === 'string') {
-                            val = val === '' ? [] : JSON.decode(val);
+                            val = val === '' ? [] : JSON.parse(val);
                         }
                         if (typeOf(val) !== 'array') {
                             val = [val];
@@ -767,7 +767,7 @@ define(['jquery', 'fab/element', 'fab/encoder', 'fab/fabrik', 'fab/autocomplete-
 		            case 'auto-complete':
 		            case 'radio':
 		            default:
-		                if (typeof this.options.value === 'string') {
+		                if (!jQuery.isArray(this.options.value)) {
 		                    return this.options.value;
                         }
 		                else if (this.options.value.length !== 0) {

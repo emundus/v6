@@ -220,7 +220,7 @@ class Calendar extends \JFormFieldCalendar implements FieldInterface
 
 			if ($this->onchange)
 			{
-				$attributes['onchange'] = $this->onchange;
+				$attributes['onChange'] = $this->onchange;
 			}
 
 			if ($this->required)

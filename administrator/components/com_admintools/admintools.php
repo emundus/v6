@@ -34,6 +34,14 @@ if (function_exists('eaccelerator_info'))
 	}
 }
 
+// HHVM made sense in 2013, now PHP 7 is a way better solution than an hybrid PHP interpreter
+if (defined('HHVM_VERSION'))
+{
+	(include_once __DIR__ . '/View/hhvm.php') or die('We have detected that you are running HHVM instead of PHP. This software WILL NOT WORK properly on HHVM. Please switch to PHP 7 instead.');
+
+	return;
+}
+
 if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
 {
 	throw new RuntimeException('FOF 3.0 is not installed', 500);

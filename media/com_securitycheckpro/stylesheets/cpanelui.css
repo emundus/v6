@@ -40,6 +40,8 @@
 .sc-icon-purgesessions{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/purge_sessions.png) top left no-repeat; margin: 4px auto 6px; }
 .sc-icon-spamprotection{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/spamprotection.png) top left no-repeat; margin: 4px auto 6px; }
 .sc-icon-url_inspector{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/url_inspector_panel.png) top left no-repeat; margin: 4px auto 6px; }
+.sc-icon-firewalltrackactions{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/trackactions.png) top left no-repeat; margin: 4px auto 6px; }
+.sc-icon-view_trackactions_logs{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/view_trackactions_logs.png) top left no-repeat; margin: 4px auto 6px; }
 
 /*
  * Control Panel
