@@ -238,8 +238,11 @@ public function GetConfigApplied(){
 		if ( $exists ) {
 			$this->ConfigApplied['own_banned_list'] = 1;
 		}
+					
 		/* 'own_code' habilitado? */
+		$exists = false;
 		$current_own_code = explode( PHP_EOL, $this->getValue("own_code") );
+				
 		if ( ! empty( $current_own_code ) && ! ( sizeof( $current_own_code ) == 1 && trim( $current_own_code[0] ) == ''  ) ) {
 			$exists = true;
 			foreach ( $current_own_code as $code ) {
@@ -331,6 +334,9 @@ public function protect()
 	$site_url = str_replace('http://',"",JURI::base());
 	
 	$rules = null;
+	$endsat = 0;
+	$rules_end = null;
+	$rules_applied = null;
 			
 	$ExistsHtaccess = $this->ExistsFile('.htaccess');  // Comprobamos si existe el archivo .htaccess
 	if ( $ExistsHtaccess) {  // Si existe, hacemos un backup
@@ -341,14 +347,34 @@ public function protect()
 		}
 		
 		//Leemos el contenido del fichero htaccess.txt existente y lo guardamos en el buffer.		
-		$rules .= JFile::read(JPATH_SITE . DIRECTORY_SEPARATOR . '.htaccess');
+		$rules_applied .= JFile::read(JPATH_SITE . DIRECTORY_SEPARATOR . '.htaccess');
 		
 		// Obtenemos los valores que ya están aplicados para evitar duplicar valores
 		$this-> ConfigApplied = $this->GetConfigApplied();
-		// Borramos el fichero .htaccess 
-		$this->delete_htaccess();
-		// Actualizamos la variable después de borrar el fichero
-		$ExistsHtaccess = false;
+		
+		// Longitud total del fichero
+		$longitud = strlen($rules_applied);
+		// Primera ocurrencia del string "## Begin Securitycheck Pro", que es el que da comienzo a las secciones añadidas por la protección
+		$startsat = strpos($rules_applied, "## Begin Securitycheck Pro");
+		$fin = $startsat;
+		
+		// Última ocurrencia del string "## End Securitycheck Pro", que es el que da fin a las secciones añadidas por la protección
+		while ($endsat <= $longitud) {
+			$endsat = strpos( $rules_applied, "## End Securitycheck Pro", $fin);
+			if ($endsat === false) {
+				$endsat = $fin;
+				break;
+			}
+			$fin = $endsat + strlen("## End Securitycheck Pro");						
+		}
+		
+		// Obtenemos la primera parte del fichero (desde el comienzo del fichero hasta la aparición del string "## Begin Securitycheck Pro")
+		$rules = substr($rules_applied, 0, $startsat);
+		// Modificamos el valor para añadir el contenido hasta el final de la línea
+		$endsat = strpos($rules_applied, PHP_EOL, $endsat);
+		
+		$rules_end = trim(substr($rules_applied, $endsat));
+		
 	} else {  
 		/* Si no existe el fichero, copiamos el que incorpora Joomla por defecto */		
 		if ( $this->ExistsFile('htaccess.txt') ) {			
@@ -363,79 +389,83 @@ public function protect()
 	
 	/* Comprobamos si hay que proteger los archivos .ht */
 	if ( $this->getValue("prevent_access") ) {
-		if ( ( !$ExistsHtaccess ) &&  ( !$this->ConfigApplied['prevent_access'] ) ) {
+		
 			$rules .= PHP_EOL . "## Begin Securitycheck Pro Prevent access to .ht files";
 			$rules .= PHP_EOL . "<FilesMatch \"^.ht\">";
 			$rules .= PHP_EOL . "Order deny,allow";
 			$rules .= PHP_EOL . "Deny from all";
 			$rules .= PHP_EOL . "</FilesMatch>";
 			$rules .= PHP_EOL . "## End Securitycheck Pro Prevent access to .ht files" . PHP_EOL;
-		}
+		
 	}
 	
 	/* Comprobamos si hay que proteger los directorios de navegación no autorizada. Esta opción ya viene por defecto en las últimas versiones de Joomla */
 	if ( ($this->getValue("prevent_unauthorized_browsing")) && (!$this->ConfigApplied['prevent_unauthorized_browsing']) ) {
-		if ( ( !$ExistsHtaccess ) &&  ( !$this->ConfigApplied['prevent_unauthorized_browsing'] ) ) {
+		
 			$rules .= PHP_EOL . "## Begin Securitycheck Pro Prevent Unauthorized Browsing";
 			$rules .= PHP_EOL . "Options All -Indexes";
 			$rules .= PHP_EOL . "## End Securitycheck Pro Prevent Unauthorized Browsing" . PHP_EOL;
-		}
+		
 	}
 	
 	/* Comprobamos si hay que proteger frente a ataques de inclusión */
 	if ( $this->getValue("file_injection_protection") ) {
-		if ( ( !$ExistsHtaccess ) &&  ( !$this->ConfigApplied['file_injection_protection'] ) ) {
-			$rules .= PHP_EOL . "## Begin File Injection Protection";
+		
+			$rules .= PHP_EOL . "## Begin Securitycheck Pro File Injection Protection";
 			$rules .= PHP_EOL . "RewriteCond %{REQUEST_METHOD} GET";
 			$rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=http:// [OR]";
 			$rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=(\.\.//?)+ [OR]";
 			$rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=/([a-z0-9_.]//?)+ [NC]";
 			$rules .= PHP_EOL . "RewriteRule .* - [F]";
-			$rules .= PHP_EOL . "## End File Injection Protection" . PHP_EOL;
-		}
+			$rules .= PHP_EOL . "## End Securitycheck Pro File Injection Protection" . PHP_EOL;
+		
 	}
 	
 	/* Comprobamos si hay que proteger frente a ataques que intentan explotar la vulnerabilidad de /proc/self/environ */
 	if ( $this->getValue("self_environ") ) {
-		if ( ( !$ExistsHtaccess ) &&  ( !$this->ConfigApplied['file_injection_protection'] ) ) {
+			
+			$rules .= PHP_EOL . "## Begin Securitycheck Pro self/environ protection";
 			$rules .= PHP_EOL . "## /proc/self/environ? Go away!";
-			$rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} proc/self/environ [NC,OR]" . PHP_EOL;			
-		}
+			$rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} proc/self/environ [NC,OR]";	
+			$rules .= PHP_EOL . "## End Securitycheck Pro self/environ protection" . PHP_EOL;		
 	}
 	
 	/* Comprobamos si hay que proteger las cabeceras X-Frame del navegador */
 	if ( !($this->getValue("xframe_options") == 'NO') ) {
-		if ( ( !$ExistsHtaccess ) &&  ( !$this->ConfigApplied['xframe_options'] ) ) {
+		
+			$rules .= PHP_EOL . "## Begin Securitycheck Pro Xframe-options protection";
 			$rules .= PHP_EOL . "## Don't allow any pages to be framed - Defends against CSRF";
 			$rules .= PHP_EOL . "<IfModule mod_headers.c>";
 			$rules .= PHP_EOL . "Header set X-Frame-Options " . $this->getValue("xframe_options");			
-			$rules .= PHP_EOL . "</IfModule>" . PHP_EOL;
-		}
+			$rules .= PHP_EOL . "</IfModule>";
+			$rules .= PHP_EOL . "## End Securitycheck Pro Xframe-options protection" . PHP_EOL;	
+		
 	}
 	
 	/* Comprobamos si hay que establecer protección contra ataques basados en 'mime'*/
 	if ( $this->getValue("prevent_mime_attacks") ) {
-		if ( ( !$ExistsHtaccess ) &&  ( !$this->ConfigApplied['prevent_mime_attacks'] ) ) {
-			$rules .= PHP_EOL . "## Prevent mime based attacks";
+		
+			$rules .= PHP_EOL . "## Begin Securitycheck Pro Prevent mime based attacks";
 			$rules .= PHP_EOL . "<IfModule mod_headers.c>";
 			$rules .= PHP_EOL . 'Header set X-Content-Type-Options "nosniff"';			
-			$rules .= PHP_EOL . "</IfModule>" . PHP_EOL;
-		}
+			$rules .= PHP_EOL . "</IfModule>";
+			$rules .= PHP_EOL . "## End Securitycheck Pro Prevent mime based attacks" . PHP_EOL;	
+		
 	}
 	
 	/* Comprobamos si hay que aplicar la lista de user-agents por defecto */
 	if ( $this->getValue("default_banned_list") ) {
-		if ( ( !$ExistsHtaccess ) &&  ( !$this->ConfigApplied['default_banned_list'] ) ) {
+		
 			$user_agent_rules = JFile::read(JPATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'user_agent_blacklist.inc');
 			// Añadimos el contenido del fichero por defecto al final del buffer
 			$rules .= PHP_EOL . $user_agent_rules . PHP_EOL;
-		}
+		
 	}
 	
 	/* Comprobamos si hay que aplicar la lista de user-agents establecida por el usuario */
 	$own_user_agents = explode( PHP_EOL, $this->getValue("own_banned_list") );
 	if ( ! empty( $own_user_agents ) && ! ( sizeof( $own_user_agents ) == 1 && trim( $own_user_agents[0] ) == ''  ) ) {
-		if ( ( !$ExistsHtaccess ) &&  ( !$this->ConfigApplied['own_banned_list'] ) ) {
+		
 			$rules .= PHP_EOL . "## Begin Securitycheck Pro User Own Blacklist";
 			$count = 1;
 					
@@ -453,13 +483,13 @@ public function protect()
 				
 			$rules .= PHP_EOL . "RewriteRule ^(.*)$ - [F,L]";
 			$rules .= PHP_EOL . "## End Securitycheck Pro User Own Blacklist" . PHP_EOL;
-		}
+		
 	}
 	
 	/* Comprobamos si hay que aplicar código del usuario */
 	$own_code = explode( PHP_EOL, $this->getValue("own_code") );
 	if ( ! empty( $own_code ) && ! ( sizeof( $own_code ) == 1 && trim( $own_code[0] ) == ''  ) ) {
-		if ( ( !$ExistsHtaccess ) &&  ( !$this->ConfigApplied['own_code'] ) ) {
+		
 			$rules .= PHP_EOL . "## Begin Securitycheck Pro User Own Code";
 			$count = 1;
 					
@@ -469,32 +499,32 @@ public function protect()
 			}
 				
 			$rules .= PHP_EOL . "## End Securitycheck Pro User Own Code" . PHP_EOL;
-		}
+		
 	}
 	
 	/* Comprobamos si hay que deshabilitar la firma del servidor*/
 	if ( $this->getValue("disable_server_signature") ) {
-		if ( ( !$ExistsHtaccess ) &&  ( !$this->ConfigApplied['disable_server_signature'] ) ) {
+		
 			$rules .= PHP_EOL . "# Begin Securitycheck Pro Disable Server Signature";
 			$rules .= PHP_EOL . "ServerSignature Off";
 			$rules .= PHP_EOL . "## End Securitycheck Pro Disable Server Signature" . PHP_EOL;
-		}
+		
 	}
 	
 	/* Comprobamos si hay que prohibir los 'easter-eggs' de PHP */
 	if ( $this->getValue("disallow_php_eggs") ) {
-		if ( ( !$ExistsHtaccess ) &&  ( !$this->ConfigApplied['disallow_php_eggs'] ) ) {
+		
 			$rules .= PHP_EOL . "## Begin Securitycheck Pro Disallow Php Easter Eggs";
 			$rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} \=PHP[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12} [NC]";
 			$rules .= PHP_EOL . "RewriteRule .* index.php [F]";
 			$rules .= PHP_EOL . "## End Securitycheck Pro Disallow Php Easter Eggs" . PHP_EOL;
-		}
+		
 	}
 	
 	/* Comprobamos si hay que prohibir el acceso a archivos que pueden contener información sensible o que tengan alguna vulnerabilidad */
 	$disallow_sensible_files_access = explode( PHP_EOL, $this->getValue("disallow_sensible_files_access") );
 	if ( ! empty( $disallow_sensible_files_access ) && ! ( sizeof( $disallow_sensible_files_access ) == 1 && trim( $disallow_sensible_files_access[0] ) == ''  ) ) {
-		if ( ( !$ExistsHtaccess ) &&  ( !$this->ConfigApplied['disallow_sensible_files_access'] ) ) {
+		
 			$rules .= PHP_EOL . "## Begin Securitycheck Pro Disallow Access To Sensitive Files";
 			$rules .= PHP_EOL . "RewriteRule ^(";
 					
@@ -511,12 +541,12 @@ public function protect()
 			
 			$rules .= ")$ - [F]";
 			$rules .= PHP_EOL . "## End Securitycheck Pro Disallow Access To Sensitive Files" . PHP_EOL;
-		}
+		
 	}
 	
 	/* Comprobamos si hay que ocultar la url del backend */
 	if ( !is_null($this->getValue("hide_backend_url")) ) {
-		if ( ( !$ExistsHtaccess ) &&  ( !$this->ConfigApplied['hide_backend_url'] ) ) {
+		
 			$rules .= PHP_EOL . "## Begin Securitycheck Pro Hide Backend Url";
 			$rules .= PHP_EOL . "RewriteCond %{HTTP_REFERER} !" . $site_url;
 			$rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} !^" . $this->getValue("hide_backend_url") . "$";
@@ -532,12 +562,12 @@ public function protect()
 			}
 			$rules .= PHP_EOL . "RewriteRule ^.*administrator/? /" . $this->getValue("hide_backend_url_redirection") ." [R,L]";
 			$rules .= PHP_EOL . "## End Securitycheck Pro Hide Backend Url";
-		}
+		
 	}
 	
 	/* Comprobamos si hay que establecer el tiempo óptimo de los recursos */
 	if ( $this->getValue("optimal_expiration_time") ) {
-		if ( ( !$ExistsHtaccess ) &&  ( !$this->ConfigApplied['optimal_expiration_time'] ) ) {
+		
 			$rules .= PHP_EOL . "## Begin Securitycheck Pro Optimal Expiration time";
 			$rules .= PHP_EOL . "<IfModule mod_expires.c>";
 			$rules .= PHP_EOL . "# Enable expiration control";
@@ -586,12 +616,12 @@ public function protect()
 			$rules .= PHP_EOL . "</filesMatch>";
 			$rules .= PHP_EOL . "</IfModule>";
 			$rules .= PHP_EOL . "## End Securitycheck Pro Optimal Expiration time" . PHP_EOL;
-		}
+		
 	}
 	
 	/* Comprobamos si hay que comprimir contenido */
 	if ( $this->getValue("compress_content") ) {
-		if ( ( !$ExistsHtaccess ) &&  ( !$this->ConfigApplied['compress_content'] ) ) {
+		
 			$rules .= PHP_EOL . "## Begin Securitycheck Pro compress content";
 			$rules .= PHP_EOL . "<IfModule mod_deflate.c>";
 			$rules .= PHP_EOL . "AddOutputFilterByType DEFLATE text/html text/xml text/css text/plain";
@@ -602,12 +632,12 @@ public function protect()
 			$rules .= PHP_EOL . "AddOutputFilterByType DEFLATE font/truetype font/opentype";
 			$rules .= PHP_EOL . "</IfModule>";
 			$rules .= PHP_EOL . "## End Securitycheck Pro Redirect compress content" . PHP_EOL;
-		}
+		
 	}
 	
 	/* Comprobamos si hay que redirigir las peticiones no www a www */
 	if ( $this->getValue("redirect_to_www") ) {
-		if ( ( !$ExistsHtaccess ) &&  ( !$this->ConfigApplied['redirect_to_www'] ) ) {
+		
 			$rules .= PHP_EOL . "## Begin Securitycheck Pro Redirect non-www to www";
 			$rules .= PHP_EOL . "RewriteCond %{HTTP_HOST} !^www\. [NC]";
 			$rules .= PHP_EOL . "RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]";
@@ -615,7 +645,12 @@ public function protect()
 			$rules .= PHP_EOL . "RewriteCond %{HTTPS}s on(s)|offs()";
 			$rules .= PHP_EOL . "RewriteRule ^ http%1://www.%{HTTP_HOST}%{REQUEST_URI} [NE,L,R]";*/
 			$rules .= PHP_EOL . "## End Securitycheck Pro Redirect non-www to www" . PHP_EOL;
-		}
+		
+	}
+	
+	// Añadimos la parte final (si es necesario)
+	if ( $ExistsHtaccess) { 
+		$rules .= $rules_end;
 	}
 	
 	/* Comprobamos si hay algo que aplicar */

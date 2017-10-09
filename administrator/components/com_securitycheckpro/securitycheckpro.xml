@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="3.0" method="upgrade">
 <name>Securitycheck Pro</name>
-<creationDate>17-08-2017</creationDate>
+<creationDate>05-10-2017</creationDate>
 <author>Jose A. Luque</author>
 <authorEmail>contacto@protegetuordenador.com</authorEmail>
 <authorUrl>http://www.protegetuordenador.com</authorUrl>
 <copyright>Copyright www.protegetuordenador.com</copyright>
 <license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
-<version>2.8.21</version>
+<version>2.8.22</version>
 <description>COM_SECURITYCHECKPRO_DESCRIPTION</description> 
 
 <!-- Public front end files -->
@@ -68,7 +68,6 @@
 <folder>includes</folder>
 <folder>language</folder>
 <folder>library</folder>
-<folder>liveupdate</folder>
 <folder>models</folder>
 <folder>scans</folder>
 <folder>sql</folder>

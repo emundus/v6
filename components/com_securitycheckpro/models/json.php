@@ -168,10 +168,6 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 					$this->deleteBlocked();
 					break;
 					
-				case "LatestReleaseInfo":
-					$this->LatestReleaseInfo();
-					break;
-					
 				case "checkmalware":
 					$this->checkMalware();
 					break;
@@ -260,9 +256,23 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 	/* Función que devuelve el estado de la extensión remota  */
 	public function getStatus($opcion=true) {
-	
+		
 		// Inicializamos las variables
 		$extension_updates = null;
+		$installed_version = "0.0.0";
+		$hasUpdates = 0;
+		
+		$db = JFactory::getDBO();
+		
+		// Buscamos la versión de SCP instalada
+		$query = $db->getQuery(true)
+			->select($db->quoteName('manifest_cache'))
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('name') . ' = ' . $db->quote('Securitycheck Pro'));
+		$db->setQuery( $query );				
+		$result = $db->loadResult();					
+		$manifest = json_decode($result);
+		$installed_version = isset($manifest->version) ? $manifest->version : "0.0.0";
 		
 		// Import Securitycheckpros model
 		JLoader::import('joomla.application.component.model');
@@ -340,17 +350,13 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		// Comprobamos el estado del backup
 		$this->getBackupInfo();
 		
-		// Verificamos si el cliente está actualizado
-		require_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/liveupdate/liveupdate.php';
-		$liveupdatemodel = new LiveUpdate();
-		$updateInformation = $liveupdatemodel->getUpdateInformation(1);
-		
+			
 		// Verificamos si el core está actualizado (obviando la caché) 
 		require_once JPATH_ROOT.'/administrator/components/com_joomlaupdate/models/default.php';
 		$updatemodel = new JoomlaupdateModelDefault();
 		$updatemodel->refreshUpdates(true);
 		$coreInformation = $updatemodel->getUpdateInformation();
-						
+										
 		// Si el plugin 'Update Batabase' está instalado, comprobamos si está actualizado
 		if ( $update_database_plugin_installed ) {
 			$this->update_database_plugin_needs_update = $this->checkforUpdate();
@@ -364,6 +370,15 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		// Añadimos la información sobre las extensiones no actualizadas. Esta opción no es necesaria cuando escogemos la opción 'System Info'
 		if ( $opcion ) {
 			$extension_updates = $this->getNotUpdatedExtensions();
+			$outdated_extensions = json_decode($extension_updates, true);
+			$sc_to_find = "Securitycheck Pro";
+			$key_sc = array_search($sc_to_find, array_column($outdated_extensions, 2));	
+			
+			if ( $key_sc !== false ) {
+				$installed_version = $outdated_extensions[$key_sc][4];
+				$hasUpdates = 1;
+			}		
+			
 		}	
 		
 		$this->data = array(
@@ -373,8 +388,8 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			'last_check' => $last_check,
 			'files_with_bad_integrity'		=> $files_with_bad_integrity,
 			'last_check_integrity' => $last_check_integrity,
-			'installed_version'	=> $updateInformation->extInfo->version,
-			'hasUpdates'	=> $updateInformation->hasUpdates,
+			'installed_version'	=> $installed_version,
+			'hasUpdates'	=> $hasUpdates,
 			'coreinstalled'	=>	$coreInformation['installed'],
 			'corelatest'	=>	$coreInformation['latest'],
 			'last_check_malwarescan' => $last_check_malwarescan,
@@ -612,20 +627,6 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 				}
 			}
 		}
-	}
-	
-	/* Obtiene información de la última versión publicada */
-	private function LatestReleaseInfo() {
-		/* Preguntamos por la información de la última versión */
-		require_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/liveupdate/liveupdate.php';
-		$updateInformation = LiveUpdate::getUpdateInformation(1);
-		
-	
-		$this->data = array(
-			'latest_version'	=> $updateInformation->version,
-			'release_notes'	=> $updateInformation->releasenotes
-		);
-	
 	}
 	
 	/* Obtiene información de los requisitos necesarios para clonar una web */

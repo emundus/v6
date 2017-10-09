@@ -94,25 +94,29 @@ public function getListQuery()
 	JLoader::import('joomla.utilities.date');
 
 	$fltDateFrom = $this->getState('datefrom', null, 'string');
-	if($fltDateFrom) {
-		$regex = '/^\d{1,4}(\/|-)\d{1,2}(\/|-)\d{2,4}[[:space:]]{0,}(\d{1,2}:\d{1,2}(:\d{1,2}){0,1}){0,1}$/';
-		if(!preg_match($regex, $fltDateFrom)) {
-			$fltDateFrom = '2000-01-01 00:00:00';
-			$this->setState('datefrom', '');
-		}
-		$date = new JDate($fltDateFrom);
-		$query->where($db->quoteName('time').' >= '.$db->Quote($date->toSql()));
+	
+	if(!empty($fltDateFrom)) {
+		$is_valid = $this->checkIsAValidDate($fltDateFrom);
+		if ($is_valid ) {
+			$date = new JDate($fltDateFrom);
+			$query->where($db->quoteName('time').' >= '.$db->Quote($date->toSql()));
+		} else {
+			if ( $fltDateFrom != "0000-00-00 00:00:00" ) {
+				JError::raiseNotice(100,JText::_("COM_SECURITYCHECKPRO_DATE_NOT_VALID"));
+			}			
+		}	
 	}
-
-	$fltDateTo = $this->getState('dateto', null, 'string');
-	if($fltDateTo) {
-		$regex = '/^\d{1,4}(\/|-)\d{1,2}(\/|-)\d{2,4}[[:space:]]{0,}(\d{1,2}:\d{1,2}(:\d{1,2}){0,1}){0,1}$/';
-		if(!preg_match($regex, $fltDateTo)) {
-			$fltDateTo = '2037-01-01 00:00:00';
-			$this->setState('dateto', '');
-		}
-		$date = new JDate($fltDateTo);
-		$query->where($db->quoteName('time').' <= '.$db->Quote($date->toSql()));
+	
+	if(!empty($fltDateTo)) {
+		$is_valid = $this->checkIsAValidDate($fltDateTo);
+		if ($is_valid ) {
+			$date = new JDate($fltDateTo);
+			$query->where($db->quoteName('time').' <= '.$db->Quote($date->toSql()));
+		} else {
+			if ( $fltDateTo != "0000-00-00 00:00:00" ) {
+				JError::raiseNotice(100,JText::_("COM_SECURITYCHECKPRO_DATE_NOT_VALID"));
+			}
+		}	
 	}
 	
 	// Add the list ordering clause.
@@ -121,6 +125,10 @@ public function getListQuery()
 	return $query;
 	}
 		
+
+function checkIsAValidDate($myDateString){
+    return (bool)strtotime($myDateString);
+}
 
 /* Función para cambiar el estado de un array de logs de no leído a leído */
 function mark_read(){

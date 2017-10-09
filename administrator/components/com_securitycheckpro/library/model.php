@@ -126,7 +126,7 @@ private $defaultConfig = array(
 	'write_log_inspector'	=> 1,
 	'action_inspector'	=>	2,
 	'send_email_inspector'	=>	0
-);
+	);
 
 
 function __construct()
@@ -706,6 +706,8 @@ function PluginStatus($opcion) {
 		$query = 'SELECT COUNT(*) FROM #__extensions WHERE name="System - Securitycheck Spam Protection"';
 	} else if ( $opcion == 7 ) {
 		$query = 'SELECT enabled FROM #__extensions WHERE name="System - url inspector"';
+	} else if ( $opcion == 8 ) {
+		$query = 'SELECT COUNT(*) FROM #__extensions WHERE name="System - Track Actions"';
 	}
 	
 	$db->setQuery( $query );

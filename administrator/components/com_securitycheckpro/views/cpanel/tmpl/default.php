@@ -455,11 +455,7 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 			<strong><?php echo JText::_( 'COM_SECURITYCHECKPRO_SECURITY_OVERALL_SECURITY_STATUS' ); ?></strong>
 			<button class="btn btn-info btn-mini right" type="button" onclick="Joomla.submitbutton('Go_system_info')" href="#"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_STATUS' ); ?></i></button>
 		</div>
-		
-		<div class="well span3 top-block">
-			<?php echo LiveUpdate::getIcon(); ?>
-		</div>
-		
+				
 		<div class="well span3 top-block">
 			<strong><a href="#" id="subscriptions_status" data-toggle="tooltip" title="<?php echo JText::_( 'COM_SECURITYCHECKPRO_SUBSCRIPTIONS_STATUS_EXPLAINED' ); ?>"><?php echo JText::_( 'COM_SECURITYCHECKPRO_SUBSCRIPTIONS_STATUS' ); ?></a></strong>
 			<p></p>

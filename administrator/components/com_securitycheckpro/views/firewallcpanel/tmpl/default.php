@@ -125,6 +125,13 @@ JHTML::stylesheet($bootstrap_css);
 				<span><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_URL_INSPECTOR_TEXT'); ?></span>
 				</a>
 			</div>
+			
+			<div class="icon">
+				<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=firewalltrackactions&view=firewalltrackactions&'. JSession::getFormToken() .'=1' );?>">
+				<div class="sc-icon-firewalltrackactions">&nbsp;</div>
+				<span><?php echo JText::_('COM_SECURITYCHECKPRO_TRACK_ACTIONS'); ?></span>
+				</a>
+			</div>
 	</div>
 </div>
 

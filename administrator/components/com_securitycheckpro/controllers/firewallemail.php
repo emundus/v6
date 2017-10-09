@@ -63,4 +63,12 @@ public function apply()
 	$this->setRedirect('index.php?option=com_securitycheckpro&controller=firewallemail&view=firewallemail&'. JSession::getFormToken() .'=1');
 }
 
+/* Envía un correo de prueba */
+public function send_email_test()
+{
+	$model = $this->getModel("firewallemail");
+	$model->send_email_test();
+	$this->setRedirect('index.php?option=com_securitycheckpro&controller=firewallemail&view=firewallemail&'. JSession::getFormToken() .'=1');
+}
+
 }

@@ -53,6 +53,7 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
 		$update_database_plugin_exists = $model->PluginStatus(4);
 		$spam_protection_plugin_enabled = $model->PluginStatus(5);
 		$spam_protection_plugin_exists = $model->PluginStatus(6);
+		$trackactions_plugin_exists = $model->PluginStatus(8);
 		$logs_pending = $model->LogsPending();
 		$scpro_plugin_id = $model->get_plugin_id(1);
 		$scprocron_plugin_id = $model->get_plugin_id(2);
@@ -96,6 +97,7 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
 		$this->assignRef('update_database_plugin_exists', $update_database_plugin_exists);
 		$this->assignRef('spam_protection_plugin_enabled', $spam_protection_plugin_enabled);
 		$this->assignRef('spam_protection_plugin_exists', $spam_protection_plugin_exists);
+		$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
 		$this->assignRef('logs_pending', $logs_pending);
 		$this->assignRef('scpro_plugin_id', $scpro_plugin_id);
 		$this->assignRef('scprocron_plugin_id', $scprocron_plugin_id);
