@@ -45,6 +45,10 @@ defined('_JEXEC') or die;
                 userId = <?php echo $user->id; ?>,
                 fnum = <?php echo $user->fnum; ?>;
 
+            $('#btnBook').css('background-color', '#4183D7');
+            $('#btnBook').text('Loading...');
+            $('#btnBook').removeAttr('onclick');
+
             $.ajax({
                 url: 'index.php?option=com_emundus&controller=calendar&task=bookinterview&format=raw',
                 type: 'POST',
@@ -58,13 +62,13 @@ defined('_JEXEC') or die;
                     if (result.status) {
                         location.reload(true);                        
                     } else {
-                        $('#btnCal').css('background-color','#96281B');
-                        $('#btnCal').text('Error!');
+                        $('#btnBook').css('background-color','#96281B');
+                        $('#btnBook').text('Error!');
                     }
                 },
-                failure: function(jqXHR, textStatus, errorThrown){
-                    $('#btnCal').setStyle('background-color','#96281B');
-                    $('#btnCal').text('Error!');
+                failure: function(jqXHR, textStatus, errorThrown) {
+                    $('#btnBook').setStyle('background-color','#96281B');
+                    $('#btnBook').text('Error!');
                 }
             });
         }

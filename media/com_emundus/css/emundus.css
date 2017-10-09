@@ -323,7 +323,6 @@ h1 a {
 #userlist td.order span { float: left; display: block; width: 20px; text-align: center; }
 .modal {background-color:#F0F0F0;border-radius:5px;border-radius:5px;padding:5px 2px 5px 2px;margin:1px}
 .modal.clean {background-color:transparent; background-image: none;}
-.modal:hover {background-color:#C4C4C4;color:#FFF;border-radius:5px;border-radius:5px;padding:8px 2px 8px 2px;margin:1px}
 .modal.clean:hover {background-color:transparent;background-image: none;}
 
 
@@ -721,9 +720,6 @@ display:inline;
 }
 #attachment_list_opt fieldset.hover {
     background-color: #E1BC47;
-}
-.modal-body {
-    padding: 0px !important;
 }
 
 /* Diplaying user photos and email in list views */

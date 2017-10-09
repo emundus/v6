@@ -95,7 +95,8 @@ class EmundusModelCalendar extends JModelLegacy {
             $event = $db->loadObject();
 
         } catch (Exception $e) {
-            die($e->getMessage());
+            JLog::add("User: ".$user_id." SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+            die(json_encode(['status' => false]));
         }
 
         // TODO: Synthesis as description?
@@ -116,7 +117,8 @@ class EmundusModelCalendar extends JModelLegacy {
             $db->execute();
 
         } catch (Exception $e) {
-            die($e->getMessage());
+            JLog::add("User: ".$user_id." SQL Query: ".$query." SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+            die(json_encode(['status' => false]));
         }
 
         $values = array();
@@ -141,7 +143,8 @@ class EmundusModelCalendar extends JModelLegacy {
             $db->execute();
 
         } catch (Exception $e) {
-            die($e->getMessage());
+            JLog::add("User: ".$user_id." SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+            die(json_encode(['status' => false]));
         }
 
         return $event;
@@ -158,7 +161,8 @@ class EmundusModelCalendar extends JModelLegacy {
             $dpcalendar_params = $db->loadResult();
 
         } catch (Exception $e) {
-            die($e->getMessage());
+            JLog::add("SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+            die(json_encode(['status' => false]));
         }
 
 
@@ -202,7 +206,8 @@ class EmundusModelCalendar extends JModelLegacy {
             $db->execute();
 
         } catch (Exception $e) {
-            die($e->getMessage());
+            JLog::add("SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+            die(json_encode(['status' => false]));
         }
 
         if (isset($result))
@@ -222,7 +227,8 @@ class EmundusModelCalendar extends JModelLegacy {
             $db->execute();
         
         } catch (Exception $e) {
-            die($e->getMessage());
+            JLog::add("SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+            die(json_encode(['status' => false]));
         }
 
         // Get event
@@ -232,7 +238,8 @@ class EmundusModelCalendar extends JModelLegacy {
             $title = $db->loadResult();
 
         } catch (Exception $e) {
-            die($e->getMessage());
+            JLog::add("SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+            die(json_encode(['status' => false]));
         }
 
         $title = str_replace("(BOOKED) ", "", $title);
@@ -247,7 +254,8 @@ class EmundusModelCalendar extends JModelLegacy {
             $db->execute();
 
         } catch (Exception $e) {
-            die($e->getMessage());
+            JLog::add("SQL Query: ".$query." SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+            die(json_encode(['status' => false]));
         }
 
         return true;
@@ -265,7 +273,8 @@ class EmundusModelCalendar extends JModelLegacy {
             $params = $db->loadResult();
 
         } catch (Exception $e) {
-            die($e->getMessage());
+            JLog::add("SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+            die(json_encode(['status' => false]));
         }
 
         $dpcalendar_params = json_decode($params);
@@ -278,7 +287,8 @@ class EmundusModelCalendar extends JModelLegacy {
             $params = $db->loadResult();
 
         } catch (Exception $e) {
-            die($e->getMessage());
+            JLog::add("SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+            die(json_encode(['status' => false]));
         }
 
         $event_params = json_decode($params);
@@ -306,7 +316,8 @@ class EmundusModelCalendar extends JModelLegacy {
             $event = $db->loadObject();
 
         } catch (Exception $e) {
-            die($e->getMessage());
+            JLog::add("SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+            die(json_encode(['status' => false]));
         }
 
         try {
@@ -315,7 +326,8 @@ class EmundusModelCalendar extends JModelLegacy {
             $params = $db->loadResult();
 
         } catch (Exception $e) {
-            die($e->getMessage());
+            JLog::add("SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+            die(json_encode(['status' => false]));
         }
 
         $params = json_decode($params);
@@ -473,7 +485,8 @@ class EmundusModelCalendar extends JModelLegacy {
             $program_user_ids = $db->loadColumn();
 
         } catch (Exception $e) {
-            die($e->getMessage());
+            JLog::add("SQL Query: ".$query." SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+            die(json_encode(['status' => false]));
         }
 
         try {
@@ -484,7 +497,8 @@ class EmundusModelCalendar extends JModelLegacy {
             return $db->loadObjectList();
 
         } catch (Exception $e) {
-            die($e->getMessage());
+            JLog::add("SQL Query: ".$query." SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+            die(json_encode(['status' => false]));
         }
 
 

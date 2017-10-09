@@ -19,9 +19,12 @@ defined('_JEXEC') or die;
                 </h4>
             </div>
             <div class="modal-body">
-                <label for="em-calendar-title"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_ARE_YOU_SURE"); ?></label>
-                <button type="button" onclick="cancelInterview()" class="btn btn-danger"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_CONFIRM_DELETE") ?></button>
+                <p><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_ARE_YOU_SURE"); ?></p>
                 <p id="bookHelp" class="form-text text-muted"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_DELETE_HELP"); ?></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnBook" onclick="cancelInterview()" class="btn btn-danger"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_CONFIRM_DELETE") ?></button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -32,6 +35,10 @@ defined('_JEXEC') or die;
     function cancelInterview() {
 
         var eventId = <?php echo $next_interview->id; ?>;
+
+        $('#btnBook').css('background-color', '#4183D7');
+        $('#btnBook').text('Loading...');
+        $('#btnBook').removeAttr('onclick');
 
         $.ajax({
             url: 'index.php?option=com_emundus&controller=calendar&task=cancelinterview&format=raw',
@@ -44,13 +51,13 @@ defined('_JEXEC') or die;
                 if (result.status) {
                     location.reload(true);
                 } else {
-                    $('#btnCal').css('background-color','#96281B');
-                    $('#btnCal').text('Error!');
+                    $('#btnBook').css('background-color','#96281B');
+                    $('#btnBook').text('Error!');
                 }
             },
             failure: function(jqXHR, textStatus, errorThrown){
-                $('#btnCal').setStyle('background-color','#96281B');
-                $('#btnCal').text('Error!');
+                $('#btnBook').setStyle('background-color','#96281B');
+                $('#btnBook').text('Error!');
             }
         });
 
