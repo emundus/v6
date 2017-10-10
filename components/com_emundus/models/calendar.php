@@ -79,7 +79,7 @@ class EmundusModelCalendar extends JModelLegacy {
             'robots' => ''
         );
         
-        return $this->createCategory($category_data);
+        $this->createCategory($category_data);
 
     }
 

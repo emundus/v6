@@ -35,7 +35,7 @@ class EmundusControllerCalendar extends JControllerLegacy {
         // Calendar information is obtained via the post data
         $calendar_title     = $jinput->get("calTitle", null, "string");
         $calendar_program   = $jinput->get("calProgram", null, "string");
-        $calendar_color     = $jinput->get("color", null, "string");
+        $calendar_color     = $jinput->get("calColor", null, "string");
         $calendar_alias     = str_replace(' ', '-', $calendar_title);
 
         // Google API info is obtained via the module params
@@ -49,9 +49,9 @@ class EmundusControllerCalendar extends JControllerLegacy {
 
         $google_calendar_id = $m_calendar->google_add_calendar($service, $calendar_title);
 
-        $result = $m_calendar->dpcalendar_add_calendar($calendar_title, $calendar_alias, $calendar_color, $google_calendar_id, $dpcalendar_parent_id, $calendar_program);
+        $m_calendar->dpcalendar_add_calendar($calendar_title, $calendar_alias, $calendar_color, $google_calendar_id, $dpcalendar_parent_id, $calendar_program);
 
-        echo json_encode(['status' => $result]);
+        echo json_encode(['status' => true]);
     
     }
 

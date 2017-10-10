@@ -111,4 +111,5 @@ defined('_JEXEC') or die;
 
             ajax.send();
         }
+        
     </script>
