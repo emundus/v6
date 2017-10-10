@@ -4,9 +4,7 @@ defined('_JEXEC') or die('Access Deny');
 require_once(dirname(__FILE__).DS.'helper.php');
 
 
-JHtml::stylesheet('media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css');
 JHtml::stylesheet('media/com_emundus/css/mod_emundus_book_interview.css');
-JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 
 $session = JFactory::getSession();
 $user = $session->get('emundusUser');
