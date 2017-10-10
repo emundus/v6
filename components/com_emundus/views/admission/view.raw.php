@@ -35,6 +35,7 @@ class EmundusViewAdmission extends JViewLegacy
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
@@ -93,6 +94,7 @@ class EmundusViewAdmission extends JViewLegacy
 
 				$m_admission = $this->getModel('Admission');
 				$m_files = new EmundusModelFiles();
+				$h_files = new EmundusHelperFiles();
 				$userModel = new EmundusModelUsers();
 
                 $m_admission->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
