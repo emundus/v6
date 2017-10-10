@@ -190,7 +190,7 @@ class EmundusViewAdmission extends JViewLegacy
 						$fnumArray[] = $user['fnum'];
 						$line = array('check' => $usObj);
 						
-						if (array_key_exists($user['fnum'], $taggedFile)) {
+						if (isset($taggedFile) && array_key_exists($user['fnum'], $taggedFile)) {
 							$class = $taggedFile[$user['fnum']]['class'];
 							$usObj->class = $taggedFile[$user['fnum']]['class'];
 						} else {
