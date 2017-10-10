@@ -651,8 +651,6 @@ class EmundusModelCalendar extends JModelLegacy {
             $tok = json_decode($token, true);
             if (($tok['refresh_token'] != null)) {
                 $eMConfig->set('refreshToken', $tok['refresh_token']);
-                $calId = $this->getCalId();
-                $eMConfig->set('calendarIds', implode(",", $calId));
                         
                 $componentid = JComponentHelper::getComponent('com_emundus')->id;
                 $db = JFactory::getDBO();  
