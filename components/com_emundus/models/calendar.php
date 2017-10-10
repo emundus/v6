@@ -604,6 +604,80 @@ class EmundusModelCalendar extends JModelLegacy {
         return $client;
     }
 
+    function authenticateClient() {
+
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $app = JFactory::getApplication();
+        $session = JFactory::getSession(array(
+            'expire' => 30
+        ));
+        $myUrl = "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+        $urlExpl = explode('&', $myUrl);
+        $authCodeExpl = explode('=', $urlExpl[2]);
+        $compareURL = $authCodeExpl[0];
+        $authCode = $authCodeExpl[1];
+        
+        // If we are on the callback from google don't save
+        if ($compareURL != 'code') {
+            $params = $app->input->get('params', array(
+                'clientId' => null,
+                'clientSecret' => null
+            ), 'array');
+            $session->set('clientId', $params['clientId']);
+            $session->set('clientSecret', $params['clientSecret']);
+        }
+        
+        $clientId = $session->get('clientId', null);
+        $clientSecret = $session->get('clientSecret', null);
+        
+        if ($compareURL == 'code') {
+            $session->set('clientId', null);
+            $session->set('clientSecret', null);
+        }
+        
+        try {
+            $client = $this->getClient($eMConfig->get('clientId'), $eMConfig->get('clientSecret'));
+            $client->setApprovalPrompt('force');
+            
+            if (empty($client)) return;
+            if ($compareURL != 'code') {
+                $app->redirect($client->createAuthUrl());
+                $app->close();
+            }
+            
+            $cal = new Google_Service_Calendar($client);
+        
+            $token = $client->authenticate($authCode);
+            $tok = json_decode($token, true);
+            if (($tok['refresh_token'] != null)) {
+                $eMConfig->set('refreshToken', $tok['refresh_token']);
+                $calId = $this->getCalId();
+                $eMConfig->set('calendarIds', implode(",", $calId));
+                        
+                $componentid = JComponentHelper::getComponent('com_emundus')->id;
+                $db = JFactory::getDBO();  
+                
+                $query = "UPDATE #__extensions SET params = ".$db->Quote($eMConfig->toString())." WHERE extension_id = ".$componentid;
+        
+                try {
+                    $db->setQuery($query);
+                    $db->execute();
+                } catch (Exception $e) {
+                    die($e->getMessage());
+                }
+            }
+            
+            if ($token === true) die();
+            
+            if ($token) $client->setAccessToken($token);    
+            
+        } catch (Exception $e) {
+            $error = JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage();
+            JLog::add($error, JLog::ERROR, 'com_emundus');
+        }
+        
+    }
+
 }
 
 ?>
