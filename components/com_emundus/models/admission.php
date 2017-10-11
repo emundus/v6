@@ -1424,11 +1424,20 @@ class EmundusModelAdmission extends JModelList
 
             $query = "SELECT * FROM #__emundus_final_grade WHERE student_id = ".$sid." GROUP BY fnum ORDER BY time_date DESC";
             $db->setQuery($query);
-            return $db->loadObjectList();
+            $admissionInfo = $db->loadObject();
+			
+			$query = "SELECT form_id FROM #__fabrik_formgroup as fg 
+				LEFT JOIN #__emundus_setup_programmes AS sp ON sp.fabrik_applicant_admission_group_id = fg.group_id 
+				LEFT JOIN #__emundus_setup_campaign AS sc ON sc.training LIKE sp.code 
+				LEFT JOIN #__emundus_campaign_candidatures AS cc ON cc.campaign_id = sc.id 
+				WHERE cc.fnum LIKE ".$admissionInfo->fnum;
+			
+			$db->setQuery($query);
+			$admissionInfo->form_id = $db->loadresult();
 
-        } catch (Exception $e) {
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-        }
+		} catch (Exception $e) {
+			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+		}
 
     }
 
