@@ -41,35 +41,38 @@ defined('_JEXEC') or die;
 
         function bookInterview() {
 
-            var eventId = $("#em-book-interview").val(),
+            var eventId = $$("#em-book-interview").get("value"),
                 userId = <?php echo $user->id; ?>,
                 fnum = <?php echo $user->fnum; ?>;
 
-            $('#btnBook').css('background-color', '#4183D7');
-            $('#btnBook').text('Loading...');
-            $('#btnBook').removeAttr('onclick');
+            $$("#btnBook").setStyle('background-color','#4183D7');
+            $$("#btnBook").set('text','Loading... ');
+            $$("#btnBook").removeProperty("onclick");
 
-            $.ajax({
+            var ajax = new Request({
                 url: 'index.php?option=com_emundus&controller=calendar&task=bookinterview&format=raw',
-                type: 'POST',
-                dataType: 'json',
-                data: ({
+                method: 'POST',
+                data: {
                     eventId: eventId,
                     userId: userId,
                     fnum: fnum,
-                }),
-                success: function(result) {
+                },
+                onSuccess: function(result) {
+                    result = JSON.parse(result);
                     if (result.status) {
                         location.reload(true);                        
                     } else {
-                        $('#btnBook').css('background-color','#96281B');
-                        $('#btnBook').text('Error!');
+                        $$('#btnBook').setStyle('background-color','#96281B');
+                        $$('#btnBook').set('text','Error!');
                     }
                 },
-                failure: function(jqXHR, textStatus, errorThrown) {
-                    $('#btnBook').setStyle('background-color','#96281B');
-                    $('#btnBook').text('Error!');
+                onFailure: function(jqXHR, textStatus, errorThrown) {
+                    $$('#btnBook').setStyle('background-color','#96281B');
+                    $$('#btnBook').set('text','Error!');
                 }
             });
+        
+            ajax.send();
+
         }
     </script>
