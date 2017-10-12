@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 JHTML::_('behavior.tooltip'); 
 JHTML::_('behavior.modal');
 
-if($this->applicant_can_renew){
+if ($this->applicant_can_renew) {
 	JError::raiseNotice('YEAR', JText::_( 'FILE_NEW_APPLICATION' ));
 	//$url = 'index.php?option=com_emundus&controller=renew_application&task=new_application&view=renew_application&uid='.$this->current_user->id.'&up='.$this->current_user->profile;
 	$url = 'index.php?option=com_fabrik&view=form&formid=102';

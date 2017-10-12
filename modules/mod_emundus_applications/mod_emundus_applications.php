@@ -70,7 +70,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$profile = $m_profile->getCurrentProfile($user->id);
 	if ($profile['profile'] == 8) {		
 		$admissionInfo = @EmundusModelAdmission::getAdmissionInfo($user->id);
-		$admission_fnum = $admissionInfo[0]->fnum;		
+		$admission_fnum = $admissionInfo->fnum;		
 	}
 	
 	if ($display_poll == 1 && $display_poll_id > 0) {

@@ -489,12 +489,12 @@ class EmundusModelProfile extends JModelList
 				
 				if (!empty($admissionInfo)) {
 					$campaign = $this->getCampaignInfoByFnum($admissionInfo->fnum);
-					$profile = $this->getProfileByCampaign($admissionInfo->campaign_id);
+					$profile = $this->getProfileByCampaign($campaign["id"]);
 				}
 			
-			}			
+			}
 
-			if (empty($campaign["id"]) || !isset($campaign["id"]) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+			if ((empty($campaign["id"]) || !isset($campaign["id"])) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
 				$app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
 			
 			// If the user is admitted then we fill the session with information about the admitted file

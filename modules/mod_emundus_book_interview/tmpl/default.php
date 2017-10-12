@@ -4,10 +4,10 @@ defined('_JEXEC') or die;
 ?>
 
     <div class="col-md-2">
-        <button type="button" data-toggle="modal" data-target="#em-modal-form" class="btn btn-success"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW"); ?></button>
+        <button type="button" data-toggle="modal" data-target="#em-modal-book" class="btn btn-success"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW"); ?></button>
     </div>
 
-    <div class="modal fade" id="em-modal-form" tabindex="-1" style="z-index:99999" role="dialog" aria-labelledby="em-modal-actions-title">
+    <div class="modal fade" id="em-modal-book" tabindex="-1" style="z-index:99999" role="dialog" aria-labelledby="em-modal-actions-title">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">

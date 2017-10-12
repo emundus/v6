@@ -3,9 +3,6 @@
 defined('_JEXEC') or die('Access Deny');
 require_once(dirname(__FILE__).DS.'helper.php');
 
-
-JHtml::stylesheet('media/com_emundus/css/mod_emundus_book_interview.css');
-
 $session = JFactory::getSession();
 $user = $session->get('emundusUser');
 $helper = new modEmundusBookInterviewHelper;
