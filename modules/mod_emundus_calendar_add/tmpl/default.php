@@ -95,9 +95,9 @@ defined('_JEXEC') or die;
                     $$('#btnCal').set('text','Loading... ');
                 },
                 onSuccess: function(result){
+                    result = JSON.parse(result);
                     if (result.status) {
-                        $$('#btnCal').setStyle('background-color','#26A65B');
-                        $$('#btnCal').set('text','Calendar added!');
+                        location.reload(true);
                     } else {
                         $$('#btnCal').setStyle('background-color','#96281B');
                         $$('#btnCal').set('text','Error!');

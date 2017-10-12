@@ -39,7 +39,6 @@ class EmundusControllerCalendar extends JControllerLegacy {
         $calendar_alias     = str_replace(' ', '-', $calendar_title);
 
         // Google API info is obtained via the module params
-        // TODO: Get google API info from dpcalendar params instead
         $google_client_id       = $eMConfig->get('clientId');
         $google_secret_key      = $eMConfig->get('clientSecret');
         $google_refresh_token   = $eMConfig->get('refreshToken');
