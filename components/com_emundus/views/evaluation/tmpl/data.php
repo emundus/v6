@@ -86,9 +86,11 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 										<?php echo $this->colsSup['id_tag'][$line['fnum']->val]?>
 									<?php else:?>
 										<?php 
-											if($value->type == 'text' ) {
+											if ($value->type == 'text' ) {
 												echo strip_tags($value->val);
-											}else {
+											} elseif ($value->type == "textarea" && strlen($value->val) > 120) {
+												echo "<p>".substr($value->val, 0, 120)." ...<p>";
+ 											} else {
 												echo $value->val;
 											}
 										?>

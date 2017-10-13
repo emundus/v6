@@ -115,6 +115,23 @@ class EmundusViewEvaluation extends JViewLegacy
 				// get applications files
 				$users = $evaluation->getUsers($cfnum);
 
+
+				// Get elements from model and proccess them to get an easy to use array containing the element type
+				$elements = $evaluation->getElementsVar();
+				foreach ($elements as $elt) {
+					$elt_name = $elt->tab_name."___".$elt->element_name;
+					$eltarr[$elt_name] = [
+						"plugin" 	=> $elt->element_plugin,
+						"tab_name" 	=> $elt->tab_name,
+						"params"  	=> $elt->element_attribs,
+						"fabrik_id" => $elt->id
+					];
+				}
+
+				if (isset($eltarr))
+					$elements = $eltarr;
+
+
 				// Columns
 				$defaultElements = $this->get('DefaultElements');
 				$datas = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
@@ -221,6 +238,21 @@ class EmundusViewEvaluation extends JViewLegacy
 
 								$userObj->type = 'html';
 								$line['evaluator'] = $userObj;
+
+							} elseif (isset($elements) && in_array($key, array_keys($elements))) {
+								
+								$userObj->val 			= $value;
+								$userObj->type 			= $elements[$key]['plugin'];
+								$userObj->status_class 	= $user['status_class'];
+								$userObj->id 			= $elements[$key]['fabrik_id'];
+								$userObj->params 		= $elements[$key]['params'];
+								$line[$key] 			= $userObj;
+
+								// Radiobuttons are a strange beast, we need to get all of the values
+								if ($userObj->type == 'radiobutton') {
+									$params = json_decode($userObj->params);
+									$userObj->radio = array_combine($params->sub_options->sub_labels, $params->sub_options->sub_values);
+								}
 							
 							} else {
 
