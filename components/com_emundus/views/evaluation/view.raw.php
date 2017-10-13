@@ -143,7 +143,7 @@ class EmundusViewEvaluation extends JViewLegacy
 
 				if (!empty($users)) {
 					
-					$i = 1;
+					//$i = 1;
 					$taggedFile = array();
 					foreach ($columnSupl as $col) {
 						$col = explode('.', $col);
@@ -170,7 +170,7 @@ class EmundusViewEvaluation extends JViewLegacy
 						}
 					}
 
-					//$i = 0;
+					$i = 0;
 					foreach ($users as $user) {
 						$usObj = new stdClass();
 						$usObj->val = 'X';

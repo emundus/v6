@@ -1104,11 +1104,14 @@ class EmundusModelEvaluation extends JModelList
 			$query .= $leftJoin;
 		$query .= ' LEFT JOIN #__emundus_users as eu on eu.user_id = jos_emundus_evaluations.user ';
 		$query .= $q['join'];
+
+		// Only get Sent and Confirmed users
+		$query .= " WHERE (ss.value LIKE 'Envoyé' OR ss.value LIKE 'Confirmé') ";
 		
 		if (empty($current_fnum))
-			$query .= ' where 1 = 1 ';
+			$query .= ' AND 1 = 1 ';
 		else
-			$query .= ' WHERE c.fnum like ' . $current_fnum;
+			$query .= ' AND c.fnum like ' . $current_fnum;
 		
 		
 		$query .= $q['q'];
