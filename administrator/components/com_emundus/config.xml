@@ -175,4 +175,14 @@
 			label="JCONFIG_PERMISSIONS_LABEL"
 			section="component" />
 	</fieldset>
+	<fieldset name="users" label="COM_EMUNDUS_USERS_LABEL" description="COM_EMUNDUS_USERS_DESC">
+		<field name="showUniversities" type="list" menu="hide" default="1" label="COM_EMUNDUS_SHOW_UNIVERSITIES" description="COM_EMUNDUS_SHOW_UNIVERSITIES_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="showNewsletter" type="list" menu="hide" default="1" label="COM_EMUNDUS_SHOW_NEWSLETTER" description="COM_EMUNDUS_SHOW_NEWSLETTER_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>		
+	</fieldset>
 </config>
