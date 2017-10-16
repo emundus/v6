@@ -20,7 +20,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 			<?php echo $this->pagination->getResultsCounter(); ?>
 		</div>
 		<div class="em-data-container">
-			<table class="table table-striped table-hover" id="em-data">
+			<table class="table table-fixed" id="em-data">
 			<thead>
 			<tr>
 				<?php foreach($this->datas[0] as $kl => $v): ?>
@@ -78,6 +78,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 											<div class="em_list_text">
 												<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
 												<div class="em_list_email"><?php echo $value->user->email; ?></div>
+												<div class="em_list_email"><?php echo $line['fnum']->val; ?></div>
 											</div>
 										</a>
 									<?php elseif($k == "access"):?>
