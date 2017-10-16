@@ -1105,8 +1105,18 @@ class EmundusModelEvaluation extends JModelList
 		$query .= ' LEFT JOIN #__emundus_users as eu on eu.user_id = jos_emundus_evaluations.user ';
 		$query .= $q['join'];
 
-		// Only get Sent and Confirmed users
-		$query .= " WHERE (ss.value LIKE 'Envoyé' OR ss.value LIKE 'Confirmé') ";
+		// Only get users by status defined in backoffice
+		$statConfig = $eMConfig->get('evaluationDisplayStatus');
+
+		if (isset($statConfig)) {
+			$statConfig = explode(",",$statConfig);
+			$scc = array();
+			foreach ($statConfig as $sc) {
+				$scc[] = $dbo->quote($sc);
+			}
+			$query .= " WHERE ss.value IN (".implode(",", $scc).") ";
+		}
+			
 		
 		if (empty($current_fnum))
 			$query .= ' AND 1 = 1 ';
