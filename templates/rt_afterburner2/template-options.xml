@@ -163,24 +163,6 @@
             <field name="showmax" type="showmax" default="6" label="POS_COUNT"/>
         </fields>
 
-        <fields name="secondheader" type="position" label="Second Header" description="LAYOUT_POS_DESC">
-            <field name="layout" type="positions" default="3,3,3,3" label="">
-                <schemas>1,2,3,4,5,6</schemas>
-                <words>2,3,4,5,6,7,8,9,10</words>
-            </field>
-            <field name="showall" type="toggle" default="0" label="FORCE_POS"/>
-            <field name="showmax" type="showmax" default="6" label="POS_COUNT"/>
-        </fields>
-
-        <fields name="secondmenu" type="position" label="Second Menu" description="LAYOUT_POS_DESC">
-            <field name="layout" type="positions" default="3,3,3,3" label="">
-                <schemas>1,2,3,4,5,6</schemas>
-                <words>2,3,4,5,6,7,8,9,10</words>
-            </field>
-            <field name="showall" type="toggle" default="0" label="FORCE_POS"/>
-            <field name="showmax" type="showmax" default="6" label="POS_COUNT"/>
-        </fields>
-
         <field name="mainbodyPosition" type="positions" default="6,3,3" label="MAINBODY_POS" description="LAYOUT_POS_DESC">
             <schemas>1,2,3,4</schemas>
             <words>sa,sb,sc,mb</words>
@@ -235,4 +217,4 @@
     <fieldset name="assignment" label="ASSIGNMENTS">
         <field name="assignments" type="assignments" panel_position="left" setinoverride="false"/>
         </fieldset>
-</form>
+    </form>

@@ -1,7 +1,7 @@
 /**
-* @version   $Id: joomla-core.less 26100 2015-01-27 14:16:12Z james $
+* @version   $Id: joomla-core.less 28245 2015-04-14 22:46:12Z kat $
 * @author    RocketTheme http://www.rockettheme.com
-* @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+* @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
 * @license   http://www.rockettheme.com/legal/license.php RocketTheme Proprietary Use License
 */
 
@@ -343,6 +343,14 @@
 	}
 }
 
+// Frontend Module Editing
+#modules-form {
+    .radio input[type="radio"], .checkbox input[type="checkbox"] {
+        display: inline-block;
+        margin-left: 0;
+    }
+}
+
 // Editing
 .component-content {
 	.edit {
@@ -624,14 +632,13 @@
 			}
 		}
 	}
-	input[type="text"], input[type="password"] {width: 94%; height: none;}
+	input[type="text"], input[type="password"] {width: 94%;}
 	#form-login-remember {
 		label {
 			display: inline-block;
 		}
 		input {
 			margin: 0;
-			height: none;
 		}
 	}
 }
@@ -1043,7 +1050,7 @@ input[type="radio"], input[type="checkbox"] {
 	}
 	.profile-edit #member-profile fieldset dt, .registration #member-registration fieldset dt {
 		padding: 5px 5px 5px 0;
-		width: 25em;
+		width: 13em;
 	}
 	.optional {
 		font-size: @baseFontSize;
@@ -1303,4 +1310,27 @@ figcaption {
 }
 .text-right {
     text-align: right;
+}
+
+// Article Tags
+ul.tags.inline, ol.tags.inline {
+	list-style: none; 
+	margin: 0 -4px;
+	padding: 0;
+	> li {
+		display: inline-block;
+		padding-left: 5px;
+		padding-right: 5px;
+	}
+	label {
+		padding: 5px 4px;
+		font-size: 11px;
+		font-weight: bold;
+		line-height: 14px;
+		color: #fff;
+		vertical-align: baseline;
+		white-space: nowrap;
+		text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+		border-radius: 3px;
+	}
 }
