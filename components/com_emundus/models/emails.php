@@ -585,59 +585,71 @@ class EmundusModelEmails extends JModelList
         $mail_type = $jinput->get('mail_type', null, 'CMD');
 
         if ($fnum != null) {
+
             $student_id = (int)substr($fnum, -7);
             $campaign_id = (int)substr($fnum, 14, 7);
+        
         } else {
+        
             $student_id = $jinput->get('student_id', null, 'INT'); //JRequest::getVar('student_id', null, 'POST', 'VARCHAR', 0);
             $campaign_id = $jinput->get('campaign_id', null, 'INT'); //JRequest::getVar('campaign_id', null, 'POST', 'VARCHAR', 0);
+        
         }
+
 
         $student = JFactory::getUser($student_id);
 
         if (!isset($type))
             $type = $mail_type;
 
-        if($type == "evaluation_result") {
+        if ($type == "evaluation_result") {
+            
             $mode = 1; // HTML
-            $mail_cc = null;
-            $mail_subject = $jinput->get('mail_subject', null, 'STRING'); //JRequest::getVar('mail_subject', null, 'POST', 'VARCHAR', 0);
-            $mail_from_id = $this->_user->id;
+            
+            $mail_cc        = null;
+            $mail_subject   = $jinput->get('mail_subject', null, 'STRING'); //JRequest::getVar('mail_subject', null, 'POST', 'VARCHAR', 0);
+            
+            $mail_from_id   = $this->_user->id;
             $mail_from_name = $this->_user->name;
-            $mail_from = $this->_user->email;
-            $mail_to_id = $jinput->get('mail_to', null, 'STRING'); //JRequest::getVar('mail_to', null, 'POST', 'VARCHAR', 0);
-            $student = JFactory::getUser($mail_to_id);
-            $mail_to_name = $student->name;
-            $mail_to = $student->email;
+            $mail_from      = $this->_user->email;
+            
+            $mail_to_id     = $jinput->get('mail_to', null, 'STRING'); //JRequest::getVar('mail_to', null, 'POST', 'VARCHAR', 0);
+            $student        = JFactory::getUser($mail_to_id);
+            $mail_to_name   = $student->name;
+            $mail_to        = $student->email;
+            
             $mail_body = $this->setBody($student, JRequest::getVar('mail_body', null, 'POST', 'VARCHAR', JREQUEST_ALLOWHTML), $fnum, $passwd='');
             $mail_attachments = $jinput->get('mail_attachments', null, 'STRING'); //JRequest::getVar('mail_attachments', null, 'POST', 'VARCHAR', 0);
 
-            if (!empty($mail_attachments)) $mail_attachments = explode(',', $mail_attachments);
+            if (!empty($mail_attachments)) 
+                $mail_attachments = explode(',', $mail_attachments);
 
             $sent = JUtility::sendMail($mail_from, $mail_from_name, $mail_to, $mail_subject, $mail_body, $mode, $mail_cc, null, @$mail_attachments);
 
-            $message = array(
-                'user_id_from' => $this->_user->id,
-                'user_id_to' => $mail_to_id,
-                'subject' => $mail_subject,
-                'message' => $mail_body
-            );
+            $message = [
+                'user_id_from'  => $this->_user->id,
+                'user_id_to'    => $mail_to_id,
+                'subject'       => $mail_subject,
+                'message'       => $mail_body
+            ];
             $this->logEmail($message);
 
-        } elseif($type == "expert") {
+        } elseif ($type == "expert") {
 
             require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
             include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
-            $eMConfig = JComponentHelper::getParams('com_emundus');
-            $formid = $eMConfig->get('expert_fabrikformid', '110');
+            $eMConfig   = JComponentHelper::getParams('com_emundus');
+            $formid     = $eMConfig->get('expert_fabrikformid', '110');
             $documentid = $eMConfig->get('expert_document_id', '36');
 
             $mode = 1; // HTML
-            $mail_cc = null;
-            $mail_subject = $jinput->get('mail_subject', null, 'STRING'); //JRequest::getVar('mail_subject', null, 'POST', 'VARCHAR', 0);
-            $mail_from_name = $jinput->get('mail_from_name', null, 'STRING'); //JRequest::getVar('mail_from_name', null, 'POST', 'VARCHAR', 0);
-            $mail_from = $jinput->get('mail_from', null, 'STRING'); //JRequest::getVar('mail_from', null, 'POST', 'VARCHAR', 0);
             
+            $mail_cc        = null;
+            $mail_subject   = $jinput->get('mail_subject', null, 'STRING'); //JRequest::getVar('mail_subject', null, 'POST', 'VARCHAR', 0);
+            
+            $mail_from_name = $jinput->get('mail_from_name', null, 'STRING'); //JRequest::getVar('mail_from_name', null, 'POST', 'VARCHAR', 0);
+            $mail_from      = $jinput->get('mail_from', null, 'STRING'); //JRequest::getVar('mail_from', null, 'POST', 'VARCHAR', 0);
 
             $campaign = @EmundusHelperfilters::getCampaignByID($campaign_id);
             $application = new EmundusModelApplication;
@@ -645,8 +657,8 @@ class EmundusModelEmails extends JModelList
             $tags = $this->setTags($this->_user->id);
 
             $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
-            $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
-            $mail_from_id = $this->_user->id;
+            $mail_from      = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
+            $mail_from_id   = $this->_user->id;
   
             $mail_to = explode(',', $jinput->get('mail_to', null, 'STRING'));
 
@@ -655,20 +667,21 @@ class EmundusModelEmails extends JModelList
             //
             // Replacement
             //
-            $post = array(  'TRAINING_PROGRAMME'    => $campaign['label'],
-                            'CAMPAIGN_START'        => $campaign['start_date'],
-                            'CAMPAIGN_END'          => $campaign['end_date'],
-                            'EVAL_DEADLINE'         => date("d/M/Y", mktime(0, 0, 0, date("m")+2, date("d"), date("Y")))
-            );
+            $post = [  
+                'TRAINING_PROGRAMME'    => $campaign['label'],
+                'CAMPAIGN_START'        => $campaign['start_date'],
+                'CAMPAIGN_END'          => $campaign['end_date'],
+                'EVAL_DEADLINE'         => date("d/M/Y", mktime(0, 0, 0, date("m")+2, date("d"), date("Y")))
+            ];
             $tags = $this->setTags($student_id, $post, $fnum);
             $mail_body = preg_replace($tags['patterns'], $tags['replacements'], $mail_body);
 
             //tags from Fabrik ID
             $element_ids = $this->getFabrikElementIDs($mail_body);
             $synthesis = new stdClass();
-            if(count(@$element_ids[0])>0) {
-                $element_values = $this->getFabrikElementValues($fnum, $element_ids[1]);
-                $synthesis->block = $this->setElementValues($mail_body, $element_values);
+            if (count(@$element_ids[0]) > 0) {
+                $element_values     = $this->getFabrikElementValues($fnum, $element_ids[1]);
+                $synthesis->block   = $this->setElementValues($mail_body, $element_values);
             }
 
             $mail_attachments = $jinput->get('mail_attachments', null, 'STRING'); //JRequest::getVar('mail_attachments', null, 'POST', 'VARCHAR', 0);
@@ -678,13 +691,15 @@ class EmundusModelEmails extends JModelList
                 $mail_attachments = explode(',', $mail_attachments); 
 
             foreach ($mail_to as $m_to) {
+
                 $key1 = md5($this->rand_string(20).time());
                 $m_to = trim($m_to);
+                
                 // 2. MAJ de la table emundus_files_request
                 $attachment_id = $documentid; // document avec clause de confidentialité
                 $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, campaign_id, email, fnum)
                             VALUES (NOW(), '.$student_id.', "'.$key1.'", "'.$attachment_id.'", '.$campaign_id.', '.$this->_db->quote($m_to).', '.$this->_db->quote($fnum).')';
-                $this->_db->setQuery( $query );
+                $this->_db->setQuery($query);
                 $this->_db->query();
 
                 // 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
@@ -692,8 +707,9 @@ class EmundusModelEmails extends JModelList
                 $link_refuse = JURI::base().'index.php?option=com_fabrik&c=form&view=form&formid=168&tableid=71&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
                 //$link_refuse = JURI::base(true).'index.php?option=com_emundus&task=decline&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id;
 
-                $post = array(  'EXPERT_ACCEPT_LINK'    => $link_accept,
-                                'EXPERT_REFUSE_LINK'    => $link_refuse
+                $post = array(  
+                    'EXPERT_ACCEPT_LINK'    => $link_accept,
+                    'EXPERT_REFUSE_LINK'    => $link_refuse
                 );
                 $tags = $this->setTags($student_id, $post, $fnum);
 
@@ -701,16 +717,28 @@ class EmundusModelEmails extends JModelList
                 $body = $this->setTagsFabrik($body, array($fnum));
 
                 //$sent = JUtility::sendMail($mail_from, $mail_from_name, $m_to, $mail_subject, $body, $mode, $mail_cc, null, @$mail_attachments);
-                $app    = JFactory::getApplication();
+
+                // If we have an email sender in our jinput then we use that, else we use the default system sender.
+
+                $app = JFactory::getApplication();
                 $email_from_sys = $app->getCfg('mailfrom');
-                $sender = array(
-                    $email_from_sys,
+
+                // If the email sender has the same domain as the system sender address.
+                if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+                    $mail_from_address = $email_from;
+                else 
+                    $mail_from_address = $email_from_sys;
+
+                
+                
+                // Set sender
+                $sender = [
+                    $mail_from_address,
                     $mail_from_name
-                );
+                ];
+                
                 $mailer = JFactory::getMailer();
-
                 $mailer->setSender($sender); 
-
                 $mailer->addReplyTo($mail_from, $mail_from_name);
                 $mailer->addRecipient($m_to);
                 $mailer->setSubject($mail_subject);
@@ -724,29 +752,33 @@ class EmundusModelEmails extends JModelList
                 }
             
                 $send = $mailer->Send();
-                if ( $send !== true ) {
-                    $row = array(
-                        'applicant_id' => $student_id,
-                        'user_id' => $this->_user->id,
-                        'reason' => JText::_( 'INFORM_EXPERTS' ),
-                        'comment_body' => JText::_('ERROR').' '.JText::_('MESSAGE').' '.JText::_('NOT_SENT').' '.JText::_('TO').' '.$m_to,
-                        'fnum'          =>  $fnum
-                    );
+
+                if ($send !== true) {
+                    
+                    $row = [
+                        'applicant_id'  => $student_id,
+                        'user_id'       => $this->_user->id,
+                        'reason'        => JText::_( 'INFORM_EXPERTS' ),
+                        'comment_body'  => JText::_('ERROR').' '.JText::_('MESSAGE').' '.JText::_('NOT_SENT').' '.JText::_('TO').' '.$m_to,
+                        'fnum'          => $fnum
+                    ];
                     echo 'Error sending email: ' . $send->__toString(); die();
+                
                 } else {
-                    $row = array(
-                        'applicant_id' => $student_id,
-                        'user_id' => $this->_user->id,
-                        'reason' => JText::_( 'INFORM_EXPERTS' ),
-                        'comment_body' => JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$m_to,
+                
+                    $row = [
+                        'applicant_id'  => $student_id,
+                        'user_id'       => $this->_user->id,
+                        'reason'        => JText::_( 'INFORM_EXPERTS' ),
+                        'comment_body'  => JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$m_to,
                         'fnum'          =>  $fnum
-                    );
-                    $message = array(
-                        'user_id_from' => $this->_user->id,
-                        'user_id_to' => '',
-                        'subject' => $mail_subject,
-                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$m_to.'</i><br>'.$body
-                    );
+                    ];
+                    $message = [
+                        'user_id_from'  => $this->_user->id,
+                        'user_id_to'    => '',
+                        'subject'       => $mail_subject,
+                        'message'       => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$m_to.'</i><br>'.$body
+                    ];
                     $this->logEmail($message);
 
                     echo '<hr>'.JText::_('EMAIL_SENT').' : '.$m_to;
@@ -763,8 +795,8 @@ class EmundusModelEmails extends JModelList
             // delete attached files
             if (is_array($mail_attachments) && count($mail_attachments) > 0 && $delete_attachment == 1) {
                 foreach ($mail_attachments as $attachment) {
-                    $filename = explode(DS, $attachment);
 
+                    $filename = explode(DS, $attachment);
                     $query = 'DELETE FROM #__emundus_uploads
                                 WHERE user_id='.$student_id.' 
                                     AND campaign_id='.$campaign_id. ' 
@@ -774,11 +806,11 @@ class EmundusModelEmails extends JModelList
                     $this->_db->query();
 
                     @unlink(EMUNDUS_PATH_ABS.$student_id.DS.$filename[count($filename)-1]);
+                
                 }
             }
 
-        } else
-            return false;
+        } else return false;
 
         JFactory::getApplication()->enqueueMessage(JText::_('EMAIL_SENT'), 'message');
         return true;
