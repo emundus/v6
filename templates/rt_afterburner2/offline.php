@@ -2,7 +2,7 @@
 /**
 * @version   $Id: offline.php 26100 2015-01-27 14:16:12Z james $
 * @author    RocketTheme http://www.rockettheme.com
-* @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+* @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
 * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
 *
 * Gantry uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system
@@ -119,7 +119,7 @@ ob_start();
 
 											<input type="hidden" name="option" value="com_users" />
 											<input type="hidden" name="task" value="user.login" />
-											<input type="hidden" name="return" value="<?php echo base64_encode(JURI::base(true)) ?>" />
+											<input type="hidden" name="return" value="<?php echo base64_encode(JURI::base()) ?>" />
 											<?php echo JHtml::_('form.token'); ?>
 
 										</form>

@@ -11,9 +11,9 @@
  * @license        GNU/GPL
  * @author        Benjamin Rivalland
  */
- 
+
 // no direct access
- 
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 //error_reporting(E_ALL);
 jimport( 'joomla.application.component.view');
@@ -22,7 +22,7 @@ jimport( 'joomla.application.component.view');
  *
  * @package    Emundus
  */
- 
+
 class EmundusViewFiles extends JViewLegacy
 {
 	//protected $itemId;
@@ -35,7 +35,7 @@ class EmundusViewFiles extends JViewLegacy
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
-		
+
 		parent::__construct($config);
 	}
 
@@ -46,7 +46,7 @@ class EmundusViewFiles extends JViewLegacy
 
 		if( !EmundusHelperAccess::asPartnerAccessLevel($current_user->id) )
 			die( JText::_('RESTRICTED_ACCESS') );
-	   	
+
 	   	$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_emundus');
 		//$default_actions = $params->get('default_actions', 0);
@@ -54,7 +54,7 @@ class EmundusViewFiles extends JViewLegacy
 	    $this->itemId = $app->input->getInt('Itemid', null);
 	    $this->cfnum = $app->input->getString('cfnum', null);
 	    $layout = $app->input->getString('layout', null);
-		
+
 		$model 			= $this->getModel('Files');
 		$m_evaluation 	= new EmundusModelEvaluation;
 
@@ -65,7 +65,7 @@ class EmundusViewFiles extends JViewLegacy
 			// get access list for application file
 			case 'access':
 				$fnums = $app->input->getString('users', null);
-				$fnums_obj = (array) json_decode(stripslashes($fnums)); 
+				$fnums_obj = (array) json_decode(stripslashes($fnums));
 
 			    if(@$fnums_obj[0] == 'all')
 					$fnums = $model->getAllFnums();
@@ -94,24 +94,20 @@ class EmundusViewFiles extends JViewLegacy
 			// get Menu actions
 			case 'menuactions':
 				$fnum = $app->input->getString("fnum", "0");
-				$display = $app->input->getString('display', 'none'); 
+				$display = $app->input->getString('display', 'none');
 				$menu = @JSite::getMenu();
 				$current_menu = $menu->getActive();
 				if (isset($current_menu) && !empty($current_menu)) {
 					$params = $menu->getParams($current_menu->id);
-				
-					if($fnum === "0")
-					{
+
+					if ($fnum === "0")
 						$items = @EmundusHelperFiles::getMenuList($params);
-					}
 					else
-					{ 
 						$items = @EmundusHelperFiles::getMenuList($params, $fnum);
-					}
 
 					$this->assignRef('items', $items);
 					$this->assignRef('display', $display);
-				} else { 
+				} else {
 					echo JText::_('ERROR_MENU_ID_NOT_FOUND');
 					return false;
 				}
@@ -169,12 +165,12 @@ class EmundusViewFiles extends JViewLegacy
 			    $menu = $app->getMenu();
 			    $current_menu  = $menu->getActive();
 				$menu_params = $menu->getParams($current_menu->id);
-				
+
 				$columnSupl = explode(',', $menu_params->get('em_other_columns'));
 
 				$m_user = new EmundusModelUsers();
 				$h_files = new EmundushelperFiles();
-				
+
                 $model->code = $m_user->getUserGroupsProgrammeAssoc($current_user->id);
 
 		        // get all fnums manually associated to user
@@ -204,7 +200,7 @@ class EmundusViewFiles extends JViewLegacy
 				if (isset($eltarr))
 					$elements = $eltarr;
 
-				
+
 				// Do not display photos unless specified in params
 				$displayPhoto = false;
 
@@ -286,14 +282,15 @@ class EmundusViewFiles extends JViewLegacy
 								if ($displayPhoto)
 									$userObj->photo = $h_files->getPhotos($value);
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
+								$userObj->emUser = $m_user->getUserInfos((int)substr($value, -7));
 							    $line['fnum'] = $userObj;
 							}
-							
+
 							elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'applicant_id' || $key == 'campaign_id')
 								continue;
-							
+
 							elseif (isset($elements) && in_array($key, array_keys($elements))) {
-								
+
 								$userObj->val 			= $value;
 								$userObj->type 			= $elements[$key]['plugin'];
 								$userObj->status_class 	= $user['status_class'];
@@ -306,7 +303,7 @@ class EmundusViewFiles extends JViewLegacy
 									$params = json_decode($userObj->params);
 									$userObj->radio = array_combine($params->sub_options->sub_labels, $params->sub_options->sub_values);
 								}
-								
+
 
 							} else {
 							    $userObj->val = $value;
@@ -346,7 +343,7 @@ class EmundusViewFiles extends JViewLegacy
 					    $data[$line['fnum']->val.'-'.$i] = $line;
 					    $i++;
 					}
-					
+
 					if(isset($colsSup['overall']))
 					{
 						//$colsSup['overall'] = $m_evaluation->getEvaluationAverageByFnum($fnumArray);

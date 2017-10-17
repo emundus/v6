@@ -92,24 +92,32 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 													<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
 														<div class="em_list_photo"><?php echo $value->photo; ?></div>
 														<div class="em_list_text">
-															<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
-															<div class="em_list_email"><?php echo $value->user->email; ?></div>
-															<div class="em_list_email"><?php echo $line['fnum']->val; ?></div>
-														</div>
-													</a>
-												<?php elseif($k == "access"):?>
-													<?php echo $this->accessObj[$line['fnum']->val]?>
-												<?php elseif($k == "id_tag"):?>
-													<?php echo @$this->colsSup['id_tag'][$line['fnum']->val]?>
-												<?php else:?>
-													<?php 
-														if($value->type == 'text' ) {
-															echo strip_tags($value->val);
-														}else {
-															echo $value->val;
-														}
-													?>
+														<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo strtoupper($value->emUser['lastname'])." ".ucfirst(strtolower($value->emUser['firstname'])); ?></strong></span>
+														<div class="em_list_email"><?php echo $value->user->email; ?></div>
+													</div>
+												</a>
+											<?php elseif($k == "access"):?>
+												<?php echo $this->accessObj[$line['fnum']->val]?>
+											<?php elseif($k == "id_tag"):?>
+												<?php echo @$this->colsSup['id_tag'][$line['fnum']->val]?>
+											<?php else:?>
+												<?php if ($value->type == 'text' ) :?>
+													<?php echo strip_tags($value->val); ?>
+												<?php elseif ($value->type == "date")  :?>
+												<strong>
+													<?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
+															<span class="glyphicon glyphicon-warning-sign em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true" style="color:orange;"></span>
+													<?php else: ?>
+														<?php
+															$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
+															echo $formatted_date->format("M j, Y, H:i");
+														?>
+													<?php endif; ?>
+												</strong>
+												<?php else: ?>
+													<?php echo $value->val; ?>
 												<?php endif; ?>
+											<?php endif; ?>
 											</div>
 										</td>
 									<?php endforeach; ?>

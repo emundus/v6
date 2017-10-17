@@ -22,7 +22,7 @@ if (!empty($this->items)) :
     foreach ($this->items as $i => $item) :
         if ($item->level == 1) {
             echo '<li class="dropdown" style="background-color:none"><a class="em-dropdown" id="em-menu-' . $i . '" href="#">' . @$item->title . '<b class="caret"></b></a>';
-        } 
+        }
         else {
             switch ($multiple) {
                 case 0 : 

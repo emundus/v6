@@ -33,23 +33,23 @@
 			<option value="1">JYES</option>
 		</field>
 		<field name="default_actions" type="textarea" default='{
-"1":{"id":1, "c":0, "r":1, "u":0, "d":0},
-"4":{"id":4, "c":1, "r":1, "u":0, "d":0},
-"5":{"id":5, "c":1, "r":1, "u":1, "d":0},
-"6":{"id":6, "c":1, "r":0, "u":0, "d":0},
-"7":{"id":7, "c":1, "r":0, "u":0, "d":0},
-"8":{"id":8, "c":1, "r":0, "u":0, "d":0},
-"9":{"id":9, "c":0, "r":0, "u":0, "d":0},
-"10":{"id":10, "c":1, "r":1, "u":1, "d":0},
-"13":{"id":10, "c":0, "r":1, "u":0, "d":0},
-"14":{"id":14, "c":1, "r":1, "u":1, "d":0}
-}' label="COM_EMUNDUS_EVALUATORS_DEFAULT_ACTIONS" description="COM_EMUNDUS_EVALUATORS_DEFAULT_ACTIONS_DESC" />
-	<field name="show_related_files" type="radio" default="0" label="COM_EMUNDUS_EVALUATORS_SHOW_RELATED_FILES" description="COM_EMUNDUS_EVALUATORS_SHOW_RELATED_FILES_DESC">
+			"1":{"id":1, "c":0, "r":1, "u":0, "d":0},
+			"4":{"id":4, "c":1, "r":1, "u":0, "d":0},
+			"5":{"id":5, "c":1, "r":1, "u":1, "d":0},
+			"6":{"id":6, "c":1, "r":0, "u":0, "d":0},
+			"7":{"id":7, "c":1, "r":0, "u":0, "d":0},
+			"8":{"id":8, "c":1, "r":0, "u":0, "d":0},
+			"9":{"id":9, "c":0, "r":0, "u":0, "d":0},
+			"10":{"id":10, "c":1, "r":1, "u":1, "d":0},
+			"13":{"id":10, "c":0, "r":1, "u":0, "d":0},
+			"14":{"id":14, "c":1, "r":1, "u":1, "d":0}
+			}' label="COM_EMUNDUS_EVALUATORS_DEFAULT_ACTIONS" description="COM_EMUNDUS_EVALUATORS_DEFAULT_ACTIONS_DESC" />
+		<field name="show_related_files" type="radio" default="0" label="COM_EMUNDUS_EVALUATORS_SHOW_RELATED_FILES" description="COM_EMUNDUS_EVALUATORS_SHOW_RELATED_FILES_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
-	</field>
-	<!-- 
-	<field name="nb_months_registration_period_access" type="text" size="2" default="11" label="NB_MONTHS_REGISTRATION_PERIOD_ACCESS" description="NB_MONTHS_REGISTRATION_PERIOD_ACCESS_DESC" />
+		</field>
+		<!-- 
+		<field name="nb_months_registration_period_access" type="text" size="2" default="11" label="NB_MONTHS_REGISTRATION_PERIOD_ACCESS" description="NB_MONTHS_REGISTRATION_PERIOD_ACCESS_DESC" />
 		<field name="alert_new_applicant" type="radio" default="0" label="ALERT_NEW_APPLICANT" description="ALERT_NEW_APPLICANT_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
@@ -59,6 +59,7 @@
 			<option value="1">JYes</option>
 		</field>
 		-->
+		<field name="evaluationDisplayStatus" type="text" size="50" default="" label="COM_EMUNDUS_DISPLAY_STATUS" description="COM_EMUNDUS_DISPLAY_STATUS_DESC"></field>
 	</fieldset>
 
 	<fieldset label="COM_EMUNDUS_APPLICANTS" name="applicants" description="COM_EMUNDUS_APPLICANTS_DESC">
@@ -173,5 +174,15 @@
 			class="inputbox" filter="rules" validate="rules"
 			label="JCONFIG_PERMISSIONS_LABEL"
 			section="component" />
+	</fieldset>
+	<fieldset name="users" label="COM_EMUNDUS_USERS_LABEL" description="COM_EMUNDUS_USERS_DESC">
+		<field name="showUniversities" type="list" menu="hide" default="1" label="COM_EMUNDUS_SHOW_UNIVERSITIES" description="COM_EMUNDUS_SHOW_UNIVERSITIES_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="showNewsletter" type="list" menu="hide" default="1" label="COM_EMUNDUS_SHOW_NEWSLETTER" description="COM_EMUNDUS_SHOW_NEWSLETTER_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>		
 	</fieldset>
 </config>

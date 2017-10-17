@@ -167,7 +167,21 @@ class EmundusModelUsers extends JModelList
             }
         }
 
-        $query = 'SELECT DISTINCT(u.id), e.lastname, e.firstname, u.email, u.username,  espr.label as profile, up.profile_value as newsletter, u.registerDate, u.lastvisitDate,  GROUP_CONCAT( DISTINCT esgr.label SEPARATOR "<br>") as groupe, cat.title as university, u.block as active
+        $eMConfig           = JComponentHelper::getParams('com_emundus');
+        $showUniversities   = $eMConfig->get('showUniversities');
+        $showNewsletter     = $eMConfig->get('showNewsletter');
+
+        $query = 'SELECT DISTINCT(u.id), e.lastname, e.firstname, u.email, u.username,  espr.label as profile, ';
+        
+        if ($showNewsletter == 1)
+            $query .= 'up.profile_value as newsletter, ';
+
+        $query .= 'u.registerDate, u.lastvisitDate,  GROUP_CONCAT( DISTINCT esgr.label SEPARATOR "<br>") as groupe, ';
+        
+        if ($showUniversities == 1)
+            $query .= 'cat.title as university,';
+        
+        $query .= 'u.block as active
                     FROM #__users AS u 
                     LEFT JOIN #__emundus_users AS e ON u.id = e.user_id 
                     LEFT JOIN #__emundus_groups AS egr ON egr.user_id = u.id

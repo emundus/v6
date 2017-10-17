@@ -1,7 +1,7 @@
 /**
 * @version   $Id: style.less 26100 2015-01-27 14:16:12Z james $
 * @author    RocketTheme http://www.rockettheme.com
-* @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+* @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
 * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -30,7 +30,7 @@ a, ul.menu li .separator, .gf-menu li.active > .item {
 }
 
 .button, .readon, .readmore, button.validate, #member-profile a, #member-registration a, .formelm-buttons button, .btn-primary, .btn.btn-primary.disabled, .btn.btn-primary[disabled], a.btn.btn-primary.disabled:hover {
-	border-color: darken(@accentcolor, 20%);
+	border-color: darken(@linkcolor, 20%);
 	background: @accentcolor;
 }
 
@@ -69,7 +69,7 @@ h1, h2, h3, h4, h5, h6 {
 // Modules
 #rt-mainbody-surround {
 	.title, .component-content h2 {
-		border-bottom-color: @linkcolor;;
+		border-bottom-color: @mainborder;
 	}
 	.box1 {
 		background: @box1background;
@@ -253,7 +253,6 @@ input[type="tel"],
 input[type="color"],
 .uneditable-input {
   color: @bodytext;
-  height: 30px;
 }
 
 textarea,
@@ -275,7 +274,6 @@ input[type="color"],
   background-color: @bodycontrast;
   border: 1px solid @bodyborder;
   .box-shadow(inset 0 1px 1px rgba(0,0,0,.075));
-  height: 30px;
 }
 
 select {

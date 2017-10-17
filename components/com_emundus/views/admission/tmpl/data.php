@@ -96,7 +96,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 													<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
 														<div class="em_list_photo"><?php echo $value->photo; ?></div>
 														<div class="em_list_text">
-															<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
+															<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo strtoupper($value->emUser['lastname'])." ".ucfirst(strtolower($value->emUser['firstname'])); ?></strong></span>
 															<div class="em_list_email"><?php echo $value->user->email; ?></div>
 															<div class="em_list_email"><?php echo $line['fnum']->val; ?></div>
 														</div>
