@@ -53,7 +53,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 			</tr>
 			</thead>
 			<tbody>
-					
+
 			<?php foreach ($this->datas as $key => $line):?>
 				<?php if($key != 0): ?>
 					<tr>
@@ -65,7 +65,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									<?php if($k == 'check'): ?>
 										<label for = "<?php echo $line['fnum']->val ?>_check">
 											<input type="checkbox" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
-											<?php 
+											<?php
 												$tab = explode('-', $key);
 												echo ($tab[1] + 1 + $this->pagination->limitstart);
 												?>
@@ -85,15 +85,23 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									<?php elseif($k == "id_tag"):?>
 										<?php echo $this->colsSup['id_tag'][$line['fnum']->val]?>
 									<?php else:?>
-										<?php 
-											if ($value->type == 'text' ) {
-												echo strip_tags($value->val);
-											} elseif ($value->type == "textarea" && strlen($value->val) > 120) {
-												echo "<p>".substr($value->val, 0, 120)." ...<p>";
- 											} else {
-												echo $value->val;
-											}
-										?>
+										<?php if ($value->type == 'text' ) :?>
+											<?php echo strip_tags($value->val); ?>
+										<?php elseif ($value->type == "textarea" && !empty($value->val) && strlen($value->val) > 200) :?>
+											<?php echo substr($value->val,0,200)." ..."; ?>
+										<?php elseif ($value->type == "date")  :?>
+											<strong>
+												<?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
+												<?php else: ?>
+													<?php
+														$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
+														echo $formatted_date->format("M j, Y, H:i");
+													?>
+												<?php endif; ?>
+											</strong>
+										<?php else: ?>
+											<?php echo $value->val; ?>
+										<?php endif; ?>
 									<?php endif; ?>
 								</div>
 							</td>

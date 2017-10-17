@@ -62,7 +62,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									<?php if($k == 'check'): ?>
 										<label for = "<?php echo $line['fnum']->val ?>_check">
 											<input type="checkbox" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
-											<?php 
+											<?php
 												$tab = explode('-', $key);
 												echo ($tab[1] + $this->pagination->limitstart);
 												?>
@@ -82,13 +82,22 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									<?php elseif($k == "id_tag"):?>
 										<?php echo @$this->colsSup['id_tag'][$line['fnum']->val]?>
 									<?php else:?>
-										<?php 
-											if($value->type == 'text' ) {
-												echo strip_tags($value->val);
-											}else {
-												echo $value->val;
-											}
-										?>
+										<?php if ($value->type == 'text' ) :?>
+											<?php echo strip_tags($value->val); ?>
+										<?php elseif ($value->type == "date")  :?>
+										<strong>
+											<?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
+													<span class="glyphicon glyphicon-warning-sign em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true" style="color:orange;"></span>
+											<?php else: ?>
+												<?php
+													$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
+													echo $formatted_date->format("M j, Y, H:i");
+												?>
+											<?php endif; ?>
+										</strong>
+										<?php else: ?>
+											<?php echo $value->val; ?>
+										<?php endif; ?>
 									<?php endif; ?>
 								</div>
 							</td>
