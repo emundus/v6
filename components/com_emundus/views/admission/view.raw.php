@@ -95,15 +95,15 @@ class EmundusViewAdmission extends JViewLegacy
 				$m_admission = $this->getModel('Admission');
 				$m_files = new EmundusModelFiles();
 				$h_files = new EmundusHelperFiles();
-				$userModel = new EmundusModelUsers();
+				$m_user = new EmundusModelUsers();
 
-                $m_admission->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
-                //$m_admission->fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
+                $m_admission->code = $m_user->getUserGroupsProgrammeAssoc($this->_user->id);
+                //$m_admission->fnum_assoc = $m_user->getApplicantsAssoc($this->_user->id);
                 // get all fnums manually associated to user
-		        $groups = $userModel->getUserGroups($this->_user->id, 'Column');
+		        $groups = $m_user->getUserGroups($this->_user->id, 'Column');
 				
-        		$fnum_assoc_to_groups = $userModel->getApplicationsAssocToGroups($groups);
-		        $fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
+        		$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
+		        $fnum_assoc = $m_user->getApplicantsAssoc($this->_user->id);
 		        $m_admission->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
                 $this->assignRef('code', $m_admission->code);
                 $this->assignRef('fnum_assoc', $m_admission->fnum_assoc);
@@ -208,6 +208,7 @@ class EmundusViewAdmission extends JViewLegacy
 								if ($displayPhoto)
 									$userObj->photo = $h_files->getPhotos($value);
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
+								$userObj->emUser = $m_user->getUserInfos((int)substr($value, -7));								
 								$line['fnum'] = $userObj;
 							} 
 							

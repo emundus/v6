@@ -93,14 +93,14 @@ class EmundusViewEvaluation extends JViewLegacy
 				$evaluation = $this->getModel('Evaluation');
 				$h_files = new EmundusHelperFiles();
 				$m_files = new EmundusModelFiles();
-                $userModel = new EmundusModelUsers();
+                $m_user = new EmundusModelUsers();
 
-                $evaluation->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
-                //$evaluation->fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
+                $evaluation->code = $m_user->getUserGroupsProgrammeAssoc($this->_user->id);
+                //$evaluation->fnum_assoc = $m_user->getApplicantsAssoc($this->_user->id);
                 // get all fnums manually associated to user
-		        $groups = $userModel->getUserGroups($this->_user->id, 'Column');
-        		$fnum_assoc_to_groups = $userModel->getApplicationsAssocToGroups($groups);
-		        $fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
+		        $groups = $m_user->getUserGroups($this->_user->id, 'Column');
+        		$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
+		        $fnum_assoc = $m_user->getApplicantsAssoc($this->_user->id);
 		        $evaluation->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
                 $this->assignRef('code', $evaluation->code);
                 $this->assignRef('fnum_assoc', $evaluation->fnum_assoc);
@@ -215,6 +215,7 @@ class EmundusViewEvaluation extends JViewLegacy
 								if ($displayPhoto) 
 									$userObj->photo = $h_files->getPhotos($value);
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
+								$userObj->emUser = $m_user->getUserInfos((int)substr($value, -7));
 								$line['fnum'] = $userObj;
 							
 							} 

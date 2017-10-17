@@ -286,6 +286,7 @@ class EmundusViewFiles extends JViewLegacy
 								if ($displayPhoto)
 									$userObj->photo = $h_files->getPhotos($value);
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
+								$userObj->emUser = $m_user->getUserInfos((int)substr($value, -7));
 							    $line['fnum'] = $userObj;
 							}
 							
