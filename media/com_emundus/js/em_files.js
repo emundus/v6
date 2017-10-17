@@ -135,6 +135,19 @@ function reloadData(view)
         }
     })
 }
+
+/*fixed head js*/
+/*function fixedHead(){
+    var fauxTable = document.getElementById("faux-table");
+    var mainTable = document.getElementById("em-data");
+    var clonedElement = mainTable.cloneNode(true);
+    var clonedElement2 = mainTable.cloneNode(true);
+    clonedElement.id = "";
+    clonedElement2.id = "";
+    fauxTable.appendChild(clonedElement);
+    fauxTable.appendChild(clonedElement2);
+}*/
+
 /*
 // load Filter
 function reloadFilter(view)
