@@ -50,7 +50,7 @@ class EmundusControllerApplication extends JControllerLegacy
     public function delete_attachments() {
         $user = JFactory::getUser();
         //$allowed = array("Super Users", "Administrator", "Editor");
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) 
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
             die(JText::_("ACCESS_DENIED"));
 
         //$db   = JFactory::getDBO();
@@ -90,7 +90,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
                     echo $result;
                 }
-            } 
+            }
             else {
                 echo JText::_('ACCESS_DENIED').' : '.$attachment['value'].' : '.$upload['filename'];
             }
@@ -321,7 +321,7 @@ class EmundusControllerApplication extends JControllerLegacy
      */
     public function getactionmenu()
     {
-        $user = JFactory::getUser(); 
+        $user = JFactory::getUser();
         if(!EmundusHelperAccess::asPartnerAccessLevel($user->id))
             die(JText::_("ACCESS_DENIED"));
 
@@ -331,7 +331,7 @@ class EmundusControllerApplication extends JControllerLegacy
         $model = $this->getModel('Application');
         $menus = $model->getActionMenu();
         $res = false;
-        
+
         if(EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum))
         {
             if ($menus !== false)
