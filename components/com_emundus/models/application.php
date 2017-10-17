@@ -1166,6 +1166,13 @@ class EmundusModelApplication extends JModelList
                             }
                         }
                         unset($iteme);
+ 
+                        $asTextArea = false;
+                        foreach ($elements as $key => $element) {
+                            if ($element->plugin == 'textarea') {
+                                $asTextArea = true;
+                            }
+                        }
 
                         if ($itemg->group_id == 14) {
 
@@ -1183,7 +1190,7 @@ class EmundusModelApplication extends JModelList
                             }
 
                         // TABLEAU DE PLUSIEURS LIGNES avec plus de 7 lignes
-                        } elseif (($itemg->repeated > 0 || $itemg->repeated_1 > 0) && count($elements)<7){
+                        } elseif (($itemg->repeated > 0 || $itemg->repeated_1 > 0) && count($elements)<7 && !$asTextArea){
                             $forms .= '<p><table class="adminlist">
                             <thead>
                             <tr> ';
