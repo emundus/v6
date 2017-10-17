@@ -501,7 +501,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 	public function changeblock() {
 		$user = JFactory::getUser();
 		//temid=JSite::getMenu()->getActive()->id;
-		if (!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
+		if (!EmundusHelperAccess::asAdministratorAccessLevel($user->id) && !EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
 			return;
 		}
