@@ -88,7 +88,7 @@ function formCheck(id)
 	}
 	else
 	{
-		var re = /^[a-z0-9]*$/;
+		var re = /^[0-9a-zA-Z\_\@\-\.]+$/;
 		if(id == 'login' && !re.test($('#'+id).val()))
 		{
 			if(!$(this).parent('.form-group').hasClass('has-error'))
@@ -1067,7 +1067,7 @@ $(document).ready(function()
 							      var ln = $('#lname').val();
 							      var email = $('#mail').val();
 							      var profile = $('#profiles').val();
-
+								  
 				                 if(!formCheck('fname') || !formCheck('lname') || !formCheck('login') || !formCheck('mail'))
 				                 {
 					                 return false;

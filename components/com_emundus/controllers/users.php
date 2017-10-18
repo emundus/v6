@@ -79,7 +79,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$password 	= JUserHelper::genRandomPassword();
 		$user 		= clone(JFactory::getUser(0));
 
-		if (preg_match('/^[a-z0-9]*$/', $username) !== 1) {
+		if (preg_match('/^[0-9a-zA-Z\_\@\-\.]+$/', $username) !== 1) {
 			echo json_encode((object)array('status' => false, 'msg' => 'LOGIN_NOT_GOOD'));
 			exit;
 		}
