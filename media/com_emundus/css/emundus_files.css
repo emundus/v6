@@ -5,6 +5,10 @@ p {
     margin-top: 0;
 }
 
+.em-close-minimise {
+    margin: -49px 0px 0px 0px;
+}
+
 #check {
     min-width: 60px !important;
     max-width: 100px !important;
