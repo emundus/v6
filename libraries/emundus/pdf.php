@@ -740,23 +740,15 @@ $htmldata .= '
 	
 	$htmldata .='
 	<h2>'.$titleupload.' : '.$nbuploads.'</h2>';	
-/*	<table>
-	<tr>
-		<td><h3>'.JText::_('FILE_TYPE').'</h3></td>
-		<td><h3>'.JText::_('FILE_NAME').'</h3></td>
-		<td><h3>'.JText::_('DESCRIPTION').'</h3></td>
-		<td><h3>'.JText::_('SENT_ON').'</h3></td>
-	</tr>';*/
+
 	$htmldata .='<div class="file_upload">';
 	$htmldata .= '<ol>';
 	foreach($uploads as $upload){
         if (strrpos($upload->filename,"application_form")=== false) {
             $path_href = JURI::base(true) . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
-            $htmldata .= '<li><h3>' . $upload->value . '</h3>';
+            $htmldata .= '<li><b>' . $upload->value . '</b>';
             $htmldata .= '<ul>';
-            $htmldata .= '<li><b>' . JText::_('FILE_NAME') . '</b> : <a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a></li>';
-            $htmldata .= '<li><b>' . JText::_('SENT_ON') . '</b> : ' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . '</li>';
-            $htmldata .= '<li><b>' . JText::_('DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
+            $htmldata .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br><b>' . JText::_('DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
             $htmldata .= '</ul>';
             $htmldata .= '</li>';
         }
@@ -766,7 +758,7 @@ $htmldata .= '
 
 	$htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
 
-
+ 
 	if (!empty($htmldata)) {
 		$pdf->startTransaction();
 		$start_y = $pdf->GetY();
