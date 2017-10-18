@@ -30,7 +30,7 @@
 		</div>
 		<div class="form-group">
 			<label class="control-label" for="login"><?php echo JText::_('LOGIN_FORM'); ?></label>
-			<input type="text" class="form-control" id="login" name = "login" <?php if($this->edit == 1){echo 'value="'.$this->user['login'].'"';}?> />
+			<input type="text" class="form-control"  id="login" name = "login" <?php if($this->edit == 1){echo 'value="'.$this->user['login'].'"';}?> />
 		</div>
 		<div class="form-group">
 			<label class="control-label" for="email"><?php echo JText::_('EMAIL_FORM'); ?></label>
@@ -135,15 +135,20 @@
 
           $(document).on('keyup', '#login', function()
                      {
-                        var re = /^[a-z0-9]*$/;
-                        if(re.test($('#login').val()))
+                        var re = /^[0-9a-zA-Z\_\@\-\.]+$/; // /^[a-z0-9]*$/;
+                        if(!re.test($('#login').val()))
                         {
                             if(!$(this).parent('.form-group').hasClass('has-error'))
- {
+							{
 	                            $(this).parent('.form-group').addClass('has-error');
 	                            $(this).after('<span class="help-block">'+Joomla.JText._('NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER')+'</span>');
                             }
                         }
+						else
+						{
+							$(this).parent('.form-group').removeClass('has-error');
+                         	$(this).siblings('.help-block').remove();
+						}
 					 }); 
 		 
 
