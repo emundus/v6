@@ -37,63 +37,61 @@ header('Content-type: text/css');
 $c = $_REQUEST['c'];
 echo <<<EOT
 /* BEGIN - Your CSS styling starts here */
-
-#listform_$c .fabrikForm {
+.fabrikForm {
 	margin-top: 25px !important;
 }
 
-#listform_$c .label-lightblue {
+.label-lightblue {
     background-color: #6bb9F0 !important;
 }
-#listform_$c .label-blue {
+.label-blue {
     background-color: #19B5FE !important;
 }
-#listform_$c .label-darkblue {
+.label-darkblue {
     background-color: #013243 !important;
-}
-#listform_$c .label-lightgreen {
+}.label-lightgreen {
     background-color: #00E640 !important;
 }
-#listform_$c .label-green {
+.label-green {
     background-color: #3FC380 !important;
 }
-#listform_$c .label-darkgreen {
+.label-darkgreen {
     background-color: #1E824C !important;
 }
-#listform_$c .label-lightyellow {
+.label-lightyellow {
     background-color: #FFFD7E !important;
 }
-#listform_$c .label-yellow {
+.label-yellow {
     background-color: #FFFD54 !important;
 }
-#listform_$c .label-darkyellow {
+.label-darkyellow {
     background-color: #F7CA18 !important;
 }
-#listform_$c .label-lightorange {
+.label-lightorange {
     background-color: #FABE58 !important;
 }
-#listform_$c .label-orange {
+.label-orange {
     background-color: #E87E04 !important;
 }
-#listform_$c .label-darkorange {
+.label-darkorange {
     background-color: #D35400 !important;
 }
-#listform_$c .label-lightred {
+.label-lightred {
     background-color: #EC644B !important;
 }
-#listform_$c .label-red {
+.label-red {
     background-color: #CF000F !important;
 }
-#listform_$c .label-darkred {
+.label-darkred {
     background-color: #96281B !important;
 }
-#listform_$c .label-lightpurple {
+.label-lightpurple {
     background-color: #DCC6E0 !important;
 }
-#listform_$c .label-purple {
+.label-purple {
     background-color: #947CB0 !important;
 }
-#listform_$c .label-darkpurple {
+.label-darkpurple {
     background-color: #663399 !important;
 }
 
