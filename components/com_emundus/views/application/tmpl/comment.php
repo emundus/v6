@@ -25,13 +25,13 @@ JFactory::getSession()->set('application_layout', 'comment');
     <div class="row">
         <div class="panel panel-default widget">
             <div class="panel-heading">
-                
+
                 <h3 class="panel-title">
-                	<span class="glyphicon glyphicon-comment"></span> 
+                	<span class="glyphicon glyphicon-comment"></span>
                 	<?php echo JText::_('COMMENTS'); ?>
                 	<span class="label label-info"><?php echo count($this->userComments); ?></span>
                 </h3>
-                
+
             </div>
             <div class="panel-body">
                 <ul class="list-group">
@@ -56,8 +56,15 @@ JFactory::getSession()->set('application_layout', 'comment');
                                     <button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('DELETE');?>">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
-                                </div>
-                                <?php endif; ?>
+								</div>
+								<?php endif; ?>
+								<?php if($this->_user->id == $comment->user_id || EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $this->fnum)):?>
+                                <div class="action">
+									<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#edit-comment" title="<?php echo JText::_('EDIT');?>" data-cid="<?php echo $comment->id ?>" data-cname="<?php echo $comment->reason ?>" data-ctext="<?php echo $comment->comment ?>">
+                                        <span class="glyphicon glyphicon-edit"></span>
+									</button>
+								</div>
+								<?php endif; ?>
                             </div>
                         </div>
                     </li>
@@ -65,14 +72,42 @@ JFactory::getSession()->set('application_layout', 'comment');
 						$i++;
 					}
 				} else echo JText::_('NO_COMMENT');
-				?>  
+				?>
                 </ul>
-            </div>
+			</div>
+
+			<div class="modal fade" id="edit-comment" tabindex="-1" role="dialog" aria-labelledby="editCommentLabel" style="z-index:100000">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="editCommentLabel"><?php echo JText::_('EDIT_COMMENT'); ?></h4>
+					</div>
+					<div class="modal-body">
+						<form>
+							<input type="hidden" id="comment-id">
+						<div class="form-group">
+							<label for="comment-title" class="control-label"><?php echo JText::_('COMMENT_REASON'); ?></label>
+							<input type="text" class="form-control" id="comment-title">
+						</div>
+						<div class="form-group">
+							<label for="comment-text" class="control-label"><?php echo JText::_('COMMENT_TEXT'); ?></label>
+							<textarea class="form-control" id="comment-text"></textarea>
+						</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal"><?php echo JText::_('CANCEL'); ?></button>
+						<button type="button" class="btn btn-primary" id="editCommentBtn"><?php echo JText::_('EDIT_COMMENT'); ?></button>
+					</div>
+					</div>
+				</div>
+			</div>
 
 	        <?php if(EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum)):?>
 	            <div class="form" id="form"></div>
 	        <?php endif;?>
-        
+
         </div>
     </div>
 </div>
@@ -81,7 +116,7 @@ JFactory::getSession()->set('application_layout', 'comment');
 
 $(document).off('click', '.comments .btn.btn-danger.btn-xs');
 $(document).on('click', '.comments .btn.btn-danger.btn-xs', function(e)
-{ 
+{
 	if (e.handle === true) {
 		e.handle = false;
 		url = 'index.php?option=com_emundus&controller=application&task=deletecomment';
@@ -117,14 +152,14 @@ $(document).on('click', '.comments .btn.btn-danger.btn-xs', function(e)
 
 var textArea = '<hr><div id="form">' +
                     '<input placeholder="<?php echo JText::_('TITLE');?>" class="form" id="comment-title" type="text" style="height:50px !important;width:100% !important;" value="" name="comment-title"/><br>' +
-                    '<textarea placeholder="<?php echo JText::_('ENTER_COMMENT');?>" class="form" style="height:200px !important;width:100% !important;"  id="comment-body"></textarea><br>' + 
+                    '<textarea placeholder="<?php echo JText::_('ENTER_COMMENT');?>" class="form" style="height:200px !important;width:100% !important;"  id="comment-body"></textarea><br>' +
                 '<button type="button" class="btn btn-success"><?php echo JText::_('ADD_COMMENT');?></button></div>';
 
 $('#form').append(textArea);
 
 $(document).off('click', '#form .btn.btn-success');
 $(document).on('click', '#form .btn.btn-success', function(f)
-{ 
+{
 	if (f.handle === true) {
 		f.handle = false;
 		var comment = $('#comment-body').val();
@@ -139,51 +174,93 @@ $(document).on('click', '#form .btn.btn-success', function(f)
 	    url = 'index.php?option=com_emundus&controller=files&task=addcomment';
 
 	    $.ajax({
-	            type:'POST',
-	            url:url,
-	            dataType:'json',
-	            data:({id:1, fnums:'{"i":"'+$('#application_fnum').val()+'"}', title: title, comment:comment}),
-	            success: function(result)
-	            {
-	                $('#form').empty();
-	                if(result.status)
-	                {
-	                    $('#form').append('<p class="text-success"><strong>'+result.msg+'</strong></p>');
-	                    var li = ' <li class="list-group-item" id="'+result.id+'">'+
-	                        '<div class="row">'+
-	                            '<div class="col-xs-10 col-md-11">'+
-	                                '<div>'+
-	                                    '<a href="#">'+title+'</a>'+
-	                                    '<div class="mic-info">'+
-	                                        '<a href="#"><?php echo $this->_user->name; ?></a> - <?php echo JHtml::_('date', date('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2')); ?>'+
-	                                    '</div>'+
-	                                '</div>'+
-	                                '<div class="comment-text">'+comment+'</div>'+
-	                                '<div class="action">'+
-	                                    '<button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('DELETE');?>">'+
-	                                        '<span class="glyphicon glyphicon-trash"></span>'+
-	                                    '</button>'+
-	                                '</div>'+
-	                            '</div>'+
-	                        '</div>'+
-	                    '</li>';
-	                    $('.comments .list-group').append(li);
-		                var nbCom = parseInt($('.panel-default.widget .panel-heading .label.label-info').text().trim())
-		                nbCom++;
-		                $('.panel-default .panel-heading .label.label-info').html(nbCom);
-	                }
-	                else
-	                {
-	                    $('#form').append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
-	                }
+			type:'POST',
+			url:url,
+			dataType:'json',
+			data:({id:1, fnums:'{"i":"'+$('#application_fnum').val()+'"}', title: title, comment:comment}),
+			success: function(result)
+			{
+				$('#form').empty();
+				if(result.status)
+				{
+					$('#form').append('<p class="text-success"><strong>'+result.msg+'</strong></p>');
+					var li = ' <li class="list-group-item" id="'+result.id+'">'+
+						'<div class="row">'+
+							'<div class="col-xs-10 col-md-11">'+
+								'<div>'+
+									'<a href="#">'+title+'</a>'+
+									'<div class="mic-info">'+
+										'<a href="#"><?php echo $this->_user->name; ?></a> - <?php echo JHtml::_('date', date('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2')); ?>'+
+									'</div>'+
+								'</div>'+
+								'<div class="comment-text">'+comment+'</div>'+
+								'<div class="action">'+
+									'<button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('DELETE');?>">'+
+										'<span class="glyphicon glyphicon-trash"></span>'+
+									'</button>'+
+								'</div>'+
+							'</div>'+
+						'</div>'+
+					'</li>';
+					$('.comments .list-group').append(li);
+					var nbCom = parseInt($('.panel-default.widget .panel-heading .label.label-info').text().trim())
+					nbCom++;
+					$('.panel-default .panel-heading .label.label-info').html(nbCom);
+				}
+				else
+				{
+					$('#form').append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
+				}
 
-	                $('#form').append(textArea);
-	            },
-	            error: function (jqXHR, textStatus, errorThrown)
-	            {
-	                console.log(jqXHR.responseText);
-	            }
-	           });
+				$('#form').append(textArea);
+			},
+			error: function (jqXHR, textStatus, errorThrown)
+			{
+				console.log(jqXHR.responseText);
+			}
+		});
 	}
+});
+
+$('#edit-comment').on('show.bs.modal', function (event) {
+
+  	var button = $(event.relatedTarget),
+  		id = button.data('cid'),
+  		title = button.data('cname'),
+  		comment = button.data('ctext');
+
+  	$('#editCommentLabel').text(<?php echo JText::_('EDITING_COMMENT'); ?> ' + title);
+  	$('#comment-id').val(id);
+  	$('#comment-title').val(title);
+	$('#comment-text').val(comment);
+
+});
+
+
+$(document).on('click', '#editCommentBtn', function editComment() {
+
+	var id 		= $('#comment-id').val(),
+ 		title 	= $('#comment-title').val(),
+		text 	= $('#comment-text').val();
+
+	$.ajax({
+		type:'POST',
+		url:'index.php?option=com_emundus&controller=application&task=editcomment&format=raw',
+		dataType: 'json',
+		data: ({
+			id: id,
+			title: title,
+			text: text
+		}),
+		success: function(result) {
+			if (result.status)
+				location.reload(true);
+			else
+				alert(result.msg);
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			console.log(jqXHR.responseText);
+		}
+	});
 });
 </script>

@@ -53,7 +53,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 			</tr>
 			</thead>
 			<tbody>
-					
+
 			<?php foreach ($this->datas as $key => $line):?>
 				<?php if($key != 0): ?>
 					<tr>
@@ -65,7 +65,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									<?php if($k == 'check'): ?>
 										<label for = "<?php echo $line['fnum']->val ?>_check">
 											<input type="checkbox" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
-											<?php 
+											<?php
 												$tab = explode('-', $key);
 												echo ($tab[1] + 1 + $this->pagination->limitstart);
 												?>
@@ -85,7 +85,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									<?php elseif($k == "id_tag"):?>
 										<?php echo @$this->colsSup['id_tag'][$line['fnum']->val]?>
 									<?php else:?>
-										<?php 
+										<?php
 											if($value->type == 'text' ) {
 												echo strip_tags($value->val);
 											}else {

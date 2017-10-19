@@ -205,7 +205,7 @@ class EmundusViewFiles extends JViewLegacy
 				$displayPhoto = false;
 
 			    $defaultElements = $this->get('DefaultElements');
-			    $data = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'status' => JText::_('STATUS')));
+			    $data = array(array('check' => '#', 'name' => JText::_('APPLICATION_FILES'), 'status' => JText::_('STATUS')));
 			    $fl = array();
 			    $model = $this->getModel('Files');
 			    if (count($defaultElements)>0) {
@@ -282,7 +282,7 @@ class EmundusViewFiles extends JViewLegacy
 								if ($displayPhoto)
 									$userObj->photo = $h_files->getPhotos($value);
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
-								$userObj->emUser = $m_user->getUserInfos((int)substr($value, -7));
+								$userObj->user->name = $user['name'];
 							    $line['fnum'] = $userObj;
 							}
 

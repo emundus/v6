@@ -6,9 +6,9 @@
  * @license    GNU/GPL
  * @author     Benjamin Rivalland
 */
- 
+
 // no direct access
- 
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 //error_reporting(E_ALL);
 jimport( 'joomla.application.component.view');
@@ -17,7 +17,7 @@ jimport( 'joomla.application.component.view');
  *
  * @package    Emundus
  */
- 
+
 class EmundusViewEvaluation extends JViewLegacy
 {
 	var $_user = null;
@@ -40,7 +40,7 @@ class EmundusViewEvaluation extends JViewLegacy
 
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
-		
+
 		parent::__construct($config);
 	}
 
@@ -52,21 +52,21 @@ class EmundusViewEvaluation extends JViewLegacy
 	    $menu = @JSite::getMenu();
 		$current_menu  = $menu->getActive();
 		$menu_params = $menu->getParams($current_menu->id);
-		
+
 		$columnSupl = explode(',', $menu_params->get('em_other_columns'));
 		$jinput = JFactory::getApplication()->input;
 		$layout = $jinput->getString('layout', 0);
 
 		switch  ($layout)
 		{
-			case 'menuactions': 
-				$display = JFactory::getApplication()->input->getString('display', 'none'); 
-			
+			case 'menuactions':
+				$display = JFactory::getApplication()->input->getString('display', 'none');
+
 				$items = @EmundusHelperFiles::getMenuList($menu_params);
 				$actions = @EmundusHelperFiles::getActionsACL();
 
 				$menuActions = array();
-				foreach ($items as $key => $item) { 
+				foreach ($items as $key => $item) {
 					if (!empty($item->note)) {
 						$note = explode('|', $item->note);
 						if ($actions[$note[0]][$note[1]] == 1) {
@@ -75,7 +75,7 @@ class EmundusViewEvaluation extends JViewLegacy
 							$item->action = $actions[$note[0]];
 							$menuActions[] = $item;
 						}
-					} else 
+					} else
 						$menuActions[] = $item;
 				}
 
@@ -86,7 +86,7 @@ class EmundusViewEvaluation extends JViewLegacy
 			default :
 				$jinput = JFactory::getApplication()->input;
 				$cfnum = $jinput->getString('cfnum', null);
-				
+
 				$params = JComponentHelper::getParams('com_emundus');
 				$evaluators_can_see_other_eval = $params->get('evaluators_can_see_other_eval', 0);
 
@@ -134,7 +134,7 @@ class EmundusViewEvaluation extends JViewLegacy
 
 				// Columns
 				$defaultElements = $this->get('DefaultElements');
-				$datas = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
+				$datas = array(array('check' => '#', 'name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
 				$fl = array();
 
 			    // Get eval crieterion
@@ -147,7 +147,7 @@ class EmundusViewEvaluation extends JViewLegacy
 				$fl['jos_emundus_evaluations.user'] = JText::_('EVALUATOR');
 				// merge eval criterion on application files
 				$datas[0] = array_merge($datas[0], $fl);
-				
+
 				$fnumArray = array();
 
 			    // get evaluation form ID
@@ -159,7 +159,7 @@ class EmundusViewEvaluation extends JViewLegacy
 			    //$form_url_add  = 'index.php?option=com_fabrik&c=form&view=form&formid=29&tableid=31&rowid=&jos_emundus_evaluations___student_id[value]=2778&jos_emundus_evaluations___campaign_id[value]=55&jos_emundus_evaluations___fnum[value]=2014092516382300000550002778&student_id=2778&tmpl=component&iframe=1';
 
 				if (!empty($users)) {
-					
+
 					//$i = 1;
 					$taggedFile = array();
 					foreach ($columnSupl as $col) {
@@ -193,17 +193,17 @@ class EmundusViewEvaluation extends JViewLegacy
 						$usObj->val = 'X';
 						$fnumArray[] = $user['fnum'];
 						$line = array('check' => $usObj);
-						
+
 						if (array_key_exists($user['fnum'], $taggedFile)) {
-						
+
 							$class = $taggedFile[$user['fnum']]['class'];
 							$usObj->class = $taggedFile[$user['fnum']]['class'];
-						
+
 						} else {
 							$class = null;
 							$usObj->class = null;
 						}
-						
+
 						foreach ($user as  $key => $value) {
 							$userObj = new stdClass();
 
@@ -212,36 +212,36 @@ class EmundusViewEvaluation extends JViewLegacy
 								$userObj->val = $value;
 								$userObj->class = $class;
 								$userObj->type = 'fnum';
-								if ($displayPhoto) 
+								if ($displayPhoto)
 									$userObj->photo = $h_files->getPhotos($value);
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
 								$userObj->emUser = $m_user->getUserInfos((int)substr($value, -7));
 								$line['fnum'] = $userObj;
-							
-							} 
-							
+
+							}
+
 							elseif ($key == 'name' || $key == 'status_class' || $key == 'step')
 						    	continue;
 
 							elseif ($key == 'evaluator') {
-								
+
 								if ($formid > 0 && !empty($value)) {
-								
+
 									if ($evaluators_can_see_other_eval)
 										$link_view = '<a href="'.$form_url_view.$user['evaluation_id'].'" data-toggle="modal" data-target="#basicModal" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'"><span class="glyphicon icon-eye-open" title="'.JText::_('DETAILS').'">  </span></a>';
-								
-									if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) 
+
+									if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
 										$link_edit = '<a href="'.$form_url_edit.$user['evaluation_id'].'" target="_blank"><span class="glyphicon icon-edit" title="'.JText::_('EDIT').'"> </span></a>';
-								
+
 									$userObj->val = @$link_view.' '.@$link_edit.' '.$value;
-								
+
 								} else $userObj->val = $value;
 
 								$userObj->type = 'html';
 								$line['evaluator'] = $userObj;
 
 							} elseif (isset($elements) && in_array($key, array_keys($elements))) {
-								
+
 								$userObj->val 			= $value;
 								$userObj->type 			= $elements[$key]['plugin'];
 								$userObj->status_class 	= $user['status_class'];
@@ -254,36 +254,36 @@ class EmundusViewEvaluation extends JViewLegacy
 									$params = json_decode($userObj->params);
 									$userObj->radio = array_combine($params->sub_options->sub_labels, $params->sub_options->sub_values);
 								}
-							
+
 							} else {
 
 								$userObj->val = $value;
 								$userObj->type = 'text';
 								$userObj->status_class = $user['status_class'];
 								$line[$key] = $userObj;
-							
+
 							}
-						
+
 						} if (count(@$colsSup) > 0) {
-							
+
 							foreach ($colsSup as $key => $obj) {
-								
+
 								$userObj = new stdClass();
 								if (!is_null($obj)) {
-									
+
 									if(array_key_exists($user['fnum'], $obj)) {
 
 										$userObj->val = $obj[$user['fnum']];
 										$userObj->type = 'html';
 										$userObj->fnum = $user['fnum'];
 										$line[JText::_(strtoupper($key))] = $userObj;
-									
+
 									} else {
 
 										$userObj->val = '';
 										$userObj->type = 'html';
 										$line[$key] = $userObj;
-									
+
 									}
 								}
 							}

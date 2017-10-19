@@ -136,14 +136,14 @@ class EmundusModelEvaluation extends JModelList
 				elseif ($def_elmt->element_plugin == 'databasejoin') {
 					$attribs = json_decode($def_elmt->element_attribs);
 
-					$join_val_column_concat = str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat); 
+					$join_val_column_concat = str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat);
 					$join_val_column = (!empty($join_val_column_concat) && $join_val_column_concat!='')?'CONCAT('.$join_val_column_concat.')':$attribs->join_val_column;
 
 					if ($group_params->repeat_group_button == 1) {
 						$query = '(
 									select GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
-									from '.$attribs->join_db_name.' 
-									where '.$attribs->join_db_name.'.'.$attribs->join_key_column.' IN 
+									from '.$attribs->join_db_name.'
+									where '.$attribs->join_db_name.'.'.$attribs->join_key_column.' IN
 										( select '.$def_elmt->table_join.'.' . $def_elmt->element_name.'
 										  from '.$def_elmt->table_join.'
 										  where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
@@ -228,7 +228,7 @@ class EmundusModelEvaluation extends JModelList
 		{
 			//var_dump($session->get('filt_params'));
 			$element_id = array();
-			$filt_params = $session->get('filt_params'); 
+			$filt_params = $session->get('filt_params');
 			if (count(@$filt_params['programme'])>0) {
 				foreach ($filt_params['programme'] as $value) {
 					$groups = $this->getGroupsEvalByProgramme($value);
@@ -236,7 +236,7 @@ class EmundusModelEvaluation extends JModelList
 						$eval_elt_list = array();
 					} else {
 						$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-						if (count($eval_elt_list)>0) { 
+						if (count($eval_elt_list)>0) {
 							foreach ($eval_elt_list as $eel) {
                                 if(isset($eel->element_id) && !empty($eel->element_id))
     								$elements_id[] = $eel->element_id;
@@ -405,7 +405,7 @@ class EmundusModelEvaluation extends JModelList
         $can_be_ordering[] = 'fnum';
         $can_be_ordering[] = 'status';
         $can_be_ordering[] = 'c.status';
-        $can_be_ordering[] = 'u.name';
+        $can_be_ordering[] = 'name';
         $can_be_ordering[] = 'eta.id_tag';
         $can_be_ordering[] = 'overall';
 
@@ -419,19 +419,19 @@ class EmundusModelEvaluation extends JModelList
 
 		if (is_array($multi_array)) {
 			foreach ($multi_array as $key => $row_array) {
-				
+
 				if (is_array($row_array))
 					@$key_array[$key] = $row_array[$sort_key];
 				else
 					return -1;
 
 			}
-		
+
 		} else return -1;
 
 		if (!empty($key_array))
 			array_multisort($key_array, $sort, $multi_array);
-		
+
 		return $multi_array;
 	}
 
@@ -599,8 +599,8 @@ class EmundusModelEvaluation extends JModelList
 		$cols_other = $this->setSelect($search_other);
 		$cols_default = $this->setSelect($this->_elements_default);
 
-		$joined = array('jos_emundus_users', 'jos_users', 
-						'jos_emundus_setup_profiles', 
+		$joined = array('jos_emundus_users', 'jos_users',
+						'jos_emundus_setup_profiles',
 						'jos_emundus_final_grade',
 		                'jos_emundus_declaration');
 
@@ -706,7 +706,7 @@ class EmundusModelEvaluation extends JModelList
             $params['published'] = 1;
 
 		$query = array('q' => '', 'join' => '');
-		
+
 		if(!empty($params))
 		{
 			foreach($params as $key => $value)
@@ -720,7 +720,7 @@ class EmundusModelEvaluation extends JModelList
 							foreach ($value as $k => $v)
 							{
 								$tab = explode('.', $k);
-								
+
 								if (count($tab)>1)
 								{
 									if(!empty($v))
@@ -768,9 +768,9 @@ class EmundusModelEvaluation extends JModelList
                                             }
                                         }
 									}
-									
+
 								}
-								
+
 							}
 						}
 						break;
@@ -958,7 +958,7 @@ class EmundusModelEvaluation extends JModelList
 					case 'status':
 						if ($value)
 						{
-							if ( $value[0] == "%" || !isset($value[0]) ) 
+							if ( $value[0] == "%" || !isset($value[0]) )
 								$query['q'] .= ' ';
 							else
 							{
@@ -993,7 +993,7 @@ class EmundusModelEvaluation extends JModelList
 		// force menu filter
 		if (count($filt_menu['status'])>0 && isset($filt_menu['status'][0]) && !empty($filt_menu['status'][0]) && $filt_menu['status'][0] != "%") {
 			$query['q'] .= ' AND c.status IN ("' . implode('","', $filt_menu['status']) . '") ';
-		} 
+		}
 
 		if ($filt_menu['programme'][0] == "%"){
 			$sql_code = '1=1';
@@ -1007,7 +1007,7 @@ class EmundusModelEvaluation extends JModelList
 		$sql_fnum = '';
 		if(count($this->fnum_assoc)>0)
 			$sql_fnum = ' OR c.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
-		
+
 		$query['q'] .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
 
 		return $query;
@@ -1050,7 +1050,7 @@ class EmundusModelEvaluation extends JModelList
 	}
 
 	public function getUsers($current_fnum = null)
-	{ 
+	{
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
 
 		//$userModel = new EmundusModelUsers();
@@ -1060,9 +1060,9 @@ class EmundusModelEvaluation extends JModelList
 		$evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
 		$current_user = JFactory::getUser();
 
-		$query = 'select c.fnum, ss.step, ss.value as status, u.name, ss.class as status_class ';
-		// prevent double left join on query 
-		$lastTab = array('#__emundus_setup_status', 'jos_emundus_setup_status', 
+		$query = 'select c.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class ';
+		// prevent double left join on query
+		$lastTab = array('#__emundus_setup_status', 'jos_emundus_setup_status',
 						 '#__emundus_setup_programmes', 'jos_emundus_setup_programmes',
 						 '#__emundus_setup_campaigns', 'jos_emundus_setup_campaigns',
 						 '#__emundus_evaluations', 'jos_emundus_evaluations',
@@ -1083,18 +1083,19 @@ class EmundusModelEvaluation extends JModelList
 		if (count($this->_elements_default)>0)
 			$query .= ', '.implode(',', $this->_elements_default);
 
-		$query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eu.lastname," ",eu.firstname) AS evaluator';
-		
+		$query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
+
 		$query .= ' FROM #__emundus_campaign_candidature as c
-					LEFT JOIN #__emundus_setup_status as ss on ss.step = c.status 
-					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = c.campaign_id 
+					LEFT JOIN #__emundus_setup_status as ss on ss.step = c.status
+					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = c.campaign_id
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
-					LEFT JOIN #__users as u on u.id = c.applicant_id 
+					LEFT JOIN #__emundus_users as eu on eu.user_id = c.applicant_id
+					LEFT JOIN #__users as u on u.id = c.applicant_id
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=c.fnum ' ;
 		$q = $this->_buildWhere($lastTab);
 
 
-		if ((EmundusHelperAccess::isExpert($current_user->id) && $evaluators_can_see_other_eval == 0) || 
+		if ((EmundusHelperAccess::isExpert($current_user->id) && $evaluators_can_see_other_eval == 0) ||
 			(EmundusHelperAccess::isEvaluator($current_user->id) && $evaluators_can_see_other_eval == 0))  {
 			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum AND (jos_emundus_evaluations.user='.$current_user->id.' OR jos_emundus_evaluations.user IS NULL)';
 		} else
@@ -1102,7 +1103,7 @@ class EmundusModelEvaluation extends JModelList
 
 		if (!empty($leftJoin))
 			$query .= $leftJoin;
-		$query .= ' LEFT JOIN #__emundus_users as eu on eu.user_id = jos_emundus_evaluations.user ';
+		$query .= ' LEFT JOIN #__emundus_users as eue on eue.user_id = jos_emundus_evaluations.user ';
 		$query .= $q['join'];
 
 		// Only get users by status defined in backoffice
@@ -1116,21 +1117,21 @@ class EmundusModelEvaluation extends JModelList
 			}
 			$query .= " WHERE ss.value IN (".implode(",", $scc).") ";
 		}
-			
-		
+
+
 		if (empty($current_fnum))
 			$query .= ' AND 1 = 1 ';
 		else
 			$query .= ' AND c.fnum like ' . $current_fnum;
-		
-		
+
+
 		$query .= $q['q'];
-		
+
 		$query .=  $this->_buildContentOrderBy();
 
 		$dbo->setQuery($query);
 		try
-		{ 
+		{
 			$res = $dbo->loadAssocList();
 			$this->_applicants = $res;
 
@@ -1140,10 +1141,10 @@ class EmundusModelEvaluation extends JModelList
 			if ($limitStart > 0) {
 				$query .= " limit $limit, $limitStart ";
 			}
-			
+
 			$dbo->setQuery($query);
 			$res = $dbo->loadAssocList();
-//echo '<hr>'.str_replace('#_', 'jos', $query).'<hr>'; 
+//echo '<hr>'.str_replace('#_', 'jos', $query).'<hr>';
 			return $res;
 		}
 		catch(Exception $e)
@@ -1423,7 +1424,7 @@ class EmundusModelEvaluation extends JModelList
 	*/
 	function getExperts($fnum, $select, $table) {
 		$query = "SELECT ".$select." FROM ".$table." WHERE `fnum` like ".$this->_db->Quote($fnum);
-		$this->_db->setQuery($query); 
+		$this->_db->setQuery($query);
 		return $this->_db->loadAssocList();
 	}
 
@@ -1435,14 +1436,14 @@ class EmundusModelEvaluation extends JModelList
 	* 	@return array
 	*/
 	function getEvaluationDocuments($fnum, $campaign_id, $result) {
-		$query = 'SELECT *, eu.id as id, esa.id as attachment_id 
-					FROM #__emundus_uploads eu 
-					LEFT JOIN #__emundus_setup_attachments esa ON esa.id=eu.attachment_id 
-					WHERE eu.fnum like '.$this->_db->Quote($fnum).' AND campaign_id='.$campaign_id.' 
+		$query = 'SELECT *, eu.id as id, esa.id as attachment_id
+					FROM #__emundus_uploads eu
+					LEFT JOIN #__emundus_setup_attachments esa ON esa.id=eu.attachment_id
+					WHERE eu.fnum like '.$this->_db->Quote($fnum).' AND campaign_id='.$campaign_id.'
 					AND eu.attachment_id IN (
 						SELECT DISTINCT(esl.attachment_id) FROM #__emundus_setup_letters esl WHERE esl.status='.$result.'
-						) 
-					AND eu.filename NOT LIKE "%lock%" 
+						)
+					AND eu.filename NOT LIKE "%lock%"
 					ORDER BY eu.timedate';
 //die(str_replace('#_', 'jos', $query));
 		$this->_db->setQuery( $query );
@@ -1456,7 +1457,7 @@ class EmundusModelEvaluation extends JModelList
 	*/
 	function getEvaluationsFnum($fnum) {
 		$query = 'SELECT *
-					FROM #__emundus_evaluations ee 
+					FROM #__emundus_evaluations ee
 					WHERE ee.fnum like '.$this->_db->Quote($fnum);
 //die(str_replace('#_', 'jos', $query));
 		$this->_db->setQuery( $query );
@@ -1472,7 +1473,7 @@ class EmundusModelEvaluation extends JModelList
     function getEvaluationsFnumUser($fnum, $user) {
         try {
             $query = 'SELECT *
-					FROM #__emundus_evaluations ee 
+					FROM #__emundus_evaluations ee
 					WHERE ee.fnum like ' . $this->_db->Quote($fnum) . ' AND user = ' . $user;
 //die(str_replace('#_', 'jos', $query));
             $this->_db->setQuery($query);
@@ -1492,11 +1493,11 @@ class EmundusModelEvaluation extends JModelList
     **/
     function getEvaluationsByStudent($user) {
         try {
-       
+
 	        $query = 'SELECT * FROM #__emundus_evaluations ee WHERE ee.student_id = ' . $user;
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
-        
+
 		} catch(Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -1504,7 +1505,7 @@ class EmundusModelEvaluation extends JModelList
     }
 
 	/**
-     * 	Copy a line by ID from the evaluation table and use it to overrite or create another line 
+     * 	Copy a line by ID from the evaluation table and use it to overrite or create another line
      *	@param fromID 		line to copy data from
 	 *  @param toID  		line to copy data to
      * 	@return boolean
@@ -1521,7 +1522,7 @@ class EmundusModelEvaluation extends JModelList
 			$query = 'SELECT count(*) as total FROM #__emundus_evaluations ee WHERE ee.id = ' . $this->_db->Quote($toID);
             $this->_db->setQuery($query);
             $toDATA = $this->_db->loadAssoc();
-		
+
 		} catch (Exception $e) {
 			echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -1556,7 +1557,7 @@ class EmundusModelEvaluation extends JModelList
 			$query .= ") VALUES ( ";
 
 			foreach ($fromDATA as $fromK => $fromV) {
-				
+
 				if ($fromK == "id" || empty($fromV))
 					$query .= "'', ";
 				elseif ($fromK == "time_date")
@@ -1568,8 +1569,8 @@ class EmundusModelEvaluation extends JModelList
 				elseif ($fromK == "student_id")
 					$query .= $this->_db->Quote($student).", ";
 				else
-					$query .= $this->_db->Quote($fromV).", ";		
-			
+					$query .= $this->_db->Quote($fromV).", ";
+
 			}
 			$query = rtrim($query, ", ");
 			$query .= " )";
@@ -1579,7 +1580,7 @@ class EmundusModelEvaluation extends JModelList
 
 			$this->_db->setQuery($query);
 			$this->_db->execute();
-		
+
 		} catch (Exception $e) {
 			echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -1617,9 +1618,9 @@ class EmundusModelEvaluation extends JModelList
 					FROM jos_emundus_setup_letters as l
 					left join jos_emundus_setup_letters_repeat_status as lrs on lrs.parent_id=l.id
 					left join jos_emundus_setup_letters_repeat_training as lrt on lrt.parent_id=l.id
-					WHERE `lrs`.`status` IN (".$eligibility.") AND `lrt`.`training` in (".$this->_db->Quote($training).") 
+					WHERE `lrs`.`status` IN (".$eligibility.") AND `lrt`.`training` in (".$this->_db->Quote($training).")
 					GROUP BY l.id";
-		$this->_db->setQuery($query); 
+		$this->_db->setQuery($query);
 
 		return $this->_db->loadAssocList();
 	}
@@ -1627,10 +1628,10 @@ class EmundusModelEvaluation extends JModelList
 	function getLettersTemplateByID($id) {
 		try {
 			//$query = "SELECT * FROM #__emundus_setup_letters WHERE id=" . $id;
-            $query = "SELECT l.*, GROUP_CONCAT( DISTINCT(`lrs`.`status`) SEPARATOR ',' ) as `status`, CONCAT('\"',GROUP_CONCAT( DISTINCT(`lrt`.`training`) SEPARATOR '\",\"' ), '\"') as `training` 
-            			FROM #__emundus_setup_letters as l 
-            			left join #__emundus_setup_letters_repeat_status as lrs on lrs.parent_id=l.id 
-            			left join #__emundus_setup_letters_repeat_training as lrt on lrt.parent_id=l.id 
+            $query = "SELECT l.*, GROUP_CONCAT( DISTINCT(`lrs`.`status`) SEPARATOR ',' ) as `status`, CONCAT('\"',GROUP_CONCAT( DISTINCT(`lrt`.`training`) SEPARATOR '\",\"' ), '\"') as `training`
+            			FROM #__emundus_setup_letters as l
+            			left join #__emundus_setup_letters_repeat_status as lrs on lrs.parent_id=l.id
+            			left join #__emundus_setup_letters_repeat_training as lrt on lrt.parent_id=l.id
             			WHERE l.id=" . $id;
             $this->_db->setQuery($query);
             return $this->_db->loadAssocList();
@@ -1659,7 +1660,7 @@ class EmundusModelEvaluation extends JModelList
         }
         try {
             $query = 'SELECT ff.form_id
-					FROM #__fabrik_formgroup ff 
+					FROM #__fabrik_formgroup ff
 					WHERE ff.group_id IN (SELECT fabrik_group_id FROM #__emundus_setup_programmes WHERE code like ' .
                 $this->_db->Quote($code) . ')';
 //die(str_replace('#_', 'jos', $query));
@@ -1706,7 +1707,7 @@ class EmundusModelEvaluation extends JModelList
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
 	}
-	
+
 	/**
      * @param $fnums
      * @return mixed
@@ -1715,12 +1716,12 @@ class EmundusModelEvaluation extends JModelList
 	public function getEvaluationAverageByFnum($fnums) {
 		$dbo = $this->getDbo();
 		$query = 'SELECT AVG(overall) AS overall, fnum FROM #__emundus_evaluations WHERE fnum IN ("'.implode('","', $fnums).'") GROUP BY fnum';
- 
+
 		try {
-		
+
 			$dbo->setQuery($query);
 			return $dbo->loadAssocList('fnum', 'overall');
-		 
+
 		} catch(Exception $e) {
 			throw $e;
 		}

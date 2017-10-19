@@ -191,6 +191,22 @@ class EmundusModelApplication extends JModelList
         return $this->_db->loadObjectList();
     }
 
+    public function editComment($id, $title, $text) {
+
+        try {
+
+            $query = 'UPDATE #__emundus_comments SET reason = '.$this->_db->quote($title).', comment_body = '.$this->_db->quote($text).'  WHERE id = '.$this->_db->quote($id);
+            $this->_db->setQuery($query);
+            $this->_db->execute();
+            return true;
+
+        } catch (Exception $e) {
+            JLog::add('Query: '.$query.' Error:'.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+    }
+
     public function deleteComment($id){
         $query = 'SELECT user_id FROM #__emundus_comments WHERE id="'.$id.'"';
         $this->_db->setQuery( $query );
@@ -1166,7 +1182,7 @@ class EmundusModelApplication extends JModelList
                             }
                         }
                         unset($iteme);
- 
+
                         $asTextArea = false;
                         foreach ($elements as $key => $element) {
                             if ($element->plugin == 'textarea') {
