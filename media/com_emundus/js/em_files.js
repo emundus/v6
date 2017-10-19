@@ -137,7 +137,7 @@ function reloadData(view)
 }
 
 /*fixed head js*/
-/*function fixedHead(){
+function fixedHead(){
     var fauxTable = document.getElementById("faux-table");
     var mainTable = document.getElementById("em-data");
     var clonedElement = mainTable.cloneNode(true);
@@ -146,7 +146,7 @@ function reloadData(view)
     clonedElement2.id = "";
     fauxTable.appendChild(clonedElement);
     fauxTable.appendChild(clonedElement2);
-}*/
+}
 
 /*
 // load Filter

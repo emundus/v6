@@ -80,11 +80,11 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$user 		= clone(JFactory::getUser(0));
 
 		if (preg_match('/^[0-9a-zA-Z\_\@\-\.]+$/', $username) !== 1) {
-			echo json_encode((object)array('status' => false, 'msg' => 'LOGIN_NOT_GOOD'));
+			echo json_encode((object)array('status' => false, 'msg' => JText::_('USERNAME_NOT_GOOD')));
 			exit;
 		}
 		if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $email) !== 1) {
-			echo json_encode((object)array('status' => false, 'msg' => 'MAIL_NOT_GOOD'));
+			echo json_encode((object)array('status' => false, 'msg' => JText::_('MAIL_NOT_GOOD')));
 			exit;
 		}
 
@@ -121,7 +121,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		try {
 			if (!mkdir(EMUNDUS_PATH_ABS.$uid, 0755) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$uid.DS.'index.html')) {
-				echo json_encode((object)array('status' => false, 'uid' => $uid, 'msg' => 'CANT_CREATE_USER_FOLDER_CONTACT_ADMIN'));
+				echo json_encode((object)array('status' => false, 'uid' => $uid, 'msg' => JText::_('CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
 				exit;
 			}
 		} catch(Exception $e) {

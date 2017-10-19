@@ -13,6 +13,9 @@
  */
 defined( '_JEXEC' ) or die( 'Restricted access' );
 ?>
+<script type="text/javascript" >
+ 	fixedHead();
+</script>
 
 
 <input type="hidden" id="view" name="view" value="admission">
@@ -23,136 +26,141 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 		</div>
 		<div class="em-data-container">
 
-			<table class="table table-striped table-hover" id="em-data">
-				<thead>
-				<tr>
-					<?php foreach($this->datas[0] as $kl => $v): ?>
-						<?php if($kl == "jos_emundus_final_grade.user"): ?>
-						<!-- Skips extra collumn -->
-						<?php else :?>
-						<th title="<?php echo JText::_($v)?>" id="<?php echo $kl?>" >
-							<p class="em-cell">
-								<?php if($kl == 'check'): ?>
-									<label for="em-check-all">
-										<input type="checkbox" value="-1" id="em-check-all" class="em-check" style="width:20px !important;"/>
-										<span>#</span>
-									</label>
-									<label class="em-hide em-check-all-all" for="em-check-all-all">
-										<input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all" style="width:20px !important;"/>
-										<span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_CHECK_ALL_ALL')?></span>
-									</label>
-								<?php elseif(@$this->lists['order'] == $kl):?>
-									<?php if(@$this->lists['order_dir'] == 'desc'):?>
-										<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-									<?php else:?>
-										<span class="glyphicon glyphicon-sort-by-attributes"></span>
-									<?php endif;?>
-									<strong>
-										<?php echo JText::_($v)?>
-									</strong>
-								<?php else:?>
-									<?php echo JText::_($v)?>
-								<?php endif;?>
-							</p>
-						</th>
-						<?php endif; ?>
-					<?php endforeach; ?>
-				</tr>
-				</thead>
-				<tbody>
-
-				<?php foreach ($this->datas as $key => $line):?>
-					<?php if($key != 0): ?>
+			<div id="table-scroll" class="table-scroll">
+ 				<div id="faux-table" class="faux-table" aria="hidden"></div>
+ 				<div class="table-wrap">
+ 					<table class="table table-striped table-hover main-table" id="em-data">
+						<thead>
 						<tr>
-							<?php $cfnum = $line['fnum']->val; ?>
-							<?php foreach ($line as $k => $value):?>
-								<td <?php if($k == 'check' && $value->class != null) {echo 'class="'.$value->class.'"';}?>>
-									<div class="em-cell" >
-										<?php if($k == 'check'): ?>
-											<label for = "<?php echo $line['fnum']->val ?>_check">
-												<input type="checkbox" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
-												<?php
-													$tab = explode('-', $key);
-													echo ($tab[1] + 1 + $this->pagination->limitstart);
-												?>
+							<?php foreach($this->datas[0] as $kl => $v): ?>
+								<?php if($kl == "jos_emundus_final_grade.user"): ?>
+								<!-- Skips extra collumn -->
+								<?php else :?>
+								<th title="<?php echo JText::_($v)?>" id="<?php echo $kl?>" >
+									<p class="em-cell">
+										<?php if($kl == 'check'): ?>
+											<label for="em-check-all">
+												<input type="checkbox" value="-1" id="em-check-all" class="em-check" style="width:20px !important;"/>
+												<span>#</span>
 											</label>
-										<?php elseif ($k == 'status'):?>
-											<span class="label label-<?php echo $value->status_class ?>" title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
-										<?php elseif ($k == 'fnum'):?>
-											<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
-												<div class="em_list_photo"><?php echo $value->photo; ?></div>
-												<div class="em_list_text">
-													<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
-													<div class="em_list_email"><?php echo $value->user->email; ?></div>
-													<div class="em_list_email"><?php echo $line['fnum']->val; ?></div>
-												</div>
-											</a>
-										<?php elseif($k == "access"):?>
-											<?php echo $this->accessObj[$line['fnum']->val]?>
-										<?php elseif($k == "id_tag"):?>
-											<?php echo @$this->colsSup['id_tag'][$line['fnum']->val]?>
+											<label class="em-hide em-check-all-all" for="em-check-all-all">
+												<input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all" style="width:20px !important;"/>
+												<span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_CHECK_ALL_ALL')?></span>
+											</label>
+										<?php elseif(@$this->lists['order'] == $kl):?>
+											<?php if(@$this->lists['order_dir'] == 'desc'):?>
+												<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+											<?php else:?>
+												<span class="glyphicon glyphicon-sort-by-attributes"></span>
+											<?php endif;?>
+											<strong>
+												<?php echo JText::_($v)?>
+											</strong>
 										<?php else:?>
-
-											<?php if ($value->type == 'text' ) :?>
-												<?php echo strip_tags($value->val); ?>
-											<?php elseif ($value->type == 'textarea') :?>
-												<textarea class="input-medium" id="<?php echo $cfnum.'-'.$value->id; ?>"><?php echo $value->val ?></textarea>
-												<span class="glyphicon glyphicon-share-alt em-textarea" id="<?php echo $cfnum.'-'.$value->id.'-span'; ?>" aria-hidden="true" style="color:black;"></span>
-											<?php elseif ($value->type == 'date') :?>
-												<h5 class="em-date">
-													<strong>
-														<?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
-																<span class="glyphicon glyphicon-warning-sign em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true" style="color:orange;"></span>
-														<?php else: ?>
-															<?php
-																$params = json_decode($value->params);
-																$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
-																echo $formatted_date->format($params->date_form_format);
-															?>
-														<?php endif; ?>
-													</strong>
-												</h5>
-											<?php elseif ($value->type == 'radiobutton') :?>
-												<select name="<?php echo $cfnum.'-'.$value->id; ?>" class="em-radio input-medium" id="<?php echo $cfnum.'-'.$value->id; ?>"
-												<?php
-													if (strtolower($value->val) == "yes" || strtolower($value->val) == "oui" || $value->val == 1) {
-														echo "style='border: solid 3px #BCCB56'";
-													} elseif(strtolower($value->val) == "no" || strtolower($value->val) == "non" || $value->val === 0) {
-														echo "style='border: solid 3px #E09541'";
-													} elseif (!empty($value->val)) {
-														echo "style='border: solid 3px #49A0CD'";
-													}
-												?>
-												>
-													<?php if(!isset($value->val)) :?>
-														<option value="" disabled="disabled" selected="selected"> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
-													<?php endif; ?>
-													<?php foreach($value->radio as $rlabel => $rval) :?>
-														<option value="<?php echo $rval; ?>" <?php if($value->val == $rlabel){echo "selected=true";}?>> <?php echo $rlabel; ?> </option>
-													<?php endforeach; ?>
-												</select>
-											<?php elseif ($value->type == 'field'):?>
-												<input class="admission_input" type="text" id="<?php echo $cfnum.'-'.$value->id; ?>" name="<?php echo $value->val ?>" value="<?php echo $value->val ?>"></input>
-												<span class="glyphicon glyphicon-share-alt em-field" id="<?php echo $cfnum.'-'.$value->id.'-span'; ?>" aria-hidden="true" style="color:black;"></span>
-											<?php elseif ($value->type == 'fileupload'):?>
-												<?php if (!empty($value->val) && $value->val != "/") :?>
-													<a href="<?php echo $value->val ?>" target="_blank"> <?php echo JText::_('LINK_TO_DOWNLOAD')." " ?><span class="glyphicon glyphicon-save"></span> </a>
-												<?php else: ?>
-													<p> No File </p>
-												<?php endif; ?>
-											<?php else :?>
-												<?php echo $value->val; ?>
-											<?php endif; ?>
-
-										<?php endif; ?>
-									</div>
-								</td>
+											<?php echo JText::_($v)?>
+										<?php endif;?>
+									</p>
+								</th>
+								<?php endif; ?>
 							<?php endforeach; ?>
 						</tr>
-					<?php endif;?>
-				<?php  endforeach;?>
-				</tbody>
-			</table>
+						</thead>
+						<tbody>
+
+						<?php foreach ($this->datas as $key => $line):?>
+							<?php if($key != 0): ?>
+								<tr>
+									<?php $cfnum = $line['fnum']->val; ?>
+									<?php foreach ($line as $k => $value):?>
+										<td <?php if($k == 'check' && $value->class != null) {echo 'class="'.$value->class.'"';}?>>
+											<div class="em-cell" >
+												<?php if($k == 'check'): ?>
+													<label for = "<?php echo $line['fnum']->val ?>_check">
+														<input type="checkbox" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
+														<?php
+															$tab = explode('-', $key);
+															echo ($tab[1] + 1 + $this->pagination->limitstart);
+														?>
+													</label>
+												<?php elseif ($k == 'status'):?>
+													<span class="label label-<?php echo $value->status_class ?>" title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
+												<?php elseif ($k == 'fnum'):?>
+													<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
+														<div class="em_list_photo"><?php echo $value->photo; ?></div>
+														<div class="em_list_text">
+															<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
+															<div class="em_list_email"><?php echo $value->user->email; ?></div>
+															<div class="em_list_email"><?php echo $line['fnum']->val; ?></div>
+														</div>
+													</a>
+												<?php elseif($k == "access"):?>
+													<?php echo $this->accessObj[$line['fnum']->val]?>
+												<?php elseif($k == "id_tag"):?>
+													<?php echo @$this->colsSup['id_tag'][$line['fnum']->val]?>
+												<?php else:?>
+
+													<?php if ($value->type == 'text' ) :?>
+														<?php echo strip_tags($value->val); ?>
+													<?php elseif ($value->type == 'textarea') :?>
+														<textarea class="input-medium" id="<?php echo $cfnum.'-'.$value->id; ?>"><?php echo $value->val ?></textarea>
+														<span class="glyphicon glyphicon-share-alt em-textarea" id="<?php echo $cfnum.'-'.$value->id.'-span'; ?>" aria-hidden="true" style="color:black;"></span>
+													<?php elseif ($value->type == 'date') :?>
+														<h5 class="em-date">
+															<strong>
+																<?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
+																		<span class="glyphicon glyphicon-warning-sign em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true" style="color:orange;"></span>
+																<?php else: ?>
+																	<?php
+																		$params = json_decode($value->params);
+																		$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
+																		echo $formatted_date->format($params->date_form_format);
+																	?>
+																<?php endif; ?>
+															</strong>
+														</h5>
+													<?php elseif ($value->type == 'radiobutton') :?>
+														<select name="<?php echo $cfnum.'-'.$value->id; ?>" class="em-radio input-medium" id="<?php echo $cfnum.'-'.$value->id; ?>"
+														<?php
+															if (strtolower($value->val) == "yes" || strtolower($value->val) == "oui" || $value->val == 1) {
+																echo "style='border: solid 3px #BCCB56'";
+															} elseif(strtolower($value->val) == "no" || strtolower($value->val) == "non" || $value->val === 0) {
+																echo "style='border: solid 3px #E09541'";
+															} elseif (!empty($value->val)) {
+																echo "style='border: solid 3px #49A0CD'";
+															}
+														?>
+														>
+															<?php if(!isset($value->val)) :?>
+																<option value="" disabled="disabled" selected="selected"> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
+															<?php endif; ?>
+															<?php foreach($value->radio as $rlabel => $rval) :?>
+																<option value="<?php echo $rval; ?>" <?php if($value->val == $rlabel){echo "selected=true";}?>> <?php echo $rlabel; ?> </option>
+															<?php endforeach; ?>
+														</select>
+													<?php elseif ($value->type == 'field'):?>
+														<input class="admission_input" type="text" id="<?php echo $cfnum.'-'.$value->id; ?>" name="<?php echo $value->val ?>" value="<?php echo $value->val ?>"></input>
+														<span class="glyphicon glyphicon-share-alt em-field" id="<?php echo $cfnum.'-'.$value->id.'-span'; ?>" aria-hidden="true" style="color:black;"></span>
+													<?php elseif ($value->type == 'fileupload'):?>
+														<?php if (!empty($value->val) && $value->val != "/") :?>
+															<a href="<?php echo $value->val ?>" target="_blank"> <?php echo JText::_('LINK_TO_DOWNLOAD')." " ?><span class="glyphicon glyphicon-save"></span> </a>
+														<?php else: ?>
+															<p> No File </p>
+														<?php endif; ?>
+													<?php else :?>
+														<?php echo $value->val; ?>
+													<?php endif; ?>
+
+												<?php endif; ?>
+											</div>
+										</td>
+									<?php endforeach; ?>
+								</tr>
+							<?php endif;?>
+						<?php  endforeach;?>
+						</tbody>
+					</table>
+				</div>
+			</div>
 		</div>
 		<div class="well">
 			<label for = "pager-select"><?php echo JText::_('DISPLAY')?></label>
