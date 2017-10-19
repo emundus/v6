@@ -69,14 +69,14 @@ class EmundusControllerCalendar extends JControllerLegacy {
         $google_secret_key      = $eMConfig->get('clientSecret');
         $google_refresh_token   = $eMConfig->get('refreshToken');
 
-        $dpcalendar_event = $m_calendar->dpcalendar_confirm_interview($event_id, $user_id, $fnum);
+        $dpcalendar_event = $m_calendar->dpcalendar_confirm_interview($event_id[0], $user_id, $fnum);
 
         $service = $m_calendar->google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
 
         $result = $m_calendar->google_add_event($service, $dpcalendar_event);
 
         if ($result)
-            $result = $m_calendar->email_event($event_id, true);
+            $result = $m_calendar->email_event($event_id[0], true);
 
         echo json_encode(['status' => $result]);
 

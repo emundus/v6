@@ -356,14 +356,14 @@ class EmundusModelCalendar extends JModelLegacy {
             $email = $m_emails->getEmail('booking_deleted_user');
 
         // If the email sender has the same domain as the system sender address.
-        if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($config->get('mailfrom'), "@"), 1))
-            $mail_from_address = $email_from;
+        if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($config->get('mailfrom'), "@"), 1))
+            $mail_from_address = $email->emailfrom;
         else
             $mail_from_address = $config->get('mailfrom');
 
         // Set the emailfrom name if its there
         if (!empty($email->emailfrom))
-            $mail_from_name = $email->emailfrom;
+            $mail_from_name = $email->name;
         else
             $mail_from_name = $config->get('fromname');
 
@@ -415,14 +415,14 @@ class EmundusModelCalendar extends JModelLegacy {
             $email = $m_emails->getEmail('booking_deleted_recipient');
 
             // If the email sender has the same domain as the system sender address.
-        if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($config->get('mailfrom'), "@"), 1))
-            $mail_from_address = $email_from;
+        if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($config->get('mailfrom'), "@"), 1))
+            $mail_from_address = $email->emailfrom;
         else
             $mail_from_address = $config->get('mailfrom');
 
         // Set the emailfrom name if its there
         if (!empty($email->emailfrom))
-            $mail_from_name = $email->emailfrom;
+            $mail_from_name = $email->name;
         else
             $mail_from_name = $config->get('fromname');
 
