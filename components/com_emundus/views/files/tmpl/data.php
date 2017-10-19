@@ -117,11 +117,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 						<?php  endforeach;?>
 						</tbody>
 					</table>
-<<<<<<< HEAD
 				</div>
 			</div>									
-=======
->>>>>>> 5de672101c1ef486c68df8c787f71cdb88209a75
 		</div>
 		<div class="well">
 			<label for = "pager-select"><?php echo JText::_('DISPLAY')?></label>
