@@ -57,6 +57,8 @@ function tableOrdering( order, dir, task ) {
   document.adminForm.submit( task );
 }
 
+
+
 /* Administrative validation -- Mootool */
 /*function validation(uid, validate, cible){ 
 	var getPlayerResult = $(cible);

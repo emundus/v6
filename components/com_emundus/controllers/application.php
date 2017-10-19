@@ -127,12 +127,13 @@ class EmundusControllerApplication extends JControllerLegacy
                 $row['comment_body'] = $attachment['value'].' : '.$upload['filename'];
                 $model->addComment($row);
 
-                echo $result;
+                echo ($result);
             }
         }
         else {
                 echo JText::_('ACCESS_DENIED').' : '.$attachment['value'].' : '.$upload['filename'];
         }
+       
     }
 
     /**

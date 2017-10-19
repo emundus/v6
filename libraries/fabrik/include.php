@@ -10,8 +10,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\Inflector;
+use Fabble\Helpers\Factory;
 use Joomla\String\Normalise;
+use Joomla\String\Inflector;
 
 /**'
  * Autoloader Class
@@ -193,6 +194,7 @@ class FabrikAutoloader
 	 */
 	private function library($class)
 	{
+
 		if (strstr($class, '\\'))
 		{
 			return;
@@ -235,8 +237,6 @@ class FabrikAutoloader
 		}
 
 		$class = str_replace('\\', '/', $class);
-		//$file  = explode('/', $class);
-		//$file  = strtolower(array_pop($file));
 		$path = preg_replace('#Fabrik\/Helpers\/#', JPATH_SITE . '/libraries/fabrik/fabrik/Helpers/', $class);
 		$path  = $path . '.php';
 
@@ -247,6 +247,12 @@ class FabrikAutoloader
 	}
 }
 
-// PSR-4 Auto-loader.
-$loader     = require JPATH_LIBRARIES . '/fabrik/vendor/autoload.php';
+/*
+ * If the Fabrik library package has been installed, or we have full github code, we can use Composer autoload
+ */
+if (file_exists(JPATH_LIBRARIES . '/fabrik/vendor/autoload.php'))
+{
+	$loader = require JPATH_LIBRARIES . '/fabrik/vendor/autoload.php';
+}
+
 $autoLoader = new FabrikAutoloader();
