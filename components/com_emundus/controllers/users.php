@@ -146,18 +146,24 @@ class EmundusControllerUsers extends JControllerLegacy {
         $body 		= preg_replace($tags['patterns'], $tags['replacements'], $email->message);
         $body 		= $m_emails->setTagsFabrik($body);
 
-        $app    = JFactory::getApplication();
-        $email_from_sys = $app->getCfg('mailfrom');
+        $app = JFactory::getApplication();
+		$email_from_sys = $app->getCfg('mailfrom');
+
+		// If the email sender has the same domain as the system sender address.
+        if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+			$mail_from_address = $from;
+		else
+			$mail_from_address = $email_from_sys;
 
         $sender = array(
-            $email_from_sys,
+            $mail_from_address,
             $fromname
         );
 
         $mailer->setSender($sender);
-        $mailer->addReplyTo($email->emailfrom, $email->name);
+        $mailer->addReplyTo($from, $fromname);
         $mailer->addRecipient($user->email);
-        $mailer->setSubject($email->subject);
+        $mailer->setSubject($subject);
         $mailer->isHTML(true);
         $mailer->Encoding = 'base64';
         $mailer->setBody($body);
@@ -171,7 +177,7 @@ class EmundusControllerUsers extends JControllerLegacy {
             $message = array(
                 'user_id_from' => $current_user->id,
                 'user_id_to' => $uid,
-                'subject' => $email->subject,
+                'subject' => $subject,
                 'message' => $body
             );
             $m_emails->logEmail($message);
@@ -684,10 +690,16 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 
             $app = JFactory::getApplication();
-	        $email_from_sys = $app->getCfg('mailfrom');
+			$email_from_sys = $app->getCfg('mailfrom');
+
+			// If the email sender has the same domain as the system sender address.
+			if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+				$mail_from_address = $from;
+			else
+				$mail_from_address = $email_from_sys;
 
 	        $sender = array(
-	            $email_from_sys,
+	            $mail_from_address,
 	            $fromname
 	        );
 

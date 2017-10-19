@@ -692,8 +692,14 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $body       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['message']);
                                 $body       = $emails->setTagsFabrik($body, array($file['fnum']));
 
+                                // If the email sender has the same domain as the system sender address.
+                                if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+                                    $mail_from_address = $from;
+                                else
+                                    $mail_from_address = $email_from_sys;
+
                                 $sender = array(
-                                    $email_from_sys,
+                                    $mail_from_address,
                                     $fromname
                                 );
 
@@ -736,10 +742,16 @@ class EmundusControllerFiles extends JControllerLegacy
                             $body       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['message']);
                             $body       = $emails->setTagsFabrik($body, $validFnums);
 
+                            // If the email sender has the same domain as the system sender address.
+                            if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+                                $mail_from_address = $from;
+                            else
+                                $mail_from_address = $email_from_sys;
+
                             $sender = array(
-                                    $email_from_sys,
-                                    $fromname
-                                );
+                                $mail_from_address,
+                                $fromname
+                            );
 
                             $mailer->setSender($sender);
                             $mailer->addReplyTo($from, $fromname);
