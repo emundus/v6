@@ -62,7 +62,7 @@ if ($locallang == "fr-FR") {
                         $dteStart = new DateTime($now); 
                         $dteEnd   = new DateTime($resul->end_date);
                         $dteDiff  = $dteStart->diff($dteEnd); 
-                        $j = $dteDiff->format("%a"); 
+                         = $dteDiff->format("%a"); 
                         $h = $dteDiff->format("%H"); 
 
                         if ($order == "start_date") {
@@ -107,7 +107,7 @@ if ($locallang == "fr-FR") {
                                         <legend>
                                             <?php if($resul->apply_online==1) {?>
                                                 <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                                <a class="btn btn-info" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+                                                <a class="btn btn-info" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->training."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
                                             <?php } else { ?>
                                                 <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                                             <?php } ?>
