@@ -7,9 +7,9 @@
  * @license    GNU/GPL
  * @author     Benjamin Rivalland
 */
- 
+
 // no direct access
- 
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 //error_reporting(E_ALL);
 jimport( 'joomla.application.component.view');
@@ -18,7 +18,7 @@ jimport( 'joomla.application.component.view');
  *
  * @package    Emundus
  */
- 
+
 class EmundusViewDecision extends JViewLegacy
 {
 	var $_user = null;
@@ -40,7 +40,7 @@ class EmundusViewDecision extends JViewLegacy
 
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
-		
+
 		parent::__construct($config);
 	}
 
@@ -55,20 +55,20 @@ class EmundusViewDecision extends JViewLegacy
 		$current_menu  	= $menu->getActive();
 		$menu_params 	= $menu->getParams(@$current_menu->id);
 		$columnSupl 	= explode(',', $menu_params->get('em_other_columns'));
-		
+
 		$jinput = JFactory::getApplication()->input;
 		$layout = $jinput->getString('layout', 0);
 
 		switch  ($layout)
 		{
-			case 'menuactions': 
-				$display = JFactory::getApplication()->input->getString('display', 'none'); 
-			
+			case 'menuactions':
+				$display = JFactory::getApplication()->input->getString('display', 'none');
+
 				$items = @EmundusHelperFiles::getMenuList($menu_params);
 				$actions = @EmundusHelperFiles::getActionsACL();
 
 				$menuActions = array();
-				foreach ($items as $key => $item) { 
+				foreach ($items as $key => $item) {
 					if (!empty($item->note)) {
 						$note = explode('|', $item->note);
 						if ($actions[$note[0]][$note[1]] == 1) {
@@ -77,7 +77,7 @@ class EmundusViewDecision extends JViewLegacy
 							$item->action = $actions[$note[0]];
 							$menuActions[] = $item;
 						}
-					} else 
+					} else
 						$menuActions[] = $item;
 				}
 
@@ -130,7 +130,7 @@ class EmundusViewDecision extends JViewLegacy
 
 					// Columns
 					$defaultElements = $this->get('DefaultElements');
-					$data = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
+					$data = array(array('check' => '#', 'name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
 					$fl = array();
 
 					// Get eval criterion
@@ -141,7 +141,7 @@ class EmundusViewDecision extends JViewLegacy
 						}
 					}
 					$fl['jos_emundus_final_grade.user'] = JText::_('RECORDED_BY');
-					
+
 					// merge eval criterion on application files
 					$data[0] = array_merge($data[0], $fl);
 
@@ -173,7 +173,7 @@ class EmundusViewDecision extends JViewLegacy
 								break;
 						}
 					}
-					
+
 
 					//$i = 0;
 					foreach ($users as $user) {
@@ -192,7 +192,7 @@ class EmundusViewDecision extends JViewLegacy
 							$usObj->class = null;
 
 						}
-						
+
 						foreach ($user as  $key => $value) {
 							$userObj = new stdClass();
 
@@ -203,13 +203,14 @@ class EmundusViewDecision extends JViewLegacy
 								if ($displayPhoto)
 									$userObj->photo = EmundusHelperFiles::getPhotos($value);
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
+								$userObj->user->name = $user['name'];
 								$line['fnum'] = $userObj;
 							}
-							
+
 							elseif ($key == 'name' || $key == 'status_class') continue;
-							
+
 							elseif ($key == 'evaluator') {
-								if ($evaluators_can_see_other_eval || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) 
+								if ($evaluators_can_see_other_eval || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
 									$userObj->val = !empty($value)?'<a href="#" data-toggle="modal" data-target="#basicModal" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'">
 											<span class="glyphicon icon-eye-open" title="'.JText::_('DETAILS').'">  </span>
 										</a>'.$value:'';
@@ -219,7 +220,7 @@ class EmundusViewDecision extends JViewLegacy
 								$userObj->type = 'html';
 								$line['evaluator'] = $userObj;
 							}
-							
+
 							else {
 								$userObj->val = $value;
 								$userObj->type = 'text';
@@ -227,7 +228,7 @@ class EmundusViewDecision extends JViewLegacy
 								$line[$key] = $userObj;
 							}
 						}
-						
+
 						if (count(@$colsSup)>0)
 						{
 							foreach($colsSup as $key => $obj)

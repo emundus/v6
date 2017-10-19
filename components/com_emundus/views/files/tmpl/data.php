@@ -55,7 +55,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 							<?php endforeach; ?>
 						</tr>
 						</thead>
-						
+
 						<tbody>
 						<?php foreach ($this->datas as $key => $line):?>
 							<?php if($key != 0): ?>
@@ -66,7 +66,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 												<?php if($k == 'check'): ?>
 													<label for = "<?php echo $line['fnum']->val ?>_check">
 														<input type="checkbox" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
-														<?php 
+														<?php
 															$tab = explode('-', $key);
 															echo ($tab[1] + $this->pagination->limitstart);
 															?>
@@ -77,7 +77,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 													<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
 														<div class="em_list_photo"><?php echo $value->photo; ?></div>
 														<div class="em_list_text">
-														<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo strtoupper($value->emUser['lastname'])." ".ucfirst(strtolower($value->emUser['firstname'])); ?></strong></span>
+														<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
 														<div class="em_list_email"><?php echo $value->user->email; ?></div>
 													</div>
 												</a>
@@ -110,7 +110,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 							<?php endif;?>
 						<?php  endforeach;?>
 						</tbody>
-					</table>									
+					</table>
 		</div>
 		<div class="well">
 			<label for = "pager-select"><?php echo JText::_('DISPLAY')?></label>

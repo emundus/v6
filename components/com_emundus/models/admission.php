@@ -57,18 +57,18 @@ class EmundusModelAdmission extends JModelList
 		$menu_params = $menu->getParams($current_menu->id);
 		$em_blocks_names = explode(',', $menu_params->get('em_blocks_names'));
 		$session = JFactory::getSession();
-		
+
 		if (!$session->has('filter_order') || $session->get('filter_order') == 'c.id') {
             if (in_array('overall', $em_blocks_names)) {
-                
+
                 $session->set('filter_order', 'overall');
                 $session->set('filter_order_Dir', 'desc');
-            
+
             } else {
-				
+
                 $session->set('filter_order', 'c.id');
                 $session->set('filter_order_Dir', 'desc');
-            
+
             }
         }
 
@@ -81,7 +81,7 @@ class EmundusModelAdmission extends JModelList
 			$session->set('limitstart', $limitstart);
 
 		} else {
-		
+
 			$limit = intval($session->get('limit'));
 			$limitstart = intval($session->get('limitstart'));
 			$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
@@ -108,7 +108,7 @@ class EmundusModelAdmission extends JModelList
 			if (!empty($adv))
 				$this->elements_id .= ','.implode(',', $adv);
 		}
-		
+
 		$this->elements_values = explode(',', $menu_params->get('em_elements_values'));
 		$this->_elements_default = array();
 		$this->_elements = @EmundusHelperFiles::getElementsName($this->elements_id);
@@ -126,16 +126,16 @@ class EmundusModelAdmission extends JModelList
 													  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
 					} else
 						$this->_elements_default[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
-				
+
 				} elseif ($def_elmt->element_plugin == 'databasejoin') {
 					$attribs = json_decode($def_elmt->element_attribs);
                     $join_val_column = !empty($attribs->join_val_column)?$attribs->join_val_column:'CONCAT('.str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat).')';
-					
+
 					if ($group_params->repeat_group_button == 1) {
 						$query = '(
 									select GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
-									from '.$attribs->join_db_name.' 
-									where '.$attribs->join_db_name.'.'.$attribs->join_key_column.' IN 
+									from '.$attribs->join_db_name.'
+									where '.$attribs->join_db_name.'.'.$attribs->join_key_column.' IN
 										( select '.$def_elmt->table_join.'.' . $def_elmt->element_name.'
 										  from '.$def_elmt->table_join.'
 										  where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
@@ -146,16 +146,16 @@ class EmundusModelAdmission extends JModelList
 
 					$this->_elements_default[] = $query;
 					//$this->_elements_default[] = ' (SELECT esc.label FROM jos_emundus_setup_campaigns AS esc WHERE esc.id = jos_emundus_campaign_candidature.campaign_id) as `jos_emundus_campaign_candidature.campaign_id` ';
-				
+
 				} elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
-					
+
 					$element_attribs = json_decode($def_elmt->element_attribs);
 					$select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
 					foreach ($element_attribs->sub_options->sub_values as $key => $value) {
 						$select = 'REPLACE('.$select.', "'.$value.'", "'.$element_attribs->sub_options->sub_labels[$key].'")';
 					}
 					$this->_elements_default[] = $select.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
-				
+
 				} else {
 					if (@$group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
@@ -186,7 +186,7 @@ class EmundusModelAdmission extends JModelList
 		$result = @EmundusHelperFiles::insertValuesInQueryResult($result, array("sub_values", "sub_labels"));
 
 		$this->details = new stdClass();
-		
+
 		foreach ($result as $res) {
 			$this->details->{$res->tab_name . '__' . $res->element_name} = array('element_id' => $res->element_id,
 			                                                                     'plugin' => $res->element_plugin,
@@ -207,15 +207,15 @@ class EmundusModelAdmission extends JModelList
      * @param 	  int hidden from Fabrik List ; yes=1
      * @return    string list of Fabrik element ID used in admission form
      **/
-    public function getAdmissionElementsName($show_in_list_summary=1, $hidden=0) {		
+    public function getAdmissionElementsName($show_in_list_summary=1, $hidden=0) {
         $session = JFactory::getSession();
 		$h_list = new EmundusHelperList;
 
         if ($session->has('filt_params')) {
-            
+
             $filt_params = $session->get('filt_params');
             if (count(@$filt_params['programme'])>0) {
-                
+
 				foreach (array_unique($filt_params['programme']) as $value) {
                     $groups = $this->getGroupsAdmissionByProgramme($value);
                     if (empty($groups)) {
@@ -242,15 +242,15 @@ class EmundusModelAdmission extends JModelList
      * @param 	  int hidden from Fabrik List ; yes=1
      * @return    string list of Fabrik element ID used in admission form
      **/
-    public function getApplicantAdmissionElementsName($show_in_list_summary=1, $hidden=0) {		
+    public function getApplicantAdmissionElementsName($show_in_list_summary=1, $hidden=0) {
         $session = JFactory::getSession();
 		$h_list = new EmundusHelperList;
 
         if ($session->has('filt_params')) {
-            
+
             $filt_params = $session->get('filt_params');
             if (count(@$filt_params['programme'])>0) {
-                
+
 				foreach (array_unique($filt_params['programme']) as $value) {
                     $groups = $this->getGroupsApplicantAdmissionByProgramme($value);
                     if (empty($groups)) {
@@ -284,9 +284,9 @@ class EmundusModelAdmission extends JModelList
         if ($session->has('filt_params')) {
 			$elements_id = array();
             $filt_params = $session->get('filt_params');
-            
-			if (count(@$filt_params['programme'])>0) {    
-				
+
+			if (count(@$filt_params['programme'])>0) {
+
 				foreach ($filt_params['programme'] as $value) {
 					if ($value == $programme_code) {
 						$groups = $this->getGroupsAdmissionByProgramme($value);
@@ -300,11 +300,11 @@ class EmundusModelAdmission extends JModelList
                         }
                     }
                 }
-            
+
 			} else {
-                
+
 				$groups = $this->getGroupsAdmissionByProgramme($programme_code);
-                if (!empty($groups)) {        
+                if (!empty($groups)) {
 					$admission_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
                     if (count($admission_elt_list)>0) {
                         foreach ($admission_elt_list as $eel) {
@@ -313,7 +313,7 @@ class EmundusModelAdmission extends JModelList
                     }
                 }
 			}
-        
+
 		}
         return @$elements_id;
     }
@@ -327,12 +327,12 @@ class EmundusModelAdmission extends JModelList
     public function getAllApplicantAdmissionElements($show_in_list_summary=1, $programme_code) {
         $session = JFactory::getSession();
 
-        if ($session->has('filt_params')) {      
+        if ($session->has('filt_params')) {
 			$elements_id = array();
             $filt_params = $session->get('filt_params');
-            
+
 			if (count(@$filt_params['programme'])>0) {
-				
+
 				foreach ($filt_params['programme'] as $value) {
 					if ($value == $programme_code) {
 						$groups = $this->getGroupsApplicantAdmissionByProgramme($value);
@@ -346,11 +346,11 @@ class EmundusModelAdmission extends JModelList
                         }
                     }
                 }
-            
+
 			} else {
-                
+
 				$groups = $this->getGroupsApplicantAdmissionByProgramme($programme_code);
-                if (!empty($groups)) {        
+                if (!empty($groups)) {
 					$admission_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
                     if (count($admission_elt_list)>0) {
                         foreach ($admission_elt_list as $eel) {
@@ -359,7 +359,7 @@ class EmundusModelAdmission extends JModelList
                     }
                 }
 			}
-        
+
 		}
         return @$elements_id;
     }
@@ -388,7 +388,7 @@ class EmundusModelAdmission extends JModelList
         $can_be_ordering[] = 'fnum';
         $can_be_ordering[] = 'status';
         $can_be_ordering[] = 'c.status';
-        $can_be_ordering[] = 'u.name';
+        $can_be_ordering[] = 'name';
 		$can_be_ordering[] = 'eta.id_tag';
 		if (in_array('overall', $em_blocks_names))
         	$can_be_ordering[] = 'overall';
@@ -406,10 +406,10 @@ class EmundusModelAdmission extends JModelList
 				if (is_array($row_array))
 					@$key_array[$key] = $row_array[$sort_key];
 				else return -1;
-			
+
 			}
 		} else return -1;
-		
+
 		if (!empty($key_array))
 			array_multisort($key_array, $sort, $multi_array);
 
@@ -484,21 +484,21 @@ class EmundusModelAdmission extends JModelList
 	public function setSelect($search) {
 		$cols = array();
 		if (!empty($search)) {
-			
+
 			asort($search);
 			$i = 0;
 			$old_table = '';
 			foreach ($search as $c) {
-				
+
 				if (!empty($c)) {
 					$tab = explode('.', $c);
-					
+
 					if ($tab[0] == 'jos_emundus_training') {
 						$cols[] = ' search_' . $tab[0] . '.label as ' . $tab[1] . ' ';
-					} else {	
+					} else {
 						if ($this->details->{$tab[0] . '__' . $tab[1]}['group_by'])
 							$this->subquery[$tab[0] . '__' . $tab[1]] = $this->setSubQuery($tab[0], $tab[1]);
-						else 
+						else
 							$cols[] = $c . ' AS ' . $tab[0] . '__' . $tab[1];
 					}
 				}
@@ -512,24 +512,24 @@ class EmundusModelAdmission extends JModelList
 
 	public function isJoined($tab, $joined) {
 		foreach ($joined as $j) {
-			if ($tab == $j) 
+			if ($tab == $j)
 				return true;
 		}
 		return false;
 	}
 
 	public function setJoins($search, $query, $joined) {
-		
+
 		$tables_list = array();
-		
+
 		if (!empty($search)) {
 			$old_table = '';
 			$i = 0;
-			
+
 			foreach ($search as $s) {
 
 				$tab = explode('.', $s);
-				if (count($tab) > 1) {	
+				if (count($tab) > 1) {
 					if ($tab[0] != $old_table && !$this->isJoined($tab[0], $joined)) {
 
 						if ($tab[0] == 'jos_emundus_groups_eval' || $tab[0] == 'jos_emundus_comments')
@@ -540,7 +540,7 @@ class EmundusModelAdmission extends JModelList
 							$query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS search_' . $tab[0] . ' ON search_' . $tab[0] . '.code=#__emundus_setup_campaigns.training ';
 						else
 							$query .= ' LEFT JOIN ' . $tab[0] . ' ON ' . $tab[0] . '.user=#__users.id ';
-						
+
 						$joined[] = $tab[0];
 					}
 					$old_table = $tab[0];
@@ -554,7 +554,7 @@ class EmundusModelAdmission extends JModelList
 	public function _buildSelect(&$tables_list, &$tables_list_other, &$tables_list_default) {
 
 		$current_user = JFactory::getSession()->get('emundusUser');
-		
+
 		$search 				= $this->getState('elements');
 		$search_other 			= $this->getState('elements_other');
 		$schoolyears 			= $this->getState('schoolyear');
@@ -567,21 +567,21 @@ class EmundusModelAdmission extends JModelList
 		$menu 			= @JSite::getMenu();
 		$current_menu 	= $menu->getActive();
 		$menu_params 	= $menu->getParams($current_menu->id);
-		
+
 		$this->validate_details = @EmundusHelperList::getElementsDetailsByID($menu_params->get('em_validate_id'));
 		$col_validate = "";
 
 		foreach ($this->validate_details as $vd)
 			$col_validate .= $vd->tab_name . '.' . $vd->element_name . ',';
-		
+
 		$col_validate = substr($col_validate, 0, strlen($col_validate) - 1);
 
 		$cols 			= $this->setSelect($search);
 		$cols_other 	= $this->setSelect($search_other);
 		$cols_default 	= $this->setSelect($this->_elements_default);
 
-		$joined = array('jos_emundus_users', 'jos_users', 
-						'jos_emundus_setup_profiles', 
+		$joined = array('jos_emundus_users', 'jos_users',
+						'jos_emundus_setup_profiles',
 						'jos_emundus_admission',
 		                'jos_emundus_declaration');
 
@@ -643,23 +643,23 @@ class EmundusModelAdmission extends JModelList
 	public function setEvalList($search, &$eval_list, $head_val, $applicant) {
 		//print_r($applicant); die();
 		if (!empty($search)) {
-			
-			foreach ($search as $c) {	
+
+			foreach ($search as $c) {
 				if (!empty($c)) {
 					$name = explode('.', $c);
 					if (!in_array($name[0] . '__' . $name[1], $head_val)) {
-						
+
 						$print_val = '';
 						if ($this->details->{$name[0] . '__' . $name[1]}['group_by'] && array_key_exists($name[0] . '__' . $name[1], $this->subquery) && array_key_exists($applicant->user_id, $this->subquery[$name[0] . '__' . $name[1]]))
-							$eval_list[$name[0] . '__' . $name[1]] = @EmundusHelperList::createHtmlList(explode(",", $this->subquery[$name[0] . '__' . $name[1]][$applicant->user_id]));		
+							$eval_list[$name[0] . '__' . $name[1]] = @EmundusHelperList::createHtmlList(explode(",", $this->subquery[$name[0] . '__' . $name[1]][$applicant->user_id]));
 						elseif ($name[0] == 'jos_emundus_training')
 							$eval_list[$name[1]] = $applicant->{$name[1]};
 						elseif (!$this->details->{$name[0] . '__' . $name[1]}['group_by'])
 							$eval_list[$name[0] . '__' . $name[1]] = @EmundusHelperList::getBoxValue($this->details->{$name[0] . '__' . $name[1]}, $applicant->{$name[0] . '__' . $name[1]}, $name[1]);
 						else
 							$eval_list[$name[0] . '__' . $name[1]] = $applicant->{$name[0] . '__' . $name[1]};
-					
-					}				
+
+					}
 				}
 			}
 		}
@@ -682,20 +682,20 @@ class EmundusModelAdmission extends JModelList
 			foreach ($params as $key => $value) {
 
 				switch ($key) {
-					
+
 					case 'elements':
 						if (!empty($value)) {
 							foreach ($value as $k => $v) {
 								$tab = explode('.', $k);
-								
+
 								if (count($tab)>1) {
 									if (!empty($v)) {
-										
+
 										if($tab[0] == 'jos_emundus_training') {
 
 											$query['q'] .= ' AND ';
 											$query['q'] .= ' search_'.$tab[0].'.id like "%' . $v . '%"';
-										
+
 										} else {
 
                                             $query['q'] .= ' AND ';
@@ -703,7 +703,7 @@ class EmundusModelAdmission extends JModelList
                                             $sql = 'SELECT join_from_table FROM #__fabrik_joins WHERE table_join like '.$db->Quote($tab[0]);
                                             $db->setQuery($sql);
                                             $join_from_table = $db->loadResult();
-                                            
+
 											if (!empty($join_from_table)) {
                                                 $table = $join_from_table;
                                                 $table_join = $tab[0];
@@ -715,20 +715,20 @@ class EmundusModelAdmission extends JModelList
                                                     $query[$table] = true;
                                                     if (!array_key_exists($table, $tableAlias) && !in_array($table, $tableAlias))
                                                         $query['join'] .= ' left join '.$table.' on ' .$table.'.fnum like c.fnum ';
-                                                
+
 												} if (!isset($query[$table_join])) {
 
                                                     $query[$table_join] = true;
                                                     if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias))
                                                         $query['join'] .= ' left join '.$table_join.' on ' .$table.'.id='.$table_join.'.parent_id';
                                                 }
-                                            
+
 											} else {
 
                                                 $query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
 
                                                 if (!isset($query[$tab[0]])) {
-                                                    
+
 													$query[$tab[0]] = true;
                                                     if (!array_key_exists($tab[0], $tableAlias) && !in_array($tab[0], $tableAlias))
                                                         $query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like c.fnum ';
@@ -736,26 +736,26 @@ class EmundusModelAdmission extends JModelList
                                                 }
                                             }
                                         }
-									}		
+									}
 								}
 							}
 						}
 						break;
-					
+
 					case 'elements_other':
 						if (!empty($value)) {
 							foreach ($value as $k => $v) {
-								
+
 								if (!empty($v)) {
-									
+
 									$tab = explode('.', $k);
 									if (count($tab)>1) {
-										
+
 										if ($tab[0]=='jos_emundus_training') {
 
 											$query['q'] .= ' AND ';
 											$query['q'] .= ' search_'.$tab[0].'.id like "%' . $v . '%"';
-										
+
 										} else {
 
 											$query['q'] .= ' AND ';
@@ -766,7 +766,7 @@ class EmundusModelAdmission extends JModelList
 												$query[$tab[0]] = true;
 												if (!array_key_exists($tab[0], $tableAlias))
 													$query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like c.fnum ';
-											
+
 											}
 										}
 									}
@@ -774,7 +774,7 @@ class EmundusModelAdmission extends JModelList
 							}
 						}
 						break;
-					
+
 					case 's':
 						if (!empty($value)) {
 
@@ -789,17 +789,17 @@ class EmundusModelAdmission extends JModelList
 
 						}
 						break;
-					
+
 					case 'admission':
 						if (!empty($value)) {
 
 							$query['q'] .= ' and ad.admission like "%' . $value . '%"';
 							if (!isset($query['final_g'])) {
-								
+
 								$query['final_g'] = true;
 								if (!array_key_exists('jos_emundus_admission', $tableAlias))
 									$query['join'] .=' left join #__emundus_admission as ad on ad.fnum like c.fnum ';
-							
+
 							}
 						}
 						break;
@@ -811,7 +811,7 @@ class EmundusModelAdmission extends JModelList
 								$query['q'] .= '';
 							else
 								$query['q'] .= ' and esc.year IN ("' . implode('","', $value) . '") ';
-						
+
 						}
 						break;
 
@@ -822,7 +822,7 @@ class EmundusModelAdmission extends JModelList
 								$query['q'] .= ' ';
 							else
 								$query['q'] .= ' and sp.code IN ("' . implode('","', $value) . '") ';
-						
+
 						}
 						break;
 
@@ -833,7 +833,7 @@ class EmundusModelAdmission extends JModelList
 								$query['q'] .= ' ';
 							else
 								$query['q'] .= ' and esc.id IN (' . implode(',', $value) . ') ';
-						
+
 						}
 						break;
 
@@ -846,11 +846,11 @@ class EmundusModelAdmission extends JModelList
 								$query['group_eval'] = true;
 								if (!array_key_exists('jos_emundus_groups_eval', $tableAlias))
 									$query['join'] .= ' left join #__emundus_groups_eval as ge on ge.applicant_id = c.applicant_id and ge.campaign_id = c.campaign_id ';
-							
+
 							}
 						}
 						break;
-					
+
 					case 'user':
 						if (!empty($value)) {
 
@@ -862,18 +862,18 @@ class EmundusModelAdmission extends JModelList
 								$query['group_eval'] = true;
 								if (!array_key_exists('jos_emundus_groups_eval', $tableAlias))
 									$query['join'] .= ' left join #__emundus_groups_eval as ge on ge.applicant_id = c.applicant_id and ge.campaign_id = c.campaign_id ';
-							
+
 							}
 						}
 						break;
-					
+
 					case 'missing_doc':
 						if (!empty($value)) {
-							
+
 							$query['q'] .=' and (' . $value . ' NOT IN (SELECT attachment_id FROM #__emundus_uploads eup WHERE #__emundus_uploads.user_id = u.id)) ';
 							if (!array_key_exists('jos_emundus_uploads', $tableAlias))
 								$query['join'] = ' left join #__emundus_uploads on #__emundus_uploads.user_id = c.applicant_id ';
-						
+
 						}
 						break;
 
@@ -884,10 +884,10 @@ class EmundusModelAdmission extends JModelList
 								$query['q'] .= 'and #__users.id IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id) ';
 							else
 								$query['q'] .= 'and #__users.id NOT IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id) ';
-						
+
 						}
 						break;
-					
+
 					case 'validate':
 						if (!empty($value)) {
 
@@ -895,14 +895,14 @@ class EmundusModelAdmission extends JModelList
 								$query['q'] .= ' and #__emundus_declaration.validated = 1 ';
 							else
 								$query['q'] .= ' and #__emundus_declaration.validated = 0 ';
-						
+
 						}
 						break;
 
 					case 'status':
 						if ($value) {
-							
-							if ( $value[0] == "%" || !isset($value[0]) ) 
+
+							if ( $value[0] == "%" || !isset($value[0]) )
 								$query['q'] .= ' ';
 							else
 								$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
@@ -912,7 +912,7 @@ class EmundusModelAdmission extends JModelList
 
 					case 'tag':
                         if ($value) {
-                            
+
 							if ( $value[0] == "%" || !isset($value[0]) )
                                 $query['q'] .= ' ';
                             else
@@ -932,7 +932,7 @@ class EmundusModelAdmission extends JModelList
 
 				}
 			}
-		} 
+		}
 		return $query;
 	}
 
@@ -981,11 +981,11 @@ class EmundusModelAdmission extends JModelList
 		$menu_params = $current_menu->params;
         $em_blocks_names = explode(',', $menu_params->get('em_blocks_names'));
 
-		$query = 'select c.fnum, ss.value as status, ss.class as status_class, u.name ';
+		$query = 'select c.fnum, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name ';
 
-		// prevent double left join on query 
+		// prevent double left join on query
 		$lastTab = [
-			'#__emundus_setup_status', 'jos_emundus_setup_status', 
+			'#__emundus_setup_status', 'jos_emundus_setup_status',
 			'#__emundus_setup_programmes', 'jos_emundus_setup_programmes',
 			'#__emundus_setup_campaigns', 'jos_emundus_setup_campaigns',
 			'#__emundus_admission', 'jos_emundus_admission',
@@ -1001,7 +1001,7 @@ class EmundusModelAdmission extends JModelList
 
 		if (count($this->_elements) > 0) {
 			foreach ($this->_elements as $elt) {
-				
+
 				if (!isset($lastTab))
 					$lastTab = array();
 				if (!in_array($elt->tab_name, $lastTab))
@@ -1012,43 +1012,44 @@ class EmundusModelAdmission extends JModelList
 		}
 		if (count($this->_elements_default) > 0)
 			$query .= ', '.implode(',', $this->_elements_default);
-		
-		$query .= ', jos_emundus_admission.id AS admission_id, CONCAT(eu.lastname," ",eu.firstname) AS recorded_by';
-		
+
+		$query .= ', jos_emundus_admission.id AS admission_id, CONCAT(eue.lastname," ",eue.firstname) AS recorded_by';
+
 		$query .= ' FROM #__emundus_campaign_candidature as c
-					LEFT JOIN #__emundus_setup_status as ss on ss.step = c.status 
-					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = c.campaign_id 
+					LEFT JOIN #__emundus_setup_status as ss on ss.step = c.status
+					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = c.campaign_id
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
+					LEFT JOIN #__emundus_users as eu on eu.user_id = c.applicant_id
 					LEFT JOIN #__users as u on u.id = c.applicant_id
-					LEFT JOIN #__emundus_admission as jos_emundus_admission on jos_emundus_admission.fnum = c.fnum 
+					LEFT JOIN #__emundus_admission as jos_emundus_admission on jos_emundus_admission.fnum = c.fnum
 					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=c.fnum  ';
-					
+
 		if (in_array('overall', $em_blocks_names))
 			$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = c.fnum ';
-		
+
 		$q = $this->_buildWhere($lastTab);
 
 		if (!empty($leftJoin))
 			$query .= $leftJoin;
-		
-		$query .= ' LEFT JOIN #__emundus_users as eu on eu.user_id = jos_emundus_admission.user ';
+
+		$query .= ' LEFT JOIN #__emundus_users as eue on eue.user_id = jos_emundus_admission.user ';
 		$query .= $q['join'];
 
 		$query .= ' where 1 = 1 ' . $q['q'];
 
 		if (isset($current_fnum) && !empty($current_fnum))
 			$query .= ' AND c.fnum like '.$dbo->Quote($current_fnum);
-		
+
 		// ONLY FILES LINKED TO MY GROUPS
 		//$code = $userModel->getUserGroupsProgrammeAssoc(JFactory::getUser()->id);
 		//$fnum_assoc = $userModel->getApplicantsAssoc(JFactory::getUser()->id);
 		$query .= ' AND (sp.code IN ("'.implode('","', $this->code).'") OR c.fnum IN ("'.implode('","', $this->fnum_assoc).'")) ';
 		//////////////////////////////////////////////////////////////
 		$query .=  $this->_buildContentOrderBy();
-		
-		if (in_array('overall', $em_blocks_names))	
+
+		if (in_array('overall', $em_blocks_names))
 			$query .= ' GROUP BY c.fnum';
-		
+
 		$dbo->setQuery($query);
 		try {
 
@@ -1059,12 +1060,12 @@ class EmundusModelAdmission extends JModelList
 			$limitStart = $session->get('limit');
 			if ($limitStart > 0)
 				$query .= " limit $limit, $limitStart ";
-			
+
 			$dbo->setQuery($query);
 			$res = $dbo->loadAssocList();
 
 			return $res;
-		
+
 		} catch(Exception $e) {
 			echo $e->getMessage();
 		}
@@ -1150,7 +1151,7 @@ class EmundusModelAdmission extends JModelList
 			jimport('joomla.html.pagination');
 			$session = JFactory::getSession();
 			$this->_pagination = new JPagination($this->getTotal(), $session->get('limitstart'), $session->get('limit'));
-		
+
 		}
 		return $this->_pagination;
 	}
@@ -1172,14 +1173,14 @@ class EmundusModelAdmission extends JModelList
     public function getGroupsAdmissionByProgramme($code){
         $db = $this->getDbo();
         $query = 'select fabrik_admission_group_id from #__emundus_setup_programmes where code like '.$db->Quote($code);
-        
+
 		try {
 
             if (!empty($code)) {
                 $db->setQuery($query);
                 return $db->loadResult();
             } else return null;
-        
+
 		} catch(Exception $e) {
             throw $e;
         }
@@ -1189,14 +1190,14 @@ class EmundusModelAdmission extends JModelList
     public function getGroupsApplicantAdmissionByProgramme($code){
         $db = $this->getDbo();
         $query = 'select fabrik_applicant_admission_group_id from #__emundus_setup_programmes where code like '.$db->Quote($code);
-        
+
 		try {
 
             if (!empty($code)) {
                 $db->setQuery($query);
                 return $db->loadResult();
             } else return null;
-        
+
 		} catch(Exception $e) {
             throw $e;
         }
@@ -1306,12 +1307,12 @@ class EmundusModelAdmission extends JModelList
 					WHERE fg.fnum like ' . $this->_db->Quote($fnum);
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
-        
+
 		} catch (Exception $e) {
 
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-        
+
 		}
     }
 
@@ -1322,7 +1323,7 @@ class EmundusModelAdmission extends JModelList
     */
     function getAdmissionFormByProgramme($code=null) {
         if ($code === NULL) {
-            
+
 			$session = JFactory::getSession();
             if ($session->has('filt_params')) {
 
@@ -1330,23 +1331,23 @@ class EmundusModelAdmission extends JModelList
                 if (count(@$filt_params['programme'])>0)
                     $code = $filt_params['programme'][0];
             }
-		} 
+		}
 
 		try {
 
             $query = 'SELECT ff.form_id
-					FROM #__fabrik_formgroup ff 
+					FROM #__fabrik_formgroup ff
 					WHERE ff.group_id IN (SELECT fabrik_admission_group_id FROM #__emundus_setup_programmes WHERE code like ' .
                 $this->_db->Quote($code) . ')';
             $this->_db->setQuery($query);
 
             return $this->_db->loadResult();
-        
+
 		} catch(Exception $e) {
 
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-        
+
 		}
     }
 
@@ -1355,7 +1356,7 @@ class EmundusModelAdmission extends JModelList
      *  @param          $fum            string   application file number
      *  @param          $element_id     string   Fabrik element ID
      *  @param          $value          string   Value to insert into DB
-     *  @return         
+     *  @return
     */
 	function setAdmissionByFabrikElementsId($fnum, $element_id, $value) {
 		$db 	= JFactory::getDBO();
@@ -1364,28 +1365,28 @@ class EmundusModelAdmission extends JModelList
 		// Datetime is automatically added to the DB
 
 		$student_id = (int)substr($fnum, -7);
-		
+
 		$h_files = new EmundusHelperFiles;
 		$element_details = $h_files->getElementsDetailsByID($element_id);
-		
+
 		try {
 
 			$query = 'INSERT INTO '.$element_details[0]->tab_name.' ('.$element_details[0]->element_name.', fnum, user';
-			
+
 			// Student id info is only important for elements belonging to the final grade table
 			if ($element_details[0]->tab_name == "jos_emundus_final_grade")
 				$query .= ', student_id';
-			
+
 			$query .= ') VALUES ('.$db->Quote($value).', '.$db->Quote($fnum).', '.$db->Quote($user->id);
-			
-			if ($element_details[0]->tab_name == "jos_emundus_final_grade")			
+
+			if ($element_details[0]->tab_name == "jos_emundus_final_grade")
 				$query .= ', '.$db->Quote($student_id);
-			
+
 			$query .= ')';
-			
+
 			$db->setQuery($query);
 			$db->Query() or die($db->getErrorMsg());
-		
+
 		} catch (Exception $e) {
 			echo $e->getMessage();
 			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -1397,20 +1398,20 @@ class EmundusModelAdmission extends JModelList
      *  @param          $fum            string   application file number
      *  @param          $element_id     string   Fabrik element ID
      *  @param          $value          string   Value to update into DB
-     *  @return         
+     *  @return
     */
 	function updateAdmissionByFabrikElementsId($fnum, $element_id, $value) {
 		$db = JFactory::getDBO();
-			
+
 		$h_files = new EmundusHelperFiles;
 		$element_details = $h_files->getElementsDetailsByID($element_id);
-		
+
 		try {
 
 			$query = 'UPDATE '.$element_details[0]->tab_name.' SET '.$element_details[0]->element_name.' = '.$db->Quote($value).' WHERE fnum like'.$db->Quote($fnum);
 			$db->setQuery($query);
 			$db->Query() or die($db->getErrorMsg());
-		
+
 		} catch (Exception $e) {
 			echo $e->getMessage();
 			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -1425,13 +1426,13 @@ class EmundusModelAdmission extends JModelList
             $query = "SELECT * FROM #__emundus_final_grade WHERE student_id = ".$sid." GROUP BY fnum ORDER BY time_date DESC";
             $db->setQuery($query);
             $admissionInfo = $db->loadObject();
-			
-			$query = "SELECT form_id FROM #__fabrik_formgroup as fg 
-				LEFT JOIN #__emundus_setup_programmes AS sp ON sp.fabrik_applicant_admission_group_id = fg.group_id 
-				LEFT JOIN #__emundus_setup_campaigns AS sc ON sc.training LIKE sp.code 
-				LEFT JOIN #__emundus_campaign_candidature AS cc ON cc.campaign_id = sc.id 
+
+			$query = "SELECT form_id FROM #__fabrik_formgroup as fg
+				LEFT JOIN #__emundus_setup_programmes AS sp ON sp.fabrik_applicant_admission_group_id = fg.group_id
+				LEFT JOIN #__emundus_setup_campaigns AS sc ON sc.training LIKE sp.code
+				LEFT JOIN #__emundus_campaign_candidature AS cc ON cc.campaign_id = sc.id
 				WHERE cc.fnum LIKE ".$db->quote($admissionInfo->fnum);
-			
+
 			$db->setQuery($query);
 			$admissionInfo->form_id = $db->loadresult();
 

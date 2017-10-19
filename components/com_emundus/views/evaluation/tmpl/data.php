@@ -22,9 +22,9 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 			<?php echo $this->pagination->getResultsCounter(); ?>
 		</div>
 		<div class="em-data-container">
-		
+
 			<table class="table table-striped table-hover" id="em-data">
-				
+
 				<thead>
 				<tr>
 					<?php foreach($this->datas[0] as $kl => $v): ?>
@@ -55,10 +55,10 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 						</th>
 					<?php endforeach; ?>
 				</tr>
-				
+
 				</thead>
-				
-				<tbody>							
+
+				<tbody>
 				<?php foreach ($this->datas as $key => $line):?>
 					<?php if($key != 0): ?>
 						<tr>
@@ -70,7 +70,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 										<?php if($k == 'check'): ?>
 											<label for = "<?php echo $line['fnum']->val ?>_check">
 												<input type="checkbox" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
-												<?php 
+												<?php
 													$tab = explode('-', $key);
 													echo ($tab[1] + 1 + $this->pagination->limitstart);
 													?>
@@ -109,7 +109,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 											<?php endif; ?>
 										<?php endif; ?>
 									</div>
-									
+
 								</td>
 							<?php endif; ?>
 							<?php endforeach; ?>

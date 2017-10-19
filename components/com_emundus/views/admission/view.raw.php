@@ -7,9 +7,9 @@
  * @license    GNU/GPL
  * @author     Benjamin Rivalland
 */
- 
+
 // no direct access
- 
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 //error_reporting(E_ALL);
 jimport( 'joomla.application.component.view');
@@ -18,7 +18,7 @@ jimport( 'joomla.application.component.view');
  *
  * @package    Emundus
  */
- 
+
 class EmundusViewAdmission extends JViewLegacy
 {
 	var $_user = null;
@@ -41,7 +41,7 @@ class EmundusViewAdmission extends JViewLegacy
 
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
-		
+
 		parent::__construct($config);
 	}
 
@@ -61,15 +61,15 @@ class EmundusViewAdmission extends JViewLegacy
 		$layout 	= $jinput->getString('layout', 0);
 
 		switch ($layout) {
-			case 'menuactions': 
-				$display = JFactory::getApplication()->input->getString('display', 'none'); 
-			
+			case 'menuactions':
+				$display = JFactory::getApplication()->input->getString('display', 'none');
+
 				$items = @EmundusHelperFiles::getMenuList($menu_params);
 				$actions = @EmundusHelperFiles::getActionsACL();
 
 				$menuActions = array();
-				foreach ($items as $key => $item) { 
-					
+				foreach ($items as $key => $item) {
+
 					if (!empty($item->note)) {
 						$note = explode('|', $item->note);
 						if ($actions[$note[0]][$note[1]] == 1) {
@@ -101,7 +101,7 @@ class EmundusViewAdmission extends JViewLegacy
                 //$m_admission->fnum_assoc = $m_user->getApplicantsAssoc($this->_user->id);
                 // get all fnums manually associated to user
 		        $groups = $m_user->getUserGroups($this->_user->id, 'Column');
-				
+
         		$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
 		        $fnum_assoc = $m_user->getApplicantsAssoc($this->_user->id);
 		        $m_admission->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
@@ -135,7 +135,7 @@ class EmundusViewAdmission extends JViewLegacy
 
 				// Columns
 				$defaultElements = $this->get('DefaultElements');
-				$data = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
+				$data = array(array('check' => '#', 'name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
 				$fl = array();
 
 			    // Get admission criterion
@@ -181,15 +181,15 @@ class EmundusViewAdmission extends JViewLegacy
 								$displayPhoto = true;
 								break;
 						}
-					}					
+					}
 
-					
+
 					foreach ($users as $user) {
 						$usObj = new stdClass();
 						$usObj->val = 'X';
 						$fnumArray[] = $user['fnum'];
 						$line = array('check' => $usObj);
-						
+
 						if (isset($taggedFile) && array_key_exists($user['fnum'], $taggedFile)) {
 							$class = $taggedFile[$user['fnum']]['class'];
 							$usObj->class = $taggedFile[$user['fnum']]['class'];
@@ -197,7 +197,7 @@ class EmundusViewAdmission extends JViewLegacy
 							$class = null;
 							$usObj->class = null;
 						}
-						
+
 						foreach ($user as  $key => $value) {
 							$userObj = new stdClass();
 
@@ -208,18 +208,18 @@ class EmundusViewAdmission extends JViewLegacy
 								if ($displayPhoto)
 									$userObj->photo = $h_files->getPhotos($value);
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
-								$userObj->emUser = $m_user->getUserInfos((int)substr($value, -7));								
+								$userObj->emUser = $m_user->getUserInfos((int)substr($value, -7));
 								$line['fnum'] = $userObj;
-							} 
-							
+							}
+
 							elseif ($key == 'name' || $key == 'evaluation_id' || $key == 'admission_id' || $key == 'recorded_by' || $key == 'status_class') continue;
-						    
+
 							elseif ($key == 'evaluator') {
-								
+
 								if ($evaluators_can_see_other_eval || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 									$userObj->val = !empty($value)?'<a href="#" data-toggle="modal" data-target="#basicModal" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'">
 											<span class="glyphicon icon-eye-open" title="'.JText::_('DETAILS').'">  </span>
-										</a>'.$value:'';								
+										</a>'.$value:'';
 								} else $userObj->val = $value;
 
 								$userObj->type = 'html';
@@ -227,7 +227,7 @@ class EmundusViewAdmission extends JViewLegacy
 							}
 
 							elseif (isset($elements) && in_array($key, array_keys($elements))) {
-								
+
 								$userObj->val 			= $value;
 								$userObj->type 			= $elements[$key]['plugin'];
 								$userObj->status_class 	= $user['status_class'];
@@ -240,7 +240,7 @@ class EmundusViewAdmission extends JViewLegacy
 									$params = json_decode($userObj->params);
 									$userObj->radio = array_combine($params->sub_options->sub_labels, $params->sub_options->sub_values);
 								}
-							
+
 							} else {
 
 								$userObj->val 			= $value;
@@ -252,7 +252,7 @@ class EmundusViewAdmission extends JViewLegacy
 
 						if (count(@$colsSup)>0) {
 							foreach ($colsSup as $key => $obj) {
-								
+
 								$userObj = new stdClass();
 								if (!is_null($obj)) {
 									if (array_key_exists($user['fnum'], $obj)) {
