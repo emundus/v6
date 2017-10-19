@@ -31,7 +31,7 @@ class EmundusControllerCalendar extends JControllerLegacy {
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
         $jinput = JFactory::getApplication()->input;
-        
+
         // Calendar information is obtained via the post data
         $calendar_title     = $jinput->get("calTitle", null, "string");
         $calendar_program   = $jinput->get("calProgram", null, "string");
@@ -51,7 +51,7 @@ class EmundusControllerCalendar extends JControllerLegacy {
         $m_calendar->dpcalendar_add_calendar($calendar_title, $calendar_alias, $calendar_color, $google_calendar_id, $dpcalendar_parent_id, $calendar_program);
 
         echo json_encode(['status' => true]);
-    
+
     }
 
     public function bookinterview() {
@@ -60,7 +60,7 @@ class EmundusControllerCalendar extends JControllerLegacy {
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
         $jinput = JFactory::getApplication()->input;
-        
+
         $event_id   = $jinput->get("eventId", null, "string");
         $user_id    = $jinput->get("userId", null, "string");
         $fnum       = $jinput->get("fnum", null, "string");
@@ -69,7 +69,7 @@ class EmundusControllerCalendar extends JControllerLegacy {
         $google_secret_key      = $eMConfig->get('clientSecret');
         $google_refresh_token   = $eMConfig->get('refreshToken');
 
-        $dpcalendar_event = $m_calendar->dpcalendar_confirm_interview($event_id, $user_id, $fnum); 
+        $dpcalendar_event = $m_calendar->dpcalendar_confirm_interview($event_id, $user_id, $fnum);
 
         $service = $m_calendar->google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
 
@@ -77,7 +77,7 @@ class EmundusControllerCalendar extends JControllerLegacy {
 
         if ($result)
             $result = $m_calendar->email_event($event_id, true);
-            
+
         echo json_encode(['status' => $result]);
 
     }
@@ -85,8 +85,8 @@ class EmundusControllerCalendar extends JControllerLegacy {
     public function cancelinterview() {
 
         $m_calendar = new EmundusModelCalendar();
-        $eMConfig = JComponentHelper::getParams('com_emundus');        
-        
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
         $jinput = JFactory::getApplication()->input;
         $event_id = $jinput->get("eventId", null, "string");
 
@@ -97,7 +97,7 @@ class EmundusControllerCalendar extends JControllerLegacy {
         $service = $m_calendar->google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
         $m_calendar->google_delete_event($event_id, $service);
         $result = $m_calendar->dpcalendar_delete_interview($event_id);
-        
+
         if ($result)
             $result = $m_calendar->email_event($event_id, false);
 
@@ -105,4 +105,4 @@ class EmundusControllerCalendar extends JControllerLegacy {
 
     }
 
-}  
+}

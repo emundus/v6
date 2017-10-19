@@ -68,13 +68,13 @@ class EmundusControllerApplication extends JControllerLegacy
             exit;
         }
 
-        $model = $this->getModel('application');
+        $m_application = $this->getModel('application');
 
         foreach ($attachments as $id) {
-            $upload = $model->getUploadByID($id);
-            $attachment = $model->getAttachmentByID($upload['attachment_id']);
+            $upload = $m_application->getUploadByID($id);
+            $attachment = $m_application->getAttachmentByID($upload['attachment_id']);
             if (EmundusHelperAccess::asAccessAction(4, 'd', $user->id, $upload['fnum']) ) {
-                $result = $model->deleteAttachment($id);
+                $result = $m_application->deleteAttachment($id);
 
                 if ($result != 1) {
                     echo JText::_('ATTACHMENT_DELETE_ERROR').' : '.$attachment['value'].' : '.$upload['filename'];
@@ -86,7 +86,7 @@ class EmundusControllerApplication extends JControllerLegacy
                     $row['user_id'] = $user->id;
                     $row['reason'] = JText::_('ATTACHMENT_DELETED');
                     $row['comment_body'] = $attachment['value'].' : '.$upload['filename'];
-                    $model->addComment($row);
+                    $m_application->addComment($row);
 
                     echo $result;
                 }
@@ -110,13 +110,13 @@ class EmundusControllerApplication extends JControllerLegacy
 
         $id = JRequest::getVar('id', null, 'GET', 'none',0);
 
-        $model = $this->getModel('application');
+        $m_application = $this->getModel('application');
 
-        $upload = $model->getUploadByID($id);
-        $attachment = $model->getAttachmentByID($upload['attachment_id']);
+        $upload = $m_application->getUploadByID($id);
+        $attachment = $m_application->getAttachmentByID($upload['attachment_id']);
 
         if( EmundusHelperAccess::asAccessAction(4, 'd', $user->id, $upload['fnum']) ) {
-            $result = $model->deleteAttachment($id);
+            $result = $m_application->deleteAttachment($id);
 
             if($result != 1){
                 echo JText::_('ATTACHMENT_DELETE_ERROR');
@@ -125,7 +125,7 @@ class EmundusControllerApplication extends JControllerLegacy
                 $row['user_id'] = $user->id;
                 $row['reason'] = JText::_('ATTACHMENT_DELETED');
                 $row['comment_body'] = $attachment['value'].' : '.$upload['filename'];
-                $model->addComment($row);
+                $m_application->addComment($row);
 
                 echo $result;
             }
@@ -171,8 +171,8 @@ class EmundusControllerApplication extends JControllerLegacy
                     $fileParts = pathinfo($_FILES['filename']['name']);
 
                     if (in_array($fileParts['extension'], $fileTypes)) {
-                        $model = $this->getModel('application');
-                        $type_attachment = $model->getAttachmentByID($aid);
+                        $m_application = $this->getModel('application');
+                        $type_attachment = $m_application->getAttachmentByID($aid);
 
                         $filename = date('Y-m-d_H-i-s').$type_attachment['lbl'].'_'.$_FILES['filename']['name'];
                         $fileURL = EMUNDUS_PATH_REL.$uid.'/'.$filename;
@@ -185,7 +185,7 @@ class EmundusControllerApplication extends JControllerLegacy
                         $attachment["key"] = array("user_id", "attachment_id", "filename", "description", "can_be_deleted", "can_be_viewed", "campaign_id");
                         $attachment["value"] = array($uid, $aid, '"'.$filename.'"', '"'.date('Y-m-d H:i:s').'"', $can_be_deleted, $can_be_viewed, $campaign_id);
 
-                        $id = $model->uploadAttachment($attachment);
+                        $id = $m_application->uploadAttachment($attachment);
                     } else {
                         $msg .= JText::_('COM_EMUNDUS_FILETYPE_INVALIDE');
                     }
@@ -234,6 +234,40 @@ class EmundusControllerApplication extends JControllerLegacy
         }
     }
 
+    public function editcomment() {
+
+        $user   = JFactory::getUser();
+        $jinput = JFactory::getApplication()->input;
+
+        $comment_id     = $jinput->get('id', null);
+        $comment_title  = $jinput->get('title', null, 'string');
+        $comment_text   = $jinput->get('text', null, 'string');
+
+        $m_application = $this->getModel('application');
+
+        $comment = $m_application->getComment($comment_id);
+
+        if (!EmundusHelperAccess::asAccessAction(10, 'u', $user->id, $comment['fnum'])) {
+
+            echo json_encode((object) array('status' => false, 'msg' => JText::_("ACCESS_DENIED")));
+            exit;
+
+        } else {
+
+            $result = $m_application->editComment($comment_id, $comment_title, $comment_text);
+
+            if ($result)
+                $msg = JText::_('COMMENT_EDITED');
+            else
+                $msg = JTEXT::_('COMMENT_EDIT_ERROR');
+
+            echo json_encode((object) array('status' => $result, 'msg' => $msg));
+            exit;
+
+        }
+
+    }
+
 
     public function deletecomment(){
         $user = JFactory::getUser();
@@ -241,9 +275,9 @@ class EmundusControllerApplication extends JControllerLegacy
         $view = JRequest::getVar('view', null, 'GET', 'none',0);
         $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 
-        $model = $this->getModel('application');
+        $m_application = $this->getModel('application');
 
-        $comment = $model->getComment($comment_id);
+        $comment = $m_application->getComment($comment_id);
 
         if( !EmundusHelperAccess::asAccessAction(10, 'd', $user->id, $comment['fnum']))
         {
@@ -252,7 +286,7 @@ class EmundusControllerApplication extends JControllerLegacy
         }
         else
         {
-            $result = $model->deleteComment($comment_id);
+            $result = $m_application->deleteComment($comment_id);
             if($result!=1)
                 $tab = array('status' => $result, 'msg' => JText::_('COMMENT_DELETE_ERROR'));
             else
@@ -267,7 +301,7 @@ class EmundusControllerApplication extends JControllerLegacy
         $id_tag = JRequest::getVar('id_tag', null, 'GET', 'none',0);
         $fnum = JRequest::getVar('fnum', null, 'GET', 'none',0);
 
-        $model = $this->getModel('application');
+        $m_application = $this->getModel('application');
 
         if( !EmundusHelperAccess::asAccessAction(14, 'd', $user->id, $fnum))
         {
@@ -276,7 +310,7 @@ class EmundusControllerApplication extends JControllerLegacy
         }
         else
         {
-            $result = $model->deleteTag($id_tag, $fnum);
+            $result = $m_application->deleteTag($id_tag, $fnum);
             if($result!=1 && $result!=true)
                 $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETE_ERROR'));
             else
@@ -298,16 +332,14 @@ class EmundusControllerApplication extends JControllerLegacy
         $sid = JRequest::getVar('sid', null, 'GET', 'none',0);
         $table = JRequest::getVar('t', null, 'GET', 'none',0);
 
-        $model = $this->getModel('application');
-        $result = $model->deleteData($id, $table);
-
-        $model = $this->getModel('application');
+        $m_application = $this->getModel('application');
+        $result = $m_application->deleteData($id, $table);
 
         $row['applicant_id'] = $sid;
         $row['user_id'] = $user->id;
         $row['reason'] = JText::_('DATA_DELETED');
         $row['comment_body'] = JText::_('LINE').' '.$id.' '.JText::_('FROM').' '.$table;
-        $model->addComment($row);
+        $m_application->addComment($row);
 
         echo $result;
 
@@ -328,8 +360,8 @@ class EmundusControllerApplication extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->get('fnum', null, 'STRING');
 
-        $model = $this->getModel('Application');
-        $menus = $model->getActionMenu();
+        $m_application = $this->getModel('Application');
+        $menus = $m_application->getActionMenu();
         $res = false;
 
         if(EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum))
@@ -375,10 +407,10 @@ class EmundusControllerApplication extends JControllerLegacy
         $res = new stdClass();
         if(EmundusHelperAccess::asAccessAction(4 ,'d', JFactory::getUser()->id, $fnum))
         {
-            $model = $this->getModel('application');
+            $m_application = $this->getModel('application');
             foreach($ids as $id)
             {
-                $model->deleteAttachment($id);
+                $m_application->deleteAttachment($id);
             }
             $res->status = true;
         }
@@ -407,14 +439,14 @@ class EmundusControllerApplication extends JControllerLegacy
 
             if($form_post)
             {
-                $modelFiles = $this->getModel('files');
-                $fnumInfos = $modelFiles->getFnumInfos($fnum);
+                $m_Files = $this->getModel('files');
+                $fnumInfos = $m_Files->getFnumInfos($fnum);
 
                 $exports[] = EmundusHelperExport::buildFormPDF($fnumInfos, $sid, $fnum, 1);
             }
 
-            $model = $this->getModel('application');
-            $files = $model->getAttachments($ids);
+            $m_application = $this->getModel('application');
+            $files = $m_application->getAttachments($ids);
             EmundusHelperExport::getAttachmentPDF($exports, $tmpArray, $files, $sid);
 
             if(!empty($exports))
@@ -464,15 +496,15 @@ class EmundusControllerApplication extends JControllerLegacy
             $state = $jinput->getInt('state', null);
             $accessid = explode('-', $jinput->getString('access_id', null));
             $type = $jinput->getString('type', null);
-            $model = $this->getModel('Application');
+            $m_application = $this->getModel('Application');
             $res = new stdClass();
             if($type == 'groups')
             {
-                $res->status = $model->updateGroupAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
+                $res->status = $m_application->updateGroupAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
             }
             else
             {
-                $res->status = $model->updateUserAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
+                $res->status = $m_application->updateUserAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
             }
             echo json_encode($res);
             exit();
@@ -495,15 +527,15 @@ class EmundusControllerApplication extends JControllerLegacy
         {
             $id =  $jinput->getString('id', null);
             $type = $jinput->getString('type', null);
-            $model = $this->getModel('Application');
+            $m_application = $this->getModel('Application');
             $res = new stdClass();
             if($type == 'groups')
             {
-                $res->status = $model->deleteGroupAccess($fnum, $id);
+                $res->status = $m_application->deleteGroupAccess($fnum, $id);
             }
             else
             {
-                $res->status = $model->deleteUserAccess($fnum, $id);
+                $res->status = $m_application->deleteUserAccess($fnum, $id);
             }
             echo json_encode($res);
             exit();

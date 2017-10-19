@@ -1,5 +1,5 @@
 <?php
-defined('_JEXEC') or die; 
+defined('_JEXEC') or die;
 
 ?>
 
@@ -73,7 +73,7 @@ defined('_JEXEC') or die;
             </div>
         </div>
     </div>
-    
+
     <script>
 
         function postCalendar() {
@@ -111,5 +111,5 @@ defined('_JEXEC') or die;
 
             ajax.send();
         }
-        
+
     </script>

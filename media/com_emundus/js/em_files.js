@@ -96,7 +96,7 @@ function search() {
 }
 function clearchosen(cible){
     $(cible).val("%");
-    //$('#select_multiple_programmes option[value="%"]').attr('selected',true); 
+    //$('#select_multiple_programmes option[value="%"]').attr('selected',true);
     $(cible).trigger('chosen:updated');
     // $("#select_multiple_programmes").trigger("chosen:updated");
 }
@@ -246,7 +246,7 @@ function addElement() {
                         options += '<optgroup label=">> ' + groupe_tmp + '">';
                         groupe = groupe_tmp;
                     }
-   
+
                     if (Joomla.JText._(result.options[i].element_label) == "undefined" || Joomla.JText._(result.options[i].element_label) == "")
                         var elt_label = result.options[i].element_label;
                     else
@@ -329,7 +329,7 @@ function openFiles(fnum) {
                 var menus = result.menus;
                 var firstMenu = menus[0].link;
                 var menuList = '';
-                
+
                 for (var m in menus) {
                     if (isNaN(parseInt(m)) || isNaN(menus[m].id) || typeof(menus[m].title) == "undefined")
                         break;
@@ -369,7 +369,7 @@ function openFiles(fnum) {
                             window.location.replace('/user');
                     }
                 })
-            
+
             } else $('#em-appli-menu .list-group').append(result.msg);
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -674,9 +674,9 @@ function generate_pdf(json) {
     var decision    = json.decision;
     var admission   = json.admission;
     var ids         = json.ids;
-    
+
     $.ajaxQ.abortAll();
-    
+
     if (start+limit < maxfiles) {
         $.ajax(
             {
@@ -697,9 +697,9 @@ function generate_pdf(json) {
                 },
                 success: function (result) {
                     var json = result.json;
-                    
+
                     if (result.status) {
-                    
+
                         $('#datasbs').replaceWith('<div id="datasbs" data-start="' + result.json.start + '"><p>' + result.json.start + ' / ' + result.json.totalfile + '</p></div>');
 
                         if (start != json.start) {
@@ -711,15 +711,15 @@ function generate_pdf(json) {
                             $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</div>' );
                             $('.modal-body').append('<a class="btn .btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="tmp/' + file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
                         }
-                    
+
                     } else {
-                    
+
                         var json = result.json;
                         if (start != json.start)
                             generate_pdf(json);
                         else
                             $('#loadingimg').empty();
-                    
+
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -727,18 +727,18 @@ function generate_pdf(json) {
                     $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
                 }
             });
-    
+
         } else if (start+limit> maxfiles) {
         $('#loadingimg').empty();
         $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">'+Joomla.JText._('COM_EMUNDUS_ERROR_NBFILES_CAPACITY')+'</div>');
         exit();
-    
+
     } else if( (start+limit <= maxfiles) ) {
         $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_PDF_GENERATION')+'</p></div>');
         $('#loadingimg').empty();
         $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</div>' );
         $('.modal-body').append('<a class="btn .btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' + file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
-    
+
     } else {
         $('#loadingimg').empty();
         $('#extractstep').replaceWith('<div class="alert alert-info" role="alert">'+Joomla.JText._('COM_EMUNDUS_ERROR_CAPACITY_PDF')+'</div><a class="btn .btn-link" title="'+Joomla.JText._('DOWNLOAD_PDF')+'" href="tmp/'+file+'" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>'+Joomla.JText._('DOWNLOAD_PDF')+'</span></a>');
@@ -1068,7 +1068,7 @@ $(document).ready(function()
         }
     });
 //
-// Open Application File (FNUM) 
+// Open Application File (FNUM)
 //
     $(document).on('click', '.em_file_open', function(e)
     {
@@ -1414,9 +1414,9 @@ $(document).ready(function()
 
         $.ajaxQ.abortAll();
         e.preventDefault();
-        
+
         var id = parseInt($(this).attr('id'));
-        
+
         $('#em-modal-actions').modal({backdrop:true,keyboard:true},'toggle');
         $('.modal-title').empty();
         $('.modal-title').append($(this).children('a').text());
@@ -1424,7 +1424,7 @@ $(document).ready(function()
 
         if ($('.modal-dialog').hasClass('modal-lg'))
             $('.modal-dialog').removeClass('modal-lg');
-        
+
         $('.modal-body').attr('act-id', id);
         $('.modal-footer').show();
         $('.modal-lg').css({ width: '80%' });
@@ -1445,9 +1445,9 @@ $(document).ready(function()
                 sid = parseInt(fnum.substr(21, 7));
                 fnums.push({fnum: fnum, cid: cid, sid:sid});
             });
-        
+
         }
-        
+
         fnums = JSON.stringify(fnums);
         fnums = encodeURIComponent(fnums);
 
@@ -1505,14 +1505,14 @@ $(document).ready(function()
                     type:'get',
                     url:url,
                     dataType:'json',
-                    
+
                     success: function(result) {
                         if (result.status) {
                             var nbprg = 0;
                             $('.modal-body').empty();
-                            
+
                             $('.modal-body').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE')+'</h5></div><div class="panel-body"><select name="em-export-methode" id="em-export-methode" style="width: 95%;" class="chzn-select"><option value="0" data-value="0">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+'</option><option value="1" data-value="1">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN')+'</option></select></div></div>');
-                            
+
                             $('.modal-body').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select name="em-export-prg" id="em-export-prg" style="width: 95%;" class="chzn-select"><option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option></select></div></div>');
 
                             $('.modal-body').append('<div id="elements_detail" style="display: none">' +
@@ -1535,18 +1535,18 @@ $(document).ready(function()
                                 url: 'index.php?option=com_emundus&controller=files&task=getProgrammes',
                                 dataType:'json',
 
-                                success: function(result) {    
+                                success: function(result) {
                                     if (result.status) {
 
                                         $('#em-export-prg').append(result.html);
                                         var code = $('#em-export-prg').val();
-                                        
+
                                         nbprg = result.nbprg;
-                                        
+
                                         $.ajax({
                                             type: 'get',
                                             url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code,
-                                            
+
                                             success: function (data) {
                                                 $('#elements-popup').empty();
                                                 $('#em-export-form').empty();
@@ -1556,14 +1556,14 @@ $(document).ready(function()
                                                         type:'get',
                                                         url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getformelem&Itemid='+itemId,
                                                         dataType:'json',
-                                                        
+
                                                         success: function(result) {
-                                                            
+
                                                             var item='';
                                                             item+='<option value="0" selected>Select an option</option>';
-                                                            
+
                                                             for (var d in result.elts) {
-                                                                
+
                                                                 if (isNaN(parseInt(d)))
                                                                     break;
 
@@ -1594,7 +1594,7 @@ $(document).ready(function()
                                                             $('#em-export-form').append(item);
                                                             $('#em-export-form').trigger("chosen:updated");
                                                             item ="";
-                                                            
+
                                                             for (var d in result.defaults) {
                                                                 if (isNaN(parseInt(d)))
                                                                     break;
@@ -1603,7 +1603,7 @@ $(document).ready(function()
                                                                 else
                                                                     item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                             }
-                                                            
+
                                                             $('#em-export').append(item);
                                                             $('.btn-success').show();
                                                             $('#elements_detail').show();
@@ -1621,7 +1621,7 @@ $(document).ready(function()
                                             }
                                         });
 
-                                        
+
                                         // If we are on the admission page, we need to add selection options for the decision and admission forms
                                         if ($("#view").val() == "admission") {
 
@@ -1639,14 +1639,14 @@ $(document).ready(function()
                                                                                 '</div>' +
                                                                             '</div>' +
                                                                         '</div>' +
-                                                                    '</div>'); 
+                                                                    '</div>');
 
                                             nbprg = result.nbprg;
-                                            
+
                                             $.ajax({
                                                 type: 'get',
                                                 url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=decision',
-                                                
+
                                                 success: function (data) {
                                                     $('#decision-elements-popup').empty();
                                                     $('#em-decision-export-form').empty();
@@ -1656,14 +1656,14 @@ $(document).ready(function()
                                                             type:'get',
                                                             url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getformelem&form=decision',
                                                             dataType:'json',
-                                                            
+
                                                             success: function(result) {
-                                                                
+
                                                                 var item='';
                                                                 item+='<option value="0" selected>Select an option</option>';
-                                                                
+
                                                                 for (var d in result.elts) {
-                                                                    
+
                                                                     if (isNaN(parseInt(d)))
                                                                         break;
 
@@ -1679,13 +1679,13 @@ $(document).ready(function()
                                                                 $('#em-decision-export-form').append(item);
                                                                 $('#em-decision-export-form').trigger("chosen:updated");
                                                                 item ="";
-                                                                
+
                                                                 for (var d in result.defaults) {
                                                                     if (isNaN(parseInt(d)))
                                                                         break;
                                                                     item += '<li class="em-decision-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                                 }
-                                                                
+
                                                                 $('#em-decision-export').append(item);
                                                                 $('.btn-success').show();
                                                                 $('#decision_elements_detail').show();
@@ -1717,14 +1717,14 @@ $(document).ready(function()
                                                                                 '</div>' +
                                                                             '</div>' +
                                                                         '</div>' +
-                                                                    '</div>'); 
+                                                                    '</div>');
 
                                             nbprg = result.nbprg;
-                                            
+
                                             $.ajax({
                                                 type: 'get',
                                                 url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=admission',
-                                                
+
                                                 success: function (data) {
                                                     $('#admission-elements-popup').empty();
                                                     $('#em-admission-export-form').empty();
@@ -1734,14 +1734,14 @@ $(document).ready(function()
                                                             type:'get',
                                                             url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getformelem&form=admission',
                                                             dataType:'json',
-                                                            
+
                                                             success: function(result) {
-                                                                
+
                                                                 var item='';
                                                                 item+='<option value="0" selected>Select an option</option>';
-                                                                
+
                                                                 for (var d in result.elts) {
-                                                                    
+
                                                                     if (isNaN(parseInt(d)))
                                                                         break;
 
@@ -1757,13 +1757,13 @@ $(document).ready(function()
                                                                 $('#em-admission-export-form').append(item);
                                                                 $('#em-admission-export-form').trigger("chosen:updated");
                                                                 item ="";
-                                                                
+
                                                                 for (var d in result.defaults) {
                                                                     if (isNaN(parseInt(d)))
                                                                         break;
                                                                     item += '<li class="em-admission-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                                 }
-                                                                
+
                                                                 $('#em-admission-export').append(item);
                                                                 $('.btn-success').show();
                                                                 $('#admission_elements_detail').show();
@@ -1830,21 +1830,21 @@ $(document).ready(function()
                                                             item += '<option value="'+result.elts[d].id+'" data-value="'+result.elts[d].element_label+'">'+result.elts[d].element_label+'</option>';
                                                         else
                                                             item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
-                                                            
+
                                                     }
                                                     $('#em-export-form').append(item);
                                                     $('#em-export-form').trigger("chosen:updated");
                                                     item ="";
-                                                    
+
                                                     for (var d in result.defaults) {
                                                         if (isNaN(parseInt(d)))
                                                             break;
                                                         if ($('#view').val()!="evaluation" && $('#view').val()!="decision" && $('#view').val()!="admission")
                                                             item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                         else
-                                                            item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';                                                    
+                                                            item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                     }
-                                                    
+
                                                     $('#em-export').append(item);
 
                                                 },
@@ -1868,11 +1868,11 @@ $(document).ready(function()
                                 }
                             });
                             $('.modal-body').append('<div id="list-element-export" class="panel panel-default xclsform"></div>');
-                            
+
                             var defaults = '<h5>  '+Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM')+'</h5><div id="em-export-elts" class="well"><ul id="em-export"></ul></div>';
-                            
+
                             $('#list-element-export').append(defaults);
-                            
+
                             var grId = null;
                             var menu = null;
 
@@ -1915,7 +1915,7 @@ $(document).ready(function()
                     });
                     myJSONObject = myJSONObject.substr(0, myJSONObject.length-1);
                     myJSONObject += '}';
-                    
+
                     if (myJSONObject.length == 2) {
                         alert('SELECT_FILES');
                         return;
@@ -2117,7 +2117,7 @@ $(document).ready(function()
                 $('.modal-footer').hide();
                 $('.modal-dialog').addClass('modal-lg');
                 $('.modal-body').empty();
-                //var url = 'index.php?option=com_emundus&view=email&tmpl=component&Itemid='+itemId+'&fnums='+encodeURIComponent(fnums)+'&desc=1'; 
+                //var url = 'index.php?option=com_emundus&view=email&tmpl=component&Itemid='+itemId+'&fnums='+encodeURIComponent(fnums)+'&desc=1';
                 $('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
 
                 break;
@@ -2253,7 +2253,7 @@ $(document).ready(function()
                 //var url = 'index.php?option=com_emundus&view=email&tmpl=component&Itemid='+itemId+'&fnums='+encodeURIComponent(fnums)+'&desc=2';
                 $('.modal-body').empty();
                 $('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
-                
+
                 break;
 
             default:
@@ -2262,12 +2262,12 @@ $(document).ready(function()
 
     });
 
-    // PDF file generation 
+    // PDF file generation
     // this function is called on click of #em-generate and not in the above switch case for the likely reason that the same button is used elsewhere
     $(document).on('click', '#em_generate', function(e) {
         e.preventDefault();
         $.ajaxQ.abortAll();
-       
+
         //var checkInput = getUserCheck();
         var fnum = '';
         var fnums = '';
@@ -2281,7 +2281,7 @@ $(document).ready(function()
             fnums = '{"1":"'+fnum+'"}';
         else
             fnums = getUserCheck();
-        
+
         var ids = getUrlParameter(url, 'ids');
 
 
@@ -2292,7 +2292,7 @@ $(document).ready(function()
         var assessment  = 0;
         var decision    = 0;
         var admission   = 0;
-        
+
         if ($('#em-ex-forms').is(":checked"))
             forms       = 1;
         if ($('#em-ex-attachment').is(":checked"))
@@ -2320,11 +2320,11 @@ $(document).ready(function()
                 url: 'index.php?option=com_emundus&controller=files&task=getfnums',
                 dataType: 'JSON',
                 data: {fnums: fnums, ids: ids, action_id:8, crud:'c'},
-                
+
                 success: function (result) {
                     var totalfile = result.totalfile;
                     ids = result.ids;
-                    
+
                     if (result.status) {
                         $.ajax(
                             {
@@ -2333,7 +2333,7 @@ $(document).ready(function()
                                 dataType: 'JSON',
                                 success: function (result) {
                                     if (result.status) {
-                                     
+
                                         $('#extractstep').replaceWith('<div id="extractstep"><div id="addatatext"><p>' +
                                         Joomla.JText._('COM_EMUNDUS_ADD_FILES_TO_PDF') +
                                         '</p></div><div id="datasbs"</div>');
@@ -2348,13 +2348,13 @@ $(document).ready(function()
                                         //console.log(json);
                                         //console.log(json.ids);
                                         generate_pdf(json);
-                                    
+
                                     } else {
 
                                         $('#loadingimg').empty();
                                         $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' +
                                         result.msg + '</div>');
-                                    
+
                                     }
                                 },
                                 error: function (jqXHR, textStatus, errorThrown) {
@@ -2410,10 +2410,10 @@ $(document).ready(function()
     // Modals for actions such as exporting documents to pdf
     $(document).on('click', '#em-modal-actions .btn.btn-success', function(e) {
         $.ajaxQ.abortAll();
-        
+
         // act-id represents the action to carry out (ex: export)
         var id = parseInt($('.modal-body').attr('act-id'));
-        
+
         // See which files have been selected for action
         var checkInput = getUserCheck();
 
@@ -2422,16 +2422,16 @@ $(document).ready(function()
             case 6:
                 var eltJson = "{";
                 var i = 0;
-                
+
                 $(".em-export-item").each(function() {
                     eltJson += '"'+i+'":"'+$(this).attr('id').split('-')[0]+'",';
                     i++;
                 });
-                
+
                 eltJson = eltJson.substr(0, eltJson.length - 1);
                 eltJson += '}';
                 var objJson = '{';
-                
+
                 i = 0;
                 $('.em-ex-check:checked').each(function() {
                     objJson += '"'+i +'":"'+$(this).attr('value')+'",';
@@ -2442,10 +2442,10 @@ $(document).ready(function()
                 objJson += '}';
 
                 var methode = $('#em-export-methode').val();
-                
+
                 if ($('#view').val() == "evaluation")
                     methode = 0;
-                
+
                 $('.modal-body').empty();
                 $('.modal-body').append('<div>' +
                 '<h5>'+Joomla.JText._('COM_EMUNDUS_EXCEL_GENERATION')+'</h5>'+
@@ -2474,12 +2474,12 @@ $(document).ready(function()
                                                 var limit = 100;
                                                 var file = result.file;
                                                 var json= jQuery.parseJSON('{"start":"'+start+'","limit":"'+limit+'","totalfile":"'+totalfile+'","nbcol":"0","methode":"'+methode+'","file":"'+file+'"}');
-                                                
+
                                                 if ((methode == 0) && ($('#view').val()!="evaluation"))
                                                     $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0 / ' + totalfile + '</p></div>');
                                                 else
                                                     $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0</p></div>');
-                                                
+
                                                 generate_csv(json, eltJson, objJson);
                                             }
                                         },
@@ -2520,7 +2520,7 @@ $(document).ready(function()
                             $('.modal-body').append('<p class="text-success"><strong>'+result.msg+'</strong></p>');
                         else
                             $('.modal-body').append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
-                            
+
                         setTimeout(function(){$('#em-modal-actions').modal('hide');}, 800);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
@@ -2557,7 +2557,7 @@ $(document).ready(function()
                     $(this).children('td').each(function() {
                         if ($(this).hasClass('em-has-checkbox')) {
                             var id = $(this).attr('id').split('-');
-                            
+
                             switch(id[0]) {
                                 case 'c':
                                     id = id.join('-');
@@ -2566,15 +2566,15 @@ $(document).ready(function()
                                     else
                                         actLine.c = 0;
                                     break;
-                                
+
                                 case 'r':
                                     id = id.join('-');
                                     if ($(this).children('input[name="'+id+'"]').is(':checked'))
                                         actLine.r = 1;
-                                    else 
+                                    else
                                         actLine.r = 0;
                                     break;
-                                
+
                                 case 'u':
                                     id = id.join('-');
                                     if ($(this).children('input[name="'+id+'"]').is(':checked'))
@@ -2582,7 +2582,7 @@ $(document).ready(function()
                                     else
                                         actLine.u = 0;
                                     break;
-                                
+
                                 case 'd':
                                     id = id.join('-');
                                     if ($(this).children('input[name="'+id+'"]').is(':checked'))
@@ -2605,7 +2605,7 @@ $(document).ready(function()
                         }
                     })
                     actionsCheck.push(actLine);
-                    if (actionsCheck.length == tableSize) 
+                    if (actionsCheck.length == tableSize)
                         return false;
                 });
 
@@ -2724,7 +2724,7 @@ $(document).ready(function()
             case 27:
                 if ($(this).hasClass('em-doc-dl'))
                     return;
-                
+
                 var fnums = $('input:hidden[name="em-doc-fnums"]').val();
                 var code = $('#em-doc-trainings').val();
                 var idTmpl = $('#em-doc-tmpl').val();
@@ -2781,7 +2781,7 @@ $(document).ready(function()
                     })
 
                 break;
-            
+
             // Validating publication change
             case 28:
                 var publish = $("#em-action-publish").val();
@@ -2835,7 +2835,7 @@ $(document).ready(function()
             $('#em-export').append('<li class="em-export-item" id="'+id+'-item"><button class="btn btn-danger btn-xs" id="' + id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button><span class="em-excel_elts"><strong>'+text+'</strong></span></li>');
         }
     });
-    
+
     $(document).on('change', '#em-admission-export-form', function(e)
     {
         if (e.handle !== true)
@@ -2859,7 +2859,7 @@ $(document).ready(function()
             $('#em-export').append('<li class="em-export-item" id="'+id+'-item"><button class="btn btn-danger btn-xs" id="' + id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button><span class="em-excel_elts"><strong>'+text+'</strong></span></li>');
         }
     });
-    
+
     $(document).on('click', '.emundusraw', function(e)
     {
         $.ajaxQ.abortAll();
@@ -2893,7 +2893,7 @@ $(document).ready(function()
             var id = $(this).attr('name').split('-');
             id.pop();
             id = id.join('-');
-            
+
             if ($(this).is(':checked')) {
                 $(this).prop('checked', true);
                 $('.'+id).prop('checked', true);
@@ -2946,61 +2946,61 @@ $(document).ready(function()
             $(this).children('span').addClass('glyphicon-chevron-left');
             $('.main-panel').addClass('col-md-9');
             $('.main-panel').removeClass('col-md-12');
-        
+
         }
     });
     $(document).on('click', '#showelements', function() {
         $.ajaxQ.abortAll();
         if ($(this).hasClass("btn btn-info")) {
-        
+
             $('#elements-popup').toggle(400);
             $(this).removeClass("btn btn-info").addClass("btn btn-elements-success");
             $(this).empty();
             $(this).append('<span class="glyphicon glyphicon-minus"></span>');
-        
+
         } else {
-        
+
             $('#elements-popup').hide();
             $(this).removeClass("btn btn-elements-success").addClass("btn btn-info");
             $(this).empty();
             $(this).append('<span class="glyphicon glyphicon-plus"></span>');
-        
+
         }
     });
     $(document).on('click', '#showadmissionelements', function() {
         $.ajaxQ.abortAll();
         if ($(this).hasClass("btn btn-info")) {
-        
+
             $('#admission-elements-popup').toggle(400);
             $(this).removeClass("btn btn-info").addClass("btn btn-elements-success");
             $(this).empty();
             $(this).append('<span class="glyphicon glyphicon-minus"></span>');
-        
+
         } else {
-        
+
             $('#admission-elements-popup').hide();
             $(this).removeClass("btn btn-elements-success").addClass("btn btn-info");
             $(this).empty();
             $(this).append('<span class="glyphicon glyphicon-plus"></span>');
-        
+
         }
     });
     $(document).on('click', '#showdecisionelements', function() {
         $.ajaxQ.abortAll();
         if ($(this).hasClass("btn btn-info")) {
-        
+
             $('#decision-elements-popup').toggle(400);
             $(this).removeClass("btn btn-info").addClass("btn btn-elements-success");
             $(this).empty();
             $(this).append('<span class="glyphicon glyphicon-minus"></span>');
-        
+
         } else {
-        
+
             $('#decision-elements-popup').hide();
             $(this).removeClass("btn btn-elements-success").addClass("btn btn-info");
             $(this).empty();
             $(this).append('<span class="glyphicon glyphicon-plus"></span>');
-        
+
         }
     });
 
