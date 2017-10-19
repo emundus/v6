@@ -528,68 +528,6 @@ thead th:hover {
 .mainemundus {
     width: 100% !important;
 }
-/*fixed thead------------*/
-
-.table-scroll {
-    position: relative;
-    max-width: 1280px;
-    width:100%;
-    margin: auto;
-    display:table;
-}
-.table-wrap {
-    width: 100%;
-    display:block;
-    height: 900px;
-    overflow: auto;
-    position:relative;
-    z-index:1;
-}
-.table-scroll table {
-    width: 100%;
-    margin: auto;
-    border-collapse: separate;
-    border-spacing: 0;
-}
-.table-scroll th, .table-scroll td {
-    padding: 5px 10px;
-    background: #fff;
-    vertical-align: top;
-}
-.faux-table table {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    pointer-events: none;
-}
-.faux-table table + table {
-    top: auto;
-    bottom: 0;
-}
-.faux-table table tbody {
-    visibility: hidden;
-    border-color: transparent;
-}
-.faux-table table + table thead {
-    visibility: hidden;
-    border-color: transparent;
-}
-
-.faux-table {
-    position:absolute;
-    top:0;
-    right:0;
-    left:0;
-    bottom:0;
-    overflow-y:scroll;
-}
-.faux-table thead, .faux-table thead th{
-    position:relative;
-    z-index:2;
-}
-
-
 
 /* Diplaying user photos and email in list views */
 

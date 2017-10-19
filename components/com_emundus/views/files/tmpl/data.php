@@ -14,19 +14,7 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 ?>
 
-<!-- script for fixed thead-->
-<script type="text/javascript" >
-	(function() {
-		var fauxTable = document.getElementById("faux-table");
-		var mainTable = document.getElementById("em-data");
-		var clonedElement = mainTable.cloneNode(true);
-		var clonedElement2 = mainTable.cloneNode(true);
-		clonedElement.id = "";
-		clonedElement2.id = "";
-		fauxTable.appendChild(clonedElement);
-		fauxTable.appendChild(clonedElement2);
-	})();
-</script>
+
 
 <input type="hidden" id="view" name="view" value="files">
 <div class="panel panel-default">
@@ -35,10 +23,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 			<?php echo $this->pagination->getResultsCounter(); ?>
 		</div>
 		<div class="em-data-container">
-			<div id="table-scroll" class="table-scroll">
-				<div id="faux-table" class="faux-table" aria="hidden"></div>
-				<div class="table-wrap">
-					<table class="table table-striped table-hover main-table" id="em-data">
+					<table class="table table-striped table-hover" id="em-data">
 						<thead>
 						<tr>
 							<?php foreach($this->datas[0] as $kl => $v): ?>
@@ -125,9 +110,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 							<?php endif;?>
 						<?php  endforeach;?>
 						</tbody>
-					</table>
-				</div>
-			</div>										
+					</table>									
 		</div>
 		<div class="well">
 			<label for = "pager-select"><?php echo JText::_('DISPLAY')?></label>
