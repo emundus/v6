@@ -70,7 +70,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 						</tr>
 						</thead>
 						<tbody>
-						
+
 						<?php foreach ($this->datas as $key => $line):?>
 							<?php if($key != 0): ?>
 								<tr>
@@ -81,7 +81,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 												<?php if($k == 'check'): ?>
 													<label for = "<?php echo $line['fnum']->val ?>_check">
 														<input type="checkbox" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
-														<?php 
+														<?php
 															$tab = explode('-', $key);
 															echo ($tab[1] + 1 + $this->pagination->limitstart);
 														?>
@@ -92,7 +92,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 													<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
 														<div class="em_list_photo"><?php echo $value->photo; ?></div>
 														<div class="em_list_text">
-															<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo strtoupper($value->emUser['lastname'])." ".ucfirst(strtolower($value->emUser['firstname'])); ?></strong></span>
+															<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
 															<div class="em_list_email"><?php echo $value->user->email; ?></div>
 															<div class="em_list_email"><?php echo $line['fnum']->val; ?></div>
 														</div>
@@ -102,7 +102,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 												<?php elseif($k == "id_tag"):?>
 													<?php echo @$this->colsSup['id_tag'][$line['fnum']->val]?>
 												<?php else:?>
-													
+
 													<?php if ($value->type == 'text' ) :?>
 														<?php echo strip_tags($value->val); ?>
 													<?php elseif ($value->type == 'textarea') :?>
@@ -113,7 +113,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 															<strong>
 																<?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
 																		<span class="glyphicon glyphicon-warning-sign em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true" style="color:orange;"></span>
-																<?php else: ?> 
+																<?php else: ?>
 																	<?php
 																		$params = json_decode($value->params);
 																		$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
@@ -124,7 +124,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 														</h5>
 													<?php elseif ($value->type == 'radiobutton') :?>
 														<select name="<?php echo $cfnum.'-'.$value->id; ?>" class="em-radio input-medium" id="<?php echo $cfnum.'-'.$value->id; ?>"
-														<?php 
+														<?php
 															if (strtolower($value->val) == "yes" || strtolower($value->val) == "oui" || $value->val == 1) {
 																echo "style='border: solid 3px #BCCB56'";
 															} elseif(strtolower($value->val) == "no" || strtolower($value->val) == "non" || $value->val === 0) {
@@ -153,7 +153,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 													<?php else :?>
 														<?php echo $value->val; ?>
 													<?php endif; ?>
-												
+
 												<?php endif; ?>
 											</div>
 										</td>
