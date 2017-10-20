@@ -545,19 +545,24 @@ thead th:hover {
     color: #666666
 }
 
-/*fixed thead------------
+/*fixed thead------------*/
 
+/*fixed thead------------*/
+body{
+    overflow-x:hidden;
+}
 .table-scroll {
-    position: relative;
-    width:100%;
+   position: relative;
+    max-width: 100%;
+    width: 100%;
     margin: auto;
     display:table;
 }
 .table-wrap {
     width: 100%;
-    display:block;
-    height: 700px;
-    overflow: auto;
+    display: block;
+    height: 600px;
+    overflow:auto;
     position:relative;
     z-index:1;
 }
@@ -603,7 +608,7 @@ thead th:hover {
 .faux-table thead, .faux-table thead th{
     position:relative;
     z-index:2;
-}*/
+}
 
 /*scroll side 
 .scroll-side { 
@@ -614,8 +619,6 @@ thead th:hover {
     height: 1000px !important;
     overflow-y:scroll !important;
 }*/
-
-
 
 
 
