@@ -14,6 +14,7 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 JHTML::_('behavior.tooltip');
 ?>
+
 <input type="hidden" id="view" name="view" value="evaluation">
 <div class="container-fluid" >
 	<div class="row">

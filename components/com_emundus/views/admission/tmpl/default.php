@@ -14,6 +14,8 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 JHTML::_('behavior.tooltip');
 ?>
+
+
 <input type="hidden" id="view" name="view" value="admission">
 <div class="container-fluid">
 	<div class="row">
@@ -81,7 +83,6 @@ JHTML::_('behavior.tooltip');
 					</button>
 					<span class="navbar-brand" href="#"><?php echo JText::_('ACTIONS')?></span>
 				</div>
-
 			</div>
 			<div class="panel panel-default"></div>
 		</div>
