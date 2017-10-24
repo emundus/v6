@@ -1106,23 +1106,10 @@ class EmundusModelEvaluation extends JModelList
 		$query .= ' LEFT JOIN #__emundus_users as eue on eue.user_id = jos_emundus_evaluations.user ';
 		$query .= $q['join'];
 
-		// Only get users by status defined in backoffice
-		$statConfig = $eMConfig->get('evaluationDisplayStatus');
-
-		if (isset($statConfig)) {
-			$statConfig = explode(",",$statConfig);
-			$scc = array();
-			foreach ($statConfig as $sc) {
-				$scc[] = $dbo->quote($sc);
-			}
-			$query .= " WHERE ss.value IN (".implode(",", $scc).") ";
-		}
-
-
 		if (empty($current_fnum))
-			$query .= ' AND 1 = 1 ';
+			$query .= ' WHERE 1 = 1 ';
 		else
-			$query .= ' AND c.fnum like ' . $current_fnum;
+			$query .= ' WHERE c.fnum like ' . $current_fnum;
 
 
 		$query .= $q['q'];

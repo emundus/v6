@@ -48,7 +48,7 @@
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
-		<!-- 
+		<!--
 		<field name="nb_months_registration_period_access" type="text" size="2" default="11" label="NB_MONTHS_REGISTRATION_PERIOD_ACCESS" description="NB_MONTHS_REGISTRATION_PERIOD_ACCESS_DESC" />
 		<field name="alert_new_applicant" type="radio" default="0" label="ALERT_NEW_APPLICANT" description="ALERT_NEW_APPLICANT_DESC">
 			<option value="0">JNo</option>
@@ -59,7 +59,6 @@
 			<option value="1">JYes</option>
 		</field>
 		-->
-		<field name="evaluationDisplayStatus" type="text" size="50" default="" label="COM_EMUNDUS_DISPLAY_STATUS" description="COM_EMUNDUS_DISPLAY_STATUS_DESC"></field>
 	</fieldset>
 
 	<fieldset label="COM_EMUNDUS_APPLICANTS" name="applicants" description="COM_EMUNDUS_APPLICANTS_DESC">
@@ -124,15 +123,15 @@
 			/>
 		<field name="reminder_element_date_id" type="text" default="" label="DATE_OF_BEGIN_REMIND" description="DATE_OF_BEGIN_REMIND_DESC" />
 		<field name="report_remind_mail_id" type="text" default="16" label="EMAIL_SENT_TO_APPLICANTS" description="EMAIL_SENT_TO_APPLICANTS_DESC" />
-		<field name="remind_days" type="text" default="90,120,150" label="REMIND_DAYS" description="REMIND_DAYS_DESC" /> 
-		<field name="reminder_attanchment_id" type="text" default="" label="ATTACHMENT_EXIST" description="ATTACHMENT_EXIST_DESC" />  
-		<field name="reminder_profile_id" type="text" default="" label="PROFILES_CONCERNED" description="PROFILES_CONCERNED_DESC" /> 
+		<field name="remind_days" type="text" default="90,120,150" label="REMIND_DAYS" description="REMIND_DAYS_DESC" />
+		<field name="reminder_attanchment_id" type="text" default="" label="ATTACHMENT_EXIST" description="ATTACHMENT_EXIST_DESC" />
+		<field name="reminder_profile_id" type="text" default="" label="PROFILES_CONCERNED" description="PROFILES_CONCERNED_DESC" />
 		<field
 			name="spacer3"
 			type="spacer"
 			hr="true"
 			/>
-		<field name="keyid" type="text" label="Key id for the reminder email" description="REMINDERKEY" /> 
+		<field name="keyid" type="text" label="Key id for the reminder email" description="REMINDERKEY" />
 		<field name="reference_table" type="text" label="COM_EMUNDUS_REFERENCE_TABLE" description="COM_EMUNDUS_REFERENCE_TABLE_DESC" />
 		<field name="reference_field" type="text" label="COM_EMUNDUS_REFERENCE_FIELD" description="COM_EMUNDUS_REFERENCE_FIELD_DESC" />
 -->
@@ -144,7 +143,7 @@
 	<fieldset addfieldpath="/administrator/components/com_emundus/models/fields" label="COM_EMUNDUS_PDF" name="pdf" description="COM_EMUNDUS_PDF_DESC" >
         <field name="export_pdf" type="text" size="60" default="" label="Select items for the pdf export"/>
 	</fieldset>
--->	
+-->
 
 	<fieldset label="COM_EMUNDUS_CALENDAR" name="calendar" description="COM_EMUNDUS_CALENDAR_DESC">
 		<field name="clientId" type="text" required="false" label="COM_EMUNDUS_CLIENTID_GOOGLE_LABEL" description="COM_EMUNDUS_CLIENTID_GOOGLE_DESC" class="inputbox" default="" ForcedDisplay="value"/>
@@ -164,12 +163,12 @@
 		<field name="ametys_sync_default_decision" type="text" default="56" label="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_DECISION_GROUPS" description="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_DECISION_GROUPS_DESC" />
 		<field name="ametys_sync_default_synthesis" type="editor" default="[APPLICANT_NAME]" label="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_SYNTHESIS" description="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_DECISION_SYNTHESIS_DESC" />
 	</fieldset>
-	<fieldset 
+	<fieldset
         name="permissions"
 		description="JCONFIG_PERMISSIONS_DESC"
 		label="JCONFIG_PERMISSIONS_LABEL">
 
-		<field 
+		<field
 			name="rules" type="rules" component="com_emundus"
 			class="inputbox" filter="rules" validate="rules"
 			label="JCONFIG_PERMISSIONS_LABEL"
@@ -183,6 +182,6 @@
 		<field name="showNewsletter" type="list" menu="hide" default="1" label="COM_EMUNDUS_SHOW_NEWSLETTER" description="COM_EMUNDUS_SHOW_NEWSLETTER_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
-		</field>		
+		</field>
 	</fieldset>
 </config>
