@@ -16,7 +16,7 @@ JHTML::_('behavior.tooltip');
 ?>
 
 <input type="hidden" id="view" name="view" value="evaluation">
-<div class="container-fluid" >
+<div class="container-fluid">
 	<div class="row">
 		<div class="col-md-3 side-panel">
 			<div class="panel panel-info" id="em-files-filters" >
