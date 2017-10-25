@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -224,7 +224,7 @@ class PluginsViewPlugins extends hikashopView{
 		JHTML::_('behavior.modal');
 		$app = JFactory::getApplication();
 		$db = JFactory::getDBO();
-		$task = JRequest::getVar('task');
+		$task = hikaInput::get()->getVar('task');
 
 		$config = hikashop_config();
 		$this->assignRef('config', $config);
@@ -236,7 +236,7 @@ class PluginsViewPlugins extends hikashopView{
 		$this->assignRef('popup',$popup);
 
 		$this->content = '';
-		$this->plugin_name = JRequest::getCmd('name', '');
+		$this->plugin_name = hikaInput::get()->getCmd('name', '');
 		if(empty($this->plugin_name)) {
 			hikashop_setTitle(JText::_($this->nameListing), $this->icon, $this->ctrl);
 			return false;
@@ -279,7 +279,7 @@ class PluginsViewPlugins extends hikashopView{
 			$multiple_plugin = $plugin->isMultiple();
 		}
 
-		$subtask = JRequest::getCmd('subtask', '');
+		$subtask = hikaInput::get()->getCmd('subtask', '');
 		if($multiple_plugin && empty($subtask)) {
 			$querySelect = array();
 			$queryFrom = array();
@@ -325,7 +325,7 @@ class PluginsViewPlugins extends hikashopView{
 		$function = 'pluginConfiguration';
 		$ctrl = '&plugin_type='.$this->plugin_type.'&task='.$task.'&name='.$this->plugin_name;
 		if($multiple_plugin === true) {
-			$subtask = JRequest::getCmd('subtask','');
+			$subtask = hikaInput::get()->getCmd('subtask','');
 			$ctrl .= '&subtask='.$subtask;
 			if(empty($subtask)) {
 				$function = 'pluginMultipleConfiguration';
@@ -518,9 +518,9 @@ class PluginsViewPlugins extends hikashopView{
 	}
 
 	function edit_translation() {
-		$language_id = JRequest::getInt('language_id',0);
+		$language_id = hikaInput::get()->getInt('language_id',0);
 
-		$type = JRequest::getString('type');
+		$type = hikaInput::get()->getString('type');
 		$field = $type.'_id';
 		$cid = hikashop_getCID($field);
 		$class = hikashop_get('class.'.$type);
@@ -550,7 +550,7 @@ class PluginsViewPlugins extends hikashopView{
 	}
 
 	function selectimages(){
-		$type = JRequest::getCmd('type','shipping');
+		$type = hikaInput::get()->getCmd('type','shipping');
 		if(!in_array($type,array('shipping','payment'))){
 			$type = 'shipping';
 		}
@@ -570,7 +570,7 @@ class PluginsViewPlugins extends hikashopView{
 			$rows[]=$row;
 		}
 
-		$selectedImages = JRequest::getVar('values','','','string');
+		$selectedImages = hikaInput::get()->getVar('values','','','string');
 
 		if(strtolower($selectedImages) == 'all') {
 			foreach($rows as $id => $oneRow) {

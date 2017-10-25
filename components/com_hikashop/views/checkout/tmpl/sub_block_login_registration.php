@@ -1,13 +1,13 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><fieldset class="form-horizontal">
+?><fieldset class="hkform-horizontal">
 <?php
 $labelcolumnclass = 'hkc-sm-4';
 $inputcolumnclass = 'hkc-sm-8';
@@ -87,7 +87,7 @@ if(!empty($this->extraFields[$type])) {
 				@$this->$type->$fieldName,
 				'data['.$type.']['.$fieldName.']',
 				false,
-				'class="hkform-control" '.$onWhat.'="hikashopToggleFields(this.value,\''.$fieldName.'\',\''.$type . '_' . $this->step . '_' . $this->module_position.'\',0,\'hikashop_\');"',
+				' class="hkform-control" '.$onWhat.'="hikashopToggleFields(this.value,\''.$fieldName.'\',\''.$type . '_' . $this->step . '_' . $this->module_position.'\',0,\'hikashop_\');"',
 				false,
 				$this->extraFields[$type],
 				@$this->$type,
@@ -104,25 +104,28 @@ if(!empty($this->options['affiliate_registration'])) {
 	if(!empty($plugin)) {
 ?>
 	<div class="hkform-group control-group hikashop_registration_affiliate_line">
-		<div class="controls">
+		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label"></div>
+		<div class=" <?php echo $inputcolumnclass;?>">
+			<div class="checkbox">
 <?php
 		$affiliate_terms = $this->config->get('affiliate_terms', 0);
 		if(!empty($affiliate_terms)) {
 ?>
-			<input class="hikashop_affiliate_checkbox" id="hikashop_affiliate_checkbox" type="checkbox" name="hikashop_affiliate_checkbox" value="1" <?php echo $this->affiliate_checked; ?> />
-			<span class="hikashop_affiliate_terms_span_link" id="hikashop_affiliate_terms_span_link">
-				<a class="hikashop_affiliate_terms_link" id="hikashop_affiliate_terms_link" target="_blank" href="<?php echo JRoute::_('index.php?option=com_content&view=article&id='.$affiliate_terms); ?>"><?php echo JText::_('BECOME_A_PARTNER'); ?></a>
-			</span>
+				<input class="hikashop_affiliate_checkbox" id="hikashop_affiliate_checkbox" type="checkbox" name="hikashop_affiliate_checkbox" value="1" <?php echo $this->affiliate_checked; ?> />
+				<span class="hikashop_affiliate_terms_span_link" id="hikashop_affiliate_terms_span_link">
+					<a class="hikashop_affiliate_terms_link" id="hikashop_affiliate_terms_link" target="_blank" href="<?php echo JRoute::_('index.php?option=com_content&view=article&id='.$affiliate_terms); ?>"><?php echo JText::_('BECOME_A_PARTNER'); ?></a>
+				</span>
 <?php
 		} else {
 ?>
-			<label class="checkbox">
-				<input class="hikashop_affiliate_checkbox" id="hikashop_affiliate_checkbox" type="checkbox" name="hikashop_affiliate_checkbox" value="1" <?php echo $this->affiliate_checked; ?> />
-				<?php echo JText::_('BECOME_A_PARTNER');?>
-			</label>
+				<label>
+					<input class="hikashop_affiliate_checkbox" id="hikashop_affiliate_checkbox" type="checkbox" name="hikashop_affiliate_checkbox" value="1" <?php echo $this->affiliate_checked; ?> />
+					<?php echo JText::_('BECOME_A_PARTNER');?>
+				</label>
 <?php
 		}
 ?>
+			</div>
 		</div>
 	</div>
 <?php
@@ -168,14 +171,16 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 
 ?>
 	<div class="hkform-group control-group hikashop_registration_required_info_line">
-		<div class="controls"><?php echo JText::_('HIKA_REGISTER_REQUIRED'); ?></div>
+		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label"></div>
+		<div class="<?php echo $inputcolumnclass;?>"><?php echo JText::_('HIKA_REGISTER_REQUIRED'); ?></div>
 	</div>
 	<input type="hidden" name="data[register][id]" value="<?php echo (int)$this->mainUser->get('id');?>" />
 	<input type="hidden" name="data[register][gid]" value="<?php echo (int)$this->mainUser->get('gid');?>" />
 	<div class="hkform-group control-group">
-		<div class="controls">
+		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label"></div>
+		<div class="<?php echo $inputcolumnclass;?>">
 			<button type="submit" onclick="window.checkout.submitLogin(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>, 'register'); return false;" class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikabtn_checkout_login_register" id="hikashop_register_form_button"><?php
-				echo !empty($this->options['registration_simplified']) ? JText::_('HIKA_NEXT') : JText::_('HIKA_REGISTER');
+				echo !empty($this->options['registration_simplified']) || !empty($this->options['registration_guest']) ? JText::_('HIKA_NEXT') : JText::_('HIKA_REGISTER');
 			?></button>
 		</div>
 	</div>

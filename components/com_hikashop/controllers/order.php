@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -71,7 +71,7 @@ class orderController extends hikashopController {
 			return $this->listing();
 
 		if(empty($user->user_cms_id) || (int)$user->user_cms_id == 0){
-			$token = JRequest::getVar('order_token');
+			$token = hikaInput::get()->getVar('order_token');
 			if(empty($order->order_token) || $token != $order->order_token){
 				return false;
 			}
@@ -100,7 +100,7 @@ class orderController extends hikashopController {
 		if(!$this->_check())
 			return false;
 
-		JRequest::setVar('layout', 'invoice');
+		hikaInput::get()->set('layout', 'invoice');
 		return parent::display();
 	}
 
@@ -134,7 +134,7 @@ class orderController extends hikashopController {
 			return false;
 
 		$checkout = explode(',', $config->get('checkout'));
-		$step = JRequest::getInt('step', 0);
+		$step = hikaInput::get()->getInt('step', 0);
 		if(empty($step))
 			$step = max(count($checkout) - 2, 0);
 
@@ -144,7 +144,7 @@ class orderController extends hikashopController {
 		$cancel_url =  hikashop_completeLink('checkout&step=' . $step . $item, false, true);
 
 		if(empty($order) || $order->order_user_id != $user_id) {
-			$redirect_url = JRequest::getVar('redirect_url');
+			$redirect_url = hikaInput::get()->getVar('redirect_url');
 
 			if(!empty($redirect_url) && !hikashop_disallowUrlRedirect($redirect_url))
 				$cancel_url = $redirect_url;
@@ -165,7 +165,7 @@ class orderController extends hikashopController {
 			$newOrder->order_id = $order_id;
 			$ret = $orderClass->save($newOrder);
 
-			if($ret && JRequest::getInt('email', false)) {
+			if($ret && hikaInput::get()->getInt('email', false)) {
 				$order->order_status = $newOrder->order_status;
 
 				$mailClass = hikashop_get('class.mail');
@@ -196,7 +196,7 @@ class orderController extends hikashopController {
 			$cancel_url = $paymentOptions->payment_params->cancel_url;
 		}
 
-		$redirect_url = JRequest::getVar('redirect_url');
+		$redirect_url = hikaInput::get()->getVar('redirect_url');
 		if(!empty($redirect_url) && !hikashop_disallowUrlRedirect($redirect_url))
 			$cancel_url = $redirect_url;
 
@@ -273,7 +273,7 @@ class orderController extends hikashopController {
 		}
 
 		if(isset($order->customer->user_cms_id) && (int)$order->customer->user_cms_id == 0){
-			$token = JRequest::getVar('order_token');
+			$token = hikaInput::get()->getVar('order_token');
 			if(empty($order->order_token) || $token != $order->order_token){
 				$app->enqueueMessage(JText::sprintf('ORDER_X_NOT_FOUND', $order_id), 'error');
 				$app->redirect( hikashop_completeLink('order&task=listing', false, true) );
@@ -291,10 +291,10 @@ class orderController extends hikashopController {
 			return false;
 		}
 
-		$new_payment_method = JRequest::getVar('new_payment_method', null);
+		$new_payment_method = hikaInput::get()->getVar('new_payment_method', null);
 		$payment_change = $config->get('allow_payment_change', 1);
 		if($payment_change && $new_payment_method === null) {
-			JRequest::setVar('layout', 'pay');
+			hikaInput::get()->set('layout', 'pay');
 			return $this->display();
 		}
 
@@ -328,11 +328,12 @@ class orderController extends hikashopController {
 			$app->setUserState( HIKASHOP_COMPONENT.'.payment_data', $paymentMethod);
 
 		if(!empty($needCC) && !$paymentClass->readCC()) {
-			JRequest::setVar('layout', 'pay');
+			hikaInput::get()->set('layout', 'pay');
 			return $this->display();
 		}
-		if(!empty($paymentMethod) && !empty($paymentMethod->custom_html) && (JRequest::getInt('payment_custom_html', 0) == 0 || !JRequest::checkToken())) {
-			JRequest::setVar('layout', 'pay');
+		$invalidToken = ((!HIKASHOP_J25 && !JRequest::checkToken('request')) || (HIKASHOP_J25 && !JSession::checkToken('request')));
+		if(!empty($paymentMethod) && !empty($paymentMethod->custom_html) && (hikaInput::get()->getInt('payment_custom_html', 0) == 0 || $invalidToken)) {
+			hikaInput::get()->set('layout', 'pay');
 			return $this->display();
 		}
 
@@ -395,6 +396,7 @@ class orderController extends hikashopController {
 			$paymentPlugin->onBeforeOrderCreate($order, $do);
 
 		if(!$do) {
+			hikashop_writeToLog();
 			$app->enqueueMessage(JText::_('PAYMENT_REFUSED'), 'error');
 			$app->redirect( hikashop_completeLink('order&task=listing', false, true) );
 			return false;
@@ -406,6 +408,8 @@ class orderController extends hikashopController {
 				global $Itemid;
 				$Itemid = $itemid_for_checkout;
 			}
+
+			ob_start();
 
 			if(method_exists($paymentPlugin, 'onAfterOrderConfirm'))
 				$paymentPlugin->onAfterOrderConfirm($order, $paymentMethods, $order->order_payment_id);
@@ -512,19 +516,19 @@ class orderController extends hikashopController {
 	}
 
 	public function download() {
-		$file_id = JRequest::getInt('file_id');
+		$file_id = hikaInput::get()->getInt('file_id');
 		if(empty($file_id)){
-			$field_table = JRequest::getString('field_table');
-			$field_namekey = base64_decode(urldecode(JRequest::getString('field_namekey')));
-			$name = base64_decode(urldecode(JRequest::getString('name')));
+			$field_table = hikaInput::get()->getString('field_table');
+			$field_namekey = base64_decode(urldecode(hikaInput::get()->getString('field_namekey')));
+			$name = base64_decode(urldecode(hikaInput::get()->getString('name')));
 			if(empty($field_table)||empty($field_namekey)||empty($name)){
 				$app=JFactory::getApplication();
 				$app->enqueueMessage(JText::_('FILE_NOT_FOUND'));
 				return false;
 			}else{
 				$options = array(
-					'thumbnail_x' => JRequest::getInt('thumbnail_x', 0),
-					'thumbnail_y' => JRequest::getInt('thumbnail_y', 0)
+					'thumbnail_x' => hikaInput::get()->getInt('thumbnail_x', 0),
+					'thumbnail_y' => hikaInput::get()->getInt('thumbnail_y', 0)
 				);
 				$fileClass = hikashop_get('class.file');
 				$fileClass->downloadFieldFile($name, $field_table, $field_namekey, $options);
@@ -538,11 +542,11 @@ class orderController extends hikashopController {
 			return false;
 		}
 
-		$file_pos = JRequest::getInt('file_pos', 1);
-		$order_token = JRequest::getVar('order_token', '');
+		$file_pos = hikaInput::get()->getInt('file_pos', 1);
+		$order_token = hikaInput::get()->getVar('order_token', '');
 
 		if(empty($order_token))
-			$order_token = JRequest::getVar('email', '');
+			$order_token = hikaInput::get()->getVar('email', '');
 
 		$fileClass = hikashop_get('class.file');
 		if(!$fileClass->download($file_id, $order_id, $file_pos, $order_token)) {
@@ -562,7 +566,7 @@ class orderController extends hikashopController {
 	}
 
 	public function cancel() {
-		$cancel_redirect = JRequest::getString('cancel_redirect');
+		$cancel_redirect = hikaInput::get()->getString('cancel_redirect');
 		if(!empty($cancel_redirect)) {
 			$cancel_redirect = urldecode($cancel_redirect);
 			if(hikashop_disallowUrlRedirect($cancel_redirect))
@@ -571,7 +575,7 @@ class orderController extends hikashopController {
 			return true;
 		}
 
-		$cancel_url = JRequest::getString('cancel_url');
+		$cancel_url = hikaInput::get()->getString('cancel_url');
 		if(!empty($cancel_url)) {
 			$cancel_url = urldecode($cancel_url);
 			if(hikashop_disallowUrlRedirect($cancel_url))
@@ -606,7 +610,7 @@ class orderController extends hikashopController {
 		if(empty($field) || ($field->field_type != 'ajaxfile' && $field->field_type != 'ajaximage'))
 			return false;
 
-		$map = JRequest::getString('field_map', '');
+		$map = hikaInput::get()->getString('field_map', '');
 		if(empty($map))
 			return false;
 
@@ -624,7 +628,7 @@ class orderController extends hikashopController {
 			'extra' => array(
 				'field_name' => $map,
 				'delete' => empty($field->field_required),
-				'uploader_id' => JRequest::getString('uploader_id', '')
+				'uploader_id' => hikaInput::get()->getString('uploader_id', '')
 			)
 		);
 	}
@@ -646,7 +650,7 @@ class orderController extends hikashopController {
 		if(empty($field) || ($field->field_type != 'ajaxfile' && $field->field_type != 'ajaximage'))
 			return;
 
-		$map = JRequest::getString('field_map', '');
+		$map = hikaInput::get()->getString('field_map', '');
 		if(empty($map))
 			return;
 

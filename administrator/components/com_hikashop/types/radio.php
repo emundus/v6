@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,9 +16,14 @@ class hikashopRadioType {
 			return true;
 
 		self::$event = true;
-		$doc = JFactory::getDocument();
 
-		JHtml::_('jquery.framework');
+		if(!HIKASHOP_J30) {
+			hikashop_loadJslib('jquery');
+		} else {
+			JHtml::_('jquery.framework');
+		}
+
+		$doc = JFactory::getDocument();
 		$doc->addScriptDeclaration('
 (function($){
 if(!window.hikashopLocal) window.hikashopLocal = {};

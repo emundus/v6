@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -28,7 +28,7 @@ class chooseViewchoose extends hikashopView
 
 		$rows = array_keys($columns);
 
-		$selected = JRequest::getVar('values','','','string');
+		$selected = hikaInput::get()->getVar('values','','','string');
 		$selectedvalues = explode(',',$selected);
 		$newRows = array();
 		foreach($rows as $id => $oneRow){
@@ -40,7 +40,7 @@ class chooseViewchoose extends hikashopView
 			$newRows[]=$obj;
 		}
 		$this->assignRef('rows',$newRows);
-		$controlName = JRequest::getString('control','params');
+		$controlName = hikaInput::get()->getString('control','params');
 		$this->assignRef('controlName',$controlName);
 	}
 	function filters(){
@@ -48,7 +48,7 @@ class chooseViewchoose extends hikashopView
 		$db->setQuery('SELECT * FROM '.hikashop_table('filter').' ORDER BY filter_ordering');
 		$rows = $db->loadObjectList('filter_namekey');
 
-		$selected = JRequest::getVar('values','','','string');
+		$selected = hikaInput::get()->getVar('values','','','string');
 		$selectedvalues = explode(',',$selected);
 		$newRows = array();
 		foreach($rows as $namkey => $row){
@@ -57,7 +57,7 @@ class chooseViewchoose extends hikashopView
 			}
 		}
 		$this->assignRef('rows',$rows);
-		$controlName = JRequest::getString('control','params');
+		$controlName = hikaInput::get()->getString('control','params');
 		$this->assignRef('controlName',$controlName);
 	}
 }

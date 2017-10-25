@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -323,7 +323,7 @@ class plgHikashopshippingAupost extends hikashopShippingPlugin {
 		$app = JFactory::getApplication();
 		$app->enqueueMessage('That Australia Post shipping version is deprecated and is using the old Australia post API, Please start using the new Australia Post v2 shipping method');
 
-		$this->aupost = JRequest::getCmd('name','aupost');
+		$this->aupost = hikaInput::get()->getCmd('name','aupost');
 		$this->categoryType = hikashop_get('type.categorysub');
 		$this->categoryType->type = 'tax';
 		$this->categoryType->field = 'category_id';

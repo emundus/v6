@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,7 +24,7 @@ $app = JFactory::getApplication();
 	if(empty($this->rows)) {
 		echo $this->params->get('comp_description');
 	} else {
-		if($this->config->get('print_cart',0)&&JRequest::getVar('tmpl','')!='component'){ ?>
+		if($this->config->get('print_cart',0)&&hikaInput::get()->getVar('tmpl','')!='component'){ ?>
 			<div class="hikashop_checkout_cart_print_link">
 				<a title="<?php echo JText::_('HIKA_PRINT');?>" class="modal" rel="{handler: 'iframe', size: {x: 760, y: 480}}" href="<?php echo hikashop_completeLink('checkout&task=printcart',true); ?>">
 					<img src="<?php echo HIKASHOP_IMAGES; ?>print.png" alt="<?php echo JText::_('HIKA_PRINT');?>"/>
@@ -103,7 +103,10 @@ $app = JFactory::getApplication();
 				$image_options = array('default' => true,'forcesize'=>$this->config->get('image_force_size',true),'scale'=>$this->config->get('image_scale_mode','inside'));
 				$img = $this->image->getThumbnail(@$image->file_path, array('width' => $width, 'height' => $height), $image_options);
 				if($img->success) {
-					echo '<img class="hikashop_product_checkout_cart_image" title="'.$this->escape(@$image->file_description).'" alt="'.$this->escape(@$image->file_name).'" src="'.$img->url.'"/>';
+					$attributes = '';
+					if($img->external)
+						$attributes = ' width="'.$img->req_width.'" height="'.$img->req_height.'"';
+					echo '<img class="hikashop_product_checkout_cart_image" title="'.$this->escape(@$image->file_description).'" alt="'.$this->escape(@$image->file_name).'" src="'.$img->url.'"'.$attributes.'/>';
 				}
 ?>
 									</div>

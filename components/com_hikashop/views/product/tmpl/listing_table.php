@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -106,7 +106,7 @@ if((int)$this->config->get('show_quantity_field') >= 2) {
 					<th class="hikashop_product_add_to_cart title hk_center">
 					</th>
 <?php } ?>
-<?php if(JRequest::getVar('hikashop_front_end_main', 0) && JRequest::getVar('task') == 'listing' && $this->params->get('show_compare')) { $columns++; ?>
+<?php if(hikaInput::get()->getVar('hikashop_front_end_main', 0) && hikaInput::get()->getVar('task') == 'listing' && $this->params->get('show_compare')) { $columns++; ?>
 					<th class="hikashop_product_compare title hk_center">
 					</th>
 <?php } ?>
@@ -222,7 +222,7 @@ foreach($this->rows as $row) {
 						?></td>
 <?php } ?>
 <?php
-	if(JRequest::getVar('hikashop_front_end_main', 0) && JRequest::getVar('task') == 'listing' && $this->params->get('show_compare')) {
+	if(hikaInput::get()->getVar('hikashop_front_end_main', 0) && hikaInput::get()->getVar('task') == 'listing' && $this->params->get('show_compare')) {
 		$css_button = $this->config->get('css_button', 'hikabtn');
 		$css_button_compare = $this->config->get('css_button_compare', 'hikabtn-compare');
 ?>

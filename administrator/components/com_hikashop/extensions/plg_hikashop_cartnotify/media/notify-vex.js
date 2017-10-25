@@ -12,6 +12,9 @@ window.Oby.registerAjax(["cart.updated","wishlist.updated"],function(params){
 		class_name = "warning";
 		title = cart ? p.err_title : p.err_wishlist_title;
 		text = cart ? p.err_text : p.err_wishlist_text;
+	}else if(params.product_id == 'list' && !params.resp.product_name){
+		title = cart ? p.list_title : p.list_wishlist_title;
+		text = cart ? p.list_text : p.list_wishlist_text;
 	}
 	if(params.resp.image)
 		img_url = params.resp.image;
@@ -24,7 +27,7 @@ window.Oby.registerAjax(["cart.updated","wishlist.updated"],function(params){
 	if(img_url == null) {
 		content = "<div class=\"notifyjs-metro-lite-base\"><div class=\"text-wrapper\"><div class=\"title\">"+title+"</div><div class=\"text\">"+text+"</div></div></div>";
 	} else {
-		content = "<div class=\"notifyjs-metro-base\"><div class=\"image\"><img src=\""+img_url+"\" alt=\"\"/></div><div class=\"text-wrapper\"><div class=\"title\">"+title+"</div><div class=\"text\">"+text+"</div></div></div>";
+		content = "<div class=\"notifyjs-metro-base\"><div class=\"image\"><img src=\""+img_url+"\" width=\"50\" height=\"50\" alt=\"\"/></div><div class=\"text-wrapper\"><div class=\"title\">"+title+"</div><div class=\"text\">"+text+"</div></div></div>";
 	}
 	var vex_params = {message: content},
 		params_key = params.type + (params.resp.ret == 0 ? '_err' : '') + '_params';

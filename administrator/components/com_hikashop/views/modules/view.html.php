@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -457,7 +457,7 @@ class ModulesViewModules extends hikashopView{
 	}
 
 	function selectmodules(){
-		$this->modules = JRequest::getString('modules','');
+		$this->modules = hikaInput::get()->getString('modules','');
 
 		$query='SELECT * FROM '.hikashop_table('modules',false). ' WHERE module IN (\'mod_hikashop\')';
 		$this->database = JFactory::getDBO();
@@ -486,7 +486,7 @@ class ModulesViewModules extends hikashopView{
 
 	function savemodules(){
 		$modules = array();
-		$formData = JRequest::getVar( 'data', array(), '', 'array' );
+		$formData = hikaInput::get()->get('data', array(), 'array');
 		foreach($formData['module']['used'] as $id => $used){
 			if((bool)$used){
 				$modules[$formData['module']['ordering'][$id]]=$id;
@@ -497,8 +497,8 @@ class ModulesViewModules extends hikashopView{
 			$modules = array_values($modules);
 		}
 		$this->assignRef('modules',$modules);
-		$control = JRequest::getString('control','');
-		$name = JRequest::getString('name','');
+		$control = hikaInput::get()->getString('control','');
+		$name = hikaInput::get()->getString('name','');
 		if(empty($control) || empty($name)){
 			$id = 'modules_display';
 		}else{
@@ -562,7 +562,7 @@ class ModulesViewModules extends hikashopView{
 		}
 		$this->assignRef('hikashop_menu',$menuvalues);
 
-		$cid = JRequest::getInt('id','');
+		$cid = hikaInput::get()->getInt('id','');
 		if(empty($cid))
 			$cid = hikashop_getCID();
 

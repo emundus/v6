@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -66,9 +66,9 @@ class addressViewAddress extends HikaShopView {
 		if(!empty($this->params->type)) {
 			$type = $this->params->type;
 		} else {
-			$type = JRequest::getCmd('address_type', '');
+			$type = hikaInput::get()->getCmd('address_type', '');
 			if(empty($type))
-				$type = JRequest::getCmd('subtask', 'billing');
+				$type = hikaInput::get()->getCmd('subtask', 'billing');
 			if(substr($type, -8) == '_address')
 				$type = substr($type, 0, -8);
 		}
@@ -81,7 +81,7 @@ class addressViewAddress extends HikaShopView {
 		if(!empty($this->params->fieldset_id))
 			$fieldset_id = $this->params->fieldset_id;
 		else
-			$fieldset_id = JRequest::getVar('fid', '');
+			$fieldset_id = hikaInput::get()->getVar('fid', '');
 
 		$this->assignRef('type', $type);
 		$this->assignRef('address_id', $address_id);
@@ -90,7 +90,7 @@ class addressViewAddress extends HikaShopView {
 		$fieldsClass = hikashop_get('class.field');
 		$this->assignRef('fieldsClass', $fieldsClass);
 
-		$edit = (JRequest::getVar('edition', false) === true);
+		$edit = (hikaInput::get()->getVar('edition', false) === true);
 		if(isset($this->params->edit))
 			$edit = $this->params->edit;
 		$this->assignRef('edit', $edit);
@@ -188,10 +188,10 @@ class addressViewAddress extends HikaShopView {
 
 		$address_id = hikashop_getCID('address_id');
 
-		$tmpl = JRequest::getString('tmpl', '');
+		$tmpl = hikaInput::get()->getString('tmpl', '');
 		$this->assignRef('tmpl', $tmpl);
 
-		$address = JRequest::getVar('fail');
+		$address = hikaInput::get()->getVar('fail');
 		if(empty($address)) {
 			$address = new stdClass();
 			if(!empty($address_id)) {

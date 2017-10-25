@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -19,7 +19,7 @@ class hikashopZoneClass extends hikashopClass{
 	function saveForm(){
 		$zone = new stdClass();
 		$zone->zone_id = hikashop_getCID('zone_id');
-		$formData = JRequest::getVar( 'data', array(), '', 'array' );
+		$formData = hikaInput::get()->get('data', array(), 'array');
 		$status = false;
 		if(!empty($formData['zone'])){
 			jimport('joomla.filter.filterinput');
@@ -32,7 +32,7 @@ class hikashopZoneClass extends hikashopClass{
 			$status = $this->save($zone);
 
 			if(!$status){
-				JRequest::setVar( 'fail', $zone  );
+				hikaInput::get()->set( 'fail', $zone  );
 				$app =& JFactory::getApplication();
 				$app->enqueueMessage(JText::_( 'DUPLICATE_ZONE' ), 'error');
 			}

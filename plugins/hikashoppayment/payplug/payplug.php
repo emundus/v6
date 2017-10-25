@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -56,7 +56,7 @@ class plgHikashoppaymentPayplug extends hikashopPaymentPlugin
 	}
 
 	function onPaymentNotification(&$statuses) {
-		$method_id = JRequest::getInt('notif_id', 0);
+		$method_id = hikaInput::get()->getInt('notif_id', 0);
 		$this->pluginParams($method_id);
 		$this->payment_params =& $this->plugin_params;
 		if(empty($this->payment_params))
@@ -66,7 +66,7 @@ class plgHikashoppaymentPayplug extends hikashopPaymentPlugin
 		$filter = JFilterInput::getInstance();
 		foreach($_REQUEST as $key => $value) {
 			$key = $filter->clean($key);
-			$value = JRequest::getString($key);
+			$value = hikaInput::get()->getString($key);
 			$vars[strtolower($key)] = $value;
 		}
 
@@ -145,16 +145,19 @@ class plgHikashoppaymentPayplug extends hikashopPaymentPlugin
 	function onPaymentConfigurationSave(&$element) {
 		$app = JFactory::getApplication();
 		if(empty($element->payment_params->email)){
-			$app->enqueueMessage(JText::sprintf('ENTER_INFO_REGISTER_IF_NEEDED', 'PayPlug', JText::_('HIKA_EMAIL'), 'PayPlug', 'http://www.payplug.fr'));
+			$app->enqueueMessage(JText::sprintf('ENTER_INFO_REGISTER_IF_NEEDED', 'PayPlug', JText::_('HIKA_EMAIL'), 'PayPlug', 'http://www.payplug.fr'), 'error');
 		}elseif(empty($element->payment_params->password)){
-			$app->enqueueMessage(JText::sprintf('ENTER_INFO_REGISTER_IF_NEEDED', 'PayPlug', JText::_('HIKA_PASSWORD'), 'PayPlug', 'http://www.payplug.fr'));
+			$app->enqueueMessage(JText::sprintf('ENTER_INFO_REGISTER_IF_NEEDED', 'PayPlug', JText::_('HIKA_PASSWORD'), 'PayPlug', 'http://www.payplug.fr'), 'error');
 		}else{
 			require_once(dirname(__FILE__).'/lib/payplug.php');
 			try{
 				$parameters = Payplug::loadParameters($element->payment_params->email, $element->payment_params->password);
 				$parameters->saveInFile(HIKASHOP_MEDIA."payplug_parameters.json");
 			}catch(Exception $e){
-				$app->enqueueMessage($e->getMessage());
+				$msg = $e->getMessage();
+				if(empty($msg))
+					$msg = 'Error: ' . get_class($e);
+				$app->enqueueMessage($msg);
 			}
 		}
 		return true;

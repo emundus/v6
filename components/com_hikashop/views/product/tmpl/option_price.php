@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 		if(!headers_sent()){
 			header('Content-Type: text/css; charset=utf-8', true, 200);
 		}
-		$price = JRequest::getVar( 'price', 0 );
+		$price = hikaInput::get()->getVar( 'price', 0 );
 		$currency = hikashop_get('class.currency');
 		echo '<span class="hikashop_option_price_title">'.JText::_('PRICE_WITH_OPTIONS').':</span> <span class="hikashop_option_price_value">'.$currency->format($price, hikashop_getCurrency()).'</span>';
 		exit;

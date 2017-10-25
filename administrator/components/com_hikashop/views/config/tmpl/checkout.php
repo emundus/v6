@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -95,11 +95,11 @@ function jSelectArticle_checkout(id, title, catid, object) {
 		$doc->addScriptDeclaration($js);
 	}
 	echo $this->popup->display(
-		JText::_('Select'),
+		'<button type="button" class="btn" onclick="return false">'.JText::_('Select').'</button>',
 		'TERMS_AND_CONDITIONS_SELECT_ARTICLE',
 		$link,
 		'checkout_terms_link',
-		760, 480, '', '', 'button'
+		760, 480, '', '', 'link'
 	);
 ?>
 		</td>
@@ -163,11 +163,15 @@ $doc->addScriptDeclaration($js);
 		<td class="hk_tbl_key"<?php echo $this->docTip('checkout_address_selector');?>><?php echo JText::_('HIKASHOP_CHECKOUT_ADDRESS_SELECTOR'); ?></td>
 		<td><?php
 			$values = array(
-				JHTML::_('select.option', 0, JText::_('HIKASHOP_CHECKOUT_ADDRESS_SELECTOR_POPUP')),
 				JHTML::_('select.option', 1, JText::_('HIKASHOP_CHECKOUT_ADDRESS_SELECTOR_LIST')),
 				JHTML::_('select.option', 2, JText::_('HIKASHOP_CHECKOUT_ADDRESS_SELECTOR_DROPDOWN'))
 			);
-			echo JHTML::_('hikaselect.radiolist',  $values, 'config[checkout_address_selector]', '', 'value', 'text', $this->config->get('checkout_address_selector',0) );
+			$selector = $this->config->get('checkout_address_selector',0);
+			if($this->config->get('checkout_legacy', 0))
+				$values[] = JHTML::_('select.option', 0, JText::_('HIKASHOP_CHECKOUT_ADDRESS_SELECTOR_POPUP'));
+			elseif( $selector == 0 )
+				$selector = 1;
+			echo JHTML::_('hikaselect.radiolist',  $values, 'config[checkout_address_selector]', '', 'value', 'text', $selector );
 		?></td>
 	</tr>
 	<tr>
@@ -305,7 +309,21 @@ $doc->addScriptDeclaration($js);
 			echo $this->joomlaAclType->displayList('config[user_group_registration]', $this->config->get('user_group_registration', ''), 'HIKA_INHERIT');
 		?></td>
 	</tr>
-
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('show_register_after_guest');?>><?php echo JText::_('ALLOW_REGISTRATION_AFTER_GUEST_CHECKOUT'); ?></td>
+		<td><?php
+			if(hikashop_level(1)) {
+				if((int)$joomla_params->get('allowUserRegistration') == 0)
+					echo JText::_('IMPOSSIBLE_WITH_JOOMLA_REGISTRATION_DEACTIVATED');
+				elseif(in_array('2',$registration))
+					echo JHTML::_('hikaselect.booleanlist', 'config[register_after_guest]','',$this->config->get('register_after_guest', 1));
+				else
+					echo JText::_('ONLY_WITH_GUEST_MODE');
+			} else {
+				echo '<small style="color:red">'.JText::_('ONLY_COMMERCIAL').'</small>';
+			}
+		?></td>
+	</tr>
 </table>
 	</div></div>
 </div>
@@ -314,7 +332,7 @@ $doc->addScriptDeclaration($js);
 <script type="text/javascript">
 <?php
 	foreach($registration as $key){
-		if($key!=2)	echo 'registrationAvailable('.$key.', true);';
+		if(!empty($key) && $key!=2)	echo 'registrationAvailable('.$key.', true);';
 	} ?>
 </script>
 <?php } ?>

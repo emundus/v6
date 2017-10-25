@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -98,7 +98,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 		$continue = true;
 
 
-		$this->opencDatabase = $app->getUserStateFromRequest($this->sessionParams.'dbName', 'opencDbName', '', 'string' ); //getUserStateFromRequest( 'keyFromSession', 'keyFromRequest', '', 'typeKey' ) - JRequest::getString()
+		$this->opencDatabase = $app->getUserStateFromRequest($this->sessionParams.'dbName', 'opencDbName', '', 'string' ); //getUserStateFromRequest( 'keyFromSession', 'keyFromRequest', '', 'typeKey' ) - hikaInput::get()->getString()
 		$this->opencRootPath = $app->getUserStateFromRequest($this->sessionParams.'rootPath', 'opencRootPath', '', 'string' );
 		$this->opencPrefix = $app->getUserStateFromRequest($this->sessionParams.'prefix', 'opencPrefix', '', 'string' );
 		$config = JFactory::getConfig();

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -47,7 +47,9 @@ $columns = array_merge($columns, array(
 	'files' => 'files',
 	'images' => 'images',
 	'related' => 'related',
-	'options' => 'options'
+	'options' => 'options',
+	'bundle' => 'bundle',
+	'bundle_quantity' => 'bundle_quantity'
 ));
 
 $characteristicsColumns = array();
@@ -205,6 +207,26 @@ if(!empty($this->products)) {
 			$data[] = '';
 		} else {
 			$data[] = implode($separator, $options);
+		}
+
+		$bundle = array();
+		$bundle_quantity = array();
+		if(!empty($product->bundle)) {
+			foreach($product->bundle as $k => $rel) {
+				if(!isset($this->products[$rel]->product_code)) $this->products[$rel] = $classProduct->get($rel);
+				$bundle[] = @$this->products[$rel]->product_code;
+				$qty = 0;
+				if(!empty($product->bundle_quantity[$k]))
+					$qty = $product->bundle_quantity[$k];
+				$bundle_quantity[] = $qty;
+			}
+		}
+		if(empty($bundle)) {
+			$data[] = '';
+			$data[] = '';
+		} else {
+			$data[] = implode($separator, $bundle);
+			$data[] = implode($separator, $bundle_quantity);
 		}
 
 		if(!empty($product->variant_links)) {

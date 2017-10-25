@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,8 +23,8 @@ if($voteAccess == 'buyed' && !empty($user)){
 $canVote = $voteAccess == 'public' || ($voteAccess == 'registered' && !empty($user)) || ($voteAccess == 'buyed' && $hasBought);
 
 $row->hikashop_vote_average_score = (float)hikashop_toFloat($row->hikashop_vote_average_score);
-JRequest::setVar("rate_rounded",$row->hikashop_vote_average_score_rounded);
-JRequest::setVar("nb_max_star",$row->hikashop_vote_nb_star);
+hikaInput::get()->set("rate_rounded",$row->hikashop_vote_average_score_rounded);
+hikaInput::get()->set("nb_max_star",$row->hikashop_vote_nb_star);
 $select_id = "select_id_".$row->vote_ref_id;
 if(!empty($row->main_div_name)){
 	$select_id .= "_".$row->main_div_name;

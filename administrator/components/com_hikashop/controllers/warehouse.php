@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -21,17 +21,17 @@ class WarehouseController extends hikashopController {
 		$this->modify[]='useselection';
 	}
 	function selection(){
-		JRequest::setVar( 'layout', 'selection'  );
+		hikaInput::get()->set( 'layout', 'selection'  );
 		return parent::display();
 	}
 	function useselection(){
-		JRequest::setVar( 'layout', 'useselection'  );
+		hikaInput::get()->set( 'layout', 'useselection'  );
 		return parent::display();
 	}
 
 	function findValue() {
-		$displayFormat = JRequest::getVar('displayFormat', '');
-		$search = JRequest::getVar('search', null);
+		$displayFormat = hikaInput::get()->getVar('displayFormat', '');
+		$search = hikaInput::get()->getVar('search', null);
 
 		$nameboxType = hikashop_get('type.namebox');
 		$options = array(

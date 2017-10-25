@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -29,16 +29,17 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 	} else {
 		echo JText::sprintf('HIKASHOP_COUPON_LABEL', @$cart->coupon->discount_code);
-
-		global $Itemid;
-		$url_itemid = '';
-		if(!empty($Itemid))
-			$url_itemid = '&Itemid=' . $Itemid;
+		if(empty($cart->cart_params->coupon_autoloaded)) {
+			global $Itemid;
+			$url_itemid = '';
+			if(!empty($Itemid))
+				$url_itemid = '&Itemid=' . $Itemid;
 ?>
 	<a href="#removeCoupon" onclick="return window.checkout.removeCoupon(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>);" title="<?php echo JText::_('REMOVE_COUPON'); ?>">
 		<img src="<?php echo HIKASHOP_IMAGES . 'delete2.png';?>" alt="<?php echo JText::_('REMOVE_COUPON'); ?>" />
 	</a>
 <?php
+		}
 	}
 
 	if(empty($this->ajax)) { ?>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -118,6 +118,6 @@ defined('_JEXEC') or die('Restricted access');
 	<input type="hidden" name="data[widget][widget_id]" value="<?php echo (int)@$this->element->widget_id; ?>" />
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="tmpl" value="component" />
-	<input type="hidden" name="ctrl" value="<?php echo JRequest::getVar('ctrl');?>" />
+	<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getVar('ctrl');?>" />
 	<?php echo JHTML::_( 'form.token' );?>
 </form>

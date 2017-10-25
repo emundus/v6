@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -19,7 +19,7 @@ class JElementSelectoptions extends JElement{
 			return 'Access to the HikaShop options of the menus is restricted';
 		}
 
-		$id = reset(JRequest::getVar( 'cid', array(), '', 'array' ));
+		$id = reset(hikaInput::get()->get('cid', array(), 'array'));
 
 		if(!empty($id)){
 			$text = '<a title="'.JText::_('HIKASHOP_OPTIONS').'"  href="'.JRoute::_('index.php?option=com_hikashop&ctrl=menus&task=edit&cid[]='.$id).'" >'.JText::_('HIKASHOP_OPTIONS').'</a>';

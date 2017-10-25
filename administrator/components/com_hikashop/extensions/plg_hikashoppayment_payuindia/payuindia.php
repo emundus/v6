@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -91,7 +91,7 @@ class plgHikashoppaymentPayuindia extends hikashopPaymentPlugin {
 		foreach ($_REQUEST as $key => $value) {
 			$key = $filter->clean($key);
 			if (preg_match('#^[0-9a-z_-]{1,30}$#i', $key) && !preg_match('#^cmd$#i', $key)) {
-				$value = JRequest :: getString($key);
+				$value = JRequest::getString($key);
 				$vars[$key] = $value;
 			}
 		}
@@ -120,8 +120,8 @@ class plgHikashoppaymentPayuindia extends hikashopPaymentPlugin {
 		$order_id = $dbOrder->order_id;
 
 		$url = HIKASHOP_LIVE . 'administrator/index.php?option=com_hikashop&ctrl=order&task=edit&order_id=' . $order_id;
-		$order_text = "\r\n" . JText :: sprintf('NOTIFICATION_OF_ORDER_ON_WEBSITE', $dbOrder->order_number, HIKASHOP_LIVE);
-		$order_text .= "\r\n" . str_replace('<br/>', "\r\n", JText :: sprintf('ACCESS_ORDER_WITH_LINK', $url));
+		$order_text = "\r\n" . JText::sprintf('NOTIFICATION_OF_ORDER_ON_WEBSITE', $dbOrder->order_number, HIKASHOP_LIVE);
+		$order_text .= "\r\n" . str_replace('<br/>', "\r\n", JText::sprintf('ACCESS_ORDER_WITH_LINK', $url));
 
 		if($this->payment_params->environnement == 'test')
 			$this->payment_params->url = 'https://test.payu.in/_payment';

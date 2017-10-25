@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -17,8 +17,8 @@ class FileController extends hikashopController{
 	var $delete = array('delete');
 	function resetdownload(){
 		$fileClass = hikashop_get('class.file');
-		$fileClass->resetdownload(JRequest::getInt('file_id'),JRequest::getInt('order_id'));
-		$return = JRequest::getString('return');
+		$fileClass->resetdownload(hikaInput::get()->getInt('file_id'),hikaInput::get()->getInt('order_id'));
+		$return = hikaInput::get()->getString('return');
 		if(!empty($return)){
 			$url = base64_decode(urldecode($return));
 			if(hikashop_disallowUrlRedirect($url)) return false;

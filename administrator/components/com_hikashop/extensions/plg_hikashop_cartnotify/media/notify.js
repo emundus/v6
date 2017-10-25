@@ -1,33 +1,9 @@
 /* Notify.js - http://notifyjs.com/ Copyright (c) 2015 MIT */
 /* v0.4.2 / Customized by Obsidev */
 (function (factory) {
-	// UMD start
-	// https://github.com/umdjs/umd/blob/master/jqueryPluginCommonjs.js
-	if (typeof define === 'function' && define.amd) {
-		// AMD. Register as an anonymous module.
-		define(['jquery'], factory);
-	} else if (typeof module === 'object' && module.exports) {
-		// Node/CommonJS
-		module.exports = function( root, jQuery ) {
-			if ( jQuery === undefined ) {
-				// require('jQuery') returns a factory that requires window to
-				// build a jQuery instance, we normalize how we use modules
-				// that require this pattern but the window provided is a noop
-				// if it's defined (how jquery works)
-				if ( typeof window !== 'undefined' ) {
-					jQuery = require('jquery');
-				}
-				else {
-					jQuery = require('jquery')(root);
-				}
-			}
-			factory(jQuery);
-			return jQuery;
-		};
-	} else {
-		// Browser globals
-		factory(jQuery);
-	}
+	if(window.jQuery && typeof(jQuery.noConflict) == "function" && !window.hkjQuery)
+		window.hkjQuery = jQuery.noConflict();
+	factory(window.hkjQuery);
 }(function ($) {
 	//IE8 indexOf polyfill
 	var indexOf = [].indexOf || function(item) {
@@ -704,6 +680,9 @@ window.Oby.registerAjax(["cart.updated","wishlist.updated"],function(params){
 		class_name = "warning";
 		title = cart ? p.err_title : p.err_wishlist_title;
 		text = cart ? p.err_text : p.err_wishlist_text;
+	}else if(params.product_id == 'list' && !params.resp.product_name){
+		title = cart ? p.list_title : p.list_wishlist_title;
+		text = cart ? p.list_text : p.list_wishlist_text;
 	}
 	if(params.resp.image)
 		img_url = params.resp.image;
@@ -713,7 +692,7 @@ window.Oby.registerAjax(["cart.updated","wishlist.updated"],function(params){
 		text = params.resp.message;
 
 	if(p && p.reference && p.reference == 'button' && params.el) {
-		jQuery(params.el).notify({title:title,text:text,image:"<img src=\""+img_url+"\" alt=\"\"/>"},{style:"metro",className:class_name,arrowShow:true});
+		jQuery(params.el).notify({title:title,text:text,image:"<img src=\""+img_url+"\" width=\"50\" height=\"50\" alt=\"\"/>"},{style:"metro",className:class_name,arrowShow:true});
 		return true;
 	}
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -26,7 +26,7 @@ if(empty($title) && $title_key == 'show_page_heading') {
 	$title = $params->get($title_key);
 }
 
-if(!empty($title) && JRequest::getVar('hikashop_front_end_main', 0)){
+if(!empty($title) && hikaInput::get()->getVar('hikashop_front_end_main', 0)){
 	if($this->module) {
 		$heading = $this->params->get('title');
 	} else {
@@ -96,7 +96,7 @@ if(!$this->module){
 		if(!empty($custom_fields_html)){ ?>
 		<div id="hikashop_category_custom_info_main" class="hikashop_category_custom_info_main">
 			<h4><?php echo JText::_('CATEGORY_ADDITIONAL_INFORMATION');?></h4>
-			<table width="100%">
+			<table class="hikashop_category_custom_info_main_table">
 				<?php echo $custom_fields_html; ?>
 			</table>
 		</div>

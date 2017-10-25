@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -14,10 +14,10 @@ class hikashopCharacteristicClass extends hikashopClass{
 	var $pkeys = array('characteristic_parent_id','characteristic_id');
 	var $deleteToggle = array('variant'=>array('variant_characteristic_id','variant_product_id'));
 
-	function saveForm(){
+	public function saveForm() {
 		$element = new stdClass();
 		$element->characteristic_id = hikashop_getCID('characteristic_id');
-		$formData = JRequest::getVar( 'data', array(), '', 'array' );
+		$formData = hikaInput::get()->get('data', array(), 'array' );
 		jimport('joomla.filter.filterinput');
 		$safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
 		foreach($formData['characteristic'] as $column => $value){
@@ -25,23 +25,23 @@ class hikashopCharacteristicClass extends hikashopClass{
 			$element->$column = $safeHtmlFilter->clean($value, 'string');
 		}
 
-		$element->values = JRequest::getVar( 'characteristic', array(), '', 'array' );
+		$element->values = hikaInput::get()->get('characteristic', array(), 'array' );
 		JArrayHelper::toInteger($element->values);
-		$element->values_ordering = JRequest::getVar( 'characteristic_ordering', array(), '', 'array' );
+		$element->values_ordering = hikaInput::get()->get('characteristic_ordering', array(), 'array' );
 		JArrayHelper::toInteger($element->values);
 		JArrayHelper::toInteger($element->values_ordering);
 
 		$status = $this->save($element);
 
 		if(!$status){
-			JRequest::setVar( 'fail', $element  );
+			hikaInput::get()->set( 'fail', $element  );
 		}elseif(@$element->characteristic_parent_id==0){
 			$this->updateValues($element,$status);
 		}
 		return $status;
 	}
 
-	function save(&$element){
+	public function save(&$element){
 		$translationHelper = hikashop_get('helper.translation');
 		$translationHelper->getTranslations($element);
 		$status = parent::save($element);
@@ -51,7 +51,7 @@ class hikashopCharacteristicClass extends hikashopClass{
 		return $status;
 	}
 
-	function updateValues(&$element,$status){
+	public function updateValues(&$element,$status){
 		$filter='';
 		if(count($element->values)){
 			$filter = ' AND characteristic_id NOT IN ('.implode(',',$element->values).')';
@@ -74,7 +74,7 @@ class hikashopCharacteristicClass extends hikashopClass{
 		}
 	}
 
-	function loadConversionTables(&$obj){
+	public function loadConversionTables(&$obj){
 		$obj->characteristics = array();
 		$obj->characteristicsConversionTable = array();
 		$query = 'SELECT * FROM '.hikashop_table('characteristic'). ' ORDER BY characteristic_parent_id ASC, characteristic_ordering ASC';
@@ -188,6 +188,10 @@ class hikashopCharacteristicClass extends hikashopClass{
 				$ret[0][$k] = $v;
 			}
 			asort($ret[0]);
+		} else {
+			JPluginHelper::importPlugin('hikashop');
+			$dispatcher = JDispatcher::getInstance();
+			$dispatcher->trigger('onNameboxCharacteristicsLoad', array( $typeConfig, &$fullLoad, $mode, $value, $search, $options, &$ret ));
 		}
 		unset($characteristics);
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -58,7 +58,7 @@ class hikashopItemType{
 		if(version_compare(JVERSION,'1.6.0','>=')){
 			$this->values[] = JHTML::_('select.optgroup', $optGroup);
 		}
-		if(JRequest::getVar('inherit',true) == true) {
+		if(hikaInput::get()->getVar('inherit',true) == true) {
 			$config = hikashop_config();
 			$defaultParams = $config->get('default_params');
 			$default = '';

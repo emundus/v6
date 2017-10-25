@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -123,17 +123,18 @@ class plgHikashoppaymentPaypalAdvanced extends hikashopPaymentPlugin {
 
 		if (!$resp) {
 			echo "<p>No response from PayPal's servers, please try again. </p>";
+			echo '<p>Error : ' . curl_error($ch).'</p>';
 		}
 
 		$arr = null;
 		parse_str($resp, $arr);
 
-		if ($arr['RESULT']!=0) {
+		if (@$arr['RESULT']!=0) {
 			echo "<p>An error has occurred, please try again.</p>";
 		}
 
 
-		$vars['SECURETOKEN'] = $arr['SECURETOKEN'];
+		$vars['SECURETOKEN'] = @$arr['SECURETOKEN'];
 		$this->vars = $vars;
 
 		return $this->showPage('end');
@@ -157,7 +158,7 @@ class plgHikashoppaymentPaypalAdvanced extends hikashopPaymentPlugin {
 					$url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=after_end'.$this->url_itemid;
 					break;
 			}
-			$payment_notification_plg = JRequest::getVar('hikashop_payment_notification_plugin', false, 'default', 'bool');
+			$payment_notification_plg = hikaInput::get()->getVar('hikashop_payment_notification_plugin', false, 'default', 'bool');
 			if($payment_notification_plg === true) {
 				echo '<html>
 <body>
@@ -179,7 +180,7 @@ window.parent.location = "'.$url.'";
 		foreach($_REQUEST as $key => $value) {
 			$key = $filter->clean($key);
 			if(preg_match('#^[0-9a-z_-]{1,30}$#i', $key) && !preg_match('#^cmd$#i', $key)) {
-				$value = JRequest::getString($key);
+				$value = hikaInput::get()->getString($key);
 				$vars[$key] = $value;
 				$data[] = $key . '=' . urlencode($value);
 			}

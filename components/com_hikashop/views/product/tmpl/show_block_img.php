@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -58,14 +58,17 @@ if(!$this->config->get('thumbnail')) {
 		$image_options = array('default' => true,'forcesize'=>$this->config->get('image_force_size',true),'scale'=>$this->config->get('image_scale_mode','inside'));
 		$img = $this->image->getThumbnail(@$image->file_path, array('width' => $width, 'height' => $height), $image_options);
 		if(@$img->success) {
-			$attr = 'title="'.$this->escape(@$image->file_description).'"';
-			if (!empty ($this->element->images) && count($this->element->images) > 1) {
-				$attr .= ' onclick="return window.localPage.openImage(\'hikashop_main_image'.$variant_name.'\', \''.$variant_name.'\', event);"';
-			}
-			$html = '<img id="hikashop_main_image'.$variant_name.'" style="margin-top:10px;margin-bottom:10px;display:inline-block;vertical-align:middle" title="'.$this->escape(@$image->file_description).'" alt="'.$this->escape(@$image->file_name).'" src="'.$img->url.'"/>';
+			$attributes = 'style="margin-top:10px;margin-bottom:10px;display:inline-block;vertical-align:middle"';
+			if($img->external)
+				$attributes .= ' width="'.$img->req_width.'" height="'.$img->req_height.'"';
+			$html = '<img id="hikashop_main_image'.$variant_name.'" '.$attributes.' title="'.$this->escape(@$image->file_description).'" alt="'.$this->escape(@$image->file_name).'" src="'.$img->url.'"/>';
+
 			if(!empty($this->element->badges))
 				$html .= $this->classbadge->placeBadges($this->image, $this->element->badges, '0', '0',false);
 
+			$attr = 'title="'.$this->escape(@$image->file_description).'"';
+			if (!empty ($this->element->images) && count($this->element->images) > 1)
+				$attr .= ' onclick="return window.localPage.openImage(\'hikashop_main_image'.$variant_name.'\', \''.$variant_name.'\', event);"';
 			echo $this->popup->image($html, $img->origin_url, null, $attr);
 		}
 	}
@@ -147,8 +150,8 @@ window.localPage.changeImage = function(el, id, url, width, height, title, alt) 
 	}
 	thumb_img = el.getElementsByTagName('img');
 	if(thumb_img) {
-		for(var i = thumbs_img.length - 1; i >= 0; i--) {
-			o.addClass(thumbs_img[i], 'hikashop_child_image_active');
+		for(var i = thumb_img.length - 1; i >= 0; i--) {
+			o.addClass(thumb_img[i], 'hikashop_child_image_active');
 		}
 	}
 

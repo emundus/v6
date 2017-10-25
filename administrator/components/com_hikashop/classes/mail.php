@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -522,25 +522,26 @@ class hikashopMailClass {
 
 		}
 
-		if(preg_match_all('#\{([a-z0-9_\.]+)\}#', $mail->subject, $matches)){
-			foreach($matches[0] as $k => $match){
+		if(preg_match_all('#\{([-._A-Z0-9a-z]+)\}#', $mail->subject, $matches)) {
+			foreach($matches[0] as $k => $match) {
 				$var = $matches[1][$k];
 				$val = '';
 				$table = '';
-				if(strpos($var, '.')){
+				if(strpos($var, '.')) {
 					list($table, $var) = explode('.', $var, 2);
-				}
-
-				if(!empty($table) && !empty($var)){
-					if(!empty($mail->data->cart->$table->$var) && is_string($mail->data->cart->$table->$var)){
-						$val = $mail->data->cart->$table->$var;
-					}elseif(!empty($mail->data->$table->$var) && is_string($mail->data->cart->$table->$var)){
-						$val = $mail->data->$table->$var;
+					if(!empty($table) && !empty($var)){
+						if(!empty($mail->data->cart->$table->$var) && is_string($mail->data->cart->$table->$var)){
+							$val = $mail->data->cart->$table->$var;
+						}elseif(!empty($mail->data->$table->$var) && is_string($mail->data->cart->$table->$var)){
+							$val = $mail->data->$table->$var;
+						}
 					}
-				}elseif(!empty($mail->data->$table)){
-					$val = $mail->data->$table;
+				} elseif(!empty($var) && !empty($mail->data->cart->$var) && is_string($mail->data->cart->$var)) {
+					$val = $mail->data->cart->$var;
+				} elseif(!empty($var) && !empty($mail->data->$var) && is_string($mail->data->$var)) {
+					$val = $mail->data->$var;
 				}
-				$mail->subject = str_replace($match,$val,$mail->subject);
+				$mail->subject = str_replace($match, $val, $mail->subject);
 			}
 		}
 
@@ -574,8 +575,8 @@ class hikashopMailClass {
 			$this->mailer->Body = $mail->altbody;
 		}
 
-		if(empty($mail->attachments)&&!empty($mail->mail_name)){
-			$mail->attachments=$this->loadAttachments($mail->mail_name);
+		if(empty($mail->attachments) && !empty($mail->mail_name)) {
+			$mail->attachments = $this->loadAttachments($mail->mail_name);
 		}
 
 		if(!empty($mail->attachments)){
@@ -647,7 +648,7 @@ class hikashopMailClass {
 		}
 		$uploadURL = HIKASHOP_LIVE.str_replace(DS,'/',$uploadFolder);
 		$attach = array();
-		foreach($attachData as $oneAttach){
+		foreach($attachData as $oneAttach) {
 			$attachObj = new stdClass();
 			$attachObj->name = $oneAttach->filename;
 			$attachObj->filename = $uploadPath.$oneAttach->filename;

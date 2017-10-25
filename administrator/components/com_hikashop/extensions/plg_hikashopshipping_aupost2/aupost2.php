@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -331,7 +331,7 @@ class plgHikashopshippingAupost2 extends hikashopShippingPlugin {
 		$elements = array($element);
 	}
 	function onShippingConfiguration(&$element) {
-		$this->aupost2 = JRequest::getCmd('name','aupost2');
+		$this->aupost2 = hikaInput::get()->getCmd('name','aupost2');
 		$this->categoryType = hikashop_get('type.categorysub');
 		$this->categoryType->type = 'tax';
 		$this->categoryType->field = 'category_id';

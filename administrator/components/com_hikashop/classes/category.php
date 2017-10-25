@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -84,13 +84,13 @@ class hikashopCategoryClass extends hikashopClass {
 		if(empty($element))
 			return false;
 
-		$main = JRequest::getVar( 'main_category', 0, '', 'int' );
+		$main = hikaInput::get()->getVar( 'main_category', 0, '', 'int' );
 		if($main)
 			$element->category_parent_id = 0;
 		else
 			$element->category_type = '';
 
-		$element->category_description = JRequest::getVar('category_description', '', '', 'string', JREQUEST_ALLOWRAW);
+		$element->category_description = hikaInput::get()->getRaw('category_description', '');
 
 		$translationHelper = hikashop_get('helper.translation');
 		$translationHelper->getTranslations($element);
@@ -113,7 +113,7 @@ class hikashopCategoryClass extends hikashopClass {
 			if(!empty($element_with_same_alias) && (empty($element->category_id) || $element_with_same_alias != $element->category_id)) {
 				$app = JFactory::getApplication();
 				$app->enqueueMessage(JText::_( 'ELEMENT_WITH_SAME_ALIAS_ALREADY_EXISTS' ), 'error');
-				JRequest::setVar('fail', $element);
+				hikaInput::get()->set('fail', $element);
 				return false;
 			}
 		}
@@ -132,7 +132,7 @@ class hikashopCategoryClass extends hikashopClass {
 			$fileClass = hikashop_get('class.file');
 			$fileClass->storeFiles('category', $status);
 		} else {
-			JRequest::setVar('fail', $element);
+			hikaInput::get()->set('fail', $element);
 		}
 		return $status;
 	}
@@ -741,7 +741,7 @@ class hikashopCategoryClass extends hikashopClass {
 		}
 		$left++;
 		if($currentLeft != $element->category_right || $currentLeft != $element->category_left || $currentDepth!=$element->category_depth) {
-			$query = 'UPDATE '.hikashop_table(end($this->tables)). ' SET category_left='.$currentLeft.', category_right='.$left.', category_depth='.$currentDepth.' WHERE '.$pkey.' = '.$element->$pkey.' LIMIT 1';
+			$query = 'UPDATE '.hikashop_table(end($this->tables)). ' SET category_left='.$currentLeft.', category_right='.$left.', category_depth='.$currentDepth.' WHERE '.$pkey.' = '.(int)$element->$pkey.' LIMIT 1';
 			$this->database->setQuery($query);
 			$this->database->query();
 		}
@@ -1035,6 +1035,8 @@ class hikashopCategoryClass extends hikashopClass {
 
 				$orderedList = array();
 				foreach($value as $v){
+					if(empty($v))
+						continue;
 					$orderedList[$v] = $categories[$v];
 				}
 				$categories = $orderedList;

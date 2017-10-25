@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -17,7 +17,7 @@ class hikashopCheckoutCartHelper extends hikashopCheckoutHelperInterface {
 
 	public function validate(&$controller, &$params, $data = array()) {
 		if(empty($data))
-			$data = JRequest::getVar('checkout', array(), '', 'array');
+			$data = hikaInput::get()->get('checkout', array(), 'array');
 		if(empty($data['cart']))
 			return true;
 		if(empty($data['cart']['item']))
@@ -25,11 +25,15 @@ class hikashopCheckoutCartHelper extends hikashopCheckoutHelperInterface {
 
 		$items = array();
 		foreach($data['cart']['item'] as $k => $v) {
+			if((int)$v == 0 && !is_numeric($v))
+				continue;
 			$items[] = array(
 				'id' => (int)$k,
 				'qty' => (int)$v
 			);
 		}
+		if(empty($items))
+			return true;
 
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		$cart = $checkoutHelper->getCart();
@@ -41,7 +45,7 @@ class hikashopCheckoutCartHelper extends hikashopCheckoutHelperInterface {
 
 		$cart = $checkoutHelper->getCart(true);
 
-		if(empty($cart->products)){
+		if(empty($cart->products)) {
 			$checkoutHelper->redirectBeforeDisplay = JText::_('CART_EMPTY');
 		}
 
@@ -56,6 +60,13 @@ class hikashopCheckoutCartHelper extends hikashopCheckoutHelperInterface {
 
 		if(!$ret)
 			return true;
+
+		if(!empty($params['src']['context']) && $params['src']['context'] == 'submitstep') {
+			$checkoutHelper->addMessage('cart.updated', array(
+				JText::_('CART_UPDATED'),
+				'success'
+			));
+		}
 
 		$eventParams = null;
 		if(!empty($params['src']))

@@ -26,11 +26,11 @@
 */
 
 /** oTree
- * version: 0.9.9
- * release date: 2016-03-01
+ * version: 0.9.10
+ * release date: 2017-03-09
  */
 (function(){
-	window.oTrees = [];
+	window.oTrees = {};
 
 	/** oNode
 	 * @param id The identifier number
@@ -1484,7 +1484,7 @@
 
 			if(t.config.sort) {
 				if(!window.hkjQuery && !window.jQuery) return;
-				if(!window.hkjQuery) window.hkjQuery = window.jQuery;
+				if(!window.hkjQuery) window.hkjQuery = window.jQuery.noConflict();
 				hkjQuery(document).ready(function($) {
 					$('#'+t.id).sortable({
 						cursor: "move", items: "div",

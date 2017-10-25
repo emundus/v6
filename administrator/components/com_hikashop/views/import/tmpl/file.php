@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,7 +23,7 @@ defined('_JEXEC') or die('Restricted access');
 			<?php echo JText::_('CHARSET_FILE'); ?>
 		</td>
 		<td>
-			<?php $charsetType = hikashop_get('type.charset'); array_unshift($charsetType->values,JHTML::_('select.option', JText::_('UNKNOWN'),'')); echo $charsetType->display('charsetconvert',JRequest::getString('charsetconvert','')); ?>
+			<?php $charsetType = hikashop_get('type.charset'); array_unshift($charsetType->values,JHTML::_('select.option','', JText::_('UNKNOWN'))); echo $charsetType->display('charsetconvert',hikaInput::get()->getString('charsetconvert','')); ?>
 		</td>
 	</tr>
 	<tr>
@@ -31,7 +31,7 @@ defined('_JEXEC') or die('Restricted access');
 			<?php echo JText::_('UPDATE_PRODUCTS'); ?>
 		</td>
 		<td>
-			<?php echo JHTML::_('hikaselect.booleanlist', 'file_update_products','',JRequest::getInt('file_update_products','1'));?>
+			<?php echo JHTML::_('hikaselect.booleanlist', 'file_update_products','',hikaInput::get()->getInt('file_update_products','1'));?>
 		</td>
 	</tr>
 	<tr>
@@ -39,7 +39,7 @@ defined('_JEXEC') or die('Restricted access');
 			<?php echo JText::_('CREATE_CATEGORIES'); ?>
 		</td>
 		<td>
-			<?php echo JHTML::_('hikaselect.booleanlist', 'file_create_categories','',JRequest::getInt('file_create_categories','1'));?>
+			<?php echo JHTML::_('hikaselect.booleanlist', 'file_create_categories','',hikaInput::get()->getInt('file_create_categories','1'));?>
 		</td>
 	</tr>
 	<tr>
@@ -47,7 +47,7 @@ defined('_JEXEC') or die('Restricted access');
 			<?php echo JText::_('FORCE_PUBLISH'); ?>
 		</td>
 		<td>
-			<?php echo JHTML::_('hikaselect.booleanlist', 'file_force_publish','',JRequest::getInt('file_force_publish','1'));?>
+			<?php echo JHTML::_('hikaselect.booleanlist', 'file_force_publish','',hikaInput::get()->getInt('file_force_publish','1'));?>
 		</td>
 	</tr>
 	<tr>
@@ -55,7 +55,23 @@ defined('_JEXEC') or die('Restricted access');
 			<?php echo JText::_('UPDATE_PRODUCT_QUANTITY'); ?>
 		</td>
 		<td>
-			<?php echo JHTML::_('hikaselect.booleanlist', 'update_product_quantity','',JRequest::getInt('update_product_quantity','0'));?>
+			<?php echo JHTML::_('hikaselect.booleanlist', 'file_update_product_quantity','',hikaInput::get()->getInt('file_update_product_quantity','0'));?>
+		</td>
+	</tr>
+	<tr>
+		<td class="key" >
+			<?php echo JText::_('STORE_IMAGES_LOCALLY'); ?>
+		</td>
+		<td>
+			<?php echo JHTML::_('hikaselect.booleanlist', 'file_store_images_locally','',hikaInput::get()->getInt('file_store_images_locally','1'));?>
+		</td>
+	</tr>
+	<tr>
+		<td class="key" >
+			<?php echo JText::_('STORE_FILES_LOCALLY'); ?>
+		</td>
+		<td>
+			<?php echo JHTML::_('hikaselect.booleanlist', 'file_store_files_locally','',hikaInput::get()->getInt('file_store_files_locally','1'));?>
 		</td>
 	</tr>
 </table>

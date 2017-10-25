@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,6 +24,16 @@ echo $this->leftmenu(
 		<div class="hikashop_tile_title"><?php echo JText::_('HIKA_ADVANCED_SETTINGS'); ?></div>
 <table class="hk_config_table table" style="width:100%">
 
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('display_view_files');?>><?php echo JText::_('DISPLAY_VIEW_FILES'); ?></td>
+		<td><?php
+		$arr = array(
+			JHTML::_('select.option', '0', JText::_('HIKASHOP_NO') ),
+			JHTML::_('select.option', '1',  JText::_('DISPLAY_FRONTCOMP') ),
+			JHTML::_('select.option', '2',  JText::_('HIKA_ALL') ),
+		);
+		echo JHTML::_('hikaselect.genericlist', $arr, "config[display_view_files]" , '', 'value', 'text',$this->config->get('display_view_files', 0) );?></td>
+	</tr>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('cart_retaining_period');?>><?php echo JText::_('CART_RETAINING_PERIOD'); ?></td>
 		<td><?php
@@ -118,7 +128,7 @@ echo $this->leftmenu(
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('checkout_legacy_mode');?>><?php echo JText::_('CHECKOUT_LEGACY_MODE'); ?></td>
 		<td><?php
-			echo JHTML::_('hikaselect.booleanlist', 'config[checkout_legacy]', '', $this->config->get('checkout_legacy', 1));
+			echo JHTML::_('hikaselect.booleanlist', 'config[checkout_legacy]', '', $this->config->get('checkout_legacy', 0));
 		?></td>
 	</tr>
 	<tr>
@@ -133,7 +143,13 @@ echo $this->leftmenu(
 			echo JHTML::_('hikaselect.booleanlist', 'config[legacy_widgets]', '', $this->config->get('legacy_widgets', 1));
 		?></td>
 	</tr>
-<?php if($this->config->get('checkout_legacy', 1)){ ?>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('carousel_legacy_mode');?>><?php echo JText::_('CAROUSEL_LEGACY'); ?></td>
+		<td><?php
+			echo JHTML::_('hikaselect.booleanlist', 'config[carousel_legacy]', '', $this->config->get('carousel_legacy', 1));
+		?></td>
+	</tr>
+<?php if($this->config->get('checkout_legacy', 0)){ ?>
 	<tr>
 		<td colspan="2"><h4><?php echo JText::_('CHECKOUT_LEGACY_MODE'); ?></h4></td>
 	</tr>

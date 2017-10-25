@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -28,6 +28,7 @@ class UserController extends hikashopController {
 			'state',
 			'selection',
 			'useselection',
+			'getValues',
 		));
 	}
 
@@ -40,22 +41,26 @@ class UserController extends hikashopController {
 	}
 
 	public function deleteaddress() {
-		$addressdelete = JRequest::getInt('address_id',0);
+		$addressdelete = hikaInput::get()->getInt('address_id',0);
 		if($addressdelete){
 			$addressClass = hikashop_get('class.address');
 			$oldData = $addressClass->get($addressdelete);
 			if(!empty($oldData)){
 				$addressClass->delete($addressdelete);
-				JRequest::setVar('user_id',$oldData->address_user_id);
+				hikaInput::get()->set('user_id',$oldData->address_user_id);
 			}
 		}
 		$this->edit();
 	}
 
 	public function setdefault() {
-		$newDefaultId = JRequest::getInt('address_default', 0);
+		$newDefaultId = hikaInput::get()->getInt('address_default', 0);
 		if($newDefaultId){
-			JRequest::checkToken('request') || jexit( 'Invalid Token' );
+			if(!HIKASHOP_J25) {
+				JRequest::checkToken('request') || die('Invalid Token');
+			} else {
+				JSession::checkToken('request') || die('Invalid Token');
+			}
 			$addressClass = hikashop_get('class.address');
 			$oldData = $addressClass->get($newDefaultId);
 			if(!empty($oldData)){
@@ -70,9 +75,9 @@ class UserController extends hikashopController {
 	}
 
 	public function cancel() {
-		$order_id = JRequest::getInt('order_id');
+		$order_id = hikaInput::get()->getInt('order_id');
 		if(empty($order_id)){
-			$cancel_redirect = JRequest::getString('cancel_redirect');
+			$cancel_redirect = hikaInput::get()->getString('cancel_redirect');
 			if(empty($cancel_redirect)){
 				$this->listing();
 			}else{
@@ -115,23 +120,42 @@ class UserController extends hikashopController {
 	}
 
 	public function editaddress() {
-		JRequest::setVar('layout', 'editaddress');
+		hikaInput::get()->set('layout', 'editaddress');
 		return parent::display();
 	}
 
 	public function state() {
-		JRequest::setVar('layout', 'state');
+		hikaInput::get()->set('layout', 'state');
 		return parent::display();
 	}
 
 	public function selection() {
-		JRequest::setVar('layout', 'selection');
+		hikaInput::get()->set('layout', 'selection');
 		return parent::display();
 	}
 
 	public function useselection() {
-		JRequest::setVar('layout', 'useselection');
+		hikaInput::get()->set('layout', 'useselection');
 		return parent::display();
+	}
+
+	public function getValues() {
+		$displayFormat = hikaInput::get()->getVar('displayFormat', '');
+		$search = hikaInput::get()->getVar('search', null);
+		$start = hikaInput::get()->getInt('start', 0);
+
+		$nameboxType = hikashop_get('type.namebox');
+		$options = array(
+			'start' => $start,
+			'displayFormat' => $displayFormat
+		);
+		$ret = $nameboxType->getValues($search, 'user', $options);
+		if(!empty($ret)) {
+			echo json_encode($ret);
+			exit;
+		}
+		echo '[]';
+		exit;
 	}
 
 }

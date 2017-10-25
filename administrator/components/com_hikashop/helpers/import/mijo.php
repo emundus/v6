@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,7 +32,7 @@ class hikashopImportmijoHelper extends hikashopImportHelper
 
 		if( isset($_GET['import']) && $_GET['import'] == '1' )
 		{
-			$this->importcurrencies = JRequest::getInt('importcurrencies');
+			$this->importcurrencies = hikaInput::get()->getInt('importcurrencies');
 			$time = microtime(true);
 			$processed = $this->doImport();
 			if( $processed )
@@ -66,7 +66,7 @@ class hikashopImportmijoHelper extends hikashopImportHelper
 
 	function getStartPage()
 	{
-		$this->importcurrencies = JRequest::getInt('import_currencies');
+		$this->importcurrencies = hikaInput::get()->getInt('import_currencies');
 		return '<span style="color:#297F93; font-size:1.2em;text-decoration:underline;">Step 0</span><br/><br/>'.
 			'Make a backup of your database.<br/>'.
 			'When ready, click on <a '.$this->linkstyle.' href="'.hikashop_completeLink('import&task=import&importfrom=mijo&'.$this->token.'=1&import=1&importcurrencies='.$this->importcurrencies).'">'.JText::_('HIKA_NEXT').'</a>, otherwise '.
@@ -1228,7 +1228,7 @@ class hikashopImportmijoHelper extends hikashopImportHelper
 			'order_mijo_id' => 'mjo.order_id',
 			'order_user_id' => 'hkusr.user_id',
 			'order_status' => 'hkc.category_name',
-			'order_created' => 'mjo.date_added',
+			'order_created' => 'mjo.date_added', // UNIX_TIMESTAMP(...)
 			'order_ip' => 'mjo.ip',
 			'order_currency_id' => 'hkcur.currency_id',
 			'order_shipping_price' => "''", //?
@@ -1237,7 +1237,7 @@ class hikashopImportmijoHelper extends hikashopImportHelper
 			'order_payment_id' => 0,
 			'order_payment_method' => 'mjo.payment_method',
 			'order_full_price' => 'mjot.value',
-			'order_modified' => 'mjo.date_modified',
+			'order_modified' => 'mjo.date_modified', // UNIX_TIMESTAMP(...)
 			'order_partner_id' => 0,
 			'order_partner_price' => 0,
 			'order_partner_paid' => 0,

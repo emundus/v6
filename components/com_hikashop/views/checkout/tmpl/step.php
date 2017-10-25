@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -173,6 +173,9 @@ defined('_JEXEC') or die('Restricted access');
 		<br style="clear:both"/>
 		<?php
 
+		if(!empty($this->extra_data))
+			echo implode("\r\n", $this->extra_data);
+
 		if($this->nextButton)
 		{
 			if($this->step == (count($this->steps) - 2)) {
@@ -204,6 +207,6 @@ defined('_JEXEC') or die('Restricted access');
 <div class="clear_both"></div>
 <?php
 
-if(JRequest::getWord('tmpl','')=='component'){
+if(hikaInput::get()->getWord('tmpl','')=='component'){
 	exit;
 }

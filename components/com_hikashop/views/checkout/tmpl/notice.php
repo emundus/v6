@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -12,7 +12,7 @@ $doc = JFactory::getDocument();
 $doc->setMetaData( 'robots', 'noindex' );
 $app = JFactory::getApplication();
 $wishlist_id = $app->getUserState( HIKASHOP_COMPONENT.'.wishlist_id','0');
-$cart_type = JRequest::getVar('cart_type','');
+$cart_type = hikaInput::get()->getVar('cart_type','');
 if(empty($cart_type))
 	$cart_type = $app->getUserState( HIKASHOP_COMPONENT.'.popup_cart_type','cart');
 $app->setUserState( HIKASHOP_COMPONENT.'.popup_cart_type','cart');
@@ -49,33 +49,8 @@ if($cart_type == 'cart' || hikashop_loadUser() != null){
 	<?php } else{ ?>
 	<div id="hikashop_add_to_cart_checkout_div">
 		<?php
-		global $Itemid;
-		$url_itemid='';
-		if(!empty($Itemid)){
-			$menuClass = hikashop_get('class.menus');
-			$current_id = $menuClass->loadAMenuItemId('','',$Itemid);
-			if($current_id){
-				$url_itemid='&Itemid='.$Itemid;
-			}
-		}
-		if(empty($url_itemid)){
-			$menuClass = hikashop_get('class.menus');
-			$random_id = $menuClass->loadAMenuItemId('','');
-			if($random_id){
-				$url_itemid='&Itemid='.$random_id;
-			}
-		}
-		$itemid_for_checkout = (int)$this->config->get('checkout_itemid','0');
-		if(empty($itemid_for_checkout)){
-			$menuClass = hikashop_get('class.menus');
-			$itemid_for_checkout = $menuClass->getCheckoutMenuIdForURL();
-		}
-		if(!empty($itemid_for_checkout)){
-			$url_checkout = hikashop_completeLink('checkout&Itemid='.$itemid_for_checkout);
-		}else{
-			$url_checkout = hikashop_completeLink('checkout'.$url_itemid);
-		}
-
+		$menuClass = hikashop_get('class.menus');
+		$url_checkout = $menuClass->getCheckoutURL();
 		echo $this->cartClass->displayButton(JText::_('PROCEED_TO_CHECKOUT'),'to_checkout',$this->params,$url_checkout,'window.top.location=\''.$url_checkout.'\';return false;','id="hikashop_add_to_cart_checkout_button"'); ?>
 	</div>
 	<?php } ?>

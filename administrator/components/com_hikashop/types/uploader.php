@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -134,7 +134,7 @@ class HikashopUploaderType {
 		if(!empty($options['browseUrl'])) {
 			$opt = '';
 			if(!empty($options['tooltip']))
-				$opt = ' data-toggle="hk-tooltip" data-title="'.JText::_('HIKA_ADD_IMAGE').'"';
+				$opt = ' data-toggle="hk-tooltip" data-title="'.JText::_('HIKA_SELECT_IMAGE').'"';
 
 			$ret .= $this->popup->display(
 				'<span class="'.$options['classes']['btn_add'].'"></span>',
@@ -143,6 +143,27 @@ class HikashopUploaderType {
 				$id.'_addpopup',
 				750, 460, 'onclick="return window.hkUploaderList[\''.$id.'\'].browseImage(this);"'.$opt, '', 'link'
 			);
+		}
+
+		if(!empty($options['buttons'])){
+			foreach($options['buttons'] as $button){
+				$opt = '';
+				if(!empty($button['tooltip']))
+					$opt .= ' data-toggle="hk-tooltip" data-title="'.$button['tooltip'].'"';
+				if(!empty($button['onclick']))
+					$opt .= ' onclick="'.$button['onclick'].'"';
+				if(empty($button['width']))
+					$button['width'] = 750;
+				if(empty($button['height']))
+					$button['height'] = 460;
+				$ret .= $this->popup->display(
+					'<span class="'.$button['class'].'"></span>',
+					$button['text'],
+					$button['url'],
+					$button['id'],
+					$button['width'], $button['height'], $opt, '', 'link'
+				);
+			}
 		}
 
 		$ret .= '
@@ -200,7 +221,7 @@ class HikashopUploaderType {
 		if(!empty($options['browseUrl'])) {
 			$opt = '';
 			if(!empty($options['tooltip']))
-				$opt = ' data-toggle="hk-tooltip" data-title="'.JText::_('HIKA_ADD_IMAGE').'"';
+				$opt = ' data-toggle="hk-tooltip" data-title="'.JText::_('HIKA_SELECT_IMAGE').'"';
 
 			$ret .= $this->popup->display(
 				'<span class="'.$options['classes']['btn_add'].'"></span>',
@@ -209,6 +230,27 @@ class HikashopUploaderType {
 				$id.'_addpopup',
 				750, 460, 'onclick="return window.hkUploaderList[\''.$id.'\'].browseImage(this);"'.$opt, '', 'link'
 			);
+		}
+
+		if(!empty($options['buttons'])){
+			foreach($options['buttons'] as $button){
+				$opt = '';
+				if(!empty($button['tooltip']))
+					$opt .= ' data-toggle="hk-tooltip" data-title="'.$button['tooltip'].'"';
+				if(!empty($button['onclick']))
+					$opt .= ' onclick="'.$button['onclick'].'"';
+				if(empty($button['width']))
+					$button['width'] = 750;
+				if(empty($button['height']))
+					$button['height'] = 460;
+				$ret .= $this->popup->display(
+					'<span class="'.$button['class'].'"></span>',
+					$button['text'],
+					$button['url'],
+					$button['id'],
+					$button['width'], $button['height'], $opt, '', 'link'
+				);
+			}
 		}
 
 		$contentHtml = '';

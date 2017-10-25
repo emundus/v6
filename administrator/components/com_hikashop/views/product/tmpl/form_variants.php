@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -96,7 +96,7 @@ if(!hikashop_acl('product/edit/variants') || empty($this->product->product_id))
 ?>
 	</tbody>
 </table>
-<?php if(JRequest::getCmd('tmpl', '') != 'component') { ?>
+<?php if(hikaInput::get()->getCmd('tmpl', '') != 'component') { ?>
 <script type="text/javascript">
 window.hikashop.ready(function(){
 	var el = document.getElementById('hikashop_product_variant_label');

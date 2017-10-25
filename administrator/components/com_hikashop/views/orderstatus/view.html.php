@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -153,8 +153,10 @@ class OrderstatusViewOrderstatus extends hikashopView
 
 		foreach($rows as &$row) {
 			$row->columns = $columns;
-			foreach($orderstatus_columns as $key => $column){
-				if(in_array($row->orderstatus_namekey, explode(',', $config->get($column['key'], $column['default']))))
+			foreach($orderstatus_columns as $key => $column) {
+				if(!empty($column['key']) && in_array($row->orderstatus_namekey, explode(',', $config->get($column['key'], $column['default']))))
+					$row->columns[$key] = true;
+				if(empty($column['key']) && in_array($row->orderstatus_namekey, explode(',', $column['default'])))
 					$row->columns[$key] = true;
 			}
 		}
@@ -184,8 +186,11 @@ class OrderstatusViewOrderstatus extends hikashopView
 	public function form() {
 		$element_id = hikashop_getCID();
 
-		$orderstatusClass = hikashop_get('class.orderstatus');
-		$element =  $orderstatusClass->get($element_id);
+		$element = hikaInput::get()->getRaw('fail');
+		if(empty($element)) {
+			$orderstatusClass = hikashop_get('class.orderstatus');
+			$element =  $orderstatusClass->get($element_id);
+		}
 		$this->assignRef('element', $element);
 
 		$this->loadRef(array(

@@ -179,4 +179,5 @@ INSERT IGNORE INTO `#__hikashop_currency` (`currency_id`, `currency_symbol`, `cu
 (178, 'CHW', 'CHW', '%i', 'WIR Franc', 0, 0, ''),
 (179, '﷼', 'YER', '%i', 'Yemeni rial', 0, 0, ''),
 (180, 'ZK ', 'ZMK', '%i', 'Zambian kwacha', 0, 0, ''),
-(181, 'Z\$', 'ZWD', '%i', 'Zimbabwean dollar', 0, 0, '');
+(181, 'Z\$', 'ZWD', '%i', 'Zimbabwean dollar', 0, 0, ''),
+(182, 'p.', 'BYN', '%i', 'Belarusian ruble', 0, 0, '');

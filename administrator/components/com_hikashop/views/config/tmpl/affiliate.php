@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -89,11 +89,11 @@ function jSelectArticle_terms(id, title, catid, object) {
 		$doc->addScriptDeclaration($js);
 	}
 	echo $this->popup->display(
-		JText::_('Select'),
+		'<button type="button" class="btn" onclick="return false">'.JText::_('Select').'</button>',
 		'Select one article which will be displayed for the affiliate program Terms & Conditions',
 		$link,
 		'affiliate_terms_link',
-		760, 480, '', '', 'button'
+		760, 480, '', '', 'link'
 	);
 ?>
 		</td>

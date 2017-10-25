@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -36,14 +36,14 @@ $url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
 	</div>
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 	<input type="hidden" name="task" value="downloads" />
-	<input type="hidden" name="ctrl" value="<?php echo JRequest::getCmd('ctrl'); ?>" />
+	<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getCmd('ctrl'); ?>" />
 	<input type="hidden" name="boxchecked" value="0" />
 	<input type="hidden" name="filter_order" value="<?php echo $this->pageInfo->filter->order->value; ?>" />
 	<input type="hidden" name="filter_order_Dir" value="<?php echo $this->pageInfo->filter->order->dir; ?>" />
 	<?php echo JHTML::_( 'form.token' ); ?>
 </form>
 
-<table id="hikashop_downloads" class="hikashop_downloads_table adminlist table table-bordered table-striped table-hover" cellpadding="1" width="100%">
+<table id="hikashop_downloads" class="hikashop_downloads_table adminlist table table-striped table-hover" cellpadding="1" width="100%">
 	<thead>
 		<tr>
 			<th class="hikashop_product_name title"><?php
@@ -75,7 +75,7 @@ $url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
 						<?php echo $this->pagination->getResultsCounter(); ?>
 						<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 						<input type="hidden" name="task" value="downloads" />
-						<input type="hidden" name="ctrl" value="<?php echo JRequest::getCmd('ctrl'); ?>" />
+						<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getCmd('ctrl'); ?>" />
 						<input type="hidden" name="filter_order" value="<?php echo $this->pageInfo->filter->order->value; ?>" />
 						<input type="hidden" name="filter_order_Dir" value="<?php echo $this->pageInfo->filter->order->dir; ?>" />
 						<?php echo JHTML::_( 'form.token' ); ?>
@@ -141,7 +141,7 @@ $url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
 		}
 ?>
 			<tr class="hikashop_downloads row<?php echo $k;?>">
-				<td class="hikashop_order_item_name_value">
+				<td data-title="<?php echo JText::_('PRODUCT'); ?>" class="hikashop_order_item_name_value">
 <?php if(!empty($downloadFile->product_id)){ ?>
 					<a class="hikashop_order_product_link" href="<?php echo hikashop_completeLink('product&task=show&cid='.$downloadFile->product_id.$url_itemid); ?>">
 <?php } ?>
@@ -152,7 +152,7 @@ $url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
 					</a>
 <?php } ?>
 				</td>
-				<td>
+				<td data-title="<?php echo JText::_('HIKA_FILES'); ?>" >
 <?php
 		if($limitNotReached && $periodNotReached) {
 			if(empty($downloadFile->file_name)) {
@@ -181,7 +181,7 @@ $url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
 		echo $fileHtml;
 ?>
 				</td>
-				<td><?php
+				<td data-title="<?php echo JText::_('NB_DOWNLOADED'); ?>" ><?php
 		if(in_array(substr($downloadFile->file_path, 0, 1), array('@', '#')) && (int)$downloadFile->file_quantity > 1) {
 			for($i = 1; $i <= (int)$downloadFile->file_quantity; $i++) {
 				if(isset($downloadFile->downloads[$i])) {
@@ -197,7 +197,7 @@ $url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
 				echo 0;
 		}
 				?></td>
-				<td>
+				<td data-title="<?php echo JText::_('DOWNLOAD_NUMBER_LIMIT'); ?>" >
 <?php
 		$downloadLimit = JText::_('UNLIMITED');
 		if($limit == -1 && $limitNotReached && $periodNotReached) {
@@ -223,10 +223,10 @@ $url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
 		echo $downloadLimit;
 ?>
 				</td>
-				<td><?php
+				<td data-title="<?php echo JText::_('FIRST_PURCHASED_AT'); ?>" ><?php
 					echo date('d/m/Y', $downloadFile->min_order_created);
 				?></td>
-				<td><?php
+				<td data-title="<?php echo JText::_('LAST_PURCHASED_AT'); ?>" ><?php
 					echo date('d/m/Y', $downloadFile->max_order_created);
 				?></td>
 			</tr>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,12 +11,12 @@ defined('_JEXEC') or die('Restricted access');
 class hikashopViewClass extends hikashopClass {
 
 	public function saveForm() {
-		$id = JRequest::getString('id');
+		$id = hikaInput::get()->getString('id');
 		$element = $this->get($id);
 
 		if(!$element) return false;
 
-		$duplicate = trim(JRequest::getCmd('duplicate', '', 'post'));
+		$duplicate = trim(hikaInput::get()->post->getCmd('duplicate', ''));
 		if(!empty($duplicate) && substr($duplicate,0,1) != '.' && substr($duplicate,0,1) != '/' && substr($duplicate,0,1) != '\\' ) {
 			$name = explode('_', $element->filename, 2);
 			$override = substr($element->override, 0, - strlen($name[1])) . $duplicate.'.php';
@@ -32,7 +32,7 @@ class hikashopViewClass extends hikashopClass {
 			}
 		}
 
-		$element->content = JRequest::getVar('filecontent', '', 'post', 'string', JREQUEST_ALLOWRAW);
+		$element->content = hikaInput::get()->post->getRaw('filecontent', '');
 		$result = $this->save($element);
 		return $result;
 	}

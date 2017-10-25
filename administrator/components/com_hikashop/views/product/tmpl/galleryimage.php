@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -45,7 +45,7 @@ echo $this->treeContent;
 hikashopGallery.callbackSelection = function(tree,id) {
 	var d = document, node = tree.get(id);
 	if( node.value && node.name ) {
-		document.location = "<?php echo hikashop_completeLink('product&task=galleryimage&id='.JRequest::getInt('id').'&cid='.@$this->cid.'&product_id='.JRequest::getInt('product_id'), true, true) ;?>&folder=" + node.value;
+		document.location = "<?php echo hikashop_completeLink('product&task=galleryimage&id='.hikaInput::get()->getInt('id').'&cid='.@$this->cid.'&product_id='.hikaInput::get()->getInt('product_id'), true, true) ;?>&folder=" + node.value;
 	}
 }
 </script>
@@ -111,8 +111,8 @@ window.hikagallery.select = function(el, id) {
 </script>
 	<div class="clr"></div>
 	<input type="hidden" name="data[file][file_type]" value="product" />
-	<input type="hidden" name="data[file][file_ref_id]" value="<?php echo JRequest::getInt('product_id'); ?>" />
-	<input type="hidden" name="id" value="<?php echo JRequest::getInt('id');?>" />
+	<input type="hidden" name="data[file][file_ref_id]" value="<?php echo hikaInput::get()->getInt('product_id'); ?>" />
+	<input type="hidden" name="id" value="<?php echo hikaInput::get()->getInt('id');?>" />
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 	<input type="hidden" name="tmpl" value="component" />
 	<input type="hidden" name="task" value="galleryimage" />

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -472,8 +472,7 @@ class hikashopStatisticsClass extends hikashopClass {
 		);
 
 		if(!empty($place) && is_string($place) && preg_match('#^[_a-zA-Z0-9]+$#', $place)) {
-			$config = hikashop_config();
-			$blocks = $config->get('statistics_'.$place, null);
+			$blocks = $this->config->get('statistics_'.$place, null);
 			if($blocks !== null) {
 				$blocks = explode(',', $blocks);
 				$removed = array_diff(array_keys($ret), $blocks);
@@ -776,9 +775,9 @@ class hikashopStatisticsClass extends hikashopClass {
 		if($init) return;
 
 		$app = JFactory::getApplication();
-		$url = hikashop_completeLink('user&task=reports&tmpl=ajax', false, false, true);
+		$url = hikashop_completeLink('user&task=reports', 'ajax', false, true);
 		if($app->isAdmin()) {
-			$url = hikashop_completeLink('dashboard&task=reports&tmpl=ajax', false, false, true);
+			$url = hikashop_completeLink('dashboard&task=reports', 'ajax', false, true);
 		}
 
 		$dateRanges = array(

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -111,7 +111,7 @@ foreach($this->order->products as $k => $product) {
 <?php
 	if(!empty($product->product_id)) {
 ?>
-				<a onclick="return window.orderMgr.showProduct(this);" href="<?php echo hikashop_frontendLink('index.php?option=com_hikashop&ctrl=product&task=show&cid='.$product->product_id,true); ?>"><?php
+				<a onclick="return window.orderMgr.showProduct(this);" href="<?php echo hikashop_contentLink('product&task=show&cid='.$product->product_id, $product, true, false, false, true ); ?>"><?php
 					echo $product->order_product_name;
 				?></a>
 <?php

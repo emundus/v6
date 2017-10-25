@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -338,14 +338,19 @@ class hikashopImportredsHelper extends hikashopImportHelper
 		echo '<p '.$this->titlefont.'><span'.$this->titlestyle.'>Step 2 :</span> Import Taxes<p>';
 		$ret = false;
 
+		$id = 'tax_rate_id';
+		$columns = $this->db->getTableColumns('#__redshop_tax_rate');
+		if(!isset($columns['tax_rate_id']))
+			$id = 'id';
+
 		$data = array(
-			'tax_namekey' => "CONCAT('REDS_TAX_', rstr.tax_rate_id)",
+			'tax_namekey' => "CONCAT('REDS_TAX_', rstr.".$id.")",
 			'tax_rate' => 'rstr.tax_rate'
 		);
 
 		$sql = 'INSERT IGNORE INTO `#__hikashop_tax` (`'.implode('`,`',array_keys($data)).'`) '.
 			'SELECT ' . implode(',',$data).' FROM `#__redshop_tax_rate` AS rstr '.
-			'WHERE rstr.tax_rate_id > ' . (int)$this->options->last_reds_taxrate;
+			'WHERE rstr.'.$id.' > ' . (int)$this->options->last_reds_taxrate;
 
 		$this->db->setQuery($sql);
 		$this->db->query();
@@ -384,7 +389,7 @@ class hikashopImportredsHelper extends hikashopImportHelper
 		$data = array(
 				'zone_namekey' => "case when hkz.zone_namekey IS NULL then '' else hkz.zone_namekey end",
 				'category_namekey' => "CONCAT('REDS_TAX_CATEGORY_', rstg.tax_group_id)",
-				'tax_namekey' => "CONCAT('REDS_TAX_', rstr.tax_rate_id)",
+				'tax_namekey' => "CONCAT('REDS_TAX_', rstr.".$id.")",
 				'taxation_published' => '1',
 				'taxation_type' => "''",
 				'tax_reds_id' => 'rstg.tax_group_id'
@@ -395,7 +400,7 @@ class hikashopImportredsHelper extends hikashopImportHelper
 			'INNER JOIN `#__redshop_tax_group` AS rstg ON rstr.tax_group_id = rstg.tax_group_id '.
 			'LEFT JOIN `#__redshop_country` AS rsc ON rstr.tax_country = rsc.country_3_code ' . //Tocheck
 			"LEFT JOIN `#__hikashop_zone` hkz ON rsc.country_3_code = hkz.zone_code_3 AND hkz.zone_type = 'country' ".
-			'WHERE rstr.tax_rate_id > ' . (int)$this->options->last_reds_taxrate;
+			'WHERE rstr.'.$id.' > ' . (int)$this->options->last_reds_taxrate;
 
 		$this->db->setQuery($sql);
 		$this->db->query();
@@ -847,7 +852,7 @@ class hikashopImportredsHelper extends hikashopImportHelper
 			'product_code' => 'rsp.hika_sku',
 			'product_published' => 'rsp.published',
 			'product_hit' => 'rsp.visited',
-			'product_created' => 'rsp.publish_date',
+			'product_created' => time(),
 			'product_modified' => 'rsp.update_date',
 			'product_sale_start' => 'rsp.product_availability_date',
 			'product_tax_id' => 'hkc.category_id',
@@ -1052,11 +1057,16 @@ class hikashopImportredsHelper extends hikashopImportHelper
 			'address_published' => '4'
 		);
 
+		$id = 'country_id';
+		$columns = $this->db->getTableColumns('#__redshop_country');
+		if(!isset($columns['country_id']))
+			$id = 'id';
+
 
 		$sql1 = 'INSERT IGNORE INTO `#__hikashop_address` (`'.implode('`,`',array_keys($data)).'`) '.
 				'SELECT '.implode(',',$data).' FROM `#__redshop_users_info` AS rsui '.
 				'INNER JOIN `#__redshop_country` rsc ON rsui.country_code = rsc.country_3_code '.
-				'INNER JOIN `#__redshop_state` rss ON rsc.country_id = rss.country_id AND rsui.state_code = rss.state_2_code '.
+				'INNER JOIN `#__redshop_state` rss ON rsc.'.$id.' = rss.country_id AND rsui.state_code = rss.state_2_code '.
 				'INNER JOIN `#__hikashop_user` AS hku ON rsui.user_id = hku.user_cms_id '.
 				'INNER JOIN `#__hikashop_zone` AS  hkzcou ON rsc.country_3_code = hkzcou.zone_code_3 AND hkzcou.zone_type=\'country\' '.
 				'INNER JOIN `#__hikashop_zone_link` AS hkzl ON hkzcou.zone_namekey = hkzl.zone_parent_namekey '.
@@ -1262,10 +1272,15 @@ class hikashopImportredsHelper extends hikashopImportHelper
 			'address_reds_order_info_id' => 'rsui.order_id'
 		);
 
+		$id = 'country_id';
+		$columns = $this->db->getTableColumns('#__redshop_country');
+		if(!isset($columns['country_id']))
+			$id = 'id';
+
 		$sql2_1 = 'INSERT IGNORE INTO `#__hikashop_address` (`'.implode('`,`',array_keys($data)).'`) '.
 			'SELECT '.implode(',',$data).' FROM `#__redshop_order_users_info` AS rsui '.
 			'INNER JOIN `#__redshop_country` rsc ON rsui.country_code = rsc.country_3_code '.
-			'INNER JOIN `#__redshop_state` rss ON rsc.country_id = rss.country_id AND rsui.state_code = rss.state_2_code '.
+			'INNER JOIN `#__redshop_state` rss ON rsc.'.$id.' = rss.country_id AND rsui.state_code = rss.state_2_code '.
 			'INNER JOIN `#__hikashop_user` AS hku ON rsui.user_id = hku.user_cms_id '.
 			'INNER JOIN `#__hikashop_zone` AS  hkzcou ON rsc.country_3_code = hkzcou.zone_code_3 AND hkzcou.zone_type=\'country\' '.
 			'INNER JOIN `#__hikashop_zone_link` AS hkzl ON hkzcou.zone_namekey = hkzl.zone_parent_namekey '.

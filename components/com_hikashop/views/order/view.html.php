@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -147,7 +147,7 @@ class OrderViewOrder extends hikashopView {
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		$this->assignRef('checkoutHelper', $checkoutHelper);
 
-		$new_payment_method = JRequest::getVar('new_payment_method', null);
+		$new_payment_method = hikaInput::get()->getVar('new_payment_method', null);
 		$paymentMethod = null;
 
 		if(!empty($new_payment_method)) {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -37,7 +37,7 @@ class ViewViewView extends hikashopView{
 		$pageInfo->filter->viewType = $app->getUserStateFromRequest(HIKASHOP_COMPONENT.'.viewType', 'viewType', '' , 'string');
 		$pageInfo->limit->value = $app->getUserStateFromRequest($this->paramBase.'.limit', 'limit', $app->getCfg('list_limit'), 'int');
 		if(empty($pageInfo->limit->value)) $pageInfo->limit->value = 500;
-		if(JRequest::getVar('search')!=$app->getUserState($this->paramBase.".search")){
+		if(hikaInput::get()->getVar('search')!=$app->getUserState($this->paramBase.".search")){
 			$app->setUserState( $this->paramBase.'.limitstart',0);
 			$pageInfo->limit->start = 0;
 		}else{
@@ -304,7 +304,7 @@ class ViewViewView extends hikashopView{
 	}
 
 	function form(){
-		$id = JRequest::getString('id','');
+		$id = hikaInput::get()->getString('id','');
 		$viewClass = hikashop_get('class.view');
 		$obj = $viewClass->get($id);
 

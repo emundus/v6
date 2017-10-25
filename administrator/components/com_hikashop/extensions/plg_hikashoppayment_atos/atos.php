@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -513,7 +513,7 @@ class plgHikashoppaymentAtos extends hikashopPaymentPlugin
 	}
 
 	function onPaymentConfiguration(&$element){
-		if(JRequest::getCmd('subtask','')=='logos'){
+		if(hikaInput::get()->getCmd('subtask','')=='logos'){
 			$app = JFactory::getApplication();
 			$this->view = 'logos';
 			$this->noForm=true;
@@ -716,7 +716,7 @@ function insertCards(){
 		$app = JFactory::getApplication();
 		jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.path');
-		$file = JRequest::getVar( $name, array(), 'files', 'array' );
+		$file = hikaInput::get()->files->get($name, array(), 'array');
 		$message=$this->_getLanguage();
 
 		if(empty($file['name'])){

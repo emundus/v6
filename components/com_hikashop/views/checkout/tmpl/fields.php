@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 		<table cellpadding="0" cellspacing="0" border="0" class="hikashop_contentpane">
 <?php
 	if(!empty($this->extraFields['order'])){
-		JRequest::setVar('hikashop_check_order',1);
+		hikaInput::get()->set('hikashop_check_order',1);
 		$this->setLayout('custom_fields');
 		$this->type = 'order';
 		echo $this->loadTemplate();

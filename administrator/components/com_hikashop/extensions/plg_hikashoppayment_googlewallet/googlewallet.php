@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -120,6 +120,8 @@ class plgHikashoppaymentgooglewallet extends hikashopPaymentPlugin
 
 		$dbOrder = $this->getOrder($gwdata->request->sellerData);
 		$this->loadPaymentParams($dbOrder);
+		if(empty($this->payment_params))
+			return false;
 
 		$gwdata = JWT::decode($_POST["jwt"], $this->payment_params->sellerSecret, true);
 		if(empty($gwdata)) return false;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -132,6 +132,7 @@ function hikashopUpdateVariantData(selection) {
 								foreach($secondCharacteristic->values as $value2) {
 									$class = '';
 									$classspan = '';
+									$extra = '';
 									foreach($element->variants as $k => $variant) {
 										$char1 = false;
 										$char2 = false;
@@ -145,6 +146,8 @@ function hikashopUpdateVariantData(selection) {
 												if(!$variant->product_published || $variant->product_quantity == 0) {
 													$class = ' hikashop_product_variant_out_of_stock';
 													$classspan=' hikashop_product_variant_out_of_stock_span';
+												}else {
+													$extra = ' data-stock="'.$variant->product_quantity.'"';
 												}
 												break 2;
 											}
@@ -152,7 +155,7 @@ function hikashopUpdateVariantData(selection) {
 									}
 
 									$name = '_'.$value->characteristic_id.'_'.$value2->characteristic_id;
-									$radio = "\n\t<span class=\"hikashop_product_characteristic_span".$classspan."\"><input type=\"radio\" class=\"hikashop_product_characteristic".$class."\" name=\"hikashop_product_characteristic\" id=\"hikashop_product_characteristic".$name."\" value=\"".$name."\" ".$this->options;
+									$radio = "\n\t<span class=\"hikashop_product_characteristic_span".$classspan."\"><input type=\"radio\" class=\"hikashop_product_characteristic".$class."\" name=\"hikashop_product_characteristic\"".$extra." id=\"hikashop_product_characteristic".$name."\" value=\"".$name."\" ".$this->options;
 									if($this->characteristics[$value->characteristic_parent_id]->default->characteristic_id == $value->characteristic_id && !empty($this->characteristics[$value2->characteristic_parent_id]->default->characteristic_id) && $this->characteristics[$value2->characteristic_parent_id]->default->characteristic_id == $value2->characteristic_id) {
 										$radio .= ' checked';
 									}
@@ -203,11 +206,6 @@ function hikashopUpdateVariantData(selection) {
 
 												$js = "
 												window.hikashop.ready( function() {".$js."});";
-												if (!HIKASHOP_PHP5) {
-													$doc =& JFactory::getDocument();
-												}else{
-
-												}
 												$doc->addScriptDeclaration("\n<!--\n".$js."\n//-->\n");
 												$switch_done = true;
 											}

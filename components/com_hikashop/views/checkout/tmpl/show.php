@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -15,25 +15,35 @@ defined('_JEXEC') or die('Restricted access');
 <div id="hikashop_checkout" class="hikashop_checkout_page hikashop_checkout_page_step<?php echo $this->step; ?>"><?php
 
 if((int)$this->config->get('display_checkout_bar', 2) > 0) {
-	echo $this->displayBlock('bar', 0, array());
+	echo $this->displayBlock('bar', 0, array(
+		'display_end' => ((int)$this->config->get('display_checkout_bar', 2) == 1)
+	));
 }
 
+$handleEnter = array();
 foreach($this->workflow['steps'][$this->workflow_step]['content'] as $k => $content) {
+	$handleEnter[] = 'window.checkout.handleEnter(\''.$content['task'].'\','.$this->step.','.$k.');';
 	echo $this->displayBlock($content['task'], $k, @$content['params']);
 }
 
 echo $this->displayBlock('buttons', 0, array());
 
+if(!empty($this->extra_data))
+	echo implode("\r\n", $this->extra_data);
+
 $doc = JFactory::getDocument();
 $doc->addScript(HIKASHOP_JS.'checkout.js');
 $js = '
 window.checkout.token = "'.hikashop_getFormToken().'";
-window.checkout.urls.show = "'.hikashop_completeLink('checkout&task=showblock'.$this->cartIdParam.'&tmpl=ajax&Itemid='.$this->itemid, false, false, true).'";
-window.checkout.urls.submit = "'.hikashop_completeLink('checkout&task=submitblock'.$this->cartIdParam.'&tmpl=ajax&Itemid='.$this->itemid, false, false, true).'";
-window.checkout.urls.submitstep = "'.hikashop_completeLink('checkout&task=submitstep'.$this->cartIdParam.'&tmpl=ajax&Itemid='.$this->itemid, false, false, true).'";
+window.checkout.urls.show = "'.hikashop_completeLink('checkout&task=showblock'.$this->cartIdParam.'&Itemid='.$this->itemid, 'ajax', false, true).'";
+window.checkout.urls.submit = "'.hikashop_completeLink('checkout&task=submitblock'.$this->cartIdParam.'&Itemid='.$this->itemid, 'ajax', false, true).'";
+window.checkout.urls.submitstep = "'.hikashop_completeLink('checkout&task=submitstep'.$this->cartIdParam.'&Itemid='.$this->itemid, 'ajax', false, true).'";
 window.Oby.registerAjax("checkout.step.completed",function(params){ document.getElementById("hikashop_checkout_form").submit(); });
 window.Oby.registerAjax("cart.empty",function(params){ setTimeout(function(){ window.location.reload(); },150); });
 window.Oby.registerAjax("cart.updated",function(params){ if(!params || !params.resp || !params.resp.empty) return; window.Oby.fireAjax("cart.empty",null); });
+window.hikashop.ready(function(){
+	'.implode("\r\n\t", $handleEnter).'
+});
 ';
 $doc->addScriptDeclaration($js);
 ?>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,7 +23,7 @@ class uploadController extends hikashopController {
 		parent::__construct($config);
 		$this->registerDefaultTask('galleryimage');
 
-		$controllerName = JRequest::getCmd('uploader', '');
+		$controllerName = hikaInput::get()->getCmd('uploader', '');
 		if(!empty($controllerName)) {
 			$this->controller = hikashop_get('controller.'.$controllerName, array(), true);
 			if(!method_exists($this->controller, 'getUploadSetting'))
@@ -32,7 +32,7 @@ class uploadController extends hikashopController {
 	}
 
 	public function image() {
-		$upload_key = JRequest::getVar('field', '');
+		$upload_key = hikaInput::get()->getVar('field', '');
 		if(empty($this->controller))
 			return false;
 
@@ -43,13 +43,13 @@ class uploadController extends hikashopController {
 		if(!empty($uploadConfig['type']) && $uploadConfig['type'] != 'image')
 			return false;
 
-		JRequest::setVar('layout', 'sendfile');
-		JRequest::setVar('uploadConfig', $uploadConfig);
+		hikaInput::get()->set('layout', 'sendfile');
+		hikaInput::get()->set('uploadConfig', $uploadConfig);
 		return parent::display();
 	}
 
 	public function galleryimage() {
-		$upload_key = JRequest::getVar('field', '');
+		$upload_key = hikaInput::get()->getVar('field', '');
 		if(empty($this->controller))
 			return false;
 
@@ -60,13 +60,13 @@ class uploadController extends hikashopController {
 		if(!empty($uploadConfig['type']) && $uploadConfig['type'] != 'image')
 			return false;
 
-		JRequest::setVar('layout', 'galleryimage');
-		JRequest::setVar('uploadConfig', $uploadConfig);
+		hikaInput::get()->set('layout', 'galleryimage');
+		hikaInput::get()->set('uploadConfig', $uploadConfig);
 		return parent::display();
 	}
 
 	public function addImage() {
-		$upload_key = JRequest::getVar('field', '');
+		$upload_key = hikaInput::get()->getVar('field', '');
 		if(empty($this->controller))
 			return false;
 
@@ -186,7 +186,7 @@ class uploadController extends hikashopController {
 	}
 
 	public function galleryselect() {
-		$upload_key = JRequest::getVar('field', '');
+		$upload_key = hikaInput::get()->getVar('field', '');
 		if(empty($this->controller))
 			return false;
 
@@ -224,7 +224,7 @@ class uploadController extends hikashopController {
 		if(empty($options) || empty($options['upload_dir']))
 			return false;
 
-		$filesData = JRequest::getVar('files', array(), '', 'array');
+		$filesData = hikaInput::get()->get('files', array(), 'array');
 
 		$output = '[]';
 		if(!empty($filesData)) {
@@ -272,10 +272,14 @@ class uploadController extends hikashopController {
 	}
 
 	public function upload() {
-		JRequest::checkToken() || die('Invalid Token');
+		if(!HIKASHOP_J25) {
+			JRequest::checkToken() || die('Invalid Token');
+		} else {
+			JSession::checkToken() || die('Invalid Token');
+		}
 
 		$config = hikashop_config();
-		$upload_key = JRequest::getVar('field', '');
+		$upload_key = hikaInput::get()->getVar('field', '');
 		if(empty($this->controller))
 			exit;
 

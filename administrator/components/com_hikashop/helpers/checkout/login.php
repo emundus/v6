@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -17,8 +17,8 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 	}
 
 	public function haveEmptyContent(&$controller, &$params) {
-		$checkoutHelper = hikashopCheckoutHelper::get();
-		return $checkoutHelper->isLoggedUser();
+		$user = JFactory::getUser();
+		return !$user->guest;
 	}
 
 	public function validate(&$controller, &$params, $data = array()) {
@@ -29,12 +29,30 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 
 		$app = JFactory::getApplication();
 		$user_id = $app->getUserState(HIKASHOP_COMPONENT.'.user_id');
-		if(!empty($user_id))
-			return true;
+		if(!empty($user_id)){
+			$logout = hikaInput::get()->getInt('hikashop_checkout_guest_logout', 0);
+			if($logout) {
+				$app->setUserState(HIKASHOP_COMPONENT.'.user_id', 0);
+				hikashop_loadUser(false, true);
 
+				$checkoutHelper = hikashopCheckoutHelper::get();
+				$cart = $checkoutHelper->getCart();
+
+				$cartClass = hikashop_get('class.cart');
+				$cartClass->sessionToUser($cart->cart_id, $cart->session_id, 0, false);
+
+				$cartToSave = $cartClass->get($cart->cart_id);
+				$cartToSave->cart_billing_address_id = 0;
+				$cartToSave->cart_shipping_address_ids = 0;
+				$cartClass->save($cartToSave);
+
+				$checkoutHelper->getCart(true);
+			}
+			return true;
+		}
 		JPluginHelper::importPlugin('user');
 
-		$data = JRequest::getVar('data');
+		$data = hikaInput::get()->getVar('data');
 		if(isset($data['register']['registration_method'])) {
 			$checkoutHelper = hikashopCheckoutHelper::get();
 			$step = $params['src']['workflow_step'];
@@ -51,37 +69,37 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 				return $this->validateRegistration($controller, $params);
 		}
 
-		$register = JRequest::getString('register','');
-		$action = JRequest::getString('login_view_action','');
+		$register = hikaInput::get()->getString('register','');
+		$action = hikaInput::get()->getString('login_view_action','');
 
 		if($action == 'register' || ($action != 'login' && !empty($register)))
 			return $this->validateRegistration($controller, $params);
 
-		$login = JRequest::getVar('login', array(), '', 'array');
+		$login = hikaInput::get()->get('login', array(), 'array');
 		if($action == 'login' || (!empty($login['username']) && !empty($login['passwd'])))
 			return $this->validateLogin($controller, $params);
 
-		$formData = JRequest::getVar('data', array(), '', 'array');
+		$formData = hikaInput::get()->get('data', array(), 'array');
 		if(!empty($formData['register']['email']))
 			return $this->validateRegistration($controller, $params);
 
 		$config =& hikashop_config();
 		if($config->get('display_login', 1)) {
-			$username = JRequest::getVar('username', '', 'request', 'username');
+			$username = hikaInput::get()->request->getUsername('username', '');
 			if(!empty($username))
 				return $this->validateLogin($controller, $params);
 
-			if(empty($username)) {
-				$checkoutHelper = hikashopCheckoutHelper::get();
-				$checkoutHelper->addMessage('login', array(JText::_('JGLOBAL_AUTH_EMPTY_PASS_NOT_ALLOWED'),'error'));
-			}
+
+			$checkoutHelper = hikashopCheckoutHelper::get();
+			$checkoutHelper->addMessage('login', array(JText::_('PLEASE_FILL_FORM_BEFORE_PROCEEDING'),'error'));
+
 			return;
 		}
 		return $this->validateRegistration($controller, $params);
 	}
 
 	protected function validateLogin(&$controller, &$params) {
-		$login = JRequest::getVar('login', array(), '', 'array');
+		$login = hikaInput::get()->get('login', array(), 'array');
 		if(empty($login))
 			return false;
 
@@ -132,8 +150,10 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			$app->setUserState(HIKASHOP_COMPONENT.'.user_id', $user_id);
 
 			$cartClass = hikashop_get('class.cart');
-			if($cartClass->sessionToUser($cart->cart_id, $old_session, $user_id))
+			if($cartClass->sessionToUser($cart->cart_id, $old_session, $user_id)) {
+				$cartClass->get('reset_cache');
 				$checkoutHelper->getCart(true);
+			}
 		}
 
 		$params['login_done'] = true;
@@ -150,7 +170,7 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 		$jsession = JFactory::getSession();
 		$old_session = $jsession->getId();
 
-		$formData = JRequest::getVar('data', array(), '', 'array');
+		$formData = hikaInput::get()->get('data', array(), 'array');
 		$data = array(
 			'register' => null,
 			'user' => null,
@@ -172,8 +192,8 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 
 		if($display == 1) {
 			$mode = explode(',', $mode);
-			$formData = JRequest::getVar('data', array(), '', 'array');
-			if(in_array(@$formData['register']['registration_method'], $mode)) {
+			$formData = hikaInput::get()->get('data', array(), 'array');
+			if(isset($formData['register']['registration_method']) && in_array($formData['register']['registration_method'], $mode)) {
 				$mode = $formData['register']['registration_method'];
 			} else {
 				$mode = array_shift($mode);
@@ -236,12 +256,12 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			if(count($simplified) == 1) {
 				$simplified = array_shift($simplified);
 			} else {
-				$formData = JRequest::getVar('data', array(), '', 'array');
+				$formData = hikaInput::get()->get('data', array(), 'array');
 				$simplified = @$formData['register']['registration_method'];
 			}
 		}
 
-		if($simplified != 2 && $ret['useractivation'] == 0) {
+		if($simplified != 2 && @$ret['userActivation'] == 0) {
 			$options = array(
 				'return' => true,
 				'remember' => false
@@ -260,8 +280,10 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 					$app->setUserState(HIKASHOP_COMPONENT.'.user_id', $user_id);
 
 					$cartClass = hikashop_get('class.cart');
-					if($cartClass->sessionToUser($cart->cart_id, $old_session, $user_id))
+					if($cartClass->sessionToUser($cart->cart_id, $old_session, $user_id)) {
+						$cartClass->get('reset_cache');
 						$checkoutHelper->getCart(true);
+					}
 				}
 
 				$checkoutHelper->addEvent('checkout.user.updated', null);
@@ -350,7 +372,6 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 
 		if(!empty($params['address_on_registration'])) {
 			$view->address = @$_SESSION['hikashop_address_data'];
-
 			$view->extraFields['address'] = $view->fieldsClass->getFields('frontcomp', $view->address, 'address');
 			$params['js'] .= $view->fieldsClass->jsToggle($view->extraFields['address'], $view->address, 0, 'hikashop_', array('return_data' => true, 'suffix_type' => '_'.$view->step.'_'.$view->block_position));
 			$check_values['address'] = $view->address;
@@ -368,6 +389,16 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			}
 			if($params['address_on_registration'])
 				return false;
+
+			$checkoutHelper = hikashopCheckoutHelper::get();
+			$workflow = $checkoutHelper->checkout_workflow;
+			foreach($workflow['steps'] as $step) {
+				foreach($step['content'] as $step_content) {
+					if($step_content['task'] == 'address')
+						return true;
+				}
+			}
+			return false;
 		}
 
 		return true;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -85,6 +85,10 @@ window.cartNotifyParams = '.json_encode(array(
 		'text' => JText::_('PRODUCT_SUCCESSFULLY_ADDED_TO_CART'),
 		'wishlist_title' => JText::_('PRODUCT_ADDED_TO_WISHLIST'),
 		'wishlist_text' => JText::_('PRODUCT_SUCCESSFULLY_ADDED_TO_WISHLIST'),
+		'list_title' => JText::_('PRODUCTS_ADDED_TO_CART'),
+		'list_text' => JText::_('PRODUCTS_SUCCESSFULLY_ADDED_TO_CART'),
+		'list_wishlist_title' => JText::_('PRODUCTS_ADDED_TO_WISHLIST'),
+		'list_wishlist_text' => JText::_('PRODUCTS_SUCCESSFULLY_ADDED_TO_WISHLIST'),
 		'err_title' => JText::_('PRODUCT_NOT_ADDED_TO_CART'),
 		'err_text' => JText::_('PRODUCT_UNSUCCESSFULLY_ADDED_TO_CART'),
 		'err_wishlist_title' =>  JText::_('PRODUCT_NOT_ADDED_TO_WISHLIST'),
@@ -109,9 +113,8 @@ window.cartNotifyParams = '.json_encode(array(
 			$doc->addStyleSheet($base.'/plugins/hikashop/media/notify-metro.css');
 		}
 
-		$config = hikashop_config();
-		$checkout_itemid = (int)$config->get('checkout_itemid', 0);
-		$url_checkout = hikashop_completeLink('checkout'. (!empty($checkout_itemid) ? '&Itemid='.$checkout_itemid : ''), false, true);
+		$menusClass = hikashop_get('class.menus');
+		$url_checkout = $menusClass->getCheckoutURL(true);
 		$link_to_checkout = (int)$this->params->get('checkout_button', 1);
 
 		$extra_data = array();
@@ -125,13 +128,18 @@ window.cartNotifyParams.cart_params = {buttons:[
 
 		$js = '
 if(window.Oby) {
-vex.defaultOptions.className = "vex-theme-default"
+vex.defaultOptions.className = "vex-theme-default";
+vex.dialog.buttons.YES.text = "'.JText::_('HIKA_OK', true).'";
 window.cartNotifyParams = '.json_encode(array(
 	'img_url' => HIKASHOP_IMAGES.'icons/icon-32-newproduct.png',
 	'title' => JText::_('PRODUCT_ADDED_TO_CART'),
 	'text' => JText::_('PRODUCT_SUCCESSFULLY_ADDED_TO_CART'),
 	'wishlist_title' => JText::_('PRODUCT_ADDED_TO_WISHLIST'),
 	'wishlist_text' => JText::_('PRODUCT_SUCCESSFULLY_ADDED_TO_WISHLIST'),
+	'list_title' => JText::_('PRODUCTS_ADDED_TO_CART'),
+	'list_text' => JText::_('PRODUCTS_SUCCESSFULLY_ADDED_TO_CART'),
+	'list_wishlist_title' => JText::_('PRODUCTS_ADDED_TO_WISHLIST'),
+	'list_wishlist_text' => JText::_('PRODUCTS_SUCCESSFULLY_ADDED_TO_WISHLIST'),
 	'err_title' => JText::_('PRODUCT_NOT_ADDED_TO_CART'),
 	'err_text' => JText::_('PRODUCT_UNSUCCESSFULLY_ADDED_TO_CART'),
 	'err_wishlist_title' => JText::_('PRODUCT_NOT_ADDED_TO_WISHLIST'),

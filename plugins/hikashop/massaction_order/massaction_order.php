@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -374,7 +374,7 @@ class plgHikashopMassaction_order extends JPlugin
 		$params->action_id = $k;
 		$js = '';
 		$app = JFactory::getApplication();
-		if($app->isAdmin() && JRequest::getVar('ctrl','massaction') == 'massaction'){
+		if($app->isAdmin() && hikaInput::get()->getVar('ctrl','massaction') == 'massaction'){
 			echo hikashop_getLayout('massaction','results',$params,$js);
 		}
 	}
@@ -551,7 +551,7 @@ class plgHikashopMassaction_order extends JPlugin
 					}
 					if($action['type'] == 'add'){
 						$productClass = hikashop_get('class.product');
-						JRequest::setVar( 'order_id', $order->order_id);
+						hikaInput::get()->set( 'order_id', $order->order_id);
 						$data = array();
 						$data['products'] = true;
 						$data['order']['product']['many'] = true;
@@ -565,7 +565,7 @@ class plgHikashopMassaction_order extends JPlugin
 							$data['order']['product'][$k]['order_product_code'] = $product->product_code;
 							$data['order']['product'][$k]['order_product_price'] = $product->prices[0]->price_value;
 						}
-						JRequest::setVar('data', $data);
+						hikaInput::get()->set('data', $data);
 						$orderClass->saveForm('products');
 					}
 				}
@@ -598,7 +598,7 @@ class plgHikashopMassaction_order extends JPlugin
 		$values = array();
 
 		foreach($elements as $element){
-			$user_ids[] = $element->order_user_id;
+			$user_ids[] = (int)$element->order_user_id;
 		}
 		if(empty($user_ids))
 			return false;

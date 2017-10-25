@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -25,6 +25,7 @@ class ConfigController extends hikashopController{
 		$this->modify_views[]='language';
 		$this->modify[]='cancel';
 		$this->modify_views[]='cleanreport';
+		$this->modify_views[]='config';
 		$this->modify[]='wizard';
 		$this->modify[]='checkdb';
 		$this->modify[]='resetAddressFormat';
@@ -38,26 +39,25 @@ class ConfigController extends hikashopController{
 		return $this->display();
 	}
 	function store($new=false){
-		if(!HIKASHOP_PHP5) {
-			$app =& JFactory::getApplication();
-		} else {
-			$app = JFactory::getApplication();
-		}
 		$app = JFactory::getApplication();
-		JRequest::checkToken() || die( 'Invalid Token' );
+		if(!HIKASHOP_J25) {
+			JRequest::checkToken() || die('Invalid Token');
+		} else {
+			JSession::checkToken() || die('Invalid Token');
+		}
 		$imageClass = hikashop_get('class.file');
-		$source = is_array($_POST['config'])?'POST':'REQUEST'; //to avoid strange bugs on some web servers where the config array might be only in one of the two global variable :/
-		$formData = JRequest::getVar( 'config', array(), $source, 'array' );
-		$aclcats = JRequest::getVar( 'aclcat', array(), '', 'array' );
+		$source = is_array($_POST['config'])?'post':'request'; //to avoid strange bugs on some web servers where the config array might be only in one of the two global variable :/
+		$formData = hikaInput::get()->{$source}->get('config', array(), 'array' );
+		$aclcats = hikaInput::get()->get('aclcat', array(), 'array' );
 		if(!empty($aclcats)){
-			if(JRequest::getString('acl_config','all') != 'all' && !hikashop_isAllowed($formData['acl_config_manage'])){
+			if(hikaInput::get()->getString('acl_config','all') != 'all' && !hikashop_isAllowed($formData['acl_config_manage'])){
 				$app->enqueueMessage(JText::_( 'ACL_WRONG_CONFIG' ), 'notice');
 				unset($formData['acl_config_manage']);
 			}
 			$deleteAclCats = array();
 			$unsetVars = array('manage','delete','view');
 			foreach($aclcats as $oneCat){
-				if(JRequest::getString('acl_'.$oneCat) == 'all'){
+				if(hikaInput::get()->getString('acl_'.$oneCat) == 'all'){
 					foreach($unsetVars as $oneVar){
 						unset($formData['acl_'.$oneCat.'_'.$oneVar]);
 					}
@@ -94,7 +94,7 @@ class ConfigController extends hikashopController{
 				$formData['watermark']=$data->file_path;
 			}
 		}
-		$formData['store_address']=JRequest::getVar( 'config_store_address','','','string',JREQUEST_ALLOWRAW);
+		$formData['store_address']=hikaInput::get()->getRaw( 'config_store_address','');
 
 		$this->_saveAddressFormat();
 
@@ -102,8 +102,9 @@ class ConfigController extends hikashopController{
 			$formData['cart_item_limit']=0;
 		}
 		if(!isset($this->wizard) && !$this->_checkWorkflow($formData)){
-			$app->enqueueMessage('Checkout workflow invalid. The modification is ignored. See <a style="font-size:1.2em;text-decoration:underline" href="http://www.hikashop.com/support/documentation/integrated-documentation/54-hikashop-config.html#main" target="_blank" >the documentation</a> for more information on how to configure that option.');
+			$app->enqueueMessage('Checkout workflow invalid. The modification is ignored. See <a style="font-size:1.2em;text-decoration:underline" href="http://www.hikashop.com/support/documentation/integrated-documentation/54-hikashop-config.html#main" target="_blank" >the documentation</a> for more information on how to configure that option.', 'error');
 			unset($formData['checkout']);
+			return false;
 		}
 
 		if(!isset($this->wizard)){
@@ -125,6 +126,7 @@ class ConfigController extends hikashopController{
 			foreach($symbols as $k => $symbol){
 				if(!in_array($symbol,$possibleSymbols)){
 					$app->enqueueMessage('The weight unit "'.$symbol.'" is not in the list of possible units : '.implode(',',$possibleSymbols));
+					return false;
 				}else{
 					$okSymbols[]=$symbol;
 				}
@@ -143,6 +145,7 @@ class ConfigController extends hikashopController{
 			foreach($symbols as $k => $symbol){
 				if(!in_array($symbol,$possibleSymbols)){
 					$app->enqueueMessage('The dimension unit "'.$symbol.'" is not in the list of possible units : '.implode(',',$possibleSymbols));
+					return false;
 				}else{
 					$okSymbols[]=$symbol;
 				}
@@ -155,7 +158,7 @@ class ConfigController extends hikashopController{
 		}
 		if(!isset($this->wizard) && $formData['force_ssl']=='url' && empty($formData['force_ssl_url'])){
 			$formData['force_ssl']='no';
-			$app->enqueueMessage('No ssl url specified, force ssl parametre setted to no');
+			$app->enqueueMessage('No ssl url specified, force ssl parameter setted to no');
 		}
 
 		if(!empty($formData['order_number_format']))
@@ -171,7 +174,7 @@ class ConfigController extends hikashopController{
 
 		$pluginsClass = hikashop_get('class.plugins');
 
-		$paramsPlugins = JRequest::getVar('params',array(),'','array');
+		$paramsPlugins = hikaInput::get()->get('params', array(), 'array');
 		foreach($paramsPlugins as $group => $paramsPluginsOneGroup){
 			foreach($paramsPluginsOneGroup as $name => $paramsPlugin){
 				$plugin = $pluginsClass->getByName($group,$name);
@@ -200,6 +203,7 @@ class ConfigController extends hikashopController{
 	 	$doc->addScriptDeclaration($js);
 
 		$config->load();
+		return $status;
 
 	}
 
@@ -247,7 +251,7 @@ class ConfigController extends hikashopController{
 		}
 		if($address && !$login){
 			$app = JFactory::getApplication();
-			$app->enqueueMessage('You cannot have the Address view without the Login view on your checkout workflow.');
+			$app->enqueueMessage('You cannot have the Address view without the Login view on your checkout workflow.', 'error');
 			return false;
 		}
 		return true;
@@ -256,7 +260,7 @@ class ConfigController extends hikashopController{
 	function _saveAddressFormat(){
 		if(!HIKASHOP_J25)
 			return;
-		$format = trim(JRequest::getVar( 'config_address_format','','','string',JREQUEST_ALLOWRAW));
+		$format = trim(hikaInput::get()->getRaw( 'config_address_format',''));
 		if(empty($format))
 			return;
 		$config = hikashop_config();
@@ -281,10 +285,12 @@ class ConfigController extends hikashopController{
 
 		foreach($templates as $template){
 			$path = HIKASHOP_ROOT;
+			$view = 'address';
 			if($template->client_id){
 				$path .= 'administrator' . DS;
+				$view = 'order';
 			}
-			$path .= 'templates' . DS . $template->template . DS . 'html' . DS . 'com_hikashop' . DS . 'address' . DS . 'address_template.php';
+			$path .= 'templates' . DS . $template->template . DS . 'html' . DS . 'com_hikashop' . DS . $view . DS . 'address_template.php';
 			JFile::write($path, $format);
 		}
 	}
@@ -325,7 +331,7 @@ class ConfigController extends hikashopController{
 	}
 
 	function display($cachable = false, $urlparams = array()){
-		JRequest::setVar( 'layout', 'config'  );
+		hikaInput::get()->set( 'layout', 'config'  );
 		return parent::display();
 	}
 	function test(){
@@ -444,7 +450,7 @@ class ConfigController extends hikashopController{
 	}
 
 	function language(){
-		JRequest::setVar( 'layout', 'language'  );
+		hikaInput::get()->set( 'layout', 'language'  );
 		return parent::display();
 	}
 	function savelanguage(){
@@ -457,8 +463,12 @@ class ConfigController extends hikashopController{
 	}
 
 	function savecss(){
-		JRequest::checkToken() || die( 'Invalid Token' );
-		$file = JRequest::getCmd('file');
+		if(!HIKASHOP_J25) {
+			JRequest::checkToken() || die('Invalid Token');
+		} else {
+			JSession::checkToken() || die('Invalid Token');
+		}
+		$file = hikaInput::get()->getCmd('file');
 		if(!preg_match('#^([-_a-z0-9]*)_([-_a-z0-9]*)$#i',$file,$result)){
 			hikashop_display('Could not load the file '.htmlentities($file).' properly');
 			exit;
@@ -471,10 +481,10 @@ class ConfigController extends hikashopController{
 			hikashop_display(JText::sprintf('FAIL_SAVE','invalid filename'),'error');
 			return $this->css();
 		}
-		$csscontent = JRequest::getString('csscontent');
+		$csscontent = hikaInput::get()->getString('csscontent');
 		$alreadyExists = file_exists($path);
 		if(JFile::write($path, $csscontent)){
-			$varName = JRequest::getCmd('var');
+			$varName = hikaInput::get()->getCmd('var');
 			$configName = 'css_'.$varName;
 			$config =& hikashop_config();
 			$newConfig = new stdClass();
@@ -496,16 +506,16 @@ class ConfigController extends hikashopController{
 		return $this->css();
 	}
 	function css(){
-		JRequest::setVar( 'layout', 'css'  );
+		hikaInput::get()->set( 'layout', 'css'  );
 		return parent::display();
 	}
 
 
 	function send(){
 		JRequest::checkToken() || die( 'Invalid Token' );
-		$bodyEmail = JRequest::getString('mailbody');
-		$code = JRequest::getString('code');
-		JRequest::setVar('code',$code);
+		$bodyEmail = hikaInput::get()->getString('mailbody');
+		$code = hikaInput::get()->getString('code');
+		hikaInput::get()->set('code',$code);
 		if(empty($code)) return;
 		$config =& hikashop_config();
 		$user = hikashop_loadUser(true);
@@ -521,6 +531,11 @@ class ConfigController extends hikashopController{
 		$mail->html=0;
 		jimport('joomla.filesystem.file');
 		$path = JPath::clean(JLanguage::getLanguagePath(JPATH_ROOT).DS.$code.DS.$code.'.com_hikashop.ini');
+		$result = parse_ini_file($path);
+		if(!$result){
+			hikashop_display('There is an parsing error in your language file. So the file could not be sent. Please activate the "debug language" setting of the Joomla configuration and look at the debug information at the bottom of the page. It will tell you on which line of the file you have a problem.', 'success');
+			return;
+		}
 		$mailClass->mailer->AddAttachment($path);
 		$result = $mailClass->sendMail($mail);
 
@@ -530,9 +545,13 @@ class ConfigController extends hikashopController{
 		}
 	}
 	function share(){
-		JRequest::checkToken() || die( 'Invalid Token' );
+		if(!HIKASHOP_J25) {
+			JRequest::checkToken() || die('Invalid Token');
+		} else {
+			JSession::checkToken() || die('Invalid Token');
+		}
 		if($this->_savelanguage()){
-			JRequest::setVar( 'layout', 'share' );
+			hikaInput::get()->set( 'layout', 'share' );
 			return parent::display();
 		}else{
 			return $this->language();
@@ -541,11 +560,11 @@ class ConfigController extends hikashopController{
 	function _savelanguage(){
 		jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.folder');
-		$code = JRequest::getString('code');
-		JRequest::setVar('code',$code);
-		$content = JRequest::getVar('content','','','string',JREQUEST_ALLOWRAW);
+		$code = hikaInput::get()->getString('code');
+		hikaInput::get()->set('code',$code);
+		$content = hikaInput::get()->getRaw('content', '');
 		if(empty($code)) return;
-		$content_override = JRequest::getVar('content_override','','','string',JREQUEST_ALLOWRAW);
+		$content_override = hikaInput::get()->getRaw('content_override', '');
 		$folder = JLanguage::getLanguagePath(JPATH_ROOT).DS.'overrides';
 		jimport('joomla.filesystem.folder');
 		if(!JFolder::exists($folder)){
@@ -574,7 +593,7 @@ class ConfigController extends hikashopController{
 			hikashop_display(JText::_('HIKASHOP_SUCC_SAVED'),'success');
 			$updateHelper = hikashop_get('helper.update');
 			$updateHelper->installMenu($code);
-			$js = "window.top.document.getElementById('image$code').src = '".HIKASHOP_IMAGES."icons/icon-16-edit.png'";
+			$js = "window.top.document.getElementById('image$code').src = '".HIKASHOP_IMAGES."'edit.png''";
 			$doc = JFactory::getDocument();
 			$doc->addScriptDeclaration( $js );
 		}else{
@@ -639,7 +658,7 @@ class ConfigController extends hikashopController{
 		$databaseHelper = hikashop_get('helper.database');
 		$html = $databaseHelper->checkdb();
 
-		JRequest::setVar('layout', 'checkdb');
+		hikaInput::get()->set('layout', 'checkdb');
 		return parent::display();
 	}
 }

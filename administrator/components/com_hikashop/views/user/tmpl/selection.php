@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -33,7 +33,7 @@ function hikashop_setId(id) {
 }
 </script>
 <?php } ?>
-<form action="index.php?option=<?php echo HIKASHOP_COMPONENT ?>&amp;ctrl=<?php echo JRequest::getCmd('ctrl'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="index.php?option=<?php echo HIKASHOP_COMPONENT ?>&amp;ctrl=<?php echo hikaInput::get()->getCmd('ctrl'); ?>" method="post" name="adminForm" id="adminForm">
 	<table class="hika_filter">
 		<tr>
 			<td width="100%">
@@ -141,11 +141,11 @@ function hikashop_setId(id) {
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 	<input type="hidden" name="task" value="selection" />
 	<input type="hidden" name="tmpl" value="component" />
-	<input type="hidden" name="after" value="<?php echo JRequest::getVar('after', ''); ?>" />
-	<input type="hidden" name="afterParams" value="<?php echo JRequest::getVar('afterParams', ''); ?>" />
+	<input type="hidden" name="after" value="<?php echo hikaInput::get()->getVar('after', ''); ?>" />
+	<input type="hidden" name="afterParams" value="<?php echo hikaInput::get()->getVar('afterParams', ''); ?>" />
 	<input type="hidden" name="confirm" value="<?php echo $this->confirm ? '1' : '0'; ?>" />
 	<input type="hidden" name="single" value="<?php echo $this->singleSelection ? '1' : '0'; ?>" />
-	<input type="hidden" name="ctrl" value="<?php echo JRequest::getCmd('ctrl'); ?>" />
+	<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getCmd('ctrl'); ?>" />
 	<input type="hidden" name="boxchecked" value="0" />
 	<input type="hidden" name="filter_order" value="<?php echo $this->pageInfo->filter->order->value; ?>" />
 	<input type="hidden" name="filter_order_Dir" value="<?php echo $this->pageInfo->filter->order->dir; ?>" />

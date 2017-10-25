@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -35,7 +35,7 @@ class OrderViewOrder extends hikashopView{
 		$null = null;
 		$fields =  $fieldsClass->getFields('backend_listing', $null, 'order');
 
-		$popup = (JRequest::getString('tmpl') === 'component');
+		$popup = (hikaInput::get()->getString('tmpl') === 'component');
 		$this->assignRef('popup',$popup);
 
 		$pageInfo = new stdClass();
@@ -50,7 +50,7 @@ class OrderViewOrder extends hikashopView{
 		if(empty($pageInfo->limit->value))
 			$pageInfo->limit->value = 500;
 
-		if(JRequest::getVar('search') != $app->getUserState($this->paramBase.".search")){
+		if(hikaInput::get()->getVar('search') != $app->getUserState($this->paramBase.".search")){
 			$app->setUserState( $this->paramBase.'.limitstart',0);
 			$pageInfo->limit->start = 0;
 		}else{
@@ -64,7 +64,7 @@ class OrderViewOrder extends hikashopView{
 		$pageInfo->filter->filter_partner = $app->getUserStateFromRequest($this->paramBase.".filter_partner",'filter_partner','','int');
 		$pageInfo->filter->filter_end = $app->getUserStateFromRequest($this->paramBase.".filter_end",'filter_end','','string');
 		$pageInfo->filter->filter_start = $app->getUserStateFromRequest($this->paramBase.".filter_start",'filter_start','','string');
-		$pageInfo->filter->filter_product = JRequest::getInt('filter_product',0);
+		$pageInfo->filter->filter_product = hikaInput::get()->getInt('filter_product',0);
 
 		$database = JFactory::getDBO();
 		$tables = array();
@@ -259,15 +259,15 @@ class OrderViewOrder extends hikashopView{
 		$fieldsClass = hikashop_get('class.field');
 		$fields = null;
 		if(!empty($order_id)){
-			$class = hikashop_get('class.order');
-			$order = $class->loadFullOrder($order_id,true);
+			$orderClass = hikashop_get('class.order');
+			$order = $orderClass->loadFullOrder($order_id,true);
 
 			if(hikashop_level(2)){
 				$fields['order'] = $fieldsClass->getFields('backend', $order, 'order');
 
 				$null = null;
 				$fields['entry'] = $fieldsClass->getFields('backend_listing',$null,'entry');
-				$fields['item'] = $fieldsClass->getFields('backend_listing',$null,'item');
+				$fields['item'] = $fieldsClass->getFields('backend_listing', $order->products,'item');
 			}
 			$task='edit';
 
@@ -361,13 +361,13 @@ class OrderViewOrder extends hikashopView{
 		}
 		$this->assignRef('products',$products);
 
-		$user_id = JRequest::getInt('user_id',0);
+		$user_id = hikaInput::get()->getInt('user_id',0);
 		if(!empty($user_id)){
 			$user_info='&user_id='.$user_id;
 			$url = hikashop_completeLink('user&task=edit&user_id='.$user_id);
 		}else{
 			$user_info='';
-			$cancel_url = JRequest::getVar('cancel_redirect');
+			$cancel_url = hikaInput::get()->getVar('cancel_redirect');
 			if(!empty($cancel_url)){
 				$url = base64_decode($cancel_url);
 			}else{
@@ -400,7 +400,7 @@ class OrderViewOrder extends hikashopView{
 
 	function changestatus(){
 		$order_id = hikashop_getCID('order_id');
-		$new_status = JRequest::getVar('status','');
+		$new_status = hikaInput::get()->getVar('status','');
 		if(!empty($order_id)){
 			$class = hikashop_get('class.order');
 			$order = $class->get($order_id,$new_status);
@@ -491,7 +491,7 @@ class OrderViewOrder extends hikashopView{
 
 	function changeplugin(){
 		$order_id = hikashop_getCID('order_id');
-		$new_status = JRequest::getVar('status','');
+		$new_status = hikaInput::get()->getVar('status','');
 		if(!empty($order_id)){
 			$class = hikashop_get('class.order');
 			$order = $class->loadNotification($order_id);
@@ -516,10 +516,10 @@ class OrderViewOrder extends hikashopView{
 		$order->mail->altbody='';
 		$this->assignRef('editor',$editor);
 		$pluginsPayment = hikashop_get('type.plugins');
-		$pluginsPayment->type=JRequest::getWord('type');
+		$pluginsPayment->type=hikaInput::get()->getWord('type');
 		$this->assignRef($pluginsPayment->type,$pluginsPayment);
 		$this->assignRef('type',$pluginsPayment->type);
-		$full_id = JRequest::getCmd('plugin');
+		$full_id = hikaInput::get()->getCmd('plugin');
 		$this->assignRef('full_id',$full_id);
 		$parts = explode('_',$full_id);
 		$id = array_pop($parts);
@@ -532,10 +532,10 @@ class OrderViewOrder extends hikashopView{
 
 	function mail(){
 		$element = new stdClass();
-		$element->order_id = JRequest::getInt('order_id',0);
+		$element->order_id = hikaInput::get()->getInt('order_id',0);
 
 		if(empty($element->order_id)){
-			$user_id = JRequest::getInt('user_id',0);
+			$user_id = hikaInput::get()->getInt('user_id',0);
 			$userClass = hikashop_get('class.user');
 			$element->customer = $userClass->get($user_id);
 			$mailClass = hikashop_get('class.mail');
@@ -562,7 +562,7 @@ class OrderViewOrder extends hikashopView{
 	}
 
 	function export() {
-		$ids = JRequest::getVar('cid', array(), '', 'array');
+		$ids = hikaInput::get()->get('cid', array(), 'array');
 		$database = JFactory::getDBO();
 		$fieldsClass = hikashop_get('class.field');
 		$fields = $fieldsClass->getData('all','order',false);
@@ -794,7 +794,6 @@ class OrderViewOrder extends hikashopView{
 		}
 		$this->assignRef('products',$products);
 
-
 		if(!empty($order->order_payment_id)){
 			$pluginsPayment = hikashop_get('type.plugins');
 			$pluginsPayment->type='payment';
@@ -840,7 +839,7 @@ class OrderViewOrder extends hikashopView{
 			}
 		}
 
-		$type = JRequest::getWord('type');
+		$type = hikaInput::get()->getWord('type');
 		$this->assignRef('invoice_type',$type);
 		$nobutton = true;
 		$this->assignRef('nobutton',$nobutton);
@@ -861,7 +860,7 @@ class OrderViewOrder extends hikashopView{
 			$product = $class->get($product_id);
 		}else{
 			$product = new stdClass();
-			$product->order_id = JRequest::getInt('order_id');
+			$product->order_id = hikaInput::get()->getInt('order_id');
 			$product->mail = new stdClass();
 			$product->mail->body = '';
 		}
@@ -882,15 +881,14 @@ class OrderViewOrder extends hikashopView{
 		$extraFields=array();
 		$fieldsClass = hikashop_get('class.field');
 		$this->assignRef('fieldsClass',$fieldsClass);
-		$null=null;
-		$extraFields['item'] = $fieldsClass->getFields('display:order_edit=1',$null,'item','user&task=state');
+		$extraFields['item'] = $fieldsClass->getFields('display:order_edit=1', $product, 'item', 'user&task=state');
 		$this->assignRef('extraFields',$extraFields);
 		$ratesType = hikashop_get('type.rates');
 		$this->assignRef('ratesType',$ratesType);
 	}
 	function user(){
 		$element = new stdClass();
-		$element->order_id = JRequest::getInt('order_id');
+		$element->order_id = hikaInput::get()->getInt('order_id');
 		$element->mail = new stdClass();
 		$element->mail->body = '';
 		$orderClass = hikashop_get('class.order');
@@ -919,11 +917,11 @@ class OrderViewOrder extends hikashopView{
 
 	function address(){
 		$address_id = hikashop_getCID('address_id');
-		$address_type = JRequest::getCmd('type');
+		$address_type = hikaInput::get()->getCmd('type');
 		$fieldsClass = hikashop_get('class.field');
 		$orderClass = hikashop_get('class.order');
 		$order = new stdClass();
-		$order->order_id = JRequest::getInt('order_id');
+		$order->order_id = hikaInput::get()->getInt('order_id');
 		$addressClass=hikashop_get('class.address');
 		$name = $address_type.'_address';
 		if(!empty($address_id)){
@@ -951,7 +949,7 @@ class OrderViewOrder extends hikashopView{
 		$this->assignRef('config',$config);
 		$this->paramBase.="_product_select";
 		$element = new stdClass();
-		$element->order_id = JRequest::getInt('order_id');
+		$element->order_id = hikaInput::get()->getInt('order_id');
 		$this->assignRef('element',$element);
 		$pageInfo = new stdClass();
 		$pageInfo->filter = new stdClass();
@@ -959,7 +957,7 @@ class OrderViewOrder extends hikashopView{
 		$pageInfo->limit = new stdClass();
 		$pageInfo->filter->order->value = $app->getUserStateFromRequest( $this->paramBase.".filter_order", 'filter_order',	'a.ordering','cmd' );
 		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest( $this->paramBase.".filter_order_Dir", 'filter_order_Dir',	'asc',	'word' );
-		if(JRequest::getVar('search')!=$app->getUserState($this->paramBase.".search")){
+		if(hikaInput::get()->getVar('search')!=$app->getUserState($this->paramBase.".search")){
 			$app->setUserState( $this->paramBase.'.limitstart',0);
 			$pageInfo->limit->start = 0;
 		}else{
@@ -1107,7 +1105,7 @@ class OrderViewOrder extends hikashopView{
 	public function show($tpl = null, $toolbar = true) {
 		$this->form();
 
-		$edit = JRequest::getVar('task','') == 'edit';
+		$edit = hikaInput::get()->getVar('task','') == 'edit';
 		$this->assignRef('edit', $edit);
 		$order_status_type = hikashop_get('type.order_status');
 		$this->assignRef('order_status', $order_status_type);
@@ -1155,7 +1153,7 @@ class OrderViewOrder extends hikashopView{
 	}
 
 	public function show_additional($tpl = null) {
-		$task = JRequest::getCmd('task', '');
+		$task = hikaInput::get()->getCmd('task', '');
 		if($task == 'save') {
 			$html = '<html><body><script type="text/javascript">'."\r\n".
 				'window.parent.hikashop.submitFct();'."\r\n".
@@ -1202,7 +1200,7 @@ class OrderViewOrder extends hikashopView{
 	}
 
 	public function show_products($tpl = null) {
-		$task = JRequest::getCmd('task', '');
+		$task = hikaInput::get()->getCmd('task', '');
 		if($task == 'save') {
 			$html = '<html><body><script type="text/javascript">'."\r\n".
 				'window.parent.hikashop.submitFct();'."\r\n".
@@ -1218,9 +1216,10 @@ class OrderViewOrder extends hikashopView{
 		$productClass = hikashop_get('class.product');
 		$fieldsClass = hikashop_get('class.field');
 		$this->assignRef('fieldsClass', $fieldsClass);
+		$this->fields['item'] = null;
 
-		$order_id = JRequest::getInt('order_id');
-		$order_product_id = JRequest::getInt('order_product_id', 0);
+		$order_id = hikaInput::get()->getInt('order_id');
+		$order_product_id = hikaInput::get()->getInt('order_product_id', 0);
 
 		$orderClass = hikashop_get('class.order');
 		$order = $orderClass->loadFullOrder($order_id);
@@ -1236,12 +1235,14 @@ class OrderViewOrder extends hikashopView{
 			if(!empty($orderProduct->product_id)) {
 				$originalProduct = $productClass->get($orderProduct->product_id);
 			}
+			if(hikashop_level(2))
+				$this->fields['item'] = $this->fieldsClass->getFields('display:order_edit=1',$orderProduct,'item','user&task=state');
 		}else{
 			$orderProduct = new stdClass();
 			$orderProduct->order_id = $order_id;
 			$orderProduct->order_product_quantity = 1;
 
-			$product_id = JRequest::getVar('cid', array(), '', 'array');
+			$product_id = hikaInput::get()->get('cid', array(), 'array');
 
 			if(!empty($product_id)) {
 				$database = JFactory::getDBO();
@@ -1321,6 +1322,8 @@ class OrderViewOrder extends hikashopView{
 							$orderProduct->order_product_tax_info = @$price->taxes;
 						}
 					}
+					if(hikashop_level(2))
+						$this->fields['item'] = $this->fieldsClass->getFields('display:order_edit=1',$allproducts,'item','user&task=state');
 				}
 			}
 		}
@@ -1329,25 +1332,20 @@ class OrderViewOrder extends hikashopView{
 
 		$ratesType = hikashop_get('type.rates');
 		$this->assignRef('ratesType',$ratesType);
-
-		if(hikashop_level(2)) {
-			$null = null;
-			$this->fields['item'] = $this->fieldsClass->getFields('display:order_edit=1',$null,'item','user&task=state');
-		}
 	}
 
 	public function customer_set() {
-		$users = JRequest::getVar('cid', array(), '', 'array');
-		$closePopup = JRequest::getInt('finalstep', 0);
+		$users = hikaInput::get()->get('cid', array(), 'array');
+		$closePopup = hikaInput::get()->getInt('finalstep', 0);
 
 		if($closePopup) {
-			$formData = JRequest::getVar('data', array(), '', 'array');
+			$formData = hikaInput::get()->get('data', array(), 'array');
 			$users = array( (int)$formData['order']['order_user_id'] );
 		}
 		$rows = array();
 		$data = '';
-		$singleSelection = true; //JRequest::getVar('single', false);
-		$order_id = JRequest::getInt('order_id', 0);
+		$singleSelection = true; //hikaInput::get()->getVar('single', false);
+		$order_id = hikaInput::get()->getInt('order_id', 0);
 
 		$elemStruct = array(
 			'user_email',
@@ -1357,7 +1355,7 @@ class OrderViewOrder extends hikashopView{
 			'email'
 		);
 
-		$set_address = JRequest::getInt('set_user_address', 0);
+		$set_address = hikaInput::get()->getInt('set_user_address', 0);
 
 		if(!empty($users)) {
 			JArrayHelper::toInteger($users);

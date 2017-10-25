@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -211,7 +211,7 @@ class plgHikashoppaymentCardSave extends hikashopPaymentPlugin
 								$order_text .= "\r\n".str_replace('<br/>',"\r\n",JText::sprintf('ACCESS_ORDER_WITH_LINK',$url));
 
 								$email->subject = JText::sprintf('PAYMENT_NOTIFICATION','CardSave','Accepted');
-								$email->body = str_replace('<br/>',"\r\n",JText::sprintf('PAYMENT_NOTIFICATION_STATUS','CardSave','Accepted')).' '.JText::sprintf('ORDER_STATUS_CHANGED',$order_status)."\r\n\r\n".$order_text;
+								$email->body = str_replace('<br/>',"\r\n",JText::sprintf('PAYMENT_NOTIFICATION_STATUS','CardSave','Accepted')).' '.JText::sprintf('ORDER_STATUS_CHANGED', hikashop_orderStatus($order_status))."\r\n\r\n".$order_text;
 
 								$this->modifyOrder($order,$order_status,$history,$email);
 
@@ -793,7 +793,7 @@ class plgHikashoppaymentCardSave extends hikashopPaymentPlugin
 								$payment_status = 'confirmed';
 
 								$email->subject = JText::sprintf('PAYMENT_NOTIFICATION','CardSave','Accepted');
-								$email->body = str_replace('<br/>',"\r\n",JText::sprintf('PAYMENT_NOTIFICATION_STATUS','CardSave','Accepted')).' '.JText::sprintf('ORDER_STATUS_CHANGED',$order_status)."\r\n\r\n".$order_text;
+								$email->body = str_replace('<br/>',"\r\n",JText::sprintf('PAYMENT_NOTIFICATION_STATUS','CardSave','Accepted')).' '.JText::sprintf('ORDER_STATUS_CHANGED', hikashop_orderStatus($order_status))."\r\n\r\n".$order_text;
 
 								$this->modifyOrder($order_id,$order_status,$history,$email);
 
@@ -803,7 +803,7 @@ class plgHikashoppaymentCardSave extends hikashopPaymentPlugin
 								$order_status = $this->payment_params->invalid_status;
 								$email->subject = JText::sprintf('PAYMENT_NOTIFICATION','CardSave','Transaction declined');
 
-								$email->body = str_replace('<br/>',"\r\n",JText::sprintf('PAYMENT_NOTIFICATION_STATUS','CardSave','Declined')).' '.JText::sprintf('ORDER_STATUS_CHANGED',$order_status)."\r\n\r\n".$order_text;
+								$email->body = str_replace('<br/>',"\r\n",JText::sprintf('PAYMENT_NOTIFICATION_STATUS','CardSave','Declined')).' '.JText::sprintf('ORDER_STATUS_CHANGED', hikashop_orderStatus($order_status))."\r\n\r\n".$order_text;
 
 								$this->modifyOrder($order_id,$order_status,$history,$email);
 
@@ -821,7 +821,7 @@ class plgHikashoppaymentCardSave extends hikashopPaymentPlugin
 											$history->notified = 1;
 											$payment_status = 'confirmed';
 											$email->subject = JText::sprintf('PAYMENT_NOTIFICATION','CardSave','Accepted');
-											$email->body = str_replace('<br/>',"\r\n",JText::sprintf('PAYMENT_NOTIFICATION_STATUS','CardSave','Accepted')).' '.JText::sprintf('ORDER_STATUS_CHANGED',$order_status)."\r\n\r\n".$order_text;
+											$email->body = str_replace('<br/>',"\r\n",JText::sprintf('PAYMENT_NOTIFICATION_STATUS','CardSave','Accepted')).' '.JText::sprintf('ORDER_STATUS_CHANGED', hikashop_orderStatus($order_status))."\r\n\r\n".$order_text;
 
 											$this->modifyOrder($order_id,$order_status,$history,$email);
 										}

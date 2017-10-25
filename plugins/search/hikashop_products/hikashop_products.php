@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -34,7 +34,7 @@ class plgSearchHikashop_products extends JPlugin{
 
 	function &onSearchAreas(){
 		$areas = array(
-			'products' => JText::_('PRODUCTS')
+			'products' => JText::_('PRODUCTS_SEARCH')
 		);
 		return $areas;
 	}
@@ -227,12 +227,13 @@ class plgSearchHikashop_products extends JPlugin{
 						if($row->id==$item->reference_id){
 							if($item->reference_field=='product_name'){
 								$row->product_name=$item->value;
+								break;
 							}elseif($item->reference_field=='product_description'){
 								$row->product_description=$item->value;
+								break;
 							}else{
 								$row->product_name=$item->value;
 							}
-							break;
 						}
 					}
 				}

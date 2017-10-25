@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,12 +24,12 @@ class ReportController extends hikashopController{
 	}
 
 	function tableform(){
-		JRequest::setVar( 'layout', 'tableform'  );
+		hikaInput::get()->set( 'layout', 'tableform'  );
 		return $this->display();
 	}
 
 	function csv(){
-		JRequest::setVar( 'layout', 'csv'  );
+		hikaInput::get()->set( 'layout', 'csv'  );
 		return $this->display();
 	}
 
@@ -41,7 +41,7 @@ class ReportController extends hikashopController{
 	}
 
 	function save(){
-		$dashboard = JRequest::getVar('dashboard');
+		$dashboard = hikaInput::get()->getVar('dashboard');
 		if($dashboard){
 			$this->store();
 			$this->setRedirect(hikashop_completeLink('dashboard', false, true));
@@ -52,7 +52,7 @@ class ReportController extends hikashopController{
 	}
 
 	function cancel(){
-		$dashboard = JRequest::getVar('dashboard');
+		$dashboard = hikaInput::get()->getVar('dashboard');
 		if($dashboard){
 			$this->setRedirect(hikashop_completeLink('dashboard', false, true));
 		}else{

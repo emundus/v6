@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -12,6 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 <?php } ?>
 	<div class="hikashop_checkout_loading_elem"></div>
 	<div class="hikashop_checkout_loading_spinner"></div>
+
 <?php
 
 $this->checkoutHelper->displayMessages('payment');
@@ -19,6 +20,7 @@ $cart = $this->checkoutHelper->getCart();
 
 if(!empty($cart->usable_methods->payment)) {
 ?>
+<legend><?php echo JText::_('HIKASHOP_PAYMENT_METHOD');?></legend>
 <table style="width:100%" class="hikashop_payment_methods_table table table-bordered table-striped table-hover">
 <?php
 	foreach($cart->usable_methods->payment as $payment) {
@@ -129,7 +131,7 @@ if(!empty($cart->usable_methods->payment)) {
 <?php
 				if(empty($cc_data)) {
 ?>
-				<input type="text" autocomplete="off" name="checkout[payment][card][<?php echo $payment->payment_id; ?>][num]" value="" onchange="if(!hikashopCheckCreditCard(this.value)){ this.value = '';}" id="hk_co_p_c_<?php echo $payment->payment_id; ?>"/>
+				<input type="text" autocomplete="off" name="checkout[payment][card][<?php echo $payment->payment_id; ?>][num]" value="" onchange="if(!hikashopCheckCreditCard(this.value)){ this.value = ''; }" id="hk_co_p_c_<?php echo $payment->payment_id; ?>"/>
 <?php
 				} else {
 ?>
@@ -222,7 +224,7 @@ if(empty($this->ajax)) { ?>
 </div>
 <script type="text/javascript">
 if(!window.checkout) window.checkout = {};
-window.checkout.selectedPayment = <?php echo (int)$cart->payment->payment_id; ?>;
+window.checkout.selectedPayment = <?php echo (int)@$cart->payment->payment_id; ?>;
 
 window.Oby.registerAjax(['checkout.payment.updated','cart.updated'], function(params){
 	if(params && (params.cart_empty || (params.resp && params.resp.empty))) return;
@@ -235,8 +237,8 @@ window.checkout.paymentSelected = function(el) {
 		prefix = 'hikashop_checkout_payment_' + data.step + '_' + data.pos + '__',
 		el = null, d = document;
 
-	var url = "<?php echo hikashop_completeLink('checkout&task=submitblock&blocktask=payment&cid=HIKACID&blockpos=HIKAPOS&tmpl=ajax', false, false, true); ?>".replace("HIKACID", data.step).replace("HIKAPOS", data.pos),
-		formData = 'selectionOnly=1&' + encodeURI('checkout[payment][id]') + '=' + encodeURIComponent(data.id) + '&' + encodeURI(window.checkout.token)+'=1';
+	var url = "<?php echo hikashop_completeLink('checkout&task=submitblock&blocktask=payment'.$this->cartIdParam.'&Itemid='.$this->itemid, 'ajax', false, true); ?>",
+		formData = 'cid=' + encodeURIComponent(data.step) + '&blockpos=' + encodeURIComponent(data.pos) + '&selectionOnly=1&' + encodeURI('checkout[payment][id]') + '=' + encodeURIComponent(data.id) + '&' + encodeURI(window.checkout.token)+'=1';
 	window.Oby.xRequest(url, {mode:"POST", data: formData}, function(x,p) {
 		var r = window.Oby.evalJSON(x.responseText);
 		if(r && r.ret > 0) {
@@ -257,6 +259,11 @@ window.checkout.paymentSelected = function(el) {
 window.checkout.resetPayment = function(step, pos, payment_id) {
 	var formData = encodeURI('checkout[payment][id]') + '=' + encodeURIComponent(payment_id) + '&' + encodeURI('checkout[payment][card]['+payment_id+']') + '=reset';
 	return window.checkout.submitBlock('payment', step, pos, formData);
+};
+
+var ccHikaErrors = {
+	3: "<?php echo JText::_('CREDIT_CARD_INVALID', true); ?>",
+	5: "<?php echo JText::_('CREDIT_CARD_EXPIRED', true); ?>"
 };
 </script>
 <?php }

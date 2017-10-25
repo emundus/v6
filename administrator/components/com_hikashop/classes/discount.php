@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,7 +24,7 @@ class hikashopDiscountClass extends hikashopClass {
 
 		$nameboxes = array('discount_product_id','discount_category_id','discount_zone_id');
 
-		$formData = JRequest::getVar('data', array(), '', 'array');
+		$formData = hikaInput::get()->get('data', array(), 'array');
 
 		foreach($formData['discount'] as $column => $value) {
 			hikashop_secureField($column);
@@ -70,14 +70,14 @@ class hikashopDiscountClass extends hikashopClass {
 
 			if(!empty($res) && $res != (int)$discount->discount_id) {
 				$app->enqueueMessage(JText::_('DISCOUNT_CODE_ALREADY_USED'), 'error');
-				JRequest::setVar('fail', $discount);
+				hikaInput::get()->set('fail', $discount);
 				return false;
 			}
 		}
 
 		$status = $this->save($discount);
 		if(!$status) {
-			JRequest::setVar('fail', $discount);
+			hikaInput::get()->set('fail', $discount);
 			$app->enqueueMessage(JText::_('DISCOUNT_CODE_ALREADY_USED'));
 		}
 		return $status;
@@ -195,11 +195,11 @@ class hikashopDiscountClass extends hikashopClass {
 			$cartClass = hikashop_get('class.cart');
 			$cartClass->update('', 0, 0, 'coupon');
 			if($display_error) {
-				JRequest::setVar('coupon_error_message', $error_message);
+				hikaInput::get()->set('coupon_error_message', $error_message);
 			}
 			return null;
 		}
-		JRequest::setVar('coupon_error_message','');
+		hikaInput::get()->set('coupon_error_message','');
 
 		if(!$do)
 			return $coupon;
@@ -212,7 +212,7 @@ class hikashopDiscountClass extends hikashopClass {
 		} else {
 			if(!isset($coupon->total))
 				$coupon->total = new stdClass();
-			$coupon->total->prices = array(clone(reset($total->prices)));
+			$coupon->total->prices = array(hikashop_copy(reset($total->prices)));
 		}
 
 
@@ -257,30 +257,33 @@ class hikashopDiscountClass extends hikashopClass {
 		$config = hikashop_config();
 		$price = 'price_value';
 		$price_without_discount = 'price_value_without_discount';
-		if(!empty($coupon->discount_tax_id) || $config->get('discount_before_tax', 1)){
+		if(!empty($coupon->discount_tax_id) && !$config->get('discount_before_tax', 1)) {
 			$price = 'price_value_with_tax';
 			$price_without_discount = 'price_value_without_discount_with_tax';
 		}
 
 		if(!empty($coupon->discount_product_id)) {
-			if(!is_array($coupon->discount_product_id)){
-				$coupon->discount_product_id = explode(',',$coupon->discount_product_id);
+			if(!is_array($coupon->discount_product_id)) {
+				$coupon->discount_product_id = explode(',', $coupon->discount_product_id);
 			}
 			$variantsFirst = array_reverse($products);
 			foreach ($variantsFirst as $product) {
-				if(!isset($product->prices[0])) continue;
-				if(empty($product->cart_product_quantity)) continue;
+				if(!isset($product->prices[0]))
+					continue;
+				if(empty($product->cart_product_quantity))
+					continue;
 				if(in_array($product->product_id,$coupon->discount_product_id)  || in_array($product->product_parent_id,$coupon->discount_product_id)) {
-					switch($coupon->discount_coupon_nodoubling){
+					switch($coupon->discount_coupon_nodoubling) {
 						case 2:
 							if(isset($product->prices[0]->$price_without_discount)) {
 								$coupon->discount_flat_amount += ($coupon->discount_percent_amount * $product->prices[0]->$price) / 100;
 								$coupon->discount_flat_amount -= $product->prices[0]->$price_without_discount - $product->prices[0]->$price;
-								if($coupon->discount_flat_amount<0)$coupon->discount_flat_amount=0;
+								if($coupon->discount_flat_amount < 0)
+									$coupon->discount_flat_amount = 0;
 								continue;
 							}
 						case 1:
-							if(isset($product->prices[0]->$price_without_discount)){
+							if(isset($product->prices[0]->$price_without_discount)) {
 								continue;
 							}
 						default:
@@ -305,7 +308,7 @@ class hikashopDiscountClass extends hikashopClass {
 					if($product->product_id == $productid && empty($product->variants) || $product->product_parent_id == $productid) {
 						switch($coupon->discount_coupon_nodoubling) {
 							case 2:
-								if(isset($product->prices[0]->$price_without_discount)){
+								if(isset($product->prices[0]->$price_without_discount)) {
 									$coupon->discount_flat_amount += ($coupon->discount_percent_amount * $product->prices[0]->$price) / 100;
 									$coupon->discount_flat_amount -= $product->prices[0]->$price_without_discount - $product->prices[0]->$price;
 									if($coupon->discount_flat_amount < 0)
@@ -341,13 +344,14 @@ class hikashopDiscountClass extends hikashopClass {
 
 
 	function addCoupon(&$coupon1, &$products, &$currencyClass, $discountmode) {
-		$totaldiscount=0.0;
-		$totaldiscount_with_tax=0.0;
-		$totalprice=0.0;
-		$totalprice_with_tax=0.0;
-		$totalnondiscount=0.0;
-		$totalnondiscount_with_tax=0.0;
-		foreach($products as $k => $product){
+		$totaldiscount = 0.0;
+		$totaldiscount_with_tax = 0.0;
+		$totalprice = 0.0;
+		$totalprice_with_tax = 0.0;
+		$totalnondiscount = 0.0;
+		$totalnondiscount_with_tax = 0.0;
+
+		foreach($products as $k => $product) {
 			if(!empty($product->prices)&&$product->cart_product_quantity>0){
 				$price = reset($product->prices);
 				if (isset($price->price_value)) {
@@ -428,7 +432,7 @@ class hikashopDiscountClass extends hikashopClass {
 
 		if (@$price_diff <= 0) {
 			$couponErrorMessage = JText::_('COUPON_NO_VALUE_WHEN_DISCOUNT');
-			JRequest::setVar('coupon_error_message',$couponErrorMessage);
+			hikaInput::get()->set('coupon_error_message',$couponErrorMessage);
 			return $coupon1;
 		}
 		if(!(isset($coupon2->discount_percent_amount_calculated) && $discountmode == 2)){
@@ -446,7 +450,7 @@ class hikashopDiscountClass extends hikashopClass {
 
 		if ($coupon2->discount_flat_amount != $coupon2->discount_value_without_tax) {
 			$couponErrorMessage = JText::_('COUPON_LIMITED_VALUE_WHEN_DISCOUNT');
-			JRequest::setVar('coupon_error_message',$couponErrorMessage);
+			hikaInput::get()->set('coupon_error_message',$couponErrorMessage);
 		}
 		return $coupon2;
 	}

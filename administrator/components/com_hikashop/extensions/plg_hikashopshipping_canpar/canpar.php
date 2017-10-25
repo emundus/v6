@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -188,7 +188,7 @@ class plgHikashopshippingCANPAR extends hikashopShippingPlugin {
 		$this -> currencyCode = $currency -> get($this -> main_currency)->currency_code;
 		$this -> currencySymbol = $currency -> get($this -> main_currency)->currency_symbol;
 
-		$this -> canpar = JRequest::getCmd('name', 'canpar');
+		$this -> canpar = hikaInput::get()->getCmd('name', 'canpar');
 		$this -> categoryType = hikashop_get('type.categorysub');
 		$this -> categoryType -> type = 'tax';
 		$this -> categoryType -> field = 'category_id';
@@ -244,7 +244,7 @@ function checkAllBox(id, type){
 	}
 
 	function onShippingConfigurationSave(&$element) {
-		$warehouses = JRequest::getVar('warehouse', array(), '', 'array');
+		$warehouses = hikaInput::get()->get('warehouse', array(), 'array');
 		$cats = array();
 		$methods = array();
 		$db = JFactory::getDBO();

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -27,17 +27,17 @@ class MassactionController extends hikashopController{
 	}
 
 	function editcell(){
-		JRequest::setVar( 'layout', 'editcell' );
+		hikaInput::get()->set( 'layout', 'editcell' );
 		return parent::display();
 	}
 
 	function export(){
-		JRequest::setVar( 'layout', 'export' );
+		hikaInput::get()->set( 'layout', 'export' );
 		return parent::display();
 	}
 
 	function cancel_edit(){
-		JRequest::setVar( 'layout', 'cell' );
+		hikaInput::get()->set( 'layout', 'cell' );
 		return parent::display();
 	}
 
@@ -45,7 +45,7 @@ class MassactionController extends hikashopController{
 		$massactionClass = hikashop_get('class.massaction');
 
 		if(isset($_POST['hikashop'])){
-			$hikashop = JRequest::getVar( 'hikashop', '' );
+			$hikashop = hikaInput::get()->getVar( 'hikashop', '' );
 
 			$data = $hikashop['data'];
 			$table = $hikashop['table'];
@@ -87,7 +87,7 @@ class MassactionController extends hikashopController{
 			}
 
 		}
-		JRequest::setVar( 'layout', 'cell' );
+		hikaInput::get()->set( 'layout', 'cell' );
 		return parent::display();
 	}
 
@@ -97,7 +97,7 @@ class MassactionController extends hikashopController{
 		}
 
 		$massactionClass = hikashop_get('class.massaction');
-		$massaction = $massactionClass->get(JRequest::getInt('cid'));
+		$massaction = $massactionClass->get(hikaInput::get()->getInt('cid'));
 		$elements = array();
 		ob_start();
 		$massactionClass->process($massaction,$elements);
@@ -105,7 +105,7 @@ class MassactionController extends hikashopController{
 		$_POST['html_results']=$html;
 
 		if(!empty($massactionClass->report)){
-			if(JRequest::getCmd('tmpl') == 'component'){
+			if(hikaInput::get()->getCmd('tmpl') == 'component'){
 				echo hikashop_display($massactionClass->report,'info');
 				$js = "setTimeout('redirect()',2000); function redirect(){window.top.location.href = 'index.php?option=com_hikashop&ctrl=massaction'; }";
 				$doc = JFactory::getDocument();
@@ -122,7 +122,7 @@ class MassactionController extends hikashopController{
 	}
 
 	function copy(){
-		$actions = JRequest::getVar( 'cid', array(), '', 'array' );
+		$actions = hikaInput::get()->get('cid', array(), 'array');
 		$result = true;
 		if(!empty($actions)){
 			$massactionClass = hikashop_get('class.massaction');
@@ -145,9 +145,9 @@ class MassactionController extends hikashopController{
 
 	function countresults(){
 		$massActionClass = hikashop_get('class.massaction'); //load the hikaQuery class
-		$num = JRequest::getInt('num');
-		$table = JRequest::getWord('table');
-		$filters = JRequest::getVar('filter');
+		$num = hikaInput::get()->getInt('num');
+		$table = hikaInput::get()->getWord('table');
+		$filters = hikaInput::get()->getVar('filter');
 
 		if(empty($filters[$table]['type'][$num]))
 			exit;
@@ -171,14 +171,14 @@ class MassactionController extends hikashopController{
 	}
 
 	function results(){
-		JRequest::setVar( 'layout', 'results' );
+		hikaInput::get()->set( 'layout', 'results' );
 		return parent::display();
 	}
 
 	function displayassociate(){
-		$path = JRequest::getVar('csv_path');
-		$num = JRequest::getVar('current_filter');
-		$cid = JRequest::getVar('cid','');
+		$path = hikaInput::get()->getVar('csv_path');
+		$num = hikaInput::get()->getVar('current_filter');
+		$cid = hikaInput::get()->getVar('cid','');
 
 		if(!JPath::check($path)) {
 			echo JText::_('FILE_NOT_FOUND');

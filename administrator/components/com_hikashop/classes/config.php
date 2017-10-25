@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,7 +32,7 @@ class hikashopConfigClass extends hikashopClass{
 		}
 
 		if(isset($this->values[$namekey])){
-			if(preg_match('#^(menu_|params_)[0-9]+$#',$namekey) && !empty($this->values[$namekey]->config_value) && is_string($this->values[$namekey]->config_value)){
+			if((preg_match('#^(menu_|params_)[0-9]+$#',$namekey) || $namekey == 'default_params') && !empty($this->values[$namekey]->config_value) && is_string($this->values[$namekey]->config_value)){
 				$this->values[$namekey]->config_value = hikashop_unserialize(base64_decode($this->values[$namekey]->config_value));
 			}
 			if($namekey=='main_currency'){

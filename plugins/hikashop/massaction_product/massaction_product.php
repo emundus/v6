@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -140,8 +140,9 @@ class plgHikashopMassaction_product extends JPlugin
 		if(empty($filter['type']) || $filter['type']=='all') return;
 		if(!isset($this->massaction))$this->massaction = hikashop_get('class.massaction');
 		if(count($elements)){
+			$type = $filter['type'];
 			foreach($elements as $k => $element){
-				if(isset($element->$filter['type'])){
+				if(isset($element->$type)){
 					$in = $this->massaction->checkInElement($element, $filter);
 					if(!$in) unset($elements[$k]);
 				}
@@ -465,17 +466,24 @@ class plgHikashopMassaction_product extends JPlugin
 				$pool[$data->elements[$id]->product_code]['id'] = $data->elements[$id]->product_id;
 				$pool[$data->elements[$id]->product_code]['parent_id'] = $data->elements[$id]->product_parent_id;
 			}
+
 			$toGet = array();
 			foreach($data->ids as $i => $id){
-				if(isset($data->elements[$id]->product_parent_id) && $data->elements[$id]->product_parent_id != '' && (int)$data->elements[$id]->product_parent_id == 0 && !in_array($data->elements[$id]->product_parent_id,$pool) && !in_array($data->elements[$id]->product_parent_id,$toGet)){
-					$toGet[] = $data->elements[$id]->product_parent_id;
+				if(!isset($data->elements[$id]->product_parent_id) || empty($data->elements[$id]->product_parent_id))
+					continue;
+				if((int)$data->elements[$id]->product_parent_id == 0 && !in_array($data->elements[$id]->product_parent_id,$pool) && !isset($toGet[$data->elements[$id]->product_parent_id])) {
+					$toGet[$data->elements[$id]->product_parent_id] = $db->Quote($data->elements[$id]->product_parent_id);
 				}
 			}
-			$db->setQuery('SELECT * FROM '.hikashop_table('product').' WHERE product_code IN (\''.implode('\',\'',$toGet).'\')');
-			$gets = $db->loadObjectList();
-			foreach($gets as $get){
-				$pool[$get->product_code]['id'] = $get->product_id;
-				$pool[$get->product_code]['parent_id'] = $get->product_parent_id;
+
+			if(!empty($toGet)) {
+				$db->setQuery('SELECT product_id, product_parent_id, product_code FROM '.hikashop_table('product').' WHERE product_code IN ('.implode(',', $toGet).')');
+				$gets = $db->loadObjectList();
+				foreach($gets as $get){
+					$pool[$get->product_code]['id'] = $get->product_id;
+					$pool[$get->product_code]['parent_id'] = $get->product_parent_id;
+				}
+				unset($gets);
 			}
 
 			if(!is_array($data->ids)) $data->ids = array($data->ids);
@@ -754,7 +762,7 @@ class plgHikashopMassaction_product extends JPlugin
 		$params->action_id = $k;
 		$js = '';
 		$app = JFactory::getApplication();
-		if($app->isAdmin() && JRequest::getVar('ctrl','massaction') == 'massaction'){
+		if($app->isAdmin() && hikaInput::get()->getVar('ctrl','massaction') == 'massaction'){
 			echo hikashop_getLayout('massaction','results',$params,$js);
 		}
 	}
@@ -800,15 +808,16 @@ class plgHikashopMassaction_product extends JPlugin
 		$current = 'product';
 		$current_id = $current.'_id';
 		$ids = array();
+		$type = $action['type'];
 		foreach($elements as $element){
 			$ids[] = $element->$current_id;
-			if(isset($element->$action['type']))
-				$element->$action['type'] = $action['value'];
+			if(isset($element->$type))
+				$element->$type = $action['value'];
 
 		}
 
-		$action['type'] = strip_tags($action['type']);
-		$alias = explode('_',$action['type']);
+		$type = $action['type'] = strip_tags($type);
+		$alias = explode('_',$type);
 		$queryTables = array($current);
 		$possibleTables = array($current, 'price');
 
@@ -843,13 +852,13 @@ class plgHikashopMassaction_product extends JPlugin
 				for($i = 0; $i < $c; $i++){
 					$offset = $max * $i;
 					$id = array_slice($ids, $offset, $max);
-					$query = $mainQuery.' SET hk_'.$hk.'.'.$action['type'].' = '.$value.' ';
+					$query = $mainQuery.' SET hk_'.$hk.'.'.$type.' = '.$value.' ';
 					$query .= 'WHERE hk_'.$current.'.'.$current.'_id IN ('.implode(',',$id).')';
 					$db->setQuery($query);
 					$db->query();
 				}
 			}else{
-				$query .= 'SET hk_'.$hk.'.'.$action['type'].' = '.$value.' ';
+				$query .= 'SET hk_'.$hk.'.'.$type.' = '.$value.' ';
 				$query .= 'WHERE hk_'.$current.'.'.$current.'_id IN ('.implode(',',$ids).')';
 				$db->setQuery($query);
 				$db->query();
@@ -873,7 +882,7 @@ class plgHikashopMassaction_product extends JPlugin
 							$data->price_min_quantity = 0;
 							$data->price_access = 'all';
 							$data->price_users = '';
-							$data->$action['type'] = $action['value'];
+							$data->$type = $action['value'];
 							$values[] = (int)$data->price_currency_id.','.(int)$data->price_product_id.','.(float)$data->price_value.','.(int)$data->price_min_quantity.','.$db->quote($data->price_access).','.$db->quote($data->price_users);
 						}
 						$query = 'INSERT INTO '.hikashop_table('price').' (price_currency_id,price_product_id,price_value,price_min_quantity,price_access,price_users) VALUES ('.implode('),(',$values).')';

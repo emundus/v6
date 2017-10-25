@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,7 +24,7 @@ class VoteViewvote extends HikaShopView {
 		$class->loadJS();
 		$db = JFactory::getDBO();
 		$config = hikashop_config();
-		$type_item = JRequest::getCmd('ctrl');
+		$type_item = hikaInput::get()->getCmd('ctrl');
 		if(!empty($this->params)){
 			$ctrl_param = $this->params->get('main_ctrl','');
 			if(!empty($ctrl_param))
@@ -42,9 +42,9 @@ class VoteViewvote extends HikaShopView {
 		$vote_comment_sort_frontend = $config->get('vote_comment_sort_frontend',0);
 		$hikashop_vote_user_id = hikashop_loadUser();
 		if(!empty($this->params))
-			JRequest::setVar('productlayout',$this->params->get('productlayout','show_default'));
+			hikaInput::get()->set('productlayout',$this->params->get('productlayout','show_default'));
 		else
-			JRequest::setVar('productlayout','show_default');
+			hikaInput::get()->set('productlayout','show_default');
 
 		$hide = 1; //already voted !!
 		if(($access_useful == 1 && !empty($hikashop_vote_user_id)) || $access_useful == 0){
@@ -95,7 +95,7 @@ class VoteViewvote extends HikaShopView {
 					$order = ' ORDER BY `vote_date` DESC';
 				}
 				if($vote_comment_sort_frontend){
-					$sort_comments = JRequest::getString('sort_comment','');
+					$sort_comments = hikaInput::get()->getString('sort_comment','');
 					if($sort_comments == "date"){
 						$order = ' ORDER BY `vote_date` ASC';
 					}else if($sort_comments == "date_desc"){
@@ -189,7 +189,7 @@ class VoteViewvote extends HikaShopView {
 		$class->loadJS();
 		$type_item = $this->params->get('vote_type','');
 		if(empty($type_item))
-			$type_item = JRequest::getCmd('ctrl');
+			$type_item = hikaInput::get()->getCmd('ctrl');
 		$config = hikashop_config();
 		$db = JFactory::getDBO();
 		if(!empty($this->params)){
@@ -305,7 +305,7 @@ class VoteViewvote extends HikaShopView {
 		} else {
 			$doc = JFactory::getDocument();
 		}
-		$type_item = JRequest::getCmd('ctrl');
+		$type_item = hikaInput::get()->getCmd('ctrl');
 		$class = hikashop_get('class.vote');
 		$class->loadJS();
 		$doc->addScript(HIKASHOP_JS.'vote.js');
@@ -351,7 +351,7 @@ class VoteViewvote extends HikaShopView {
 		}
 
 		$hikashop_vote_average_score_rounded = round($hikashop_vote_average_score, 0);
-		JRequest::setVar('rate_rounded', $hikashop_vote_average_score_rounded);
+		hikaInput::get()->set('rate_rounded', $hikashop_vote_average_score_rounded);
 
 		$row->vote_ref_id = $hikashop_vote_ref_id;
 		$row->main_div_name = $main_div_name;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -118,7 +118,7 @@ class plgHikashoppaymentPostfinance extends hikashopPaymentPlugin {
 		foreach($_REQUEST as $key => $value) {
 			$key = $filter->clean($key);
 			if(preg_match("#^[0-9a-z_-]{1,30}$#i", $key) && !preg_match("#^cmd$#i", $key)) {
-				$vars[$key] = JRequest::getString($key);
+				$vars[$key] = hikaInput::get()->getString($key);
 			}
 		}
 

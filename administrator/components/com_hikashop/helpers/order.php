@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -25,9 +25,9 @@ class hikashopOrderHelper {
 			$sign = '<';
 			$dir = 'DESC';
 		}
-		$orders = JRequest::getVar( 'order', array(), '', 'array' );
+		$orders = hikaInput::get()->get('order', array(), 'array');
 		if($useCID) {
-			$ids = JRequest::getVar( 'cid', array(), '', 'array' );
+			$ids = hikaInput::get()->get('cid', array(), 'array');
 		} else {
 			$ids = array_keys($orders);
 		}
@@ -82,9 +82,9 @@ class hikashopOrderHelper {
 		}
 		$orderingMap = $this->orderingMap;
 
-		$order = JRequest::getVar('order', array(), 'post', 'array');
+		$order = hikaInput::get()->post->get('order', array(), 'array');
 		if($useCID) {
-			$cid = JRequest::getVar('cid', array(), 'post', 'array');
+			$cid = hikaInput::get()->post->get('cid', array(), 'array');
 			JArrayHelper::toInteger($cid);
 		} else {
 			$cid = array_keys($order);

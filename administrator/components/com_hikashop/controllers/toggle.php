@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -21,13 +21,13 @@ class ToggleController extends HikashopBridgeController {
 	}
 
 	function toggle() {
-		$completeTask = JRequest::getCmd('task');
+		$completeTask = hikaInput::get()->getVar('task');
 		$task = substr($completeTask,0,strrpos($completeTask,'-'));
 		$elementPkey = substr($completeTask,strrpos($completeTask,'-') +1);
-		$value =  JRequest::getVar('value','','','cmd');
-		$controllerName =  JRequest::getVar('table','','','word');
+		$value =  hikaInput::get()->getVar('value','','','cmd');
+		$controllerName =  hikaInput::get()->getVar('table','','','word');
 
-		$extra = JRequest::getVar('extra',array(),'','array');
+		$extra = hikaInput::get()->get('extra', array(), 'array');
 		if(!empty($extra)){
 			foreach($extra as $key => $val){
 				$extra[$key] = urldecode($val);
@@ -121,7 +121,7 @@ class ToggleController extends HikashopBridgeController {
 		$type = @$extra['type'];
 		if(!in_array($type, array('radio','toggle')))
 			$type = 'toggle';
-		echo $toggleHelper->$type(JRequest::getCmd('task',''),$value,$controllerName,$extra);
+		echo $toggleHelper->$type(hikaInput::get()->getCmd('task',''),$value,$controllerName,$extra);
 		exit;
 	}
 
@@ -210,8 +210,8 @@ class ToggleController extends HikashopBridgeController {
 	}
 
 	function delete(){
-		list($value1,$value2) = explode('-', JRequest::getCmd('value'), 2);
-		$table =  JRequest::getVar('table','','','word');
+		list($value1,$value2) = explode('-', hikaInput::get()->getCmd('value'), 2);
+		$table =  hikaInput::get()->getVar('table','','','word');
 
 		$controller = hikashop_get('controller.'.$table);
 		if(empty($controller)) {

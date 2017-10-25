@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -234,8 +234,8 @@ function category_listing_hideshow(el, state) {
 	<input type="hidden" name="task" value="selection" />
 	<input type="hidden" name="tmpl" value="component" />
 	<input type="hidden" name="selection" value="products" />
-	<input type="hidden" name="after" value="<?php echo JRequest::getVar('after', ''); ?>" />
-	<input type="hidden" name="afterParams" value="<?php echo JRequest::getVar('afterParams', ''); ?>" />
+	<input type="hidden" name="after" value="<?php echo hikaInput::get()->getVar('after', ''); ?>" />
+	<input type="hidden" name="afterParams" value="<?php echo hikaInput::get()->getVar('afterParams', ''); ?>" />
 	<input type="hidden" name="confirm" value="<?php echo $this->confirm ? '1' : '0'; ?>" />
 	<input type="hidden" name="single" value="<?php echo $this->singleSelection ? '1' : '0'; ?>" />
 	<input type="hidden" name="ctrl" value="product" />
@@ -249,8 +249,8 @@ function category_listing_hideshow(el, state) {
 				continue;
 			echo '<input type="hidden" name="'.$this->escape($p[0]).'" value="'.$this->escape($p[1]).'"/>' . "\r\n";
 		}
-		echo '<input type="hidden" name="after" value="'.JRequest::getString('after', '').'"/>'."\r\n";
-		echo '<input type="hidden" name="afterParams" value="'.JRequest::getString('afterParams', '').'"/>'."\r\n";
+		echo '<input type="hidden" name="after" value="'.hikaInput::get()->getString('after', '').'"/>'."\r\n";
+		echo '<input type="hidden" name="afterParams" value="'.hikaInput::get()->getString('afterParams', '').'"/>'."\r\n";
 	}
 ?>
 	<?php echo JHTML::_('form.token'); ?>

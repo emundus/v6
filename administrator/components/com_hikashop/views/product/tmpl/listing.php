@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -112,7 +112,7 @@ defined('_JEXEC') or die('Restricted access');
 								echo JHTML::_('grid.sort', JText::_('HIKA_NAME'), 'b.product_name', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?> / <?php echo JHTML::_('grid.sort', JText::_('PRODUCT_CODE'), 'b.product_code', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
 							?></th>
 							<th class="title"><?php
-								echo JText::_('PRODUCT_PRICE');
+								echo JHTML::_('grid.sort', JText::_('PRODUCT_PRICE'), 'b.product_sort_price', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
 							?></th>
 							<th class="title"><?php
 							echo JHTML::_('grid.sort', JText::_('PRODUCT_QUANTITY'), 'b.product_quantity', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
@@ -179,7 +179,10 @@ defined('_JEXEC') or die('Restricted access');
 								$image_options = array('default' => true,'forcesize'=>$this->config->get('image_force_size',true),'scale'=>$this->config->get('image_scale_mode','inside'));
 								$img = $this->image->getThumbnail(@$row->file_path, array('width' => 50, 'height' => 50), $image_options);
 								if($img->success) {
-									echo '<img class="hikashop_product_image" title="'.$this->escape(@$row->file_description).'" alt="'.$this->escape(@$row->file_name).'" src="'.$img->url.'"/>';
+									$attributes = '';
+									if($img->external)
+										$attributes = ' width="'.$img->req_width.'" height="'.$img->req_height.'"';
+									echo '<img class="hikashop_product_image" title="'.$this->escape(@$row->file_description).'" alt="'.$this->escape(@$row->file_name).'" src="'.$img->url.'"'.$attributes.'/>';
 								}
 							?></td>
 							<td>
@@ -252,7 +255,7 @@ defined('_JEXEC') or die('Restricted access');
 				</table>
 				<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 				<input type="hidden" name="task" value="" />
-				<input type="hidden" name="ctrl" value="<?php echo JRequest::getCmd('ctrl'); ?>" />
+				<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getCmd('ctrl'); ?>" />
 				<input type="hidden" name="boxchecked" value="0" />
 				<input type="hidden" id="filter_id" name="filter_id" value="<?php echo $this->pageInfo->filter->filter_id; ?>" />
 				<input type="hidden" name="filter_order" value="<?php echo $this->pageInfo->filter->order->value; ?>" />

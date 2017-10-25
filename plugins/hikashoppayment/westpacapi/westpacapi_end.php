@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,7 +23,7 @@ defined('_JEXEC') or die('Restricted access');
 			foreach($this->vars as $name => $value ) {
 				echo '<input type="hidden" name="'.$name.'" value="'.$value.'" />';
 			}
-			JRequest::setVar('noform',1); ?>
+			hikaInput::get()->set('noform',1); ?>
 	</form>
 	<script type="text/javascript">
 		<!--

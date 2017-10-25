@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -30,41 +30,64 @@ if(!HIKASHOP_J16) {
 }
 
 if(!HIKASHOP_RESPONSIVE) {
+	$labelcolumnclass = 'hkc-sm-4';
+	$inputcolumnclass = 'hkc-sm-8';
 ?>
-	<p id="com-form-login-username">
-		<label for="username"><?php echo JText::_('HIKA_USERNAME') ?></label><br />
-		<input type="text" id="username" name="login[username]" class="inputbox" alt="username" size="18" />
-	</p>
-	<p id="com-form-login-password">
-		<label for="passwd"><?php echo JText::_('HIKA_PASSWORD') ?></label><br />
-		<input type="password" id="passwd" name="login[passwd]" class="inputbox" size="18" alt="password" />
-	</p>
+<fieldset class="hkform-horizontal">
+	<div class="hkform-group control-group hikashop_login_username_line">
+		<label for="username" class="<?php echo $labelcolumnclass;?> hkcontrol-label"><?php echo JText::_('HIKA_USERNAME') ?></label>
+		<div class="<?php echo $inputcolumnclass;?>">
+			<input type="text" id="username" name="login[username]" class="inputbox" alt="<?php echo JText::_('HIKA_USERNAME') ?>" size="18" />
+		</div>
+	</div>
+	<div class="hkform-group control-group hikashop_login_password_line">
+		<label for="passwd" class="<?php echo $labelcolumnclass;?> hkcontrol-label"><?php echo JText::_('HIKA_PASSWORD') ?></label>
+		<div class="<?php echo $inputcolumnclass;?>">
+			<input type="password" id="passwd" name="login[passwd]" class="inputbox" size="18" alt="<?php echo JText::_('HIKA_PASSWORD') ?>" />
+		</div>
+	</div>
 <?php
 	if(JPluginHelper::isEnabled('system', 'remember')) {
 ?>
-	<p id="com-form-login-remember">
-		<label for="remember"><?php echo JText::_('HIKA_REMEMBER_ME') ?></label>
-		<input type="checkbox" id="remember" name="login[remember]" value="yes" alt="Remember Me" />
-	</p>
+	<div class="hkform-group control-group hikashop_login_remember_line">
+		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label"></div>
+		<div class=" <?php echo $inputcolumnclass;?>">
+			<div class="hkcheckbox">
+				<label for="remember">
+					<input type="checkbox" id="remember" name="login[remember]" value="yes" class="hkform-control" alt="<?php echo JText::_('HIKA_REMEMBER_ME') ?>" />
+					<?php echo JText::_('HIKA_REMEMBER_ME') ?>
+				</label>
+			</div>
+		</div>
+	</div>
 <?php
 	}
 ?>
-	<button type="submit" onclick="window.checkout.submitLogin(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>, 'login'); return false;" class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikabtn_checkout_login_form"><?php
-		echo JText::_('HIKA_LOGIN');
-	?></button>
-
-	<ul>
-		<li>
-			<a href="<?php echo JRoute::_( $reset_url ); ?>"><?php
-				echo JText::_('HIKA_FORGOT_YOUR_PASSWORD');
-			?></a>
-		</li>
-		<li>
-			<a href="<?php echo JRoute::_( $remind_url ); ?>"><?php
-				echo JText::_('HIKA_FORGOT_YOUR_USERNAME');
-			?></a>
-		</li>
-	</ul>
+	<div class="hkform-group control-group hikashop_login_button_line">
+		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label"></div>
+		<div class=" <?php echo $inputcolumnclass;?>">
+			<button type="submit" onclick="window.checkout.submitLogin(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>, 'login'); return false;" class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikabtn_checkout_login_form">
+				<?php echo JText::_('HIKA_LOGIN'); ?>
+			</button>
+		</div>
+	</div>
+	<div class="hkform-group control-group hikashop_login_forgot_password_line">
+		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label"></div>
+		<div class=" <?php echo $inputcolumnclass;?>">
+			<a href="<?php echo JRoute::_( $reset_url ); ?>">
+				<?php echo JText::_('HIKA_FORGOT_YOUR_PASSWORD'); ?>
+			</a>
+		</div>
+	</div>
+	<div class="hkform-group control-group hikashop_login_forgot_username_line">
+		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label"></div>
+		<div class=" <?php echo $inputcolumnclass;?>">
+			<a href="<?php echo JRoute::_( $remind_url ); ?>">
+				<?php echo JText::_('HIKA_FORGOT_YOUR_USERNAME'); ?>
+			</a>
+		</div>
+	</div>
+</fieldset>
 <?php
 
 } else {

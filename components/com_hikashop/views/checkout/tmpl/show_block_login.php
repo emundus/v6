@@ -1,26 +1,15 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-if(!empty($this->options['current_login']) && empty($this->ajax))
+if(!empty($this->options['current_login']) && empty($this->mainUser->guest) && empty($this->ajax))
 	return;
-
-if(!empty($this->options['current_login'])) {
-?>
-<script type="text/javascript">
-var hct = document.getElementById('hikashop_checkout_token');
-if(hct) hct.name = '<?php echo hikashop_getFormToken(); ?>';
-if(window.checkout) window.checkout.token = '<?php echo hikashop_getFormToken(); ?>';
-</script>
-<?php
-	return;
-}
 
 if(empty($this->ajax)) {
 ?>
@@ -31,6 +20,32 @@ if(empty($this->ajax)) {
 	<div class="hikashop_checkout_loading_elem"></div>
 	<div class="hikashop_checkout_loading_spinner"></div>
 <?php
+
+if(!empty($this->options['current_login'])) {
+	if($this->mainUser->guest) {
+?>
+	<span id="hikashop_checkout_guest_email_title">
+		<?php echo JText::_('HIKA_EMAIL'); ?><span class="hikashop_checkout_guest_email_separator">:</span>
+	</span>
+	<span id="hikashop_checkout_guest_email_value"><?php echo $this->options['current_login']->user_email; ?></span>
+	<a href="" class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikabtn_checkout_guest_logout" onclick="window.checkout.submitBlock('login', <?php echo $this->step; ?>, <?php echo $this->module_position; ?>, 'hikashop_checkout_guest_logout=1'); this.disabled=true; window.Oby.addClass(this, 'next_button_disabled'); return false;"><?php
+		echo JText::_('CHANGE_GUEST_INFORMATION');
+?>
+	</a>
+<?php
+	}
+?>
+	<script type="text/javascript">
+	var hct = document.getElementById('hikashop_checkout_token');
+	if(hct) hct.name = '<?php echo hikashop_getFormToken(); ?>';
+	if(window.checkout) window.checkout.token = '<?php echo hikashop_getFormToken(); ?>';
+	</script>
+</div>
+<?php
+	return;
+}
+
+
 	$this->checkoutHelper->displayMessages('login');
 
 	if(!empty($this->options['registration_invalid_fields'])){
@@ -166,8 +181,8 @@ if(invalid_field)
 ?>
 <script type="text/javascript">
 window.hikashop.ready(function(){
-	var currentRegistrationSelection = window.document.getElementById('data_register_registration_method<?php echo $this->options['default_registration_view']; ?>');
-	if(!currentRegistrationSelection) currentRegistrationSelection = window.document.getElementById('data[register][registration_method]<?php echo $this->options['default_registration_view']; ?>');
+	var currentRegistrationSelection = document.getElementById('data_register_registration_method<?php echo $this->options['default_registration_view']; ?>');
+	if(!currentRegistrationSelection) currentRegistrationSelection = document.getElementById('data[register][registration_method]<?php echo $this->options['default_registration_view']; ?>');
 	displayRegistration(currentRegistrationSelection);
 });
 function displayRegistration(el) {
@@ -193,7 +208,7 @@ function displayRegistration(el) {
 		els.forEach(function(el) {
 			el.className = "form-horizontal";
 		});';
-}?>	
+}?>
 		if(login_div)
 			login_div.className = '';
 		if(registration_div)
@@ -218,8 +233,15 @@ function displayRegistration(el) {
 		els.forEach(function(el) {
 			el.className = "hikashop_hidden_checkout";
 		});
+		var message = document.getElementById(\'registration_not_allowed_div\');
+		if(!message){
+			message = document.createElement("div");
+			message.setAttribute(\'id\', \'registration_not_allowed_div\');
+			message.innerHTML = \''.JText::_('REGISTRATION_NOT_ALLOWED', true).'\';
+			registration_div.insertBefore(message, registration_div.firstChild.nextSibling.nextSibling);
+		}
 		return;';
-}?>	
+}?>
 
 		if(value == 0) {
 			if(name) name.style.display = "";
@@ -245,8 +267,12 @@ function displayRegistration(el) {
 			els = Array.prototype.slice.call(els);
 		els.forEach(function(el) {
 			el.className = "form-horizontal";
-		});';
-}?>	
+		});
+		var message = document.getElementById(\'registration_not_allowed_div\');
+		if(message)
+			registration_div.removeChild(message);
+		';
+}?>
 		if(login_div)
 			login_div.className = 'hikashop_hidden_checkout';
 		if(registration_div)

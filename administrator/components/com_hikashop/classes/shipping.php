@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -229,6 +229,8 @@ class hikashopShippingClass extends hikashopClass {
 
 		$shipping_groups = $this->getShippingGroups($order, $rates);
 
+		$sort_shipping_by_price = (int)$config->get('sort_shipping_by_price', 0);
+
 		JPluginHelper::importPlugin('hikashopshipping');
 		$dispatcher = JDispatcher::getInstance();
 
@@ -373,7 +375,10 @@ class hikashopShippingClass extends hikashopClass {
 
 			$dispatcher->trigger('onShippingDisplay', array(&$order, &$rates, &$usable_methods, &$errors));
 
-			uasort($usable_methods, array($this, "sortShipping"));
+			if($sort_shipping_by_price)
+				uasort($usable_methods, array($this, "sortShippingByPrice"));
+			else
+				uasort($usable_methods, array($this, "sortShipping"));
 
 			$g = reset($shipping_groups);
 			if(empty($g)) {
@@ -395,7 +400,10 @@ class hikashopShippingClass extends hikashopClass {
 			$i = 0;
 			$shipping_ordering = array();
 			foreach($usable_methods as $key => $shipping_method) {
-				$shipping_ordering[$key] = sprintf('%05d', $shipping_method->shipping_ordering).'_'.sprintf('%05d', $i);
+				if($sort_shipping_by_price)
+					$shipping_ordering[$key] = sprintf('%05.5d', $shipping_method->shipping_price).'_'.sprintf('%05d', $shipping_method->shipping_ordering).'_'.sprintf('%05d', $i);
+				else
+					$shipping_ordering[$key] = sprintf('%05d', $shipping_method->shipping_ordering).'_'.sprintf('%05d', $i);
 				$i++;
 			}
 			array_multisort($shipping_ordering, SORT_ASC, $usable_methods);
@@ -429,6 +437,14 @@ class hikashopShippingClass extends hikashopClass {
 		if((int)$sort_a[0] == (int)$sort_b[0])
 			return ((int)$sort_a[1] > (int)$sort_b[1]) ? +1 : -1;
 		return ((int)$sort_a[0] > (int)$sort_b[0]) ? +1 : -1;
+	}
+
+	protected function sortShippingByPrice($a, $b) {
+		$price_a = $a->shipping_price;
+		$price_b = $b->shipping_price;
+		if($price_a == $price_b)
+			return $this->sortShipping($a, $b);
+		return ($price_a > $price_b) ? +1 : -1;
 	}
 
 	function getShippingProductsData(&$order, $products = array()) {
@@ -474,118 +490,117 @@ class hikashopShippingClass extends hikashopClass {
 		$order->shipping_prices[$key]->volume = 0.0;
 		$order->shipping_prices[$key]->weight = 0.0;
 		$order->shipping_prices[$key]->total_quantity = 0;
-		if(!empty($order->products)) {
-			$all_products = new stdClass();
-			$all_products->products = array();
-			$real_products = new stdClass();
-			$real_products->products = array();
 
-			$volumeHelper = hikashop_get('helper.volume');
-			$weightHelper = hikashop_get('helper.weight');
+		if(empty($order->products))
+			return $key;
 
-			foreach($order->products as $k => $row) {
-				if(!empty($products) && !isset($products[$k]))
-					continue;
+		$all_products = new stdClass();
+		$all_products->products = array();
+		$real_products = new stdClass();
+		$real_products->products = array();
 
-				if(empty($order->shipping_prices[$key]->products[$row->product_id]))
-					$order->shipping_prices[$key]->products[$row->product_id] = 0;
-				$order->shipping_prices[$key]->products[$row->product_id] += @$row->cart_product_quantity;
+		$volumeHelper = hikashop_get('helper.volume');
+		$weightHelper = hikashop_get('helper.weight');
 
-				if(!empty($row->product_parent_id)) {
-					if(!isset($order->shipping_prices[$key]->products[$row->product_parent_id]))
-						$order->shipping_prices[$key]->products[$row->product_parent_id] = 0;
-					$order->shipping_prices[$key]->products[$row->product_parent_id] += @$row->cart_product_quantity;
-				}
+		foreach($order->products as $k => $row) {
+			if(!empty($products) && !isset($products[$k]))
+				continue;
 
-				if(@$row->product_weight > 0)
-					$real_products->products[] = $row;
+			if(empty($order->shipping_prices[$key]->products[$row->product_id]))
+				$order->shipping_prices[$key]->products[$row->product_id] = 0;
+			$order->shipping_prices[$key]->products[$row->product_id] += @$row->cart_product_quantity;
 
-				if($key !== 0)
-					$all_products->products[] = $row;
-
-				if($key !== 0 && !empty($row->cart_product_quantity)) {
-
-					if(!empty($row->cart_product_parent_id)) {
-						if(!bccomp($row->product_length, 0, 5) || !bccomp($row->product_width, 0, 5) || !bccomp($row->product_height, 0, 5)) {
-							foreach($order->products as $l => $elem){
-								if($elem->cart_product_id == $row->cart_product_parent_id) {
-									$row->product_length = $elem->product_length;
-									$row->product_width = $elem->product_width;
-									$row->product_height = $elem->product_height;
-									$row->product_dimension_unit = $elem->product_dimension_unit;
-									break;
-								}
-							}
-						}
-						if(!bccomp($row->product_weight, 0, 5)) {
-							foreach($order->products as $l => $elem){
-								if($elem->cart_product_id == $row->cart_product_parent_id){
-									$row->product_weight = $elem->product_weight;
-									$row->product_weight_unit = $elem->product_weight_unit;
-									break;
-								}
-							}
-						}
-					}
-
-					if(bccomp($row->product_length, 0, 5) && bccomp($row->product_width, 0, 5) && bccomp($row->product_height, 0, 5)) {
-						if(!isset($row->product_total_volume)) {
-							$row->product_volume = $row->product_length * $row->product_width * $row->product_height;
-							$row->product_total_volume = $row->product_volume * $row->cart_product_quantity;
-							$row->product_total_volume_orig = $row->product_total_volume;
-							$row->product_dimension_unit_orig = $row->product_dimension_unit;
-							$row->product_total_volume = $volumeHelper->convert($row->product_total_volume, $row->product_dimension_unit);
-							$row->product_dimension_unit = $order->volume_unit;
-						}
-
-						$order->shipping_prices[$key]->volume += $row->product_total_volume;
-					}
-
-					if(bccomp($row->product_weight, 0, 5)) {
-
-						$order_weight_unit = isset($order->weight_unit) ? $order->weight_unit : @$order->weight['unit'];
-						if($row->product_weight_unit != $order_weight_unit) {
-							$row->product_weight_orig = $row->product_weight;
-							$row->product_weight_unit_orig = $row->product_weight_unit;
-							$row->product_weight = $weightHelper->convert($row->product_weight, $row->product_weight_unit);
-							$row->product_weight_unit = $order_weight_unit;
-						}
-
-						$order->shipping_prices[$key]->weight += $row->product_weight * $row->cart_product_quantity;
-					}
-
-					$order->shipping_prices[$key]->total_quantity += $row->cart_product_quantity;
-				}
+			if(!empty($row->product_parent_id)) {
+				if(!isset($order->shipping_prices[$key]->products[$row->product_parent_id]))
+					$order->shipping_prices[$key]->products[$row->product_parent_id] = 0;
+				$order->shipping_prices[$key]->products[$row->product_parent_id] += @$row->cart_product_quantity;
 			}
 
-			$currencyClass = hikashop_get('class.currency');
-			$currencyClass->calculateTotal($real_products->products, $real_products->total, hikashop_getCurrency());
+			if(@$row->product_weight > 0)
+				$real_products->products[] = $row;
 
-			$order->shipping_prices[$key]->real_with_tax = $real_products->total->prices[0]->price_value_with_tax;
-			$order->shipping_prices[$key]->real_without_tax = $real_products->total->prices[0]->price_value;
+			if($key !== 0)
+				$all_products->products[] = $row;
 
-			if($key !== 0) {
-				$currencyClass->calculateTotal($all_products->products, $all_products->total, hikashop_getCurrency());
-				$order->shipping_prices[$key]->all_with_tax =  $all_products->total->prices[0]->price_value_with_tax;
-				$order->shipping_prices[$key]->all_without_tax = $all_products->total->prices[0]->price_value;
-				if (!empty($order->coupon))
-				{
-					if ($order->coupon->discount_flat_amount != 0)
-					{
-						$order->shipping_prices[$key]->all_with_tax -= $order->coupon->discount_flat_amount;
-						$order->shipping_prices[$key]->all_without_tax -= $order->coupon->discount_flat_amount;
+			if($key === 0 || empty($row->cart_product_quantity))
+				continue;
+
+
+			if(!empty($row->cart_product_parent_id)) {
+				if(!bccomp($row->product_length, 0, 5) || !bccomp($row->product_width, 0, 5) || !bccomp($row->product_height, 0, 5)) {
+					foreach($order->products as $l => $elem) {
+						if($elem->cart_product_id == $row->cart_product_parent_id) {
+							$row->product_length = $elem->product_length;
+							$row->product_width = $elem->product_width;
+							$row->product_height = $elem->product_height;
+							$row->product_dimension_unit = $elem->product_dimension_unit;
+							break;
+						}
 					}
-					elseif ($order->coupon->discount_percent_amount != 0)
-					{
-						$order->shipping_prices[$key]->all_with_tax -= $order->shipping_prices[$key]->all_with_tax * ($order->coupon->discount_percent_amount / 100);
-						$order->shipping_prices[$key]->all_without_tax -= $order->shipping_prices[$key]->all_without_tax * ($order->coupon->discount_percent_amount / 100);
+				}
+				if(!bccomp($row->product_weight, 0, 5)) {
+					foreach($order->products as $l => $elem) {
+						if($elem->cart_product_id == $row->cart_product_parent_id) {
+							$row->product_weight = $elem->product_weight;
+							$row->product_weight_unit = $elem->product_weight_unit;
+							break;
+						}
 					}
 				}
 			}
 
-			unset($real_products->products);
-			unset($real_products);
+			if(bccomp($row->product_length, 0, 5) && bccomp($row->product_width, 0, 5) && bccomp($row->product_height, 0, 5)) {
+				if(!isset($row->product_total_volume)) {
+					$row->product_volume = $row->product_length * $row->product_width * $row->product_height;
+					$row->product_total_volume = $row->product_volume * $row->cart_product_quantity;
+					$row->product_total_volume_orig = $row->product_total_volume;
+					$row->product_dimension_unit_orig = $row->product_dimension_unit;
+					$row->product_total_volume = $volumeHelper->convert($row->product_total_volume, $row->product_dimension_unit);
+					$row->product_dimension_unit = $order->volume_unit;
+				}
+
+				$order->shipping_prices[$key]->volume += $row->product_total_volume;
+			}
+
+			if(bccomp($row->product_weight, 0, 5)) {
+
+				$order_weight_unit = isset($order->weight_unit) ? $order->weight_unit : @$order->weight['unit'];
+				if($row->product_weight_unit != $order_weight_unit) {
+					$row->product_weight_orig = $row->product_weight;
+					$row->product_weight_unit_orig = $row->product_weight_unit;
+					$row->product_weight = $weightHelper->convert($row->product_weight, $row->product_weight_unit);
+					$row->product_weight_unit = $order_weight_unit;
+				}
+
+				$order->shipping_prices[$key]->weight += $row->product_weight * $row->cart_product_quantity;
+			}
+
+			$order->shipping_prices[$key]->total_quantity += $row->cart_product_quantity;
 		}
+
+		$currencyClass = hikashop_get('class.currency');
+		$currencyClass->calculateTotal($real_products->products, $real_products->total, hikashop_getCurrency());
+
+		$order->shipping_prices[$key]->real_with_tax = $real_products->total->prices[0]->price_value_with_tax;
+		$order->shipping_prices[$key]->real_without_tax = $real_products->total->prices[0]->price_value;
+
+		if($key !== 0) {
+			$currencyClass->calculateTotal($all_products->products, $all_products->total, hikashop_getCurrency());
+			$order->shipping_prices[$key]->all_with_tax =  $all_products->total->prices[0]->price_value_with_tax;
+			$order->shipping_prices[$key]->all_without_tax = $all_products->total->prices[0]->price_value;
+			if (!empty($order->coupon)) {
+				if (@$order->coupon->discount_flat_amount != 0) {
+					$order->shipping_prices[$key]->all_with_tax -= $order->coupon->discount_flat_amount;
+					$order->shipping_prices[$key]->all_without_tax -= $order->coupon->discount_flat_amount;
+				} elseif (@$order->coupon->discount_percent_amount != 0) {
+					$order->shipping_prices[$key]->all_with_tax -= $order->shipping_prices[$key]->all_with_tax * ($order->coupon->discount_percent_amount / 100);
+					$order->shipping_prices[$key]->all_without_tax -= $order->shipping_prices[$key]->all_without_tax * ($order->coupon->discount_percent_amount / 100);
+				}
+			}
+		}
+
+		unset($real_products->products);
+		unset($real_products);
 
 		return $key;
 	}

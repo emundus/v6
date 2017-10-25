@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -58,6 +58,9 @@ defined('_JEXEC') or die('Restricted access');
 			<th class="title titletoggle"><?php
 				echo JText::_('HIKA_EDIT');
 			?></th>
+			<th class="title titletoggle"><?php
+				echo JText::_('HIKASHOP_CHECKOUT_STATUS');
+			?></th>
 			<th class="title"><?php
 				echo JText::_('HIKA_NAME');
 			?></th>
@@ -71,13 +74,16 @@ defined('_JEXEC') or die('Restricted access');
 	$k = 0;
 	for($i = 0,$a = count($this->languages);$i<$a;$i++){
 		$row =& $this->languages[$i];
-?>
+?>		
 		<tr class="row<?php echo $k; ?>">
 			<td class="hk_center">
 			<?php echo $i+1; ?>
 			</td>
-			<td  class="hk_center">
+			<td class="hk_tbl_key hk_center" data-toggle="hk-tooltip" data-title="<?php echo $row->edit_tooltip ?>">
 				<?php if($this->manage) echo $row->edit; ?>
+			</td>
+			<td class="hk_tbl_key hk_center" data-toggle="hk-tooltip" data-title="<?php echo $row->status_tooltip ?>">
+				<?php echo $row->status; ?>
 			</td>
 			<td class="hk_center">
 				<?php echo $row->name; ?>
@@ -91,6 +97,13 @@ defined('_JEXEC') or die('Restricted access');
 	}
 ?>
 	</tbody>
+</table>
+<table style="margin-bottom: 8px;">
+	<tr>
+		<td style="width: 25%; font-weight: bold; padding: 8px;">
+			If required language file isn't listed here, you have to add this language file in your Joomla, in Extensions => Language(s)
+		</td>
+	</tr>
 </table>
 	</div></div>
 </div>

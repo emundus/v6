@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -148,7 +148,7 @@ class hikashopToolbarHelper {
 					$bar->appendButton('Standard', 'cancel', JText::_('HIKA_CLOSE'), 'cancel', false, false);
 					break;
 				case 'hikacancel':
-					$cancel_url = JRequest::getVar('cancel_redirect');
+					$cancel_url = hikaInput::get()->getVar('cancel_redirect');
 					if(!empty($cancel_url) || !empty($tool['url'])) {
 						if(!empty($cancel_url)){
 							$cancel_url = base64_decode($cancel_url);

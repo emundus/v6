@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -28,7 +28,7 @@ defined('_JEXEC') or die('Restricted access');
 		<?php $this->setLayout('notification'); echo $this->loadTemplate();?>
 	</table>
 	<input type="hidden" name="data[order][history][history_type]" value="modification" />
-	<input type="hidden" name="edit" value="<?php echo JRequest::getInt('edit',0);?>" />
+	<input type="hidden" name="edit" value="<?php echo hikaInput::get()->getInt('edit',0);?>" />
 	<input type="hidden" name="data[order][order_id]" value="<?php echo @$this->element->order_id;?>" />
 	<input type="hidden" id="data[order][order_status]" name="data[order][order_status]" value="<?php echo trim(@$this->element->order_status); ?>" />
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />

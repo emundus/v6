@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -15,10 +15,6 @@ $orderClass = hikashop_get('class.order');
 $imageHelper = hikashop_get('helper.image');
 $productClass = hikashop_get('class.product');
 $fieldsClass = hikashop_get('class.field');
-if(hikashop_level(2)) {
-	$null = null;
-	$itemFields = $fieldsClass->getFields('display:mail_order_notif=1',$null,'item');
-}
 
 global $Itemid;
 $url_itemid = '';
@@ -36,9 +32,14 @@ $url = '<a href="'.$order_url.'">'. $url.'</a>';
 
 $data->cart = $orderClass->loadFullOrder($data->order_id,true,false);
 $data->cart->coupon = new stdClass();
+
+if(hikashop_level(2)) {
+	$itemFields = $fieldsClass->getFields('display:mail_order_notif=1', $data->cart->products, 'item');
+}
+
 $price = new stdClass();
 $tax = $data->cart->order_subtotal - $data->cart->order_subtotal_no_vat - $data->cart->order_discount_tax + $data->cart->order_shipping_tax + $data->cart->order_payment_tax;
-$price->price_value = $data->cart->order_full_price - $tax;
+$price->price_value = max(0, $data->cart->order_full_price - $tax);
 $price->price_value_with_tax = $data->cart->order_full_price;
 $data->cart->full_total = new stdClass;
 $data->cart->full_total->prices = array($price);
@@ -145,7 +146,10 @@ if(!empty($data->cart->products)){
 			$img = $imageHelper->getThumbnail($item->images[0]->file_path, array(50, 50), array('forcesize' => true, 'scale' => 'outside'));
 			if($img->success) {
 				$image = str_replace('../', HIKASHOP_LIVE, $img->url);
-				$cartProduct['PRODUCT_IMG'] = '<img src="'.$image.'" alt="" style="float:left;margin-top:3px;margin-bottom:3px;margin-right:6px;"/>';
+				$attributes = '';
+				if($img->external)
+					$attributes = ' width="'.$img->req_width.'" height="'.$img->req_height.'"';
+				$cartProduct['PRODUCT_IMG'] = '<img src="'.$image.'" alt="" style="float:left;margin-top:3px;margin-bottom:3px;margin-right:6px;"'.$attributes.'/>';
 			}
 		}
 
@@ -249,7 +253,7 @@ if(!empty($data->cart->products)){
 		if($config->get('price_with_tax')) {
 			$t = $currencyHelper->format($data->cart->order_discount_price * -1, $data->cart->order_currency_id);
 		}else{
-			$t = $currencyHelper->format(($data->cart->order_discount_price - @$data->order_discount_tax) * -1, $data->order->order_currency_id);
+			$t = $currencyHelper->format(($data->cart->order_discount_price - @$data->cart->order_discount_tax) * -1, $data->cart->order_currency_id);
 		}
 		$cartFooters[] = array(
 			'NAME' => JText::_('HIKASHOP_COUPON'),

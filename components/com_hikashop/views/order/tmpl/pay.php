@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -88,6 +88,7 @@ $url_itemid = (!empty($Itemid) ? '&Itemid=' . $Itemid : '');
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 	<input type="hidden" name="task" value="pay" />
 	<input type="hidden" name="order_id" value="<?php echo $this->order->order_id; ?>" />
-	<input type="hidden" name="ctrl" value="<?php echo JRequest::getCmd('ctrl'); ?>" />
+	<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getCmd('ctrl'); ?>" />
+	<input type="hidden" name="order_token" value="<?php echo hikaInput::get()->getVar('order_token'); ?>" />
 	<?php echo JHTML::_('form.token'); ?>
 </form>

@@ -330,7 +330,9 @@ class CalDAVClient {
     $this->httpResponseBody = curl_exec($c);
 
     $this->httpResponseHeaders = curl_getinfo($c, CURLINFO_HEADER_OUT);
-    if (strpos($this->httpResponseBody, 'No digest authentication headers were found') !== false && $auth === CURLAUTH_BASIC)
+    if ((strpos($this->httpResponseBody, 'No digest authentication headers were found') !== false
+	    || strpos($this->httpResponseBody, 'No \'Authorization: Digest\' header found.') !== false)
+	    && $auth === CURLAUTH_BASIC)
     {
     	return $this->DoRequest($this->request_url, CURLAUTH_DIGEST);
     }

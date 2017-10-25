@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,17 +20,17 @@ class ModulesController extends hikashopController{
 	}
 
 	function selectmodules(){
-		JRequest::setVar( 'layout', 'selectmodules'  );
+		hikaInput::get()->set( 'layout', 'selectmodules'  );
 		return parent::display();
 	}
 
 	function savemodules(){
-		JRequest::setVar( 'layout', 'savemodules'  );
+		hikaInput::get()->set( 'layout', 'savemodules'  );
 		return parent::display();
 	}
 
 	function edit(){
-		if(JRequest::getInt('fromjoomla')){
+		if(hikaInput::get()->getInt('fromjoomla')){
 			$app = JFactory::getApplication();
 			$context = 'com_modules.edit.module';
 			$id = hikashop_getCID('id');
@@ -50,10 +50,10 @@ class ModulesController extends hikashopController{
 		$js = '';
 		jimport('joomla.html.parameter');
 		$params = new hikaParameter();
-		$params->set('id',JRequest::getVar('id','product'));
-		$params->set('name',JRequest::getVar('id','product'));
-		$value = hikashop_unserialize(JRequest::getVar('value')); // TODO : See to improve the security :)
-		$value['content_type'] = JRequest::getVar('content_type','product');
+		$params->set('id',hikaInput::get()->getVar('id','product'));
+		$params->set('name',hikaInput::get()->getVar('id','product'));
+		$value = hikashop_unserialize(hikaInput::get()->getVar('value')); // TODO : See to improve the security :)
+		$value['content_type'] = hikaInput::get()->getVar('content_type','product');
 		if($value['content_type'] == 'manufacturer')
 			$value['content_type'] = 'category';
 		$params->set('value',$value);

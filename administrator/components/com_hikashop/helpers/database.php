@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -404,6 +404,36 @@ class hikashopDatabaseHelper {
 			}
 		}
 
+		$query = 'SELECT category_id FROM `#__hikashop_category` WHERE category_type = ' . $this->db->Quote('root') . ' AND category_parent_id = 0';
+		try {
+			$this->db->setQuery($query);
+			$root = $this->db->loadResult();
+		} catch(Exception $e) {
+			$root = 0;
+		}
+		if(empty($root)) {
+			$query = 'INSERT IGNORE INTO `#__hikashop_category` '.
+				'(`category_id`, `category_parent_id`, `category_type`, `category_name`, `category_description`, `category_published`, `category_ordering`, `category_left`, `category_right`, `category_depth`, `category_namekey`) VALUES '.
+				"(1, 0, 'root', 'ROOT', '', 0, 0, 1, 22, 0, 'root'),".
+				"(2, 1, 'product', 'product category', '', 1, 1, 2, 3, 1, 'product'),".
+				"(3, 1, 'tax', 'taxation category', '', 1, 2, 4, 7, 1, 'tax')";
+			try {
+				$this->db->setQuery($query);
+				$result = $this->db->query();
+			} catch(Exception $e) {
+				$result = -1;
+			}
+
+			if($result) {
+				$ret[] = array(
+					'info',
+					'Missing core categories fixed'
+				);
+				$root = null;
+				$categoryClass = hikashop_get('class.category');
+				$categoryClass->rebuildTree($root,0,1);
+			}
+		}
 
 		$query = 'SELECT count(p.product_id) as result FROM `#__hikashop_product` AS p ' .
 				' LEFT JOIN `#__hikashop_product_category` AS pc ON p.product_id = pc.product_id ' .
@@ -575,6 +605,8 @@ class hikashopDatabaseHelper {
 				}
 			}
 			foreach($invalids as $invalid) {
+				if(empty($invalid))
+					continue;
 				$ret[] = array(
 					'error',
 					'The order status `'.$invalid.'` is not found but orders with that status exist'

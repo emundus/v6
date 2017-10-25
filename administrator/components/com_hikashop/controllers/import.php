@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -27,9 +27,13 @@ class ImportController extends hikashopController
 
 	function import()
 	{
-		JRequest::checkToken('request') || die( 'Invalid Token' );
-		$function = JRequest::getCmd('importfrom');
-		$this->importHelper->addTemplate(JRequest::getInt('template_product',0));
+		if(!HIKASHOP_J25) {
+			JRequest::checkToken('request') || die('Invalid Token');
+		} else {
+			JSession::checkToken('request') || die('Invalid Token');
+		}
+		$function = hikaInput::get()->getCmd('importfrom');
+		$this->importHelper->addTemplate(hikaInput::get()->getInt('template_product',0));
 
 		switch($function){
 			case 'file':
@@ -116,25 +120,31 @@ class ImportController extends hikashopController
 	}
 
 	function _textarea(){
-		$content = JRequest::getVar('textareaentries','','','string',JREQUEST_ALLOWRAW);
-		$this->importHelper->overwrite = JRequest::getInt('textarea_update_products');
-		$this->importHelper->createCategories = JRequest::getInt('textarea_create_categories');
-		$this->importHelper->force_published = JRequest::getInt('textarea_force_publish');
+		$content = hikaInput::get()->getRaw('textareaentries', '');
+		$this->importHelper->overwrite = hikaInput::get()->getInt('textarea_update_products');
+		$this->importHelper->createCategories = hikaInput::get()->getInt('textarea_create_categories');
+		$this->importHelper->force_published = hikaInput::get()->getInt('textarea_force_publish');
+		$this->importHelper->update_product_quantity = hikaInput::get()->getInt('textarea_update_product_quantity');
+		$this->importHelper->store_images_locally = hikaInput::get()->getInt('textarea_store_images_locally', 1);
+		$this->importHelper->store_files_locally = hikaInput::get()->getInt('textarea_store_files_locally', 1);
 		return $this->importHelper->handleContent($content);
 	}
 
 	function _folder(){
-		$type = JRequest::getCmd('importfolderfrom');
-		$delete = JRequest::getInt('delete_files_automatically');
-		$uploadFolder = JRequest::getVar($type.'_folder','');
+		$type = hikaInput::get()->getCmd('importfolderfrom');
+		$delete = hikaInput::get()->getInt('delete_files_automatically');
+		$uploadFolder = hikaInput::get()->getVar($type.'_folder','');
 		return $this->importHelper->importFromFolder($type,$delete,$uploadFolder);
 	}
 
 	function _file(){
-		$importFile =  JRequest::getVar( 'importfile', array(), 'files','array');
-		$this->importHelper->overwrite = JRequest::getInt('file_update_products');
-		$this->importHelper->createCategories = JRequest::getInt('file_create_categories');
-		$this->importHelper->force_published = JRequest::getInt('file_force_publish');
+		$importFile =  hikaInput::get()->files->get('importfile', array(), 'array');
+		$this->importHelper->overwrite = hikaInput::get()->getInt('file_update_products');
+		$this->importHelper->createCategories = hikaInput::get()->getInt('file_create_categories');
+		$this->importHelper->force_published = hikaInput::get()->getInt('file_force_publish');
+		$this->importHelper->update_product_quantity = hikaInput::get()->getInt('file_update_product_quantity');
+		$this->importHelper->store_images_locally = hikaInput::get()->getInt('file_store_images_locally', 1);
+		$this->importHelper->store_files_locally = hikaInput::get()->getInt('file_store_files_locally', 1);
 		return $this->importHelper->importFromFile($importFile);
 	}
 

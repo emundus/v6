@@ -1,14 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-if( (empty($this->rows) && $this->module && !JRequest::getVar('hikashop_front_end_main', 0)) || empty($this->pageInfo->elements->total) )
+if( (empty($this->rows) && $this->module && !hikaInput::get()->getVar('hikashop_front_end_main', 0)) || empty($this->pageInfo->elements->total) )
 	return;
 
 if(!empty($this->tmpl_ajax) && empty($this->rows)) {
@@ -165,15 +165,18 @@ if(!empty($this->rows)) {
 		if(!empty($this->filters)){
 			foreach($this->filters as $uniqueFitler){
 				$name = 'filter_'.$uniqueFitler->filter_namekey;
-				$value = JRequest::getVar($name);
+				$value = hikaInput::get()->getVar($name);
+				if(is_array($value))
+					$value = implode('::', $value);
 
 				$filters_params .= '&'.$name . '=' . $value;
 
 				$name .= '_values';
-				$value = JRequest::getVar($name);
-				if(empty($value)){
+				$value = hikaInput::get()->getVar($name);
+				if(is_array($value))
+					$value = implode('::', $value);
+				if(empty($value))
 					continue;
-				}
 
 				$filters_params .= '&'.$name . '=' . $value;
 			}
@@ -230,6 +233,11 @@ window.localPage.infiniteScroll = function(container_name) {
 		window.localPage.infiniteScrollPage++;
 
 		setTimeout(function(){
+<?php if($this->params->get('show_vote_product')) { ?>
+			if(window.hikaVotes)
+				initVote(newNode);
+			hkjQuery('[data-toggle="hk-tooltip"]').hktooltip({"html": true,"container": "body"});
+<?php } ?>
 			window.localPage.checkInfiniteScroll('<?php echo $mainDivName; ?>');
 		}, 500);
 	});

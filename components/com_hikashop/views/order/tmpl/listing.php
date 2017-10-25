@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -34,7 +34,7 @@ defined('_JEXEC') or die('Restricted access');
 	<input type="hidden" name="Itemid" value="<?php echo $Itemid; ?>"/>
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="ctrl" value="<?php echo JRequest::getCmd('ctrl'); ?>" />
+	<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getCmd('ctrl'); ?>" />
 	<input type="hidden" name="boxchecked" value="0" />
 	<input type="hidden" name="filter_order" value="<?php echo $this->pageInfo->filter->order->value; ?>" />
 	<input type="hidden" name="filter_order_Dir" value="<?php echo $this->pageInfo->filter->order->dir; ?>" />
@@ -82,7 +82,7 @@ defined('_JEXEC') or die('Restricted access');
 						<input type="hidden" name="Itemid" value="<?php echo $Itemid; ?>"/>
 						<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 						<input type="hidden" name="task" value="" />
-						<input type="hidden" name="ctrl" value="<?php echo JRequest::getCmd('ctrl'); ?>" />
+						<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getCmd('ctrl'); ?>" />
 						<input type="hidden" name="boxchecked" value="0" />
 						<input type="hidden" name="filter_order" value="<?php echo $this->pageInfo->filter->order->value; ?>" />
 						<input type="hidden" name="filter_order_Dir" value="<?php echo $this->pageInfo->filter->order->dir; ?>" />
@@ -107,27 +107,27 @@ defined('_JEXEC') or die('Restricted access');
 	foreach($this->rows as &$row) {
 ?>
 		<tr class="row<?php echo $k; ?>">
-			<td class="hikashop_order_num_value"><?php
+			<td data-title="<?php echo JText::_('HIKA_NUM'); ?>" class="hikashop_order_num_value"><?php
 				echo $this->pagination->getRowOffset($i);
 			?></td>
-			<td class="hikashop_order_number_value">
+			<td data-title="<?php echo JText::_('ORDER_NUMBER'); ?>" class="hikashop_order_number_value">
 				<a href="<?php echo hikashop_completeLink('order&task=show&cid='.$row->order_id.$url_itemid); ?>"><?php
 					echo $row->order_number;
 				?></a>
 			</td>
-			<td class="hikashop_order_date_value"><?php
+			<td data-title="<?php echo JText::_('DATE'); ?>" class="hikashop_order_date_value"><?php
 				echo hikashop_getDate($row->order_created,'%Y-%m-%d %H:%M');
 			?></td>
-			<td class="hikashop_order_status_value">
+			<td data-title="<?php echo JText::_('ORDER_STATUS'); ?>" class="hikashop_order_status_value">
 				<span class="hikashop_order_listing_status order-label order-label-<?php echo preg_replace('#[^a-z_0-9]#i', '_', str_replace(' ','_', $row->order_status)); ?>"><?php
 					echo hikashop_orderStatus($row->order_status);
 				?></span>
 			</td>
-			<td class="hikashop_order_total_value"><?php
+			<td data-title="<?php echo JText::_('HIKASHOP_TOTAL'); ?>" class="hikashop_order_total_value"><?php
 				echo $this->currencyClass->format($row->order_full_price, $row->order_currency_id);
 			?></td>
 <?php if(!empty($this->action_column)) { ?>
-			<td class="hikashop_order_action_value"><?php
+			<td data-title="<?php echo JText::_('ACTIONS'); ?>" class="hikashop_order_action_value"><?php
 
 		$dropData = array();
 
@@ -201,7 +201,7 @@ window.localPage.cancelOrder = function(id, number) {
 	<input type="hidden" name="task" value="cancel_order" />
 	<input type="hidden" name="email" value="1" />
 	<input type="hidden" name="order_id" value="" />
-	<input type="hidden" name="ctrl" value="<?php echo JRequest::getCmd('ctrl'); ?>" />
+	<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getCmd('ctrl'); ?>" />
 	<input type="hidden" name="redirect_url" value="<?php echo hikashop_currentURL(); ?>" />
 	<?php echo JHTML::_('form.token'); ?>
 </form>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -53,7 +53,7 @@ class hikashopEmailtemplateType {
 
 	public function display($map, $value, $mail_name = false) {
 		if($mail_name === false)
-			$mail_name = JRequest::getCmd('mail_name', false);
+			$mail_name = hikaInput::get()->getCmd('mail_name', false);
 		if($mail_name === false)
 			$mail_name = $this->mail_name;
 

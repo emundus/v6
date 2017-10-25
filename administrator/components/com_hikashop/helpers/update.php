@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -14,8 +14,8 @@ class hikashopUpdateHelper{
 		$this->db = JFactory::getDBO();
 		jimport('joomla.filesystem.folder');
 		jimport('joomla.filesystem.file');
-		$this->update = JRequest::getBool('update');
-		$this->freshinstall = JRequest::getBool('freshinstall');
+		$this->update = hikaInput::get()->getBool('update');
+		$this->freshinstall = hikaInput::get()->getBool('freshinstall');
 	}
 	function addDefaultModules(){
 	}
@@ -524,8 +524,8 @@ class hikashopUpdateHelper{
 		if(empty($folder)) return false;
 		unset($GLOBALS['_JREQUEST']['installtype']);
 		unset($GLOBALS['_JREQUEST']['install_directory']);
-		JRequest::setVar('installtype','folder');
-		JRequest::setVar('install_directory',$folder);
+		hikaInput::get()->set('installtype','folder');
+		hikaInput::get()->set('install_directory',$folder);
 		$_REQUEST['installtype']='folder';
 		$_REQUEST['install_directory']=$folder;
 		$controller = new JController(array('base_path'=>
@@ -757,15 +757,15 @@ class hikashopUpdateHelper{
 
 				$left = $parentData->lft;
 				$cid = $parentData->component_id;
-				$query  = "INSERT IGNORE INTO `#__menu` (`type`,`link`,`menutype`,`img`,`alias`,`title`,`client_id`,`parent_id`,`level`,`language`,`lft`,`rgt`,`component_id`) VALUES
-				('component','index.php?option=com_hikashop&ctrl=product','menu','./templates/bluestork/images/menu/icon-16-article.png','Products','Products',1,".(int)$parent.",2,'*',".($left+1).",".($left+2).",".$cid."),
-				('component','index.php?option=com_hikashop&ctrl=category&filter_id=product','menu','./templates/bluestork/images/menu/icon-16-category.png','Categories','Categories',1,".(int)$parent.",2,'*',".($left+3).",".($left+4).",".$cid."),
-				('component','index.php?option=com_hikashop&ctrl=user&filter_partner=0','menu','./templates/bluestork/images/menu/icon-16-user.png','Users','Users',1,".(int)$parent.",2,'*',".($left+5).",".($left+6).",".$cid."),
-				('component','index.php?option=com_hikashop&ctrl=order&order_type=sale&filter_partner=0','menu','./templates/bluestork/images/menu/icon-16-content.png','Orders','Orders',1,".(int)$parent.",2,'*',".($left+7).",".($left+8).",".$cid."),
-				('component','index.php?option=com_hikashop&ctrl=config','menu','./templates/bluestork/images/menu/icon-16-config.png','Configuration','Configuration',1,".(int)$parent.",2,'*',".($left+9).",".($left+10).",".$cid."),
-				('component','index.php?option=com_hikashop&ctrl=discount','menu','./templates/bluestork/images/menu/icon-16-default.png','Discounts','Discounts',1,".(int)$parent.",2,'*',".($left+11).",".($left+12).",".$cid."),
-				('component','index.php?option=com_hikashop&ctrl=documentation','menu','./templates/bluestork/images/menu/icon-16-help.png','Help','Help',1,".(int)$parent.",2,'*',".($left+13).",".($left+14).",".$cid."),
-				('component','index.php?option=com_hikashop&ctrl=update','menu','./templates/bluestork/images/menu/icon-16-help-jrd.png','Update / About','Update / About',1,".(int)$parent.",2,'*',".($left+15).",".($left+16).",".$cid.");
+				$query  = "INSERT IGNORE INTO `#__menu` (`published`,`type`,`link`,`menutype`,`img`,`alias`,`title`,`client_id`,`parent_id`,`level`,`language`,`lft`,`rgt`,`component_id`) VALUES
+				('1','component','index.php?option=com_hikashop&ctrl=product','".$parentData->menutype."','./templates/bluestork/images/menu/icon-16-article.png','Products','Products',1,".(int)$parent.",2,'*',".($left+1).",".($left+2).",".$cid."),
+				('1','component','index.php?option=com_hikashop&ctrl=category&filter_id=product','".$parentData->menutype."','./templates/bluestork/images/menu/icon-16-category.png','Categories','Categories',1,".(int)$parent.",2,'*',".($left+3).",".($left+4).",".$cid."),
+				('1','component','index.php?option=com_hikashop&ctrl=user&filter_partner=0','".$parentData->menutype."','./templates/bluestork/images/menu/icon-16-user.png','Users','Users',1,".(int)$parent.",2,'*',".($left+5).",".($left+6).",".$cid."),
+				('1','component','index.php?option=com_hikashop&ctrl=order&order_type=sale&filter_partner=0','".$parentData->menutype."','./templates/bluestork/images/menu/icon-16-content.png','Orders','Orders',1,".(int)$parent.",2,'*',".($left+7).",".($left+8).",".$cid."),
+				('1','component','index.php?option=com_hikashop&ctrl=config','".$parentData->menutype."','./templates/bluestork/images/menu/icon-16-config.png','Configuration','Configuration',1,".(int)$parent.",2,'*',".($left+9).",".($left+10).",".$cid."),
+				('1','component','index.php?option=com_hikashop&ctrl=discount','".$parentData->menutype."','./templates/bluestork/images/menu/icon-16-default.png','Discounts','Discounts',1,".(int)$parent.",2,'*',".($left+11).",".($left+12).",".$cid."),
+				('1','component','index.php?option=com_hikashop&ctrl=documentation','".$parentData->menutype."','./templates/bluestork/images/menu/icon-16-help.png','Help','Help',1,".(int)$parent.",2,'*',".($left+13).",".($left+14).",".$cid."),
+				('1','component','index.php?option=com_hikashop&ctrl=update','".$parentData->menutype."','./templates/bluestork/images/menu/icon-16-help-jrd.png','Update / About','Update_About',1,".(int)$parent.",2,'*',".($left+15).",".($left+16).",".$cid.");
 				";
 				$this->db->setQuery($query);
 				$this->db->query();

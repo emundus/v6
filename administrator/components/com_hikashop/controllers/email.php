@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -37,14 +37,18 @@ class emailController extends hikashopController {
 	}
 
 	function emailtemplate(){
-		JRequest::setVar('layout', 'emailtemplate');
+		hikaInput::get()->set('layout', 'emailtemplate');
 		return parent::display();
 	}
 
 	public function saveemailtemplate(){
-		JRequest::checkToken() || die( 'Invalid Token' );
-		$file = JRequest::getCmd('file');
-		$email_name = JRequest::getCmd('email_name');
+		if(!HIKASHOP_J25) {
+			JRequest::checkToken() || die('Invalid Token');
+		} else {
+			JSession::checkToken() || die('Invalid Token');
+		}
+		$file = hikaInput::get()->getCmd('file');
+		$email_name = hikaInput::get()->getCmd('email_name');
 
 		jimport('joomla.filesystem.file');
 		$fileName = JFile::makeSafe($file);
@@ -55,7 +59,7 @@ class emailController extends hikashopController {
 			return $this->emailtemplate();
 		}
 
-		$templatecontent = JRequest::getVar('templatecontent', '', '', 'string', JREQUEST_ALLOWRAW);
+		$templatecontent = hikaInput::get()->getRaw('templatecontent', '');
 		$templatecontent = trim($templatecontent);
 
 		if(empty($templatecontent)) {

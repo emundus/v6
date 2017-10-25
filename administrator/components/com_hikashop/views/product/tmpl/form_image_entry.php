@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,7 +16,10 @@ $type = (!empty($this->params->product_type) && $this->params->product_type == '
 		$this->params->file_id = 0;
 	$image = $this->imageHelper->getThumbnail(@$this->params->file_path, array(100, 100), array('default' => true));
 	if(!empty($image) && $image->success) {
-		$content = '<img src="'.$image->url.'" alt="'.$image->filename.'" />';
+		$attributes = '';
+		if($image->external)
+			$attributes = ' width="'.$image->req_width.'" height="'.$image->req_height.'"';
+		$content = '<img src="'.$image->url.'" alt="'.$image->filename.'"'.$attributes.' />';
 	} else {
 		$content = '<img src="" alt="'.@$this->params->file_name.'" />';
 	}

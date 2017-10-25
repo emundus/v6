@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,7 +9,7 @@
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 $app = JFactory::getApplication();
-if((!empty($this->rows) || !$this->module || JRequest::getVar('hikashop_front_end_main',0)) && $this->pageInfo->elements->total) {
+if((!empty($this->rows) || !$this->module || hikaInput::get()->getVar('hikashop_front_end_main',0)) && $this->pageInfo->elements->total) {
 	$pagination = $this->config->get('pagination','bottom');
 	if(in_array($pagination,array('top','both')) && $this->params->get('show_limit') && $this->pageInfo->elements->total) {
 		$this->pagination->form = '_top';
@@ -113,7 +113,7 @@ if((!empty($this->rows) || !$this->module || JRequest::getVar('hikashop_front_en
 				echo $this->loadTemplate();
 			}
 
-			if(JRequest::getVar('hikashop_front_end_main', 0) && JRequest::getVar('task') == 'listing' && $this->params->get('show_compare')) {
+			if(hikaInput::get()->getVar('hikashop_front_end_main', 0) && hikaInput::get()->getVar('task') == 'listing' && $this->params->get('show_compare')) {
 				$css_button = $this->config->get('css_button', 'hikabtn');
 				$css_button_compare = $this->config->get('css_button_compare', 'hikabtn-compare');
 				if((int)$this->params->get('show_compare') == 1) {

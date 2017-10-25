@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -156,7 +156,7 @@ class plgHikashoppaymentFirstdata extends hikashopPaymentPlugin
 					$order_text = "\r\n".JText::sprintf('NOTIFICATION_OF_ORDER_ON_WEBSITE','',HIKASHOP_LIVE);
 					$order_text .= "\r\n".str_replace('<br/>',"\r\n",JText::sprintf('ACCESS_ORDER_WITH_LINK',$url));
 					$email->subject = JText::sprintf('PAYMENT_NOTIFICATION','First Data','Accepted');
-					$email->body = str_replace('<br/>',"\r\n",JText::sprintf('PAYMENT_NOTIFICATION_STATUS','First Data','Accepted')).' '.JText::sprintf('ORDER_STATUS_CHANGED',$order_status)."\r\n\r\n".$order_text;
+					$email->body = str_replace('<br/>',"\r\n",JText::sprintf('PAYMENT_NOTIFICATION_STATUS','First Data','Accepted')).' '.JText::sprintf('ORDER_STATUS_CHANGED', hikashop_orderStatus($order_status))."\r\n\r\n".$order_text;
 
 					$this->modifyOrder($order,$order_status,$history,$email);
 

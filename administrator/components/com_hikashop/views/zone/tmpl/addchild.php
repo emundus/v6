@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,8 +9,8 @@
 defined('_JEXEC') or die('Restricted access');
 ?>				<span id="result" >
 					<?php echo @$this->element->zone_id.' '.@$this->element->zone_name_english;
-					$type = JRequest::getCmd('type');
-					$subtype = JRequest::getCmd('subtype');
+					$type = hikaInput::get()->getCmd('type');
+					$subtype = hikaInput::get()->getCmd('subtype');
 					if($type=='discount'){
 					?>
 						<input type="hidden" name="data[discount][discount_zone_id]" value="<?php echo @$this->element->zone_id; ?>" />
@@ -24,8 +24,8 @@ defined('_JEXEC') or die('Restricted access');
 						<input type="hidden" name="config[main_tax_zone]" value="<?php echo @$this->element->zone_id; ?>" />
 					<?php
 					}elseif(!empty($subtype)){
-						$map = JRequest::getVar('map',$subtype);
-						$column = JRequest::getVar('column','zone_namekey');
+						$map = hikaInput::get()->getVar('map',$subtype);
+						$column = hikaInput::get()->getVar('column','zone_namekey');
 						if(empty($column)) $column = 'zone_namekey';
 					?>
 						<input type="hidden" name="<?php echo $map;?>" value="<?php echo @$this->element->$column; ?>" />

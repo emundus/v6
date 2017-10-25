@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 if(!isset($this->element['layout_type']))
 	$this->element['layout_type'] = 'inherit';
 ?>
-<div id="hikashop_main_content" class="hk-container-fluid item-menu-interface">
+<div id="hikashop_main_content_<?php echo $this->type; ?>" class="hikashop_main_content hk-container-fluid item-menu-interface">
 	<!-- Menu edition -->
 	<div id="hikashop_menu_backend_page_edition">
 		<!-- Top part (Layout selection) -->
@@ -135,9 +135,6 @@ if(!empty($this->extra_blocks['layouts'])) {
 <?php
 $js = "
 window.hikashop.ready(function(){
-	setTimeout(function(){window.hikashop.dlTitle('hikashop_main_content')},1000);
-";
-$js .= "
 	if(hkjQuery('#attrib-products')){
 		hkjQuery('#attrib-products .control-group').hide();
 		hkjQuery('#attrib-basic .control-group').hide();
@@ -170,10 +167,10 @@ $js .= "
 ";
 $js .= "
 	window.optionMgr.hideDisplayOptions();
-	hkjQuery('#hikashop_main_content .hikashop_option_value').find('input').change(function(){
+	hkjQuery('.hikashop_option_value').find('input').change(function(){
 		window.optionMgr.hideDisplayOptions(''+hkjQuery(this).attr('name')+'',''+hkjQuery(this).val()+'');
 	});
-	hkjQuery('#hikashop_main_content .hikashop_option_value').find('select').change(function(){
+	hkjQuery('.hikashop_option_value').find('select').change(function(){
 		window.optionMgr.hideDisplayOptions(''+hkjQuery(this).attr('name')+'',''+hkjQuery(this).val()+'');
 	});
 ";
@@ -222,7 +219,7 @@ $js .="
 ";
 $js .= "var defaultParams = [];";
 foreach($this->default_params as $k => $v){
-	$js .= "defaultParams['".$k."'] = '".$v."';";
+	$js .= "defaultParams['".$k."'] = '".str_replace(array("\\", "'"), array("\\\\", "\'"), $v)."';";
 }
 $js .= "
 window.optionMgr = {
@@ -374,5 +371,10 @@ window.hikashop.ready(function(){
 	window.optionMgr.tabChange('div[data-layout=\'".$this->type."_".$this->element['layout_type']."\']');
 });
 	";
+$hkMenusJs .= "
+window.hikashop.ready(function(){
+	window.hikashop.dlTitle('hikashop_main_content_" . $this->type . "');
+});
+";
 $doc = JFactory::getDocument();
 $doc->addScriptDeclaration($hkMenusJs);

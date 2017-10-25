@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -42,9 +42,9 @@ class hikashopProductClass extends hikashopClass{
 	}
 
 	function saveForm() {
-		$legacy = JRequest::getInt('legacy', 0);
+		$legacy = hikaInput::get()->getInt('legacy', 0);
 		if(!$legacy) {
-			$subtask = JRequest::getCmd('subtask', '');
+			$subtask = hikaInput::get()->getCmd('subtask', '');
 			if($subtask == 'variant')
 				return $this->backSaveVariantForm();
 			return $this->backSaveForm();
@@ -52,7 +52,7 @@ class hikashopProductClass extends hikashopClass{
 
 		$oldProduct = null;
 		$product_id = hikashop_getCID('product_id');
-		$categories = JRequest::getVar('category', array(), '', 'array');
+		$categories = hikaInput::get()->get('category', array(), 'array');
 		$app = JFactory::getApplication();
 		JArrayHelper::toInteger($categories);
 		$newCategories = array();
@@ -99,10 +99,10 @@ class hikashopProductClass extends hikashopClass{
 			}
 		}
 		$element->related = array();
-		$related = JRequest::getVar( 'related', array(), '', 'array' );
+		$related = hikaInput::get()->get('related', array(), 'array');
 		JArrayHelper::toInteger($related);
 		if(!empty($related)){
-			$related_ordering = JRequest::getVar( 'related_ordering', array(), '', 'array' );
+			$related_ordering = hikaInput::get()->get('related_ordering', array(), 'array');
 			JArrayHelper::toInteger($related_ordering);
 			foreach($related as $id){
 				$obj = new stdClass();
@@ -111,11 +111,11 @@ class hikashopProductClass extends hikashopClass{
 				$element->related[$id] = $obj;
 			}
 		}
-		$options = JRequest::getVar( 'options', array(), '', 'array' );
+		$options = hikaInput::get()->get('options', array(), 'array');
 		$element->options = array();
 		JArrayHelper::toInteger($element->options);
 		if(!empty($options)){
-			$related_ordering = JRequest::getVar( 'options_ordering', array(), '', 'array' );
+			$related_ordering = hikaInput::get()->get('options_ordering', array(), 'array');
 			JArrayHelper::toInteger($related_ordering);
 			foreach($options as $id){
 				$obj = new stdClass();
@@ -125,11 +125,11 @@ class hikashopProductClass extends hikashopClass{
 			}
 		}
 
-		$bundle = JRequest::getVar('bundle', array(), '', 'array' );
+		$bundle = hikaInput::get()->get('bundle', array(), 'array');
 		$element->$bundle = array();
 		JArrayHelper::toInteger($element->$bundle);
 		if(!empty($bundle)){
-			$related_ordering = JRequest::getVar( 'bundle_ordering', array(), '', 'array' );
+			$related_ordering = hikaInput::get()->get('bundle_ordering', array(), 'array');
 			JArrayHelper::toInteger($related_ordering);
 			foreach($options as $id){
 				$obj = new stdClass();
@@ -139,17 +139,17 @@ class hikashopProductClass extends hikashopClass{
 			}
 		}
 
-		$element->images = JRequest::getVar( 'image', array(), '', 'array' );
+		$element->images = hikaInput::get()->get('image', array(), 'array');
 		JArrayHelper::toInteger($element->images);
-		$element->files = JRequest::getVar( 'file', array(), '', 'array' );
+		$element->files = hikaInput::get()->get('file', array(), 'array');
 		JArrayHelper::toInteger($element->files);
 
-		$element->imagesorder = JRequest::getVar('imageorder', array(), '', 'array');
+		$element->imagesorder = hikaInput::get()->get('imageorder', array(), 'array');
 		JArrayHelper::toInteger($element->imagesorder);
 
-		$element->tags = JRequest::getVar('tags', array(), '', 'array');
+		$element->tags = hikaInput::get()->get('tags', array(), 'array');
 
-		$priceData = JRequest::getVar( 'price', array(), '', 'array' );
+		$priceData = hikaInput::get()->get('price', array(), 'array');
 		$element->prices = array();
 		foreach($priceData as $column => $value) {
 			hikashop_secureField($column);
@@ -183,7 +183,7 @@ class hikashopProductClass extends hikashopClass{
 
 		$element->oldCharacteristics = array();
 		if(isset($element->product_type) && $element->product_type=='variant'){
-			$characteristics = JRequest::getVar( 'characteristic', array(), '', 'array' );
+			$characteristics = hikaInput::get()->get('characteristic', array(), 'array');
 			JArrayHelper::toInteger($characteristics);
 			if(empty($characteristics)){
 				$element->characteristics = array();
@@ -192,7 +192,7 @@ class hikashopProductClass extends hikashopClass{
 				$element->characteristics = $this->database->loadObjectList('characteristic_id');
 			}
 		}else{
-			$characteristics = JRequest::getVar( 'characteristic', array(), '', 'array' );
+			$characteristics = hikaInput::get()->get('characteristic', array(), 'array');
 			JArrayHelper::toInteger($characteristics);
 			if(!empty($element->product_id)){
 				$this->database->setQuery('SELECT b.characteristic_id FROM '.hikashop_table('variant').' AS a LEFT JOIN '.hikashop_table('characteristic').' AS b ON a.variant_characteristic_id=b.characteristic_id WHERE a.variant_product_id ='.$element->product_id.' AND b.characteristic_parent_id=0');
@@ -206,9 +206,9 @@ class hikashopProductClass extends hikashopClass{
 				$element->oldCharacteristics = array();
 			}
 			if(!empty($characteristics)){
-				$characteristics_ordering = JRequest::getVar( 'characteristic_ordering', array(), '', 'array' );
+				$characteristics_ordering = hikaInput::get()->get('characteristic_ordering', array(), 'array');
 				JArrayHelper::toInteger($characteristics_ordering);
-				$characteristics_default = JRequest::getVar( 'characteristic_default', array(), '', 'array' );
+				$characteristics_default = hikaInput::get()->get('characteristic_default', array(), 'array');
 				JArrayHelper::toInteger($characteristics_default);
 				$this->database->setQuery('SELECT * FROM '.hikashop_table('characteristic').' WHERE characteristic_parent_id IN ('.implode(',',$characteristics).')');
 				$values = $this->database->loadObjectList();
@@ -239,13 +239,13 @@ class hikashopProductClass extends hikashopClass{
 
 		$element->product_max_per_order=(int)$element->product_max_per_order;
 
-		$element->product_description = JRequest::getVar('product_description','','','string',JREQUEST_ALLOWRAW);
+		$element->product_description = hikaInput::get()->getRaw('product_description','');
 		if(!empty($element->product_id) && !empty($element->product_code)){
 			$query = 'SELECT product_id FROM '.hikashop_table('product').' WHERE product_code  = '.$this->database->Quote($element->product_code).' AND product_id!='.(int)$element->product_id.' LIMIT 1';
 			$this->database->setQuery($query);
 			if($this->database->loadResult()){
 				$app->enqueueMessage(JText::_( 'DUPLICATE_PRODUCT' ), 'error');
-				JRequest::setVar( 'fail', $element  );
+				hikaInput::get()->set( 'fail', $element  );
 				return false;
 			}
 		}
@@ -275,7 +275,7 @@ class hikashopProductClass extends hikashopClass{
 			$product_with_same_alias = $this->database->loadResult();
 			if($product_with_same_alias && (empty($element->product_id) || $product_with_same_alias!=$element->product_id)){
 				$app->enqueueMessage(JText::_( 'ELEMENT_WITH_SAME_ALIAS_ALREADY_EXISTS' ), 'error');
-				JRequest::setVar( 'fail', $element  );
+				hikaInput::get()->set( 'fail', $element  );
 				return false;
 			}
 		}
@@ -289,7 +289,7 @@ class hikashopProductClass extends hikashopClass{
 		if($status){
 			$status = $this->save($element);
 		}else{
-			JRequest::setVar( 'fail', $element  );
+			hikaInput::get()->set( 'fail', $element  );
 			return $status;
 		}
 
@@ -304,7 +304,7 @@ class hikashopProductClass extends hikashopClass{
 			$this->updateCharacteristics($element,$status);
 			$translationHelper->handleTranslations('product',$status,$element);
 		}else{
-			JRequest::setVar( 'fail', $element  );
+			hikaInput::get()->set( 'fail', $element  );
 			if(empty($element->product_id) && empty($element->product_code) && empty($element->product_name)){
 				$app->enqueueMessage(JText::_( 'SPECIFY_NAME_AND_CODE' ), 'error');
 			}else{
@@ -326,7 +326,7 @@ class hikashopProductClass extends hikashopClass{
 		$product_id = hikashop_getCID('product_id');
 		$fieldsClass = hikashop_get('class.field');
 
-		$formData = JRequest::getVar('data', array(), '', 'array');
+		$formData = hikaInput::get()->get('data', array(), 'array');
 		$formProduct = array();
 		if(!empty($formData['product']))
 			$formProduct = $formData['product'];
@@ -419,7 +419,7 @@ class hikashopProductClass extends hikashopClass{
 		}
 
 		if(hikashop_acl('product/edit/description')) {
-			$product->product_description = JRequest::getVar('product_description','','','string',JREQUEST_ALLOWRAW);
+			$product->product_description = hikaInput::get()->getRaw('product_description','');
 			if((int)$config->get('safe_product_description', 0)) {
 				$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
 				$product->product_description = $safeHtmlFilter->clean($product->product_description, 'string');
@@ -493,7 +493,7 @@ class hikashopProductClass extends hikashopClass{
 			$oldProduct->prices = $this->db->loadObjectList();
 		}
 
-		$priceData = JRequest::getVar('price', array(), '', 'array');
+		$priceData = hikaInput::get()->get('price', array(), 'array');
 		$product->prices = array();
 		foreach($priceData as $k => $value) {
 			if((int)$k == 0 && $k !== 0 && $k !== '0')
@@ -590,7 +590,7 @@ class hikashopProductClass extends hikashopClass{
 			$this->database->setQuery($query);
 			if($this->database->loadResult()){
 				$app->enqueueMessage(JText::_( 'DUPLICATE_PRODUCT' ), 'error');
-				JRequest::setVar( 'fail', $product  );
+				hikaInput::get()->set( 'fail', $product  );
 				return false;
 			}
 		}
@@ -623,7 +623,7 @@ class hikashopProductClass extends hikashopClass{
 			$product_with_same_alias = $this->db->loadResult();
 			if($product_with_same_alias && (empty($product->product_id) || $product_with_same_alias!=$product->product_id)) {
 				$app->enqueueMessage(JText::_('ELEMENT_WITH_SAME_ALIAS_ALREADY_EXISTS'), 'error');
-				JRequest::setVar('fail', $product);
+				hikaInput::get()->set('fail', $product);
 				return false;
 			}
 		}
@@ -637,7 +637,7 @@ class hikashopProductClass extends hikashopClass{
 		if($status) {
 			$status = $this->save($product);
 		} else {
-			JRequest::setVar('fail', $product);
+			hikaInput::get()->set('fail', $product);
 			return $status;
 		}
 
@@ -689,7 +689,7 @@ class hikashopProductClass extends hikashopClass{
 			if(hikashop_acl('product/variant') && !empty($formData['variant']))
 				$this->backSaveVariantForm();
 		} else {
-			JRequest::setVar('fail', $product);
+			hikaInput::get()->set('fail', $product);
 			if(empty($product->product_id) && empty($product->product_code) && empty($product->product_name)) {
 				$app->enqueueMessage(JText::_('SPECIFY_NAME_AND_CODE'), 'error');
 			} else {
@@ -711,10 +711,10 @@ class hikashopProductClass extends hikashopClass{
 			$this->db = JFactory::getDBO();
 
 		$product_id = hikashop_getCID('variant_id');
-		$parent_product_id = JRequest::getInt('product_id', 0);
+		$parent_product_id = hikaInput::get()->getInt('product_id', 0);
 		$fieldClass = hikashop_get('class.field');
 
-		$formData = JRequest::getVar('data', array(), '', 'array');
+		$formData = hikaInput::get()->get('data', array(), 'array');
 		$formVariant = array();
 		if(!empty($formData['variant'])) {
 			$formVariant = $formData['variant'];
@@ -846,7 +846,7 @@ class hikashopProductClass extends hikashopClass{
 		unset($product->bundle);
 
 		if(hikashop_acl('product/variant/description')) {
-			$product->product_description = JRequest::getVar('product_variant_description','','','string',JREQUEST_ALLOWRAW);
+			$product->product_description = hikaInput::get()->getRaw('product_variant_description','');
 			if((int)$config->get('safe_product_description', 0)) {
 				$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
 				$product->product_description = $safeHtmlFilter->clean($product->product_description, 'string');
@@ -868,7 +868,7 @@ class hikashopProductClass extends hikashopClass{
 				$oldProduct->prices = $this->db->loadObjectList();
 			}
 
-			$priceData = JRequest::getVar('variantprice', array(), '', 'array');
+			$priceData = hikaInput::get()->get('variantprice', array(), 'array');
 			$product->prices = array();
 			foreach($priceData as $k => $value) {
 				if((int)$k == 0 && $k !== 0 && $k !== '0')
@@ -956,7 +956,7 @@ class hikashopProductClass extends hikashopClass{
 			$this->database->setQuery($query);
 			if($this->database->loadResult()){
 				$app->enqueueMessage(JText::_( 'DUPLICATE_PRODUCT' ), 'error');
-				JRequest::setVar( 'fail', $product  );
+				hikaInput::get()->set( 'fail', $product  );
 				return false;
 			}
 		}
@@ -972,7 +972,7 @@ class hikashopProductClass extends hikashopClass{
 			if(hikashop_acl('product/variant/characteristics'))
 				$this->updateCharacteristics($product, $status);
 		} else {
-			JRequest::setVar('fail', $product);
+			hikaInput::get()->set('fail', $product);
 			if(empty($product->product_id) && empty($product->product_code) && empty($product->product_name)) {
 				$app->enqueueMessage(JText::_('SPECIFY_NAME_AND_CODE'), 'error');
 			} else {
@@ -1136,6 +1136,8 @@ class hikashopProductClass extends hikashopClass{
 		foreach($related as $rel){
 			$type = $rel->product_related_type;
 			$all_products[$rel->product_id]->{$type}[] = $rel->product_related_id;
+			if($type == 'bundle')
+				$all_products[$rel->product_id]->bundle_quantity[] = $rel->product_related_quantity;
 		}
 
 		$translationHelper = hikashop_get('helper.translation');
@@ -1261,7 +1263,7 @@ class hikashopProductClass extends hikashopClass{
 		$this->db->setQuery($query);
 		$characteristic_values = $this->db->loadObjectList('characteristic_id');
 
-		if(!isset($characteristic_values[ (int)$characteristic_value_id ]) || (int)$characteristic_values[ (int)$characteristic_value_id ]->characteristic_parent_id != (int)$characteristic_id)
+		if($characteristic_value_id != $characteristic_id && (!isset($characteristic_values[ (int)$characteristic_value_id ]) || (int)$characteristic_values[ (int)$characteristic_value_id ]->characteristic_parent_id != (int)$characteristic_id))
 			return false;
 
 		$query = 'SELECT c.characteristic_id, c.characteristic_parent_id FROM ' . hikashop_table('characteristic') . ' AS c '.
@@ -1345,7 +1347,6 @@ class hikashopProductClass extends hikashopClass{
 			$e->characteristic_id = (int)$k;
 			$e->default_id = null;
 			$e->ordering = null;
-			JArrayHelper::toInteger($v);
 			$e->values = array_combine($v, $v);
 
 			$elem->characteristics[ (int)$k ] = $e;
@@ -1512,7 +1513,7 @@ class hikashopProductClass extends hikashopClass{
 	}
 
 	public function setDefaultVariant($product_id, $variant_id) {
-		if(!hikashop_acl('product/variant'))
+		if(!hikashop_acl('product/variant') || (int)$variant_id <= 0)
 			return false;
 
 		$app = JFactory::getApplication();
@@ -1761,11 +1762,13 @@ class hikashopProductClass extends hikashopClass{
 			}
 		}
 
+		if(!hikashop_level(1))
+			return true;
+
 		if($options['load_custom_product_fields']){
 			$fieldsClass = hikashop_get('class.field');
 			$this->productFields = $fieldsClass->getFields($options['load_custom_product_fields'], $rows, 'product', 'checkout&task=state');
 		}
-
 
 		if(!hikashop_level(2))
 			return true;
@@ -2616,7 +2619,7 @@ class hikashopProductClass extends hikashopClass{
 						$tables[] = hikashop_table('characteristic') . ' AS c'.$k;
 						if(empty($v))
 							$v = array(0 => 0);
-						$filters[] = 'c'.$k.'.characteristic_id IN ('.implode(',', array_keys($v)).')';
+						$filters[] = 'c'.$k.'.characteristic_id IN (\''.implode('\',\'', array_keys($v)).'\')';
 					}
 
 					if(!empty($variants)) {
@@ -3094,13 +3097,13 @@ class hikashopProductClass extends hikashopClass{
 		$separator = JText::_('HIKA_VARIANTS_MIDDLE_SEPARATOR');
 		if($separator == 'HIKA_VARIANTS_MIDDLE_SEPARATOR')
 			$separator = ' ';
-		$product_price_percentage = @$variant->product_price_percentage;
+		$product_price_percentage = (float) @$variant->product_price_percentage;
 		foreach($checkfields as $field) {
 			if(!empty($variant->$field) && $field != 'product_name' && (!is_numeric($variant->$field) || bccomp($variant->$field,0,5)))
 				continue;
 
 			if(isset($element->$field) && (is_array($element->$field) && count($element->$field) || is_object($element->$field))) {
-				$variant->$field = $this->_copy($element->$field);
+				$variant->$field = hikashop_copy($element->$field);
 
 				if($field != 'prices')
 					continue;
@@ -3147,25 +3150,6 @@ class hikashopProductClass extends hikashopClass{
 		if(!$variant->product_published)
 			$variant->product_quantity = 0;
 		$variant->variant_checked = true;
-	}
-
-	function _copy(&$src) {
-		if(is_array($src)) {
-			$array = array();
-			foreach($src as $k => $v) {
-				$array[$k] = $this->_copy($v);
-			}
-			return $array;
-		}
-
-		if(is_object($src)) {
-			$obj = new stdClass();
-			foreach(get_object_vars($src) as $k => $v) {
-				$obj->$k=$this->_copy($v);
-			}
-			return $obj;
-		}
-		return $src;
 	}
 
 	function generateVariantData(&$element){
@@ -3262,7 +3246,7 @@ class hikashopProductClass extends hikashopClass{
 		}
 
 		if($load_variants) {
-			$typeConfig['options']['tree_url'] .= '&variants=1';
+			$typeConfig['options']['tree_url'] .= '&variants='.$load_variants;
 		}
 
 		if($depth <= 0)
@@ -3494,6 +3478,15 @@ class hikashopProductClass extends hikashopClass{
 					$o->icon = 'node';
 					$o->data = array();
 
+					if($load_variants == 2) {
+						$o2 = new stdClass();
+						$o2->status = 0;
+						$o2->value = (int)$p->product_id;
+						$o2->name = $o->name . ' ('.JText::_('HIKA_ALL_VARIANTS').')';
+						$o->data[] =& $o2;
+						unset($o2);
+					}
+
 					foreach($product_ids[ (int)$p->product_id ] as $id) {
 						$o2 = new stdClass();
 						$o2->status = 0;
@@ -3567,7 +3560,14 @@ class hikashopProductClass extends hikashopClass{
 					' FROM ' . hikashop_table('product') . ' AS p ' .
 					' WHERE p.product_id IN ('.implode(',', $filter).') ';
 			$this->db->setQuery($query);
-			$products = $this->db->loadObjectList('product_id');
+			$products_data = $this->db->loadObjectList('product_id');
+
+			$products = array();
+			foreach($filter as $pid){
+				if(isset($products_data[$pid]))
+					$products[$pid] =& $products_data[$pid];
+			}
+
 
 			$variant_data = array(
 				'product' => array(),
@@ -3616,7 +3616,10 @@ class hikashopProductClass extends hikashopClass{
 			}
 
 			if(!empty($products)) {
-				$ret[1] = $products;
+				$ret[1] = array();
+				foreach($value as $v) {
+					$ret[1][(int)$v] = $products[(int)$v];
+				}
 			}
 
 			if($mode == hikashopNameboxType::NAMEBOX_SINGLE)

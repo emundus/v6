@@ -188,6 +188,12 @@ class DPCalendarControllerBookingForm extends JControllerForm
 			}
 		}
 
+		// Reset the show submit, because we have a proper thank you page anyway
+		if($this->messageType == 'message')
+		{
+			$this->message = null;
+		}
+
 		return $result;
 	}
 

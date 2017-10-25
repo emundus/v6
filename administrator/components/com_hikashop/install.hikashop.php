@@ -23,7 +23,7 @@ if(!function_exists('com_install')) {
 
 class hikashopInstall {
 	var $level = 'Starter';
-	var $version = '3.0.1';
+	var $version = '3.2.1';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';
@@ -694,6 +694,11 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			$this->db->setQuery($query);
 			try{$this->db->query();}catch(Exception $e){}
 
+			$query = 'UPDATE `#__hikashop_config` SET config_value = 1 '.
+					' WHERE config_namekey IN (\'checkout_legacy\', \'add_to_cart_legacy\',\'legacy_widgets\')';
+			$this->db->setQuery($query);
+			try{$this->db->query();}catch(Exception $e){}
+
 			$hikashopEmails = array(
 				'order_admin_notification',
 				'order_status_notification',
@@ -712,7 +717,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			jimport('joomla.filesystem.file');
 
 			foreach($hikashopEmails as $hikashopEmail){
-				$path = HIKASHOP_MEDIA.'mail'.DS.$hikashopEmail.'.html.modified.php';
+				$path = HIKASHOP_MEDIA . 'mail' . DS . $hikashopEmail . '.html.modified.php';
 				if(JPath::check($path) && file_exists($path)){
 					$this->db->setQuery("UPDATE `#__hikashop_config` SET `config_value` = '' WHERE `config_namekey` = ".$this->db->Quote($hikashopEmail.'.template'));
 					try{$this->db->query();}catch(Exception $e){}
@@ -722,6 +727,16 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 		if(version_compare($this->fromVersion, '3.1.0', '<')) {
 			$this->databaseHelper->addColumns('price', "`price_users` varchar(255) NOT NULL DEFAULT ''");
 			$this->databaseHelper->addColumns('product_related', "`product_related_quantity` int(10) unsigned NOT NULL DEFAULT '0'");
+		}
+		if(version_compare($this->fromVersion, '3.1.1', '<')) {
+			$query = 'UPDATE `#__hikashop_config` SET config_value = 1 '.
+					' WHERE config_namekey = \'carousel_legacy\'';
+			$this->db->setQuery($query);
+			try{$this->db->query();}catch(Exception $e){}
+		}
+		if(version_compare($this->fromVersion, '3.2.0', '<')) {
+			$this->databaseHelper->addColumns('waitlist', "`language` varchar(255) NOT NULL DEFAULT ''");
+			$this->databaseHelper->addColumns('cart', "`cart_ip` varchar(255) NOT NULL DEFAULT ''");
 		}
 	}
 
@@ -893,6 +908,11 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			'order_cancel.published' => 1,
 
 			'variant_increase_perf' => 1,
+
+			'checkout_legacy' => 0,
+			'add_to_cart_legacy' => 0,
+			'legacy_widgets' => 0,
+			'carousel_legacy' => 0,
 
 			'show_footer' => 1,
 			'no_css_header' => 0,

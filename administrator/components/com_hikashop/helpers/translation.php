@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -169,7 +169,7 @@ class hikashopTranslationHelper {
 	}
 
 	function getTranslations(&$element) {
-		$transArray = JRequest::getVar('translation',array(),'','array',JREQUEST_ALLOWRAW);
+		$transArray = hikaInput::get()->get('translation', array(), 'array');
 		foreach($transArray as $field => $trans){
 			foreach($trans as $lg => $value){
 				if(!empty($value)){
@@ -189,7 +189,7 @@ class hikashopTranslationHelper {
 		}
 		foreach($_POST as $name => $value) {
 			if(preg_match('#^translation_([a-z_]+)_([0-9]+)$#i', $name, $match)) {
-				$html_element = JRequest::getVar($name, '', '', 'string', JREQUEST_ALLOWRAW);
+				$html_element = hikaInput::get()->getRaw($name, '');
 				if(!empty($html_element)) {
 					$obj = new stdClass();
 					$type = $match[1];
@@ -209,7 +209,7 @@ class hikashopTranslationHelper {
 			$table = 'hikashop_' . $table;
 
 		if(empty($data) || $data === null)
-			$transArray = JRequest::getVar('translation', array(), '', 'array', JREQUEST_ALLOWRAW);
+			$transArray = hikaInput::get()->get('translation', array(), 'array');
 		else
 			$transArray = $data;
 
@@ -236,7 +236,7 @@ class hikashopTranslationHelper {
 				if(!preg_match('#^translation_([a-z_]+)_([0-9]+)$#i', $name, $match))
 					continue;
 
-				$html_element = JRequest::getVar($name, '', '', 'string', JREQUEST_ALLOWRAW);
+				$html_element = hikaInput::get()->getRaw($name, '');
 				if(empty($html_element))
 					continue;
 
@@ -382,8 +382,14 @@ class hikashopTranslationHelper {
 		jimport('joomla.filesystem.folder');
 		$path = JLanguage::getLanguagePath(JPATH_ROOT);
 		$dirs = JFolder::folders( $path );
-		$edit_image = HIKASHOP_IMAGES.'icons/icon-16-edit.png';
-		$new_image = HIKASHOP_IMAGES.'icons/icon-16-new.png';
+		$status_hika = HIKASHOP_IMAGES.'icons/icon-14-hikablue.png';
+		$edit_image = HIKASHOP_IMAGES.'edit.png';
+		$status_unavailable = HIKASHOP_IMAGES.'unavailable.png';
+		$edit_add = HIKASHOP_IMAGES.'add.png';
+		$tooltip_add = JText::_('ADD_HIKA_LANG');
+		$tooltip_hika = JText::_('AVAILABLE_HIKA_LANG');
+		$tooltip_unavailable = JText::_('IMPOSSIBLE_HIKA_LANG');
+		$tooltip_edit = JText::_('EDIT_HIKA_LANG');
 		$popupHelper = hikashop_get('helper.popup');
 
 		foreach ($dirs as $dir){
@@ -406,16 +412,23 @@ class hikashopTranslationHelper {
 					'edit_language_'.$oneLanguage->language,
 					760, 480, '', '', 'link'
 				);
+				$oneLanguage->status = '<img id="image'.$oneLanguage->language.'" src="'. $status_hika.'" alt="'.$tooltip_hika.'"/>';
+
+				$oneLanguage->edit_tooltip = $tooltip_edit;
+				$oneLanguage->status_tooltip = $tooltip_hika;
 			}else{
 				$oneLanguage->edit = $popupHelper->display(
-					'<img id="image'.$oneLanguage->language.'" src="'. $new_image.'" alt="'.JText::_('ADD_LANGUAGE_FILE').'"/>',
+					'<img id="image'.$oneLanguage->language.'" src="'. $edit_add.'" alt="'.$tooltip_add.'"/>',
 					'ADD_LANGUAGE_FILE',
 					'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=config&amp;task=language&amp;code='.$oneLanguage->language,
 					'edit_language_'.$oneLanguage->language,
 					760, 480, '', '', 'link'
 				);
-			}
+				$oneLanguage->status = '<img id="image'.$oneLanguage->language.'" src="'. $status_unavailable.'" alt="'.JText::_('ADD_HIKA_LANG').'"/>';
 
+				$oneLanguage->edit_tooltip = $tooltip_add;
+				$oneLanguage->status_tooltip = $tooltip_unavailable;
+			}
 			$languages[] = $oneLanguage;
 		}
 		return $languages;

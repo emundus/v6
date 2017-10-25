@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -30,7 +30,7 @@ class hikashopCheckoutPaymentHelper extends hikashopCheckoutHelperInterface {
 
 	public function validate(&$controller, &$params, $data = array()) {
 		if(empty($data))
-			$data = JRequest::getVar('checkout', array(), '', 'array');
+			$data = hikaInput::get()->get('checkout', array(), 'array');
 		if(empty($data['payment']))
 			return true;
 
@@ -43,7 +43,7 @@ class hikashopCheckoutPaymentHelper extends hikashopCheckoutHelperInterface {
 
 		$payment_price = $this->getPaymentPrice($cart);
 
-		$selectionOnly = JRequest::getInt('selectionOnly', 0);
+		$selectionOnly = hikaInput::get()->getInt('selectionOnly', 0);
 		if($selectionOnly) {
 			$cart_markers = $checkoutHelper->getCartMarkers();
 		}
@@ -86,6 +86,18 @@ class hikashopCheckoutPaymentHelper extends hikashopCheckoutHelperInterface {
 				if(isset($checkout_cc[$payment_id]['mm']) && isset($checkout_cc[$payment_id]['yy'])) {
 				}
 
+				$plugin = hikashop_import('hikashoppayment', $cart->payment->payment_type);
+				if(method_exists($plugin, 'needCC')) {
+					$plugin->needCC($cart->payment);
+				} else if(!empty($plugin->ask_cc)) {
+					if(!empty($cart->payment->payment_params->ask_ccv))
+						$cart->payment->ask_ccv = true;
+				}
+				if(!empty($cart->payment->ask_ccv) && empty($checkout_cc[$payment_id]['ccv'])){
+					$ret = false;
+					$checkoutHelper->addMessage('payment', array(JText::_('CCV_MISSING'), 'error'));
+				}
+
 			} else if(is_string($data['payment']['card'][$payment_id]) && $data['payment']['card'][$payment_id] === 'reset')
 				unset($checkout_cc[$payment_id]);
 
@@ -116,7 +128,8 @@ class hikashopCheckoutPaymentHelper extends hikashopCheckoutHelperInterface {
 			}
 		}
 
-		if(JRequest::getInt('selectionOnly', 0) && JRequest::getCmd('tmpl', '') == 'ajax') {
+		$tmpl = hikaInput::get()->getCmd('tmpl', '');
+		if(hikaInput::get()->getInt('selectionOnly', 0) && in_array($tmpl, array('ajax', 'raw'))) {
 			$data = array(
 				'ret' => $ret,
 				'events' => array(),

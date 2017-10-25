@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -42,7 +42,7 @@ if($displayTitle){
 
 <div id="hikashop_product_custom_info_main" class="hikashop_product_custom_info_main">
 	<h4><?php echo JText::_('SPECIFICATIONS');?></h4>
-	<table width="100%">
+	<table class="hikashop_product_custom_info_main_table">
 		<?php echo $specifFields; ?>
 	</table>
 </div>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -111,6 +111,29 @@ class userViewUser extends HikaShopView {
 			$pathway->addItem(JText::_('CUSTOMER_ACCOUNT'), hikashop_completeLink('user'));
 
 		hikashop_setPageTitle('CUSTOMER_ACCOUNT');
+	}
+
+	public function guest_form(){
+		hikashop_setPageTitle('HIKA_REGISTRATION');
+		global $Itemid;
+		$url_itemid = '';
+		if(!empty($Itemid)){
+			$url_itemid = '&Itemid=' . $Itemid;
+		}
+		$this->assignRef('url_itemid', $url_itemid);
+
+		$user = (object)@$_SESSION['hikashop_guest_data'];
+
+		if(empty($user)){
+			$user = new stdClass();
+			$user->username = '';
+			$user->name = '';
+		}
+
+		$this->assignRef('user', $user);
+
+		$config = hikashop_config();
+		$this->assignRef('config', $config);
 	}
 
 	public function form(){

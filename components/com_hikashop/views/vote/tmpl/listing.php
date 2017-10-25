@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -19,7 +19,7 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 	<span><?php echo JText::_('HIKASHOP_LISTING_COMMENT');?></span>
 <?php
 	if($row->vote_comment_sort_frontend) {
-		$sort = JRequest::getString('sort_comment','');
+		$sort = hikaInput::get()->getString('sort_comment','');
 ?>
 	<span style="float: right;" class="hikashop_sort_listing_comment">
 		<select name="sort_comment" onchange="refreshCommentSort(this.value); return false;">
@@ -47,12 +47,12 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 		<td class="hika_comment_listing_stars hk-rating"><?php
 
 		$nb_star_vote = $elt->vote_rating;
-		JRequest::setVar("nb_star", $nb_star_vote);
+		hikaInput::get()->set("nb_star", $nb_star_vote);
 		$nb_star_config = $row->vote_star_number;
-		JRequest::setVar("nb_max_star", $nb_star_config);
+		hikaInput::get()->set("nb_max_star", $nb_star_config);
 
 		if($nb_star_vote != 0) {
-			for($k = 0; $k < $nb_star_vote; $k++){
+			for($k = 0; $k < $nb_star_vote; $k++) {
 				?><span class="hika_comment_listing_full_stars hk-rate-star state-full"></span><?php
 			}
 			$nb_star_empty = $nb_star_config - $nb_star_vote;

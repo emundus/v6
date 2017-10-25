@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -40,6 +40,35 @@ class plgSystemHikashopuser extends JPlugin {
 			$lang = JFactory::getLanguage();
 			$lang->load('com_hikashop', JPATH_SITE, null, true);
 		}
+	}
+
+	public function onBeforeCompileHead(){
+
+		if(version_compare(JVERSION,'3.7','<'))
+			return;
+
+		$doc = JFactory::getDocument();
+		$head = $doc->getHeadData();
+
+		if(empty($head['scripts']))
+			return;
+
+		$js_files = array('jquery.js', 'jquery.min.js', 'jquery-noconflict.js', 'jquery.ui.core.js', 'jquery.ui.core.min.js');
+		$newScripts = array();
+		foreach($head['scripts'] as $file => $data) {
+			foreach($js_files as $js_file) {
+				if(strpos($file,'media/jui/js/'.$js_file)=== false)
+					continue;
+				$newScripts[$file] = $data;
+			}
+		}
+		foreach($head['scripts'] as $file => $data){
+			if(!isset($newScripts[$file]))
+				$newScripts[$file] = $data;
+		}
+		$head['scripts'] = $newScripts;
+
+		$doc->setHeadData($head);
 	}
 
 	public function onContentPrepare($context, &$article, &$params, $limitstart = 0) {
@@ -115,7 +144,7 @@ class plgSystemHikashopuser extends JPlugin {
 			$hikaUser->user_id = $userClass->getID($hikaUser->user_email, 'email');
 		}
 
-		$formData = JRequest::getVar('data', array(), '', 'array');
+		$formData = hikaInput::get()->get('data', array(), 'array');
 
 		$in_checkout = !empty($_REQUEST['option']) && $_REQUEST['option'] == 'com_hikashop' && !empty($_REQUEST['ctrl']) && $_REQUEST['option'] == 'checkout';
 
@@ -224,6 +253,12 @@ class plgSystemHikashopuser extends JPlugin {
 
 		if($options !== null)
 			$this->moveCarts($hika_user_id);
+		else{
+			$db = JFactory::getDBO();
+			$query = 'UPDATE #__hikashop_cart SET session_id = \'\' WHERE user_id = '.(int)$hika_user_id.' AND cart_type = \'cart\';';
+			$db->setQuery($query);
+			$db->query();
+		}
 
 		$addressClass = hikashop_get('class.address');
 		$addresses = $addressClass->getByUser($hika_user_id);
@@ -261,6 +296,21 @@ class plgSystemHikashopuser extends JPlugin {
 		$query = 'UPDATE #__hikashop_cart SET cart_current = 0 WHERE user_id = '.(int)$hika_user_id.' AND cart_type = \'cart\';';
 		$db->setQuery($query);
 		$db->query();
+
+		$config = hikashop_config();
+		if(!$config->get('enable_multicart', 1)) {
+			$query = 'SELECT cart_id FROM #__hikashop_cart WHERE user_id = '.(int)$hika_user_id.' AND cart_type = \'cart\';';
+			$db->setQuery($query);
+			if(!HIKASHOP_J25) {
+				$cart_ids = $db->loadResultArray();
+			} else {
+				$cart_ids = $db->loadColumn();
+			}
+			if(count($cart_ids)) {
+				$cartClass = hikashop_get('class.cart');
+				$cartClass->delete($cart_ids, $hika_user_id);
+			}
+		}
 
 		$query = 'UPDATE #__hikashop_cart SET user_id = '.(int)$hika_user_id.
 			' WHERE session_id = '.$db->Quote($this->session).' AND cart_type = \'cart\';';

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,7 +23,7 @@ class ZoneController extends hikashopController{
 	}
 
 	function copy(){
-		$zones = JRequest::getVar( 'cid', array(), '', 'array' );
+		$zones = hikaInput::get()->get('cid', array(), 'array' );
 		$result = true;
 		if(!empty($zones)){
 			$zoneClass = hikashop_get('class.zone');
@@ -58,12 +58,12 @@ class ZoneController extends hikashopController{
 
 	function savechild(){
 		$new_id = $this->store();
-		$main_id = JRequest::getInt('main_id');
+		$main_id = hikaInput::get()->getInt('main_id');
 		if($main_id && $new_id){
 			$zoneClass = hikashop_get('class.zone');
 			$insertedNamekeys = $zoneClass->addChildren($main_id,array($new_id));
-			JRequest::setVar('cid',$new_id);
-			JRequest::setVar( 'layout', 'savechild'  );
+			hikaInput::get()->set('cid',$new_id);
+			hikaInput::get()->set( 'layout', 'savechild'  );
 			return parent::display();
 		}else{
 			$this->selectchildlisting();
@@ -71,35 +71,35 @@ class ZoneController extends hikashopController{
 	}
 
 	function selectchildlisting(){
-		JRequest::setVar( 'task', 'selectchildlisting'  );
-		JRequest::setVar( 'layout', 'selectchildlisting'  );
+		hikaInput::get()->set( 'task', 'selectchildlisting'  );
+		hikaInput::get()->set( 'layout', 'selectchildlisting'  );
 		return parent::display();
 	}
 
 	function addchild(){
-		$type=JRequest::getWord('type');
+		$type=hikaInput::get()->getWord('type');
 		if(!in_array($type,array('discount','shipping','payment','config','tax'))){
-			$childNamekeys = JRequest::getVar( 'cid', array(), '', 'array' );
-			$mainNamekey = JRequest::getVar( 'main_id', 0, '', 'int' );
+			$childNamekeys = hikaInput::get()->get('cid', array(), 'array');
+			$mainNamekey = hikaInput::get()->getInt( 'main_id', 0);
 			$zoneClass = hikashop_get('class.zone');
 			$insertedNamekeys = $zoneClass->addChildren($mainNamekey,$childNamekeys);
-			JRequest::setVar( 'cid', $insertedNamekeys );
-			JRequest::setVar( 'layout', 'newchild'  );
+			hikaInput::get()->set( 'cid', $insertedNamekeys );
+			hikaInput::get()->set( 'layout', 'newchild'  );
 		}else{
-			JRequest::setVar( 'layout', 'addchild'  );
+			hikaInput::get()->set( 'layout', 'addchild'  );
 		}
 		return parent::display();
 	}
 
 	function newchild(){
-		JRequest::setVar( 'layout', 'newchildform'  );
+		hikaInput::get()->set( 'layout', 'newchildform'  );
 		return parent::display();
 	}
 
 	function getTree() {
-		$zone_key = JRequest::getVar('zone_key', null);
-		$displayFormat = JRequest::getVar('displayFormat', '');
-		$search = JRequest::getVar('search', null);
+		$zone_key = hikaInput::get()->getVar('zone_key', null);
+		$displayFormat = hikaInput::get()->getVar('displayFormat', '');
+		$search = hikaInput::get()->getVar('search', null);
 
 		$nameboxType = hikashop_get('type.namebox');
 		$options = array(
@@ -107,7 +107,7 @@ class ZoneController extends hikashopController{
 			'displayFormat' => $displayFormat
 		);
 
-		$return_zonetype = JRequest::getVar('return_zonetype', null);
+		$return_zonetype = hikaInput::get()->getVar('return_zonetype', null);
 		if(!empty($return_zonetype))
 			$options['type'] = $return_zonetype;
 

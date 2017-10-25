@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -78,7 +78,7 @@ class hikashopCartHelper {
 		static $i = 0;
 		if($inc) {
 		  self::$hk_show_quantity_counter++;
-		  $i = self::$hk_show_quantity_counter;  
+		  $i = self::$hk_show_quantity_counter;
 		}
 
 		if(!empty($ajax))
@@ -226,7 +226,7 @@ function hikashopQuantityChange(field, plus, max, min) {
 						echo '<script type="text/javascript">'."\r\n<!--".$js."//-->\r\n".'</script>';
 					}
 				}
-				$html = '<input id="hikashop_product_quantity_field_'.$i.'" type="text" value="'.JRequest::getInt('quantity',$min_quantity).'" class="hikashop_product_quantity_field" name="quantity" onchange="hikashopCheckQuantityChange(\'hikashop_product_quantity_field_'.$i.'\','.$max_quantity.','.$min_quantity.');" />'.$html;
+				$html = '<input id="hikashop_product_quantity_field_'.$i.'" type="text" value="'.hikaInput::get()->getInt('quantity',$min_quantity).'" class="hikashop_product_quantity_field" name="quantity" onchange="hikashopCheckQuantityChange(\'hikashop_product_quantity_field_'.(int)$i.'\','.(int)$max_quantity.','.(int)$min_quantity.');" />'.$html;
 			} elseif($params->get('show_quantity_field', 0) == 2) {
 			}
 		}
@@ -250,9 +250,8 @@ function hikashopQuantityChange(field, plus, max, min) {
 		if(!$config->get('add_to_cart_legacy', true)) {
 			$first = false;
 
-			$checkout_itemid = (int)$config->get('checkout_itemid', 0);
-
-			$url_cart = hikashop_completeLink('checkout'. (!empty($checkout_itemid) ? '&Itemid='.$checkout_itemid : ''), false, true);
+			$menusClass = hikashop_get('class.menus');
+			$url_cart = $menusClass->getCheckoutURL(true);
 			$url_wishlist = hikashop_completeLink('product&task=listing', false, true);
 
 			$js = '
@@ -280,7 +279,7 @@ window.localPage.wishlistRedirect = function(cid,pid,resp){window.location="'.$u
 
 		if($redirect=='ask_user' || ($config->get('enable_wishlist') && hikashop_loadUser() == null)) {
 			JHTML::_('behavior.modal');
-			if($needNotice && JRequest::getVar('tmpl','')!='component'){
+			if($needNotice && hikaInput::get()->getVar('tmpl','')!='component'){
 				if($this->override && function_exists('hikashop_popup_render')){
 					echo hikashop_popup_render();
 				}else{
@@ -307,7 +306,7 @@ if(cart_type == "wishlist") {
 }
 ';
 				}
-				$addTo = JRequest::getString('add_to','');
+				$addTo = hikaInput::get()->getString('add_to','');
 				if(!empty($addTo))
 					$addTo = '&addTo='.$addTo;
 				$js = '
@@ -401,7 +400,7 @@ function hikashopModifyQuantity(id,obj,add,form,type,moduleid){
 				if($this->cartCount()!=1 && !empty($url)){
 					$js = 'window.location = \''.urldecode($url).'\';';
 				}
-				$addTo = JRequest::getString('add_to','');
+				$addTo = hikaInput::get()->getString('add_to','');
 				if(!empty($addTo))
 					$addTo = '&addTo='.$addTo;
 				$app = JFactory::getApplication();

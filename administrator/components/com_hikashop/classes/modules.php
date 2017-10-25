@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -55,7 +55,7 @@ class hikashopModulesClass extends hikashopClass{
 
 	function saveForm($id=null){
 		$module = new stdClass();
-		$formData = JRequest::getVar( 'module', array(), '', 'array' );
+		$formData = hikaInput::get()->get('module', array(), 'array');
 		jimport('joomla.filter.filterinput');
 		$safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
 		if(!empty($formData)){
@@ -74,7 +74,7 @@ class hikashopModulesClass extends hikashopClass{
 		}
 
 		$element = array();
-		$formData = JRequest::getVar( 'config', array(), '', 'array' );
+		$formData = hikaInput::get()->get('config', array(), 'array');
 		if (isset($module->id) && empty($id))
 			$params_name = 'params_'.(int)$module->id;
 		else
@@ -93,7 +93,7 @@ class hikashopModulesClass extends hikashopClass{
 			}
 		}
 
-		$formData = JRequest::getVar( 'moduleconfig', array(), '', 'array' );
+		$formData = hikaInput::get()->get('moduleconfig', array(), 'array');
 
 		if(!empty($formData[$params_name])){
 			foreach($formData[$params_name] as $column => $value){
@@ -173,9 +173,9 @@ class hikashopModulesClass extends hikashopClass{
 		if($display === false)
 			return true;
 
-		$option = JRequest::getVar('option', ''); // com_hikashop
-		$ctrl = JRequest::getVar('ctrl', ''); // product, category, checkout
-		$task = JRequest::getVar('task', ''); // show, listing, compare, ...
+		$option = hikaInput::get()->getVar('option', ''); // com_hikashop
+		$ctrl = hikaInput::get()->getVar('ctrl', ''); // product, category, checkout
+		$task = hikaInput::get()->getVar('task', ''); // show, listing, compare, ...
 
 		if($option != 'com_hikashop')
 			return true;
@@ -195,6 +195,8 @@ class hikashopModulesClass extends hikashopClass{
 			if($task == 'compare' && $ctrl == 'product' && (int)$params->get('display_on_product_compare_page', 1) == 0)
 				return false;
 			if($task == 'listing' && $ctrl == 'category' && (int)$params->get('display_on_category_listing_page', 1) == 0)
+				return false;
+			if($task == 'contact' && $ctrl == 'product' && (int)$params->get('display_on_contact_page', 1) == 0)
 				return false;
 		}
 		if($ctrl == 'checkout' && (int)$params->get('display_on_checkout_page', 1) == 0) {

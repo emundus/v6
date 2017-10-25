@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -30,19 +30,21 @@ class plgSystemHikashopregistrationredirect extends JPlugin
 
 		if((@$_REQUEST['option']=='com_user' && @$_REQUEST['view']=='register') || (@$_REQUEST['option']=='com_users' && @$_REQUEST['view']=='registration' && !in_array(@$_REQUEST['task'],array('remind.remind','reset.request','reset.confirm','reset.complete')))){
 
+			if(!defined('DS'))
+				define('DS', DIRECTORY_SEPARATOR);
+			if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')) return true;
+
 			$Itemid = $this->params->get('item_id');
 			if(empty($Itemid)){
 				global $Itemid;
 				if(empty($Itemid)){
-					$urlItemid = JRequest::getInt('Itemid');
+					$urlItemid = hikaInput::get()->getInt('Itemid');
 					if($urlItemid){
 						$Itemid = $urlItemid;
 					}
 				}
 			}
-			if(!defined('DS'))
-				define('DS', DIRECTORY_SEPARATOR);
-			if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')) return true;
+
 			$menuClass = hikashop_get('class.menus');
 			if(!empty($Itemid)){
 				$Itemid = $menuClass->loadAMenuItemId('','',$Itemid);

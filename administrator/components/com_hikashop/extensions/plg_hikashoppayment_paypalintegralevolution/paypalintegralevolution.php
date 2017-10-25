@@ -1,14 +1,13 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-
 class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 	var $accepted_currencies = array (
 		'AUD','CAD','EUR','GBP','JPY','USD','NZD','CHF','HKD','SGD','SEK','DKK','PLN','NOK','HUF','CZK'
@@ -18,7 +17,7 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 	var $name = 'paypalintegralevolution';
 	var $doc_form = 'paypalintegralevolution';
 
-	function onBeforeOrderCreate(& $order, & $do) {
+	public function onBeforeOrderCreate(& $order, & $do) {
 		if (parent::onBeforeOrderCreate($order, $do) === true)
 			return true;
 
@@ -28,7 +27,7 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 		}
 	}
 
-	function onAfterOrderConfirm(& $order, & $methods, $method_id) {
+	public function onAfterOrderConfirm(& $order, & $methods, $method_id) {
 		parent::onAfterOrderConfirm($order, $methods, $method_id);
 
 		if ($this->currency->currency_locale['int_frac_digits'] > 2)
@@ -112,31 +111,31 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 			$vars['logoImage'] = $this->payment_params->logoImage;
 		}
 
-			if (empty ($this->payment_params->details)) {
-				$vars['subtotal'] = round($order->cart->full_total->prices[0]->price_value_with_tax, (int) $this->currency->currency_locale['int_frac_digits']);
-				$vars['item_name'] = JText :: _('CART_PRODUCT_TOTAL_PRICE');
-			} else {
-				$i = 1;
-				$tax = 0;
-				$config = & hikashop_config();
-				$group = $config->get('group_options', 0);
-				$subtotal = 0;
-				foreach ($order->cart->products as $product) {
-					if ($group && $product->order_product_option_parent_id)
-						continue;
-					$subtotal += (round($product->order_product_price, (int) $this->currency->currency_locale['int_frac_digits']) * $product->order_product_quantity);
-					$tax += round($product->order_product_tax, (int) $this->currency->currency_locale['int_frac_digits']) * $product->order_product_quantity;
-				}
-				$vars['subtotal'] = $subtotal + $order->order_payment_price - $order->order_discount_price;
-
-				if (!empty ($order->order_shipping_price) && bccomp($order->order_shipping_price, 0, 5)) {
-					$vars['shipping'] = round($order->order_shipping_price - @ $order->order_shipping_tax, (int) $this->currency->currency_locale['int_frac_digits']);
-					$tax += round($order->order_shipping_tax, (int) $this->currency->currency_locale['int_frac_digits']);
-				}
-
-				if (bccomp($tax, 0, 5))
-					$vars['tax'] = $tax;
+		if (empty ($this->payment_params->details)) {
+			$vars['subtotal'] = round($order->cart->full_total->prices[0]->price_value_with_tax, (int) $this->currency->currency_locale['int_frac_digits']);
+			$vars['item_name'] = JText::_('CART_PRODUCT_TOTAL_PRICE');
+		} else {
+			$i = 1;
+			$tax = 0;
+			$config = & hikashop_config();
+			$group = $config->get('group_options', 0);
+			$subtotal = 0;
+			foreach ($order->cart->products as $product) {
+				if ($group && $product->order_product_option_parent_id)
+					continue;
+				$subtotal += (round($product->order_product_price, (int) $this->currency->currency_locale['int_frac_digits']) * $product->order_product_quantity);
+				$tax += round($product->order_product_tax, (int) $this->currency->currency_locale['int_frac_digits']) * $product->order_product_quantity;
 			}
+			$vars['subtotal'] = $subtotal + $order->order_payment_price - $order->order_discount_price;
+
+			if (!empty ($order->order_shipping_price) && bccomp($order->order_shipping_price, 0, 5)) {
+				$vars['shipping'] = round($order->order_shipping_price - @ $order->order_shipping_tax, (int) $this->currency->currency_locale['int_frac_digits']);
+				$tax += round($order->order_shipping_tax, (int) $this->currency->currency_locale['int_frac_digits']);
+			}
+
+			if (bccomp($tax, 0, 5))
+				$vars['tax'] = $tax;
+		}
 
 		if ((isset ($this->payment_params->validation) && $this->payment_params->validation)) {
 			$vars['paymentaction'] = 'authorization';
@@ -150,28 +149,22 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 		}
 		$this->vars = $vars;
 
-
-
 		return $this->showPage('end');
-
 	}
 
-	function onPaymentNotification(& $statuses) {
-
-		$vars = array ();
-		$data = array ();
-		$filter = JFilterInput :: getInstance();
+	public function onPaymentNotification(& $statuses) {
+		$vars = array();
+		$data = array();
+		$filter = JFilterInput::getInstance();
 		foreach ($_REQUEST as $key => $value) {
 			$key = $filter->clean($key);
 			if (preg_match('#^[0-9a-z_-]{1,30}$#i', $key) && !preg_match('#^cmd$#i', $key)) {
-				$value = JRequest :: getString($key);
+				$value = JRequest::getString($key);
 				$vars[$key] = $value;
 				$data[] = $key . '=' . urlencode($value);
 			}
 		}
-		$this->writeToLog ("test paypal \n\n\n");
-		$this->writeToLog (print_r($_REQUEST,true)."\n\n\n");
-		$this->writeToLog (print_r($vars,true)."\n\n\n");
+
 		$data = implode('&', $data) . '&cmd=_notify-validate';
 
 		$dbOrder = $this->getOrder((int) @ $vars['invoice']);
@@ -180,12 +173,11 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 			return false;
 		$this->loadOrderData($dbOrder);
 
-
 		if ($this->payment_params->debug)
 			echo print_r($vars, true) . "\r\n\r\n";
 
 		if (empty ($dbOrder)) {
-			echo 'Could not load any order for your notification ' . @ $vars['invoice'];
+			echo 'Could not load any order for your notification ' . @$vars['invoice'];
 			return false;
 		}
 
@@ -196,113 +188,83 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 		$order_id = $dbOrder->order_id;
 
 		$url = HIKASHOP_LIVE . 'administrator/index.php?option=com_hikashop&ctrl=order&task=edit&order_id=' . $order_id;
-		$order_text = "\r\n" . JText :: sprintf('NOTIFICATION_OF_ORDER_ON_WEBSITE', $dbOrder->order_number, HIKASHOP_LIVE);
-		$order_text .= "\r\n" . str_replace('<br/>', "\r\n", JText :: sprintf('ACCESS_ORDER_WITH_LINK', $url));
+		$order_text = "\r\n" . JText::sprintf('NOTIFICATION_OF_ORDER_ON_WEBSITE', $dbOrder->order_number, HIKASHOP_LIVE);
+		$order_text .= "\r\n" . str_replace('<br/>', "\r\n", JText::sprintf('ACCESS_ORDER_WITH_LINK', $url));
 
-		if (!empty ($this->payment_params->ips)) {
+		if(!empty ($this->payment_params->ips)) {
 			$ip = hikashop_getIP();
-			$ips = str_replace(array (
-				'.',
-				'*',
-				','
-			), array (
-				'\.',
-				'[0-9]+',
-				'|'
-			), $this->payment_params->ips);
-			if (!preg_match('#(' . implode('|', $ips) . ')#', $ip)) {
+			$ips = str_replace(
+				array('.','*',','),
+				array('\.','[0-9]+','|'),
+				$this->payment_params->ips
+			);
+			if(!preg_match('#(' . implode('|', $ips) . ')#', $ip)) {
 				$email = new stdClass();
-				$email->subject = JText :: sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER', 'Paypal') . ' ' . JText :: sprintf('IP_NOT_VALID', $dbOrder->order_number);
-				$email->body = str_replace('<br/>', "\r\n", JText :: sprintf('NOTIFICATION_REFUSED_FROM_IP', 'Paypal', $ip, implode("\r\n", $this->payment_params->ips))) . "\r\n\r\n" . JText :: sprintf('CHECK_DOCUMENTATION', HIKASHOP_HELPURL . 'payment-paypal-error#ip') . $order_text;
+				$email->subject = JText::sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER', 'Paypal') . ' ' . JText::sprintf('IP_NOT_VALID', $dbOrder->order_number);
+				$email->body = str_replace('<br/>', "\r\n", JText::sprintf('NOTIFICATION_REFUSED_FROM_IP', 'Paypal', $ip, implode("\r\n", $this->payment_params->ips))) . "\r\n\r\n" . JText::sprintf('CHECK_DOCUMENTATION', HIKASHOP_HELPURL . 'payment-paypal-error#ip') . $order_text;
 				$action = false;
 				$this->modifyOrder($action, null, null, $email);
 
-				JError :: raiseError(403, JText :: _('Access Forbidden'));
+				JError::raiseError(403, JText::_('Access Forbidden'));
 				return false;
 			}
 		}
 
-		if($this->payment_params->sandbox){
+		if($this->payment_params->sandbox) {
 			$this->payment_params->url = 'https://securepayments.sandbox.paypal.com/webapps/HostedSoleSolutionApp/webflow/sparta/hostedSoleSolutionProcess';
-		}else{
+		} else {
 			$this->payment_params->url = 'https://securepayments.paypal.com/webapps/HostedSoleSolutionApp/webflow/sparta/hostedSoleSolutionProcess';
 		}
-		$url = parse_url($this->payment_params->url);
-		if (!isset ($url['query']))
-			$url['query'] = '';
 
-		if (!isset ($url['port'])) {
-			if (!empty ($url['scheme']) && in_array($url['scheme'], array (
-					'https',
-					'ssl'
-				))) {
-				$url['port'] = 443;
-			} else {
-				$url['port'] = 80;
+		$response = $this->verifyIPN();
+
+		if(empty($response) || !preg_match('#VERIFIED#i', $response)) {
+			$url = parse_url($this->payment_params->url);
+			if (!isset ($url['query']))
+				$url['query'] = '';
+
+			if (!isset ($url['port'])) {
+				if (!empty ($url['scheme']) && in_array($url['scheme'], array('https','ssl'))) {
+					$url['port'] = 443;
+				} else {
+					$url['port'] = 80;
+				}
 			}
+
+			if (!empty ($url['scheme']) && in_array($url['scheme'], array('https','ssl'))) {
+				$url['host_socket'] = 'ssl://' . $url['host'];
+			} else {
+				$url['host_socket'] = $url['host'];
+			}
+
+			if ($this->payment_params->debug)
+				echo print_r($url, true) . "\r\n\r\n";
+
+			$response = $this->sendRequest($url, $data);
 		}
 
-		if (!empty ($url['scheme']) && in_array($url['scheme'], array (
-				'https',
-				'ssl'
-			))) {
-			$url['host_socket'] = 'ssl://' . $url['host'];
-		} else {
-			$url['host_socket'] = $url['host'];
-		}
-
-		if ($this->payment_params->debug)
-			echo print_r($url, true) . "\r\n\r\n";
-
-		$fp = fsockopen($url['host_socket'], $url['port'], $errno, $errstr, 30);
-		if (!$fp) {
+		if($response === false) {
 			$email = new stdClass();
-			$email->subject = JText :: sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER', 'Paypal') . ' ' . JText :: sprintf('PAYPAL_CONNECTION_FAILED', $dbOrder->order_number);
-			$email->body = str_replace('<br/>', "\r\n", JText :: sprintf('NOTIFICATION_REFUSED_NO_CONNECTION', 'Paypal')) . "\r\n\r\n" . JText :: sprintf('CHECK_DOCUMENTATION', HIKASHOP_HELPURL . 'payment-paypal-error#connection') . $order_text;
+			$email->subject = JText::sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER', 'Paypal') . ' ' . JText::sprintf('PAYPAL_CONNECTION_FAILED', $dbOrder->order_number);
+			$email->body = str_replace('<br/>', "\r\n", JText::sprintf('NOTIFICATION_REFUSED_NO_CONNECTION', 'Paypal')) . "\r\n\r\n" . JText::sprintf('CHECK_DOCUMENTATION', HIKASHOP_HELPURL . 'payment-paypal-error#connection') . $order_text;
 			$action = false;
 			$this->modifyOrder($action, null, null, $email);
 
-			JError :: raiseError(403, JText :: _('Access Forbidden'));
+			JError::raiseError(403, JText::_('Access Forbidden'));
 			return false;
 		}
-
-		$uri = $url['path'] . ($url['query'] != '' ? '?' . $url['query'] : '');
-		$header = 'POST ' . $uri . ' HTTP/1.1' . "\r\n" .
-		'User-Agent: PHP/' . phpversion() . "\r\n" .
-		'Referer: ' . hikashop_currentURL() . "\r\n" .
-		'Server: ' . $_SERVER['SERVER_SOFTWARE'] . "\r\n" .
-		'Host: ' . $url['host'] . "\r\n" .
-		'Content-Type: application/x-www-form-urlencoded' . "\r\n" .
-		'Content-Length: ' . strlen($data) . "\r\n" .
-		'Accept: */' . '*' . "\r\n" .
-		'Connection: close' . "\r\n\r\n";
-
-		fwrite($fp, $header . $data);
-		$response = '';
-		while (!feof($fp)) {
-			$response .= fgets($fp, 1024);
-		}
-		fclose($fp);
-
-		if ($this->payment_params->debug) {
-			echo print_r($header, true) . "\r\n\r\n";
-			echo print_r($data, true) . "\r\n\r\n";
-			echo print_r($response, true) . "\r\n\r\n";
-		}
-
-		$response = substr($response, strpos($response, "\r\n\r\n") + strlen("\r\n\r\n"));
 
 		$verified = preg_match('#VERIFIED#i', $response);
 		if (!$verified) {
 			$email = new stdClass();
 			if (preg_match('#INVALID#i', $response)) {
-				$email->subject = JText :: sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER', 'Paypal') . 'invalid transaction';
-				$email->body = JText :: sprintf("Hello,\r\n A paypal notification was refused because it could not be verified by the paypal server") . "\r\n\r\n" . JText :: sprintf('CHECK_DOCUMENTATION', HIKASHOP_HELPURL . 'payment-paypal-error#invalidtnx') . $order_text;
+				$email->subject = JText::sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER', 'Paypal') . 'invalid transaction';
+				$email->body = JText::sprintf("Hello,\r\n A paypal notification was refused because it could not be verified by the paypal server") . "\r\n\r\n" . JText::sprintf('CHECK_DOCUMENTATION', HIKASHOP_HELPURL . 'payment-paypal-error#invalidtnx') . $order_text;
 				if ($this->payment_params->debug)
 					echo 'invalid transaction' . "\n\n\n";
 			} else {
-				$email->subject = JText :: sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER', 'Paypal') . 'invalid response';
-				$email->body = JText :: sprintf("Hello,\r\n A paypal notification was refused because the response from the paypal server was invalid") . "\r\n\r\n" . JText :: sprintf('CHECK_DOCUMENTATION', HIKASHOP_HELPURL . 'payment-paypal-error#invalidresponse') . $order_text;
+				$email->subject = JText::sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER', 'Paypal') . 'invalid response';
+				$email->body = JText::sprintf("Hello,\r\n A paypal notification was refused because the response from the paypal server was invalid") . "\r\n\r\n" . JText::sprintf('CHECK_DOCUMENTATION', HIKASHOP_HELPURL . 'payment-paypal-error#invalidresponse') . $order_text;
 
 				if ($this->payment_params->debug)
 					echo 'invalid response' . "\n\n\n";
@@ -316,8 +278,8 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 		$pending = preg_match('#Pending#i', $vars['payment_status']);
 		if (!$completed && !$pending) {
 			$email = new stdClass();
-			$email->subject = JText :: sprintf('PAYMENT_NOTIFICATION_FOR_ORDER', 'Paypal', $vars['payment_status'], $dbOrder->order_number);
-			$email->body = str_replace('<br/>', "\r\n", JText :: sprintf('PAYMENT_NOTIFICATION_STATUS', 'Paypal', $vars['payment_status'])) . ' ' . JText :: _('STATUS_NOT_CHANGED') . "\r\n\r\n" . JText :: sprintf('CHECK_DOCUMENTATION', HIKASHOP_HELPURL . 'payment-paypal-error#status') . $order_text;
+			$email->subject = JText::sprintf('PAYMENT_NOTIFICATION_FOR_ORDER', 'Paypal', $vars['payment_status'], $dbOrder->order_number);
+			$email->body = str_replace('<br/>', "\r\n", JText::sprintf('PAYMENT_NOTIFICATION_STATUS', 'Paypal', $vars['payment_status'])) . ' ' . JText::_('STATUS_NOT_CHANGED') . "\r\n\r\n" . JText::sprintf('CHECK_DOCUMENTATION', HIKASHOP_HELPURL . 'payment-paypal-error#status') . $order_text;
 			$action = false;
 			$this->modifyOrder($action, null, null, $email);
 
@@ -336,8 +298,8 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 		$price_check = round($dbOrder->order_full_price, (int) $this->currency->currency_locale['int_frac_digits']);
 		if ($price_check != @ $vars['mc_gross'] || $this->currency->currency_code != @ $vars['mc_currency']) {
 			$email = new stdClass();
-			$email->subject = JText :: sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER', 'Paypal') . JText :: _('INVALID_AMOUNT');
-			$email->body = str_replace('<br/>', "\r\n", JText :: sprintf('AMOUNT_RECEIVED_DIFFERENT_FROM_ORDER', 'Paypal', $history->subtotal, $price_check . $this->currency->currency_code)) . "\r\n\r\n" . JText :: sprintf('CHECK_DOCUMENTATION', HIKASHOP_HELPURL . 'payment-paypal-error#amount') . $order_text;
+			$email->subject = JText::sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER', 'Paypal') . JText::_('INVALID_AMOUNT');
+			$email->body = str_replace('<br/>', "\r\n", JText::sprintf('AMOUNT_RECEIVED_DIFFERENT_FROM_ORDER', 'Paypal', $history->subtotal, $price_check . $this->currency->currency_code)) . "\r\n\r\n" . JText::sprintf('CHECK_DOCUMENTATION', HIKASHOP_HELPURL . 'payment-paypal-error#amount') . $order_text;
 
 			$this->modifyOrder($order_id, $this->payment_params->invalid_status, $history, $email);
 			return false;
@@ -347,7 +309,7 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 			$order_status = $this->payment_params->verified_status;
 		} else {
 			$order_status = $this->payment_params->pending_status;
-			$order_text = JText :: sprintf('CHECK_DOCUMENTATION', HIKASHOP_HELPURL . 'payment-paypal-error#pending') . "\r\n\r\n" . $order_text;
+			$order_text = JText::sprintf('CHECK_DOCUMENTATION', HIKASHOP_HELPURL . 'payment-paypal-error#pending') . "\r\n\r\n" . $order_text;
 		}
 		if ($dbOrder->order_status == $order_status)
 			return true;
@@ -358,40 +320,40 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 		}
 
 		$email = new stdClass();
-		$email->subject = JText :: sprintf('PAYMENT_NOTIFICATION_FOR_ORDER', 'Paypal', $vars['payment_status'], $dbOrder->order_number);
-		$email->body = str_replace('<br/>', "\r\n", JText :: sprintf('PAYMENT_NOTIFICATION_STATUS', 'Paypal', $vars['payment_status'])) . ' ' . JText :: sprintf('ORDER_STATUS_CHANGED', $order_status) . "\r\n\r\n" . $order_text;
+		$email->subject = JText::sprintf('PAYMENT_NOTIFICATION_FOR_ORDER', 'Paypal', $vars['payment_status'], $dbOrder->order_number);
+		$email->body = str_replace('<br/>', "\r\n", JText::sprintf('PAYMENT_NOTIFICATION_STATUS', 'Paypal', $vars['payment_status'])) . ' ' . JText::sprintf('ORDER_STATUS_CHANGED', hikashop_orderStatus($order_status)) . "\r\n\r\n" . $order_text;
 
 		$this->modifyOrder($order_id, $order_status, $history, $email);
+
 		return true;
 	}
 
-	function onPaymentConfiguration(& $element) {
-		$subtask = JRequest :: getCmd('subtask', '');
+	public function onPaymentConfiguration(&$element) {
+		$subtask = JRequest::getCmd('subtask', '');
 		if ($subtask == 'ips') {
 			$ips = null;
 			echo implode(',', $this->_getIPList($ips));
 			exit;
 		}
 
-		parent :: onPaymentConfiguration($element);
+		parent::onPaymentConfiguration($element);
 		$this->address = hikashop_get('type.address');
 
-		if (empty ($element->payment_params->email)) {
-			$app = JFactory :: getApplication();
-			$lang = JFactory :: getLanguage();
+		if(empty($element->payment_params->email)) {
+			$app = JFactory::getApplication();
+			$lang = JFactory::getLanguage();
 			$locale = strtolower(substr($lang->get('tag'), 0, 2));
-			$app->enqueueMessage(JText :: sprintf('ENTER_INFO_REGISTER_IF_NEEDED', 'PayPal', JText :: _('HIKA_EMAIL'), 'PayPal', 'https://www.paypal.com/' . $locale . '/mrb/pal=SXL9FKNKGAEM8'));
+			$app->enqueueMessage(JText::sprintf('ENTER_INFO_REGISTER_IF_NEEDED', 'PayPal', JText::_('HIKA_EMAIL'), 'PayPal', 'https://www.paypal.com/' . $locale . '/mrb/pal=SXL9FKNKGAEM8'));
 		}
 	}
 
-	function onPaymentConfigurationSave(& $element) {
-		if (!empty ($element->payment_params->ips))
+	public function onPaymentConfigurationSave(&$element) {
+		if( !empty($element->payment_params->ips) )
 			$element->payment_params->ips = explode(',', $element->payment_params->ips);
-
 		return true;
 	}
 
-	function getPaymentDefaultValues(& $element) {
+	public function getPaymentDefaultValues(&$element) {
 		$element->payment_name = 'PayPal Integral Evolution';
 		$element->payment_description = 'You can pay by credit card or paypal using this payment method';
 		$element->payment_images = 'MasterCard,VISA,Credit_card,PayPal';
@@ -404,7 +366,201 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 		$element->payment_params->iframe = 0;
 	}
 
-	function _getIPList(& $ipList) {
+	protected function verifyIPN() {
+		if(!function_exists('curl_version'))
+			return false;
+
+		$raw_post_data = file_get_contents('php://input');
+		$raw_post_array = explode('&', $raw_post_data);
+		$myPost = array();
+		foreach ($raw_post_array as $keyval) {
+			$keyval = explode('=', $keyval);
+			if (count($keyval) == 2) {
+				if ($keyval[0] === 'payment_date') {
+					if (substr_count($keyval[1], '+') === 1) {
+						$keyval[1] = str_replace('+', '%2B', $keyval[1]);
+					}
+				}
+				$myPost[$keyval[0]] = urldecode($keyval[1]);
+			}
+		}
+		$req = 'cmd=_notify-validate';
+		$get_magic_quotes_exists = false;
+		if (function_exists('get_magic_quotes_gpc')) {
+			$get_magic_quotes_exists = true;
+		}
+		foreach ($myPost as $key => $value) {
+			if ($get_magic_quotes_exists == true && get_magic_quotes_gpc() == 1) {
+				$value = urlencode(stripslashes($value));
+			} else {
+				$value = urlencode($value);
+			}
+			$req .= "&$key=$value";
+		}
+
+		if(empty($this->payment_params->url))
+			$this->payment_params->url = 'https://www.paypal.com/cgi-bin/webscr';
+		if(strpos($this->payment_params->url, 'sandbox') === false) {
+			$url = 'https://ipnpb.paypal.com/cgi-bin/webscr';
+		} else {
+			$url = 'https://ipnpb.sandbox.paypal.com/cgi-bin/webscr';
+		}
+
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
+		curl_setopt($ch, CURLOPT_SSLVERSION, 6);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+		curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Connection: Close'));
+		$res = curl_exec($ch);
+
+		if ( ! ($res)) {
+			$errno = curl_errno($ch);
+			$errstr = curl_error($ch);
+			curl_close($ch);
+			$this->writeToLog("cURL error: [$errno] $errstr");
+			return false;
+		}
+
+		$info = curl_getinfo($ch);
+		$http_code = $info['http_code'];
+		if ($http_code != 200) {
+			$this->writeToLog("PayPal responded with http code $http_code");
+			return false;
+		}
+		curl_close($ch);
+
+		return $res;
+	}
+
+	public function sendRequest($url, $data){
+		$response = $this->_sendRequestSocket($url,$data);
+		if(!$response)
+			$response = $this->_sendRequestCURL($url,$data);
+		return $response;
+	}
+
+	protected function _sendRequestCURL($url, $data) {
+		if(!function_exists('curl_version')) {
+			if($this->payment_params->debug)
+				echo 'CURL is not available'. "\r\n\r\n";
+			return false;
+		}
+
+		$uri = $url['scheme'] . '://' . $url['host'] . $url['path'] . ($url['query'] != '' ? '?' . $url['query'] : '');
+		$ch = curl_init($uri);
+
+		if(!$ch){
+			if($this->payment_params->debug)
+				echo 'CURL could not be initialized'. "\r\n\r\n";
+			return false;
+		}
+
+		curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+		curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
+		curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Connection: Close'));
+		curl_setopt($ch, CURLOPT_FAILONERROR,true);
+
+		if($this->payment_params->debug) {
+			echo print_r($data, true) . "\r\n\r\n";
+		}
+
+		$response = curl_exec($ch);
+
+		$errno = curl_errno($ch);
+		$error = curl_error($ch);
+
+		curl_close($ch);
+
+		if (!$response) {
+			if($this->payment_params->debug)
+				echo 'CURL request didn\t return any data'. "\r\n\r\n";
+			return false;
+		}
+
+		if($errno){
+			if($this->payment_params->debug) {
+				echo 'CURL error number: '.$errno. "\r\n\r\n";
+				echo 'CURL error message: '.$error. "\r\n\r\n";
+			}
+		}
+
+		if($this->payment_params->debug) {
+			echo print_r($response, true) . "\r\n\r\n";
+		}
+
+		return $response;
+	}
+
+	protected function _sendRequestSocket($url, $data){
+		if(!function_exists('fsockopen')) {
+			if($this->payment_params->debug)
+				echo 'fsockopen function does not exist'. "\r\n\r\n";
+			return false;
+		}
+		if(!is_callable('fsockopen')) {
+			if($this->payment_params->debug)
+				echo 'fsockopen function is not callable'. "\r\n\r\n";
+			return false;
+		}
+
+		$fp = fsockopen($url['host_socket'], $url['port'], $errno, $errstr, 30);
+		if(!$fp) {
+			if($this->payment_params->debug)
+				echo 'fsockopen connection couldn\'t be established'. "\r\n\r\n";
+			return false;
+		}
+
+		$uri = $url['path'] . ($url['query'] != '' ? '?' . $url['query'] : '');
+		$header = 'POST '.$uri.' HTTP/1.1'."\r\n".
+			'User-Agent: PHP/'.phpversion()."\r\n".
+			'Referer: '.hikashop_currentURL()."\r\n".
+			'Server: '.$_SERVER['SERVER_SOFTWARE']."\r\n".
+			'Host: '.$url['host']."\r\n".
+			'Content-Type: application/x-www-form-urlencoded'."\r\n".
+			'Content-Length: '.strlen($data)."\r\n".
+			'Accept: */'.'*'."\r\n".
+			'Connection: close'."\r\n\r\n";
+
+		if($this->payment_params->debug) {
+			echo print_r($header, true) . "\r\n\r\n";
+			echo print_r($data, true) . "\r\n\r\n";
+		}
+
+		fwrite($fp, $header . $data);
+		$response = '';
+		while(!feof($fp)) {
+			$response .= fgets($fp, 1024);
+		}
+		fclose ($fp);
+
+		if(empty($response)){
+			if($this->payment_params->debug)
+				echo 'fsockopen request did not return any data'. "\r\n\r\n";
+			return false;
+		}
+
+		if($this->payment_params->debug) {
+			echo print_r($response, true) . "\r\n\r\n";
+		}
+
+		$response = substr($response, strpos($response, "\r\n\r\n") + strlen("\r\n\r\n"));
+
+		return $response;
+	}
+
+	protected function _getIPList(&$ipList) {
 		$hosts = array (
 			'www.paypal.com',
 			'notify.paypal.com',

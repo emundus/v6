@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -228,7 +228,7 @@ function switchDisplay(value,name,activevalue){
 		$this->mainProductCategory = 'product';
 		$this->categoryClass->getMainElement($this->mainProductCategory);
 
-		$cid = JRequest::getInt('id','');
+		$cid = hikaInput::get()->getInt('id','');
 		if(empty($cid))
 			$cid = hikashop_getCID();
 

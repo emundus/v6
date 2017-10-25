@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -186,12 +186,8 @@ defined('_JEXEC') or die('Restricted access');
 											}
 										}
 
-										$item_type = 'display:field_item_shipping_invoice=1';
-										if($this->invoice_type=='full'){
-											$item_type = 'display:field_item_invoice=1';
-										}
 										if(hikashop_level(2)){
-											$itemFields = $this->fieldsClass->getFields($item_type,$product,'item');
+											$itemFields = $this->fieldsClass->getFields($type,$product,'item');
 											if(!empty($itemFields)) {
 												foreach($itemFields as $field){
 													$namekey = $field->field_namekey;

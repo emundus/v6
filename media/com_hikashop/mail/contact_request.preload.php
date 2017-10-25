@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -52,12 +52,12 @@ if(!empty($data->product)) {
 if(hikashop_level(1)) {
 	$null = null;
 	$fieldsClass = hikashop_get('class.field');
-	$contactFields = $fieldsClass->getFields('frontcomp',$null,'contact');
+	$contactFields = $fieldsClass->getFields('frontcomp',$data->product,'contact');
 	if(!empty($contactFields)){
 		foreach($contactFields as $field){
 			$namekey = $field->field_namekey;
 			if(empty($data->element->$namekey) && !strlen($data->element->$namekey)) continue;
-			$vars['PRODUCT_DETAILS'] .= '<p>'.$fieldsClass->getFieldName($field).': '.$fieldsClass->show($field,$data->element->$namekey,'user_email').'</p>';
+			$vars['PRODUCT_DETAILS'] .= '<p>'.$fieldsClass->getFieldName($field).': '.$fieldsClass->show($field, $data->element->$namekey, 'admin_email').'</p>';
 		}
 	}
 }

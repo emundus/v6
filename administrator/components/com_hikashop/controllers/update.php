@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -47,8 +47,8 @@ class updateController extends HikashopBridgeController {
 		}else{
 			$bar = JToolBar::getInstance('toolbar');
 		}
-		$bar->appendButton( 'Link', 'hikashop', JText::_('HIKASHOP_CPANEL'), hikashop_completeLink('dashboard') );
-		$this->_iframe(HIKASHOP_UPDATEURL.'install&fromversion='.JRequest::getCmd('fromversion'));
+		$bar->appendButton( 'Link', 'dashboard', JText::_('HIKASHOP_CPANEL'), hikashop_completeLink('dashboard') );
+		$this->_iframe(HIKASHOP_UPDATEURL.'install&fromversion='.hikaInput::get()->getCmd('fromversion'));
 	}
 
 	function update(){
@@ -63,7 +63,7 @@ class updateController extends HikashopBridgeController {
 		}else{
 			$bar = JToolBar::getInstance('toolbar');
 		}
-		$bar->appendButton( 'Link', 'hikashop', JText::_('HIKASHOP_CPANEL'), hikashop_completeLink('dashboard') );
+		$bar->appendButton( 'Link', 'dashboard', JText::_('HIKASHOP_CPANEL'), hikashop_completeLink('dashboard') );
 		return $this->_iframe(HIKASHOP_UPDATEURL.'update');
 	}
 	function _iframe($url){
@@ -116,22 +116,22 @@ class updateController extends HikashopBridgeController {
 			}
 		}
 
-		JRequest::setVar( 'layout', 'wizard' );
+		hikaInput::get()->set( 'layout', 'wizard' );
 		return parent::display();
 	}
 
 	function wizard_save() {
-		$layoutType = JRequest::getVar('layout_type');
-		$currency = JRequest::getVar('currency');
-		$taxName = JRequest::getVar('tax_name');
-		$taxRate = JRequest::getVar('tax_rate');
-		$addressCountry = JRequest::getVar('address_country');
-		$data = JRequest::getVar('data', array(), '', 'array');
+		$layoutType = hikaInput::get()->getVar('layout_type');
+		$currency = hikaInput::get()->getVar('currency');
+		$taxName = hikaInput::get()->getVar('tax_name');
+		$taxRate = hikaInput::get()->getVar('tax_rate');
+		$addressCountry = hikaInput::get()->getVar('address_country');
+		$data = hikaInput::get()->get('data', array(), 'array');
 		$addressState = (!empty($data['address']['address_state'])) ? ($data['address']['address_state']) : '';
-		$shopAddress = JRequest::getVar('shop_address');
-		$paypalEmail = JRequest::getVar('paypal_email');
-		$productType = JRequest::getVar('product_type');
-		$dataExample = JRequest::getVar('data_sample');
+		$shopAddress = hikaInput::get()->getVar('shop_address');
+		$paypalEmail = hikaInput::get()->getVar('paypal_email');
+		$productType = hikaInput::get()->getVar('product_type');
+		$dataExample = hikaInput::get()->getVar('data_sample');
 
 		$ratePlugin = hikashop_import('hikashop','rates');
 		if($ratePlugin){
@@ -186,7 +186,7 @@ class updateController extends HikashopBridgeController {
 		$db->setQuery('UPDATE '.hikashop_table('field').' SET `field_default` = '.$db->Quote($addressCountry).' WHERE field_namekey = "address_country"');
 		$db->query();
 
-		$import_language = JRequest::getVar('import_language');
+		$import_language = hikaInput::get()->getVar('import_language');
 		if($import_language != '0'){
 			if(preg_match('#_#',$import_language)){
 				$languages = explode('_',$import_language);
@@ -212,10 +212,13 @@ class updateController extends HikashopBridgeController {
 			}
 		}
 
-		$install_eu_taxes = JRequest::getVar('install_eu_taxes');
+		$install_eu_taxes = hikaInput::get()->getVar('install_eu_taxes');
 		if($install_eu_taxes === '1') {
+			$jconfig = JFactory::getConfig();
+			$tmp_dest = $jconfig->get('tmp_path');
+
 			$url = str_replace('https://','http://',HIKASHOP_URL.'index.php?option=com_updateme&ctrl=download&plugin=tax_europe');
-			$file = JPath::clean(realpath('../tmp/') . DS .'european_taxes.zip');
+			$file = JPath::clean($tmp_dest . DS .'european_taxes.zip');
 			$ret = $this->retrieveFile($url, $file, true);
 
 			if($ret === 1) {
@@ -227,7 +230,7 @@ class updateController extends HikashopBridgeController {
 				$archiveClass = new JArchive();
 				$zip = $archiveClass->getAdapter('zip');
 
-				$path = JPath::clean(realpath('../tmp/') . DS . 'eu_taxes' . DS); // pathinfo(realpath($file), PATHINFO_DIRNAME);
+				$path = JPath::clean($tmp_dest . DS . 'eu_taxes' . DS); // pathinfo(realpath($file), PATHINFO_DIRNAME);
 				if(!JFile::exists($path))
 					JFolder::create($path);
 
@@ -319,9 +322,9 @@ class updateController extends HikashopBridgeController {
 					'payment_type' => 'paypal',
 				),
 			);
-			JRequest::setVar('name','paypal');
-			JRequest::setVar('plugin_type','payment');
-			JRequest::setVar('data',$pluginData);
+			hikaInput::get()->set('name','paypal');
+			hikaInput::get()->set('plugin_type','payment');
+			hikaInput::get()->set('data',$pluginData);
 
 			$pluginsController = hikashop_get('controller.plugins');
 			$pluginsController->store(true);
@@ -377,12 +380,12 @@ class updateController extends HikashopBridgeController {
 	}
 
 	function state(){
-		JRequest::setVar( 'layout', 'state' );
+		hikaInput::get()->set( 'layout', 'state' );
 		return parent::display();
 	}
 
 	function post_install(){
-		$this->_iframe(HIKASHOP_UPDATEURL.'install&fromversion='.JRequest::getCmd('fromversion'));
+		$this->_iframe(HIKASHOP_UPDATEURL.'install&fromversion='.hikaInput::get()->getCmd('fromversion'));
 	}
 
 
@@ -390,13 +393,15 @@ class updateController extends HikashopBridgeController {
 		if( !isset($_GET['step']) )
 			return;
 
-		$step = JRequest::getInt('step');
+		$step = hikaInput::get()->getInt('step');
 		$url = 'index.php?option=com_hikashop&ctrl=update&task=process_data_save&'.hikashop_getFormToken().'=1&step='.$step;
 		$redirect = 'index.php?option=com_hikashop&ctrl=product&task=add';
 		$error = false;
 		$app = JFactory::getApplication();
+		$jconfig = JFactory::getConfig();
+		$tmp_dest = $jconfig->get('tmp_path');
 		$urlsrc = "http://www.hikashop.com/sampledata/dataexample.zip"; //server URL
-		$destination = '../tmp/dataexample.zip'; //HIKASHOP_ROOT.'tmp\dataexample.zip';
+		$destination = $tmp_dest.'/dataexample.zip'; //HIKASHOP_ROOT.'tmp\dataexample.zip';
 		$path = pathinfo(realpath($destination), PATHINFO_DIRNAME);
 		switch ($step)
 		{
@@ -503,8 +508,8 @@ class updateController extends HikashopBridgeController {
 			break;
 
 			case 4 : //exec script
-				$fh = fopen('../tmp/dataexample/script.sql', 'r+') or die("Can't open file /tmp/dataexample/script.sql");
-				$data = explode("\r\n",fread($fh,filesize('../tmp/dataexample/script.sql')));
+				$fh = fopen($tmp_dest.'/dataexample/script.sql', 'r+') or die("Can't open file tmp/dataexample/script.sql");
+				$data = explode("\r\n",fread($fh,filesize($tmp_dest.'/dataexample/script.sql')));
 				$db = JFactory::getDBO();
 				foreach ($data as $d)
 				{

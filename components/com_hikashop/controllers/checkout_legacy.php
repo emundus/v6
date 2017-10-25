@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -15,6 +15,10 @@ class checkoutLegacyController extends hikashopController {
 	var $modify = array();
 	var $delete = array();
 	var $controllers = array();
+
+	var $checkout_workflow = null;
+	var $steps = null;
+	var $redirect_url = null;
 
 	function __construct($config = array(), $skip = false) {
 		parent::__construct($config, $skip);
@@ -55,26 +59,26 @@ class checkoutLegacyController extends hikashopController {
 	}
 
 	function printcart() {
-		JRequest::setVar('layout', 'printcart');
+		hikaInput::get()->set('layout', 'printcart');
 		return parent::display();
 	}
 	function activate_page() {
-		JRequest::setVar('layout', 'activate_page');
+		hikaInput::get()->set('layout', 'activate_page');
 		return parent::display();
 	}
 
 	function state() {
-		JRequest::setVar('layout', 'state');
+		hikaInput::get()->set('layout', 'state');
 		return parent::display();
 	}
 
 	function notice() {
-		$cart_type = JRequest::getVar('cart_type','','post');
+		$cart_type = hikaInput::get()->post->getVar('cart_type','');
 		if(!empty($cart_type)){
 			$app = JFactory::getApplication();
 			$app->setUserState( HIKASHOP_COMPONENT.'.popup_cart_type',$cart_type);
 		}
-		JRequest::setVar( 'layout', 'notice' );
+		hikaInput::get()->set( 'layout', 'notice' );
 		return parent::display();
 	}
 
@@ -106,7 +110,7 @@ class checkoutLegacyController extends hikashopController {
 		$lang->load('com_user',JPATH_SITE);
 		jimport('joomla.user.helper');
 
-		$activation = hikashop_getEscaped(JRequest::getVar('activation', '', '', 'alnum'));
+		$activation = hikashop_getEscaped(hikaInput::get()->getVar('activation', '', '', 'alnum'));
 		if (empty($activation)) {
 			$app->enqueueMessage(JText::_('HIKA_REG_ACTIVATE_NOT_FOUND'));
 			return;
@@ -133,7 +137,7 @@ class checkoutLegacyController extends hikashopController {
 		}
 
 		$app->enqueueMessage(JText::_( 'HIKA_REG_ACTIVATE_COMPLETE' ));
-		$id = JRequest::getInt('id',0);
+		$id = hikaInput::get()->getInt('id',0);
 
 		$userClass = hikashop_get('class.user');
 		$user = $userClass->get($id);
@@ -141,7 +145,7 @@ class checkoutLegacyController extends hikashopController {
 			$userClass->addAndConfirmUserInCB($user);
 		}
 
-		$infos = JRequest::getVar('infos','');
+		$infos = hikaInput::get()->getVar('infos','');
 		global $Itemid;
 		$url = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
 
@@ -153,7 +157,7 @@ class checkoutLegacyController extends hikashopController {
 
 			JPluginHelper::importPlugin('user');
 			if($userActivation < 2 && !empty($infos['pass']) && !empty($infos['username']) && $this->_doLogin($infos['username'], $infos['pass'], false)) {
-				$page = JRequest::getString('page','checkout');
+				$page = hikaInput::get()->getString('page','checkout');
 
 				if($page == 'checkout'){
 					$this->before_address();
@@ -161,7 +165,7 @@ class checkoutLegacyController extends hikashopController {
 					return;
 				}
 
-				JRequest::setVar('layout', 'activate');
+				hikaInput::get()->set('layout', 'activate');
 				return parent::display();
 
 			} elseif($userActivation >= 2) {
@@ -178,13 +182,17 @@ class checkoutLegacyController extends hikashopController {
 	}
 
 	function deleteaddress() {
-		$addressdelete = JRequest::getInt('address_id', 0);
+		$addressdelete = hikaInput::get()->getInt('address_id', 0);
 		if(empty($addressdelete)) {
 			$this->step();
 			return;
 		}
 
-		JRequest::checkToken('request') || jexit( 'Invalid Token' );
+		if(!HIKASHOP_J25) {
+			JRequest::checkToken('request') || die('Invalid Token');
+		} else {
+			JSession::checkToken('request') || die('Invalid Token');
+		}
 		$addressClass = hikashop_get('class.address');
 		$oldData = $addressClass->get($addressdelete);
 		if(empty($oldData)) {
@@ -243,8 +251,8 @@ class checkoutLegacyController extends hikashopController {
 			static $done = false;
 
 			if(!$done && isset($ck_submital[$unique_id])) {
-				JRequest::setVar('step', JRequest::getInt('previous', 0));
-				JRequest::setVar('layout', 'step');
+				hikaInput::get()->set('step', hikaInput::get()->getInt('previous', 0));
+				hikaInput::get()->set('layout', 'step');
 				return $this->display();
 			}
 
@@ -315,8 +323,8 @@ class checkoutLegacyController extends hikashopController {
 		}
 
 		$go_back = false;
-		$this->previous = JRequest::getInt('previous', 0);
-		$this->current = JRequest::getInt('step', 0);
+		$this->previous = hikaInput::get()->getInt('previous', 0);
+		$this->current = hikaInput::get()->getInt('step', 0);
 
 		JPluginHelper::importPlugin('hikashop');
 		JPluginHelper::importPlugin('hikashoppayment');
@@ -406,10 +414,10 @@ class checkoutLegacyController extends hikashopController {
 		}
 
 		if($go_back && isset($this->previous)) {
-			JRequest::setVar('step', $this->previous);
+			hikaInput::get()->set('step', $this->previous);
 		}
 
-		JRequest::setVar('layout', 'step');
+		hikaInput::get()->set('layout', 'step');
 		return $this->display();
 	}
 
@@ -418,11 +426,11 @@ class checkoutLegacyController extends hikashopController {
 	}
 
 	function after_coupon($success) {
-		$coupon = JRequest::getString('coupon','');
+		$coupon = hikaInput::get()->getString('coupon','');
 		$qty = 1;
 
 		if(empty($coupon)){
-			$coupon = JRequest::getInt('removecoupon', 0);
+			$coupon = hikaInput::get()->getInt('removecoupon', 0);
 			$qty = 0;
 		}
 		if(empty($coupon))
@@ -452,13 +460,13 @@ class checkoutLegacyController extends hikashopController {
 	}
 
 	function termsandconditions() {
-		JRequest::setVar('layout', 'termsandconditions');
+		hikaInput::get()->set('layout', 'termsandconditions');
 		return $this->display();
 	}
 
 	function after_terms($success) {
 		$app = JFactory::getApplication();
-		$app->setUserState(HIKASHOP_COMPONENT.'.checkout_terms', JRequest::getInt('hikashop_checkout_terms', 0));
+		$app->setUserState(HIKASHOP_COMPONENT.'.checkout_terms', hikaInput::get()->getInt('hikashop_checkout_terms', 0));
 		if(!$this->cart_update && $success) {
 			return $this->check_terms();
 		}
@@ -526,18 +534,20 @@ class checkoutLegacyController extends hikashopController {
 		$modified = false;
 		$cartClass = hikashop_get('class.cart');
 
-		$formData = JRequest::getVar('item', array(), '', 'array');
+		$formData = hikaInput::get()->get('item', array(), 'array');
 		if(!empty($formData)) {
 			$modified = $cartClass->update($formData, 0, 0, 'item');
 		} else {
-			$formData = JRequest::getVar('data', array(), '', 'array');
+			$formData = hikaInput::get()->get('data', array(), 'array');
 			if(!empty($formData)) {
 				$modified = $cartClass->update($formData, 0, 0);
 			}
 		}
 
-		if(!$modified)
+		if($modified === 0)
 			return true;
+		if(!$modified)
+			return false;
 
 		$cartClass->get(0);
 
@@ -577,8 +587,8 @@ class checkoutLegacyController extends hikashopController {
 		if(count($controllersCheck) == 1 && $controllersCheck[0] == 'login')
 			$current = $this->previous + 1;
 
-		JRequest::setVar('step', $current);
-		JRequest::setVar('previous', 0);
+		hikaInput::get()->set('step', $current);
+		hikaInput::get()->set('previous', 0);
 		$this->step();
 		return true;
 	}
@@ -597,22 +607,23 @@ class checkoutLegacyController extends hikashopController {
 			return true;
 
 		JPluginHelper::importPlugin('user');
-		$register = JRequest::getString('register', '');
-		$action = JRequest::getString('login_view_action', '');
-		$login = JRequest::getString('login', '');
+		$register = hikaInput::get()->getString('register', '');
+		$action = hikaInput::get()->getString('login_view_action', '');
+		$login = hikaInput::get()->getString('login', '');
+		$username = hikaInput::get()->request->getUsername('username', '');
 
 		if($action == 'register' || ($action != 'login' && !empty($register))) {
 			$status = $this->_doRegister();
-		} elseif($action == 'login' || !empty($login)) {
+		} elseif(($action == 'login' || !empty($login)) && !empty($username)) {
 			$status = $this->_doLogin();
 		} else {
 			$name = @$_REQUEST['data']['register']['email'];
-			$username = JRequest::getVar('username', '', 'request', 'username');
 			if(!empty($name)) {
 				$status = $this->_doRegister();
 			} elseif(!empty($username)) {
 				$status = $this->_doLogin();
 			} elseif(empty($name) && empty($username) && $messDisplay == 0) {
+				$app->enqueueMessage(JText::_('PLEASE_FILL_FORM_BEFORE_PROCEEDING'), 'error');
 			}
 		}
 
@@ -657,18 +668,18 @@ class checkoutLegacyController extends hikashopController {
 
 	function _doLogin($user = '', $pass = '', $checkToken = true) {
 		$options = array(
-			'remember' => JRequest::getBool('remember', false),
+			'remember' => hikaInput::get()->getBool('remember', false),
 			'return' => false,
 		);
 
 		$credentials = array();
 		if(empty($user)) {
-			$credentials['username'] = JRequest::getVar('username', '', 'request', 'username');
+			$credentials['username'] = hikaInput::get()->request->getUsername('username', '');
 		} else {
 			$credentials['username'] = $user;
 		}
 		if(empty($pass)) {
-			$credentials['password'] = JRequest::getString('passwd', '', 'request', JREQUEST_ALLOWRAW);
+			$credentials['password'] = hikaInput::get()->request->getRaw('passwd', '');
 		} else {
 			$credentials['password'] = $pass;
 		}
@@ -826,8 +837,8 @@ class checkoutLegacyController extends hikashopController {
 			return false;
 		}
 
-		$billing = JRequest::getInt('hikashop_address_billing', 0);
-		$shipping = JRequest::getInt('hikashop_address_shipping', 0);
+		$billing = hikaInput::get()->getInt('hikashop_address_billing', 0);
+		$shipping = hikaInput::get()->getInt('hikashop_address_shipping', 0);
 
 		if(!empty($result) && count($result)) {
 			if(isset($result['billing_address'])) {
@@ -839,8 +850,8 @@ class checkoutLegacyController extends hikashopController {
 		}
 
 		if(empty($billing)) {
-			if(!$this->cart_update && !JRequest::getInt('removecoupon', 0)) {
-				JRequest::setVar(HIKASHOP_COMPONENT.'.address_error', 1);
+			if(!$this->cart_update && !hikaInput::get()->getInt('removecoupon', 0)) {
+				hikaInput::get()->set(HIKASHOP_COMPONENT.'.address_error', 1);
 
 				$app = JFactory::getApplication();
 				$app->enqueueMessage( JText::_('CREATE_OR_SELECT_ADDRESS') );
@@ -848,7 +859,7 @@ class checkoutLegacyController extends hikashopController {
 			return false;
 		}
 
-		if(JRequest::getString('same_address','') == 'yes' || empty($shipping)) {
+		if(hikaInput::get()->getString('same_address','') == 'yes' || empty($shipping)) {
 			$shipping = $billing;
 		}
 		$old_billing_address = $this->getBillingAddress();
@@ -887,7 +898,7 @@ class checkoutLegacyController extends hikashopController {
 		if(!empty($shipping_address))
 			return true;
 
-		JRequest::setVar(HIKASHOP_COMPONENT.'.address_error', 1);
+		hikaInput::get()->set(HIKASHOP_COMPONENT.'.address_error', 1);
 
 		$app = JFactory::getApplication();
 		$app->enqueueMessage( JText::_('CREATE_OR_SELECT_ADDRESS') );
@@ -913,8 +924,8 @@ class checkoutLegacyController extends hikashopController {
 			$found = $this->_getStep('address');
 			if($found !== false && $found != $this->current) {
 				static $done = false;
-				JRequest::setVar('step', $found);
-				JRequest::setVar('previous', 0);
+				hikaInput::get()->set('step', $found);
+				hikaInput::get()->set('previous', 0);
 				if(!$done) {
 					$done = true;
 					$this->step();
@@ -968,7 +979,7 @@ class checkoutLegacyController extends hikashopController {
 		if(!$cart->has_shipping)
 			return true;
 
-		$shipping = JRequest::getString('hikashop_shippings', '');
+		$shipping = hikaInput::get()->getString('hikashop_shippings', '');
 
 		$app = JFactory::getApplication();
 		$shippingClass = hikashop_get('class.shipping');
@@ -992,7 +1003,7 @@ class checkoutLegacyController extends hikashopController {
 			$input_name = 'hikashop_shipping';
 			if($several_shipping)
 				$input_name .= '_'.$group_key;
-			$shipping = JRequest::getString($input_name, null);
+			$shipping = hikaInput::get()->getString($input_name, null);
 			if(empty($shipping))
 				return false;
 
@@ -1131,7 +1142,7 @@ class checkoutLegacyController extends hikashopController {
 		if(!empty($payment_method) && !$this->cart_update)
 			return $ok;
 
-		$payment = JRequest::getString('hikashop_payment', '');
+		$payment = hikaInput::get()->getString('hikashop_payment', '');
 		if(!empty($payment)){
 			$payment = explode('_', $payment);
 			if(count($payment) > 1) {
@@ -1204,7 +1215,7 @@ class checkoutLegacyController extends hikashopController {
 	}
 
 	function _readPayment() {
-		$payment = JRequest::getString('hikashop_payment','');
+		$payment = hikaInput::get()->getString('hikashop_payment','');
 		if(empty($payment))
 			return false;
 
@@ -1300,7 +1311,11 @@ class checkoutLegacyController extends hikashopController {
 			return;
 
 		$done = true;
-		JRequest::checkToken('request') || jexit('Invalid Token');
+		if(!HIKASHOP_J25) {
+			JRequest::checkToken('request') || die('Invalid Token');
+		} else {
+			JSession::checkToken('request') || die('Invalid Token');
+		}
 	}
 
 	function notify() {
@@ -1308,16 +1323,16 @@ class checkoutLegacyController extends hikashopController {
 
 		ob_start();
 
-		$plugin = JRequest::getCmd('notif_payment');
+		$plugin = hikaInput::get()->getCmd('notif_payment');
 		$type = 'payment';
 
 		if(empty($plugin)) {
-			$plugin = JRequest::getCmd('notif_shipping');
+			$plugin = hikaInput::get()->getCmd('notif_shipping');
 			$type = 'shipping';
 		}
 
 		if(empty($plugin)) {
-			$plugin = JRequest::getCmd('notif_hikashop');
+			$plugin = hikaInput::get()->getCmd('notif_hikashop');
 			$type = '';
 		}
 
@@ -1347,7 +1362,7 @@ class checkoutLegacyController extends hikashopController {
 		hikashop_nocache();
 
 		ob_start();
-		$payment = JRequest::getCmd('3dsecure_payment');
+		$payment = hikaInput::get()->getCmd('3dsecure_payment');
 
 		$pluginInstance = hikashop_import('hikashoppayment', $payment);
 		if(empty($pluginInstance))
@@ -1404,7 +1419,7 @@ class checkoutLegacyController extends hikashopController {
 		if(!$success){
 			return false;
 		}
-		if(!JRequest::getVar('validate', 0)) {
+		if(!hikaInput::get()->getVar('validate', 0)) {
 			return false;
 		}
 		if($this->current==$this->previous) {
@@ -1484,8 +1499,10 @@ class checkoutLegacyController extends hikashopController {
 			$itemFields = $fieldsClass->getFields('', $element, 'item');
 		}
 
-		$products = array();
-		foreach($cart->products as $product) {
+		$cart->full_products =& $cart->products;
+		unset($cart->products);
+		$cart->products = array();
+		foreach($cart->full_products as &$product) {
 			if((int)$product->cart_product_quantity <= 0)
 				continue;
 
@@ -1528,7 +1545,13 @@ class checkoutLegacyController extends hikashopController {
 				$orderProduct->discount->taxes_without_discount = @$product->prices[0]->unit_price->taxes_without_discount;
 			}
 
-			if(!empty($itemFields)) {
+			if(!empty($cart->item_fields)) {
+				foreach($cart->item_fields as $field) {
+					$namekey = $field->field_namekey;
+					if(isset($product->$namekey))
+						$orderProduct->$namekey = $product->$namekey;
+				}
+			}elseif(!empty($itemFields)) {
 				foreach($itemFields as $field) {
 					$namekey = $field->field_namekey;
 					if(isset($product->$namekey))
@@ -1559,9 +1582,9 @@ class checkoutLegacyController extends hikashopController {
 						break;
 				}
 			}
-			$products[] = $orderProduct;
+			$cart->products[] = $orderProduct;
 		}
-		$cart->products = &$products;
+		unset($product);
 
 		$shipping_address = (int)$cart->cart_shipping_address_ids;
 		$billing_address = $cart->cart_billing_address_id;
@@ -1762,7 +1785,7 @@ class checkoutLegacyController extends hikashopController {
 				$removeCart = true;
 			}
 		}
-		JRequest::setVar('hikashop_plugins_html',ob_get_clean());
+		hikaInput::get()->set('hikashop_plugins_html',ob_get_clean());
 
 		$app->setUserState( HIKASHOP_COMPONENT.'.order_id', $order->order_id);
 
@@ -1770,6 +1793,10 @@ class checkoutLegacyController extends hikashopController {
 
 			$cartClass = hikashop_get('class.cart');
 			$cartClass->cleanCartFromSession(false);
+
+			$user = JFactory::getUser();
+			if($user->guest)
+				$this->app->setUserState( HIKASHOP_COMPONENT.'.user_id', 0);
 		}
 		return true;
 	}
@@ -1801,7 +1828,7 @@ class checkoutLegacyController extends hikashopController {
 
 		$cartClass = hikashop_get('class.cart');
 		$cartClass->cleanCartFromSession();
-		JRequest::setVar('layout', 'after_end');
+		hikaInput::get()->set('layout', 'after_end');
 		return $this->display();
 	}
 
@@ -1816,8 +1843,8 @@ class checkoutLegacyController extends hikashopController {
 			$found = $this->_getStep('login');
 
 			if($found !== false) {
-				JRequest::setVar('step',$found);
-				JRequest::setVar('previous',0);
+				hikaInput::get()->set('step',$found);
+				hikaInput::get()->set('previous',0);
 				unset($_REQUEST['previous']);
 				$this->step();
 				return false;

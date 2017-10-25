@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,16 +24,16 @@ class productController extends hikashopController {
 		return $this->isIn($task, array('display'));
 	}
 
-	public function contact() { JRequest::setVar('layout', 'contact'); return $this->display(); }
-	public function compare() { JRequest::setVar('layout', 'compare'); return $this->display(); }
-	public function waitlist() { JRequest::setVar('layout', 'waitlist'); return $this->display(); }
-	public function price() { JRequest::setVar('layout', 'option_price'); return $this->display(); }
+	public function contact() { hikaInput::get()->set('layout', 'contact'); return $this->display(); }
+	public function compare() { hikaInput::get()->set('layout', 'compare'); return $this->display(); }
+	public function waitlist() { hikaInput::get()->set('layout', 'waitlist'); return $this->display(); }
+	public function price() { hikaInput::get()->set('layout', 'option_price'); return $this->display(); }
 
 	public function listing() {
-		JRequest::setVar('layout', 'listing');
+		hikaInput::get()->set('layout', 'listing');
 
-		$tmpl = JRequest::getCmd('tmpl', '');
-		if($tmpl == 'ajax') {
+		$tmpl = hikaInput::get()->getCmd('tmpl', '');
+		if(in_array($tmpl, array('ajax', 'raw'))) {
 			$this->display();
 			exit;
 		}
@@ -41,10 +41,14 @@ class productController extends hikashopController {
 	}
 
 	public function send_email() {
-		JRequest::checkToken('request') || jexit('Invalid Token');
+		if(!HIKASHOP_J25) {
+			JRequest::checkToken('request') || die('Invalid Token');
+		} else {
+			JSession::checkToken('request') || die('Invalid Token');
+		}
 
 		$element = new stdClass();
-		$formData = JRequest::getVar('data', array(), '', 'array');
+		$formData = hikaInput::get()->get('data', array(), 'array');
 		if(empty($formData['contact'])) {
 			$formData['contact'] = @$formData['register'];
 			foreach($formData['contact'] as $column => $value) {
@@ -86,7 +90,7 @@ class productController extends hikashopController {
 		}
 
 		if(!$send) {
-			JRequest::setVar('formData', $element);
+			hikaInput::get()->set('formData', $element);
 			$this->contact();
 			return;
 		}
@@ -127,7 +131,7 @@ class productController extends hikashopController {
 
 		if($status) {
 			$app->enqueueMessage(JText::_('CONTACT_REQUEST_SENT'));
-			if(JRequest::getString('tmpl', '') == 'component') {
+			if(hikaInput::get()->getString('tmpl', '') == 'component') {
 				$doc = JFactory::getDocument();
 				$doc->addScriptDeclaration('setTimeout(function(){ window.parent.hikashop.closeBox(); }, 4000);');
 				return true;
@@ -145,7 +149,7 @@ class productController extends hikashopController {
 			}
 		}
 
-		$url = JRequest::getVar('redirect_url');
+		$url = hikaInput::get()->getVar('redirect_url');
 		if(!empty($url)) {
 			$app->redirect($url);
 		} else {
@@ -154,9 +158,14 @@ class productController extends hikashopController {
 	}
 
 	function add_waitlist() {
-		JRequest::checkToken('request') || jexit( 'Invalid Token' );
+		if(!HIKASHOP_J25) {
+			JRequest::checkToken('request') || die('Invalid Token');
+		} else {
+			JSession::checkToken('request') || die('Invalid Token');
+		}
+
 		$element = new stdClass();
-		$formData = JRequest::getVar('data', array(), '', 'array');
+		$formData = hikaInput::get()->get('data', array(), 'array');
 		foreach($formData['register'] as $column => $value){
 			hikashop_secureField($column);
 			$element->$column = strip_tags($value);
@@ -181,7 +190,7 @@ class productController extends hikashopController {
 		$waitlist_subscribe_limit = $config->get('product_waitlist_sub_limit',10);
 
 		$product_id = 0;
-		$itemId = JRequest::getVar('Itemid');
+		$itemId = hikaInput::get()->getVar('Itemid');
 		$url_itemid = '';
 		if(!empty($itemId))
 			$url_itemid = '&Itemid='.$itemId;
@@ -220,7 +229,10 @@ class productController extends hikashopController {
 			$subscriptions = $db->loadResult();
 
 			if( $subscriptions < $waitlist_subscribe_limit || $waitlist_subscribe_limit <= 0 ) {
-				$sql = 'INSERT IGNORE INTO '.hikashop_table('waitlist').' (`product_id`,`date`,`email`,`name`,`product_item_id`) VALUES ('.(int)$product_id.', '.time().', '.$db->quote($email).', '.$db->quote($name).', '.(int)$itemId.');';
+				$lang = JFactory::getLanguage();
+				$tag = $lang->getTag();
+
+				$sql = 'INSERT IGNORE INTO '.hikashop_table('waitlist').' (`product_id`,`date`,`email`,`name`,`product_item_id`,`language`) VALUES ('.(int)$product_id.', '.time().', '.$db->quote($email).', '.$db->quote($name).', '.(int)$itemId.', '.$db->quote($tag).');';
 				$db->setQuery($sql);
 				$db->query();
 
@@ -249,7 +261,7 @@ class productController extends hikashopController {
 			$app->enqueueMessage(JText::_('ALREADY_REGISTER_WAITLIST'));
 		}
 		$app->enqueueMessage(JText::sprintf('CLICK_HERE_TO_GO_BACK_TO_PRODUCT',hikashop_contentLink('product&task=show&cid='.$product->product_id.'&name='.$alias.$url_itemid,$product)));
-		$url = JRequest::getVar('redirect_url');
+		$url = hikaInput::get()->getVar('redirect_url');
 		if(!empty($url)){
 			$app->redirect($url);
 		}else{
@@ -265,9 +277,9 @@ class productController extends hikashopController {
 		if(!empty($cart_id))
 			$cartClass->delete($cart_id);
 
-		$url = JRequest::getVar('return_url', '');
+		$url = hikaInput::get()->getVar('return_url', '');
 		if(empty($url)) {
-			$url = JRequest::getVar('url', '');
+			$url = hikaInput::get()->getVar('url', '');
 			$url = urldecode($url);
 		} else {
 			$url = base64_decode(urldecode($url));
@@ -309,24 +321,27 @@ class productController extends hikashopController {
 	public function updatecart() {
 		hikashop_nocache();
 
-		$char = JRequest::getString('characteristic', '');
+		if(!headers_sent())
+			header('X-Robots-Tag: noindex');
+
+		$char = hikaInput::get()->getString('characteristic', '');
 		if(!empty($char))
 			return $this->show();
 
 		$app = JFactory::getApplication();
 		$cartClass = hikashop_get('class.cart');
 
-		$product_id = JRequest::getInt('product_id', 0);
-		$module_id = JRequest::getInt('module_id', 0);
-		$tmpl = JRequest::getCmd('tmpl', '');
+		$product_id = hikaInput::get()->getInt('product_id', 0);
+		$module_id = hikaInput::get()->getInt('module_id', 0);
+		$tmpl = hikaInput::get()->getCmd('tmpl', '');
 
-		$cart_type = JRequest::getString('hikashop_cart_type_'.$product_id.'_'.$module_id, null);
+		$cart_type = hikaInput::get()->getString('hikashop_cart_type_'.$product_id.'_'.$module_id, null);
 		if(empty($cart_type))
-			$cart_type = JRequest::getString('hikashop_cart_type_'.$module_id, null);
+			$cart_type = hikaInput::get()->getString('hikashop_cart_type_'.$module_id, null);
 		if(empty($cart_type))
-			$cart_type = JRequest::getString('cart_type', 'cart');
+			$cart_type = hikaInput::get()->getString('cart_type', 'cart');
 
-		$cart_id = JRequest::getInt('cart_id', 0, 'GET');
+		$cart_id = hikaInput::get()->get->getInt('cart_id', 0);
 		if(!empty($cart_id)) {
 			$cart = $cartClass->get($cart_id);
 			$cart_id = 0;
@@ -337,7 +352,7 @@ class productController extends hikashopController {
 			$cart_id = $cartClass->getCurrentCartId($cart_type);
 
 		if($cart_id === false && $cart_type == 'wishlist' && hikashop_loadUser() == false) {
-			if($tmpl == 'ajax') {
+			if(in_array($tmpl, array('ajax', 'raw'))) {
 				$ret = array(
 					'ret' => 0,
 					'message' => JText::_('LOGIN_REQUIRED_FOR_WISHLISTS')
@@ -350,7 +365,7 @@ class productController extends hikashopController {
 		}
 
 		if($cart_id === false) {
-			if($tmpl == 'ajax') {
+			if(in_array($tmpl, array('ajax', 'raw'))) {
 				echo '{ret:0}';
 				exit;
 			}
@@ -362,7 +377,7 @@ class productController extends hikashopController {
 			$cart->cart_type = $cart_type;
 			$status = $cartClass->save($cart);
 
-			if(empty($status) && $tmpl == 'ajax') {
+			if(empty($status) && in_array($tmpl, array('ajax', 'raw'))) {
 				echo '{ret:0}';
 				exit;
 			}
@@ -372,33 +387,33 @@ class productController extends hikashopController {
 			$cart_id = (int)$status;
 		}
 
-		$addTo = JRequest::getString('add_to', '');
+		$addTo = hikaInput::get()->getString('add_to', '');
 		$cart_type_id = $cart_type.'_id';
 		if(!empty($addTo)) {
 			$from_id = $cart_id;
 			if($addTo == 'cart')
-				JRequest::setVar('from_id', $cart_id);
+				hikaInput::get()->set('from_id', $cart_id);
 			$cart_id = $app->getUserState(HIKASHOP_COMPONENT.'.'.$addTo.'_id', 0);
 			$cart_type_id = $addTo.'_id';
-			JRequest::setVar('cart_type', $addTo);
+			hikaInput::get()->set('cart_type', $addTo);
 		} else {
-			JRequest::setVar('cart_type', $cart_type);
+			hikaInput::get()->set('cart_type', $cart_type);
 		}
-		JRequest::setVar($cart_type_id, $cart_id);
+		hikaInput::get()->set($cart_type_id, $cart_id);
 
-		$add = JRequest::getCmd('add', '');
+		$add = hikaInput::get()->getCmd('add', '');
 		$add = empty($add) ? 0 : 1;
 
 		if(empty($product_id))
-			$product_id = JRequest::getCmd('cid', 0);
+			$product_id = hikaInput::get()->getCmd('cid', 0);
 
-		$cart_product_id = JRequest::getInt('cart_product_id', 0);
-		$quantity = JRequest::getInt('quantity', 1);
+		$cart_product_id = hikaInput::get()->getInt('cart_product_id', 0);
+		$quantity = hikaInput::get()->getInt('quantity', 1);
 		$status = null;
 		$used_data = null;
 
 		if (!empty($product_id)) {
-			$type = JRequest::getWord('type', 'product');
+			$type = hikaInput::get()->getWord('type', 'product');
 			if($type == 'product')
 				$product_id = (int)$product_id;
 			$used_data = array('product' => $product_id, 'quantity' => $quantity);
@@ -409,18 +424,24 @@ class productController extends hikashopController {
 			$status = $cartClass->update($cart_product_id, $quantity, $add, 'item', true, false, $cart_id);
 
 		} else {
-			$formData = JRequest::getVar('item', array(), '', 'array');
+			$formData = hikaInput::get()->get('item', array(), 'array');
 			$type = 'item';
 			if(empty($formData)) {
-				$formData = JRequest::getVar('data', array(), '', 'array');
+				$formData = hikaInput::get()->get('data', array(), 'array');
 				$type = 'product';
 			}
 			$used_data = array('form' => $formData, 'type' => $type);
 			$status = $cartClass->update($formData, 0, $add, $type, true, false, $cart_id);
 		}
 
+		if($status || is_null($status)){
+			$coupon = hikaInput::get()->getString('coupon');
+			if(!empty($coupon))
+				$cartClass->addCoupon($cart_id, $coupon);
+		}
+
 		$cart = $cartClass->getFullCart($cart_id);
-		if($tmpl == 'ajax') {
+		if(in_array($tmpl, array('ajax', 'raw'))) {
 			$ret = $this->getAjaxCartData($used_data, $cart, $status);
 			echo json_encode($ret);
 			exit;
@@ -446,7 +467,7 @@ class productController extends hikashopController {
 			}
 		}
 
-		$checkout = JRequest::getString('checkout', '');
+		$checkout = hikaInput::get()->getString('checkout', '');
 		if(!empty($checkout)) {
 			$this->redirectToCheckout();
 			return true;
@@ -468,11 +489,25 @@ class productController extends hikashopController {
 		if(empty($cart->cart_products))
 			$ret['empty'] = true;
 
+		if(!empty($data['type']) && $data['type'] == 'product' && !empty($data['form']) && count($data['form'])) {
+			$added = array();
+			foreach($data['form'] as $prod => $qty) {
+				if($qty)
+					$added[] = array('product' => $prod, 'quantity' => $qty);
+			}
+
+			if(count($added) == 1) {
+				$data = array_merge($data,$added[0]);
+			}
+		}
+
 		if(!isset($data['product']))
 			return $ret;
 
 		$imageHelper = hikashop_get('helper.image');
 		if(!empty($cart->products)) {
+			$config = hikashop_config();
+			$imageSize = (int)$config->get('addtocart_popup_image_size', 50);
 			foreach($cart->products as $product) {
 				if($product->product_id != $data['product'])
 					continue;
@@ -480,10 +515,12 @@ class productController extends hikashopController {
 				$ret['product_name'] = $product->product_name;
 				$ret['quantity'] = (int)$product->cart_product_quantity;
 
-				$image_path = (isset($product->images[0]->file_path) ? $product->images[0]->file_path : '');
-				$img = $imageHelper->getThumbnail($image_path, array(50,50), array('default' => true), true);
-				if($img->success)
-					$ret['image'] = $img->url;
+				if($imageSize > 0) {
+					$image_path = (isset($product->images[0]->file_path) ? $product->images[0]->file_path : '');
+					$img = $imageHelper->getThumbnail($image_path, array(50,50), array('default' => true), true);
+					if($img->success)
+						$ret['image'] = $img->url;
+				}
 				break;
 			}
 		}
@@ -528,9 +565,9 @@ class productController extends hikashopController {
 
 		$app->setUserState(HIKASHOP_COMPONENT.'.popup_cart_type','cart');
 
-		$url = JRequest::getVar('return_url','');
+		$url = hikaInput::get()->getVar('return_url','');
 		if(empty($url)) {
-			$url = urldecode(JRequest::getVar('url', ''));
+			$url = urldecode(hikaInput::get()->getVar('url', ''));
 		} else {
 			$url = base64_decode(urldecode($url));
 		}
@@ -548,7 +585,7 @@ class productController extends hikashopController {
 			$url = hikashop_completeLink($url, false, true);
 		}
 
-		$tmpl = JRequest::getCmd('tmpl', '');
+		$tmpl = hikaInput::get()->getCmd('tmpl', '');
 		if($tmpl == 'component' && $config->get('redirect_url_after_add_cart', 'stay_if_cart') != 'checkout') {
 
 			$js ='';
@@ -556,7 +593,7 @@ class productController extends hikashopController {
 			global $Itemid;
 			if(isset($Itemid) && empty($Itemid)) {
 				$Itemid = null;
-				JRequest::setVar('Itemid', null);
+				hikaInput::get()->set('Itemid', null);
 			}
 
 			$module = JModuleHelper::getModule('hikashop_cart', false);
@@ -586,12 +623,12 @@ class productController extends hikashopController {
 
 		$params = new HikaParameter(@$module->params);
 
-		if(JRequest::getInt('popup', 0) || (JRequest::getInt('quantity', 0) > 0 && $config->get('redirect_url_after_add_cart', 'stay_if_cart') == 'ask_user')) {
+		if(hikaInput::get()->getInt('popup', 0) || (hikaInput::get()->getInt('quantity', 0) > 0 && $config->get('redirect_url_after_add_cart', 'stay_if_cart') == 'ask_user')) {
 			$url .= (strpos($url, '?') ? '&' : '?') . 'popup=1';
 			$app->setUserState(HIKASHOP_COMPONENT.'.popup', 1);
 		}
 
-		if(JRequest::getInt('hikashop_ajax', 0) == 0) {
+		if(hikaInput::get()->getInt('hikashop_ajax', 0) == 0) {
 			$this->setRedirect($url);
 			return false;
 		}
@@ -613,7 +650,7 @@ class productController extends hikashopController {
 		$app->setUserState( HIKASHOP_COMPONENT.'.popup_cart_type', 'wishlist');
 
 		if(hikashop_loadUser() == null) {
-			$url = JRequest::getVar('return_url', '');
+			$url = hikaInput::get()->getVar('return_url', '');
 			if(!empty($url))
 				$url = base64_decode(urldecode($url));
 
@@ -622,7 +659,7 @@ class productController extends hikashopController {
 			if($config->get('redirect_url_after_add_cart', 'stay_if_cart') != 'ask_user')
 				$app->enqueueMessage(JText::_('LOGIN_REQUIRED_FOR_WISHLISTS'));
 
-			$tmpl = JRequest::getCmd('tmpl', '');
+			$tmpl = hikaInput::get()->getCmd('tmpl', '');
 			if($tmpl == 'component') {
 				echo 'notLogged';
 				exit;
@@ -642,16 +679,16 @@ class productController extends hikashopController {
 			$redirectConfig = $config->get('redirect_url_after_add_cart', 'stay_if_cart');
 			switch($redirectConfig) {
 				case 'ask_user':
-					$url = JRequest::getVar('return_url','');
+					$url = hikaInput::get()->getVar('return_url','');
 					if(!empty($url))
 						$url = base64_decode(urldecode($url));
 					$url = str_replace(array('&popup=1','?popup=1'), '', $url);
 
-					if(JRequest::getInt('popup', 0) && empty($_COOKIE['popup']) || JRequest::getInt('quantity', 0)) {
+					if(hikaInput::get()->getInt('popup', 0) && empty($_COOKIE['popup']) || hikaInput::get()->getInt('quantity', 0)) {
 						$url .= (strpos($url, '?') ? '&' : '?') . 'popup=1';
 						$app->setUserState( HIKASHOP_COMPONENT.'.popup', 1);
 					}
-					JRequest::setVar('cart_type', 'wishlist');
+					hikaInput::get()->set('cart_type', 'wishlist');
 					break;
 				case 'stay':
 					$stay = 1;
@@ -696,8 +733,8 @@ class productController extends hikashopController {
 			global $Itemid;
 			if(isset($from_id))
 				$cart_id = $from_id;
-			if(JRequest::getInt('new_wishlist_id', 0) != 0 && JRequest::getInt('delete', 0) == 0)
-				$cart_id = JRequest::getInt('new_wishlist_id', 0);
+			if(hikaInput::get()->getInt('new_wishlist_id', 0) != 0 && hikaInput::get()->getInt('delete', 0) == 0)
+				$cart_id = hikaInput::get()->getInt('new_wishlist_id', 0);
 
 			$cartClass = hikashop_get('class.cart');
 			$cart = $cartClass->get($cart_id, false, 'wishlist');
@@ -709,13 +746,13 @@ class productController extends hikashopController {
 			$url = hikashop_completeLink($url, false, true);
 		}
 
-		$stay = JRequest::getInt('stay', 0);
+		$stay = hikaInput::get()->getInt('stay', 0);
 		if($stay == 0) {
 			if(hikashop_disallowUrlRedirect($url))
 				return false;
 
-			if(JRequest::getVar('from_form', true)) {
-				JRequest::setVar('cart_type', 'wishlist');
+			if(hikaInput::get()->getVar('from_form', true)) {
+				hikaInput::get()->set('cart_type', 'wishlist');
 				$this->setRedirect($url);
 				return false;
 			}
@@ -730,22 +767,22 @@ class productController extends hikashopController {
 	}
 
 	public function cart() {
-		$module_id = JRequest::getInt('module_id', 0);
+		$module_id = hikaInput::get()->getInt('module_id', 0);
 		if(empty($module_id))
 			return false;
 
-		$tmpl = JRequest::getVar('tmpl', '');
-		if(!in_array($tmpl, array('component', 'ajax')))
-			JRequest::setVar('tmpl', 'component');
+		$tmpl = hikaInput::get()->getVar('tmpl', '');
+		if(!in_array($tmpl, array('component', 'ajax', 'raw')))
+			hikaInput::get()->set('tmpl', 'component');
 
-		JRequest::setVar('layout', 'cart');
+		hikaInput::get()->set('layout', 'cart');
 		ob_clean();
 		$this->display();
 		exit;
 	}
 
 	public function download() {
-		$file_id = JRequest::getInt('file_id', 0);
+		$file_id = hikaInput::get()->getInt('file_id', 0);
 		if(empty($file_id))
 			return false;
 		$fileClass = hikashop_get('class.file');

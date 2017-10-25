@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -14,10 +14,6 @@ $orderClass = hikashop_get('class.order');
 $imageHelper = hikashop_get('helper.image');
 $productClass = hikashop_get('class.product');
 $fieldsClass = hikashop_get('class.field');
-if(hikashop_level(2)) {
-	$null = null;
-	$itemFields = $fieldsClass->getFields('display:mail_admin_notif=1',$null,'item');
-}
 
 global $Itemid;
 $url_itemid = '';
@@ -44,9 +40,14 @@ $data->order->order_url = $order_url;
 
 $data->cart = $orderClass->loadFullOrder($data->order_id,true,false);
 $data->cart->coupon = new stdClass();
+
+if(hikashop_level(2)) {
+	$itemFields = $fieldsClass->getFields('display:mail_admin_notif=1', $data->cart->products, 'item');
+}
+
 $price = new stdClass();
 $tax = $data->cart->order_subtotal - $data->cart->order_subtotal_no_vat - $data->cart->order_discount_tax + $data->cart->order_shipping_tax + $data->cart->order_payment_tax;
-$price->price_value = $data->cart->order_full_price - $tax;
+$price->price_value = max(0, $data->cart->order_full_price - $tax);
 $price->price_value_with_tax = $data->cart->order_full_price;
 $data->cart->full_total = new stdClass;
 $data->cart->full_total->prices = array($price);
@@ -63,7 +64,7 @@ $vars = array(
 	'URL' => '#',
 	'ORDER_NUMBER' => $data->order_number,
 	'ORDER_LINK' => HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=order&task=edit&order_id='.$data->order_id,
-	'CUSTOMER_DETAILS' => JText::_('HIKA_CUSTOMER_EMAIL').': '.$userInfos->user_email,
+	'CUSTOMER_DETAILS' => $userInfos->user_email,
 	'ORDER_PRODUCT_CODE' => (bool)$config->get('show_code', false),
 	'order' => $data->cart,
 	'user' => $userInfos,
@@ -86,6 +87,7 @@ $texts = array(
 	'PRODUCT_QUANTITY' => JText::_('CART_PRODUCT_QUANTITY'),
 	'PRODUCT_TOTAL' => JText::_('HIKASHOP_TOTAL'),
 	'ADDITIONAL_INFORMATION' => JText::_('ADDITIONAL_INFORMATION'),
+	'CUSTOMER' => JText::_('CUSTOMER'),
 
 	'ORDER_TITLE' => JText::_('YOUR_ORDER'),
 	'HI_CUSTOMER' => JText::sprintf('HI_CUSTOMER', @$mail->to_name),
@@ -169,7 +171,11 @@ if(!empty($data->cart->products)){
 					$image = str_replace('../', HIKASHOP_LIVE, $img->url);
 				else
 					$image = substr(HIKASHOP_LIVE, 0, strpos(HIKASHOP_LIVE, '/', 9)) . $img->url;
-				$cartProduct['PRODUCT_IMG'] = '<img src="'.$image.'" alt="" style="float:left;margin-top:3px;margin-bottom:3px;margin-right:6px;"/>';
+
+				$attributes = '';
+				if($img->external)
+					$attributes = ' width="'.$img->req_width.'" height="'.$img->req_height.'"';
+				$cartProduct['PRODUCT_IMG'] = '<img src="'.$image.'" alt="" style="float:left;margin-top:3px;margin-bottom:3px;margin-right:6px;"'.$attributes.'/>';
 			}
 		}
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -67,7 +67,7 @@ class hikashopOrderstatusClass extends hikashopClass {
 		if(empty($element))
 			return false;
 
-		$element->orderstatus_description = JRequest::getVar('orderstatus_description', '', '', 'string', JREQUEST_ALLOWRAW);
+		$element->orderstatus_description = hikaInput::get()->getRaw('orderstatus_description', '');
 		if(!empty($oldOrderstatus) && $oldOrderstatus !== false)
 			$element->old = $oldOrderstatus;
 
@@ -75,11 +75,18 @@ class hikashopOrderstatusClass extends hikashopClass {
 			$element->orderstatus_namekey = $element->orderstatus_name;
 		}
 		if(!empty($element->orderstatus_namekey)) {
-			$element->orderstatus_namekey = str_replace(
-				array(' ',',',';',':','|','.'),
-				'_',
+			$element->orderstatus_namekey = preg_replace(
+				'#[^a-z0-9_]#i',
+				'',
 				strtolower(trim($element->orderstatus_namekey))
 			);
+
+			if(empty($element->orderstatus_namekey)) {
+				$app = JFactory::getApplication();
+				$app->enqueueMessage('Please enter a namekey in English.', 'error');
+				hikaInput::get()->set('fail', $element);
+				return false;
+			}
 		}
 
 		$status = $this->save($element);
@@ -87,7 +94,7 @@ class hikashopOrderstatusClass extends hikashopClass {
 		if($status) {
 
 		} else {
-			JRequest::setVar('fail', $element);
+			hikaInput::get()->set('fail', $element);
 		}
 		return $status;
 	}

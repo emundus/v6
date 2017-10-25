@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -27,6 +27,16 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 		$this->sessionParams = HIKASHOP_COMPONENT.'vm';
 		jimport('joomla.filesystem.file');
 	}
+		function checkCategories(){
+			$sql = "UPDATE `#__hikashop_category` AS cat ".
+			"SET cat.category_parent_id = 2 ".
+			"WHERE cat.category_type = 'product' AND (cat.category_parent_id = 0 OR cat.category_parent_id = cat.category_id) AND cat.category_id > 2;";
+
+			$this->db->setQuery($sql);
+			$this->db->query();
+			$total = $this->db->getAffectedRows();
+			echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Total number of corrected Hikashop Parent Categories : ' . $total . '</p>';
+		}
 
 	function importFromVM()
 	{
@@ -98,7 +108,7 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 			$continue = false;
 		}
 
-		$this->vm_current_lng = $app->getUserStateFromRequest($this->sessionParams.'language', 'language', '', 'string' );//JRequest::getString('language');
+		$this->vm_current_lng = $app->getUserStateFromRequest($this->sessionParams.'language', 'language', '', 'string' );//hikaInput::get()->getString('language');
 		$this->vm_current_lng = strtolower(str_replace('-','_',$this->vm_current_lng));
 		$app->setUserState($this->sessionParams.'language',$this->vm_current_lng);
 		$this->db->setQuery("SHOW TABLES LIKE '".$this->db->getPrefix()."virtuemart_products_".$this->vm_current_lng."'");
@@ -450,6 +460,8 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 		$this->db->setQuery($query);
 		$this->db->query();
 
+		$this->checkCategories();
+
 		echo '<p'.$this->titlefont.'>Import finished !</p>';
 		$class = hikashop_get('class.plugins');
 		$infos = $class->getByName('system','vm_redirect');
@@ -464,6 +476,9 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 				echo '<p>You can publish the <a'.$this->linkstyle.' href="'.$url.'">VirtueMart Fallback Redirect Plugin</a> so that your old VirtueMart links are automatically redirected to HikaShop pages and thus not loose the ranking of your content on search engines.</p>';
 			}
 		}
+
+		$databaseHelper = hikashop_get('helper.database');
+		$databaseHelper->checkdb();
 	}
 
 	function createTables()
@@ -497,6 +512,10 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 			echo '<p>Tables have been already created.</p>';
 		}
 
+		$this->addVirtuemartCategoryLevel();
+		$vm_childs = array();
+		$this->addVirtuemartCategoryLevelcolumn(1,$vm_childs);
+
 		return true;
 	}
 
@@ -513,7 +532,7 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 		$buffTable=$this->vmprefix."virtuemart_calcs";
 		$data = array(
 			'tax_namekey' => "CONCAT('VM_TAX_', vmtr.virtuemart_calc_id)",
-			'tax_rate' => 'vmtr.calc_value'
+			'tax_rate' => 'vmtr.calc_value / 100'
 		);
 		$sql = 'INSERT IGNORE INTO `#__hikashop_tax` (`'.implode('`,`',array_keys($data)).'`) '.
 			'SELECT ' . implode(',',$data).' FROM `'.$buffTable.'` AS vmtr '.
@@ -665,6 +684,7 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 		{
 			$sql0 = 'INSERT IGNORE INTO `#__hikashop_category` (`category_id`,`category_parent_id`,`category_type`,`category_name`,`category_description`,`category_published`,'.
 				'`category_namekey`,`category_access`,`category_menu`,`category_keywords`) VALUES ';
+			$sql1 = 'INSERT IGNORE INTO `#__hikashop_orderstatus` (`orderstatus_name`,`orderstatus_description`,`orderstatus_published`,`orderstatus_namekey`) VALUES ';
 
 			$id = $this->options->max_hk_cat + 1;
 			$sep = '';
@@ -674,22 +694,36 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 					$id++,
 					$status_category,
 					"'status'",
-					$this->db->quote(strtolower(JText::_($c->order_status_name))),
-					$this->db->quote( $c->order_status_description ),
+					$this->db->Quote(strtolower(JText::_($c->order_status_name))),
+					$this->db->Quote( $c->order_status_description ),
 					'1',
-					$this->db->quote('status_vm_import_'.strtolower(str_replace(' ','_',JText::_($c->order_status_name)))),
+					$this->db->Quote('status_vm_import_'.strtolower(str_replace(' ','_',JText::_($c->order_status_name)))),
 					"'all'",
 					'0',
-					$this->db->quote( $c->order_status_code )
+					$this->db->Quote( $c->order_status_code )
+				);
+				$d1 = array(
+					$this->db->Quote(strtolower(JText::_($c->order_status_name))),
+					$this->db->Quote( $c->order_status_description ),
+					'1',
+					$this->db->Quote('status_vm_import_'.strtolower(str_replace(' ','_',JText::_($c->order_status_name)))),
 				);
 
 				$sql0 .= $sep.'('.implode(',',$d).')';
+				unset($d);
+
+				$sql1 .= $sep.'('.implode(',',$d1).')';
+				unset($d1);
+
 				$sep = ',';
 			}
 
 			$this->db->setQuery($sql0);
 			$this->db->query();
 			$total = $this->db->getAffectedRows();
+
+			$this->db->setQuery($sql1);
+			$this->db->query();
 
 			if( $total > 0 )
 			{
@@ -699,28 +733,28 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 				$this->options->max_hk_cat = $id;
 				$this->db->setQuery("UPDATE `#__hikashop_config` SET config_value = ".$this->options->max_hk_cat." WHERE config_namekey = 'vm_import_max_hk_cat'; ");
 				$this->db->query();
-				$sql0 = '';
 			}
 			else
 			{
 				echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Imported order status categories : 0</p>';
 			}
 
+			$sql0 = '';
+			$sql1 = '';
 		}
 
 		$buffTable=$this->vmprefix."virtuemart_categories_".$this->vm_current_lng;
 
-		$this->db->setQuery('SELECT *, vmc.virtuemart_category_id as vmid, hkvm.vm_id as vm_cat_id, hkvmp.vm_id as vm_parent_id FROM `'.$this->vmprefix.'virtuemart_categories` vmc '.
+		$this->db->setQuery('SELECT *, vmc.virtuemart_category_id as vmid, hkvm.vm_id as vm_cat_id, vmcc.category_parent_id as vm_parent_id FROM `'.$this->vmprefix.'virtuemart_categories` vmc '.
 				"LEFT JOIN `".$buffTable."` vmceg ON vmc.virtuemart_category_id = vmceg.virtuemart_category_id ".
 				"LEFT JOIN `".$this->vmprefix."virtuemart_category_medias` vmcm ON vmceg.virtuemart_category_id = vmcm.virtuemart_category_id ".
 				"LEFT JOIN `".$this->vmprefix."virtuemart_medias` vmm ON vmcm.virtuemart_media_id = vmm.virtuemart_media_id ".
 				'LEFT JOIN `'.$this->vmprefix.'virtuemart_category_categories` vmcc ON vmceg.virtuemart_category_id = vmcc.category_child_id '.
 				'LEFT JOIN `#__hikashop_vm_cat` hkvm ON vmc.virtuemart_category_id = hkvm.vm_id '.
-				'LEFT JOIN `#__hikashop_vm_cat` hkvmp ON vmcc.category_parent_id = hkvmp.vm_id '.
-				'ORDER BY category_parent_id ASC, vmc.ordering ASC, vmc.virtuemart_category_id ASC LIMIT '.(int)$offset.', '.(int)$count.';');
+				'ORDER BY vmcc.level ASC, vmc.ordering ASC, vmc.virtuemart_category_id ASC LIMIT '.(int)$offset.', '.(int)$count.';');
 		$data = $this->db->loadObjectList();
 
-		$max = $offset + count($data);
+		$new_offset = $offset + count($data);
 
 		$total = count($data);
 		if( $total == 0 ) {
@@ -766,6 +800,8 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 		$sep2 = '';
 		$doQuery = false;
 
+		$cat_ids = array();
+
 		foreach($data as $c)
 		{
 			if( !empty($c->vm_cat_id) )
@@ -774,12 +810,7 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 			$doQuery = true;
 			$id = $ids[(int)$c->vmid];
 
-			if(!empty($ids[(int)$c->category_parent_id]))
-				$pid = (int)$ids[(int)$c->category_parent_id];
-			else if(!empty($c->vm_parent_id))
-				$pid = (int)$c->vm_parent_id;
-			else
-				$pid = $ids[0];
+			$pid = (int)$c->vm_parent_id;
 
 			$element = new stdClass();
 			$element->category_id = $id;
@@ -787,17 +818,19 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 			$element->category_name = $c->category_name;
 			$nameKey = $categoryClass->getNameKey($element);
 
+			$cat_ids[] = $id;
+
 			$d = array(
 				$id,
 				$pid,
 				"'product'",
-				$this->db->quote($c->category_name),
-				$this->db->quote($c->category_description),
+				$this->db->Quote($c->category_name),
+				$this->db->Quote($c->category_description),
 				'1',
 				(int)@$c->ordering,
-				$this->db->quote($nameKey),
-				$this->db->quote(strtotime($c->created_on)),
-				$this->db->quote(strtotime($c->modified_on)),
+				$this->db->Quote($nameKey),
+				$this->db->Quote(strtotime($c->created_on)),
+				$this->db->Quote(strtotime($c->modified_on)),
 				"'all'",
 				'0'
 			);
@@ -871,6 +904,9 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 			$this->db->query();
 			$total = $this->db->getAffectedRows();
 			echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Fallback links : ' . $total . '</p>';
+
+			$this->db->setQuery("UPDATE `#__hikashop_category` hkc, `#__hikashop_vm_cat` hkvmc SET hkc.category_parent_id = hkvmc.hk_id WHERE hkc.category_parent_id = hkvmc.vm_id AND hkc.category_id IN (".implode(',',$cat_ids).") ");
+			$this->db->query();
 		}
 		else
 			echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Fallback links : 0</p>';
@@ -889,11 +925,10 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 
 		if( $rebuild )
 			$this->importRebuildTree();
-		$this->options->current = $max;
+		$this->options->current = $new_offset;
 
 		if( $max > 0 ) {
 			echo '<p>Copying files...(last proccessed product id: ' . $max . ')</p>';
-			$this->options->current = $max;
 			$this->refreshPage = true;
 			return $ret;
 		}
@@ -902,6 +937,44 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 		return $ret;
 	}
 
+
+	function addVirtuemartCategoryLevel(){
+		$this->db->setQuery('ALTER TABLE `'. $this->vmprefix .'virtuemart_category_categories` ADD `level` INT(11)');
+		$this->db->query();
+	}
+	function addVirtuemartCategoryLevelcolumn($level, $childs = array()){
+		$level = (int)$level;
+		if((int)$level <= 0)
+			return;
+		if($level == 1)
+			$childs[] = 0;
+		if(empty($childs))
+			return;
+
+		$sql = 'UPDATE `'. $this->vmprefix .'virtuemart_category_categories` '.
+				'SET level = '. (int)$level .
+				' WHERE category_parent_id IN ('."'".implode("','",$childs)."'".');';
+		$this->db->setQuery($sql);
+		$this->db->query();
+		$total = $this->db->getAffectedRows();
+		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Total number of added levels through the "virtuemart_category_categories" table : ' . $total . '</p>';
+
+		$query = 'SELECT category_child_id FROM `'. $this->vmprefix .'virtuemart_category_categories` ' .
+				'WHERE category_parent_id IN ('."'".implode("','",$childs)."'".');';
+		$this->db->setQuery($query);
+		$childArray = $this->db->loadRowList();
+
+		if(empty($childArray))
+			return;
+
+		$childs = array();
+		foreach($childArray as $child){
+			if(isset($child[0]))
+				$childs[] = $child[0];
+		}
+		$level++;
+		$this->addVirtuemartCategoryLevelcolumn($level, $childs);
+	}
 
 	function importProducts() {
 		if( $this->db == null )
@@ -918,13 +991,26 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 		$max = 0;
 
 		$this->db->setQuery(
+			'SELECT MAX(pid) FROM ('.
+				' SELECT vmp.virtuemart_product_id as pid '.
+				' FROM `'.$this->vmprefix.'virtuemart_products` AS vmp '.
+				' LEFT JOIN `#__hikashop_vm_prod` hkvm ON vmp.virtuemart_product_id = hkvm.vm_id '.
+				' WHERE vmp.virtuemart_product_id > '.$offset.' AND hkvm.hk_id IS NULL '.
+				' ORDER BY vmp.virtuemart_product_id ASC LIMIT '.$count.
+			') AS t;'
+		);
+		$maxOffset = (int)$this->db->loadResult();
+
+		$this->db->setQuery(
 			'SELECT vmp.virtuemart_product_id, vmm.file_meta, vmm.file_url, vmm.file_title '.
-			'FROM `'.$this->vmprefix.'virtuemart_products` vmp '.
-			"INNER JOIN `".$this->vmprefix."virtuemart_product_medias` vmpm ON vmp.virtuemart_product_id = vmpm.virtuemart_product_id ".
-			"INNER JOIN `".$this->vmprefix."virtuemart_medias` vmm ON vmpm.virtuemart_media_id = vmm.virtuemart_media_id ".
-			'LEFT JOIN `#__hikashop_vm_prod` hkprod ON vmp.virtuemart_product_id = hkprod.vm_id '.
-			"WHERE vmp.virtuemart_product_id > ".$offset." AND hkprod.hk_id IS NULL AND ((vmm.file_meta IS NOT NULL AND vmm.file_meta <> '') OR vmm.file_url <> '' )".
-			'ORDER BY vmp.virtuemart_product_id ASC LIMIT '.$count.';'
+			'FROM `'.$this->vmprefix.'virtuemart_products` AS vmp '.
+			"INNER JOIN `".$this->vmprefix."virtuemart_product_medias` AS vmpm ON vmp.virtuemart_product_id = vmpm.virtuemart_product_id ".
+			"INNER JOIN `".$this->vmprefix."virtuemart_medias` AS vmm ON vmpm.virtuemart_media_id = vmm.virtuemart_media_id ".
+			'LEFT JOIN `#__hikashop_vm_prod` AS hkprod ON vmp.virtuemart_product_id = hkprod.vm_id '.
+			'WHERE vmp.virtuemart_product_id > '.$offset.' AND vmp.virtuemart_product_id <= '.$maxOffset.' AND hkprod.hk_id IS NULL AND ('.
+				'(vmm.file_meta IS NOT NULL AND vmm.file_meta <> \'\') OR vmm.file_url <> \'\''.
+			') '.
+			'ORDER BY vmp.virtuemart_product_id ASC;'
 		);
 
 		$data = $this->db->loadObjectList();
@@ -940,7 +1026,7 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 					if( strpos($file_name,'/') !== false ) {
 						$file_name = substr($file_name, strrpos($file_name,'/'));
 					}
-					$result = $this->copyFile($this->copyImgDir,$c->file_meta, $this->options->uploadfolder.$file_name);
+					$result = $this->copyFile($this->copyImgDir, $c->file_meta, $this->options->uploadfolder.$file_name);
 					if($result){
 						$meta_files[] = $this->db->Quote($c->file_meta);
 					}
@@ -950,32 +1036,34 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 					if( strpos($file_name,'/') !== false ) {
 						$file_name = substr($file_name, strrpos($file_name,'/'));
 					}
-					$result = $this->copyFile($this->copyImgDir,$c->file_title, $this->options->uploadfolder.$file_name);
-					if($result){
+					$file_title_ext = strtolower(substr($c->file_title, -4));
+					if(in_array($file_title_ext, array('.jpg','.png','.gif')) || strtolower(substr($c->file_title, -5)) == '.jpeg')
+						$result = $this->copyFile($this->copyImgDir, $c->file_title, $this->options->uploadfolder.$file_name);
+					if($result) {
 						$meta_files[] = $this->db->Quote($c->file_title);
 					}
 				}
-				if(!$result && !empty($c->file_url)){
-					$file_name = str_replace('\\','/',$c->file_url);
+				if(!$result && !empty($c->file_url)) {
+					$file_name = str_replace(array('\\/','\\'),array('/','/'),$c->file_url);
 					if( strpos($file_name,'/') !== false ) {
 						$file_name = substr($file_name, strrpos($file_name,'/'));
 					}
 					if(strpos($this->copyImgValue, trim($c->file_url, '/')) === 0)
 						$c->file_url = trim(substr(trim($c->file_url, '/'), strlen($this->copyImgValue)), '/');
-					$result = $this->copyFile($this->copyImgDir,$c->file_url, $this->options->uploadfolder.$file_name);
-					if(!$result && !empty($c->file_meta)){ //if we couldn't copy the image from the file_url, we still add the image name from file_meta and then the user can copy the files manually
+					$result = $this->copyFile($this->copyImgDir, $c->file_url, $this->options->uploadfolder.$file_name);
+					if(!$result && !empty($c->file_meta)) { //if we couldn't copy the image from the file_url, we still add the image name from file_meta and then the user can copy the files manually
 						$meta_files[] = $this->db->Quote($c->file_meta);
 					}
 				}
 			}
 		}
 		if(empty($meta_files) || !count($meta_files)){
-			$meta_files = "''";
-		}else{
+			$meta_files = "'##'";
+		} else {
 			$meta_files = implode(',',$meta_files);
 		}
 
-		$buffTable=$this->vmprefix."virtuemart_products_".$this->vm_current_lng;
+		$buffTable = $this->vmprefix."virtuemart_products_".$this->vm_current_lng;
 
 		$data = array(
 			'product_name' => 'vmpeg.product_name',
@@ -1003,7 +1091,7 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 			'SELECT '.implode(',',$data).' FROM `'.$this->vmprefix.'virtuemart_products` AS vmp '.
 			'INNER JOIN `'.$buffTable.'` vmpeg ON vmp.virtuemart_product_id = vmpeg.virtuemart_product_id '.
 			'LEFT JOIN `'.$this->vmprefix.'virtuemart_product_prices` vmpp ON vmpeg.virtuemart_product_id = vmpp.virtuemart_product_id '.
-			'LEFT JOIN `#__hikashop_taxation` hkt ON hkt.tax_vm_id = vmpp.product_tax_id '.
+			'LEFT JOIN `#__hikashop_taxation` hkt ON (hkt.tax_vm_id = vmpp.product_tax_id OR (hkt.tax_vm_id = 0 AND vmpp.product_tax_id = '.(int)@$this->options->tax_id.')) '.
 			'LEFT JOIN `#__hikashop_category` hkc ON hkc.category_namekey = hkt.category_namekey '.
 			'LEFT JOIN `#__hikashop_vm_prod` AS hkp ON vmp.virtuemart_product_id = hkp.vm_id '.
 			'WHERE hkp.hk_id IS NULL AND vmp.virtuemart_product_id > '.$offset.' '.
@@ -1030,7 +1118,7 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 		$data = array(
 			'file_name' => "''",
 			'file_description' => "''",
-			'file_path' => "case when vmm.file_meta IN (".$meta_files.") then SUBSTRING_INDEX(vmm.file_meta,'/',-1) else SUBSTRING_INDEX(vmm.file_url,'/',-1) end",
+			'file_path' => "SUBSTRING_INDEX(vmm.file_url,'/',-1)",
 			'file_type' => "'product'",
 			'file_ref_id' => 'hkvm.hk_id'
 		);
@@ -1040,14 +1128,15 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 			"INNER JOIN `#__hikashop_vm_prod` AS hkvm ON vmp.virtuemart_product_id = hkvm.vm_id ".
 			"INNER JOIN `".$this->vmprefix."virtuemart_product_medias` vmpm ON hkvm.vm_id = vmpm.virtuemart_product_id ".
 			"INNER JOIN `".$this->vmprefix."virtuemart_medias` vmm ON vmpm.virtuemart_media_id = vmm.virtuemart_media_id ".
-			'WHERE vmp.virtuemart_product_id > '.$this->options->last_vm_prod." AND (vmm.file_meta <> '' OR vmm.file_url <> '') ";
+			'WHERE vmp.virtuemart_product_id > '.$offset." AND (vmm.file_meta <> '' OR vmm.file_url <> '')".
+			'ORDER BY vmp.virtuemart_product_id ASC;';
 
 		$sql5 = 'UPDATE `#__hikashop_product` AS hkp '.
 			'INNER JOIN `#__hikashop_vm_prod` AS hkvm ON hkp.product_id = hkvm.hk_id '.
 			'INNER JOIN `'.$this->vmprefix.'virtuemart_product_manufacturers` AS vmpm ON vmpm.virtuemart_product_id = hkvm.vm_id '.
 			"INNER JOIN `#__hikashop_category` AS hkc ON hkc.category_type = 'manufacturer' AND vmpm.virtuemart_manufacturer_id = hkc.category_menu ".
 			'SET hkp.product_manufacturer_id = hkc.category_id '.
-			'WHERE vmpm.virtuemart_manufacturer_id > '.$this->options->last_vm_manufacturer.' OR vmpm.virtuemart_product_id > '.$this->options->last_vm_prod.';';
+			'WHERE vmpm.virtuemart_manufacturer_id > '.$this->options->last_vm_manufacturer.' OR vmpm.virtuemart_product_id > '.$offset.';';
 
 		$this->db->setQuery($sql1);
 		$this->db->query();
@@ -1675,5 +1764,43 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 
 		$ret = true;
 		return $ret;
+	}
+
+	function copyFile($dir, $fsrc, $dst, $debug = false){
+		if ($debug){
+			echo 'Source folder : '.$dir.'<br/>';
+			echo 'File source name : '.$fsrc.'<br/>';
+			echo 'From "'.$dir.$fsrc.'" to folder/file : "'.$dst.'"<br/>';
+			echo '#####<br/>';
+		}
+
+		$dir = str_replace(array('\\/', '/', '\\'), DS, $dir);
+		$fsrc = str_replace(array('\\/', '/', '\\'), DS, $fsrc);
+		$dst = str_replace(array('\\/', '/', '\\'), DS, $dst);
+
+		$src = $fsrc;
+		if( file_exists($dir.$fsrc) )
+			$src = $dir.$fsrc;
+		else if( file_exists(HIKASHOP_ROOT.$fsrc) )
+			$src = HIKASHOP_ROOT.$fsrc;
+
+		if( file_exists($src) ){
+			if( !file_exists($dst) ){
+				$ret = JFile::copy($src, $dst);
+				if( !$ret ){
+					echo '<span '.$this->copywarning.'>The file "' . $src . '" could not be copied to "' . $dst . '"</span><br/>';
+				}else{
+					return true;
+				}
+			}
+			else{
+				echo '<span '.$this->copywarning.'>File already exists "' .$dst . '" ("' . $src . '")</span><br/>';
+				return true;
+			}
+		}
+		else{
+			echo '<span '.$this->copywarning.'>File is not found "' . $dir.$fsrc . '"</span><br/>';
+		}
+		return false;
 	}
 }

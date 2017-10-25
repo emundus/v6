@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -121,128 +121,134 @@ function HikashopBuildRoute( &$query )
 function HikashopParseRoute( $segments )
 {
 	$vars = array();
-	$check=false;
-	if(!empty($segments)){
-		if(!defined('DS'))
-			define('DS', DIRECTORY_SEPARATOR);
-		if(function_exists('hikashop_config') || include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')){
-			$config =& hikashop_config();
-			if($config->get('activate_sef',1)){
-				$categorySef=$config->get('category_sef_name','category');
-				$productSef=$config->get('product_sef_name','product');
-				$checkoutSef=$config->get('checkout_sef_name','checkout');
-				$skip=false;
-				if(isset($segments[0])){
-					$file = HIKASHOP_CONTROLLER.$segments[0].'.php';
-					if(file_exists($file) && isset($segments[1])){
-						if(!($segments[0]=='product'&&$segments[1]=='show' || $segments[0]=='category'&&$segments[1]=='listing' || $segments[0]=='checkout'&&$segments[1]=='notice')){
-							$controller = hikashop_get('controller.'.$segments[0],array(),true);
-							if($controller->isIn($segments[1],array('display','modify_views','add','modify','delete'))){
-								$skip = true;
-							}
-						}
-					}
-				}
+	$check = false;
+	if(empty($segments))
+		return $vars;
 
-				if(!$skip){
+	if(!defined('DS'))
+		define('DS', DIRECTORY_SEPARATOR);
+	if(!function_exists('hikashop_config') && !include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php'))
+		return $vars;
 
-					if(count($segments)==1){
-						if(empty($categorySef)){
-							$vars['ctrl']='category';
-							$vars['task']='listing';
-						}
-						elseif(empty($productSef)){
-							$vars['ctrl']='product';
-							$vars['task']='show';
-						}
-					}
+	$config =& hikashop_config();
+	if(!$config->get('activate_sef', 1)) {
+		foreach($segments as $name){
+			hikashop_retrieve_url_id($vars,$name);
+		}
+		return $vars;
+	}
 
-					$i = 0;
-
-					foreach($segments as $k => $name){
-						if(strpos($name,':')){
-							if(empty($productSef) && !$check){
-								$vars['ctrl']='product';
-								$vars['task']='show';
-							}
-							list($arg,$val) = explode(':',$name,2);
-							if($arg=='task'&&$val=='step'){
-								$vars['ctrl']='checkout';
-							}
-							if(is_numeric($arg) && !is_numeric($val)){
-								$vars['cid'] = $arg;
-								$vars['name'] = $val;
-							}elseif(is_numeric($arg)){
-								$vars['Itemid'] = $arg;
-							}elseif(str_replace(':','-',$name)==$productSef){
-								$vars['ctrl']='product';
-								$vars['task']='show';
-							}else if(str_replace(':','-',$name)==$categorySef){
-								$vars['ctrl']='category';
-								$vars['task']='listing';
-								$check=true;
-							}else{
-								if(hikashop_retrieve_url_id($vars,$name)) continue;
-								$vars[$arg] = $val;
-							}
-						}else if($name==$productSef){
-							$vars['ctrl']='product';
-							$vars['task']='show';
-						}else if($name==$categorySef){
-							$vars['ctrl']='category';
-							$vars['task']='listing';
-							$check=true;
-						}else if($name==$checkoutSef && ( $name!= 'checkout' || !isset($segments[$k+1]) || $segments[$k+1] != 'notice' )){
-							$vars['ctrl']='checkout';
-							$vars['task']='step';
-							$check=true;
-						}else{
-							if(hikashop_retrieve_url_id($vars,$name)) continue;
-							$i++;
-							if($i == 1){
-								$vars['ctrl'] = $name;
-								$vars['task'] = '';
-							}elseif($i == 2)
-								$vars['task'] = $name;
-							$check=true;
-						}
-					}
-
-					return $vars;
-				}
-				$i = 0;
-				foreach($segments as $name){
-					if(strpos($name,':')){
-						list($arg,$val) = explode(':',$name,2);
-						if(is_numeric($arg) && !is_numeric($val)){
-							$vars['cid'] = $arg;
-							$vars['name'] = $val;
-						}elseif(is_numeric($arg)){
-							if(hikashop_retrieve_url_id($vars,$name)) continue;
-							$vars['Itemid'] = $arg;
-						}else{
-							if(hikashop_retrieve_url_id($vars,$name)) continue;
-							$vars[$arg] = $val;
-						}
-					}else{
-						if(hikashop_retrieve_url_id($vars,$name)) continue;
-						$i++;
-						if($i == 1) $vars['ctrl'] = $name;
-						elseif($i == 2) $vars['task'] = $name;
-					}
-				}
-				$category_pathway = $config->get('category_pathway','category_pathway');
-				if($category_pathway!='category_pathway' && isset($vars[$category_pathway])){
-					$vars['category_pathway']=$vars[$category_pathway];
-				}
-			}else{
-				foreach($segments as $name){
-					hikashop_retrieve_url_id($vars,$name);
+	$categorySef=$config->get('category_sef_name','category');
+	$productSef=$config->get('product_sef_name','product');
+	$checkoutSef=$config->get('checkout_sef_name','checkout');
+	$skip = false;
+	if(isset($segments[0])) {
+		$file = HIKASHOP_CONTROLLER.$segments[0].'.php';
+		if(file_exists($file) && isset($segments[1])) {
+			if(!($segments[0]=='product'&&$segments[1]=='show' || $segments[0]=='category'&&$segments[1]=='listing' || $segments[0]=='checkout'&&$segments[1]=='notice')){
+				$controller = hikashop_get('controller.'.$segments[0],array(),true);
+				if($controller->isIn($segments[1],array('display','modify_views','add','modify','delete'))){
+					$skip = true;
 				}
 			}
-
 		}
 	}
+
+	if(!$skip) {
+		if(count($segments)==1){
+			if(empty($categorySef)){
+				$vars['ctrl']='category';
+				$vars['task']='listing';
+			}
+			elseif(empty($productSef)){
+				$vars['ctrl']='product';
+				$vars['task']='show';
+			}
+		}
+
+		$i = 0;
+		foreach($segments as $k => $name){
+			if(strpos($name,':')){
+				if(empty($productSef) && !$check){
+					$vars['ctrl']='product';
+					$vars['task']='show';
+				}
+				list($arg,$val) = explode(':',$name,2);
+				if($arg=='task' && ($val == 'step' || $val =='show')){
+					$vars['ctrl']='checkout';
+				}
+				if(is_numeric($arg) && !is_numeric($val)){
+					$vars['cid'] = $arg;
+					$vars['name'] = $val;
+				}elseif(is_numeric($arg)){
+					$vars['Itemid'] = $arg;
+				}elseif(str_replace(':','-',$name)==$productSef){
+					$vars['ctrl']='product';
+					$vars['task']='show';
+				}else if(str_replace(':','-',$name)==$categorySef){
+					$vars['ctrl']='category';
+					$vars['task']='listing';
+					$check=true;
+				}else if($arg=='step' && is_numeric($val)) {
+					$vars['ctrl']='checkout';
+					$vars['task']='step';
+					$vars['step'] = $val;
+				}else{
+					if(hikashop_retrieve_url_id($vars,$name)) continue;
+					$vars[$arg] = $val;
+				}
+			}else if($name==$productSef){
+				$vars['ctrl']='product';
+				$vars['task']='show';
+			}else if($name==$categorySef){
+				$vars['ctrl']='category';
+				$vars['task']='listing';
+				$check=true;
+			}else if($name==$checkoutSef && ( $name!= 'checkout' || !isset($segments[$k+1]) || $segments[$k+1] != 'notice' )){
+				$vars['ctrl']='checkout';
+				$vars['task']='step';
+				$check=true;
+			}else{
+				if(hikashop_retrieve_url_id($vars,$name)) continue;
+				$i++;
+				if($i == 1){
+					$vars['ctrl'] = $name;
+					$vars['task'] = '';
+				}elseif($i == 2)
+					$vars['task'] = $name;
+				$check=true;
+			}
+		}
+
+		return $vars;
+	}
+
+	$i = 0;
+	foreach($segments as $name) {
+		if(strpos($name,':')){
+			list($arg,$val) = explode(':',$name,2);
+			if(is_numeric($arg) && !is_numeric($val)){
+				$vars['cid'] = $arg;
+				$vars['name'] = $val;
+			}elseif(is_numeric($arg)){
+				if(hikashop_retrieve_url_id($vars,$name)) continue;
+				$vars['Itemid'] = $arg;
+			}else{
+				if(hikashop_retrieve_url_id($vars,$name)) continue;
+				$vars[$arg] = $val;
+			}
+		}else{
+			if(hikashop_retrieve_url_id($vars,$name)) continue;
+			$i++;
+			if($i == 1) $vars['ctrl'] = $name;
+			elseif($i == 2) $vars['task'] = $name;
+		}
+	}
+	$category_pathway = $config->get('category_pathway','category_pathway');
+	if($category_pathway!='category_pathway' && isset($vars[$category_pathway])){
+		$vars['category_pathway']=$vars[$category_pathway];
+	}
+
 	return $vars;
 }
 
@@ -260,13 +266,15 @@ function hikashop_retrieve_url_id(&$vars,$name){
 		$db = JFactory::getDBO();
 		$config =& hikashop_config();
 		$translationHelper = hikashop_get('helper.translation');
+		$lang = JFactory::getLanguage();
 
 		if($translationHelper->isMulti()){
+			$lang_id = $translationHelper->getId($lang->getTag());
 			$trans_table = 'jf_content';
 			if($translationHelper->falang){
 				$trans_table = 'falang_content';
 			}
-			$db->setQuery('SELECT reference_id FROM '.hikashop_table($trans_table,false).' WHERE reference_table='.$db->Quote('hikashop_'.$type).' AND reference_field='.$db->Quote($type.'_alias').' AND value = '.$db->Quote(str_replace(':','-',$name)));
+			$db->setQuery('SELECT reference_id FROM '.hikashop_table($trans_table,false).' WHERE language_id='.(int)$lang_id.' AND reference_table='.$db->Quote('hikashop_'.$type).' AND reference_field='.$db->Quote($type.'_alias').' AND value = '.$db->Quote(str_replace(':','-',$name)));
 			$retrieved_id = $db->loadResult();
 			if($retrieved_id){
 				$vars['cid'] = $retrieved_id;
@@ -284,11 +292,12 @@ function hikashop_retrieve_url_id(&$vars,$name){
 
 		$name_regex = '^ *p?'.str_replace(array('-',':'),'.+',$name).' *$';
 		if($translationHelper->isMulti()){
+			$lang_id = $translationHelper->getId($lang->getTag());
 			$trans_table = 'jf_content';
 			if($translationHelper->falang){
 				$trans_table = 'falang_content';
 			}
-			$db->setQuery('SELECT reference_id FROM '.hikashop_table($trans_table,false).' WHERE reference_table='.$db->Quote('hikashop_'.$type).' AND ((reference_field='.$db->Quote($type.'_alias').' AND (value = '.$db->Quote(str_replace(':','-',$name)).' OR value REGEXP '.$db->Quote($name_regex).')) OR (reference_field='.$db->Quote($type.'_name').' AND value REGEXP '.$db->Quote($name_regex).'))');
+			$db->setQuery('SELECT reference_id FROM '.hikashop_table($trans_table,false).' WHERE language_id='.(int)$lang_id.' AND reference_table='.$db->Quote('hikashop_'.$type).' AND ((reference_field='.$db->Quote($type.'_alias').' AND (value = '.$db->Quote(str_replace(':','-',$name)).' OR value REGEXP '.$db->Quote($name_regex).')) OR (reference_field='.$db->Quote($type.'_name').' AND value REGEXP '.$db->Quote($name_regex).'))');
 			$retrieved_id = $db->loadResult();
 			if($retrieved_id){
 				$vars['cid'] = $retrieved_id;

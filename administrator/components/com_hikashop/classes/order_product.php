@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -217,7 +217,15 @@ class hikashopOrder_productClass extends hikashopClass {
 			}
 		}
 
-		return true;
+		$ret = array();
+		foreach($products as $product) {
+			if(empty($product->cart_product_id) || (int)$product->cart_product_id <= 0)
+				continue;
+			$ret[ (int)$product->cart_product_id ] = isset($newProducts[$product->cart_product_id]) ? (int)$newProducts[$product->cart_product_id]->order_product_id : 0;
+		}
+		if(empty($ret))
+			$ret = true;
+		return $ret;
 	}
 
 	protected function updateQuantityAndSales(&$updates, $cancel = false){

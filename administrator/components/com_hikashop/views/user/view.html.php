@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -215,7 +215,7 @@ function updateCustomFeesPanel(active) {
 		$doc->addScriptDeclaration($js);
 
 		$order_info = '';
-		$order_id = JRequest::getInt('order_id', 0);
+		$order_id = hikaInput::get()->getInt('order_id', 0);
 		if(!empty($order_id)) {
 			$order_info = '&order_id=' . $order_id;
 		}
@@ -224,7 +224,7 @@ function updateCustomFeesPanel(active) {
 	}
 
 	public function editaddress() {
-		$user_id = JRequest::getInt('user_id');
+		$user_id = hikaInput::get()->getInt('user_id');
 		$address_id = hikashop_getCID('address_id');
 		$address = new stdClass();
 		if(!empty($address_id)){
@@ -255,21 +255,21 @@ function updateCustomFeesPanel(active) {
 	}
 
 	public function state() {
-		$namekey = JRequest::getCmd('namekey','');
+		$namekey = hikaInput::get()->getCmd('namekey','');
 		if(empty($namekey)) {
 			echo '<span class="state_no_country">'.JText::_('PLEASE_SELECT_COUNTRY_FIRST').'</span>';
 			exit;
 		}
 
-		$field_namekey = JRequest::getCmd('field_namekey', '');
+		$field_namekey = hikaInput::get()->getCmd('field_namekey', '');
 		if(empty($field_namekey))
 			$field_namekey = 'address_state';
 
-		$field_id = JRequest::getCmd('field_id', '');
+		$field_id = hikaInput::get()->getCmd('field_id', '');
 		if(empty($field_id))
 			$field_id = 'address_state';
 
-		$field_type = JRequest::getCmd('field_type', '');
+		$field_type = hikaInput::get()->getCmd('field_type', '');
 		if(empty($field_type))
 			$field_type = 'address';
 
@@ -280,23 +280,23 @@ function updateCustomFeesPanel(active) {
 	}
 
 	public function selection() {
-		$singleSelection = JRequest::getVar('single', 0);
-		$confirm = JRequest::getVar('confirm', 1);
+		$singleSelection = hikaInput::get()->getVar('single', 0);
+		$confirm = hikaInput::get()->getVar('confirm', 1);
 		$this->assignRef('singleSelection', $singleSelection);
 		$this->assignRef('confirm', $confirm);
 
-		$ctrl = JRequest::getCmd('ctrl');
+		$ctrl = hikaInput::get()->getCmd('ctrl');
 		$this->assignRef('ctrl', $ctrl);
 
 		$task = 'useselection';
 		$this->assignRef('task', $task);
 
 		$afterParams = array();
-		$after = JRequest::getString('after', '');
+		$after = hikaInput::get()->getString('after', '');
 		if(!empty($after)) {
 			list($ctrl, $task) = explode('|', $after, 2);
 
-			$afterParams = JRequest::getString('afterParams', '');
+			$afterParams = hikaInput::get()->getString('afterParams', '');
 			$afterParams = explode(',', $afterParams);
 			foreach($afterParams as &$p) {
 				$p = explode('|', $p, 2);
@@ -310,11 +310,11 @@ function updateCustomFeesPanel(active) {
 
 
 	public function useselection() {
-		$users = JRequest::getVar('cid', array(), '', 'array');
+		$users = hikaInput::get()->get('cid', array(), 'array');
 		$rows = array();
 		$data = '';
-		$confirm = JRequest::getVar('confirm', true);
-		$singleSelection = JRequest::getVar('single', false);
+		$confirm = hikaInput::get()->getVar('confirm', true);
+		$singleSelection = hikaInput::get()->getVar('single', false);
 
 		$elemStruct = array(
 			'user_email',

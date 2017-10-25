@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -67,7 +67,7 @@ if($end_date && $end_date < time()) {
 		$min = 1;
 
 	if($formName == ',0')
-		$formName = ',hikashop_product_form';
+		$formName = ',\'hikashop_product_form\'';
 	$cleanFormName = str_replace(array('\'',','),'',$formName);
 	$wishlistAjax =	'if(hikashopCheckChangeForm(\'item\''.$formName.')){ var typeField = document.querySelector(\'form[name='.$cleanFormName.'] input[name=cart_type]\'); if(typeField !== null){typeField.value = \'wishlist\';} return hikashopModifyQuantity(\'' . (int)@$this->row->product_id . '\',field,1' . $formName . ',\'wishlist\','.$module_id.'); } else { return false; }';
 

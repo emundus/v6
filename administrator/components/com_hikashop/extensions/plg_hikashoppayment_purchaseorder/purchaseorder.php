@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -25,7 +25,7 @@ class plgHikashoppaymentPurchaseorder extends hikashopPaymentPlugin
 	}
 
 	public function onPaymentSave(&$cart, &$rates, &$payment_id) {
-		$_SESSION['hikashop_purchase_order_number'] = JRequest::getVar('hikashop_purchase_order_number');
+		$_SESSION['hikashop_purchase_order_number'] = hikaInput::get()->getVar('hikashop_purchase_order_number');
 
 		$usable_method = parent::onPaymentSave($cart, $rates, $payment_id);
 

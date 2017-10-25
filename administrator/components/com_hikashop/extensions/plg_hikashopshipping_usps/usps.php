@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -54,16 +54,16 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 		)),
 		'container' => array('Container', 'list',array(
 			'VARIABLE' => 'Variable',
-			'FLAT RATE ENVELOPE' => 'Flate rate envelope',
+			'FLAT RATE ENVELOPE' => 'Flat rate envelope',
 			'PADDED FLAT RATE ENVELOPE' => 'Padded flat rate envelope',
-			'LEGAL FLAT RATE ENVELOPE' => 'Legal flate rate envelope',
-			'SM FLAT RATE ENVELOPE' => 'Small flate rate envelope',
+			'LEGAL FLAT RATE ENVELOPE' => 'Legal flat rate envelope',
+			'SM FLAT RATE ENVELOPE' => 'Small flat rate envelope',
 			'WINDOW FLAT RATE ENVELOPE' => 'Window flat rate envelope',
 			'GIFT CARD FLAT RATE ENVELOPE' => 'Gift cart flat rate envelope',
-			'FLAT RATE BOX' => 'Flate rate box',
-			'SM FLAT RATE BOX' => 'Small flate rate box',
-			'MD FLAT RATE BOX' => 'Medium flate rate box',
-			'LG FLAT RATE BOX' => 'Large flate rate box',
+			'FLAT RATE BOX' => 'Flat rate box',
+			'SM FLAT RATE BOX' => 'Small flat rate box',
+			'MD FLAT RATE BOX' => 'Medium flat rate box',
+			'LG FLAT RATE BOX' => 'Large flat rate box',
 			'RECTANGULAR' => 'Rectangular',
 			'NONRECTANGULAR' => 'Non rectangular',
 		))
@@ -89,24 +89,25 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 
 	function shippingMethods(&$main){
 		$methods = array();
-		if(!empty($main->shipping_params->services)){
-			foreach($main->shipping_params->services as $service){
-				$selected = null;
-				foreach($this->methods as $name => $key){
-					if($name == $service) {
-						$selected = array('name' => $this->pluginConfig['services'][2][$name], 'key' => $key);
-						break;
-					}
+		if(empty($main->shipping_params->services))
+			return $methods;
+
+		foreach($main->shipping_params->services as $service) {
+			$selected = null;
+			foreach($this->methods as $name => $key) {
+				if($name == $service) {
+					$selected = array('name' => $this->pluginConfig['services'][2][$name], 'key' => $key);
+					break;
 				}
-				if($selected){
-					$methods[$main->shipping_id . '-' . $selected['key']] = $selected['name'];
-				}
+			}
+			if($selected) {
+				$methods[$main->shipping_id . '-' . $selected['key']] = $selected['name'];
 			}
 		}
 		return $methods;
 	}
 
-	function onShippingDisplay(&$order,&$dbrates,&$usable_rates,&$messages){
+	function onShippingDisplay(&$order, &$dbrates, &$usable_rates, &$messages) {
 		if(!hikashop_loadUser())
 			return false;
 
@@ -131,6 +132,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 
 		$currentShippingZone = null;
 		$currentCurrencyId = null;
+		$currencyClass = hikashop_get('class.currency');
 		foreach($local_usable_rates as $rate) {
 			if($rate->shipping_type != 'usps')
 				continue;
@@ -214,19 +216,21 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 			$limit = array();
 
 			$envelope = array(
-					'FLAT RATE ENVELOPE',
-					'PADDED FLAT RATE ENVELOPE',
-					'LEGAL FLAT RATE ENVELOPE',
-					'SM FLAT RATE ENVELOPE',
-					'WINDOW FLAT RATE ENVELOPE',
-					'GIFT CARD FLAT RATE ENVELOPE');
+				'FLAT RATE ENVELOPE',
+				'PADDED FLAT RATE ENVELOPE',
+				'LEGAL FLAT RATE ENVELOPE',
+				'SM FLAT RATE ENVELOPE',
+				'WINDOW FLAT RATE ENVELOPE',
+				'GIFT CARD FLAT RATE ENVELOPE'
+			);
 			$variable = array(
-					'VARIABLE',
-					'FLAT RATE BOX',
-					'SM FLAT RATE BOX',
-					'MD FLAT RATE BOX',
-					'RECTANGULAR',
-					'NONRECTANGULAR');
+				'VARIABLE',
+				'FLAT RATE BOX',
+				'SM FLAT RATE BOX',
+				'MD FLAT RATE BOX',
+				'RECTANGULAR',
+				'NONRECTANGULAR'
+			);
 
 
 			if(in_array($rate->shipping_params->container, $variable)) {
@@ -236,9 +240,10 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 			} elseif(in_array($rate->shipping_params->container, $envelope)) {
 				if($rate->shipping_params->with_dimension) {
 					$limit = array(
-					'x' => 0.75,
-					'y' => 12,
-					'z' => 15);
+						'x' => 0.75,
+						'y' => 12,
+						'z' => 15
+					);
 				} else
 					$limit['unit'] = 1;
 			} elseif($rate->shipping_params->container == 'LG FLAT RATE BOX'){
@@ -369,7 +374,15 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 				$cache_messages['no_shipping_quotes'] = 'Failed to obtain shipping quotes.';
 				continue;
 			}
+
 			foreach($rates as $finalRate) {
+				if(isset($finalRate->shipping_price_orig) || isset($finalRate->shipping_currency_id_orig)){
+					if($finalRate->shipping_currency_id_orig == $finalRate->shipping_currency_id)
+						$finalRate->shipping_price_orig = $finalRate->shipping_price;
+					else
+						$finalRate->shipping_price_orig = $currencyClass->convertUniquePrice($finalRate->shipping_price, $finalRate->shipping_currency_id, $finalRate->shipping_currency_id_orig);
+				}
+
 				$finalRate->shipping_ordering .= '_' . $i++;
 				$usable_rates[$finalRate->shipping_id] = $finalRate;
 				$cache_rates[$finalRate->shipping_id] = $finalRate;
@@ -412,7 +425,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 				$request .= '<Revision />';
 
 			foreach($parcels as $parcel){
-				if($parcel->Weight > 13 && $type =='FIRST CLASS')
+				if($parcel->Weight > 13 && $type =='FIRSTCLASSINT' && isset($rate->shipping_params->firstclass_mail_type) && $rate->shipping_params->firstclass_mail_type == 'PARCEL')
 					return;
 				$package_weight_arr = $this->getUSPSweightDimensions($parcel->Weight);
 				$package_weight_lb = $package_weight_arr['Pounds'];
@@ -445,7 +458,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 				'<Revision />';
 
 			foreach($parcels as $parcel){
-				if($parcel->Weight > 13 && $type =='FIRST CLASS')
+				if($parcel->Weight > 13 && $type =='FIRST CLASS' && isset($rate->shipping_params->firstclass_mail_type) && $rate->shipping_params->firstclass_mail_type == 'PARCEL')
 					return;
 
 				$request.='<Package ID="' . $package_id . '">'.
@@ -483,6 +496,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 
 		$responseError = false;
 		$response_xml = $this->doUSPS($request, !$isInternational);
+
 		if(!$response_xml)
 			return false;
 
@@ -518,13 +532,14 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 				12 => 'ENVELOPE'
 			);
 
+			$usps_rates = array();
 			foreach($usps_rate_arr as $k) {
 				$id = (int)$k['@attributes']['ID'];
 				if(isset($decoding[$id]) && strcmp($type, $decoding[$id]) == 0) {
 					if(isset($k['ServiceErrors']) || $k['Postage'] == 0)
 						continue;
 
-					$usps_rates = array(
+					$usps_rates[] = array(
 						'Service' => html_entity_decode($k['SvcDescription']),
 						'Rate' => $k['Postage']
 					);
@@ -534,8 +549,9 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 			$rateResult = $response_xml->xpath('Package/Postage');
 			$usps_rate_arr = $this->xml2array($rateResult);
 
+			$usps_rates = array();
 			foreach($usps_rate_arr as $k => $v) {
-				$usps_rates = array(
+				$usps_rates[] = array(
 					'Service' => html_entity_decode($v['MailService']),
 					'Rate' => $v['Rate']
 				);
@@ -566,7 +582,18 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 				$info->shipping_id .= '-'.$this->methods[$type];
 				$rates[$type] = $info;
 			}
-			$rates[$type]->shipping_price += $usps_rates['Rate'];
+
+			$currencyClass = hikashop_get('class.currency');
+
+			foreach($usps_rates as $usps_rate){
+				if(!isset($usps_rate['Rate']))
+					continue;
+				if(isset($currency) && $currency != $rates[$type]->shipping_currency_id)
+					$rates[$type]->shipping_price += $currencyClass->convertUniquePrice($usps_rate['Rate'], $currency, $rates[$type]->shipping_currency_id);
+				else
+					$rates[$type]->shipping_price += $usps_rate['Rate'];
+
+			}
 		}
 	}
 
@@ -597,7 +624,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 
 	function onShippingConfiguration(&$element){
 		$config = &hikashop_config();
-		$this->usps = JRequest::getCmd('name','usps');
+		$this->usps = hikaInput::get()->getCmd('name','usps');
 		$this->main_currency = $config->get('main_currency', 1);
 
 		$currencyClass = hikashop_get('class.currency');

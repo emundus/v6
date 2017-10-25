@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -26,7 +26,13 @@ $doc->addScriptDeclaration($js);
 		<legend><?php echo JText::_('DESCFTPTITLE'); ?></legend>
 		<?php echo JText::_('DESCFTP'); ?>
 <?php if(JError::isError($this->ftp)){ ?>
-		<p><?php echo JText::_($this->ftp->message); ?></p>
+		<p><?php
+			if(method_exists($this->ftp, '__toString'))
+				$msg = $this->ftp->__toString();
+			else
+				$msg = @$this->ftp->message;
+			echo JText::_( $msg );
+		?></p>
 <?php } ?>
 		<table class="adminform nospace">
 		<tbody>
@@ -158,7 +164,7 @@ $doc->addScriptDeclaration($js);
 	<input type="hidden" id="email_type" name="type" value="" />
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="ctrl" value="<?php echo JRequest::getCmd('ctrl'); ?>" />
+	<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getCmd('ctrl'); ?>" />
 	<input type="hidden" name="boxchecked" value="0" />
 	<input type="hidden" name="filter_order" value="<?php echo $this->pageInfo->filter->order->value; ?>" />
 	<input type="hidden" name="filter_order_Dir" value="<?php echo $this->pageInfo->filter->order->dir; ?>" />

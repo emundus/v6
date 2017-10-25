@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -63,8 +63,8 @@ class hikashopWidgetClass extends hikashopClass {
 	function saveForm(){
 		$widget = new stdClass();
 		$table = new stdClass();
-		$formData = JRequest::getVar( 'data', array(), '', 'array' );
-		$deleteRow = JRequest::getVar( 'delete_row');
+		$formData = hikaInput::get()->get('data', array(), 'array');
+		$deleteRow = hikaInput::get()->getVar( 'delete_row');
 		$widget->widget_id = hikashop_getCID('widget_id');
 		jimport('joomla.filter.filterinput');
 		$safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
@@ -112,7 +112,7 @@ class hikashopWidgetClass extends hikashopClass {
 						$table->$column = $safeHtmlFilter->clean(strip_tags($value), 'string');
 					}
 				}
-				$categories = JRequest::getVar( 'row_category', array(), '', 'array' );
+				$categories = hikaInput::get()->get('row_category', array(), 'array');
 				JArrayHelper::toInteger($categories);
 				$cat=array();
 				foreach($categories as $category){
@@ -125,7 +125,7 @@ class hikashopWidgetClass extends hikashopClass {
 				}
 				$widget->widget_params->categories = $cat;
 
-				$coupons = JRequest::getVar( 'row_coupon', array(), '', 'array' );
+				$coupons = hikaInput::get()->get('row_coupon', array(), 'array');
 				JArrayHelper::toInteger($coupons);
 				$coupons=serialize($coupons);
 				$widget->widget_params->coupons = $coupons;
@@ -179,7 +179,7 @@ class hikashopWidgetClass extends hikashopClass {
 				$widget->widget_params->compares=null;
 			}
 		}
-		$categories = JRequest::getVar( 'category', array(), '', 'array' );
+		$categories = hikaInput::get()->get('category', array(), 'array');
 		JArrayHelper::toInteger($categories);
 		$cat=array();
 		foreach($categories as $category){
@@ -191,11 +191,11 @@ class hikashopWidgetClass extends hikashopClass {
 			$cat=implode(',',$cat);
 		}
 
-		$products = JRequest::getVar( 'widget', array(), '', 'array' );
+		$products = hikaInput::get()->get('widget', array(), 'array');
 		JArrayHelper::toInteger($products);
 		$prods=serialize($products);
 
-		$coupons = JRequest::getVar( 'coupon', array(), '', 'array' );
+		$coupons = hikaInput::get()->get('coupon', array(), 'array');
 		JArrayHelper::toInteger($coupons);
 		$coupons=serialize($coupons);
 
@@ -1112,11 +1112,11 @@ class hikashopWidgetClass extends hikashopClass {
 						return true;
 					}
 					if($widget->widget_params->customers=='total_customers'){
-						$filters='';
+						$filters = array();
 						if($widget->widget_params->content=='partners'){
-							$filters[]=' user_partner_activated=1 ';
+							$filters[] = ' user_partner_activated=1 ';
 						}
-						$filters=$this->_dateLimit($widget, $filters, $date_field);
+						$filters = $this->_dateLimit($widget, $filters, $date_field);
 						if(!empty($filters)){
 							$filters = (empty($filters)? ' ':' WHERE ').implode(' AND ',$filters);
 						} else {

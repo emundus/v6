@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -69,7 +69,7 @@ class CartController extends hikashopController {
 		if(empty($cart_id)) {
 			$cart_id = 0;
 
-			$cart_type = JRequest::getCmd('cart_type', '');
+			$cart_type = hikaInput::get()->getCmd('cart_type', '');
 
 			if(empty($cart_type)) {
 				$app = JFactory::getApplication();
@@ -90,7 +90,7 @@ class CartController extends hikashopController {
 					$this->setRedirect(hikashop_completeLink('user'), JText::_('WISHLIST_EMPTY'));
 					return true;
 				}
-				JRequest::setVar('cart_id', $cart_id);
+				hikaInput::get()->set('cart_id', $cart_id);
 			}
 		}
 
@@ -108,7 +108,7 @@ class CartController extends hikashopController {
 
 		$user_id = hikashop_loadUser(false);
 		if($cart->cart_type == 'wishlist' && $cart->user_id != $user_id && $cart->cart_share == 'email') {
-			$token = JRequest::getString('token');
+			$token = hikaInput::get()->getString('token');
 			if(!empty($cart->cart_params->token) && $token != $cart->cart_params->token) {
 				$app = JFactory::getApplication();
 				$app->enqueueMessage(JText::_('CART_SHARE_INVALID_TOKEN'), 'error');
@@ -150,8 +150,8 @@ class CartController extends hikashopController {
 		if(empty($cart))
 			return false;
 
-		JRequest::setVar('tmpl','component');
-		JRequest::setVar('print_cart', true);
+		hikaInput::get()->set('tmpl','component');
+		hikaInput::get()->set('print_cart', true);
 
 		$js = '
 window.hikashop.ready(function(){
@@ -179,23 +179,29 @@ window.hikashop.ready(function(){
 		$group = $config->get('group_options', 0);
 
 		$cart_id = hikashop_getCID('cart_id');
-		$addto_type = JRequest::getCmd('addto_type', 'cart');
-		$addto_id = JRequest::getInt('addto_id', 0);
+		$addto_type = hikaInput::get()->getCmd('addto_type', 'cart');
+		$addto_id = hikaInput::get()->getInt('addto_id', 0);
+		$request_addto_id = $addto_id;
 
-		$formProducts = JRequest::getVar('products', array(), '', 'array');
+		$formProducts = hikaInput::get()->get('products', array(), 'array');
 		JArrayHelper::toInteger($formProducts);
-
-		if($addto_type == 'wishlist' && !$config->get('enable_wishlist')) {
-			$app->enqueueMessage(JText::_('ERROR'), 'error');
-			$app->redirect( hikashop_completeLink('cart&task=listing', false, true) );
-			return false;
-		}
 
 		$cart = $cartClass->get($cart_id);
 
 		if(empty($cart)) {
 			$app->enqueueMessage(JText::_('ERROR'), 'error');
 			$app->redirect( hikashop_completeLink('cart&task=listing', false, true) );
+			return false;
+		}
+
+		$juser = JFactory::getUser();
+		if($addto_type == 'wishlist' && (!$config->get('enable_wishlist') || $juser->guest)) {
+			if(!$config->get('enable_wishlist'))
+				$app->enqueueMessage(JText::_('ERROR'), 'error');
+			else
+				$app->enqueueMessage(JText::_('LOGIN_REQUIRED_FOR_WISHLISTS'), 'error');
+
+			$app->redirect( hikashop_completeLink('cart&task=show&cid='.$cart_id, false, true) );
 			return false;
 		}
 
@@ -234,7 +240,15 @@ window.hikashop.ready(function(){
 
 		$ret = false;
 
-		if($cart->user_id != $user_id) {
+		if($cart->user_id != $user_id || ($request_addto_id === 0 && $addto_type === 'cart')) {
+			$formData = hikaInput::get()->get('data', array(), 'array');
+			foreach($products as $key => &$product) {
+				if(!isset($formData['products'][$key]))
+					continue;
+				$product->cart_product_quantity = (int)$formData['products'][$key]['quantity'];
+			}
+			unset($product);
+
 			$product_data = $cartClass->cartProductsToArray($products, array('wishlist' => $cart_id));
 			$ret = $cartClass->addProduct($addto_id, $product_data);
 		} else {
@@ -316,7 +330,7 @@ window.hikashop.ready(function(){
 		$app = JFactory::getApplication();
 
 		$cart_type = '';
-		$cids = JRequest::getVar('cid', array(), '', 'array');
+		$cids = hikaInput::get()->get('cid', array(), 'array');
 		if(empty($cids)) {
 			$app->redirect( hikashop_completeLink('cart&task=listing', false, true) );
 			return false;

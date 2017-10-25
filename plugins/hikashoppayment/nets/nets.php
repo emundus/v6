@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -173,7 +173,7 @@ class plgHikashoppaymentNets extends hikashopPaymentPlugin
 	}
 
 	function onPaymentNotification(&$statuses) {
-		$method_id = JRequest::getInt('notif_id', 0);
+		$method_id = hikaInput::get()->getInt('notif_id', 0);
 		$this->pluginParams($method_id);
 		$this->payment_params =& $this->plugin_params;
 		if(empty($this->payment_params))
@@ -197,7 +197,7 @@ class plgHikashoppaymentNets extends hikashopPaymentPlugin
 		if(!empty($_POST['transactionId']))
 			$transactionId = $_POST['transactionId'];
 
-		$order_id = JRequest::getInt('order_id', 0);
+		$order_id = hikaInput::get()->getInt('order_id', 0);
 		$dbOrder = $this->getOrder($order_id);
 		if(empty($dbOrder)){
 			$this->app->enqueueMessage('Could not load any order for your notification '.$order_id);
@@ -207,6 +207,8 @@ class plgHikashoppaymentNets extends hikashopPaymentPlugin
 		if($method_id != $dbOrder->order_payment_id)
 			return false;
 		$this->loadOrderData($dbOrder);
+		if(empty($this->payment_params))
+			return false;
 
 		if( $this->payment_params->sandbox ) {
 			$wsdl = 'https://test.epayment.nets.eu/netaxept.svc?wsdl';

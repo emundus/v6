@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -26,7 +26,7 @@ class hikashopCheckoutTermsHelper extends hikashopCheckoutHelperInterface {
 	}
 
 	public function validate(&$controller, &$params, $data = array()) {
-		$checkout = JRequest::getVar('checkout', array(), '', 'array');
+		$checkout = hikaInput::get()->get('checkout', array(), 'array');
 
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		$cart = $checkoutHelper->getCart();

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,7 +23,7 @@ class DiscountController extends hikashopController{
 	}
 
 	function copy(){
-		$discounts = JRequest::getVar( 'cid', array(), '', 'array' );
+		$discounts = hikaInput::get()->get('cid', array(), 'array');
 		$result = true;
 		if(!empty($discounts)){
 			$discountClass = hikashop_get('class.discount');
@@ -50,26 +50,26 @@ class DiscountController extends hikashopController{
 	}
 
 	function export(){
-		JRequest::setVar( 'layout', 'export'  );
+		hikaInput::get()->set( 'layout', 'export'  );
 		return parent::display();
 	}
 
 	function select_coupon(){
-		JRequest::setVar( 'layout', 'select_coupon'  );
+		hikaInput::get()->set( 'layout', 'select_coupon'  );
 		return parent::display();
 	}
 
 	function add_coupon(){
-		JRequest::setVar( 'layout', 'add_coupon'  );
+		hikaInput::get()->set( 'layout', 'add_coupon'  );
 		return parent::display();
 	}
 
 	function selection(){
-		JRequest::setVar('layout', 'selection');
+		hikaInput::get()->set('layout', 'selection');
 		return parent::display();
 	}
 	function useselection(){
-		JRequest::setVar('layout', 'useselection');
+		hikaInput::get()->set('layout', 'useselection');
 		return parent::display();
 	}
 }

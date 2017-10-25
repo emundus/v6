@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -106,7 +106,7 @@ class hikashopCheckoutHelper {
 		if(!$reset && $this->cart !== false)
 			return $this->cart;
 
-		if(empty($this->cartClass))
+		if(empty($this->cartClass) || $reset)
 			$this->cartClass = hikashop_get('class.cart');
 		$this->cart = $this->cartClass->getFullCart($this->cart_id);
 		return $this->cart;
@@ -393,6 +393,13 @@ class hikashopCheckoutHelper {
 			'user' => $user,
 		);
 
+		$markers = array();
+		JPluginHelper::importPlugin('hikashop');
+		$dispatcher = JDispatcher::getInstance();
+		$dispatcher->trigger('onCheckoutGetCartMarkers', array(&$markers, &$cart));
+		if(!empty($markers)) {
+			$ret['plugins'] = $markers;
+		}
 
 		return $ret;
 	}
@@ -434,6 +441,19 @@ class hikashopCheckoutHelper {
 				}
 			} else {
 				$this->addEvent($evt, $params);
+			}
+		}
+
+		if(!empty($markers['plugins'])) {
+			$dispatcher = JDispatcher::getInstance();
+			foreach($markers['plugins'] as $k => $v) {
+				if($v === $newMarkers['plugin'][$k])
+					continue;
+				$evts = array();
+				$dispatcher->trigger('onCheckoutProcessCartMarker', array($k, &$evts, $v, $newMarkers['plugin'][$k]));
+				foreach($evts as $e) {
+					$this->addEvent($e, $params);
+				}
 			}
 		}
 

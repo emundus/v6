@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -12,12 +12,15 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 	$workflow = $this->checkoutHelper->checkout_workflow;
 	foreach($workflow['steps'] as $k => $step) {
+		if($step['content'][0]['task'] == 'end' && empty($this->options['display_end']))
+			continue;
+
 		$stepClass = ($k == $this->workflow_step) ? 'hikashop_cart_step_current' : ($k < $this->workflow_step ? 'hikashop_cart_step_finished' : '');
 		$badgeClass = ($k == $this->workflow_step) ? 'hkbadge-current' : ($k < $this->workflow_step ? 'hkbadge-past' : '');
 		$name = (isset($step['name'])) ? $step['name'] : JText::_('HIKASHOP_CHECKOUT_'.strtoupper($step['content'][0]['task']));
 
 		if($k < $this->workflow_step) {
-			$name = '<a href="'.hikashop_completeLink('checkout&task=show&cid='.($k+1)).'">'.$name.'</a>';
+			$name = '<a href="'.hikashop_completeLink('checkout&task=show&cid='.($k+1).$this->cartIdParam).'">'.$name.'</a>';
 		}
 ?>
 		<li class="<?php echo $stepClass; ?>">

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -19,7 +19,7 @@ defined('_JEXEC') or die('Restricted access');
 foreach($this->vars as $key => $value) {
 	echo '<input type="hidden" name="'.$key.'" value="'.$value.'" />'."\r\n";
 }
-JRequest::setVar('noform',1);
+hikaInput::get()->set('noform',1);
 ?>
 		<div id="hikashop_paybox_end_image" class="hikashop_paybox_end_image">
 			<input id="hikashop_paybox_button" type="submit" class="btn btn-primary" value="<?php echo JText::_('PAY_NOW');?>" alt="<?php echo JText::_('PAY_NOW');?>" />

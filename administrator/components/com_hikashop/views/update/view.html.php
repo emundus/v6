@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -77,20 +77,20 @@ class UpdateViewUpdate extends hikashopView{
 		$app->enqueueMessage(JText::_('WELCOME_WIZARD', 'success'));
 	}
 	function state(){
-		$namekey = JRequest::getCmd('namekey','');
+		$namekey = hikaInput::get()->getCmd('namekey','');
 		if(!headers_sent()){
 			header('Content-Type:text/html; charset=utf-8');
 		}
 		if(!empty($namekey)){
-			$field_namekey = JRequest::getCmd('field_namekey', '');
+			$field_namekey = hikaInput::get()->getCmd('field_namekey', '');
 			if(empty($field_namekey))
 				$field_namekey = 'address_state';
 
-			$field_id = JRequest::getCmd('field_id', '');
+			$field_id = hikaInput::get()->getCmd('field_id', '');
 			if(empty($field_id))
 				$field_id = 'address_state';
 
-			$field_type = JRequest::getCmd('field_type', '');
+			$field_type = hikaInput::get()->getCmd('field_type', '');
 			if(empty($field_type))
 				$field_type = 'address';
 

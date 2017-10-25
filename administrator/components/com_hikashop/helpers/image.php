@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -322,6 +322,7 @@ window.hikashop.ready( function() {
 
 		$ret = new stdClass();
 		$ret->success = false;
+		$ret->external = false;
 		$ret->path = $filename;
 		$ret->height = 0;
 		$ret->width = 0;
@@ -344,10 +345,33 @@ window.hikashop.ready( function() {
 		}catch(Exception $e) {
 		}
 
+
+		if(empty($size) || !is_array($size) || (!isset($size['x']) && !isset($size[0]) && !isset($size['width'])))
+			$size = array('x' => (int)$config->get('thumbnail_x', 100), 'y' => (int)$config->get('thumbnail_y', 100));
+		if(isset($size['width']))
+			$size = array('x' => (int)$size['width'], 'y' => (int)$size['height']);
+		if(!isset($size['x']))
+			$size = array('x' => (int)$size[0], 'y' => (int)$size[1]);
+		$ret->req_height = $size['y'];
+		$ret->req_width = $size['x'];
+
+		if(preg_match('#^https?://#i', $filename) === 1) {
+			$ret->url = $ret->origin_url = $filename;
+			$ret->filename = basename($filename);
+			$urlArray = parse_url($filename);
+			$url = ($urlArray['scheme'].'://'.$urlArray['host'].str_replace('%2F', '/', urlencode($urlArray['path'])));
+			$url .= isset($urlArray['query']) ? '?'.$urlArray['query'] : '';
+			list($ret->width, $ret->height) = @getimagesize($url);
+			$ret->success = true;
+			$ret->external = true;
+			return $ret;
+		}
+
 		if($cachePath !== false && empty($cachePath))
 			$cachePath = $this->uploadFolder;
 		else if($cachePath !== false)
 			$cachePath = rtrim(JFolder::cleanPath($cachePath), DS) . DS;
+
 
 		if(!JFile::exists($fullFilename)) {
 			if($jdebug && !empty($filename)) {
@@ -379,13 +403,6 @@ window.hikashop.ready( function() {
 			unset($ret->filename);
 		}
 
-		if(empty($size) || !is_array($size) || (!isset($size['x']) && !isset($size[0]) && !isset($size['width'])))
-			$size = array('x' => (int)$config->get('thumbnail_x', 100), 'y' => (int)$config->get('thumbnail_y', 100));
-		if(isset($size['width']))
-			$size = array('x' => (int)$size['width'], 'y' => (int)$size['height']);
-		if(!isset($size['x']))
-			$size = array('x' => (int)$size[0], 'y' => (int)$size[1]);
-
 		$optString = '';
 		if(!empty($options['forcesize'])) $optString .= 'f';
 		if(!empty($options['grayscale'])) $optString .= 'g';
@@ -407,8 +424,6 @@ window.hikashop.ready( function() {
 		if(!empty($options['radius']) && (int)$options['radius'] > 2) $optString .= 'r'.(int)$options['radius'];
 
 		$destFolder = 'thumbnails' . DS . $size['y'] . 'x' . $size['x'] . $optString;
-		$ret->req_height = $size['y'];
-		$ret->req_width = $size['x'];
 
 		$extension = strtolower(substr($filename, strrpos($filename, '.') + 1));
 
@@ -892,8 +907,15 @@ window.hikashop.ready( function() {
 		return $status;
 	}
 
-	function _getImage($image,$extension){
+	function _getImage($image, &$extension){
 		if(!$this->checkGD()) return;
+
+		$types = array('gif' => 1, 'jpg' => 2, 'jpeg' => 2, 'png' => 3);
+		$data = getimagesize($image);
+		if(@$types[$extension] != $data[2]){
+			$extension = array_search($data[2], $types);
+		}
+
 		switch($extension){
 			case 'gif':
 				if(function_exists('ImageCreateFromGIF')) return ImageCreateFromGIF($image);
@@ -913,7 +935,6 @@ window.hikashop.ready( function() {
 			$app->enqueueMessage('The GD library for thumbnails creation is installed and activated on your website. However, it is not configured to support &quot;'.$extension.'&quot; images. Please make sure that you\'re using a valid image extension and contact your hosting company or system administrator in order to make sure that the GD library on your web server supports the image extension: '.$extension);
 		}
 	}
-
 
 	function scaleImage($x, $y, $cx, $cy, $scaleMode = 'inside') {
 		if(empty($cx)) $cx = 9999;

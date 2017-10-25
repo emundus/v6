@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -15,10 +15,6 @@ $orderClass = hikashop_get('class.order');
 $imageHelper = hikashop_get('helper.image');
 $productClass = hikashop_get('class.product');
 $fieldsClass = hikashop_get('class.field');
-if(hikashop_level(2)) {
-	$null = null;
-	$itemFields = $fieldsClass->getFields('display:mail_status_notif=1',$null,'item');
-}
 
 global $Itemid;
 $url_itemid = '';
@@ -45,13 +41,17 @@ $data->order->order_url = $order_url;
 
 $data->cart = $orderClass->loadFullOrder($data->order_id,true,false);
 
+if(hikashop_level(2)) {
+	$itemFields = $fieldsClass->getFields('display:mail_status_notif=1', $data->cart->products, 'item');
+}
+
 $url = $data->order_number = $data->cart->order_number;
 $url = '<a href="'.$order_url.'">'. $url.'</a>';
 
 $data->cart->coupon = new stdClass();
 $price = new stdClass();
 $tax = $data->cart->order_subtotal - $data->cart->order_subtotal_no_vat - $data->cart->order_discount_tax + $data->cart->order_shipping_tax + $data->cart->order_payment_tax;
-$price->price_value = $data->cart->order_full_price - $tax;
+$price->price_value = max(0, $data->cart->order_full_price - $tax);
 $price->price_value_with_tax = $data->cart->order_full_price;
 $data->cart->full_total = new stdClass;
 $data->cart->full_total->prices = array($price);
@@ -164,7 +164,10 @@ if(!empty($data->cart->products)){
 					$image = str_replace('../', HIKASHOP_LIVE, $img->url);
 				else
 					$image = substr(HIKASHOP_LIVE, 0, strpos(HIKASHOP_LIVE, '/', 9)) . $img->url;
-				$cartProduct['PRODUCT_IMG'] = '<img src="'.$image.'" alt="" style="float:left;margin-top:3px;margin-bottom:3px;margin-right:6px;"/>';
+				$attributes = '';
+				if($img->external)
+					$attributes = ' width="'.$img->req_width.'" height="'.$img->req_height.'"';
+				$cartProduct['PRODUCT_IMG'] = '<img src="'.$image.'" alt="" style="float:left;margin-top:3px;margin-bottom:3px;margin-right:6px;"'.$attributes.'/>';
 			}
 		}
 
@@ -441,6 +444,16 @@ ob_start();
 
 $content = ob_get_clean();
 $vars['ORDER_SUMMARY'] = trim($content);
+
+if($config->get('register_after_guest', 1) && empty($customer->user_cms_id) && !empty($data->order_token)){
+	jimport('joomla.application.component.helper');
+	$params = JComponentHelper::getParams('com_users');
+	if((int)$params->get('allowUserRegistration') != 0) {
+		$register_url = 'index.php?option=com_hikashop&ctrl=user&task=guest_form&order_id='.$data->order_id.$url_itemid.'&order_token='.urlencode($data->order_token);
+		$register_url = hikashop_frontendLink($register_url);
+		$vars['ORDER_SUMMARY'] .= '<p><a href="'. $register_url .'">'.JText::_('CLICK_HERE_TO_EASILY_CREATE_YOUR_USER_ACCOUNT') . '</a></p>';
+	}
+}
 
 $vars['BILLING_ADDRESS'] = '';
 $vars['SHIPPING_ADDRESS'] = '';

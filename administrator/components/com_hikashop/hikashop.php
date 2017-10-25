@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -13,7 +13,24 @@ if(!defined('DS'))
 
 include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php');
 
-$taskGroup = JRequest::getCmd('ctrl','dashboard');
+$view = hikaInput::get()->getCmd('view');
+$ctrl = hikaInput::get()->getCmd('ctrl');
+if(!empty($view) && !$ctrl) {
+	hikaInput::get()->set('ctrl', $view);
+	$layout = hikaInput::get()->getCmd('layout');
+	if(!empty($layout)){
+		hikaInput::get()->set('task', $layout);
+	}
+}
+elseif(!empty($ctrl) && !$view) {
+	hikaInput::get()->set('view', $ctrl);
+	$layout = hikaInput::get()->getCmd('task');
+	if(!empty($layout)){
+		hikaInput::get()->set('layout', $layout);
+	}
+}
+
+$taskGroup = hikaInput::get()->getCmd('ctrl','dashboard');
 $config =& hikashop_config();
 JHTML::_('behavior.tooltip');
 if(!HIKASHOP_PHP5) {
@@ -50,12 +67,12 @@ if(!class_exists($className) && (!file_exists(HIKASHOP_CONTROLLER.$taskGroup.'.p
 ob_start();
 
 $classGroup = new $className();
-JRequest::setVar( 'view', $classGroup->getName() );
-$classGroup->execute( JRequest::getCmd('task','listing'));
+hikaInput::get()->set('view', $classGroup->getName() );
+$classGroup->execute( hikaInput::get()->getCmd('task','listing'));
 $classGroup->redirect();
-if(JRequest::getString('tmpl') !== 'component'){
+if(hikaInput::get()->getString('tmpl') !== 'component'){
 	echo hikashop_footer();
 }
-echo '<div id="hikashop_main_content">'.ob_get_clean().'</div>';
+echo '<div id="hikashop_main_content" class="hikashop_main_content">'.ob_get_clean().'</div>';
 
 hikashop_cleanCart();

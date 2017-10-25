@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,7 +16,7 @@ class hikashopFileClass extends hikashopClass {
 	var $error_type = '';
 
 	function saveFile($var_name = 'files', $type = 'image', $allowed = null) {
-		$file = JRequest::getVar($var_name, array(), 'files', 'array');
+		$file = hikaInput::get()->files->get($var_name, array(), 'array');
 
 		if(empty($file['name']))
 			return false;
@@ -64,8 +64,9 @@ class hikashopFileClass extends hikashopClass {
 
 	function storeFiles($type, $pkey, $var_name = 'files', $subPath = '') {
 		$ids = array();
-		$files = JRequest::getVar( $var_name, array(), 'files', 'array' );
-		if(!empty($files['name'][0]) || !empty($files['name'][1])) {
+		$files = hikaInput::get()->files->getVar($var_name, array(), 'array');
+
+		if(!empty($files[0]['name'])) {
 
 			$app = JFactory::getApplication();
 			$config =& hikashop_config();
@@ -79,9 +80,10 @@ class hikashopFileClass extends hikashopClass {
 			$uploadPath = $this->getPath($type, $subPath);
 
 			$tempData = array();
-			foreach($files['name'] as $id => $filename) {
-				if(empty($filename)) continue;
-				$file_path = strtolower(JFile::makeSafe($filename));
+			foreach($files as $id => $file) {
+				if(empty($file['name'])) continue;
+				$file_path = strtolower(JFile::makeSafe($file['name']));
+
 				if(!preg_match('#\.('.str_replace(array(',','.'),array('|','\.'),$allowed).')$#Ui',$file_path,$extension) || preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)$#Ui',$file_path)){
 					$app->enqueueMessage(JText::sprintf( 'ACCEPTED_TYPE',substr($file_path,strrpos($file_path,'.')+1),str_replace(',',', ',$allowed)), 'notice');
 					continue;
@@ -124,7 +126,7 @@ class hikashopFileClass extends hikashopClass {
 				foreach($tempData as $id => $file_path) {
 					$process = true;
 					if(JFile::exists($uploadPath . $file_path)) {
-						if(filesize($uploadPath . $file_path) == filesize($files['tmp_name'][$id])){
+						if(filesize($uploadPath . $file_path) == filesize($files[$id]['tmp_name'])){
 							$process = false;
 						}else{
 							$pos = strrpos($file_path,'.');
@@ -132,9 +134,9 @@ class hikashopFileClass extends hikashopClass {
 						}
 					}
 					if($process){
-						if(!JFile::upload($files['tmp_name'][$id], $uploadPath . $file_path)) {
-							if ( !move_uploaded_file($files['tmp_name'][$id], $uploadPath . $file_path)) {
-								$app->enqueueMessage(JText::sprintf( 'FAIL_UPLOAD',$files['tmp_name'][$id],$uploadPath . $file_path), 'error');
+						if(!JFile::upload($files[$id]['tmp_name'], $uploadPath . $file_path)) {
+							if ( !move_uploaded_file($files[$id]['tmp_name'], $uploadPath . $file_path)) {
+								$app->enqueueMessage(JText::sprintf( 'FAIL_UPLOAD',$files[$id]['tmp_name'],$uploadPath . $file_path), 'error');
 								continue;
 							}
 						}
@@ -161,7 +163,7 @@ class hikashopFileClass extends hikashopClass {
 					}
 				}
 			}
-		}elseif(JRequest::getVar('ctrl')=='product'){
+		}elseif(hikaInput::get()->getVar('ctrl')=='product'){
 			$app = JFactory::getApplication();
 			$app->enqueueMessage(JText::_( 'ADD_FILE_VIA_BROWSE_BUTTON'),'error');
 		}

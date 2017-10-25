@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -54,12 +54,9 @@ class plgHikashopMassaction_user extends JPlugin
 		$loadedData->massaction_filters['__num__']->name = 'haveDontHave';
 		$loadedData->massaction_filters['__num__']->html = '';
 
-		$this->db->setQuery('SELECT `category_name` FROM '.hikashop_table('category').' WHERE `category_type` = '.$this->db->quote('status').' AND `category_name` != '.$this->db->quote('order status'));
-		if(!HIKASHOP_J25){
-			$orderStatuses = $this->db->loadResultArray();
-		} else {
-			$orderStatuses = $this->db->loadColumn();
-		}
+		$this->db->setQuery('SELECT `orderstatus_namekey` FROM '.hikashop_table('orderstatus'));
+		$orderStatuses = $this->db->loadObjectList();
+
 		foreach($loadedData->massaction_filters as $key => &$value) {
 			if($value->name != 'haveDontHave' || ($table->table != $loadedData->massaction_table && is_int($key)))
 				continue;
@@ -92,8 +89,8 @@ class plgHikashopMassaction_user extends JPlugin
 			if(is_array($orderStatuses)){
 				foreach($orderStatuses as $orderStatus){
 					$selected = '';
-					if($orderStatus == $value->data['order_status']) $selected = 'selected="selected"';
-					$output.='<option value="'.$orderStatus.'" '.$selected.'>'.JText::_($orderStatus).'</option>';
+					if($orderStatus->orderstatus_namekey == $value->data['order_status']) $selected = 'selected="selected"';
+					$output.='<option value="'.$orderStatus->orderstatus_namekey.'" '.$selected.'>'.hikashop_orderStatus($orderStatus->orderstatus_namekey).'</option>';
 				}
 			}
 			$output.= '</select>';
@@ -291,7 +288,7 @@ class plgHikashopMassaction_user extends JPlugin
 		$params->action_id = $k;
 		$js = '';
 		$app = JFactory::getApplication();
-		if($app->isAdmin() && JRequest::getVar('ctrl','massaction') == 'massaction'){
+		if($app->isAdmin() && hikaInput::get()->getVar('ctrl','massaction') == 'massaction'){
 			echo hikashop_getLayout('massaction','results',$params,$js);
 		}
 	}

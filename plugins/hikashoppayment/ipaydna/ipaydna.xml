@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashoppayment">
 	<name>Hikashop iPayDNA Payment Plugin</name>
-	<creationDate>23 avril 2017</creationDate>
-	<version>3.0.1</version>
+	<creationDate>24 octobre 2017</creationDate>
+	<version>3.2.1</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>

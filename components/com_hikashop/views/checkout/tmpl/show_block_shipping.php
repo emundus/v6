@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -28,6 +28,7 @@ if(!empty($cart->usable_methods->shipping)) {
 	foreach($cart->shipping_groups as $shipping_group_key => $group) {
 ?>
 <div class="hikashop_shipping_group">
+	<legend><?php echo JText::_('HIKASHOP_SHIPPING_METHOD');?></legend>
 <?php
 		if(!empty($group->name) || $several_groups) {
 ?>
@@ -159,7 +160,7 @@ if(empty($this->ajax)) { ?>
 </div>
 <script type="text/javascript">
 if(!window.checkout) window.checkout = {};
-window.Oby.registerAjax(['checkout.shipping.updated','cart.updated','checkout.user.updated'], function(params){
+window.Oby.registerAjax(['checkout.shipping.updated','cart.updated'], function(params){
 	if(params && (params.cart_empty || (params.resp && params.resp.empty))) return;
 	window.checkout.refreshShipping(<?php echo (int)$this->step; ?>, <?php echo (int)$this->module_position; ?>);
 });
@@ -168,8 +169,8 @@ window.checkout.submitShipping = function(step, id) { return window.checkout.sub
 window.checkout.shippingSelected = function(el) {
 	var data = window.Oby.evalJSON(el.getAttribute('data-hk-checkout'));
 
-	var url = "<?php echo hikashop_completeLink('checkout&task=submitblock&blocktask=shipping&cid=HIKACID&blockpos=HIKAPOS&tmpl=ajax', false, false, true); ?>".replace("HIKACID", data.step).replace("HIKAPOS", data.pos),
-		formData = 'selectionOnly=1&' + encodeURI('checkout[shipping]['+data.warehouse+'][id]') + '=' + encodeURIComponent(data.id) + '&' + encodeURI(window.checkout.token)+'=1';
+	var url = "<?php echo hikashop_completeLink('checkout&task=submitblock&blocktask=shipping'.$this->cartIdParam.'&Itemid='.$this->itemid, 'ajax', false, true); ?>",
+		formData = 'cid=' + encodeURIComponent(data.step) + '&blockpos=' + encodeURIComponent(data.pos) + '&selectionOnly=1&' + encodeURI('checkout[shipping]['+data.warehouse+'][id]') + '=' + encodeURIComponent(data.id) + '&' + encodeURI(window.checkout.token)+'=1';
 	window.Oby.xRequest(url, {mode:"POST", data: formData}, function(x,p) {
 		var r = window.Oby.evalJSON(x.responseText);
 		if(r && r.events)

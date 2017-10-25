@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,7 +23,7 @@ defined('_JEXEC') or die('Restricted access');
 			</td>
 			<td>
 				<?php $type = hikashop_get('type.user');
-				echo $type->display('data[order][order_user_id]',JRequest::getVar('user_id',0)); ?>
+				echo $type->display('data[order][order_user_id]',hikaInput::get()->getVar('user_id',0)); ?>
 			</td>
 		</tr>
 		<tr>
@@ -43,7 +43,7 @@ defined('_JEXEC') or die('Restricted access');
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="ctrl" value="order" />
-	<input type="hidden" name="cart_id" value="<?php echo JRequest::getString('cart_id','0'); ?>" />
-	<input type="hidden" name="cart_type" value="<?php echo JRequest::getString('cart_type','cart'); ?>" />
+	<input type="hidden" name="cart_id" value="<?php echo hikaInput::get()->getString('cart_id','0'); ?>" />
+	<input type="hidden" name="cart_type" value="<?php echo hikaInput::get()->getString('cart_type','cart'); ?>" />
 	<?php echo JHTML::_( 'form.token' ); ?>
 </form>

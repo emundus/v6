@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -18,7 +18,8 @@ class plgHikashoppaymentCreditcard extends hikashopPaymentPlugin
 		'ask_ccv' => array('CARD_VALIDATION_CODE', 'boolean','1'),
 		'ask_owner' => array('CREDIT_CARD_OWNER', 'boolean','0'),
 		'ask_cctype' => array('CARD_TYPE', 'big-textarea'),
-		'information' => array('CREDITCARD_INFORMATION', 'big-textarea')
+		'information' => array('CREDITCARD_INFORMATION', 'big-textarea'),
+		'return_url' => array('RETURN_URL', 'input'),
 	);
 
 

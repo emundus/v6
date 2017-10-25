@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,7 +32,7 @@ echo $this->leftmenu(
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('version');?>><?php echo JText::_('VERSION');?></td>
 		<td>
-			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [1704232254]
+			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [1710241806]
 		</td>
 	</tr>
 	<tr>
@@ -281,6 +281,7 @@ echo $this->leftmenu(
 					JHTML::_('select.option', '', JText::_('HIKA_NONE')),
 					JHTML::_('select.option', 'year', JText::_('EVERY_YEARS')),
 					JHTML::_('select.option', 'month', JText::_('EVERY_MONTHS')),
+					JHTML::_('select.option', '*'.'/'.'*', JText::_('EVERY_DAYS')),
 				);
 				$value = $this->config->get('invoice_reset_frequency', '');
 				if(strpos($value, '/') !== false) {
@@ -377,7 +378,7 @@ echo $this->leftmenu(
 			<input class="inputbox" type="text" name="config[payment_log_file]" size="50" value="<?php echo $this->config->get('payment_log_file'); ?>" />
 <?php
 	echo $this->popup->display(
-		'<button class="btn" onclick="return false">'.JText::_('REPORT_SEE').'</button>',
+		'<button type="button" class="btn" onclick="return false">'.JText::_('REPORT_SEE').'</button>',
 		'PAYMENT_LOG_FILE',
 		hikashop_completeLink('config&task=seepaymentreport',true),
 		'hikashop_log_file',

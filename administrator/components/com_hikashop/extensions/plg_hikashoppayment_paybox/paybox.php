@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -149,13 +149,13 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 		global $Itemid;
 		$this->url_itemid = empty($Itemid) ? '' : '&Itemid=' . $Itemid;
 
-		$method_id = JRequest::getInt('notif_id', 0);
+		$method_id = hikaInput::get()->getInt('notif_id', 0);
 		$this->pluginParams($method_id);
 		$this->payment_params =& $this->plugin_params;
 
-		if(JRequest::getVar('pbx', '') == 'user') {
+		if(hikaInput::get()->getVar('pbx', '') == 'user') {
 			$app = JFactory::getApplication();
-			$t = JRequest::getVar('t', '');
+			$t = hikaInput::get()->getVar('t', '');
 			switch($t) {
 				case 'refuse':
 					$url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=order&task=cancel_order'.$this->url_itemid;
@@ -206,14 +206,14 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 		}
 
 		if(function_exists('openssl_pkey_get_public') && (!isset($this->payment_params->signature) || !empty($this->payment_params->signature))) {
-			$signature = JRequest::getVar('sign', '');
+			$signature = hikaInput::get()->getVar('sign', '');
 			if(!empty($signature))
 				$signature = base64_decode(urldecode($signature));
 
-			$p_mt = JRequest::getVar('mt', '');
-			$p_ref = JRequest::getVar('ref', '');
-			$p_auth = JRequest::getVar('auth', '');
-			$p_err = JRequest::getVar('err', '');
+			$p_mt = hikaInput::get()->getVar('mt', '');
+			$p_ref = hikaInput::get()->getVar('ref', '');
+			$p_auth = hikaInput::get()->getVar('auth', '');
+			$p_err = hikaInput::get()->getVar('err', '');
 			$sign_data = 'mt=' . rawurlencode($p_mt) . '&ref=' . rawurlencode($p_ref) . '&auth=' . rawurlencode($p_auth) . '&err' . rawurlencode($p_err);
 
 			$pubkeyid = openssl_pkey_get_public( dirname(__FILE__) . DS . 'paybox_pubkey.pem' );
@@ -235,7 +235,7 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 			}
 		}
 
-		$order_id = (int)JRequest::getInt('ref', 0);
+		$order_id = (int)hikaInput::get()->getInt('ref', 0);
 		$dbOrder = $this->getOrder($order_id);
 		if(empty($dbOrder)){
 			exit;
@@ -244,10 +244,12 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 		if($method_id != $dbOrder->order_payment_id)
 			exit;
 		$this->loadOrderData($dbOrder);
+		if(empty($this->payment_params))
+			return false;
 
-		$pbx_auth = JRequest::getVar('auth', '');
-		$pbx_err = JRequest::getVar('err', '99999');
-		$pbx_mt = JRequest::getInt('mt', 0);
+		$pbx_auth = hikaInput::get()->getVar('auth', '');
+		$pbx_err = hikaInput::get()->getVar('err', '99999');
+		$pbx_mt = hikaInput::get()->getInt('mt', 0);
 
 		$history = new stdClass();
 		$email = new stdClass();

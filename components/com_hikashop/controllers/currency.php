@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -18,10 +18,10 @@ class CurrencyController extends hikashopController{
 			parent::__construct($config,$skip);
 			$this->registerDefaultTask('update');
 		}
-		JRequest::setVar('tmpl','component');
+		hikaInput::get()->set('tmpl','component');
 	}
 	function update(){
-		$currency=JRequest::getInt('hikashopcurrency',0);
+		$currency=hikaInput::get()->getInt('hikashopcurrency',0);
 		if(!empty($currency)){
 			$app = JFactory::getApplication();
 			$app->setUserState( HIKASHOP_COMPONENT.'.currency_id', $currency );
@@ -31,7 +31,7 @@ class CurrencyController extends hikashopController{
 			$app->setUserState(HIKASHOP_COMPONENT.'.payment_method', null);
 			$app->setUserState(HIKASHOP_COMPONENT.'.payment_id', null);
 			$app->setUserState(HIKASHOP_COMPONENT.'.payment_data', null);
-			$url = JRequest::getString('return_url','');
+			$url = hikaInput::get()->getString('return_url','');
 			if(HIKASHOP_J30){
 				$plugin = JPluginHelper::getPlugin('system', 'cache');
 				$params = new JRegistry(@$plugin->params);

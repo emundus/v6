@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -19,7 +19,7 @@ if(!empty($this->categories)) {
 	}
 }
 ?>
-<div itemprop="Product" itemscope itemtype="http://schema.org/Product" id="hikashop_product_<?php echo preg_replace('#[^a-z0-9]#i','_',@$this->element->product_code); ?>_page" class="hikashop_product_page <?php echo implode(' ',$classes); ?>">
+<div itemscope itemtype="http://schema.org/Product" id="hikashop_product_<?php echo preg_replace('#[^a-z0-9]#i','_',@$this->element->product_code); ?>_page" class="hikashop_product_page <?php echo implode(' ',$classes); ?>">
 <?php
 $app = JFactory::getApplication();
 if(empty($this->element)) {
@@ -35,9 +35,9 @@ if(empty($this->element)) {
 }
 
 if(!empty($this->links->previous))
-	echo '<a title="'.JText :: _('PREVIOUS_PRODUCT').'" href="'.$this->links->previous.'"><span class="hikashop_previous_product"></span></a>';
+	echo '<a title="'.JText::_('PREVIOUS_PRODUCT').'" href="'.$this->links->previous.'"><span class="hikashop_previous_product"></span></a>';
 if(!empty($this->links->next))
-	echo '<a title="'.JText :: _('NEXT_PRODUCT').'" href="'.$this->links->next.'"><span class="hikashop_next_product"></span></a>';
+	echo '<a title="'.JText::_('NEXT_PRODUCT').'" href="'.$this->links->next.'"><span class="hikashop_next_product"></span></a>';
 
 ?>
 	<div class='clear_both'></div>
@@ -314,7 +314,7 @@ if(empty($this->element->variants) || $this->params->get('characteristic_display
 ?>
 	<div id="hikashop_product_custom_info_<?php echo $variant_name; ?>" style="display:none;">
 		<h4><?php echo JText::_('SPECIFICATIONS'); ?></h4>
-		<table width="100%">
+		<table class="hikashop_product_custom_info_<?php echo $variant_name; ?>">
 <?php
 
 			$this->fieldsClass->prefix = '';
@@ -415,6 +415,12 @@ if($this->config->get('comments_feature') == 'jcomments') {
 		else
 			$product_id = $this->product->product_id;
 		echo jomcomment($product_id, 'com_hikashop');
+	}
+} elseif($this->config->get('comments_feature') == 'komento') {
+	$comments = HIKASHOP_ROOT . 'components' . DS . 'com_komento' . DS . 'bootstrap.php';
+	if(file_exists($comments)) {
+		require_once ($comments);
+		echo KT::commentify('com_hikashop', $this->product, array('params' => ''));
 	}
 }
 ?>

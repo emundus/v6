@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -29,17 +29,23 @@ if(in_array($pagination,array('top','both')) && $this->params->get('show_limit')
 <?php
 
 $app = JFactory::getApplication();
-$in_hikashop_context = (JRequest::getString('option') == HIKASHOP_COMPONENT && in_array(JRequest::getString('ctrl','category'), array('category', 'product')));
+$in_hikashop_context = (hikaInput::get()->getString('option') == HIKASHOP_COMPONENT && in_array(hikaInput::get()->getString('ctrl','category'), array('category', 'product')));
 $cid = 0;
 $last_category_selected = 0;
+
+$before_nb_products = JText::_('BEFORE_NUMBER_OF_PRODUCTS');
+if($before_nb_products == 'BEFORE_NUMBER_OF_PRODUCTS') $before_nb_products = ' (';
+$after_nb_products = JText::_('AFTER_NUMBER_OF_PRODUCTS');
+if($after_nb_products == 'AFTER_NUMBER_OF_PRODUCTS') $after_nb_products = ')';
+
 if($in_hikashop_context) {
-	if(JRequest::getString('ctrl','category') == 'product' && JRequest::getString('task','listing') == 'show') {
+	if(hikaInput::get()->getString('ctrl','category') == 'product' && hikaInput::get()->getString('task','listing') == 'show') {
 		$last_category_selected = (int)$app->getUserState(HIKASHOP_COMPONENT.'.last_category_selected', 0);
 		$config =& hikashop_config();
 		$pathway_sef_name = $config->get('pathway_sef_name', 'category_pathway');
-		$cid = JRequest::getInt($pathway_sef_name, 0);
+		$cid = hikaInput::get()->getInt($pathway_sef_name, 0);
 	} else {
-		$cid = JRequest::getInt('cid', 0);
+		$cid = hikaInput::get()->getInt('cid', 0);
 	}
 }
 
@@ -48,7 +54,7 @@ switch($this->params->get('child_display_type')){
 	case 'nochild':
 	default:
 ?>
-	<ul class="hikashop_category_list<?php echo $this->params->get('ul_class_name'); ?>">
+	<ul class="hikashop_category_list <?php echo $this->params->get('ul_class_name'); ?>">
 <?php
 		$width = 0;
 		if((int)$this->params->get('columns', 0) > 0)
@@ -81,7 +87,7 @@ switch($this->params->get('child_display_type')){
 			<a href="<?php echo $link; ?>"><?php
 				echo $row->category_name;
 				if($this->params->get('number_of_products', 0)) {
-					echo ' (' . $row->number_of_products . ')';
+					echo $before_nb_products . $row->number_of_products . $after_nb_products;
 				}
 			?></a>
 		</li>
@@ -95,7 +101,7 @@ switch($this->params->get('child_display_type')){
 	case 'allchildsexpand':
 		if($this->params->get('ul_display_simplelist', 0)) {
 ?>
-	<ul class="hikashop_category_list<?php echo $this->params->get('ul_class_name'); ?>">
+	<ul class="hikashop_category_list <?php echo $this->params->get('ul_class_name'); ?>">
 <?php
 			foreach($this->rows as $k => $row) {
 				if($only_if_products && $row->number_of_products < 1)
@@ -118,7 +124,7 @@ switch($this->params->get('child_display_type')){
 			<a href="<?php echo $link; ?>"><?php
 				echo $row->category_name;
 				if($this->params->get('number_of_products', 0))
-					echo ' (' . $row->number_of_products . ')';
+					echo $before_nb_products . $row->number_of_products . $after_nb_products;
 			?></a>
 <?php
 				if(!empty($row->childs)) {
@@ -140,7 +146,7 @@ switch($this->params->get('child_display_type')){
 					<a href="<?php echo $link; ?>"><?php
 						echo $child->category_name;
 						if($this->params->get('number_of_products', 0))
-							echo ' (' . $child->number_of_products . ')';
+							echo $before_nb_products. $child->number_of_products . $after_nb_products;
 					?></a>
 				</li>
 <?php
@@ -209,7 +215,7 @@ switch($this->params->get('child_display_type')){
 						<a href="<?php echo $link; ?>"><?php
 							echo $child->category_name;
 							if($this->params->get('number_of_products', 0)) {
-								echo ' (' . $child->number_of_products . ')';
+								echo $before_nb_products . $child->number_of_products . $after_nb_products;
 							}
 						?></a>
 					</li>
@@ -234,7 +240,7 @@ switch($this->params->get('child_display_type')){
 		$found = -1;
 		$sub_selected = -1;
 		if($in_hikashop_context) {
-			if(JRequest::getString('ctrl', 'category') == 'product' && JRequest::getString('task', 'listing') == 'show') {
+			if(hikaInput::get()->getString('ctrl', 'category') == 'product' && hikaInput::get()->getString('task', 'listing') == 'show') {
 				$database = JFactory::getDBO();
 				$query = 'SELECT category_id FROM '.hikashop_table('product_category').' WHERE product_id = ' . (int)hikashop_getCID('product_id') . ' ORDER BY product_category_id ASC';
 				$database->setQuery($query);
@@ -300,7 +306,7 @@ switch($this->params->get('child_display_type')){
 			$app = JFactory::getApplication();
 			if($found >= 0) {
 				$app->setUserState(HIKASHOP_COMPONENT.'.last_category_selected', $found);
-			} elseif(JRequest::getString('ctrl', 'category') != 'category' || JRequest::getString('task','listing') != 'listing') {
+			} elseif(hikaInput::get()->getString('ctrl', 'category') != 'category' || hikaInput::get()->getString('task','listing') != 'listing') {
 				$found = (int)$last_category_selected;
 			}
 		} else {
@@ -309,7 +315,7 @@ switch($this->params->get('child_display_type')){
 
 		if($this->params->get('ul_display_simplelist', 0)) {
 ?>
-	<ul class="hikashop_category_list<?php echo $this->params->get('ul_class_name'); ?>">
+	<ul class="hikashop_category_list <?php echo $this->params->get('ul_class_name'); ?>">
 <?php
 			foreach($this->rows as $k => $row) {
 				if($only_if_products && $row->number_of_products < 1)
@@ -323,7 +329,7 @@ switch($this->params->get('child_display_type')){
 			<a href="<?php echo $link; ?>"><?php
 				echo $row->category_name;
 				if($this->params->get('number_of_products', 0))
-					echo ' (' . $row->number_of_products . ')';
+					echo $before_nb_products . $row->number_of_products . $after_nb_products;
 			?></a>
 <?php
 				if(!empty($row->childs)) {
@@ -355,7 +361,7 @@ switch($this->params->get('child_display_type')){
 					<a href="<?php echo $link; ?>"><?php
 						echo $child->category_name;
 						if($this->params->get('number_of_products', 0))
-							echo ' (' . $child->number_of_products . ')';
+							echo $before_nb_products . $child->number_of_products . $after_nb_products;
 					?></a>
 				</li>
 <?php
@@ -407,7 +413,7 @@ switch($this->params->get('child_display_type')){
 				echo $this->tabs->startPanel($row->category_name, 'category_pane_'.$k, !empty($row->childs), $toOpen);
 				if(!empty($row->childs)) {
 ?>
-		<ul class="hikashop_category_list<?php echo $this->params->get('ul_class_name'); ?>">
+		<ul class="hikashop_category_list <?php echo $this->params->get('ul_class_name'); ?>">
 <?php
 					foreach($row->childs as $child) {
 						if($only_if_products && $child->number_of_products < 1)
@@ -419,7 +425,7 @@ switch($this->params->get('child_display_type')){
 				<a class="hikashop_category_list_item_link" href="<?php echo $link; ?>"><?php
 					echo $child->category_name;
 					if($this->params->get('number_of_products', 0))
-						echo ' (' . $child->number_of_products . ')';
+						echo $before_nb_products . $child->number_of_products . $after_nb_products;
 				?></a>
 			</li>
 <?php

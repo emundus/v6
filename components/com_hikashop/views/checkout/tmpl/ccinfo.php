@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,13 +11,13 @@ defined('_JEXEC') or die('Restricted access');
 hikashop_loadJsLib('tooltip');
 if( isset($this->display_form) && $this->display_form ) {
 	global $Itemid;
-	$order_id = JRequest::getInt('order_id',0);
+	$order_id = hikaInput::get()->getInt('order_id',0);
 ?><form action="<?php echo hikashop_completeLink('order'); ?>" name="payForm_<?php echo $order_id; ?>" method="post">
 <input type="hidden" name="Itemid" value="<?php echo $Itemid; ?>"/>
 <input type="hidden" name="ctrl" value="order"/>
 <input type="hidden" name="task" value="pay"/>
 <input type="hidden" name="order_id" value="<?php echo $order_id; ?>"/>
-<input type="hidden" name="new_payment_method" value="<?php echo JRequest::getVar('new_payment_method','');?>"/>
+<input type="hidden" name="new_payment_method" value="<?php echo hikaInput::get()->getVar('new_payment_method','');?>"/>
 <?php
 	echo JHTML::_( 'form.token' );
 }
@@ -39,7 +39,7 @@ if( isset($this->display_form) && $this->display_form ) {
 			$cc_CCV = base64_decode($cc_CCV);
 			$cc_type = base64_decode($cc_type);
 ?>
-	<table width="100%">
+	<table class="hikashop_credit_card_table">
 <?php if(!empty($this->method->ask_owner)){ ?>
 		<tr>
 			<td style="text-align:right"><label for="hikashop_credit_card_CCV_<?php echo $this->method->payment_type.'_'.$this->method->payment_id;?>"><?php echo JText::_('CREDIT_CARD_OWNER'); ?></label></td>
@@ -71,7 +71,7 @@ if( isset($this->display_form) && $this->display_form ) {
 		} else {
 			hikashop_loadJsLib('creditcard');
 ?>
-	<table width="100%">
+	<table class="hikashop_credit_card_table">
 <?php if(!empty($this->method->ask_owner)){ ?>
 		<tr>
 			<td style="text-align:right"><label for="hikashop_credit_card_owner_<?php echo $this->method->payment_type.'_'.$this->method->payment_id;?>"><?php echo JText::_('CREDIT_CARD_OWNER'); ?></label></td>

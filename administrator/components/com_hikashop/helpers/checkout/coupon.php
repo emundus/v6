@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,7 +16,7 @@ class hikashopCheckoutCouponHelper extends hikashopCheckoutHelperInterface {
 	}
 
 	public function validate(&$controller, &$params, $data = array()) {
-		$checkout = JRequest::getVar('checkout', array(), '', 'array');
+		$checkout = hikaInput::get()->get('checkout', array(), 'array');
 		$coupon = null;
 		if(isset($checkout['coupon']) && is_string($checkout['coupon']))
 			$coupon = $checkout['coupon'];
@@ -39,14 +39,25 @@ class hikashopCheckoutCouponHelper extends hikashopCheckoutHelperInterface {
 		$ret = false;
 		if($qty == 1) {
 			$ret = $cartClass->addCoupon($cart->cart_id, $coupon);
+			$msg = 'COUPON_ADDED';
 		} else {
 			$ret = $cartClass->removeCoupon($cart->cart_id, $cart->cart_coupon);
+			$msg = 'COUPON_REMOVED';
 		}
 
-		if(!empty($ret))
-			return true;
+		$cart = $checkoutHelper->getCart(true);
 
-		$error_message = JRequest::getVar('coupon_error_message', '');
+		if(!empty($ret)){
+			if(@$params['src']['context'] == 'submitstep') {
+				$checkoutHelper->addMessage('coupon.success', array(
+					JText::_($msg),
+					'success'
+				));
+			}
+			return true;
+		}
+
+		$error_message = hikaInput::get()->getVar('coupon_error_message', '');
 		if(empty($error_message))
 			$error_message = JText::_('COUPON_NOT_VALID');
 

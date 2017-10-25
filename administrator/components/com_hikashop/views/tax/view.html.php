@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -156,7 +156,7 @@ class TaxViewTax extends hikashopView{
 				$info =& $orders_taxes[$k]->order_tax_info;
 				if(!$info) continue;
 				foreach($info as $k2 => $taxes_info){
-					$tax_amount = $taxes_info->tax_amount + @$taxes_info->tax_amount_for_shipping + @$taxes_info->tax_amount_for_payment - @$taxes_info->tax_amount_for_coupon;
+					$tax_amount = $taxes_info->tax_amount;
 					if(!isset($taxes_info->tax_rate)) $taxes_info->tax_rate = $rows[$taxes_info->tax_namekey]->tax_rate;
 					if($taxes_info->tax_rate != 0)
 						$info[$k2]->amount = $currencyClass->round($tax_amount/$taxes_info->tax_rate,$currencyClass->getRounding($v->order_currency_id));
@@ -231,7 +231,7 @@ class TaxViewTax extends hikashopView{
 			'editList',
 			'deleteList'
 		);
-		$return = JRequest::getString('return','');
+		$return = hikaInput::get()->getString('return','');
 		if(!empty($return)){
 			$this->toolbar[]='cancel';
 		}
@@ -243,9 +243,9 @@ class TaxViewTax extends hikashopView{
 	}
 	function form(){
 
-		$tax_namekey = JRequest::getString('tax_namekey');
+		$tax_namekey = hikaInput::get()->getString('tax_namekey');
 		if(empty($tax_namekey)){
-			$id = JRequest::getVar( 'cid', array(), '', 'array' );
+			$id = hikaInput::get()->get('cid', array(), 'array');
 			if(is_array($id) && count($id)) $tax_namekey = reset($id);
 			else $tax_namekey = $id;
 		}
@@ -273,7 +273,7 @@ class TaxViewTax extends hikashopView{
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-form')
 		);
 
-		$return = JRequest::getString('return','');
+		$return = hikaInput::get()->getString('return','');
 		$this->assignRef('return',$return);
 	}
 }

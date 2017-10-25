@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -21,7 +21,7 @@ class DashboardController extends hikashopController{
 	}
 
 	function cpanel() {
-		JRequest::setVar('layout', 'cpanel');
+		hikaInput::get()->set('layout', 'cpanel');
 		return $this->display();
 	}
 
@@ -33,8 +33,8 @@ class DashboardController extends hikashopController{
 	}
 
 	public function reports() {
-		$statName = JRequest::getCmd('chart', '');
-		$statValue = JRequest::getString('value', '');
+		$statName = hikaInput::get()->getCmd('chart', '');
+		$statValue = hikaInput::get()->getString('value', '');
 		if(empty($statName) || empty($statValue)) {
 			echo '{}';
 			exit;

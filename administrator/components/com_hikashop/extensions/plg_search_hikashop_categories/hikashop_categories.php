@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -35,10 +35,10 @@ class plgSearchHikashop_categories extends JPlugin{
 
 	function &onSearchAreas(){
 		$areas = array(
-			'categories' => JText::_('PRODUCT_CATEGORIES')
+			'categories' => JText::_('PRODUCT_CATEGORIES_SEARCH')
 		);
 		if(1==(int)$this->params->get('manufacturers','1')){
-			$areas['manufacturers']=JText::_('MANUFACTURERS');
+			$areas['manufacturers']=JText::_('MANUFACTURERS_SEARCH');
 		}
 		return $areas;
 	}

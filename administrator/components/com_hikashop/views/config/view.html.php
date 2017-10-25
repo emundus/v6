@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -35,7 +35,7 @@ class configViewConfig extends hikashopView
 		$config =& hikashop_config();
 		$this->assignRef('config', $config);
 
-		JRequest::setVar('inherit', false);
+		hikaInput::get()->set('inherit', false);
 
 		hikashop_setTitle(JText::_('HIKA_CONFIGURATION'), 'config', 'config');
 
@@ -185,7 +185,9 @@ class configViewConfig extends hikashopView
 			'productSyncType' => 'type.productsync',
 			'productDisplayType' => 'type.productdisplay',
 			'quantityDisplayType' => 'type.quantitydisplay',
+			'acltable' => 'type.acltable',
 		));
+
 		$this->delayTypeRates =& $this->delayType;
 		$this->delayTypeCarts =& $this->delayType;
 		$this->delayTypeRetaining =& $this->delayType;
@@ -265,6 +267,55 @@ class configViewConfig extends hikashopView
 		$this->assignRef('address_format', $address_format);
 		$address_format_reset = $address_format != $this->config->getAddressFormat(true);
 		$this->assignRef('address_format_reset', $address_format_reset);
+
+
+		$aclcats = array();
+		$acltrans = array();
+		$aclcats['affiliates'] = array('view','manage','delete');
+		$aclcats['badge'] = array('view','manage','delete');
+		$aclcats['banner'] = array('view','manage','delete');
+		$aclcats['category'] = array('view','manage','delete');
+		$aclcats['characteristic'] = array('view','manage','delete');
+		$acltrans['characteristic'] = 'characteristics';
+		$aclcats['cart'] = array('view','manage','delete');
+		$acltrans['cart'] = 'HIKASHOP_CHECKOUT_CART';
+		$aclcats['config'] = array('view','manage');
+		$acltrans['config'] = 'hika_configuration';
+		$aclcats['currency'] = array('view','manage','delete');
+		$aclcats['dashboard'] = array('view','manage','delete');
+		$acltrans['dashboard'] = 'hikashop_cpanel';
+		$aclcats['discount'] = array('view','manage','delete');
+		$aclcats['email'] = array('view','manage','delete');
+		$aclcats['entry'] = array('view','manage','delete');
+		$acltrans['entry'] = 'hikashop_entry';
+		$aclcats['field'] = array('view','manage','delete');
+		$aclcats['filter'] = array('view','manage','delete');
+		$aclcats['forum'] = array('view');
+		$aclcats['documentation'] = array('view');
+		$acltrans['documentation'] = 'help';
+		$aclcats['import'] = array('view');
+		$aclcats['limit'] = array('view','manage','delete');
+		$aclcats['massaction'] = array('view','manage','delete');
+		$aclcats['menus'] = array('view','manage','delete');
+		$aclcats['modules'] = array('view','manage','delete');
+		$aclcats['order'] = array('view','manage','delete');
+		$acltrans['order'] = 'hikashop_order';
+		$aclcats['plugins'] = array('view','manage');
+		$aclcats['product'] = array('view','manage','delete');
+		$aclcats['report'] = array('view','manage', 'delete');
+		$aclcats['taxation'] = array('view','manage','delete');
+		$aclcats['update_about'] = array('view');
+		$aclcats['user'] = array('view','manage','delete');
+		$aclcats['view'] = array('view','manage','delete');
+		$aclcats['vote'] = array('view','manage','delete');
+		$aclcats['warehouse'] = array('view','manage','delete');
+		if($this->config->get('product_waitlist'))
+			$aclcats['waitlist'] = array('view','manage','delete');
+		if($this->config->get('enable_wishlist'))
+			$aclcats['wishlist'] = array('view','manage','delete');
+		$aclcats['zone'] = array('view','manage','delete');
+		$this->assignRef('aclcats', $aclcats);
+		$this->assignRef('acltrans', $acltrans);
 	}
 
 	protected function checkPlugins() {
@@ -453,7 +504,7 @@ function registrationAvailable(value, checked) {
 	}
 
 	public function language() {
-		$code = JRequest::getString('code');
+		$code = hikaInput::get()->getString('code');
 		if(empty($code)){
 			hikashop_display('Code not specified','error');
 			return;
@@ -475,11 +526,11 @@ function registrationAvailable(value, checked) {
 			hikashop_display(JText::_('HIKASHOP_LOAD_ENGLISH_1').'<br/>'.JText::_('LOAD_ENGLISH_2').'<br/>'.JText::_('LOAD_ENGLISH_3'),'info');
 			$file->content = JFile::read(JLanguage::getLanguagePath(JPATH_ROOT).DS.'en-GB'.DS.'en-GB.com_hikashop.ini');
 		}
-		if($loadLatest OR JRequest::getString('task') == 'latest'){
+		if($loadLatest OR hikaInput::get()->getString('task') == 'latest'){
 			$doc = JFactory::getDocument();
-			$doc->addScript(HIKASHOP_UPDATEURL.'languageload&code='.JRequest::getString('code'));
+			$doc->addScript(HIKASHOP_UPDATEURL.'languageload&code='.hikaInput::get()->getString('code'));
 			$showLatest = false;
-		}elseif(JRequest::getString('task') == 'save') $showLatest = false;
+		}elseif(hikaInput::get()->getString('task') == 'save') $showLatest = false;
 		$override_content = '';
 		$override_path = JLanguage::getLanguagePath(JPATH_ROOT).DS.'overrides'.DS.$code.'.override.ini';
 		if(JFile::exists($override_path)){
@@ -507,9 +558,9 @@ function registrationAvailable(value, checked) {
 	}
 
 	public function css() {
-		$file = JRequest::getCmd('file');
+		$file = hikaInput::get()->getCmd('file');
 		if(empty($file)) {
-			$var = JRequest::getCmd('var');
+			$var = hikaInput::get()->getCmd('var');
 			if(in_array($var, array('frontend','backend', 'style'))) {
 				$file = $var . '_default';
 			}
@@ -527,7 +578,7 @@ function registrationAvailable(value, checked) {
 
 		$type = $result[1];
 		$fileName = $result[2];
-		$content = JRequest::getString('csscontent');
+		$content = hikaInput::get()->getString('csscontent');
 		if(empty($content))
 			$content = file_get_contents(HIKASHOP_MEDIA.'css'.DS.$type.'_'.$fileName.'.css');
 
@@ -549,7 +600,7 @@ function registrationAvailable(value, checked) {
 
 	public function share(){
 		$file = new stdClass();
-		$file->name = JRequest::getString('code');
+		$file->name = hikaInput::get()->getString('code');
 		$this->assignRef('file',$file);
 	}
 

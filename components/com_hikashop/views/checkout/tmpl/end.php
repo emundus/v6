@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -14,7 +14,7 @@ if(empty($this->html)) {
 	if(!$user->guest) {
 		$url = hikashop_completeLink('order&task=show&cid='.$this->order->order_id);
 	} else {
-		$url = hikashop_completeLink('order&task=show&cid='.$this->order->order_id.'&token='.$this->order->order_token);
+		$url = hikashop_completeLink('order&task=show&cid='.$this->order->order_id.'&order_token='.$this->order->order_token);
 	}
 	echo '<br/>'.JText::sprintf('YOU_CAN_NOW_ACCESS_YOUR_ORDER_HERE', $url);
 } else {

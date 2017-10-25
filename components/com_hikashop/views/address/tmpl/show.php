@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -146,14 +146,14 @@ window.addressMgr.click = function(el, cid, uid, type) { window.Oby.fireAjax('hi
 <?php
 }
 
-if(JRequest::getVar('tmpl', '') == 'component') {
+if(hikaInput::get()->getVar('tmpl', '') == 'component') {
 	if(empty($this->addressClass))
 		$this->addressClass = hikashop_get('class.address');
 	$miniFormat = $this->addressClass->miniFormat($this->address);
-	$task = JRequest::getCmd('task', '');
+	$task = hikaInput::get()->getCmd('task', '');
 ?>
 window.Oby.fireAjax('hikashop_address_changed',{'type':'<?php echo $this->type; ?>','edit':<?php echo $this->edit?'1':'0'; ?>,'cid':<?php echo $this->address_id; ?>,'task':'<?php echo $task; ?>','miniFormat':'<?php echo str_replace('\'','\\\'', $miniFormat); ?>'<?php
-	$previous_id = JRequest::getVar('previous_cid', null);
+	$previous_id = hikaInput::get()->getVar('previous_cid', null);
 	if((!empty($previous_id) || $previous_id === 0) && is_int($previous_id))
 		echo ',\'previous_cid\':' . $previous_id;
 ?>});

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -34,7 +34,7 @@ class CategoryViewCategory extends hikashopView
 
 		$pageInfo->filter->order->value = $app->getUserStateFromRequest( $this->paramBase.".filter_order", 'filter_order',	'a.category_ordering','cmd' );
 		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest( $this->paramBase.".filter_order_Dir", 'filter_order_Dir',	'asc',	'word' );
-		if(JRequest::getVar('search')!=$app->getUserState($this->paramBase.".search")){
+		if(hikaInput::get()->getVar('search')!=$app->getUserState($this->paramBase.".search")){
 			$app->setUserState( $this->paramBase.'.limitstart',0);
 			$pageInfo->limit->start = 0;
 		}else{
@@ -177,7 +177,7 @@ class CategoryViewCategory extends hikashopView
 	function selectstatus(){
 		$class = hikashop_get('class.category');
 		$rows = $class->loadAllWithTrans('status');
-		$selected = JRequest::getVar('values','','','string');
+		$selected = hikaInput::get()->getVar('values','','','string');
 		$selectedvalues = explode(',',$selected);
 		$translated=false;
 		if(!empty($rows)){
@@ -192,15 +192,15 @@ class CategoryViewCategory extends hikashopView
 		}
 		$this->assignRef('translated',$translated);
 		$this->assignRef('rows',$rows);
-		$controlName = JRequest::getString('control','');
+		$controlName = hikaInput::get()->getString('control','');
 		$this->assignRef('controlName',$controlName);
 	}
 
 	function selectparentlisting(){
 		$this->paramBase .='_parent';
-		$control = JRequest::getCmd('control');
-		$id = JRequest::getCmd('id');
-		$name = JRequest::getCmd('name');
+		$control = hikaInput::get()->getCmd('control');
+		$id = hikaInput::get()->getCmd('id');
+		$name = hikaInput::get()->getCmd('name');
 		if(empty($id)){ $id='changeParent'; }
 		if(!empty($control)){
 			$js ='
@@ -240,7 +240,7 @@ class CategoryViewCategory extends hikashopView
 			$element = $class->get($category_id,true);
 			$task='edit';
 		}else{
-			$element = JRequest::getVar('fail');
+			$element = hikaInput::get()->getVar('fail');
 			if(empty($element)){
 				$element = new stdClass();
 				$element->category_published=1;
@@ -318,7 +318,7 @@ class CategoryViewCategory extends hikashopView
 	}
 
 	function edit_translation(){
-		$language_id = JRequest::getInt('language_id',0);
+		$language_id = hikaInput::get()->getInt('language_id',0);
 		$category_id = hikashop_getCID('category_id');
 		$class = hikashop_get('class.category');
 		$element = $class->get($category_id);

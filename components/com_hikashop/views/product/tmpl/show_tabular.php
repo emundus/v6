@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -85,7 +85,7 @@ if(!empty($this->fields)){
 ?>
 	<span id="hikashop_product_price_main" class="hikashop_product_price_main" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 <?php
-	if ($this->params->get('show_price')) {
+	if($this->params->get('show_price') && (empty($this->displayVariants['prices']) || $this->params->get('characteristic_display') != 'list')) {
 		$this->row =& $this->element;
 		$this->setLayout('listing_price');
 		echo $this->loadTemplate();
@@ -210,10 +210,15 @@ if(!empty($this->fields)){
 	<input type="hidden" name="task" value="updatecart"/>
 	<input type="hidden" name="return_url" value="<?php echo urlencode(base64_encode(urldecode($this->redirect_url)));?>"/>
 </form>
+<?php
+	$description = trim(JHTML::_('content.prepare',preg_replace('#<hr *id="system-readmore" */>#i','',$this->element->product_description)));
+?>
 <div id="hikashop_product_bottom_part" class="hikashop_product_bottom_part show_tabular">
 	<div id="hikashop_tabs_div">
 		<ul class="hikashop_tabs_ul">
+<?php if(!empty($description)) { ?>
 			<li id="hikashop_show_tabular_description_li" class="hikashop_tabs_li ui-corner-top"><?php echo JText::_('PRODUCT_DESCRIPTION');?></li>
+<?php } ?>
 <?php if(!empty($specif_tab_content)) { ?>
 			<li id="hikashop_show_tabular_specification_li" class="hikashop_tabs_li ui-corner-top"><?php echo JText::_('SPECIFICATIONS');?></li>
 <?php } ?>
@@ -223,25 +228,27 @@ if(!empty($this->fields)){
 <?php } ?>
 		</ul>
 <?php
-		if(!empty($this->element->extraData->bottomBegin))
-			echo implode("\r\n",$this->element->extraData->bottomBegin);
+	if(!empty($this->element->extraData->bottomBegin))
+		echo implode("\r\n",$this->element->extraData->bottomBegin);
 ?>
 		<div class="hikashop_tabs_content" id="hikashop_show_tabular_description">
+<?php if(!empty($description)) { ?>
 			<div id="hikashop_product_description_main" class="hikashop_product_description_main" itemprop="description"><?php
-				echo JHTML::_('content.prepare',preg_replace('#<hr *id="system-readmore" */>#i','',$this->element->product_description));
+				echo $description;
 			?></div>
+<?php } ?>
 			<span id="hikashop_product_url_main" class="hikashop_product_url_main"><?php
 				if (!empty ($this->element->product_url)) {
-					echo JText :: sprintf('MANUFACTURER_URL', '<a href="' . $this->element->product_url . '" target="_blank">' . $this->element->product_url . '</a>');
+					echo JText::sprintf('MANUFACTURER_URL', '<a href="' . $this->element->product_url . '" target="_blank">' . $this->element->product_url . '</a>');
 				}
 			?></span>
 		</div>
-		<?php if(!empty($specif_tab_content)) { ?>
+<?php if(!empty($specif_tab_content)) { ?>
 		<div class="hikashop_tabs_content" id="hikashop_show_tabular_specification"><?php
 				echo $specif_tab_content;
 		?></div>
-		<?php }
-if($status_vote == "comment" || $status_vote == "two" || $status_vote == "both" ) { ?>
+<?php }
+	if($status_vote == "comment" || $status_vote == "two" || $status_vote == "both" ) { ?>
 		<form action="<?php echo hikashop_currentURL() ?>" method="post" name="adminForm_hikashop_comment_form" id="hikashop_comment_form">
 <?php
 			if(!empty($this->element->extraData->bottomMiddle))

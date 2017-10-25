@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    3.0.1
+ * @version    3.2.1
  * @author     hikashop.com
  * @copyright  (C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -33,12 +33,15 @@ var hikashopCheckout = {
 		o.addClass(el, "hikashop_checkout_loading");
 
 		var url = window.checkout.urls.show,
-			params = {update: el};
+			params = {};
 		url = t.handleParams({'type': type, 'cid': step, 'pos': id }, url, params);
 
 		o.xRequest(url, params, function(x,p) {
 			el = d.getElementById("hikashop_checkout_" + type_clean + "_" + step + "_" + id);
 			o.removeClass(el, "hikashop_checkout_loading");
+			o.updateElem(el, x.responseText);
+			t.handleEnter(type_clean, step, id);
+			o.fireAjax('checkoutBlockRefresh', {'type': type_clean, 'cid': step, 'pos': id});
 		});
 		return false;
 	},
@@ -64,7 +67,7 @@ var hikashopCheckout = {
 		o.addClass(el, "hikashop_checkout_loading");
 
 		var url = window.checkout.urls.submit,
-			params = {mode:"POST", data: formData, update: el};
+			params = {mode:"POST", data: formData};
 		url = t.handleParams({'type': type, 'cid': step, 'pos': id, 'token': 1 }, url, params);
 
 		o.xRequest(url, params, function(x,p) {
@@ -72,6 +75,9 @@ var hikashopCheckout = {
 				window.location.reload(true);
 			el = d.getElementById("hikashop_checkout_" + type_clean + "_" + step + "_" + id);
 			o.removeClass(el, "hikashop_checkout_loading");
+			o.updateElem(el, x.responseText);
+			t.handleEnter(type_clean, step, id);
+			o.fireAjax('checkoutBlockRefresh', {'type': type_clean, 'cid': step, 'pos': id});
 		});
 		return false;
 	},
@@ -113,6 +119,28 @@ var hikashopCheckout = {
 			}
 			window.Oby.fireAjax(evt, params);
 		}
+	},
+	handleEnter: function(task, step, pos) {
+		var t = this, d = document;
+
+		block = d.getElementById('hikashop_checkout_' + task + '_' + step + '_' + pos);
+		if(!block)
+			return true;
+
+		els = block.querySelectorAll('input[type=text], input[type=checkbox], input[type=password]');
+		if(!els.length)
+			return true;
+
+		els.forEach(function (item, idx) {
+			item.addEventListener('keydown', function(e) {
+				if(e.key === undefined && e.keyCode === undefined && e.which === undefined)
+					return;
+				if((e.key !== undefined && e.key != "Enter") || (e.keyCode !== undefined && e.keyCode != 13) || (e.which !== undefined && e.which != 13))
+					return;
+				e.preventDefault();
+				t.submitBlock(task, step, pos);
+			});
+		});
 	}
 };
 

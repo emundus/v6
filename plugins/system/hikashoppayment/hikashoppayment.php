@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -68,13 +68,17 @@ class plgSystemHikashoppayment extends JPlugin {
 	}
 
 	protected function processPaymentNotification() {
+
+		if(!empty($_REQUEST['skip_system_notification']))
+			return;
+
 		if(!include_once(rtrim(JPATH_ADMINISTRATOR,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_hikashop'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php'))
 			return;
 
-		JRequest::setVar('hikashop_payment_notification_plugin', true);
+		hikaInput::get()->set('hikashop_payment_notification_plugin', true);
 
 		ob_start();
-		$payment = JRequest::getCmd('notif_payment', @$_REQUEST['notif_payment']);
+		$payment = hikaInput::get()->getCmd('notif_payment', @$_REQUEST['notif_payment']);
 		$data = hikashop_import('hikashoppayment', $payment);
 
 		if(!empty($data)) {

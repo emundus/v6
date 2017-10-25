@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -14,7 +14,7 @@ class TaxController extends hikashopController{
 	var $table = 'tax';
 
 	function cancel(){
-		$return = JRequest::getString('return');
+		$return = hikaInput::get()->getString('return');
 		if(!empty($return)){
 			if(strpos($return,HIKASHOP_LIVE)===false && preg_match('#^https?://.*#',$return)) return false;
 			$this->setRedirect(hikashop_completeLink(urldecode($return),false,true));

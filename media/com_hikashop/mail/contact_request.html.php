@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -40,10 +40,13 @@ defined('_JEXEC') or die('Restricted access');
 		<td style="color:#1c8faf !important;font-size:12px;font-weight:bold;">{TXT:USER}</td>
 		<td>{VAR:USER_DETAILS}</td>
 	</tr>
+	<!--{IF:PRODUCT}-->
 	<tr>
 		<td style="color:#1c8faf !important;font-size:12px;font-weight:bold;">{TXT:PRODUCT}</td>
 		<td>{VAR:PRODUCT_DETAILS}</td>
 	</tr>
+<!--{ENDIF:PRODUCT}-->
+
 </table>
 
 <h1 style="color:#1c8faf !important;font-size:16px;font-weight:bold;border-top:1px solid #ddd;border-bottom:1px solid #ddd;padding-top:10px;padding-bottom:10px;">

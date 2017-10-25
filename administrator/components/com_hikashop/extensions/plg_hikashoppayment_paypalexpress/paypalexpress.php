@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -77,12 +77,15 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 		$currency = $currencyClass->get($cart->full_total->prices[0]->price_currency_id);
 		$config = hikashop_config();
 
-		$app = JFactory::getApplication();
+		$this->app = JFactory::getApplication();
 
 		if(!empty($_SESSION['paypal_express_checkout_payment_method'] ) )
 			$this->pluginParams($_SESSION['paypal_express_checkout_payment_method']->payment_id);
 		else
 			$this->pluginParams();
+
+		if(empty($this->plugin_params))
+			return false;
 
 		$menuClass = hikashop_get('class.menus');
 		$url_menu_id = $menuClass->getCheckoutMenuIdForURL();
@@ -92,7 +95,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 		$return_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=after_end'.$url_menu_id;
 
 		$amountTheorical = (isset($cart->full_total->prices[0]->price_value_without_payment_with_tax) ) ?
-			round($cart->full_total->prices[0]->price_value_without_payment_with_tax,2) : round($cart->full_total->prices[0]->price_value_with_tax,2);
+			round($cart->full_total->prices[0]->price_value_without_payment_with_tax, 2) : round($cart->full_total->prices[0]->price_value_with_tax, 2);
 
 		$vars = $this->getRequestDatas();
 
@@ -107,14 +110,12 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 				$tax = 0;
 				$amountCalculated = 0;
 				$items = array();
-				$config = hikashop_config();
-				$group = $config->get('group_options',0);
+				$group = $config->get('group_options', 0);
 
 				foreach ($cart->products as $p) {
-
 					$productprice = 0;
 					$optionalProdDesc = '';
-					if($p->cart_product_quantity<=0)
+					if($p->cart_product_quantity <= 0)
 						continue;
 
 					if($group) {
@@ -123,27 +124,33 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 							continue;
 
 						foreach ($cart->products as $p2) {
-							if ($p2->cart_product_option_parent_id == $p->cart_product_id) {
+							if ($p2->cart_product_option_parent_id != $p->cart_product_id)
+							continue;
 
-								if(isset($p2->prices[0]->unit_price) )
-									$unit2 =& $p2->prices[0]->unit_price;
-								else
-									$unit2 =& $p2->prices[0];
+							if(isset($p2->prices[0]->unit_price) )
+								$unit2 =& $p2->prices[0]->unit_price;
+							else
+								$unit2 =& $p2->prices[0];
 
-								$productprice += round($unit2->price_value,2);
-								$tax += (round($unit2->price_value_with_tax,2) - round($unit2->price_value,2))*$p->cart_product_quantity;
-								$amountCalculated += $p->cart_product_quantity*round($unit2->price_value,2);
-								$optionalProdDesc .= $p2->product_name.',';
-							}
+							$productprice += round($unit2->price_value, 2);
+							$tax += (round($unit2->price_value_with_tax, 2) - round($unit2->price_value, 2))*$p->cart_product_quantity;
+							$amountCalculated += $p->cart_product_quantity*round($unit2->price_value, 2);
+							$optionalProdDesc .= $p2->product_name.',';
+
+							unset($unit2);
 						}
 					}
 
-					if(isset($p->prices[0]->unit_price) ) $unit =& $p->prices[0]->unit_price;
-					else $unit =& $p->prices[0];
+					if(isset($p->prices[0]->unit_price) )
+						$unit =& $p->prices[0]->unit_price;
+					else
+						$unit =& $p->prices[0];
 
-					$tax += (round($unit->price_value_with_tax,2) - round($unit->price_value,2))*$p->cart_product_quantity;
-					$amountCalculated += $p->cart_product_quantity*round($unit->price_value,2);
-					$productprice += round($unit->price_value,2);
+					$tax += (round($unit->price_value_with_tax, 2) - round($unit->price_value, 2)) * $p->cart_product_quantity;
+					$amountCalculated += $p->cart_product_quantity * round($unit->price_value, 2);
+					$productprice += round($unit->price_value, 2);
+
+					unset($unit);
 
 					$item = array(
 						'L_PAYMENTREQUEST_0_NAME'.$i => substr(strip_tags($p->product_name), 0, 126),
@@ -152,10 +159,10 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 						'L_PAYMENTREQUEST_0_QTY'.$i => $p->cart_product_quantity,
 					);
 
-					if (!empty($optionalProdDesc) ) {
+					if( !empty($optionalProdDesc) ) {
 						$optionalProdDesc = rtrim($optionalProdDesc,',');
-						if(strlen($optionalProdDesc)>=127) {
-							$optionalProdDesc = substr($optionalProdDesc,0,123).'...';
+						if(strlen($optionalProdDesc) >= 127) {
+							$optionalProdDesc = substr($optionalProdDesc, 0, 123) . '...';
 						}
 						$item['L_PAYMENTREQUEST_0_DESC'.$i] = $optionalProdDesc;
 					}
@@ -164,16 +171,16 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 				}
 
 				$shipping = 0;
-				if (!empty($cart->shipping) )
-					$shipping = round($cart->shipping[0]->shipping_price_with_tax,2);
+				if( !empty($cart->shipping) )
+					$shipping = round($cart->shipping[0]->shipping_price_with_tax, 2);
 
 				$discount = 0;
-				if (!empty($cart->coupon) )
-					$discount = round($cart->coupon->discount_value,2);
+				if( !empty($cart->coupon) )
+					$discount = round($cart->coupon->discount_value, 2);
 
-				if ($this->plugin_data->payment_price>0 or $this->plugin_params->payment_percentage>0) {
+				if ($this->plugin_data->payment_price > 0 || $this->plugin_params->payment_percentage > 0) {
 
-					$feesValue = round($this->plugin_data->payment_price + $amountTheorical * $this->plugin_params->payment_percentage / 100,2);
+					$feesValue = round($this->plugin_data->payment_price + $amountTheorical * $this->plugin_params->payment_percentage / 100, 2);
 					$item = array(
 						'L_PAYMENTREQUEST_0_NAME'.$i => JText::_('HIKASHOP_PAYMENT'),
 						'L_PAYMENTREQUEST_0_NUMBER'.$i => 99999, //?
@@ -184,7 +191,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 					$items = array_merge($items,$item);
 				}
 
-				$amountTheorical += round($amountTheorical * $this->plugin_params->payment_percentage / 100,2);
+				$amountTheorical += round($amountTheorical * $this->plugin_params->payment_percentage / 100, 2);
 				$amountTheorical += round($this->plugin_data->payment_price,2);
 
 				$endItem = array(
@@ -199,23 +206,21 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 					'ALLOWNOTE' => 1
 				);
 
-				$varform = array_merge($items,$endItem);
+				$varform = array_merge($items, $endItem);
 			}
 
-			if($amountTheorical<=0) {
-
+			if($amountTheorical <= 0) {
 				$order = $this->createOrder($cart);
 				$orderClass = hikashop_get('class.order');
 				$order->order_payment_id = $this->plugin_data->payment_id;
 				$order->order_payment_method = $this->name;
 				$order->order_id = $orderClass->save($order);
-				$app->redirect($return_url);
+				$this->app->redirect($return_url);
 			}
 
 			$this->plugin_params->landingpage = (empty($this->plugin_params->landingpage) ) ? 'Login' : 'Billing';
 
 			$arrayparams = array(
-
 				'USER' => $this->plugin_params->apiuser,
 				'PWD' => $this->plugin_params->apipassword,
 				'SIGNATURE' => $this->plugin_params->apisignature,
@@ -235,321 +240,297 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 			$request = $this->initCurlToPaypal($varform,$this->plugin_params->sandbox);
 			$post_response = curl_exec($request);
 
+			$curl_error = curl_error($request);
+			curl_close ($request);
+
 			if (empty($post_response) ) {
-
-				$app->enqueueMessage('The connection to the payment plateform did not succeed. '
+				$this->app->enqueueMessage('The connection to the payment plateform did not succeed. '
 					. 'It is often caused by the hosting company blocking external connections '
-					. 'so you should contact him for further guidance. The cURL error message was: '.curl_error($request),'error');
-
-				curl_close ($request);
+					. 'so you should contact him for further guidance. The cURL error message was: '.$curl_error,'error');
 				return false;
 			}
-			else {
-				curl_close ($request);
-				$vars = $this->getPostDatas($post_response);
 
-				$urlstring = $_SERVER['HTTP_REFERER'];
-				$post = $this->getPostDatas($urlstring);
+			$vars = $this->getPostDatas($post_response);
 
-				if ($vars['ACK']=='Success') {
+			$urlstring = $_SERVER['HTTP_REFERER'];
+			$post = $this->getPostDatas($urlstring);
 
-					$datehash = time();
-					$url = ($this->plugin_params->sandbox) ?
-						'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token='.$vars['TOKEN'].'&hash='.$datehash
-						: 'https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token='.$vars['TOKEN'].'&hash='.$datehash;
+			if ($vars['ACK'] == 'Success') {
+				$datehash = time();
+				$url = ($this->plugin_params->sandbox) ?
+					'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token='.$vars['TOKEN'].'&hash='.$datehash
+					: 'https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token='.$vars['TOKEN'].'&hash='.$datehash;
 
-					$order = $this->createOrder($cart);
-					$orderClass = hikashop_get('class.order');
-					$order->order_payment_id = $this->plugin_data->payment_id;
-					$order->order_payment_method = $this->name;
-					$order->history->history_data = $vars['TOKEN'];
-					$order->order_id = $orderClass->save($order);
+				$order = $this->createOrder($cart);
+				$orderClass = hikashop_get('class.order');
+				$order->order_payment_id = $this->plugin_data->payment_id;
+				$order->order_payment_method = $this->name;
+				$order->history->history_data = $vars['TOKEN'];
+				$order->order_id = $orderClass->save($order);
 
-					$app->redirect($url);
-				}
-				else {
+				$this->app->redirect($url);
+				return false;
+			}
 
-					$error = 'Connection failure - error code : '.$vars['L_ERRORCODE0'].' , error message : '.$vars['L_LONGMESSAGE0'];
+			$error = 'Connection failure - error code : '.$vars['L_ERRORCODE0'].' , error message : '.$vars['L_LONGMESSAGE0'];
 
-					if($this->plugin_params->debug){
-						$this->writeToLog('Fail at step 0 :'.$error);
-						$this->writeToLog(print_r($varform,true));
-					}
+			if($this->plugin_params->debug){
+				$this->writeToLog('Fail at step 0 :'.$error);
+				$this->writeToLog(print_r($varform,true));
+			}
 
-					$app->enqueueMessage($error);
-					$add = (isset($post['step'])) ? '&step='.$post['step'] : '&step=0';
-					$app->redirect($cancel_url.$add);
-					return false;
-				}
+			$this->app->enqueueMessage($error);
+			$add = (isset($post['step'])) ? '&step='.$post['step'] : '&step=0';
+			$this->app->redirect($cancel_url.$add);
+			return false;
+		}
+
+		$datas = $this->loadOrderId($vars['token']);
+		$orderid = (int)$datas[0]->history_order_id;
+
+		$dbOrder = $this->getOrder($orderid);
+		$this->loadOrderData($dbOrder);
+
+		if(!empty($dbOrder->order_payment_id))
+			$this->pluginParams($dbOrder->order_payment_id);
+
+
+		$cancel_url .= '&order_id='.$orderid.$this->url_itemid;
+		$return_url .= '&order_id='.$orderid.$this->url_itemid;
+
+		$varform = array(
+			'USER' => $this->plugin_params->apiuser,
+			'PWD' => $this->plugin_params->apipassword,
+			'SIGNATURE' => $this->plugin_params->apisignature,
+			'VERSION' => $this->plugin_params->apiversion,
+			'TOKEN' => $vars['token'],
+			'METHOD' => 'GetExpressCheckoutDetails'
+		);
+
+		$request = $this->initCurlToPaypal($varform,$this->plugin_params->sandbox);
+		$post_response = curl_exec($request);
+
+		$curl_error = curl_error($request);
+		curl_close($request);
+
+		if(empty($post_response) ) {
+			if($this->plugin_params->debug) {
+				$this->writeToLog('Order N°: ' . $orderid . "\r\n" . 'Fail at step 1: '.$curl_error);
+			}
+			$this->app->enqueueMessage('The connection to the payment plateform did not succeed. ' .
+				'It is often caused by the hosting company blocking external connections so ' .
+				'you should contact him for further guidance. The cURL error message was: '.$curl_error,'error');
+			$this->modifyOrder($orderid, $this->plugin_params->invalid_status, true, true);
+			$this->app->redirect($cancel_url);
+			return false;
+		}
+
+		$vars = $this->getPostDatas($post_response);
+
+		if ($vars['ACK'] != 'Success' && $vars['ACK'] != 'SuccessWithWarning') {
+			if($this->plugin_params->debug) {
+				$this->writeToLog('Order N°:' . $orderid . "\r\n" . 'Fail at step 2: '.$curl_error);
+			}
+			$this->app->enqueueMessage('An error has been encountered - error code : '.$vars['L_ERRORCODE0'].' , error message : '.$vars['L_LONGMESSAGE0']);
+			$this->modifyOrder($orderid, $this->plugin_params->invalid_status, true, true);
+			$this->app->redirect($cancel_url);
+			return false;
+		}
+
+		if (empty($dbOrder->order_user_id) ) {
+			$user = $this->createUser($vars);
+			$userClass = hikashop_get('class.user');
+			$getuser = $userClass->get($vars['EMAIL'],'email');
+
+			$userid = (empty($getuser) ) ? $userClass->save($user) : $getuser->user_id;
+
+			if($this->plugin_params->debug) {
+				$this->writeToLog('Order N°: ' . $orderid."\r\n".'User: '.$userid);
 			}
 		}
-		else {
+		else
+			$userid = $dbOrder->order_user_id;
 
-			$datas = $this->loadOrderId($vars['token']);
-			$orderid = $datas[0]->history_order_id;
+		if( @$this->plugin_params->address_override || !isset($dbOrder->order_shipping_address_id) || $dbOrder->order_shipping_address_id == 0) {
+			$address = $this->createAddress($vars,$userid);
+			$addressClass = hikashop_get('class.address');
+			$addressid = $addressClass->save($address);
+			$dbOrder->order_shipping_address_id = $addressid;
+			$dbOrder->order_billing_address_id = $addressid;
+		}
 
-			$dbOrder = $this->getOrder($orderid);
-			$this->loadOrderData($dbOrder);
+		$orderClass = hikashop_get('class.order');
+		$dbOrder->order_user_id = $userid;
+		$orderClass->save($dbOrder);
 
-			if(!empty($dbOrder->order_payment_id))
-				$this->pluginParams($dbOrder->order_payment_id);
+		if ($this->plugin_params->cartdetail) {
+			$i = 0;
+			$tax = 0;
+			$amountCalculated = 0;
+			$items = array();
+			$group = $config->get('group_options',0);
 
-			$cancel_url .= '&order_id='.$orderid.$this->url_itemid;
-			$return_url .= '&order_id='.$orderid.$this->url_itemid;
+			foreach ($cart->products as $p) {
+				$productprice = 0;
+				$optionalProdDesc = '';
+				if($p->cart_product_quantity<=0)
+					continue;
 
-			$varform = array(
-				'USER' => $this->plugin_params->apiuser,
-				'PWD' => $this->plugin_params->apipassword,
-				'SIGNATURE' => $this->plugin_params->apisignature,
-				'VERSION' => $this->plugin_params->apiversion,
-				'TOKEN' => $vars['token'],
-				'METHOD' => 'GetExpressCheckoutDetails'
+				if($group) {
+					if($p->cart_product_option_parent_id)
+						continue;
+
+					foreach ($cart->products as $p2) {
+						if ($p2->cart_product_option_parent_id != $p->cart_product_id)
+							continue;
+
+						if(isset($p2->prices[0]->unit_price) )
+							$unit2 =& $p2->prices[0]->unit_price;
+						else
+							$unit2 =& $p2->prices[0];
+
+						$productprice += round($unit2->price_value, 2);
+						$tax += (round($unit2->price_value_with_tax, 2) - round($unit2->price_value, 2)) * $p->cart_product_quantity;
+						$amountCalculated += $p->cart_product_quantity * round($unit2->price_value, 2);
+						$optionalProdDesc .= $p2->product_name.',';
+
+						unset($unit2);
+					}
+				}
+
+				if(isset($p->prices[0]->unit_price) )
+					$unit =& $p->prices[0]->unit_price;
+				else
+					$unit =& $p->prices[0];
+
+				$tax += (round($unit->price_value_with_tax, 2) - round($unit->price_value, 2))  *$p->cart_product_quantity;
+				$amountCalculated += $p->cart_product_quantity * round($unit->price_value, 2);
+				$productprice += round($unit->price_value, 2);
+
+				unset($unit);
+
+				$item = array(
+					'L_PAYMENTREQUEST_0_NAME'.$i => substr(strip_tags($p->product_name), 0, 126),
+					'L_PAYMENTREQUEST_0_NUMBER'.$i => $p->product_id,
+					'L_PAYMENTREQUEST_0_AMT'.$i =>$productprice,
+					'L_PAYMENTREQUEST_0_QTY'.$i => $p->cart_product_quantity,
+				);
+
+				if (!empty($optionalProdDesc) ) {
+					$optionalProdDesc = rtrim($optionalProdDesc, ',');
+					if(strlen($optionalProdDesc) >= 127) {
+						$optionalProdDesc = substr($optionalProdDesc, 0, 123) . '...';
+					}
+					$item['L_PAYMENTREQUEST_0_DESC'.$i] = $optionalProdDesc;
+				}
+				$i++;
+				$items = array_merge($items,$item);
+			}
+
+			$shipping = 0;
+			if (!empty($cart->shipping) )
+				$shipping = round($cart->shipping[0]->shipping_price_with_tax, 2);
+
+			$discount = 0;
+			if (!empty($cart->coupon) )
+				$discount = round($cart->coupon->discount_value, 2);
+
+			if ($this->plugin_data->payment_price > 0 || $this->plugin_params->payment_percentage > 0) {
+
+				$feesValue = round($this->plugin_data->payment_price + $amountTheorical * $this->plugin_params->payment_percentage / 100, 2);
+				$item = array(
+					'L_PAYMENTREQUEST_0_NAME'.$i => JText::_('HIKASHOP_PAYMENT'),
+					'L_PAYMENTREQUEST_0_NUMBER'.$i => 99999, //?
+					'L_PAYMENTREQUEST_0_AMT'.$i => $feesValue,
+					'L_PAYMENTREQUEST_0_QTY'.$i => 1,
+				);
+				$amountCalculated += $feesValue;
+				$items = array_merge($items,$item);
+			}
+
+			$amountTheorical += round($amountTheorical * $this->plugin_params->payment_percentage / 100, 2);
+			$amountTheorical += round($this->plugin_data->payment_price, 2);
+
+			$endItem = array(
+				'PAYMENTREQUEST_0_ITEMAMT' => $amountCalculated,
+				'PAYMENTREQUEST_0_TAXAMT' => $tax,
+				'PAYMENTREQUEST_0_SHIPPINGAMT' => $shipping,
+				'PAYMENTREQUEST_0_SHIPDISCAMT' => -$discount,
+				'PAYMENTREQUEST_0_HANDLINGAMT' => 0,
+				'PAYMENTREQUEST_0_AMT' => $amountTheorical,
+				'PAYMENTREQUEST_0_CURRENCYCODE' => $currency->currency_code,
+				'PAYMENTREQUEST_0_PAYMENTACTION' => 'Sale',
+				'ALLOWNOTE' => 1
 			);
 
-			$request = $this->initCurlToPaypal($varform,$this->plugin_params->sandbox);
-			$post_response = curl_exec($request);
-
-			if(empty($post_response) ) {
-
-				if($this->plugin_params->debug) {
-					$this->writeToLog('Order N° :\n\n ');
-					$this->writeToLog($orderid);
-					$this->writeToLog('Fail at step 1 :'.curl_error($request));
-				}
-					$app->enqueueMessage('The connection to the payment plateform did not succeed. '
-						. 'It is often caused by the hosting company blocking external connections so '
-						. 'you should contact him for further guidance. The cURL error message was: '.curl_error($request),'error');
-
-				curl_close ($request);
-				$this->modifyOrder($orderid, $this->plugin_params->invalid_status, true, true);
-				$app->redirect($cancel_url);
-				return false;
-			}
-			else {
-				curl_close ($request);
-				$vars = $this->getPostDatas($post_response);
-
-				if ($vars['ACK'] != 'Success' && $vars['ACK'] != 'SuccessWithWarning') {
-
-					if($this->plugin_params->debug) {
-						$this->writeToLog('Order N° :\n\n ');
-						$this->writeToLog($orderid);
-						$this->writeToLog('Fail at step 2 :'.curl_error($request));
-					}
-
-					$app->enqueueMessage('An error has been encountered - error code : '.$vars['L_ERRORCODE0'].' , error message : '.$vars['L_LONGMESSAGE0']);
-					$this->modifyOrder($orderid, $this->plugin_params->invalid_status, true, true);
-					$app->redirect($cancel_url);
-					return false;
-				}
-				else {
-					if (empty($dbOrder->order_user_id) ) {
-
-						$user = $this->createUser($vars);
-						$userClass = hikashop_get('class.user');
-						$getuser = $userClass->get($vars['EMAIL'],'email');
-
-						$userid = (empty($getuser) ) ? $userClass->save($user) : $getuser->user_id;
-
-						if($this->plugin_params->debug) {
-							$this->writeToLog('Order N° :\n\n ');
-							$this->writeToLog($orderid);
-							$this->writeToLog('user : '.$userid);
-						}
-					}
-					else
-						$userid = $dbOrder->order_user_id;
-
-					if ( @$this->plugin_params->address_override || !isset($dbOrder->order_shipping_address_id) || $dbOrder->order_shipping_address_id==0) {
-
-						$address = $this->createAddress($vars,$userid);
-						$addressClass = hikashop_get('class.address');
-						$addressid = $addressClass->save($address);
-						$dbOrder->order_shipping_address_id = $addressid;
-						$dbOrder->order_billing_address_id = $addressid;
-					}
-
-					$orderClass = hikashop_get('class.order');
-					$dbOrder->order_user_id = $userid;
-					$orderClass->save($dbOrder);
-
-					if ($this->plugin_params->cartdetail) {
-						$i = 0;
-						$tax = 0;
-						$amountCalculated = 0;
-						$items = array();
-						$config = hikashop_config();
-						$group = $config->get('group_options',0);
-						foreach ($cart->products as $p) {
-
-							$productprice = 0;
-							$optionalProdDesc = '';
-							if($p->cart_product_quantity<=0)
-								continue;
-
-							if($group) {
-
-								if($p->cart_product_option_parent_id)
-									continue;
-
-								foreach ($cart->products as $p2) {
-									if ($p2->cart_product_option_parent_id == $p->cart_product_id) {
-
-										if(isset($p2->prices[0]->unit_price) )
-											$unit2 =& $p2->prices[0]->unit_price;
-										else
-											$unit2 =& $p2->prices[0];
-
-										$productprice += round($unit2->price_value,2);
-										$tax += (round($unit2->price_value_with_tax,2) - round($unit2->price_value,2))*$p->cart_product_quantity;
-										$amountCalculated += $p->cart_product_quantity*round($unit2->price_value,2);
-										$optionalProdDesc .= $p2->product_name.',';
-									}
-								}
-							}
-
-							if(isset($p->prices[0]->unit_price) ) $unit =& $p->prices[0]->unit_price;
-							else $unit =& $p->prices[0];
-
-							$tax += (round($unit->price_value_with_tax,2) - round($unit->price_value,2))*$p->cart_product_quantity;
-							$amountCalculated += $p->cart_product_quantity*round($unit->price_value,2);
-							$productprice += round($unit->price_value,2);
-
-							$item = array(
-								'L_PAYMENTREQUEST_0_NAME'.$i => substr(strip_tags($p->product_name), 0, 126),
-								'L_PAYMENTREQUEST_0_NUMBER'.$i => $p->product_id,
-								'L_PAYMENTREQUEST_0_AMT'.$i =>$productprice,
-								'L_PAYMENTREQUEST_0_QTY'.$i => $p->cart_product_quantity,
-							);
-
-							if (!empty($optionalProdDesc) ) {
-								$optionalProdDesc = rtrim($optionalProdDesc,',');
-								if(strlen($optionalProdDesc)>=127) {
-									$optionalProdDesc = substr($optionalProdDesc,0,123).'...';
-								}
-								$item['L_PAYMENTREQUEST_0_DESC'.$i] = $optionalProdDesc;
-							}
-							$i++;
-							$items = array_merge($items,$item);
-						}
-
-						$shipping = 0;
-						if (!empty($cart->shipping) )
-							$shipping = round($cart->shipping[0]->shipping_price_with_tax,2);
-
-						$discount = 0;
-						if (!empty($cart->coupon) )
-							$discount = round($cart->coupon->discount_value,2);
-
-						if ($this->plugin_data->payment_price>0 or $this->plugin_params->payment_percentage>0) {
-
-							$feesValue = round($this->plugin_data->payment_price + $amountTheorical * $this->plugin_params->payment_percentage / 100,2);
-							$item = array(
-								'L_PAYMENTREQUEST_0_NAME'.$i => JText::_('HIKASHOP_PAYMENT'),
-								'L_PAYMENTREQUEST_0_NUMBER'.$i => 99999, //?
-								'L_PAYMENTREQUEST_0_AMT'.$i => $feesValue,
-								'L_PAYMENTREQUEST_0_QTY'.$i => 1,
-							);
-							$amountCalculated += $feesValue;
-							$items = array_merge($items,$item);
-						}
-
-						$amountTheorical += round($amountTheorical * $this->plugin_params->payment_percentage / 100,2);
-						$amountTheorical += round($this->plugin_data->payment_price,2);
-
-						$endItem = array(
-							'PAYMENTREQUEST_0_ITEMAMT' => $amountCalculated,
-							'PAYMENTREQUEST_0_TAXAMT' => $tax,
-							'PAYMENTREQUEST_0_SHIPPINGAMT' => $shipping,
-							'PAYMENTREQUEST_0_SHIPDISCAMT' => -$discount,
-							'PAYMENTREQUEST_0_HANDLINGAMT' => 0,
-							'PAYMENTREQUEST_0_AMT' => $amountTheorical,
-							'PAYMENTREQUEST_0_CURRENCYCODE' => $currency->currency_code,
-							'PAYMENTREQUEST_0_PAYMENTACTION' => 'Sale',
-							'ALLOWNOTE' => 1
-						);
-
-						$varform = array_merge($items,$endItem);
-					}
-
-					$arrayparams = array(
-
-						'USER' => $this->plugin_params->apiuser,
-						'PWD' => $this->plugin_params->apipassword,
-						'SIGNATURE' => $this->plugin_params->apisignature,
-						'VERSION' => $this->plugin_params->apiversion,
-						'PAYMENTREQUEST_0_PAYMENTACTION' => 'Sale',
-						'PAYERID' => $vars['PAYERID'],
-						'TOKEN' => $vars['TOKEN'],
-						'PAYMENTREQUEST_0_AMT' => $amountTheorical,
-						'PAYMENTREQUEST_0_CURRENCYCODE' => $currency->currency_code,
-						'METHOD' => 'DoExpressCheckoutPayment'
-					);
-
-					$varform = ($this->plugin_params->cartdetail) ? array_merge($arrayparams, $varform) : $arrayparams;
-
-					$request = $this->initCurlToPaypal($varform,$this->plugin_params->sandbox);
-					$post_response = curl_exec($request);
-
-					if( ($this->plugin_params->debug) && (!empty($post_response) ) ) {
-						$this->writeToLog('View on post_response (curl) from Paypal (step 2):\n\n ');
-						$this->writeToLog($post_response);
-					}
-
-					if(empty($post_response) ) {
-
-						if($this->plugin_params->debug) {
-							$this->writeToLog('No response was recieved for Order N° :\n\n ');
-							$this->writeToLog($orderid);
-							$this->writeToLog('Fail at step 3 :'.curl_error($request));
-						}
-
-						$app->enqueueMessage('The connection to the payment plateform did not succeed. It is often caused by '
-							. 'the hosting company blocking external connections so you should contact him for further guidance. '
-							. 'The cURL error message was: '.curl_error($request),'error');
-
-						curl_close ($request);
-						$this->modifyOrder($orderid, $this->plugin_params->invalid_status, true, true);
-						$app->redirect($cancel_url);
-						return false;
-					}
-					else {
-
-						curl_close ($request);
-						$vars = $this->getPostDatas($post_response);
-						if ($vars['ACK'] != 'Success' && $vars['ACK'] != 'SuccessWithWarning') {
-
-							if($this->plugin_params->debug) {
-								$this->writeToLog('Order N° :\n\n ');
-								$this->writeToLog($orderid);
-								$this->writeToLog('Fail at step 4 :'.curl_error($request));
-							}
-
-							$app->enqueueMessage('An error has been encountered - error code : '.
-								$vars['L_ERRORCODE0'].' , error message : '.$vars['L_LONGMESSAGE0']);
-
-							$this->modifyOrder($orderid, $this->plugin_params->invalid_status, true, true);
-							$app->redirect($cancel_url);
-							return false;
-						}
-						else {
-							if($this->payment_params->debug) {
-
-								$this->writeToLog("Success processing for order N° :\n\n ");
-								$this->writeToLog($orderid);
-							}
-
-							$history = new stdClass();
-							$history->notified = 1;
-							$history->data = 'PayPal transaction id: '.$vars['PAYMENTINFO_0_TRANSACTIONID'] . "\r\n\r\n";
-							$this->modifyOrder($orderid, $this->plugin_params->verified_status, $history, true);
-							$this->app->redirect($return_url);
-							return true;
-						}
-					}
-				}
-			}
+			$varform = array_merge($items,$endItem);
 		}
+
+		$arrayparams = array(
+			'USER' => $this->plugin_params->apiuser,
+			'PWD' => $this->plugin_params->apipassword,
+			'SIGNATURE' => $this->plugin_params->apisignature,
+			'VERSION' => $this->plugin_params->apiversion,
+			'PAYMENTREQUEST_0_PAYMENTACTION' => 'Sale',
+			'PAYERID' => $vars['PAYERID'],
+			'TOKEN' => $vars['TOKEN'],
+			'PAYMENTREQUEST_0_AMT' => $amountTheorical,
+			'PAYMENTREQUEST_0_CURRENCYCODE' => $currency->currency_code,
+			'METHOD' => 'DoExpressCheckoutPayment'
+		);
+
+		$varform = ($this->plugin_params->cartdetail) ? array_merge($arrayparams, $varform) : $arrayparams;
+
+		$request = $this->initCurlToPaypal($varform,$this->plugin_params->sandbox);
+		$post_response = curl_exec($request);
+
+		$curl_error = curl_error($request);
+		curl_close($request);
+
+		if(empty($post_response) ) {
+			if($this->plugin_params->debug) {
+				$this->writeToLog('No response was recieved for Order N°: ' . $orderid . "\r\n" . 'Fail at step 3: ' . $curl_error);
+			}
+
+			$this->app->enqueueMessage('The connection to the payment plateform did not succeed. It is often caused by ' .
+				'the hosting company blocking external connections so you should contact him for further guidance. ' .
+				'The cURL error message was: '.$curl_error, 'error');
+
+			$this->modifyOrder($orderid, $this->plugin_params->invalid_status, true, true);
+			$this->app->redirect($cancel_url);
+			return false;
+		}
+
+		if(($this->plugin_params->debug)) {
+			$this->writeToLog('View on post_response (curl) from Paypal (step 2):' . "\r\n" . $post_response);
+		}
+
+		$vars = $this->getPostDatas($post_response);
+
+		if ($vars['ACK'] != 'Success' && $vars['ACK'] != 'SuccessWithWarning') {
+			if($this->plugin_params->debug) {
+				$this->writeToLog('Order N°: ' . $orderid . "\r\n" . 'Fail at step 4: ' . $curl_error);
+			}
+
+			$this->app->enqueueMessage('An error has been encountered - error code: '.
+				$vars['L_ERRORCODE0'].', error message: '.$vars['L_LONGMESSAGE0']);
+
+			$this->modifyOrder($orderid, $this->plugin_params->invalid_status, true, true);
+			$this->app->redirect($cancel_url);
+			return false;
+		}
+
+		if($this->payment_params->debug) {
+			$this->writeToLog('Success processing for order N°: '.$orderid);
+		}
+
+		$history = new stdClass();
+		$history->notified = 1;
+		$history->data = 'PayPal transaction id: '.$vars['PAYMENTINFO_0_TRANSACTIONID'];
+
+		$this->modifyOrder($orderid, $this->plugin_params->verified_status, $history, true);
+		$this->app->redirect($return_url);
+		return true;
 	}
 
 	public function onHikashopBeforeDisplayView(&$element) {
@@ -696,7 +677,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 
 		foreach($_REQUEST as $key => $value) {
 			$key = $filter->clean($key);
-			$value = JRequest::getString($key);
+			$value = hikaInput::get()->getString($key);
 			$vars[$key]=$value;
 		}
 		return $vars;

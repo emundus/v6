@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,7 +16,7 @@ class hikashopChilddisplayType {
 		);
 		if($groupby)
 			$this->values[3] = JHTML::_('select.option', 3, JText::_('ALL_SUB_ELEMENTS_GROUP_BY_CATEGORY'));
-		if($show_inherit && JRequest::getCmd('from_display', false) == false) {
+		if($show_inherit && hikaInput::get()->getCmd('from_display', false) == false) {
 			$config = hikashop_config();
 			$defaultParams = $config->get('default_params');
 			$default = '';

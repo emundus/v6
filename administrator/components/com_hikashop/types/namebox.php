@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -21,7 +21,8 @@ class hikashopNameboxType {
 			'name' => 'product_name',
 			'mode' => 'tree',
 			'displayFormat' => '[{product_id}] {product_name}',
-			'url' => 'product&task=getTree&displayFormat={displayFormat}',
+			'url' => 'product&task=getTree&displayFormat={displayFormat}&variants={VARIANTS}',
+			'url_params' => array('VARIANTS'),
 			'options' => array(
 				'tree_url' => 'product&task=getTree&displayFormat={displayFormat}&category_id={ID}',
 				'tree_key' => '{ID}',
@@ -137,7 +138,7 @@ class hikashopNameboxType {
 			'name' => 'user_id',
 			'mode' => 'list',
 			'displayFormat' => '{user_id} - {name}',
-			'url' => 'users&task=getValues',
+			'url' => 'user&task=getValues',
 			'options' => array(
 				'olist' => array(
 					'table' => array('user_id' => 'ID', 'name' => 'HIKA_NAME', 'user_email' => 'HIKA_EMAIL' ),
@@ -291,6 +292,9 @@ class hikashopNameboxType {
 		if(!empty($options['style']))
 			$style = ' style="' . is_array($options['style']) ? implode(' ', $options['style']) : $options['style'] . '"';
 
+		$lang = JFactory::getLanguage();
+		$leftOffset = ($lang->isRTL()) ? '2000px' : '-2000px';
+
 		if((!empty($typeConfig['mode']) && $typeConfig['mode'] == 'list') && empty($typeConfig['options']['olist']['table']) && !is_string(reset($elements))) {
 			$n = $typeConfig['name'];
 			foreach($elements as &$element) {
@@ -324,7 +328,7 @@ class hikashopNameboxType {
 	</div>
 	<div class="nametext">
 		<input id="'.$id.'_text" type="text" style="width:50px;min-width:60px" onfocus="window.oNameboxes[\''.$id.'\'].focus(this);" onkeyup="window.oNameboxes[\''.$id.'\'].search(this);" onchange="window.oNameboxes[\''.$id.'\'].search(this);"/>
-		<span style="position:absolute;top:0px;left:-2000px;visibility:hidden" id="'.$id.'_span">xxxxxx</span>
+		<span style="position:absolute;top:0px;left:'.$leftOffset.';visibility:hidden" id="'.$id.'_span">xxxxxx</span>
 	</div>';
 		}
 		else {
@@ -354,7 +358,7 @@ class hikashopNameboxType {
 				'</div>';
 			$ret .= "\r\n".'<div class="nametext">'.
 				'<input id="'.$id.'_text" type="text" style="width:50px;min-width:60px" onfocus="window.oNameboxes[\''.$id.'\'].focus(this);" onkeyup="window.oNameboxes[\''.$id.'\'].search(this);" onchange="window.oNameboxes[\''.$id.'\'].search(this);"/>'.
-				'<span style="position:absolute;top:0px;left:-2000px;visibility:hidden" id="'.$id.'_span">span</span>'.
+				'<span style="position:absolute;top:0px;left:'.$leftOffset.';visibility:hidden" id="'.$id.'_span">span</span>'.
 				'</div>';
 
 			if(!empty($options['force_data']))

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -77,6 +77,7 @@ class DiscountViewDiscount extends hikashopView {
 		if($pageInfo->elements->page && $extendedData){
 
 			$types = array('product','category','zone');
+			$productClass = hikashop_get('class.product');
 			foreach($types as $type){
 				$ids = array();
 				$key = 'discount_'.$type.'_id';
@@ -106,18 +107,32 @@ class DiscountViewDiscount extends hikashopView {
 				$database->setQuery($query);
 				$elements = $database->loadObjectList();
 
+				static $parents = array();
+
 				foreach($rows as $k => $row){
-					if(empty($row->$key)){
+					if(empty($row->$key))
 						continue;
-					}
 					$display = array();
 					foreach($row->$key as $el){
 						foreach($elements as $element){
-							if($element->$primary==$el){
-								$display[] = $element->$name;
-								$found = true;
-								break;
+							if($element->$primary!=$el)
+								continue;
+							if(!empty($element->product_parent_id)){
+								if(!isset($parents[$element->product_parent_id]))
+									$parents[$element->product_parent_id] = $productClass->get($element->product_parent_id);
+								if(!empty($parents[$element->product_parent_id])){
+									$db = JFactory::getDBO();
+									$query = 'SELECT * FROM '.hikashop_table('variant').' AS v '.
+										' LEFT JOIN '.hikashop_table('characteristic') .' AS c ON v.variant_characteristic_id = c.characteristic_id '.
+										' WHERE v.variant_product_id = '.(int)$element->product_id.' ORDER BY v.ordering';
+									$db->setQuery($query);
+									$element->characteristics = $db->loadObjectList();
+									$productClass->checkVariant($element, $parents[$element->product_parent_id]);
+								}
 							}
+							$display[] = $element->$name;
+							$found = true;
+							break;
 						}
 					}
 					if(!count($display)){
@@ -176,12 +191,12 @@ class DiscountViewDiscount extends hikashopView {
 		);
 		$this->assignRef('elemStruct', $elemStruct);
 
-		$singleSelection = JRequest::getVar('single', false);
+		$singleSelection = hikaInput::get()->getVar('single', false);
 		$this->assignRef('singleSelection', $singleSelection);
 	}
 
 	public function useselection() {
-		$selection = JRequest::getVar('cid', array(), '', 'array');
+		$selection = hikaInput::get()->get('cid', array(), 'array');
 		$rows = array();
 		$data = '';
 
@@ -214,7 +229,7 @@ class DiscountViewDiscount extends hikashopView {
 		$this->assignRef('rows', $rows);
 		$this->assignRef('data', $data);
 
-		$confirm = JRequest::getVar('confirm', true, '', 'boolean');
+		$confirm = hikaInput::get()->getVar('confirm', true, '', 'boolean');
 		$this->assignRef('confirm', $confirm);
 		if($confirm) {
 			$js = 'window.hikashop.ready( function(){window.top.hikashop.submitBox('.$data.');});';
@@ -231,7 +246,7 @@ class DiscountViewDiscount extends hikashopView {
 			$element = $disountClass->get($discount_id);
 			$task = 'edit';
 		} else {
-			$element = JRequest::getVar('fail');
+			$element = hikaInput::get()->getVar('fail');
 			if(empty($element)) {
 				$element = new stdClass();
 				$app = JFactory::getApplication();
@@ -275,7 +290,7 @@ class DiscountViewDiscount extends hikashopView {
 	}
 
 	function select_coupon() {
-		$badge = JRequest::getVar('badge','false');
+		$badge = hikaInput::get()->getVar('badge','false');
 		$this->assignRef('badge',$badge);
 		$app = JFactory::getApplication();
 		$pageInfo = new stdClass();
@@ -352,9 +367,9 @@ class DiscountViewDiscount extends hikashopView {
 	}
 
 	function add_coupon(){
-		$discounts = JRequest::getVar('cid', array(), '', 'array');
+		$discounts = hikaInput::get()->get('cid', array(), 'array');
 
-		$badge = JRequest::getVar('badge');
+		$badge = hikaInput::get()->getVar('badge');
 		if(!isset($badge)) {
 			$badge = 'false';
 		}

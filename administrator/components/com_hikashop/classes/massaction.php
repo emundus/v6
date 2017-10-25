@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -17,7 +17,7 @@ class hikashopMassactionClass extends hikashopClass{
 	function saveForm(){
 		$element = new stdClass();
 		$element->massaction_id = hikashop_getCID('massaction_id');
-		$formData = JRequest::getVar( 'data', array(), '', 'array' );
+		$formData = hikaInput::get()->get('data', array(), 'array');
 
 		foreach($formData['massaction'] as $column => $value){
 			hikashop_secureField($column);
@@ -34,7 +34,7 @@ class hikashopMassactionClass extends hikashopClass{
 		$result = $this->save($element);
 		if($result){
 			$translationHelper->handleTranslations('massaction',$result,$element);
-			JRequest::setVar( 'cid', $result);
+			hikaInput::get()->set( 'cid', $result);
 		}
 		return $result;
 	}
@@ -42,7 +42,7 @@ class hikashopMassactionClass extends hikashopClass{
 	function _retreiveData(&$element, $type='trigger'){
 		$var_name = 'massaction_'.$type.'s';
 		$element->$var_name = '';
-		$formData = JRequest::getVar( $type, array(), '', 'array' );
+		$formData = hikaInput::get()->get($type, array(), 'array');
 
 		if(count($formData[$element->massaction_table]) > 0)
 			$element->$var_name = array();
@@ -1069,7 +1069,7 @@ class hikashopMassactionClass extends hikashopClass{
 			if($key === $column && isset($type->type)){
 				switch($type->type){
 					case 'price':
-						if($element->$column->currency != '0' && JRequest::getVar('from_task','displayResults') == 'displayResults'){
+						if($element->$column->currency != '0' && hikaInput::get()->getVar('from_task','displayResults') == 'displayResults'){
 							$currencyClass = hikashop_get('class.currency');
 							if(!isset($element->$column->currency)){
 								$config = hikashop_config();
@@ -1251,12 +1251,14 @@ class hikashopMassactionClass extends hikashopClass{
 		return $element;
 	}
 
-	function prepare(&$massaction,$action='unserialize'){
+	function prepare(&$massaction,$action='hikashop_unserialize'){
 		$vars = array('triggers','actions','filters');
 		foreach($vars as $var){
 			$key = 'massaction_'.$var;
 			if(!empty($massaction->$key)){
 				$massaction->$key = $action($massaction->$key);
+			} else {
+				$massaction->$key = array();
 			}
 		}
 	}
@@ -1358,54 +1360,55 @@ class hikashopMassactionClass extends hikashopClass{
 		if(in_array($filter['operator'],array('<=','>=','<','>')) && !preg_match('/^(?:\d+|\d*\.\d+)$/',$filter['value'])){
 			$in = false;
 		}else{
+			$type = $filter['type'];
 			switch($filter['operator']){
 				case 'BEGINS':
-					if(preg_match('/^'.$filter['value'].'/i',$element->$filter['type'])){ $in = true; }
+					if(preg_match('/^'.$filter['value'].'/i',$element->$type)){ $in = true; }
 					break;
 				case 'END':
-					if(preg_match('/'.$filter['value'].'$/i',$element->$filter['type'])){ $in = true; }
+					if(preg_match('/'.$filter['value'].'$/i',$element->$type)){ $in = true; }
 					break;
 				case 'LIKE':
-					if(preg_match('/\b'.$filter['value'].'\b/i',$element->$filter['type'])){ $in = true; }
+					if(preg_match('/\b'.$filter['value'].'\b/i',$element->$type)){ $in = true; }
 					break;
 				case 'NOT LIKE':
-					if(!preg_match('/\b'.$filter['value'].'\b/i',$element->$filter['type'])){ $in = true; }
+					if(!preg_match('/\b'.$filter['value'].'\b/i',$element->$type)){ $in = true; }
 					break;
 				case 'CONTAINS':
-					if(preg_match('/'.$filter['value'].'/i',$element->$filter['type'])){ $in = true; }
+					if(preg_match('/'.$filter['value'].'/i',$element->$type)){ $in = true; }
 					break;
 				case 'NOTCONTAINS':
-					if(!preg_match('/'.$filter['value'].'/i',$element->$filter['type'])){ $in = true; }
+					if(!preg_match('/'.$filter['value'].'/i',$element->$type)){ $in = true; }
 					break;
 				case 'REGEXP':
-					if(preg_match($filter['value'],$element->$filter['type'])){ $in = true;	}
+					if(preg_match($filter['value'],$element->$type)){ $in = true;	}
 					break;
 				case 'NOT REGEXP':
-					if(!preg_match($filter['value'],$element->$filter['type'])){ $in = true; }
+					if(!preg_match($filter['value'],$element->$type)){ $in = true; }
 					break;
 				case 'IS NULL':
-					if($element->$filter['type'] == null){ $in = true; }
+					if($element->$type == null){ $in = true; }
 					break;
 				case 'IS NOT NULL':
-					if($element->$filter['type'] != null){ $in = true; }
+					if($element->$type != null){ $in = true; }
 					break;
 				case '>':
-					if($element->$filter['type'] > $filter['value']){ $in = true; }
+					if($element->$type > $filter['value']){ $in = true; }
 					break;
 				case '<':
-					if($element->$filter['type'] < $filter['value']){ $in = true; }
+					if($element->$type < $filter['value']){ $in = true; }
 					break;
 				case '>=':
-					if($element->$filter['type'] >= $filter['value']){ $in = true; }
+					if($element->$type >= $filter['value']){ $in = true; }
 					break;
 				case '<=':
-					if($element->$filter['type'] <= $filter['value']){ $in = true; }
+					if($element->$type <= $filter['value']){ $in = true; }
 					break;
 				case '!=':
-					if($element->$filter['type'] != $filter['value']){ $in = true; }
+					if($element->$type != $filter['value']){ $in = true; }
 					break;
 				default:
-					if($element->$filter['type'] == $filter['value']){ $in = true; }
+					if($element->$type == $filter['value']){ $in = true; }
 					break;
 			}
 		}
@@ -1600,7 +1603,6 @@ class hikashopMassactionClass extends hikashopClass{
 				$missingIds[] = $pool[$key]->product_code;
 			}
 		}
-
 		$missing = array();
 		if(!empty($missingCodes)){
 			$db->setQuery('SELECT * FROM '.hikashop_table('product').' WHERE product_id IN ('.implode(',',$missingCodes).')');
@@ -1637,6 +1639,8 @@ class hikashopMassactionClass extends hikashopClass{
 				foreach($missingIds as $missingId){
 					if($newProduct->product_code == $missingId->product_code){
 						$newProduct->product_id = $missingId->product_id;
+						if(!isset($newProduct->product_parent_id))
+							$newProduct->product_parent_id = $missingId->product_parent_id;
 					}
 				}
 			}
@@ -2529,7 +2533,7 @@ class hikashopMassactionClass extends hikashopClass{
 			$spreadsheetHelper->writeLine($row);
 		}
 
-		JRequest::setVar('from_task','exportCsv');
+		hikaInput::get()->set('from_task','exportCsv');
 		if(!empty($params->action)){
 			if(!isset($params->action['date_format']) || empty($params->action['date_format']))
 				$params->action['date_format'] = JText::_('HIKASHOP_DATE_FORMAT');

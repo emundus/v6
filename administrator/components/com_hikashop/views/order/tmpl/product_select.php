@@ -1,16 +1,16 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-	$cart_type = JRequest::getCmd('cart_type', 'cart');
+	$cart_type = hikaInput::get()->getCmd('cart_type', 'cart');
 	if($this->element->order_id == 0){
-		$cart_id = JRequest::getInt($cart_type.'_id', 0);
+		$cart_id = hikaInput::get()->getInt($cart_type.'_id', 0);
 		$parameters = '&cart_type='.$cart_type;
 		$parameters .= '&cart_id='.$cart_id;
 	}else{
@@ -144,8 +144,8 @@ defined('_JEXEC') or die('Restricted access');
 					</tbody>
 				</table>
 						<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
-				<input type="hidden" name="task" value="<?php echo JRequest::getCmd('task'); ?>" />
-				<input type="hidden" name="ctrl" value="<?php echo JRequest::getCmd('ctrl'); ?>" />
+				<input type="hidden" name="task" value="<?php echo hikaInput::get()->getCmd('task'); ?>" />
+				<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getCmd('ctrl'); ?>" />
 				<input type="hidden" name="boxchecked" value="0" />
 				<input type="hidden" name="tmpl" value="component" />
 				<input type="hidden" name="order_id" value="<?php echo @$this->element->order_id;?>" />

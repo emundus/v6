@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -14,18 +14,18 @@ defined('_JEXEC') or die('Restricted access');
 
 class plgSystemHikashopproducttag extends JPlugin {
 	function onHikashopBeforeDisplayView(&$view){
-		$option = JRequest::getString('option');
-		$ctrl = JRequest::getString('ctrl');
-		$task = JRequest::getString('task');
+		$option = hikaInput::get()->getString('option');
+		$ctrl = hikaInput::get()->getString('ctrl');
+		$task = hikaInput::get()->getString('task');
 
 		if ($option!='com_hikashop'||$ctrl!='product'||$task!='show') return;
 
 		ob_start();
 	}
 	function onHikashopAfterDisplayView(&$view){
-		$option = JRequest::getString('option');
-		$ctrl = JRequest::getString('ctrl');
-		$task = JRequest::getString('task');
+		$option = hikaInput::get()->getString('option');
+		$ctrl = hikaInput::get()->getString('ctrl');
+		$task = hikaInput::get()->getString('task');
 
 		if ($option!='com_hikashop'||$ctrl!='product'||$task!='show') return;
 
@@ -144,7 +144,7 @@ class plgSystemHikashopproducttag extends JPlugin {
 			}
 
 			if(!preg_match('#itemprop="ratingValue"#',$product_page_parts[1])){
-				$ratemax=JRequest::getVar("nb_max_star");//nbmax
+				$ratemax=hikaInput::get()->getVar("nb_max_star");//nbmax
 				$pattern='/(<span\s+class="hikashop_total_vote")/iUs';
 				if(preg_match($pattern,$product_page_parts[1])){
 

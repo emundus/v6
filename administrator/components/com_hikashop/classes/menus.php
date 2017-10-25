@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -74,7 +74,7 @@ class hikashopMenusClass extends hikashopClass {
 
 	function saveForm(){
 		$module = new stdClass();
-		$formData = JRequest::getVar( 'menu', array(), '', 'array' );
+		$formData = hikaInput::get()->get('menu', array(), 'array');
 		jimport('joomla.filter.filterinput');
 		$safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
 		if(!empty($formData)){
@@ -114,7 +114,7 @@ class hikashopMenusClass extends hikashopClass {
 		if($result)
 		{
 			$element = array();
-			$formData = JRequest::getVar( 'config', array(), '', 'array' );
+			$formData = hikaInput::get()->get('config', array(), 'array');
 			$params_name = 'menu_'.(int)$module->id;
 			if($new){
 				$post_name = 'menu_0';
@@ -179,7 +179,9 @@ class hikashopMenusClass extends hikashopClass {
 			$menu_id = $this->loadAMenuItemId('','',$Itemid);
 		}
 		if(empty($menu_id)){
-			$menu_id = $this->loadAMenuItemId('checkout','step');
+			$config = hikashop_config();
+			$task = $config->get('checkout_legacy', 0) ? 'step' : 'show';
+			$menu_id = $this->loadAMenuItemId('checkout', $task);
 			if(empty($menu_id)){
 				$menu_id = $this->loadAMenuItemId('','');
 			}
@@ -191,7 +193,61 @@ class hikashopMenusClass extends hikashopClass {
 		return $url_menu_id;
 	}
 
-	function loadAMenuItemId($view='category',$layout='listing',$id=0){
+	function getCheckoutURL($redirect = false) {
+		$config = hikashop_config();
+		$task = $config->get('checkout_legacy', 0) ? 'step' : 'show';
+		$itemid_for_checkout = (int)$config->get('checkout_itemid', 0);
+		if(!empty($itemid_for_checkout)) {
+			$forced_menu_item_is_checkout_type = (int)$this->loadAMenuItemId('checkout', $task, $itemid_for_checkout);
+			if(!empty($forced_menu_item_is_checkout_type))
+				return JRoute::_('index.php?option=' . HIKASHOP_COMPONENT . '&Itemid=' . $itemid_for_checkout, !$redirect);
+
+			$forced_menu_item_is_hikashop = (int)$this->loadAMenuItemId('', '', $itemid_for_checkout);
+			if(!empty($forced_menu_item_is_hikashop))
+				return hikashop_completeLink('checkout&Itemid=' . $itemid_for_checkout, false, $redirect);
+		}
+
+		$menu_id = (int)$this->loadAMenuItemId('checkout', $task);
+		if(!empty($menu_id))
+			return JRoute::_('index.php?option=' . HIKASHOP_COMPONENT . '&Itemid=' . $menu_id, !$redirect);
+
+		global $Itemid;
+		$menu_id = (int)$this->loadAMenuItemId('','',$Itemid);
+		if(!empty($menu_id))
+			return hikashop_completeLink('checkout&Itemid=' . $menu_id, false, $redirect);
+
+		$menu_id = (int)$this->loadAMenuItemId('','');
+		if(!empty($menu_id))
+			return hikashop_completeLink('checkout&Itemid=' . $menu_id, false, $redirect);
+
+		if(!empty($Itemid))
+			return hikashop_completeLink('checkout&Itemid=' . $Itemid, false, $redirect);
+
+		return hikashop_completeLink('checkout', false, $redirect);
+	}
+
+	function getPublicMenuItemId($id = 0) {
+		$filters = array(
+			'a.type=\'component\'',
+			'a.published=1',
+			'b.title IS NOT NULL',
+			'a.access IN (0, 1)',
+			'a.link LIKE \'index.php?option=com_hikashop&view=%\'',
+		);
+		if(HIKASHOP_J25){
+			$lang = JFactory::getLanguage();
+			$tag = $lang->getTag();
+			$filters[] = "a.language IN ('*',".$this->database->Quote($tag).")";
+		}
+		if($id){
+			$filters[] = 'a.id = '.(int)$id;
+		}
+		$query = "SELECT a.id FROM ".hikashop_table('menu',false).' AS a INNER JOIN `#__menu_types` as b on a.menutype = b.menutype WHERE '.implode(' AND ',$filters);
+		$this->database->setQuery($query);
+		return (int) $this->database->loadResult();
+	}
+
+	function loadAMenuItemId($view = 'category', $layout = 'listing', $id = 0) {
 		static $cache = array();
 		if(!isset($cache[$view.'.'.$layout])){
 			$filters = array(
@@ -261,12 +317,12 @@ class hikashopMenusClass extends hikashopClass {
 						if(isset($menuItem->params))
 							$categoryParams = $menuItem->params->get('hk_category');
 						if((isset($categoryParams->content_type) && $categoryParams->content_type == 'manufacturer') || (isset($categoryParams->category) && $categoryParams->category == $brandId))
-							return $current_id;
+							return (int)$current_id;
 					}
 
 					$options = $config->get('menu_'.$current_id,null);
 					if (isset($options['content_type']) && $options['content_type'] == $view) {
-						return $current_id;
+						return (int)$current_id;
 					}
 				}
 			}

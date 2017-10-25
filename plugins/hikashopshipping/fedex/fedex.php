@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -45,21 +45,20 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 
 	function shippingMethods(&$main){
 		$methods = array();
-		if(!empty($main->shipping_params->methodsList)){
-			$main->shipping_params->methods=hikashop_unserialize($main->shipping_params->methodsList);
+		if(!empty($main->shipping_params->methodsList)) {
+			$main->shipping_params->methods = hikashop_unserialize($main->shipping_params->methodsList);
 		}
-		if(!empty($main->shipping_params->methods)){
+		if(!empty($main->shipping_params->methods)) {
 			foreach($main->shipping_params->methods as $method){
 				$selected = null;
-				foreach($this->fedex_methods as $fedex){
-					if($fedex['code']==$method) {
+				foreach($this->fedex_methods as $fedex) {
+					if($fedex['code'] == $method) {
 						$selected = $fedex;
 						break;
 					}
 				}
-				if($selected){
+				if($selected)
 					$methods[$main->shipping_id . '-' . $selected['key']] = $selected['name'];
-				}
 			}
 		}
 		return $methods;
@@ -105,9 +104,9 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 				return true;
 			}
 
-			$this->shipping_currency_id=$currency= hikashop_getCurrency();
+			$this->shipping_currency_id = $currency = hikashop_getCurrency();
 			$db = JFactory::getDBO();
-			$query='SELECT currency_code FROM '.hikashop_table('currency').' WHERE currency_id IN ('.$this->shipping_currency_id.')';
+			$query = 'SELECT currency_code FROM '. hikashop_table('currency') .' WHERE currency_id IN ('. $this->shipping_currency_id .')';
 			$db->setQuery($query);
 			$this->shipping_currency_code = $db->loadResult();
 			$cart = hikashop_get('class.cart');
@@ -115,21 +114,22 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 			$cart->loadAddress($null,$order->shipping_address->address_id,'object', 'shipping');
 			$currency = hikashop_get('class.currency');
 
-			$receivedMethods=$this->_getRates($rate, $order, $heavyProduct, $null);
+			$receivedMethods = $this->_getRates($rate, $order, $heavyProduct, $null);
 
 			if(empty($receivedMethods)) {
 				$messages['no_rates'] = JText::_('NO_SHIPPING_METHOD_FOUND');
 				continue;
 			}
+
 			$i = 0;
 			$local_usable_rates = array();
 			foreach($receivedMethods as $method) {
 				$usableMethods[] = $method;
-				$local_usable_rates[$i]=(!HIKASHOP_PHP5) ? $rate : clone($rate);
+				$local_usable_rates[$i] = (!HIKASHOP_PHP5) ? $rate : clone($rate);
 				$local_usable_rates[$i]->shipping_price += round($method['value'], 2);
 				$selected_method = '';
 				$name = '';
-				$description ='';
+				$description = '';
 
 				foreach($this->fedex_methods as $fedex_method) {
 					if($fedex_method['code'] == $method['code'] && ($method['old_currency_code'] == 'CAD' || !isset($fedex_method['double']))) {
@@ -150,7 +150,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 						break;
 					}
 				}
-				$local_usable_rates[$i]->shipping_name=$name;
+				$local_usable_rates[$i]->shipping_name = $name;
 
 				if($description != '')
 					$local_usable_rates[$i]->shipping_description .= $description;
@@ -160,61 +160,64 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 				$sep = '';
 				if(@$rate->shipping_params->show_eta) {
 					if(@$rate->shipping_params->show_eta_delay) {
-						if($method['delivery_delay']!=-1 && $method['day']>0){
-							$local_usable_rates[$i]->shipping_description.=$sep.JText::sprintf( 'ESTIMATED_TIME_AFTER_SEND', $method['delivery_delay']);
-						}else{
-							$local_usable_rates[$i]->shipping_description.=$sep.JText::_( 'NO_ESTIMATED_TIME_AFTER_SEND');
-						}
+						if($method['delivery_delay'] != -1 && $method['day'] > 0)
+							$local_usable_rates[$i]->shipping_description .= $sep . JText::sprintf( 'ESTIMATED_TIME_AFTER_SEND', $method['delivery_delay']);
+						else
+							$local_usable_rates[$i]->shipping_description .= $sep . JText::_( 'NO_ESTIMATED_TIME_AFTER_SEND');
 					} else {
-						if($method['delivery_day']!=-1 && $method['day']>0){
-							$local_usable_rates[$i]->shipping_description.=$sep.JText::sprintf( 'ESTIMATED_TIME_AFTER_SEND', $method['delivery_day']);
-						}else{
-							$local_usable_rates[$i]->shipping_description.=$sep.JText::_( 'NO_ESTIMATED_TIME_AFTER_SEND');
-						}
+						if($method['delivery_day'] != -1 && $method['day'] > 0)
+							$local_usable_rates[$i]->shipping_description .= $sep . JText::sprintf( 'ESTIMATED_TIME_AFTER_SEND', $method['delivery_day']);
+						else
+							$local_usable_rates[$i]->shipping_description .= $sep . JText::_( 'NO_ESTIMATED_TIME_AFTER_SEND');
 					}
 					$sep = '<br/>';
-					if($method['delivery_time']!=-1 && $method['day']>0){
+					if($method['delivery_time']!= -1 && $method['day'] > 0) {
 						if(@$rate->shipping_params->show_eta_format == '12')
-							$local_usable_rates[$i]->shipping_description.=$sep.JText::sprintf( 'DELIVERY_HOUR', date('h:i:s a', strtotime($method['delivery_time'])));
+							$local_usable_rates[$i]->shipping_description .= $sep . JText::sprintf( 'DELIVERY_HOUR', date('h:i:s a', strtotime($method['delivery_time'])));
 						else
-							$local_usable_rates[$i]->shipping_description.=$sep.JText::sprintf( 'DELIVERY_HOUR', $method['delivery_time']);
-					}else{
-						$local_usable_rates[$i]->shipping_description.=$sep.JText::_( 'NO_DELIVERY_HOUR');
+							$local_usable_rates[$i]->shipping_description .= $sep . JText::sprintf( 'DELIVERY_HOUR', $method['delivery_time']);
+					} else {
+						$local_usable_rates[$i]->shipping_description .= $sep . JText::_( 'NO_DELIVERY_HOUR');
 					}
 				}
 				if(@$rate->shipping_params->show_notes && !empty($method['notes'])) {
 					foreach($method['notes'] as $note){
-						if($note->Code != '820' && $note->Code != '819' && !empty($note->LocalizedMessage) ) {
-							$local_usable_rates[$i]->shipping_description.=$sep.implode('<br/>', $note->LocalizedMessage);
+						if($note->Code != '820' && $note->Code != '819' && !empty($note->LocalizedMessage)) {
+							$local_usable_rates[$i]->shipping_description .= $sep . implode('<br/>', $note->LocalizedMessage);
 							$sep = '<br/>';
 						}
 					}
 				}
-				if($rate->shipping_params->group_package && $this->nbpackage>0)
-					$local_usable_rates[$i]->shipping_description.='<br/>'.JText::sprintf('X_PACKAGES', $this->nbpackage);
+				if($rate->shipping_params->group_package && $this->nbpackage > 0)
+					$local_usable_rates[$i]->shipping_description .= '<br/>' . JText::sprintf('X_PACKAGES', $this->nbpackage);
 				$i++;
 			}
-			foreach($local_usable_rates as $i => $finalRate){
+
+			foreach($local_usable_rates as $i => $finalRate) {
 				if(isset($finalRate->shipping_price_orig) || isset($finalRate->shipping_currency_id_orig)){
 					if($finalRate->shipping_currency_id_orig == $finalRate->shipping_currency_id)
 						$finalRate->shipping_price_orig = $finalRate->shipping_price;
 					else
 						$finalRate->shipping_price_orig = $currencyClass->convertUniquePrice($finalRate->shipping_price, $finalRate->shipping_currency_id, $finalRate->shipping_currency_id_orig);
 				}
-				$usable_rates[$finalRate->shipping_id]=$finalRate;
+				$usable_rates[$finalRate->shipping_id] = $finalRate;
 			}
 		}
 	}
-	function getShippingDefaultValues(&$element){
-		$element->shipping_name='FedEx';
-		$element->shipping_description='';
-		$element->group_package=0;
-		$element->debug=0;
-		$element->shipping_images='fedex';
-		$element->shipping_params->post_code='';
+	function getShippingDefaultValues(&$element) {
+		$element->shipping_name = 'FedEx';
+		$element->shipping_description = '';
+		$element->group_package = 0;
+		$element->debug = 0;
+		$element->shipping_images = 'fedex';
+		$element->shipping_params->post_code = '';
 		$element->shipping_currency_id = $this->main_currency;
-		$element->shipping_params->pickup_type='01';
-		$element->shipping_params->destination_type='auto';
+		$element->shipping_params->pickup_type = '01';
+		$element->shipping_params->destination_type = 'auto';
+		$element->shipping_params->use_dimensions = 1;
+		$element->shipping_params->show_eta_delay = 1;
+		$element->shipping_params->show_eta = 1;
+		$element->shipping_params->show_notes = 1;
 	}
 	function onShippingConfiguration(&$element){
 		$config =& hikashop_config();
@@ -223,7 +226,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 		$currency = hikashop_get('class.currency');
 		$this->currencyCode = $currency->get($this->main_currency)->currency_code;
 		$this->currencySymbol = $currency->get($this->main_currency)->currency_symbol;
-		$this->fedex = JRequest::getCmd('name','fedex');
+		$this->fedex = hikaInput::get()->getCmd('name','fedex');
 		$this->categoryType = hikashop_get('type.categorysub');
 		$this->categoryType->type = 'tax';
 		$this->categoryType->field = 'category_id';
@@ -231,7 +234,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 
 		parent::onShippingConfiguration($element);
 
-		$js="
+		$js = "
 			function checkAllBox(id, type){
 				var toCheck = document.getElementById(id).getElementsByTagName('input');
 				for (i = 0 ; i < toCheck.length ; i++) {
@@ -254,30 +257,30 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 
 	function onShippingConfigurationSave(&$element){
 		$app = JFactory::getApplication();
-		$methods=array();
-		if(empty($element->shipping_params->account_number) ||
-			empty($element->shipping_params->origination_postcode) ||
-			empty($element->shipping_params->meter_id) ||
-			empty($element->shipping_params->api_key) ||
-			empty($element->shipping_params->api_password) ||
-			empty($element->shipping_params->sender_company) ||
-			empty($element->shipping_params->sender_phone) ||
-			empty($element->shipping_params->sender_address) ||
-			empty($element->shipping_params->sender_city) ||
-			empty($element->shipping_params->sender_state) ||
-			empty($element->shipping_params->sender_country) ||
-			empty($element->shipping_params->sender_postcode)
-		 ){
+		$methods = array();
+		if(empty($element->shipping_params->account_number)
+			|| empty($element->shipping_params->origination_postcode)
+			|| empty($element->shipping_params->meter_id)
+			|| empty($element->shipping_params->api_key)
+			|| empty($element->shipping_params->api_password)
+			|| empty($element->shipping_params->sender_company)
+			|| empty($element->shipping_params->sender_phone)
+			|| empty($element->shipping_params->sender_address)
+			|| empty($element->shipping_params->sender_city)
+			|| empty($element->shipping_params->sender_state)
+			|| empty($element->shipping_params->sender_country)
+			|| empty($element->shipping_params->sender_postcode)
+		) {
 			$app->enqueueMessage(JText::sprintf('ENTER_INFO', 'FedEx', JText::_('SENDER_INFORMATIONS').' ('. JText::_( 'FEDEX_ORIGINATION_POSTCODE' ).', '.JText::_( 'FEDEX_ACCOUNT_NUMBER' ).', '.JText::_( 'FEDEX_METER_ID' ).', '.JText::_( 'FEDEX_API_KEY' ).', '.JText::_( 'HIKA_PASSWORD' ).', '.JText::_( 'COMPANY' ).', '.JText::_( 'TELEPHONE' ).', '.JText::_( 'ADDRESS' ).', '.JText::_( 'CITY' ).', '.JText::_( 'COUNTRY' ).', '.JText::_( 'POST_CODE' ).')'));
 		}
-		if(isset($_REQUEST['data']['shipping_methods'])){
-			foreach($_REQUEST['data']['shipping_methods'] as $method){
-				foreach($this->fedex_methods as $fedexMethod){
-					$name=strtolower($fedexMethod['name']);
-					$name=str_replace(' ','_', $name);
-					if($name==$method['name']){
+		if(isset($_REQUEST['data']['shipping_methods'])) {
+			foreach($_REQUEST['data']['shipping_methods'] as $method) {
+				foreach($this->fedex_methods as $fedexMethod) {
+					$name = strtolower($fedexMethod['name']);
+					$name = str_replace(' ','_', $name);
+					if($name == $method['name']) {
 						$obj = new stdClass();
-						$methods[strip_tags($method['name'])]=strip_tags($fedexMethod['code']);
+						$methods[strip_tags($method['name'])] = strip_tags($fedexMethod['code']);
 					}
 				}
 			}
@@ -292,67 +295,67 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 	function _getRates(&$rate, &$order, $heavyProduct, $null){
 		$db = JFactory::getDBO();
 		$total_price = 0;
-		foreach($order->products as $k=>$v){
-			foreach($v->prices as $price){
+		foreach($order->products as $k=>$v) {
+			foreach($v->prices as $price) {
 				$total_price = $total_price + $price->price_value;
 			}
 		}
 
-		$data['fedex_account_number']=@$rate->shipping_params->account_number;
-		$data['fedex_meter_number']=@$rate->shipping_params->meter_id;
-		$data['fedex_api_key']=@$rate->shipping_params->api_key;
-		$data['fedex_api_password']=@$rate->shipping_params->api_password;
-		$data['show_eta']=@$rate->shipping_params->show_eta;
-		$data['show_eta_format']=@$rate->shipping_params->show_eta_format;
-		$data['packaging_type']=@$rate->shipping_params->packaging_type;
-		$data['include_price']=@$rate->shipping_params->include_price;
-		$data['currency_code']= $this->shipping_currency_code;
-		$data['weight_approximation']=@$rate->shipping_params->weight_approximation;
-		$data['use_dimensions']=@$rate->shipping_params->use_dimensions;
-		$data['dim_approximation_l']=@$rate->shipping_params->dim_approximation_l;
-		$data['dim_approximation_w']=@$rate->shipping_params->dim_approximation_w;
-		$data['dim_approximation_h']=@$rate->shipping_params->dim_approximation_h;
-		$data['methods']=@$rate->shipping_params->methods;
-		$data['destZip']=@$null->shipping_address->address_post_code;
-		$data['destCountry']=@$null->shipping_address->address_country->zone_code_2;
-		$data['zip']=@$rate->shipping_params->origination_postcode;
-		$data['total_insured']=@$total_price;
-		$data['sender_company']=@$rate->shipping_params->sender_company;
-		$data['sender_phone']=@$rate->shipping_params->sender_phone;
-		$data['sender_address']=@$rate->shipping_params->sender_address;
-		$data['sender_city']=@$rate->shipping_params->sender_city;
-		$data['weight']=0;
-		$data['height']=0;
-		$data['length']=0;
-		$data['width']=0;
+		$data['fedex_account_number'] = @$rate->shipping_params->account_number;
+		$data['fedex_meter_number'] = @$rate->shipping_params->meter_id;
+		$data['fedex_api_key'] = @$rate->shipping_params->api_key;
+		$data['fedex_api_password'] = @$rate->shipping_params->api_password;
+		$data['show_eta'] = @$rate->shipping_params->show_eta;
+		$data['show_eta_format'] = @$rate->shipping_params->show_eta_format;
+		$data['packaging_type'] = @$rate->shipping_params->packaging_type;
+		$data['include_price'] = @$rate->shipping_params->include_price;
+		$data['currency_code'] = $this->shipping_currency_code;
+		$data['weight_approximation'] = @$rate->shipping_params->weight_approximation;
+		$data['use_dimensions'] = (isset($rate->shipping_params->use_dimensions)) ? $rate->shipping_params->use_dimensions : 0;
+		$data['dim_approximation_l'] = @$rate->shipping_params->dim_approximation_l;
+		$data['dim_approximation_w'] = @$rate->shipping_params->dim_approximation_w;
+		$data['dim_approximation_h'] = @$rate->shipping_params->dim_approximation_h;
+		$data['methods'] = @$rate->shipping_params->methods;
+		$data['destZip'] = @$null->shipping_address->address_post_code;
+		$data['destCountry'] = @$null->shipping_address->address_country->zone_code_2;
+		$data['zip'] = @$rate->shipping_params->origination_postcode;
+		$data['total_insured'] = @$total_price;
+		$data['sender_company'] = @$rate->shipping_params->sender_company;
+		$data['sender_phone'] = @$rate->shipping_params->sender_phone;
+		$data['sender_address'] = @$rate->shipping_params->sender_address;
+		$data['sender_city'] = @$rate->shipping_params->sender_city;
+		$data['weight'] = 0;
+		$data['height'] = 0;
+		$data['length'] = 0;
+		$data['width'] = 0;
 		if(isset($order->full_total->prices[0]))
 			$data['price'] = $order->full_total->prices[0]->price_value_with_tax;
 		else
-			$data['price']=0;
+			$data['price'] = 0;
 
 		$state_zone = '';
-		$state_zone=@$rate->shipping_params->sender_state;
-		$query="SELECT zone_id, zone_code_2, zone_code_3 FROM ".hikashop_table('zone')." WHERE zone_namekey IN (".$db->Quote($state_zone).")";
+		$state_zone = @$rate->shipping_params->sender_state;
+		$query = "SELECT zone_id, zone_code_2, zone_code_3 FROM ".hikashop_table('zone')." WHERE zone_namekey IN (".$db->Quote($state_zone).")";
 		$db->setQuery($query);
 		$state = $db->loadObject();
 		$data['sender_state'] = '';
 		if(isset($state->zone_code_2) && strlen($state->zone_code_2) == 2)
 			$data['sender_state'] = $state->zone_code_2;
-		elseif(strlen($state->zone_code_3) == 2)
-			$data['sender_state']=$state->zone_code_3;
+		elseif(isset($state->zone_code_3) && strlen($state->zone_code_3) == 2)
+			$data['sender_state'] = $state->zone_code_3;
 
-		$data['sender_postcode']=$rate->shipping_params->sender_postcode;
-		$data['recipient']=$null->shipping_address;
+		$data['sender_postcode'] = $rate->shipping_params->sender_postcode;
+		$data['recipient'] = $null->shipping_address;
 
 		$czone_code = '';
-		$czone_code=@$rate->shipping_params->sender_country;
-		$query="SELECT zone_id, zone_code_2 FROM ".hikashop_table('zone')." WHERE zone_namekey IN (".$db->Quote($czone_code).")";
+		$czone_code = @$rate->shipping_params->sender_country;
+		$query = "SELECT zone_id, zone_code_2 FROM ".hikashop_table('zone')." WHERE zone_namekey IN (".$db->Quote($czone_code).")";
 		$db->setQuery($query);
 		$czone = $db->loadObject();
 		$data['country'] = $czone->zone_code_2;
 
-		$data['XMLpackage']='';
-		$data['pickup_type']=@$rate->shipping_params->pickup_type;
+		$data['XMLpackage'] = '';
+		$data['pickup_type'] = @$rate->shipping_params->pickup_type;
 		$this->nbpackage = 0;
 
 		$ground_limit = array(
@@ -396,8 +399,11 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 
 
 		$required_dimensions = array('w');
-		if(@$rate->shipping_params->use_dimensions == 1)
+		if(@$rate->shipping_params->use_dimensions == 1) {
 			$required_dimensions = array('w','x','y','z');
+		} else {
+			$limit = array('w' => $limit['w']);
+		}
 
 		$packages = $this->getOrderPackage($order, array('weight_unit' => 'lb', 'volume_unit' => 'in', 'limit' => $limit, 'required_dimensions' => $required_dimensions));
 
@@ -417,14 +423,18 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 			$data['dimension_unit'] = 'IN';
 			$data['quantity'] = 1;
 
-			if(($this->freight==true && $this->classicMethod==false) || ($heavyProduct==true && $this->freight==true))
-				$data['XMLpackage'].=$this->_createPackage($data, $rate, $order);
+			if(($this->freight==true && $this->classicMethod==false) || ($heavyProduct==true && $this->freight==true) || @$rate->shipping_params->use_dimensions != 1)
+				$data['XMLpackage'].= $this->_createPackage($data, $rate, $order);
 			else
-				$data['XMLpackage'].=$this->_createPackage($data, $rate, $order, true);
+				$data['XMLpackage'].= $this->_createPackage($data, $rate, $order, true);
 		} else {
 			foreach($packages as $package){
-				if(!isset($package['w']) || $package['w'] == 0 || !isset($package['x']) || $package['x'] == 0 || !isset($package['y']) || $package['y'] == 0 || !isset($package['z']) || $package['z'] == 0)
+				if(!isset($package['w']) || $package['w'] == 0)
 					continue;
+				if(@$rate->shipping_params->use_dimensions == 1) {
+					if(!isset($package['x']) || $package['x'] == 0 || !isset($package['y']) || $package['y'] == 0 || !isset($package['z']) || $package['z'] == 0)
+						continue;
+				}
 				$this->nbpackage++;
 				$data['weight'] = $package['w'];
 				$data['height'] = $package['z'];
@@ -434,46 +444,66 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 				$data['dimension_unit'] = 'IN';
 				$data['quantity'] = 1;
 
-				if(($this->freight==true && $this->classicMethod==false) || ($heavyProduct==true && $this->freight==true))
-					$data['XMLpackage'].=$this->_createPackage($data, $rate, $order);
+				if(($this->freight==true && $this->classicMethod==false) || ($heavyProduct==true && $this->freight==true) || @$rate->shipping_params->use_dimensions != 1)
+					$data['XMLpackage'].= $this->_createPackage($data, $rate, $order);
 				else
-					$data['XMLpackage'].=$this->_createPackage($data, $rate, $order, true);
+					$data['XMLpackage'].= $this->_createPackage($data, $rate, $order, true);
 			}
 		}
 
-		$usableMethods=$this->_FEDEXrequestMethods($data,$rate);
+		$usableMethods = $this->_FEDEXrequestMethods($data,$rate);
+
+		if(empty($usableMethods))
+			return false;
+
+		$currencies = array();
+		foreach($usableMethods as $method){
+			$currencies[$method['currency_code']] = '"'. $method['currency_code'] .'"';
+		}
+
+		$db = JFactory::getDBO();
+		$query = 'SELECT currency_code, currency_id FROM '. hikashop_table('currency') .' WHERE currency_code IN ('. implode(',',$currencies) .')';
+		$db->setQuery($query);
+		$currencyList = $db->loadObjectList();
+		$currencyList = reset($currencyList);
+		foreach($usableMethods as $i => $method) {
+			$usableMethods[$i]['currency_id'] = $currencyList->currency_id;
+		}
+
+		$usableMethods = parent::_currencyConversion($usableMethods, $order);
+
 		return $usableMethods;
 	}
 
 	function _createPackage(&$data, &$rate, &$order, $includeDimension=false){
-		if(!empty($rate->shipping_params->weight_approximation)){
-			$data['weight']=$data['weight']+$data['weight']*$rate->shipping_params->weight_approximation/100;
-		}
-		if(@$data['weight']<1){
-			$data['weight']=1;
-		}
-		if(!empty($rate->shipping_params->dim_approximation_h) && @$rate->shipping_params->use_dimensions == 1){
-			$data['height']=$data['height']+$data['height']*$rate->shipping_params->dim_approximation_h/100;
-		}
-		if(!empty($rate->shipping_params->dim_approximation_l) && @$rate->shipping_params->use_dimensions == 1){
-			$data['length']=$data['length']+$data['length']*$rate->shipping_params->dim_approximation_l/100;
-		}
+		if(!empty($rate->shipping_params->weight_approximation))
+			$data['weight'] = $data['weight']+$data['weight']*$rate->shipping_params->weight_approximation/100;
+
+		if(@$data['weight'] < 1)
+			$data['weight'] = 1;
+
+		if(!empty($rate->shipping_params->dim_approximation_h) && @$rate->shipping_params->use_dimensions == 1)
+			$data['height'] = $data['height'] + $data['height']*($rate->shipping_params->dim_approximation_h / 100);
+
+		if(!empty($rate->shipping_params->dim_approximation_l) && @$rate->shipping_params->use_dimensions == 1)
+			$data['length'] = $data['length'] + $data['length']*($rate->shipping_params->dim_approximation_l / 100);
+
 		if(!empty($rate->shipping_params->dim_approximation_w) && @$rate->shipping_params->use_dimensions == 1){
-			$data['width']=$data['width']+$data['width']*$rate->shipping_params->dim_approximation_w/100;
+			$data['width'] = $data['width'] + $data['width']*($rate->shipping_params->dim_approximation_w / 100);
 		}
-		$options='';
-		$dimension='';
-		if(@$rate->shipping_params->include_price){
-			$options='<PackageServiceOptions>
+		$options = '';
+		$dimension = '';
+		if(@$rate->shipping_params->include_price) {
+			$options = '<PackageServiceOptions>
 						<InsuredValue>
 							<CurrencyCode>'.$data['currency_code'].'</CurrencyCode>
 							<MonetaryValue>'.$data['price'].'</MonetaryValue>
 						</InsuredValue>
 					</PackageServiceOptions>';
 		}
-		if($includeDimension){
-			if($data['height'] != '' && $data['height'] != 0 && $data['height'] != '0.00'){
-				$dimension='<Dimensions>
+		if($includeDimension) {
+			if($data['height'] != '' && $data['height'] != 0 && $data['height'] != '0.00') {
+				$dimension = '<Dimensions>
 							<UnitOfMeasurement>
 								<Code>'.$data['dimension_unit'].'</Code>
 							</UnitOfMeasurement>
@@ -484,30 +514,30 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 			}
 		}
 		static $id = 0;
-		$xml='<Package'.$id.'>
+		$xml = '<Package'. $id .'>
 				<PackagingType>
 					<Code>02</Code>
 				</PackagingType>
 				<Description>Shop</Description>
-				'.$dimension.'
+				'. $dimension .'
 				<PackageWeight>
 					<UnitOfMeasurement>
-						<Code>'.$data['weight_unit'].'</Code>
+						<Code>'. $data['weight_unit'] .'</Code>
 					</UnitOfMeasurement>
-					<Weight>'.$data['weight'].'</Weight>
+					<Weight>'. $data['weight']. '</Weight>
 				</PackageWeight>
-				'.$options.'
-			</Package'.$id.'>';
+				'. $options .'
+			</Package'. $id .'>';
 		$id++;
 		return $xml;
 	}
-	function _FEDEXrequestMethods($data,$rate){
+	function _FEDEXrequestMethods($data,$rate) {
 		global $fedex_methods;
 
 		$path_to_wsdl = dirname(__FILE__).DS.'fedex_rate.wsdl';
 
 		ini_set("soap.wsdl_cache_enabled","0");
-		if(!class_exists('SoapClient')){
+		if(!class_exists('SoapClient')) {
 			$app = JFactory::getApplication();
 			$app->enqueueMessage('The FEDEX shipping plugin needs the SOAP library installed but it seems that it is not available on your server. Please contact your web hosting to set it up.','error');
 			return false;
@@ -516,9 +546,9 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 
 
 		$shipment= array();
-		foreach($data['methods'] as $k=>$v){
+		foreach($data['methods'] as $k=>$v) {
 			$request['WebAuthenticationDetail'] = array(
-				'UserCredential' =>array(
+				'UserCredential' => array(
 					'Key' => $data['fedex_api_key'],
 					'Password' => $data['fedex_api_password']
 				)
@@ -540,7 +570,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 			$request['RequestedShipment']['ShipTimestamp'] = date('c');
 			$request['RequestedShipment']['ServiceType'] = $v; // valid values STANDARD_OVERNIGHT, PRIORITY_OVERNIGHT, FEDEX_GROUND, ...
 			$request['RequestedShipment']['PackagingType'] = $data['packaging_type']; // valid values FEDEX_BOX, FEDEX_PAK, FEDEX_TUBE, YOUR_PACKAGING, ...
-			$request['RequestedShipment']['TotalInsuredValue']=array('Ammount'=>$data['total_insured'],'Currency'=>'USD');
+			$request['RequestedShipment']['TotalInsuredValue'] = array('Ammount'=>$data['total_insured'],'Currency'=>'USD');
 			$request['RequestedPackageDetailType'] = 'PACKAGE_SUMMARY';
 
 			$shipper = array(
@@ -559,7 +589,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 			$recipient_StateOrProvinceCode = '';
 			if(isset($data['recipient']->address_state->zone_code_2) && strlen($data['recipient']->address_state->zone_code_2) == 2)
 				$recipient_StateOrProvinceCode = $data['recipient']->address_state->zone_code_2;
-			elseif(strlen($data['recipient']->address_state->zone_code_3) == 2)
+			elseif(isset($data['recipient']->address_state->zone_code_3) && strlen($data['recipient']->address_state->zone_code_3) == 2)
 				$recipient_StateOrProvinceCode = $data['recipient']->address_state->zone_code_3;
 			$recipient = array(
 				'Contact' => array(
@@ -575,10 +605,10 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 					'CountryCode' => $data['recipient']->address_country->zone_code_2,
 					'Residential' => true)
 			);
-			if(@$rate->shipping_params->destination_type=='res'){
+			if(@$rate->shipping_params->destination_type == 'res') {
 				$recipient['Address']['Residential'] = true;
 			}
-			if(@$rate->shipping_params->destination_type=='com' || (@$rate->shipping_params->destination_type=='auto' && $v == 'FEDEX_GROUND')){
+			if(@$rate->shipping_params->destination_type=='com' || (@$rate->shipping_params->destination_type=='auto' && $v == 'FEDEX_GROUND')) {
 				$recipient['Address']['Residential'] = false;
 			}
 			$shippingChargesPayment = array(
@@ -588,7 +618,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 					'CountryCode' => $data['country'])
 			);
 
-			$pkg_values = $this->xml2array('<root>'.$data['XMLpackage'].'</root>');
+			$pkg_values = $this->xml2array('<root>'. $data['XMLpackage'] .'</root>');
 			$pkg_values = $pkg_values['root'];
 			$pkg_count = count($pkg_values);
 
@@ -602,7 +632,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 			$request['RequestedShipment']['PackageCount'] = $pkg_count;
 			$request['RequestedShipment']['RequestedPackageLineItems'] = $this->addPackageLineItem($pkg_values);
 
-			if(@$rate->shipping_params->debug){
+			if(@$rate->shipping_params->debug) {
 				echo "<br/> Request $v : <br/>";
 				echo '<pre>' . var_export($request, true) . '</pre>';
 			}
@@ -644,7 +674,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 					$timestamp = strtotime($response->RateReplyDetails->DeliveryTimestamp);
 				else {
 					$timestamp = 0;
-					$response->RateReplyDetails->DeliveryTimestamp=0;
+					$response->RateReplyDetails->DeliveryTimestamp = 0;
 				}
 				$totalNetPrice = 0;
 				$discountAmount = 0;
@@ -655,14 +685,14 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 						$discountAmount = $response->RateReplyDetails->RatedShipmentDetails[0]->ShipmentRateDetail->TotalFreightDiscounts->Amount;
 					}
 					$shipment[] = array(
-						'value'=>$totalNetPrice + $discountAmount,
-						'code'=>$code,
+						'value' => $totalNetPrice + $discountAmount,
+						'code' => $code,
 						'delivery_timestamp' => $timestamp,
-						'day'=>$response->RateReplyDetails->DeliveryTimestamp,
+						'day' => $response->RateReplyDetails->DeliveryTimestamp,
 						'delivery_day' => date("m/d/Y", $timestamp),
 						'delivery_delay' => parent::displayDelaySECtoDAY($timestamp - strtotime('now'),2),
 						'delivery_time' => date("H:i:s", $timestamp),
-						'currency_code'=>$response->RateReplyDetails->RatedShipmentDetails[0]->ShipmentRateDetail->TotalNetCharge->Currency,
+						'currency_code' => $response->RateReplyDetails->RatedShipmentDetails[0]->ShipmentRateDetail->TotalNetCharge->Currency,
 						'old_currency_code' => $response->RateReplyDetails->RatedShipmentDetails[0]->ShipmentRateDetail->TotalNetCharge->Currency,
 						'notes' => $notes
 					);
@@ -674,14 +704,14 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 						$discountAmount = $response->RateReplyDetails->RatedShipmentDetails->ShipmentRateDetail->TotalFreightDiscounts->Amount;
 					}
 					$shipment[] = array(
-						'value'=>$totalNetPrice + $discountAmount,
-						'code'=>$code,
+						'value' => $totalNetPrice + $discountAmount,
+						'code' => $code,
 						'delivery_timestamp' => $timestamp,
-						'day'=>$response->RateReplyDetails->DeliveryTimestamp,
+						'day' => $response->RateReplyDetails->DeliveryTimestamp,
 						'delivery_day' => date("m/d/Y", $timestamp),
 						'delivery_delay' => parent::displayDelaySECtoDAY($timestamp - strtotime('now'),2),
 						'delivery_time' => date("H:i:s", $timestamp),
-						'currency_code'=>$response->RateReplyDetails->RatedShipmentDetails->ShipmentRateDetail->TotalNetCharge->Currency,
+						'currency_code' => $response->RateReplyDetails->RatedShipmentDetails->ShipmentRateDetail->TotalNetCharge->Currency,
 						'old_currency_code' => $response->RateReplyDetails->RatedShipmentDetails->ShipmentRateDetail->TotalNetCharge->Currency,
 						'notes' => $notes
 					);
@@ -689,26 +719,23 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 			} else if(!empty($response->HighestSeverity) && ($response->HighestSeverity == "ERROR")) {
 				static $errorsDisplayed = array();
 
-				$acceptedCodes = array(836);
-
 				if(!empty($response->Notifications)) {
 					foreach($response->Notifications as $notif) {
-						if(!is_object($notif))
+						if(!is_object($notif) || !isset($notif->Code))
 							continue;
 						$errorCode = $notif->Code;
 
-						if(!in_array($errorCode, $acceptedCodes)) {
-							if(!isset($errorsDisplayed[$errorCode])) {
-								$app = JFactory::getApplication();
-								$app->enqueueMessage($notif->Message);
-							}
-							$errorsDisplayed[$errorCode] = true;
+						if(!isset($errorsDisplayed[$errorCode])) {
+							$app = JFactory::getApplication();
+							$app->enqueueMessage($notif->Message);
 						}
+						$errorsDisplayed[$errorCode] = true;
 					}
 
 				}
 			}
 		}
+
 		return $shipment;
 	}
 
@@ -860,7 +887,13 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 			} else {
 				$uom = $pkg["PackageWeight"]["UnitOfMeasurement"]['Code'];
 			}
-			if(is_array($pkg['Dimensions'])){
+			$dimensions = array("Dimensions"=>array(
+					'Length' => 0,
+					'Width' => 0,
+					'Height' => 0,
+					'Units' => 'IN')
+				);
+			if(isset($pkg['Dimensions']) && is_array($pkg['Dimensions'])){
 				$dimensions = array("Dimensions"=>array(
 					'Length' => $pkg['Dimensions']['Length'],
 					'Width' => $pkg['Dimensions']['Width'],

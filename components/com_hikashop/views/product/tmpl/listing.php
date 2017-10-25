@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -22,7 +22,7 @@ if(!empty($this->tmpl_ajax)) {
 	return;
 }
 
-if(hikashop_level(2) && JRequest::getVar('hikashop_front_end_main', 0) && JRequest::getVar('task') == 'listing' && $this->params->get('show_compare')) { ?>
+if(hikashop_level(2) && hikaInput::get()->getVar('hikashop_front_end_main', 0) && hikaInput::get()->getVar('task') == 'listing' && $this->params->get('show_compare')) { ?>
 <script type="text/javascript">
 <!--
 var compare_list = {length: 0};
@@ -134,7 +134,7 @@ if($title_key == 'show_page_heading' && $title === '') {
 	$title = $params->get('show_page_heading');
 }
 
-if(!empty($title) && JRequest::getVar('hikashop_front_end_main', 0) && (!$this->module || $this->pageInfo->elements->total)) {
+if(!empty($title) && hikaInput::get()->getVar('hikashop_front_end_main', 0) && (!$this->module || $this->pageInfo->elements->total)) {
 	$name = $this->params->get('page_title');
 	if($this->module) {
 		$name = $this->params->get('title');
@@ -198,7 +198,7 @@ if(!empty($this->fields)) {
 ?>
 		<div id="hikashop_category_custom_info_main" class="hikashop_category_custom_info_main">
 			<h4><?php echo JText::_('CATEGORY_ADDITIONAL_INFORMATION');?></h4>
-			<table width="100%">
+			<table class="hikashop_category_custom_info_main">
 				<?php echo $custom_fields_html; ?>
 			</table>
 		</div>
@@ -214,7 +214,7 @@ if($display_filters == -1) {
 	$config =& hikashop_config();
 	$display_filters = (int)$config->get('show_filters');
 }
-if(hikashop_level(2) && JRequest::getVar('hikashop_front_end_main', 0) && (JRequest::getVar('task','listing')=='listing' || !empty($this->force_display_filter)) && $display_filters == 1) {
+if(hikashop_level(2) && hikaInput::get()->getVar('hikashop_front_end_main', 0) && (hikaInput::get()->getVar('task','listing')=='listing' || !empty($this->force_display_filter)) && $display_filters == 1) {
 	$this->setLayout('filter');
 	$htmlFilter = $this->loadTemplate();
 }
@@ -239,7 +239,7 @@ if($filter_type !== 3) {
 ?>
 	<div class="hikashop_products_listing">
 <?php
-		if(JRequest::getVar('hikashop_front_end_main',0) && JRequest::getVar('task') == 'listing' && $this->params->get('show_compare')) {
+		if(hikaInput::get()->getVar('hikashop_front_end_main',0) && hikaInput::get()->getVar('task') == 'listing' && $this->params->get('show_compare')) {
 			$css_button = $this->config->get('css_button', 'hikabtn');
 			$css_button_compare = $this->config->get('css_button_compare', 'hikabtn-compare');
 ?>
@@ -254,7 +254,7 @@ if($filter_type !== 3) {
 ?>
 	</div>
 <?php
-	} elseif(( !$this->module || JRequest::getVar('hikashop_front_end_main',0) ) && ((@$_REQUEST['ctrl']=='product' || @$_REQUEST['view']=='product') || (@$_REQUEST['ctrl']=='category' || @$_REQUEST['view']=='category')) && (@$_REQUEST['task']=='listing' || @$_REQUEST['layout']=='listing') && !empty($this->filters) && count($this->filters) && !empty($this->filter_set)){
+	} elseif(( !$this->module || hikaInput::get()->getVar('hikashop_front_end_main',0) ) && ((@$_REQUEST['ctrl']=='product' || @$_REQUEST['view']=='product') || (@$_REQUEST['ctrl']=='category' || @$_REQUEST['view']=='category')) && (@$_REQUEST['task']=='listing' || @$_REQUEST['layout']=='listing') && !empty($this->filters) && count($this->filters) && !empty($this->filter_set)){
 		echo JText::_('HIKASHOP_NO_RESULT');
 	}
 
@@ -272,12 +272,12 @@ if($filter_type !== 3) {
 	$allrows = $this->rows;
 
 	$pagination = '';
-	if((!$this->module || JRequest::getVar('hikashop_front_end_main',0)) && $this->pageInfo->elements->total) {
+	if((!$this->module || hikaInput::get()->getVar('hikashop_front_end_main',0)) && $this->pageInfo->elements->total) {
 		$pagination = $this->config->get('pagination','bottom');
 		$this->config->set('pagination', '');
 	}
 
-	if((!empty($allrows) || !$this->module || JRequest::getVar('hikashop_front_end_main',0)) && in_array($pagination, array('top','both')) && $this->params->get('show_limit') && $this->pageInfo->elements->total) {
+	if((!empty($allrows) || !$this->module || hikaInput::get()->getVar('hikashop_front_end_main',0)) && in_array($pagination, array('top','both')) && $this->params->get('show_limit') && $this->pageInfo->elements->total) {
 		$this->pagination->form = '_top';
 ?>
 	<form action="<?php echo hikashop_currentURL(); ?>" method="post" name="adminForm_<?php echo $this->params->get('main_div_name').$this->category_selected;?>_top">
@@ -314,7 +314,7 @@ if($filter_type !== 3) {
 	<h2><?php echo $category['category']->category_name; ?></h2>
 	<div class="hikashop_products_listing">
 <?php
-		if(JRequest::getVar('hikashop_front_end_main',0) && JRequest::getVar('task') == 'listing' && $this->params->get('show_compare')) {
+		if(hikaInput::get()->getVar('hikashop_front_end_main',0) && hikaInput::get()->getVar('task') == 'listing' && $this->params->get('show_compare')) {
 			$css_button = $this->config->get('css_button', 'hikabtn');
 			$css_button_compare = $this->config->get('css_button_compare', 'hikabtn-compare');
 ?>
@@ -334,7 +334,7 @@ if($filter_type !== 3) {
 	$this->params->set('main_div_name', $main_div_name);
 	$this->config->set('pagination', $pagination);
 
-	if((!empty($allrows) || !$this->module || JRequest::getVar('hikashop_front_end_main',0)) && in_array($pagination,array('bottom','both')) && $this->params->get('show_limit') && $this->pageInfo->elements->total) {
+	if((!empty($allrows) || !$this->module || hikaInput::get()->getVar('hikashop_front_end_main',0)) && in_array($pagination,array('bottom','both')) && $this->params->get('show_limit') && $this->pageInfo->elements->total) {
 		$this->pagination->form = '_bottom';
 ?>
 	<form action="<?php echo hikashop_currentURL(); ?>" method="post" name="adminForm_<?php echo $this->params->get('main_div_name').$this->category_selected;?>_bottom">

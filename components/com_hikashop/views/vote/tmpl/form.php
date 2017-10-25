@@ -1,23 +1,30 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-$row = & $this->row;
-$row->hikashop_vote_average_score = (float)hikashop_toFloat($row->hikashop_vote_average_score);
 
-$hide = 0;
-if(($row->access_vote == 'registered' && hikashop_loadUser() == null) || ($row->access_vote == 'buyed' && $row->purchased == 0))
-	$hide = 1;
-
-if($row->comment_enabled == 0 || $hide)
+if(empty($this->row->comment_enabled) || $this->row->comment_enabled == 0)
 	return;
 
+$row =& $this->row;
+
+if($row->access_vote == 'registered' && hikashop_loadUser() == null) {
+	echo '<div class="hikashop_vote_comment_not_allowed">' . JText::_('ONLY_REGISTERED_CAN_COMMENT') . '</div>';
+	return;
+}
+
+if($row->access_vote == 'buyed' && $row->purchased == 0) {
+	echo '<div class="hikashop_vote_comment_not_allowed">' . JText::_('MUST_HAVE_BUY_TO_VOTE') . '</div>';
+	return;
+}
+
+$row->hikashop_vote_average_score = (float)hikashop_toFloat($row->hikashop_vote_average_score);
 if($row->hikashop_vote_total_vote == '0') {
 	$tooltip = JText::_('HIKA_NO_VOTE');
 } else {

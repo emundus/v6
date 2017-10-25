@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -217,6 +217,13 @@ defined('_JEXEC') or die('Restricted access');
 			<input type="text" id="field_placeholder" size="80" name="field_options[placeholder]" value="<?php echo $this->escape(@$this->field->field_options['placeholder']); ?>"/>
 		</dd>
 
+		<dt data-hk-display="inline"><label><?php
+			echo JText::_('HIKA_INLINE');
+		?></label></dt>
+		<dd data-hk-display="inline"><?php
+			echo JHTML::_('hikaselect.booleanlist', 'field_options[inline]', '', @$this->field->field_options['inline']);
+		?></dd>
+
 <?php if(!empty($this->field->field_type) && $this->field->field_type == 'link') { ?>
 		<dt data-hk-display="target"><label for="field_placeholder"><?php
 			echo JText::_('FIELD_TARGET_BLANK');
@@ -319,7 +326,7 @@ defined('_JEXEC') or die('Restricted access');
 		<dd data-hk-display="format" class="input_large">
 <?php
 	if(!isset($this->field->field_options['format']))
-		$this->field->field_options['format'] = 'd/m/Y';
+		$this->field->field_options['format'] = '%Y-%m-%d';
 ?>
 			<input type="text" id="field_format" name="field_options[format]" value="<?php echo $this->escape($this->field->field_options['format']); ?>"/>
 		</dd>

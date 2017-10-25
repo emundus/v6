@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -74,8 +74,8 @@ if(!empty($this->addresses)) {
 </table>
 <?php
 }else{
-	if(!JRequest::getVar( HIKASHOP_COMPONENT.'.address_error')){
-		JRequest::setVar( HIKASHOP_COMPONENT.'.address_error',1);
+	if(!hikaInput::get()->getVar( HIKASHOP_COMPONENT.'.address_error')){
+		hikaInput::get()->set( HIKASHOP_COMPONENT.'.address_error',1);
 		$this->app->enqueueMessage( JText::_('CREATE_OR_SELECT_ADDRESS') );
 	}
 	$js='

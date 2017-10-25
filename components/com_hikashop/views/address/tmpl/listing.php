@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -50,7 +50,7 @@ if(empty($this->user_id))
 
 <?php
 if(!empty($this->addresses)) {
-	$ctrl = JRequest::getCmd('ctrl');
+	$ctrl = hikaInput::get()->getCmd('ctrl');
 ?>
 <div class="hikashop_address_listing_div">
 <form action="<?php echo hikashop_completeLink($ctrl); ?>" name="hikashop_user_address" method="post">
@@ -79,14 +79,14 @@ if(!empty($this->addresses)) {
 			$this->address =& $address;
 ?>
 		<tr class="hikashop_address_listing_item">
-			<td class="hikashop_address_listing_item_default" style="width:5%">
+			<td data-title="<?php echo JText::_( 'HIKA_DEFAULT' );?>" class="hikashop_address_listing_item_default" style="width:5%">
 				<input type="radio" name="address_default" value="<?php echo $this->address->address_id;?>"<?php
 					if($this->address->address_default == 1) {
 						echo ' checked="checked"';
 					}
 				?> onclick="this.form.submit();"/>
 			</td>
-			<td class="hikashop_address_listing_item_actions" style="width:5%">
+			<td data-title="<?php echo JText::_( 'HIKA_EDIT' );?>" class="hikashop_address_listing_item_actions" style="width:5%">
 <?php
 			if(!empty($this->use_popup)) {
 				echo $this->popup->display(
@@ -103,12 +103,12 @@ if(!empty($this->addresses)) {
 			}
 ?>
 			</td>
-			<td class="hikashop_address_listing_item_details">
+			<td data-title="<?php echo JText::_( 'ADDRESS' );?>" class="hikashop_address_listing_item_details">
 				<span><?php
 					echo $addressClass->displayAddress($this->fields, $address, 'address');
 				?></span>
 			</td>
-			<td class="hikashop_address_listing_item_actions" style="width:5%">
+			<td data-title="<?php echo JText::_( 'HIKA_DELETE' );?>" class="hikashop_address_listing_item_actions" style="width:5%">
 				<a onclick="return confirm('<?php echo JText::_('HIKASHOP_CONFIRM_DELETE_ADDRESS', true); ?>');" href="<?php echo hikashop_completeLink('address&task=delete&address_id='.$address->address_id.'&'.$token.'=1&Itemid='.$Itemid);?>" title="<?php echo JText::_('HIKA_DELETE'); ?>"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png" alt="<?php echo JText::_('HIKA_DELETE'); ?>" /></a>
 			</td>
 		</tr>

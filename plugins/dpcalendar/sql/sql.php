@@ -126,7 +126,7 @@ class PlgDPCalendarSQL extends \DPCalendar\Plugin\SyncPlugin
 					$text[] = 'UID:' . md5($row->{$params->get('id_column')} . 'SQL');
 					$text[] = 'CATEGORIES:Default';
 					$text[] = 'SUMMARY:' . $row->{$params->get('title_column')};
-					$text[] = 'DESCRIPTION:' . $row->{$params->get('description_column')};
+					$text[] = 'DESCRIPTION:' . $this->replaceNl(nl2br($row->{$params->get('description_column')}));
 
 					if (key_exists($params->get('rrule_column'), $existingColumns) && $row->{$params->get('rrule_column')}) {
 						$text[] = 'RRULE:' . $row->{$params->get('rrule_column')};

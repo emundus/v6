@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -53,8 +53,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 			$this->payment_params->rm = 2;
 
 		$vars = array(
-			'cmd' => '_ext-enter',
-			'redirect_cmd' => '_cart',
+			'cmd' => '_cart',
 			'upload' => '1',
 			'business' => $this->payment_params->email,
 			'receiver_email' => $this->payment_params->email,
@@ -125,7 +124,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		}
 
 		if(empty($this->payment_params->details)) {
-			$vars['amount_1'] = round($order->cart->full_total->prices[0]->price_value_with_tax, (int)$this->currency->currency_locale['int_frac_digits']);
+			$vars['amount_1'] = number_format($order->cart->full_total->prices[0]->price_value_with_tax, 2, '.', '');
 			$vars['item_name_1'] = JText::_('CART_PRODUCT_TOTAL_PRICE');
 		} else {
 			$i = 1;
@@ -136,7 +135,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 				if($group && $product->order_product_option_parent_id) continue;
 				$vars['item_name_' . $i] = substr(strip_tags($product->order_product_name), 0, 127);
 				$vars['item_number_' . $i] = $product->order_product_code;
-				$vars['amount_'.$i] = round($product->order_product_price, (int)$this->currency->currency_locale['int_frac_digits']);
+				$vars['amount_'.$i] = number_format($product->order_product_price, 2, '.', '');
 				$vars['quantity_' . $i] = $product->order_product_quantity;
 				$tax += round($product->order_product_tax, (int)$this->currency->currency_locale['int_frac_digits']) * $product->order_product_quantity;
 				$i++;
@@ -147,7 +146,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 					if(empty($product->order_product_price) || $product->order_product_price <= 0) continue;
 					$vars['item_name_' . $i] = substr(JText::_(strip_tags($product->order_product_name)), 0, 127);
 					$vars['item_number_' . $i] = $product->order_product_code;
-					$vars['amount_'.$i] = round($product->order_product_price, (int)$this->currency->currency_locale['int_frac_digits']);
+					$vars['amount_'.$i] = number_format($product->order_product_price, 2, '.', '');
 					$vars['quantity_' . $i] = 1;
 					$tax += round($product->order_product_tax, (int)$this->currency->currency_locale['int_frac_digits']);
 					$i++;
@@ -156,7 +155,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 
 			if(!empty($order->order_shipping_price) && bccomp($order->order_shipping_price, 0, 5)) {
 				$vars['item_name_' . $i] = JText::_('HIKASHOP_SHIPPING');
-				$vars['amount_' . $i] = round($order->order_shipping_price - @$order->order_shipping_tax, (int)$this->currency->currency_locale['int_frac_digits']);
+				$vars['amount_' . $i] = number_format($order->order_shipping_price - @$order->order_shipping_tax, 2, '.', '');
 				$tax += round($order->order_shipping_tax, (int)$this->currency->currency_locale['int_frac_digits']);
 				$vars['quantity_' . $i] = 1;
 				$i++;
@@ -164,14 +163,14 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 
 			if(!empty($order->order_payment_price) && bccomp($order->order_payment_price, 0, 5)) {
 				$vars['item_name_' . $i] = JText::_('HIKASHOP_PAYMENT');
-				$vars['amount_' . $i] = round($order->order_payment_price - @$order->order_payment_tax, (int)$this->currency->currency_locale['int_frac_digits']);
+				$vars['amount_' . $i] = number_format($order->order_payment_price - @$order->order_payment_tax, (int)$this->currency->currency_locale['int_frac_digits']);
 				$tax += round($order->order_payment_tax, (int)$this->currency->currency_locale['int_frac_digits']);
 				$vars['quantity_' . $i] = 1;
 				$i++;
 			}
 
 			if(bccomp($tax, 0, 5))
-				$vars['tax_cart'] = $tax;
+				$vars['tax_cart'] = number_format($tax, 2, '.', '');
 			if(!empty($order->cart->coupon) && bccomp($order->order_discount_price, 0, 5)){
 				$vars['discount_amount_cart'] = round($order->order_discount_price, (int)$this->currency->currency_locale['int_frac_digits']);
 			}
@@ -182,6 +181,8 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 					$vars['discount_amount_cart'] += round($product->order_product_price*-1, (int)$this->currency->currency_locale['int_frac_digits']);
 				}
 			}
+			if(isset($vars['discount_amount_cart']))
+				$vars['discount_amount_cart'] = number_format($vars['discount_amount_cart'], 2, '.', '');
 		}
 
 		if((isset($this->payment_params->validation) && $this->payment_params->validation) || (isset($this->payment_params->enable_validation) && !$this->payment_params->enable_validation)) {
@@ -191,6 +192,10 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 			$this->payment_params->url = 'https://www.paypal.com/cgi-bin/webscr';
 
 		$this->vars = $vars;
+
+		if($this->payment_params->debug)
+			$this->writeToLog($vars);
+
 		return $this->showPage('end');
 	}
 
@@ -202,12 +207,12 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		foreach($_REQUEST as $key => $value) {
 			$key = $filter->clean($key);
 			if(preg_match('#^[0-9a-z_-]{1,30}$#i', $key) && !preg_match('#^cmd$#i', $key)) {
-				$value = JRequest::getString($key);
+				$value = hikaInput::get()->getString($key);
 				$vars[$key] = $value;
 				$data[] = $key . '=' . urlencode($value);
 			}
 		}
-		$data = implode('&', $data) . '&cmd=_notify-validate';
+		$data = 'cmd=_notify-validate&'.implode('&', $data);
 
 		$dbOrder = $this->getOrder((int)@$vars['invoice']);
 		$this->loadPaymentParams($dbOrder);
@@ -274,7 +279,13 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		if($this->payment_params->debug)
 			echo print_r($url, true) . "\r\n\r\n";
 
-		$response = $this->sendRequest($url, $data);
+		$response = $this->verifyIPN();
+
+		if(empty($response) || !preg_match('#VERIFIED#i', $response))
+			$response = $this->sendRequest($url, $data);
+
+		if($this->payment_params->debug)
+			echo print_r($response, true) . "\r\n\r\n";
 
 		if(empty($response)){
 			$email = new stdClass();
@@ -366,7 +377,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 
 		$email = new stdClass();
 		$email->subject = JText::sprintf('PAYMENT_NOTIFICATION_FOR_ORDER','Paypal',$vars['payment_status'],$dbOrder->order_number);
-		$email->body = str_replace('<br/>',"\r\n",JText::sprintf('PAYMENT_NOTIFICATION_STATUS','Paypal',$vars['payment_status'])).' '.JText::sprintf('ORDER_STATUS_CHANGED',$order_status)."\r\n\r\n".$order_text;
+		$email->body = str_replace('<br/>',"\r\n",JText::sprintf('PAYMENT_NOTIFICATION_STATUS','Paypal',$vars['payment_status'])).' '.JText::sprintf('ORDER_STATUS_CHANGED',hikashop_orderStatus($order_status))."\r\n\r\n".$order_text;
 
 		$this->modifyOrder($order_id, $order_status, $history, $email);
 		return true;
@@ -495,7 +506,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 	}
 
 	function onPaymentConfiguration(&$element) {
-		$subtask = JRequest::getCmd('subtask', '');
+		$subtask = hikaInput::get()->getCmd('subtask', '');
 		if($subtask == 'ips') {
 			$ips = null;
 			echo implode(',', $this->_getIPList($ips));
@@ -521,10 +532,10 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 			}
 		}
 
-        if(defined('OPENSSL_VERSION_NUMBER') && OPENSSL_VERSION_NUMBER < 0x009080bf ){
-            $app = JFactory::getApplication();
-            $app->enqueueMessage('The OpenSSL version installed on your server is too old and payment notifications will be rejected by PayPal. Please contact your hosting company in order to update it.');
-        }
+		if(defined('OPENSSL_VERSION_NUMBER') && OPENSSL_VERSION_NUMBER < 0x009080bf ){
+			$app = JFactory::getApplication();
+			$app->enqueueMessage('The OpenSSL version installed on your server is too old and payment notifications will be rejected by PayPal. Please contact your hosting company in order to update it.');
+		}
 	}
 
 	function onPaymentConfigurationSave(&$element) {
@@ -553,6 +564,78 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		$element->payment_params->pending_status = 'created';
 		$element->payment_params->verified_status = 'confirmed';
 		$element->payment_params->address_override = 1;
+	}
+
+	protected function verifyIPN() {
+		if(!function_exists('curl_version'))
+			return false;
+
+		$raw_post_data = file_get_contents('php://input');
+		$raw_post_array = explode('&', $raw_post_data);
+		$myPost = array();
+		foreach ($raw_post_array as $keyval) {
+			$keyval = explode('=', $keyval);
+			if (count($keyval) == 2) {
+				if ($keyval[0] === 'payment_date') {
+					if (substr_count($keyval[1], '+') === 1) {
+						$keyval[1] = str_replace('+', '%2B', $keyval[1]);
+					}
+				}
+				$myPost[$keyval[0]] = urldecode($keyval[1]);
+			}
+		}
+		$req = 'cmd=_notify-validate';
+		$get_magic_quotes_exists = false;
+		if (function_exists('get_magic_quotes_gpc')) {
+			$get_magic_quotes_exists = true;
+		}
+		foreach ($myPost as $key => $value) {
+			if ($get_magic_quotes_exists == true && get_magic_quotes_gpc() == 1) {
+				$value = urlencode(stripslashes($value));
+			} else {
+				$value = urlencode($value);
+			}
+			$req .= "&$key=$value";
+		}
+
+		if(empty($this->payment_params->url))
+			$this->payment_params->url = 'https://www.paypal.com/cgi-bin/webscr';
+		if(strpos($this->payment_params->url, 'sandbox') === false) {
+			$url = 'https://ipnpb.paypal.com/cgi-bin/webscr';
+		} else {
+			$url = 'https://ipnpb.sandbox.paypal.com/cgi-bin/webscr';
+		}
+
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
+		curl_setopt($ch, CURLOPT_SSLVERSION, 6);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+		curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Connection: Close'));
+		$res = curl_exec($ch);
+
+		if ( ! ($res)) {
+			$errno = curl_errno($ch);
+			$errstr = curl_error($ch);
+			curl_close($ch);
+			$this->writeToLog("cURL error: [$errno] $errstr");
+			return false;
+		}
+
+		$info = curl_getinfo($ch);
+		$http_code = $info['http_code'];
+		if ($http_code != 200) {
+			$this->writeToLog("PayPal responded with http code $http_code");
+			return false;
+		}
+		curl_close($ch);
+
+		return $res;
 	}
 
 	function _getIPList(&$ipList) {

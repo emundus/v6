@@ -2430,7 +2430,8 @@ INSERT IGNORE INTO `#__hikashop_zone_link` (`zone_parent_namekey`, `zone_child_n
 ('country_Nigeria_156', 'state_Ebonyi_State_2745'),
 ('country_Nigeria_156', 'state_Edo_State_2746'),
 ('country_Nigeria_156', 'state_Ekiti_State_2747'),
-('country_Nigeria_156', 'state_Enugu_State_2748')
+('country_Nigeria_156', 'state_Enugu_State_2748'),
+('country_Nigeria_156', 'state_FCT_Abuja_4569')
 
 INSERT IGNORE INTO `#__hikashop_zone_link` (`zone_parent_namekey`, `zone_child_namekey`) VALUES
 ('country_Nigeria_156', 'state_Gombe_State_2749'),
@@ -2453,6 +2454,7 @@ INSERT IGNORE INTO `#__hikashop_zone_link` (`zone_parent_namekey`, `zone_child_n
 ('country_Nigeria_156', 'state_Rivers_State_2766'),
 ('country_Nigeria_156', 'state_Sokoto_State_2767'),
 ('country_Nigeria_156', 'state_Taraba_State_2768'),
+('country_Nigeria_156', 'state_Yobe_State_4568'),
 ('country_Nigeria_156', 'state_Zamfara_State_2769'),
 ('country_Northern_Mariana_Islands_159', 'state_Northern_Islands_2770'),
 ('country_Northern_Mariana_Islands_159', 'state_Rota_2771'),

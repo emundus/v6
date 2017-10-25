@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -31,7 +31,7 @@ class hikashopCheckoutShippingHelper extends hikashopCheckoutHelperInterface {
 
 	public function validate(&$controller, &$params, $data = array()) {
 		if(empty($data))
-			$data = JRequest::getVar('checkout', array(), '', 'array');
+			$data = hikaInput::get()->get('checkout', array(), 'array');
 		if(empty($data['shipping']))
 			return true;
 
@@ -54,7 +54,7 @@ class hikashopCheckoutShippingHelper extends hikashopCheckoutHelperInterface {
 		$cart = $checkoutHelper->getCart();
 		$shipping_price = $this->getShippingPrice($cart);
 
-		$selectionOnly = JRequest::getInt('selectionOnly', 0);
+		$selectionOnly = hikaInput::get()->getInt('selectionOnly', 0);
 		if($selectionOnly) {
 			$cart_markers = $checkoutHelper->getCartMarkers();
 		}
@@ -64,7 +64,8 @@ class hikashopCheckoutShippingHelper extends hikashopCheckoutHelperInterface {
 
 		$cart = $checkoutHelper->getCart(true);
 
-		if($selectionOnly && JRequest::getCmd('tmpl', '') == 'ajax') {
+		$tmpl = hikaInput::get()->getCmd('tmpl', '');
+		if($selectionOnly && in_array($tmpl, array('ajax', 'raw'))) {
 			$data = array(
 				'ret' => $ret,
 				'events' => array(),

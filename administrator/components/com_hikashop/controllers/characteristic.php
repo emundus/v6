@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,33 +23,37 @@ class CharacteristicController extends hikashopController{
 	function addcharacteristic(){
 		$characteristicClass = hikashop_get('class.characteristic');
 		$status = $characteristicClass->saveForm();
-		JRequest::setVar('cid',$status);
-		JRequest::setVar( 'layout', 'addcharacteristic'  );
+		hikaInput::get()->set('cid',$status);
+		hikaInput::get()->set( 'layout', 'addcharacteristic'  );
 		return parent::display();
 	}
 
 	function editpopup(){
-		JRequest::setVar( 'layout', 'editpopup'  );
+		hikaInput::get()->set( 'layout', 'editpopup'  );
 		return parent::display();
 	}
 
 	function selectcharacteristic(){
-		JRequest::setVar( 'layout', 'selectcharacteristic'  );
+		hikaInput::get()->set( 'layout', 'selectcharacteristic'  );
 		return parent::display();
 	}
 	function usecharacteristic(){
-		JRequest::setVar( 'layout', 'usecharacteristic'  );
+		hikaInput::get()->set( 'layout', 'usecharacteristic'  );
 		return parent::display();
 	}
 
 	public function addcharacteristic_ajax() {
-		JRequest::checkToken('request') || die('Invalid Token');
-		$tmpl = JRequest::getCmd('tmpl', '');
+		if(!HIKASHOP_J25) {
+			JRequest::checkToken('request') || jexit('Invalid Token');
+		} else {
+			JSession::checkToken('request') || jexit('Invalid Token');
+		}
+		$tmpl = hikaInput::get()->getCmd('tmpl', '');
 
-		$characteristic_parent_id = JRequest::getInt('characteristic_parent_id', 0);
-		$characteristic_type = JRequest::getCmd('characteristic_type', '');
+		$characteristic_parent_id = hikaInput::get()->getInt('characteristic_parent_id', 0);
+		$characteristic_type = hikaInput::get()->getCmd('characteristic_type', '');
 
-		$value = JRequest::getString('value', '');
+		$value = hikaInput::get()->getString('value', '');
 		if(empty($value))
 			return false;
 
@@ -68,7 +72,7 @@ class CharacteristicController extends hikashopController{
 
 			$characteristic_vendor_id = $vendor_id;
 			if($characteristic_vendor_id == 0 && hikashop_acl('characteristic/values/edit/vendor'))
-				$characteristic_vendor_id = (int)JRequest::getInt('characteristic_vendor_id', 0);
+				$characteristic_vendor_id = (int)hikaInput::get()->getInt('characteristic_vendor_id', 0);
 
 			if($characteristicClass->findValue($value, $characteristic_parent_id, $characteristic_vendor_id) > 0)
 				return false; // hikamarket::deny('vendor', JText::sprintf('HIKAM_ACTION_ERROR', JText::_('HIKAM_WRONG_DATA')));
@@ -88,7 +92,7 @@ class CharacteristicController extends hikashopController{
 
 			$characteristic_vendor_id = $vendor_id;
 			if($characteristic_vendor_id == 0 && hikashop_acl('characteristic/edit/vendor'))
-				$characteristic_vendor_id = (int)JRequest::getInt('characteristic_vendor_id', 0);
+				$characteristic_vendor_id = (int)hikaInput::get()->getInt('characteristic_vendor_id', 0);
 
 			if($characteristicClass->findValue($value, 0, $characteristic_vendor_id) > 0)
 				return false;
@@ -113,14 +117,14 @@ class CharacteristicController extends hikashopController{
 			exit;
 		}
 
-		JRequest::setVar('layout', 'listing');
+		hikaInput::get()->set('layout', 'listing');
 		return parent::display();
 	}
 
 	public function findList() {
-		$search = JRequest::getVar('search', '');
-		$type = JRequest::getVar('characteristic_type', '');
-		$characteristic_parent_id = JRequest::getInt('characteristic_parent_id', 0);
+		$search = hikaInput::get()->getVar('search', '');
+		$type = hikaInput::get()->getVar('characteristic_type', '');
+		$characteristic_parent_id = hikaInput::get()->getInt('characteristic_parent_id', 0);
 
 		$options = array();
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -53,9 +53,9 @@ defined('_JEXEC') or die('Restricted access');
 		echo hikashop_getLayout('vote', 'mini', $this->params, $js);
 	}
 		?></div>
-		<span id="hikashop_product_price_main" class="hikashop_product_price_main"  itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+		<span id="hikashop_product_price_main" class="hikashop_product_price_main" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 <?php
-	if($this->params->get('show_price')) {
+	if($this->params->get('show_price') && (empty($this->displayVariants['prices']) || $this->params->get('characteristic_display') != 'list')) {
 		$this->row =& $this->element;
 		$this->setLayout('listing_price');
 		echo $this->loadTemplate();
@@ -181,7 +181,7 @@ defined('_JEXEC') or die('Restricted access');
 	?></div>
 	<span id="hikashop_product_url_main" class="hikashop_product_url_main"><?php
 		if(!empty($this->element->product_url)) {
-			echo JText :: sprintf('MANUFACTURER_URL', '<a href="' . $this->element->product_url . '" target="_blank">' . $this->element->product_url . '</a>');
+			echo JText::sprintf('MANUFACTURER_URL', '<a href="' . $this->element->product_url . '" target="_blank">' . $this->element->product_url . '</a>');
 		}
 	?></span>
 

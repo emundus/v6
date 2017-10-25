@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -107,8 +107,12 @@ defined('_JEXEC') or die('Restricted access');
 					'scale' => $this->config->get('image_scale_mode', 'inside')
 				)
 			);
-			if($img->success)
-				echo '<img class="hikashop_product_checkout_cart_image" title="'.$this->escape(@$image->file_description).'" alt="'.$this->escape(@$image->file_name).'" src="'.$img->url.'"/>';
+			if($img->success) {
+				$attributes = '';
+				if($img->external)
+					$attributes = ' width="'.$img->req_width.'" height="'.$img->req_height.'"';
+				echo '<img class="hikashop_product_checkout_cart_image" title="'.$this->escape(@$image->file_description).'" alt="'.$this->escape(@$image->file_name).'" src="'.$img->url.'"'.$attributes.'/>';
+			}
 				?></div>
 <?php
 		}
@@ -216,12 +220,12 @@ defined('_JEXEC') or die('Restricted access');
 				for($j = $min_quantity; $j <= $max_quantity; $j += $min_quantity) {
 					$values[$j] = JHTML::_('select.option', $j, $j);
 				}
-				$onchange = 'onchange="var qty_field = document.getElementById(\'hikashop_checkout_quantity_'.$product->cart_product_id.'\'); if (qty_field && qty_field.value != \''.$product->cart_product_quantity.'\'){'.$input.'return window.checkout.submitCart('.$this->step.','.$this->module_position.'); } return false;"';
-				$ret = JHTML::_('select.genericlist', $values, 'checkout[cart][item]['.$product->cart_product_id.']', 'id="hikashop_checkout_quantity_'.$product->cart_product_id.'" '.$onchange, 'value', 'text', $product->cart_product_quantity);
+				$onchange = 'onchange="window.hikashop.checkQuantity(this); var qty_field = document.getElementById(\'hikashop_checkout_quantity_'.$product->cart_product_id.'\'); if (qty_field && qty_field.value != \''.$product->cart_product_quantity.'\'){'.$input.'return window.checkout.submitCart('.$this->step.','.$this->module_position.'); } return false;"';
+				$ret = JHTML::_('select.genericlist', $values, 'checkout[cart][item]['.$product->cart_product_id.']', 'id="hikashop_checkout_quantity_'.$product->cart_product_id.'" data-hk-qty-old="'. $product->cart_product_quantity.'" '.$onchange, 'value', 'text', $product->cart_product_quantity);
 				echo str_replace('id="checkoutcartitem'.$product->cart_product_id.'"', '', $ret);
 			} else {
 ?>
-				<input id="hikashop_checkout_quantity_<?php echo $product->cart_product_id;?>" type="text" name="checkout[cart][item][<?php echo $product->cart_product_id;?>]" class="hikashop_product_quantity_field" value="<?php echo $product->cart_product_quantity; ?>"/>
+				<input id="hikashop_checkout_quantity_<?php echo $product->cart_product_id;?>" type="text" name="checkout[cart][item][<?php echo $product->cart_product_id;?>]" class="hikashop_product_quantity_field" data-hk-qty-old="<?php echo $product->cart_product_quantity; ?>" value="<?php echo $product->cart_product_quantity; ?>" onchange="window.hikashop.checkQuantity(this);"/>
 				<div class="hikashop_cart_product_quantity_refresh">
 					<a class="hikashop_no_print" href="#" onclick="var qty_field = document.getElementById('hikashop_checkout_quantity_<?php echo $product->cart_product_id;?>'); if (qty_field && qty_field.value != '<?php echo $product->cart_product_quantity; ?>'){<?php echo $input; ?> return window.checkout.submitCart(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>); } return false;" title="<?php echo JText::_('HIKA_REFRESH'); ?>">
 						<img src="<?php echo HIKASHOP_IMAGES . 'refresh.png';?>" border="0" alt="<?php echo JText::_('HIKA_REFRESH'); ?>" />
@@ -284,7 +288,7 @@ defined('_JEXEC') or die('Restricted access');
 			?></td>
 			<td class="hikashop_cart_coupon_value" data-title="<?php echo JText::_('HIKASHOP_COUPON'); ?>">
 				<span class="hikashop_checkout_cart_coupon"><?php
-					if($taxes == 0 || empty($this->options['price_with_tax']))
+					if(empty($this->options['price_with_tax']))
 						echo $this->currencyClass->format(@$cart->coupon->discount_value_without_tax * -1, @$cart->coupon->discount_currency_id);
 					else
 						echo $this->currencyClass->format(@$cart->coupon->discount_value * -1, @$cart->coupon->discount_currency_id);

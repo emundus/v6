@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -60,7 +60,11 @@ class plgHikaShopTaxcloud extends JPlugin {
 
 		if(!empty($order->order_status)){
 			if(in_array($order->order_status,$confirmed_statuses) && !in_array($order->old->order_status,$confirmed_statuses)){//if the actual status is confirmed and the old status wasn't confirmed
-				$this->AuthorizedWithCaptured($order);
+				if(!isset($full_order)){
+					$orderClass = hikashop_get('class.order');
+					$full_order = $orderClass->loadFullOrder($order->order_id,false ,false);
+				}
+				$this->AuthorizedWithCaptured($full_order);
 				return;
 			}
 
@@ -110,20 +114,44 @@ class plgHikaShopTaxcloud extends JPlugin {
 		}
 
 		$db = JFactory::getDBO();
-		if(!empty($ids) && count($ids)){
-			$product_query = 'SELECT product_id, product_taxability_code FROM ' . hikashop_table('product') . ' WHERE product_id IN (' . implode(',', $ids) . ') AND product_access=\'all\' AND product_published=1 AND product_type=\'main\'';
-			$db->setQuery($product_query);
-			$products = $db->loadObjectList();
-			if(empty($products)){ // the products are no longer in the database
-				return false;
-			}
-		}else{
+		if(empty($ids) || !count($ids))
 			return false;
+
+		$product_query = 'SELECT product_id, product_taxability_code, product_parent_id FROM ' . hikashop_table('product') . ' WHERE product_id IN (' . implode(',', $ids) . ') AND product_access=\'all\' AND product_published=1';
+		$db->setQuery($product_query);
+		$products = $db->loadObjectList();
+
+		if(empty($products))
+			return false;
+
+		$tics = array();
+		$parents_ids = array();
+		foreach($products as $product){//associating the tics with the right ItemIds
+			if(empty($product->product_taxability_code)){
+				if(!empty($product->product_parent_id)){
+					$parents_ids[$product->product_id] = $product->product_parent_id;
+				}
+				continue;
+			}
+			$tics[$product->product_id] = $product->product_taxability_code;
 		}
 
-		$tics= array();
-		foreach($products as $product){//associating the tics with the right ItemIds
-			$tics[$product->product_id]=$product->product_taxability_code;
+		if(count($parents_ids)){
+			$product_query = 'SELECT product_id, product_taxability_code FROM ' . hikashop_table('product') . ' WHERE product_id IN (' . implode(',', $parents_ids) . ') AND product_access=\'all\' AND product_published=1 AND product_type=\'main\'';
+			$db->setQuery($product_query);
+			$parents = $db->loadObjectList('product_id');
+
+			if(!empty($parents)){
+				foreach($products as $product){
+					if(!empty($tics[$product->product_id]))
+						continue;
+					if(empty($parents_ids[$product->product_id]))
+						continue;
+					if(empty($parents[$parents_ids[$product->product_id]]))
+						continue;
+					$tics[$product->product_id] = $parents[$parents_ids[$product->product_id]]->product_taxability_code;
+				}
+			}
 		}
 		$return_items = array();
 		$all_returned = true;
@@ -408,8 +436,8 @@ class plgHikaShopTaxcloud extends JPlugin {
 					);
 			}
 			else{
-				$option = JRequest::getCmd('option', '');
-				$ctrl = JRequest::getCmd('ctrl', '');
+				$option = hikaInput::get()->getCmd('option', '');
+				$ctrl = hikaInput::get()->getCmd('ctrl', '');
 				if($option == 'com_hikashop' && $ctrl == 'checkout') {
 					$app->enqueueMessage(JText::_('WRONG_SHIPPING_ADDRESS'), 'error');
 				}
@@ -420,32 +448,11 @@ class plgHikaShopTaxcloud extends JPlugin {
 		$cart_items = array();
 
 
-		$ids = array();//getting the ids of the products to get their tics
-		foreach($cart->products as $product) {//getting the id of the product to get its tic
-			$ids[$product->order_product_id] = (int)$product->product_id;
-		}
-
-
-		$db = JFactory::getDBO();
-		if(!empty($ids)){
-			$product_query = 'SELECT product_id, product_taxability_code FROM ' . hikashop_table('product') . ' WHERE product_id IN (' . implode(',', $ids) . ') AND product_access=\'all\' AND product_published=1 AND product_type=\'main\'';
-			$db->setQuery($product_query);
-			$products = $db->loadObjectList();
-		}
-
-		$tics= array();
-		if(!empty($products)){
-			foreach($products as $product){//associating the tics with the right productIDs
-				$tics[$product->product_id]=$product->product_taxability_code;
-			}
-		}
-
 		$i = 0;
 		foreach($cart->products as $product) {
-			$tic = (int)$this->plugin_options['default_tic'];
-			if((int)$tics[$ids[$product->order_product_id]] != '-1' && (int)$tics[$ids[$product->order_product_id]] !=='')
-				$tic = (int)$tics[$ids[$product->order_product_id]];
-
+			$tic = $this->getCode($product, $cart->products);
+			if(!$tic)
+				$tic = (int)$this->plugin_options['default_tic'];
 
 			$cart_items[] = array(
 				'Index' => $product->cart_product_id,
@@ -466,14 +473,14 @@ class plgHikaShopTaxcloud extends JPlugin {
 				$order->order_shipping_params->prices[$key]->taxcloud_index = $id;
 				$order->order_shipping_params->prices[$key]->taxcloud_itemId = "Shipping".$j;
 				$order->order_shipping_params->prices[$key]->taxcloud_tic = $this->plugin_options['shipping_tic'];
-				$order->order_shipping_params->prices[$key]->taxcloud_price = (int)($shipping->price_with_tax - $shipping->tax);
+				$order->order_shipping_params->prices[$key]->taxcloud_price = $shipping->price_with_tax - $shipping->tax;
 
 
 				$cart_items[] = array(
 					'Index' => $id,
 					'ItemID' => "Shipping".$j,
 					'TIC' => $this->plugin_options['shipping_tic'],
-					'Price' => (int)($shipping->price_with_tax - $shipping->tax),
+					'Price' => $order->order_shipping_params->prices[$key]->taxcloud_price,
 					'Qty' => '1'
 				);
 				$j++;
@@ -592,7 +599,7 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 	}
 
 	protected function productFormSave(&$product) {
-		$field = JRequest::getInt('product_taxability_code_field', '0');
+		$field = hikaInput::get()->getInt('product_taxability_code_field', '0');
 		if(!empty($field) && empty($product->product_taxability_code)) {
 			$product->product_taxability_code = (int)@$this->plugin_options['default_tic'];
 		}
@@ -909,8 +916,8 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 				$app->setUserState(HIKASHOP_COMPONENT.'.taxcloud.address_result', 1);
 				return 1;
 			} else {
-				$option = JRequest::getCmd('option', '');
-				$ctrl = JRequest::getCmd('ctrl', '');
+				$option = hikaInput::get()->getCmd('option', '');
+				$ctrl = hikaInput::get()->getCmd('ctrl', '');
 				if($option == 'com_hikashop' && $ctrl == 'checkout') {
 					$app->enqueueMessage(JText::_('WRONG_SHIPPING_ADDRESS'), 'error');
 				}
@@ -980,6 +987,16 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 		return $address;
 	}
 
+	protected function getCode(&$product, &$products){
+		if(!empty($product->product_taxability_code) && $product->product_taxability_code!= '-1' && $product->product_taxability_code!=='')
+			return (int)$product->product_taxability_code;
+
+		if(!empty($product->cart_product_parent_id) && isset($products[$product->cart_product_parent_id]) && !empty($products[$product->cart_product_parent_id]->product_taxability_code) && $products[$product->cart_product_parent_id]->product_taxability_code != '-1'){
+			return (int)$products[$product->cart_product_parent_id]->product_taxability_code;
+		}
+		return false;
+	}
+
 	protected function lookup(&$cart) {
 		if(!$this->initSoap())
 			return false;
@@ -1019,12 +1036,12 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 		$tics = array();
 		$i = 0;
 		foreach($cart->products as $product) {
+			if(empty($product->cart_product_quantity))
+				continue;
 			$i++;
-			$tic = (int)$this->plugin_options['default_tic'];
-			if(!empty($product->product_taxability_code)){
-				if($product->product_taxability_code!= '-1' && $product->product_taxability_code!=='')
-					$tic = (int)$product->product_taxability_code;
-			}
+			$tic = $this->getCode($product, $cart->products);
+			if(!$tic)
+				$tic = (int)$this->plugin_options['default_tic'];
 
 			if(!isset($tics[$tic])) {
 				$cart_items[] = array(
@@ -1039,12 +1056,12 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 		}
 		$i=0;
 		foreach($cart->products as $k => $product) {
+			if(empty($product->cart_product_quantity))
+				continue;
 			$i++;
-			$tic = (int)$this->plugin_options['default_tic'];
-			if(!empty($product->product_taxability_code)){
-				if($product->product_taxability_code!= '-1' && $product->product_taxability_code!=='')
-					$tic = (int)$product->product_taxability_code;
-			}
+			$tic = $this->getCode($product, $cart->products);
+			if(!$tic)
+				$tic = (int)$this->plugin_options['default_tic'];
 			$cart->products[$k]->taxcloud_id = $i;
 
 			if(isset($product->prices[0]->unit_price->price_value))
@@ -1131,6 +1148,8 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 
 		if(!empty($ret) && $ret->ResponseType == 'OK') {
 			foreach($cart->products as &$product) {
+				if(empty($product->cart_product_quantity))
+					continue;
 				if(isset($product->prices[0])){
 					$product->prices[0]->price_value_with_tax = $product->prices[0]->price_value;
 					$product->prices[0]->taxes = array();
@@ -1142,10 +1161,11 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 
 			foreach($ret->CartItemsResponse->CartItemResponse as $item) {
 				foreach($cart->products as &$product) {
+					if(empty($product->cart_product_quantity))
+						continue;
 					if($item->CartItemIndex <= 0) {
-						if(!empty($product->product_taxability_code))
-							$tic = $product->product_taxability_code;
-						else
+						$tic = $this->getCode($product, $cart->products);
+						if(!$tic)
 							$tic = (int)$this->plugin_options['default_tic'];
 					if(!isset($rates[$tic]) ) {
 						$r = new stdClass();
@@ -1161,9 +1181,9 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 					if((int)$product->taxcloud_id == $item->CartItemIndex) {
 						if(!isset($product->prices[0]))
 							continue;
-						$tic = (int)$this->plugin_options['default_tic'];
-						if(!empty($product->product_taxability_code))
-							$tic = (int)$product->product_taxability_code;
+						$tic = $this->getCode($product, $cart->products);
+						if(!$tic)
+							$tic = (int)$this->plugin_options['default_tic'];
 
 						$price_value = $product->prices[0]->price_value;
 						$new_price = $price_value + $item->TaxAmount;

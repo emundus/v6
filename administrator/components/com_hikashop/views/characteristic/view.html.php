@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -131,7 +131,7 @@ class CharacteristicViewCharacteristic extends hikashopView {
 				$element->values = $database->loadObjectList();
 			}
 		}else{
-			$element = JRequest::getVar('fail');
+			$element = hikaInput::get()->getVar('fail');
 			if(empty($element)){
 				$element = new stdClass();
 			}
@@ -172,7 +172,7 @@ class CharacteristicViewCharacteristic extends hikashopView {
 	}
 
 	function addcharacteristic(){
-		$element = JRequest::getInt( 'cid');
+		$element = hikaInput::get()->getInt( 'cid');
 		$rows = array();
 		if(!empty($element)){
 			$database	= JFactory::getDBO();
@@ -180,7 +180,7 @@ class CharacteristicViewCharacteristic extends hikashopView {
 			$database->setQuery($query);
 			$rows = $database->loadObjectList();
 			$document= JFactory::getDocument();
-			$id = JRequest::getInt('id');
+			$id = hikaInput::get()->getInt('id');
 			$js = "window.hikashop.ready( function() {
 					window.top.deleteRow('characteristic_div_".$rows[0]->characteristic_id.'_'.$id."','characteristic[".$rows[0]->characteristic_id."][".$id."]','characteristic_".$rows[0]->characteristic_id.'_'.$id."');
 					var dstTable = window.top.document.getElementById('characteristic_listing');
@@ -205,7 +205,7 @@ class CharacteristicViewCharacteristic extends hikashopView {
 	}
 
 	function usecharacteristic(){
-		$characteristics = JRequest::getVar( 'cid', array(), '', 'array' );
+		$characteristics = hikaInput::get()->get('cid', array(), 'array' );
 		$rows = array();
 		$js="window.top.hikashop.closeBox();";
 		if(!empty($characteristics) && count($characteristics)){

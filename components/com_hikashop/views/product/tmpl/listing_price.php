@@ -1,17 +1,24 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
+$config =& hikashop_config();
+if($this->params->get('show_original_price','-1')=='-1'){
+	$this->params->set('show_original_price',$config->get('show_original_price'));
+}
+if($this->params->get('show_original_price','-1')=='-1'){
+	$this->params->set('show_original_price',$config->get('show_original_price'));
+}
 $class = (!empty($this->row->prices) && count($this->row->prices) > 1) ? ' hikashop_product_several_prices' : '';
 if(isset($this->element->main->product_msrp) && !(@$this->row->product_msrp > 0.0) )
 	$this->row->product_msrp = $this->element->main->product_msrp;
-if(isset($this->row->product_msrp) && @$this->row->product_msrp > 0.0 && JRequest::getCmd('layout') == 'show' && $this->params->get('from_module','') == '') {
+if(isset($this->row->product_msrp) && @$this->row->product_msrp > 0.0 && hikaInput::get()->getCmd('layout') == 'show' && $this->params->get('from_module','') == '') {
 ?>
 	<span class="hikashop_product_msrp_price hikashop_product_price_full">
 		<span class="hikashop_product_msrp_price_title"><?php
@@ -24,8 +31,11 @@ if(isset($this->row->product_msrp) && @$this->row->product_msrp > 0.0 && JReques
 			$msrpCurrencied = $this->currencyHelper->convertUniquePrice($this->row->product_msrp,$mainCurr,$currCurrency);
 			if($msrpCurrencied == $this->row->product_msrp)
 				echo $this->currencyHelper->format($this->row->product_msrp,$mainCurr);
-			else
-				echo $this->currencyHelper->format($msrpCurrencied,$currCurrency).' ('.$this->currencyHelper->format($this->row->product_msrp,$mainCurr).')';
+			else {
+				echo $this->currencyHelper->format($msrpCurrencied,$currCurrency);
+				if($this->params->get('show_original_price'))
+					echo ' ('.$this->currencyHelper->format($this->row->product_msrp,$mainCurr).')';
+			}
 		?></span>
 	</span>
 <?php
@@ -40,22 +50,15 @@ if(isset($this->row->product_msrp) && @$this->row->product_msrp > 0.0 && JReques
 		echo JText::_('PRICE_BEGINNING');
 		$i=0;
 
-		if(isset($this->row->product_msrp) && @$this->row->product_msrp > 0.0 && JRequest::getCmd('layout') == 'show' && $this->params->get('from_module','') == ''){
+		if(isset($this->row->product_msrp) && @$this->row->product_msrp > 0.0 && hikaInput::get()->getCmd('layout') == 'show' && $this->params->get('from_module','') == ''){
 			echo '<span class="hikashop_product_our_price_title">'.JText::_('PRODUCT_MSRP_AFTER').'</span> ';
 		}
 
-		$config =& hikashop_config();
 		if($this->params->get('price_with_tax',3)==3){
 			$this->params->set('price_with_tax',$config->get('price_with_tax'));
 		}
 		if($this->params->get('show_discount',3)==3){
 			$this->params->set('show_discount',$config->get('show_discount'));
-		}
-		if($this->params->get('show_original_price','-1')=='-1'){
-			$this->params->set('show_original_price',$config->get('show_original_price'));
-		}
-		if($this->params->get('show_original_price','-1')=='-1'){
-			$this->params->set('show_original_price',$config->get('show_original_price'));
 		}
 
 		foreach($this->row->prices as $k => $price){

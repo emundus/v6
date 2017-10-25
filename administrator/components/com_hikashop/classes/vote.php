@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -391,7 +391,7 @@ class hikashopVoteClass extends hikashopClass {
 	function saveForm(){
 		$element = new stdClass();
 		$element->vote_id = hikashop_getCID('vote_id');
-		$formData = JRequest::getVar( 'data', array(), '', 'array' );
+		$formData = hikaInput::get()->get('data', array(), 'array');
 		jimport('joomla.filter.filterinput');
 		$safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
 		foreach($formData['vote'] as $column => $value){
@@ -424,7 +424,7 @@ hikaVote.setOptions({
 	urls : {
 		save : "'.hikashop_completelink('vote&task=save',true,true).'",
 		show : "'.hikashop_completelink('vote&task=show',true,true).'"
-	},ctrl : "'.JRequest::getVar('ctrl','product').'",
+	},ctrl : "'.hikaInput::get()->getVar('ctrl','product').'",
 	both : "'.$voteType.'"
 });
 function hikashop_vote_useful(hikashop_vote_id, val) { return hikaVote.useful(hikashop_vote_id, val); }

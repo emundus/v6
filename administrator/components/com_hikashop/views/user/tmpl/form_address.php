@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -26,7 +26,7 @@ defined('_JEXEC') or die('Restricted access');
 	}
 	if(empty($values))
 		$values = array(JHTML::_('select.option', '', JText::_('HIKA_NO_ADDRESS')));
-	echo JHTML::_('select.genericlist', $values, 'default_address', 'class="hikashop_default_address_dropdown" style="width:100%;"', 'value', 'text', $current, 'hikashop_default_address_selector');
+	echo JHTML::_('select.genericlist', $values, 'address_default', 'class="hikashop_default_address_dropdown" style="width:100%;"', 'value', 'text', $current, 'hikashop_default_address_selector');
 
 		?></dd>
 	</dl>

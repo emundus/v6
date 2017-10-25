@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -35,7 +35,7 @@ class ZoneViewZone extends hikashopView
 
 		$selectedType = $app->getUserStateFromRequest( $this->paramBase.".filter_type",'filter_type','','string');
 		$pageInfo->limit->value = $app->getUserStateFromRequest( $this->paramBase.'.list_limit', 'limit', $app->getCfg('list_limit'), 'int' );
-		if(JRequest::getVar('search')!=$app->getUserState($this->paramBase.".search")){
+		if(hikaInput::get()->getVar('search')!=$app->getUserState($this->paramBase.".search")){
 			$app->setUserState( $this->paramBase.'.limitstart',0);
 			$pageInfo->limit->start = 0;
 		}else{
@@ -120,13 +120,13 @@ class ZoneViewZone extends hikashopView
 	function selectchildlisting(){
 		$this->paramBase .= '_child';
 		$this->listing();
-		$control=JRequest::getWord('type');
+		$control=hikaInput::get()->getWord('type');
 		$this->assignRef('type',$control);
-		$subcontrol=JRequest::getVar('subtype');
+		$subcontrol=hikaInput::get()->getVar('subtype');
 		$this->assignRef('subtype',$subcontrol);
-		$map=JRequest::getVar('map');
+		$map=hikaInput::get()->getVar('map');
 		$this->assignRef('map',$map);
-		$column=JRequest::getVar('column');
+		$column=hikaInput::get()->getVar('column');
 		$this->assignRef('column',$column);
 	}
 
@@ -137,7 +137,7 @@ class ZoneViewZone extends hikashopView
 			$element = $class->get($zone_id);
 			$task='edit';
 		}else{
-			$element = JRequest::getVar('fail');
+			$element = hikaInput::get()->getVar('fail');
 			if(empty($element)){
 				$element = new stdClass();
 				$app = JFactory::getApplication();
@@ -160,7 +160,7 @@ class ZoneViewZone extends hikashopView
 		$this->assignRef('element',$element);
 		$this->assignRef('type',$zoneType);
 
-		$control=JRequest::getWord('type');
+		$control=hikaInput::get()->getWord('type');
 		$this->assignRef('control',$control);
 		$popup = hikashop_get('helper.popup');
 		$this->assignRef('popup',$popup);
@@ -173,7 +173,7 @@ class ZoneViewZone extends hikashopView
 		$element = new stdClass();
 		$app = JFactory::getApplication();
 		$this->paramBase .= '_child';
-		$main_id = JRequest::getInt('main_id');
+		$main_id = hikaInput::get()->getInt('main_id');
 		if(!empty($main_id)){
 			$zoneClass = hikashop_get('class.zone');
 			$parent = $zoneClass->get($main_id);
@@ -193,7 +193,7 @@ class ZoneViewZone extends hikashopView
 
 	function savechild(){
 		$database = JFactory::getDBO();
-		$id = JRequest::getInt( 'cid' );
+		$id = hikaInput::get()->getInt( 'cid' );
 		if(!empty($id)){
 			$query = 'SELECT a.* FROM '.hikashop_table('zone').' AS a WHERE a.zone_id='.$id;
 			$database->setQuery($query);
@@ -202,7 +202,7 @@ class ZoneViewZone extends hikashopView
 			$rows = array();
 		}
 		$this->assignRef('list',$rows);
-		$main_namekey = JRequest::getCmd('main_namekey');
+		$main_namekey = hikaInput::get()->getCmd('main_namekey');
 		$this->assignRef('main_namekey',$main_namekey);
 		$toggle = hikashop_get('helper.toggle');
 		$this->assignRef('toggleClass',$toggle);
@@ -223,7 +223,7 @@ class ZoneViewZone extends hikashopView
 	function newchild(){
 		$document = JFactory::getDocument();
 		$database = JFactory::getDBO();
-		$childNamekeys = JRequest::getVar( 'cid', array(), '', 'array' );
+		$childNamekeys = hikaInput::get()->get('cid', array(), 'array');
 		if(!empty($childNamekeys)){
 			$query = 'SELECT a.* FROM '.hikashop_table('zone').' AS a WHERE a.zone_namekey  IN (';
 			foreach($childNamekeys as $namekey){
@@ -236,7 +236,7 @@ class ZoneViewZone extends hikashopView
 			$rows = array();
 		}
 		$this->assignRef('list',$rows);
-		$main_namekey = JRequest::getCmd('main_namekey');
+		$main_namekey = hikaInput::get()->getCmd('main_namekey');
 		$this->assignRef('main_namekey',$main_namekey);
 		$toggle = hikashop_get('helper.toggle');
 		$this->assignRef('toggleClass',$toggle);
@@ -270,7 +270,7 @@ class ZoneViewZone extends hikashopView
 				$element->zone_name_english=JText::_('ZONE_NOT_FOUND');
 			}
 		}
-		$subtype=JRequest::getVar('subtype');
+		$subtype=hikaInput::get()->getVar('subtype');
 		if(empty($subtype)){
 			$subtype='zone_id';
 		}

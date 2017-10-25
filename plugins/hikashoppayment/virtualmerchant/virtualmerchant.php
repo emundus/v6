@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -111,6 +111,8 @@ class plgHikashoppaymentVirtualmerchant extends hikashopPaymentPlugin
 		$session = curl_init();
 		curl_setopt($session, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($session, CURLOPT_SSL_VERIFYHOST, false);
+		defined('CURL_SSLVERSION_TLSv1_2') || define('CURL_SSLVERSION_TLSv1_2', 6);
+		curl_setopt($session, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
 		curl_setopt($session, CURLOPT_POST,           1);
 		curl_setopt($session, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($session, CURLOPT_VERBOSE,        1);
@@ -119,9 +121,9 @@ class plgHikashoppaymentVirtualmerchant extends hikashopPaymentPlugin
 
 		$httpsHikashop = str_replace('http://','https://', HIKASHOP_LIVE);
 		if($this->payment_params->sandbox) {
-			$url = 'demo.myvirtualmerchant.com/VirtualMerchantDemo/processxml.do';
+			$url = 'api.demo.convergepay.com/VirtualMerchantDemo/processxml.do';
 		} else {
-			$url = 'www.myvirtualmerchant.com/VirtualMerchant/processxml.do';
+			$url = 'api.convergepay.com/VirtualMerchant/processxml.do';
 		}
 
 		curl_setopt($session, CURLOPT_URL, 'https://' . $url);
@@ -185,7 +187,7 @@ class plgHikashoppaymentVirtualmerchant extends hikashopPaymentPlugin
 					$order_text = "\r\n".JText::sprintf('NOTIFICATION_OF_ORDER_ON_WEBSITE','',HIKASHOP_LIVE);
 					$order_text .= "\r\n".str_replace('<br/>',"\r\n",JText::sprintf('ACCESS_ORDER_WITH_LINK',$url));
 					$email->subject = JText::sprintf('PAYMENT_NOTIFICATION','VirtualMerchant','Accepted');
-					$email->body = str_replace('<br/>',"\r\n",JText::sprintf('PAYMENT_NOTIFICATION_STATUS','VirtualMerchant','Accepted')).' '.JText::sprintf('ORDER_STATUS_CHANGED',$order_status)."\r\n\r\n".$order_text;
+					$email->body = str_replace('<br/>',"\r\n",JText::sprintf('PAYMENT_NOTIFICATION_STATUS','VirtualMerchant','Accepted')).' '.JText::sprintf('ORDER_STATUS_CHANGED', hikashop_orderStatus($order_status))."\r\n\r\n".$order_text;
 
 					$this->modifyOrder($order,$order_status,$history,$email);
 				} else {

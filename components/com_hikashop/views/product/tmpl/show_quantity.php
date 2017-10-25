@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,8 +20,16 @@ if(!empty($this->row->quantityFieldName)){
 }
 
 if(isset($this->row) && isset($this->row->product_min_per_order)) {
-	$min_quantity = max((int)$this->row->product_min_per_order, 1);
-	$max_quantity = max((int)$this->row->product_max_per_order, 0);
+	$min_quantity = ($this->row->product_min_per_order || empty($this->element->main)) ? $this->row->product_min_per_order : $this->element->main->product_min_per_order;
+	$max_quantity = ($this->row->product_max_per_order || empty($this->element->main)) ? $this->row->product_max_per_order : $this->element->main->product_max_per_order;
+	if($this->row->product_quantity > 0) {
+		if($max_quantity > 0)
+			$max_quantity = min($max_quantity, $this->row->product_quantity);
+		else
+			$max_quantity = $this->row->product_quantity;
+	}
+	$min_quantity = max((int)$min_quantity, 1);
+	$max_quantity = max((int)$max_quantity, 0);
 } else {
 	$min_quantity = max((int)$this->params->get('min_quantity', 0), 1);
 	$max_quantity = max((int)$this->params->get('max_quantity', 0), 0);
@@ -36,7 +44,7 @@ if(!isset($this->global_on_listing)){
 if(!empty($this->global_on_listing))
 	$min_quantity = 0;
 
-$current_quantity = JRequest::getInt('quantity', $min_quantity);
+$current_quantity = hikaInput::get()->getInt('quantity', $min_quantity);
 
 if(!isset($this->quantityLayout)) {
 	$quantityLayout = $this->config->get('product_quantity_display', 'show_default');

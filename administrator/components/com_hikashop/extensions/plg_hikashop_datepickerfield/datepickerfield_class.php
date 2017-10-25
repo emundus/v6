@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -114,7 +114,7 @@ class fieldOpt_datepicker_options {
 
 	public function save(&$options) {
 		if(!empty($options['datepicker_options']))
-			$options['datepicker_options']['excludes'] = JRequest::getVar('field_options__datepicker_options__excludes','','','string',JREQUEST_ALLOWRAW);
+			$options['datepicker_options']['excludes'] = hikaInput::get()->getRaw('field_options__datepicker_options__excludes', '');
 	}
 }
 
@@ -125,6 +125,7 @@ class hikashopDatepickerfield {
 	public $excludeValue = null;
 	public $report = null;
 	public $parent = null;
+	public $displayFor = false;
 	protected $params = null;
 
 	public function __construct(&$obj) {
@@ -277,15 +278,32 @@ window.hikashopDatepicker = function(el) {
 		return $init;
 	}
 
-	public function getFieldName($field) {
-		return '<label for="' . $this->prefix . $field->field_namekey . $this->suffix.'">' . $this->trans($field->field_realname) . '</label>';
+	public function getFieldName(&$field, $requiredDisplay = false, $classname = '') {
+		$app = JFactory::getApplication();
+		if($app->isAdmin()) return $this->trans($field->field_realname);
+		$required = '';
+		$options = '';
+		$for = '';
+		if($requiredDisplay && !empty($field->field_required))
+			$required = '<span class="hikashop_field_required_label">*</span>';
+		if(!empty($classname))
+			$options = ' class="'.str_replace('"','',$classname).'"';
+		if($this->displayFor)
+			$for = ' for="'.$this->prefix.$field->field_namekey.$this->suffix.'"';
+		return '<label'.$for.$options.'>'.$this->trans($field->field_realname).$required.'</label>';
 	}
 
 	public function trans($name) {
-		$val = preg_replace('#[^a-z0-9]#i', '_', strtoupper($name));
-		$trans = JText::_($val);
+		$val = preg_replace('#[^a-z0-9]#i','_',strtoupper($name));
+
+		$app = JFactory::getApplication();
+		if($app->isAdmin() && strcmp(JText::_($val), strip_tags(JText::_($val))) !== 0)
+			$trans = $val;
+		else
+			$trans = JText::_($val);
+
 		if($val == $trans)
-			return $name;
+			$trans = $name;
 		return $trans;
 	}
 

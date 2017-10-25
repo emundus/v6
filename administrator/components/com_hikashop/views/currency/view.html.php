@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -33,7 +33,7 @@ class CurrencyViewCurrency extends hikashopView
 		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest( $this->paramBase.".filter_order_Dir", 'filter_order_Dir',	'asc',	'word' );
 
 		$pageInfo->limit->value = $app->getUserStateFromRequest( $this->paramBase.'.list_limit', 'limit', $app->getCfg('list_limit'), 'int' );
-		if(JRequest::getVar('search')!=$app->getUserState($this->paramBase.".search")){
+		if(hikaInput::get()->getVar('search')!=$app->getUserState($this->paramBase.".search")){
 			$app->setUserState( $this->paramBase.'.limitstart',0);
 			$pageInfo->limit->start = 0;
 		}else{
@@ -98,7 +98,7 @@ class CurrencyViewCurrency extends hikashopView
 			$element = $class->get($currency_id);
 			$task='edit';
 		}else{
-			$element = JRequest::getVar('fail');
+			$element = hikaInput::get()->getVar('fail');
 			if(empty($element)){
 				$element = new stdClass();
 				$element->currency_published=1;

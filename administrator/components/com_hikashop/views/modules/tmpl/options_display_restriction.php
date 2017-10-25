@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,7 +9,7 @@
 defined('_JEXEC') or die('Restricted access');
 ?><div class="hkc-xl-4 hkc-md-6 hikashop_module_subblock hikashop_module_edit_general_part1">
 	<div class="hikashop_module_subblock_content">
-		<div class="hikashop_module_subblock_title hikashop_module_edit_display_settings_div_title"><?php echo JText::_('DISPLAY_LIMITED_TO'); ?></div>
+		<div class="hikashop_module_subblock_title hikashop_module_edit_display_settings_div_title"><?php echo JText::_('DISPLAY'); ?></div>
 		 <dl class="hika_options">
 			<dt class="hikashop_option_name">
 				<?php echo JText::_('PRODUCT_PAGE');?>
@@ -61,6 +61,16 @@ defined('_JEXEC') or die('Restricted access');
 				if(!isset($this->element['display_on_checkout_page']))
 					$this->element['display_on_checkout_page'] = 1;
 				echo JHTML::_('hikaselect.booleanlist', $this->name.'[display_on_checkout_page]', '', $this->element['display_on_checkout_page']);
+			?></dd>
+		</dl>
+		<dl class="hika_options">
+			<dt class="hikashop_option_name"><?php
+				echo JText::_('COM_HIKASHOP_CONTACT_VIEW_DEFAULT_TITLE');
+			?></dt>
+			<dd class="hikashop_option_value"><?php
+				if(!isset($this->element['display_on_contact_page']))
+					$this->element['display_on_contact_page'] = 1;
+				echo JHTML::_('hikaselect.booleanlist', $this->name.'[display_on_contact_page]', '', $this->element['display_on_contact_page']);
 			?></dd>
 		</dl>
 	</div>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -45,7 +45,7 @@ if(!empty($data) && is_object($data)){
 $type = $module_options['content_type'];
 if($type=='manufacturer') $type = 'category';
 
-if(empty($module_options['itemid']) && $type=='category' && !JRequest::getVar('hikashop_front_end_main')){
+if(empty($module_options['itemid']) && $type=='category' && !hikaInput::get()->getVar('hikashop_front_end_main')){
 	$module_options['content_synchronize']=0;
 	$menu = hikashop_get('class.menus');
 	$menu->createMenu($module_options,$module->id);

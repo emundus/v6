@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -56,27 +56,27 @@ class OrderController extends hikashopController {
 	}
 
 	function download(){
-		$file_id = JRequest::getInt('file_id');
+		$file_id = hikaInput::get()->getInt('file_id');
 		if(empty($file_id)){
-			$field_table = JRequest::getWord('field_table');
-			$field_namekey = JRequest::getString('field_namekey');
-			$name = JRequest::getString('name');
+			$field_table = hikaInput::get()->getWord('field_table');
+			$field_namekey = hikaInput::get()->getString('field_namekey');
+			$name = hikaInput::get()->getString('name');
 			if(empty($field_table)||empty($field_namekey)||empty($name)){
 				$app=JFactory::getApplication();
 				$app->enqueueMessage(JText::_('FILE_NOT_FOUND'));
 				return false;
 			}else{
 				$options = array(
-					'thumbnail_x' => JRequest::getInt('thumbnail_x', 0),
-					'thumbnail_y' => JRequest::getInt('thumbnail_y', 0)
+					'thumbnail_x' => hikaInput::get()->getInt('thumbnail_x', 0),
+					'thumbnail_y' => hikaInput::get()->getInt('thumbnail_y', 0)
 				);
 				$fileClass = hikashop_get('class.file');
 				$fileClass->downloadFieldFile(urldecode(base64_decode($name)), $field_table, urldecode(base64_decode($field_namekey)), $options);
 			}
 
 		}
-		$file_pos = JRequest::getInt('file_pos',1);
-		$order_id = JRequest::getInt('order_id',0);
+		$file_pos = hikaInput::get()->getInt('file_pos',1);
+		$order_id = hikaInput::get()->getInt('order_id',0);
 		$fileClass = hikashop_get('class.file');
 		$fileClass->download($file_id,$order_id,$file_pos);
 	}
@@ -95,7 +95,7 @@ class OrderController extends hikashopController {
 		if(empty($field) || ($field->field_type != 'ajaxfile' && $field->field_type != 'ajaximage'))
 			return false;
 
-		$map = JRequest::getString('field_map', '');
+		$map = hikaInput::get()->getString('field_map', '');
 		if(empty($map))
 			return false;
 
@@ -113,7 +113,7 @@ class OrderController extends hikashopController {
 			'extra' => array(
 				'field_name' => $map,
 				'delete' => empty($field->field_required),
-				'uploader_id' => JRequest::getString('uploader_id', '')
+				'uploader_id' => hikaInput::get()->getString('uploader_id', '')
 			)
 		);
 	}
@@ -135,7 +135,7 @@ class OrderController extends hikashopController {
 		if(empty($field) || ($field->field_type != 'ajaxfile' && $field->field_type != 'ajaximage'))
 			return;
 
-		$map = JRequest::getString('field_map', '');
+		$map = hikaInput::get()->getString('field_map', '');
 		if(empty($map))
 			return;
 
@@ -147,25 +147,25 @@ class OrderController extends hikashopController {
 	}
 
 	function changestatus(){
-		JRequest::setVar('layout', 'changestatus');
+		hikaInput::get()->set('layout', 'changestatus');
 		return parent::display();
 	}
 
 	function product(){
-		JRequest::setVar('layout', 'product');
+		hikaInput::get()->set('layout', 'product');
 		return parent::display();
 	}
 	function user(){
-		JRequest::setVar('layout', 'user');
-		JRequest::setVar('cart_id',JRequest::getString('cart_id','0'));
-		JRequest::setVar('cart_type',JRequest::getString('cart_type','0'));
+		hikaInput::get()->set('layout', 'user');
+		hikaInput::get()->set('cart_id',hikaInput::get()->getString('cart_id','0'));
+		hikaInput::get()->set('cart_type',hikaInput::get()->getString('cart_type','0'));
 		return parent::display();
 	}
 	function product_select(){
-		JRequest::setVar( 'layout', 'product_select'  );
-		$cart_type = JRequest::getString('cart_type','cart');
-		JRequest::setVar('cart_type',$cart_type);
-		JRequest::setVar($cart_type.'_id', JRequest::getInt('cart_id', '0'));
+		hikaInput::get()->set( 'layout', 'product_select'  );
+		$cart_type = hikaInput::get()->getString('cart_type','cart');
+		hikaInput::get()->set('cart_type',$cart_type);
+		hikaInput::get()->set($cart_type.'_id', hikaInput::get()->getInt('cart_id', '0'));
 		return parent::display();
 	}
 	function product_add($order_id = 0){
@@ -174,14 +174,14 @@ class OrderController extends hikashopController {
 		$classOrder = hikashop_get('class.order');
 		if($order_id == 0){
 			$data = $this->_cleanOrder();
-			$product_ids = JRequest::getVar( 'cid', array(), '', 'array' );
+			$product_ids = hikaInput::get()->get('cid', array(), 'array');
 		}else{
 			$data = new stdClass();
 			$data->order_id = $order_id;
-			$product_ids = JRequest::getVar( 'product_ids', array(), '', 'array' );
+			$product_ids = hikaInput::get()->get('product_ids', array(), 'array');
 		}
 
-		$quantities = JRequest::getVar( 'quantity', array(), '', 'array' );
+		$quantities = hikaInput::get()->get('quantity', array(), 'array');
 		$rows = array();
 		if(!empty($product_ids)){
 			JArrayHelper::toInteger($product_ids);
@@ -226,8 +226,8 @@ class OrderController extends hikashopController {
 		}
 
 		$result = false;
-		$cart_type = JRequest::getString('cart_type','cart');
-		$cart_id = JRequest::getString($cart_type.'_id','0');
+		$cart_type = hikaInput::get()->getString('cart_type','cart');
+		$cart_id = hikaInput::get()->getString($cart_type.'_id','0');
 		if(!empty($data->order_id)){
 			$data->product = $element;
 			$classOrder = hikashop_get('class.order');
@@ -241,8 +241,8 @@ class OrderController extends hikashopController {
 				$cart_id = $classCart->save($cart);
 			}
 
-			JRequest::setVar('cart_type',$cart_type);
-			JRequest::setVar($cart_type.'_id',$cart_id);
+			hikaInput::get()->set('cart_type',$cart_type);
+			hikaInput::get()->set($cart_type.'_id',$cart_id);
 
 			$result = true;
 			foreach($element as $data){
@@ -263,23 +263,23 @@ class OrderController extends hikashopController {
 		}
 	}
 	function address(){
-		JRequest::setVar('layout', 'address');
+		hikaInput::get()->set('layout', 'address');
 		return parent::display();
 	}
 	function invoice(){
-		JRequest::setVar('layout', 'invoice');
+		hikaInput::get()->set('layout', 'invoice');
 		return parent::display();
 	}
 	function export(){
-		JRequest::setVar('layout', 'export');
+		hikaInput::get()->set('layout', 'export');
 		return parent::display();
 	}
 	function discount(){
-		JRequest::setVar('layout', 'discount');
+		hikaInput::get()->set('layout', 'discount');
 		return parent::display();
 	}
 	function fields(){
-		JRequest::setVar('layout', 'fields');
+		hikaInput::get()->set('layout', 'fields');
 		return parent::display();
 	}
 	function savefields(){
@@ -289,39 +289,39 @@ class OrderController extends hikashopController {
 		$this->_save();
 	}
 	function partner(){
-		JRequest::setVar('layout', 'partner');
+		hikaInput::get()->set('layout', 'partner');
 		return parent::display();
 	}
 	function savepartner(){
 		$this->_save();
 	}
 	function saveuser(){
-		$set_address = JRequest::getInt('set_address', 0);
+		$set_address = hikaInput::get()->getInt('set_address', 0);
 		if($set_address) {
-			$formData = JRequest::getVar( 'data', array(), '', 'array');
+			$formData = hikaInput::get()->get('data', array(), 'array');
 			if(isset($formData['order']['order_user_id'])) {
 				$user_id = $formData['order']['order_user_id'];
 				$db = JFactory::getDBO();
-				if(JRequest::getString('cart_id','0') != '0'){
+				if(hikaInput::get()->getString('cart_id','0') != '0'){
 					$userClass = hikashop_get('class.user');
 					$user = $userClass->get($user_id);
 					$user_id = $user->user_cms_id;
 
-					$query = 'UPDATE '.hikashop_table('cart').' SET user_id = '.$user_id.' WHERE cart_id = '.JRequest::getString('cart_id','0');
+					$query = 'UPDATE '.hikashop_table('cart').' SET user_id = '.$user_id.' WHERE cart_id = '.hikaInput::get()->getString('cart_id','0');
 					$db->setQuery($query);
 					$db->query();
-					JRequest::setVar('user_id',$user_id,'GET',true);
+					hikaInput::get()->set('user_id', $user_id);
 					$element = new stdClass();
 					$element->user_id = $user_id;
-					$element->cart_id = JRequest::getString('cart_id','0');
-					$element->cart_type = JRequest::getString('cart_type','cart');
+					$element->cart_id = hikaInput::get()->getString('cart_id','0');
+					$element->cart_type = hikaInput::get()->getString('cart_type','cart');
 					$this->_terminate($element,'showcart');
 				}else{
 					$db->setQuery('SELECT address_id FROM '.hikashop_table('address').' WHERE address_user_id = '. (int)$user_id . ' AND address_published = 1 ORDER BY address_default DESC, address_id ASC LIMIT 1');
 					$address_id = $db->loadResult();
 					if($address_id) {
 						$formData['order']['order_billing_address_id'] = $address_id;
-						JRequest::setVar('data', $formData);
+						hikaInput::get()->set('data', $formData);
 					}
 				}
 			}
@@ -329,11 +329,11 @@ class OrderController extends hikashopController {
 		$this->_save();
 	}
 	function mail(){
-		JRequest::setVar( 'layout', 'mail'  );
+		hikaInput::get()->set( 'layout', 'mail'  );
 		return parent::display();
 	}
 	function changeplugin(){
-		JRequest::setVar( 'layout', 'changeplugin'  );
+		hikaInput::get()->set( 'layout', 'changeplugin'  );
 		return parent::display();
 	}
 	function savechangeplugin(){
@@ -353,13 +353,13 @@ class OrderController extends hikashopController {
 	}
 
 	function saveproduct(){
-		if(JRequest::getInt('cart_id','0') != '0'){ //Check the quantity too ?
-			$cart_id = JRequest::getString('cart_id','0');
-			$cart_type = JRequest::getString('cart_type','cart');
-			JRequest::setVar('cart_id',$cart_id);
-			JRequest::setVar('cart_type',$cart_type);
+		if(hikaInput::get()->getInt('cart_id','0') != '0'){ //Check the quantity too ?
+			$cart_id = hikaInput::get()->getString('cart_id','0');
+			$cart_type = hikaInput::get()->getString('cart_type','cart');
+			hikaInput::get()->set('cart_id',$cart_id);
+			hikaInput::get()->set('cart_type',$cart_type);
 			$classCart = hikashop_get('class.cart');
-			$classCart->update(JRequest::getInt('product_id','0'), 0,0,'product',true,true);
+			$classCart->update(hikaInput::get()->getInt('product_id','0'), 0,0,'product',true,true);
 			$element = new stdClass();
 			$element->cart_type = $cart_type;
 			$element->cart_id = $cart_id;
@@ -385,7 +385,7 @@ class OrderController extends hikashopController {
 		$element = $this->_cleanOrder();
 
 		if(!empty($element->order_id)){
-			$type = JRequest::getCmd('type');
+			$type = hikaInput::get()->getCmd('type');
 			$result = $addressClass->save($address,$element->order_id,$type);
 			if($result){
 				$name = 'order_'.$type.'_address_id';
@@ -400,7 +400,7 @@ class OrderController extends hikashopController {
 	}
 
 	function remove_history_data(){
-		$history_id = JRequest::getInt( 'history_id', 0);
+		$history_id = hikaInput::get()->getInt( 'history_id', 0);
 		if($history_id){
 			$historyClass = hikashop_get('class.history');
 			$history = $historyClass->get($history_id);
@@ -410,7 +410,7 @@ class OrderController extends hikashopController {
 				$newHistoryObj->history_data = '';
 				$historyClass->save($newHistoryObj);
 			}
-			JRequest::setVar( 'order_id', $history->history_order_id );
+			hikaInput::get()->set( 'order_id', $history->history_order_id );
 			return $this->edit();
 		}else{
 			return $this->listing();
@@ -418,20 +418,20 @@ class OrderController extends hikashopController {
 	}
 
 	function product_delete(){
-		JRequest::setVar( 'layout', 'product_delete'  );
-		JRequest::setVar( 'cart_id', JRequest::getInt('cart_id','0')  );
-		JRequest::setVar( 'product_id',JRequest::getInt('product_id','0')  );
-		JRequest::setVar( 'cart_type',JRequest::getString('cart_type','cart')  );
+		hikaInput::get()->set( 'layout', 'product_delete'  );
+		hikaInput::get()->set( 'cart_id', hikaInput::get()->getInt('cart_id','0')  );
+		hikaInput::get()->set( 'product_id',hikaInput::get()->getInt('product_id','0')  );
+		hikaInput::get()->set( 'cart_type',hikaInput::get()->getString('cart_type','cart')  );
 
 		return parent::display();
 	}
 
 	function savechangestatus(){
-		$this->_save(JRequest::getInt('edit', 0));
+		$this->_save(hikaInput::get()->getInt('edit', 0));
 	}
 	function _cleanOrder(){
 		$element = new stdClass();
-		$formData = JRequest::getVar('data', array(), '', 'array');
+		$formData = hikaInput::get()->get('data', array(), 'array');
 		$fieldClass = hikashop_get('class.field');
 		$old = null; //$fieldsClass->get($formData['order']['product']['order_product_id']);
 
@@ -439,7 +439,7 @@ class OrderController extends hikashopController {
 			hikashop_secureField($column);
 			if($column == 'product') {
 				$formData['item'] = $formData['order']['product'];
-				JRequest::setVar('data', $formData);
+				hikaInput::get()->set('data', $formData);
 				$fieldClass->getInput('item',$old,false);
 				$element->product = $_SESSION['hikashop_item_data'];
 			} elseif(in_array($column,array('history','mail'))){
@@ -457,7 +457,7 @@ class OrderController extends hikashopController {
 		}
 		if(!isset($element->mail))
 			$element->mail = new stdClass();
-		$element->mail->body = JRequest::getVar('hikashop_mail_body','','','string',JREQUEST_ALLOWRAW);
+		$element->mail->body = hikaInput::get()->getRaw('hikashop_mail_body', '');
 		$element->mail->data = new stdClass();
 		if(!empty($element->order_id))
 			$element->mail->data->order_id = (int)$element->order_id;
@@ -481,7 +481,7 @@ class OrderController extends hikashopController {
 				} else if(empty($element)) {
 					$app->enqueueMessage(JText::_('ERROR_SAVING'), 'error');
 				} else {
-					$element->mail->body = JRequest::getVar('hikashop_mail_body','','','string',JREQUEST_ALLOWRAW);
+					$element->mail->body = hikaInput::get()->getRaw('hikashop_mail_body', '');
 				}
 			}
 
@@ -496,13 +496,13 @@ class OrderController extends hikashopController {
 	}
 
 	function deleteentry(){
-		$entry = JRequest::getInt('entry_id',0);
+		$entry = hikaInput::get()->getInt('entry_id',0);
 		if($entry){
 			$entryClass = hikashop_get('class.entry');
 			$oldData = $entryClass->get($entry);
 			if(!empty($oldData)){
 				$entryClass->delete($entry);
-				JRequest::setVar('cid',$oldData->order_id);
+				hikaInput::get()->set('cid',$oldData->order_id);
 			}
 		}
 		$this->edit();
@@ -534,7 +534,7 @@ class OrderController extends hikashopController {
 	}
 
 	public function copy(){
-		$orders = JRequest::getVar( 'cid', array(), '', 'array' );
+		$orders = hikaInput::get()->get('cid', array(), 'array');
 		$result = true;
 		if(!empty($orders)){
 			$orderClass = hikashop_get('class.order');
@@ -555,16 +555,16 @@ class OrderController extends hikashopController {
 	}
 
 	public function show() {
-		$task = JRequest::getVar('subtask', '');
+		$task = hikaInput::get()->getVar('subtask', '');
 		if(!empty($task) && !in_array($task, $this->subtasks))
 			return false;
 
 		if(empty($task))
-			JRequest::setVar('layout', 'show');
+			hikaInput::get()->set('layout', 'show');
 		else
-			JRequest::setVar('layout', 'show_'.$task);
+			hikaInput::get()->set('layout', 'show_'.$task);
 
-		$tmpl = JRequest::getVar('tmpl', '');
+		$tmpl = hikaInput::get()->getVar('tmpl', '');
 		if($tmpl == 'component') {
 			ob_end_clean();
 			hikashop_nocache();
@@ -575,7 +575,7 @@ class OrderController extends hikashopController {
 	}
 
 	public function save() {
-		$task = JRequest::getVar('subtask', '');
+		$task = hikaInput::get()->getVar('subtask', '');
 		if(!in_array($task, $this->subtasks))
 			return false;
 
@@ -584,11 +584,11 @@ class OrderController extends hikashopController {
 			return false;
 		$status = $orderClass->saveForm($task);
 		if($status) {
-			JRequest::setVar('cid', $status);
-			JRequest::setVar('fail', null);
+			hikaInput::get()->set('cid', $status);
+			hikaInput::get()->set('fail', null);
 		}
 
-		$tmpl = JRequest::getVar('tmpl', '');
+		$tmpl = hikaInput::get()->getVar('tmpl', '');
 		if($tmpl == 'component') {
 			return $this->show();
 		}
@@ -596,47 +596,47 @@ class OrderController extends hikashopController {
 	}
 
 	private function show_products() {
-		$tmpl = JRequest::getVar('tmpl', '');
+		$tmpl = hikaInput::get()->getVar('tmpl', '');
 		if($tmpl == 'component') {
-			JRequest::setVar('layout', 'show_products');
+			hikaInput::get()->set('layout', 'show_products');
 			ob_end_clean();
 			hikashop_nocache();
 			parent::display();
 			exit;
 		}
-		JRequest::setVar('layout', 'show');
+		hikaInput::get()->set('layout', 'show');
 		return parent::display();
 	}
 
 	public function edit() {
-		$task = JRequest::getVar('subtask', '');
+		$task = hikaInput::get()->getVar('subtask', '');
 		if(empty($task)) {
 			$config = hikashop_config();
-			if($config->get('fallback_order_edition', 0) || JRequest::getVar('fallback', 0))
+			if($config->get('fallback_order_edition', 0) || hikaInput::get()->getVar('fallback', 0))
 				return parent::edit();
 
-			JRequest::setVar('task', 'show');
+			hikaInput::get()->set('task', 'show');
 			return $this->show();
 		}
 
 		if(!in_array($task, $this->subtasks)) {
-			$tmpl = JRequest::getVar('tmpl', '');
+			$tmpl = hikaInput::get()->getVar('tmpl', '');
 			if($tmpl == 'component') {
 				exit;
 			}
 			return false;
 		}
-		JRequest::setVar('layout', 'show_'.$task);
+		hikaInput::get()->set('layout', 'show_'.$task);
 
 		if(!in_array($task , $this->popupSubtasks)) {
-			$tmpl = JRequest::getVar('tmpl', '');
+			$tmpl = hikaInput::get()->getVar('tmpl', '');
 			if($tmpl == 'component') {
 				ob_end_clean();
 				parent::display();
 				exit;
 			}
 		} else {
-			JRequest::setVar('layout', 'edit_'.$task);
+			hikaInput::get()->set('layout', 'edit_'.$task);
 		}
 		return parent::display();
 	}
@@ -647,26 +647,26 @@ class OrderController extends hikashopController {
 			return false;
 		$status = $orderClass->saveForm('customer');
 		if($status) {
-			JRequest::setVar('cid', $status);
-			JRequest::setVar('fail', null);
+			hikaInput::get()->set('cid', $status);
+			hikaInput::get()->set('fail', null);
 		}
 
-		$tmpl = JRequest::getVar('tmpl', '');
+		$tmpl = hikaInput::get()->getVar('tmpl', '');
 		if($tmpl == 'component') {
 			ob_end_clean();
-			JRequest::setVar('layout', 'customer_set');
+			hikaInput::get()->set('layout', 'customer_set');
 			return parent::display();
 		}
 		return $this->show();
 	}
 
 	public function customer_set() {
-		JRequest::setVar('layout', 'customer_set');
+		hikaInput::get()->set('layout', 'customer_set');
 		return parent::display();
 	}
 
 	public function product_create() {
-		$formData = JRequest::getVar('data', array(), '', 'array');
+		$formData = hikaInput::get()->get('data', array(), 'array');
 		$product_quantity = -1;
 		if(isset($formData['order']['product']['order_product_quantity']))
 			$product_quantity = (int)$formData['order']['product']['order_product_quantity'];
@@ -674,11 +674,11 @@ class OrderController extends hikashopController {
 			$orderClass = hikashop_get('class.order');
 			$status = $orderClass->saveForm('products');
 			if($status) {
-				JRequest::setVar('cid', $status);
-				JRequest::setVar('fail', null);
+				hikaInput::get()->set('cid', $status);
+				hikaInput::get()->set('fail', null);
 			}
 		} else {
-			JRequest::setVar('layout', 'edit_products');
+			hikaInput::get()->set('layout', 'edit_products');
 			return parent::display();
 		}
 
@@ -691,11 +691,11 @@ class OrderController extends hikashopController {
 			return false;
 		$status = $orderClass->saveForm('product_delete');
 		if($status) {
-			JRequest::setVar('cid', $status);
-			JRequest::setVar('fail', null);
+			hikaInput::get()->set('cid', $status);
+			hikaInput::get()->set('fail', null);
 		}
 
-		$tmpl = JRequest::getVar('tmpl', '');
+		$tmpl = hikaInput::get()->getVar('tmpl', '');
 		if($tmpl == 'component')
 			return $this->show_products();
 		return $this->show();

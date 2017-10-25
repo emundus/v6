@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -22,7 +22,11 @@ class FieldController extends hikashopController {
 	}
 
 	function store($new = false) {
-		JRequest::checkToken() || die('Invalid Token');
+		if(!HIKASHOP_J25) {
+			JRequest::checkToken() || die('Invalid Token');
+		} else {
+			JSession::checkToken() || die('Invalid Token');
+		}
 
 		$app = JFactory::getApplication();
 
@@ -50,9 +54,13 @@ class FieldController extends hikashopController {
 	}
 
 	public function remove() {
-		JRequest::checkToken() || die('Invalid Token');
+		if(!HIKASHOP_J25) {
+			JRequest::checkToken() || die('Invalid Token');
+		} else {
+			JSession::checkToken() || die('Invalid Token');
+		}
 
-		$cids = JRequest::getVar('cid', array(), '', 'array');
+		$cids = hikaInput::get()->get('cid', array(), 'array');
 
 		$fieldClass = hikashop_get('class.field');
 		$num = $fieldClass->delete($cids);
@@ -68,19 +76,19 @@ class FieldController extends hikashopController {
 	function state(){
 		hikashop_nocache();
 
-		$namekey = JRequest::getCmd('namekey', '');
+		$namekey = hikaInput::get()->getCmd('namekey', '');
 		if(empty($namekey))
 			exit;
 
-		$field_namekey = JRequest::getCmd('field_namekey', '');
+		$field_namekey = hikaInput::get()->getCmd('field_namekey', '');
 		if(empty($field_namekey))
 			$field_namekey = 'address_state';
 
-		$field_id = JRequest::getCmd('field_id', '');
+		$field_id = hikaInput::get()->getCmd('field_id', '');
 		if(empty($field_id))
 			$field_id = 'address_state';
 
-		$field_type = JRequest::getCmd('field_type', '');
+		$field_type = hikaInput::get()->getCmd('field_type', '');
 		if(empty($field_type))
 			$field_type = 'address';
 
@@ -92,9 +100,9 @@ class FieldController extends hikashopController {
 	public function parentfield() {
 		hikashop_nocache();
 
-		$type = JRequest::getVar('type');
-		$namekey = JRequest::getVar('namekey');
-		$value = JRequest::getString('value');
+		$type = hikaInput::get()->getVar('type');
+		$namekey = hikaInput::get()->getVar('namekey');
+		$value = hikaInput::get()->getString('value');
 		if(empty($namekey) || empty($type))
 			exit;
 

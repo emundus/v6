@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -169,9 +169,9 @@ if($this->badge=='false'){ ?>
 
 				</table>
 				<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
-				<input type="hidden" name="task" value="<?php echo JRequest::getCmd('task'); ?>" />
-				<input type="hidden" name="ctrl" value="<?php echo JRequest::getCmd('ctrl'); ?>" />
-				<input type="hidden" name="control" value="<?php echo JRequest::getCmd('control'); ?>" />
+				<input type="hidden" name="task" value="<?php echo hikaInput::get()->getCmd('task'); ?>" />
+				<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getCmd('ctrl'); ?>" />
+				<input type="hidden" name="control" value="<?php echo hikaInput::get()->getCmd('control'); ?>" />
 				<input type="hidden" name="boxchecked" value="0" />
 				<input type="hidden" name="badge" value=<?php echo $this->badge; ?> />
 				<input type="hidden" name="tmpl" value="component" />

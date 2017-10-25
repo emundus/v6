@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -258,8 +258,8 @@ class hikashopCartClass extends hikashopClass {
 
 	function initCart() {
 		$cart = new stdClass();
-		$cart->cart_type = JRequest::getString('cart_type','cart');
-		$cart->cart_id = JRequest::getString($cart->cart_type.'_id','0');
+		$cart->cart_type = hikaInput::get()->getString('cart_type','cart');
+		$cart->cart_id = hikaInput::get()->getString($cart->cart_type.'_id','0');
 		$cart->cart_modified = time();
 
 		if(!empty($this->cart->cart_id))
@@ -319,10 +319,10 @@ class hikashopCartClass extends hikashopClass {
 
 		$app = JFactory::getApplication();
 
-		$this->cart_type = JRequest::getString('cart_type', 'cart');
+		$this->cart_type = hikaInput::get()->getString('cart_type', 'cart');
 
 		$cart_id = $this->cart_type.'_id';
-		$this->$cart_id = JRequest::getInt($cart_id, '0');
+		$this->$cart_id = hikaInput::get()->getInt($cart_id, '0');
 
 		$cart = $this->loadCart($this->$cart_id);
 
@@ -331,7 +331,7 @@ class hikashopCartClass extends hikashopClass {
 		if(!$app->isAdmin() && !empty($cart->cart_id) && @$currUser->user_id != @$cart->user_id && @$currUser->user_cms_id != @$cart->user_id && $session->getId() != @$cart->session_id)
 			return false;
 
-		$this->from_id = JRequest::getString('from_id', '0');
+		$this->from_id = hikaInput::get()->getString('from_id', '0');
 		$keepEmptyCart = false;
 		if($type == 'cart') {
 			$type = 'product';
@@ -353,7 +353,7 @@ class hikashopCartClass extends hikashopClass {
 		if($add || !$app->isAdmin())
 			$cart = $this->initCart();
 
-		JRequest::setVar('new_'.$cart_id, $cart->cart_id);
+		hikaInput::get()->set('new_'.$cart_id, $cart->cart_id);
 		JPluginHelper::importPlugin('hikashop');
 		$dispatcher = JDispatcher::getInstance();
 		$do = true;
@@ -372,7 +372,7 @@ class hikashopCartClass extends hikashopClass {
 				$this->mainProduct = $product_id;
 				$product_id = array($product_id => $quantity);
 
-				$options = JRequest::getVar('hikashop_product_option', array(), '', 'array');
+				$options = hikaInput::get()->get('hikashop_product_option', array(), 'array');
 				if(!empty($options) && is_array($options)) {
 					foreach($options as $optionElement) {
 						$this->options[$optionElement] = $pid;
@@ -448,7 +448,7 @@ class hikashopCartClass extends hikashopClass {
 					if($force>=2){
 						$formData = @$_REQUEST['data'];
 					}else{
-						$formData = JRequest::getVar( 'data', array(), '', 'array' );
+						$formData = hikaInput::get()->get('data', array(), 'array');
 					}
 					if(!empty($formData['item']) || !empty($_FILES)){
 						$fieldClass = hikashop_get('class.field');
@@ -604,7 +604,7 @@ class hikashopCartClass extends hikashopClass {
 					if($force >= 2)
 						$formData = @$_REQUEST['data'];
 					else
-						$formData = JRequest::getVar( 'data', array(), '', 'array' );
+						$formData = hikaInput::get()->get('data', array(), 'array');
 
 					if(!empty($formData['item']) || !empty($_FILES)) {
 						if(empty($data)) {
@@ -642,7 +642,7 @@ class hikashopCartClass extends hikashopClass {
 				}
 				return true;
 			}
-		} else if ($this->cart_type == 'wishlist' && !JRequest::getInt('delete','0') && !empty($cartContent[$id]->cart_product_id)) {
+		} else if ($this->cart_type == 'wishlist' && !hikaInput::get()->getInt('delete','0') && !empty($cartContent[$id]->cart_product_id)) {
 			$query = 'UPDATE '.hikashop_table('cart_product').' SET cart_product_quantity='.(int)$quantity.' WHERE cart_product_id='.(int)$cartContent[$id]->cart_product_id;
 			$this->database->setQuery($query);
 			$this->database->query();
@@ -1749,7 +1749,7 @@ class hikashopCartClass extends hikashopClass {
 		if($order_id === true || empty($order_id))
 			$order_id = $app->getUserState(HIKASHOP_COMPONENT.'.order_id');
 		if(empty($order_id))
-			$order_id = JRequest::getInt('order_id');
+			$order_id = hikaInput::get()->getInt('order_id');
 		if(empty($order_id))
 			return;
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -37,6 +37,8 @@ defined('_JEXEC') or die('Restricted access');
 		</tr>
 <?php
 	if(empty($this->element->file_path)){
+		$style = '';
+		if(empty($_REQUEST['pathonly'])){
 ?>
 		<tr>
 			<td class="key">
@@ -44,6 +46,7 @@ defined('_JEXEC') or die('Restricted access');
 					echo JText::_('HIKA_FILE_MODE');
 				?></label>
 			</td>
+
 			<td><?php
 				$values = array(
 					JHTML::_('select.option', 'upload', JText::_('HIKA_FILE_MODE_UPLOAD')),
@@ -79,7 +82,25 @@ defined('_JEXEC') or die('Restricted access');
 				<?php echo JText::sprintf('MAX_UPLOAD',(hikashop_bytes(ini_get('upload_max_filesize')) > hikashop_bytes(ini_get('post_max_size'))) ? ini_get('post_max_size') : ini_get('upload_max_filesize')); ?>
 			</td>
 		</tr>
-		<tr id="hikashop_path_section" style="display:none;">
+<?php
+			$style = 'style="display:none;"';
+		}else{
+?>
+		<tr id="hikashop_path_download">
+			<td class="key">
+				<label for="files"><?php
+					echo JText::_('STORE_LOCALLY');
+				?></label>
+			</td>
+			<td>
+				<?php echo JHTML::_('hikaselect.booleanlist', "data[download]" , '',1 ); ?>
+				<input type="hidden" name="data[filemode]" value="path"/>
+			</td>
+		</tr>
+<?php
+		}
+?>
+		<tr id="hikashop_path_section" <?php echo $style; ?>>
 			<td class="key">
 				<label for="files"><?php
 					echo JText::_('HIKA_PATH');
@@ -99,7 +120,18 @@ defined('_JEXEC') or die('Restricted access');
 				?></label>
 			</td>
 			<td>
-				<?php echo $this->image->display($this->element->file_path,false,'','','', 100, 100);?>
+				<?php
+					$image = $this->image->getThumbnail($this->element->file_path, array(100, 100), array('default' => true));
+					if(!empty($image) && $image->success) {
+						$attributes = '';
+						if($image->external)
+							$attributes = ' width="'.$image->req_width.'" height="'.$image->req_height.'"';
+						echo '<img src="'.$image->url.'" alt="'.$image->filename.'"'.$attributes.' />';
+					} else {
+						echo '<img src="" alt="'.@$this->element->file_name.'" />';
+					}
+
+				?>
 			</td>
 		</tr>
 <?php
@@ -108,14 +140,15 @@ defined('_JEXEC') or die('Restricted access');
 	</table>
 	<div class="clr"></div>
 	<input type="hidden" name="data[file][file_type]" value="product" />
-	<input type="hidden" name="data[file][file_ref_id]" value="<?php echo JRequest::getInt('product_id'); ?>" />
+	<input type="hidden" name="data[file][file_ref_id]" value="<?php echo hikaInput::get()->getInt('product_id'); ?>" />
 	<input type="hidden" name="cid[]" value="<?php echo @$this->cid; ?>" />
-	<input type="hidden" name="id" value="<?php echo JRequest::getInt('id');?>" />
+	<input type="hidden" name="id" value="<?php echo hikaInput::get()->getInt('id');?>" />
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 	<input type="hidden" name="tmpl" value="component" />
 	<input type="hidden" name="task" value="selectimage" />
 	<input type="hidden" name="ctrl" value="product" />
-<?php if(JRequest::getInt('legacy', 0)) { ?>
+	<input type="hidden" name="pathonly" value="<?php echo hikaInput::get()->getInt('pathonly', 0); ?>" />
+<?php if(hikaInput::get()->getInt('legacy', 0)) { ?>
 	<input type="hidden" name="legacy" value="1" />
 <?php } ?>
 	<?php echo JHTML::_( 'form.token' ); ?>

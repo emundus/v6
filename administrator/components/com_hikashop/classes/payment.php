@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -301,7 +301,7 @@ class hikashopPaymentClass extends hikashopClass {
 
 		$config = hikashop_config();
 		$auto_select_default = (int)$config->get('auto_select_default', 2);
-		if($auto_select_default == 1 && count($cart->usable_methods->payment) > 1)
+		if($auto_select_default == 1 && is_array($cart->usable_methods->payment) && count($cart->usable_methods->payment) > 1)
 			$auto_select_default = 0;
 		if($force_selection)
 			$auto_select_default = 2;
@@ -313,16 +313,18 @@ class hikashopPaymentClass extends hikashopClass {
 			return true;
 
 		$found = false;
-		foreach($cart->usable_methods->payment as $payment) {
-			if($payment->payment_id == $cart->cart_payment_id) {
-				$found = true;
-				break;
+		if(is_array($cart->usable_methods->payment)){
+			foreach($cart->usable_methods->payment as $payment) {
+				if($payment->payment_id == $cart->cart_payment_id) {
+					$found = true;
+					break;
+				}
 			}
 		}
 		if($found)
 			return true;
 
-		if($auto_select_default) {
+		if($auto_select_default && is_array($cart->usable_methods->payment)) {
 			$first = reset($cart->usable_methods->payment);
 			$cart->cart_payment_id = $first->payment_id;
 		} else
@@ -385,12 +387,12 @@ class hikashopPaymentClass extends hikashopClass {
 		$cc_owner = $app->getUserState(HIKASHOP_COMPONENT.'.cc_owner');
 		if(empty($cc_number) || empty($cc_month) || empty($cc_year) || (empty($cc_CCV) && !empty($payment_data->ask_ccv)) || (empty($cc_owner) && !empty($payment_data->ask_owner))) {
 			$ret = false;
-			$cc_numbers = JRequest::getVar( 'hikashop_credit_card_number', array(), '', 'array' );
+			$cc_numbers = hikaInput::get()->get('hikashop_credit_card_number', array(), 'array');
 			$cc_number='';
 			if(!empty($cc_numbers[$payment.'_'.$payment_id])){
 				$cc_number=preg_replace('#[^0-9]#','',$cc_numbers[$payment.'_'.$payment_id]);
 			}
-			$cc_months = JRequest::getVar( 'hikashop_credit_card_month', array(), '', 'array' );
+			$cc_months = hikaInput::get()->get('hikashop_credit_card_month', array(), 'array');
 			$cc_month='';
 			if(!empty($cc_months[$payment.'_'.$payment_id])){
 				$cc_month=substr(preg_replace('#[^0-9]#','',$cc_months[$payment.'_'.$payment_id]),0,2);
@@ -398,7 +400,7 @@ class hikashopPaymentClass extends hikashopClass {
 					$cc_month='0'.$cc_month;
 				}
 			}
-			$cc_years = JRequest::getVar( 'hikashop_credit_card_year', array(), '', 'array' );
+			$cc_years = hikaInput::get()->get('hikashop_credit_card_year', array(), 'array');
 			$cc_year='';
 			if(!empty($cc_years[$payment.'_'.$payment_id])){
 				$cc_year=substr(preg_replace('#[^0-9]#','',$cc_years[$payment.'_'.$payment_id]),0,2);
@@ -406,7 +408,7 @@ class hikashopPaymentClass extends hikashopClass {
 					$cc_year='0'.$cc_year;
 				}
 			}
-			$cc_CCVs = JRequest::getVar( 'hikashop_credit_card_CCV', array(), '', 'array' );
+			$cc_CCVs = hikaInput::get()->get('hikashop_credit_card_CCV', array(), 'array');
 			$cc_CCV='';
 			if(!empty($cc_CCVs[$payment.'_'.$payment_id])){
 				$cc_CCV=substr(preg_replace('#[^0-9]#','',$cc_CCVs[$payment.'_'.$payment_id]),0,4);
@@ -414,12 +416,12 @@ class hikashopPaymentClass extends hikashopClass {
 					$cc_CCV='';
 				}
 			}
-			$cc_types = JRequest::getVar( 'hikashop_credit_card_type', array(), '', 'array' );
+			$cc_types = hikaInput::get()->get('hikashop_credit_card_type', array(), 'array');
 			$cc_type='';
 			if(!empty($cc_types[$payment.'_'.$payment_id])){
 				$cc_type=$cc_types[$payment.'_'.$payment_id];
 			}
-			$cc_owners = JRequest::getVar( 'hikashop_credit_card_owner', array(), '', 'array' );
+			$cc_owners = hikaInput::get()->get('hikashop_credit_card_owner', array(), 'array');
 			$cc_owner='';
 			if(!empty($cc_owners[$payment.'_'.$payment_id])){
 				$cc_owner=strip_tags($cc_owners[$payment.'_'.$payment_id]);

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -294,7 +294,7 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 				if(!HIKASHOP_J30)
 					echo '<div class="calendarj25" style="display: inline; margin-left: 2px">';
 
-				echo JHTML::_('calendar', hikashop_getDate((@$this->product->product_sale_start?@$this->product->product_sale_start:''),'%Y-%m-%d %H:%M'), 'data[product][product_sale_start]','product_sale_start','%Y-%m-%d %H:%M',array('size' => '20'));
+				echo JHTML::_('calendar', hikashop_getDate((@$this->product->product_sale_start?@$this->product->product_sale_start:''),'%Y-%m-%d %H:%M'), 'data[product][product_sale_start]','product_sale_start','%Y-%m-%d %H:%M',array('size' => '20', 'showTime' => true));
 				if(!HIKASHOP_J30)
 					echo '</div>';
 
@@ -302,7 +302,7 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 
 				if(!HIKASHOP_J30)
 					echo '<div class="calendarj25" style="display: inline; margin-left: 2px">';
-				echo JHTML::_('calendar', hikashop_getDate((@$this->product->product_sale_end?@$this->product->product_sale_end:''),'%Y-%m-%d %H:%M'), 'data[product][product_sale_end]','product_sale_end','%Y-%m-%d %H:%M',array('size' => '20'));
+				echo JHTML::_('calendar', hikashop_getDate((@$this->product->product_sale_end?@$this->product->product_sale_end:''),'%Y-%m-%d %H:%M'), 'data[product][product_sale_end]','product_sale_end','%Y-%m-%d %H:%M',array('size' => '20', 'showTime' => true));
 				if(!HIKASHOP_J30)
 					echo '</div';
 			?></dd>

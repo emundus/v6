@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,6 +23,7 @@ $dropdown_style = (empty($this->element['small_cart']) || (int)$this->element['s
 					1 => JHTML::_('select.option', 1, JText::_('JYES')),
 					0 => JHTML::_('select.option', 0, JText::_('JNO')),
 					2 => JHTML::_('select.option', 2, JText::_('HIKA_CART_DROPDOWN')),
+					2 => JHTML::_('select.option', 3, JText::_('HIKA_CART_DROPDOWN_HOVER')),
 				);
 				echo JHTML::_('hikaselect.radiolist', $values, $this->name.'[small_cart]', 'data-control="mini_cart"', 'value', 'text', (int)@$this->element['small_cart']);
 			?></dd>

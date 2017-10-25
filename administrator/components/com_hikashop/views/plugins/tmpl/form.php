@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -784,7 +784,7 @@ function hika_payment_algorithm(el) {
 }
 ?>
 		<input type="hidden" name="name" value="<?php echo $this->name;?>"/>
-		<input type="hidden" name="subtask" value="<?php echo JRequest::getVar('subtask', '');?>"/>
+		<input type="hidden" name="subtask" value="<?php echo hikaInput::get()->getVar('subtask', '');?>"/>
 		<input type="hidden" name="ctrl" value="plugins" />
 		<input type="hidden" name="plugin_type" value="<?php echo $this->plugin_type;?>" />
 		<input type="hidden" name="<?php echo $this->plugin_type; ?>_plugin_type" value="<?php echo $this->name; ?>"/>

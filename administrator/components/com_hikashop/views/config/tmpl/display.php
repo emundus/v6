@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,7 +20,7 @@ echo $this->leftmenu(
 		'#display_default_divs' => JText::_('DEFAULT_PARAMS_FOR_DIV')
 	)
 );
-JRequest::setVar('from_display',true);
+hikaInput::get()->set('from_display',true);
 ?>
 <div id="page-display" class="rightconfig-container <?php if(HIKASHOP_BACK_RESPONSIVE) echo 'rightconfig-container-j30';?>">
 
@@ -74,6 +74,7 @@ JRequest::setVar('from_display',true);
 		<td>
 <?php
 	$options = array(
+		JHTML::_('hikaselect.option', 'no', JText::_('HIKA_NONE')),
 		JHTML::_('hikaselect.option', 'mootools', JText::_('mootools')),
 		JHTML::_('hikaselect.option', 'shadowbox', JText::_('shadowbox (external)')),
 		JHTML::_('hikaselect.option', 'shadowbox-embbeded', JText::_('shadowbox (embedded)'))
@@ -120,6 +121,9 @@ window.localPage.imagepopupmode = function(el) {
 	}
 	if(file_exists(HIKASHOP_ROOT.'plugins'.DS.'content'.DS.'jom_comment_bot.php')){
 		$values[] = JHTML::_('select.option', 'jomcomment','jomComment');
+	}
+	if(file_exists(HIKASHOP_ROOT . '/components/com_komento/bootstrap.php')){
+		$values[] = JHTML::_('select.option', 'komento','Komento');
 	}
 	if(count($values)) {
 		$values[] = JHTML::_('select.option', 0, JText::_('HIKASHOP_NO'));
@@ -204,11 +208,11 @@ window.localPage.imagepopupmode = function(el) {
 			<input type="hidden" name="config[product_show_modules]'; ?>" id="menumodules"  value="<?php echo $this->config->get('product_show_modules'); ?>" />
 <?php
 	echo $this->popup->display(
-		JText::_('SELECT'),
+		'<button type="button" class="btn" onclick="return false">'.JText::_('Select').'</button>',
 		'SELECT_MODULES',
 		'\''.hikashop_completeLink('modules&task=selectmodules&control=menu&name=modules',true).'\'+\'&modules=\'+document.getElementById(\'menumodules\').value',
 		'linkmenumodules',
-		750, 375, '', '', 'button',true
+		750, 375, '', '', 'link',true
 	);
 ?>
 			<br/>
@@ -309,13 +313,13 @@ window.localPage.imagepopupmode = function(el) {
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('defparams_columns');?>><?php echo JText::_('NUMBER_OF_COLUMNS');?></td>
 		<td>
-			<input name="config[default_params][columns]" type="text" value="<?php echo $this->escape($this->default_params['columns']); ?>" />
+			<input name="config[default_params][columns]" type="text" value="<?php echo $this->escape(@$this->default_params['columns']); ?>" />
 		</td>
 	</tr>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('defparams_limit');?>><?php echo JText::_('NUMBER_OF_ITEMS');?></td>
 		<td>
-			<input name="config[default_params][limit]" type="text" value="<?php echo $this->escape($this->default_params['limit']); ?>" />
+			<input name="config[default_params][limit]" type="text" value="<?php echo $this->escape(@$this->default_params['limit']); ?>" />
 		</td>
 	</tr>
 	<tr>
@@ -401,7 +405,7 @@ window.localPage.imagepopupmode = function(el) {
 		<td><?php
 			if(!isset($this->default_params['add_to_cart']))
 				$this->default_params['add_to_cart'] = 1;
-			echo JHTML::_('hikaselect.booleanlist', 'config[default_params][add_to_cart]', '', $this->default_params['add_to_cart']);
+			echo JHTML::_('hikaselect.booleanlist', 'config[default_params][add_to_cart]', '', @$this->default_params['add_to_cart']);
 		?></td>
 	</tr>
 	<tr>
@@ -409,7 +413,7 @@ window.localPage.imagepopupmode = function(el) {
 		<td><?php
 			if(!isset($this->default_params['show_quantity_field']))
 				$this->default_params['show_quantity_field'] = 1;
-			echo JHTML::_('hikaselect.booleanlist', 'config[default_params][show_quantity_field]', '', $this->default_params['show_quantity_field']);
+			echo JHTML::_('hikaselect.booleanlist', 'config[default_params][show_quantity_field]', '', @$this->default_params['show_quantity_field']);
 		?></td>
 	</tr>
 	<tr>
@@ -486,13 +490,13 @@ window.localPage.imagepopupmode = function(el) {
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('defparams_category_order');?>><?php echo JText::_('ORDERING_FIELD'); ?></td>
 		<td><?php
-			echo $this->orderType->display('config[default_params][category_order]', $this->default_params['category_order'], 'category');
+			echo $this->orderType->display('config[default_params][category_order]', @$this->default_params['category_order'], 'category');
 		?></td>
 	</tr>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('defparams_child_display_type');?>><?php echo JText::_('SHOW_SUB_CATEGORIES'); ?></td>
 		<td><?php
-			echo $this->listType->display('config[default_params][child_display_type]', $this->default_params['child_display_type']);
+			echo $this->listType->display('config[default_params][child_display_type]', @$this->default_params['child_display_type']);
 		?></td>
 	</tr>
 	<tr>
@@ -533,7 +537,7 @@ window.localPage.imagepopupmode = function(el) {
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('defparams_div_item_layout_type');?>><?php echo JText::_('TYPE_OF_ITEM_LAYOUT');?></td>
 		<td><?php
-			echo $this->itemType->display('config[default_params][div_item_layout_type]',$this->default_params['div_item_layout_type'],$this->js);
+			echo $this->itemType->display('config[default_params][div_item_layout_type]',@$this->default_params['div_item_layout_type'],$this->js);
 		?></td>
 	</tr>
 	<tr>

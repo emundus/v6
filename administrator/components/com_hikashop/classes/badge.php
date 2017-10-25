@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,7 +16,7 @@ class hikashopBadgeClass extends hikashopClass {
 	public function saveForm() {
 		$element = new stdClass();
 		$element->badge_id = hikashop_getCID('badge_id');
-		$formData = JRequest::getVar( 'data', array(), '', 'array' );
+		$formData = hikaInput::get()->get('data', array(), 'array' );
 		jimport('joomla.filter.filterinput');
 		$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
 		$nameboxes = array('badge_discount_id','badge_category_id','badge_product_id');
@@ -73,9 +73,9 @@ class hikashopBadgeClass extends hikashopClass {
 			'(a.badge_quantity = \'\' OR a.badge_quantity = '.(int)$qty.')',
 		);
 		if($discount && isset($discount->discount_id)) {
-			$badge_filters[] = '(badge_discount_id = '.(int)@$discount->discount_id.' OR badge_discount_id = 0 OR badge_discount_id = \'\' OR badge_discount_id LIKE \'%,'.(int)@$discount->discount_id.',%\')';
+			$badge_filters[] = '(badge_discount_id = '.(int)@$discount->discount_id.' OR badge_discount_id = \'0\' OR badge_discount_id = \'\' OR badge_discount_id LIKE \'%,'.(int)@$discount->discount_id.',%\')';
 		} else {
-			$badge_filters[] = '(badge_discount_id = 0 OR badge_discount_id = \'\')';
+			$badge_filters[] = '(badge_discount_id = \'0\' OR badge_discount_id = \'\')';
 		}
 
 		$categories = array(
@@ -141,6 +141,7 @@ class hikashopBadgeClass extends hikashopClass {
 
 		static $badges = array();
 		$key = sha1($badge_filters);
+
 		if(!isset($badges[$key])) {
 			$query = 'SELECT a.* FROM '.hikashop_table('badge').' AS a WHERE '.$badge_filters.' ORDER BY a.badge_ordering ASC,a.badge_id ASC';
 			$this->database->setQuery($query);
@@ -209,7 +210,7 @@ class hikashopBadgeClass extends hikashopClass {
 			if(!$img)
 				continue;
 
-			$imageDisplayed = '<img class="hikashop_product_badge_image" title="'.htmlentities(@$badge->badge_name).'" alt="'.htmlentities(@$badge->badge_name).'" src="'.$img->url.'"/>';
+			$imageDisplayed = '<img class="hikashop_product_badge_image" title="'.htmlentities(@$badge->badge_name, ENT_COMPAT, 'UTF-8').'" alt="'.htmlentities(@$badge->badge_name, ENT_COMPAT, 'UTF-8').'" src="'.$img->url.'"/>';
 			if(!empty($badge->badge_url)) {
 				$imageDisplayed = '<a href="'.hikashop_cleanURL($badge->badge_url).'">'. $imageDisplayed . '</a>';
 			}

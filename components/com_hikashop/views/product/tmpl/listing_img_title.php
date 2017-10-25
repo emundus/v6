@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -135,7 +135,7 @@ if($this->params->get('add_to_cart') || $this->params->get('add_to_wishlist')) {
 
 	<!-- COMPARISON AREA -->
 <?php
-if(JRequest::getVar('hikashop_front_end_main', 0) && JRequest::getVar('task') == 'listing' && $this->params->get('show_compare')) {
+if(hikaInput::get()->getVar('hikashop_front_end_main', 0) && hikaInput::get()->getVar('task') == 'listing' && $this->params->get('show_compare')) {
 	$css_button = $this->config->get('css_button', 'hikabtn');
 	$css_button_compare = $this->config->get('css_button_compare', 'hikabtn-compare');
 ?>
@@ -160,8 +160,7 @@ if(JRequest::getVar('hikashop_front_end_main', 0) && JRequest::getVar('task') ==
 
 if(!empty($this->row->extraData->bottom)) { echo implode("\r\n",$this->row->extraData->bottom); }
 
-if($this->rows[0]->product_id == $this->row->product_id) {
-
+if(isset($this->rows[0]) && $this->rows[0]->product_id == $this->row->product_id) {
 	$css = '';
 	if((int)$this->image->main_thumbnail_y>0){
 		$css .= '

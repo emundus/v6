@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -54,8 +54,7 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 
 	public $nbpackage = 0;
 
-
-	function processPackageLimit($limit_key, $limit_value, $product, $qty, $package, $units) {
+	public function processPackageLimit($limit_key, $limit_value, $product, $qty, $package, $units) {
 		switch ($limit_key) {
 			case 'dimension':
 				$divide = (float)(($product['z'] + $product['y']) * 2 + $product['x']);
@@ -67,7 +66,7 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 		return parent::processPackageLimit($limit_key, $limit_value , $product, $qty, $package, $units);
 	}
 
-	function shippingMethods(&$main) {
+	public function shippingMethods(&$main) {
 		$methods = array();
 		if(!empty($main->shipping_params->methodsList))
 			$main->shipping_params->methods = hikashop_unserialize($main->shipping_params->methodsList);
@@ -88,7 +87,7 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 		return $methods;
 	}
 
-	function onShippingDisplay(&$order, &$dbrates, &$usable_rates, &$messages) {
+	public function onShippingDisplay(&$order, &$dbrates, &$usable_rates, &$messages) {
 		if(!hikashop_loadUser())
 			return false;
 
@@ -173,7 +172,6 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 
 			$cart = hikashop_get('class.cart');
 			$cart->loadAddress($null, $order->shipping_address->address_id, 'object', 'shipping');
-
 
 			$receivedMethods = $this->_getBestMethods($rate, $order, $usableWarehouses, $heavyProduct, $null);
 
@@ -263,7 +261,7 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 		}
 	}
 
-	function getShippingDefaultValues(&$element){
+	public function getShippingDefaultValues(&$element){
 		$element->shipping_name = 'UPS';
 		$element->shipping_description = '';
 		$element->group_package = 0;
@@ -275,7 +273,7 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 		$element->shipping_params->destination_type = 'auto';
 	}
 
-	function onShippingConfiguration(&$element){
+	public function onShippingConfiguration(&$element){
 		$config =& hikashop_config();
 		$app = JFactory::getApplication();
 		$this->main_currency = $config->get('main_currency', 1);
@@ -284,7 +282,7 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 		$this->currencyCode = $currency->get($this->main_currency)->currency_code;
 		$this->currencySymbol = $currency->get($this->main_currency)->currency_symbol;
 
-		$this->ups = JRequest::getCmd('name','ups');
+		$this->ups = hikaInput::get()->getCmd('name','ups');
 		$this->categoryType = hikashop_get('type.categorysub');
 		$this->categoryType->type = 'tax';
 		$this->categoryType->field = 'category_id';
@@ -300,33 +298,31 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 			$elements[$key]->shipping_params->methods = hikashop_unserialize($elements[$key]->shipping_params->methodsList);
 
 		$js = '
-			function deleteRow(divName,inputName,rowName){
-				var d = document.getElementById(divName);
-				var olddiv = document.getElementById(inputName);
-				if(d && olddiv){
-					d.removeChild(olddiv);
-					document.getElementById(rowName).style.display=\'none\';
-				}
-				return false;
-			}
-
-			function deleteZone(zoneName){
-				var d = document.getElementById(zoneName);
-				if(d){
-					d.innerHTML="";
-				}
-				return false;
-			}';
-
-	 	$js.='
-			function checkAllBox(id, type){
-				var toCheck = document.getElementById(id).getElementsByTagName("input");
-				for (i = 0 ; i < toCheck.length ; i++) {
-					if (toCheck[i].type == "checkbox") {
-						toCheck[i].checked = (type == "check");
-					}
-				}
-			}';
+function deleteRow(divName,inputName,rowName){
+	var d = document.getElementById(divName);
+	var olddiv = document.getElementById(inputName);
+	if(d && olddiv){
+		d.removeChild(olddiv);
+		document.getElementById(rowName).style.display=\'none\';
+	}
+	return false;
+}
+function deleteZone(zoneName){
+	var d = document.getElementById(zoneName);
+	if(d){
+		d.innerHTML="";
+	}
+	return false;
+}
+function checkAllBox(id, type){
+	var toCheck = document.getElementById(id).getElementsByTagName("input");
+	for (i = 0 ; i < toCheck.length ; i++) {
+		if (toCheck[i].type == "checkbox") {
+			toCheck[i].checked = (type == "check");
+		}
+	}
+}
+';
 
 		if(empty($elements[$key]->shipping_params->access_code))
 			$app->enqueueMessage(JText::sprintf('PLEASE_FILL_THE_FIELD',JText::_('UPS_ACCESS_CODE')),'notice');
@@ -341,18 +337,14 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 		if(empty($elements[$key]->shipping_params->warehouse[0]->city))
 			$app->enqueueMessage(JText::sprintf('PLEASE_FILL_THE_FIELD',JText::_('CITY')),'notice');
 
-		if(!HIKASHOP_PHP5)
-			$doc =& JFactory::getDocument();
-		else
-			$doc = JFactory::getDocument();
-
+		$doc = JFactory::getDocument();
 		$doc->addScriptDeclaration( "<!--\n".$js."\n//-->\n" );
 	}
 
-	function onShippingConfigurationSave(&$elements) {
+	public function onShippingConfigurationSave(&$elements) {
 		parent::onShippingConfiguration($elements);
 
-		$warehouses = JRequest::getVar( 'warehouse', array(), '', 'array' );
+		$warehouses = hikaInput::get()->get('warehouse', array(), 'array');
 		$cats = array();
 		$methods = array();
 		$db = JFactory::getDBO();
@@ -424,13 +416,13 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 		return true;
 	}
 
-	function _getBestMethods(&$rate, &$order, &$usableWarehouses, $heavyProduct, $null) {
+	protected function _getBestMethods(&$rate, &$order, &$usableWarehouses, $heavyProduct, $null) {
 		$db = JFactory::getDBO();
 		$usableMethods = array();
 		$zone_code = '';
 
-		$freight = false;
-		$classicMethod = false;
+		$this->freight = false;
+		$this->classicMethod = false;
 		foreach($rate->shipping_params->methods as $method) {
 			if($method=='TDCB' || $method=='TDA' || $method=='TDO' || $method=='308' || $method=='309' || $method=='310')
 				$this->freight = true;
@@ -507,7 +499,7 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 		return false;
 	}
 
-	function _getShippingMethods(&$rate, &$order, &$warehouse, $heavyProduct, $null) {
+	protected function _getShippingMethods(&$rate, &$order, &$warehouse, $heavyProduct, $null) {
 		$data['userId'] = $rate->shipping_params->user_id;
 		$data['accessLicenseNumber'] = $rate->shipping_params->access_code;
 		$data['password'] = $rate->shipping_params->password;
@@ -545,18 +537,27 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 
 		$limitations = array();
 
-		if(($this->freight == false && $this->classicMethod == true) || ($heavyProduct == false && $this->freight == false)){
+		if(($this->freight == false && $this->classicMethod == true) || ($heavyProduct == false && $this->freight == false)) {
 			$limitations['dimension'] = 165;
 			$limitations['w'] = 150;
 		}
 
-		if(isset($rate->shipping_params->group_package) && $rate->shipping_params->group_package == 1)
+		if(empty($rate->shipping_params->group_package))
 			$limitations['unit'] = 1;
 
-		if($exclude_dimensions)
-			$packages = $this->getOrderPackage($order, array('weight_unit' => 'lb', 'volume_unit' => 'in', 'limit' => $limitations, 'required_dimensions' => array('w')));
-		else
-			$packages = $this->getOrderPackage($order, array('weight_unit' => 'lb', 'volume_unit' => 'in', 'limit' => $limitations, 'required_dimensions' => array('w','x','y','z')));
+		$weight_unit = 'lb';
+		$volume_unit = 'in';
+		if($warehouse->units == 'kg') {
+			$weight_unit = 'kg';
+			$volume_unit = 'cm';
+		}
+
+		if($exclude_dimensions) {
+			unset($limitations['dimension']);
+			$packages = $this->getOrderPackage($order, array('weight_unit' => $weight_unit, 'volume_unit' => $volume_unit, 'limit' => $limitations, 'required_dimensions' => array('w')));
+		} else {
+			$packages = $this->getOrderPackage($order, array('weight_unit' => $weight_unit, 'volume_unit' => $volume_unit, 'limit' => $limitations, 'required_dimensions' => array('w','x','y','z')));
+		}
 
 		if(empty($packages))
 			return true;
@@ -568,8 +569,8 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 
 		if(isset($packages['w']) && isset($packages['x']) && isset($packages['y']) && isset($packages['z'])) {
 			$this->nbpackage++;
-			$data['weight_unit'] = 'LBS';
-			$data['dimension_unit'] = 'IN';
+			$data['weight_unit'] = ($weight_unit == 'lb' ? 'LBS' : 'KGS');
+			$data['dimension_unit'] = ($volume_unit == 'in' ? 'IN' : 'CM');
 			$data['weight'] = $packages['w'];
 			$data['height'] = $packages['z'];
 			$data['length'] = $packages['y'];
@@ -580,11 +581,15 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 			$data['XMLpackage'] .= $this->_createPackage($data, $rate, $order, true);
 		} else {
 			foreach($packages as $package) {
-				if(!isset($package['w']) || $package['w'] == 0 || !isset($package['x']) || $package['x'] == 0 || !isset($package['y']) || $package['y'] == 0 || !isset($package['z']) || $package['z'] == 0)
+				if(!isset($package['w']) || $package['w'] == 0)
 					continue;
+				if(!$exclude_dimensions) {
+					if(!isset($package['x']) || $package['x'] == 0 || !isset($package['y']) || $package['y'] == 0 || !isset($package['z']) || $package['z'] == 0)
+						continue;
+				}
 				$this->nbpackage++;
-				$data['weight_unit'] = 'LBS';
-				$data['dimension_unit'] = 'IN';
+				$data['weight_unit'] = ($weight_unit == 'lb' ? 'LBS' : 'KGS');
+				$data['dimension_unit'] = ($volume_unit == 'in' ? 'IN' : 'CM');
 				$data['weight'] = $package['w'];
 				$data['height'] = $package['z'];
 				$data['length'] = $package['y'];
@@ -621,7 +626,7 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 		return $usableMethods;
 	}
 
-	function _createPackage(&$data, &$rate, &$order, $includeDimension=false) {
+	protected function _createPackage(&$data, &$rate, &$order, $includeDimension=false) {
 		if(@$rate->shipping_params->exclude_dimensions == 1){
 			$includeDimension = false;
 		}
@@ -655,46 +660,44 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 		$dimension = '';
 		if($rate->shipping_params->include_price) {
 			$options = '
-				<PackageServiceOptions>
-					<InsuredValue>
-						<CurrencyCode>'. $data['currency_code'] .'</CurrencyCode>
-						<MonetaryValue>'. $price .'</MonetaryValue>
-					</InsuredValue>
-				</PackageServiceOptions>';
+	<PackageServiceOptions>
+		<InsuredValue>
+			<CurrencyCode>'. $data['currency_code'] .'</CurrencyCode>
+			<MonetaryValue>'. $price .'</MonetaryValue>
+		</InsuredValue>
+	</PackageServiceOptions>';
 		}
 
 		if($includeDimension) {
 			$dimension = '
-				<Dimensions>
-					<UnitOfMeasurement>
-						<Code>' . $data['dimension_unit'] . '</Code>
-					</UnitOfMeasurement>
-					<Length>' . round($data['length'],2) . '</Length>
-					<Width>' . round($data['width'], 2) . '</Width>
-					<Height>' . round($data['height'], 2) . '</Height>
-				</Dimensions>';
+	<Dimensions>
+		<UnitOfMeasurement>
+			<Code>' . $data['dimension_unit'] . '</Code>
+		</UnitOfMeasurement>
+		<Length>' . round($data['length'],2) . '</Length>
+		<Width>' . round($data['width'], 2) . '</Width>
+		<Height>' . round($data['height'], 2) . '</Height>
+	</Dimensions>';
 		}
 
 		$xml = '
-			<Package>
-				<PackagingType>
-					<Code>02</Code>
-				</PackagingType>
-				<Description>Shop</Description>
-				'. $dimension .'
-				<PackageWeight>
-					<UnitOfMeasurement>
-						<Code>'. $data['weight_unit'] .'</Code>
-					</UnitOfMeasurement>
-					<Weight>'. $data['weight'] .'</Weight>
-				</PackageWeight>
-				'. $options .'
-			</Package>';
+<Package>
+	<PackagingType>
+		<Code>02</Code>
+	</PackagingType>
+	<Description>Shop</Description>'. $dimension .'
+	<PackageWeight>
+		<UnitOfMeasurement>
+			<Code>'. $data['weight_unit'] .'</Code>
+		</UnitOfMeasurement>
+		<Weight>'. $data['weight'] .'</Weight>
+	</PackageWeight>'. $options .'
+</Package>';
 
 		return $xml;
 	}
 
-	function _UPSrequestMethods($data, &$rate) {
+	protected function _UPSrequestMethods($data, &$rate) {
 		$fromStateCode = '';
 		$destStateCode = '';
 		$negotiated_rate = '';
@@ -703,58 +706,58 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 			$destStateCode = '<StateProvinceCode>'. $data['destStatecode'] .'</StateProvinceCode>';
 			$negotiated_rate = $data['negotiated_rate'];
 		}
-		$xml='
-			<?xml version="1.0" ?>
-				<AccessRequest xml:lang=\'en-US\'>
-					<AccessLicenseNumber>'. $data['accessLicenseNumber'] .'</AccessLicenseNumber>
-					<UserId>'. $data['userId'] .'</UserId>
-					<Password>'. str_replace('&', '&amp;', $data['password']). '</Password>
-				</AccessRequest>
-			<?xml version="1.0" ?>
-			<RatingServiceSelectionRequest>
-				<Request>
-					<TransactionReference>
-						<CustomerContext>Rating and Service</CustomerContext>
-						<XpciVersion>1.0</XpciVersion>
-					</TransactionReference>
-					<RequestAction>Rate</RequestAction>
-					<RequestOption>shop</RequestOption>
-				</Request>
-				<PickupType>
-					<Code>'. $data['pickup_type'] .'</Code>
-					<Description>Daily Pickup</Description>
-				</PickupType>
-				<Shipment>
-					<Description>Rate Shopping - Domestic</Description>
-					<Shipper>
-						<ShipperNumber>'. $data['shipperNumber'] .'</ShipperNumber>
-						<Address>
-							<City>'. $data['city'] .'</City>
-							<PostalCode>'. $data['zip'] .'</PostalCode>
-							<CountryCode>'. $data['country'] .'</CountryCode>
-						</Address>
-					</Shipper>
-					<ShipTo>
-						<Address>
-							<City>'. $data['destCity'] .'</City>
-							'. $destStateCode .'
-							<PostalCode>'. $data['destZip'] .'</PostalCode>
-							<CountryCode>'. $data['destCountry'] .'</CountryCode>
-							'. $data['destType'] .'
-						</Address>
-					</ShipTo>
-					<ShipFrom>
-						<Address>
-							<City>'. $data['city'] .'</City>
-							'. $fromStateCode .'
-							<PostalCode>'. $data['zip'] .'</PostalCode>
-							<CountryCode>'. $data['country'] .'</CountryCode>
-						</Address>
-					</ShipFrom>
-					'. $negotiated_rate . $data['XMLpackage'] .'
-					<ShipmentServiceOptions />
-				</Shipment>
-			</RatingServiceSelectionRequest>';
+		$xml = 
+'<'.'?xml version="1.0" ?'.'>
+	<AccessRequest xml:lang=\'en-US\'>
+		<AccessLicenseNumber>'. $data['accessLicenseNumber'] .'</AccessLicenseNumber>
+		<UserId>'. $data['userId'] .'</UserId>
+		<Password>'. str_replace('&', '&amp;', $data['password']). '</Password>
+	</AccessRequest>
+<?xml version="1.0" ?>
+<RatingServiceSelectionRequest>
+	<Request>
+		<TransactionReference>
+			<CustomerContext>Rating and Service</CustomerContext>
+			<XpciVersion>1.0</XpciVersion>
+		</TransactionReference>
+		<RequestAction>Rate</RequestAction>
+		<RequestOption>shop</RequestOption>
+	</Request>
+	<PickupType>
+		<Code>'. $data['pickup_type'] .'</Code>
+		<Description>Daily Pickup</Description>
+	</PickupType>
+	<Shipment>
+		<Description>Rate Shopping - Domestic</Description>
+		<Shipper>
+			<ShipperNumber>'. $data['shipperNumber'] .'</ShipperNumber>
+			<Address>
+				<City>'. $data['city'] .'</City>
+				<PostalCode>'. $data['zip'] .'</PostalCode>
+				<CountryCode>'. $data['country'] .'</CountryCode>
+			</Address>
+		</Shipper>
+		<ShipTo>
+			<Address>
+				<City>'. $data['destCity'] .'</City>
+				'. $destStateCode .'
+				<PostalCode>'. $data['destZip'] .'</PostalCode>
+				<CountryCode>'. $data['destCountry'] .'</CountryCode>
+				'. $data['destType'] .'
+			</Address>
+		</ShipTo>
+		<ShipFrom>
+			<Address>
+				<City>'. $data['city'] .'</City>
+				'. $fromStateCode .'
+				<PostalCode>'. $data['zip'] .'</PostalCode>
+				<CountryCode>'. $data['country'] .'</CountryCode>
+			</Address>
+		</ShipFrom>
+		'. $negotiated_rate . $data['XMLpackage'] .'
+		<ShipmentServiceOptions />
+	</Shipment>
+</RatingServiceSelectionRequest>';
 
 		if(@$rate->shipping_params->debug)
 			echo '<!-- '. $xml. ' -->'."\r\n"; // THIS LINE IS FOR DEBUG PURPOSES ONLY-IT WILL SHOW IN HTML COMMENTS
@@ -769,36 +772,47 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 		curl_setopt($session,CURLOPT_POSTFIELDS,$xml);
 		$result = curl_exec($session);
 		$error = curl_errno($session);
+		$error_msg = curl_error($session);
+		curl_close($session);
 
-		if(!$error && !empty($result)) {
-			if(@$rate->shipping_params->debug)
-				echo '<!-- '. $result. ' -->'; // THIS LINE IS FOR DEBUG PURPOSES ONLY-IT WILL SHOW IN HTML COMMENTS
+		if($error || empty($result)) {
+			$app = JFactory::getApplication();
+			if(!empty($error_msg))
+				$error_msg = ' : '. $error_msg;
+			$app->enqueueMessage('An error occurred. The connection to the UPS server could not be established'. $error_msg);
+			return false;
+		}
 
-			$xml_data = strstr($result, '<?');
-			$xml = simplexml_load_string($xml_data);
+		if(@$rate->shipping_params->debug)
+			echo '<!-- '. $result. ' -->'; // THIS LINE IS FOR DEBUG PURPOSES ONLY-IT WILL SHOW IN HTML COMMENTS
 
-			$shipment = array();
-			$i = 1;
-			foreach($xml->RatedShipment as $ups_rate) {
-				if(@$rate->shipping_params->negotiated_rate && isset($ups_rate->NegotiatedRates->NetSummaryCharges->GrandTotal->MonetaryValue)) {
-					$shipment[$i]['value'] = (string) $ups_rate->NegotiatedRates->NetSummaryCharges->GrandTotal->MonetaryValue;
-					$shipment[$i]['currency_code'] = (string)$ups_rate->NegotiatedRates->NetSummaryCharges->GrandTotal->CurrencyCode;
-					$shipment[$i]['old_currency_code'] = (string)$ups_rate->NegotiatedRates->NetSummaryCharges->GrandTotal->CurrencyCode;
-				} else {
-					$shipment[$i]['value'] = (string) $ups_rate->TotalCharges->MonetaryValue;
-					$shipment[$i]['currency_code'] = (string)$ups_rate->TotalCharges->CurrencyCode;
-					$shipment[$i]['old_currency_code'] = (string)$ups_rate->TotalCharges->CurrencyCode;
-				}
-				$shipment[$i]['code'] = (string)$ups_rate->Service->Code;
-				$shipment[$i]['delivery_day'] = (string)$ups_rate->GuaranteedDaysToDelivery;
-				$shipment[$i]['delivery_time'] = (string)$ups_rate->ScheduledDeliveryTime;
-				$i++;
+		$xml_data = strstr($result, '<?');
+		$xml = simplexml_load_string($xml_data);
+
+		$shipment = array();
+		$i = 1;
+		foreach($xml->RatedShipment as $ups_rate) {
+			if(@$rate->shipping_params->negotiated_rate && isset($ups_rate->NegotiatedRates->NetSummaryCharges->GrandTotal->MonetaryValue)) {
+				$shipment[$i]['value'] = (string) $ups_rate->NegotiatedRates->NetSummaryCharges->GrandTotal->MonetaryValue;
+				$shipment[$i]['currency_code'] = (string)$ups_rate->NegotiatedRates->NetSummaryCharges->GrandTotal->CurrencyCode;
+				$shipment[$i]['old_currency_code'] = (string)$ups_rate->NegotiatedRates->NetSummaryCharges->GrandTotal->CurrencyCode;
+			} else {
+				$shipment[$i]['value'] = (string) $ups_rate->TotalCharges->MonetaryValue;
+				$shipment[$i]['currency_code'] = (string)$ups_rate->TotalCharges->CurrencyCode;
+				$shipment[$i]['old_currency_code'] = (string)$ups_rate->TotalCharges->CurrencyCode;
 			}
-			$ok = false;
-			$error_volume = false;
-			$error_locations = false;
+			$shipment[$i]['code'] = (string)$ups_rate->Service->Code;
+			$shipment[$i]['delivery_day'] = (string)$ups_rate->GuaranteedDaysToDelivery;
+			$shipment[$i]['delivery_time'] = (string)$ups_rate->ScheduledDeliveryTime;
+			$i++;
+		}
+
+		$error = false;
+		$error_volume = false;
+		$error_locations = false;
+		if(!empty($xml->Response->Error)) {
 			foreach($xml->Response->Error as $ups_error) {
-				$error=true;
+				$error = true;
 				$shipment[$i]['return'] = (string)$xml->Response->ResponseStatusCode;
 				if($shipment[$i]['return'] == "-1") {
 					$app = JFactory::getApplication();
@@ -813,23 +827,17 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 					}
 				}
 			}
-			if($error) {
-				if($error_volume)
-					$this->error_messages['ups_volume_too_big'] = JText::_('ITEMS_VOLUME_TOO_BIG_FOR_SHIPPING_METHODS');
-
-				if($error_locations)
-					$this->error_messages['ups_no_locations'] = 'No UPS shipping methods available: '. $error_locations;
-
-				return false;
-			}
-
-			return $shipment;
-		} else {
-			$app = JFactory::getApplication();
-			$error = curl_error($session);
-			if(!empty($error)) $error = ' : '. $error;
-			$app->enqueueMessage('An error occurred. The connection to the UPS server could not be established'. $error);
 		}
-		curl_close($session);
+		if($error) {
+			if($error_volume)
+				$this->error_messages['ups_volume_too_big'] = JText::_('ITEMS_VOLUME_TOO_BIG_FOR_SHIPPING_METHODS');
+
+			if($error_locations)
+				$this->error_messages['ups_no_locations'] = 'No UPS shipping methods available: '. $error_locations;
+
+			return false;
+		}
+
+		return $shipment;
 	}
 }

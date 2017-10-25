@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -33,7 +33,7 @@ class CheckoutViewCheckoutLegacy extends hikashopView {
 		if(method_exists($this, $function))
 			$this->$function();
 
-		if(JRequest::getInt('popup') && empty($_COOKIE['popup']) && JRequest::getVar('tmpl') != 'component') {
+		if(hikaInput::get()->getInt('popup') && empty($_COOKIE['popup']) && hikaInput::get()->getVar('tmpl') != 'component') {
 			$cartHelper = hikashop_get('helper.cart');
 			$this->init();
 			$cartHelper->getJS($this->params->get('url'));
@@ -70,7 +70,7 @@ window.hikashop.ready(function(){ SqueezeBox.fromElement(\'hikashop_notice_box_t
 		$this->display_checkout_bar = $config->get('display_checkout_bar', 2);
 		$this->continueShopping = $config->get('continue_shopping');
 
-		$step = JRequest::getInt('step',0);
+		$step = hikaInput::get()->getInt('step',0);
 		if(!isset($this->steps[$step])) {
 			$step=0;
 		}
@@ -289,7 +289,7 @@ function hikashopCheckCoupon(id){
 		$doc = JFactory::getDocument();
 		$doc->addScriptDeclaration($js);
 
-		$coupon_error_message = JRequest::getVar('coupon_error_message', '');
+		$coupon_error_message = hikaInput::get()->getVar('coupon_error_message', '');
 		if(!empty($coupon_error_message)) {
 			$app = JFactory::getApplication();
 			$app->enqueueMessage( $coupon_error_message, 'notice');
@@ -447,20 +447,20 @@ function displayRegistration(el) {
 
 	function state() {
 		$database	= JFactory::getDBO();
-		$namekey = JRequest::getCmd('namekey','');
+		$namekey = hikaInput::get()->getCmd('namekey','');
 		if(!headers_sent()){
 			header('Content-Type:text/html; charset=utf-8');
 		}
 		if(!empty($namekey)){
-			$field_namekey = JRequest::getString('field_namekey', '');
+			$field_namekey = hikaInput::get()->getString('field_namekey', '');
 			if(empty($field_namekey))
 				$field_namekey = 'address_state';
 
-			$field_id = JRequest::getString('field_id', '');
+			$field_id = hikaInput::get()->getString('field_id', '');
 			if(empty($field_id))
 				$field_id = 'address_state';
 
-			$field_type = JRequest::getString('field_type', '');
+			$field_type = hikaInput::get()->getString('field_type', '');
 			if(empty($field_type))
 				$field_type = 'address';
 
@@ -781,7 +781,7 @@ var ccHikaErrors = {
 	}
 
 	function after_end(){
-		$order_id = JRequest::getInt('order_id');
+		$order_id = hikaInput::get()->getInt('order_id');
 		if(empty($order_id)){
 			$app = JFactory::getApplication();
 			$order_id = $app->getUserState('com_hikashop.order_id');
@@ -863,12 +863,12 @@ var ccHikaErrors = {
 	}
 
 	function end() {
-		$html = JRequest::getVar('hikashop_plugins_html','','default','string',JREQUEST_ALLOWRAW);
+		$html = hikaInput::get()->getRaw('hikashop_plugins_html', '');
 		$this->assignRef('html',$html);
-		$noform = JRequest::getVar('noform',1,'default','int');
+		$noform = hikaInput::get()->getInt('noform', 1);
 		$this->assignRef('noform',$noform);
 
-		$order_id = JRequest::getInt('order_id');
+		$order_id = hikaInput::get()->getInt('order_id');
 		if(empty($order_id)){
 			$app = JFactory::getApplication();
 			$order_id = $app->getUserState('com_hikashop.order_id');

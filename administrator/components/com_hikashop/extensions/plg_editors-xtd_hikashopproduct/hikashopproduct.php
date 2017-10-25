@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -132,7 +132,7 @@ class plgButtonHikashopproduct extends JPlugin
 		$app = JFactory::getApplication();
 		$db = JFactory::getDBO();
 
-		$editor_name = JRequest::getString('editor_name', 'jform_articletext');
+		$editor_name = hikaInput::get()->getString('editor_name', 'jform_articletext');
 
 		$pageInfo = new stdClass();
 		$pageInfo->limit = new stdClass();
@@ -140,7 +140,7 @@ class plgButtonHikashopproduct extends JPlugin
 		$pageInfo->search = JString::strtolower(trim($pageInfo->search));
 		$pageInfo->limit->value = $app->getUserStateFromRequest( 'com_content.productbutton.limit', 'limit', $app->getCfg('list_limit'), 'int' );
 		$pageInfo->limit->start = $app->getUserStateFromRequest( 'com_content.productbutton.limitstart', 'limitstart', 0, 'int' );
-		if((JRequest::getVar('search')!=$app->getUserState('com_content.productbutton.search')) || (JRequest::getVar('limit')!=$app->getUserState('com_content.productbutton.limit'))){
+		if((hikaInput::get()->getVar('search')!=$app->getUserState('com_content.productbutton.search')) || (hikaInput::get()->getVar('limit')!=$app->getUserState('com_content.productbutton.limit'))){
 			$pageInfo->limit->start = 0;
 			$app->setUserState('com_content.productbutton.limitstart',0);
 		}

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -34,7 +34,7 @@ defined('_JEXEC') or die('Restricted access');
 <?php } ?>
 <form action="index.php?option=<?php echo HIKASHOP_COMPONENT ?>&ctrl=massaction" method="post" autocomplete="off" enctype="multipart/form-data" name="adminForm" id="adminForm">
 <?php
-	if(JRequest::getCmd('tmpl') == 'component'){
+	if(hikaInput::get()->getCmd('tmpl') == 'component'){
 		if(empty($this->data_id)){
 			hikashop_display(JText::_('PLEASE_SELECT_'.strtoupper($this->data_table)),'warning');
 			return;

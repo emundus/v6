@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -116,7 +116,7 @@ class plgHikashoppaymentAlipay extends hikashopPaymentPlugin
 		foreach($_REQUEST as $key => $value){
 			$key = $filter->clean($key);
 			if(preg_match("#^[0-9a-z_-]{1,30}$#i",$key)&&!preg_match("#^cmd$#i",$key)){
-				$value = JRequest::getString($key);
+				$value = hikaInput::get()->getString($key);
 				$vars[$key]=$value;
 				$data[]=$key.'='.urlencode($value);
 			}
@@ -320,7 +320,7 @@ class alipay {
 	function set_transport($transport) {
 		$this->_transport = strtolower($transport);
 		if($this->_transport == 'https') {
-			$this->_gateway = 'http://www.alipay.com/cooperate/gateway.do?';
+			$this->_gateway = 'https://www.alipay.com/cooperate/gateway.do?';
 			$this->_notify_gateway = $this->_gateway;
 		} elseif($this->_transport == 'http') {
 			$this->_gateway = 'http://www.alipay.com/cooperate/gateway.do?';

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -144,6 +144,7 @@ class plgHikashopshippingCANADAPOST extends hikashopShippingPlugin {
 		$found = true;
 		$usableWarehouses = array();
 		$zoneClass = hikashop_get('class.zone');
+		$currencyClass = hikashop_get('class.currency');
 		$zones = $zoneClass->getOrderZones($order);
 		if(!function_exists('curl_init')) {
 			$app = JFactory::getApplication();
@@ -200,6 +201,7 @@ class plgHikashopshippingCANADAPOST extends hikashopShippingPlugin {
 			}
 
 			$receivedMethods = $this->_getBestMethods($rate, $order, $usableWarehouses, $null);
+
 			if(empty($receivedMethods)) {
 				$messages['no_rates'] = JText::_('NO_SHIPPING_METHOD_FOUND');
 				continue;
@@ -252,6 +254,13 @@ class plgHikashopshippingCANADAPOST extends hikashopShippingPlugin {
 				if($rate->shipping_params->group_package == 1 && $this->nbpackage > 1)
 					$r->shipping_description .= '<br/>' . JText::sprintf('X_PACKAGES', $this->nbpackage);
 
+				if(isset($r->shipping_price_orig) || isset($r->shipping_currency_id_orig)){
+					if($r->shipping_currency_id_orig == $r->shipping_currency_id)
+						$r->shipping_price_orig = $r->shipping_price;
+					else
+						$r->shipping_price_orig = $currencyClass->convertUniquePrice($r->shipping_price, $r->shipping_currency_id, $r->shipping_currency_id_orig);
+				}
+
 				$usable_rates[$r->shipping_id] = $r;
 			}
 		}
@@ -278,7 +287,7 @@ class plgHikashopshippingCANADAPOST extends hikashopShippingPlugin {
 		$this->currencyCode = $main_currency->currency_code;
 		$this->currencySymbol = $main_currency->currency_symbol;
 
-		$this->canadapost = JRequest::getCmd('name', 'canadapost');
+		$this->canadapost = hikaInput::get()->getCmd('name', 'canadapost');
 
 		$this->categoryType = hikashop_get('type.categorysub');
 		$this->categoryType->type = 'tax';
@@ -341,8 +350,8 @@ function checkAllBox(id, type) {
 		$cats = array();
 		$methods = array();
 
-		$warehouses = JRequest::getVar('warehouse', array(), '', 'array');
-		$formData = JRequest::getVar('data', array(), '', 'array');
+		$warehouses = hikaInput::get()->get('warehouse', array(), 'array');
+		$formData = hikaInput::get()->get('data', array(), 'array');
 
 		if(isset($formData['shipping_methods'])) {
 			foreach($formData['shipping_methods'] as $method) {
@@ -550,6 +559,19 @@ function checkAllBox(id, type) {
 			'</eparcel>';
 		$usableMethods = $this->_RequestMethods($data, $data['XMLpackage']);
 
+		if(empty($usableMethods))
+			return false;
+
+		$db = JFactory::getDBO();
+		$query = 'SELECT currency_id FROM '. hikashop_table('currency') .' WHERE currency_code = "CAD"';
+		$db->setQuery($query);
+		$currencyID = $db->loadResult();
+		foreach($usableMethods as $i => $method) {
+			$usableMethods[$i]['currency_id'] = (int)$currencyID;
+		}
+
+		$usableMethods = parent::_currencyConversion($usableMethods, $order);
+
 		return $usableMethods;
 	}
 
@@ -646,6 +668,8 @@ function checkAllBox(id, type) {
 				'nextDayAM' => $rate->nextDayAM->__toString(),
 				'status_code' => $xml->ratesAndServicesResponse->statusCode->__toString(),
 				'status_message' => $xml->ratesAndServicesResponse->statusMessage->__toString(),
+				'currency_code' => 'CAD',
+				'old_currency_code' => 'CAD',
 			);
 		}
 

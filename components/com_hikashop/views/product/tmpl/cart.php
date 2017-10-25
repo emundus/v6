@@ -1,17 +1,17 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-$tmpl = JRequest::getWord('tmpl', '');
+$tmpl = hikaInput::get()->getWord('tmpl', '');
 $module_id = (int)$this->params->get('id', 0);
 
-if(!in_array($tmpl, array('component', 'ajax'))) {
+if(!in_array($tmpl, array('component', 'ajax', 'raw'))) {
 	$events = ($this->cart_type == 'cart') ? '["cart.updated","checkout.cart.updated"]' : '"wishlist.updated"';
 ?>
 <script type="text/javascript">
@@ -28,6 +28,8 @@ window.Oby.registerAjax(<?php echo $events; ?>, function(params) {
 });
 </script>
 <?php
+} elseif(!headers_sent()){
+	header('X-Robots-Tag: noindex');
 }
 
 if(empty($this->rows)) {
@@ -47,7 +49,7 @@ if(empty($this->rows)) {
 	if(!empty($desc))
 		echo $this->notice_html;
 
-	if(!in_array($tmpl, array('component', 'ajax'))) {
+	if(!in_array($tmpl, array('component', 'ajax', 'raw'))) {
 ?>
 <div id="hikashop_cart_<?php echo $module_id; ?>" class="hikashop_cart">
 <?php
@@ -59,7 +61,7 @@ if(empty($this->rows)) {
 	if(!empty($desc))
 		echo $desc;
 
-	if(!in_array($tmpl, array('component', 'ajax'))) {
+	if(!in_array($tmpl, array('component', 'ajax', 'raw'))) {
 ?>
 </div>
 <div class="clear_both"></div>
@@ -79,7 +81,7 @@ $small_cart = (int)$this->params->get('small_cart', 0);
 $this->setLayout('listing_price');
 $this->params->set('show_quantity_field', 0);
 
-if(!in_array($tmpl, array('component', 'ajax'))) {
+if(!in_array($tmpl, array('component', 'ajax', 'raw'))) {
 ?>
 <div id="hikashop_cart_<?php echo $module_id; ?>" class="hikashop_cart">
 <?php
@@ -114,8 +116,28 @@ if(!empty($this->element->messages)) {
 }
 
 if(!empty($small_cart)) {
-	$this->setLayout('listing_price');
-	$this->row = $this->total;
+	$price_name  = '';
+	if(!$this->params->get('show_shipping', 0) && isset($this->total->prices[0]->price_value_without_shipping)){
+		$price_name = '_without_shipping';
+	}
+	if(!$this->params->get('show_coupon', 0) && isset($this->total->prices[0]->price_value_without_discount)){
+		$price_name = '_without_discount';
+	}
+	$price = '';
+	if($this->params->get('price_with_tax')){
+		$var_name = 'price_value'.$price_name.'_with_tax';
+		$price .= $this->currencyClass->format(@$this->total->prices[0]->$var_name, $this->total->prices[0]->price_currency_id);
+	}
+	if($this->params->get('price_with_tax')==2){
+		$price .= JText::_('PRICE_BEFORE_TAX');
+	}
+	if($this->params->get('price_with_tax')==2||!$this->params->get('price_with_tax')){
+		$var_name = 'price_value'.$price_name;
+		$price .= $this->currencyClass->format(@$this->total->prices[0]->price_value, $this->total->prices[0]->price_currency_id);
+	}
+	if($this->params->get('price_with_tax')==2){
+		$price .= JText::_('PRICE_AFTER_TAX');
+	}
 	if((int)$this->params->get('show_cart_quantity', 1)) {
 		$qty = 0;
 		foreach($this->element->cart_products as $i => $row) {
@@ -127,13 +149,23 @@ if(!empty($small_cart)) {
 			$qty += $row->cart_product_quantity;
 		}
 
-		if($qty == 1 && JText::_('X_ITEM_FOR_X') != 'X_ITEM_FOR_X') {
-			$text = JText::sprintf('X_ITEM_FOR_X', $qty, $this->loadTemplate());
-		} else {
-			$text = JText::sprintf('X_ITEMS_FOR_X', $qty, $this->loadTemplate());
+		if($this->params->get('show_price')){
+			if($qty == 1 && JText::_('X_ITEM_FOR_X') != 'X_ITEM_FOR_X') {
+				$text = JText::sprintf('X_ITEM_FOR_X', $qty, $price);
+			} else {
+				$text = JText::sprintf('X_ITEMS_FOR_X', $qty, $price);
+			}
+		}else{
+			if($qty == 1)
+				$text = JText::sprintf('X_ITEM', $qty);
+			else
+				$text = JText::sprintf('X_ITEMS', $qty);
 		}
 	} else {
-		$text = JText::sprintf('TOTAL_IN_CART_X', $this->loadTemplate());
+		if($this->params->get('show_price'))
+			$text = JText::sprintf('TOTAL_IN_CART_X', $price);
+		else
+			$text = JText::_('MINI_CART_PROCEED_TO_CHECKOUT');
 	}
 	unset($this->row);
 
@@ -145,6 +177,8 @@ if(!empty($small_cart)) {
 	}
 	if($small_cart == 2) {
 		$extra_data .= ' onclick="if(window.hikashop.toggleOverlayBlock(\'hikashop_cart_dropdown_'.$module_id.'\')) return false;"';
+	}elseif($small_cart == 3) {
+		$extra_data .= ' onmouseover="window.hikashop.toggleOverlayBlock(\'hikashop_cart_dropdown_'.$module_id.'\', \'hover\'); return false;"';
 	}
 ?>
 	<a class="hikashop_small_cart_checkout_link" href="<?php echo $link; ?>"<?php echo $extra_data; ?>>
@@ -321,7 +355,10 @@ foreach($this->element->products as $k => $product) {
 				<td class="hikashop_cart_module_product_image hikashop_cart_value" style="vertical-align:middle !important;text-align:center;"><?php
 		$img = $this->imageHelper->getThumbnail(@$product->images[0]->file_path, array('width' => $width, 'height' => $height), $image_options);
 		if($img->success) {
-			?><img class="hikashop_product_cart_image" title="<?php echo $this->escape(@$product->images[0]->file_description); ?>" alt="<?php echo $this->escape(@$product->images[0]->file_name); ?>" src="<?php echo $img->url; ?>"/><?php
+			$attributes = '';
+			if($img->external)
+				$attributes = ' width="'.$img->req_width.'" height="'.$img->req_height.'"';
+			?><img class="hikashop_product_cart_image" title="<?php echo $this->escape(@$product->images[0]->file_description); ?>" alt="<?php echo $this->escape(@$product->images[0]->file_name); ?>" src="<?php echo $img->url; ?>" <?php echo $attributes; ?>/><?php
 		}
 				?></td>
 <?php
@@ -413,6 +450,7 @@ foreach($this->element->products as $k => $product) {
 				if(empty($optionElement->prices[0]))
 					continue;
 				if(!isset($product->prices[0])) {
+					$product->prices[0] = new stdClass();
 					$product->prices[0]->price_value = 0;
 					$product->prices[0]->price_value_with_tax = 0;
 					$product->prices[0]->price_currency_id = hikashop_getCurrency();
@@ -488,14 +526,14 @@ if($this->element->cart_type == 'cart' && $this->params->get('show_cart_proceed'
 
 if(!empty($this->extraData->bottom)) { echo implode("\r\n", $this->extraData->bottom); }
 
-if($small_cart == 2) {
+if(in_array($small_cart, array(2, 3))) {
 ?>
 	</div>
 	</div>
 <?php
 }
 
-if(!in_array($tmpl, array('component', 'ajax'))) {
+if(!in_array($tmpl, array('component', 'ajax', 'raw'))) {
 ?>
 </div>
 <div class="clear_both"></div>

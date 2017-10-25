@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -30,6 +30,10 @@ class CartmodulesViewCartmodules extends hikashopView{
 		$this->pricetaxType = hikashop_get('type.pricetax');
 		$this->discountDisplayType = hikashop_get('type.discount_display');
 		$this->priceDisplayType = hikashop_get('type.priceDisplay');
+		if(!isset($this->element['show_original_price']))
+			$this->element['show_original_price'] = 0;
+		if(!isset($this->element['show_discount']))
+			$this->element['show_discount'] = 0;
 		$this->arr = array(
 			JHTML::_('select.option', '-1', JText::_('HIKA_INHERIT') ),
 			JHTML::_('select.option', '1', JText::_('HIKASHOP_YES') ),
@@ -53,7 +57,7 @@ class CartmodulesViewCartmodules extends hikashopView{
 			$this->type = 'wishlist';
 		hikashop_loadJslib('tooltip');
 
-		$cid = JRequest::getInt('id','');
+		$cid = hikaInput::get()->getInt('id','');
 		if(empty($cid))
 			$cid = hikashop_getCID();
 		$modulesClass = hikashop_get('class.modules');

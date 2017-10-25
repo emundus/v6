@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -40,7 +40,8 @@ defined('_JEXEC') or die('Restricted access');
 <?php }
 
 	$edit_variant = hikashop_acl('product/variant/characteristics');
-	foreach($this->product->characteristics as $characteristic){ ?>
+	if(!empty($this->product->characteristics)) {
+		foreach($this->product->characteristics as $characteristic) { ?>
 			<dt class="hikashop_product_characteristic"><label><?php echo $characteristic->characteristic_value; ?></label></dt>
 			<dd class="hikashop_product_characteristic"><?php
 				if($edit_variant)
@@ -49,6 +50,7 @@ defined('_JEXEC') or die('Restricted access');
 					echo $characteristic->values[$characteristic->default_id];
 			?></dd>
 <?php
+		}
 	}
 
 	if(hikashop_acl('product/variant/quantity')) { ?>
@@ -332,6 +334,17 @@ window.productMgr.closeVariantEditor = function() { <?php echo $this->editor->js
 </div>
 <input type="hidden" name="data[variant][product_id]" value="<?php echo $this->product->product_id; ?>" />
 <div style="clear:both"></div>
+<script type="text/javascript">
+if(JoomlaCalendar && JoomlaCalendar.init){
+	setTimeout(function(){
+		var section = document.getElementById('hikashop_product_variant_edition');
+		elements = section.querySelectorAll(".field-calendar");
+		for(i = 0; i < elements.length; i++){
+			JoomlaCalendar.init(elements[i]);
+		}
+	}, 500);
+}
+</script>
 <?php
 $doc = JFactory::getDocument();
 foreach($doc->_custom as $custom) {

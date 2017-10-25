@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -59,7 +59,7 @@ if(empty($this->row->has_options) && ($this->row->product_quantity == -1 || $thi
 		<table class="hikashop_product_custom_item_info_table hikashop_product_listing_custom_item_table" width="100%">
 <?php
 		foreach($itemFields as $fieldName => $oneExtraField) {
-			$itemData = JRequest::getString('item_data_'.$fieldName, @$this->row->$fieldName);
+			$itemData = hikaInput::get()->getString('item_data_'.$fieldName, @$this->row->$fieldName);
 ?>
 			<tr id="hikashop_item_<?php echo $oneExtraField->field_namekey; ?>" class="hikashop_item_<?php echo $oneExtraField->field_namekey;?>_line">
 				<td class="key">

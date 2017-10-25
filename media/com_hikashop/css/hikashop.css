@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    3.0.1
+ * @version    3.2.1
  * @author     hikashop.com
  * @copyright  (C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -135,6 +135,8 @@
 .hk-row:after,
 .hk-row-fluid:before,
 .hk-row-fluid:after,
+.hkform-group:before,
+.hkform-group:after,
 .hk-thumbnails:before,
 .hk-thumbnails:after {
 	content:" ";
@@ -148,6 +150,7 @@
 .hk-container-fluid:after,
 .hk-row:after,
 .hk-row-fluid:after,
+.hkform-group:after,
 .hk-thumbnails:before,
 .hk-thumbnails:after {
 	clear:both;
@@ -407,25 +410,56 @@
 	display: block;
 	width: 100%;
 }
+input[type=checkbox].hkform-control, input[type=radio].hkform-control {
+	display:inline-block;
+	width:auto;
+	margin:0px 3px 0 0;
+}
 
-.hkform-horizontal .radio,
-.hkform-horizontal .checkbox,
-.hkform-horizontal .radio-inline,
-.hkform-horizontal .checkbox-inline {
+.hkform-horizontal .hkradio,
+.hkform-horizontal .hkcheckbox,
+.hkform-horizontal .hkradio-inline,
+.hkform-horizontal .hkcheckbox-inline {
 	margin-top: 0;
 	margin-bottom: 0;
 	padding-top: 7px;
 }
-.hkform-horizontal .radio,
-.hkform-horizontal .checkbox {
+.hkform-horizontal .hkradio,
+.hkform-horizontal .hkcheckbox {
 	min-height: 27px;
 	padding-left: 0;
 	vertical-align: middle;
 }
+
+.hkradio-inline input[type="radio"],
+.hkcheckbox-inline input[type="checkbox"] {
+  position: absolute;
+  margin: 4px 4px 0px -15px;
+}
+.hkradio-inline,
+.hkcheckbox-inline {
+  position: relative;
+  display: inline-block;
+  padding-left: 20px;
+  margin-bottom: 0;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
 .hkform-horizontal .hkform-group {
 	margin-left: -5px;
 	margin-right: -5px;
 }
+.hkform-horizontal .hkcontrol-group:before,
+.hkform-horizontal .hkcontrol-group:after {
+	display: table;
+	content: "";
+	line-height: 0;
+}
+.hkform-horizontal .hkcontrol-group:after {
+	clear: both;
+}
+
 @media (min-width: 768px) {
 	.hkform-horizontal .hkcontrol-label {
 		text-align: right;
@@ -662,6 +696,9 @@ div.hikashop_checkout_loading div.hikashop_checkout_loading_spinner {
 div.hikashop_checkout_loading div.hikashop_checkout_loading_spinner.small_spinner {
 	background:url('../images/spinner.gif') no-repeat center;
 }
+.hikashop_cart_product_quantity_refresh, .hikashop_cart_product_quantity_delete {
+    display: inline-block;
+}
 
 .hikashop_wizardbar {
 	background-color:#f9f9f9;
@@ -880,6 +917,7 @@ div.hikashop_uploader_singlefile_content .deleteImg:hover {
 
 .icon-32-cancel {background-image:url(../images/icons/icon-32-cancel.png) !important;}
 .icon-32-cart {background-image:url(../images/icons/icon-32-show_cart.png) !important;}
+.icon-32-go-cart{background-image:url(../images/icons/icon-32-show_cart.png) !important;}
 .icon-32-back {background-image:url(../images/icons/icon-32-back.png) !important;}
 .icon-32-new {background-image:url(../images/icons/icon-32-new.png) !important;}
 .icon-32-apply {background-image:url(../images/icons/icon-32-apply.png) !important;}
@@ -950,9 +988,59 @@ div.hikashop_messages li { list-style-type : none; }
 
 @media print {
 	.hikashop_no_print:after {
-		content: "" !important;
+		content:"" !important;
 	}
 }
 
 
 .hikashopcurrency { width:100%; }
+
+.hikashop_view_files_border{
+	border:1px dashed black;
+	margin:1px;
+}
+.hikashop_view_files_title {
+	position:relative;
+	top:0;
+	left:0;
+	text-align:left;
+	height:1.3em;
+	overflow:hidden;
+	z-index:auto;
+}
+.hikashop_view_files_title span {
+	position:absolute;
+	color:red;
+	font-weight:bold;
+	white-space:nowrap;
+	background-color:white;
+}
+.hikashop_view_files_border:hover > .hikashop_view_files_title {
+	overflow:visible;
+	z-index:9999;
+}
+.hikashop_view_files_border:hover > .hikashop_view_files_title span {
+	outline:1px solid black;
+}
+
+.carousel_vertical_pagination .owl-dot {
+    display:block !important;
+}
+.carousel_vertical_pagination {
+    float:left;
+}
+.carousel_main_vertical_pagination{
+	float:left;
+	width:95%;
+}
+.carousel_main_vertical_pagination_names{
+	width:80%;
+}
+.owl-dots{
+	cursor:pointer;
+}
+
+
+.hikashop_products_listing{
+	clear:both;
+}

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -21,6 +21,6 @@ defined('_JEXEC') or die('Restricted access');
 	<input type="hidden" name="tmpl" value="component" />
 	<input type="hidden" name="ctrl" value="config" />
 	<input type="hidden" name="file" value="<?php echo $this->type.'_'.$this->fileName; ?>" />
-	<input type="hidden" name="var" value="<?php echo JRequest::getCmd('var'); ?>" />
+	<input type="hidden" name="var" value="<?php echo hikaInput::get()->getCmd('var'); ?>" />
 	<?php echo JHTML::_( 'form.token' ); ?>
 </form>

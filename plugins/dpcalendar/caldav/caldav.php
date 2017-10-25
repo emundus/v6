@@ -178,7 +178,7 @@ class PlgDPCalendarCalDAV extends \DPCalendar\Plugin\CalDAVPlugin
 		} else {
 			$response = $this->fetchFromDav($host . "calendars/" . $params['username'],
 				"<A:propfind xmlns:A='DAV:'><A:prop><A:displayname/></A:prop></A:propfind>");
-			if (empty($response)) {
+			if (empty($response) || strpos($response, '<') !== 0) {
 				$response = $this->fetchFromDav($host, "<A:propfind xmlns:A='DAV:'><A:prop><A:displayname/></A:prop></A:propfind>");
 			}
 		}
@@ -270,7 +270,9 @@ class PlgDPCalendarCalDAV extends \DPCalendar\Plugin\CalDAVPlugin
 
 		$data = curl_exec($c);
 
-		if (strpos($data, 'No digest authentication headers were found') !== false && $auth == CURLAUTH_BASIC) {
+		if ((strpos($data, 'No digest authentication headers were found') !== false
+			|| strpos($data, 'No \'Authorization: Digest\' header found.') !== false)
+			&& $auth == CURLAUTH_BASIC) {
 			return $this->fetchFromDav($url, $xml, CURLAUTH_DIGEST);
 		}
 

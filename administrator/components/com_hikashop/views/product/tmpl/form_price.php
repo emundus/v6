@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -22,14 +22,10 @@ if(!empty($this->editing_variant))
 				echo JText::_('RESTRICTIONS');
 			?></th>
 			<th style="width:60px;text-align:center">
-				<a href="#" onclick="return window.productMgr.editPrice('<?php echo $form_key ?>', 0);"><img src="<?php echo HIKASHOP_IMAGES; ?>plus.png" alt="<?php echo JText::_('ADD'); ?>"></a>
+				<a href="#" onclick="return window.productMgr.editPrice('<?php echo $form_key ?>', 0);"><img src="<?php echo HIKASHOP_IMAGES; ?>plus.png" alt="<?php echo JText::_('ADD'); ?>"/></a>
 			</th>
 		</tr>
 	</thead>
-	<tfoot>
-		<tr id="hikashop_<?php echo $form_key; ?>_edit_zone" style="display:none;">
-		</tr>
-	</tfoot>
 	<tbody>
 <?php
 	$k = 0;
@@ -56,8 +52,12 @@ if(!empty($this->editing_variant))
 			foreach($users as $user) {
 				if($user) {
 					$data = $this->userClass->get($user);
-					if($data)
-						$text[] = $data->name;
+					if($data){
+						if(!empty($data->name))
+							$text[] = $data->name;
+						else
+							$text[] = $data->user_email;
+					}
 				}
 			}
 			$restrictions[] = '<strong>'.JText::_('USERS').'</strong>: '.implode(', ',$text);
@@ -99,7 +99,7 @@ if(!empty($this->editing_variant))
 		$k = 1 - $k;
 	}
 ?>
-		<tr id="hikashop_<?php echo $form_key; ?>_row_template" id="price_{ID}" class="row<?php echo $k ?>" style="display:none;">
+		<tr id="hikashop_<?php echo $form_key; ?>_row_template" id="price_{ID}" class="row<?php echo $k; ?>" style="display:none;">
 			<td style="white-space: nowrap;">
 				{PRICE}
 			</td>
@@ -113,13 +113,15 @@ if(!empty($this->editing_variant))
 				<input type="hidden" name="{PRICE_ID_INPUT_NAME}" value="{PRICE_ID}"/>
 				<input type="hidden" name="{PRICE_VALUE_INPUT_NAME}" value="{PRICE_VALUE}"/>
 			</td>
-			<td style="text-align:center">
+			<td style="text-align:center;">
 				{EDIT_BUTTON}
-				<a href="#delete" onclick="window.hikashop.deleteRow(this); return false;"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png" alt="<?php echo JText::_('HIKA_DELETE'); ?>"></a>
+				<a href="#delete" onclick="window.hikashop.deleteRow(this); return false;"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png" alt="<?php echo JText::_('HIKA_DELETE'); ?>"/></a>
 			</td>
 		</tr>
 	</tbody>
 </table>
+<div id="hikashop_<?php echo $form_key; ?>_edit_zone" style="display:none;">
+</div>
 <script type="text/javascript">
 if(!window.productMgr.priceEdition)
 	window.productMgr.priceEdition = {};
@@ -150,14 +152,13 @@ window.productMgr.editPrice = function(formkey, pid) {
 
 	o.xRequest(u.replace('{ID}', pid).replace('{FORMKEY}', formkey), {mode:"GET"}, function(x,p) {
 		if(x.responseText == '') return;
-		td = el.insertCell(0);
-		td.colSpan = 3;
+		td = el;
 		if(typeof(hkjQuery) != "undefined") {
-			hkjQuery(td).html(x.responseText);
+			o.updateElem(td, x.responseText);
 			if(hkjQuery().chosen)
 				hkjQuery('.hika_options select').chosen();
 		} else {
-			td.innerHTML = x.responseText;
+			o.updateElem(td, x.responseText);
 		}
 		window.productMgr.priceEdition[formkey+'_edit'] = false;
 	});
@@ -184,7 +185,6 @@ window.productMgr.cancelNewPrice = function(formkey) {
 	if(!el)
 		return false;
 	el.style.display = 'none';
-	el.innerHTML = '';
 	return false;
 };
 window.productMgr.addPrice = function(formkey) {

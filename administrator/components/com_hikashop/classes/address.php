@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -29,7 +29,6 @@ class hikashopAddressClass extends hikashopClass {
 
 		if((int)$element == 0)
 			return true;
-
 		if(!isset($cachedElements[$element]))
 			$cachedElements[$element] = parent::get($element, $default);
 
@@ -149,10 +148,12 @@ class hikashopAddressClass extends hikashopClass {
 		if(isset($addresses[$user_id]))
 			return $addresses[$user_id];
 
-		if($user_id == 'reset_cache') {
+		if($user_id === 'reset_cache') {
 			$addresses = array();
 			return true;
 		}
+		if((int)$user_id == 0)
+			return array();
 
 		$query = 'SELECT a.* FROM '.hikashop_table('address').' AS a WHERE a.address_user_id = '.(int)$user_id.' and a.address_published = 1 ORDER BY a.address_default DESC, a.address_id DESC';
 		$this->database->setQuery($query);
@@ -204,16 +205,16 @@ class hikashopAddressClass extends hikashopClass {
 	}
 
 	function save(&$addressData, $order_id = 0, $type = 'shipping') {
-		$new = true;
-		if(!empty($addressData->address_id)) {
-			$new = false;
+		$app = JFactory::getApplication();
+		$new = empty($addressData->address_id);
+
+		if(!empty($addressData->address_id) && $addressData->address_id > 0) {
 			$oldData = $this->get($addressData->address_id);
 
 			if(!empty($addressData->address_vat) && $oldData->address_vat != $addressData->address_vat && !$this->_checkVat($addressData)) {
 				return false;
 			}
 
-			$app = JFactory::getApplication();
 			$user_id = hikashop_loadUser();
 			if(!$app->isAdmin() && ($user_id != $oldData->address_user_id || !$oldData->address_published)) {
 				unset($addressData->address_id);
@@ -236,7 +237,7 @@ class hikashopAddressClass extends hikashopClass {
 		if(empty($addressData->address_id) && empty($addressData->address_user_id) && empty($order_id))
 			return false;
 
-		JPluginHelper::importPlugin( 'hikashop' );
+		JPluginHelper::importPlugin('hikashop');
 		$dispatcher = JDispatcher::getInstance();
 		$do = true;
 		if($new) {
@@ -249,19 +250,20 @@ class hikashopAddressClass extends hikashopClass {
 				}
 			}
 
-			$dispatcher->trigger( 'onBeforeAddressCreate', array( & $addressData, & $do) );
+			$dispatcher->trigger('onBeforeAddressCreate', array( &$addressData, &$do) );
 		} else {
-			$dispatcher->trigger( 'onBeforeAddressUpdate', array( & $addressData, & $do) );
+			$dispatcher->trigger('onBeforeAddressUpdate', array( &$addressData, &$do) );
 		}
 
-		if(!$do) {
+		if(!$do)
 			return false;
-		}
 
-		$status = parent::save($addressData);
-		if(!$status) {
-			return false;
+		if(empty($addressData->address_id) || (int)$addressData->address_id > 0) {
+			$status = parent::save($addressData);
 		}
+		if(!$status)
+			return false;
+
 		$this->cleanCaches();
 
 		if(!empty($addressData->address_default) && !empty($oldData)) {
@@ -283,6 +285,13 @@ class hikashopAddressClass extends hikashopClass {
 				$cartClass = hikashop_get('class.cart');
 				$cartClass->get('reset_cache');
 			}
+
+			if((int)$app->getUserState(HIKASHOP_COMPONENT.'.'.'billing_address', 0) == (int)$oldData->address_id) {
+				$app->setUserState(HIKASHOP_COMPONENT.'.'.'billing_address', (int)$status);
+			}
+			if((int)$app->getUserState(HIKASHOP_COMPONENT.'.'.'shipping_address', 0) == (int)$oldData->address_id) {
+				$app->setUserState(HIKASHOP_COMPONENT.'.'.'shipping_address', (int)$status);
+			}
 		}
 
 		if($new) {
@@ -296,7 +305,7 @@ class hikashopAddressClass extends hikashopClass {
 
 	function frontSaveForm($task = '') {
 		$fieldsClass = hikashop_get('class.field');
-		$data = JRequest::getVar('data', array(), '', 'array');
+		$data = hikaInput::get()->get('data', array(), 'array');
 		$ret = array();
 
 		$user_id = hikashop_loadUser(false);
@@ -322,7 +331,7 @@ class hikashopAddressClass extends hikashopClass {
 			}
 		}
 
-		$same_address = JRequest::getString('same_address');
+		$same_address = hikaInput::get()->getString('same_address');
 		$currentTask = 'shipping_address';
 		if( (empty($task) || $task == $currentTask) && !empty($data[$currentTask]) && $same_address != 'yes') {
 			$oldAddress = null;
@@ -349,6 +358,11 @@ class hikashopAddressClass extends hikashopClass {
 
 	public function getCurrentUserAddress($type = '', $user = null) {
 		static $cache = array();
+
+		if($type == 'reset_cache') {
+			$cache = array();
+			return;
+		}
 
 		$app = JFactory::getApplication();
 		$user_id = 0;
@@ -379,9 +393,17 @@ class hikashopAddressClass extends hikashopClass {
 		}
 
 		if(empty($user_address))
-			$user_address = $app->getUserState(HIKASHOP_COMPONENT.'.'.$type.'_address', 0);
+			$user_address = (int)$app->getUserState(HIKASHOP_COMPONENT.'.'.$type.'_address', 0);
 		if(empty($user_address) && $type == 'shipping')
-			$user_address = $app->getUserState(HIKASHOP_COMPONENT.'.'.'billing_address', 0);
+			$user_address = (int)$app->getUserState(HIKASHOP_COMPONENT.'.'.'billing_address', 0);
+
+		if(empty($user_address) && !empty($user_id)) {
+			$addresses = $this->loadUserAddresses((int)$user_id);
+			if(!empty($addresses) && is_array($addresses)) {
+				$address = reset($addresses);
+				$user_address = (int)$address->address_id;
+			}
+		}
 
 		if(empty($user_id) && !is_numeric($user_address)) {
 			return $user_address;

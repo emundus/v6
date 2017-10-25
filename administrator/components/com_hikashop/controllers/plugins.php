@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,7 +32,7 @@ class PluginsController extends hikashopController {
 	}
 
 	function _getToggle() {
-		$this->type = JRequest::getCmd('plugin_type');
+		$this->type = hikaInput::get()->getCmd('plugin_type');
 		if($this->type == 'plugin') {
 			$this->toggle = array('plugin_published' => 'plugin_id');
 		} else if($this->type == 'payment') {
@@ -53,8 +53,8 @@ class PluginsController extends hikashopController {
 	}
 
 	function trigger(){
-		$cid= JRequest::getInt('cid', 0);
-		$function = JRequest::getString('function', '');
+		$cid= hikaInput::get()->getInt('cid', 0);
+		$function = hikaInput::get()->getString('function', '');
 		if(empty($cid) || empty($function)){
 			return false;
 		}
@@ -70,11 +70,11 @@ class PluginsController extends hikashopController {
 	}
 
 	function copy(){
-		$plugins = JRequest::getVar( 'cid', array(), '', 'array' );
+		$plugins = hikaInput::get()->get('cid', array(), 'array');
 		$result = true;
 		if(!empty($plugins)){
-			$type = JRequest::getCMD('plugin_type');
-			if(!in_array($type,array('payment','shipping'))){
+			$type = hikaInput::get()->getCMD('plugin_type');
+			if(!in_array($type, array('payment','shipping'))){
 				$this->listing();
 				return false;
 			}
@@ -102,13 +102,13 @@ class PluginsController extends hikashopController {
 	}
 
 	function edit_translation(){
-		JRequest::setVar( 'layout', 'edit_translation');
+		hikaInput::get()->set( 'layout', 'edit_translation');
 		return parent::display();
 	}
 
 	function save_translation(){
-		$cid= JRequest::getInt('cid');
-		$type = JRequest::getString('type');
+		$cid= hikaInput::get()->getInt('cid');
+		$type = hikaInput::get()->getString('type');
 		$id_field = $type.'_id';
 		$pluginClass = hikashop_get('class.'.$type);
 		$element = $pluginClass->get($cid);
@@ -134,31 +134,31 @@ class PluginsController extends hikashopController {
 	function saveorder(){
 		$this->setOptions();
 		$this->listing = false;
-		JRequest::setVar('subtask', '');
+		hikaInput::get()->set('subtask', '');
 		return parent::saveorder();
 	}
 
 	function cancel(){
-		$type = JRequest::getVar( 'plugin_type','shipping').'_edit';
-		if(JRequest::getVar('subtask','') == $type) {
-			JRequest::setVar('subtask', '');
+		$type = hikaInput::get()->getVar( 'plugin_type','shipping').'_edit';
+		if(hikaInput::get()->getVar('subtask', '') == $type) {
+			hikaInput::get()->set('subtask', '');
 			return $this->edit();
 		}
 		return $this->listing();
 	}
 
 	function add(){
-		JRequest::setVar('layout', 'selectnew');
+		hikaInput::get()->set('layout', 'selectnew');
 		return parent::display();
 	}
 
 	function listing(){
-		JRequest::setVar('layout', 'listing');
+		hikaInput::get()->set('layout', 'listing');
 		return parent::display();
 	}
 
 	function selectimages(){
-		JRequest::setVar( 'layout', 'selectimages'  );
+		hikaInput::get()->set( 'layout', 'selectimages'  );
 		return parent::display();
 	}
 
@@ -175,16 +175,16 @@ class PluginsController extends hikashopController {
 
 	function save() {
 		$status = $this->store();
-		$subtask = JRequest::getVar('subtask');
+		$subtask = hikaInput::get()->getVar('subtask');
 		if(!empty($subtask)){
-			JRequest::setVar('subtask','');
+			hikaInput::get()->set('subtask','');
 		}
 		return $this->listing();
 	}
 
 	function store($new = false) {
-		$this->plugin = JRequest::getCmd('name','manual');
-		$this->plugin_type = JRequest::getCmd('plugin_type','shipping');
+		$this->plugin = hikaInput::get()->getCmd('name', 'manual');
+		$this->plugin_type = hikaInput::get()->getCmd('plugin_type', 'shipping');
 		if(!in_array($this->plugin_type,array('shipping','payment','plugin'))) {
 			return false;
 		}
@@ -195,7 +195,7 @@ class PluginsController extends hikashopController {
 
 		$element = new stdClass();
 		$id = hikashop_getCID($this->plugin_type.'_id');
-		$formData = JRequest::getVar('data', array(), '', 'array');
+		$formData = hikaInput::get()->get('data', array(), 'array');
 
 		$params_name = $this->plugin_type.'_params';
 		if(!empty($formData[$this->plugin_type])) {
@@ -248,7 +248,7 @@ class PluginsController extends hikashopController {
 			}
 
 			$plugin_description = $this->plugin_type.'_description';
-			$plugin_description_data = JRequest::getVar($plugin_description,'','','string',JREQUEST_ALLOWRAW);
+			$plugin_description_data = hikaInput::get()->getRaw($plugin_description, '');
 			$element->$plugin_description = $plugin_description_data;
 			$translationHelper = hikashop_get('helper.translation');
 			$translationHelper->getTranslations($element);
@@ -263,7 +263,7 @@ class PluginsController extends hikashopController {
 			$status = $pluginClass->save($element);
 
 			if(!$status) {
-				JRequest::setVar('fail', $element);
+				hikaInput::get()->set('fail', $element);
 			} else {
 				$translationHelper->handleTranslations($this->plugin_type, $status, $element);
 				$app = JFactory::getApplication();
@@ -272,14 +272,14 @@ class PluginsController extends hikashopController {
 				else
 					$app->enqueueMessage(JText::_( 'HIKASHOP_SUCC_SAVED' ));
 				if(empty($id)) {
-					JRequest::setVar($this->plugin_type.'_id',$status);
+					hikaInput::get()->set($this->plugin_type.'_id',$status);
 				}
 			}
 		}
 	}
 
 	function edit(){
-		if(JRequest::getInt('fromjoomla')){
+		if(hikaInput::get()->getInt('fromjoomla')){
 			$app = JFactory::getApplication();
 			$context = 'com_plugins.edit.plugin';
 			$id = hikashop_getCID('id');

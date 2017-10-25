@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -133,6 +133,7 @@ window.productMgr.addCharacteristic = function() {
 	el = d.getElementById('hikashop_characteristic_nb_def_valuehidden')
 	if(el) cv = parseInt(el.value);
 	if(isNaN(cv) || cv === 0) cv = null;
+	if(cv === null && el.value.substr(0,1) == 'v') cv = c;
 
 	if(c <= 0  || c === null || cv <= 0 || cv === null)
 		return false;

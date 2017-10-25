@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.0.1
+ * @version	3.2.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,14 +24,14 @@ class uploadViewupload extends hikashopView {
 	}
 
 	public function sendfile() {
-		$uploadConfig = JRequest::getVar('uploadConfig', null);
+		$uploadConfig = hikaInput::get()->getVar('uploadConfig', null);
 		if(empty($uploadConfig) || !is_array($uploadConfig))
 			return false;
 
 		$this->assignRef('uploadConfig', $uploadConfig);
-		$uploader = JRequest::getCmd('uploader', '');
+		$uploader = hikaInput::get()->getCmd('uploader', '');
 		$this->assignRef('uploader', $uploader);
-		$field = JRequest::getCmd('field', '');
+		$field = hikaInput::get()->getCmd('field', '');
 		$this->assignRef('field', $field);
 	}
 
@@ -44,14 +44,14 @@ class uploadViewupload extends hikashopView {
 
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName().'.gallery';
 
-		$uploadConfig = JRequest::getVar('uploadConfig', null);
+		$uploadConfig = hikaInput::get()->getVar('uploadConfig', null);
 		if(empty($uploadConfig) || !is_array($uploadConfig))
 			return false;
 
 		$this->assignRef('uploadConfig', $uploadConfig);
-		$uploader = JRequest::getCmd('uploader', '');
+		$uploader = hikaInput::get()->getCmd('uploader', '');
 		$this->assignRef('uploader', $uploader);
-		$field = JRequest::getCmd('field', '');
+		$field = hikaInput::get()->getCmd('field', '');
 		$this->assignRef('field', $field);
 
 		$uploadFolder = ltrim(JPath::clean(html_entity_decode($config->get('uploadfolder'))),DS);
@@ -81,7 +81,7 @@ class uploadViewupload extends hikashopView {
 		$galleryHelper->setRoot($subFolder);
 		$this->assignRef('galleryHelper', $galleryHelper);
 
-		$folder = str_replace(array('|', '\/'), array(DS, DS), JRequest::getString('folder', ''));
+		$folder = str_replace(array('|', '\/'), array(DS, DS), hikaInput::get()->getString('folder', ''));
 		if(!empty($uploadConfig['options']['sub_folder']) && substr($folder, 0, strlen($uploadConfig['options']['sub_folder'])) == $uploadConfig['options']['sub_folder']) {
 			$folder = substr($folder, strlen($uploadConfig['options']['sub_folder']));
 			if($folder === false)
