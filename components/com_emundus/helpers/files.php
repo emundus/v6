@@ -141,7 +141,7 @@ class EmundusHelperFiles
 
         //$tab_params = array();
         foreach ($filts_names as $key => $filt_name) {
-            
+
             if (!is_null($filts_values[$key]) && isset($filts_values[$key]) && empty($params[$filt_name])) {
                 if (in_array($filt_name, $filter_multi_list)) {
                     $params[$filt_name] = array();
@@ -156,7 +156,7 @@ class EmundusHelperFiles
                 else
                     $filts_details[$filt_name] = $filts_values[$key];
             } else $filts_details[$filt_name] = '';
-            
+
             if (array_key_exists($key, $filts_types)) {
                 if ($filts_types[$key] == "hidden") {
                     if(in_array($filt_name, $filter_multi_list))
@@ -166,22 +166,33 @@ class EmundusHelperFiles
                 }
                 $filts_options[$filt_name] = $filts_types[$key];
             } else $filts_options[$filt_name] = '';
-        
+
         }
 
         // on force avec la valeur du filtre défini dans les options de menu
-        if (count($filts_details['status'])>0 && isset($filts_details['status'][0]) && !empty($filts_details['status'][0]))
+        if (count($filts_details['status'])>0 && isset($filts_details['status'][0]) && !empty($filts_details['status'][0])) {
+            $fd_with_param = $params['status'] + $filts_details['status'];
             $params['status'] = $filts_details['status'];
+            $filts_details['status'] = $fd_with_param;
+        }
 
-        if (count($filts_details['group'])>0 && isset($filts_details['group'][0]) && !empty($filts_details['group'][0]))
+        if (count($filts_details['group'])>0 && isset($filts_details['group'][0]) && !empty($filts_details['group'][0])) {
+            $fd_with_param = $params['group'] + $filts_details['group'];
             $params['group'] = $filts_details['group'];
+            $filts_details['group'] = $fd_with_param;
+        }
 
-        if (count($filts_details['institution'])>0 && isset($filts_details['institution'][0]) && !empty($filts_details['institution'][0]))
+        if (count($filts_details['institution'])>0 && isset($filts_details['institution'][0]) && !empty($filts_details['institution'][0])) {
+            $fd_with_param = $params['institution'] + $filts_details['institution'];
             $params['institution'] = $filts_details['institution'];
+            $filts_details['institution'] = $fd_with_param;
+        }
 
         // Else statement is present due to the fact that programmes are group limited
         if (count($filts_details['programme']) > 0 && isset($filts_details['programme'][0]) && !empty($filts_details['programme'][0])) {
+            $fd_with_param = $params['programme'] + $filts_details['programme'];
             $params['programme'] = $filts_details['programme'];
+            $filts_details['programme'] = $fd_with_param;
         } else {
             // ONLY FILES LINKED TO MY GROUP
             $programme = count($this->code)>0?$this->code:null;
@@ -202,7 +213,7 @@ class EmundusHelperFiles
 
         $session->set('filt_params', $params);
         $session->set('filt_menu', $filts_details);
-   
+
         $filters['filts_details'] = $filts_details;
         $filters['filts_options'] = $filts_options;
         $filters['tables'] = $tables;
@@ -260,7 +271,7 @@ class EmundusHelperFiles
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
         $config     = JFactory::getConfig();
-        
+
         $jdate = JFactory::getDate();
         $timezone = new DateTimeZone( $config->get('offset') );
         $jdate->setTimezone($timezone);
@@ -268,7 +279,7 @@ class EmundusHelperFiles
 
         $db = JFactory::getDBO();
         $query = 'SELECT DISTINCT year as schoolyear
-        FROM #__emundus_setup_campaigns 
+        FROM #__emundus_setup_campaigns
         WHERE published = 1 AND end_date > DATE_ADD("'.$now.'", INTERVAL -'.$nb_months_registration_period_access.' MONTH) ORDER BY schoolyear DESC';
         $db->setQuery( $query );
         try {
@@ -282,15 +293,15 @@ class EmundusHelperFiles
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
         $config = JFactory::getConfig();
-        
+
         $jdate = JFactory::getDate();
         $timezone = new DateTimeZone( $config->get('offset') );
         $jdate->setTimezone($timezone);
         $now = $jdate->toSql();
-        
+
         $db = JFactory::getDBO();
         $query = 'SELECT id
-        FROM #__emundus_setup_campaigns 
+        FROM #__emundus_setup_campaigns
         WHERE published = 1 AND end_date > DATE_ADD("'.$now.'", INTERVAL -'.$nb_months_registration_period_access.' MONTH)
         ORDER BY year DESC';
         $db->setQuery( $query );
@@ -373,7 +384,7 @@ class EmundusHelperFiles
     public  function getApplicants(){
         $db = JFactory::getDBO();
         $query = 'SELECT esp.id, esp.label
-        FROM #__emundus_setup_profiles esp 
+        FROM #__emundus_setup_profiles esp
         WHERE esp.status=1';
         $db->setQuery( $query );
         return $db->loadObjectList('id');
@@ -382,9 +393,9 @@ class EmundusHelperFiles
     public  function getProfiles(){
         $db = JFactory::getDBO();
         $query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft
-        FROM #__emundus_setup_profiles esp 
-        INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id 
-        WHERE esp.status=1 
+        FROM #__emundus_setup_profiles esp
+        INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
+        WHERE esp.status=1
         ORDER BY caag.lft, esp.label';
         $db->setQuery( $query );
         return $db->loadObjectList('id');
@@ -417,7 +428,7 @@ class EmundusHelperFiles
         $db = JFactory::getDBO();
         $query = 'SELECT esg.id, esg.label
         FROM #__emundus_setup_groups esg
-        WHERE esg.published=1 
+        WHERE esg.published=1
         ORDER BY esg.label';
         $db->setQuery( $query );
         return $db->loadObjectList('id');
@@ -426,7 +437,7 @@ class EmundusHelperFiles
     public  function getSchoolyears(){
         $db = JFactory::getDBO();
         $query = 'SELECT DISTINCT(year) as schoolyear
-            FROM #__emundus_setup_campaigns 
+            FROM #__emundus_setup_campaigns
             ORDER BY schoolyear DESC';
         $db->setQuery( $query );
         return $db->loadObjectList();
@@ -489,7 +500,7 @@ class EmundusHelperFiles
         $m_profile  = new EmundusModelProfile;
 
         $db = JFactory::getDBO();
-        
+
 
         if (count($code) == 0) {
             $params = JFactory::getSession()->get('filt_params');
@@ -537,18 +548,18 @@ class EmundusHelperFiles
                     INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
                     INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id
                     LEFT JOIN #__fabrik_joins AS joins ON tab.id = joins.list_id AND groupe.id=joins.group_id
-                    INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1) 
+                    INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
                     INNER JOIN #__emundus_setup_profiles as p on p.menutype=menu.menutype ';
             $where = 'WHERE tab.published = 1';
-            
-            
+
+
             if (count($fabrik_elements) > 0 ) {
-            
+
                 $where .= ' AND element.id IN (' . implode(',', $fabrik_elements) . ') ';
                 $order ='';
-            
+
             } else {
-            
+
                 $where .= ' AND (tab.id IN ( ' . implode(',', $fl) . ' ))
                         AND element.published=1
                         AND element.hidden=0
@@ -558,12 +569,12 @@ class EmundusHelperFiles
                 $order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
             }
 
-            
+
             $query .= ' ' . $join . ' ' . $where . ' ' . $order;
 //echo str_replace('#_', 'jos', $query);
 
             try {
-           
+
                 $db->setQuery($query);
                 $elements = $db->loadObjectList('id');
                 $elts = array();
@@ -574,7 +585,7 @@ class EmundusHelperFiles
                     }
                 }
                 return $elts;
-            
+
             } catch (Exception $e) {
                 echo $e->getMessage();
                 return array();
@@ -605,23 +616,23 @@ class EmundusHelperFiles
             $pictures = array();
 
             if ($fnum != null) {
-            
+
                 $fnums[] = $fnum;
                 $photos = $m_files->getPhotos($fnums);
                 foreach ($photos as $photo) {
                     $folder = JURI::base(true).EMUNDUS_PATH_REL.$photo['user_id'];
                     return '<img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
                 }
-            
+
             } else {
-                
+
                 $photos = $m_files->getPhotos();
                 foreach ($photos as $photo) {
                     $folder = JURI::base(true).EMUNDUS_PATH_REL.$photo['user_id'];
                     $pictures[$photo['fnum']] = '<img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
                 }
                 return $pictures;
-                
+
             }
 
         } catch (Exception $e) {
@@ -661,10 +672,10 @@ class EmundusHelperFiles
     public  function getElementsOther($tables){
         $db = JFactory::getDBO();
         $query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id as group_id, groupe.label AS group_label, element.params AS element_attribs,
-            INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label 
+            INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label
                 FROM #__fabrik_elements element
-                INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id 
-                INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
+                INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
+                INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
                 INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id';
         if(!empty($tables) && !empty($tables[0])) {
             $query .= ' WHERE tab.id IN(';
@@ -700,21 +711,21 @@ class EmundusHelperFiles
 
     public function getElementsName($elements_id) {
         if (!empty($elements_id) && isset($elements_id)) {
-            
+
             $db = JFactory::getDBO();
             $query = 'SELECT element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.id, element.plugin as element_plugin, groupe.id as group_id, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias, joins.table_join
                     FROM #__fabrik_elements element
-                    INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id 
-                    INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
+                    INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
+                    INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
                     INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
                     LEFT JOIN #__fabrik_joins AS joins ON tab.id = joins.list_id AND groupe.id=joins.group_id
                     WHERE element.id IN ('.ltrim($elements_id, ',').')
                     ORDER BY formgroup.ordering, element.ordering ';
             try {
-            
+
                 $db->setQuery($query);
                 $res = $db->loadObjectList('id');
-            
+
             } catch (Exception $e) {
                 throw $e->getMessage();
             }
@@ -741,7 +752,7 @@ class EmundusHelperFiles
 
         $query = 'SELECT '.$element_details[0]->element_name.' FROM '.$element_details[0]->tab_name.' WHERE fnum like '.$db->Quote($fnum);
         $db->setQuery($query);
-        $element_value = $db->loadResult();        
+        $element_value = $db->loadResult();
 
         return $element_value;
     }
@@ -777,9 +788,9 @@ class EmundusHelperFiles
         $query = 'SELECT element.name AS element_name, element.label AS element_label, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin,
                 element.params AS params, element.params, tab.group_by AS tab_group_by
                 FROM #__fabrik_elements element
-                INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id 
-                INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
-                INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id 
+                INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
+                INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
+                INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
                 WHERE element.id IN ('.$elements.')';
         $db->setQuery($query);
 
@@ -953,7 +964,7 @@ class EmundusHelperFiles
                             <a href="javascript:clearchosen(\'#text_s\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a>
                         </label>
                         <input class="form-control" id="text_s" type="text" name="s" value="'.$current_s.'"/>
-                    </div> 
+                    </div>
                     <button type="button" class="btn btn-xs" id="shower"><i class="icon-chevron-down"></i> ' . JText::_('MORE_FILTERS') . '</button>
                     <button type="button" class="btn btn-xs" id="hider"><i class="icon-chevron-up"></i> ' . JText::_('HIDE_FILTERS') . '</button>
                 </div>';
@@ -997,7 +1008,7 @@ class EmundusHelperFiles
             foreach ($profile_users as $profu) {
                 if (!$prefilter || ($prefilter && in_array($profu->id, $params['profile_users']))) {
                     $profile_user .= '<option value="' . $profu->id . '"';
-                    if ($current_user_profile == $profu->id) 
+                    if ($current_user_profile == $profu->id)
                         $profile_user .= ' selected="true"';
                     $profile_user .= '>' . $profu->label . '</option>';
                 }
@@ -1060,7 +1071,7 @@ class EmundusHelperFiles
             foreach($sub_values as $sv) $p_grade[]="/".$sv."/";
             unset($sub_values);
             $final_grade = '';
-            if ($types['finalgrade'] != 'hidden') 
+            if ($types['finalgrade'] != 'hidden')
                 $final_grade .= '<div class="em_filters" id="finalgrade">
                                     <div class="em_label"><label class="control-label">'.JText::_('FINAL_GRADE_FILTER').'</label></div>
                                     <div class="em_filtersElement">';
@@ -1070,13 +1081,13 @@ class EmundusHelperFiles
             for ($i=0; $i<count($final_gradeList); $i++) {
                 $val = substr($p_grade[$i],1,1);
                 $final_grade .= '<option value="'.$val.'"';
-                if($val == $current_finalgrade) 
+                if($val == $current_finalgrade)
                     $final_grade .= ' selected="true"';
                 $final_grade .= '>'.$final_gradeList[$i].'</option>';
             }
             unset($val); unset($i);
             $final_grade .= '</select>';
-            if ($types['finalgrade'] != 'hidden') 
+            if ($types['finalgrade'] != 'hidden')
                 $final_grade .= '</div></div>';
             $filters .= $final_grade;
         }
@@ -1095,7 +1106,7 @@ class EmundusHelperFiles
                                 <option value="0">'.JText::_('ALL').'</option>';
             foreach ($missing_docList as $md) {
                 $missing_doc .= '<option value="'.$md->attachment_id.'"';
-                if($miss_doc == $md->attachment_id) 
+                if($miss_doc == $md->attachment_id)
                     $missing_doc .= ' selected="true"';
                 $missing_doc .= '>'.$md->value.'</option>';
             }
@@ -1133,22 +1144,22 @@ class EmundusHelperFiles
         if (@$params['validate'] !== NULL) {
             $validate = '';
             $hidden = $types['validate'] != 'hidden' ? false : true;
-            if ($types['validate'] != 'hidden') 
+            if ($types['validate'] != 'hidden')
                 $validate .= '<div class="em_filters" id="validate">
                                 <div class="em_label"><label class="control-label">'.JText::_('VALIDATED_APPLICATION').'</label></div>
                                 <div class="em_filtersElement">';
             $validate .= '<select class="chzn-select em-filt-select" id="select_validate" name="validate" '.($types['validate'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
                             <option value="0">'.JText::_('ALL').'</option>';
             $validate .= '<option value="1"';
-            if ($validate_application == 1) 
+            if ($validate_application == 1)
                 $validate .= ' selected="true"';
             $validate .= '>'.JText::_('VALIDATED').'</option>';
             $validate .= '<option value="2"';
-            if ($validate_application == 2) 
+            if ($validate_application == 2)
                 $validate .= ' selected="true"';
             $validate .= '>'.JText::_('UNVALIDATED').'</option>';
             $validate .= '</select>';
-            if ($types['validate'] != 'hidden') 
+            if ($types['validate'] != 'hidden')
                 $validate .= '</div></div>';
             $filters .= $validate;
         }
@@ -1160,7 +1171,7 @@ class EmundusHelperFiles
             if ($types['campaign'] != 'hidden') {
                 $campaign .= '<div id="campaign">
                             <div class="em_label">
-                            <label class="control-label">'.JText::_('CAMPAIGN').' 
+                            <label class="control-label">'.JText::_('CAMPAIGN').'
                                  <a href="javascript:clearchosen(\'#select_multiple_campaigns\')"><span class="glyphicon glyphicon-remove" title="'.JText::_('CLEAR').'"></span></a>
                                 </label>
                             </div>
@@ -1168,7 +1179,7 @@ class EmundusHelperFiles
             }
             $campaign .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_campaigns" name="campaign" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;"> ' : '>');
             $campaign .= '<option value="%" ';
-            if ((@$current_campaign[0] == "%" || empty($current_campaign[0])) && count(@$current_campaign)<2) 
+            if ((@$current_campaign[0] == "%" || empty($current_campaign[0])) && count(@$current_campaign)<2)
                 $campaign .= ' selected="true"';
             $campaign .= '>'.JText::_('ALL').'</option>';
 
@@ -1226,7 +1237,7 @@ class EmundusHelperFiles
             }
             $programme .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_programmes" name="programme" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" >' : '>');
             $programme .= '<option value="%" ';
-            if ((@$current_programme[0] == "%" || empty($current_programme[0])) && count(@$current_programme)<2 ) 
+            if ((@$current_programme[0] == "%" || empty($current_programme[0])) && count(@$current_programme)<2 )
                 $programme .= ' selected="true"';
             $programme .= '>'.JText::_('ALL').'</option>';
 
@@ -1255,13 +1266,13 @@ class EmundusHelperFiles
             }
             $status .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_status" name="status" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" >' : '>');
             $status .= '<option value="%" ';
-            if ((@$current_status[0] == "%" || !isset($current_status[0])) && (count(@$current_status)<2 )) 
+            if ((@$current_status[0] == "%" || !isset($current_status[0])) && (count(@$current_status)<2 ))
                 $status .= ' selected="true"';
             $status .= '>'.JText::_('ALL').'</option>';
 
             foreach ($statusList as $p) {
                 $status .= '<option value="'.$p->step.'"';
-                if(!empty($current_status) && in_array($p->step, $current_status)) 
+                if(!empty($current_status) && in_array($p->step, $current_status))
                     $status .= ' selected="true"';
                 $status .= '>'.$p->value.'</option>';
             }
@@ -1311,7 +1322,7 @@ class EmundusHelperFiles
             }
             $tag .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_tags" name="tag" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" >' : '>');
             $tag .= '<option value="%" ';
-            if ((@$current_tag[0] == "%" || !isset($current_tag[0])) && (count(@$current_tag)<2 )) 
+            if ((@$current_tag[0] == "%" || !isset($current_tag[0])) && (count(@$current_tag)<2 ))
                 $tag .= ' selected="true"';
             $tag .= '>'.JText::_('ALL').'</option>';
 
@@ -1469,7 +1480,7 @@ class EmundusHelperFiles
             }
             $group .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_groups" name="group" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" >' : '>');
             $group .= '<option value="%" ';
-            if ((@$group[0] == "%" || empty($group[0])) && count(@$group) < 2) 
+            if ((@$group[0] == "%" || empty($group[0])) && count(@$group) < 2)
                 $group .= ' selected="true"';
             $group .= '>'.JText::_('ALL').'</option>';
 
@@ -1498,7 +1509,7 @@ class EmundusHelperFiles
             }
             $institution .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_institutions" name="institution" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" >' : '>');
             $institution .= '<option value="%" ';
-            if ((@$institution[0] == "%" || empty($institution[0])) && count(@$institution) < 2) 
+            if ((@$institution[0] == "%" || empty($institution[0])) && count(@$institution) < 2)
                 $institution .= ' selected="true"';
             $institution .= '>'.JText::_('ALL').'</option>';
 
@@ -1526,7 +1537,7 @@ class EmundusHelperFiles
                 $filters .= ' selected';
             $filters.='>'.JText::_("ALL").'</option>
                             <option value="1"';
-            if (@$spam_suspect == 1) 
+            if (@$spam_suspect == 1)
                 $filters .= ' selected';
             $filters.='>'.JText::_("JYES").'</option>
                         </select>
@@ -1774,7 +1785,7 @@ class EmundusHelperFiles
                     $item->anchor_css   = htmlspecialchars($item->params->get('menu-anchor_css', ''), ENT_COMPAT, 'UTF-8', false);
                     $item->anchor_title = htmlspecialchars($item->params->get('menu-anchor_title', ''), ENT_COMPAT, 'UTF-8', false);
                     $item->menu_image   = $item->params->get('menu_image', '') ? htmlspecialchars($item->params->get('menu_image', ''), ENT_COMPAT, 'UTF-8', false) : '';
-    
+
                 }
 
                 if (isset($items[$lastitem])) {
@@ -1803,7 +1814,7 @@ class EmundusHelperFiles
         $db         = JFactory::getDbo();
 
         $query = 'select distinct(group_id)
-                    from #__emundus_groups 
+                    from #__emundus_groups
                     where user_id='.$uid;
 
         try
@@ -2018,7 +2029,7 @@ class EmundusHelperFiles
                         $element->element_name != 'email' &&
                         $element->element_name != 'label' &&
                         $element->element_name != 'code' &&
-                        array_key_exists($k, $adm)) 
+                        array_key_exists($k, $adm))
                     {
                         $str .= '<tr>';
                         if (strpos($element->element_plugin, 'textarea') !== false)
@@ -2072,7 +2083,7 @@ class EmundusHelperFiles
                     $element->element_name != 'email' &&
                     $element->element_name != 'label' &&
                     $element->element_name != 'code' &&
-                    array_key_exists($k, $adm)) 
+                    array_key_exists($k, $adm))
                 {
                     $str .= '<tr>';
                     if (strpos($element->element_plugin, 'textarea') !== false)

@@ -956,16 +956,17 @@ class EmundusModelEvaluation extends JModelList
 						}
 						break;
 					case 'status':
-						if ($value)
+						// Code is redundant because $filt_menu has the status value as well.
+						/*if ($value)
 						{
 							if ( $value[0] == "%" || !isset($value[0]) )
 								$query['q'] .= ' ';
 							else
 							{
-								$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
+								//$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
 							}
 						}
-						break;
+						break;*/
 					case 'tag':
                         if ($value)
                         {
@@ -991,7 +992,7 @@ class EmundusModelEvaluation extends JModelList
 		}
 
 		// force menu filter
-		if (count($filt_menu['status'])>0 && isset($filt_menu['status'][0]) && !empty($filt_menu['status'][0]) && $filt_menu['status'][0] != "%") {
+		if (count($filt_menu['status'])>0 && !empty($filt_menu['status'][0]) && $filt_menu['status'][0] != "%") {
 			$query['q'] .= ' AND c.status IN ("' . implode('","', $filt_menu['status']) . '") ';
 		}
 
