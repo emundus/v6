@@ -18,7 +18,11 @@
 		</files>
 		<config>
 			<fields name="params">
-				<fieldset name="basic" label="Options">
+				<fieldset name="basic" label="Options">``
+					<field name="skype" type="checkbox" label="SKYPE_PARAM" description="SKYPE_PARAM_DESC" value="1" default="0"/>
+					<field name="facetime" type="checkbox" label="FACETIME_PARAM" description="FACETIME_PARAM_DESC" value="1" default="0"/>
+					<field name="whatsapp" type="checkbox" label="WHATSAPP_PARAM" description="WHATSAPP_PARAM_DESC" value="1" default="0"/>
+					<field name="google" type="checkbox" label="GOOGLE_PARAM" description="GOOGLE_PARAM_DESC" value="1" default="0"/>
 				</fieldset>
 				<fieldset name="advanced">
 					<field name="layout" type="modulelayout" label="JFIELD_ALT_LAYOUT_LABEL" description="JFIELD_ALT_MODULE_LAYOUT_DESC" />

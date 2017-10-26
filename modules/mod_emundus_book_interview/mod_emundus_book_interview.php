@@ -19,21 +19,33 @@ if (isset($user->fnum)) {
     if ($user_booked) {
 
         $offset = JFactory::getConfig()->get('offset');
-        
+
         $next_interview = $helper->getNextInterview($user);
         $interview_dt   = new DateTime($next_interview->start_date, new DateTimeZone('GMT'));
         $interview_dt->setTimezone(new DateTimeZone($offset));
         $interview_date = $interview_dt->format('M j Y');
         $interview_time = $interview_dt->format('g:i A');
-        require(JModuleHelper::getLayoutPath('mod_emundus_book_interview','showInterview'));    
+
+        require(JModuleHelper::getLayoutPath('mod_emundus_book_interview','showInterview'));
 
     } else {
 
         $available_events = $helper->getEvents($user);
-        require(JModuleHelper::getLayoutPath('mod_emundus_book_interview','default'));    
+
+        $contact_info = array();
+        if ($params->get('skype') == 1)
+            $contact_info['skype'] = JText::_('ENTER_SKYPE_ID');
+        if ($params->get('facetime') == 1)
+            $contact_info['facetime'] = JText::_('ENTER_FACETIME_ID');
+        if ($params->get('whatsapp') == 1)
+            $contact_info['whatsapp'] = JText::_('ENTER_FACETIME_ID');
+        if ($params->get('google') == 1)
+            $contact_info['google'] = JText::_('ENTER_GOOGLE_ID');
+
+        require(JModuleHelper::getLayoutPath('mod_emundus_book_interview','default'));
 
     }
 
 }
-    
+
 ?>
