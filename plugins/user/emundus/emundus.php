@@ -51,6 +51,7 @@ class plgUserEmundus extends JPlugin
                 $db->setQuery('DELETE FROM '.$table.' WHERE user_id_from = '.(int) $user['id'].' OR user_id_to = '.(int) $user['id']);
             if (strpos($table, 'emundus_') === FALSE) continue;
             if (strpos($table, 'emundus_group_assoc')>0) continue;
+            if (strpos($table, 'emundus_groups_eval')>0) continue;
             if (strpos($table, 'emundus_tag_assoc')>0) continue;
             if (strpos($table, 'emundus_stats')>0) continue;
             if (strpos($table, '_repeat')>0) continue;

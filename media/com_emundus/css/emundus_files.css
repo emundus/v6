@@ -604,7 +604,7 @@ thead th:hover {
 
 
 
-/*fixed thead------------*/
+/*fixed thead------------
 
 .table-scroll {
     position: relative;
@@ -653,18 +653,19 @@ thead th:hover {
 }
 
 .false-table {
-    position:absolute;
+    position:fixed;
     top:0;
     right:0;
     left:0;
     bottom:0;
-    overflow-y:scroll;
+    overflow: scroll;
+   
 }
 .false-table thead, .false-table thead th{
-    position:relative;
+    position:fixed;
     z-index:2;
 }
-
+*/
 /*scroll side  
     height: 1000px !important;
     overflow-y:scroll !important;

@@ -1116,7 +1116,7 @@ class EmundusModelEvaluation extends JModelList
 		$query .= $q['q'];
 
 		$query .=  $this->_buildContentOrderBy();
-
+		
 		$dbo->setQuery($query);
 		try
 		{

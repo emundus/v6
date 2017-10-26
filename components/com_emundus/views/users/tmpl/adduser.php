@@ -6,6 +6,7 @@
  * Time: 10:30
  */
 ?>
+
 <form action = "<?php if($this->edit == 1){echo "index.php?option=com_emundus&controller=users&task=edituser";}else{echo "index.php?option=com_emundus&controller=users&task=adduser";}?>" id="em-add-user" role="form" method="post">
 	<h3>
 		<?php
@@ -86,6 +87,9 @@
 	</fieldset>
 </form>
 <script type="text/javascript">
+	window.onunload = function(){
+	window.opener.location.reload();
+	};
 	$(document).ready(function()
       {
           var edit = '<?php echo $this->edit?>';

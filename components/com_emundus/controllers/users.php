@@ -162,21 +162,29 @@ class EmundusControllerUsers extends JControllerLegacy {
         $mailer->Encoding = 'base64';
         $mailer->setBody($body);
 
-        $send = $mailer->Send();
-        if ( $send !== true ) {
-            echo json_encode((object)array('status' => false, 'msg' => JText::_('EMAIL_NOT_SENT')));
-            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
-            exit();
-        } else {
-            $message = array(
-                'user_id_from' => $current_user->id,
-                'user_id_to' => $uid,
-                'subject' => $email->subject,
-                'message' => $body
-            );
-            $m_emails->logEmail($message);
-        }
-
+        try {
+			$send = $mailer->Send();
+		
+			if ($send === false){
+				JLog::add('No email configuration!', JLog::ERROR, 'com_emundus.email');
+			} else {
+				$message = array(
+					'user_id_from' => $current_user->id,
+					'user_id_to' => $uid,
+					'subject' => $email->subject,
+					'message' => $body
+				);
+				$m_emails->logEmail($message);
+			}
+		
+		} catch (Exception $e) {
+		
+			echo json_encode((object)array('status' => false, 'msg' => JText::_('EMAIL_NOT_SENT')));
+			JLog::add($e->__toString(), JLog::ERROR, 'com_emundus.email');
+			exit();
+		
+		}
+		
 		echo json_encode((object)array('status' => true, 'msg' => JText::_('USER_CREATED')));
 		exit;
 	}

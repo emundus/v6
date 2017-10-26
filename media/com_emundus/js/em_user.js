@@ -26,6 +26,8 @@ function reloadActions(view)
     })
 }
 
+
+
 function clearchosen(cible){
 	$(cible).val("%");
 	//$('#select_multiple_programmes option[value="%"]').attr('selected',true);
@@ -1106,9 +1108,9 @@ $(document).ready(function()
 								                 $('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
 									                                          '<button type="button" class="close" data-dismiss="alert">×</button>' +
 									                                          '<strong>'+result.msg+'</strong> ' +
-									                                          '</div>');
+																			  '</div>');												 
 								                 setTimeout(function(){$('#em-modal-actions').modal('hide');},500);
-
+												 reloadData();
 							                 }
 							                 else
 							                 {
