@@ -36,7 +36,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 						<option value="30" <?php if($this->pagination->limit == 30){echo "selected=true";}?>>30</option>
 						<option value="50" <?php if($this->pagination->limit == 50){echo "selected=true";}?>>50</option>
 						<option value="100" <?php if($this->pagination->limit == 100){echo "selected=true";}?>>100</option>
-					</select>	
+					</select>
 				</div>
 				<div style="width: 80%; float:left;">
 					<ul class="pagination pagination-sm">
@@ -108,10 +108,10 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 								<th></th>
 								<th></th>
 							</tr>
-							
+
 						</thead>
-							
-						<tbody>							
+
+						<tbody>
 						<?php foreach ($this->datas as $key => $line):?>
 							<?php if($key != 0): ?>
 								<tr>
@@ -123,7 +123,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 												<?php if($k == 'check'): ?>
 													<label for = "<?php echo $line['fnum']->val ?>_check">
 														<input type="checkbox" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
-														<?php 
+														<?php
 															$tab = explode('-', $key);
 															echo ($tab[1] + 1 + $this->pagination->limitstart);
 															?>
@@ -134,10 +134,11 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 													<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
 														<div class="em_list_photo"><?php echo $value->photo; ?></div>
 														<div class="em_list_text">
-														<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo strtoupper($value->emUser['lastname'])." ".ucfirst(strtolower($value->emUser['firstname'])); ?></strong></span>
-														<div class="em_list_email"><?php echo $value->user->email; ?></div>
-													</div>
-												</a>
+															<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
+															<div class="em_list_email"><?php echo $value->user->email; ?></div>
+															<div class="em_list_email"><?php echo $value->user->id; ?></div>
+														</div>
+													</a>
 												<?php elseif($k == "access"):?>
 													<?php echo $this->accessObj[$line['fnum']->val]?>
 												<?php elseif($k == "id_tag"):?>
@@ -162,7 +163,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 													<?php endif; ?>
 												<?php endif; ?>
 											</div>
-											
+
 										</td>
 									<?php endif; ?>
 									<?php endforeach; ?>

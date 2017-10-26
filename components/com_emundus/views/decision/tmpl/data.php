@@ -78,6 +78,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 											<div class="em_list_text">
 												<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
 												<div class="em_list_email"><?php echo $value->user->email; ?></div>
+												<div class="em_list_email"><?php echo $value->user->id; ?></div>
 											</div>
 										</a>
 									<?php elseif($k == "access"):?>

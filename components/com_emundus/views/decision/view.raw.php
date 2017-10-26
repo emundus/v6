@@ -125,7 +125,7 @@ class EmundusViewDecision extends JViewLegacy
 
 				if(!empty($users))
 				{
-					$i = 0;
+					//$i = 0;
 					$taggedFile = $m_decision->getTaggedFile();
 
 					// Columns
@@ -175,22 +175,21 @@ class EmundusViewDecision extends JViewLegacy
 					}
 
 
-					//$i = 0;
+					$i = 0;
 					foreach ($users as $user) {
 						$usObj = new stdClass();
 						$usObj->val = 'X';
 						$fnumArray[] = $user['fnum'];
 						$line = array('check' => $usObj);
-						if(array_key_exists($user['fnum'], $taggedFile))
-						{
+
+						if (array_key_exists($user['fnum'], $taggedFile)) {
+
 							$class = $taggedFile[$user['fnum']]['class'];
 							$usObj->class = $taggedFile[$user['fnum']]['class'];
-						}
-						else
-						{
+
+						} else {
 							$class = null;
 							$usObj->class = null;
-
 						}
 
 						foreach ($user as  $key => $value) {

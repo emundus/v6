@@ -35,7 +35,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 						<option value="30" <?php if($this->pagination->limit == 30){echo "selected=true";}?>>30</option>
 						<option value="50" <?php if($this->pagination->limit == 50){echo "selected=true";}?>>50</option>
 						<option value="100" <?php if($this->pagination->limit == 100){echo "selected=true";}?>>100</option>
-					</select>	
+					</select>
 				</div>
 				<div style="width: 80%; float:left;">
 					<ul class="pagination pagination-sm">
@@ -128,10 +128,11 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 													<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
 														<div class="em_list_photo"><?php echo $value->photo; ?></div>
 														<div class="em_list_text">
-														<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
-														<div class="em_list_email"><?php echo $value->user->email; ?></div>
-													</div>
-												</a>
+															<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
+															<div class="em_list_email"><?php echo $value->user->email; ?></div>
+															<div class="em_list_email"><?php echo $value->user->name; ?></div>
+														</div>
+													</a>
 											<?php elseif($k == "access"):?>
 												<?php echo $this->accessObj[$line['fnum']->val]?>
 											<?php elseif($k == "id_tag"):?>
@@ -163,9 +164,9 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 						</tbody>
 					</table>
 				</div>
-			</div>							
+			</div>
 		</div>
-		
+
 	<?php else:?>
 		<?php echo $this->datas?>
 	<?php endif;?>
