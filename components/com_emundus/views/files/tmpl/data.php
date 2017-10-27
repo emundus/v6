@@ -24,100 +24,95 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 			<?php echo $this->pagination->getResultsCounter(); ?>
 		</div>
 		<div class="em-data-container">
-			<div id="table-scroll" class="table-scroll">
-				<div id="false-table" class="false-table" aria="hidden"></div>
-				<div class="table-wrap">
- 					<table class="table table-striped table-hover" id="em-data">
-						<thead>
+			<table class="table table-striped table-hover" id="em-data">
+				<thead>
+				<tr>
+					<?php foreach($this->datas[0] as $kl => $v): ?>
+						<th title="<?php echo JText::_($v)?>" id="<?php echo $kl?>" >
+							<p class="em-cell">
+								<?php if($kl == 'check'): ?>
+									<label for="em-check-all">
+										<input type="checkbox" value="-1" id="em-check-all" class="em-check" style="width:20px !important;"/>
+										<span>#</span>
+									</label>
+									<label class="em-hide em-check-all-all" for="em-check-all-all">
+										<input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all" style="width:20px !important;"/>
+										<span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_CHECK_ALL_ALL')?></span>
+									</label>
+								<?php elseif($this->lists['order'] == $kl):?>
+									<?php if($this->lists['order_dir'] == 'desc'):?>
+										<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+									<?php else:?>
+										<span class="glyphicon glyphicon-sort-by-attributes"></span>
+									<?php endif;?>
+									<strong>
+										<?php echo JText::_($v)?>
+									</strong>
+								<?php else:?>
+									<?php echo JText::_($v)?>
+								<?php endif;?>
+							</p>
+						</th>
+					<?php endforeach; ?>
+				</tr>
+				</thead>
+
+				<tbody>
+				<?php foreach ($this->datas as $key => $line):?>
+					<?php if($key != 0): ?>
 						<tr>
-							<?php foreach($this->datas[0] as $kl => $v): ?>
-								<th title="<?php echo JText::_($v)?>" id="<?php echo $kl?>" >
-									<p class="em-cell">
-										<?php if($kl == 'check'): ?>
-											<label for="em-check-all">
-												<input type="checkbox" value="-1" id="em-check-all" class="em-check" style="width:20px !important;"/>
-												<span>#</span>
+							<?php foreach ($line as $k => $value):?>
+								<td <?php if($k == 'check'&& $value->class != null){echo 'class="'.$value->class.'"';}   ?>>
+									<div class="em-cell" >
+										<?php if($k == 'check'): ?>
+											<label for = "<?php echo $line['fnum']->val ?>_check">
+												<input type="checkbox" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
+												<?php
+													$tab = explode('-', $key);
+													echo ($tab[1] + $this->pagination->limitstart);
+												?>
 											</label>
-											<label class="em-hide em-check-all-all" for="em-check-all-all">
-												<input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all" style="width:20px !important;"/>
-												<span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_CHECK_ALL_ALL')?></span>
-											</label>
-										<?php elseif($this->lists['order'] == $kl):?>
-											<?php if($this->lists['order_dir'] == 'desc'):?>
-												<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-											<?php else:?>
-												<span class="glyphicon glyphicon-sort-by-attributes"></span>
-											<?php endif;?>
-											<strong>
-												<?php echo JText::_($v)?>
-											</strong>
-										<?php else:?>
-											<?php echo JText::_($v)?>
-										<?php endif;?>
-									</p>
-								</th>
+										<?php elseif($k == 'status'):?>
+											<span class="label label-<?php echo $value->status_class ?>" title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
+										<?php elseif($k == 'fnum'):?>
+											<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
+												<div class="em_list_photo"><?php echo $value->photo; ?></div>
+												<div class="em_list_text">
+													<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
+													<div class="em_list_email"><?php echo $value->user->email; ?></div>
+													<div class="em_list_email"><?php echo $value->user->id; ?></div>
+												</div>
+											</a>
+									<?php elseif($k == "access"):?>
+										<?php echo $this->accessObj[$line['fnum']->val]?>
+									<?php elseif($k == "id_tag"):?>
+										<?php echo @$this->colsSup['id_tag'][$line['fnum']->val]?>
+									<?php else:?>
+										<?php if ($value->type == 'text' ) :?>
+											<?php echo strip_tags($value->val); ?>
+										<?php elseif ($value->type == "date")  :?>
+										<strong>
+											<?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
+													<span class="glyphicon glyphicon-warning-sign em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true" style="color:orange;"></span>
+											<?php else: ?>
+												<?php
+													$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
+													echo $formatted_date->format("M j, Y, H:i");
+												?>
+											<?php endif; ?>
+										</strong>
+										<?php else: ?>
+											<?php echo $value->val; ?>
+										<?php endif; ?>
+									<?php endif; ?>
+									</div>
+								</td>
 							<?php endforeach; ?>
 						</tr>
-						</thead>
-
-						<tbody>
-						<?php foreach ($this->datas as $key => $line):?>
-							<?php if($key != 0): ?>
-								<tr>
-									<?php foreach ($line as $k => $value):?>
-										<td <?php if($k == 'check'&& $value->class != null){echo 'class="'.$value->class.'"';}   ?>>
-											<div class="em-cell" >
-												<?php if($k == 'check'): ?>
-													<label for = "<?php echo $line['fnum']->val ?>_check">
-														<input type="checkbox" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
-														<?php
-															$tab = explode('-', $key);
-															echo ($tab[1] + $this->pagination->limitstart);
-														?>
-													</label>
-												<?php elseif($k == 'status'):?>
-													<span class="label label-<?php echo $value->status_class ?>" title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
-												<?php elseif($k == 'fnum'):?>
-													<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
-														<div class="em_list_photo"><?php echo $value->photo; ?></div>
-														<div class="em_list_text">
-															<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
-															<div class="em_list_email"><?php echo $value->user->email; ?></div>
-															<div class="em_list_email"><?php echo $value->user->id; ?></div>
-														</div>
-													</a>
-											<?php elseif($k == "access"):?>
-												<?php echo $this->accessObj[$line['fnum']->val]?>
-											<?php elseif($k == "id_tag"):?>
-												<?php echo @$this->colsSup['id_tag'][$line['fnum']->val]?>
-											<?php else:?>
-												<?php if ($value->type == 'text' ) :?>
-													<?php echo strip_tags($value->val); ?>
-												<?php elseif ($value->type == "date")  :?>
-												<strong>
-													<?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
-															<span class="glyphicon glyphicon-warning-sign em-radio" id="<?php echo $cfnum.'-'.$value->id.'-'.$value->val; ?>" aria-hidden="true" style="color:orange;"></span>
-													<?php else: ?>
-														<?php
-															$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
-															echo $formatted_date->format("M j, Y, H:i");
-														?>
-													<?php endif; ?>
-												</strong>
-												<?php else: ?>
-													<?php echo $value->val; ?>
-												<?php endif; ?>
-											<?php endif; ?>
-											</div>
-										</td>
-									<?php endforeach; ?>
-								</tr>
-							<?php endif;?>
-						<?php  endforeach;?>
-						</tbody>
-					</table>
-				</div>
-			</div>
+					<?php endif;?>
+				<?php  endforeach;?>
+				</tbody>
+			</table>
 		</div>
 		<div class="well">
 			<label for = "pager-select"><?php echo JText::_('DISPLAY')?></label>
