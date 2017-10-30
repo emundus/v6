@@ -47,8 +47,14 @@
 						<option value="default">LIST_DEFAULT</option>
 						<option value="old">LIST_OLD</option>
 					</field>
-					<field type="text" name="mod_em_campaign_class" label="MOD_EM_CAMPAIGN_CLASS" description="MOD_EM_CAMPAIGN_CLASS_DESC"/>
-
+					<field type="list" name="mod_em_campaign_class" label="MOD_EM_CAMPAIGN_CLASS" description="MOD_EM_CAMPAIGN_CLASS_DESC">
+						<option value="">LIST_DEFAULT</option>
+						<option value="red">LIST_RED</option>
+						<option value="orange">LIST_ORANGE</option>
+						<option value="blue">LIST_BLUE</option>
+						<option value="purple">LIST_PURPLE</option>
+						<option value="black">LIST_BLACK</option>
+					</field>
 				</fieldset>
 			</fields>
 		</config>
