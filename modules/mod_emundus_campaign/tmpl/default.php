@@ -365,28 +365,13 @@ if ($locallang == "fr-FR") {
             var id = jQuery(this).attr("href").substr(1);
             jQuery.cookie("tabactive", id);
             jQuery(this).tab('show');
-            //if (jQuery(window).width() >= 767) {
-            if (jQuery(window).width() > 768) {
-                jQuery('.position-me').each(function () {
-                    var h = jQuery(this).parent().parent().height()-23;
-                    jQuery(this).width(h);
-                });
-            };
         });
-        //if (jQuery(window).width() >= 767) {
         if (jQuery(window).width() > 768) {
             jQuery('.position-me').each(function () {
                 var h = jQuery(this).parent().parent().height()-23;
                 jQuery(this).width(h);
             });
-
         };
-        if (jQuery(window).width() == 768) {
-            jQuery('.position-me').each(function () {
-                var h = jQuery(this).parent().parent().height()-38;
-                jQuery(this).width(h);
-            });
-        }
     });
 </script>
 
