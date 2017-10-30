@@ -70,6 +70,30 @@ $gpreset = str_replace(' ','',strtolower($gantry->get('name')));
 			</div>
 		</div>
 		<?php /** End Header **/ endif; ?>
+		<div id="responsive_menu" class="rt-grid-12">
+        </div>
+		<?php /** Begin Second Header **/ if ($gantry->countModules('secondheader')) : ?>
+		<div id="rt-secondheader">
+			<div class="rt-container">
+				<?php echo $gantry->displayModules('secondheader','standard','standard'); ?>
+				<div class="clear"></div>
+			</div>
+		</div>
+		<?php /** End Second Header **/ endif; ?>
+		<?php /** Begin Second Menu**/ ?>
+		<div id="rt-secondmenu">
+			<nav class="nav-area">
+      			<div class="rt-container">
+        			<div id="nav">
+        				<?php if ($gantry->countModules('secondmenu')) : ?>
+        				<?php echo $gantry->displayModules('secondmenu','standard','standard'); ?>
+        				<?php endif; ?>
+        			</div>
+      			</div>
+    		</nav>	
+			<div class="clear"></div>
+		</div>
+		<?php /** End Second Menu **/ ?>
 	</header>
 	<?php /** End Top Surround **/ endif; ?>
 
@@ -109,10 +133,16 @@ $gpreset = str_replace(' ','',strtolower($gantry->get('name')));
 	
 	<?php /** Begin Footer **/ if ($gantry->countModules('footer')) : ?>
 	<div id="rt-footer">
-		<div class="rt-container">
-			<?php echo $gantry->displayModules('footer','standard','standard'); ?>
-			<div class="clear"></div>
-		</div>
+	<br />    
+        <footer id="footer">
+          	<section class="logos-area">
+          		<div class="rt-container">
+					<?php echo $gantry->displayModules('footer','standard','standard'); ?>
+					<div class="clear"></div>
+				</div>
+			</section>
+            <p style="color:#000000;float:right;">Logiciel <em><a target="_blank" title="Your open source candidatures management" href="http://www.emundus.fr">eMundus®</a></em></p>
+        </footer>
 	</div>		
 	<?php /** End Footer **/ endif; ?>
 
