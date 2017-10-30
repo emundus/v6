@@ -350,7 +350,7 @@ if ($locallang == "fr-FR") {
 </form>
 
 <script src="media/com_emundus/js/jquery.cookie.js" type="text/javascript"></script>
-<script src="media/com_emundus/lib/bootstrap-336/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="media/jui/js/bootstrap.min.js" type="text/javascript"></script>
 <script type="text/javascript">
     jQuery(document).ready(function() {
         var tabsidshow = jQuery.cookie("tabactive");
