@@ -28,18 +28,18 @@ $session = JFactory::getSession();
 
 if (isset($_GET['order_date']) && !empty($_GET['order_date']))
     $session->set('order_date', $_GET['order_date']);
-else if(empty($order))
+elseif (empty($order))
     $session->set('order_date', $mod_em_campaign_order);
 
 if (isset($_GET['order_time']) && !empty($_GET['order_time']))
     $session->set('order_time', $_GET['order_time']);
-else if(empty($order))
+elseif (empty($order))
     $session->set('order_time', $mod_em_campaign_order_type);
 
 $order = $session->get('order_date');
 $ordertime = $session->get('order_time');
 
-if(isset($_POST['searchword']) && !empty($_POST['searchword'])) {
+if (isset($_POST['searchword']) && !empty($_POST['searchword'])) {
     $searchword=$_POST['searchword'];
     $condition = "AND CONCAT(pr.code,ca.label,pr.label,ca.description,ca.short_description) LIKE '%$searchword%'";
 }
@@ -47,13 +47,13 @@ if(isset($_POST['searchword']) && !empty($_POST['searchword'])) {
 
 switch ($mod_em_campaign_groupby) {
     case 'month':
-        if ($order=="start_date")
+        if ($order == "start_date")
             $condition .= ' ORDER BY start_date';
         else
             $condition .= ' ORDER BY end_date';
         break;
     case 'program':
-        if ($order=="start_date")
+        if ($order == "start_date")
             $condition .= ' ORDER BY training, start_date';
         else
             $condition .= ' ORDER BY training, end_date';
@@ -82,22 +82,21 @@ switch ($ordertime) {
 
 $helper = new modEmundusCampaignHelper;
 
-$currentCampaign = $helper->getCurrent($condition);
-$pastCampaign = $helper->getPast($condition);
-$futurCampaign = $helper->getFutur($condition);
-$allCampaign = $helper->getProgram($condition);
+$currentCampaign    = $helper->getCurrent($condition);
+$pastCampaign       = $helper->getPast($condition);
+$futurCampaign      = $helper->getFutur($condition);
+$allCampaign        = $helper->getProgram($condition);
 $now = $helper->now;
 
 jimport('joomla.html.pagination');
 $session = JFactory::getSession();
 
-$paginationCurrent = new JPagination($helper->getTotalCurrent(), $session->get('limitstartCurrent'), $session->get('limit'));
-$paginationPast = new JPagination($helper->getTotalPast(), $session->get('limitstartPast'), $session->get('limit'));
-$paginationFutur = new JPagination($helper->getTotalFutur(), $session->get('limitstartFutur'), $session->get('limit'));
-$paginationTotal = new JPagination($helper->getTotal(), $session->get('limitstart'), $session->get('limit'));
+$paginationCurrent  = new JPagination($helper->getTotalCurrent(), $session->get('limitstartCurrent'), $session->get('limit'));
+$paginationPast     = new JPagination($helper->getTotalPast(), $session->get('limitstartPast'), $session->get('limit'));
+$paginationFutur    = new JPagination($helper->getTotalFutur(), $session->get('limitstartFutur'), $session->get('limit'));
+$paginationTotal    = new JPagination($helper->getTotal(), $session->get('limitstart'), $session->get('limit'));
 
 
-
-require(JModuleHelper::getLayoutPath('mod_emundus_campaign'));
+require(JModuleHelper::getLayoutPath('mod_emundus_campaign', $params->get('mod_em_campaign_layout')));
 
 ?>
