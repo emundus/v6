@@ -28,7 +28,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 				<thead>
 				<tr>
 					<?php foreach($this->datas[0] as $kl => $v): ?>
-						<th title="<?php echo JText::_($v)?>" id="<?php echo $kl?>" >
+						<th title="<?php echo JText::_(strip_tags($v))?>" id="<?php echo $kl?>" >
 							<p class="em-cell">
 								<?php if($kl == 'check'): ?>
 									<label for="em-check-all">
