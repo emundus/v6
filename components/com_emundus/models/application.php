@@ -463,9 +463,9 @@ class EmundusModelApplication extends JModelList
         $form .= '<br><hr><h3>';
         $title = explode('-', JText::_($table[0]->label));
         if (empty($title[1]))
-            $form .= $table[0]->label;
+            $form .= JText::_($table[0]->label);
         else
-            $form .= $title[1];
+            $form .= JText::_($title[1]);
 
         if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $table[0]->db_table_name != "#__emundus_training") {
 
@@ -791,9 +791,9 @@ class EmundusModelApplication extends JModelList
                 $forms .= '<br><hr><h3>';
                 $title = explode('-', JText::_($itemt->label));
                 if (empty($title[1]))
-                    $forms .= $itemt->label;
+                    $forms .= JText::_($itemt->label);
                 else
-                    $forms .= $title[1];
+                    $forms .= JText::_($title[1]);
 
                 if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != "#__emundus_training")
                 {
@@ -1080,7 +1080,7 @@ class EmundusModelApplication extends JModelList
                 if (count($groupes) > 0) {
                     $forms .= '<br><br>';
                     $forms .= '<hr><h3>';
-                    $title = explode('-', $itemt->label);
+                    $title = explode('-', JText::_($itemt->label));
                     if (empty($title[1]))
                         $forms .= JText::_($itemt->label);
                     else
