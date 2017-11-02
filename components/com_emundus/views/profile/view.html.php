@@ -37,11 +37,14 @@ class EmundusViewProfile extends JViewLegacy
 		if ( !EmundusHelperAccess::asAdministratorAccessLevel($this->_user->id) && !EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) ){
 			die(JText::_('ACCESS_DENIED'));
 		}
-		$p = JRequest::getVar('rowid', $default=null, $hash= 'GET', $type= 'none', $mask=0);
-		$model = $this->getModel();
+		$app    = JFactory::getApplication();
+		$p 		= JRequest::getVar('rowid', $default=null, $hash= 'GET', $type= 'none', $mask=0);
+		$model 	= $this->getModel();
 		$profile = $model->getProfile($p);
-		if($p < 7 && $p > 9) {
-			die("This is not an applicant profile.");
+
+		if($profile->published !=1) {
+			JError::raiseError(500, JText::_('CANNOT_SETUP_ATTACHMENTS_TO_NON_APPLICANT_USERS'));
+			$app->redirect('index.php?option=com_fabrik&view=list&listid=67');
 		}
 		$attachments = $model->getAttachments($p);
 		$forms = $model->getForms($p);
