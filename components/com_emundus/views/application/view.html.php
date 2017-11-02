@@ -6,23 +6,23 @@
  * @license    GNU/GPL
  * @author     Benjamin Rivalland
 */
- 
+
 // no direct access
- 
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
- 
+
 jimport( 'joomla.application.component.view');
- 
+
 /**
  * HTML View class for the Emundus Component
  *
  * @package    Emundus
  */
- 
+
 class EmundusViewApplication extends JViewLegacy{
 	var $_user = null;
 	var $_db = null;
-	
+
 	function __construct($config = array()){
 		// require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
@@ -31,17 +31,17 @@ class EmundusViewApplication extends JViewLegacy{
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
-		
+
 		$this->_user = JFactory::getSession()->get('emundusUser');
 		$this->_db = JFactory::getDBO();
-		
+
 		parent::__construct($config);
 	}
-    function display($tpl = null){	
+    function display($tpl = null){
 
     	if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 			die( JText::_('RESTRICTED_ACCESS') );
-	
+
         $document = JFactory::getDocument();
         $document->addStyleSheet("media/com_emundus/css/emundus.css" );
         $document->addStyleSheet("media/com_emundus/css/emundus_application.css" );
@@ -55,8 +55,8 @@ class EmundusViewApplication extends JViewLegacy{
         $menu = JSite::getMenu();
 		$current_menu  = $menu->getActive();
 		$access=!empty($current_menu)?$current_menu->access : 0;
-		
-		if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) 
+
+		if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id))
 			die("ACCESS_DENIED");
 
 		$menu_params = $menu->getParams($current_menu->id);
@@ -81,13 +81,13 @@ class EmundusViewApplication extends JViewLegacy{
 		$infos = array('#__emundus_uploads.filename', '#__users.email', '#__emundus_setup_profiles.label as profile', '#__emundus_personal_detail.gender', '#__emundus_personal_detail.birth_date as birthdate', '#__emundus_users.profile as pid');
 		$userInformations = $application->getApplicantInfos($aid, $infos);
 		$this->assignRef('userInformations', $userInformations);
-		
+
 		$userCampaigns = $application->getUserCampaigns($aid);
 		$this->assignRef('userCampaigns', $userCampaigns);
-		
+
 		$userAttachments = $application->getUserAttachments($aid);
 		$this->assignRef('userAttachments', $userAttachments);
-		
+
 		$userComments = $application->getUsersComments($aid);
 		$this->assignRef('userComments', $userComments);
 
@@ -102,7 +102,7 @@ class EmundusViewApplication extends JViewLegacy{
 
 		$forms = $application->getforms($aid);
 		$this->assignRef('forms', $forms);
-		
+
 		$email = $application->getEmail($aid);
 		$this->assignRef('email', $email);
 
@@ -118,7 +118,7 @@ class EmundusViewApplication extends JViewLegacy{
 	      'email_applicant' => $student->email,
 	      'campaign' => "",
 	      'campaign_id' => $campaign_id,
-	      'evaluation_id' => $rowid, 
+	      'evaluation_id' => $rowid,
 	      'final_grade' => "",
 	      'date_result_sent' => "",
 	      'result' => "",

@@ -85,14 +85,14 @@ JFactory::getSession()->set('application_layout', 'comment');
 					</div>
 					<div class="modal-body">
 						<form>
-							<input type="hidden" id="comment-id">
+							<input type="hidden" id="edit-comment-id">
 						<div class="form-group">
-							<label for="comment-title" class="control-label"><?php echo JText::_('COMMENT_REASON'); ?></label>
-							<input type="text" class="form-control" id="comment-title">
+							<label for="edit-comment-title" class="control-label"><?php echo JText::_('COMMENT_REASON'); ?></label>
+							<input type="text" class="form-control" id="edit-comment-title">
 						</div>
 						<div class="form-group">
-							<label for="comment-text" class="control-label"><?php echo JText::_('COMMENT_TEXT'); ?></label>
-							<textarea class="form-control" id="comment-text"></textarea>
+							<label for="edit-comment-text" class="control-label"><?php echo JText::_('COMMENT_TEXT'); ?></label>
+							<textarea class="form-control" id="edit-comment-text"></textarea>
 						</div>
 						</form>
 					</div>
@@ -133,7 +133,7 @@ $(document).on('click', '.comments .btn.btn-danger.btn-xs', function(e)
 
 	                    $('.comments li#'+id).empty();
 	                    $('.comments li#'+id).append(result.msg);
-		                var nbCom = parseInt($('.panel-default.widget .panel-heading .label.label-info').text().trim())
+		                var nbCom = parseInt($('.panel-default.widget .panel-heading .label.label-info').text().trim());
 		                nbCom--;
 		                $('.panel-default.widget .panel-heading .label.label-info').html(nbCom);
 	                }
@@ -146,7 +146,7 @@ $(document).on('click', '.comments .btn.btn-danger.btn-xs', function(e)
 	            {
 	                console.log(jqXHR.responseText);
 	            }
-	           });
+		});
 	}
 });
 
@@ -157,7 +157,7 @@ var textArea = '<hr><div id="form">' +
 
 $('#form').append(textArea);
 
-$(document).off('click', '#form .btn.btn-success');
+//$(document).off('click', '#form .btn.btn-success');
 $(document).on('click', '#form .btn.btn-success', function(f)
 {
 	if (f.handle === true) {
@@ -203,7 +203,7 @@ $(document).on('click', '#form .btn.btn-success', function(f)
 						'</div>'+
 					'</li>';
 					$('.comments .list-group').append(li);
-					var nbCom = parseInt($('.panel-default.widget .panel-heading .label.label-info').text().trim())
+					var nbCom = parseInt($('.panel-default.widget .panel-heading .label.label-info').text().trim());
 					nbCom++;
 					$('.panel-default .panel-heading .label.label-info').html(nbCom);
 				}
@@ -229,19 +229,19 @@ $('#edit-comment').on('show.bs.modal', function (event) {
   		title = button.data('cname'),
   		comment = button.data('ctext');
 
-  	$('#editCommentLabel').text(<?php echo JText::_('EDITING_COMMENT'); ?> ' + title);
-  	$('#comment-id').val(id);
-  	$('#comment-title').val(title);
-	$('#comment-text').val(comment);
+  	$('#editCommentLabel').text('<?php echo JText::_('EDITING_COMMENT'); ?>' + title);
+  	$('#edit-comment-id').val(id);
+  	$('#edit-comment-title').val(title);
+	$('#edit-comment-text').val(comment);
 
 });
 
 
 $(document).on('click', '#editCommentBtn', function editComment() {
 
-	var id 		= $('#comment-id').val(),
- 		title 	= $('#comment-title').val(),
-		text 	= $('#comment-text').val();
+	var id 		= $('#edit-comment-id').val(),
+ 		title 	= $('#edit-comment-title').val(),
+		text 	= $('#edit-comment-text').val();
 
 	$.ajax({
 		type:'POST',
@@ -253,10 +253,16 @@ $(document).on('click', '#editCommentBtn', function editComment() {
 			text: text
 		}),
 		success: function(result) {
-			if (result.status)
-				location.reload(true);
-			else
-				alert(result.msg);
+			if (result.status) {
+				$('#edit-comment .close').click();
+				$('.comments li#'+id).empty();
+				$('.comments li#'+id).append('<div class="row"><div class="col-xs-10 col-md-11"><div><a href="#">'+title+'</a></div>'+
+				'<div class="comment-text">'+text+'</div>'+
+				'<div class="action"><button type="button" class="btn btn-danger btn-xs" title="Delete"><span class="glyphicon glyphicon-trash"></span></button></div>'+
+				'<div class="action"><button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#edit-comment" title="Edit" data-cid="'+id+'" data-cname="'+title+'" data-ctext="'+text+'"> <span class="glyphicon glyphicon-edit"></span></button></div></div></div>');
+			} else {
+				$('#form').append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
+			}
 		},
 		error: function (jqXHR, textStatus, errorThrown) {
 			console.log(jqXHR.responseText);
