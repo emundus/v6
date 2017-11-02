@@ -199,6 +199,11 @@ $(document).on('click', '#form .btn.btn-success', function(f)
 										'<span class="glyphicon glyphicon-trash"></span>'+
 									'</button>'+
 								'</div>'+
+								'<div class="action">'+
+									'<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#edit-comment" title="<?php echo JText::_('EDIT');?>" data-cid="'+result.id+'" data-cname="'+title+'" data-ctext="'+comment+'">'+
+                                        '<span class="glyphicon glyphicon-edit"></span>'+
+									'</button>'+
+								'</div>'+
 							'</div>'+
 						'</div>'+
 					'</li>';
