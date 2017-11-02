@@ -1,12 +1,13 @@
 <?php
-require_once __DIR__ .DS.'php-google-api-client'.DS.'vendor'.DS.'autoload.php';
+require_once JPATH_LIBRARIES.DS.'php-google-api-client'.DS.'vendor'.DS.'autoload.php';
+
 JLoader::import('components.com_dpcalendar.libraries.dpcalendar.syncplugin', JPATH_ADMINISTRATOR);
 JPluginHelper::importPlugin( 'dpcalendar' );
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 define('APPLICATION_NAME', 'Google Calendar API PHP Emundus');
-define('CREDENTIALS_PATH', __DIR__ .DS.'php-google-api-client'.DS.'credentials'.DS.'calendar-php-quickstart.json');
-define('CLIENT_SECRET_PATH', __DIR__ .DS.'php-google-api-client'.DS.'certificates'.DS.'client_secret.json');
+define('CREDENTIALS_PATH', JPATH_LIBRARIES.DS.'php-google-api-client'.DS.'credentials'.DS.'calendar-php-quickstart.json');
+define('CLIENT_SECRET_PATH', JPATH_LIBRARIES.DS.'php-google-api-client'.DS.'certificates'.DS.'client_secret.json');
 
 // If modifying these scopes, delete your previously saved credentials
 // at __DIR__ . '/credentials/calendar-php-quickstart.json
