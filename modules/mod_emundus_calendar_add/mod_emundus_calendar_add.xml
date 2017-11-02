@@ -18,12 +18,6 @@
 		</files>
 		<config>
 			<fields name="params">
-				<fieldset name="basic" label="Options">
-					<field name="clientId" type="text" required="false" label="MOD_EM_CALENDAR_ADD_CLIENTID_GOOGLE_LABEL" description="MOD_EM_CALENDAR_ADD_CLIENTID_GOOGLE_DESC" class="inputbox" default="" ForcedDisplay="value"/>
-					<field name="clientSecret" type="text" required="false" label="MOD_EM_CALENDAR_ADD_CLIENTSECRET_GOOGLE_LABEL" description="MOD_EM_CALENDAR_ADD_CLIENTSECRET_GOOGLE_DESC" class="inputbox" default=""/>
-					<field name="refreshToken" type="text" required="false" label="MOD_EM_CALENDAR_ADD_REFRESHTOKEN_GOOGLE_LABEL" description="MOD_EM_CALENDAR_ADD_REFRESHTOKEN_GOOGLE_DESC" class="inputbox" default=""/>
-					<field name="parentCalId" type="text" required="false" label="MOD_EMUNDUS_CALENDAR_ADD_PARENT_CAL_LABEL" description="MOD_EMUNDUS_CALENDAR_ADD_PARENT_CAL_DESC" class="inputbox" default="" />
-				</fieldset>
 				<fieldset name="advanced">
 					<field name="layout" type="modulelayout" label="JFIELD_ALT_LAYOUT_LABEL" description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
 				</fieldset>
