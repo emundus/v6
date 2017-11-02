@@ -10,8 +10,8 @@ defined( '_JEXEC' ) or die();
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  * See COPYRIGHT.php for copyright notices and details.
- * @description Envoi automatique d'un email à l'étudiant lors d'un upload de document demandé par consortium à une tierce personne 
- *						(Banque ou Professeur Référent). 
+ * @description Envoi automatique d'un email à l'étudiant lors d'un upload de document demandé par consortium à une tierce personne
+ *						(Banque ou Professeur Référent).
  */
 /*$this->formModel->_arErrors['jos_emundus_uploads___filename'][] = 'woops!';
 return false;
@@ -34,7 +34,7 @@ $fnum 	 		= $jinput->get('jos_emundus_uploads___fnum');
 $references_id = array(4, 6, 21, 19);
 
 
-$db->setQuery('SELECT student_id, attachment_id, keyid FROM #__emundus_files_request WHERE keyid="'.mysql_real_escape_string($key_id).'"');
+$db->setQuery('SELECT student_id, attachment_id, keyid FROM #__emundus_files_request WHERE keyid='.$db->Quote($key_id));
 $file_request=$db->loadObject();
 
 if($files['jos_emundus_uploads___filename']['size'] == 0){
@@ -85,10 +85,10 @@ if(!isset($attachement_params->displayed) || $attachement_params->displayed === 
 $nom .= $attachement_params->lbl.rand().'.'.end(explode('.', $upload->filename));
 
 if(!file_exists(EMUNDUS_PATH_ABS.$user_id)) {
-	if (!mkdir(EMUNDUS_PATH_ABS.$user_id, 0777, true) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user_id.DS.'index.html')) 
+	if (!mkdir(EMUNDUS_PATH_ABS.$user_id, 0777, true) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user_id.DS.'index.html'))
 			die(JError::raiseWarning(500, 'ERROR_CANNOT_CREATE_USER_FILE'));
 }
-	
+
 
 if (!rename(JPATH_SITE.$upload->filename, EMUNDUS_PATH_ABS.$user_id.DS.$nom))
 	die("ERROR_MOVING_UPLOAD_FILE");
@@ -128,8 +128,8 @@ $query = 'SELECT id, subject, emailfrom, name, message
 				WHERE lbl like '.$db->Quote($email_tmpl);
 $db->setQuery( $query );
 $obj=$db->loadObject();
-	
-	
+
+
 
 $patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[DOCUMENT_TYPE\]/','/\n/');
 $replacements = array ($student->id, $student->name, $student->email, $attachement_params->value, '<br />');
@@ -169,7 +169,7 @@ if ( $send !== true ) {
     $db->setQuery( $sql );
     $db->execute();
 }
-	
+
 //
 //	// Envoie d'une copie au user, le CC ou BCC n'est pas utilisé car cela bug avec les serveurs de Paris1
 //	// Récupération des données du mail de notification
@@ -178,9 +178,9 @@ if ( $send !== true ) {
 //					WHERE lbl="attachment_notification"';
 //	$db->setQuery( $query );
 //	$notification=$db->loadObject();
-//	
+//
 //	// Envoie d'une copie au user, le CC ou BCC n'est pas utilisé car cela bug avec les serveurs de Paris1
-//	
+//
 //	// Récupération des emails des Coordinateurs
 //	$query = 'SELECT id, email
 //				FROM #__users
@@ -203,7 +203,7 @@ if ( $send !== true ) {
 //	$replytoname = $notification->name;
 //	// Envoyer un mail au coordinateur du consortium
 //	// JUtility::sendMail($from, $fromname, $cc, $subject, $body, $mode, null, null, $attachment, $replyto, $replytoname);
-//	// $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
+//	// $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 //				// VALUES ";
 //	// foreach ( $cc as $row ) {
 //		// $sql .= "('62', '".$row->id."', '".$subject."', '".$body."', NOW()),";
@@ -211,7 +211,7 @@ if ( $send !== true ) {
 //	// $sql = substr($sql, 0, -1)
 //	// $db->setQuery( $sql );
 //	// $db->query();
-//	
+//
 
 	header('Location: '.$baseurl.'index.php?option=com_content&view=article&id=18');
 	exit();

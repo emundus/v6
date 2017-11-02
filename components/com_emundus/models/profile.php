@@ -5,13 +5,13 @@
  * @copyright   Copyright (C) 2015 emundus.fr. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
- 
+
 // No direct access
- 
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
- 
+
 jimport( 'joomla.application.component.model' );
- 
+
 class EmundusModelProfile extends JModelList
 {
 	var $_db = null;
@@ -33,7 +33,7 @@ class EmundusModelProfile extends JModelList
 	function getProfile($p)
 	{
 		$query = 'SELECT * FROM #__emundus_setup_profiles WHERE id='.$p;
-		
+
 		try
         {
             $this->_db->setQuery( $query );
@@ -52,9 +52,9 @@ class EmundusModelProfile extends JModelList
     public function getApplicantsProfiles()
     {
         $db = JFactory::getDBO();
-        $query = 'SELECT * 
+        $query = 'SELECT *
         			FROM #__emundus_setup_profiles esp
-                 	WHERE esp.published=1  AND status=1 
+                 	WHERE esp.published=1  AND status=1
                   	ORDER BY esp.label';
         $db->setQuery($query);
         return $db->loadObjectList();
@@ -62,12 +62,12 @@ class EmundusModelProfile extends JModelList
 
 	function getProfileByApplicant($aid)
 	{
-		$query = 'SELECT eu.firstname, eu.lastname, eu.profile, eu.university_id, 
+		$query = 'SELECT eu.firstname, eu.lastname, eu.profile, eu.university_id,
 							esp.label AS profile_label, esp.menutype, esp.published
-						FROM #__emundus_users AS eu 
-						LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile 
+						FROM #__emundus_users AS eu
+						LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile
 						WHERE eu.user_id = '.$aid;
-		
+
 		try
         {
             $this->_db->setQuery( $query );
@@ -82,10 +82,10 @@ class EmundusModelProfile extends JModelList
 
 	function getCurrentProfile($aid) {
 		$query = 'SELECT eu.*,  esp.*
-						FROM #__emundus_users AS eu 
-						LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile 
+						FROM #__emundus_users AS eu
+						LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile
 						WHERE eu.user_id = '.$aid;
-		
+
 		try
         {
             $this->_db->setQuery( $query );
@@ -97,15 +97,15 @@ class EmundusModelProfile extends JModelList
             JError::raiseError(500, $e->getMessage());
         }
 	}
-	
+
 	function getAttachments($p)
 	{
-		$query = 'SELECT attachment.*, profile.id AS selected, profile.displayed, profile.mandatory, profile.bank_needed 
+		$query = 'SELECT attachment.*, profile.id AS selected, profile.displayed, profile.mandatory, profile.bank_needed
 					FROM #__emundus_setup_attachments AS attachment
-					LEFT JOIN #__emundus_setup_attachment_profiles AS profile ON profile.attachment_id = attachment.id AND profile.profile_id='.$p.' 
-					WHERE attachment.published=1 
+					LEFT JOIN #__emundus_setup_attachment_profiles AS profile ON profile.attachment_id = attachment.id AND profile.profile_id='.$p.'
+					WHERE attachment.published=1
 					ORDER BY attachment.ordering';
-		
+
 		try
         {
             $this->_db->setQuery( $query );
@@ -117,14 +117,14 @@ class EmundusModelProfile extends JModelList
             JError::raiseError(500, $e->getMessage());
         }
 	}
-	
+
 	function getForms($p)
 	{
-		$query = 'SELECT fbtable.id, fbtable.label, menu.id>0 AS selected, menu.lft AS `order` FROM #__fabrik_lists AS fbtable 
+		$query = 'SELECT fbtable.id, fbtable.label, menu.id>0 AS selected, menu.lft AS `order` FROM #__fabrik_lists AS fbtable
 					LEFT JOIN #__menu AS menu ON fbtable.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)
 					AND menu.menutype=(SELECT profile.menutype FROM #__emundus_setup_profiles AS profile WHERE profile.id = '.$p.')
 					WHERE fbtable.created_by_alias = "form" ORDER BY selected DESC, menu.lft ASC, fbtable.label ASC';
-		
+
 		try
         {
             $this->_db->setQuery( $query );
@@ -136,10 +136,10 @@ class EmundusModelProfile extends JModelList
             JError::raiseError(500, $e->getMessage());
         }
 	}
-	
+
 	function isProfileUserSet($uid) {
 		$query = 'SELECT count(user_id) as cpt, profile FROM #__emundus_users WHERE user_id = '.$uid. ' GROUP BY user_id';
-		
+
 		try
         {
             $this->_db->setQuery( $query );
@@ -156,10 +156,10 @@ class EmundusModelProfile extends JModelList
 
 	function updateProfile($uid, $campaign) {
 		$query = 'UPDATE #__emundus_users SET profile='.$campaign->profile_id.', schoolyear="'.$campaign->year.'" WHERE user_id='.$uid;
-		
+
 		try
         {
-            $this->_db->setQuery( $query ); 
+            $this->_db->setQuery( $query );
 			return $this->_db->execute();
         }
         catch(Exception $e)
@@ -171,7 +171,7 @@ class EmundusModelProfile extends JModelList
 
 	function getCurrentCampaignByApplicant($uid) {
 		$query = 'SELECT campaign_id FROM #__emundus_campaign_candidature WHERE applicant_id = '.$uid. ' ORDER BY date_time DESC';
-		
+
 		try
         {
             $this->_db->setQuery( $query );
@@ -205,7 +205,7 @@ class EmundusModelProfile extends JModelList
 
 	function getCurrentCompleteCampaignByApplicant($uid) {
 		$query = 'SELECT campaign_id FROM #__emundus_campaign_candidature WHERE submitted=1 AND applicant_id = '.$uid. ' ORDER BY date_time DESC';
-		
+
 		try
         {
 			$this->_db->setQuery( $query );
@@ -222,11 +222,11 @@ class EmundusModelProfile extends JModelList
 
 	function getCurrentCampaignInfoByApplicant($uid) {
 		$query = 'SELECT esc.*, ecc.date_time, ecc.submitted, ecc.date_submitted, ecc.fnum, esc.profile_id, esp.label, esp.menutype, ecc.submitted, ecc.status
-					FROM #__emundus_campaign_candidature AS ecc 
+					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON ecc.campaign_id = esc.id
 					LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = esc.profile_id
 					WHERE ecc.applicant_id = '.$uid. ' ORDER BY ecc.date_time DESC';
-		
+
 		try
         {
 			$this->_db->setQuery( $query );
@@ -243,11 +243,11 @@ class EmundusModelProfile extends JModelList
 
 	function getCampaignInfoByFnum($fnum) {
 		$query = 'SELECT esc.*, ecc.date_time, ecc.submitted, ecc.date_submitted, ecc.fnum, esc.profile_id, esp.label, esp.menutype, ecc.submitted, ecc.status
-					FROM #__emundus_campaign_candidature AS ecc 
+					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON ecc.campaign_id = esc.id
 					LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = esc.profile_id
 					WHERE ecc.fnum LIKE '.$fnum. ' ORDER BY ecc.date_time DESC';
-		
+
 		try {
 
 			$this->_db->setQuery( $query );
@@ -263,7 +263,7 @@ class EmundusModelProfile extends JModelList
 
 	function getCampaignById($id) {
 		$query = 'SELECT * FROM  #__emundus_setup_campaigns AS esc WHERE id='.$id;
-		
+
 		try
         {
 			$this->_db->setQuery( $query );
@@ -279,11 +279,11 @@ class EmundusModelProfile extends JModelList
 	}
 
 	function getProfileByCampaign($id) {
-		$query = 'SELECT esp.*, esc.* 
-					FROM  #__emundus_setup_profiles AS esp 
+		$query = 'SELECT esp.*, esc.*
+					FROM  #__emundus_setup_profiles AS esp
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.profile_id = esp.id
 					WHERE esc.id='.$id;
-		
+
 		try
         {
 			$this->_db->setQuery( $query );
@@ -305,11 +305,11 @@ class EmundusModelProfile extends JModelList
 	function getProfileIDByCourse($code = array()) {
 		if (count($code)>0) {
 			$query = 'SELECT DISTINCT(esc.profile_id)
-						FROM  #__emundus_setup_campaigns AS esc 
-						WHERE esc.training IN ("'.implode('","', $code).'")';		
+						FROM  #__emundus_setup_campaigns AS esc
+						WHERE esc.training IN ("'.implode('","', $code).'")';
 			try
 	        {
-	            $this->_db->setQuery( $query ); 
+	            $this->_db->setQuery( $query );
 				$res = $this->_db->loadColumn();
 	        }
 	        catch(Exception $e)
@@ -317,10 +317,10 @@ class EmundusModelProfile extends JModelList
 	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
             	JError::raiseError(500, $e->getMessage());
 	        }
-		} 
-		else 
+		}
+		else
 			$res = $code;
-		
+
 		return $res;
 	}
 
@@ -338,7 +338,7 @@ class EmundusModelProfile extends JModelList
 
             $query = 'SELECT DISTINCT(esc.profile_id)
 						FROM  #__emundus_setup_campaigns AS esc '.$where;
-           
+
             try
 	        {
 	            $this->_db->setQuery( $query );
@@ -352,17 +352,17 @@ class EmundusModelProfile extends JModelList
         }
         else
             $res = false;
-        
+
         return $res;
     }
 
 	function getFnumDetails($fnum){
 		$query = 'SELECT ecc.*, esc.*, ess.*, epd.profile as profile_id_form
-					FROM #__emundus_campaign_candidature AS ecc 
-					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id 
+					FROM #__emundus_campaign_candidature AS ecc
+					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
 					LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
 					LEFT JOIN #__emundus_personal_detail as epd on epd.fnum = ecc.fnum
-					WHERE ecc.fnum like '.$this->_db->Quote($fnum); 
+					WHERE ecc.fnum like '.$this->_db->Quote($fnum);
 		try
         {
             $this->_db->setQuery( $query );
@@ -371,11 +371,11 @@ class EmundusModelProfile extends JModelList
         catch(Exception $e)
         {
             $query = 'SELECT ecc.*, esc.*, ess.*
-					FROM #__emundus_campaign_candidature AS ecc 
-					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id 
+					FROM #__emundus_campaign_candidature AS ecc
+					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
 					LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
 					LEFT JOIN #__emundus_personal_detail as epd on epd.fnum = ecc.fnum
-					WHERE ecc.fnum like '.$this->_db->Quote($fnum); 
+					WHERE ecc.fnum like '.$this->_db->Quote($fnum);
 			try
 	        {
 	            $this->_db->setQuery( $query );
@@ -397,7 +397,7 @@ class EmundusModelProfile extends JModelList
 
 	function isApplicationDeclared($aid) {
 		$query = 'SELECT COUNT(*) FROM #__emundus_declaration WHERE user = '.$aid;
-		
+
 		try
         {
 			$this->_db->setQuery( $query );
@@ -425,8 +425,8 @@ class EmundusModelProfile extends JModelList
         $db = JFactory::getDBO();
 
         $query = 'SELECT ecc.*, esc.label, esc.start_date, esc.end_date, esc.training, esc.year, esc.profile_id
-                    FROM #__emundus_campaign_candidature as ecc 
-                    LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id 
+                    FROM #__emundus_campaign_candidature as ecc
+                    LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
                     WHERE ecc.published=1 AND ecc.applicant_id='.$aid;
         $query .= (!empty($submitted))?' AND ecc.submitted='.$submitted:'';
         $query .= (!empty($start_date))?' AND esc.start_date<='.$db->Quote($start_date):'';
@@ -464,7 +464,7 @@ class EmundusModelProfile extends JModelList
 		foreach ($session->get('user') as $key => $value) {
 			$emundusSession->{$key} = $value;
 		}
-		
+
 		$emundusSession->firstname 	= $profile["firstname"];
 		$emundusSession->lastname   = strtoupper($profile["lastname"]);
 		$emundusSession->emGroups   = array_keys($users->getUserGroups($current_user->id));
@@ -472,34 +472,34 @@ class EmundusModelProfile extends JModelList
 		if (EmundusHelperAccess::isApplicant($current_user->id)) {
 
 			// Get the current user profile
-			$profile = $this->getCurrentProfile($current_user->id);	
-			
+			$profile = $this->getCurrentProfile($current_user->id);
+
 			// If the profile number is 8 that means he has been admitted
 			// This means that regardless of his other applications he must be considered admitted
 			if ($profile['profile'] != 8) {
-			
+
 				$campaign = $this->getCurrentCampaignInfoByApplicant($current_user->id);
 
 				if (!empty($campaign))
 					$profile = $this->getProfileByCampaign($campaign["id"]);
-		
+
 			} else {
-			
+
 				$admissionInfo = $m_admission->getAdmissionInfo($current_user->id);
-				
+
 				if (!empty($admissionInfo)) {
 					$campaign = $this->getCampaignInfoByFnum($admissionInfo->fnum);
 					$profile = $this->getProfileByCampaign($campaign["id"]);
 				}
-			
+
 			}
 
 			if ((empty($campaign["id"]) || !isset($campaign["id"])) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
 				$app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
-			
+
 			// If the user is admitted then we fill the session with information about the admitted file
 			// regardeless of the current campaign
-			
+
 			$emundusSession->fnum               	= $campaign["fnum"];
 			$emundusSession->fnums                  = $this->getApplicantFnums($current_user->id, null, $profile["start_date"], $profile["end_date"]);
 			$emundusSession->campaign_id        	= $campaign["id"];
@@ -518,7 +518,7 @@ class EmundusModelProfile extends JModelList
 			$emundusSession->schoolyear             = $profile["year"];
 			$emundusSession->code                   = $profile["training"];
 			$emundusSession->campaign_name          = $profile["label"];
-		
+
 		} else {
 			$emundusSession->profile                = $profile["profile"];
 			$emundusSession->profile_label          = $profile["profile_label"];
@@ -526,7 +526,7 @@ class EmundusModelProfile extends JModelList
 			$emundusSession->university_id          = $profile["university_id"];
 			$emundusSession->applicant              = 0;
 		}
-		
+
 		$session->set('emundusUser', $emundusSession);
 
 		if (isset($admissionInfo))
@@ -539,7 +539,7 @@ class EmundusModelProfile extends JModelList
 	public function getEmundusUser($user_id) {
 		include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 		include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
-		
+
 		$users 			= new EmundusModelUsers;
 		$current_user 	= JFactory::getUser($user_id);
 		$profile 		= $this->getProfileByApplicant($current_user->id);
@@ -547,7 +547,7 @@ class EmundusModelProfile extends JModelList
 		foreach ($current_user as $key => $value) {
 			$emundus_user->{$key} = $value;
 		}
-		
+
 		$emundus_user->firstname  = $profile["firstname"];
 		$emundus_user->lastname   = strtoupper($profile["lastname"]);
 		$emundus_user->emGroups   = array_keys($users->getUserGroups($current_user->id));

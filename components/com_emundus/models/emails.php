@@ -37,7 +37,7 @@ class EmundusModelEmails extends JModelList
      */
     public function getEmail($lbl)
     {
-        $query = 'SELECT * FROM #__emundus_setup_emails AS se LEFT JOIN #__emundus_email_templates AS et ON et.id = se.email_tmpl WHERE se.lbl="'.mysql_real_escape_string($lbl).'"';
+        $query = 'SELECT * FROM #__emundus_setup_emails AS se LEFT JOIN #__emundus_email_templates AS et ON et.id = se.email_tmpl WHERE se.lbl='.$this->_db->Quote($lbl);
         $this->_db->setQuery( $query );
         return $this->_db->loadObject();
     }
@@ -49,7 +49,7 @@ class EmundusModelEmails extends JModelList
      */
     public function getEmailById($id)
     {
-        $query = 'SELECT * FROM #__emundus_setup_emails WHERE id='.mysql_real_escape_string($id);
+        $query = 'SELECT * FROM #__emundus_setup_emails WHERE id='.$this->_db->Quote($id);
         $this->_db->setQuery( $query );
         return $this->_db->loadObject();
     }
@@ -71,7 +71,7 @@ class EmundusModelEmails extends JModelList
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_profile_id as eser ON eser.parent_id=eset.id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_group_id as eserg ON eserg.parent_id=eset.id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_user_id as eseru ON eseru.parent_id=eset.id
-                  WHERE eset.step='.mysql_real_escape_string($step).' AND eset.to_applicant IN ('.$to_applicant.') AND esp.code IN ("'.implode('","', $code).'")';
+                  WHERE eset.step='.$this->_db->Quote($step).' AND eset.to_applicant IN ('.$this->_db->Quote($to_applicant).') AND esp.code IN ("'.implode('","', $code).'")';
         $this->_db->setQuery( $query );
         $triggers = $this->_db->loadObjectList();
 

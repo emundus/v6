@@ -840,7 +840,7 @@ class EmundusModelAdmission extends JModelList
 					case 'groups':
 						if (!empty($value)) {
 
-							$query['q'] .= ' and  (ge.group_id=' . mysql_real_escape_string($value) . ' OR ge.user_id IN (select user_id FROM #__emundus_groups WHERE group_id=' .mysql_real_escape_string($value) . ')) ';
+							$query['q'] .= ' and  (ge.group_id=' .$db->Quote($value). ' OR ge.user_id IN (select user_id FROM #__emundus_groups WHERE group_id=' .$db->Quote($value). ')) ';
 							if (!isset($query['group_eval'])) {
 
 								$query['group_eval'] = true;
@@ -854,9 +854,9 @@ class EmundusModelAdmission extends JModelList
 					case 'user':
 						if (!empty($value)) {
 
-							$query['q'] .= ' and (ge.user_id=' . mysql_real_escape_string($value) .
+							$query['q'] .= ' and (ge.user_id=' .$db->Quote($value).
 							          ' OR ge.group_id IN (select e.group_id FROM #__emundus_groups e WHERE e.user_id=' .
-							          mysql_real_escape_string($value) . '))';
+							          $db->Quote($value). '))';
 							if (!isset($query['group_eval'])) {
 
 								$query['group_eval'] = true;
@@ -950,14 +950,14 @@ class EmundusModelAdmission extends JModelList
 			if(filter_var($str, FILTER_VALIDATE_EMAIL) !== false) {
 
 				//the request is an email
-				$q['q'] .= 'u.email = "'.mysql_real_escape_string($str).'"';
+				$q['q'] .= 'u.email = "'.$str.'"';
 				if (!in_array('jos_users', $tableAlias))
 					$q['join'] .= ' left join #__users as u on u.id = c.applicant_id ';
 				$q['users'] = true;
 
 			} else {
 
-				$q['q'] .= ' (ue.lastname LIKE "%' . mysql_real_escape_string($str) . '%" OR ue.firstname LIKE "%' . mysql_real_escape_string($str) . '%" OR u.email LIKE "%' . mysql_real_escape_string($str) . '%" OR u.username LIKE "%' . mysql_real_escape_string($str) . '%" ) ';
+				$q['q'] .= ' (ue.lastname LIKE "%' .$str. '%" OR ue.firstname LIKE "%' .$str. '%" OR u.email LIKE "%' .$str . '%" OR u.username LIKE "%' .$str. '%" ) ';
 				if (!in_array('jos_users', $tableAlias))
 					$q['join'] .= ' left join #__users as u on u.id = c.applicant_id';
 				$q['join'] .= ' left join #__emundus_users as ue on ue.user_id = c.applicant_id ';

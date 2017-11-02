@@ -618,7 +618,7 @@ class EmundusModelFiles extends JModelLegacy
                     case 'groups':
                         if(!empty($value))
                         {
-                            $query['q'] .= ' and  (ge.group_id=' . mysql_real_escape_string($value) . ' OR ge.user_id IN (select user_id FROM #__emundus_groups WHERE group_id=' .mysql_real_escape_string($value) . ')) ';
+                            $query['q'] .= ' and  (ge.group_id=' . $db->Quote($value) . ' OR ge.user_id IN (select user_id FROM #__emundus_groups WHERE group_id=' .$db->Quote($value) . ')) ';
 
                             if(!isset($query['group_eval']))
                             {
@@ -632,9 +632,9 @@ class EmundusModelFiles extends JModelLegacy
                     case 'user':
                         if(!empty($value))
                         {
-                            $query['q'] .= ' and (ge.user_id=' . mysql_real_escape_string($value) .
+                            $query['q'] .= ' and (ge.user_id=' . $db->Quote($value) .
                                 ' OR ge.group_id IN (select e.group_id FROM #__emundus_groups e WHERE e.user_id=' .
-                                mysql_real_escape_string($value) . '))';
+                                $db->Quote($value) . '))';
                             if(!isset($query['group_eval']))
                             {
                                 $query['group_eval'] = true;

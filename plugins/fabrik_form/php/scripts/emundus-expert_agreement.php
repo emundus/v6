@@ -10,7 +10,7 @@ defined( '_JEXEC' ) or die();
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  * See COPYRIGHT.php for copyright notices and details.
- * @description gestion du document Confidentiality agreement et création automatique d'un compte d'accès au profil Expert pour l'évaluation. 
+ * @description gestion du document Confidentiality agreement et création automatique d'un compte d'accès au profil Expert pour l'évaluation.
  */
 /*$this->formModel->_arErrors['jos_emundus_uploads___filename'][] = 'woops!';
 return false;
@@ -35,8 +35,8 @@ $lastname 		= $jinput->get('jos_emundus_files_request___lastname');
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $formid = $eMConfig->get('expert_fabrikformid', '110');
 
-include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php'); 
-include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php'); 
+include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 
@@ -51,7 +51,7 @@ if (empty($email) || !isset($email)) {
 	die("NO_EMAIL_FOUND");
 }
 
-$db->setQuery('SELECT student_id, attachment_id, keyid FROM #__emundus_files_request WHERE keyid="'.mysql_real_escape_string($key_id).'"');
+$db->setQuery('SELECT student_id, attachment_id, keyid FROM #__emundus_files_request WHERE keyid='.$db->Quote($key_id));
 $file_request=$db->loadObject();
 
 if($user_id != $file_request->student_id || $attachment_id != $file_request->attachment_id) {
@@ -73,12 +73,12 @@ if(!isset($student)) {
 $query = 'SELECT profile FROM #__emundus_users WHERE user_id='.$user_id.'';
 $db->setQuery( $query );
 $profile=$db->loadResult();
-*/ 
+*/
 $profile = $m_profile->getFnumDetails($fnum);
 //die('data2:'.$profile.'-'.print_r($attachement_params, true).'-'.print_r($upload, true).'-'.$db->getErrorMsg());
  /*
 // 1. Récupération des informations sur l'étudiant et le fichier qui doit être chargé par la tierce personne
-$query = 'SELECT ap.displayed, attachment.lbl 
+$query = 'SELECT ap.displayed, attachment.lbl
 			FROM #__emundus_setup_attachments AS attachment
 			LEFT JOIN #__emundus_setup_attachment_profiles AS ap ON attachment.id = ap.attachment_id AND ap.profile_id='.$profile['profile_id'].'
 			WHERE attachment.id ='.$attachment_id.' ';
@@ -91,12 +91,12 @@ $query = 'SELECT id, filename FROM #__emundus_uploads WHERE attachment_id='.$att
 $db->setQuery( $query );
 $upload=$db->loadObject();
 $nom = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($student->name,ENT_NOQUOTES,'UTF-8'))));
-if(!isset($attachement_params->displayed) || $attachement_params->displayed === '0') 
+if(!isset($attachement_params->displayed) || $attachement_params->displayed === '0')
 	$nom.= "_locked";
 $nom .= $attachement_params->lbl.rand().'.'.end(explode('.', $upload->filename));
 
 if(!file_exists(EMUNDUS_PATH_ABS.$user_id)) {
-	if (!mkdir(EMUNDUS_PATH_ABS.$user_id, 0777, true) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user_id.DS.'index.html')) 
+	if (!mkdir(EMUNDUS_PATH_ABS.$user_id, 0777, true) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user_id.DS.'index.html'))
 			die(JError::raiseWarning(500, 'Unable to create user file'));
 }
 
@@ -128,7 +128,7 @@ if ($uid > 0) {
 // 2.0. Si oui : Récupération du user->id du compte existant + Action #2.1.1
 	$user = JFactory::getUser($uid);
 
-// 2.0.1 Si Expert déjà déclaré comme candidat : 
+// 2.0.1 Si Expert déjà déclaré comme candidat :
 	$query = 'SELECT count(id) FROM #__emundus_users_profiles WHERE user_id='.$user->id.' AND profile_id='.$profile['profile_id'];
 	$db->setQuery( $query );
 	$is_evaluator=$db->loadResult();
@@ -141,7 +141,7 @@ if ($uid > 0) {
 		/*$query = "INSERT INTO #__emundus_users_profiles_history (user_id, profile_id, var) VALUES (".$user->id.", ".$profile['profile_id'].", 'profile')";
 		$db->setQuery( $query );
 		$db->execute();*/
-	
+
 	// Modification du profil courant en profil Expert
 		$user->groups=$acl_aro_groups;
 
@@ -153,17 +153,17 @@ if ($uid > 0) {
 		 	JFactory::getApplication()->enqueueMessage(JText::_('CAN_NOT_SAVE_USER').'<BR />'.$user->getError(), 'error');
 		}
 
-		$query = "UPDATE #__emundus_users 
-					SET firstname=".$db->Quote(ucfirst($firstname)).", lastname=".$db->Quote(strtoupper($lastname)).", profile=".$profile['profile_id']." 
+		$query = "UPDATE #__emundus_users
+					SET firstname=".$db->Quote(ucfirst($firstname)).", lastname=".$db->Quote(strtoupper($lastname)).", profile=".$profile['profile_id']."
 					WHERE user_id=".$user->id;
 		$db->setQuery( $query );
 		$db->execute();
 	}
-	
+
 
 // 2.0.1 Si Expert déjà déclaré comme expert
-	// 2.1.1. Association de l'ID user Expert avec le candidat (#__emundus_groups_eval) 
-	$query = 'INSERT INTO `#__emundus_users_assoc` (`user_id`, `action_id`, `fnum`, `c`, `r`, `u`, `d`) 
+	// 2.1.1. Association de l'ID user Expert avec le candidat (#__emundus_groups_eval)
+	$query = 'INSERT INTO `#__emundus_users_assoc` (`user_id`, `action_id`, `fnum`, `c`, `r`, `u`, `d`)
 				VALUES  ('.$user->id.', 1, '.$db->Quote($fnum).', 0,1,0,0),
 						('.$user->id.', 4, '.$db->Quote($fnum).', 0,1,0,0),
 						('.$user->id.', 5, '.$db->Quote($fnum).', 1,1,1,0),
@@ -209,9 +209,9 @@ if ($uid > 0) {
 
 // 2.1.3. Commentaire sur le dossier du candidat : nouvel expert ayant accepté l'évaluation du dossier
 	$row = array(
-	'applicant_id'  => $student->id, 
-	'user_id' 		=> $user->id, 
-	'reason' 		=> JText::_( 'EXPERT_ACCEPT_TO_EVALUATE' ), 
+	'applicant_id'  => $student->id,
+	'user_id' 		=> $user->id,
+	'reason' 		=> JText::_( 'EXPERT_ACCEPT_TO_EVALUATE' ),
 	'comment_body'  => $user->name. ' ' .JText::_( 'ACCEPT_TO_EVALUATE' ),
 	'fnum'          => $fnum
 	);
@@ -241,18 +241,18 @@ if ($uid > 0) {
 	$user->registerDate	= date('Y-m-d H:i:s');
 	$user->lastvisitDate= "0000-00-00-00:00:00";
 	$user->block 		= 0;
-	
+
 	$other_param['firstname']=ucfirst($firstname);
 	$other_param['lastname']=strtoupper($lastname);
 	$other_param['profile']=$profile;
 	$other_param['univ_id']="";
 	$other_param['groups']="";
-	
+
 	$user->groups=$acl_aro_groups;
 
 	$usertype = $m_users->found_usertype($acl_aro_groups[0]);
 	$user->usertype=$usertype;
-		
+
 	$uid = $m_users->adduser($user, $other_param);
 
 	if (empty($uid) || !isset($uid) || (!mkdir(EMUNDUS_PATH_ABS.$user->id.DS, 0777, true) && !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html'))) {
@@ -261,8 +261,8 @@ if ($uid > 0) {
 		exit();
 	}
 
-// 2.1.1. Association de l'ID user Expert avec le candidat (#__emundus_groups_eval) 
-	$query = 'INSERT INTO `#__emundus_users_assoc` (`user_id`, `action_id`, `fnum`, `c`, `r`, `u`, `d`) 
+// 2.1.1. Association de l'ID user Expert avec le candidat (#__emundus_groups_eval)
+	$query = 'INSERT INTO `#__emundus_users_assoc` (`user_id`, `action_id`, `fnum`, `c`, `r`, `u`, `d`)
 				VALUES  ('.$user->id.', 1, '.$db->Quote($fnum).', 0,1,0,0),
 						('.$user->id.', 4, '.$db->Quote($fnum).', 0,1,0,0),
 						('.$user->id.', 5, '.$db->Quote($fnum).', 1,1,1,0),
@@ -308,9 +308,9 @@ if ($uid > 0) {
 
 // 2.1.3. Commentaire sur le dossier du candidat : nouvel expert ayant accepté l'évaluation du dossier
 	$row = array(
-	'applicant_id' 	=> $student->id, 
-	'user_id' 		=> $user->id, 
-	'reason' 		=> JText::_( 'EXPERT_ACCEPT_TO_EVALUATE' ), 
+	'applicant_id' 	=> $student->id,
+	'user_id' 		=> $user->id,
+	'reason' 		=> JText::_( 'EXPERT_ACCEPT_TO_EVALUATE' ),
 	'comment_body'  => $user->name. ' ' .JText::_( 'ACCEPT_TO_EVALUATE' ),
 	'fnum'          => $fnum
 	);
@@ -321,9 +321,9 @@ if ($uid > 0) {
     $logged = $m_users->plainLogin( array('username' => $user->username, 'password' => $password) );
 	JFactory::getApplication()->enqueueMessage(JText::_('USER_LOGGED'), 'message');
 }
-	
+
 
 	JFactory::getApplication()->enqueueMessage(JText::_('PLEASE_LOGIN'), 'message');
 	header('Location: '.$baseurl.'index.php?option=com_users&view=login');
-	exit(); 
+	exit();
 ?>

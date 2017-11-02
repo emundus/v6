@@ -15,28 +15,28 @@
                     return false;
 
             } catch (Exception $e) {
-                die($e->getMessage());  
+                die($e->getMessage());
             }
 
         }
 
 
         public function getEvents($user) {
-            
+
             $db = JFactory::getDbo();
             $offset = JFactory::getConfig()->get('offset');
-            
+
             $now = date("Y-m-d H:i:s");
-            
+
             try {
-                
-                $query = "SELECT id, title, start_date, description 
-                FROM #__dpcalendar_events 
+
+                $query = "SELECT id, title, start_date, description
+                FROM #__dpcalendar_events
                 WHERE metakey IS NULL
                 AND start_date >= ".$db->Quote($now)."
                 AND catid IN (
-                    SELECT GROUP_CONCAT(id) 
-                    FROM jos_categories 
+                    SELECT GROUP_CONCAT(id)
+                    FROM jos_categories
                     WHERE extension LIKE \"com_dpcalendar\"
                     AND params LIKE '%\"program\":\"".$user->code."\"%'
                     GROUP BY id
@@ -80,5 +80,5 @@
         }
 
     }
-    
+
 ?>
