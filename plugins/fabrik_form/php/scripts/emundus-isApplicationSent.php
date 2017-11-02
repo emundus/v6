@@ -25,6 +25,8 @@ JLog::addLogger(
 );
 
 $user = JFactory::getSession()->get('emundusUser');
+if (empty($user))
+	$user = JFactory::getUser();
 $mainframe = JFactory::getApplication();
 $jinput = $mainframe->input;
 
@@ -45,8 +47,8 @@ try {
 }
 
 $fnum = $jinput->get('rowid', null);
-$itemid = $jinput->get('Itemid'); 
-$reload = $jinput->get('r', 0); 
+$itemid = $jinput->get('Itemid');
+$reload = $jinput->get('r', 0);
 
 
 if (!EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
@@ -66,17 +68,17 @@ if (!EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
     }
 }
 
-if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){
+if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 	 $sid = $jinput->get('sid', null, 'ALNUM');
 //	$student = JUser::getInstance($sid);
 //	echo '<a href="index.php?option=com_emundus&view=application&sid='.$student_id.'"><h1>'.$student->name.'</h1></a>';
 	echo !empty($rowid)?'<h4 style="text-align:right">#'.$fnum.'</h4>':'';
 
 } else {
-	
+
 	if (empty($user->fnum) && !isset($user->fnum) && EmundusHelperAccess::isApplicant($user->id))
 		$mainframe->redirect("index.php?option=com_emundus&view=renew_application");
-	
+
 	if ($jinput->get('view') == 'form' && empty($fnum) && !isset($fnum)) {
 		// Si l'application Form a été envoyee par le candidat : affichage vue details
 		if($user->candidature_posted > 0 && $user->candidature_incomplete == 0 && $can_edit_until_deadline == 0) {
@@ -140,19 +142,19 @@ if (EmundusHelperAccess::isApplicant($user->id) && $copy_application_form == 1 &
 		            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 		            JLog::add($error, JLog::ERROR, 'com_emundus');
 		        }
-				
+
 				// get data and update current form
 				$groups = $formModel->getFormGroups(true);
 				$data	= array();
 				if (count($groups) > 0) {
 					foreach ($groups as $key => $group) {
-						$group_params = json_decode($group->gparams); 
+						$group_params = json_decode($group->gparams);
 						if ($group_params->repeat_group_button == 1) {
 							$data[$group->group_id]['repeat_group'] = $group_params->repeat_group_button;
 							$data[$group->group_id]['group_id'] = $group->group_id;
 							$data[$group->group_id]['element_name'][] = $group->name;
 							$data[$group->group_id]['table'] = $table->db_table_name.'_'.$group->group_id.'_repeat';
-						}		
+						}
 					}
 					if (count($data) > 0) {
 						foreach ($data as $key => $d) {
@@ -161,7 +163,7 @@ if (EmundusHelperAccess::isApplicant($user->id) && $copy_application_form == 1 &
 								$query = 'SELECT '.implode(',', $d['element_name']).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
 								$db->setQuery( $query );
 								$stored = $db->loadAssoc();
-								
+
 								if (count($stored) > 0) {
 									// update form data
 									unset($stored['id']);
@@ -195,15 +197,15 @@ if (EmundusHelperAccess::isApplicant($user->id) && $copy_application_form == 1 &
 				if (count($fnums) > 0) {
 					$previous_fnum = array_keys($fnums);
 					$query = 'SELECT eu.*, esa.nbmax
-								FROM #__emundus_uploads as eu 
+								FROM #__emundus_uploads as eu
 								LEFT JOIN #__emundus_setup_attachments as esa on esa.id=eu.attachment_id
 								LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id='.$user->profile.'
-								WHERE eu.user_id='.$user->id.' 
-								AND eu.fnum like '.$db->Quote($previous_fnum[0]).' 
+								WHERE eu.user_id='.$user->id.'
+								AND eu.fnum like '.$db->Quote($previous_fnum[0]).'
 								AND esap.duplicate=1';
 					$db->setQuery( $query );
 					$stored = $db->loadAssocList();
-					
+
 					if (count($stored) > 0) {
 						// 2. copy DB définition and duplicate files in applicant directory
 						foreach ($stored as $key => $row) {
@@ -247,7 +249,7 @@ if (EmundusHelperAccess::isApplicant($user->id) && $copy_application_form == 1 &
 				}
 				if ($reload < 5) {
 					$reload++;
-					$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload); 
+					$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
 				}
 		    }
 		}
