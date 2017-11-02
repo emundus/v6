@@ -64,18 +64,19 @@ class EmundusControllerUsers extends JControllerLegacy {
 			exit;
 		}
 
-		$itemid 	= JRequest::getVar('Itemid', null, 'POST', 'none',0);
-		$firstname 	= JRequest::getVar('firstname', null, 'POST', 'none',0);
-		$lastname 	= JRequest::getVar('lastname', null, 'POST', 'none',0);
-		$username 	= JRequest::getVar('login', null, 'POST', 'none',0);
-		$name 		= strtolower($firstname).' '.strtoupper($lastname);
-		$email 		= JRequest::getVar('email', null, 'POST', 'none',0);
-		$profile 	= JRequest::getVar('profile', null, 'POST', 'none',0);
-		$jgr 		= JRequest::getVar('jgr', null, 'POST', 'none',0);
-		$univ_id 	= JRequest::getVar('university_id', null, 'POST', 'none',0);
-		$groups 	= JRequest::getVar('groups', null, 'POST', 'string',0);
-		$campaigns 	= JRequest::getVar('campaigns', null, 'POST', 'string',0);
-
+		$itemid 		= JRequest::getVar('Itemid', null, 'POST', 'none',0);
+		$firstname 		= JRequest::getVar('firstname', null, 'POST', 'none',0);
+		$lastname 		= JRequest::getVar('lastname', null, 'POST', 'none',0);
+		$username 		= JRequest::getVar('login', null, 'POST', 'none',0);
+		$name 			= strtolower($firstname).' '.strtoupper($lastname);
+		$email 			= JRequest::getVar('email', null, 'POST', 'none',0);
+		$profile 		= JRequest::getVar('profile', null, 'POST', 'none',0);
+		//$oprofiles 		= JRequest::getVar('oprofiles', null, 'POST', 'string',0);
+		$jgr 			= JRequest::getVar('jgr', null, 'POST', 'none',0);
+		$univ_id 		= JRequest::getVar('university_id', null, 'POST', 'none',0);
+		$groups 		= JRequest::getVar('groups', null, 'POST', 'string',0);
+		$campaigns 		= JRequest::getVar('campaigns', null, 'POST', 'string',0);
+		
 		$password 	= JUserHelper::genRandomPassword();
 		$user 		= clone(JFactory::getUser(0));
 
@@ -100,9 +101,10 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$other_param['firstname'] = $firstname;
 		$other_param['lastname'] = $lastname;
 		$other_param['profile'] = $profile;
+		//$other_param['oprofiles'] = !empty($oprofiles) ? explode(',', $oprofiles): $oprofiles;
 		$other_param['univ_id'] = $univ_id;
 		$other_param['em_groups'] = !empty($groups) ? explode(',', $groups): $groups;
-		$other_param['em_campaigns'] = !empty($campaigns) ? explode(',', $campaigns): $campaigns;;
+		$other_param['em_campaigns'] = !empty($campaigns) ? explode(',', $campaigns): $campaigns;
 		$other_param['news'] = JRequest::getVar('newsletter', null, 'POST', 'string',0);
 		$m_users = new EmundusModelUsers();
 		$acl_aro_groups = $m_users->getDefaultGroup($profile);
@@ -112,7 +114,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$user->usertype = $usertype;
 
 		$uid = $m_users->adduser($user, $other_param);
-
+		
 		if (is_array($uid)) {
 			$uid['status'] = false;
 			echo json_encode((object) $uid);
@@ -120,6 +122,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		}
 
 		try {
+			//echo $uid;
 			if (!mkdir(EMUNDUS_PATH_ABS.$uid, 0755) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$uid.DS.'index.html')) {
 				echo json_encode((object)array('status' => false, 'uid' => $uid, 'msg' => JText::_('CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
 				exit;
@@ -584,6 +587,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$newuser['name'] 			= $newuser['firstname'].' '.$newuser['lastname'];
 		$newuser['email'] 			= JRequest::getVar('email', null, 'POST', '', 0);
 		$newuser['profile'] 		= JRequest::getVar('profile', null, 'POST', '', 0);
+		//$newuser['em_oprofiles']	= JRequest::getVar('oprofiles', null, 'POST', 'string',0);
 		$newuser['groups'] 			= array(JRequest::getVar('jgr', null, 'POST', '', 0));
 		$newuser['university_id'] 	= JRequest::getVar('university_id', null, 'POST', '', 0);
 		$newuser['em_campaigns'] 	= JRequest::getVar('campaigns', null, 'POST', '', 0);
@@ -616,6 +620,54 @@ class EmundusControllerUsers extends JControllerLegacy {
 		echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
 		exit;
 	}
+
+	/*public function switchprofile() {
+		$current_user = JFactory::getUser();
+		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::asAccessAction(12, 'u') && !EmundusHelperAccess::asAccessAction(20, 'u')) {
+			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
+			return;
+		}
+		$itemid 				= JRequest::getVar('Itemid', null, 'POST', 'none',0);
+		$user['id'] 			= JRequest::getVar('id', null, 'POST', '', 0);
+		$user['firstname'] 		= JRequest::getVar('firstname', null, 'POST', '', 0);
+		$user['lastname'] 		= JRequest::getVar('lastname', null, 'POST', '', 0);
+		$user['username'] 		= JRequest::getVar('login', null, 'POST', '', 0);
+		$user['name'] 			= $newuser['firstname'].' '.$newuser['lastname'];
+		$user['email'] 			= JRequest::getVar('email', null, 'POST', '', 0);
+		$user['profile'] 		= JRequest::getVar('profile', null, 'POST', '', 0);
+		$user['em_oprofiles']	= JRequest::getVar('oprofiles', null, 'POST', 'string',0);
+		//$newuser['groups'] 			= array(JRequest::getVar('jgr', null, 'POST', '', 0));
+		//$newuser['university_id'] 	= JRequest::getVar('university_id', null, 'POST', '', 0);
+		//$newuser['em_campaigns'] 	= JRequest::getVar('campaigns', null, 'POST', '', 0);
+		//$newuser['em_groups'] 		= JRequest::getVar('groups', null, 'POST', '', 0);
+		//$newuser['news'] 			= JRequest::getVar('newsletter', null, 'POST', 'string',0);*/
+
+		/*if (preg_match('/^[a-z0-9.-_@]*$/', $newuser['username']) !== 1) {
+			echo json_encode((object)array('status' => false, 'msg' => 'LOGIN_NOT_GOOD'));
+			exit;
+		}
+		if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $newuser['email']) !== 1) {
+			echo json_encode((object)array('status' => false, 'msg' => 'MAIL_NOT_GOOD'));
+			exit;
+		}*/
+
+	/*	$m_users = new EmundusModelUsers();
+		$res = $m_users->switchProfile($user);
+
+		if ($res !== false || !is_array($res)) {
+			$res = true;
+			$msg = JText::_('PROFILE_CHOSEN');
+		} else {
+			if (is_array($res)) {
+				$res['status'] = false;
+				echo json_encode((object)($res));
+				exit;
+			}
+			else $msg = JText::_('AN_ERROR_OCCURED');
+		}
+		echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
+		exit;
+}*/
 
 	public function deleteusers() {
 		$jinput = JFactory::getApplication()->input;
