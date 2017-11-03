@@ -786,8 +786,8 @@ class EmundusModelApplication extends JModelList
         $forms = '';
 
         try {
-        if(isset($tableuser)) {
-            foreach($tableuser as $key => $itemt) {
+        if (isset($tableuser)) {
+            foreach ($tableuser as $key => $itemt) {
                 $forms .= '<br><hr><h3>';
                 $title = explode('-', JText::_($itemt->label));
                 if (empty($title[1]))
@@ -818,7 +818,7 @@ class EmundusModelApplication extends JModelList
                 $groupes = $this->_db->loadObjectList();
 
                 /*-- Liste des groupes -- */
-                foreach($groupes as $keyg => $itemg) {
+                foreach ($groupes as $keyg => $itemg) {
                     // liste des items par groupe
                     $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
                                 FROM #__fabrik_elements fe
@@ -829,7 +829,7 @@ class EmundusModelApplication extends JModelList
 
                     $this->_db->setQuery( $query );
                     $elements = $this->_db->loadObjectList();
-                    if(count($elements)>0) {
+                    if (count($elements) > 0) {
                         $forms .= '<fieldset><legend class="legend">';
                         $forms .= JText::_($itemg->label);
                         $forms .= '</legend>';
@@ -925,7 +925,7 @@ class EmundusModelApplication extends JModelList
                                             elseif ($elements[$j]->plugin == 'checkbox') {
                                                 $elt = implode(", ", json_decode (@$r_elt));
                                             }
-                                            elseif($elements[$j]->plugin=='dropdown' || $elements[$j]->plugin=='radiobutton') {
+                                            elseif ($elements[$j]->plugin=='dropdown' || $elements[$j]->plugin=='radiobutton') {
                                                 $params = json_decode($elements[$j]->params);
                                                 $index = array_search($r_elt, $params->sub_options->sub_values);
                                                 $elt = $params->sub_options->sub_labels[$index];
@@ -967,12 +967,12 @@ class EmundusModelApplication extends JModelList
                                     elseif ($element->plugin=='birthday' && $element->content>0) {
                                         $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
                                     }
-                                    elseif($element->plugin=='databasejoin') {
+                                    elseif ($element->plugin=='databasejoin') {
                                         $params = json_decode($element->params);
 
                                         $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
 
-                                        if($params->database_join_display_type == 'checkbox'){
+                                        if ($params->database_join_display_type == 'checkbox'){
                                             $elt = implode(", ", json_decode (@$element->content));
                                         }
                                         else {
@@ -985,7 +985,7 @@ class EmundusModelApplication extends JModelList
                                             $elt = $this->_db->loadResult();
                                         }
                                     }
-                                    elseif($element->plugin=='cascadingdropdown') {
+                                    elseif ($element->plugin=='cascadingdropdown') {
                                         $params = json_decode($element->params);
                                         $cascadingdropdown_id = $params->cascadingdropdown_id;
                                         $r1 = explode('___', $cascadingdropdown_id);
@@ -1003,13 +1003,14 @@ class EmundusModelApplication extends JModelList
                                     elseif ($element->plugin == 'checkbox') {
                                         $elt = implode(", ", json_decode (@$element->content));
                                     }
-                                    elseif($element->plugin=='dropdown' || $element->plugin=='radiobutton') {
+                                    elseif ( ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') && isset($element->content) ) {
                                         $params = json_decode($element->params);
                                         $index = array_search($element->content, $params->sub_options->sub_values);
                                         $elt = $params->sub_options->sub_labels[$index];
                                     }
                                     else
                                         $elt = $element->content;
+
                                     $forms .= '<b>'.JText::_($element->label).': </b>'.JText::_($elt).'<br/>';
                                 }
                             }
