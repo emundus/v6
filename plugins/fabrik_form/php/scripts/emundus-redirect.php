@@ -222,9 +222,11 @@ $formid = $jinput->get('formid');
 $db 	= JFactory::getDBO();
 
 if (EmundusHelperAccess::asApplicantAccessLevel($user->id)){
+	$levels = JAccess::getAuthorisedViewLevels($user->id);
+
 	$query = 'SELECT CONCAT(link,"&Itemid=",id) 
 			FROM #__menu 
-			WHERE published=1 AND menutype = "'.$user->menutype.'" 
+			WHERE published=1 AND menutype = "'.$user->menutype.'" AND access IN ('.implode(',', $levels).')
 			AND parent_id != 1
 			AND lft = 2+(
 					SELECT menu.lft 
@@ -239,7 +241,7 @@ if (EmundusHelperAccess::asApplicantAccessLevel($user->id)){
 
 		$query = 'SELECT CONCAT(link,"&Itemid=",id) 
 			FROM #__menu 
-			WHERE published=1 AND menutype = "'.$user->menutype.'" 
+			WHERE published=1 AND menutype = "'.$user->menutype.'"  AND access IN ('.implode(',', $levels).')
 			AND parent_id != 1
 			AND lft = 4+(
 					SELECT menu.lft 
@@ -257,7 +259,7 @@ if (EmundusHelperAccess::asApplicantAccessLevel($user->id)){
 			$db->setQuery( $query );
 			$link = $db->loadResult();
 		}
-	}	
+	}
 } else { 
 	$query = 'SELECT db_table_name FROM `#__fabrik_lists` WHERE `form_id` ='.$formid;
 	$db->setQuery( $query );
