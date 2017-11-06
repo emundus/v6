@@ -129,7 +129,7 @@ foreach ($recipients as $recipient) {
 
             // 2. MAJ de la table emundus_files_request
             $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, campaign_id, fnum, attachment_id, email)
-                          VALUES (NOW(), '.$student->id.', "'.$key.'", "'.$fnum_detail['campaign_id'].'", '.$current_user->fnum.', 2, '.$db->Quote($recipient['email']).')';
+                          VALUES (NOW(), '.$student->id.', "'.$key.'", "'.$fnum_detail['campaign_id'].'", '.$current_user->fnum.', 4, '.$db->Quote($recipient['email']).')';
             $db->setQuery( $query );
             $db->execute();
 

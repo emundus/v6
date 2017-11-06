@@ -261,10 +261,12 @@ $(document).on('click', '#editCommentBtn', function editComment() {
 			if (result.status) {
 				$('#edit-comment .close').click();
 				$('.comments li#'+id).empty();
-				$('.comments li#'+id).append('<div class="row"><div class="col-xs-10 col-md-11"><div><a href="#">'+title+'</a></div>'+
+				$('.comments li#'+id).append('<div class="row"><div class="col-xs-10 col-md-11"><div><a href="#">'+title+'</a><div class="mic-info">'+
+										'<a href="#"><?php echo $this->_user->name; ?></a> - <?php echo JHtml::_('date', date('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2')); ?>'+
+									'</div></div>'+
 				'<div class="comment-text">'+text+'</div>'+
-				'<div class="action"><button type="button" class="btn btn-danger btn-xs" title="Delete"><span class="glyphicon glyphicon-trash"></span></button></div>'+
-				'<div class="action"><button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#edit-comment" title="Edit" data-cid="'+id+'" data-cname="'+title+'" data-ctext="'+text+'"> <span class="glyphicon glyphicon-edit"></span></button></div></div></div>');
+				'<div class="action"><button type="button" class="btn btn-danger btn-xs" title="Delete"> <span class="glyphicon glyphicon-trash"> </span></button> </div>'+
+				'<div class="action"><button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#edit-comment" title="Edit" data-cid="'+id+'" data-cname="'+title+'" data-ctext="'+text+'"> <span class="glyphicon glyphicon-edit"> </span></button> </div></div></div>');
 			} else {
 				$('#form').append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
 			}
