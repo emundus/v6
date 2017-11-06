@@ -151,7 +151,7 @@ try {
 
     // setup mail
     $app = JFactory::getApplication();
-	$email_from_sys = $config->get('emailfrom');
+	$email_from_sys = $app->getCfg('mailfrom');
 	$email_from = $obj->emailfrom;
 
 	// If the email sender has the same domain as the system sender address.

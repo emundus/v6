@@ -108,7 +108,7 @@ if ($inform_applicant_by_email == 1) {
 	$db->setQuery('SELECT id, subject, emailfrom, name, message FROM #__emundus_setup_emails WHERE lbl="attachment"');
 	$email=$db->loadObject();
 	$from = $email->emailfrom;
-	$fromname =$email->name;
+	$fromname = $email->name;
 	$recipient[] = $student->email;
 	$subject = $email->subject;
 	$body = preg_replace($patterns, $replacements, $email->message).'<br/>'.@$file_url;
@@ -118,13 +118,12 @@ if ($inform_applicant_by_email == 1) {
 	$mailer = JFactory::getMailer();
 
     // setup mail
-    $app    = JFactory::getApplication();
-	$email_from_sys = $config->get('emailfrom');
-	$email_from = $email->emailfrom;
+    $app = JFactory::getApplication();
+	$email_from_sys = $config->getCfg('emailfrom');
 
 	// If the email sender has the same domain as the system sender address.
-	if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
-		$mail_from_address = $email_from;
+	if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+		$mail_from_address = $from;
 	else
 		$mail_from_address = $email_from_sys;
 

@@ -60,12 +60,12 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron
 // Get list of applicants to notify
 		$db = FabrikWorker::getDbo();
 		$query = 'SELECT u.id, u.email, eu.firstname, eu.lastname, ecc.fnum, esc.start_date, esc.end_date, esc.label, DATEDIFF( esc.end_date , now()) as left_days
-					FROM #__emundus_campaign_candidature as ecc 
+					FROM #__emundus_campaign_candidature as ecc
 					LEFT JOIN #__users as u ON u.id=ecc.applicant_id
 					LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
-					LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id 
+					LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
 					WHERE ecc.status = 0 AND u.block = 0 AND esc.published = 1 AND DATEDIFF( esc.end_date , now()) IN ('.$reminder_deadline.')';
-	
+
 		if (isset($reminder_programme_id) && !empty($reminder_programme_id))
 			$query .= ' AND esc.training IN ('.$reminder_programme_code.')';
 
@@ -78,11 +78,11 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron
 			include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
 			$emails = new EmundusModelEmails;
 			$email = $emails->getEmailById($reminder_mail_id);
-			
+
 			foreach ($applicants as $applicant) {
 				$mailer = JFactory::getMailer();
 
-				$post = array(  
+				$post = array(
 							'FNUM' => $applicant->fnum,
 			                'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($applicant->end_date)),
 			                'CAMPAIGN_LABEL' => $applicant->label,
@@ -106,10 +106,20 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron
                 $replytoname = $fromname;
 
                 $config = JFactory::getConfig();
-                $sender = array(
-                    $config->get( $from ),
-                    $config->get( $fromname )
-                );
+                $email_from_sys = $config->get('mailfrom');
+				$email_from = $email->emailfrom;
+
+				// If the email sender has the same domain as the system sender address.
+				if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+					$mail_from_address = $email_from;
+				else
+					$mail_from_address = $email_from_sys;
+
+				// Set sender
+				$sender = [
+					$mail_from_address,
+					$mail_from_name
+				];
 
                 $mailer->setSender($sender);
                 $mailer->addRecipient($to);

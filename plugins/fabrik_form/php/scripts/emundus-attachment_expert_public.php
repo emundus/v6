@@ -181,7 +181,7 @@ if ($uid > 0) {
 	$body = $m_emails->setBody($user, $email->message, "");
 
     $config = JFactory::getConfig();
-	$email_from_sys = $config->get('emailfrom');
+	$email_from_sys = $config->get('mailfrom');
 	$email_from = $email->emailfrom;
 
 	// If the email sender has the same domain as the system sender address.
@@ -291,7 +291,7 @@ if ($uid > 0) {
 	$body = $m_emails->setBody($user, $email->message, $fnum, $password);
 
     $config = JFactory::getConfig();
-    $email_from_sys = $config->get('emailfrom');
+    $email_from_sys = $config->get('mailfrom');
 	$email_from = $email->emailfrom;
 
 	// If the email sender has the same domain as the system sender address.

@@ -737,8 +737,6 @@ class EmundusModelEmails extends JModelList
                 else
                     $mail_from_address = $email_from_sys;
 
-
-
                 // Set sender
                 $sender = [
                     $mail_from_address,
