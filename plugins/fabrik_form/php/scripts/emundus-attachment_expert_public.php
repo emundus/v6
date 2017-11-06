@@ -181,10 +181,21 @@ if ($uid > 0) {
 	$body = $m_emails->setBody($user, $email->message, "");
 
     $config = JFactory::getConfig();
-    $sender = array(
-        $config->get( $email->emailfrom ),
-        $config->get( $email->name )
-    );
+	$email_from_sys = $config->get('emailfrom');
+	$email_from = $email->emailfrom;
+
+	// If the email sender has the same domain as the system sender address.
+	if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+		$mail_from_address = $email_from;
+	else
+		$mail_from_address = $email_from_sys;
+
+	// Set sender
+	$sender = [
+		$mail_from_address,
+		$mail_from_name
+	];
+
     $mailer = JFactory::getMailer();
     $mailer->setSender($sender);
     $mailer->addRecipient($user->email);
@@ -280,17 +291,27 @@ if ($uid > 0) {
 	$body = $m_emails->setBody($user, $email->message, $fnum, $password);
 
     $config = JFactory::getConfig();
-    $sender = array(
-        $config->get( $email->emailfrom ),
-        $config->get( $email->name )
-    );
+    $email_from_sys = $config->get('emailfrom');
+	$email_from = $email->emailfrom;
+
+	// If the email sender has the same domain as the system sender address.
+	if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+		$mail_from_address = $email_from;
+	else
+		$mail_from_address = $email_from_sys;
+
+	// Set sender
+	$sender = [
+		$mail_from_address,
+		$mail_from_name
+	];
 
     $mailer->setSender($sender);
     $mailer->addRecipient($user->email);
     $mailer->setSubject($email->subject);
     $mailer->isHTML(true);
     $mailer->Encoding = 'base64';
-    $mailer->setBody($body);
+	$mailer->setBody($body);
 
     $send = $mailer->Send();
     if ( $send !== true ) {

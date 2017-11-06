@@ -76,7 +76,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$univ_id 		= JRequest::getVar('university_id', null, 'POST', 'none',0);
 		$groups 		= JRequest::getVar('groups', null, 'POST', 'string',0);
 		$campaigns 		= JRequest::getVar('campaigns', null, 'POST', 'string',0);
-		
+
 		$password 	= JUserHelper::genRandomPassword();
 		$user 		= clone(JFactory::getUser(0));
 
@@ -114,7 +114,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$user->usertype = $usertype;
 
 		$uid = $m_users->adduser($user, $other_param);
-		
+
 		if (is_array($uid)) {
 			$uid['status'] = false;
 			echo json_encode((object) $uid);
@@ -149,13 +149,20 @@ class EmundusControllerUsers extends JControllerLegacy {
         $body 		= preg_replace($tags['patterns'], $tags['replacements'], $email->message);
         $body 		= $m_emails->setTagsFabrik($body);
 
-        $app    = JFactory::getApplication();
-        $email_from_sys = $app->getCfg('mailfrom');
+        $app = JFactory::getApplication();
+		$email_from_sys = $app->getCfg('mailfrom');
 
-        $sender = array(
-            $email_from_sys,
-            $fromname
-        );
+		// If the email sender has the same domain as the system sender address.
+		if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+			$mail_from_address = $email->emailfrom;
+		else
+			$mail_from_address = $email_from_sys;
+
+		// Set sender
+		$sender = [
+			$mail_from_address,
+			$mail_from_name
+		];
 
         $mailer->setSender($sender);
         $mailer->addReplyTo($email->emailfrom, $email->name);
@@ -167,7 +174,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         try {
 			$send = $mailer->Send();
-		
+
 			if ($send === false){
 				JLog::add('No email configuration!', JLog::ERROR, 'com_emundus.email');
 			} else {
@@ -179,15 +186,15 @@ class EmundusControllerUsers extends JControllerLegacy {
 				);
 				$m_emails->logEmail($message);
 			}
-		
+
 		} catch (Exception $e) {
-		
+
 			echo json_encode((object)array('status' => false, 'msg' => JText::_('EMAIL_NOT_SENT')));
 			JLog::add($e->__toString(), JLog::ERROR, 'com_emundus.email');
 			exit();
-		
+
 		}
-		
+
 		echo json_encode((object)array('status' => true, 'msg' => JText::_('USER_CREATED')));
 		exit;
 	}
@@ -746,10 +753,17 @@ class EmundusControllerUsers extends JControllerLegacy {
             $app = JFactory::getApplication();
 	        $email_from_sys = $app->getCfg('mailfrom');
 
-	        $sender = array(
-	            $email_from_sys,
-	            $fromname
-	        );
+            // If the email sender has the same domain as the system sender address.
+            if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+                $mail_from_address = $email->emailfrom;
+            else
+                $mail_from_address = $email_from_sys;
+
+            // Set sender
+            $sender = [
+                $mail_from_address,
+                $mail_from_name
+            ];
 
             $mailer->setSender($sender);
             $mailer->addReplyTo($from, $fromname);

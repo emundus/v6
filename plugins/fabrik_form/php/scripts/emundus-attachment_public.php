@@ -138,7 +138,7 @@ try {
  	// Mail au candidat
 	$fileURL = $baseurl.'/'.EMUNDUS_PATH_REL.$upload->user_id.'/'.$nom;
 	$from = $obj->emailfrom;
-	$fromname =$obj->name;
+	$fromname = $obj->name;
 	$recipient[] = $student->email;
 	$subject = $obj->subject;
 	$body = preg_replace($patterns, $replacements, $obj->message).'<br/>';
@@ -150,14 +150,23 @@ try {
 	$replytoname = $obj->name;
 
     // setup mail
-    $app    = JFactory::getApplication();
-	$email_from_sys = $app->getCfg('mailfrom');
-    $sender = array(
-        $email_from_sys,
-        $fromname
-    );
-    $mailer = JFactory::getMailer();
+    $app = JFactory::getApplication();
+	$email_from_sys = $config->get('emailfrom');
+	$email_from = $obj->emailfrom;
 
+	// If the email sender has the same domain as the system sender address.
+	if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+		$mail_from_address = $email_from;
+	else
+		$mail_from_address = $email_from_sys;
+
+	// Set sender
+	$sender = [
+		$mail_from_address,
+		$mail_from_name
+	];
+
+    $mailer = JFactory::getMailer();
     $mailer->setSender($sender);
     $mailer->addReplyTo($from, $fromname);
     $mailer->addRecipient($recipient);

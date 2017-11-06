@@ -373,14 +373,29 @@ class EmundusModelCalendar extends JModelLegacy {
         // TODO: Try to get these tags out of this code, either put them in the DB or make a function that builds the emails with the template?
         $body = preg_replace(array("/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"), array($subject, $body), $email->Template);
 
-        $sender = array(
-            $config->get('mailfrom'),
-            $config->get('fromname')
-        );
+        $email_from_sys = $config->get('mailfrom');
+        $email_from = $email->emailfrom;
+
+        if ($email->name === null)
+            $email_from_name = $config->get('fromname');
+        else
+            $email_from_name = $email->name;
+
+        // If the email sender has the same domain as the system sender address.
+        if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+            $mail_from_address = $email_from;
+        else
+            $mail_from_address = $email_from_sys;
+
+        // Set sender
+        $sender = [
+            $mail_from_address,
+            $mail_from_name
+        ];
 
         // Configure email sender
         $mailer->setSender($sender);
-        $mailer->addReplyTo($config->get('mailfrom'), $config->get('fromname'));
+        $mailer->addReplyTo($email_from, $email_from_name);
         $mailer->addRecipient($user->email);
         $mailer->setSubject($subject);
         $mailer->isHTML(true);
@@ -434,15 +449,30 @@ class EmundusModelCalendar extends JModelLegacy {
             // TODO: Try to get these tags out of this code, either put them in the DB or make a function that builds the emails with the template?
             $body = preg_replace(array("/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"), array($subject, $body), $email->Template);
 
-            $sender = array(
-                $config->get('mailfrom'),
-                $config->get('fromname')
-            );
+            $email_from_sys = $config->get('mailfrom');
+            $email_from = $email->emailfrom;
+
+            if ($email->name === null)
+                $email_from_name = $config->get('fromname');
+            else
+                $email_from_name = $email->name;
+
+            // If the email sender has the same domain as the system sender address.
+            if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+                $mail_from_address = $email_from;
+            else
+                $mail_from_address = $email_from_sys;
+
+            // Set sender
+            $sender = [
+                $mail_from_address,
+                $mail_from_name
+            ];
 
             // Configure email sender
             $mailer->ClearAllRecipients();
             $mailer->setSender($sender);
-            $mailer->addReplyTo($config->get('mailfrom'), $config->get('fromname'));
+            $mailer->addReplyTo($email_from, $email_from_name);
             $mailer->addRecipient($recipient->email);
             $mailer->setSubject($subject);
             $mailer->isHTML(true);

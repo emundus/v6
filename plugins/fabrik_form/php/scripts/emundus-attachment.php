@@ -119,11 +119,20 @@ if ($inform_applicant_by_email == 1) {
 
     // setup mail
     $app    = JFactory::getApplication();
-	$email_from_sys = $app->getCfg('mailfrom');
-    $sender = array(
-        $email_from_sys,
-        $fromname
-    );
+	$email_from_sys = $config->get('emailfrom');
+	$email_from = $email->emailfrom;
+
+	// If the email sender has the same domain as the system sender address.
+	if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+		$mail_from_address = $email_from;
+	else
+		$mail_from_address = $email_from_sys;
+
+	// Set sender
+	$sender = [
+		$mail_from_address,
+		$mail_from_name
+	];
 
     $mailer->setSender($sender);
     $mailer->addReplyTo($from, $fromname);
