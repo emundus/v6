@@ -128,18 +128,18 @@ foreach ($recipients as $recipient) {
             $key = md5(date('Y-m-d h:m:i').'::'.$fnum.'::'.$student_id.'::'.$fnum_detail['campaign_id'].'::'.rand());
 
             // 2. MAJ de la table emundus_files_request
-            $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, campaign_id, fnum, email)
-                          VALUES (NOW(), '.$student->id.', "'.$key.'", "'.$fnum_detail['campaign_id'].'", '.$current_user->fnum.', '.$db->Quote($recipient['email']).')';
+            $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, campaign_id, fnum, attachment_id, email)
+                          VALUES (NOW(), '.$student->id.', "'.$key.'", "'.$fnum_detail['campaign_id'].'", '.$current_user->fnum.', 2, '.$db->Quote($recipient['email']).')';
             $db->setQuery( $query );
             $db->execute();
 
 
-            // 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
+            // 3. Envoi du lien vers lequel le professeur va pouvoir remplir le formulaire de référence
             $link_form = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=272&tableid=283&keyid='.$key.'&sid='.$student->id;
 
-            $replacements = array($student->id, $student->name, $student->email, $link_form, $fnum_detail['label']);
-            $subject = preg_replace($patterns, $replacements, $obj->subject);
-            $body = preg_replace($patterns, $replacements, $obj->message);
+            $replacements   = array($student->id, $student->name, $student->email, $link_form, $fnum_detail['label']);
+            $subject        = preg_replace($patterns, $replacements, $obj->subject);
+            $body           = preg_replace($patterns, $replacements, $obj->message);
 
             $to = array($recipient['email']);
 
