@@ -105,7 +105,7 @@ try {
 
     if ($send !== true) {
     	JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_CANNOT_SEND_EMAIL").$send->__toString(), JLog::ERROR, 'com_emundus');
-        echo 'Error sending email: ' . $send->__toString(); die();
+        echo 'Error sending email: ' . $send->__toString();
     } else {
 		$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 				VALUES ('62', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW()";
@@ -166,7 +166,7 @@ try {
     $send = $mailer->Send();
     if ($send !== true) {
     	JLog::add("PLUGIN IMT_emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_CANNOT_SEND_EMAIL").$send->__toString(), JLog::ERROR, 'com_emundus');
-        echo 'Error sending email: ' . $send->__toString(); die();
+        echo 'Error sending email: ' . $send->__toString();
     } else {
         $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
                 VALUES ('62', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW()";
