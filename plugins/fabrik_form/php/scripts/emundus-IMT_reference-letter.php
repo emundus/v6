@@ -139,7 +139,10 @@ foreach ($recipients as $recipient) {
 
 
             // template replacements (patterns)
-            $post       = array('REFERENCE_FORM_URL' => $link_form);
+            $post       = array(
+                'REFERENCE_FORM_URL'    => $link_form,
+                'CAMPAIGN_LABEL'        => $current_user->campaign_name
+            );
             $tags       = $m_emails->setTags($user->id, $post);
             $body       = preg_replace($tags['patterns'], $tags['replacements'], $obj->message);
             $body       = $m_emails->setTagsFabrik($body, array($current_user->fnum));
