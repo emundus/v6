@@ -72,7 +72,7 @@ try {
     // Mail au candidat
 	$from           = $obj->emailfrom;
 	$fromname       = $obj->name;
-	$recipient[]    = $student->email;
+	$recipient      = array($student->email);
 	$mode           = 1;
 	$replyto        = $obj->emailfrom;
 	$replytoname    = $obj->name;
@@ -102,7 +102,8 @@ try {
     $mailer->setBody($body);
 
     $send = $mailer->Send();
-    if ( $send !== true ) {
+
+    if ($send !== true) {
     	JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_CANNOT_SEND_EMAIL").$send->__toString(), JLog::ERROR, 'com_emundus');
         echo 'Error sending email: ' . $send->__toString(); die();
     } else {
@@ -137,7 +138,7 @@ try {
     // Mail au référent
 	$from           = $obj->emailfrom;
 	$fromname       = $obj->name;
-	$recipient[]    = $reference->Email_1;
+	$recipient      = array($reference->Email_1);
 	$mode           = 1;
 	$replyto        = $obj->emailfrom;
     $replytoname    = $obj->name;
@@ -154,7 +155,6 @@ try {
         $mail_from_name
     );
 
-    $mailer = JFactory::getMailer();
     $mailer->setSender($sender);
     $mailer->addReplyTo($from, $fromname);
     $mailer->addRecipient($recipient);
@@ -167,6 +167,11 @@ try {
     if ($send !== true) {
     	JLog::add("PLUGIN IMT_emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_CANNOT_SEND_EMAIL").$send->__toString(), JLog::ERROR, 'com_emundus');
         echo 'Error sending email: ' . $send->__toString(); die();
+    } else {
+        $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
+                VALUES ('62', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW()";
+        $db->setQuery($sql);
+        $db->execute();
     }
 
 } catch (Exception $e) {

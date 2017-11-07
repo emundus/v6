@@ -187,6 +187,8 @@ foreach ($recipients as $recipient) {
             }
             unset($replacements);
             unset($mailer);
+        } else {
+            JError::raiseWarning(500, JText::_('ERROR: a form has already been submitted for the user','error'));
         }
     }
 }
