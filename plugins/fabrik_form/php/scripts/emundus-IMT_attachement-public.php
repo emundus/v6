@@ -114,9 +114,15 @@ try {
         $db->execute();
     }
 
-    // Step one is to get the email and name of the referent.
+    // Step one is to get the email of the referent.
     $query = 'SELECT Email_1 FROM #__emundus_references as er
-                WHERE er.fnum = '.$db->Quote($fnum);
+                WHERE er.fnum IN (
+                    SELECT fnum
+                    FROM #__emundus_files_request as efr
+                    WHERE efr.keyid = "'.$key_id.'"
+                )';
+
+
     $db->setQuery($query);
     $recipient = array($db->loadResult());
 
@@ -150,6 +156,7 @@ try {
         $mail_from_name
     );
 
+    $mailer = JFactory::getMailer();
     $mailer->setSender($sender);
     $mailer->addReplyTo($from, $fromname);
     $mailer->addRecipient($recipient);
