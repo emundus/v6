@@ -29,6 +29,7 @@ JLog::addLogger(
 );
 //include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
+include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 $baseurl = JURI::root();
 
 // Get reference information.
@@ -77,11 +78,10 @@ function rand_string($len, $chars = 'abcdefghijklmnopqrstuvwxyz0123456789') {
     return $string;
 }
 
+$m_emails   = new EmundusModelEmails();
+$m_profile  = new EmundusModelProfile;
 
-$m_profile = new EmundusModelProfile;
 $fnum_detail = $m_profile->getFnumDetails($current_user->fnum);
-
-$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[REFERENCE_FORM_URL\]/', '/\[PROGRAMME_NAME\]/');
 
 // setup mail
 $app = JFactory::getApplication();
@@ -137,9 +137,13 @@ foreach ($recipients as $recipient) {
             // 3. Envoi du lien vers lequel le professeur va pouvoir remplir le formulaire de référence
             $link_form = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=272&tableid=283&keyid='.$key.'&sid='.$student->id;
 
-            $replacements   = array($student->id, $student->name, $student->email, $link_form, $fnum_detail['label']);
-            $subject        = preg_replace($patterns, $replacements, $obj->subject);
-            $body           = preg_replace($patterns, $replacements, $obj->message);
+
+            // template replacements (patterns)
+            $post       = array('REFERENCE_FORM_URL' => $link_form);
+            $tags       = $m_emails->setTags($user->id, $post);
+            $body       = preg_replace($tags['patterns'], $tags['replacements'], $obj->message);
+            $body       = $m_emails->setTagsFabrik($body, array($current_user->fnum));
+            $subject    = $m_emails->setTagsFabrik($obj->subject, array($current_user->fnum));
 
             $to = array($recipient['email']);
 

@@ -13,6 +13,8 @@ defined( '_JEXEC' ) or die();
  * @description Envoi automatique d'un email à l'étudiant lors d'un envoie de formulaire de référence fait par le référent désigné par l'utilisateur.
  */
 
+include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+
 $eMConfig   = JComponentHelper::getParams('com_emundus');
 $alert_new_attachment = $eMConfig->get('alert_new_attachment');
 
@@ -43,7 +45,8 @@ JLog::addLogger(
 
 try {
 
-	$student = &JUser::getInstance($user_id);
+    $student = &JUser::getInstance($user_id);
+    $m_emails = new EmundusModelEmails();
 
 	if (!isset($student)) {
 		JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_STUDENT_NOT_SET"), JLog::ERROR, 'com_emundus');
@@ -62,15 +65,14 @@ try {
 	$db->setQuery($query);
 	$obj = $db->loadObject();
 
-	$patterns = array('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/','/\n/');
-	$replacements = array($student->id, $student->name, $student->email, '<br />');
+	// template replacements (patterns)
+    $subject    = $m_emails->setTagsFabrik($obj->subject, array($current_user->fnum));
+    $body       = $m_emails->setTagsFabrik($obj->message, array($current_user->fnum));
 
     // Mail au candidat
 	$from           = $obj->emailfrom;
 	$fromname       = $obj->name;
 	$recipient[]    = $student->email;
-	$subject        = $obj->subject;
-	$body           = preg_replace($patterns, $replacements, $obj->message).'<br/>';
 	$mode           = 1;
 	$replyto        = $obj->emailfrom;
 	$replytoname    = $obj->name;
@@ -128,15 +130,14 @@ try {
     $db->setQuery($query);
     $obj = $db->loadObject();
 
-    $patterns = array('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/','/\n/');
-    $replacements = array($student->id, $reference->Last_Name_1." ".$reference->First_Name_1, $reference->Email_1, '<br />');
+    // template replacements (patterns)
+    $subject    = $m_emails->setTagsFabrik($obj->subject, array($current_user->fnum));
+    $body       = $m_emails->setTagsFabrik($obj->message, array($current_user->fnum));
 
     // Mail au référent
 	$from           = $obj->emailfrom;
 	$fromname       = $obj->name;
 	$recipient[]    = $reference->Email_1;
-	$subject        = $obj->subject;
-	$body           = preg_replace($patterns, $replacements, $obj->message).'<br/>';
 	$mode           = 1;
 	$replyto        = $obj->emailfrom;
     $replytoname    = $obj->name;
