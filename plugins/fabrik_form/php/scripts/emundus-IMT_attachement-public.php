@@ -21,6 +21,7 @@ $alert_new_attachment = $eMConfig->get('alert_new_attachment');
 $mainframe  = JFactory::getApplication();
 $jinput     = $mainframe->input;
 $user_id    = $jinput->get('jos_emundus_reference_letter___user');
+$fnum       = $jinput->get('jos_emundus_reference_letter___fnum');
 
 $mailer     = JFactory::getMailer();
 $db         = JFactory::getDBO();
@@ -66,8 +67,8 @@ try {
 	$obj = $db->loadObject();
 
 	// template replacements (patterns)
-    $subject    = $m_emails->setTagsFabrik($obj->subject, array($current_user->fnum));
-    $body       = $m_emails->setTagsFabrik($obj->message, array($current_user->fnum));
+    $subject    = $m_emails->setTagsFabrik($obj->subject, array($fnum));
+    $body       = $m_emails->setTagsFabrik($obj->message, array($fnum));
 
     // Mail au candidat
 	$from           = $obj->emailfrom;
@@ -114,15 +115,10 @@ try {
     }
 
     // Step one is to get the email and name of the referent.
-    $query = 'SELECT *
-                FROM #__emundus_references as er
-                WHERE er.fnum IN (
-                    SELECT fnum
-                    FROM #__emundus_files_request as efr
-                    WHERE efr.keyid = "'.$key_id.'"
-                )';
+    $query = 'SELECT Email_1 FROM #__emundus_references as er
+                WHERE er.fnum = '.$db->Quote($fnum);
     $db->setQuery($query);
-    $reference = $db->loadObject();
+    $recipient = array($db->loadResult());
 
     // Récupération des données du mail
 	$query = 'SELECT id, subject, emailfrom, name, message
@@ -132,13 +128,12 @@ try {
     $obj = $db->loadObject();
 
     // template replacements (patterns)
-    $subject    = $m_emails->setTagsFabrik($obj->subject, array($current_user->fnum));
-    $body       = $m_emails->setTagsFabrik($obj->message, array($current_user->fnum));
+    $subject    = $m_emails->setTagsFabrik($obj->subject, array($fnum));
+    $body       = $m_emails->setTagsFabrik($obj->message, array($fnum));
 
     // Mail au référent
 	$from           = $obj->emailfrom;
 	$fromname       = $obj->name;
-	$recipient      = array($reference->Email_1);
 	$mode           = 1;
 	$replyto        = $obj->emailfrom;
     $replytoname    = $obj->name;
