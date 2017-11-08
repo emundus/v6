@@ -957,7 +957,7 @@ class EmundusModelEvaluation extends JModelList
 						break;
 					case 'status':
 						// Code is redundant because $filt_menu has the status value as well.
-						/*if ($value)
+						if ($value)
 						{
 							if ( $value[0] == "%" || !isset($value[0]) )
 								$query['q'] .= ' ';
@@ -966,7 +966,7 @@ class EmundusModelEvaluation extends JModelList
 								//$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
 							}
 						}
-						break;*/
+						break;
 					case 'tag':
                         if ($value)
                         {
