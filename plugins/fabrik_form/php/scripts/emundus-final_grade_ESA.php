@@ -23,27 +23,43 @@ $status = $jinput->get('jos_emundus_final_grade___final_grade', null, 'ARRAY');
 
 if (!empty($status[0])) {
 
-	$query = 'UPDATE #__emundus_campaign_candidature SET status='.$status[0].' WHERE fnum like '. $db->Quote($fnum).' AND applicant_id='.$sid;
+	switch ($status[0]) {
+
+		case 4:
+			$step = 7;
+			break;
+
+		case 3:
+			$step = 8;
+			break;
+
+		case 2:
+			$step = 4;
+			break;
+
+	}
+
+	$query = 'UPDATE #__emundus_campaign_candidature SET status='.$step.' WHERE fnum like '. $db->Quote($fnum).' AND applicant_id='.$sid;
 
 	try {
-	
+
 		$db->setQuery($query);
 		$db->execute();
-	
+
 	} catch(Exception $e) {
 	    throw $e;
 	}
 
 
-	if ($status[0] == 7) {
-		
+	if ($status[0] == 4) {
+
 		$query = 'UPDATE #__emundus_users SET profile=8 WHERE user_id = '.$sid;
 
 		try {
-			
+
 			$db->setQuery($query);
 			$db->execute();
-		
+
 		} catch(Exception $e) {
 			throw $e;
 		}
