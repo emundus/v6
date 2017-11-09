@@ -212,7 +212,8 @@ class EmundusViewAdmission extends JViewLegacy
 								$line['fnum'] = $userObj;
 							}
 
-							elseif ($key == 'name' || $key == 'evaluation_id' || $key == 'admission_id' || $key == 'recorded_by' || $key == 'status_class') continue;
+							elseif ($key == 'name' || $key == 'evaluation_id' || $key == 'admission_id' || $key == 'recorded_by' || $key == 'status_class' || $key == 'step')
+								continue;
 
 							elseif ($key == 'evaluator') {
 

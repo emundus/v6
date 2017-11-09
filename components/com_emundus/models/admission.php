@@ -981,7 +981,7 @@ class EmundusModelAdmission extends JModelList
 		$menu_params = $current_menu->params;
         $em_blocks_names = explode(',', $menu_params->get('em_blocks_names'));
 
-		$query = 'select c.fnum, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name ';
+		$query = 'select c.fnum, ss.step, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name ';
 
 		// prevent double left join on query
 		$lastTab = [
