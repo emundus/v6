@@ -222,21 +222,21 @@ class EmundusModelUsers extends JModelList
         if ($edit == 1) {
             $query.= ' u.id='.$db->Quote($uid);
         } else {
-            $and = true;
+            $and = true; 
             /*var_dump($this->filts_details['profile']);
             if(isset($this->filts_details['profile']) && !empty($this->filts_details['profile'])){
                 $query.= ' AND e.profile IN ('.implode(',', $this->filts_details['profile']).') ';
                 $and = true;
             }*/
             if (isset($profile) && !empty($profile) && is_numeric($profile)) {
-                $query.= ' AND e.profile = '.$db->Quote($profile);
+                $query.= ' AND e.profile = '.$profile;
                 $and = true;
             }
             if (isset($final_grade) && !empty($final_grade)) {
                 if ($and) $query .= ' AND ';
                 else { $and = true;  $query .='WHERE '; }
 
-                $query.= 'efg.Final_grade = '.$db->Quote($final_grade);
+                $query.= 'efg.Final_grade = '.$final_grade;
                 $and = true;
             }
             if (isset($search) && !empty($search)) {
@@ -250,11 +250,9 @@ class EmundusModelUsers extends JModelList
                             OR u.username LIKE '.$db->Quote('%'.$search.'%').'
                             OR u.id LIKE '.$db->Quote('%'.$search.'%').')';
             }
-            /*if(isset($schoolyears) &&  !empty($schoolyears)) {
-                if($and) $query .= ' AND ';
-                else { $and = true; $query .='WHERE '; }
-                $query.= 'e.schoolyear="'.$db->Quote($schoolyears).'"';
-            }*/
+            
+            
+
             if (isset($spam_suspect) &&  !empty($spam_suspect) && $spam_suspect == 1) {
                 if ($and) $query .= ' AND ';
                 else { $and = true; $query .=' '; }
@@ -291,6 +289,7 @@ class EmundusModelUsers extends JModelList
 
             $query = $this->_buildQuery();
             $query .= $this->_buildContentOrderBy();
+  // echo str_replace('#_','jos',$query); //die();
             return $this->_getList( $query ,$session->get('limitstart'), $session->get('limit'));
 
         } catch(Exception $e) {
@@ -1709,7 +1708,5 @@ class EmundusModelUsers extends JModelList
         $dbo->setQuery($query);
         return $dbo->execute();
     }
-
-
 
 }
