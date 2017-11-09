@@ -16,6 +16,9 @@ if (isset($user->fnum)) {
     // If the user has we will display the date of their interview.
     $user_booked = $helper->hasUserbooked($user->id);
 
+    // We then need to get the user's status, this will determine if he is elligible for an interview.
+    $status = $helper->getStatus($user->fnum);
+
     if ($user_booked) {
 
         $offset = JFactory::getConfig()->get('offset');
@@ -28,7 +31,7 @@ if (isset($user->fnum)) {
 
         require(JModuleHelper::getLayoutPath('mod_emundus_book_interview','showInterview'));
 
-    } else {
+    } elseif ($status == 3) {
 
         $available_events = $helper->getEvents($user);
 

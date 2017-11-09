@@ -15,7 +15,23 @@
                     return false;
 
             } catch (Exception $e) {
-                die($e->getMessage());
+                JLog::add('Error in mod_emundus_book_interview at: hasUserBooked', Jlog::ERROR, 'com_emundus');
+            }
+
+        }
+
+
+        public function getStatus($fnum) {
+
+
+            try {
+
+                $db = JFactory::getDbo();
+                $db->setQuery('SELECT status FROM #__emundus_campaign_candidature WHERE fnum LIKE '.$db->Quote($fnum));
+                return $db->loadResult();
+
+            } catch (Exception $e) {
+                JLog::add('Error in mod_emundus_book_interview at: getStatus', Jlog::ERROR, 'com_emundus');
             }
 
         }
@@ -46,7 +62,7 @@
                 $events = $db->loadObjectList();
 
             } catch (Exception $e) {
-                die($e->getMessage());
+                JLog::add('Error in mod_emundus_book_interview at: getEvents', Jlog::ERROR, 'com_emundus');
             }
 
 
@@ -74,7 +90,7 @@
                 return $db->loadObject();
 
             } catch (Exception $e) {
-                die($e->getMessage());
+                JLog::add('Error in mod_emundus_book_interview at: getNextInterview', Jlog::ERROR, 'com_emundus');
             }
 
         }
