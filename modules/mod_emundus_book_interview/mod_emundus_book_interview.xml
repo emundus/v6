@@ -23,6 +23,10 @@
 					<field name="facetime" type="checkbox" label="FACETIME_PARAM" description="FACETIME_PARAM_DESC" value="1" default="0"/>
 					<field name="whatsapp" type="checkbox" label="WHATSAPP_PARAM" description="WHATSAPP_PARAM_DESC" value="1" default="0"/>
 					<field name="google" type="checkbox" label="GOOGLE_PARAM" description="GOOGLE_PARAM_DESC" value="1" default="0"/>
+					<field type="list" name="mod_em_book_interview_layout" default="" label="MOD_EM_BOOK_INTERVIEW_LAYOUT" description="MOD_EM_BOOK_INTERVIEW_LAYOUT_DESC">
+                        <option value="default">EM_MODAL</option>
+                        <option value="form">EM_FORM</option>
+                    </field>
 				</fieldset>
 				<fieldset name="advanced">
 					<field name="layout" type="modulelayout" label="JFIELD_ALT_LAYOUT_LABEL" description="JFIELD_ALT_MODULE_LAYOUT_DESC" />

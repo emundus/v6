@@ -45,7 +45,7 @@ if (isset($user->fnum)) {
         if ($params->get('google') == 1)
             $contact_info['google'] = JText::_('ENTER_GOOGLE_ID');
 
-        require(JModuleHelper::getLayoutPath('mod_emundus_book_interview','default'));
+        require(JModuleHelper::getLayoutPath('mod_emundus_book_interview', $params->get('mod_em_book_interview_layout')));
 
     }
 
