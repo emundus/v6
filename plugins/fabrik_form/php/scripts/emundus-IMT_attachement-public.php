@@ -55,7 +55,7 @@ if (!isset($student)) {
 }
 
 try {
-    $query = 'UPDATE #__emundus_files_request SET uploaded = 1 WHERE keyid = "'.$key_id.'"';
+    $query = 'UPDATE #__emundus_files_request SET uploaded = 1 WHERE keyid = '.$db->Quote($key_id);
     $db->setQuery($query);
     $db->execute();
 } catch (Exception $e) {
@@ -117,11 +117,16 @@ if ($send !== true) {
     JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_CANNOT_SEND_EMAIL").$send->__toString(), JLog::ERROR, 'com_emundus');
     echo 'Error sending email: ' . $send->__toString();
 } else {
-    $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-            VALUES ('62', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW()";
-    $db->setQuery($sql);
-    $db->execute();
+    try {
+        $sql = "INSERT INTO #__messages (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
+                VALUES ('62', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
+        $db->setQuery($sql);
+        $db->execute();
+    } catch (Exception $e) {
+        die($sql);
+    }
 }
+
 
 try {
     // Step one is to get the email of the referent.
@@ -190,7 +195,7 @@ if ($send !== true) {
     echo 'Error sending email: ' . $send->__toString();
 } else {
     $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-            VALUES ('62', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW()";
+            VALUES ('62', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
     $db->setQuery($sql);
     $db->execute();
 }
