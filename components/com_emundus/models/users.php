@@ -243,18 +243,9 @@ class EmundusModelUsers extends JModelList
                 if ($and) $query .= ' AND ';
                 else { $and = true; $query .=' '; }
 
-                $query .= '(e.lastname LIKE '.$db->Quote('%'.$search.'%').'
-                            OR e.firstname LIKE '.$db->Quote('%'.$search.'%').'
-                            OR u.email LIKE '.$db->Quote('%'.$search.'%').'
-                            OR e.schoolyear LIKE '.$db->Quote('%'.$search.'%').'
-                            OR u.username LIKE '.$db->Quote('%'.$search.'%').'
-                            OR u.id LIKE '.$db->Quote('%'.$search.'%').')';
+                 $query .= '(e.lastname LIKE "%'.$search.'%" OR e.firstname LIKE "%'.$search.'%" OR u.email LIKE "%'.$search.'%" OR u.username LIKE "%'.$search.'%" OR u.id like "'.$search.'")';
             }
-            /*if(isset($schoolyears) &&  !empty($schoolyears)) {
-                if($and) $query .= ' AND ';
-                else { $and = true; $query .='WHERE '; }
-                $query.= 'e.schoolyear="'.$db->Quote($schoolyears).'"';
-            }*/
+
             if (isset($spam_suspect) &&  !empty($spam_suspect) && $spam_suspect == 1) {
                 if ($and) $query .= ' AND ';
                 else { $and = true; $query .=' '; }
