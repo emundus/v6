@@ -29,7 +29,7 @@ if (isset($user->fnum)) {
         $interview_date = $interview_dt->format('M j Y');
         $interview_time = $interview_dt->format('g:i A');
 
-        require(JModuleHelper::getLayoutPath('mod_emundus_book_interview','showInterview'));
+        require(JModuleHelper::getLayoutPath('mod_emundus_book_interview','showInterview_'.$params->get('mod_em_book_interview_layout')));
 
     } elseif ($status == 3) {
 

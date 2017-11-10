@@ -1,5 +1,5 @@
 <?php
-defined('_JEXEC') or die; 
+defined('_JEXEC') or die;
 
 ?>
 
@@ -49,7 +49,7 @@ defined('_JEXEC') or die;
             onSuccess: function(result) {
                 result = JSON.parse(result);
                 if (result.status) {
-                    location.reload(true);                        
+                    location.reload(true);
                 } else {
                     $$('#btnBook').setStyle('background-color','#96281B');
                     $$('#btnBook').set('text','Error!');
