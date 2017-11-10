@@ -78,3 +78,10 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule .* index.php [L]
 #
 ## End - Joomla! core SEF Section.
+
+## Protect /images/emundus/files/* directories from unallowed access ####
+#  Uncomment following line if your webserver's URL is not directly related to physical file paths.
+#  Update Your Joomla! Directory (just / for root path or something like /emundus/ for sub directorie)
+RewriteRule (images/emundus/files)/([0-9]+)/(.*)\.(.*)$ index.php?option=com_emundus&task=getfile&u=$1/$2/$3.$4 [L,R,NC]
+RewriteRule (tmp)/(.*)\.(.*)$ index.php?option=com_emundus&task=getfile&u=$1/$2.$3 [L,R,NC]
+## End emundus file uploaded protection
