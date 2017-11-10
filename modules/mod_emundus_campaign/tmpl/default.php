@@ -52,7 +52,7 @@ if ($locallang == "fr-FR") {
     <div class="tab-content">
         <div id="current" class="tab-pane fade in active">
             <div class="campaigns-list">
-                <?php echo $paginationCurrent->getResultsCounter(); ?>
+                <?php echo $paginationCurrent->getResultsCounter(); 
                 <?php if (empty($currentCampaign)) { ?>
                 <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
                 <?php } else {
@@ -112,10 +112,10 @@ if ($locallang == "fr-FR") {
                             </div>
                             <div class="below-content">
                             <?php if($resul->apply_online==1) {?>
-                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                <a class="btn btn-info" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+                                <a class="btn btn-success" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
                             <?php } else { ?>
-                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-success" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php } ?>
                             </div>
                         </div><!-- Close campaign-content -->
@@ -186,10 +186,10 @@ if ($locallang == "fr-FR") {
                             </div>
                             <div class="below-content">
                             <?php if ($resul->apply_online==1) {?>
-                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                <a class="btn btn-info" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+                                <a class="btn btn-success" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
                             <?php } else { ?>
-                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-success" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php } ?>
                             </div>
                         </div><!-- Close campaign-content -->
@@ -258,10 +258,10 @@ if ($locallang == "fr-FR") {
                             </div>
                             <div class="below-content">
                             <?php if ($resul->apply_online == 1) {?>
-                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                <a class="btn btn-info" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+                                <a class="btn btn-success" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
                             <?php } else { ?>
-                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-success" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php } ?>
                             </div>
                         </div><!-- Close campaign-content -->
@@ -330,10 +330,10 @@ if ($locallang == "fr-FR") {
                             </div>
                             <div class="below-content">
                             <?php if($resul->apply_online==1) {?>
-                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                <a class="btn btn-info" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+                                <a class="btn btn-success" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
                             <?php } else { ?>
-                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-success" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php } ?>
                             </div>
                         </div><!-- Close campaign-content -->
