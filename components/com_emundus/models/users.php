@@ -220,9 +220,9 @@ class EmundusModelUsers extends JModelList
             $query .= ' AND u.id IN( SELECT jeu.user_id FROM #__emundus_users as jeu WHERE jeu.university_id IN ('.implode(',', $institution).')) ';
 
         if ($edit == 1) {
-            $query.= ' u.id='.$db->Quote($uid);
+            $query.= ' u.id='.$uid;
         } else {
-            $and = true; 
+            $and = true;
             /*var_dump($this->filts_details['profile']);
             if(isset($this->filts_details['profile']) && !empty($this->filts_details['profile'])){
                 $query.= ' AND e.profile IN ('.implode(',', $this->filts_details['profile']).') ';
@@ -250,9 +250,11 @@ class EmundusModelUsers extends JModelList
                             OR u.username LIKE '.$db->Quote('%'.$search.'%').'
                             OR u.id LIKE '.$db->Quote('%'.$search.'%').')';
             }
-            
-            
-
+            /*if(isset($schoolyears) &&  !empty($schoolyears)) {
+                if($and) $query .= ' AND ';
+                else { $and = true; $query .='WHERE '; }
+                $query.= 'e.schoolyear="'.$db->Quote($schoolyears).'"';
+            }*/
             if (isset($spam_suspect) &&  !empty($spam_suspect) && $spam_suspect == 1) {
                 if ($and) $query .= ' AND ';
                 else { $and = true; $query .=' '; }
@@ -289,7 +291,6 @@ class EmundusModelUsers extends JModelList
 
             $query = $this->_buildQuery();
             $query .= $this->_buildContentOrderBy();
-  // echo str_replace('#_','jos',$query); //die();
             return $this->_getList( $query ,$session->get('limitstart'), $session->get('limit'));
 
         } catch(Exception $e) {
@@ -1451,8 +1452,8 @@ class EmundusModelUsers extends JModelList
             $db->setQuery('UPDATE #__emundus_users SET firstname = '.$db->Quote($user['firstname']).',
                                                         lastname = '.$db->Quote($user['lastname']).',
                                                         profile = '.$db->Quote($user['profile']).',
-                                                        university_id = '.$db->Quote($user['university_id']).'
-                                                        WHERE user_id = '.$db->Quote($user['id']));
+                                                        university_id = '.$user['university_id'].'
+                                                        WHERE user_id = '.$user['id']);
             $db->query();
 
             $db->setQuery('delete from #__emundus_groups where user_id = '. $user['id']);
@@ -1532,8 +1533,8 @@ class EmundusModelUsers extends JModelList
             $db->setQuery('UPDATE #__emundus_users SET firstname = '.$db->Quote($user['firstname']).',
                                                         lastname = '.$db->Quote($user['lastname']).',
                                                         profile = '.$db->Quote($user['profile']).',
-                                                        university_id = '.$db->Quote($user['university_id']).'
-                                                        WHERE user_id = '.$db->Quote($user['id']));
+                                                        university_id = '.$user['university_id'].'
+                                                        WHERE user_id = '.$user['id']);
             $db->query();
 
             $db->setQuery('delete from #__emundus_groups where user_id = '. $user['id']);
@@ -1708,5 +1709,7 @@ class EmundusModelUsers extends JModelList
         $dbo->setQuery($query);
         return $dbo->execute();
     }
+
+
 
 }
