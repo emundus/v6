@@ -47,7 +47,7 @@ class EmundusViewEvaluation extends JViewLegacy
     public function display($tpl = null)
     {
 
-	    $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
+		$this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 
 	    $menu = @JSite::getMenu();
 		$current_menu  = $menu->getActive();
@@ -118,14 +118,16 @@ class EmundusViewEvaluation extends JViewLegacy
 
 				// Get elements from model and proccess them to get an easy to use array containing the element type
 				$elements = $evaluation->getElementsVar();
-				foreach ($elements as $elt) {
-					$elt_name = $elt->tab_name."___".$elt->element_name;
-					$eltarr[$elt_name] = [
-						"plugin" 	=> $elt->element_plugin,
-						"tab_name" 	=> $elt->tab_name,
-						"params"  	=> $elt->element_attribs,
-						"fabrik_id" => $elt->id
-					];
+				if (count($elements) > 0) {
+					foreach ($elements as $elt) {
+						$elt_name = $elt->tab_name."___".$elt->element_name;
+						$eltarr[$elt_name] = [
+							"plugin" 	=> $elt->element_plugin,
+							"tab_name" 	=> $elt->tab_name,
+							"params"  	=> $elt->element_attribs,
+							"fabrik_id" => $elt->id
+						];
+					}
 				}
 
 				if (isset($eltarr))
@@ -214,6 +216,8 @@ class EmundusViewEvaluation extends JViewLegacy
 								$userObj->type = 'fnum';
 								if ($displayPhoto)
 									$userObj->photo = $h_files->getPhotos($value);
+								else
+									$userObj->photo = "";
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
 								$userObj->user->name = $user['name'];
 								$line['fnum'] = $userObj;

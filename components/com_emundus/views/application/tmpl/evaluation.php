@@ -24,7 +24,7 @@ JFactory::getSession()->set('application_layout', 'evaluation');
     <div class="panel panel-default widget">
         <div class="panel-heading">
             <h3 class="panel-title">
-            <span class="glyphicon glyphicon-check"></span> 
+            <span class="glyphicon glyphicon-check"></span>
                 <?php echo JText::_('COM_EMUNDUS_ASSESSMENT'); ?>
                 <?php if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum) && !empty($this->url_form)):?>
                         <a class="  clean" target="_blank" href="<?php echo JURI::base(true); ?>index.php?option=com_emundus&controller=evaluation&task=pdf&user=<?php echo $this->student->id; ?>&fnum=<?php echo $this->fnum; ?>">
@@ -38,7 +38,7 @@ JFactory::getSession()->set('application_layout', 'evaluation');
         </div>
         <div class="panel-body">
             <div class="content">
-                <?php if (count($this->evaluation_select) > 0):?>
+                <?php if (isset($this->evaluation_select) && count($this->evaluation_select) > 0):?>
                     <label for="copy_evaltuations"><?php echo JText::_('PICK_EVAL_TO_COPY'); ?></label>
                     <select id="copy_evaluations">
                         <option value="0" selected><?php echo JText::_('PICK_EVAL_TO_COPY'); ?></option>
@@ -105,11 +105,11 @@ JFactory::getSession()->set('application_layout', 'evaluation');
 
     $('#copy_evaluations').on('change', function() {
         if (this.value != 0) {
-            
+
             var tmp = this.value.split('-');
             var fnum = tmp[0];
             var evaluator = tmp[1];
-            
+
             $.ajax({
                type: 'GET',
                url: 'index.php?option=com_emundus&controller=evaluation&task=getevalcopy&format=raw&fnum='+fnum+'&evaluator='+evaluator,
@@ -117,7 +117,7 @@ JFactory::getSession()->set('application_layout', 'evaluation');
                    result = JSON.parse(result);
 
                     if (result.status) {
-                    
+
                         $('#formCopy').html(result.evaluation);
                         $('#formCopyButton').show();
                         $('div.copyForm').attr('id', result.formID);

@@ -29,9 +29,9 @@ $id = $data['jos_emundus_campaign_candidature___id'];
 // create new fnum
 $fnum		 = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);
 try {
-	$query = 'UPDATE #__emundus_campaign_candidature 
-				SET `fnum`='.$db->Quote($fnum). ' 
-				WHERE id='.$id.' AND applicant_id='.$user->id. ' AND fnum like '.$db->Quote($fnum_tmp).' AND campaign_id='.$campaign_id; 
+	$query = 'UPDATE #__emundus_campaign_candidature
+				SET `fnum`='.$db->Quote($fnum). '
+				WHERE id='.$id.' AND applicant_id='.$user->id. ' AND fnum like '.$db->Quote($fnum_tmp).' AND campaign_id='.$campaign_id;
 	$db->setQuery($query);
 	$db->execute();
 } catch (Exception $e) {
@@ -41,8 +41,8 @@ try {
 
 
 try {
-	$query = 'SELECT esc.*,  esp.label as plabel, esp.menutype 
-				FROM #__emundus_setup_campaigns AS esc 
+	$query = 'SELECT esc.*,  esp.label as plabel, esp.menutype
+				FROM #__emundus_setup_campaigns AS esc
 				LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = esc.profile_id
 				WHERE esc.id='.$campaign_id;
 	$db->setQuery($query);
@@ -71,9 +71,9 @@ $menutype = $campaign['menutype'];
 // Insert data in #__emundus_users
 $p = $mprofile->isProfileUserSet($user->id);
 if( $p['cpt'] == 0 )
-	$query = 'INSERT INTO #__emundus_users (user_id, firstname, lastname, profile, schoolyear, registerDate) 
+	$query = 'INSERT INTO #__emundus_users (user_id, firstname, lastname, profile, schoolyear, registerDate)
 			values ('.$user->id.', '.$db->quote(ucfirst($firstname)).', '.$db->quote(strtoupper($lastname)).', '.$profile.', '.$db->quote($schoolyear).', '.$db->quote($user->registerDate).')';
-else 
+else
 	$query = 'UPDATE #__emundus_users SET profile = '.$profile.', schoolyear='.$db->quote($schoolyear).' WHERE user_id = '.$user->id;
 
 try {
@@ -84,7 +84,7 @@ catch(Exception $e)
 {
    JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
    JError::raiseError(500, $query);
-}	
+}
 
 // Insert data in #__emundus_users_profiles
 $query = 'INSERT INTO #__emundus_users_profiles (user_id, profile_id) VALUES ('.$user->id.','.$profile.')';

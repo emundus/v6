@@ -52,7 +52,7 @@ if ($locallang == "fr-FR") {
     <div class="tab-content">
         <div id="current" class="tab-pane fade in active">
             <div class="campaigns-list">
-                <?php echo $paginationCurrent->getResultsCounter(); 
+                <?php echo $paginationCurrent->getResultsCounter(); ?>
                 <?php if (empty($currentCampaign)) { ?>
                 <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
                 <?php } else {

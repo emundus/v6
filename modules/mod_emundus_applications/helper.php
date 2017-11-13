@@ -21,7 +21,7 @@ class modemundusApplicationsHelper
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
 					LEFT JOIN #__emundus_setup_status AS ess ON ess.step=ecc.status
-					WHERE ecc.applicant_id ='.$user->id.' 
+					WHERE ecc.applicant_id ='.$user->id.'
 					ORDER BY esc.end_date DESC';
 //echo str_replace('#_', 'jos', $query);
 		$db->setQuery($query);
@@ -42,5 +42,66 @@ class modemundusApplicationsHelper
 		$db->setQuery($query);
 		$id = $db->loadResult();
 		return $id>0?$id:0;
+	}
+
+	static function getOtherCampaigns($uid) {
+
+		$db = JFactory::getDbo();
+
+		$query = 'SELECT count(id)
+					FROM #__emundus_setup_campaigns
+					WHERE published = 1
+					AND end_date >= NOW()
+					AND start_date <= NOW()
+					AND id NOT IN (
+						select campaign_id
+						from #__emundus_campaign_candidature
+						where applicant_id='. $uid .'
+					)';
+
+		try {
+
+			$db->setQuery($query);
+
+			if ($db->loadResult() > 0)
+				return true;
+			else
+				return false;
+
+		} catch (Exception $e) {
+			JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+
+	static function getFutureYearCampaigns($uid) {
+
+		$db = JFactory::getDbo();
+
+		$query = 'SELECT count(id)
+					FROM #__emundus_setup_campaigns
+					WHERE published = 1
+					AND end_date >= NOW()
+					AND start_date <= NOW()
+					AND year NOT IN (
+						select sc.year
+						from #__emundus_campaign_candidature as cc
+						LEFT JOIN #__emundus_setup_campaigns as sc ON sc.id = cc.campaign_id
+						where applicant_id='. $uid .'
+					)';
+
+		try {
+
+			$db->setQuery($query);
+
+			if ($db->loadResult() > 0)
+				return true;
+			else
+				return false;
+
+		} catch (Exception $e) {
+			JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
+			return false;
+		}
 	}
 }
