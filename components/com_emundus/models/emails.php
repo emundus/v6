@@ -37,9 +37,17 @@ class EmundusModelEmails extends JModelList
      */
     public function getEmail($lbl)
     {
-        $query = 'SELECT * FROM #__emundus_setup_emails AS se LEFT JOIN #__emundus_email_templates AS et ON et.id = se.email_tmpl WHERE se.lbl='.$this->_db->Quote($lbl);
-        $this->_db->setQuery( $query );
-        return $this->_db->loadObject();
+        try {
+            $query = 'SELECT * FROM #__emundus_setup_emails AS se LEFT JOIN #__emundus_email_templates AS et ON et.id = se.email_tmpl WHERE se.lbl like '.$this->_db->Quote($lbl);
+            $this->_db->setQuery( $query );
+
+            return $this->_db->loadObject();
+
+        } catch(Exeption $e) {
+            error_log($e->getMessage(), 0);
+            JLog::add($query, JLog::ERROR, 'com_emundus.email');
+            return false;
+        }
     }
 
     /**
@@ -355,7 +363,7 @@ class EmundusModelEmails extends JModelList
         );
         $replacements = array(
             $user->id, $user->name, $user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
-            JURI::base(true)."index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), JURI::base(true),
+            JURI::base(true)."index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), JURI::base(),
             $user->id, $user->name, $user->email, $user->username, date("F j, Y"), $logo
         );
 

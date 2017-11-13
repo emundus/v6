@@ -134,7 +134,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		// Envoi de la confirmation de création de compte par email
 		/*
-         * @var EmundusModelEmails $m_users
+         * @var EmundusModelEmails $m_emails
 		 *  */
         $m_emails 	= $this->getModel('emails');
 		$email 	= $m_emails->getEmail('new_account');
@@ -163,7 +163,6 @@ class EmundusControllerUsers extends JControllerLegacy {
 			$mail_from_address,
 			$mail_from_name
 		];
-
         $mailer->setSender($sender);
         $mailer->addReplyTo($email->emailfrom, $email->name);
         $mailer->addRecipient($user->email);
