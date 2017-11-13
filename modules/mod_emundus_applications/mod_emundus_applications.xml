@@ -76,7 +76,7 @@
 					name="show_progress_color"
 					type="text"
 					label="MOD_EMUNDUS_SHOW_PROGRESS_COLOR"
-					description="" 
+					description=""
 					default="#EA5012" />
 				<field
 					name="show_progress_forms"
@@ -93,7 +93,7 @@
 					name="show_progress_color_forms"
 					type="text"
 					label="MOD_EMUNDUS_SHOW_PROGRESS_COLOR_FORMS"
-					description="" 
+					description=""
 					default="#EA5012" />
 				<field
 					name="show_progress_documents"
@@ -110,7 +110,7 @@
 					name="show_progress_color_documents"
 					type="text"
 					label="MOD_EMUNDUS_SHOW_PROGRESS_COLOR_DOCUMENTS"
-					description="" 
+					description=""
 					default="#EA5012" />
 			</fieldset>
 			<fieldset
@@ -124,7 +124,7 @@
 					name="moduleclass_sfx"
 					type="text"
 					label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
-					description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC" 
+					description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC"
 					default="list-group" />
 				<field
 					name="cache"
