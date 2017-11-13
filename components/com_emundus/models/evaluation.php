@@ -1635,7 +1635,7 @@ class EmundusModelEvaluation extends JModelList
     *	@param code 		code of the programme
     * 	@return int
     */
-    function getEvaluationFormByProgramme($code=null) {
+    function getEvaluationFormByProgramme($code = null) {
         if ($code === NULL) {
             $session = JFactory::getSession();
             if ($session->has('filt_params'))
