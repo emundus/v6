@@ -129,6 +129,7 @@ if ($send !== true) {
 
 
 try {
+
     // Step one is to get the email of the referent.
     $query = 'SELECT Email_1 FROM #__emundus_references as er
                 WHERE er.fnum IN (
@@ -136,14 +137,14 @@ try {
                     FROM #__emundus_files_request as efr
                     WHERE efr.keyid = "'.$key_id.'"
                 )';
+
+    $db->setQuery($query);
+    $recipient = array($db->loadResult());
+
 } catch (Exception $e) {
     // catch any database errors.
     JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
 }
-
-
-$db->setQuery($query);
-$recipient = array($db->loadResult());
 
 try {
     // Récupération des données du mail
@@ -183,7 +184,7 @@ $sender = array(
 $mailer = JFactory::getMailer();
 $mailer->setSender($sender);
 $mailer->addReplyTo($from, $fromname);
-$mailer->addRecipient($recipient);
+$mailer->addRecipient(array($recipient, "admissions@mines-albi.fr"));
 $mailer->setSubject($subject);
 $mailer->isHTML(true);
 $mailer->Encoding = 'base64';
