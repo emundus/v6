@@ -377,9 +377,9 @@ class EmundusModelCalendar extends JModelLegacy {
         $email_from = $email->emailfrom;
 
         if ($email->name === null)
-            $email_from_name = $config->get('fromname');
+            $mail_from_name = $config->get('fromname');
         else
-            $email_from_name = $email->name;
+            $mail_from_name = $email->name;
 
         // If the email sender has the same domain as the system sender address.
         if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
@@ -395,7 +395,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
         // Configure email sender
         $mailer->setSender($sender);
-        $mailer->addReplyTo($email_from, $email_from_name);
+        $mailer->addReplyTo($email_from, $mail_from_name);
         $mailer->addRecipient($user->email);
         $mailer->setSubject($subject);
         $mailer->isHTML(true);
@@ -453,9 +453,9 @@ class EmundusModelCalendar extends JModelLegacy {
             $email_from = $email->emailfrom;
 
             if ($email->name === null)
-                $email_from_name = $config->get('fromname');
+                $mail_from_name = $config->get('fromname');
             else
-                $email_from_name = $email->name;
+                $mail_from_name = $email->name;
 
             // If the email sender has the same domain as the system sender address.
             if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
@@ -472,7 +472,7 @@ class EmundusModelCalendar extends JModelLegacy {
             // Configure email sender
             $mailer->ClearAllRecipients();
             $mailer->setSender($sender);
-            $mailer->addReplyTo($email_from, $email_from_name);
+            $mailer->addReplyTo($email_from, $mail_from_name);
             $mailer->addRecipient($recipient->email);
             $mailer->setSubject($subject);
             $mailer->isHTML(true);
