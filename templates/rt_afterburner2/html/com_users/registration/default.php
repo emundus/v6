@@ -18,7 +18,7 @@ $app	= JFactory::getApplication();
 $template = $app->getTemplate();
 $lang->load('tpl_'.$template, JPATH_THEMES.DS.$template);
 //$this->form->reset( true );
-$this->form->loadFile( dirname(__FILE__) . DS . "registration.xml"); 
+$this->form->loadFile( dirname(__FILE__) . DS . "registration.xml");
 
 $jform = $app->getUserState('com_users.registration.data');
 
@@ -31,7 +31,7 @@ if (!empty($course)) {
 	$campaign_id = $campaigns['id'];
 }
 
-if(count(@$campaign_id) == 0 && !empty($course)) { 
+if(count(@$campaign_id) == 0 && !empty($course)) {
 	JFactory::getApplication()->enqueueMessage(JText::_('EMUNDUS_NO_CAMPAIGN'), 'error');
 	JLog::add('No available campaign', JLog::ERROR, 'com_emundus');
 }
@@ -100,7 +100,7 @@ else {
 }
 $HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
 //Detection du browser
-if(preg_match('/Safari/', $HTTP_USER_AGENT) && !preg_match('/Konqueror/', $HTTP_USER_AGENT))
+if (preg_match('/Safari/', $HTTP_USER_AGENT) && !preg_match('/Konqueror/', $HTTP_USER_AGENT))
 	$browser='Safari';
 elseif (preg_match('/msie/', $HTTP_USER_AGENT) && !preg_match('/opera/', $HTTP_USER_AGENT))
 	$browser='IE';
@@ -108,14 +108,29 @@ elseif (preg_match('/opera/', $HTTP_USER_AGENT))
 	$browser='Opera';
 elseif (preg_match('/Mozilla/', $HTTP_USER_AGENT))
 	$browser='FireFox';
-else {
+else
 	$browser=$HTTP_USER_AGENT;
-}
 
 //var_dump($jform);
 ?>
 
 <script>
+
+var courseInURL = "<?php echo (isset($course)) ? 'true' : 'null'; ?>";
+
+if (courseInURL == 'true') {
+	var campaign = document.getElementById('jform_emundus_profile_campaign');
+	var cText = campaign.options[1].text;
+	campaign.style.visibility = 'hidden';
+
+	var newItem = document.createElement("p");       // Create a <li> node
+	var textnode = document.createTextNode(cText);  // Create a text node
+	newItem.appendChild(textnode);
+
+	campaign.parentNode.insertBefore(newItem, campaign);
+}
+
+
 function validateEmail(email) {
   var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(email);
@@ -124,7 +139,7 @@ function validateEmail(email) {
 function check_field(){
 	campaign_id = "<?php echo $campaign_id ?>";
 	campaign = $('jform_emundus_profile_campaign');
-	if(campaign_id != "") { 
+	if(campaign_id != "") {
 		for (var i=0 ; i<campaign.options.length ; ++i) {
 			if(campaign.options[i].value == campaign_id)
 				campaign.options[i].selected=true;
@@ -132,16 +147,16 @@ function check_field(){
 	} else { campaign.options[0].selected=true; }
 
 	var form_values = new Array();
-	<?php 
+	<?php
 	if(!empty($jform)) {
-		foreach($jform as $key => $value) { 
+		foreach($jform as $key => $value) {
 		 	if( is_array($value) ) {
 		 		foreach($value as $k => $v)
-		 			echo 'form_values["jform_'.$key.'_'.$k.'"] = "'.$v.'"; '; 
+		 			echo 'form_values["jform_'.$key.'_'.$k.'"] = "'.$v.'"; ';
 			} else {
 		 		echo 'form_values["jform_'.$key.'"] = "'.$value.'"; ';
-			} 
-		} 
+			}
+		}
 	}
 	?>
 
@@ -150,14 +165,14 @@ function check_field(){
 
     <?php $i=0; foreach($fields as $field){ ?>
 		field = document.getElementsByName("<?php echo $field->name; ?>");
-		if (field[0] != undefined) { 
+		if (field[0] != undefined) {
 			if (form_values[field[0].id] != undefined)
 				field[0].value = form_values[field[0].id];
 			if (field[0].value == "" && "<?php echo $browser; ?>" != "IE")
 				field[0].setStyles({backgroundColor: '#F7F2B2'});
 			field[0].onblur = function() {
 				if ("<?php echo $browser; ?>" != "IE")
-					this.setStyles({backgroundColor: '#fff'}); 
+					this.setStyles({backgroundColor: '#fff'});
 				$("jform_name").value = firstname.value + ' ' + lastname.value;
 			}
 			if ("<?php echo $browser; ?>" != "IE") {
