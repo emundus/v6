@@ -27,6 +27,7 @@
                         <option value="default">EM_MODAL</option>
                         <option value="form">EM_FORM</option>
                     </field>
+					<field name="evaluated_status" type="text" label="EVALUATED_STATUS" description="EVALUATED_STATUS_DESC"/>
 				</fieldset>
 				<fieldset name="advanced">
 					<field name="layout" type="modulelayout" label="JFIELD_ALT_LAYOUT_LABEL" description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
