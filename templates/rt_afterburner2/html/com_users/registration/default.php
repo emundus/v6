@@ -121,6 +121,7 @@ var courseInURL = "<?php echo (isset($course)) ? 'true' : 'null'; ?>";
 if (courseInURL == 'true') {
 	var campaign = document.getElementById('jform_emundus_profile_campaign');
 	var cText = campaign.options[1].text;
+	campaign.selectedIndex = 1;
 	campaign.style.visibility = 'hidden';
 
 	var newItem = document.createElement("p");       // Create a <li> node

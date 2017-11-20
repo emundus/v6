@@ -81,7 +81,9 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 													<span class="label label-<?php echo $value->status_class ?>" title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
 												<?php elseif ($k == 'fnum'):?>
 													<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
-														<div class="em_list_photo"><?php echo $value->photo; ?></div>
+														<?php if (isset($value->photo)) :?>
+															<div class="em_list_photo"><?php echo $value->photo; ?></div>
+														<?php endif; ?>
 														<div class="em_list_text">
 															<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
 															<div class="em_list_email"><?php echo $value->user->email; ?></div>
