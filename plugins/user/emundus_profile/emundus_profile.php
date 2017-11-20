@@ -1,12 +1,12 @@
  <?php
  /**
-  * @version            
+  * @version
   * @copyright  Copyright (C) 2005 - 2010 Open Source Matters, Inc. All rights reserved.
   * @license            GNU General Public License version 2 or later; see LICENSE.txt
   */
- 
+
  defined('JPATH_BASE') or die;
- 
+
   /**
    * An example custom profile plugin.
    *
@@ -44,9 +44,9 @@
                 if (!in_array($context, array('com_users.profile','com_users.registration','com_users.user','com_admin.profile'))){
                         return true;
                 }
- 
+
                 $userId = isset($data->id) ? $data->id : 0;
- 
+
                 // Load the profile data from the database.
                 $db = JFactory::getDbo();
                 $db->setQuery(
@@ -56,24 +56,24 @@
                         ' ORDER BY ordering'
                 );
                 $results = $db->loadRowList();
- 
+
                 // Check for a database error.
                 if ($db->getErrorNum()) {
                         $this->_subject->setError($db->getErrorMsg());
                         return false;
                 }
- 
+
                 // Merge the profile data.
                 $data->emundus_profile = array();
-				
+
                 foreach ($results as $v) {
                         $k = str_replace('emundus_profile.', '', $v[0]);
                         $data->emundus_profile[$k] = json_decode($v[1], true);
                 }
- 
+
                 return true;
         }
- 
+
         /**
          * @param       JForm   The form to be altered.
          * @param       array   The associated data for the form.
@@ -85,7 +85,7 @@
           // Load user_profile plugin language
           //$lang = JFactory::getLanguage();
           //$lang->load('plg_user_emundus_profile', JPATH_ADMINISTRATOR);
-          
+
           if (!($form instanceof JForm)) {
             $this->_subject->setError('JERROR_NOT_A_FORM');
               return false;
@@ -95,11 +95,11 @@
           if (!in_array($form->getName(), array('com_users.profile', 'com_users.registration','com_users.user','com_admin.profile'))) {
             return true;
           }
-				
+
 				// Add the registration fields to the form.
 				JForm::addFormPath(dirname(__FILE__) . '/profiles');
 				$form->loadFile('profile', false);
-		
+
 				$fields = array(
 					'lastname',
 					'firstname',
@@ -107,9 +107,9 @@
 					'campaign',
           'newsletter'
 				);
-		
+
         foreach ($fields as $field)
-        {	
+        {
                 // Case using the users manager in admin
                 if ($name == 'com_users.user')
                 {
@@ -122,7 +122,7 @@
                 }
                 // Case registration
                 elseif ($name == 'com_users.registration')
-                { 
+                {
                         // Toggle whether the field is required.
                         if ($this->params->get('register-require_' . $field, 1) > 0)
                         {
@@ -139,7 +139,7 @@
                         // Toggle whether the field is required.
                         if ($this->params->get('profile-require_' . $field, 1) > 0)
                         {
-                                $form->setFieldAttribute($field, 'required', ($this->params->get('profile-require_' . $field) == 2) ? 'required' : '', 'emundus_profile'); 
+                                $form->setFieldAttribute($field, 'required', ($this->params->get('profile-require_' . $field) == 2) ? 'required' : '', 'emundus_profile');
                         }
                         else
                         {
@@ -148,9 +148,9 @@
                 }
         }
 
-        return true;                
+        return true;
         }
- 
+
         function onUserAfterSave($data, $isNew, $result, $error)
         {
             $userId = JArrayHelper::getValue($data, 'id', 0, 'int');
@@ -184,7 +184,7 @@
 
             return true;
         }
- 
+
         /**
          * Remove all user profile information for the given user ID
          *
@@ -199,9 +199,9 @@
                 if (!$success) {
                         return false;
                 }
- 
+
                 $userId = JArrayHelper::getValue($user, 'id', 0, 'int');
- 
+
                 if ($userId)
                 {
                         try
@@ -211,7 +211,7 @@
                                         'DELETE FROM #__user_profiles WHERE user_id = '.$userId .
                                         " AND profile_key LIKE 'emundus_profile.%'"
                                 );
- 
+
                                 if (!$db->query()) {
                                         throw new Exception($db->getErrorMsg());
                                 }
@@ -222,10 +222,10 @@
                                 return false;
                         }
                 }
- 
+
                 return true;
         }
- 
- 
+
+
  }
 ?>

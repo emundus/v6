@@ -20,6 +20,18 @@ $interviewed = !empty(@$_REQUEST['jos_emundus_evaluations___oral'][0]);
 $fnum = $_REQUEST['jos_emundus_evaluations___fnum'];
 $student = JUser::getInstance(substr($fnum,-7));
 
+try {
+
+	// If user is already interviewed, then dont change his status.
+	$query = 'SELECT status FROM #__emundus_campaign_candidature
+				WHERE fnum LIKE '.$db->Quote($fnum);
+	$db->setQuery($query);
+	$status = $db->loadResult();
+
+} catch (Exception $e) {
+	JLog::add('Error in plugin evaluation-ESA on query : '.$query, JLog::ERROR, 'com_emundus');
+}
+
 if ($interviewed) {
 
 	try {
@@ -35,7 +47,7 @@ if ($interviewed) {
 		JLog::add('Error in plugin evaluation-ESA on query : '.$query, JLog::ERROR, 'com_emundus');
 	}
 
-} else {
+} elseif ($status != 5) {
 
 	include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 

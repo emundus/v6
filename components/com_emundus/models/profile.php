@@ -451,13 +451,13 @@ class EmundusModelProfile extends JModelList
 		include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 		include_once(JPATH_SITE.'/components/com_emundus/models/admission.php');
 
-		$users 			= new EmundusModelUsers;
+		$m_users 		= new EmundusModelUsers;
 		$m_admission	= new EmundusModelAdmission;
 		$current_user 	= JFactory::getUser();
 		$session        = JFactory::getSession();
 		$app			= JFactory::getApplication();
 
-		$profile 		= $this->getProfileByApplicant($current_user->id);
+		$profile = $this->getProfileByApplicant($current_user->id);
 
 		$emundusSession = new stdClass();
 
@@ -467,7 +467,7 @@ class EmundusModelProfile extends JModelList
 
 		$emundusSession->firstname 	= $profile["firstname"];
 		$emundusSession->lastname   = strtoupper($profile["lastname"]);
-		$emundusSession->emGroups   = array_keys($users->getUserGroups($current_user->id));
+		$emundusSession->emGroups   = array_keys($m_users->getUserGroups($current_user->id));
 
 		if (EmundusHelperAccess::isApplicant($current_user->id)) {
 
@@ -540,7 +540,7 @@ class EmundusModelProfile extends JModelList
 		include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 		include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 
-		$users 			= new EmundusModelUsers;
+		$m_users 			= new EmundusModelUsers;
 		$current_user 	= JFactory::getUser($user_id);
 		$profile 		= $this->getProfileByApplicant($current_user->id);
 		$emundus_user 	= new stdClass();
@@ -550,7 +550,7 @@ class EmundusModelProfile extends JModelList
 
 		$emundus_user->firstname  = $profile["firstname"];
 		$emundus_user->lastname   = strtoupper($profile["lastname"]);
-		$emundus_user->emGroups   = array_keys($users->getUserGroups($current_user->id));
+		$emundus_user->emGroups   = array_keys($m_users->getUserGroups($current_user->id));
 
 		if (EmundusHelperAccess::isApplicant($current_user->id)) {
 			$campaign 	= $this->getCurrentCampaignInfoByApplicant($current_user->id);
