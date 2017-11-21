@@ -175,6 +175,7 @@ function check_field(){
 				if ("<?php echo $browser; ?>" != "IE")
 					this.setStyles({backgroundColor: '#fff'});
 				$("jform_name").value = firstname.value + ' ' + lastname.value;
+				$("jform_email1").value = $("jform_username").value;
 			}
 			if ("<?php echo $browser; ?>" != "IE") {
 				field[0].onchange = function(){this.setStyles({backgroundColor: '#fff'});}
