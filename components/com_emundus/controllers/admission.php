@@ -49,7 +49,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
             JRequest::setVar('view', $default );
         }
         parent::display();
-    
+
     }
 
     // EMAIL APPLICANT WITH CUSTOM MESSAGE
@@ -115,10 +115,10 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
     public function loadfilters() {
         try {
-            
+
             $jinput = JFactory::getApplication()->input;
             $id     = $jinput->getInt('id', null);
-            
+
             $filter = @EmundusHelperFiles::getEmundusFilters($id);
             $params = (array) json_decode($filter->constraints);
             $params['select_filter'] = $id;
@@ -129,14 +129,14 @@ class EmundusControllerAdmission extends JControllerLegacy {
                 JFactory::getSession()->set('filter_order', $params['filter_order']);
                 JFactory::getSession()->set('filter_order_Dir', $params['filter_order_Dir']);
             }
-            
+
             JFactory::getSession()->set('filt_params', $params['filter']);
             if (!empty($params['col']))
                 JFactory::getSession()->set('adv_cols', $params['col']);
 
             echo json_encode((object)(array('status' => true)));
             exit();
-        
+
         } catch (Exception $e) {
             throw new Exception;
         }
@@ -145,14 +145,14 @@ class EmundusControllerAdmission extends JControllerLegacy {
     public function order() {
         $jinput = JFactory::getApplication()->input;
         $order  = $jinput->getString('filter_order', null);
-        
+
         $ancientOrder = JFactory::getSession()->get('filter_order');
         $params = JFactory::getSession()->get('filt_params');
         JFactory::getSession()->set('filter_order', $order);
         $params['filter_order'] = $order;
 
         if ($order == $ancientOrder) {
-            
+
             if (JFactory::getSession()->get('filter_order_Dir') == 'desc') {
                 JFactory::getSession()->set('filter_order_Dir', 'asc');
                 $params['filter_order_Dir'] = 'asc';
@@ -239,10 +239,10 @@ class EmundusControllerAdmission extends JControllerLegacy {
     public function setlimitstart() {
         $jinput     = JFactory::getApplication()->input;
         $limistart  = $jinput->getInt('limitstart', null);
-        
+
         $limit = intval(JFactory::getSession()->get('limit'));
         $limitstart = ($limit != 0 ? ($limistart > 1 ? (($limistart - 1) * $limit) : 0) : 0);
-        
+
         JFactory::getSession()->set('limitstart', $limitstart);
 
         echo json_encode((object)(array('status' => true)));
@@ -255,13 +255,13 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
             $elements = $h_files->getElements();
             echo json_encode((object)([
-                'status'        => true, 
-                'default'       => JText::_('PLEASE_SELECT'), 
-                'defaulttrash'  => JText::_('REMOVE_SEARCH_ELEMENT'), 
+                'status'        => true,
+                'default'       => JText::_('PLEASE_SELECT'),
+                'defaulttrash'  => JText::_('REMOVE_SEARCH_ELEMENT'),
                 'options'       => $elements
             ]));
             exit;
-            
+
         } catch (Exception $e) {
             throw $e;
         }
@@ -274,32 +274,32 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $fnums      = $jinput->getString('fnums', null);
         $title      = $jinput->getString('title', '');
         $comment    = $jinput->getString('comment', null);
-        
+
         $fnums      = (array) json_decode(stripslashes($fnums));
-        
+
         $m_application = $this->getModel('Application');
 
         if (is_array($fnums)) {
 
             foreach ($fnums as $fnum) {
                 if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
-                    
+
                     $aid = intval(substr($fnum, 21, 7));
                     $res = $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum)));
-                    
+
                     if ($res !== true && !is_numeric($res)) {
                         echo json_encode(([
-                            'status'    => false, 
+                            'status'    => false,
                             'msg'       => JText::_('ERROR')
                         ]));
                         exit;
                     }
-                
+
                 }
             }
 
             echo json_encode(([
-                'status'    => true, 
+                'status'    => true,
                 'msg'       => JText::_('COMMENT_SUCCESS')
             ]));
             exit;
@@ -307,7 +307,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         } else {
             //all result find by the request
             $m_files = $this->getmodel('Files');
-            
+
             $fnums = $m_files->getAllFnums();
             foreach ($fnums as $fnum) {
                 if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
@@ -366,22 +366,22 @@ class EmundusControllerAdmission extends JControllerLegacy {
          $tag = $jinput->getInt('tag', null);
          $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
          $m_files = $this->getModel('Files');
- 
+
          if ($fnums == "all")
              $fnums = $m_files->getAllFnums();
 
          $validFnums = array();
- 
+
          foreach($fnums as $fnum) {
              if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum)) {
                  $validFnums[] = $fnum;
              }
          }
          unset($fnums);
- 
+
          $res = $m_files->tagFile($validFnums, $tag);
          $tagged = $m_files->getTaggedFile($tag);
- 
+
          echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAG_SUCCESS'), 'tagged' => $tagged)));
          exit;
      }
@@ -396,7 +396,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $actions    = (array) json_decode(stripslashes($actions));
         $fnums      = (array) json_decode(stripslashes($fnums));
         $m_files    = $this->getModel('Files');
-        
+
         if (is_array($fnums)) {
 
             $validFnums = array();
@@ -404,7 +404,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
                 if (EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum))
                     $validFnums[] = $fnum;
             }
-            
+
             unset($fnums);
             if (!empty($groups)) {
                 $groups = (array) json_decode(stripslashes($groups));
@@ -420,7 +420,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
                 $msg = JText::_('SHARE_SUCCESS');
             else
                 $msg = JText::_('SHARE_ERROR');
-        
+
         } else {
 
             $fnums = $m_files->getAllFnums();
@@ -429,7 +429,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
                 if (EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum))
                     $validFnums[] = $fnum;
             }
-            
+
             unset($fnums);
             if ($groups !== null) {
                 $groups = (array) json_decode(stripslashes($groups));
@@ -443,12 +443,12 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
             if ($res !== false)
                 $msg = JText::_('SHARE_SUCCESS');
-            else 
+            else
                 $msg = JText::_('SHARE_ERROR');
         }
-        
+
         echo json_encode((object)([
-            'status'    => $res, 
+            'status'    => $res,
             'msg'       => $msg
         ]));
         exit;
@@ -473,9 +473,9 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $state  = $jinput->getInt('state', null);
 
         $fnums = (array) json_decode(stripslashes($fnums));
-        
+
         $m_files = $this->getModel('Files');
-        
+
         if (is_array($fnums)) {
 
             $validFnums = array();
@@ -485,9 +485,9 @@ class EmundusControllerAdmission extends JControllerLegacy {
                     $validFnums[] = $fnum;
             }
             $res = $m_files->updateState($validFnums, $state);
-        
+
         } else {
-        
+
             $fnums = $m_files->getAllFnums();
             $validFnums = array();
 
@@ -514,7 +514,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $group  = $jinput->getString('group', null);
 
         $m_files = $this->getModel('Files');
-        
+
         if ($group == "true")
             $res = $m_files->unlinkEvaluators($fnum, $id, true);
         else
@@ -532,14 +532,14 @@ class EmundusControllerAdmission extends JControllerLegacy {
     public function getfnuminfos() {
         $jinput = JFactory::getApplication()->input;
         $fnum   = $jinput->getString('fnum', null);
-        
+
         $res        = false;
         $fnumInfos  = null;
 
         if ($fnum != null) {
             $m_files    = $this->getModel('Files');
             $fnumInfos  = $m_files->getFnumInfos($fnum);
-            
+
             if ($fnum !== false)
                 $res = true;
         }
@@ -552,9 +552,9 @@ class EmundusControllerAdmission extends JControllerLegacy {
     public function deletefile() {
         $jinput = JFactory::getApplication()->input;
         $fnum   = $jinput->getString('fnum', null);
-        
+
         $m_files  = $this->getModel('Files');
-        
+
         if (EmundusHelperAccess::asAccessAction(1, 'd', $this->_user->id, $fnum))
             $res = $m_files->changePublished($fnum);
         else
@@ -575,15 +575,20 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $h_files        = new EmundusHelperFiles;
 
 
-        $defaultElements = $m_admission->getAdmissionElementsName(0, 0);
-        
+        $defaultElements = $m_admission->getAdmissionElementsName(0, 1);
+
+        foreach ($defaultElements as $kde => $de) {
+            if ($de->element_name == 'id' || $de->element_name == 'fnum' || $de->element_name == 'student_id' || $de->element_name == 'user')
+                unset($defaultElements[$kde]);
+        }
+
         if ($form == "admission")
             $elements = $m_admission->getApplicantAdmissionElementsName(0, 0);
         elseif ($form == "decision")
             $elements = $m_admission->getAdmissionElementsName(0, 0);
         else
             $elements = $h_files->getElements();
-        
+
         $res = [
             'status'    => true,
             'elts'      => $elements,
@@ -596,19 +601,19 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
     public function send_elements() {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-        
+
         $current_user = JFactory::getUser();
-        
+
         if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
             die(JText::_('RESTRICTED_ACCESS') );
 
         $jinput = JFactory::getApplication()->input;
         $fnums  = $jinput->getVar('fnums', null);
-        
+
         $fnums  = (array) json_decode(stripcslashes($fnums));
-        
+
         $m_files = $this->getModel('Files');
-        
+
         if (!is_array($fnums) || count($fnums)==0 || @$fnums===null)
             $fnums = $m_files->getAllFnums();
 
@@ -618,7 +623,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
                 $validFnums[] = $fnum;
         }
         unset($fnums);
-        
+
         $elts   = $jinput->getString('elts', null);
         $elts   = (array) json_decode(stripcslashes($elts));
         $objs   = $jinput->getString('objs', null);
@@ -626,7 +631,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         //$elts[] = 2755; // statut Fabrik ID
 
         $name = $this->export_xls($validFnums, $objs, $elts);
-        
+
         $result = array('status' => true, 'name' => $name);
         echo json_encode((object) $result);
         exit();
@@ -660,7 +665,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
         require_once($file);
         pdf_admission(!empty($student_id)?$student_id:$this->_user->id, $fnum);
-        
+
         exit();
     }
 
@@ -681,7 +686,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
     }
 
     public function sortArrayByArray($array,$orderArray) {
-        
+
         $ordered = array();
         foreach ($orderArray as $key) {
             if (array_key_exists($key,$array)) {
@@ -725,13 +730,13 @@ class EmundusControllerAdmission extends JControllerLegacy {
     }
 
     public function getfnums_csv() {
-        
+
         $jinput = JFactory::getApplication()->input;
         $fnums  = $jinput->getVar('fnums', null);
         $fnums  = (array) json_decode(stripslashes($fnums));
-        
+
         $m_files  = $this->getModel('Files');
-        
+
         if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
             $fnums = $m_files->getAllFnums();
 
@@ -741,10 +746,10 @@ class EmundusControllerAdmission extends JControllerLegacy {
                 $validFnums[] = $fnum;
         }
         $totalfile = sizeof($validFnums);
-        
+
         $session = JFactory::getSession();
         $session->set('fnums_export', $validFnums);
-        
+
         $result = array('status' => true, 'totalfile'=> $totalfile);
         echo json_encode((object) $result);
         exit();
@@ -778,7 +783,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $fnums      = $session->get('fnums_export');
 		if (count($fnums) == 0)
             $fnums = array($session->get('application_fnum'));
-		
+
         $jinput     = JFactory::getApplication()->input;
         $file       = $jinput->getVar('file', null, 'STRING');
         $totalfile  = $jinput->getVar('totalfile', null);
@@ -845,14 +850,14 @@ class EmundusControllerAdmission extends JControllerLegacy {
         if ($start == 0) {
             $line=JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('CAMPAIGN')."\t";
             $nbcol = 6;
-            
+
             foreach ($ordered_elements as $fKey => $fLine) {
                 if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id') {
                     $line .= $fLine->element_label . "\t";
                     $nbcol++;
                 }
             }
-            
+
             foreach ($colsup as $kOpt => $vOpt) {
                 if ($vOpt=="forms" || $vOpt=="attachment")
                     $line .= $vOpt . "(%)\t";
@@ -872,16 +877,16 @@ class EmundusControllerAdmission extends JControllerLegacy {
             // On traitre les données du fnum
             foreach ($fnum as $k => $v) {
                 if ($k != 'code' && $k != 'campaign_id' && $k != 'jos_emundus_campaign_candidature___campaign_id' && $k != 'jos_emundus_final_grade___campaign_id' && $k != 'c___campaign_id') {
-                    
+
                     if ($k === 'fnum') {
-                    
+
                         $line .= $v."\t";
                         $line .= $status[$v]['value']."\t";
                         $uid = intval(substr($v, 21, 7));
                         $userProfil = JUserHelper::getProfile($uid)->emundus_profile;
                         $line .= strtoupper($userProfil['lastname'])."\t";
                         $line .= $userProfil['firstname']."\t";
-                    
+
                     } elseif ($k === 'jos_emundus_evaluations___user' || $k === "user")
                         $line .= strip_tags(JFactory::getUser($v)->name)."\t";
                     else
@@ -892,7 +897,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
             // On ajoute les données supplémentaires
             foreach ($colOpt as $kOpt => $vOpt) {
                 switch ($kOpt) {
-                    
+
                     case "PHOTO":
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
                             $val = $vOpt[$fnum['fnum']];
@@ -905,7 +910,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
                             $line .= "\t";
                         }
                         break;
-                    
+
                     case "forms":
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
                             $val = $vOpt[$fnum['fnum']];
@@ -914,7 +919,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
                             $line .= "\t";
                         }
                         break;
-                    
+
                     case "attachment":
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
                             $val = $vOpt[$fnum['fnum']];
@@ -923,7 +928,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
                             $line .= "\t";
                         }
                         break;
-                    
+
                     case "assessment":
                         $eval = '';
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
@@ -937,7 +942,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
                             $line .= "\t";
                         }
                         break;
-                    
+
                     case "comment":
                         $comments = "";
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
@@ -951,7 +956,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
                             $line .= "\t";
                         }
                         break;
-                    
+
                     case 'evaluators':
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
                             $line .= $vOpt[$fnum['fnum']] . "\t";
@@ -1003,7 +1008,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $csv    = $jinput->getVar('csv', null);
         $nbcol  = $jinput->getVar('nbcol', 0);
         $nbrow  = $jinput->getVar('start', 0);
-        
+
         $objReader = PHPExcel_IOFactory::createReader('CSV');
         $objReader->setDelimiter("\t");
         $objPHPExcel = new PHPExcel();
@@ -1072,7 +1077,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
         for ($i; $i < $nbcol; $i++) {
             $value = $objPHPExcel->getActiveSheet()->getCellByColumnAndRow($i, 1)->getValue();
-            
+
             if ($value == "forms(%)" || $value == "attachment(%)") {
                 $conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i] . '1')->getConditionalStyles();
                 array_push($conditionalStyles, $objConditional1);
@@ -1081,7 +1086,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
                 $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i] . '1')->setConditionalStyles($conditionalStyles);
                 $objPHPExcel->getActiveSheet()->duplicateConditionalStyle($conditionalStyles, $colonne_by_id[$i] . '1:' . $colonne_by_id[$i] . ($nbrow + 1));
             }
-            
+
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         }
 
@@ -1126,7 +1131,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $adm_elements_id = array();
         $show_in_list_summary = 0;
         $hidden = 0;
-        
+
         $adm_elements_id    = $m_admission->getAdmissionElements($show_in_list_summary, $hidden);
         $element_id         = array_merge($element_id, $adm_elements_id);
         $elements           = @EmundusHelperFiles::getElementsName(implode(',',$element_id));
@@ -1236,7 +1241,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
             foreach ($fnunLine as $k => $v) {
                 if ($k != 'code' && $k != 'campaign_id' && $k != 'jos_emundus_campaign_candidature___campaign_id') {
                     if ($k === 'fnum') {
-                        
+
                         $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow($col, $line, (string) $v, PHPExcel_Cell_DataType::TYPE_STRING);
                         $col++;
                         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $line, $status[$v]['value']);
@@ -1247,32 +1252,32 @@ class EmundusControllerAdmission extends JControllerLegacy {
                         $col++;
                         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $line, $userProfil['firstname']);
                         $col++;
-                    
+
                     }  elseif ($k === 'jos_emundus_evaluations___user') {
-          
+
                         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $line, strip_tags(JFactory::getUser($v)->name));
                         $col++;
-           
+
                     } else {
-                   
+
                         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $line, strip_tags($v));
                         $col++;
-                    
+
                     }
                 }
             }
 
             foreach ($colOpt as $kOpt => $vOpt) {
                 switch ($kOpt) {
-                    
+
                     case "photo":
                         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $line, $val);
                         break;
-                    
+
                     case "forms":
                         $val = $vOpt[$fnunLine['fnum']];
                         $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$col].':'.$colonne_by_id[$col])->getAlignment()->setWrapText(true);
-                        
+
                         if ($val == 0)
                             $rgb='FF6600';
                         elseif ($val == 100)
@@ -1281,7 +1286,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
                             $rgb='FFFF00';
                         else
                             $rgb='FFFFFF';
-                        
+
                         $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$col].$line)->applyFromArray([
                             'fill' => [
                                 'type'  => PHPExcel_Style_Fill::FILL_SOLID,
@@ -1293,11 +1298,11 @@ class EmundusControllerAdmission extends JControllerLegacy {
                         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $line, $val.'%');
                         $objPHPExcel->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
                         break;
-                    
+
                     case "attachment":
                         $val = $vOpt[$fnunLine['fnum']];
                         $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$col].':'.$colonne_by_id[$col])->getAlignment()->setWrapText(true);
-                        
+
                         if ($val == 0)
                             $rgb='FF6600';
                         elseif ($val == 100)
@@ -1319,7 +1324,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
                         $objPHPExcel->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
                         //$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $line, $vOpt[$fnunLine['fnum']]."%");
                         break;
-                    
+
                     case "assessment":
                         $eval = '';
                         foreach ($vOpt[$fnunLine['fnum']] as $fnums => $evals) {
@@ -1328,7 +1333,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
                         }
                         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $line, $eval);
                         break;
-                    
+
                     case "comment":
                         $comments="";
                         foreach ($colOpt['comment'] as $comment) {
@@ -1355,22 +1360,22 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
     function get_mime_type($filename, $mimePath = '../etc') {
         $fileext = substr(strrchr($filename, '.'), 1);
-        
-        if (empty($fileext)) 
+
+        if (empty($fileext))
             return (false);
-        
+
         $regex = "/^([\w\+\-\.\/]+)\s+(\w+\s)*($fileext\s)/i";
         $lines = file("$mimePath/mime.types");
-        
+
         foreach($lines as $line) {
-            if (substr($line, 0, 1) == '#') 
+            if (substr($line, 0, 1) == '#')
                 continue; // skip comments
-            
+
             $line = rtrim($line) . " ";
-            
-            if (!preg_match($regex, $line, $matches)) 
+
+            if (!preg_match($regex, $line, $matches))
                 continue; // no match to the extension
-            
+
             return ($matches[1]);
         }
         return (false); // no match at all
@@ -1420,7 +1425,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
         $nom        = date("Y-m-d").'_'.rand(1000,9999).'_x'.(count($fnums)-1).'.zip';
         $path       = JPATH_BASE.DS.'tmp'.DS.$nom;
-        
+
         $m_files    = $this->getModel('Files');
         $files      = $m_files->getFilesByFnums($fnums);
 
@@ -1487,23 +1492,23 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
         // Check if fnum is found in DB table in order to determine if we do a create or update
         $exists = $m_admission->getAdmissionFnum($fnum);
-        if (!isset($exists) || empty($exists)) 
+        if (!isset($exists) || empty($exists))
             $create = true;
         else $create = false;
-        
+
         if ($create === true) {
-            
+
             if (!EmundusHelperAccess::asAccessAction(32, 'c', $this->_user->id, $fnum))
                 die('ACCESS DENIED');
-            
+
             $m_admission->setAdmissionByFabrikElementsId($fnum, $fid, $value);
             $data = [ 'status' => true ];
 
         } else {
-            
+
             if (!EmundusHelperAccess::asAccessAction(32, 'u', $this->_user->id, $fnum))
                 die('ACCESS DENIED');
-            
+
             $m_admission->updateAdmissionByFabrikElementsId($fnum, $fid, $value);
             $data = [ 'status' => true ];
 

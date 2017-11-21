@@ -919,7 +919,7 @@ class EmundusHelperFiles
     */  //$filts_details, $filts_options, $tables
     public function createFilterBlock($params, $types, $tables){
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
-        $files = new EmundusModelFiles();
+        $m_files = new EmundusModelFiles();
 
         /*$document = JFactory::getDocument();
         $document->addStyleSheet("media/com_emundus/lib/chosen/chosen.min.css" );
@@ -1313,7 +1313,7 @@ class EmundusHelperFiles
 
         if(@$params['tag'] !== NULL){
             $hidden = $types['tag'] != 'hidden' ? false : true;
-            $tagList = $files->getAllTags();
+            $tagList = $m_files->getAllTags();
             $tag = '';
             if (!$hidden) {
                 $tag .= '<div id="tag">
@@ -1471,7 +1471,7 @@ class EmundusHelperFiles
 
         if (@$params['group'] !== NULL) {
             $hidden = $types['group'] != 'hidden' ? false : true;
-            $groupList = $files->getAllGroups();
+            $groupList = $m_files->getAllGroups();
             $group = '';
             if (!$hidden) {
                 $group .= '<div id="group">
@@ -1500,7 +1500,7 @@ class EmundusHelperFiles
 
         if (@$params['institution'] !== NULL) {
             $hidden = $types['institution'] != 'hidden' ? false : true;
-            $institutionList = $files->getAllInstitutions();
+            $institutionList = $m_files->getAllInstitutions();
             $institution = '';
             if (!$hidden) {
                 $institution .= '<div id="group">
@@ -1833,36 +1833,36 @@ class EmundusHelperFiles
         require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
-        $evaluation     = new EmundusModelEvaluation();
-        $files          = new EmundusModelFiles;
+        $m_evaluation   = new EmundusModelEvaluation();
+        $m_files        = new EmundusModelFiles;
 
-        //$fnums = '2014103012343200000630002385';
         if (!is_array($fnums)) {
-            $fnumInfo = $files->getFnumInfos($fnums);
+            $fnumInfo = $m_files->getFnumInfos($fnums);
             $fnums = array($fnums);
         } else {
-            $fnumInfo = $files->getFnumInfos($fnums[1]);
+            $fnumInfo = $m_files->getFnumInfos($fnums[0]);
         }
 
-        $element_id = $evaluation->getAllEvaluationElements(1, $fnumInfo['training']);
+        $element_id = $m_evaluation->getAllEvaluationElements(1, $fnumInfo['training']);
         $elements = @EmundusHelperFiles::getElementsName(implode(',',$element_id));
-        $evaluations = $files->getFnumArray($fnums, $elements);
+        $evaluations = $m_files->getFnumArray($fnums, $elements);
 
         $data = array();
         //$i = 0;
 
-        foreach($evaluations as $eval)
-        {
+        foreach ($evaluations as $eval) {
+
             if ($eval['jos_emundus_evaluations___user_raw'] > 0) {
+
                 $str = '<br><hr>';
                 $str .= '<em>'.JText::_('EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em>';
                 $str .= '<h1>'.JFactory::getUser($eval['jos_emundus_evaluations___user_raw'])->name.'</h1>';
                 $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
-                foreach($elements as $element){
+                foreach ($elements as $element) {
                     $k = $element->tab_name.'___'.$element->element_name;
 
-                    if( $element->element_name != 'id' &&
+                    if ($element->element_name != 'id' &&
                         $element->element_name != 'time_date' &&
                         $element->element_name != 'campaign_id' &&
                         $element->element_name != 'student_id'&&
@@ -1875,7 +1875,7 @@ class EmundusHelperFiles
                         array_key_exists($k, $eval))
                     {
                         $str .= '<tr>';
-                        if(strpos($element->element_name, 'comment') !== false)
+                        if (strpos($element->element_name, 'comment') !== false)
                             $str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . $eval[$k] . '</td>';
                         else
                             $str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . $eval[$k] . '</td>';
@@ -1910,23 +1910,23 @@ class EmundusHelperFiles
     }
 
     // getDecision
-    function getDecision($format='html', $fnums){
+    function getDecision($format='html', $fnums) {
         require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
-        $evaluation    = new EmundusModelEvaluation();
-        $files         = new EmundusModelFiles;
+        $m_evaluation   = new EmundusModelEvaluation();
+        $m_files        = new EmundusModelFiles;
 
         if (!is_array($fnums)) {
-            $fnumInfo = $files->getFnumInfos($fnums);
+            $fnumInfo = $m_files->getFnumInfos($fnums);
             $fnums = array($fnums);
         } else {
-            $fnumInfo = $files->getFnumInfos($fnums[1]);
+            $fnumInfo = $m_files->getFnumInfos($fnums[1]);
         }
 
-        $element_id = $evaluation->getAllDecisionElements(1, $fnumInfo['training']);
+        $element_id = $m_evaluation->getAllDecisionElements(1, $fnumInfo['training']);
         $elements = @EmundusHelperFiles::getElementsName(implode(',',$element_id));
-        $evaluations = $files->getFnumArray($fnums, $elements);
+        $evaluations = $m_files->getFnumArray($fnums, $elements);
 
         $data = array();
 
