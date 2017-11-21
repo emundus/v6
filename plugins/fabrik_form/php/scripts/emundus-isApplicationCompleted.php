@@ -26,10 +26,37 @@ if ($jinput->get('view') == 'form') {
 
 	$params = JComponentHelper::getParams('com_emundus');
 	$application_fee = $params->get('application_fee', 0);
+	$scholarship_document_id = $params->gety('scholarship_document_id', NULL);
 
 	$application = new EmundusModelApplication;
 	$attachments = $application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
 	$forms = $application->getFormsProgress($user->id, $user->profile, $user->fnum);
+
+	// If students with a scholarship have a different fee.
+	// The form ID will be appended to the URL, taking him to a different checkout page.
+	if (isset($scholarship_document_id)) {
+
+		$db = JFactory::getDbo();
+
+		// See if applicant has uploaded the required scolarship form.
+		try {
+
+			$query = 'SELECT count(id) FROM #__emundus_uploads
+						WHERE attachment_id = '.$scholarship_document_id.'
+						AND fnum LIKE '.$db->Quote($user->fnum);
+
+			$db->setQuery($query);
+			$uploaded_document = $db->loadResult();
+
+		} catch (Exception $e) {
+			JLog::Add('Error in plugin/isApplicationCompleted at SQL query : '.$query, Jlog::ERROR, 'plugins');
+		}
+
+		// If he hasn't, no discount for him.
+		if ($uploaded_document == 0)
+			$scholarship_document_id == NULL;
+
+	}
 
 	if ($application_fee == 1) {
 		$fnumInfos = EmundusModelFiles::getFnumInfos($user->fnum);
@@ -37,16 +64,16 @@ if ($jinput->get('view') == 'form') {
 			$paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
 
 			if (!$paid && $attachments >= 100 && $forms >= 100) {
-				$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($application->getHikashopCheckoutUrl($user->profile)));
+				$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($application->getHikashopCheckoutUrl($user->profile.$scholarship_document_id)));
 				$mainframe->redirect(JRoute::_($checkout_url));
-			} 
+			}
 		} else {
 			$mainframe->redirect('index.php');
 		}
 
-	}	
+	}
 
-	if($attachments < 100 || $forms < 100){
+	if ($attachments < 100 || $forms < 100){
 		$mainframe->redirect( "index.php?option=com_emundus&view=checklist&Itemid=".$itemid, JText::_('INCOMPLETE_APPLICATION'));
 	}
 }
