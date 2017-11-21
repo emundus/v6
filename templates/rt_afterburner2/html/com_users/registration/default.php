@@ -47,7 +47,7 @@ else {
 	<h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
 <?php endif; ?>
 
-	<form id="member-registration" action="<?php echo JRoute::_('index.php?option=com_users&task=registration.register&course='.$course); ?>" method="post" class="form-validate">
+	<form id="member-registration" action="<?php echo JRoute::_('index.php?option=com_users&task=registration.register&course='.$course); ?>" method="post" class="form-validate" autocomplete="off">
 <?php foreach ($this->form->getFieldsets() as $fieldset): // Iterate through the form fieldsets and display each one.?>
 	<?php $fields = $this->form->getFieldset($fieldset->name); ?>
 	<?php if (count($fields)):?>
@@ -183,15 +183,30 @@ function check_field(){
 		}
 	<?php } ?>
 	username = document.getElementById("jform_username");
+	document.getElementById('jform_username-lbl').style.display = 'none';
+	username.style.display = 'none';
+
 	passwd1 = document.getElementById("jform_password1");
 	passwd2 = document.getElementById("jform_password2");
-	username.onkeyup = function() { this.value = this.value.replace(/[^a-z0-9]/gi, '').toLowerCase(); };
+
+	//username.onkeyup = function() { this.value = this.value.replace(/[^a-z0-9]/gi, '').toLowerCase(); };
+
 	passwd1.onchange = function() { if(passwd1.value.length < 4) $('em_msg_jform[password1]').innerHTML = "<?php echo JText::_('COM_USERS_DESIRED_PASSWORD');?>"; else $('em_msg_jform[password1]').innerHTML = ""; };
 	passwd2.onchange = function() { if(passwd1.value != this.value) $('em_msg_jform[password2]').innerHTML = "<?php echo JText::_('COM_USERS_FIELD_RESET_PASSWORD1_MESSAGE');?>"; else $('em_msg_jform[password2]').innerHTML = ""; };
+
 	email1 = document.getElementById("jform_email1");
-	email1.onchange = function() { if (!validateEmail(this.value)) {$('em_msg_jform[email1]').innerHTML = "<?php echo JText::_('COM_USERS_INVALID_EMAIL');?>";} else $('em_msg_jform[email1]').innerHTML = ""; };
+	email1.onchange = function() {
+		if (!validateEmail(this.value))
+			$('em_msg_jform[email1]').innerHTML = "<?php echo JText::_('COM_USERS_INVALID_EMAIL');?>";
+		else
+			$('em_msg_jform[email1]').innerHTML = "";
+
+		username.value = this.value;
+	};
+
 	email2 = document.getElementById("jform_email2");
 	email2.onchange = function() { if(jform_email1.value != this.value) $('em_msg_jform[email2]').innerHTML = "<?php echo JText::_('COM_USERS_PROFILE_EMAIL2_MESSAGE');?>"; else $('em_msg_jform[email2]').innerHTML = ""; };
+
 	campaign = document.getElementById("jform_emundus_profile_campaign");
 	campaign.onclick = function() { if(campaign.value == "") $('em_msg_jform[emundus_profile][campaign]').innerHTML = "<?php echo JText::_('COM_USERS_PROFILE_CAMPAIGN_MESSAGE');?>"; else $('em_msg_jform[emundus_profile][campaign]').innerHTML = ""; };
 }
