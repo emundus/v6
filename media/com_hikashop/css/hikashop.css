@@ -662,18 +662,18 @@ ul.hika_tabs > li.active > a:focus {
 }
 
 
-.hikabtn-primary { color:#fff; background-color:#337ab7; border-color:#2e6da4; }
-.hikabtn-primary:focus { color:#fff; background-color:#286090; border-color:#122b40; }
-.hikabtn-primary:hover { color:#fff; background-color:#286090; border-color:#204d74; }
-.hikabtn-success { color:#fff; background-color:#5cb85c; border-color:#4cae4c; }
-.hikabtn-success:focus { color:#fff; background-color:#449d44; border-color:#255625; }
-.hikabtn-success:hover { color:#fff; background-color:#449d44; border-color:#398439; }
-.hikabtn-danger { color:#fff; background-color:#d9534f; border-color:#d43f3a; }
-.hikabtn-danger:focus { color:#fff; background-color:#c9302c; border-color:#761c19; }
-.hikabtn-danger:hover { color:#fff; background-color:#c9302c; border-color:#ac2925; }
-.hikabtn-info { color:#fff; background-color:#5bc0de; border-color:#46b8da; }
-.hikabtn-info:focus { color:#fff; background-color:#31b0d5; border-color:#1b6d85; }
-.hikabtn-info:hover { color:#fff; background-color:#31b0d5; border-color:#269abc; }
+.hikabtn.hikabtn-primary, .hikabtn-primary { color:#fff; background-color:#337ab7; border-color:#2e6da4; }
+.hikabtn.hikabtn-primary:focus, .hikabtn-primary:focus { color:#fff; background-color:#286090; border-color:#122b40; }
+.hikabtn.hikabtn-primary:hover, .hikabtn-primary:hover { color:#fff; background-color:#286090; border-color:#204d74; }
+.hikabtn.hikabtn-success, .hikabtn-success { color:#fff; background-color:#5cb85c; border-color:#4cae4c; }
+.hikabtn.hikabtn-success:focus, .hikabtn-success:focus { color:#fff; background-color:#449d44; border-color:#255625; }
+.hikabtn.hikabtn-success:hover, .hikabtn-success:hover { color:#fff; background-color:#449d44; border-color:#398439; }
+.hikabtn.hikabtn-danger, .hikabtn-danger { color:#fff; background-color:#d9534f; border-color:#d43f3a; }
+.hikabtn.hikabtn-danger:focus, .hikabtn-danger:focus { color:#fff; background-color:#c9302c; border-color:#761c19; }
+.hikabtn.hikabtn-danger:hover ,.hikabtn-danger:hover { color:#fff; background-color:#c9302c; border-color:#ac2925; }
+.hikabtn.hikabtn-info, .hikabtn-info { color:#fff; background-color:#5bc0de; border-color:#46b8da; }
+.hikabtn.hikabtn-info:focus, .hikabtn-info:focus { color:#fff; background-color:#31b0d5; border-color:#1b6d85; }
+.hikabtn.hikabtn-info:hover, .hikabtn-info:hover { color:#fff; background-color:#31b0d5; border-color:#269abc; }
 
 div.hikashop_checkout_loading { position:relative; }
 div.hikashop_checkout_loading div.hikashop_checkout_loading_elem,

@@ -2440,7 +2440,7 @@ class hikashopFieldZone extends hikashopFieldSingledropdown {
 
 		if($field->field_options['zone_type'] != 'country' || empty($field->field_options['pleaseselect'])) {
 			$app = JFactory::getApplication();
-			$currentZoneId = (int)$app->setUserState(HIKASHOP_COMPONENT.'.geoloc_zone_id', 0); // hikashop_getZone() ? hikashop_getZone() : '';
+			$currentZoneId = (int)$app->getUserState(HIKASHOP_COMPONENT.'.geoloc_zone_id', 0);
 			if(!empty($currentZoneId) && $app->isSite()) {
 				$zoneClass = hikashop_get('class.zone');
 				$currentZone = $zoneClass->getZoneParents($currentZoneId);

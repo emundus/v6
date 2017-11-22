@@ -748,10 +748,12 @@ class ProductViewProduct extends HikaShopView {
 			hikashop_setPageTitle($page_title);
 			$this->params->set('page_title', $title);
 
-			if(empty($element->category_keywords))
-				$element->category_keywords =  $menu->params->get('menu-meta_keywords', '');
-			if(empty($element->category_meta_description))
-				$element->category_meta_description =  $menu->params->get('menu-meta_description', '');
+			if(!empty($menu) && isset($menu->params)){
+				if(empty($element->category_keywords))
+					$element->category_keywords =  $menu->params->get('menu-meta_keywords', '');
+				if(empty($element->category_meta_description))
+					$element->category_meta_description =  $menu->params->get('menu-meta_description', '');
+			}
 
 			$doc = JFactory::getDocument();
 			if(!empty($element->category_keywords)) {
@@ -958,7 +960,8 @@ class ProductViewProduct extends HikaShopView {
 		$params->set('characteristic_display', $config->get('characteristic_display', 'table'));
 		$params->set('characteristic_display_text', $config->get('characteristic_display_text', 1));
 		$params->set('show_quantity_field', $config->get('show_quantity_field', 1));
-		$params->set('add_to_wishlist',@$default_params['add_to_wishlist']);
+		$params->set('add_to_wishlist', 1);
+		$params->set('add_to_cart', 1);
 
 		if((int)$params->get('show_vote_product', -1) == -1) {
 			$params->set('show_vote_product', (int)$config->get('show_vote_product'));

@@ -28,9 +28,9 @@ if ($jinput->get('view') == 'form') {
 	$application_fee = $params->get('application_fee', 0);
 	$scholarship_document_id = $params->gety('scholarship_document_id', NULL);
 
-	$application = new EmundusModelApplication;
-	$attachments = $application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
-	$forms = $application->getFormsProgress($user->id, $user->profile, $user->fnum);
+	$m_application = new EmundusModelApplication;
+	$attachments = $m_application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
+	$forms = $m_application->getFormsProgress($user->id, $user->profile, $user->fnum);
 
 	// If students with a scholarship have a different fee.
 	// The form ID will be appended to the URL, taking him to a different checkout page.
@@ -61,10 +61,10 @@ if ($jinput->get('view') == 'form') {
 	if ($application_fee == 1) {
 		$fnumInfos = EmundusModelFiles::getFnumInfos($user->fnum);
 		if (count($fnumInfos) > 0) {
-			$paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
+			$paid = count($m_application->getHikashopOrder($fnumInfos))>0?1:0;
 
 			if (!$paid && $attachments >= 100 && $forms >= 100) {
-				$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($application->getHikashopCheckoutUrl($user->profile.$scholarship_document_id)));
+				$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile.$scholarship_document_id)));
 				$mainframe->redirect(JRoute::_($checkout_url));
 			}
 		} else {
@@ -73,9 +73,8 @@ if ($jinput->get('view') == 'form') {
 
 	}
 
-	if ($attachments < 100 || $forms < 100){
+	if ($attachments < 100 || $forms < 100)
 		$mainframe->redirect( "index.php?option=com_emundus&view=checklist&Itemid=".$itemid, JText::_('INCOMPLETE_APPLICATION'));
-	}
 }
 
 ?>

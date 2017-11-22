@@ -194,6 +194,8 @@ window.hikashop.ready(function(){
 			return false;
 		}
 
+		$add = $cart->user_id != $user_id || ($request_addto_id === 0 && $addto_type === 'cart');
+
 		$juser = JFactory::getUser();
 		if($addto_type == 'wishlist' && (!$config->get('enable_wishlist') || $juser->guest)) {
 			if(!$config->get('enable_wishlist'))
@@ -209,6 +211,7 @@ window.hikashop.ready(function(){
 		foreach($formProducts as $p) {
 			if(!isset($cart->cart_products[$p]))
 				continue;
+
 			if($group && !empty($cart->cart_products[$p]->cart_product_option_parent_id))
 				continue;
 
@@ -239,12 +242,21 @@ window.hikashop.ready(function(){
 		}
 
 		$ret = false;
-
-		if($cart->user_id != $user_id || ($request_addto_id === 0 && $addto_type === 'cart')) {
+		if($add) {
 			$formData = hikaInput::get()->get('data', array(), 'array');
 			foreach($products as $key => &$product) {
 				if(!isset($formData['products'][$key]))
 					continue;
+				$qty_change = $formData['products'][$key]['quantity'] - $product->cart_product_quantity;
+
+				foreach($cart->cart_products as $product_in_cart_key => $product_in_cart){
+					if($product_in_cart->cart_product_option_parent_id == $key){
+						$products[$product_in_cart_key] = $product_in_cart;
+						if($qty_change)
+							$products[$product_in_cart_key]->cart_product_quantity = $product_in_cart->cart_product_quantity + ($product_in_cart->cart_product_quantity / $product->cart_product_quantity) * $qty_change;
+					}
+				}
+
 				$product->cart_product_quantity = (int)$formData['products'][$key]['quantity'];
 			}
 			unset($product);

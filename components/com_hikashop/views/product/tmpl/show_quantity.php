@@ -20,8 +20,8 @@ if(!empty($this->row->quantityFieldName)){
 }
 
 if(isset($this->row) && isset($this->row->product_min_per_order)) {
-	$min_quantity = ($this->row->product_min_per_order || empty($this->element->main)) ? $this->row->product_min_per_order : $this->element->main->product_min_per_order;
-	$max_quantity = ($this->row->product_max_per_order || empty($this->element->main)) ? $this->row->product_max_per_order : $this->element->main->product_max_per_order;
+	$min_quantity = ($this->row->product_min_per_order || empty($this->element->main)) ? $this->row->product_min_per_order : @$this->element->main->product_min_per_order;
+	$max_quantity = ($this->row->product_max_per_order || empty($this->element->main)) ? $this->row->product_max_per_order : @$this->element->main->product_max_per_order;
 	if($this->row->product_quantity > 0) {
 		if($max_quantity > 0)
 			$max_quantity = min($max_quantity, $this->row->product_quantity);

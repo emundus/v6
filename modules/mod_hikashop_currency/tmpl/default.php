@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 <?php if(empty($mode_noform)) { ?>
 	<form action="<?php echo hikashop_completeLink('currency&task=update'); ?>" method="post" name="hikashop_currency_form_<?php echo $module->id; ?>">
 		<input type="hidden" name="return_url" value="<?php echo urlencode($redirectUrl); ?>" />
-		<?php echo $currency->display('hikashopcurrency',hikashop_getCurrency(),'class="hikashopcurrency" onchange="document.hikashop_currency_form_'.$module->id.'.submit();"'); ?>
+		<?php echo $currency->display('hikashopcurrency',hikashop_getCurrency(),'class="hikashopcurrency" onchange="this.form.submit();"'); ?>
 	</form>
 <?php } else {
 	echo $currency->display(null, hikashop_getCurrency(), 'class="hikashopcurrency" id="hikashopcurrency_'.$module->id.'" onchange="window.localPage.switchCurrency(this);"');

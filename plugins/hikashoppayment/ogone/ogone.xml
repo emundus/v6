@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashoppayment">
 	<name>Ogone Payment Plugin</name>
-	<creationDate>24 octobre 2017</creationDate>
+	<creationDate>17 novembre 2017</creationDate>
 	<version>3.2.1</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>

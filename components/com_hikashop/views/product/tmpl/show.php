@@ -356,7 +356,7 @@ if(empty($this->element->variants) || $this->params->get('characteristic_display
 ?>
 	<div id="hikashop_product_files_<?php echo $variant_name; ?>" style="display:none;">
 		<fieldset class="hikashop_product_files_fieldset">
-			<legend><?php JText::_('DOWNLOADS'); ?></legend>
+			<legend><?php echo JText::_('DOWNLOADS'); ?></legend>
 <?php
 				foreach($variant->files as $file) {
 					if(empty($file->file_free_download))

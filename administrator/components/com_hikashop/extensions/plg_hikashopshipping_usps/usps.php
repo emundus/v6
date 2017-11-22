@@ -67,6 +67,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 			'RECTANGULAR' => 'Rectangular',
 			'NONRECTANGULAR' => 'Non rectangular',
 		))
+		,'debug' => array('debug', 'boolean')
 	);
 	var $methods = array(
 		'PRIORITY' => 1,
@@ -493,6 +494,8 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 			$request.='</RateV4Request>';
 		}
 
+		if(!empty($rate->shipping_params->debug))
+			echo '<!--' . "\r\n" . 'USPS DEBUG' . "\r\n" . $request . "\r\n" . '-->';
 
 		$responseError = false;
 		$response_xml = $this->doUSPS($request, !$isInternational);
