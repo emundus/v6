@@ -81,7 +81,7 @@ if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 
 	if ($jinput->get('view') == 'form' && empty($fnum) && !isset($fnum)) {
 		// Si l'application Form a été envoyee par le candidat : affichage vue details
-		if($user->candidature_posted > 0 && $user->candidature_incomplete == 0 && $can_edit_until_deadline == 0) {
+		if ($user->candidature_posted > 0 && $user->candidature_incomplete == 0 && $can_edit_until_deadline == 0) {
 			$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
 		} elseif(strtotime(date($now)) > strtotime($user->end_date) && !in_array($user->id, $applicants) ) {
 			JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', utf8_encode(JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($user->end_date) ))));

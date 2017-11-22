@@ -26,7 +26,7 @@ if ($jinput->get('view') == 'form') {
 
 	$params = JComponentHelper::getParams('com_emundus');
 	$application_fee = $params->get('application_fee', 0);
-	$scholarship_document_id = $params->gety('scholarship_document_id', NULL);
+	$scholarship_document_id = $params->get('scholarship_document_id', NULL);
 
 	$m_application = new EmundusModelApplication;
 	$attachments = $m_application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
@@ -54,7 +54,7 @@ if ($jinput->get('view') == 'form') {
 
 		// If he hasn't, no discount for him.
 		if ($uploaded_document == 0)
-			$scholarship_document_id == NULL;
+			$scholarship_document_id = NULL;
 
 	}
 
