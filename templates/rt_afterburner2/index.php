@@ -32,12 +32,12 @@ $gpreset = str_replace(' ','',strtolower($gantry->get('name')));
     <?php
         $gantry->displayHead();
 		/* Force IE to most recent version */
-		if ($gantry->browser->name == 'ie') : 
+		if ($gantry->browser->name == 'ie') :
 			echo '<meta http-equiv="X-UA-Compatible" content="IE=edge" />';
-		endif;        
+		endif;
 
 		if ($gantry->get('layout-mode', 'responsive') == 'responsive') $gantry->addStyle('grid-responsive.css', 5);
-		$gantry->addLess('bootstrap.less', 'bootstrap.css', 6);   
+		$gantry->addLess('bootstrap.less', 'bootstrap.css', 6);
 
         if ($gantry->browser->name == 'ie'){
         	if ($gantry->browser->shortversion == 9){
@@ -52,6 +52,9 @@ $gpreset = str_replace(' ','',strtolower($gantry->get('name')));
     ?>
 </head>
 <body <?php echo $gantry->displayBodyTag(); ?>>
+
+	<noscript> Please activate JavaScript </noscript>
+
     <?php /** Begin Top Surround **/ if ($gantry->countModules('top') or $gantry->countModules('header')) : ?>
     <header id="rt-top-surround">
 		<?php /** Begin Top **/ if ($gantry->countModules('top')) : ?>
@@ -90,7 +93,7 @@ $gpreset = str_replace(' ','',strtolower($gantry->get('name')));
         				<?php endif; ?>
         			</div>
       			</div>
-    		</nav>	
+    		</nav>
 			<div class="clear"></div>
 		</div>
 		<?php /** End Second Menu **/ ?>
@@ -109,31 +112,31 @@ $gpreset = str_replace(' ','',strtolower($gantry->get('name')));
 	<div id="rt-breadcrumbs">
 		<div class="rt-container">
 			<?php echo $gantry->displayModules('breadcrumb','standard','standard'); ?>
-	   		<div class="clear"></div>				   
+	   		<div class="clear"></div>
 		</div>
 	</div>
 	<?php /** End Breadcrumbs **/ endif; ?>
 
 	<div id="rt-mainbody-surround">
-		<div class="rt-container">			
+		<div class="rt-container">
 			<?php /** Begin Main Body **/ ?>
     			<?php echo $gantry->displayMainbody('mainbody','sidebar','standard','standard','standard','standard','standard'); ?>
 				<?php /** End Main Body **/ ?>
 		</div>
-	</div>     
+	</div>
 
 	<?php /** Begin Bottom **/ if ($gantry->countModules('bottom')) : ?>
 	<div id="rt-bottom">
-		<div class="rt-container">		
+		<div class="rt-container">
 			<?php echo $gantry->displayModules('bottom','standard','standard'); ?>
 			<div class="clear"></div>
 		</div>
 	</div>
 	<?php /** End Bottom **/ endif; ?>
-	
+
 	<?php /** Begin Footer **/ if ($gantry->countModules('footer')) : ?>
 	<div id="rt-footer">
-	<br />    
+	<br />
         <footer id="footer">
           	<section class="logos-area">
           		<div class="rt-container">
@@ -143,7 +146,7 @@ $gpreset = str_replace(' ','',strtolower($gantry->get('name')));
 			</section>
             <p style="color:#000000;float:right;">Logiciel <em><a target="_blank" title="Your open source candidatures management" href="http://www.emundus.fr">eMundus®</a></em></p>
         </footer>
-	</div>		
+	</div>
 	<?php /** End Footer **/ endif; ?>
 
 	<?php /** Begin Debug **/ if ($gantry->countModules('debug')) : ?>
