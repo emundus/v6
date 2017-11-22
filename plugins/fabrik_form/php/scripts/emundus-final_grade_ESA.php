@@ -53,7 +53,7 @@ if (!empty($status[0])) {
 
 	if ($status[0] == 4) {
 
-		$query = 'UPDATE #__emundus_users SET profile=7 WHERE user_id = '.$sid;
+		$query = 'UPDATE #__emundus_users SET profile=8 WHERE user_id = '.$sid;
 
 		try {
 

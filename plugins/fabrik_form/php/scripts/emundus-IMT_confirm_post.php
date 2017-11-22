@@ -34,8 +34,8 @@ $baseurl = JURI::root();
 
 // Get reference information.
 $student_id = $data['jos_emundus_academic___user'];
-$fnum = $formModel->getElementData('jos_emundus_academic___fnum', false, '');
-$time_date = $formModel->getElementData('jos_emundus_academic___time_date', false, '');
+$programme  = $data['jos_emundus_academic___program_code'];
+$fnum       = $formModel->getElementData('jos_emundus_academic___fnum', false, '');
 
 $db             = JFactory::getDBO();
 $student        = JFactory::getUser($student_id);
@@ -51,7 +51,7 @@ try {
 
     $query = 'SELECT id, subject, emailfrom, name, message
                     FROM #__emundus_setup_emails
-                    WHERE lbl="confirm_post"';
+                    WHERE lbl="confirm_post_'.$programme.'"';
     $db->setQuery($query);
     $db->execute();
     $obj = $db->loadObject();

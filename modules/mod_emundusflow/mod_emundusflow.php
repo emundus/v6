@@ -23,55 +23,85 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
-	$document = JFactory::getDocument();
-	$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
+	// Load Joomla framework classes
+	$document 	= JFactory::getDocument();
+	$jinput 	= JFactory::getApplication()->input;
+	$db 		= JFactory::getDBO();
+
 	// overide css
+	$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
 	$header_class = $params->get('header_class', '');
 	if (!empty($header_class))
 		$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$header_class.".css" );
-	$jinput = JFactory::getApplication()->input;
+
+	// Jinput
 	$option = $jinput->get('option');
-	$view = $jinput->get('view');
-
-
-	$db = JFactory::getDBO();
+	$view 	= $jinput->get('view');
 
 	// module params
 	$show_programme = $params->get('show_programme', 1);
 	$show_deadline  = $params->get('show_deadline', 0);
 
 	// eMundus params
-	$params_emundus = JComponentHelper::getParams('com_emundus');
-	$applicant_can_renew = $params_emundus->get('applicant_can_renew', 0);
-	$application_fee  = $params_emundus->get('application_fee', 0);
+	$params_emundus 		= JComponentHelper::getParams('com_emundus');
+	$applicant_can_renew 	= $params_emundus->get('applicant_can_renew', 0);
+	$application_fee  		= $params_emundus->get('application_fee', 0);
+	$scholarship_document 	= $params_emundus->get('scholarship_document_id', NULL);
 
-	$checklist = new EmundusModelChecklist;
-	$application = new EmundusModelApplication;
-	//$files = new EmundusModelFiles;
+	// Models
+	$m_checklist 	= new EmundusModelChecklist;
+	$m_application 	= new EmundusModelApplication;
+	$m_files 		= new EmundusModelFiles;
 
-	$fnumInfos = EmundusModelFiles::getFnumInfos($user->fnum);
+	$fnumInfos = $m_files->getFnumInfos($user->fnum);
 	if ($application_fee == 1) {
-		$paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
-		if ($paid == 0 ) {
-			//$checkout_url = $application->getHikashopCheckoutUrl($user->profile);
-			$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($application->getHikashopCheckoutUrl($user->profile)));
 
-		} else{
+		$paid = count($m_application->getHikashopOrder($fnumInfos))>0?1:0;
+		if ($paid == 0 ) {
+
+			// If students with a scholarship have a different fee.
+			// The form ID will be appended to the URL, taking him to a different checkout page.
+			if (isset($scholarship_document)) {
+
+				// See if applicant has uploaded the required scolarship form.
+				try {
+
+					$query = 'SELECT count(id) FROM #__emundus_uploads
+								WHERE attachment_id = '.$scholarship_document.'
+								AND fnum LIKE '.$db->Quote($user->fnum);
+
+					$db->setQuery($query);
+					$uploaded_document = $db->loadResult();
+
+				} catch (Exception $e) {
+					JLog::Add('Error in plugin/isApplicationCompleted at SQL query : '.$query, Jlog::ERROR, 'plugins');
+				}
+
+				// If he hasn't, no discount for him.
+				if ($uploaded_document == 0)
+					$scholarship_document = NULL;
+
+			}
+
+			//$checkout_url = $m_application->getHikashopCheckoutUrl($user->profile);
+			$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile.$scholarship_document)));
+
+		} else {
 			$checkout_url = 'index.php';
 		}
-		
+
 	}
 
 	if (isset($user->fnum) && !empty($user->fnum)) {
-		$attachments = $application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
-		$forms = $application->getFormsProgress($user->id, $user->profile, $user->fnum);
+		$attachments = $m_application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
+		$forms = $m_application->getFormsProgress($user->id, $user->profile, $user->fnum);
 
-		$current_application = $application->getApplication($user->fnum);
-		$sent = $checklist->getSent();
+		$current_application = $m_application->getApplication($user->fnum);
+		$sent = $m_checklist->getSent();
 
-		$confirm_form_url 	= $checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum; 
+		$confirm_form_url 	= $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
 	}
-	
+
 
 	require(JModuleHelper::getLayoutPath('mod_emundusflow'));
 }

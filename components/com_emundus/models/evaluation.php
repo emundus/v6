@@ -275,7 +275,7 @@ class EmundusModelEvaluation extends JModelList
                     if (empty($groups)) {
                         $eval_elt_list = array();
                     } else {
-                        $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+						$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden, $time_date);
                         if (count($eval_elt_list)>0) {
                             foreach ($eval_elt_list as $eel) {
                                 if(isset($eel->element_id) && !empty($eel->element_id))
@@ -285,7 +285,7 @@ class EmundusModelEvaluation extends JModelList
                     }
                 }
             }
-        }
+		}
 //die(var_dump($elements_id));
         return @$elements;
     }
@@ -1116,7 +1116,7 @@ class EmundusModelEvaluation extends JModelList
 		$query .= $q['q'];
 
 		$query .=  $this->_buildContentOrderBy();
-		
+
 		$dbo->setQuery($query);
 		try
 		{

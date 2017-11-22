@@ -11,7 +11,7 @@ function preventDefault() { this.returnValue = false; }
 function stopPropagation() { this.cancelBubble = true; }
 
 var Oby = {
-	version: 20171006,
+	version: 20171104,
 	ajaxEvents : {},
 
 	hasClass: function(o,n) {
@@ -230,7 +230,7 @@ var Oby = {
 			for(var i = 0; i < inputs.length; i++) {
 				if( !inputs[i].name || inputs[i].disabled )
 					continue;
-				var evalue = inputs[i].value, etype = '';
+				var evalue = inputs[i].value, n = inputs[i].name, etype = '';
 				if( t == 'input' )
 					etype = inputs[i].type.toLowerCase();
 				if( (etype == 'radio' || etype == 'checkbox') && !inputs[i].checked )
@@ -241,14 +241,24 @@ var Oby = {
 							continue;
 						//if( ret != '' ) ret += '&';
 						//ret += encodeURI(inputs[i].name) + '=' + encodeURIComponent(inputs[i].options[k].value);
-						ret[ inputs[i].name ] = inputs[i].options[k].value;
+						if(ret.hasOwnProperty(n)) {
+							if(typeof(ret[n]) != 'object')
+								ret[n] = [ ret[n] ];
+							ret[n][ ret[n].length ] = inputs[i].options[k].value;
+						} else
+							ret[ n ] = inputs[i].options[k].value;
 						evalue = null;
 					}
 				}
 				if( (etype != 'file' && etype != 'submit') && evalue != null ) {
 					//if( ret != '' ) ret += '&';
 					//ret += encodeURI(inputs[i].name) + '=' + encodeURIComponent(evalue);
-					ret[ inputs[i].name ] = evalue;
+					if(ret.hasOwnProperty(n)) {
+						if(typeof(ret[n]) != 'object')
+							ret[n] = [ ret[n] ];
+						ret[n][ ret[n].length ] = evalue;
+					} else
+						ret[ n ] = evalue;
 				}
 			}
 		}
@@ -264,8 +274,15 @@ var Oby = {
 			if(!data.hasOwnProperty(k))
 				continue;
 			v = data[k];
-			if( ret != '' ) ret += '&';
-			ret += encodeURI(k) + '=' + encodeURIComponent(v);
+			if(typeof(v) == 'object') {
+				for(var i in v) {
+					if( ret != '' ) ret += '&';
+					ret += encodeURI(k) + '=' + encodeURIComponent(v[i]);
+				}
+			} else {
+				if( ret != '' ) ret += '&';
+				ret += encodeURI(k) + '=' + encodeURIComponent(v);
+			}
 		}
 		return ret;
 	},
@@ -899,7 +916,12 @@ var hikashop = {
 							continue;
 						if(k == 'product_id')
 							extra[k] = product_id;
-						data.append(k, extra[k]);
+						if(typeof(extra[k]) == 'object') {
+							for(var i in extra[k]) {
+								data.append(k, extra[k][i]);
+							}
+						} else
+							data.append(k, extra[k]);
 					}
 				} else {
 					var extra = o.getFormData(extraContainer);

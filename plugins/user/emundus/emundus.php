@@ -238,8 +238,8 @@ class plgUserEmundus extends JPlugin
         if (!$app->isAdmin()) {
             include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
 
-            $profiles = new EmundusModelProfile;
-            $profiles->initEmundusSession();
+            $m_profile = new EmundusModelProfile;
+            $m_profile->initEmundusSession();
         }
         return true;
     }
@@ -263,9 +263,9 @@ class plgUserEmundus extends JPlugin
 
         include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
 
-        $profiles = new EmundusModelProfile;
+        $m_profile = new EmundusModelProfile;
 
-        $campaign = $profiles->getCurrentCampaignInfoByApplicant($user['id']);
+        $campaign = $m_profile->getCurrentCampaignInfoByApplicant($user['id']);
 //die(var_dump($campaign));
         if ($campaign["training"] == "pepite")
             $url = "https://ideepepite.sorbonne-universites.fr/";

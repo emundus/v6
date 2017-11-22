@@ -84,7 +84,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
     }
 
-    public function dpcalendar_confirm_interview($event_id, $user_id, $fnum, $contact_info) {
+    public function dpcalendar_confirm_interview($event_id, $user_id, $fnum, $contact_info = null) {
 
         $db = Jfactory::getDbo();
         $user = JFactory::getUser($user_id);
@@ -106,8 +106,10 @@ class EmundusModelCalendar extends JModelLegacy {
         $event->capacity = '1';
         $event->capacity_used = '1';
 
-        foreach ($contact_info as $type => $info) {
-            $event->description .= ' <br> contact '.$type.' : '.$info;
+        if (isset($contact_info)) {
+            foreach ($contact_info as $type => $info) {
+                $event->description .= ' <br> contact '.$type.' : '.$info;
+            }
         }
 
         // Update dpcalendar event object.

@@ -611,7 +611,8 @@ class hikashopCurrencyClass extends hikashopClass{
 							}
 
 							$pricefound = true;
-							$min->price_value_with_tax = $this->getTaxedPrice($min->price_value, $zone_id, $element->product_tax_id);
+							$round = $this->getRounding($min->price_currency_id,true);
+							$min->price_value_with_tax = $this->getTaxedPrice($min->price_value, $zone_id, $element->product_tax_id, $round);
 							$min->taxes = $this->taxRates;
 							$rows[$k]->prices = array($min);
 							break;
@@ -627,14 +628,16 @@ class hikashopCurrencyClass extends hikashopClass{
 							}
 
 							$pricefound=true;
-							$max->price_value_with_tax = $this->getTaxedPrice($max->price_value,$zone_id,$element->product_tax_id);
+							$round = $this->getRounding($max->price_currency_id,true);
+							$max->price_value_with_tax = $this->getTaxedPrice($max->price_value,$zone_id,$element->product_tax_id, $round);
 							$max->taxes = $this->taxRates;
 							$rows[$k]->prices = array($max);
 							break;
 						case 'unit':
 							if(isset($matches[0])) {
 								$pricefound = true;
-								$matches[0]->price_value_with_tax = $this->getTaxedPrice($matches[0]->price_value, $zone_id, $element->product_tax_id);
+								$round = $this->getRounding($matches[0]->price_currency_id,true);
+								$matches[0]->price_value_with_tax = $this->getTaxedPrice($matches[0]->price_value, $zone_id, $element->product_tax_id, $round);
 								$matches[0]->taxes = $this->taxRates;
 								$rows[$k]->prices = array($matches[0]);
 							} else {
@@ -658,12 +661,14 @@ class hikashopCurrencyClass extends hikashopClass{
 							}
 
 							if(empty($min->taxes_added)) {
-								$min->price_value_with_tax = $this->getTaxedPrice($min->price_value, $zone_id, $element->product_tax_id);
+								$round = $this->getRounding($min->price_currency_id,true);
+								$min->price_value_with_tax = $this->getTaxedPrice($min->price_value, $zone_id, $element->product_tax_id, $round);
 								$min->taxes = $this->taxRates;
 								$min->taxes_added = true;
 							}
 							if(empty($max->taxes_added)) {
-								$max->price_value_with_tax = $this->getTaxedPrice($max->price_value, $zone_id, $element->product_tax_id);
+								$round = $this->getRounding($max->price_currency_id,true);
+								$max->price_value_with_tax = $this->getTaxedPrice($max->price_value, $zone_id, $element->product_tax_id, $round);
 								$max->taxes = $this->taxRates;
 								$max->taxes_added = true;
 							}
@@ -679,7 +684,8 @@ class hikashopCurrencyClass extends hikashopClass{
 						case 'all':
 							$all_loaded = true;
 							foreach($matches as $j => $match) {
-								$matches[$j]->price_value_with_tax = $this->getTaxedPrice($match->price_value, $zone_id, $element->product_tax_id);
+								$round = $this->getRounding($match->price_currency_id,true);
+								$matches[$j]->price_value_with_tax = $this->getTaxedPrice($match->price_value, $zone_id, $element->product_tax_id, $round);
 								$matches[$j]->taxes = $this->taxRates;
 							}
 							$rows[$k]->prices = $matches;
@@ -766,7 +772,8 @@ class hikashopCurrencyClass extends hikashopClass{
 								foreach($matches as $j => $match){
 									if(in_array($match->price_value,$found)) continue;
 									$found[]=$match->price_value;
-									$matches[$j]->price_value_with_tax = $this->getTaxedPrice($match->price_value,$zone_id,$element->product_tax_id);
+									$round = $this->getRounding($match->price_currency_id,true);
+									$matches[$j]->price_value_with_tax = $this->getTaxedPrice($match->price_value, $zone_id, $element->product_tax_id, $round);
 									$matches[$j]->taxes = $this->taxRates;
 								}
 								$rows[$k]->prices = $matches;
@@ -780,7 +787,8 @@ class hikashopCurrencyClass extends hikashopClass{
 										$minVal = $match->price_value;
 									}
 								}
-								$min->price_value_with_tax = $this->getTaxedPrice($min->price_value,$zone_id,$element->product_tax_id);
+								$round = $this->getRounding($min->price_currency_id,true);
+								$min->price_value_with_tax = $this->getTaxedPrice($min->price_value, $zone_id, $element->product_tax_id, $round);
 								$min->taxes = $this->taxRates;
 								$rows[$k]->prices = array($min);
 								break;
@@ -788,7 +796,8 @@ class hikashopCurrencyClass extends hikashopClass{
 								$found = false;
 								foreach($matches as $j => $match){
 									if(empty($match->price_min_quantity)){
-										$matches[0]->price_value_with_tax = $this->getTaxedPrice($matches[0]->price_value,$zone_id,$element->product_tax_id);
+										$round = $this->getRounding($matches[0]->price_currency_id,true);
+										$matches[0]->price_value_with_tax = $this->getTaxedPrice($matches[0]->price_value, $zone_id, $element->product_tax_id, $round);
 										$matches[0]->taxes = $this->taxRates;
 										$rows[$k]->prices = array($matches[0]);
 										$found = true;
@@ -814,9 +823,11 @@ class hikashopCurrencyClass extends hikashopClass{
 										$minVal = $match->price_value;
 									}
 								}
-								$min->price_value_with_tax = $this->getTaxedPrice($min->price_value,$zone_id,$element->product_tax_id);
+								$round = $this->getRounding($min->price_currency_id,true);
+								$min->price_value_with_tax = $this->getTaxedPrice($min->price_value, $zone_id, $element->product_tax_id, $round);
 								$min->taxes = $this->taxRates;
-								$max->price_value_with_tax = $this->getTaxedPrice($max->price_value,$zone_id,$element->product_tax_id);
+								$round = $this->getRounding($max->price_currency_id,true);
+								$max->price_value_with_tax = $this->getTaxedPrice($max->price_value, $zone_id, $element->product_tax_id, $round);
 								$max->taxes = $this->taxRates;
 								if($min->price_value_with_tax==$max->price_value_with_tax){
 									$rows[$k]->prices = array($min);
@@ -1050,17 +1061,21 @@ class hikashopCurrencyClass extends hikashopClass{
 				$this->cartDiscountsLeft[$discount->discount_code]-=$product->cart_product_quantity;
 			}
 
-			if(!empty($discount->discount_product_id)){
-				if(!is_array($discount->discount_product_id)) $discount->discount_product_id = explode(',',$discount->discount_product_id);
-				if(in_array($product->product_id,$discount->discount_product_id)){
-					$discountsSelected[0][$value]=$discount;
+			if(!empty($discount->discount_product_id)) {
+				if(!is_array($discount->discount_product_id))
+					$discount->discount_product_id = explode(',', $discount->discount_product_id);
+
+				foreach($product->prices as $k => $price) {
+					if($product->product_id != $price->price_product_id && in_array($price->price_product_id, $discount->discount_product_id))
+						$product->prices[$k]->discount = $discountsSelected[0][$value] = $discount;
+				}
+				if(in_array($product->product_id, $discount->discount_product_id)) {
+					$discountsSelected[0][$value] = $discount;
+					continue;
+				}elseif(!empty($product->product_parent_id) && in_array($product->product_parent_id, $discount->discount_product_id)) {
+					$discountsSelected[5][$value] = $discount;
 					continue;
 				}
-			}
-
-			if(!empty($discount->discount_product_id) && !empty($product->product_parent_id) && in_array($product->product_parent_id,$discount->discount_product_id)){
-				$discountsSelected[5][$value]=$discount;
-				continue;
 			}
 
 			if(empty($discount->discount_product_id) && !empty($discount->discount_category_id)){
@@ -2042,6 +2057,9 @@ class hikashopCurrencyClass extends hikashopClass{
 		$price->price_value_without_discount = $price->price_value;
 
 		$round = $this->getRounding(@$price->price_currency_id,true);
+
+		if(!empty($price->discount))
+			$discount = $price->discount;
 
 		if($discount_before_tax) {
 			if(bccomp($discount->discount_flat_amount,0,5) !== 0) {

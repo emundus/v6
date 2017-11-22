@@ -280,7 +280,7 @@ class EmundusController extends JControllerLegacy {
         Delete document from application file
     */
     function delete() {
-        //@TODO ADD COMMENT ON DELETE
+        //TODO: ADD COMMENT ON DELETE
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $copy_application_form = $eMConfig->get('copy_application_form', 0);
         $m_profile = new EmundusModelProfile;
@@ -362,7 +362,7 @@ class EmundusController extends JControllerLegacy {
 
                     $query  = 'DELETE FROM #__emundus_uploads
                                 WHERE id IN ('.implode(',', $file_id).')
-                                AND user_id = '.mysql_real_escape_string($user->id). '
+                                AND user_id = '.$user->id. '
                                 AND fnum IN ('.$fnums.')';
                     $db->setQuery( $query );
                     $db->execute();

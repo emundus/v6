@@ -250,10 +250,17 @@ class EmundusModelApplication extends JModelList
         return $this->_db->Query();
     }
 
-    public function deleteAttachment($id){
-        $query = 'SELECT * FROM #__emundus_uploads WHERE id='.$id;
-        $this->_db->setQuery( $query );
-        $file = $this->_db->loadAssoc();
+    public function deleteAttachment($id) {
+
+        try {
+
+            $query = 'SELECT * FROM #__emundus_uploads WHERE id='.$id;
+            $this->_db->setQuery($query);
+            $file = $this->_db->loadAssoc();
+
+        } catch (Exception $e) {
+            JLog::add('Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+        }
 
         $f = EMUNDUS_PATH_ABS.$file['user_id'].DS.$file['filename'];
         @unlink($f);
@@ -263,10 +270,15 @@ class EmundusModelApplication extends JModelList
             return -1;
         }*/
 
-        $query = 'DELETE FROM #__emundus_uploads WHERE id='.$id;
-        $this->_db->setQuery( $query );
+        try {
 
-        return $this->_db->Query();
+            $query = 'DELETE FROM #__emundus_uploads WHERE id='.$id;
+            $this->_db->setQuery($query);
+            return $this->_db->Query();
+
+        } catch (Exception $e) {
+            JLog::add('Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+        }
     }
 
     public function uploadAttachment($data) {

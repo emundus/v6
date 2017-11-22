@@ -8,6 +8,7 @@ JHtml::stylesheet('media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css');
 $session = JFactory::getSession();
 $user = $session->get('emundusUser');
 $helper = new modEmundusBookInterviewHelper;
+$evaluated_status = $params->get('evaluated_status');
 
 if (isset($user->fnum)) {
 
@@ -31,7 +32,7 @@ if (isset($user->fnum)) {
 
         require(JModuleHelper::getLayoutPath('mod_emundus_book_interview','showInterview_'.$params->get('mod_em_book_interview_layout')));
 
-    } elseif ($status == 3) {
+    } elseif ($status == $evaluated_status) {
 
         $available_events = $helper->getEvents($user);
 

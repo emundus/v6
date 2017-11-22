@@ -2264,7 +2264,12 @@ class ProductViewProduct extends hikashopView
 			$price->price_value_with_tax = $price->price_value;
 			$productClass = hikashop_get('class.product');
 			$product = $productClass->get($price->price_product_id);
-			if($product->product_tax_id) {
+			if(empty($product->product_tax_id) && $product->product_type == 'variant' && !empty($product->product_parent_id)) {
+				$parentProduct = $productClass->get((int)$product->product_parent_id);
+				$product->product_tax_id = (int)$parentProduct->product_tax_id;
+				unset($parentProduct);
+			}
+			if(!empty($product->product_tax_id)) {
 				$currencyClass = hikashop_get('class.currency');
 				$config =& hikashop_config();
 				$main_tax_zone = explode(',',$config->get('main_tax_zone',1346));

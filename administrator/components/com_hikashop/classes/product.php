@@ -1530,6 +1530,9 @@ class hikashopProductClass extends hikashopClass{
 		$this->db->setQuery($query);
 		$original_data = $this->db->loadObjectList('characteristic_id');
 
+		if(empty($original_data))
+			return true;
+
 		$query = 'SELECT variant.*, characteristic.* FROM '.hikashop_table('variant').' as variant '.
 				' LEFT JOIN '.hikashop_table('characteristic').' AS characteristic ON variant.variant_characteristic_id = characteristic.characteristic_id '.
 				' WHERE variant.variant_product_id = '.(int)$variant_id;
@@ -2056,7 +2059,7 @@ class hikashopProductClass extends hikashopClass{
 		}
 
 		$variant = $this->getMainVariant($element->product_parent_id);
-		if($variant->product_id != $element->product_id) {
+		if(!empty($variant) && $variant->product_id != $element->product_id) {
 			return ($old_value != $element->product_sort_price);
 		}
 
@@ -2194,9 +2197,14 @@ class hikashopProductClass extends hikashopClass{
 
 		if($element->product_type == 'variant') {
 
+			$c = $element->characteristics;
+			unset($c['']);
+
 			$query = 'DELETE FROM ' . hikashop_table('variant') . ' WHERE variant_product_id = ' . $product_id;
-			if(!empty($element->characteristics))
-				$query .= ' AND variant_characteristic_id NOT IN (' . implode(',', array_keys($element->characteristics)) . ')';
+			if(!empty($c))
+				$query .= ' AND variant_characteristic_id NOT IN (' . implode(',', array_keys($c)) . ')';
+
+			unset($c);
 
 			$this->database->setQuery($query);
 			$this->database->query();

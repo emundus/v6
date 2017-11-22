@@ -68,6 +68,9 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 
 		$currencyHelper = hikashop_get('class.currency');
 
+		if(empty($product->product_type))
+			$product->product_type = 'main';
+
 		ob_start();
 		include dirname(__FILE__).DS.'shippingprices_views'.DS.'backend_product.php';
 		$data = ob_get_clean();
