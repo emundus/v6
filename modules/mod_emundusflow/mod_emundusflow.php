@@ -59,6 +59,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 		$paid = count($m_application->getHikashopOrder($fnumInfos))>0?1:0;
 		if ($paid == 0 ) {
 
+			$orderSent = count($m_application->getHikashopOrder($fnumInfos,true))>0?1:0;
+
 			// If students with a scholarship have a different fee.
 			// The form ID will be appended to the URL, taking him to a different checkout page.
 			if (isset($scholarship_document)) {
@@ -84,7 +86,10 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 			}
 
 			//$checkout_url = $m_application->getHikashopCheckoutUrl($user->profile);
-			$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile.$scholarship_document)));
+			if ($orderSent > 0)
+				$checkout_url = 'index.php?option=com_fabrik&amp;view=form&amp;formid=258&amp;Itemid=1483';
+			else
+				$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile.$scholarship_document))).'&usekey=fnum&rowid='.$user->fnum;
 
 		} else {
 			$checkout_url = 'index.php';
@@ -99,7 +104,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 		$current_application = $m_application->getApplication($user->fnum);
 		$sent = $m_checklist->getSent();
 
-		$confirm_form_url 	= $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
+		$confirm_form_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
 	}
 
 

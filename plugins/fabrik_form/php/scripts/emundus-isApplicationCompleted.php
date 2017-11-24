@@ -13,9 +13,9 @@ defined( '_JEXEC' ) or die();
  * @description V�rification avant envoie du dossier que le dossier est bien complet
  */
 
-$mainframe = JFactory::getApplication();
-$jinput = $mainframe->input;
-$itemid = $jinput->get('Itemid');
+$mainframe 	= JFactory::getApplication();
+$jinput 	= $mainframe->input;
+$itemid 	= $jinput->get('Itemid');
 
 if ($jinput->get('view') == 'form') {
 	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
@@ -24,13 +24,13 @@ if ($jinput->get('view') == 'form') {
 
 	$user = JFactory::getSession()->get('emundusUser');
 
-	$params = JComponentHelper::getParams('com_emundus');
-	$application_fee = $params->get('application_fee', 0);
-	$scholarship_document_id = $params->get('scholarship_document_id', NULL);
+	$params 					= JComponentHelper::getParams('com_emundus');
+	$application_fee 			= $params->get('application_fee', 0);
+	$scholarship_document_id 	= $params->get('scholarship_document_id', NULL);
 
-	$m_application = new EmundusModelApplication;
-	$attachments = $m_application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
-	$forms = $m_application->getFormsProgress($user->id, $user->profile, $user->fnum);
+	$m_application 	= new EmundusModelApplication;
+	$attachments 	= $m_application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
+	$forms 			= $m_application->getFormsProgress($user->id, $user->profile, $user->fnum);
 
 	// If students with a scholarship have a different fee.
 	// The form ID will be appended to the URL, taking him to a different checkout page.
@@ -59,11 +59,14 @@ if ($jinput->get('view') == 'form') {
 	}
 
 	if ($application_fee == 1) {
+
 		$fnumInfos = EmundusModelFiles::getFnumInfos($user->fnum);
+
 		if (count($fnumInfos) > 0) {
 			$paid = count($m_application->getHikashopOrder($fnumInfos))>0?1:0;
+			$sent = count($m_application->getHikashopOrder($fnumInfos, true))>0?1:0;
 
-			if (!$paid && $attachments >= 100 && $forms >= 100) {
+			if (!$paid && !$sent && $attachments >= 100 && $forms >= 100) {
 				$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile.$scholarship_document_id)));
 				$mainframe->redirect(JRoute::_($checkout_url));
 			}

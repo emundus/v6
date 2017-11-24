@@ -15,7 +15,7 @@ echo $description;
 <hr>
 <?php endif; ?>
 <?php if (!empty($applications)) : ?>
-<div class="<?php echo $moduleclass_sfx ?>"> 
+<div class="<?php echo $moduleclass_sfx ?>">
   <?php foreach($applications as $application) : ?>
   <div class="row" id="row<?php echo $application->fnum; ?>">
     <div class="col-md-12 main-page-application-title">
@@ -24,7 +24,7 @@ echo $description;
           <?php
             echo ($application->fnum == $user->fnum)?'<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> <b>'.$application->label.'</b>':$application->label;
           ?>
-        </a> 
+        </a>
     </div>
 
     <div class="col-xs-12 col-md-6 main-page-file-info">
@@ -38,11 +38,11 @@ echo $description;
       <?php if((int)($attachments[$application->fnum])>=100 && $application->status==0) : ?>
         <a class="btn" href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($confirm_form_url)); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
       <?php endif; ?>
-      
+
       <?php if($application->status<=1) : ?>
         <a id="trash" class="btn btn-danger" onClick="deletefile('<?php echo $application->fnum; ?>');" href="#row<?php echo $attachments[$application->fnum]; ?>" title="<?php echo JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> <?php echo JText::_('Delete'); ?></a>
-      
-        <?php 
+
+        <?php
         /*if($forms[$application->fnum] == 0) {
           echo '
             <div class="ui segments">
@@ -138,8 +138,8 @@ echo $description;
   </div>
   <hr>
   <?php endforeach;  ?>
- </div> 
-<?php else : 
+ </div>
+<?php else :
   echo JText::_('NO_FILE');
 ?>
 <?php endif; ?>

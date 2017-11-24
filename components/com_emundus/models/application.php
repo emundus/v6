@@ -2093,27 +2093,42 @@ td {
 
     /**
      * Return the order for current fnum. If an order with confirmed status is found for fnum campaign period, then return the order
-     * @param $fnumInfos
+     * If $sent is sent to true, the function will search for orders with a status of 'created'
+     * @param $fnumInfos $sent
      * @return bool|mixed
      */
-    public function getHikashopOrder($fnumInfos)
+    public function getHikashopOrder($fnumInfos, $sent=false)
     {
         $dbo = $this->getDbo();
-        try
-        {
-            $query = 'SELECT ho.*, hu.user_cms_id
-                        FROM #__hikashop_order ho
-                        LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                        WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                        AND ho.order_status like "confirmed"
-                        AND ho.order_created >= '.strtotime($fnumInfos['start_date']).'
-                        AND ho.order_created <= '.strtotime($fnumInfos['end_date']);
+        try {
+
+            if ($sent) {
+
+                $query = 'SELECT ho.*, hu.user_cms_id
+                    FROM #__hikashop_order ho
+                    LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                    WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
+                    AND ho.order_status like "created"
+                    AND ho.order_created >= '.strtotime($fnumInfos['start_date']).'
+                    AND ho.order_created <= '.strtotime($fnumInfos['end_date']);
+
+            } else {
+
+                $query = 'SELECT ho.*, hu.user_cms_id
+                    FROM #__hikashop_order ho
+                    LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                    WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
+                    AND ho.order_status like "confirmed"
+                    AND ho.order_created >= '.strtotime($fnumInfos['start_date']).'
+                    AND ho.order_created <= '.strtotime($fnumInfos['end_date']);
+            }
+
+
             $dbo->setQuery($query);
             $result = $dbo->loadObject();
             return $result;
-        }
-        catch (Exception $e)
-        {
+
+        } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
