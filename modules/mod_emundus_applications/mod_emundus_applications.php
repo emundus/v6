@@ -14,6 +14,7 @@ require_once dirname(__FILE__).'/helper.php';
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'admission.php');
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
@@ -35,6 +36,7 @@ $eMConfig 					= JComponentHelper::getParams('com_emundus');
 $applicant_can_renew 		= $eMConfig->get('applicant_can_renew', '0');
 $display_poll 				= $eMConfig->get('display_poll', 0);
 $display_poll_id 			= $eMConfig->get('display_poll_id', null);
+$application_fee			= $eMConfig->get('application_fee', 0);
 
 $description		 		= JText::_($params->get('description', ''));
 $show_add_application 		= $params->get('show_add_application', 1);
@@ -58,13 +60,20 @@ $user->fnums 		= $applications;
 
 $m_application 		= new EmundusModelApplication;
 $m_profile			= new EmundusModelProfile;
-$checklist 			= new EmundusModelChecklist;
+$m_checklist 		= new EmundusModelChecklist;
 
 if (isset($user->fnum) && !empty($user->fnum)) {
 	$attachments 		= $m_application->getAttachmentsProgress($user->id, $user->profile, array_keys($applications));
 	$forms 				= $m_application->getFormsProgress($user->id, $user->profile, array_keys($applications));
 
-	$confirm_form_url 	= $checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
+	// If an application fee is set, we redirect to the "send application" form, this form will redirect to payment if required.
+	/*if ($application_fee == 1)
+		$confirm_form_url = "/index.php?option=com_fabrik&amp;view=form&amp;formid=258&amp;Itemid=1483";
+	else
+		$confirm_form_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;*/
+
+	// Routing all completed applications though the "isApplicationCompleted" plugin (which is active on the form) seems to work better than using the getConfirmUrl method.
+	$confirm_form_url = "/index.php?option=com_fabrik&amp;view=form&amp;formid=258&amp;Itemid=1483";
 
 	// If the user can
 	$profile = $m_profile->getCurrentProfile($user->id);

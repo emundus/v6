@@ -1,5 +1,5 @@
 <?php // no direct access
-defined('_JEXEC') or die('Restricted access'); 
+defined('_JEXEC') or die('Restricted access');
 
 $deadline = new JDate($user->end_date);
 
@@ -8,11 +8,11 @@ $step_form = $forms<100?'':'completed';
 $step_attachment = $attachments<100?'':'completed';
 $step_paiement = @$paid==0?'':'completed';
 $btn_send = '';
-if ($forms>=100 && $attachments>=100 && $sent==0) {
+if ($forms>=100 && $attachments>=100 && $sent == 0) {
   $btn_send = '
   <div class="ui vertical mini button">
     <div class="visible content">
-    <a href="'.$confirm_form_url.'&usekey=fnum&rowid='.$user->fnum.'" title="'.JText::_('SEND_APPLICATION_FILE').'">
+    <a href="'.$checkout_url.'" title="'.JText::_('SEND_APPLICATION_FILE').'">
       <i class="mail outline icon"></i>
     </a>
   </div>';
@@ -44,10 +44,15 @@ if ($forms>=100 && $attachments>=100 && $sent==0) {
 
 <?php if ($application_fee == 1) { ?>
   <div class="<?php echo ($option=="com_hikashop")?"active":""; ?> <?php echo $step_paiement; ?> step">
-    <i class="large payment outline icon"></i>
+    <?php if ($paid == 0 && $orderSent > 0): ?>
+      <i class="large time outline icon"></i>
+    <?php else: ?>
+      <i class="large payment outline icon"></i>
+    <?php endif; ?>
     <div class="content">
       <div class="description"><?php echo  $paid>0?JText::_('APPLICATION_PAID'):JText::_('APPLICATION_NOT_PAID'); ?></div>
-      <div class="description"><?php echo  ($paid==0 && $forms>=100 && $attachments>=100)?'<a href="'.$checkout_url.'" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>':''; ?></div>
+      <div class="description"><?php echo  ($paid==0 && $orderSent>0)?JText::_('AWAITING_PAYMENT'):'' ?></div>
+      <div class="description"><?php echo  ($paid==0 && $orderSent==0 && $forms>=100 && $attachments>=100)?'<a href="'.$checkout_url.'" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>':''; ?></div>
     </div>
   </div>
 <?php } ?>
