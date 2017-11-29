@@ -1406,12 +1406,11 @@ class EmundusControllerFiles extends JControllerLegacy
             $files_list = array();
 
 
-        for ($i=$start ; $i<($start+$limit) && $i < $totalfile ; $i++) {
+        for ($i = $start; $i < ($start+$limit) && $i < $totalfile; $i++) {
             $fnum = $validFnums[$i];
             if (is_numeric($fnum) && !empty($fnum)) {
                 if ($forms) {
-                    $files_list[] =
-                        EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms);
+                    $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms);
                 }
 
                 if ($attachment) {
