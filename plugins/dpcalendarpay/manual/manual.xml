@@ -2,12 +2,12 @@
 <extension version="3.7" type="plugin" group="dpcalendarpay" method="upgrade">
 	<name>plg_dpcalendarpay_manual</name>
 	<author>Digital Peak</author>
-	<creationDate>Oct 2017</creationDate>
+	<creationDate>Nov 2017</creationDate>
 	<copyright>(C) 2007 - 2017 Digital Peak. All rights reserved.</copyright>
 	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
 	<authorEmail>info@digital-peak.com</authorEmail>
 	<authorUrl>joomla.digital-peak.com</authorUrl>
-	<version>6.1.4</version>
+	<version>6.1.5</version>
 	<description>PLG_DPCALENDARPAY_MANUAL_DESCRIPTION</description>
 	<files>
 		<filename plugin="manual">manual.php</filename>
