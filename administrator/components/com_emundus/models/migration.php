@@ -1,7 +1,7 @@
 <?php
 /**
  * eMundus Campaign model
- * 
+ *
  * @package    	Joomla
  * @subpackage 	eMundus
  * @link       	http://www.emundus.fr
@@ -9,11 +9,11 @@
  * @license    	GNU/GPL
  * @author     	Decision Publique - Benjamin Rivalland
  */
- 
+
 // No direct access
- 
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
- 
+
 jimport( 'joomla.application.component.model' );
 
 class EmundusModelMigration extends JModelList
@@ -25,19 +25,19 @@ class EmundusModelMigration extends JModelList
 	{
 		parent::__construct();
 		global $option;
-		
+
 		$mainframe = JFactory::getApplication();
-		
+
 		$this->_db = JFactory::getDBO();
 		$this->_user = JFactory::getUser();
-		
+
 		// Get pagination request variables
 		$filter_order			= $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'label', 'cmd' );
         $filter_order_Dir		= $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
         $limit 					= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
 		$limitstart 			= $mainframe->getUserStateFromRequest('global.list.limitstart', 'limitstart', 0, 'int');
         $limitstart 			= ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
-		
+
  		$this->setState('filter_order', $filter_order);
         $this->setState('filter_order_Dir', $filter_order_Dir);
         $this->setState('limit', $limit);
@@ -51,19 +51,19 @@ class EmundusModelMigration extends JModelList
 		$query .= $this->_buildContentOrderBy();
 	//echo str_replace('#_', 'jos',$query).'<br /><br />';
 		return $this->_getList( $query, $this->getState('limitstart'), $this->getState('limit'));
-	} 
-	
+	}
+
 	function _buildQuery(){
 		$query = 'SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME like "%_repeat%"';
 		return $query;
 	}
-	
+
 	function _buildContentOrderBy()
-	{ 
+	{
         global $option;
 
 		$mainframe = JFactory::getApplication();
- 
+
         $orderby = '';
 		$filter_order     = $this->getState('filter_order');
        	$filter_order_Dir = $this->getState('filter_order_Dir');
@@ -79,7 +79,7 @@ class EmundusModelMigration extends JModelList
 
 	function getColumnsNameByTable($tbl_name)
 	{
-		$query = 'SELECT DISTINCT(COLUMN_NAME)  
+		$query = 'SELECT DISTINCT(COLUMN_NAME)
 				  FROM INFORMATION_SCHEMA.COLUMNS
 				  WHERE table_name = "'.$tbl_name.'"';
 		$this->_db->setQuery( $query );
@@ -89,15 +89,15 @@ class EmundusModelMigration extends JModelList
 
 	function getIsRepeatedColumn($tbl_name, $col_name)
 	{
-		$query = 'SELECT count(id) 
-					FROM '.$tbl_name.' 
+		$query = 'SELECT count(id)
+					FROM '.$tbl_name.'
 					WHERE '.$col_name.' LIKE "%//..*..//%"';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadResult();
 	}
 
 	function migrateTable($tbl_name, $col_name)
-	{ 
+	{
 		$query = 'SELECT * FROM '.$tbl_name;
 		$this->_db->setQuery( $query );
 //echo str_replace("#_", "jos", $query);
@@ -108,8 +108,8 @@ class EmundusModelMigration extends JModelList
 			$i = 0;
 			$c = array();
 			$id = '';
-			foreach ($col_name as $col) { 
-				
+			foreach ($col_name as $col) {
+
 				//echo  $value[$col]."<br>--<br>**>".var_dump(explode("//..*..//", $value[$col]))."<hr>";
 				if($col == "id") {
 					$id = $value[$col];
@@ -122,9 +122,9 @@ class EmundusModelMigration extends JModelList
 					$multi = count($data[$col]);
 			}
 			if ($multi >= 1) {
-				for ($i=0; $i < $multi ; $i++) { 
+				for ($i=0; $i < $multi ; $i++) {
 					$v = array();
-					foreach ($col_name as $col) { 
+					foreach ($col_name as $col) {
 						if($col == "parent_id")
 							$v[] = $id;
 						elseif($col != "id")
@@ -141,15 +141,15 @@ class EmundusModelMigration extends JModelList
 
 					echo $query;
 				}
-				
+
 				/*var_dump($data); echo "<hr>".$multi."<hr>".$query."<hr>";
 				return;*/
 			}
 		}
-		
+
 	}
 
-	
+
 	function getPagination()
 	{
 		// Load the content if it doesn't already exist
@@ -159,20 +159,20 @@ class EmundusModelMigration extends JModelList
 		}
 		return $this->_pagination;
 	}
-	
+
 	function getTotal()
 	{
 		// Load the content if it doesn't already exist
 		if (empty($this->_total)) {
 			$query = $this->_buildQuery();
-			$this->_total = $this->_getListCount($query);    
+			$this->_total = $this->_getListCount($query);
 		}
 		return $this->_total;
 	}
 
 	// Gets all users in jos_emundus_campaign_cadidatures
-	function getUsersInCC() {		
-		
+	function getUsersInCC() {
+
 		$query = "SELECT DISTINCT(applicant_id) FROM #__emundus_campaign_candidature ORDER BY applicant_id";
 
 		try {
@@ -190,7 +190,7 @@ class EmundusModelMigration extends JModelList
 	function testFnum($fnum) {
 
 		$query = "SELECT 1 FROM ( SELECT fnum AS fnum FROM #__emundus_personal_detail ) a WHERE fnum = ".$this->_db->Quote($fnum);
-		
+
 		$this->_db->setQuery($query);
 
 		if ($this->_db->loadResult() == 1)
@@ -199,18 +199,18 @@ class EmundusModelMigration extends JModelList
 			return false;
 	}
 
-	/* This function lookes in all DB tables	
+	/* This function lookes in all DB tables
 	*  If $dataFnum is found in any of the tables then it calls the copy function for that table
 	*/
 	function copyFnumTablePicker($dataFnum, $emptyFnums) {
 
 		// First we get a list of all tables containing an fnum collumn
 		try {
-			
+
 			$query = "SELECT * FROM information_schema.columns WHERE column_name = 'fnum'";
 			$this->_db->setQuery($query);
 			$tables = $this->_db->loadObjectList();
-		
+
 		} catch (Exception $e) {
 			return $e->getMessage();
 		}
@@ -243,9 +243,9 @@ class EmundusModelMigration extends JModelList
 					continue;
 
 
-				unset($result['id']);				
+				unset($result['id']);
 				$result['fnum'] = $emptyFnum;
-			
+
 				// Build a query to insert the data into the rows
 				$query = 'INSERT INTO '.$tableName.' (`'.implode('`,`', array_keys($result)).'`) VALUES('.implode(',', $this->_db->Quote($result)).')';
 
@@ -254,11 +254,11 @@ class EmundusModelMigration extends JModelList
 					$this->_db->setQuery($query);
 					$this->_db->Query();
 					return true;
-				
+
 				} catch (Exception $e) {
 					echo $e->getMessage();
-				}	
-			
+				}
+
 			}
 		}
 
@@ -268,7 +268,12 @@ class EmundusModelMigration extends JModelList
 
 	}
 
-	// Get all files from jos_emundus_declaration where files are validated
+	/**
+	 * This function gets all fnums and users that are marked as validated.
+	 * This is used in conjunction with the tagValidations() function to tag all falidated files.
+	 *
+	 * @return mixed,bool
+	 */
 	function getValidatedFiles() {
 
 		try {
@@ -284,23 +289,32 @@ class EmundusModelMigration extends JModelList
 
 	}
 
-	// Tag a file with the 'validated' tag and
+	/**
+	 * This function tags the given file with the tag 'Validated'.
+	 * The user that runs this function (most likely Admin) will be the user that tags the file.
+	 * The tag ID of 23 is specific to ESA, but that is probably the only case of this functions use.
+	 *
+	 * @param string $fnum The file number.
+	 * @param int $user The ID pof the user to be tagged (can also be gotten by looking at the last 7 digits of the fnum).
+	 *
+	 * @return bool
+	 */
 	function tagValidations($fnum, $user) {
 
 		$current_user = JFactory::getUser();
-		
+
 		try {
-			
-			$query = 'INSERT INTO #__emundus_tag_assoc(fnum, id_tag, applicant_id, user_id) VALUES ("'.$fnum.'", 22,'.$user.','.$current_user->id.'); ';
+
+			$query = 'INSERT INTO #__emundus_tag_assoc(fnum, id_tag, applicant_id, user_id) VALUES ("'.$fnum.'", 23,'.$user.','.$current_user->id.'); ';
 			$this->_db->setQuery($query);
 			$this->_db->execute();
             return true;
-		
+
 		} catch (Exception $e) {
             die($e->getMessage());
             return false;
 		}
-	
+
 	}
 }
 ?>

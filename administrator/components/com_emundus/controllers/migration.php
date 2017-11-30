@@ -15,16 +15,15 @@ require_once (JPATH_COMPONENT_SITE.DS.'helpers'.DS.'access.php');
  */
 class EmundusControllerMigration extends JControllerLegacy
 {
-	function display() {	
+	function display() {
 		// Set a default view if none exists
 		if (!JRequest::getCmd('view')) {
 			$default = 'migration';
 			JRequest::setVar('view', $default );
 		}
 		parent::display();
-	
+
 	}
-	
 
 	function check_table() {
 		$table = JRequest::getVar('t', null, 'GET', 'none', 0);
@@ -66,6 +65,8 @@ class EmundusControllerMigration extends JControllerLegacy
 	* Used for migrating applications from older versions that have files linked to only one fnum yet mulltple fnums are present for the user
 	* This means that we must duplicate the files to each fnum.
 	* The first and possibly only use of this function will be when upgrading the ESA platform to Emundus 6
+	*
+	* @return bool
 	*/
 	function duplicatefilesforfnum() {
 		require_once (JPATH_COMPONENT_SITE.DS.'models'.DS.'users.php');
@@ -80,9 +81,9 @@ class EmundusControllerMigration extends JControllerLegacy
 
 		if (!isset($users) || empty($users))
 			return false;
-		
+
 		foreach ($users as $user) {
-		
+
 			// For each user in campaign_candidature we have one or more fnums but only one is attached to a file with data
 			// We need to find the file containing the data so that we can copy it to the others
 			$emptyFnums = array();
@@ -94,7 +95,7 @@ class EmundusControllerMigration extends JControllerLegacy
 			// For this we will go through all of the fnums and separate the one with data from the others
 			foreach ($files as $file) {
 
-				if ($m_migration->testFnum($file->fnum)) 
+				if ($m_migration->testFnum($file->fnum))
 					$dataFnum = $file->fnum;
 				else
 					$emptyFnums[] = $file->fnum;
@@ -108,13 +109,17 @@ class EmundusControllerMigration extends JControllerLegacy
 		return true;
 	}
 
-	// This function is meant to take all files that have been marked as validated and tag them with the 'validated' tag
-	// Script is ran by calling /administrator/index.php?option=com_emundus&controller=migration&task=movevalidationtotags in URL
+	/**
+	* This function is meant to take all files that have been marked as validated and tag them with the 'validated' tag
+	* Script is ran by calling /administrator/index.php?option=com_emundus&controller=migration&task=movevalidationtotags in URL
+	*
+	* @return void
+	*/
 	function movevalidationtotags() {
 		$m_migration = $this->getModel('migration');
 
 		$files = $m_migration->getValidatedFiles();
-		
+
 		if ($files === false)
 			die('no files!');
 
