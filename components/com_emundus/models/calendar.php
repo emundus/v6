@@ -376,7 +376,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $body = preg_replace(array("/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"), array($subject, $body), $email->Template);
 
         $email_from_sys = $config->get('mailfrom');
-        $email_from = $email->emailfrom;
+        $email_from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
 
         if ($email->name === null)
             $mail_from_name = $config->get('fromname');
@@ -451,7 +451,7 @@ class EmundusModelCalendar extends JModelLegacy {
             $body = preg_replace(array("/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"), array($subject, $body), $email->Template);
 
             $email_from_sys = $config->get('mailfrom');
-            $email_from = $email->emailfrom;
+            $email_from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
 
             if ($email->name === null)
                 $mail_from_name = $config->get('fromname');
