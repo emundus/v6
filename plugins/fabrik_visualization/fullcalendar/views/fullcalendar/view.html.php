@@ -172,6 +172,12 @@ class FabrikViewFullcalendar extends JViewLegacy
 		$options->default_view   = $params->get('fullcalendar_default_view', 'month');
 		$options->add_type       = $params->get('add_type', 'both');
 		$options->time_format    = $params->get('time_format', 'H(:mm)');
+
+		if ($options->time_format === '()')
+		{
+			$options->time_format = ' ';
+		}
+
 		$options->first_week_day = (int) $params->get('first_week_day', 0);
 		$options->minDuration    = $params->get('minimum_duration', "00:30:00");
 		$options->open           = $params->get('open-hour', "00:00:00");
@@ -180,7 +186,6 @@ class FabrikViewFullcalendar extends JViewLegacy
 		$options->showweekends   = (bool) $params->get('show-weekends', true);
 		$options->greyscaledweekend = (bool) $params->get('greyscaled-weekend', false);
 		$options->readonly       = (bool) $params->get('calendar-read-only', false);
-		$options->timeFormat     = $params->get('time_format', '%X');
 		$options->readonlyMonth  = (bool) $params->get('readonly_monthview', false);
 		$options->j3             = FabrikWorker::j3();
 		$options->calOptions     = $params->get('calOptions', '{}');
@@ -236,7 +241,13 @@ class FabrikViewFullcalendar extends JViewLegacy
 			'deps' => array('lib/moment/moment')
 		);
 
-		$shim['viz/fullcalendar/fullcalendar'] = (object) array(
+		$vizShim = 'viz/fullcalendar/fullcalendar';
+		if (!FabrikHelperHTML::isDebug())
+		{
+			$vizShim .= '-min';
+		}
+
+		$shim[$vizShim] = (object) array(
 			'deps' => array('fullcalendar', 'jquery')
 		);
 
@@ -255,7 +266,7 @@ class FabrikViewFullcalendar extends JViewLegacy
 			$shim['lang'] = (object) array('deps' =>
 				array('lib/moment/moment', 'fullcalendar')
 			);
-			$shim['viz/fullcalendar/fullcalendar']->deps[] = 'lang';
+			$shim[$vizShim]->deps[] = 'lang';
 			$paths['lang'] = 'plugins/fabrik_visualization/fullcalendar/libs/fullcalendar/locale/' . $lang;
 		}
 

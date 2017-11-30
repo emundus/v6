@@ -2125,8 +2125,7 @@ td {
 
 
             $dbo->setQuery($query);
-            $result = $dbo->loadObject();
-            return $result;
+            return $dbo->loadObject();
 
         } catch (Exception $e) {
             echo $e->getMessage();
@@ -2134,6 +2133,36 @@ td {
             return false;
         }
     }
+
+    /**
+     * Return any cancelled orders for the current fnum. If an order with cancelled status is found for fnum campaign period, then return the order
+     * @param $fnumInfos
+     * @return bool|mixed
+     */
+    public function getHikashopCancelledOrders($fnumInfos) {
+
+        $db = $this->getDBo();
+
+        try {
+
+            $query = 'SELECT ho.*, hu.user_cms_id
+                FROM #__hikashop_order ho
+                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
+                AND ho.order_status like "canceled"
+                AND ho.order_created >= '.strtotime($fnumInfos['start_date']).'
+                AND ho.order_created <= '.strtotime($fnumInfos['end_date']);
+
+            $db->setQuery($query);
+            return $db->loadObject();
+
+        } catch (Exception $e) {
+            JLog::add('Error in model/application at query : '.$query, JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+    }
+
 
     /**
      * Return the checkout URL order for current fnum.

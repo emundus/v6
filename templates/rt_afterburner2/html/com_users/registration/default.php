@@ -14,28 +14,30 @@ JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.noframes');
 
-$app	= JFactory::getApplication();
+$app = JFactory::getApplication();
 $template = $app->getTemplate();
+
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+$m_campaign = new EmundusModelCampaign;
+
 $lang->load('tpl_'.$template, JPATH_THEMES.DS.$template);
 //$this->form->reset( true );
-$this->form->loadFile( dirname(__FILE__) . DS . "registration.xml");
-
+$this->form->loadFile(dirname(__FILE__) . DS . "registration.xml");
 $jform = $app->getUserState('com_users.registration.data');
 
 $course = JRequest::getVar('course', null, 'GET', null, 0);
 
 if (!empty($course)) {
-	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-	$campaign = new EmundusModelCampaign;
-	$campaigns = $campaign->getCampaignsByCourse($course);
+	$campaigns = $m_campaign->getCampaignsByCourse($course);
 	$campaign_id = $campaigns['id'];
+} else {
+	$campaigns = $m_campaign->getAllowedCampaign();
 }
 
-if(count(@$campaign_id) == 0 && !empty($course)) {
-	JFactory::getApplication()->enqueueMessage(JText::_('EMUNDUS_NO_CAMPAIGN'), 'error');
+if ((count(@$campaign_id) == 0 && !empty($course)) || count($campaigns) == 0) {
+	$app->enqueueMessage(JText::_('EMUNDUS_NO_CAMPAIGN'), 'error');
 	JLog::add('No available campaign', JLog::ERROR, 'com_emundus');
-}
-else {
+} else {
 ?>
 <style> #jform_name {border:solid 0px #FFF;} </style>
 <div class="box">

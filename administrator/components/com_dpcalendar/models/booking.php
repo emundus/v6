@@ -181,7 +181,9 @@ class DPCalendarModelBooking extends JModelAdmin
 							// Increase the seat
 							$ticket->seat++;
 							$event->book(true);
-							$tickets[] = $ticketModel->getItem($ticketModel->getState($this->getName() . '.id'));
+							$t = $ticketModel->getItem($ticketModel->getState($this->getName() . '.id'));
+							$t->event_prices = $prices;
+							$tickets[] = $t;
 						} else {
 							$this->setError($this->getError() . PHP_EOL . $ticketModel->getError());
 						}

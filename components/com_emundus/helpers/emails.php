@@ -506,10 +506,17 @@ class EmundusHelperEmails
 				// mail function
 				$mailer = JFactory::getMailer();
 
-                $sender = array(
-		            $email_from_sys,
-		            $fromname
-		        );
+                // If the email sender has the same domain as the system sender address.
+				if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+					$mail_from_address = $from;
+				else
+					$mail_from_address = $email_from_sys;
+
+				// Set sender
+				$sender = [
+					$mail_from_address,
+					$fromname
+				];
 
                 $mailer->setSender($sender);
 	            $mailer->addReplyTo($from, $fromname);
@@ -671,10 +678,17 @@ class EmundusHelperEmails
                 // mail function
 				$mailer = JFactory::getMailer();
 
-                $sender = array(
-		            $email_from_sys,
-		            $fromname
-		        );
+                // If the email sender has the same domain as the system sender address.
+				if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+					$mail_from_address = $from;
+				else
+					$mail_from_address = $email_from_sys;
+
+				// Set sender
+				$sender = [
+					$mail_from_address,
+					$fromname
+				];
 
 	            $mailer->setSender($sender);
 	            $mailer->addReplyTo($from, $fromname);

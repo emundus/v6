@@ -712,10 +712,12 @@ function generate_pdf(json) {
                     } else {
 
                         var json = result.json;
-                        if (start != json.start)
+                        if (start != json.start) {
                             generate_pdf(json);
-                        else
-                            $('#loadingimg').empty();
+                        } else {
+                            $('#loadingimg').empty().append(json.msg);
+                            $('#datasbs p').replaceWith('<span class="alert alert-danger"> '+json.msg+'</span>');
+                        }
 
                     }
                 },

@@ -57,7 +57,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 		$this->data['save_and_next'] = $params->get('save_and_next', '0');
 		$this->data['save_in_session'] = $params->get('save_insession');
 		$this->data['jump_page'] = $w->parseMessageForPlaceHolder($params->get('jump_page'), $this->data);
-		$this->data['thanks_message'] = $w->parseMessageForPlaceHolder(FText::_($params->get('thanks_message')), $this->data);
+		$this->data['thanks_message'] = FText::_($w->parseMessageForPlaceHolder($params->get('thanks_message'), $this->data));
 
 		if (!$this->shouldRedirect($params))
 		{
@@ -115,8 +115,6 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 		}
 		else
 		{
-			$msg = $this->data['thanks_message'];
-
 			// Redirect not working in admin.
 			if (!$this->app->isAdmin())
 			{
@@ -133,6 +131,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 		}
 
 		$smsg[$this->renderOrder] = $this->data['thanks_message'];
+		$smsg[$this->renderOrder] = JText::sprintf($this->data['thanks_message']);
 
 		// Don't display system message if thanks is empty
 		if (FArrayHelper::getValue($this->data, 'thanks_message', '') !== '')

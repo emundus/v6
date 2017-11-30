@@ -206,7 +206,7 @@ class EmundusModelEmails extends JModelList
             foreach ($trigger_emails as $key => $trigger_email) {
 
                 foreach ($trigger_email[$student->code]['to']['recipients'] as $key => $recipient) {
-                    $mailer     = JFactory::getMailer();
+                    $mailer = JFactory::getMailer();
 
                     //$post = array();
                     $tags = $this->setTags($student->id, $post, $student->fnum);
@@ -221,11 +221,17 @@ class EmundusModelEmails extends JModelList
                     $body = $this->setTagsFabrik($body, array($student->fnum));
                     //$attachment[] = $path_file;
 
-                    // setup mail
-                    $sender = array(
-                        $email_from_sys,
+                    // If the email sender has the same domain as the system sender address.
+                    if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+                        $mail_from_address = $from;
+                    else
+                        $mail_from_address = $email_from_sys;
+
+                    // Set sender
+                    $sender = [
+                        $mail_from_address,
                         $fromname
-                    );
+                    ];
 
                     $mailer->setSender($sender);
                     $mailer->addReplyTo($from, $fromname);
@@ -255,7 +261,7 @@ class EmundusModelEmails extends JModelList
         return true;
     }
 
-    /*
+    /**
      *  @description    replace body message tags [constant] by value
      *  @param          $user           Object      user object
      *  @param          $str            String      string with tags
@@ -278,7 +284,7 @@ class EmundusModelEmails extends JModelList
         return $strval;
     }
 
-    /*
+    /**
     *  @description    Replace all accented characters by something else
     *  @param          $str              string
     *  @return         string            String with accents stripped
@@ -295,7 +301,7 @@ class EmundusModelEmails extends JModelList
         return $str;
     }
 
-    /*
+    /**
      *  @description    get tags with Fabrik elementd IDs
      *  @param          $body           string
      *  @return         array           array of application file elements IDs
@@ -306,7 +312,7 @@ class EmundusModelEmails extends JModelList
         return $element_ids;
     }
 
-    /*
+    /**
      *  @description    replace tags like {fabrik_element_id} by the application form value for current application file
      *  @param          $fum            string  application file number
      *  @param          $element_ids    array   Fabrik element ID
@@ -327,7 +333,7 @@ class EmundusModelEmails extends JModelList
         return $element_values;
     }
 
-    /*
+    /**
      *  @description    replace tags like {fabrik_element_id} by the applicaiton form value in text
      *  @param          $body               string  source containing tags like {fabrik_element_id}
      *  @param          $element_values     array   Array of values index by Fabrik elements IDs
@@ -573,8 +579,7 @@ class EmundusModelEmails extends JModelList
             }
             return $this->replace($preg, $str);
         }
-        else
-            return $str;
+        else return $str;
     }
 
 
@@ -668,7 +673,6 @@ class EmundusModelEmails extends JModelList
             $mail_from      = $jinput->get('mail_from', null, 'STRING'); //JRequest::getVar('mail_from', null, 'POST', 'VARCHAR', 0);
 
             $campaign = @EmundusHelperfilters::getCampaignByID($campaign_id);
-            $application = new EmundusModelApplication;
 
             $tags = $this->setTags($this->_user->id);
 
@@ -740,8 +744,8 @@ class EmundusModelEmails extends JModelList
                 $email_from_sys = $app->getCfg('mailfrom');
 
                 // If the email sender has the same domain as the system sender address.
-                if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
-                    $mail_from_address = $email_from;
+                if (!empty($mail_from) && substr(strrchr($mail_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+                    $mail_from_address = $mail_from;
                 else
                     $mail_from_address = $email_from_sys;
 
@@ -800,7 +804,8 @@ class EmundusModelEmails extends JModelList
                     echo '<hr>'.$body;
                 }
 
-                $application->addComment($row);
+                $m_application = new EmundusModelApplication;
+                $m_application->addComment($row);
 
                 $key1 = "";
 

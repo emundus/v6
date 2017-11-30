@@ -376,7 +376,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $body = preg_replace(array("/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"), array($subject, $body), $email->Template);
 
         $email_from_sys = $config->get('mailfrom');
-        $email_from = $email->emailfrom;
+        $email_from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
 
         if ($email->name === null)
             $mail_from_name = $config->get('fromname');
@@ -417,7 +417,6 @@ class EmundusModelCalendar extends JModelLegacy {
                 'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user->email.'</i><br>'.$body
             );
             $m_emails->logEmail($message);
-            JLog::add($user->email.' '.$body, JLog::INFO, 'com_emundus');
         }
 
         // Part two is sending the email to the coordinators.
@@ -452,7 +451,7 @@ class EmundusModelCalendar extends JModelLegacy {
             $body = preg_replace(array("/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"), array($subject, $body), $email->Template);
 
             $email_from_sys = $config->get('mailfrom');
-            $email_from = $email->emailfrom;
+            $email_from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
 
             if ($email->name === null)
                 $mail_from_name = $config->get('fromname');
@@ -494,7 +493,6 @@ class EmundusModelCalendar extends JModelLegacy {
                     'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$recipient->email.'</i><br>'.$body
                 );
                 $m_emails->logEmail($message);
-                JLog::add($recipient->email.' '.$body, JLog::INFO, 'com_emundus');
             }
 
         }
