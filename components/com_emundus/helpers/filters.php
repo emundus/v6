@@ -198,8 +198,8 @@ class EmundusHelperFilters {
 		$query = 'SELECT DISTINCT(esap.attachment_id), esa.value
 				FROM #__emundus_setup_attachment_profiles esap
 				LEFT JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id';
-		$db->setQuery( $query );
-		return $db->loadObjectList();
+			$db->setQuery( $query );
+			return $db->loadObjectList();
 	}
 
 	function getEvaluation_doc($result) {
@@ -210,8 +210,8 @@ class EmundusHelperFilters {
 					SELECT distinct(esl.attachment_id) FROM #__emundus_setup_letters esl WHERE status='.$result.'
 					)
 				ORDER BY esa.value';
-		$db->setQuery( $query );
-		return $db->loadObjectList();
+			$db->setQuery( $query );
+			return $db->loadObjectList();
 	}
 
 	function setEvaluationList ($result) {

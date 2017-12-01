@@ -31,17 +31,18 @@ class EmundusHelperFiles
     */
     public  function clear()
     {
-        JFactory::getSession()->set('filt_params', array());
-        JFactory::getSession()->set('select_filter',null);
-        JFactory::getSession()->set('adv_cols', array());
-        JFactory::getSession()->clear('filter_order');
-        JFactory::getSession()->clear('filter_order_Dir');
+        $session = JFactory::getSession();
+        $session->set('filt_params', array());
+        $session->set('select_filter',null);
+        $session->set('adv_cols', array());
+        $session->clear('filter_order');
+        $session->clear('filter_order_Dir');
         $limit = JFactory::getApplication()->getCfg('list_limit');
         $limitstart = 0;
         $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
-        JFactory::getSession()->set('limit', $limit);
-        JFactory::getSession()->set('limitstart', $limitstart);
+        $session->set('limit', $limit);
+        $session->set('limitstart', $limitstart);
 
         //@EmundusHelperFiles::resetFilter();
 
@@ -52,17 +53,18 @@ class EmundusHelperFiles
     */
     public  function clearfilter()
     {
-        JFactory::getSession()->set('filt_params', array());
-        JFactory::getSession()->set('select_filter',null);
-        JFactory::getSession()->clear('filter_order');
-        JFactory::getSession()->clear('filter_order_Dir');
+        $session = JFactory::getSession();
+        $session->set('filt_params', array());
+        $session->set('select_filter',null);
+        $session->clear('filter_order');
+        $session->clear('filter_order_Dir');
 
         $limit = JFactory::getApplication()->getCfg('list_limit');
         $limitstart = 0;
         $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
-        JFactory::getSession()->set('limit', $limit);
-        JFactory::getSession()->set('limitstart', $limitstart);
+        $session->set('limit', $limit);
+        $session->set('limitstart', $limitstart);
 
     }
 
@@ -225,8 +227,9 @@ class EmundusHelperFiles
     ** @description Clear session and reinit values by default
     */
     public function resetFilter() {
-        $filters = @EmundusHelperFiles::setMenuFilter();
-        return @EmundusHelperFiles::createFilterBlock($filters['filts_details'], $filters['filts_options'], $filters['tables']);
+        $h_files = new EmundusHelperFiles;
+        $filters = $h_files->setMenuFilter();
+        return $h_files->createFilterBlock($filters['filts_details'], $filters['filts_options'], $filters['tables']);
     }
 
 
@@ -285,7 +288,7 @@ class EmundusHelperFiles
         try {
             return $db->loadResultArray();
         } catch (Exception $e) {
-            throw new   Exception;
+            throw $e;
         }
     }
 
@@ -308,18 +311,18 @@ class EmundusHelperFiles
         try {
             return $db->loadResultArray();
         } catch (Exception $e) {
-            throw new Exception;
+            throw $e;
         }
     }
 
     public  function getCampaigns() {
-        $session = JFactory::getSession();
-        $params = $session->get('filt_params');
-        $filt_menu = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
+        $session    = JFactory::getSession();
+        $params     = $session->get('filt_params');
+        $filt_menu  = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
 
-        if ($filt_menu['programme'][0] == "%"){
+        if ($filt_menu['programme'][0] == "%") {
             $where = '1=1';
-        } elseif(count($filt_menu['programme'])>0 && isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
+        } elseif (count($filt_menu['programme'])>0 && isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
             $where = ' training IN ("'.implode('","', $filt_menu['programme']).'") ';
         } else {
             if (!empty($params) && !empty($params['programme']) && count($params['programme'] > 0)) {
@@ -341,9 +344,9 @@ class EmundusHelperFiles
             if ($code[0] == '%') {
                 // ONLY FILES LINKED TO MY GROUPS
                 require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
-                $userModel = new EmundusModelUsers();
+                $m_users = new EmundusModelUsers();
                 $user = JFactory::getUser();
-                $code = $userModel->getUserGroupsProgrammeAssoc($user->id);
+                $code = $m_users->getUserGroupsProgrammeAssoc($user->id);
                 $where = 'code IN ("'.implode('","', $code).'")';
                 //////////////////////////////////
             } else
@@ -447,7 +450,8 @@ class EmundusHelperFiles
         $db = JFactory::getDBO();
         $query = 'SELECT name, params FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
         $db->setQuery( $query );
-        return @EmundusHelperFiles::insertValuesInQueryResult($db->loadAssocList('name'), array("sub_values", "sub_labels"));
+        $h_files = new EmundusHelperFiles;
+        return $h_files->insertValuesInQueryResult($db->loadAssocList('name'), array("sub_values", "sub_labels"));
     }
 
     public  function getMissing_doc(){
@@ -472,7 +476,8 @@ class EmundusHelperFiles
     }
 
     public  function setEvaluationList ($result) {
-        $option_list =  @EmundusHelperFiles::getEvaluation_doc($result);
+        $h_files = new EmundusHelperFiles;
+        $option_list =  $h_files->getEvaluation_doc($result);
         $current_filter = '<select class="chzn-select" name="attachment_id" id="attachment_id">';
         if(!empty($option_list)){
             foreach($option_list as $value){
@@ -861,6 +866,7 @@ class EmundusHelperFiles
     public  function setSearchBox($selected, $search_value, $elements_values, $i=0)
     {
         jimport( 'joomla.html.parameter' );
+        $h_files = new EmundusHelperFiles;
         $current_filter = "";
         if(!empty($selected))
         {
@@ -869,7 +875,7 @@ class EmundusHelperFiles
                 //$query_paramsdefs = JPATH_BASE.DS.'plugins'.DS.'fabrik_element'.DS.$selected->element_plugin.DS.$selected->element_plugin.'.xml';
                 //$query_params = new JParameter($selected->element_attribs, $query_paramsdefs);
                 $query_params = json_decode($selected->element_attribs);
-                $option_list =  @EmundusHelperFiles::buildOptions($selected->element_name, $query_params);
+                $option_list =  $h_files->buildOptions($selected->element_name, $query_params);
                 $current_filter .= '<select class="chzn-select em-filt-select" id="em-adv-fil-'.$i.'" class="chsn-select" name="'.$elements_values.'" id="'.$elements_values.'">
                 <option value="">'.JText::_('PLEASE_SELECT').'</option>';
                 if(!empty($option_list))
@@ -889,7 +895,7 @@ class EmundusHelperFiles
                 //$query_paramsdefs = JPATH_BASE.DS.'plugins'.DS.'fabrik_element'.DS.$selected->element_plugin.DS.$selected->element_plugin.'.xml';
                 //$query_params = new JParameter($selected->element_attribs, $query_paramsdefs);
                 $query_params = json_decode($selected->element_attribs);
-                $option_list =  @EmundusHelperFiles::buildOptions($selected->element_name, $query_params);
+                $option_list =  $h_files->buildOptions($selected->element_name, $query_params);
                 $current_filter .= '<select class="chzn-select em-filt-select" id="em-adv-fil-'.$i.'" name="'.$elements_values.'" id="'.$elements_values.'">
                 <option value="">'.JText::_('PLEASE_SELECT').'</option>';
                 if(!empty($option_list))
@@ -920,6 +926,7 @@ class EmundusHelperFiles
     public function createFilterBlock($params, $types, $tables){
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
         $m_files = new EmundusModelFiles();
+        $h_files = new EmundusHelperFiles;
 
         /*$document = JFactory::getDocument();
         $document->addStyleSheet("media/com_emundus/lib/chosen/chosen.min.css" );
@@ -930,7 +937,7 @@ class EmundusHelperFiles
         $filt_params = $session->get('filt_params');
         $select_id   = $session->get('select_filter');
         if (!is_null($select_id)) {
-            $research_filter = @EmundusHelperFiles::getEmundusFilters($select_id);
+            $research_filter = $h_files->getEmundusFilters($select_id);
             $filter =  json_decode($research_filter->constraints, true);
             $filt_params = $filter['filter'];
         }
@@ -980,7 +987,7 @@ class EmundusHelperFiles
                                     <label class="control-label">'.JText::_('PROFILE').'</label>';
             $profile .= '           <select class="chzn-select em-filt-select" id="select_profile" name="profile" '.($types['profile'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'">
                          <option value="0">'.JText::_('ALL').'</option>';
-            $profiles = @EmundusHelperFiles::getApplicants();
+            $profiles = $h_files->getApplicants();
             foreach ($profiles as $prof) {
                 $profile .= '<option value="'.$prof->id.'"';
                 if(!empty($current_profile) && (in_array($prof->id, $current_profile) || $prof->id == $current_profile))
@@ -1002,7 +1009,7 @@ class EmundusHelperFiles
                                     <label class="control-label">'.JText::_('PROFILE_FILTER').'</label>';
             $profile_user .= '      <select class="chzn-select em-filt-select" id="select_profile_users" name="profile_users" '.($types['profile_users'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
                          <option value="0">'.JText::_('ALL').'</option>';
-            $profile_users = @EmundusHelperFiles::getProfiles();
+            $profile_users = $h_files->getProfiles();
             $prefilter = count($filt_params['profile_users'])>0?true:false;
 
             foreach ($profile_users as $profu) {
@@ -1028,7 +1035,7 @@ class EmundusHelperFiles
                                <div class="em_filtersElement">';
             $eval .= '<select class="chzn-select em-filt-select" id="select_user" name="user" '.($types['evaluator'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'>
                       <option value="0">'.JText::_('ALL').'</option>';
-            $evaluators = @EmundusHelperFiles::getEvaluators();
+            $evaluators = $h_files->getEvaluators();
             foreach ($evaluators as $evaluator) {
                 $eval .= '<option value="'.$evaluator->id.'"';
                 if($current_eval == $evaluator->id)
@@ -1050,7 +1057,7 @@ class EmundusHelperFiles
                                    <div class="em_filtersElement">';
             $group_eval .= '<select class="chzn-select em-filt-select" id="select_groups" name="evaluator_group" '.($types['evaluator_group'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '"" ').'>
                             <option value="0">'.JText::_('ALL').'</option>';
-            $groups = @EmundusHelperFiles::getGroups();
+            $groups = $h_files->getGroups();
             foreach ($groups as $group) {
                 $group_eval .= '<option value="'.$group->id.'"';
                 if($current_group_eval == $group->id)
@@ -1065,7 +1072,7 @@ class EmundusHelperFiles
 
         if (@$params['finalgrade'] !== NULL) {
             $hidden = $types['finalgrade'] != 'hidden' ? false : true;
-            $finalgrade = @EmundusHelperFiles::getFinal_grade();
+            $finalgrade = $h_files->getFinal_grade();
             $final_gradeList = explode('|', $finalgrade['final_grade']['sub_labels']);
             $sub_values = explode('|', $finalgrade['final_grade']['sub_values']);
             foreach($sub_values as $sv) $p_grade[]="/".$sv."/";
@@ -1094,7 +1101,7 @@ class EmundusHelperFiles
 
         if (@$params['missing_doc'] !== NULL) {
             $hidden = $types['missing_doc'] != 'hidden' ? false : true;
-            $missing_docList = @EmundusHelperFiles::getMissing_doc();
+            $missing_docList = $h_files->getMissing_doc();
             $missing_doc = '';
             if (@$types['missing_doc'] != 'hidden')
                 $missing_doc .= '<div class="em_filters" id="missing_doc">
@@ -1166,7 +1173,7 @@ class EmundusHelperFiles
 
         if (@$params['campaign'] !== NULL) {
             $hidden = $types['campaign'] != 'hidden' ? false : true;
-            $campaignList = @EmundusHelperFiles::getCampaigns();
+            $campaignList = $h_files->getCampaigns();
             $campaign = '';
             if ($types['campaign'] != 'hidden') {
                 $campaign .= '<div id="campaign">
@@ -1198,7 +1205,7 @@ class EmundusHelperFiles
         }
 
         if ($params['schoolyear'] !== NULL) {
-            $schoolyearList = @EmundusHelperFiles::getSchoolyears();
+            $schoolyearList = $h_files->getSchoolyears();
             $schoolyear = '';
             $hidden = $types['schoolyear'] != 'hidden' ? false : true;
             if (!$hidden) {
@@ -1228,7 +1235,7 @@ class EmundusHelperFiles
 
         if (@$params['programme'] !== NULL) {
             $hidden = $types['programme'] != 'hidden' ? false : true;
-            $programmeList = @EmundusHelperFiles::getProgrammes($params['programme']);
+            $programmeList = $h_files->getProgrammes($params['programme']);
             $programme = '';
             if (!$hidden) {
                 $programme .= '<div id="programme">
@@ -1257,7 +1264,7 @@ class EmundusHelperFiles
 
         if (@$params['status'] !== NULL) {
             $hidden = $types['status'] != 'hidden' ? false : true;
-            $statusList = @EmundusHelperFiles::getStatus();
+            $statusList = $h_files->getStatus();
             $status = '';
             if (!$hidden) {
                 $status .= '<div id="status">
@@ -1344,7 +1351,7 @@ class EmundusHelperFiles
             $filters .= '</fieldset><fieldset class="em_filters_adv_filter">';
 
             $hidden = $types['adv_filter'] != 'hidden' ? false : true;
-            $elements = @EmundusHelperFiles::getElements();
+            $elements = $h_files->getElements();
             $adv_filter = '<div class="em_filters" id="em_adv_filters">
                                     <label class="control-label editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</label>';
             $adv_filter .= '<div><button class="btn btn-default btn-sm" type="button" id="add-filter"><span class="glyphicon glyphicon-th-list"></span> '.JText::_('ADD_FILTER_COLUMN').'</button></div><input type="hidden" value="'.count($search).'" id="nb-adv-filter" />';
@@ -1391,7 +1398,7 @@ class EmundusHelperFiles
                     $adv_filter .= '</select> <button class="btn btn-danger btn-xs" id="suppr-filt"><span class="glyphicon glyphicon-trash" ></span></button>';
 
                     if($selected_adv != "")
-                        $adv_filter .= @EmundusHelperFiles::setSearchBox($selected_adv, $val, $key, $i);
+                        $adv_filter .= $h_files->setSearchBox($selected_adv, $val, $key, $i);
 
                     $i++;
                     $adv_filter .= '</fieldset>';
@@ -1407,7 +1414,7 @@ class EmundusHelperFiles
         if (@$params['other'] !== NULL && !empty($tables) && $tables[0] != "") {
             $filters .= '</fieldset><fieldset class="em_filters_other">';
             $hidden = $types['other'] != 'hidden' ? false : true;
-            $other_elements = @EmundusHelperFiles::getElementsOther($tables);
+            $other_elements = $h_files->getElementsOther($tables);
             $other_filter = '<div class="em_filters" id="em_other_filters"><a href="javascript:addElementOther();"><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('OTHER_FILTERS').'</span>';
             $other_filter .= '<input type="hidden" value="0" id="theValue_other" />';
             $other_filter .= '<img src="'.JURI::base(true).'media/com_emundus/images/icones/viewmag+_16x16.png" alt="'.JText::_('ADD_SEARCH_ELEMENT').'" id="add_filt"/></a>';
@@ -1441,7 +1448,7 @@ class EmundusHelperFiles
                     $other_filter .= '</select>';
                     if(!isset($search_values_other[$i])) $search_values_other[$i] = "";
                     if ($selected_other != "")
-                        $other_filter .= @EmundusHelperFiles::setSearchBox($selected_other, $search_values_other[$i], "elements_values_other", $i);
+                        $other_filter .= $h_files->setSearchBox($selected_other, $search_values_other[$i], "elements_values_other", $i);
                     $other_filter .= '<a href="javascript:clearAdvanceFilter(\'filter_other'.$i.'\'); javascript:removeElement(\'filter_other'.$i.'\', 2);"><img src="'.JURI::base(true).'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>';
                     $i++;
                     $other_filter .= '</div>';
@@ -1568,7 +1575,7 @@ class EmundusHelperFiles
                             </script>';
 
         // User filter
-        $research_filters = @EmundusHelperFiles::getEmundusFilters();
+        $research_filters = $h_files->getEmundusFilters();
         $filters .='<fieldset>
                                 <label for="select_filter" class="control-label">'.JText::_('SELECT_FILTER').'</label>
                                 <select class="chzn-select" id="select_filter" name="select_filter" >
@@ -1678,7 +1685,7 @@ class EmundusHelperFiles
     public function getMenuList($params, $fnum = null)
     {
         require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
-        $userModel = new EmundusModelUsers();
+        $m_users = new EmundusModelUsers();
 
 
         $menu = @JSite::getMenu();
@@ -1687,9 +1694,9 @@ class EmundusHelperFiles
 
         $user = JFactory::getUser();
         if($fnum === null)
-            $actions = $userModel->getUserACL($user->id);
+            $actions = $m_users->getUserACL($user->id);
         else
-            $actions = $userModel->getUserACL($user->id, $fnum);
+            $actions = $m_users->getUserACL($user->id, $fnum);
         $levels = $user->getAuthorisedViewLevels();
         asort($levels);
 
@@ -1835,6 +1842,7 @@ class EmundusHelperFiles
 
         $m_evaluation   = new EmundusModelEvaluation();
         $m_files        = new EmundusModelFiles;
+        $h_files        = new EmundusHelperFiles;
 
         if (!is_array($fnums)) {
             $fnumInfo = $m_files->getFnumInfos($fnums);
@@ -1844,7 +1852,7 @@ class EmundusHelperFiles
         }
 
         $element_id = $m_evaluation->getAllEvaluationElements(1, $fnumInfo['training']);
-        $elements = @EmundusHelperFiles::getElementsName(implode(',',$element_id));
+        $elements = $h_files->getElementsName(implode(',',$element_id));
         $evaluations = $m_files->getFnumArray($fnums, $elements);
 
         $data = array();
@@ -1925,7 +1933,7 @@ class EmundusHelperFiles
         }
 
         $element_id = $m_evaluation->getAllDecisionElements(1, $fnumInfo['training']);
-        $elements = @EmundusHelperFiles::getElementsName(implode(',',$element_id));
+        $elements = $h_files->getElementsName(implode(',',$element_id));
         $evaluations = $m_files->getFnumArray($fnums, $elements);
 
         $data = array();
@@ -1992,6 +2000,7 @@ class EmundusHelperFiles
 
         $m_admission   = new EmundusModelAdmission();
         $m_files       = new EmundusModelFiles;
+        $h_files       = new EmundusHelperFiles;
 
         if (!is_array($fnums)) {
             $fnumInfo = $m_files->getFnumInfos($fnums);
@@ -2002,7 +2011,7 @@ class EmundusHelperFiles
 
         // Get information from the applicant form filled out by the coordinator
         $element_id     = $m_admission->getAllAdmissionElements(0, $fnumInfo['training']);
-        $elements       = @EmundusHelperFiles::getElementsName(implode(',',$element_id));
+        $elements       = $h_files->getElementsName(implode(',',$element_id));
         $admissions     = $m_files->getFnumArray($fnums, $elements);
 
         $data = array();
@@ -2060,7 +2069,7 @@ class EmundusHelperFiles
 
         // Get information from application form filled out by the student
         $element_id     = $m_admission->getAllApplicantAdmissionElements(0, $fnumInfo['training']);
-        $elements       = @EmundusHelperFiles::getElementsName(implode(',',$element_id));
+        $elements       = $h_files->getElementsName(implode(',',$element_id));
         $admissions     = $m_files->getFnumArray($fnums, $elements);
 
 
