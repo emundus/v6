@@ -1908,19 +1908,18 @@ class EmundusControllerFiles extends JControllerLegacy
             echo JText::_('FILE_NOT_FOUND').' : '.$file;
         }
     }
-    /*
-    *   Create a zip file containing all documents attached to application fil number
-    */
+
     /**
-     * @param $fnums
+     *  Create a zip file containing all documents attached to application fil number
+     * @param array $fnums
      * @return string
      */
-    function export_zip($fnums)
-    {
+    function export_zip($fnums) {
         $view           = JRequest::getCmd( 'view' );
         $current_user   = JFactory::getUser();
+
         if ((!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) && $view != 'renew_application')
-            die( JText::_('RESTRICTED_ACCESS') );
+            die(JText::_('RESTRICTED_ACCESS'));
 
         require_once(JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'pdf.php');
@@ -1931,10 +1930,14 @@ class EmundusControllerFiles extends JControllerLegacy
         $path = JPATH_BASE.DS.'tmp'.DS.$nom;
         $m_files = $this->getModel('Files');
         $files = $m_files->getFilesByFnums($fnums);
+
+
         if (file_exists($path))
             unlink($path);
+
         if (!empty($files)) {
             $users = array();
+
             foreach ($fnums as $fnum) {
                 $sid = intval(substr($fnum, -7));
                 $users[$fnum] = JFactory::getUser($sid);
@@ -1952,8 +1955,9 @@ class EmundusControllerFiles extends JControllerLegacy
 
                     if (!$zip->addFile($dossier . DS . $application_pdf, $filename))
                         continue;
+
                     $zip->close();
-                } else die ("ERROR");
+                } else die("ERROR");
             }
 
             if ($zip->open($path, ZipArchive::CREATE) == TRUE) {
@@ -1966,9 +1970,9 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
 
                 $zip->close();
-            } else die ("ERROR");
-
+            } else die("ERROR");
             return $nom;
+
         } else return 0;
     }
 

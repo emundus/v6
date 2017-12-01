@@ -1273,7 +1273,7 @@ class EmundusHelperFiles
             foreach ($statusList as $p) {
                 $status .= '<option value="'.$p->step.'"';
                 if(!empty($current_status) && in_array($p->step, $current_status))
-                    $status .= ' selected="true"';
+                    $status .= ' selected="true" disabled="true"';
                 $status .= '>'.$p->value.'</option>';
             }
             $status .= '</select>';

@@ -28,15 +28,19 @@ function get_mime_type($filename, $mimePath = '../etc') {
 	      return ($matches[1]);
 	   }
 	   return (false); // no match at all
-} 
+}
 
-// @description Generate the letter result
-// @params Applicant user ID
-// @params Eligibility ID of the evaluation
-// @params Code of the programme
-// @params Type of output
-
-function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluation_id, $output = true, $fnum = null) { 
+/** Generate the letter result
+* @param int $user_id the user ID
+* @param bool Eligibility ID of the evaluation
+* @param String Code of the programme
+* @param int Campaign id
+* @param int Evaluation id
+* @param mixed output format
+* @param String File number
+* @return Array Files
+*/
+function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluation_id, $output = true, $fnum = null) {
 	set_time_limit(0);
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
@@ -45,34 +49,44 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
-	$current_user =  JFactory::getUser();
-	$db = JFactory::getDBO();
-	$config = JFactory::getConfig();
-    
-	$jdate = JFactory::getDate();
-	$timezone = new DateTimeZone( $config->get('offset') );
+	$current_user 	= JFactory::getUser();
+	$db 			= JFactory::getDBO();
+	$config 		= JFactory::getConfig();
+	$jdate 			= JFactory::getDate();
+	$app			= JFactory::getApplication();
+
+	$timezone = new DateTimeZone($config->get('offset'));
     $jdate->setTimezone($timezone);
 	$now = $jdate->toSql();
 
 	$files = array();
 
-	$applications = new EmundusModelApplication;
+	$m_application 	= new EmundusModelApplication;
+	$m_evaluation 	= new EmundusModelEvaluation;
+	$m_campaign 	= new EmundusModelCampaign;
+	$m_emails 		= new EmundusModelEmails;
 
 	/*$query = "SELECT * FROM #__emundus_setup_letters WHERE eligibility=".$eligibility." AND training=".$db->Quote($training);
 	$db->setQuery($query);
 	$letters = $db->loadAssocList();*/
-	$evaluations = new EmundusModelEvaluation;
-	$letters = $evaluations->getLettersTemplate($eligibility, $training);
+	$letters = $m_evaluation->getLettersTemplate($eligibility, $training);
 
 	/*$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE id = (select training_id from #__emundus_training_174_repeat where applicant_id=".$user_id." and campaign_id=".$campaign_id.") ORDER BY date_start ASC";
 	$db->setQuery($query);
 	$courses = $db->loadAssocList();
 	*/
-	$query = "SELECT * FROM #__emundus_setup_teaching_unity 
-				WHERE published=1 AND date_start>'".$now."' AND code IN (".$db->Quote($letters[0]['training']).") 
-				ORDER BY date_start ASC";
-	$db->setQuery($query);
-	$courses = $db->loadAssocList();
+
+	try {
+
+		$query = "SELECT * FROM #__emundus_setup_teaching_unity
+					WHERE published=1 AND date_start>'".$now."' AND code IN (".$db->Quote($letters[0]['training']).")
+					ORDER BY date_start ASC";
+		$db->setQuery($query);
+		$courses = $db->loadAssocList();
+
+	} catch (Exception $e) {
+		JLog::add('SQL Error in Emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+	}
 
 	$courses_list = '';
 	$courses_fee = ' ';
@@ -85,8 +99,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 		$courses_fee  .= 'Euro '.$c['price'].',-- ';
 	}
 
-	$campaigns = new EmundusModelCampaign;
-	$campaign = $campaigns->getCampaignByID($campaign_id);
+	$campaign = $m_campaign->getCampaignByID($campaign_id);
 
 	// Extend the TCPDF class to create custom Header and Footer
 	class MYPDF extends TCPDF {
@@ -119,18 +132,16 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 			//logo
 			if (is_file($this->logo_footer))
 				$this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-			
+
 		}
 	}
-	$emails = new EmundusModelEmails;
-	$evaluations = new EmundusModelEvaluation;
 
 	//
 	// Evaluation result
 	//
-	if ($evaluation_id>0) {
-		$evaluation = $evaluations->getEvaluationByID($evaluation_id);
-		$reason = $evaluations->getEvaluationReasons();
+	if ($evaluation_id > 0) {
+		$evaluation = $m_evaluation->getEvaluationByID($evaluation_id);
+		$reason = $m_evaluation->getEvaluationReasons();
 		unset($evaluation[0]["id"]);
 		unset($evaluation[0]["user"]);
 		unset($evaluation[0]["time_date"]);
@@ -138,19 +149,22 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 		unset($evaluation[0]["parent_id"]);
 		unset($evaluation[0]["campaign_id"]);
 		unset($evaluation[0]["comment"]);
+
 		if(empty($evaluation[0]["reason"])) {
 			unset($evaluation[0]["reason"]);
 			unset($evaluation[0]["reason_other"]);
 		} elseif(empty($evaluation[0]["reason_other"])) {
 			unset($evaluation[0]["reason_other"]);
 		}
+
+		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
 		$evaluation_details = @EmundusHelperList::getElementsDetailsByName('"'.implode('","', array_keys($evaluation[0])).'"');
 
 		$result = "";
 		foreach ($evaluation_details as $ed) {
-			if($ed->hidden==0 && $ed->published==1 && $ed->tab_name=="jos_emundus_evaluations") {
+			if ($ed->hidden==0 && $ed->published==1 && $ed->tab_name=="jos_emundus_evaluations") {
 				//$result .= '<br>'.$ed->element_label.' : ';
-				if($ed->element_name=="reason") {
+				if ($ed->element_name=="reason") {
 					$result .= '<ul>';
 					foreach ($evaluation as $e) {
 						$result .= '<li>'.@$reason[$e[@$ed->element_name]]->reason.'</li>'; //die(print_r(@$reason[$e[@$ed->element_name]]));
@@ -169,93 +183,113 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	//
 	// Replacement
 	//
-	$post = array(  'TRAINING_CODE' => $training, 
+	$post = array(  'TRAINING_CODE' => $training,
 					'TRAINING_PROGRAMME' => $campaign['label'],
-					'REASON' => @$result, 
-					'TRAINING_FEE' => $courses_fee, 
+					'REASON' => @$result,
+					'TRAINING_FEE' => $courses_fee,
 					'TRAINING_PERIODE' => $courses_list,
-					'USER_NAME' => $current_user->name, 
+					'USER_NAME' => $current_user->name,
 					'USER_EMAIL' => $current_user->email,
 					'FNUM' => $fnum );
-	
+
 //die(var_dump($tags));
 	foreach ($letters as $letter) {
 		$error = 0;
-		
-		$attachment = $applications->getAttachmentByID($letter['attachment_id']);
-		
+
+		$attachment = $m_application->getAttachmentByID($letter['attachment_id']);
+
 		/*$query = "SELECT * FROM #__emundus_setup_attachments WHERE id=".$letter['attachment_id'];
 		$db->setQuery($query);
 		$attachment = $db->loadAssoc();*/
 
-		// Test if letter type has already been created for that user/campaign/attachment and delete before if true.
-		$query = 'SELECT * FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter['attachment_id'].' AND campaign_id='.$campaign_id. ' AND fnum like '.$db->Quote($fnum);
-		$db->setQuery($query);
-		$file = $db->loadAssoc();
+		try {
+
+			// Test if letter type has already been created for that user/campaign/attachment and delete before if true.
+			$query = 'SELECT * FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter['attachment_id'].' AND campaign_id='.$campaign_id. ' AND fnum like '.$db->Quote($fnum);
+			$db->setQuery($query);
+			$file = $db->loadAssoc();
+
+		} catch (Exception $e) {
+			JLog::add('SQL Error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+		}
 		// test if directory exist
 		if (!file_exists(EMUNDUS_PATH_ABS.$user_id)) {
 			mkdir(EMUNDUS_PATH_ABS.$user_id, 0755, true);
 			chmod(EMUNDUS_PATH_ABS.$user_id, 0755);
 		}
-		if(count($file) > 0 && strpos($file['filename'], 'lock')===false && $letter['template_type'] != 4) {
-			$query = 'DELETE FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter['attachment_id'].' AND campaign_id='.$campaign_id. ' AND fnum like '.$db->Quote($fnum).' AND filename NOT LIKE "%lock%"';
-			$db->setQuery($query);
-			$db->query();
+
+		if (count($file) > 0 && strpos($file['filename'], 'lock') === false && $letter['template_type'] != 4) {
+
+			try {
+
+				$query = 'DELETE FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter['attachment_id'].' AND campaign_id='.$campaign_id. ' AND fnum like '.$db->Quote($fnum).' AND filename NOT LIKE "%lock%"';
+				$db->setQuery($query);
+				$db->query();
+
+			} catch (Exception $e) {
+				JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+			}
 
 			@unlink(EMUNDUS_PATH_ABS.$user_id.DS.$file['filename']);
 		}
 
-		if($letter['template_type'] == 1) { // Static file
+		if ($letter['template_type'] == 1) { // Static file
 
 			$file_path = explode(DS, $letter['file']);
 			$file_type = explode('.', $file_path[count($file_path)-1]);
 			$name = $attachment['lbl'].'_'.date('Y-m-d_H-i-s').'.'.$file_type[1];
-			if(file_exists(JPATH_BASE.$letter['file'])) {
+
+			if (file_exists(JPATH_BASE.$letter['file'])) {
 				$path = EMUNDUS_PATH_ABS.$user_id.DS.$name;
 				$url  = EMUNDUS_PATH_REL.$user_id.'/'.$name;
 				copy(JPATH_BASE.$letter['file'], $path);
 			} else {
-				JFactory::getApplication()->enqueueMessage($name.' - '.JText::_("TEMPLATE_FILE_MISSING").' : '.JPATH_BASE.$letter['file'], 'error');  
+				$app->enqueueMessage($name.' - '.JText::_("TEMPLATE_FILE_MISSING").' : '.JPATH_BASE.$letter['file'], 'error');
 				$error++;
 			}
 
-		} elseif($letter['template_type'] == 3) { // Template file .docx
-			$tags = $emails->setTagsWord($user_id, $post, $fnum);
+		} elseif ($letter['template_type'] == 3) { // Template file .docx
+
+			$tags = $m_emails->setTagsWord($user_id, $post, $fnum);
 			require_once JPATH_LIBRARIES.DS.'PHPWord.php';
 
 			$file_path = explode(DS, $letter['file']);
 			$file_type = explode('.', $file_path[count($file_path)-1]);
 			$name = $attachment['lbl'].'_'.date('Y-m-d_H-i-s').'.'.$file_type[1];
-			if(file_exists(JPATH_BASE.$letter['file'])) {
+
+			if (file_exists(JPATH_BASE.$letter['file'])) {
+
 				$PHPWord = new PHPWord();
 				$document = $PHPWord->loadTemplate(JPATH_BASE.$letter['file']);
-				for($i=0 ; $i<count($tags['patterns']) ; $i++) {
+
+				for ($i = 0; $i < count($tags['patterns']); $i++) {
 					$document->setValue($tags['patterns'][$i], $tags['replacements'][$i]);
 					//echo $tags['patterns'][$i]." - ".$tags['replacements'][$i]."<br>";
 				}
+
 				$path = EMUNDUS_PATH_ABS.$user_id.DS.$name;
 				$url  = EMUNDUS_PATH_REL.$user_id.'/'.$name;
 
 				$document->save($path);
 				unset($document);
 			} else {
-				JFactory::getApplication()->enqueueMessage($name.' - '.JText::_("TEMPLATE_FILE_MISSING").' : '.JPATH_BASE.$letter['file'], 'error');  
+				$app->enqueueMessage($name.' - '.JText::_("TEMPLATE_FILE_MISSING").' : '.JPATH_BASE.$letter['file'], 'error');
 				$error++;
 			}
 
-		} elseif($letter['template_type'] == 4) { // Applicant file
-			$upload_file = $applications->getAttachmentsByFnum($fnum, $letter['attachment_id']);
+		} elseif ($letter['template_type'] == 4) { // Applicant file
+			$upload_file = $m_application->getAttachmentsByFnum($fnum, $letter['attachment_id']);
 			$name = $upload_file[0]->filename;
-			if(file_exists(JPATH_BASE.$letter['file'])) {
+			if (file_exists(JPATH_BASE.$letter['file'])) {
 				$path = EMUNDUS_PATH_ABS.$user_id.DS.$name;
 				$url  = EMUNDUS_PATH_REL.$user_id.'/'.$name;
 			} else {
-				JFactory::getApplication()->enqueueMessage($name.' - '.JText::_("TEMPLATE_FILE_MISSING").' : '.JPATH_BASE.$letter['file'], 'error');  
+				$app->enqueueMessage($name.' - '.JText::_("TEMPLATE_FILE_MISSING").' : '.JPATH_BASE.$letter['file'], 'error');
 				$error++;
 			}
 
 		} else { // From HTML : $letter['template_type'] == 2
-			$tags = $emails->setTags($user_id, $post, $fnum);
+			$tags = $m_emails->setTags($user_id, $post, $fnum);
 			$htmldata = "";
 			$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
@@ -273,19 +307,19 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 			//get logo
 			preg_match('#src="(.*?)"#i', $letter['header'], $tab);
 			$pdf->logo = JPATH_BASE.DS.$tab[1];
-			
+
 			preg_match('#src="(.*?)"#i', $letter['footer'], $tab);
 			$pdf->logo_footer = JPATH_BASE.DS.@$tab[1];
 
 			//get title
-		//	$config =& JFactory::getConfig(); 
+		//	$config =& JFactory::getConfig();
 		//	$title = $config->getValue('config.sitename');
 		//	$title = "";
 		//	$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
 
 			unset($logo);
 			unset($logo_footer);
-			
+
 			//$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
 			//$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
@@ -296,7 +330,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 			//$dimensions = $pdf->getPageDimensions();
 
 			//$htmldata .= $letter["header"];
-			$letter["body"] = $emails->setTagsFabrik($letter["body"], array($fnum)); 
+			$letter["body"] = $m_emails->setTagsFabrik($letter["body"], array($fnum));
 
 			$htmldata .= preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $letter["body"]))));
 
@@ -310,26 +344,30 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 			@chdir('tmp');
 
             $name = $attachment['lbl'].'_'.date('Y-m-d_H-i-s').'.pdf';
-			if($output){
-				//$output?'FI':'F'
+			if ($output)
 				$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.$name, $output);
-
-			}else{
+			else
 				$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.$name, 'F');
-			}
 			$path = EMUNDUS_PATH_ABS.$user_id.DS.$name;
 			$url  = EMUNDUS_PATH_REL.$user_id.'/'.$name;
 		}
 
-		if($error == 0) {
-			if($letter['template_type'] == 4) {
+		if ($error == 0) {
+			if ($letter['template_type'] == 4) {
 				$id = $upload_file[0]->id;
 			} else {
-				$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES ('.$user_id.', '.$letter['attachment_id'].', "'.$name.'","'.$training.' '.date('Y-m-d H:i:s').'", 0, 1, '.$campaign_id.', '.$db->Quote($fnum).')';
-				$db->setQuery($query);
-				$db->query();
-				$id = $db->insertid();
-			} 
+
+				try {
+
+					$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES ('.$user_id.', '.$letter['attachment_id'].', "'.$name.'","'.$training.' '.date('Y-m-d H:i:s').'", 0, 1, '.$campaign_id.', '.$db->Quote($fnum).')';
+					$db->setQuery($query);
+					$db->query();
+					$id = $db->insertid();
+
+				} catch (Exception $e) {
+					JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+				}
+			}
 			$file_info['id'] = $id;
 			$file_info['path'] = $path;
 			$file_info['attachment_id'] = $letter['attachment_id'];
@@ -341,7 +379,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	}
 
 	return $files;
-}	
+}
 
 
 // @description Generate the letter template result
@@ -356,31 +394,40 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
-	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
-	$current_user = & JFactory::getUser();
-	$db = &JFactory::getDBO();
-	$config = JFactory::getConfig();
-        
-	$jdate = JFactory::getDate();
-	$timezone = new DateTimeZone( $config->get('offset') );
+	$current_user 	= JFactory::getUser();
+	$db 			= JFactory::getDBO();
+	$config 		= JFactory::getConfig();
+	$jdate 			= JFactory::getDate();
+
+	$timezone = new DateTimeZone($config->get('offset'));
    	$jdate->setTimezone($timezone);
 	$now = $jdate->toSql();
 
 	$files = array();
 
-	$evaluations = new EmundusModelEvaluation;
-	$letters = $evaluations->getLettersTemplateByID($letter_id);
+	$m_application 	= new EmundusModelApplication;
+	$m_evaluation 	= new EmundusModelEvaluation;
+	$m_emails 		= new EmundusModelEmails;
+
+
+	$letters = $m_evaluation->getLettersTemplateByID($letter_id);
 
 //print_r($letters);
 	//$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE published=1 AND date_start>NOW() AND code=".$db->Quote($letters[0]['training']). " ORDER BY date_start ASC";
-	$query = "SELECT * FROM #__emundus_setup_teaching_unity 
-				WHERE published=1 AND date_start>'".$now."' AND code IN (".$letters[0]['training'].") 
-				ORDER BY date_start ASC";
-	$db->setQuery($query);
-	$courses = $db->loadAssocList();
-	
+	try {
+
+		$query = "SELECT * FROM #__emundus_setup_teaching_unity
+					WHERE published=1 AND date_start>'".$now."' AND code IN (".$letters[0]['training'].")
+					ORDER BY date_start ASC";
+		$db->setQuery($query);
+		$courses = $db->loadAssocList();
+
+	} catch (Exception $e) {
+		JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+	}
+
 	$courses_list = '';
 	$courses_fee = ' ';
 	foreach ($courses as $c) {
@@ -424,27 +471,25 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 			//logo
 			if (is_file($this->logo_footer))
 				$this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-			
+
 		}
 	}
 
-	$emails = new EmundusModelEmails;
 	//
 	// Replacement
 	//
-	$post = array(  'TRAINING_CODE' 		=> @$letters[0]['training'], 
+	$post = array(  'TRAINING_CODE' 		=> @$letters[0]['training'],
 					'TRAINING_PROGRAMME' 	=> @$programme,
-					'REASON'				=> JText::_("DEPEND_OF_EVALUATION"), 
-					'TRAINING_FEE' 			=> @$courses_fee, 
+					'REASON'				=> JText::_("DEPEND_OF_EVALUATION"),
+					'TRAINING_FEE' 			=> @$courses_fee,
 					'TRAINING_PERIODE'		=> @$courses_list
 				);
-	$tags = $emails->setTags($user_id, $post, $fnum);
+	$tags = $m_emails->setTags($user_id, $post, $fnum);
 
 	foreach ($letters as $letter) {
-		$applications = new EmundusModelApplication;
-		$attachment = $applications->getAttachmentByID($letter['attachment_id']);
+		$attachment = $m_application->getAttachmentByID($letter['attachment_id']);
 
-		if($letter['template_type'] == 1) { // Static file
+		if ($letter['template_type'] == 1) { // Static file
 			$file_path = explode(DS, $letter['file']);
 			$file_type = explode('.', $file_path[count($file_path)-1]);
 			$name = date('Y-m-d_H-i-s').$attachment['lbl'].'.'.$file_type[1];
@@ -473,7 +518,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 				//$this->setRedirect('index.php?option=com_emundus&view='.$view.'&Itemid='.$Itemid);
 			}
 
-		} elseif($letter['template_type'] == 3) { // Template file .docx
+		} elseif ($letter['template_type'] == 3) { // Template file .docx
 			require_once JPATH_LIBRARIES.DS.'PHPWord.php';
 
 			$file_path = explode(DS, $letter['file']);
@@ -484,7 +529,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 
 			$document = $PHPWord->loadTemplate(JPATH_BASE.$letter['file']);
 
-			for($i=0 ; $i<count($tags['patterns']) ; $i++) {
+			for ($i = 0; $i < count($tags['patterns']); $i++) {
 				$document->setValue($tags['patterns'][$i], $tags['replacements'][$i]);
 				//echo $tags['patterns'][$i]." - ".$tags['replacements'][$i]."<br>";
 			}
@@ -536,18 +581,18 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 			//get logo
 			preg_match('#src="(.*?)"#i', $letter['header'], $tab);
 			$pdf->logo = JPATH_BASE.DS.$tab[1];
-			
+
 			preg_match('#src="(.*?)"#i', $letter['footer'], $tab);
 			$pdf->logo_footer = JPATH_BASE.DS.$tab[1];
 
 			//get title
-		/*	$config =& JFactory::getConfig(); 
+		/*	$config =& JFactory::getConfig();
 			$title = $config->getValue('config.sitename');
 			$title = "";
 			$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);*/
 			unset($logo);
 			unset($logo_footer);
-			
+
 			//$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
 			//$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
@@ -559,7 +604,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 
 			//$htmldata .= $letter["header"];
 			;
-			$htmldata .= preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $letter["body"])))); 
+			$htmldata .= preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $letter["body"]))));
 			//$htmldata .= $letter["footer"];
 	//die($htmldata);
 			$pdf->AddPage();
@@ -592,18 +637,14 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
-	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
-	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
 	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 
-	$config = JFactory::getConfig(); 
+	$config = JFactory::getConfig();
 	$offset = $config->get('offset');
 
 	$m_profile 		= new EmundusModelProfile;
-	//$m_users 		= new EmundusModelUsers;
-	//$menu 			= new EmundusHelperMenu;
-	$application 	= new EmundusModelApplication;
+	$m_application 	= new EmundusModelApplication;
 
 	$db 			= JFactory::getDBO();
 	$app 			= JFactory::getApplication();
@@ -614,7 +655,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 	//$export_pdf = $eMConfig->get('export_pdf');
 	//$user_profile = $m_users->getCurrentUserProfile($user_id);
-	
+
 	$infos = $m_profile->getFnumDetails($fnum);
 	$campaign_id = $infos['campaign_id'];
 
@@ -622,28 +663,34 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$htmldata = '';
     $forms ='';
 	if ($form_post)
-		$forms = $application->getFormsPDF($user_id, $fnum, $application_form_order);
-	
+		$forms = $m_application->getFormsPDF($user_id, $fnum, $application_form_order);
+
 	// Create PDF object
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor('Decision Publique');
 	$pdf->SetTitle('Application Form');
 
-	// Users informations
-	$query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted
-				FROM #__emundus_campaign_candidature AS ecc
-				LEFT JOIN #__users AS u ON u.id=ecc.applicant_id 
-				LEFT JOIN #__emundus_users AS c ON u.id = c.user_id
-				LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = '.$campaign_id.'  
-				LEFT JOIN #__emundus_uploads AS a ON a.user_id=u.id AND a.attachment_id = '.EMUNDUS_PHOTO_AID.' AND a.fnum like '.$db->Quote($fnum).' 
-				LEFT JOIN #__emundus_setup_profiles AS p ON p.id = esc.profile_id
-				LEFT JOIN #__emundus_personal_detail AS epd ON epd.user = u.id AND epd.fnum like '.$db->Quote($fnum).' 
-				LEFT JOIN #__emundus_declaration AS ed ON ed.user = u.id AND ed.fnum like '.$db->Quote($fnum).' 
-				WHERE ecc.fnum like '.$db->Quote($fnum).' 
-				ORDER BY esc.id DESC';
-	$db->setQuery($query);
-	$item = $db->loadObject();
+	try {
+
+		// Users informations
+		$query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted
+					FROM #__emundus_campaign_candidature AS ecc
+					LEFT JOIN #__users AS u ON u.id=ecc.applicant_id
+					LEFT JOIN #__emundus_users AS c ON u.id = c.user_id
+					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = '.$campaign_id.'
+					LEFT JOIN #__emundus_uploads AS a ON a.user_id=u.id AND a.attachment_id = '.EMUNDUS_PHOTO_AID.' AND a.fnum like '.$db->Quote($fnum).'
+					LEFT JOIN #__emundus_setup_profiles AS p ON p.id = esc.profile_id
+					LEFT JOIN #__emundus_personal_detail AS epd ON epd.user = u.id AND epd.fnum like '.$db->Quote($fnum).'
+					LEFT JOIN #__emundus_declaration AS ed ON ed.user = u.id AND ed.fnum like '.$db->Quote($fnum).'
+					WHERE ecc.fnum like '.$db->Quote($fnum).'
+					ORDER BY esc.id DESC';
+		$db->setQuery($query);
+		$item = $db->loadObject();
+
+	} catch (Exception $e) {
+		JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+	}
 //die(str_replace("#_", "jos", $query));
 
 	//get logo
@@ -666,7 +713,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 	unset($logo);
 	unset($title);
-	
+
 	$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
 	$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 	$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
@@ -677,73 +724,71 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$pdf->SetFont('helvetica', '', 10);
 	$pdf->AddPage();
 	$dimensions = $pdf->getPageDimensions();
-	
-/*** Applicant   ***/
-$htmldata .= 
-'<style>
-.card  { background-color: #cecece; border: none; display:block; line-height:80%;}
-.name  { display: block; font-size: 12pt; margin: 0 0 0 20px; padding:0; display:block; line-height:110%;}
-.maidename  { display: block; font-size: 20pt; margin: 0 0 0 20px; padding:0; }
-.nationality { display: block; margin: 0 0 0 20px;  padding:0;}
-.sent { display: block; font-family: monospace; margin: 0 0 0 10px; padding:0; text-align:right;}
-.birthday { display: block; margin: 0 0 0 20px; padding:0;}
-</style>
-<div class="card">
-<table width="100%">
-<tr>
-';
-if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar))
-	$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" align="left" /></td>';
-elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar))
-	$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" align="left" /></td>';
-$htmldata .= '
-<td width="80%">
 
-  <div class="name"><strong>'.@$item->firstname.' '.strtoupper(@$item->lastname).'</strong>, '.@$item->label.' ('.@$item->cb_schoolyear.')</div>';
+	/*** Applicant   ***/
+	$htmldata .=
+	'<style>
+	.card  { background-color: #cecece; border: none; display:block; line-height:80%;}
+	.name  { display: block; font-size: 12pt; margin: 0 0 0 20px; padding:0; display:block; line-height:110%;}
+	.maidename  { display: block; font-size: 20pt; margin: 0 0 0 20px; padding:0; }
+	.nationality { display: block; margin: 0 0 0 20px;  padding:0;}
+	.sent { display: block; font-family: monospace; margin: 0 0 0 10px; padding:0; text-align:right;}
+	.birthday { display: block; margin: 0 0 0 20px; padding:0;}
+	</style>
+	<div class="card">
+	<table width="100%">
+	<tr>
+	';
+	if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar))
+		$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" align="left" /></td>';
+	elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar))
+		$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" align="left" /></td>';
+	$htmldata .= '
+	<td width="80%">
 
-if(isset($item->maiden_name))
-	$htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
+	<div class="name"><strong>'.@$item->firstname.' '.strtoupper(@$item->lastname).'</strong>, '.@$item->label.' ('.@$item->cb_schoolyear.')</div>';
 
-$date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
+	if (isset($item->maiden_name))
+		$htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
 
-// create a $dt object with the UTC timezone
-$dt = new DateTime('NOW', new DateTimeZone('UTC'));
-// change the timezone of the object without changing it's time
-$dt->setTimezone(new DateTimeZone($offset));
+	$date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
 
-$htmldata .= '
-  <div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</div>
-  <div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
-  <div class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</div>
-  <div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
-  <div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</div>
-</td>
-</tr>
-</table>
-</div>';
+	// create a $dt object with the UTC timezone
+	$dt = new DateTime('NOW', new DateTimeZone('UTC'));
+	// change the timezone of the object without changing it's time
+	$dt->setTimezone(new DateTimeZone($offset));
 
-
-/**  END APPLICANT   ****/
+	$htmldata .= '
+	<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</div>
+	<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
+	<div class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</div>
+	<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
+	<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</div>
+	</td>
+	</tr>
+	</table>
+	</div>';
+	/**  END APPLICANT   ****/
 
 
 	$htmldata .= $forms;
 //die($htmldata);
-	// Listes des fichiers chargés 
-	$uploads = $application->getUserAttachmentsByFnum($fnum);
+	// Listes des fichiers chargés
+	$uploads = $m_application->getUserAttachmentsByFnum($fnum);
     $nbuploads=0;
-    foreach($uploads as $upload) {
+    foreach ($uploads as $upload) {
         if (strrpos($upload->filename, "application_form") === false) {
             $nbuploads++;
         }
     }
 	$titleupload = $nbuploads>0?JText::_('FILES_UPLOADED'):JText::_('FILE_UPLOADED');
-	
+
 	$htmldata .='
-	<h2>'.$titleupload.' : '.$nbuploads.'</h2>';	
+	<h2>'.$titleupload.' : '.$nbuploads.'</h2>';
 
 	$htmldata .='<div class="file_upload">';
 	$htmldata .= '<ol>';
-	foreach($uploads as $upload){
+	foreach ($uploads as $upload){
         if (strrpos($upload->filename,"application_form")=== false) {
             $path_href = JURI::base(true) . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
             $htmldata .= '<li><b>' . $upload->value . '</b>';
@@ -758,7 +803,7 @@ $htmldata .= '
 
 	$htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
 
- 
+
 	if (!empty($htmldata)) {
 		$pdf->startTransaction();
 		$start_y = $pdf->GetY();
@@ -774,16 +819,16 @@ $htmldata .= '
 	}
 
 	@chdir('tmp');
-	if($output){
-		if(@$current_user->applicant != 1){
+	if ($output) {
+		if (@$current_user->applicant != 1) {
 			//$output?'FI':'F'
 			$name = 'application_form_'.date('Y-m-d_H-i-s').'.pdf';
 			$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.$name, 'FI');
-            $attachment = $application->getAttachmentByLbl("_application_form");
-			$keys = array('user_id', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed', 'campaign_id', 'fnum' );
+            $attachment = $m_application->getAttachmentByLbl("_application_form");
+			$keys 	= array('user_id', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed', 'campaign_id', 'fnum' );
 			$values = array($item->user_id, $attachment['id'], $name, $item->training.' '.date('Y-m-d H:i:s'), 0, 0, $campaign_id, $fnum);
-			$data = array('key' => $keys, 'value' => $values);
-			$application->uploadAttachment($data);
+			$data 	= array('key' => $keys, 'value' => $values);
+			$m_application->uploadAttachment($data);
 
 		} else
 			$pdf->Output(EMUNDUS_PATH_ABS.@$item->user_id.DS.$fnum.'_application.pdf', 'FI');
