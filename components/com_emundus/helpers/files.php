@@ -1267,7 +1267,7 @@ class EmundusHelperFiles
             $status .= '<select '.(!$hidden ? 'class="chzn-select em-filt-select"' : '').' id="select_multiple_status" name="status" multiple="" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" >' : '>');
             $status .= '<option value="%" ';
             if ((@$current_status[0] == "%" || !isset($current_status[0])) && (count(@$current_status)<2 ))
-                $status .= ' selected="true" disabled="true"';
+                $status .= ' selected="true"';
             $status .= '>'.JText::_('ALL').'</option>';
 
             foreach ($statusList as $p) {
