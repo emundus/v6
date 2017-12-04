@@ -44,18 +44,21 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
 
 <?php if ($application_fee == 1) { ?>
   <div class="<?php echo ($option=="com_hikashop")?"active":""; ?> <?php echo $step_paiement; ?> step">
-    <?php if ($paid == 0 && $orderSent > 0 && !$orderCancelled): ?>
+    <?php if ($paid == 0 && count($sentOrder) > 0 && !$orderCancelled): ?>
       <i class="large time outline icon"></i>
-    <?php elseif($paid == 0 && $orderCancelled): ?>
+    <?php elseif ($paid == 0 && $orderCancelled): ?>
       <i class="large ban outline icon"></i>
     <?php else: ?>
       <i class="large payment outline icon"></i>
     <?php endif; ?>
     <div class="content">
-      <div class="description"><?php echo  $paid>0?JText::_('APPLICATION_PAID'):JText::_('APPLICATION_NOT_PAID'); ?></div>
-      <div class="description"><?php echo  ($paid==0 && $orderSent>0)?JText::_('AWAITING_PAYMENT'):'' ?></div>
-      <div class="description"><?php echo  ($paid==0 && $orderSent==0 && $forms>=100 && $attachments>=100 && !$orderCancelled)?'<a href="'.$checkout_url.'" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>':''; ?></div>
-      <div class="description"><?php echo  ($paid==0 && $orderSent==0 && $forms>=100 && $attachments>=100 && $orderCancelled)?'<a href="'.$checkout_url.'" title="'.JText::_('PAYMENT_DECLINED').'">'.JText::_('PAYMENT_DECLINED').'</a>':''; ?></div>
+      <div class="description">
+        <?php echo  $paid>0?JText::_('APPLICATION_PAID'):JText::_('APPLICATION_NOT_PAID'); ?>
+        <?php echo  ($paid==0 && count($sentOrder)>0)?JText::_('AWAITING_PAYMENT'):'' ?>
+        <?php echo  ($paid==0 && count($sentOrder)>0 && $sentOrder->order_payment_method == 'paybox')?'<a href="'.$checkout_url.'" title="'.JText::_('RETRY_PAYMENT').'">'.JText::_('RETRY_PAYMENT').'</a>':''; ?>
+        <?php echo  ($paid==0 && count($sentOrder)==0 && $forms>=100 && $attachments>=100 && !$orderCancelled)?'<a href="'.$checkout_url.'" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>':''; ?>
+        <?php echo  ($paid==0 && count($sentOrder)==0 && $forms>=100 && $attachments>=100 && $orderCancelled)?'<a href="'.$checkout_url.'" title="'.JText::_('PAYMENT_DECLINED').'">'.JText::_('PAYMENT_DECLINED').'</a>':''; ?>
+      </div>
     </div>
   </div>
 <?php } ?>
