@@ -6,45 +6,45 @@
  * @link       http://www.emundus.fr
  * @license    GNU/GPL
 */
- 
+
 // no direct access
- 
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
- 
+
 jimport( 'joomla.application.component.view');
- 
+
 /**
  * HTML View class for the eMundus Component
  *
  * @package    eMundus
  */
- 
+
 class EmundusViewChecklist extends JViewLegacy
 {
 	var $_user = null;
 	var $_db = null;
-	
+
 	function __construct($config = array()) {
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
-		
+
 		$this->_user = JFactory::getSession()->get('emundusUser');
 		$this->_db = JFactory::getDBO();
 
 		if (!EmundusHelperAccess::isApplicant($this->_user->id))
 			die(JText::_('ACCESS_DENIED'));
-		
+
 		parent::__construct($config);
 	}
-	
+
     function display($tpl = null)
-    {	
+    {
     	$app = JFactory::getApplication();
     	$layout = $app->input->getString('layout', null);
 
     	$sent 				= $this->get('sent');
 		$confirm_form_url 	= $this->get('ConfirmUrl');
-		
+
 		$this->assignRef('sent', $sent);
 		$this->assignRef('confirm_form_url', $confirm_form_url);
 
@@ -99,14 +99,14 @@ class EmundusViewChecklist extends JViewLegacy
 			$show_info_panel 	  = $menu_params->get('show_info_panel', 1);
 			$show_info_legend 	  = $menu_params->get('show_info_legend', 1);
 			$show_nb_column 	  = $menu_params->get('show_nb_column', 1);
-			
-			
+
+
 			$forms 				= $this->get('FormsList');
 			$attachments 		= $this->get('AttachmentsList');
 			$need 				= $this->get('Need');
 			$instructions 		= $this->get('Instructions');
 			$is_other_campaign 	= $this->get('isOtherActiveCampaign');
-			
+
 			if ($need == 0) {
 				$title = JText::_('APPLICATION_COMPLETED_TITLE');
 				$text = JText::_('APPLICATION_COMPLETED_TEXT');
@@ -128,12 +128,12 @@ class EmundusViewChecklist extends JViewLegacy
 			$this->assignRef('show_info_panel', $show_info_panel);
 			$this->assignRef('show_info_legend', $show_info_legend);
 			$this->assignRef('show_nb_column', $show_nb_column);
-		
+
 			$result = $this->get('Result');
 			$this->assignRef('result', $result);
-		
+
 		}
-		
+
 		parent::display($tpl);
     }
 }

@@ -86,17 +86,16 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 			}
 
 			//$checkout_url = $m_application->getHikashopCheckoutUrl($user->profile);
+			$orderCancelled = false;
 			if (count($sentOrder) > 0) {
 				if ($sentOrder->order_payment_method == 'paybox')
-					$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile.$scholarship_document))).'&usekey=fnum&rowid='.$user->fnum;				
-				else 
+					$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile.$scholarship_document))).'&usekey=fnum&rowid='.$user->fnum;
+				else
 					$checkout_url = 'index.php?option=com_fabrik&amp;view=form&amp;formid=258&amp;Itemid=1483';
 			} else {
 				$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile.$scholarship_document))).'&usekey=fnum&rowid='.$user->fnum;
 				if (count($m_application->getHikashopCancelledOrders($fnumInfos)) > 0)
 					$orderCancelled = true;
-				else
-					$orderCancelled = false;
 			}
 
 		} else {
