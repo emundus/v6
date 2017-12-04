@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.0
  */
@@ -16,8 +16,9 @@ $group = $this->group;
 ?>
 <tr class="fabrikSubGroupElements fabrikSubGroup">
 <?php foreach ($this->elements as $element) :
+	$style = $element->hidden ? 'style="display:none"' : '';
 	?>
-	<td class="<?php echo $element->containerClass; ?>">
+	<td class="<?php echo $element->containerClass; ?>" <?php echo $style?>>
 	<?php
 	if ($this->tipLocation == 'above') :
 	?>
@@ -44,17 +45,14 @@ $group = $this->group;
  	if ($group->editable) : ?>
 		<td class="fabrikGroupRepeater">
 			<div class="pull-right">
-			<?php if ($group->canAddRepeat) :
-				$add = FabrikHelperHTML::image('plus.png', 'form', $this->tmpl, array('class' => 'fabrikTip tip-small', 'title' => FText::_('COM_FABRIK_ADD_GROUP')));
-				?>
-				<a class="addGroup" href="#"><?php echo $add?></a>
 			<?php
+			if ($group->canAddRepeat) :
+				echo $this->addRepeatGroupButtonRow;
 			endif;
-			if ($group->canDeleteRepeat) :?>
-			<a class="deleteGroup" href="#">
-				<?php echo FabrikHelperHTML::image('minus.png', 'form', $this->tmpl, array('class' => 'fabrikTip tip-small', 'title' => FText::_('COM_FABRIK_DELETE_GROUP')));?>
-			</a>
-			<?php endif;?>
+			if ($group->canDeleteRepeat) :
+				echo $this->removeRepeatGroupButtonRow;
+			endif;
+			?>
 			</div>
 		</td>
 	<?php endif; ?>

@@ -2,12 +2,12 @@
 <extension type="component" version="2.5" method="upgrade">
     <name>COM_GANTRY</name>
     <author>RocketTheme, LLC</author>
-    <creationDate>July  7, 2017</creationDate>
+    <creationDate>November 29, 2017</creationDate>
     <copyright>(C) 2005 - 2017 RocketTheme, LLC. All rights reserved.</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>support@rockettheme.com</authorEmail>
     <authorUrl>http://www.rockettheme.com</authorUrl>
-    <version>4.1.33</version>
+    <version>4.1.34</version>
     <description>Gantry 4 component. Needs to be enabled at all times.</description>
 
     <scriptfile>gantry_install.script.php</scriptfile>

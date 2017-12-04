@@ -1478,9 +1478,8 @@ class FabrikFEModelList extends JModelForm
 
 				$pkCheck[] = '</div>';
 				$pkCheck = implode("\n", $pkCheck);
-				$row->fabrik_select = $this->canSelectRow($row)
-				? '<input type="checkbox" id="id_' . $row->__pk_val . '" name="ids[' . $row->__pk_val . ']" value="'
-						. htmlspecialchars($pKeyVal, ENT_COMPAT, 'UTF-8') . '" />' . $pkCheck : '';
+				$row->fabrik_select = '<input type="checkbox" id="id_' . $row->__pk_val . '" name="ids[' . $row->__pk_val . ']" value="'
+						. htmlspecialchars($pKeyVal, ENT_COMPAT, 'UTF-8') . '" />' . $pkCheck;
 
 				// Add in some default links if no element chosen to be a link
                 JDEBUG ? $profiler->mark('addSelectboxAndLinks: building edit link') : null;
@@ -3566,7 +3565,7 @@ class FabrikFEModelList extends JModelForm
 		$valueKeys = array_keys(FArrayHelper::getValue($filters, 'key', array()));
 		$nullElementConditions = array('IS NULL', 'IS NOT NULL');
 
-		while (list($vkey, $i) = each($valueKeys))
+		foreach ($valueKeys as $vkey => $i)
 		{
 			// $$$rob - prefilter with element that is not published so ignore
 			$condition = JString::strtoupper(FArrayHelper::getValue($filters['condition'], $i, ''));
@@ -4475,6 +4474,23 @@ class FabrikFEModelList extends JModelForm
 			$query->order('id');
 			$db->setQuery($query);
 			$this->joins = $db->loadObjectList();
+
+			// make sure list joins comes first, don't ask
+			usort($this->joins, function($a, $b) {
+				if ((int)$a->list_id === 0)
+				{
+					return 1;
+				}
+
+				if ((int)$b->list_id === 0)
+				{
+					return -1;
+				}
+
+
+				return ((int)$a->list_id < (int)$b->list_id) ? -1 : 1;
+			});
+
 			$this->_makeJoinAliases($this->joins);
 
 			foreach ($this->joins as &$join)
@@ -6781,9 +6797,9 @@ class FabrikFEModelList extends JModelForm
 
 		if (!in_array($this->outputFormat, array('pdf', 'csv')))
 		{
-			if ($this->canSelectRows() && $params->get('checkboxLocation', 'end') !== 'end')
+			if ($params->get('checkboxLocation', 'end') !== 'end')
 			{
-				$this->addCheckBox($aTableHeadings, $headingClass, $cellClass);
+				$this->addCheckBox($aTableHeadings, $headingClass, $cellClass, $this->canSelectRows());
 			}
 
 			if ($params->get('checkboxLocation', 'end') !== 'end')
@@ -6909,10 +6925,9 @@ class FabrikFEModelList extends JModelForm
 
 		if (!in_array($this->outputFormat, array('pdf', 'csv')))
 		{
-			// @TODO check if any plugins need to use the selector as well!
-			if ($this->canSelectRows() && $params->get('checkboxLocation', 'end') === 'end')
+			if ($params->get('checkboxLocation', 'end') === 'end')
 			{
-				$this->addCheckBox($aTableHeadings, $headingClass, $cellClass);
+				$this->addCheckBox($aTableHeadings, $headingClass, $cellClass, !$this->canSelectRows());
 			}
 
 			// If no elements linking to the edit form add in a edit column (only if we have the right to edit/view of course!)
@@ -6920,6 +6935,7 @@ class FabrikFEModelList extends JModelForm
 			{
 				$this->actionHeading($aTableHeadings, $headingClass, $cellClass);
 			}
+
 			// Create columns containing links which point to lists associated with this list
 			$faceted = $params->get('facetedlinks');
 			$joinsToThisKey = $this->getJoinsToThisKey();
@@ -7117,14 +7133,15 @@ class FabrikFEModelList extends JModelForm
 	 * @param   array  &$aTableHeadings  table headings
 	 * @param   array  &$headingClass    heading classes
 	 * @param   array  &$cellClass       cell classes
+	 * @param   bool   $hide             hide the checkbox (row is not selectable but we still need the chx for plugins)
 	 *
 	 * @return  void
 	 */
-	protected function addCheckBox(&$aTableHeadings, &$headingClass, &$cellClass)
+	protected function addCheckBox(&$aTableHeadings, &$headingClass, &$cellClass, $hide = false)
 	{
 		$params = $this->getParams();
 		$hidecheckbox = $params->get('hidecheckbox', '0');
-		$hidestyle = ($hidecheckbox == '1') ? 'display:none;' : '';
+		$hidestyle = ($hidecheckbox == '1' || $hide) ? 'display:none;' : '';
 		$id = 'list_' . $this->getId() . '_checkAll';
 		$select = '<input type="checkbox" name="checkAll" class="' . $id . '" id="' . $id . '" />';
 		$aTableHeadings['fabrik_select'] = $select;
