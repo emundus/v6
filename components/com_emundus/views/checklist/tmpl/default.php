@@ -1,7 +1,7 @@
-<?php 
-defined('_JEXEC') or die('Restricted access'); 
+<?php
+defined('_JEXEC') or die('Restricted access');
 
-JHTML::_('behavior.modal'); 
+JHTML::_('behavior.modal');
 
 $user = JFactory::getSession()->get('emundusUser');
 $chemin = EMUNDUS_PATH_REL;
@@ -14,13 +14,13 @@ if ($this->show_info_panel) :
             <legend><?php echo $this->need<2?JText::_('CHECKLIST'):JText::_('RESULTS'); ?></legend>
             <div class = "<?php echo $this->need?'checklist'.$this->need:'checklist'.'0'; ?>" id="info_checklist">
                 <h3><?php echo $this->title; ?></h3>
-                <?php 
-                    if ($this->sent && count($this->result) == 0) 
+                <?php
+                    if ($this->sent && count($this->result) == 0)
                         echo '<h3>'.JText::_('APPLICATION_SENT').'</h3>';
-                    else 
+                    else
                         echo $this->text;
-        
-                if(!$this->need) { 
+
+                if(!$this->need) {
                 ?>
                         <h3><a href="<?php echo $this->sent?'index.php?option=com_emundus&task=pdf':$this->confirm_form_url; ?>" class="<?php echo $this->sent?'appsent':'sent'; ?>" target="<?php echo $this->sent?'_blank':''; ?>"><?php echo $this->sent?JText::_('PRINT_APPLICATION'):JText::_('SEND_APPLICATION'); ?></a>
                         </h3>
@@ -50,8 +50,8 @@ if ($this->show_info_panel) :
         <br>
     <?php if ($this->show_info_legend) :?>
             <div id="legend">
-            <div class="need_missing"><?php echo JText::_('MISSING_DOC'); ?></div>, 
-            <div class="need_ok"><?php echo JText::_('SENT_DOC'); ?></div>, 
+            <div class="need_missing"><?php echo JText::_('MISSING_DOC'); ?></div>,
+            <div class="need_ok"><?php echo JText::_('SENT_DOC'); ?></div>,
             <div class="need_missing_fac"><?php echo JText::_('MISSING_DOC_FAC'); ?></div>
         </div>
     <?php endif; ?>
@@ -71,7 +71,7 @@ if ($this->show_info_panel) :
                 <p class="description">'.$attachment->description .'</p>
                 <div class="table-responsive">
                 <table id="'.$attachment->id .'" class="table">';
-            
+
             if ($attachment->nb>0)
                     foreach($attachment->liste as $item) {
                     $div .= '<tr>
@@ -79,25 +79,25 @@ if ($this->show_info_panel) :
                         if($item->can_be_viewed==1) {
                         $div .= '<a class="btn btn-xs" href="'.$chemin.$user->id .'/'.$item->filename .'" target="_blank"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> '.JText::_('VIEW').'</a>';
                         }
-                        else { 
+                        else {
                         $div .= JText::_('CANT_VIEW') ;
-                        } 
+                        }
                         $div .= '&nbsp;-&nbsp;' ;
                         if($item->can_be_deleted==1) {
                         $div .= '<a class="btn btn-danger btn-xs" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> '.JText::_('DELETE').'</a>';
-                        } 
-                        else { 
-                        $div .= JText::_('CANT_DELETE'); 
-                        } 
+                        }
+                        else {
+                        $div .= JText::_('CANT_DELETE');
+                        }
                         $div .= ' | ';
                         $div .= ($item->timedate);
                         $div .= ' | ';
                         if ($this->show_shortdesc_input) {
                             $div .= empty($item->description)?JText::_('NO_DESC'):$item->description;
-                        }       
-                        $div .= '</td></tr>';   
-                    } 
-            if ($attachment->nb<$attachment->nbmax || $user->profile<=4) { 
+                        }
+                        $div .= '</td></tr>';
+                    }
+            if ($attachment->nb<$attachment->nbmax || $user->profile<=4) {
                 $div .= '
             <tr>
                 <td>';
@@ -117,9 +117,9 @@ if ($this->show_info_panel) :
                 if ($this->show_browse_button) {
                     $div .= '<input class="btn btn-success" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/>';
                 }
-                $div .= '</span>               
+                $div .= '</span>
                 </div>';
-                
+
                 $div .= '<script>
 var maxFilesize = "'.ini_get("upload_max_filesize").'";
 
@@ -137,7 +137,7 @@ Dropzone.options.formA'.$attachment->id.' =  {
         if (sFileExtension == "php") {
           done("Naha, you do not.");
         }
-        else { 
+        else {
             var allowedExtension = "'.$attachment->allowed_types.'";
             var n = allowedExtension.indexOf(sFileExtension);
             if (n >= 0)
@@ -152,7 +152,7 @@ Dropzone.options.formA'.$attachment->id.' =  {
 
     init: function() {
 
-      this.on("maxfilesexceeded", function(file) { 
+      this.on("maxfilesexceeded", function(file) {
         this.removeFile(file);
         alert("'. JText::_('NO_MORE').' : '.$attachment->value .'. '.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'");
       });
@@ -214,7 +214,7 @@ Dropzone.options.formA'.$attachment->id.' =  {
       });
 
     }
-}; 
+};
 </script>';
                 $div .= '</form>';
                 //$div .= '</div>';
@@ -225,7 +225,7 @@ Dropzone.options.formA'.$attachment->id.' =  {
                 <p><em>'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'</em></p><p><em>'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</em></p>
                 </td>
             </tr>';
-            } else { 
+            } else {
                 $div .= '
             <tr>
                 <td>
@@ -234,15 +234,15 @@ Dropzone.options.formA'.$attachment->id.' =  {
             </tr>
             </tbody>';
             }
-            $div .='</table></div></fieldset>'; 
-            if ($attachment->mandatory) 
+            $div .='</table></div></fieldset>';
+            if ($attachment->mandatory)
                 $attachment_list_mand .= $div;
-            else 
+            else
                 $attachment_list_opt .= $div;
         }
     ?>
 
-    
+
     <div class="row">
       <div class="col-md-<?php echo (int)(12/$this->show_nb_column); ?>">
     <?php
@@ -255,7 +255,7 @@ Dropzone.options.formA'.$attachment->id.' =  {
       if ($this->show_nb_column > 1) {
         echo '<div class="ui vertical divider"></div>';
       }
-    ?>  
+    ?>
       <div class="col-md-<?php echo (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_opt!='') {
@@ -277,21 +277,21 @@ $(document).on('change', '.btn-file :file', function() {
 
 $(document).ready( function() {
     $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
-        
+
         var input = $(this).parents('.input-group').find(':text'),
             log = numFiles > 1 ? numFiles + ' <?php echo JText::_("FILES_SELECTED"); ?>' : label;
-        
+
         if( input.length ) {
             input.val(log);
         } else {
             if( log ) alert(log);
         }
-        
+
     });
 });
 
 $(document).on('click', '.em_form .document', function(f)
-{ 
+{
     var id = $(this).attr('id');
     $("fieldset").removeClass( "hover" );
     $("#a"+id).addClass( "hover" );
@@ -319,15 +319,15 @@ function toggleVisu(baliseId)
   document.getElementById('<?php echo $attachment->id; ?>').style.display='<?php echo ($attachment->mandatory && $attachment->nb==0)?'block':'none'; ?>';
 <?php } ?>
 */
-function OnSubmitForm() { 
-    var btn = document.getElementsByName(document.pressed); 
+function OnSubmitForm() {
+    var btn = document.getElementsByName(document.pressed);
     for(i=0 ; i<btn.length ; i++) {
         btn[i].disabled="disabled";
         btn[i].value="<?php echo JText::_('SENDING_ATTACHMENT'); ?>";
     }
     switch(document.pressed) {
-        case 'sendAttachment': 
-            document.checklistForm.action ="index.php?option=com_emundus&task=upload&duplicate=<?php echo $duplicate; ?>&Itemid=<?php echo $itemid; ?>" 
+        case 'sendAttachment':
+            document.checklistForm.action ="index.php?option=com_emundus&task=upload&duplicate=<?php echo $duplicate; ?>&Itemid=<?php echo $itemid; ?>"
         break;
         default: return false;
     }

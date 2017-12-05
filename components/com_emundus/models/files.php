@@ -68,6 +68,8 @@ class EmundusModelFiles extends JModelLegacy
         $menu = @JSite::getMenu();
         $current_menu = $menu->getActive();
 
+        $h_files = new EmundusHelperFiles;
+
         /*
         ** @TODO : gestion du cas Itemid absent à prendre en charge dans la vue
         */
@@ -131,7 +133,7 @@ class EmundusModelFiles extends JModelLegacy
         $this->elements_values = explode(',', $menu_params->get('em_elements_values'));
 
         $this->_elements_default = array();
-        $this->_elements = @EmundusHelperFiles::getElementsName($this->elements_id);
+        $this->_elements = $h_files->getElementsName($this->elements_id);
 
         if (!empty($this->_elements))
         {
@@ -233,8 +235,10 @@ class EmundusModelFiles extends JModelLegacy
 
             $elements_names = '"' . implode('", "', $this->col) . '"';
 
-            $result = @EmundusHelperList::getElementsDetails($elements_names);
-            $result = @EmundusHelperFiles::insertValuesInQueryResult($result, array("sub_values", "sub_labels"));
+            $h_list = new EmundusHelperList;
+
+            $result = $h_list->getElementsDetails($elements_names);
+            $result = $h_files->insertValuesInQueryResult($result, array("sub_values", "sub_labels"));
 
             $this->details = new stdClass();
             foreach ($result as $res)
@@ -267,8 +271,9 @@ class EmundusModelFiles extends JModelLegacy
 		$menu_params = $menu->getParams($current_menu->id);
 		$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
 
-        $filter_order = JFactory::getSession()->get('filter_order');
-        $filter_order_Dir = JFactory::getSession()->get('filter_order_Dir');
+        $session = JFactory::getSession();
+        $filter_order = $session->get('filter_order');
+        $filter_order_Dir = $session->get('filter_order_Dir');
 
         $can_be_ordering = array();
         if(count($this->_elements) > 0) {
@@ -324,7 +329,8 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getCampaign()
     {
-        return @EmundusHelperFiles::getCampaign();
+        $h_files = new EmundusHelperFiles;
+        return $h_files->getCampaign();
     }
 
     /**
@@ -333,7 +339,8 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getCurrentCampaign()
     {
-        return @EmundusHelperFiles::getCurrentCampaign();
+        $h_files = new EmundusHelperFiles;
+        return $h_files->getCurrentCampaign();
     }
 
     /**
@@ -342,7 +349,8 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getCurrentCampaignsID()
     {
-        return @EmundusHelperFiles::getCurrentCampaignsID();
+        $h_files = new EmundusHelperFiles;
+        return $h_files->getCurrentCampaignsID();
     }
 
     /**
@@ -385,6 +393,7 @@ class EmundusModelFiles extends JModelLegacy
     public function setEvalList($search, &$eval_list, $head_val, $applicant)
     {
         //print_r($applicant); die();
+        $h_list = new EmundusHelperList;
         if (!empty($search)) {
             foreach ($search as $c) {
                 if (!empty($c)) {
@@ -395,13 +404,13 @@ class EmundusModelFiles extends JModelLegacy
                             && array_key_exists($name[0] . '___' . $name[1], $this->subquery)
                             && array_key_exists($applicant->user_id, $this->subquery[$name[0] . '___' . $name[1]])
                         ) {
-                            $eval_list[$name[0] . '___' . $name[1]] = @EmundusHelperList::createHtmlList(explode(",",
+                            $eval_list[$name[0] . '___' . $name[1]] = $h_list->createHtmlList(explode(",",
                                 $this->subquery[$name[0] . '___' . $name[1]][$applicant->user_id]));
                         } elseif ($name[0] == 'jos_emundus_training') {
                             $eval_list[$name[1]] = $applicant->{$name[1]};
                         } elseif (!$this->details->{$name[0] . '___' . $name[1]}['group_by']) {
                             $eval_list[$name[0] . '___' . $name[1]] =
-                                @EmundusHelperList::getBoxValue($this->details->{$name[0] . '___' . $name[1]},
+                                $h_list->getBoxValue($this->details->{$name[0] . '___' . $name[1]},
                                     $applicant->{$name[0] . '___' . $name[1]}, $name[1]);
                         } else
                             $eval_list[$name[0] . '___' . $name[1]] = $applicant->{$name[0] . '___' . $name[1]};
@@ -418,9 +427,9 @@ class EmundusModelFiles extends JModelLegacy
      */
     private function _buildWhere($tableAlias = array())
     {
-        $session = JFactory::getSession();
-        $params = $session->get('filt_params'); // came from search box
-        $filt_menu = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
+        $session    = JFactory::getSession();
+        $params     = $session->get('filt_params'); // came from search box
+        $filt_menu  = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
 
         $db = JFactory::getDBO();
 
@@ -797,8 +806,9 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getUsers()
     {
-        $limitStart = JFactory::getSession()->get('limitstart');
-        $limit = JFactory::getSession()->get('limit');
+        $session = JFactory::getSession();
+        $limitStart = $session->get('limitstart');
+        $limit = $session->get('limit');
         return $this->getAllUsers($limitStart, $limit);
     }
 
@@ -911,7 +921,8 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getUserGroups($uid)
     {
-        return @EmundusHelperFiles::getUserGroups($uid);
+        $h_files = new EmundusHelperFiles;
+        return $h_files->getUserGroups($uid);
     }
 
     /**
@@ -2117,7 +2128,8 @@ where 1 order by ga.fnum asc, g.title';
      */
     public function getMenuList($params)
     {
-        return @EmundusHelperFiles::getMenuList($params);
+        $h_files = new EmundusHelperFiles;
+        return $h_files->getMenuList($params);
     }
 
     /**
@@ -2125,7 +2137,8 @@ where 1 order by ga.fnum asc, g.title';
      */
     public function getActionsACL()
     {
-        return @EmundusHelperFiles::getMenuActions();
+        $h_files = new EmundusHelperFiles;
+        return $h_files->getMenuActions();
     }
 
     /*

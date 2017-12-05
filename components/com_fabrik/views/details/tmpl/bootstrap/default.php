@@ -15,9 +15,6 @@ defined('_JEXEC') or die('Restricted access');
 $form = $this->form;
 $model = $this->getModel();
 
-$doc = JFactory::getDocument();
-$doc->addStyleSheet( 'media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css' );
-
 if ($this->params->get('show_page_heading', 1)) : ?>
 	<div class="componentheading<?php echo $this->params->get('pageclass_sfx')?>">
 		<?php echo $this->escape($this->params->get('page_heading')); ?>

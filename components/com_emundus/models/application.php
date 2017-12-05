@@ -2110,7 +2110,8 @@ td {
                     WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
                     AND ho.order_status like "created"
                     AND ho.order_created >= '.strtotime($fnumInfos['start_date']).'
-                    AND ho.order_created <= '.strtotime($fnumInfos['end_date']);
+                    AND ho.order_created <= '.strtotime($fnumInfos['end_date']).'
+                    ORDER BY ho.order_created desc';
 
             } else {
 
@@ -2120,7 +2121,8 @@ td {
                     WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
                     AND ho.order_status like "confirmed"
                     AND ho.order_created >= '.strtotime($fnumInfos['start_date']).'
-                    AND ho.order_created <= '.strtotime($fnumInfos['end_date']);
+                    AND ho.order_created <= '.strtotime($fnumInfos['end_date']).'
+                    ORDER BY ho.order_created desc';
             }
 
 
