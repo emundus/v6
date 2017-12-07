@@ -81,7 +81,7 @@ class JcrmModelContact extends JModelItem {
             }
         }
 
-        
+
 		if ( isset($this->_item->created_by) ) {
 			$this->_item->created_by_name = JFactory::getUser($this->_item->created_by)->name;
 		}
@@ -252,7 +252,7 @@ class JcrmModelContact extends JModelItem {
 	public function getOrganisationByName($name)
 	{
 		$dbo = $this->getDbo();
-		$query = "select id, organisation from #__jcrm_contacts where organisation LIKE '".$name."' and type = 1";
+		$query = "select id, organisation from #__jcrm_contacts where organisation LIKE ".$dbo->Quote($name)." and type = 1";
 		try
 		{
 			$dbo->setQuery($query);
@@ -342,9 +342,9 @@ class JcrmModelContact extends JModelItem {
 		$dbo = $this->getDbo();
 		try
 		{
-		    $query = "SELECT contact.* 
-		    FROM #__jcrm_contacts as contact 
-		    LEFT JOIN #__jcrm_contact_orga as orga on orga.contact_id = contact.id 
+		    $query = "SELECT contact.*
+		    FROM #__jcrm_contacts as contact
+		    LEFT JOIN #__jcrm_contact_orga as orga on orga.contact_id = contact.id
 		    WHERE orga.org_id =" . $id;
 			$dbo->setQuery($query);
 			return $dbo->loadObjectList();
@@ -358,6 +358,7 @@ class JcrmModelContact extends JModelItem {
 
 	private function _updateContactJcardByOrg($orga)
 	{
+		$db = $this->getDbo();
 		try
 		{
 			$contacts = $this->getContactByOrg($orga->id);
@@ -367,13 +368,13 @@ class JcrmModelContact extends JModelItem {
 				$jcard->org = $orga->organisation;
 				$contact->organisation = $orga->organisation;
 				$contact->jcard = json_encode($jcard);
-				$query = "update #__jcrm_contacts set `organisation` = '".$orga->organisation."'";
+				$query = "update #__jcrm_contacts set `organisation` = ".$db->Quote($orga->organisation);
 				if (isset($contact->jcard)) {
 					$query .= ", `jcard` = '".json_encode($jcard)."'";
 				}
 				$query .= " where `id` = ".$contact->id;
-				$this->getDbo()->setQuery($query);
-				$this->getDbo()->execute();
+				$db->setQuery($query);
+				$db->execute();
 			}
 		}
 		catch(Exception $e)
@@ -387,7 +388,7 @@ class JcrmModelContact extends JModelItem {
 	{
 		$dbo = $this->getDbo();
 
-		$query = "insert into #__jcrm_groups (`name`, `created_by`) VALUES ('".$group->name."', ".JFactory::getUser()->id.")";
+		$query = "insert into #__jcrm_groups (`name`, `created_by`) VALUES (".$dbo->Quote($group->name).", ".JFactory::getUser()->id.")";
 
 		try
 		{
@@ -407,7 +408,7 @@ class JcrmModelContact extends JModelItem {
 		$dbo = $this->getDbo();
 		try
 		{
-			$query = "update #__jcrm_groups set name='".$group->name."' where id = ".$group->id;
+			$query = "update #__jcrm_groups set name=".$dbo->Quote($group->name)." where id = ".$group->id;
 			$dbo->setQuery($query);
 			$res = $dbo->execute();
 			return $res;
