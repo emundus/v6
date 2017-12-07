@@ -38,7 +38,7 @@ JLog::addLogger(
     array('com_emundus')
 );
 
-// Get params set in eMundus component configuration 
+// Get params set in eMundus component configuration
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $can_edit_until_deadline    = $eMConfig->get('can_edit_until_deadline', 0);
 $application_fee            = $eMConfig->get('application_fee', 0);
@@ -48,35 +48,35 @@ $application_form_name      = $eMConfig->get('application_form_name', "applicati
 $export_pdf                 = $eMConfig->get('export_application_pdf', 0);
 $export_path                = $eMConfig->get('export_path', null);
 
-$application    = new EmundusModelApplication;
-$filesModel     = new EmundusModelFiles;
-$campaigns      = new EmundusModelCampaign;
-$emails         = new EmundusModelEmails;
+$m_application  = new EmundusModelApplication;
+$m_files        = new EmundusModelFiles;
+$m_campaign     = new EmundusModelCampaign;
+$m_emails       = new EmundusModelEmails;
 
 // Application fees
 if ($application_fee == 1) {
     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
-    $fnumInfos = $filesModel->getFnumInfos($student->fnum);
+    $fnumInfos = $m_files->getFnumInfos($student->fnum);
     if (count($fnumInfos) > 0) {
-        $paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
+        $paid = count($m_application->getHikashopOrder($fnumInfos))>0?1:0;
 
         if (!$paid) {
-            $checkout_url = $application->getHikashopCheckoutUrl($student->profile);
-            $mainframe->redirect(JRoute::_($checkout_url));
+            $checkout_url = $m_application->getHikashopCheckoutUrl($student->profile);
+            $app->redirect(JRoute::_($checkout_url));
         }
-    
-    } else $mainframe->redirect('index.php');
+
+    } else $app->redirect('index.php');
 }
 // get current applicant course
-$campaign = $campaigns->getCampaignByID($student->campaign_id);
+$campaign = $m_campaign->getCampaignByID($student->campaign_id);
 
 // Database UPDATE data
 //// Applicant cannot delete this attachments now
 if (!$can_edit_until_deadline) {
     $query = 'UPDATE #__emundus_uploads SET can_be_deleted = 0 WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
     $db->setQuery( $query );
-    
+
     try {
         $db->execute();
     } catch (Exception $e) {
@@ -110,12 +110,12 @@ $student->candidature_posted = 1;
 $step = 1;
 $code = array($student->code);
 $to_applicant = '0,1';
-$trigger_emails = $emails->sendEmailTrigger($step, $code, $to_applicant, $student);
+$trigger_emails = $m_emails->sendEmailTrigger($step, $code, $to_applicant, $student);
 
 // If pdf exporting is activated
 if ($export_pdf == 1) {
     $fnum = $student->fnum;
-    $fnumInfo = $filesModel->getFnumInfos($student->fnum);
+    $fnumInfo = $m_files->getFnumInfos($student->fnum);
     $files_list = array();
 
     // Build pdf file
@@ -132,11 +132,11 @@ if ($export_pdf == 1) {
             $attachment_order = explode(',',$attachment_order);
             foreach ($attachment_order as $attachment_id) {
                 // Get file attachements corresponding to fnum and type id
-                $files[] = $application->getAttachmentsByFnum($fnum, null, $attachment_id);
-            } 
+                $files[] = $m_application->getAttachmentsByFnum($fnum, null, $attachment_id);
+            }
         } else {
             // Get all file attachements corresponding to fnum
-            $files[] = $application->getAttachmentsByFnum($fnum, null, null);
+            $files[] = $m_application->getAttachmentsByFnum($fnum, null, null);
         }
         // Break up the file array and get the attachement files
         foreach ($files as $file) {
@@ -160,19 +160,19 @@ if ($export_pdf == 1) {
 
         // Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
         $post = array('FNUM' => $fnum);
-        $tags = $emails->setTags($student->id, $post);
+        $tags = $m_emails->setTags($student->id, $post);
         $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
-        $application_form_name = $emails->setTagsFabrik($application_form_name, array($fnum));
-        
+        $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
+
         // Format filename
-        $application_form_name = $emails->stripAccents($application_form_name);
+        $application_form_name = $m_emails->stripAccents($application_form_name);
         $application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/','', $application_form_name);
         $application_form_name = preg_replace('/\s/', '', $application_form_name);
         $application_form_name = strtolower($application_form_name);
-        
+
         // If a file exists with that name, delete it
         if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $application_form_name))
-            unlink(JPATH_BASE . DS . 'tmp' . DS . $application_form_name);  
+            unlink(JPATH_BASE . DS . 'tmp' . DS . $application_form_name);
 
         // Ouput pdf with desired file name
         $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $application_form_name.".pdf", 'F');
@@ -195,4 +195,4 @@ if ($export_pdf == 1) {
 }
 
 
-?>  
+?>
