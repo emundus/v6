@@ -94,7 +94,7 @@ foreach ($recipients as $recipient) {
 
 
         // template replacements (patterns)
-        $post       = array(
+        $post = array(
             'REFERENCE_FORM_URL'    => $link_form,
             'CAMPAIGN_LABEL'        => $current_user->campaign_name
         );
@@ -123,13 +123,13 @@ foreach ($recipients as $recipient) {
             if ($send === false) {
                 JLog::add('No mailer set-up!', JLog::ERROR, 'com_emundus');
             } else {
-                JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_NOT_SENT').' : '.$recipient['email'], 'error');
+                $app->enqueueMessage(JText::_('MESSAGE_NOT_SENT').' : '.$recipient['email'], 'error');
                 JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
             }
 
         } else {
 
-            JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_SENT').' : '.$recipient['email'], 'message');
+            $app->enqueueMessage(JText::_('MESSAGE_SENT').' : '.$recipient['email'], 'message');
             try {
                 $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
                             VALUES ('62', '-1', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
