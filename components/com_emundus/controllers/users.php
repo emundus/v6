@@ -60,7 +60,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		//$db = JFactory::getDBO();
 
 		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) {
-			echo json_encode((object)array('status' => false));
+			echo json_encode((object)array('status' => false, 'uid' => $uid, 'msg' => JText::_('ACCESS_DENIED')));
 			exit;
 		}
 
@@ -121,16 +121,11 @@ class EmundusControllerUsers extends JControllerLegacy {
 			exit;
 		}
 
-		try {
-			//echo $uid;
-			if (!mkdir(EMUNDUS_PATH_ABS.$uid, 0755) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$uid.DS.'index.html')) {
-				echo json_encode((object)array('status' => false, 'uid' => $uid, 'msg' => JText::_('CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
-				exit;
-			}
-		} catch(Exception $e) {
-			echo json_encode((object)array('status' => false, 'msg' => $e->getMessage(), 'uid' => $uid));
-			exit;
+	
+		if (!mkdir(EMUNDUS_PATH_ABS.$uid, 0755) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$uid.DS.'index.html')) {
+			echo json_encode((object)array('status' => false, 'uid' => $uid, 'msg' => JText::_('CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
 		}
+
 
 		// Envoi de la confirmation de création de compte par email
 		/*
