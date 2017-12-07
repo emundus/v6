@@ -59,23 +59,45 @@ if ((count(@$campaign_id) == 0 && !empty($course)) || count($campaigns) == 0) {
 			<legend><?php echo JText::_($fieldset->label);?></legend>
 		<?php endif;?>
 			<dl>
+
+		<dt>
+			<?php echo $this->form->getLabel('spacer'); ?>
+		</dt>
+		<dd><!-- spacer --><dd>
+		<dt>
+			<?php echo $this->form->getLabel('firstname', 'emundus_profile'); ?>
+		</dt>
+		<dd>
+			<?php echo $this->form->getInput('firstname', 'emundus_profile'); ?>
+		</dd>
+		<dt>
+			<?php echo $this->form->getLabel('lastname', 'emundus_profile'); ?>
+		</dt>
+		<dd>
+			<?php echo $this->form->getInput('lastname', 'emundus_profile'); ?>
+		</dd>
 		<?php foreach($fields as $field):?>
-			<?php if ($field->hidden):?>
-				<?php echo $field->input;?>
-			<?php else:?>
-				<dt>
-					<?php echo $field->label; ?>
-					<?php if (!$field->required && $field->type!='Spacer'): ?>
-						<span class="optional"><?php echo JText::_('COM_USERS_OPTIONAL'); ?></span>
-					<?php endif; ?>
-				</dt>
-				<dd>
-					<?php echo ($field->type!='Spacer') ? $field->input : "&#160;";  $this->form->setValue($field->name, $field->group, ""); ?>
-					<span class="help-inline has-warning">
-					<div class="em_msg" id="em_msg_<?php echo $field->name; ?>" style="display: inline; border-width: 2px; border-color: #FF0000; color:#FF0000; padding: 5px"></div>
-					</span>
-				</dd>
-			<?php endif;?>
+
+			<?php if ($field->name == 'jform[emundus_profile][lastname]' || $field->name == 'jform[emundus_profile][firstname]' || $field->name == 'jform[spacer]') :?>
+				<?php continue; ?>
+			<?php else: ?>
+				<?php if ($field->hidden):?>
+					<?php echo $field->input;?>
+				<?php else:?>
+					<dt>
+						<?php echo $field->label; ?>
+						<?php if (!$field->required && $field->type!='Spacer'): ?>
+							<span class="optional"><?php echo JText::_('COM_USERS_OPTIONAL'); ?></span>
+						<?php endif; ?>
+					</dt>
+					<dd>
+						<?php echo ($field->type!='Spacer') ? $field->input : "&#160;";  $this->form->setValue($field->name, $field->group, ""); ?>
+						<span class="help-inline has-warning">
+						<div class="em_msg" id="em_msg_<?php echo $field->name; ?>" style="display: inline; border-width: 2px; border-color: #FF0000; color:#FF0000; padding: 5px"></div>
+						</span>
+					</dd>
+				<?php endif;?>
+			<?php endif; ?>
 		<?php endforeach;?>
 			</dl>
 		</fieldset>
@@ -124,7 +146,7 @@ if (courseInURL == 'true') {
 	var campaign = document.getElementById('jform_emundus_profile_campaign');
 	var cText = campaign.options[1].text;
 	campaign.selectedIndex = 1;
-	campaign.style.visibility = 'hidden';
+	campaign.style.display = 'none';
 
 	var newItem = document.createElement("p");       // Create a <li> node
 	var textnode = document.createTextNode(cText);  // Create a text node
@@ -186,9 +208,6 @@ function check_field(){
 		}
 	<?php } ?>
 	username = document.getElementById("jform_username");
-	document.getElementById('jform_username-lbl').style.display = 'none';
-	username.style.display = 'none';
-
 	passwd1 = document.getElementById("jform_password1");
 	passwd2 = document.getElementById("jform_password2");
 
