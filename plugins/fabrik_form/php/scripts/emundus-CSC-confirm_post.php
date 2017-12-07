@@ -89,7 +89,7 @@ $ed_directors = JAccess::getUsersByGroup(23);
 $query ='SELECT eu.firstname, eu.lastname, u.email, u.id
          FROM #__users as u
          LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
-         WHERE u.id IN ('.implode(',', $ed_directors).')
+         WHERE u.disabled!=1 AND u.id IN ('.implode(',', $ed_directors).')
          AND eu.university_id = '.$thesis->doctoral_school;
 try {
     $db->setQuery($query);
@@ -103,7 +103,7 @@ $query = 'SELECT et.titre, eu.firstname, eu.lastname, u.email, u.id
             FROM #__emundus_thesis as et 
             LEFT JOIN #__users as u ON u.id=et.user 
             LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
-            WHERE et.id='.$thesis->thesis_proposal;
+            WHERE u.disabled!=1 AND et.id='.$thesis->thesis_proposal;
 try {
     $db->setQuery($query);
     $thesis_director = $db->loadObjectList();

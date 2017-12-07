@@ -32,7 +32,7 @@ $university = $fabrikFormData['etablissement_raw'][0];
 $query ='SELECT eu.firstname, eu.lastname, u.email, u.id 
          FROM #__users as u 
          LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id 
-         WHERE u.id IN ('.implode(',', $referents).')
+         WHERE u.disabled!=1 AND u.id IN ('.implode(',', $referents).')
          AND eu.university_id = '.$university;
 try {
     $db->setQuery($query);

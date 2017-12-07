@@ -16,7 +16,7 @@ defined( '_JEXEC' ) or die();
 
 $mainframe 		= JFactory::getApplication();
 $jinput 		= $mainframe->input;
-$baseurl 		= JURI::base(true);
+$baseurl 		= JURI::base();
 $db 			= JFactory::getDBO();
 
 //aid = $_REQUEST['jos_emundus_uploads___attachment_id'];
