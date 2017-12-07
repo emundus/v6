@@ -60,7 +60,8 @@ if ($jinput->get('view') == 'form') {
 
 	if ($application_fee == 1) {
 
-		$fnumInfos = EmundusModelFiles::getFnumInfos($user->fnum);
+		$m_files = new EmundusModelFiles;
+		$fnumInfos = $m_files->getFnumInfos($user->fnum);
 
 		if (count($fnumInfos) > 0) {
 			$paid = count($m_application->getHikashopOrder($fnumInfos))>0?1:0;
@@ -68,7 +69,7 @@ if ($jinput->get('view') == 'form') {
 
 			if (!$paid && !$sent && $attachments >= 100 && $forms >= 100) {
 				$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile.$scholarship_document_id)));
-				$mainframe->redirect(JRoute::_($checkout_url));
+				$mainframe->redirect($checkout_url);
 			}
 		} else {
 			$mainframe->redirect('index.php');
