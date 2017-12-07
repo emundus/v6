@@ -76,7 +76,7 @@ $referents = JAccess::getUsersByGroup(17);
 $query ='SELECT eu.firstname, eu.lastname, u.email, u.id
 		 FROM #__users as u
 		 LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
-		 WHERE u.id IN ('.implode(',', $referents).')
+		 WHERE u.disabled!=1 AND u.id IN ('.implode(',', $referents).')
 		 AND eu.university_id = '.$university;
 try {
     $db->setQuery($query);
@@ -94,7 +94,7 @@ $query = 'SELECT eee.intitule_poste, eu.firstname, eu.lastname, u.email, u.id
 			FROM #__emundus_emploi_etudiant as eee 
 			LEFT JOIN #__users as u ON u.id=eee.user 
 			LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
-			WHERE eee.id='.$fiche_emploi;
+			WHERE u.disabled!=1 AND eee.id='.$fiche_emploi;
 try {
     $db->setQuery($query);
     $deposants = $db->loadObjectList();

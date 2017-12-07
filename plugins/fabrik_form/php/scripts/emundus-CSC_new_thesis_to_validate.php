@@ -35,7 +35,7 @@ $query ='SELECT eu.firstname, eu.lastname, u.email, u.id, c.title
 		 FROM #__users as u 
 		 LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id 
          LEFT JOIN #__categories as c ON c.id=eu.university_id 
-		 WHERE u.id IN ('.implode(',', $referents).')
+		 WHERE u.disabled!=1 AND u.id IN ('.implode(',', $referents).')
          AND eu.university_id = '.$university;
 try {
 	$db->setQuery($query);
@@ -55,7 +55,7 @@ if (count($recipients) > 0) {
             'TITRE'           => $titre,
             'LABORATORY_DIRECTOR' => $laboratory_director,
             'RESEARCH_LABORATORY' => $research_laboratory,
-            'URL_THESIS_PROPOSAL' => JURI::base(true).'index.php?option=com_emundus&view=thesis&id='.$thesis_id
+            'URL_THESIS_PROPOSAL' => JURI::base().'index.php?option=com_emundus&view=thesis&id='.$thesis_id
             );
     //
 	// email to thesis director

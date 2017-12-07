@@ -36,7 +36,7 @@ if($valide == 1) {
     		 FROM #__users as u 
     		 LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id 
              LEFT JOIN #__categories as c ON c.id=eu.university_id 
-    		 WHERE u.id ='.$thesis_supervisor_user_id;
+    		 WHERE u.disabled!=1 AND u.id ='.$thesis_supervisor_user_id;
     try {
     	$db->setQuery($query);
         $recipients = $db->loadObjectList();
@@ -55,7 +55,7 @@ if($valide == 1) {
                 'TITRE'           => $titre,
                 'LABORATORY_DIRECTOR' => $laboratory_director,
                 'RESEARCH_LABORATORY' => $research_laboratory,
-                'URL_THESIS_PROPOSAL' => JURI::base(true).'index.php?option=com_emundus&view=thesis&id='.$thesis_id
+                'URL_THESIS_PROPOSAL' => JURI::base().'index.php?option=com_emundus&view=thesis&id='.$thesis_id
                 );
         //
     	// email to thesis director
