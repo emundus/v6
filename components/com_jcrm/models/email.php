@@ -81,7 +81,7 @@ class JcrmModelEmail extends JModelItem {
             }
         }
 
-        
+
 		if ( isset($this->_item->created_by) ) {
 			$this->_item->created_by_name = JFactory::getUser($this->_item->created_by)->name;
 		}
@@ -156,8 +156,7 @@ class JcrmModelEmail extends JModelItem {
     public function getCategoryName($id) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query
-                ->select('title')
+        $query->select('title')
                 ->from('#__categories')
                 ->where('id = ' . $id);
         $db->setQuery($query);
@@ -188,7 +187,7 @@ class JcrmModelEmail extends JModelItem {
         }
         catch(Exeption $e)
         {
-            return $e->getMessage();
+            JLog::add('Error in model/email at function getMailSubject, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
@@ -207,8 +206,7 @@ class JcrmModelEmail extends JModelItem {
         }
         catch(JDatabaseException $e)
         {
-            throw $e;
-            return $e->getMessage();
+            JLog::add('Error in model/email at function getMailContact, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
@@ -225,7 +223,7 @@ class JcrmModelEmail extends JModelItem {
         }
         catch(Exception $e)
         {
-            return $e->getMessage();
+            JLog::add('Error in model/email at function getMailBody, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
@@ -252,7 +250,7 @@ class JcrmModelEmail extends JModelItem {
         }
         catch(Exception $e)
         {
-            return $e->getMessage();
+            JLog::add('Error in model/email at function getEmailFrom, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
@@ -265,7 +263,7 @@ class JcrmModelEmail extends JModelItem {
             $query = "select email, full_name, organisation, last_name, first_name, phone
                       from #__jcrm_contacts
                       where id in (".implode(', ', $listId).") and (email not like '')";
-            $dbo->setQuery($query); 
+            $dbo->setQuery($query);
 
             $res = $dbo->loadAssocList();
             return $res;
@@ -292,8 +290,7 @@ class JcrmModelEmail extends JModelItem {
         }
         catch(JException $e)
         {
-            throw $e;
-            return $e->getMessage();
+            JLog::add('Error in model/email at function getContacts, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 

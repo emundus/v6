@@ -18,9 +18,9 @@ jimport('joomla.event.dispatcher');
  */
 class JcrmModelContactForm extends JModelForm
 {
-    
+
     var $_item = null;
-    
+
 	/**
 	 * Method to auto-populate the model state.
 	 *
@@ -50,7 +50,7 @@ class JcrmModelContactForm extends JModelForm
 		$this->setState('params', $params);
 
 	}
-        
+
 
 	/**
 	 * Method to get an ojbect.
@@ -75,7 +75,7 @@ class JcrmModelContactForm extends JModelForm
 			// Attempt to load the row.
 			if ($table->load($id))
 			{
-                
+
                 $user = JFactory::getUser();
                 $id = $table->id;
                 if($id){
@@ -91,7 +91,7 @@ else{
                 if (!$canEdit) {
                     JError::raiseError('500', JText::_('JERROR_ALERTNOAUTHOR'));
                 }
-                
+
 				// Check published state.
 				if ($published = $this->getState('filter.published'))
 				{
@@ -110,14 +110,14 @@ else{
 
 		return $this->_item;
 	}
-    
+
 	public function getTable($type = 'Contact', $prefix = 'JcrmTable', $config = array())
-	{   
+	{
         $this->addTablePath(JPATH_COMPONENT_ADMINISTRATOR.'/tables');
         return JTable::getInstance($type, $prefix, $config);
-	}     
+	}
 
-    
+
 	/**
 	 * Method to check in an item.
 	 *
@@ -131,7 +131,7 @@ else{
 		$id = (!empty($id)) ? $id : (int)$this->getState('contact.id');
 
 		if ($id) {
-            
+
 			// Initialise the table
 			$table = $this->getTable();
 
@@ -160,7 +160,7 @@ else{
 		$id = (!empty($id)) ? $id : (int)$this->getState('contact.id');
 
 		if ($id) {
-            
+
 			// Initialise the table
 			$table = $this->getTable();
 
@@ -177,13 +177,13 @@ else{
 		}
 
 		return true;
-	}    
-    
+	}
+
 	/**
 	 * Method to get the profile form.
 	 *
-	 * The base form is loaded from XML 
-     * 
+	 * The base form is loaded from XML
+     *
 	 * @param	array	$data		An optional array of data for the form to interogate.
 	 * @param	boolean	$loadData	True if the form is to load its own data (default case), false if not.
 	 * @return	JForm	A JForm object on success, false on failure
@@ -212,7 +212,7 @@ else{
         if (empty($data)) {
             $data = $this->getData();
         }
-        
+
         return $data;
 	}
 
@@ -247,16 +247,16 @@ else{
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }
-        
+
         $table = $this->getTable();
         if ($table->save($data) === true) {
             return $table->id;
         } else {
             return false;
         }
-        
+
 	}
-    
+
      function delete($data)
     {
         $id = (!empty($data['id'])) ? $data['id'] : (int)$this->getState('contact.id');
@@ -270,8 +270,8 @@ else{
         } else {
             return false;
         }
-        
+
         return true;
     }
-    
+
 }

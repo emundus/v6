@@ -28,7 +28,7 @@ class JcrmModelEmails extends JModelList
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                
+
             );
         }
         parent::__construct($config);
@@ -138,10 +138,10 @@ class JcrmModelEmails extends JModelList
 	public function getItems()
     {
         $items = parent::getItems();
-        
+
         return $items;
     }
-    
+
     /**
      * Overrides the default function to check Date fields format, identified by
      * "_dateformat" suffix, and erases the field if it's not correct.
@@ -169,16 +169,16 @@ class JcrmModelEmails extends JModelList
     }
 
     /**
-     * Checks if a given date is valid and in an specified format (YYYY-MM-DD) 
-     * 
+     * Checks if a given date is valid and in an specified format (YYYY-MM-DD)
+     *
      * @param string Contains the date to be checked
-     * 
+     *
      */
     private function isValidDate($date)
     {
         return preg_match("/^(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])$/", $date) && date_create($date);
     }
-    
+
     /**
      * Get the filter form
      *

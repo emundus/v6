@@ -221,7 +221,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(Exception $e)
 		{
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function addContact, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -244,8 +244,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(Exception $e)
 		{
-			throw $e;
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function getContact, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -261,8 +260,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(Exception $e)
 		{
-			throw $e;
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function getOrganisationByName, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -333,7 +331,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(Exception $e)
 		{
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function update, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -399,7 +397,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(Exception $e)
 		{
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function addGroup, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -415,7 +413,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(Exception $e)
 		{
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function updateGroup, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -431,7 +429,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(Exception $e)
 		{
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function deleteGroup, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -452,7 +450,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(Exception $e)
 		{
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function deleteContact, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -526,8 +524,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(JException $e)
 		{
-			throw $e;
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function getContactIdByGroup, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -548,8 +545,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(JException $e)
 		{
-			throw $e;
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function getContacts, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
