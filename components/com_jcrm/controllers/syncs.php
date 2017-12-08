@@ -58,7 +58,7 @@ class JcrmControllerSyncs extends JcrmController
 
 						if($data['id_account_'.$i] == 0)
 						{
-                            $sync->orga->options = $m_syncs->getSiblingOrgs($data['Organisation_'.$i]);
+							$sync->orga->options = $m_syncs->getSiblingOrgs($data['Organisation_'.$i]);
 							if(!empty($sync->orga->options))
 							{
 								$sync->orga->orgaId = $sync->orga->options[0]->id;
