@@ -68,9 +68,7 @@ JHtml::_('formbehavior.chosen', 'select');
 		
 		<div class="alert alert-info">
 			<h5><?php echo JText::_('COM_SECURITYCHECKPRO_GEOBLOCK_DESCRIPTION'); ?></h5>
-		<?php if ($this->geoip_database_update > 30) {?>	
-			<button class="btn btn-info" type="button" onclick="muestra_progreso(); Joomla.submitbutton('update_geoblock_database');"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UPDATE_GEOBLOCK_DATABASE' ); ?></button>
-		<?php } ?>
+			<button class="btn btn-info" type="button" onclick="muestra_progreso(); Joomla.submitbutton('update_geoblock_database');"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UPDATE_GEOBLOCK_DATABASE' ); ?></button>		
 		</div>
 				
 		<div class="label label-important">

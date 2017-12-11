@@ -7,10 +7,15 @@
  */
 defined('_JEXEC') or die();
 
+use CCL\Content\Element\Basic\Container;
 use CCL\Content\Element\Basic\Element;
+use CCL\Content\Element\Basic\Image;
 
 // The params
 $params = $this->params;
+
+// Load the spinning wheel
+DPCalendarHelper::renderLayout('calendar.loader', ['root' => $this->root]);
 
 // Create the element which holds the map
 $mc = $this->root->addChild(

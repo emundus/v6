@@ -11,7 +11,7 @@ defined('_JEXEC') or die();
 DPCalendarHelper::loadLibrary(array('dpcalendar' => true));
 
 // Load the event stylesheet
-JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/views/event/default.css', array(), true);
+JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/dpcalendar.css', ['relative' => true]);
 
 // The params
 $params = $this->params;

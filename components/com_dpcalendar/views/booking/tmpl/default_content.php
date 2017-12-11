@@ -24,8 +24,8 @@ $hasPrice = $booking->price && $booking->price != '0.00';
 
 if ($hasPrice) {
 	// The invoice heading
-	$h = $root->addChild(new Heading('invoice-heading', 2, array('dp-event-header')));
-	$h->setProtectedClass('dp-event-header');
+	$h = $root->addChild(new Heading('invoice-heading', 2, array('dpcalendar-heading')));
+	$h->setProtectedClass('dpcalendar-heading');
 	$h->setContent(JText::_('COM_DPCALENDAR_INVOICE_INVOICE_DETAILS'));
 
 	// Set up the payment options
@@ -72,8 +72,8 @@ if ($hasPrice) {
 }
 
 // The booking details heading
-$h = $root->addChild(new Heading('booking-heading', 2, array('dp-event-header')));
-$h->setProtectedClass('dp-event-header');
+$h = $root->addChild(new Heading('booking-heading', 2, array('dpcalendar-heading')));
+$h->setProtectedClass('dpcalendar-heading');
 $h->setContent(JText::_('COM_DPCALENDAR_INVOICE_BOOKING_DETAILS'));
 
 if (!$hasPrice) {
@@ -142,8 +142,8 @@ $content = JFactory::getApplication()->triggerEvent(
 $root->addChild(new Container('event-before-display'))->setContent(implode(' ', $content));
 
 // The booking details heading
-$h = $root->addChild(new Heading('tickets-heading', 2, array('dp-event-header')));
-$h->setProtectedClass('dp-event-header');
+$h = $root->addChild(new Heading('tickets-heading', 2, array('dpcalendar-heading')));
+$h->setProtectedClass('dpcalendar-heading');
 $h->setContent(JText::_('COM_DPCALENDAR_INVOICE_TICKET_DETAILS'));
 
 // Add the tickets list

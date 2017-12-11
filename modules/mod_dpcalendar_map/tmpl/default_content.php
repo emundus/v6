@@ -7,23 +7,17 @@
  */
 defined('_JEXEC') or die();
 
-use CCL\Content\Element\Basic\Element;
 use CCL\Content\Element\Basic\Container;
-use CCL\Content\Element\Basic\Frame;
+use CCL\Content\Element\Basic\Element;
+use CCL\Content\Element\Basic\Image;
 
-if ($params->get('show_as_popup'))
-{
+if ($params->get('show_as_popup')) {
 	// Load the required JS libraries
-	DPCalendarHelper::loadLibrary(array('jquery' => true, 'dpcalendar' => true));
-	JHtml::_('behavior.modal', '.dp-module-map-event-link-invalid');
-
-	// The root container for the modal iframe
-	$m = $root->addChild(new Container('modal', array('modal')));
-	$m->addClass('dp-module-map-modal', true);
-
-	// Add the iframe which holds the content
-	$m->addChild(new Frame('frame', ''));
+	DPCalendarHelper::loadLibrary(array('modal' => true));
 }
+
+// Load the spinning wheel
+DPCalendarHelper::renderLayout('calendar.loader', ['root' => $root]);
 
 // Create the element which holds the map
 $mc = $root->addChild(

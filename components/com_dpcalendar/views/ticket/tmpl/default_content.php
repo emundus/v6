@@ -29,8 +29,8 @@ $root = $this->root->addChild(new Container('details'));
 $return = JFactory::getApplication()->input->get('return') ?: DPCalendarHelperRoute::getEventRoute($event->id, $event->catid);
 
 // The title heading
-$h = $root->addChild(new Heading('title-heading', 2, array('dp-event-header')));
-$h->setProtectedClass('dp-event-header');
+$h = $root->addChild(new Heading('title-heading', 2, array('dpcalendar-heading')));
+$h->setProtectedClass('dpcalendar-heading');
 $h->addChild(new Link('title-heading-link', $return))->setContent($event->title);
 
 // The date information
@@ -70,8 +70,8 @@ if (isset($event->locations) && $event->locations) {
 }
 
 // The title heading
-$h = $root->addChild(new Heading('tickets-heading', 2, array('dp-event-header')));
-$h->setProtectedClass('dp-event-header');
+$h = $root->addChild(new Heading('tickets-heading', 2, array('dpcalendar-heading')));
+$h->setProtectedClass('dpcalendar-heading');
 $h->setContent(JText::_('COM_DPCALENDAR_INVOICE_TICKET_DETAILS'));
 
 // The id information

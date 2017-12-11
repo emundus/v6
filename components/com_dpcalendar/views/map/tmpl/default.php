@@ -10,23 +10,15 @@ defined('_JEXEC') or die();
 use CCL\Content\Element\Basic\Container;
 
 // Load the JS libraries
-DPCalendarHelper::loadLibrary(array('jquery' => true, 'maps' => true, 'dpcalendar' => true));
-JHtml::_('script', 'system/core.js', false, true);
+JHtml::_('behavior.core');
+DPCalendarHelper::loadLibrary(array('maps' => true, 'url' => true));
 
-JHtml::_('script', 'com_dpcalendar/dpcalendar/views/map/default.js', false, true);
-JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/views/map/default.css', array(), true);
+JHtml::_('script', 'com_dpcalendar/dpcalendar/views/map/default.min.js', ['relative' => true], ['defer' => true]);
+JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/views/map/default.min.css', ['relative' => true]);
 
 // Load the language files
 JFactory::getLanguage()->load('', JPATH_ADMINISTRATOR);
 JText::script('COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL_NO_EVENT_TEXT');
-
-// Get the ids to display
-$ids = '';
-foreach ($this->items as $calendar)
-{
-	$ids .= $calendar->id . ',';
-}
-$ids = trim($ids, ',');
 
 // User timezone
 DPCalendarHelper::renderLayout('user.timezone', array('root' => $this->root));

@@ -28,8 +28,8 @@ class PlgDPCalendarPayManual extends \DPCalendar\Plugin\PaymentPlugin
 	protected function getPaymentData($gateway, $transactionData, $booking)
 	{
 		$updates = array(
-			'state' => 4,
-			'payer_email' => $booking->email,
+			'state'          => 4,
+			'payer_email'    => $booking->email,
 			'transaction_id' => md5($booking->id . 'dpcalendar')
 		);
 
@@ -39,15 +39,45 @@ class PlgDPCalendarPayManual extends \DPCalendar\Plugin\PaymentPlugin
 	public function onDPPaymentStatement($payment)
 	{
 		$statement = parent::onDPPaymentStatement($payment);
-		if (!$statement)
-		{
+		if (!$statement) {
 			return $statement;
 		}
 
-		if (!$statement->statement)
-		{
-			$statement->statement = JText::_($this->params->get('payment_statement', "PLG_DPCALENDARPAY_MANUAL_PAYMENT_STATEMENT_TEXT"));
+		if (!$statement->statement) {
+			$statement->statement = JText::_($this->params->get('payment_statement', 'PLG_DPCALENDARPAY_MANUAL_PAYMENT_STATEMENT_TEXT'));
 		}
+
 		return $statement;
+	}
+
+	public function onDPPaymentCallBack($bookingmethod, $data)
+	{
+		$return = parent::onDPPaymentCallBack($bookingmethod, $data);
+
+		if ($return) {
+			$text = \DPCalendar\Helper\DPCalendarHelper::getStringFromParams(
+				'payment_statement',
+				'PLG_DPCALENDARPAY_MANUAL_PAYMENT_STATEMENT_TEXT',
+				$this->params
+			);
+
+			$booking = \JModelLegacy::getInstance('Booking', 'DPCalendarModel')->getItem($data['b_id']);
+
+			// The vars for the message
+			$vars                   = (array)$booking;
+			$vars['currency']       = \DPCalendar\Helper\DPCalendarHelper::getComponentParameter('currency', 'USD');
+			$vars['currencySymbol'] = \DPCalendar\Helper\DPCalendarHelper::getComponentParameter('currency_symbol', '$');
+
+			$text = DPCalendarHelper::renderEvents(array(), $text, null, $vars);
+
+			$mailer = JFactory::getMailer();
+			$mailer->setSubject(JText::_('PLG_DPCALENDARPAY_MANUAL_CONFIRMATION_SUBJECT'));
+			$mailer->setBody($text);
+			$mailer->IsHTML(true);
+			$mailer->addRecipient($booking->email);
+			$mailer->Send();
+		}
+
+		return $return;
 	}
 }

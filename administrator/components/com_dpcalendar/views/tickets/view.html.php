@@ -18,40 +18,34 @@ class DPCalendarViewTickets extends \DPCalendar\View\BaseView
 
 	protected $state;
 
-	public function init ()
+	public function init()
 	{
-		$this->state = $this->get('State');
-		$this->items = $this->get('Items');
+		$this->state      = $this->get('State');
+		$this->items      = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
 	}
 
-	protected function addToolbar ()
+	protected function addToolbar()
 	{
 		$state = $this->get('State');
 		$canDo = DPCalendarHelper::getActions();
 
-		if ($canDo->get('core.edit'))
-		{
+		if ($canDo->get('core.edit')) {
 			JToolbarHelper::editList('ticket.edit');
 		}
-		if ($canDo->get('core.edit.state'))
-		{
+		if ($canDo->get('core.edit.state')) {
 			JToolbarHelper::publish('tickets.publish', 'JTOOLBAR_PUBLISH', true);
 			JToolbarHelper::unpublish('tickets.unpublish', 'JTOOLBAR_UNPUBLISH', true);
 
 			JToolbarHelper::archiveList('tickets.archive');
 		}
-		if ($state->get('filter.state') == - 2 && $canDo->get('core.delete'))
-		{
+		if ($state->get('filter.state') == -2 && $canDo->get('core.delete')) {
 			JToolbarHelper::deleteList('', 'tickets.delete', 'JTOOLBAR_EMPTY_TRASH');
-		}
-		elseif ($canDo->get('core.edit.state'))
-		{
+		} elseif ($canDo->get('core.edit.state')) {
 			JToolbarHelper::trash('tickets.trash');
 		}
 
-		if ($canDo->get('core.admin', 'com_dpcalendar'))
-		{
+		if ($canDo->get('core.admin', 'com_dpcalendar')) {
 			JToolbarHelper::custom('tickets.csvexport', 'download', '', 'COM_DPCALENDAR_CSV_EXPORT', false);
 		}
 

@@ -807,24 +807,25 @@ class plgSystemSecuritycheckpro extends JPlugin{
 		$redirect_after_attack = $this->pro_plugin->getValue('redirect_after_attack',1,'pro_plugin');
 		$redirect_options = $this->pro_plugin->getValue('redirect_options',1,'pro_plugin');
 		$redirect_url = $this->pro_plugin->getValue('redirect_url','','pro_plugin');
-		$custom_code = $this->pro_plugin->getValue('custom_code','','pro_plugin');
+		$custom_code = $this->pro_plugin->getValue('custom_code','The webmaster has forbidden your access to this site','pro_plugin');
 				
 		if ($redirect_after_attack){
 			// Tenemos que redigir 
-			if ($redirect_options == 1) {
-				// Redirigimos a la página de error de Joomla
-				JError::raiseError($code,$message);
-			} else if ($redirect_options == 2) {
-				if (!$blacklist) {
+			if (!$blacklist) {
+				if ($redirect_options == 1) {
+					// Redirigimos a la página de error de Joomla
+					JFactory::getApplication()->enqueueMessage($message, 'error');
+				} else if ($redirect_options == 2) {
 					// Redirigimos a la página establecida por el administrador
 					JFactory::getApplication()->redirect(JURI::root() . $redirect_url);	
-				} else {
-					// Mostramos el código establecido por el administrador, una cabecera de Forbidden y salimos
-					echo $custom_code;
-					header('HTTP/1.1 403 Forbidden');
-					exit;
 				}
-			}
+					
+			} else {
+				// Mostramos el código establecido por el administrador, una cabecera de Forbidden y salimos					
+				echo $custom_code;
+				header('HTTP/1.1 403 Forbidden');
+				exit;
+			}			
 		} else { // Rechazamos la conexión mostrando el código establecido por el administrador, una cabecera de Forbidden y salimos
 				echo $custom_code;
 				header('HTTP/1.1 403 Forbidden');

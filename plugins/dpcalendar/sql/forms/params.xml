@@ -70,6 +70,10 @@
 				label="PLG_DPCALENDAR_SQL_FIELD_COLUMN_COLOR_LABEL" required="false"
 				description="PLG_DPCALENDAR_SQL_FIELD_COLUMN_COLOR_DESC" size="70"
 				class="inputbox" />
+			<field name="image_column" type="text" default="image"
+				label="PLG_DPCALENDAR_SQL_FIELD_COLUMN_IMAGE_LABEL" required="false"
+				description="PLG_DPCALENDAR_SQL_FIELD_COLUMN_IMAGE_DESC" size="70"
+				class="inputbox" />
 
 			<field name="action-create" type="hidden" default="false" />
 			<field name="action-edit" type="hidden" default="false" />

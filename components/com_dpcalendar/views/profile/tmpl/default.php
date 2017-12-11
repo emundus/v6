@@ -8,7 +8,7 @@
 defined('_JEXEC') or die();
 
 // Load the profile stylesheet
-JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/views/profile/default.css', array(), true);
+JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/views/profile/default.css', ['relative' => true]);
 
 // User timezone
 DPCalendarHelper::renderLayout('user.timezone', array('root' => $this->root));

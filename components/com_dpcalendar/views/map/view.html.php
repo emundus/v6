@@ -12,22 +12,20 @@ class DPCalendarViewMap extends \DPCalendar\View\BaseView
 {
 	public function init()
 	{
-		$model = JModelLegacy::getInstance('Calendar', 'DPCalendarModel', array(
-				'ignore_request' => true
-		));
-		// Initialise variables
-		$model->setState('filter.parentIds', $this->params->get('ids', array(
-				'root'
-		)));
-		$model->setState('category.recursive', true);
+		$context = 'com_dpcalendar.map.';
 
-		$items = $model->getItems();
+		$this->state->set('filter.search', $this->app->getUserStateFromRequest($context . 'search', 'search'));
+		$this->state->set('filter.location', $this->app->getUserStateFromRequest($context . 'location', 'location'));
+		$this->state->set(
+			'filter.radius',
+			$this->app->getUserStateFromRequest($context . 'radius', 'radius', $this->params->get('map_view_radius', 20))
+		);
+		$this->state->set(
+			'filter.length-type',
+			$this->app->getUserStateFromRequest($context . 'length-type', 'length-type', $this->params->get('map_view_length_type', 'm'))
+		);
 
-		if ($items === false)
-		{
-			return JError::raiseError(404, JText::_('JGLOBAL_CATEGORY_NOT_FOUND'));
-		}
-
-		$this->items = $items;
+		$this->state->set('list.start-date', $this->app->getUserStateFromRequest($context . 'start-date', 'start-date'));
+		$this->state->set('list.end-date', $this->app->getUserStateFromRequest($context . 'end-date', 'end-date'));
 	}
 }

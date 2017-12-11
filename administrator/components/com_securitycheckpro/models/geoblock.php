@@ -136,6 +136,15 @@ function saveConfig($newParams, $key_name = 'geoblock')
 function update_geoblock_database() {
 		// Ruta donde se encuentra el fichero
 		$datFile = JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR .'components' . DIRECTORY_SEPARATOR .'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'GeoLite2-Country.mmdb';
+				
+		/* Creamos un fichero testigo que indicará si la actualización se ha llevado a cabo correctamente; si este fichero existe al final del proceso es que ha habido algún problema */
+		$testigo_update = JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR .'components' . DIRECTORY_SEPARATOR .'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'scans' . DIRECTORY_SEPARATOR . 'maxmind_update.php';
+		if ( !JFile::exists($testigo_update) ) {
+			$file = fopen($testigo_update,"w");
+			$content = "<?php die('Forbidden.'); ?>";
+			fwrite($file,$content);
+			fclose($file);
+		}
 					
 		// Sanity check
 		if(!function_exists('gzinflate')) {
@@ -236,13 +245,11 @@ function update_geoblock_database() {
 			return JText::_('COM_SECURITYCHECKPRO_ERR_CANTWRITE');
 		}
 		
+		// Borramos el fichero testigo
+		JFile::delete($testigo_update);
 		// Actualizamos la fecha de la última descarga del fichero Geoipv2
 		$this->update_latest_download();
-		
-		// Actualizamos la variable que controla si se muestra el popup de actualización
-		$mainframe = JFactory::getApplication();
-		$mainframe->SetUserState("update_run",true);		
-		
+				
 		return JText::_('COM_SECURITYCHECKPRO_DATABASE_UPDATED_OK');
 }
 

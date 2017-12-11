@@ -56,6 +56,6 @@ DPCalendarHelper::renderLayout(
 );
 
 // The invoice heading
-$h = $root->addChild(new Heading('order', 2, array('dp-event-header')));
-$h->setProtectedClass('dp-event-header');
+$h = $root->addChild(new Heading('order', 2, array('dpcalendar-heading')));
+$h->setProtectedClass('dpcalendar-heading');
 $h->setContent(JText::_('COM_DPCALENDAR_VIEW_BOOKING_MESSAGE_THANKYOU'));

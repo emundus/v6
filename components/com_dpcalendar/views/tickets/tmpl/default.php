@@ -13,7 +13,7 @@ use CCL\Content\Element\Basic\Form;
 DPCalendarHelper::loadLibrary(array('jquery' => true, 'dpcalendar' => true));
 
 // Load the stylesheet
-JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/views/tickets/default.css', array(), true);
+JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/views/tickets/default.css', ['relative' => true]);
 
 // If we have an event, show an information message
 if ($this->event)

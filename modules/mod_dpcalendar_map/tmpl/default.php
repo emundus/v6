@@ -5,17 +5,18 @@
  * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
-
 defined('_JEXEC') or die();
 
 use CCL\Content\Element\Basic\Container;
 
-// Load the required JS libraries
-DPCalendarHelper::loadLibrary(array('jquery' => true, 'maps' => true, 'dpcalendar' => true));
-JHtml::_('script', 'com_dpcalendar/dpcalendar/views/map/default.js', false, true);
+// Load the JS libraries
+JHtml::_('behavior.core');
+DPCalendarHelper::loadLibrary(array('maps' => true, 'url' => true));
+JHtml::_('script', 'com_dpcalendar/dpcalendar/views/map/default.min.js', ['relative' => true], ['defer' => true]);
 
-// Load the stylesheet
-JHtml::_('stylesheet', 'mod_dpcalendar_map/default.css', array(), true);
+// Load the language files
+JFactory::getLanguage()->load('com_dpcalendar', JPATH_ADMINISTRATOR);
+JText::script('COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL_NO_EVENT_TEXT');
 
 // The root container
 $root = new Container('dp-module-map-' . $module->id, array('root'), array('ccl-prefix' => 'dp-module-map-'));

@@ -347,7 +347,16 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_surveyforce','component','3.2.4','==','3.0.0','>=','Survey Force Deluxe Component','SQL Injection Vulnerability','Sep 21 2017','3.2.4','update','3.2.5'),
 ('com_spmoviedb','component','1.3','==','3.0.0','>=','SP Movie Database Component','SQL Injection Vulnerability','Sep 22 2017','1.3','update','1.4'),
 ('com_ns_downloadshop','component','2.2.6','==','3.0.0','>=','NS Download Shop Component','SQL Injection Vulnerability','Oct 01 2017','Version 2.2.6','none','No details'),
-('com_zhyandexmap','component','6.1.1.0','==','3.0.0','>=','Zh YandexMap Component','SQL Injection Vulnerability','Oct 01 2017','Version 6.1.1.0','none','No details');
+('com_zhyandexmap','component','6.1.1.0','==','3.0.0','>=','Zh YandexMap Component','SQL Injection Vulnerability','Oct 01 2017','Version 6.1.1.0','none','No details'),
+('com_price_alert','component','3.0.4','<=','3.0.0','>=','Price Alert for Virtuemart Component','SQL Injection Vulnerability','Oct 18 2017','Version 3.0.4 and previous','none','No details'),
+('com_ajaxquiz','component','1.8.0','==','3.0.0','>=','Ajax Quiz Component','SQL Injection Vulnerability','Oct 18 2017','Version 1.8.0','none','No details'),
+('plugin_googlemap3','plugin','3.5.2','<=','3.0.0','>=','Google Maps by Reumer','Malicious update','Oct 21 2017','Version 3.5','update','3.5.2'),
+('com_hdwplayer','component','4.0.0','<=','3.0.0','>=','HDW Player Component','RCE Vulnerability','Oct 26 2017','Version 4.0.0 and all previous','none','No details'),
+('com_jsjobs','component','1.1.8','==','3.0.0','>=','Js Jobs Component','RCE Vulnerability','Oct 26 2017','Version 1.1.8','update','1.1.9'),
+('Joomla!','core','3.8.1','<=','3.0.0','>=','Joomla! LDAP Information Disclosure','Inadequate escaping in the LDAP authentication plugin','Nov 07 2017','Joomla! versions 1.5.0 through 3.8.1','update','3.8.2'),
+('Joomla!','core','3.8.1','<=','3.0.0','>=','Joomla! 2-factor-authentication bypass vulnerability','---','Nov 07 2017','Joomla! versions 3.2.0 through 3.8.1','update','3.8.2'),
+('Joomla!','core','3.8.1','<=','3.0.0','>=','Joomla! Information Disclosure vulnerability','logic bug in com_fields','Nov 07 2017','Joomla! versions 3.7.0 through 3.8.1','update','3.8.2'),
+('com_virtuemart','component','3.2.4','==','3.0.0','>=','Virtuemart Component','XSS Vulnerability','Dec 04 2017','Version 3.2.4','update','3.2.6');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -468,7 +477,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.0.101');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.0.106');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (

@@ -63,6 +63,10 @@ class PlgDPCalendarSQL extends \DPCalendar\Plugin\SyncPlugin
 			if (key_exists($params->get('color_column'), $existingColumns)) {
 				$columns[] = $params->get('color_column');
 			}
+			if (key_exists($params->get('image_column'), $existingColumns)) {
+				$columns[] = $params->get('image_column');
+			}
+
 			$query->select($db->quoteName($columns));
 			$query->from($db->quoteName($params->get('table_name')));
 
@@ -123,7 +127,7 @@ class PlgDPCalendarSQL extends \DPCalendar\Plugin\SyncPlugin
 						$text[] = 'DTEND:' . $endDate->format('Ymd\THis\Z');
 					}
 
-					$text[] = 'UID:' . md5($row->{$params->get('id_column')} . 'SQL');
+					$text[] = 'UID:' . $row->{$params->get('id_column')};
 					$text[] = 'CATEGORIES:Default';
 					$text[] = 'SUMMARY:' . $row->{$params->get('title_column')};
 					$text[] = 'DESCRIPTION:' . $this->replaceNl(nl2br($row->{$params->get('description_column')}));
@@ -142,6 +146,9 @@ class PlgDPCalendarSQL extends \DPCalendar\Plugin\SyncPlugin
 					}
 					if (key_exists($params->get('color_column'), $existingColumns)) {
 						$text[] = 'X-COLOR:' . $row->{$params->get('color_column')};
+					}
+					if (key_exists($params->get('image_column'), $existingColumns)) {
+						$text[] = 'X-IMAGE:' . $row->{$params->get('image_column')};
 					}
 
 					$text[] = 'END:VEVENT';
