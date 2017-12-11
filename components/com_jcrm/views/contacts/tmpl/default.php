@@ -523,13 +523,20 @@ ul li {
 											</div>
 										</div>
 									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<label for="orgExport"> <?php echo JText::_('CONTACT_ORG_EXPORT'); ?> </label>
+											<input type="radio" name="orgExport" value="members" ng-model="orgExport"> <?php echo JText::_('CONTACT_ORG_MEMBERS'); ?> </br>
+											<input type="radio" name="orgExport" value="direct" ng-model="orgExport"> <?php echo JText::_('CONTACT_ORG_DIRECT'); ?> </br>
+											<input type="radio" name="orgExport" value="both" ng-model="orgExport"> <?php echo JText::_('CONTACT_ORG_BOTH'); ?>
+										</div>
+									</div>
 									<div class = "row">
 										<div class="col-md-12">
 											<select class = "form-control" name = "contact-export-select" ng-model="export.type"  id = "contact-export-select">
 												<option value = "0"><?php echo JText::_('CONTACT_EXPORT_CSV')?></option>
 												<option value = "1"><?php echo JText::_('CONTACT_EXPORT_VCARD')?></option>
 											</select>
-
 										</div>
 									</div>
 								</div>

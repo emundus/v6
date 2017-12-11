@@ -528,6 +528,47 @@ class JcrmModelContact extends JModelItem {
 		}
 	}
 
+	public function getContactIdByOrg($ids) {
+
+		$db = JFactory::getDbo();
+
+		// First, let's get all of the institutions in our contact list
+		$query = 'SELECT id FROM #__jcrm_contacts
+					WHERE type=1
+					AND id IN ('.implode(', ', $ids).')';
+		$db->setquery($query);
+
+		try {
+
+			$orgIds = $db->loadColumn();
+
+		} catch (Exception $e) {
+			error_log($e->getMessage(), 0);
+			return $e->getMessage();
+		}
+
+		if (sizeof($orgIds) > 0) {
+
+			// Now that we have a list of all organizations, we can get all of the users attached to them.
+			$query = 'SELECT c.id
+						FROM #__jcrm_contacts as c
+						LEFT JOIN #__jcrm_contact_orga as co ON c.id = co.contact_id
+						WHERE co.org_id IN ('.implode(', ', $orgIds).") AND (c.email NOT LIKE '')";
+			$db->setQuery($query);
+
+			try {
+
+				return $db->loadColumn();
+
+			} catch (Exception $e) {
+				error_log($e->getMessage(), 0);
+				return $e->getMessage();
+			}
+
+		}
+
+	}
+
 	public function getContacts($ids)
 	{
 		$dbo = $this->getDbo();

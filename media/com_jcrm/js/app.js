@@ -537,6 +537,7 @@ contactApp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, sen
 	{
 		$scope.export= {type:0};
 		$scope.from = 1;
+		$scope.orgExport = 'direct';
 	}
 	$scope.guestList = {contacts:new Array(), groups:new Array(), items:new Array()};
 	if(sendTo.id)
@@ -609,7 +610,13 @@ contactApp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, sen
 			{
 				$scope.export.id = groupSelected;
 			}
-			var data = {contacts: $scope.guestList, export: $scope.export.type};
+
+			var data = {
+				contacts: $scope.guestList,
+				export: $scope.export.type,
+				orgexport: $scope.orgExport
+			};
+
 			$http.post('index.php?option=com_jcrm&task=contacts.export', data).
 				success(function(data)
                         {
