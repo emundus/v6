@@ -153,6 +153,7 @@ ul li {
 								</div>
 								<hr/>
 								<div class="contact-body">
+									<H4> <?php echo JText::_('COM_JCRM_FORM_LBL_CONTACT_PHONE'); ?> </H4>
 									<div class="row" ng-repeat="phone in contact.phone">
 										<div class="col-md-2 ct-type">
 											{{arrayText[phone.type]}}:
@@ -162,6 +163,7 @@ ul li {
 										</div>
 									</div>
 									<hr/>
+									<H4> <?php echo JText::_('COM_JCRM_FORM_LBL_CONTACT_EMAIL'); ?> </H4>
 									<div class="row" ng-repeat="email in contact.email">
 										<div class="col-md-2 ct-type">
 											{{arrayText[email.type]}}:
@@ -171,6 +173,7 @@ ul li {
 										</div>
 									</div>
 									<hr/>
+									<H4> <?php echo JText::_('CONTACT_ADDRESS_HEADER'); ?> </H4>
 									<div class="row" ng-repeat="address in contact.adr">
 										<div class="col-md-12">
 											<div class="row">
