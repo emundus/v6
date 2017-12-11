@@ -41,8 +41,6 @@ class JcrmViewContactform extends JViewLegacy {
             throw new Exception(implode("\n", $errors));
         }
 
-        
-
         $this->_prepareDocument();
 
         parent::display($tpl);

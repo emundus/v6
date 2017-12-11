@@ -36,7 +36,7 @@ class JcrmViewContact extends JViewLegacy {
         $this->params = $app->getParams('com_jcrm');
 
         if (!empty($this->item)) {
-            
+
 		$this->form		= $this->get('Form');
         }
 
@@ -46,7 +46,7 @@ class JcrmViewContact extends JViewLegacy {
             throw new Exception(implode("\n", $errors));
         }
 
-        
+
 
         if ($this->_layout == 'edit') {
 

@@ -465,6 +465,14 @@ ul li {
 											</div>
 										</div>
 									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<label for="orgMail"> <?php echo JText::_('CONTACT_SEND_ORG_GROUP_MAIL'); ?> </label>
+											<input type="radio" name="orgMail" value="members" ng-model="orgMail"> <?php echo JText::_('CONTACT_ORG_MEMBERS'); ?> </br>
+											<input type="radio" name="orgMail" value="direct" ng-model="orgMail"> <?php echo JText::_('CONTACT_ORG_DIRECT'); ?> </br>
+											<input type="radio" name="orgMail" value="both" ng-model="orgMail"> <?php echo JText::_('CONTACT_ORG_BOTH'); ?>
+										</div>
+									</div>
 									<div class = "row">
 										<div class="col-md-12">
 											<select class="form-control" ng-model="bodyId"  name = "subject" id="subject" ng-change="getBody()">
