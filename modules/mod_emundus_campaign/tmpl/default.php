@@ -1,8 +1,8 @@
 <?php
-defined('_JEXEC') or die;
+defined('_JEXEC') or die; 
 
 $lang = JFactory::getLanguage();
-$locallang = $lang->getTag();
+$locallang = $lang->getTag(); 
 if ($locallang == "fr-FR") {
     setlocale(LC_TIME, 'fr', 'fr_FR', 'french', 'fra', 'fra_FRA', 'fr_FR.ISO_8859-1', 'fra_FRA.ISO_8859-1', 'fr_FR.utf8', 'fr_FR.utf-8', 'fra_FRA.utf8', 'fra_FRA.utf-8');
 } else {
@@ -11,23 +11,23 @@ if ($locallang == "fr-FR") {
 
 ?>
 <form action="<?php echo JRoute::_(JUri::getInstance()->toString(), true, $params->get('')); ?>" method="post" id="search_program">
-    <?php if (isset($_POST['searchword']) && !empty($_POST['searchword'])) { ?>
+    <?php if(isset($_POST['searchword']) && !empty($_POST['searchword'])) { ?>
         <div class="rt-grid-12">
-            <p class="campaigntabs <?php echo $mod_em_campaign_class; ?>"><b><?php echo JText::_("RESULT_FOR")." : ".$_POST['searchword']; ?></b></p>
+            <p><b><?php echo JText::_("RESULT_FOR")." : ".$_POST['searchword']; ?></b></p>
         </div>
     <?php } ?>
     <div class="rt-grid-12" id="navfilter">
         <div class="rt-grid-5 navrowtabs">
             <ul id="tabslist" class="nav nav-tabs">
-                <?php if ($mod_em_campaign_param_tab) {?>
-                    <?php foreach ($mod_em_campaign_list_tab as $tab) {?>
-                        <li role="presentation" class="campaigntabs <?php echo $mod_em_campaign_class; ?>"><a data-toggle="tab" href="#<?php echo $tab ?>"><?php echo JText::_("MOD_EM_CAMPAIGN_LIST_".strtoupper($tab)); ?></a></li>
+                <?php if($mod_em_campaign_param_tab) {?>
+                    <?php foreach($mod_em_campaign_list_tab as $tab) {?>
+                        <li role="presentation"><a data-toggle="tab" href="#<?php echo $tab ?>"><?php echo JText::_("MOD_EM_CAMPAIGN_LIST_".strtoupper($tab)); ?></a></li>
                     <?php } ?>
                 <?php } ?>
             </ul>
         </div>
         <div class="rt-grid-4 navorder">
-            <p><?php if ($order == "start_date") {?>
+            <p><?php if ($order=="start_date") {?>
                 <?php if ($ordertime=="desc") {?><a href="index.php?order_date=start_date&order_time=asc"><i class="icon-chevron-down" aria-hidden="true"></i> <?php } else { ?><a href="index.php?order_date=start_date&order_time=desc"><i class="icon-chevron-up" aria-hidden="true"></i> <?php }?> <b><?php echo JText::_("CAMPAIGN_START_DATE");?></b></a> |  <a href="index.php?order_date=end_date&ordertime=<?php echo $ordertime ?>"><?php echo JText::_("LIST_DATE_END");?></a>
                     <?php } else { ?>
                     <a href="index.php?order_date=start_date&order_time=<?php echo $ordertime ?>"><?php echo JText::_("CAMPAIGN_START_DATE");?></a>  |  <?php if ($ordertime=="desc") {?><a href="index.php?order_date=end_date&order_time=asc"><i class="icon-chevron-down" aria-hidden="true"></i> <?php } else { ?><a href="index.php?order_date=end_date&ordertime=desc"><i class="icon-chevron-up" aria-hidden="true"></i> <?php }?> <b><?php echo JText::_("LIST_DATE_END");?></b></a>
@@ -39,7 +39,7 @@ if ($locallang == "fr-FR") {
                     <div class="input-group">
                         <input name="searchword" type="text" class="form-control" placeholder="<?php  echo JText::_("SEARCH")."..." ; ?>" <?php if (isset($_POST['searchword']) && !empty($_POST['searchword'])) { echo "value=".$_POST['searchword'];}; ?>>
                         <span class="input-group-btn">
-                            <button class="btn btn-default sch campaigntabs <?php echo $mod_em_campaign_class; ?>" type="submit"><?php  echo JText::_("SEARCH"); ?></button>
+                            <button class="btn btn-default sch" type="submit"><?php  echo JText::_("SEARCH"); ?></button>
                         </span>
                     </div><!-- /input-group -->
                 </div><!-- /.col-lg-6 -->
@@ -57,13 +57,13 @@ if ($locallang == "fr-FR") {
                 <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
                 <?php } else {
                     $oldmonth = '';
-
+                    
                     foreach($currentCampaign as $resul) {
-                        $dteStart = new DateTime($now);
+                        $dteStart = new DateTime($now); 
                         $dteEnd   = new DateTime($resul->end_date);
-                        $dteDiff  = $dteStart->diff($dteEnd);
-                        $j = $dteDiff->format("%a");
-                        $h = $dteDiff->format("%H");
+                        $dteDiff  = $dteStart->diff($dteEnd); 
+                        $j = $dteDiff->format("%a"); 
+                        $h = $dteDiff->format("%H"); 
 
                         if ($order == "start_date") {
                             $month = strftime("%B %Y", strtotime($resul->start_date));
@@ -112,10 +112,10 @@ if ($locallang == "fr-FR") {
                             </div>
                             <div class="below-content">
                             <?php if($resul->apply_online==1) {?>
-                                <a class="btn btn-success" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
                             <?php } else { ?>
-                                <a class="btn btn-success" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php } ?>
                             </div>
                         </div><!-- Close campaign-content -->
@@ -137,8 +137,8 @@ if ($locallang == "fr-FR") {
                     <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
                 <?php } else {
                     $oldmonth = '';
-
-                    foreach ($futurCampaign as $resul) {
+                    
+                    foreach($futurCampaign as $resul) {
                         if ($order == "start_date") {
                             $month = strftime("%B %Y", strtotime($resul->start_date));
                         } else {
@@ -185,11 +185,11 @@ if ($locallang == "fr-FR") {
                                 </div>
                             </div>
                             <div class="below-content">
-                            <?php if ($resul->apply_online==1) {?>
-                                <a class="btn btn-success" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+                            <?php if($resul->apply_online==1) {?>
+                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
                             <?php } else { ?>
-                                <a class="btn btn-success" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php } ?>
                             </div>
                         </div><!-- Close campaign-content -->
@@ -209,7 +209,7 @@ if ($locallang == "fr-FR") {
                 <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
                 <?php } else {
                     $oldmonth = '';
-
+                    
                     foreach($pastCampaign as $resul) {
                         if ($order == "start_date") {
                             $month = strftime("%B %Y", strtotime($resul->start_date));
@@ -257,11 +257,11 @@ if ($locallang == "fr-FR") {
                                 </div>
                             </div>
                             <div class="below-content">
-                            <?php if ($resul->apply_online == 1) {?>
-                                <a class="btn btn-success" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+                            <?php if($resul->apply_online==1) {?>
+                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
                             <?php } else { ?>
-                                <a class="btn btn-success" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php } ?>
                             </div>
                         </div><!-- Close campaign-content -->
@@ -281,7 +281,7 @@ if ($locallang == "fr-FR") {
                 <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
                 <?php } else {
                     $oldmonth = '';
-
+                    
                     foreach($allCampaign as $resul) {
                         if ($order == "start_date") {
                             $month = strftime("%B %Y", strtotime($resul->start_date));
@@ -330,10 +330,10 @@ if ($locallang == "fr-FR") {
                             </div>
                             <div class="below-content">
                             <?php if($resul->apply_online==1) {?>
-                                <a class="btn btn-success" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                                <a class="btn btn-primary" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$resul->code."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
                             <?php } else { ?>
-                                <a class="btn btn-success" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&id=".$resul->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php } ?>
                             </div>
                         </div><!-- Close campaign-content -->
@@ -346,9 +346,10 @@ if ($locallang == "fr-FR") {
             </div><!-- Close campaigns-list -->
         </div><!-- Close all tab -->
     </div><!-- Close tab-content -->
-
+    <?php /*?>
+    <div class="separator" style="height:100px"></div>
+    <?php */?>
 </form>
-
 <script type="text/javascript">
     jQuery(document).ready(function() {
         var tabsidshow = jQuery.cookie("tabactive");
@@ -363,13 +364,43 @@ if ($locallang == "fr-FR") {
             var id = jQuery(this).attr("href").substr(1);
             jQuery.cookie("tabactive", id);
             jQuery(this).tab('show');
+            //if (jQuery(window).width() >= 767) {
+            if (jQuery(window).width() > 768) {
+                jQuery('.position-me').each(function () {
+                    var h = jQuery(this).parent().parent().height()-23;
+                    jQuery(this).width(h);
+                });
+                /*jQuery('.campaingapply').each(function () {
+                    var h = jQuery(this).parent().height()-2;
+                    jQuery(this).height(h);
+                });
+                jQuery('.campaigntext').each(function () {
+                    var h = jQuery(this).parent().height()-2;
+                    jQuery(this).height(h);
+                });*/
+            };
         });
+        //if (jQuery(window).width() >= 767) {
         if (jQuery(window).width() > 768) {
             jQuery('.position-me').each(function () {
                 var h = jQuery(this).parent().parent().height()-23;
                 jQuery(this).width(h);
             });
+             /*jQuery('.campaingapply').each(function () {
+                var h = jQuery(this).parent().height()-2;
+                jQuery(this).height(h);
+            });
+            jQuery('.campaigntext').each(function () {
+                var h = jQuery(this).parent().height()-2;
+                jQuery(this).height(h);
+            });*/
         };
+        if (jQuery(window).width() == 768) {
+            jQuery('.position-me').each(function () {
+                var h = jQuery(this).parent().parent().height()-38;
+                jQuery(this).width(h);
+            });
+        }
     });
 </script>
 
