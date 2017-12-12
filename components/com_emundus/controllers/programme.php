@@ -26,7 +26,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     var $_db = null;
 
     function __construct($config = array()){
-        $this->_user = JFactory::getSession()->get('emundusUser');
+        $this->_user = JFactory::getUser();
         $this->_db = JFactory::getDBO();
         parent::__construct($config);
     }
@@ -46,10 +46,13 @@ class EmundusControllerProgramme extends JControllerLegacy {
 
         $model = $this->getModel('programme');   
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if( !EmundusHelperAccess::asCoordinatorAccessLevel($user->id) )
+        {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        }
+        else
+        {
             $programmes = $model->getProgrammes();
 
             if(count($programmes) > 0)
@@ -82,6 +85,32 @@ class EmundusControllerProgramme extends JControllerLegacy {
                 $tab = array('status' => 1, 'msg' => JText::_('PROGRAMMES_ADDED'), 'data' => $result);
             else
                 $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_PROGRAMMES'), 'data' => $result);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function editprogrammes(){ 
+        $user = JFactory::getUser();
+        $view = JRequest::getVar('view', null, 'GET', 'none',0);
+        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $data = JRequest::getVar('data', null, 'POST', 'none',0);
+
+        $model = $this->getModel('programme');   
+
+        if( !EmundusHelperAccess::asCoordinatorAccessLevel($user->id) )
+        {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        }
+        else
+        {
+            $result = $model->editProgrammes($data);
+
+            if($result === true)
+                $tab = array('status' => 1, 'msg' => JText::_('PROGRAMMES_EDITED'), 'data' => $result);
+            else
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_EDIT_PROGRAMMES'), 'data' => $result);
         }
         echo json_encode((object)$tab);
         exit;
