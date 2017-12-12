@@ -315,7 +315,7 @@ class JcrmModelSyncs extends JModelList
                     $query .= " or ";
                 }
             }
-            $query.= " LIMIT 0,100";
+            $query.= " LIMIT 0,500";
             $dbo->quote($query);
             $dbo->setQuery($query);
 
