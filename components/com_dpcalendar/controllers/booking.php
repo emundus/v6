@@ -67,9 +67,7 @@ class DPCalendarControllerBooking extends JControllerLegacy
 
 	public function invoice()
 	{
-		$model   = $this->getModel('Booking', 'DPCalendarModel', array(
-			'ignore_request' => false
-		));
+		$model   = $this->getModel('Booking', 'DPCalendarModel', array('ignore_request' => false));
 		$state   = $model->getState();
 		$booking = $model->getItem();
 
@@ -109,22 +107,18 @@ class DPCalendarControllerBooking extends JControllerLegacy
 		JLoader::import('joomla.plugin.helper');
 		JPluginHelper::importPlugin('dpcalendarpay');
 
-		$jResponse = $app->triggerEvent('onDPPaymentCallBack', array(
-			$this->input->getCmd('paymentmethod', 'none'),
-			$data
-		));
+		$app->triggerEvent(
+			'onDPPaymentCallBack',
+			array($this->input->getCmd('paymentmethod', 'none'), $data)
+		);
 
-		if (empty($jResponse)) {
-			return false;
+		$tmpl = '';
+		if ($t = \JFactory::getApplication()->input->get('tmpl')) {
+			$tmpl = '&tmpl=' . $t;
 		}
 
-		$status = false;
-
-		foreach ($jResponse as $response) {
-			$status = $status || $response;
-		}
-
-		echo $status ? 'OK' : 'FAILED';
+		$app = \JFactory::getApplication();
+		$app->redirect(\JRoute::_('index.php?option=com_dpcalendar&view=booking&layout=order&b_id=' . $data['b_id'] . $tmpl, false));
 	}
 
 	public function paycancel()
@@ -133,13 +127,13 @@ class DPCalendarControllerBooking extends JControllerLegacy
 		$this->setRedirect(
 			JRoute::_(
 				'index.php?option=com_dpcalendar&view=booking&layout=cancel&b_id=' . $this->input->getInt('b_id') . '&ptype=' .
-				$this->input->getInt('ptype')));
+				$this->input->getInt('ptype')
+			)
+		);
 	}
 
 	public function getModel($name = 'Booking', $prefix = 'DPCalendarModel', $config = array('ignore_request' => true))
 	{
-		$model = parent::getModel($name, $prefix, $config);
-
-		return $model;
+		return parent::getModel($name, $prefix, $config);
 	}
 }

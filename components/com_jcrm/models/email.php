@@ -81,7 +81,7 @@ class JcrmModelEmail extends JModelItem {
             }
         }
 
-        
+
 		if ( isset($this->_item->created_by) ) {
 			$this->_item->created_by_name = JFactory::getUser($this->_item->created_by)->name;
 		}
@@ -156,8 +156,7 @@ class JcrmModelEmail extends JModelItem {
     public function getCategoryName($id) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query
-                ->select('title')
+        $query->select('title')
                 ->from('#__categories')
                 ->where('id = ' . $id);
         $db->setQuery($query);
@@ -188,7 +187,7 @@ class JcrmModelEmail extends JModelItem {
         }
         catch(Exeption $e)
         {
-            return $e->getMessage();
+            JLog::add('Error in model/email at function getMailSubject, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
@@ -207,8 +206,7 @@ class JcrmModelEmail extends JModelItem {
         }
         catch(JDatabaseException $e)
         {
-            throw $e;
-            return $e->getMessage();
+            JLog::add('Error in model/email at function getMailContact, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
@@ -225,7 +223,7 @@ class JcrmModelEmail extends JModelItem {
         }
         catch(Exception $e)
         {
-            return $e->getMessage();
+            JLog::add('Error in model/email at function getMailBody, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
@@ -252,30 +250,75 @@ class JcrmModelEmail extends JModelItem {
         }
         catch(Exception $e)
         {
-            return $e->getMessage();
+            JLog::add('Error in model/email at function getEmailFrom, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
-    public function getEmailAdr($listId)
-    {
+    public function getEmailAdr($listId, $orgMail = 'direct') {
         $dbo = $this->getDbo();
 
-        try
-        {
+        if ($orgMail == 'members' || $orgMail == 'both') {
+
+            // First, let's get all of the institutions in our contact list
+            $query = 'SELECT id FROM #__jcrm_contacts
+                        WHERE type=1
+                        AND id IN ('.implode(', ', $listId).')';
+            $dbo->setquery($query);
+
+            try {
+
+                $orgIds = $dbo->loadColumn();
+
+            } catch(Exception $e) {
+                error_log($e->getMessage(), 0);
+                return $e->getMessage();
+            }
+
+            if (sizeof($orgIds) > 0) {
+
+                // Now that we have a list of all organizations, we can get all of the users attached to them.
+                $query = 'SELECT c.email, c.full_name, c.organisation, c.last_name, c.first_name,c.phone
+                            FROM #__jcrm_contacts as c
+                            LEFT JOIN #__jcrm_contact_orga as co ON c.id = co.contact_id
+                            WHERE co.org_id IN ('.implode(', ', $orgIds).") AND (c.email NOT LIKE '')";
+                $dbo->setQuery($query);
+
+                try {
+
+                    $orgContacts = $dbo->loadAssocList();
+
+                } catch(Exception $e) {
+                    error_log($e->getMessage(), 0);
+                    return $e->getMessage();
+                }
+
+            }
+
+        }
+
+        if ($orgMail == 'direct' || $orgMail == 'both') {
+
             $query = "select email, full_name, organisation, last_name, first_name, phone
-                      from #__jcrm_contacts
-                      where id in (".implode(', ', $listId).") and (email not like '')";
-            $dbo->setQuery($query); 
+                        from #__jcrm_contacts
+                        where id in (".implode(', ', $listId).") and (email not like '')";
+            $dbo->setQuery($query);
 
-            $res = $dbo->loadAssocList();
-            return $res;
+            try {
+
+                $contacts = $dbo->loadAssocList();
+
+            } catch(Exception $e) {
+                error_log($e->getMessage(), 0);
+                return $e->getMessage();
+            }
 
         }
-        catch(Exception $e)
-        {
-            error_log($e->getMessage(), 0);
-            return $e->getMessage();
-        }
+
+        if (isset($orgContacts))
+            $contacts = array_merge($contacts, $orgContacts);
+
+        return $contacts;
+
     }
 
     public function getContacts($list)
@@ -292,8 +335,7 @@ class JcrmModelEmail extends JModelItem {
         }
         catch(JException $e)
         {
-            throw $e;
-            return $e->getMessage();
+            JLog::add('Error in model/email at function getContacts, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 

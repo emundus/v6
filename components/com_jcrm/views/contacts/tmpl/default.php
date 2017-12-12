@@ -153,6 +153,7 @@ ul li {
 								</div>
 								<hr/>
 								<div class="contact-body">
+									<H4> <?php echo JText::_('COM_JCRM_FORM_LBL_CONTACT_PHONE'); ?> </H4>
 									<div class="row" ng-repeat="phone in contact.phone">
 										<div class="col-md-2 ct-type">
 											{{arrayText[phone.type]}}:
@@ -162,6 +163,7 @@ ul li {
 										</div>
 									</div>
 									<hr/>
+									<H4> <?php echo JText::_('COM_JCRM_FORM_LBL_CONTACT_EMAIL'); ?> </H4>
 									<div class="row" ng-repeat="email in contact.email">
 										<div class="col-md-2 ct-type">
 											{{arrayText[email.type]}}:
@@ -171,6 +173,7 @@ ul li {
 										</div>
 									</div>
 									<hr/>
+									<H4> <?php echo JText::_('CONTACT_ADDRESS_HEADER'); ?> </H4>
 									<div class="row" ng-repeat="address in contact.adr">
 										<div class="col-md-12">
 											<div class="row">
@@ -465,6 +468,14 @@ ul li {
 											</div>
 										</div>
 									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<label for="orgMail"> <?php echo JText::_('CONTACT_SEND_ORG_GROUP_MAIL'); ?> </label>
+											<input type="radio" name="orgMail" value="members" ng-model="orgMail"> <?php echo JText::_('CONTACT_ORG_MEMBERS'); ?> </br>
+											<input type="radio" name="orgMail" value="direct" ng-model="orgMail"> <?php echo JText::_('CONTACT_ORG_DIRECT'); ?> </br>
+											<input type="radio" name="orgMail" value="both" ng-model="orgMail"> <?php echo JText::_('CONTACT_ORG_BOTH'); ?>
+										</div>
+									</div>
 									<div class = "row">
 										<div class="col-md-12">
 											<select class="form-control" ng-model="bodyId"  name = "subject" id="subject" ng-change="getBody()">
@@ -512,13 +523,20 @@ ul li {
 											</div>
 										</div>
 									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<label for="orgExport"> <?php echo JText::_('CONTACT_ORG_EXPORT'); ?> </label>
+											<input type="radio" name="orgExport" value="members" ng-model="orgExport"> <?php echo JText::_('CONTACT_ORG_MEMBERS'); ?> </br>
+											<input type="radio" name="orgExport" value="direct" ng-model="orgExport"> <?php echo JText::_('CONTACT_ORG_DIRECT'); ?> </br>
+											<input type="radio" name="orgExport" value="both" ng-model="orgExport"> <?php echo JText::_('CONTACT_ORG_BOTH'); ?>
+										</div>
+									</div>
 									<div class = "row">
 										<div class="col-md-12">
 											<select class = "form-control" name = "contact-export-select" ng-model="export.type"  id = "contact-export-select">
 												<option value = "0"><?php echo JText::_('CONTACT_EXPORT_CSV')?></option>
 												<option value = "1"><?php echo JText::_('CONTACT_EXPORT_VCARD')?></option>
 											</select>
-
 										</div>
 									</div>
 								</div>

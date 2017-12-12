@@ -29,7 +29,7 @@ class EmundusHelperFiles
     /*
     ** @description Clear session and reinit values by default
     */
-    public  function clear()
+    public function clear()
     {
         $session = JFactory::getSession();
         $session->set('filt_params', array());
@@ -144,7 +144,7 @@ class EmundusHelperFiles
         //$tab_params = array();
         foreach ($filts_names as $key => $filt_name) {
 
-            if (!is_null($filts_values[$key]) && isset($filts_values[$key]) && empty($params[$filt_name])) {
+            if (isset($filts_values[$key]) && !is_null($filts_values[$key]) && empty($params[$filt_name])) {
                 if (in_array($filt_name, $filter_multi_list)) {
                     $params[$filt_name] = array();
                     $params[$filt_name] = explode('|', $filts_values[$key]);
@@ -197,7 +197,10 @@ class EmundusHelperFiles
             $filts_details['programme'] = $fd_with_param;
         } else {
             // ONLY FILES LINKED TO MY GROUP
-            $programme = count($this->code)>0?$this->code:null;
+            if (count($filts_details['programme']) > 0)
+                $programme = count($m_files->code)>0?$m_files->code:'';
+            else
+                $programme = count($m_files->code)>0?$m_files->code:null;
             //////////////////////////////////////////
             //var_dump($params['programme']);
             if (count(@$params['programme']) == 0 || @$params['programme'][0] == '%') {
@@ -320,7 +323,7 @@ class EmundusHelperFiles
         $params     = $session->get('filt_params');
         $filt_menu  = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
 
-        if ($filt_menu['programme'][0] == "%") {
+        if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%") {
             $where = '1=1';
         } elseif (count($filt_menu['programme'])>0 && isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
             $where = ' training IN ("'.implode('","', $filt_menu['programme']).'") ';
@@ -925,7 +928,7 @@ class EmundusHelperFiles
     */  //$filts_details, $filts_options, $tables
     public function createFilterBlock($params, $types, $tables){
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
-        $m_files = new EmundusModelFiles();
+        $m_files = new EmundusModelFiles;
         $h_files = new EmundusHelperFiles;
 
         /*$document = JFactory::getDocument();

@@ -742,7 +742,7 @@ class EmundusModelFiles extends JModelLegacy
             $query['q'] .= ' AND jos_emundus_campaign_candidature.status IN ("' . implode('","', $filt_menu['status']) . '") ';
         }
 
-        if ($filt_menu['programme'][0] == "%"){
+        if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%"){
             $sql_code = '1=1';
         } elseif(count($filt_menu['programme'])>0 && isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
             $sql_code = ' sp.code IN ("'.implode('","', $filt_menu['programme']).'") ';

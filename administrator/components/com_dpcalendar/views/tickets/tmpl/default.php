@@ -57,6 +57,12 @@ $canOrder	= $user->authorise('core.edit.state', 'com_dpcalendar');
                     <th width="10%" class="center">
 						<?php echo JText::_('COM_DPCALENDAR_UID'); ?>
                     </th>
+                    <th width="10%" class="center">
+						<?php echo JText::_('COM_DPCALENDAR_BOOKING_FIELD_PRICE_LABEL'); ?>
+                    </th>
+                    <th width="10%" class="center">
+						<?php echo JText::_('COM_DPCALENDAR_FIELD_EARLYBIRD_TYPE_LABEL'); ?>
+                    </th>
 					<th width="10%" class="nowrap center">
 						<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 					</th>
@@ -102,6 +108,14 @@ $canOrder	= $user->authorise('core.edit.state', 'com_dpcalendar');
 					</td>
                     <td class="center">
 						<?php echo $item->uid;?>
+                    </td>
+                    <td class="center">
+						<?php echo $item->price && $item->price !== '0.00' ? \DPCalendar\Helper\DPCalendarHelper::renderPrice($item->price) : '';?>
+                    </td>
+                    <td class="center">
+						<?php
+                        $prices = json_decode($item->event_prices);
+                        echo $prices && key_exists($item->type, $prices->label) ? $prices->label[$item->type] : ''?>
                     </td>
 					<td class="center hidden-phone">
 						<?php echo \DPCalendar\Helper\Booking::getStatusLabel($item);?>

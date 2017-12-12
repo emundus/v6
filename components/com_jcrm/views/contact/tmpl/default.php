@@ -66,9 +66,9 @@ if (!$canEdit && JFactory::getUser()->authorise('core.edit.own', 'com_jcrm' . $t
     <?php if($canEdit && $this->item->checked_out == 0): ?>
 		<button type="button" onclick="window.location.href='<?php echo JRoute::_('index.php?option=com_jcrm&task=contact.edit&id='.$this->item->id); ?>';"><?php echo JText::_("COM_JCRM_EDIT_ITEM"); ?></button>
 	<?php endif; ?>
-								<?php if(JFactory::getUser()->authorise('core.delete','com_jcrm.contact.'.$this->item->id)):?>
-									<button type="button" onclick="window.location.href='<?php echo JRoute::_('index.php?option=com_jcrm&task=contact.remove&id=' . $this->item->id, false, 2); ?>';"><?php echo JText::_("COM_JCRM_DELETE_ITEM"); ?></button>
-								<?php endif; ?>
+	<?php if(JFactory::getUser()->authorise('core.delete','com_jcrm.contact.'.$this->item->id)):?>
+		<button type="button" onclick="window.location.href='<?php echo JRoute::_('index.php?option=com_jcrm&task=contact.remove&id=' . $this->item->id, false, 2); ?>';"><?php echo JText::_("COM_JCRM_DELETE_ITEM"); ?></button>
+	<?php endif; ?>
     <?php
 else:
     echo JText::_('COM_JCRM_ITEM_NOT_LOADED');

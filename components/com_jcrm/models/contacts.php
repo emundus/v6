@@ -144,25 +144,16 @@ class JcrmModelContacts extends JModelList
         $query = $db->getQuery(true);
 
         // Select the required fields from the table.
-        $query
-            ->select(
-                $this->getState(
-                    'list.select', 'DISTINCT a.*'
-                )
-            );
-
+        $query->select($this->getState('list.select', 'DISTINCT a.*'));
         $query->from('`#__jcrm_contacts` AS a');
 
-        
-    // Join over the users for the checked out user.
-    $query->select('uc.name AS editor');
-    $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
-    
+        // Join over the users for the checked out user.
+        $query->select('uc.name AS editor');
+        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+
 		// Join over the created by field 'created_by'
 		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
-
-	    
-$query->where('a.state = 1');
+        $query->where('a.state = 1');
 
         // Filter by search in title
         $search = $this->getState('filter.search');
@@ -171,11 +162,11 @@ $query->where('a.state = 1');
                 $query->where('a.id = ' . (int)substr($search, 3));
             } else {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
-                
+
             }
         }
 
-        
+
 
         // Add the list ordering clause.
         $orderCol = $this->state->get('list.ordering');
@@ -190,10 +181,9 @@ $query->where('a.state = 1');
     public function getItems()
     {
         $items = parent::getItems();
-        
         return $items;
     }
-    
+
     /**
      * Overrides the default function to check Date fields format, identified by
      * "_dateformat" suffix, and erases the field if it's not correct.
@@ -221,16 +211,16 @@ $query->where('a.state = 1');
     }
 
     /**
-     * Checks if a given date is valid and in an specified format (YYYY-MM-DD) 
-     * 
+     * Checks if a given date is valid and in an specified format (YYYY-MM-DD)
+     *
      * @param string Contains the date to be checked
-     * 
+     *
      */
     private function isValidDate($date)
     {
         return preg_match("/^(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])$/", $date) && date_create($date);
     }
-    
+
     /**
      * Get the filter form
      *
@@ -338,8 +328,7 @@ $query->where('a.state = 1');
 		}
 		catch(JException $e)
 		{
-			throw $e;
-			return $e->getMessage();
+			JLog::add('Error in model/contacts at function getAllContacts, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -359,8 +348,7 @@ $query->where('a.state = 1');
 		}
 		catch(JDatabaseException $e)
 		{
-			throw $e;
-			return $e->getMessage();
+			JLog::add('Error in model/contacts at function getOrgas, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -381,8 +369,7 @@ $query->where('a.state = 1');
 		}
 		catch(JException $e)
 		{
-			throw $e;
-			return $e->getMessage();
+			JLog::add('Error in model/contacts at function getGroups, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -395,14 +382,11 @@ $query->where('a.state = 1');
     public function getNbContacts($id, $type)
     {
         $dbo = $this->getDbo();
-        if(!is_null($id))
-        {
+        if (!is_null($id))
             $query = "select count(*) from #__jcrm_contacts as c join #__jcrm_group_contact as grc on grc.contact_id = c.id where grc.group_id = $id and type = $type";
-        }
         else
-        {
             $query = "select count(*) from #__jcrm_contacts where type = $type";
-        }
+
         try
         {
             $dbo->setQuery($query);
@@ -411,8 +395,7 @@ $query->where('a.state = 1');
         }
         catch(JException $e)
         {
-            throw $e;
-            return $e->getMessage();
+            JLog::add('Error in model/contacts at function getNbContacts, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 

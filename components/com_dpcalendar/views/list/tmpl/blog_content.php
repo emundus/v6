@@ -41,8 +41,8 @@ foreach ($this->items as $event) {
 	$item = $root->addChild(new Container($event->id));
 
 	// The heading of the event
-	$h = $item->addChild(new Heading('event-header', 2, array('dp-event-header')));
-	$h->setProtectedClass('dp-event-header');
+	$h = $item->addChild(new Heading('event-header', 2, array('dpcalendar-heading')));
+	$h->setProtectedClass('dpcalendar-heading');
 
 	// When we are shown in a modal dialog, make the title clickable
 	$url  = str_replace(

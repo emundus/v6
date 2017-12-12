@@ -12,4 +12,9 @@ JLoader::import('components.com_dpcalendar.helpers.dpcalendar', JPATH_ADMINISTRA
 class PlgDPCalendarIcal extends \DPCalendar\Plugin\SyncPlugin
 {
 	protected $identifier = 'i';
+
+	protected function getIcalUrl($calendar)
+	{
+		return str_replace('webcal://', 'https://', $calendar->params->get('uri'));
+	}
 }

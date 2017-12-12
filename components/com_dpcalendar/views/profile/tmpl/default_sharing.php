@@ -21,7 +21,7 @@ if (!$this->params->get('profile_show_sharing', '1'))
 
 // Load the needed JS libraries
 DPCalendarHelper::loadLibrary(array('jquery' => true, 'chosen' => true, 'dpcalendar' => true));
-JHtml::_('script', 'com_dpcalendar/dpcalendar/views/profile/default.js', false, true);
+JHtml::_('script', 'com_dpcalendar/dpcalendar/views/profile/default.js', ['relative' => true], ['defer' => true]);
 
 // Text when select box is empty
 JText::script('COM_DPCALENDAR_VIEW_DAVCALENDAR_NONE_SELECTED_LABEL');

@@ -26,10 +26,10 @@ $doc->addScript(JUri::base() . '/components/com_jcrm/assets/js/form.js');
     getScript('//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js', function() {
         jQuery(document).ready(function() {
             jQuery('#form-contact').submit(function(event) {
-                
+
             });
 
-            
+
         });
     });
 
@@ -52,7 +52,7 @@ $doc->addScript(JUri::base() . '/components/com_jcrm/assets/js/form.js');
 				<?php if(empty($this->item->created_by)){ ?>
 					<input type="hidden" name="jform[created_by]" value="<?php echo JFactory::getUser()->id; ?>" />
 
-				<?php } 
+				<?php }
 				else{ ?>
 					<input type="hidden" name="jform[created_by]" value="<?php echo $this->item->created_by; ?>" />
 
@@ -88,10 +88,10 @@ $doc->addScript(JUri::base() . '/components/com_jcrm/assets/js/form.js');
                        jQuery('form-contact').append(input);
                     });
                 </script>
-             <?php endif; ?>        
+             <?php endif; ?>
         <div class="button-div">
             <button type="submit" class="validate"><span><?php echo JText::_('JSUBMIT'); ?></span></button>
-            <a href="<?php echo JRoute::_('index.php?option=com_jcrm&task=contactform.cancel'); ?>" title="<?php echo JText::_('JCANCEL'); ?>"><?php echo JText::_('JCANCEL'); ?></a>            
+            <a href="<?php echo JRoute::_('index.php?option=com_jcrm&task=contactform.cancel'); ?>" title="<?php echo JText::_('JCANCEL'); ?>"><?php echo JText::_('JCANCEL'); ?></a>
         </div>
 
         <input type="hidden" name="option" value="com_jcrm" />

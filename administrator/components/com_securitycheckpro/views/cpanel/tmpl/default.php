@@ -103,21 +103,20 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 			jQuery("#piechart").bind("plothover", pieHover);
 		}
 		
+		<?php 
+			// Actualizamos la variable de estado para no mostrar más el popup
+			$mainframe = JFactory::getApplication();						
+		?>
+		
 		// Mostramos el aviso de actualizaciones si hay que actualizar
 		dias_ultima_actualizacion = '<?php echo $this->geoip_database_update; ?>';
-		update_run = '<?php 
-			$mainframe = JFactory::getApplication();
-			$resultado = $mainframe->getUserState('update_run', false);
-			echo $resultado;
+		testigo_update = '<?php 
+			$existe = JFile::exists(JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR .'components' . DIRECTORY_SEPARATOR .'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'scans' . DIRECTORY_SEPARATOR . 'maxmind_update.php');
+			echo $existe;
 		?>';
-		if (dias_ultima_actualizacion > 30 && update_run == false ) {
+		if (dias_ultima_actualizacion > 30 && testigo_update == false ) {
 			jQuery("#div_update_geoblock_database").modal('show');		
-			jQuery("#div_refresh").show();
-			<?php 
-				// Actualizamos la variable de estado para no mostrar más el popup
-				$mainframe = JFactory::getApplication();
-				$resultado = $mainframe->getUserState('update_run', false);				
-			?>
+			jQuery("#div_refresh").show();		
 		}
 		
 		//Tooltip subscripcion

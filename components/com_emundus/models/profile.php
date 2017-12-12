@@ -303,7 +303,7 @@ class EmundusModelProfile extends JModelList
 	* @return  	string The greeting to be displayed to the user
 	*/
 	function getProfileIDByCourse($code = array()) {
-		if (count($code)>0) {
+		if (!empty($code)>0) {
 			$query = 'SELECT DISTINCT(esc.profile_id)
 						FROM  #__emundus_setup_campaigns AS esc
 						WHERE esc.training IN ("'.implode('","', $code).'")';

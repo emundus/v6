@@ -334,7 +334,7 @@ contactApp.directive('contactTinyMce', ['$timeout',
                     elements: "mail-body",
                     setup : function(edd)
                     {
-                       edd.onClick.add(function(ed) 
+                       edd.onClick.add(function(ed)
                        {
                            var newValue = tinyMCE.activeEditor.getContent();
                            if (!$scope.$$phase)
@@ -348,7 +348,7 @@ contactApp.directive('contactTinyMce', ['$timeout',
                         )
                     },
                     theme : "simple" });*/
-				 
+
                ngModel.$render = function ()
                {
                    //tinyMCE.activeEditor.setContent(ngModel.$viewValue);
@@ -474,14 +474,14 @@ contactApp.controller('ModalDemoCtrl', function ($scope, $modal, $log, $http)
 	$scope.getMailBody = function(id)
 	{
 		$http.get(''+id).success(function(data)
-		                      {
-			                      $scope.mailBody = data;
-		                      })
+		{
+			$scope.mailBody = data;
+		})
 	}
 	$scope.open = function (size, contact, groupSelected, from)
 	{
 		$scope.sendTo = {};
-		if(contact.id)
+		if (contact.id)
 		{
 			$scope.sendTo = contact;
 		}
@@ -531,11 +531,13 @@ contactApp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, sen
 		$scope.bodyId = -1;
 		$scope.subject = '';
 		$scope.from = 0;
+		$scope.orgMail = 'direct';
 	}
 	else if (from == 'vcard')
 	{
 		$scope.export= {type:0};
 		$scope.from = 1;
+		$scope.orgExport = 'direct';
 	}
 	$scope.guestList = {contacts:new Array(), groups:new Array(), items:new Array()};
 	if(sendTo.id)
@@ -564,7 +566,15 @@ contactApp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, sen
 			if(canSend)
 			{
 				$scope.showDimeModal = true;
-				var datas = {contacts:$scope.guestList, body: $scope.body, subject:$scope.subject, id: $scope.bodyId};
+
+				var datas = {
+					contacts:$scope.guestList,
+					body: $scope.body,
+					subject:$scope.subject,
+					id: $scope.bodyId,
+					orgmail: $scope.orgMail
+				};
+
 				$http.post('index.php?option=com_jcrm&task=email.sendmail', datas)
 					.success(function(data)
 	                 {
@@ -600,7 +610,13 @@ contactApp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, sen
 			{
 				$scope.export.id = groupSelected;
 			}
-			var data = {contacts: $scope.guestList, export: $scope.export.type};
+
+			var data = {
+				contacts: $scope.guestList,
+				export: $scope.export.type,
+				orgexport: $scope.orgExport
+			};
+
 			$http.post('index.php?option=com_jcrm&task=contacts.export', data).
 				success(function(data)
                         {

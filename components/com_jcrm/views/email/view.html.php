@@ -31,21 +31,20 @@ class JcrmViewEmail extends JViewLegacy {
         $user = JFactory::getUser();
 
         $this->state = $this->get('State');
-        
+
 
         $this->params = $app->getParams('com_jcrm');
 
         if (!empty($this->item)) {
-            
-        }
 
+        }
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
 
-        
+
 
         if ($this->_layout == 'edit') {
 

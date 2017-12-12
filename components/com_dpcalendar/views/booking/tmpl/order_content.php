@@ -32,8 +32,8 @@ $root->addChild(new Element('message'))->setContent(DPCalendarHelper::renderEven
 $root->addChild(new Element('plugin'))->setContent(\DPCalendar\Helper\Booking::getPaymentStatementFromPlugin($booking, $this->params));
 
 // The booking details heading
-$h = $root->addChild(new Heading('tickets-heading', 2, array('dp-event-header')));
-$h->setProtectedClass('dp-event-header');
+$h = $root->addChild(new Heading('tickets-heading', 2, array('dpcalendar-heading')));
+$h->setProtectedClass('dpcalendar-heading');
 $h->setContent(JText::_('COM_DPCALENDAR_INVOICE_TICKET_DETAILS'));
 
 // Add the tickets list

@@ -15,7 +15,7 @@ JFactory::getDocument()->setMimeEncoding('application/json');
 $data = array();
 foreach ($this->items as $event) {
 	// The root container
-	$root = new Container('dp-event-desc-' . $event->id, array(), array('ccl-prefix' => 'dp-event-'));
+	$root = new Container('dp-event-desc-' . $event->id, array(), array('ccl-prefix' => 'dp-'));
 
 	// Get the tooltip
 	DPCalendarHelper::renderLayout('event.tooltip', array('root' => $root, 'event' => $event, 'params' => $this->params));
@@ -44,6 +44,21 @@ foreach ($this->items as $event) {
 	);
 }
 
+$messages = JFactory::getApplication()->getMessageQueue();
+
+// Build the sorted messages list
+$lists = array();
+if (is_array($messages) && count($messages)) {
+	foreach ($messages as $message) {
+		if (isset($message['type']) && isset($message['message'])) {
+			$lists[$message['type']][] = $message['message'];
+		}
+	}
+}
+
+// Echo the data
 ob_clean();
-echo json_encode($data);
+echo json_encode(array('data' => $data, 'messages' => $lists));
+
+// Close the request
 JFactory::getApplication()->close();

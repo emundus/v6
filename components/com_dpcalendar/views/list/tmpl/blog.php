@@ -12,7 +12,7 @@ use CCL\Content\Element\Basic\Container;
 DPCalendarHelper::loadLibrary(array('jquery' => true));
 
 // Load the event stylesheet
-JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/views/list/blog.css', array(), true);
+JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/views/list/blog.min.css', ['relative' => true]);
 
 // User timezone
 DPCalendarHelper::renderLayout('user.timezone', array('root' => $this->root));

@@ -1,21 +1,20 @@
-.dp-module-map-root .dp-module-map-actions > * {
-	margin-bottom: 5px
+.dp-module-map-root form > div {
+	margin-bottom: 5px;
 }
 
-.dp-module-map-modal {
-	display: none;
-	width: 700px;
-	height: 500px;
+.dp-module-map-form-container {
+	display: flex;
+	flex-wrap: wrap;
 }
 
-.dp-module-map-modal iframe {
-	width: 99.6%;
-	height: 95%;
-	border: none;
+.dp-module-map-root [name=search], .dp-module-map-root [name=location] {
+	flex-grow: 1;
 }
 
-@media screen and (min-width: 767px) {
-	.dp-module-map-actions .dp-module-map-location {
-		max-width: 30%;
-	}
+.dp-module-map-root [name=start-date], .dp-module-map-root [name=end-date] {
+	width: 95px;
+}
+
+.dp-module-map-root [name=radius], .dp-module-map-root [name=length-type] {
+	width: 111px;
 }

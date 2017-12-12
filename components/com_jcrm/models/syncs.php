@@ -28,7 +28,6 @@ class JcrmModelSyncs extends JModelList
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                
             );
         }
         parent::__construct($config);
@@ -141,10 +140,10 @@ class JcrmModelSyncs extends JModelList
     public function getItems()
     {
         $items = parent::getItems();
-        
+
         return $items;
     }
-    
+
     /**
      * Overrides the default function to check Date fields format, identified by
      * "_dateformat" suffix, and erases the field if it's not correct.
@@ -172,16 +171,16 @@ class JcrmModelSyncs extends JModelList
     }
 
     /**
-     * Checks if a given date is valid and in an specified format (YYYY-MM-DD) 
-     * 
+     * Checks if a given date is valid and in an specified format (YYYY-MM-DD)
+     *
      * @param string Contains the date to be checked
-     * 
+     *
      */
     private function isValidDate($date)
     {
         return preg_match("/^(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])$/", $date) && date_create($date);
     }
-    
+
     /**
      * Get the filter form
      *
@@ -288,7 +287,7 @@ class JcrmModelSyncs extends JModelList
         }
         catch(Exception $e)
         {
-            throw $e;
+            JLog::add('Error in model/syncs at function getNbItems, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
@@ -324,7 +323,7 @@ class JcrmModelSyncs extends JModelList
         }
         catch(Exception $e)
         {
-            throw $e;
+            JLog::add('Error in model/syncs at function getData, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
@@ -336,16 +335,13 @@ class JcrmModelSyncs extends JModelList
     public function findContact($email)
     {
         $dbo = $this->getDbo();
-        $query = "select * from #__jcrm_contacts where `type` = 0 and `jcard` like '%\"".$email."\"%'";
-        $dbo->quote($query);
-        try
-        {
+        $query = "select * from #__jcrm_contacts where `type` = 0 and `jcard` like ".$dbo->Quote('%'.$email.'%');
+
+        try {
             $dbo->setQuery($query);
             return $dbo->loadObjectList();
-        }
-        catch(Exception $e)
-        {
-            throw $e;
+        } catch(Exception $e) {
+            JLog::add('Error in model/syncs at function findContact, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
@@ -365,7 +361,7 @@ class JcrmModelSyncs extends JModelList
         }
         catch(Exception $e)
         {
-            throw $e;
+            JLog::add('Error in model/syncs at function getOrga, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
@@ -381,12 +377,12 @@ class JcrmModelSyncs extends JModelList
         $query = "select $select from $tableName where id = $id";
         try
         {
-            $dbo->setQuery($query); 
+            $dbo->setQuery($query);
             return $dbo->loadAssoc();
         }
         catch(Exception $e)
         {
-            throw $e;
+            JLog::add('Error in model/syncs at function getReferent, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
@@ -410,7 +406,7 @@ class JcrmModelSyncs extends JModelList
         }
         catch(Exception $e)
         {
-            throw $e;
+            JLog::add('Error in model/syncs at function syncRefOrga, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
@@ -434,7 +430,7 @@ class JcrmModelSyncs extends JModelList
         }
         catch(Exception $e)
         {
-            throw $e;
+            JLog::add('Error in model/syncs at function syncRef, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
@@ -454,7 +450,7 @@ class JcrmModelSyncs extends JModelList
         }
         catch(Exception $e)
         {
-            throw $e;
+            JLog::add('Error in model/syncs at function getSiblingOrgs, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
@@ -479,7 +475,7 @@ class JcrmModelSyncs extends JModelList
         }
         catch(Exception $e)
         {
-            throw $e;
+            JLog::add('Error in model/syncs at function ignore, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 

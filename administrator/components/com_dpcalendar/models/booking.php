@@ -253,7 +253,7 @@ class DPCalendarModelBooking extends JModelAdmin
 			$body    = trim(
 				DPCalendarHelper::renderEvents(
 					$events,
-					$this->getMailStringFromParams('bookingsys_new_booking_mail', 'COM_DPCALENDAR_NOTIFICATION_EVENT_BOOK_USER_BODY', $params),
+					DPCalendarHelper::getStringFromParams('bookingsys_new_booking_mail', 'COM_DPCALENDAR_NOTIFICATION_EVENT_BOOK_USER_BODY', $params),
 					null,
 					$additionalVars
 				)
@@ -305,7 +305,7 @@ class DPCalendarModelBooking extends JModelAdmin
 			);
 			$body    = DPCalendarHelper::renderEvents(
 				array(),
-				$this->getMailStringFromParams('bookingsys_paid_booking_mail', 'COM_DPCALENDAR_NOTIFICATION_EVENT_BOOK_USER_PAYED_BODY', $params),
+				DPCalendarHelper::getStringFromParams('bookingsys_paid_booking_mail', 'COM_DPCALENDAR_NOTIFICATION_EVENT_BOOK_USER_PAYED_BODY', $params),
 				null,
 				$additionalVars
 			);
@@ -355,17 +355,6 @@ class DPCalendarModelBooking extends JModelAdmin
 		}
 
 		return $success;
-	}
-
-	private function getMailStringFromParams($key, $default, $params)
-	{
-		$text = $params->get($key, $default);
-
-		if (JFactory::getLanguage()->hasKey(strip_tags($text))) {
-			return JText::_(strip_tags($text));
-		}
-
-		return $text;
 	}
 
 	private function getAmountTickets($event, $data, $amount, $index)

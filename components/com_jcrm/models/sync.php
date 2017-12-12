@@ -81,7 +81,7 @@ class JcrmModelSync extends JModelItem {
             }
         }
 
-        
+
 		if ( isset($this->_item->created_by) ) {
 			$this->_item->created_by_name = JFactory::getUser($this->_item->created_by)->name;
 		}

@@ -561,7 +561,7 @@ public function protect()
 
 			}
 			$rules .= PHP_EOL . "RewriteRule ^.*administrator/? /" . $this->getValue("hide_backend_url_redirection") ." [R,L]";
-			$rules .= PHP_EOL . "## End Securitycheck Pro Hide Backend Url";
+			$rules .= PHP_EOL . "## End Securitycheck Pro Hide Backend Url" . PHP_EOL;
 		
 	}
 	
@@ -766,7 +766,7 @@ function generate_rules() {
 		$rules .= "\t\trewrite ^(.*/)?administrator /not_found redirect;" . PHP_EOL;
 		$rules .= "\t\trewrite ^/administrator(.*)$ /not_found redirect;" . PHP_EOL;
 		$rules .= "\t}" . PHP_EOL;
-		$rules .= "# End Securitycheck Pro Hide Backend Url";
+		$rules .= "# End Securitycheck Pro Hide Backend Url" . PHP_EOL;
 	}
 		
 	return $rules;

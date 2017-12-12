@@ -25,8 +25,8 @@ class JcrmControllerContacts extends JcrmController
 	 */
 	public function &getModel($name = 'Contacts', $prefix = 'JcrmModel', $config = array())
 	{
-		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
-		return $model;
+		$m_contacts = parent::getModel($name, $prefix, array('ignore_request' => true));
+		return $m_contacts;
 	}
 
 	/**
@@ -35,7 +35,7 @@ class JcrmControllerContacts extends JcrmController
 	public function getcontacts()
 	{
 		$jinput = JFactory::getApplication()->input;
-		$model = $this->getModel();
+		$m_contacts = $this->getModel();
 		$id = $jinput->getInt('group_id', null);
 		$index = $jinput->getInt('index', 0);
 		$q = $jinput->getString('q', "");
@@ -51,8 +51,8 @@ class JcrmControllerContacts extends JcrmController
 		}
 
 		$res = new stdClass();
-		$res->contacts = $model->getAllContacts($id, $index, $q, $type);
-		$res->nbContacts = $model->getNbContacts($id, $type);
+		$res->contacts = $m_contacts->getAllContacts($id, $index, $q, $type);
+		$res->nbContacts = $m_contacts->getNbContacts($id, $type);
 		echo  json_encode($res);
 		exit();
 	}
@@ -64,8 +64,8 @@ class JcrmControllerContacts extends JcrmController
 	{
 		$jinput = JFactory::getApplication()->input;
 		$org = $jinput->getString('org', "");
-		$model = $this->getModel();
-		$orgs = $model->getOrgas($org);
+		$m_contacts = $this->getModel();
+		$orgs = $m_contacts->getOrgas($org);
 		if(!is_string($orgs))
 		{
 			echo json_encode($orgs);
@@ -83,8 +83,8 @@ class JcrmControllerContacts extends JcrmController
 	 */
 	public function getgroups()
 	{
-		$model = $this->getModel();
-		$orgs = $model->getGroups();
+		$m_contacts = $this->getModel();
+		$orgs = $m_contacts->getGroups();
 		if(!is_string($orgs))
 		{
 			if(is_null($orgs))
@@ -105,27 +105,35 @@ class JcrmControllerContacts extends JcrmController
 	 */
 	public function export()
 	{
-		$request_body = (object) json_decode(file_get_contents('php://input'));
-		//list == 0 id represent just one user, list == 1 id represent the whole list or a group
+		$request_body 	= (object) json_decode(file_get_contents('php://input'));
+		$groups 		= $request_body->contacts->groups;
+		$contacts 		= $request_body->contacts->contacts;
+		$orgExport 		= $request_body->orgexport;
 
-		$groups = $request_body->contacts->groups;
-		$contacts = $request_body->contacts->contacts;
-		$model = new JcrmModelContact();
-		if(!empty($groups))
-			$groupList = $model->getContactIdByGroup($groups);
+		$m_contact = new JcrmModelContact();
+
+		if ($orgExport != 'direct')
+			$orgList = $m_contact->getContactIdByOrg($contacts);
+		else
+			$orgList = array();
+
+		$contacts = array_unique(array_merge($contacts, $orgList));
+
+		if (!empty($groups))
+			$groupList = $m_contact->getContactIdByGroup($groups);
 		else
 			$groupList = array();
+
 		$contactIds = array_unique(array_merge($contacts, $groupList));
-		$contacts = $model->getContacts($contactIds);
+
+		$contacts = $m_contact->getContacts($contactIds);
+
 		//type == 0 => csv
-		if($request_body->export == 0)
-		{
+		if ($request_body->export == 0)
 			$path = JcrmFrontendHelper::buildCSV($contacts);
-		}
 		else
-		{
 			$path = JcrmFrontendHelper::buildVcard($contacts);
-		}
+
 		$url = JURI::base();
 		$url .= 'index.php?option=com_jcrm&task=contacts.download&file='.$path;
 

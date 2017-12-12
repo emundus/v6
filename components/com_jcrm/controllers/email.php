@@ -34,16 +34,16 @@ class JcrmControllerEmail extends JcrmController {
         $app->setUserState('com_jcrm.edit.email.id', $editId);
 
         // Get the model.
-        $model = $this->getModel('Email', 'JcrmModel');
+        $m_email = $this->getModel('Email', 'JcrmModel');
 
         // Check out the item
         if ($editId) {
-            $model->checkout($editId);
+            $m_email->checkout($editId);
         }
 
         // Check in the previous user.
         if ($previousId && $previousId !== $editId) {
-            $model->checkin($previousId);
+            $m_email->checkin($previousId);
         }
 
         // Redirect to the edit screen.
@@ -63,18 +63,18 @@ class JcrmControllerEmail extends JcrmController {
         //Checking if the user can remove object
         $user = JFactory::getUser();
         if ($user->authorise('core.edit', 'com_jcrm') || $user->authorise('core.edit.state', 'com_jcrm')) {
-            $model = $this->getModel('Email', 'JcrmModel');
+            $m_email = $this->getModel('Email', 'JcrmModel');
 
             // Get the user data.
             $id = $app->input->getInt('id');
             $state = $app->input->getInt('state');
 
             // Attempt to save the data.
-            $return = $model->publish($id, $state);
+            $return = $m_email->publish($id, $state);
 
             // Check for errors.
             if ($return === false) {
-                $this->setMessage(JText::sprintf('Save failed: %s', $model->getError()), 'warning');
+                $this->setMessage(JText::sprintf('Save failed: %s', $m_email->getError()), 'warning');
             }
 
             // Clear the profile id from the session.
@@ -104,22 +104,22 @@ class JcrmControllerEmail extends JcrmController {
         //Checking if the user can remove object
         $user = JFactory::getUser();
         if ($user->authorise($user->authorise('core.delete', 'com_jcrm'))) {
-            $model = $this->getModel('Email', 'JcrmModel');
+            $m_email = $this->getModel('Email', 'JcrmModel');
 
             // Get the user data.
             $id = $app->input->getInt('id', 0);
 
             // Attempt to save the data.
-            $return = $model->delete($id);
+            $return = $m_email->delete($id);
 
 
             // Check for errors.
             if ($return === false) {
-                $this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
+                $this->setMessage(JText::sprintf('Delete failed', $m_email->getError()), 'warning');
             } else {
                 // Check in the profile.
                 if ($return) {
-                    $model->checkin($return);
+                    $m_email->checkin($return);
                 }
 
                 // Clear the profile id from the session.
@@ -147,8 +147,8 @@ class JcrmControllerEmail extends JcrmController {
     {
         $jinput = JFactory::getApplication()->input;
         $contact = $jinput->getString('contact', "");
-        $model = new JcrmModelEmail();
-        $contactList = $model->getMailContact($contact);
+        $m_email = new JcrmModelEmail();
+        $contactList = $m_email->getMailContact($contact);
         if(!is_string($contactList))
         {
             echo json_encode($contactList);
@@ -165,41 +165,40 @@ class JcrmControllerEmail extends JcrmController {
      * @throws Exception
      * @throws JException
      */
-    public function sendmail()
-    {
-        $request_body = (object) json_decode(file_get_contents('php://input'));
-        $model = new JcrmModelEmail();
-        $groups = $request_body->contacts->groups;
-        $bodyId = intval($request_body->id);
-        $contacts = $request_body->contacts->contacts;
-        $subject = $request_body->subject;
-        $body = $request_body->body;
-        if(!empty($groups))
-            $groupList = $model->getContacts($groups);
+    public function sendmail() {
+        $m_email = new JcrmModelEmail();
+        $user = JFactory::getUser();
+
+        $request_body   = (object) json_decode(file_get_contents('php://input'));
+        $groups         = $request_body->contacts->groups;
+        $bodyId         = intval($request_body->id);
+        $contacts       = $request_body->contacts->contacts;
+        $subject        = $request_body->subject;
+        $body           = $request_body->body;
+        $orgMail        = $request_body->orgmail;
+
+        if (!empty($groups))
+            $groupList = $m_email->getContacts($groups);
         else
             $groupList = array();
+
         $contacts = array_unique(array_merge($contacts, $groupList));
-        $mailAdress = $model->getEmailAdr($contacts);
-        if($bodyId != 1 && $bodyId != -1)
-        {
-            $userFrom = $model->getEmailFrom($bodyId);
-        }
-        else
-        {
+        $mailAdress = $m_email->getEmailAdr($contacts, $orgMail);
+
+        if ($bodyId != 1 && $bodyId != -1) {
+            $userFrom = $m_email->getEmailFrom($bodyId);
+        } else {
             $userFrom = new stdClass();
-            $userFrom->emailfrom = JFactory::getUser()->email;
-            $userFrom->name = JFactory::getUser()->name;
+            $userFrom->emailfrom = $user->email;
+            $userFrom->name = $user->name;
         }
 
         $cpt = 1;
         $fail = 0;
         $tags = array('[FULL_NAME]','[LAST_NAME]', '[FIRST_NAME]', '[EMAIL]', '[PHONE]', '[ORGANISATION]');
-        foreach ($mailAdress as $mail)
-        {
-            if($cpt % 10 == 0)
-            {
+        foreach ($mailAdress as $mail) {
+            if ($cpt % 10 == 0)
                 sleep(1);
-            }
 
             $body = str_replace($tags, array($mail['full_name'], $mail['last_name'], $mail['first_name'], $mail['email'], $mail['phone'], $mail['organisation']), $body);
 
@@ -207,7 +206,7 @@ class JcrmControllerEmail extends JcrmController {
                 $userFrom->emailfrom,
                 $userFrom->name
             );
-            $mailer     = JFactory::getMailer();
+            $mailer = JFactory::getMailer();
             $mailer->setSender($sender);
             $mailer->addRecipient($mail['email']);
             $mailer->setSubject($subject);
@@ -216,39 +215,34 @@ class JcrmControllerEmail extends JcrmController {
             $mailer->setBody($body);
 //die(var_dump($mailer));
             $send = $mailer->Send();
-            if ( $send !== true ) {
+            if ($send !== true)
                 $fail++;
-            } else {
-                $model->addMessage($mail['email'], $subject, $body);
-            }
+            else
+                $m_email->addMessage($mail['email'], $subject, $body);
+
             $cpt++;
 /*
             if (JUtility::sendMail($userFrom->emailfrom, $userFrom->name, $mail['email'], $subject, $body, true))
             {
-                $model->addMessage($mail['email'], $subject, $body);
+                $m_email->addMessage($mail['email'], $subject, $body);
             }
             else
             {
                 $fail++;
             }
-*/        
+*/
         }
 
         $status = true;
-        if($fail == ($cpt - 1))
-        {
+        if ($fail == ($cpt - 1)) {
             $status = false;
             $msg = JText::_('CONTACT_FAIL_SENDING_MAILS');
-        }
-        else
-        {
+        } else {
             $cpt--;
             $sent = $cpt - $fail;
             $msg = $sent . ' ' . JText::_('CONTACT_SENT_WITH_SUCCESS');
-            if($fail > 0)
-            {
+            if ($fail > 0)
                 $msg .= ' ' . $fail . ' ' . JText::_('CONTACT_FAILED');
-            }
         }
 
         echo json_encode((object)array('status' => $status, 'msg' => $msg));
@@ -263,9 +257,9 @@ class JcrmControllerEmail extends JcrmController {
     {
         $jinput = JFactory::getApplication()->input;
         $id = $jinput->getInt('bid', null);
-        $model = new JcrmModelEmail();
+        $m_email = new JcrmModelEmail();
         if(!is_null($id))
-            $body = $model->getMailBody($id);
+            $body = $m_email->getMailBody($id);
         if(!is_string($body))
         {
             echo json_encode($body);

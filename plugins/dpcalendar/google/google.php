@@ -172,6 +172,11 @@ class PlgDPCalendarGoogle extends \DPCalendar\Plugin\SyncPlugin
 		}
 	}
 
+	protected function getIcalUrl($calendar)
+	{
+		return 'https://calendar.google.com/calendar/ical/' . $calendar->params->get('calendarId') . '/public/basic.ics';
+	}
+
 	public function saveEvent($eventId = null, $calendarId, array $data)
 	{
 		$calendar = $this->getDbCal($calendarId);
@@ -485,7 +490,7 @@ class PlgDPCalendarGoogle extends \DPCalendar\Plugin\SyncPlugin
 		if (!empty($googleEvent->attachments)) {
 			$path = JPluginHelper::getLayoutPath('dpcalendar', 'google', 'attachments');
 
-			$buffer = include $path;
+			$buffer             = include $path;
 			$event->description .= $buffer;
 		}
 

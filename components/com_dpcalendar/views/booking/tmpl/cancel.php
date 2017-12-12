@@ -11,11 +11,11 @@ use CCL\Content\Element\Basic\Element;
 use CCL\Content\Element\Basic\Heading;
 
 // Load the event stylesheet
-JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/views/event/default.css', array(), true);
+JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/dpcalendar.css', ['relative' => true]);
 
 // The invoice heading
-$h = $this->root->addChild(new Heading('cancel', 2, array('dp-event-header')));
-$h->setProtectedClass('dp-event-header');
+$h = $this->root->addChild(new Heading('cancel', 2, array('dpcalendar-heading')));
+$h->setProtectedClass('dpcalendar-heading');
 $h->setContent(JText::_('COM_DPCALENDAR_VIEW_BOOKING_MESSAGE_SORRY'));
 
 // Add the message

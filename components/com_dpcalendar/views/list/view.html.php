@@ -13,7 +13,6 @@ class DPCalendarViewList extends \DPCalendar\View\BaseView
 {
 
 	protected $items = array();
-
 	protected $increment = null;
 
 	public function display($tpl = null)
@@ -21,85 +20,79 @@ class DPCalendarViewList extends \DPCalendar\View\BaseView
 		$model = JModelLegacy::getInstance('Events', 'DPCalendarModel');
 		$this->setModel($model, true);
 
-		$start = JFactory::getApplication()->getParams()->get('date_start');
-		if (!JFactory::getApplication()->input->getVar('date-start') && $start)
-		{
-			JFactory::getApplication()->input->set('date-start', DPCalendarHelper::getDate($start)->format('U'));
-		}
-
 		parent::display($tpl);
 	}
 
 	protected function init()
 	{
-		$app = JFactory::getApplication();
-		$state = $this->get('State');
-
-		$this->params = $state->params;
+		$context         = 'com_dpcalendar.listview.filter.';
+		$this->params    = $this->state->params;
 		$this->increment = $this->params->get('list_increment', '1 month');
-		$dateStart = DPCalendarHelper::getDate($state->get('list.start-date'));
+		$dateStart       = DPCalendarHelper::getDate($this->state->get('list.start-date'));
 
-		$dateEnd = $state->get('list.end-date');
-		if (!empty($dateEnd))
-		{
+		$dateEnd = $this->state->get('list.end-date');
+		if (!empty($dateEnd)) {
 			$dateEnd = DPCalendarHelper::getDate($dateEnd);
 		}
 
-		$jump = $app->input->getString('jump');
-		if (!empty($jump))
-		{
-			$dateStart = DPCalendarHelper::getDateFromString($jump, null, true);
-			$dateEnd = clone $dateStart;
-			$dateEnd->modify('+ ' . $this->increment);
+		$this->overrideStartDate = $this->app->getUserStateFromRequest($context . 'start', 'start-date');
+		if (!empty($this->overrideStartDate)) {
+			$dateStart = DPCalendarHelper::getDateFromString($this->overrideStartDate, null, true);
 		}
-		if (empty($dateEnd))
-		{
+		$this->overrideEndDate = $this->app->getUserStateFromRequest($context . 'end', 'end-date');
+		if (!empty($this->overrideEndDate)) {
+			$dateEnd = DPCalendarHelper::getDateFromString($this->overrideEndDate, null, true);
+		}
+
+		if (empty($dateEnd)) {
 			$dateEnd = clone $dateStart;
 			$dateEnd->modify('+ ' . $this->increment);
 		}
 
 		// Only set time when we are during the day.
 		// It will prevent day shifts.
-		if ($dateStart->format('H:i') != '00:00')
-		{
+		if ($dateStart->format('H:i') != '00:00') {
 			$dateStart->setTime(0, 0, 0);
 			$dateEnd->setTime(0, 0, 0);
 		}
 
-		$this->state->set('list.start-date', $dateStart->format('U'));
-		$this->state->set('list.end-date', $dateEnd->format('U'));
+		$this->state->set('list.start-date', $dateStart);
+		$this->state->set('list.end-date', $dateEnd);
 
 		$this->startDate = $dateStart;
-		$this->endDate = $dateEnd;
+		$this->endDate   = $dateEnd;
+
+		$model = $this->getModel();
 
 		// Initialise variables
-		$this->getModel()->setState('category.id', $app->getParams()
-			->get('ids'));
-		$this->getModel()->setState('category.recursive', true);
-		$this->getModel()->setState('filter.featured', $this->params->get('list_filter_featured', '2') == '1');
+		$model->setState('category.id', $this->app->getParams()->get('ids'));
+		$model->setState('category.recursive', true);
+		$model->setState('filter.featured', $this->params->get('list_filter_featured', '2') == '1');
 
 		$now = DPCalendarHelper::getDate();
 		$now->setTime(0, 0, 0);
-		$this->getModel()->setState('list.direction', $dateEnd->format('U') < $now->format('U') ? 'desc' : 'asc');
-		$this->getModel()->setState('list.limit', 100000);
+		$model->setState('list.direction', $dateEnd->format('U') < $now->format('U') ? 'desc' : 'asc');
+		$model->setState('list.limit', 100000);
+
+		// Location filters
+		if ($location = $this->app->getUserStateFromRequest($context . 'location', 'location')) {
+			$model->setState('filter.location', $location);
+			$model->setState('filter.radius', $this->app->getUserStateFromRequest($context . 'radius', 'radius'));
+			$model->setState('filter.length-type', $this->app->getUserStateFromRequest($context . 'length-type', 'length-type'));
+		}
+
+		$this->state = $model->getState();
 
 		$items = $this->get('Items');
 
-		if ($items === false)
-		{
-			return JError::raiseError(404, JText::_('JGLOBAL_CATEGORY_NOT_FOUND'));
+		if ($items === false) {
+			throw new Exception(JText::_('JGLOBAL_CATEGORY_NOT_FOUND'));
 		}
 
-		foreach ($items as $event)
-		{
+		foreach ($items as $event) {
 			$event->text = $event->description;
 			JPluginHelper::importPlugin('content');
-			JFactory::getApplication()->triggerEvent('onContentPrepare', array(
-					'com_dpcalendar.event',
-					&$event,
-					&$event->params,
-					0
-			));
+			$this->app->triggerEvent('onContentPrepare', array('com_dpcalendar.event', &$event, &$event->params, 0));
 			$event->description = $event->text;
 		}
 		$this->items = $items;

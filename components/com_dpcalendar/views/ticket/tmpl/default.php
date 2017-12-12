@@ -11,7 +11,7 @@ defined('_JEXEC') or die();
 DPCalendarHelper::loadLibrary(array('dpcalendar' => true));
 
 // Load the event stylesheet
-JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/views/event/default.css', array(), true);
+JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/views/event/default.css', ['relative' => true]);
 
 // Add some styling inline
 JFactory::getDocument()->addStyleDeclaration('#dp-ticket-details-qr-code-image {width:150px;height:150px} #dp-ticket-details-qr-code {text-align:center}');

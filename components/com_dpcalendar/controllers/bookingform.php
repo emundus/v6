@@ -137,7 +137,7 @@ class DPCalendarControllerBookingForm extends JControllerForm
 		$return = $this->input->get('return', null, 'base64');
 		if ($result) {
 			$booking = $this->getModel()->getItem($this->input->getInt('b_id'));
-			if ($booking->price > 0 && !$booking->id) {
+			if ($booking->price > 0 && $booking->id) {
 				$m    = $this->input->get('paymentmethod');
 				$tmpl = $this->input->get('tmpl');
 				if ($tmpl) {

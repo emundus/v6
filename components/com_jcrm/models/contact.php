@@ -221,7 +221,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(Exception $e)
 		{
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function addContact, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -244,8 +244,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(Exception $e)
 		{
-			throw $e;
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function getContact, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -261,8 +260,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(Exception $e)
 		{
-			throw $e;
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function getOrganisationByName, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -333,7 +331,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(Exception $e)
 		{
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function update, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -399,7 +397,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(Exception $e)
 		{
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function addGroup, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -415,7 +413,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(Exception $e)
 		{
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function updateGroup, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -431,7 +429,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(Exception $e)
 		{
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function deleteGroup, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -452,7 +450,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(Exception $e)
 		{
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function deleteContact, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
@@ -526,9 +524,49 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(JException $e)
 		{
-			throw $e;
+			JLog::add('Error in model/contact at function getContactIdByGroup, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
+		}
+	}
+
+	public function getContactIdByOrg($ids) {
+
+		$db = JFactory::getDbo();
+
+		// First, let's get all of the institutions in our contact list
+		$query = 'SELECT id FROM #__jcrm_contacts
+					WHERE type=1
+					AND id IN ('.implode(', ', $ids).')';
+		$db->setquery($query);
+
+		try {
+
+			$orgIds = $db->loadColumn();
+
+		} catch (Exception $e) {
+			error_log($e->getMessage(), 0);
 			return $e->getMessage();
 		}
+
+		if (sizeof($orgIds) > 0) {
+
+			// Now that we have a list of all organizations, we can get all of the users attached to them.
+			$query = 'SELECT c.id
+						FROM #__jcrm_contacts as c
+						LEFT JOIN #__jcrm_contact_orga as co ON c.id = co.contact_id
+						WHERE co.org_id IN ('.implode(', ', $orgIds).") AND (c.email NOT LIKE '')";
+			$db->setQuery($query);
+
+			try {
+
+				return $db->loadColumn();
+
+			} catch (Exception $e) {
+				error_log($e->getMessage(), 0);
+				return $e->getMessage();
+			}
+
+		}
+
 	}
 
 	public function getContacts($ids)
@@ -548,8 +586,7 @@ class JcrmModelContact extends JModelItem {
 		}
 		catch(JException $e)
 		{
-			throw $e;
-			return $e->getMessage();
+			JLog::add('Error in model/contact at function getContacts, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
