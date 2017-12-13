@@ -54,10 +54,9 @@ class EmundusViewFiles extends JViewLegacy
 
 	    $this->itemId = $app->input->getInt('Itemid', null);
 	    $this->cfnum = $app->input->getString('cfnum', null);
-	    $layout = $app->input->getString('layout', null);
+		$layout = $app->input->getString('layout', null);
 
-		$m_files 		= $this->getModel('Files');
-		$m_evaluation 	= new EmundusModelEvaluation;
+		$m_files = $this->getModel('Files');
 
 	    $h_files->setMenuFilter();
 
@@ -346,6 +345,7 @@ class EmundusViewFiles extends JViewLegacy
 
 					if(isset($colsSup['overall']))
 					{
+						// $m_evaluation = new EmundusModelEvaluation;
 						//$colsSup['overall'] = $m_evaluation->getEvaluationAverageByFnum($fnumArray);
 					}
 					if(isset($colsSup['id_tag']))
