@@ -210,7 +210,7 @@ class EmundusHelperFiles
                 $filts_details['programme'] = $programme;
             }
             $codes = $m_files->getAssociatedProgrammes($current_user->id);
-            if (count($codes)>0) {
+            if (count($codes)>0 && isset($code)) {
                 $params['programme'] = array_merge($params['programme'], $codes);
                 $filts_details['programme'] = array_merge($filts_details['programme'], $codes);
             }

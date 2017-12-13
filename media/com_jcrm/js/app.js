@@ -544,7 +544,7 @@ contactApp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, sen
 	{
 		$scope.sendTo = sendTo;
 		$scope.guestList.contacts.push(sendTo.id);
-		$scope.guestList.items.push({id:sendTo.id, name:sendTo.full_name, type:'contact'});
+		$scope.guestList.items.push({id:sendTo.id, contact:sendTo.full_name, type:'contact'});
 	}
 
 	$scope.ok = function ()
