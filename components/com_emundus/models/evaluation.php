@@ -116,7 +116,6 @@ class EmundusModelEvaluation extends JModelList
 		$this->_elements_default = array();
 		$this->_elements = @EmundusHelperFiles::getElementsName($this->elements_id);
 
-
 		if (!empty($this->_elements))
 		{
 			foreach ($this->_elements as $def_elmt)
@@ -229,7 +228,7 @@ class EmundusModelEvaluation extends JModelList
 			//var_dump($session->get('filt_params'));
 			$element_id = array();
 			$filt_params = $session->get('filt_params');
-			if (count(@$filt_params['programme'])>0) {
+			if (!empty($filt_params['programme']) && count(@$filt_params['programme'])>0) {
 				foreach ($filt_params['programme'] as $value) {
 					$groups = $this->getGroupsEvalByProgramme($value);
 					if (empty($groups)) {

@@ -79,7 +79,7 @@ if ($locallang == "fr-FR") {
                     <div class="campaign-month-label">
                         <div class="position-me">
                             <div class="rotate-me <?php echo $mod_em_campaign_class; ?>">
-                                <p><?php echo ucfirst(utf8_encode($month)); ?></p>
+                                <p><?php echo ucfirst($month); ?></p>
                             </div>
                         </div>
                     </div>
