@@ -402,20 +402,19 @@ class EmundusHelperEmails
 		}
 
         // Model for GetCampaignWithID()
-        $model=$this->getModel('campaign');
 
 		// include model email for Tag
-		include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
-		$emails = new EmundusModelEmails;
+		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+		$m_emails = new EmundusModelEmails;
 
-		$mainframe = JFactory::getApplication();
-		$db = JFactory::getDBO();
-		$jinput = JFactory::getApplication()->input;
+		$mainframe 	= JFactory::getApplication();
+		$db 		= JFactory::getDBO();
+		$jinput 	= JFactory::getApplication()->input;
 
-		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
-		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
-		$itemid = JRequest::getVar('Itemid', null, 'GET', null, 0);
+		$limitstart 		= JRequest::getVar('limitstart', null, 'POST', 'none',0);
+		$filter_order 		= JRequest::getVar('filter_order', null, 'POST', null, 0);
+		$filter_order_Dir 	= JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
+		$itemid 			= JRequest::getVar('Itemid', null, 'GET', null, 0);
 
 		$ag_id = $jinput->get('mail_group', array(), "ARRAY");
 		$users_id = array();
@@ -440,12 +439,12 @@ class EmundusHelperEmails
 
 		if ($subject == '') {
 			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_SUBJECT' ) );
-			$this->setRedirect('index.php?option=com_emundus&view=email&tmpl=component&desc=2&Itemid='.$itemid);
+			$mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&desc=2&Itemid='.$itemid);
 			return;
 		}
 		if ($message == '') {
 			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_A_MESSAGE' ) );
-			$this->setRedirect('index.php?option=com_emundus&view=email&tmpl=component&desc=2&Itemid='.$itemid);
+			$mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&desc=2&Itemid='.$itemid);
 			return;
 		}
 
@@ -487,9 +486,12 @@ class EmundusHelperEmails
         $info = '';
 		for ($i = 0; $i < $nUsers; $i++) {
 			$user = $users[$i];
+
 			if (isset($campaigns_id[$i]) && !empty($campaigns_id[$i])) {
-				$campaign = $model->getCampaignByID($campaigns_id[$i]);
-				$programme = $model->getProgrammeByCampaignID($campaigns_id[$i]);
+				include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+				$m_campaign = new EmundusModelCampaign;
+				$campaign 	= $m_campaign->getCampaignByID($campaigns_id[$i]);
+				$programme 	= $m_campaign->getProgrammeByCampaignID($campaigns_id[$i]);
 			}
 
 			// template replacements (patterns)
@@ -498,7 +500,7 @@ class EmundusHelperEmails
 							'SITE_URL' => JURI::base(true),
 							'USER_EMAIL' => $user->email
 						 );
-			$tags = $emails->setTags($user->id, $post);
+			$tags = $m_emails->setTags($user->id, $post);
 
 			$body = preg_replace($tags['patterns'], $tags['replacements'], $message);
 
@@ -547,7 +549,7 @@ class EmundusHelperEmails
                 }
 			}
 		}
-        $this->setRedirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent&desc=2', JText::_('REPORTS_MAILS_SENT').$info, 'message');
+        $mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent&desc=2', JText::_('REPORTS_MAILS_SENT').$info, 'message');
 
 	}
 
@@ -562,15 +564,12 @@ class EmundusHelperEmails
 		}
 
 		// include model email for Tag
-		include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
-		$emails = new EmundusModelEmails();
+		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+		$m_emails = new EmundusModelEmails();
 
 		$mainframe = JFactory::getApplication();
 
 		$db	= JFactory::getDBO();
-
-		// Model for GetCampaignWithID()
-		$model=$this->getModel('campaign');
 
 		$email_from_sys = $mainframe->getCfg('mailfrom');
 
@@ -594,22 +593,22 @@ class EmundusHelperEmails
 
 		if ($captcha !== 1) {
 			JError::raiseWarning( 500, JText::_( 'ERROR_NOT_A_VALID_POST' ) );
-			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
+			$mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			return;
 		}
 		if (count( $users_id ) == 0) {
 			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
-			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
+			$mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			return;
 		}
 		if ($subject == '') {
 			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_SUBJECT' ) );
-			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
+			$mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			return;
 		}
 		if ($message == '') {
 			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_A_MESSAGE' ) );
-			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
+			$mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			return;
 		}
 
@@ -653,9 +652,12 @@ class EmundusHelperEmails
 		for ($i = 0; $i < $nUsers; $i++) {
 
             $user = $users[$i];
-            if (isset($campaigns_id[$i]) && !empty($campaigns_id[$i])) {
-                $campaign = $model->getCampaignByID($campaigns_id[$i]);
-                $programme = $model->getProgrammeByCampaignID($campaigns_id[$i]);
+
+			if (isset($campaigns_id[$i]) && !empty($campaigns_id[$i])) {
+				include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+				$m_campaign = new EmundusModelCampaign;
+                $campaign 	= $m_campaign->getCampaignByID($campaigns_id[$i]);
+                $programme 	= $m_campaign->getProgrammeByCampaignID($campaigns_id[$i]);
             }
 
             // template replacements (patterns)
@@ -664,15 +666,15 @@ class EmundusHelperEmails
                 'SITE_URL' => JURI::base(true),
                 'USER_EMAIL' => $user->email
             );
-            $tags = $emails->setTags($user->id, $post);
+            $tags = $m_emails->setTags($user->id, $post);
 
-            $from = preg_replace($tags['patterns'], $tags['replacements'], $from);
-            $from_id = $user->id;
-            $fromname = preg_replace($tags['patterns'], $tags['replacements'], $fromname);
-            $to = $user->email;
-            $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
-            $body = preg_replace($tags['patterns'], $tags['replacements'], $message);
-            $body = $emails->setTagsFabrik($body, array($fnums[$i]));
+            $from 		= preg_replace($tags['patterns'], $tags['replacements'], $from);
+            $from_id 	= $user->id;
+            $fromname 	= preg_replace($tags['patterns'], $tags['replacements'], $fromname);
+            $to 		= $user->email;
+            $subject 	= preg_replace($tags['patterns'], $tags['replacements'], $subject);
+            $body 		= preg_replace($tags['patterns'], $tags['replacements'], $message);
+            $body 		= $m_emails->setTagsFabrik($body, array($fnums[$i]));
 
             if (!empty($user->email)) {
                 // mail function
@@ -704,9 +706,10 @@ class EmundusHelperEmails
                     echo 'Error sending email: ' . $send->__toString();
                     die();
                 } else {
-                    $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-						VALUES ('" . $from_id . "', '" . $user->id . "', " . $db->quote($subject) . ", " . $db->quote($body) . ", NOW())";
-                    $db->setQuery($sql);
+
+					$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
+							VALUES ('" . $from_id . "', '" . $user->id . "', " . $db->quote($subject) . ", " . $db->quote($body) . ", NOW())";
+					$db->setQuery($sql);
                     try {
                         $db->execute();
                     } catch (Exception $e) {
@@ -721,7 +724,7 @@ class EmundusHelperEmails
                 }
             }
         }
-		$this->setRedirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent', JText::_('REPORTS_MAILS_SENT').$info, 'message');
+		$mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent', JText::_('REPORTS_MAILS_SENT').$info, 'message');
 	}
 }
 ?>
