@@ -698,9 +698,9 @@ class EmundusHelperEmails
                 $mailer->setSubject($subject);
                 $mailer->isHTML(true);
                 $mailer->Encoding = 'base64';
-                $mailer->setBody($body);
+				$mailer->setBody($body);
 
-                $send = $mailer->Send();
+				$send = $mailer->Send();
                 if ($send !== true) {
 		            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
                     echo 'Error sending email: ' . $send->__toString();

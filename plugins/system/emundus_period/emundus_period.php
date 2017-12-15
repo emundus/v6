@@ -98,7 +98,7 @@ class  plgSystemEmundus_period extends JPlugin
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
-        
+
         // Global variables
         define('EMUNDUS_PATH_ABS', JPATH_ROOT.DS.$applicant_files_path);
         define('EMUNDUS_PATH_REL', $applicant_files_path);
