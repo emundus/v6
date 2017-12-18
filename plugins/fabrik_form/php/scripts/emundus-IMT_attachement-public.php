@@ -45,7 +45,7 @@ JLog::addLogger(
 );
 
 
-$student = &JUser::getInstance($user_id);
+$student = JUser::getInstance($user_id);
 $m_emails = new EmundusModelEmails();
 
 if (!isset($student)) {
@@ -139,7 +139,7 @@ try {
                 )';
 
     $db->setQuery($query);
-    $recipient = array($db->loadResult());
+    $recipient = $db->loadResult();
 
 } catch (Exception $e) {
     // catch any database errors.
