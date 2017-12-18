@@ -23,7 +23,7 @@ $doc = JFactory::getDocument();
 $doc->setTitle($this->error->getCode() . ' - '.$this->title);
 
 if ($gantry->get('layout-mode', 'responsive') == 'responsive') $gantry->addStyle('grid-responsive.css', 5);
-$gantry->addLess('bootstrap.less', 'bootstrap.css', 6);
+$gantry->addLess('bootstrap.less', 'bootstrap.css', 6);   
 
 if ($gantry->browser->name == 'ie') {
 	if ($gantry->browser->shortversion == 8) {
@@ -46,7 +46,7 @@ ob_start();
 				<div class="clear"></div>
 			</div>
 		</div>
-	</header>
+	</header>	
 	<div class="rt-container">
 		<div class="component-content">
 			<div class="rt-grid-12">
@@ -77,16 +77,18 @@ ob_start();
 $body = ob_get_clean();
 $gantry->finalize();
 
-//require_once(JPATH_LIBRARIES.'/joomla/document/html/renderer/head.php');
-//$header_renderer = new JDocumentRendererHead($doc);
-//$header_contents = $header_renderer->render(null);
+if (!class_exists('JDocumentRendererHead')) {
+    require_once(JPATH_LIBRARIES.'/joomla/document/html/renderer/head.php');
+}
+$header_renderer = new JDocumentRendererHead($doc);
+$header_contents = $header_renderer->render(null);
 ob_start();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $this->language; ?>" lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 <head>
-	<?php //echo $header_contents; ?>
+	<?php echo $header_contents; ?>
 </head>
 <?php
 $header = ob_get_clean();
-echo $header.$body;
+echo $header.$body;;

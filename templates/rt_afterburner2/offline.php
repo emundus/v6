@@ -139,7 +139,9 @@ ob_start();
 $body = ob_get_clean();
 $gantry->finalize();
 
-require_once(JPATH_LIBRARIES.'/joomla/document/html/renderer/head.php');
+if (!class_exists('JDocumentRendererHead')) {
+    require_once(JPATH_LIBRARIES.'/joomla/document/html/renderer/head.php');
+}
 $header_renderer = new JDocumentRendererHead($doc);
 $header_contents = $header_renderer->render(null);
 ob_start();
