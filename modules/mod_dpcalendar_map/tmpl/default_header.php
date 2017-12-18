@@ -20,7 +20,7 @@ if ($tmpl) {
 }
 
 /** @var Form $form * */
-$form = $root->addChild(new Form('form', '#', 'adminForm', 'POST', array('form-validate')));
+$form = $root->addChild(new Form('form', '#', 'dp-module-map-form-' . $module->id, 'POST', array('form-validate')));
 $form->addClass('noprint', true);
 $form->addClass('dp-actions-container', true);
 

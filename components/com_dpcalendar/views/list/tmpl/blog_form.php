@@ -24,7 +24,7 @@ $form = $this->root->addChild(
 	new Form(
 		'form',
 		JRoute::_('index.php?option=com_dpcalendar&view=list&Itemid=' . JFactory::getApplication()->input->getInt('Itemid') . $tmpl),
-		'list-form',
+		'blog-form',
 		'POST',
 		array('form-validate')
 	)
