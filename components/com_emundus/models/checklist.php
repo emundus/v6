@@ -152,6 +152,8 @@ class EmundusModelChecklist extends JModelList
 
 	function setDelete($status = 0, $student = null) {
 
+		$db = JFactory::getDBO();
+
 		if (!isset($student) && empty($student))
 			$student = JFactory::getSession()->get('emundusUser');
 
