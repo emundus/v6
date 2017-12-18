@@ -157,6 +157,7 @@ JHTML::_('behavior.tooltip');
 	           var ametysData = ametys.data;
 	           var emundusData = emundus.data;
 			   var data_to_add = new Array();
+			   var data_to_update = new Array();
                var stored = false;
 			  
 			   $('#em-content').append("<hr>");
@@ -165,6 +166,7 @@ JHTML::_('behavior.tooltip');
 			   $('#em-content').append(Joomla.JText._("COM_EMUNDUS_DATA_TO_ADD"));
 			   $('#em-content').append(" : <br>");
 
+			   var to_edit=0;
                for (var d in ametysData) {
                     if (typeof(ametysData[d].cdmCode)  == "undefined" || typeof(ametysData[d].title) == "undefined")
                         break;
@@ -201,7 +203,60 @@ JHTML::_('behavior.tooltip');
 	                    $('#em-content').append(" [" + emData.code + "]");
 	                    $('#em-content').append("<br>");
 	                }
+	                else {
+	                	if (to_edit == 0) {
+	                		$('#em-content').append("<hr>");
+			   				$('#em-content').append(Joomla.JText._("COM_EMUNDUS_DATA_TO_EDIT"));
+			   				to_edit = 1;
+	                	};
+               			// convert Ametys database definition to emundus database definition
+               			var emData = new Object();
+
+               			emData.code = ametysData[d].cdmCode;
+               			emData.label = ametysData[d].title + " { " + ametysData[d].organisation + " }";
+               			emData.organisation = ametysData[d].organisation;
+               			emData.organisation_code = ametysData[d].organisation_code;
+               			emData.notes = ametysData[d].presentation;
+               			emData.published = 1;
+               			emData.programmes = ametysData[d].catalog;
+               			emData.synthesis = "<?php echo $this->ametys_sync_default_synthesis; ?>";
+               			emData.fabrik_group_id = "<?php echo $this->ametys_sync_default_eval; ?>";
+               			emData.fabrik_decision_group_id = "<?php echo $this->ametys_sync_default_decision; ?>";
+               			emData.apply_online = 1;
+               			emData.ordering = d;
+               			emData.url = ametysData[d].programWebSiteUrl;
+
+               			data_to_update.push(emData);
+               			/*$('#em-content').append("<i class='edit circle icon'></i> ");
+	                    $('#em-content').append(emData.label);
+	                    $('#em-content').append(" [" + emData.code + "]");
+	                    $('#em-content').append("<br>");*/
+	                }
                 }
+
+                if (data_to_update.length > 0) {
+					$('#em-content').append("<hr>");
+					$('#em-content').append(Joomla.JText._("COM_EMUNDUS_ADD_DATA"));
+
+					$.ajax({
+				        type:'POST',
+				        url:'index.php?option=com_emundus&controller=programme&task=editprogrammes&Itemid=',
+				        dataType:'json',
+				        data: {data : data_to_update},
+				        success: function(result)
+				        { 
+				        	if (result.status)
+				            {
+					           	$('#em-content').append("<hr>");
+					        	$('#em-content').append(Joomla.JText._("COM_EMUNDUS_SYNC_DONE"));				            
+				            }
+				        }, 
+				        error: function (jqXHR, textStatus, errorThrown)
+				        {
+				            console.log(jqXHR.responseText);
+				        }
+				    });
+				}
 
                 if (data_to_add.length > 0) {
 					$('#em-content').append("<hr>");

@@ -452,7 +452,6 @@ class EmundusModelProfile extends JModelList
 		include_once(JPATH_SITE.'/components/com_emundus/models/admission.php');
 
 		$m_users 		= new EmundusModelUsers;
-		$m_admission	= new EmundusModelAdmission;
 		$current_user 	= JFactory::getUser();
 		$session        = JFactory::getSession();
 		$app			= JFactory::getApplication();
@@ -485,6 +484,7 @@ class EmundusModelProfile extends JModelList
 
 			} else {
 
+				$m_admission	= new EmundusModelAdmission;
 				$admissionInfo = $m_admission->getAdmissionInfo($current_user->id);
 
 				if (!empty($admissionInfo)) {

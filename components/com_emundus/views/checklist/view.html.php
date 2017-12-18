@@ -39,7 +39,8 @@ class EmundusViewChecklist extends JViewLegacy
 
     function display($tpl = null)
     {
-    	$app = JFactory::getApplication();
+		$app 	= JFactory::getApplication();
+		$db 	= JFactory::getDbo();
     	$layout = $app->input->getString('layout', null);
 
     	$sent 				= $this->get('sent');
@@ -48,6 +49,13 @@ class EmundusViewChecklist extends JViewLegacy
 		$this->assignRef('sent', $sent);
 		$this->assignRef('confirm_form_url', $confirm_form_url);
 
+		$end_date = new JDate($this->_user->fnums[$this->_user->fnum]->end_date);
+		if ($end_date > JFactory::getDate()->format('Y-m-d H:i:s')) {
+			include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+			$m_checklist = new EmundusModelChecklist;
+			$m_checklist->setDelete(0, $this->_user);
+		}
+
     	switch  ($layout)
 		{
 			// layout displayed when paid
@@ -55,12 +63,12 @@ class EmundusViewChecklist extends JViewLegacy
 			include_once(JPATH_BASE.'/components/com_emundus/models/application.php');
 
 			// 1. if application form not sent yet, send it // 2. trigger emails // 3. display reminder list
-			$application = new EmundusModelApplication;
-			$applications 		= $application->getApplications($this->_user->id);
-			$attachments 		= $application->getAttachmentsProgress($this->_user->id, $this->_user->profile, array_keys($applications));
-			$forms 				= $application->getFormsProgress($this->_user->id, $this->_user->profile, array_keys($applications));
+			$m_application 		= new EmundusModelApplication;
+			$applications 		= $m_application->getApplications($this->_user->id);
+			$attachments 		= $m_application->getAttachmentsProgress($this->_user->id, $this->_user->profile, array_keys($applications));
+			$forms 				= $m_application->getFormsProgress($this->_user->id, $this->_user->profile, array_keys($applications));
 
-			if((int)($attachments[$this->_user->fnum])>=100 && (int)($forms[$this->_user->fnum])>=100 && $sent != 1) {
+			if ((int)($attachments[$this->_user->fnum])>=100 && (int)($forms[$this->_user->fnum])>=100 && $sent != 1) {
 				$eMConfig = JComponentHelper::getParams('com_emundus');
 				$can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', 0);
 				$application_fee = $eMConfig->get('application_fee', 0);
@@ -71,8 +79,8 @@ class EmundusViewChecklist extends JViewLegacy
 					'application_fee' => $application_fee
 				);
 
-				$application->sendApplication($this->_user->fnum, $this->_user, $params);
-				$applications 		= $application->getApplications($this->_user->id);
+				$m_application->sendApplication($this->_user->fnum, $this->_user, $params);
+				$applications = $m_application->getApplications($this->_user->id);
 			}
 
 			$this->assignRef('applications', $applications);

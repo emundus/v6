@@ -147,6 +147,25 @@ class EmundusModelChecklist extends JModelList
         WHERE esp.id='.$this->_user->profile.' AND m.published>=0 AND m.level=1 ORDER BY m.lft DESC';
         $db->setQuery($query);
         return $db->loadResult();
-    }
+	}
+
+
+	function setDelete($status = 0, $student = null) {
+
+		if (!isset($student) && empty($student))
+			$student = JFactory::getSession()->get('emundusUser');
+
+		if ($status > 1)
+			$status = 1;
+
+		$query = 'UPDATE #__emundus_uploads SET can_be_deleted = '.$status.' WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+		} catch (Exception $e) {
+			JLog::add('Error in model/checklist at query : '.$query, JLog::ERROR, 'com_emundus');
+		}
+	}
 }
 ?>

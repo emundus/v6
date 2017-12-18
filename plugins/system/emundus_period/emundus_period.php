@@ -52,11 +52,16 @@ class  plgSystemEmundus_period extends JPlugin
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
         $query->select('*, id AS value, description AS text')->from('#__fabrik_connections')->where('published = 1 and description like "'.$description.'"');
-        $db->setQuery($query);
-        $connections = $db->loadObjectList();
 
-        foreach ($connections as &$cnn)
-        {
+        try {
+            $db->setQuery($query);
+            $connections = $db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add('Error in plugin/emundus_period at query : '.$query, JLog::ERROR, 'emundus_plugins');
+        }
+
+
+        foreach ($connections as &$cnn) {
             $this->decryptPw($cnn);
         }
 
@@ -93,12 +98,12 @@ class  plgSystemEmundus_period extends JPlugin
     function onAfterInitialise() {
         include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
-        $app        =  JFactory::getApplication();
-        $user       =  JFactory::getSession()->get('emundusUser');
+        $app    =  JFactory::getApplication();
+        $user   =  JFactory::getSession()->get('emundusUser');
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
-        
+
         // Global variables
         define('EMUNDUS_PATH_ABS', JPATH_ROOT.DS.$applicant_files_path);
         define('EMUNDUS_PATH_REL', $applicant_files_path);
@@ -110,16 +115,17 @@ class  plgSystemEmundus_period extends JPlugin
             $applicants     = explode(',', $id_applicants);
             $r              = JRequest::getVar('r', null, 'GET', 'none',0);
 
-            $app = JFactory::getApplication();
-
-            $id = JRequest::getVar('id', null, 'GET', 'none',0);
+            $id     = JRequest::getVar('id', null, 'GET', 'none',0);
             $option = JRequest::getVar('option', null, 'GET', 'none',0);
-            $task = JRequest::getVar('task', null, 'POST', 'none',0);
+            $task   = JRequest::getVar('task', null, 'POST', 'none',0);
             $task_get = JRequest::getVar('task', null, 'GET', 'none',0);
-            $view =JRequest::getVar('view', null, 'GET', 'none',0);
+            $view   = JRequest::getVar('view', null, 'GET', 'none',0);
 
             $no_profile = (empty($user->profile) || !isset($user->profile))?1:0;
-            if ($no_profile) $user->applicant = 1;
+
+            if ($no_profile)
+                $user->applicant = 1;
+
             if ( $r != 1 && $user->applicant==1 && !in_array($user->id, $applicants) ) {
                 if($no_profile && $task != "user.logout" && $task_get != "cancel_renew"  && $task_get != "openfile" && $option != 'com_users' && $option != 'com_content') {
                     die($app->redirect("index.php?option=com_fabrik&view=form&formid=102&random=0&r=1"));

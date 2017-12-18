@@ -146,5 +146,45 @@ class EmundusModelProgramme extends JModelList
         }
     }
 
+    /**
+     * @param   array $data the row to add in table.
+     * 
+     * @return boolean
+     * Edit programme in DB
+     */
+    public function editProgrammes($data)
+    {
+        $db = $this->getDbo();
+
+        if (count($data) > 0) {
+      
+          try
+          {  
+            foreach ($data as $key => $v) {
+              $query = 'UPDATE `#__emundus_setup_programmes` SET label='.$db->Quote($v['label']).' WHERE code like '.$db->Quote($v['code']);
+              $db->setQuery($query);
+              $db->execute();
+
+              $query = 'UPDATE `#__emundus_setup_teaching_unity` SET label='.$db->Quote($v['label']).' WHERE code like '.$db->Quote($v['code']);
+              $db->setQuery($query);
+              $db->execute();
+
+              $query = 'UPDATE `#__emundus_setup_campaigns` SET label='.$db->Quote($v['label']).' WHERE training like '.$db->Quote($v['code']);
+              $db->setQuery($query);
+              $db->execute();
+            }
+          }
+          catch(Exception $e)
+          {
+              JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+              return $e->getMessage();
+          }
+
+        } else {
+          return false;
+        }
+        return true;
+    }
+
 }
 ?>

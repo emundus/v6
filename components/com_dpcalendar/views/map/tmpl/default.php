@@ -9,9 +9,16 @@ defined('_JEXEC') or die();
 
 use CCL\Content\Element\Basic\Container;
 
+// The params
+$params = $this->params;
+
 // Load the JS libraries
 JHtml::_('behavior.core');
 DPCalendarHelper::loadLibrary(array('maps' => true, 'url' => true));
+
+if ($params->get('map_show_event_as_popup')) {
+	DPCalendarHelper::loadLibrary(array('modal' => true));
+}
 
 JHtml::_('script', 'com_dpcalendar/dpcalendar/views/map/default.min.js', ['relative' => true], ['defer' => true]);
 JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/views/map/default.min.css', ['relative' => true]);
@@ -23,13 +30,10 @@ JText::script('COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL_NO_EVENT_TEXT');
 // User timezone
 DPCalendarHelper::renderLayout('user.timezone', array('root' => $this->root));
 
-// The params
-$params = $this->params;
-
 // Set up the root container correctly
 $this->root->addAttribute('data-popup', $params->get('map_show_event_as_popup'));
-$this->root->addAttribute('data-popupwidth', $params->get('popup_width', 700));
-$this->root->addAttribute('data-popupheight', $params->get('popup_height', 500));
+$this->root->addAttribute('data-popupwidth', $params->get('map_popup_width'));
+$this->root->addAttribute('data-popupheight', $params->get('map_popup_height', 500));
 $this->root->addClass('dpcalendar-map-container', true);
 $this->root->addClass('dpcalendar-locations-container', true);
 

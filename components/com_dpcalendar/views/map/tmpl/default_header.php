@@ -20,7 +20,7 @@ if ($tmpl) {
 }
 
 /** @var Form $form * */
-$form = $this->root->addChild(new Form('form', '#', 'adminForm', 'POST', array('form-validate')));
+$form = $this->root->addChild(new Form('form', '#', 'map-form', 'POST', array('form-validate')));
 $form->addClass('noprint', true);
 $form->addClass('dp-actions-container', true);
 

@@ -32,7 +32,7 @@
 			       label="COM_DPCALENDAR_FIELD_CONFIG_CALENDAR_MAP_HEIGHT_LABEL"
 			       description="COM_DPCALENDAR_FIELD_CONFIG_CALENDAR_MAP_HEIGHT_DESC"/>
 			<field name="map_view_radius" type="list"
-			       label="COM_DPCALENDAR_FIELD_CONFIG_MAP_RADIUS_LABEL" description="COM_DPCALENDAR_FIELD_CONFIG_MAP_RADIUS_LABEL">
+			       label="COM_DPCALENDAR_FIELD_CONFIG_MAP_RADIUS_LABEL" description="COM_DPCALENDAR_FIELD_CONFIG_MAP_RADIUS_DESC">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="5">5</option>
 				<option value="10">10</option>
@@ -61,6 +61,12 @@
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
+			<field name="map_popup_width" type="text" showon="map_show_event_as_popup:1"
+			       label="COM_DPCALENDAR_FIELD_CONFIG_CALENDAR_POPUP_WIDTH_LABEL"
+			       description="COM_DPCALENDAR_FIELD_CONFIG_CALENDAR_POPUP_WIDTH_DESC"/>
+			<field name="map_popup_height" type="text" showon="map_show_event_as_popup:1"
+			       label="COM_DPCALENDAR_FIELD_CONFIG_CALENDAR_POPUP_HEIGHT_LABEL"
+			       description="COM_DPCALENDAR_FIELD_CONFIG_CALENDAR_POPUP_HEIGHT_DESC"/>
 			<field name="map_view_show_my_only" type="list"
 			       label="COM_DPCALENDAR_FIELD_CONFIG_CALENDAR_SHOW_MY_ONLY_LABEL"
 			       description="COM_DPCALENDAR_FIELD_CONFIG_CALENDAR_SHOW_MY_ONLY_DESC">
