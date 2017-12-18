@@ -2,12 +2,12 @@
 <extension method="upgrade" type="template" version="2.5">
     <name>rt_afterburner2</name>
     <author>RocketTheme, LLC</author>
-    <creationDate>March 21, 2017</creationDate>
+    <creationDate>November  7, 2017</creationDate>
     <copyright>(C) 2005 - 2017 RocketTheme, LLC. All rights reserved.</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>support@rockettheme.com</authorEmail>
     <authorUrl>http://www.rockettheme.com</authorUrl>
-    <version>1.6</version>
+    <version>1.7</version>
     <description>Afterburner2 Template</description>
     <legacycss>false</legacycss>
     <gridcss>false</gridcss>
