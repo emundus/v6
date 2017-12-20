@@ -2414,7 +2414,7 @@ $q=2;
      * @param $applicant        Object     the applicant user ID
      * @return bool
      */
-    public function sendApplication($fnum, $applicant) {
+    public function sendApplication($fnum, $applicant, $param=array()) {
         include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 
         $db = JFactory::getDBO();
