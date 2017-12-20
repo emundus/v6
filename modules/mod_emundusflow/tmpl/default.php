@@ -77,3 +77,8 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
     </div>
   </div>
 </div>
+<?php
+if ($sent>0) {
+  echo '<style type="text/css"> .submit_form {display: none;} </style>';
+}
+?>
