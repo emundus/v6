@@ -2162,9 +2162,8 @@ class EmundusControllerFiles extends JControllerLegacy
                 break;
             case 3:
                 // template DOCX
-                require_once JPATH_LIBRARIES.DS.'vendor'.DS.'phpoffice'.DS.'phpword'.DS.'bootstrap.php';
-                //require_once JPATH_LIBRARIES.DS.'HTMLtoOpenXML'.DS.'HTMLtoOpenXML.php';
-
+                require_once JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php';
+                //require_once JPATH_LIBRARIES.DS.'HTMLtoOpenXML'.DS.'HTMLtoOpenXML.php
 
                 $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
                 try

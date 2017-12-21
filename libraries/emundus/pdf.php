@@ -823,8 +823,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 			//$output?'FI':'F'
 			$name = 'application_form_'.date('Y-m-d_H-i-s').'.pdf';
 			$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.$name, 'FI');
-			echo '<pre>'; var_dump(EMUNDUS_PATH_ABS.$item->user_id.DS.$name); echo '</pre>'; die;
-			
             $attachment = $m_application->getAttachmentByLbl("_application_form");
 			$keys 	= array('user_id', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed', 'campaign_id', 'fnum' );
 			$values = array($item->user_id, $attachment['id'], $name, $item->training.' '.date('Y-m-d H:i:s'), 0, 0, $campaign_id, $fnum);
