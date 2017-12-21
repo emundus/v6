@@ -1048,7 +1048,9 @@ class EmundusModelApplication extends JModelList
     // @param   int fnum application file number
     // @return  string HTML to send to PDF librairie
     function getFormsPDF($aid, $fnum = 0, $gids = 0) {
-        $tableuser = @EmundusHelperList::getFormsList($aid, $fnum);
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+        $h_list     = new EmundusHelperList;
+        $tableuser  = $h_list->getFormsList($aid, $fnum);
 
         $forms = "<style>
                     table{
@@ -1076,17 +1078,19 @@ class EmundusModelApplication extends JModelList
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
                             WHERE ff.group_id = fg.id';
 
-                if ($gids != 0)
+                if (!empty($gids) && $gids != 0)
                     $query .= ' AND  fg.id IN ('.implode(',',$gids).')';
 
                 $query .= ' AND ff.form_id = "'.$itemt->form_id.'"
                             ORDER BY ff.ordering';
+
                 try {
 
-                $this->_db->setQuery( $query );
-                $groupes = $this->_db->loadObjectList();
+                    $this->_db->setQuery( $query );
+                    $groupes = $this->_db->loadObjectList();
 
                 } catch (Exception $e) {
+                    JLog::add('Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                     throw $e;
                 }
 

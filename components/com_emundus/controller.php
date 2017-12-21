@@ -94,7 +94,7 @@ class EmundusController extends JControllerLegacy {
 
         require_once($file);
 
-        if(EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum);
             exit;
         } elseif(EmundusHelperAccess::isApplicant($user->id)) {
