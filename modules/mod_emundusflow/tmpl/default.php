@@ -79,7 +79,7 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
   <div class="<?php echo $sent>0?'completed':''; ?> step">
     <i class="large time outline icon"></i>
     <div class="content">
-      <div class="description"><span class="label label-<?php echo $current_application->class; ?>"> <?php echo @$current_application->value; ?></span> <?php echo $btn_send; ?></div>
+      <div class="description"><span class="label label-<?php echo $current_application->class; ?>"> <?php echo @$current_application->value; ?></span></div>
     </div>
   </div>
 </div>
