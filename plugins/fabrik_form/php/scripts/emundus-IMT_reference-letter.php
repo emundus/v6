@@ -102,7 +102,7 @@ else
 // Set sender
 $sender = [
     $mail_from_address,
-    $mail_from_name
+    $fromname
 ];
 
 
@@ -139,7 +139,7 @@ foreach ($recipients as $recipient) {
 
 
             // template replacements (patterns)
-            $post       = array(
+            $post = array(
                 'REFERENCE_FORM_URL'    => $link_form,
                 'CAMPAIGN_LABEL'        => $current_user->campaign_name
             );

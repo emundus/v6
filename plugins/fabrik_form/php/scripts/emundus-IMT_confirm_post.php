@@ -81,7 +81,7 @@ else
 // Set sender
 $sender = [
     $mail_from_address,
-    $mail_from_name
+    $fromname
 ];
 
 
