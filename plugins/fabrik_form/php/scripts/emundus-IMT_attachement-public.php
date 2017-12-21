@@ -178,7 +178,7 @@ else
 // Set sender
 $sender = array(
     $mail_from_address,
-    $mail_from_name
+    $fromname
 );
 
 $mailer = JFactory::getMailer();

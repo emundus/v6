@@ -50,7 +50,12 @@ class EmundusViewChecklist extends JViewLegacy
 		$this->assignRef('confirm_form_url', $confirm_form_url);
 
 		$end_date = new JDate($this->_user->fnums[$this->_user->fnum]->end_date);
-		if ($end_date > JFactory::getDate()->format('Y-m-d H:i:s')) {
+
+		$offset 	= $app->get('offset', 'UTC');
+		$dateTime 	= new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+		$now 		= $dateTime->setTimezone(new DateTimeZone($offset));
+
+		if ($end_date < $now) {
 			include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 			$m_checklist = new EmundusModelChecklist;
 			$m_checklist->setDelete(0, $this->_user);
@@ -68,7 +73,7 @@ class EmundusViewChecklist extends JViewLegacy
 			$attachments 		= $m_application->getAttachmentsProgress($this->_user->id, $this->_user->profile, array_keys($applications));
 			$forms 				= $m_application->getFormsProgress($this->_user->id, $this->_user->profile, array_keys($applications));
 
-			if ((int)($attachments[$this->_user->fnum])>=100 && (int)($forms[$this->_user->fnum])>=100 && $sent != 1) {
+			if ((int)($attachments[$this->_user->fnum])>=100 && (int)($forms[$this->_user->fnum])>=100) {
 				$eMConfig = JComponentHelper::getParams('com_emundus');
 				$can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', 0);
 				$application_fee = $eMConfig->get('application_fee', 0);

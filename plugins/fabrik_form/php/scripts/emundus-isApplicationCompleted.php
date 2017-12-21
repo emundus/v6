@@ -52,9 +52,11 @@ if ($jinput->get('view') == 'form') {
 			JLog::Add('Error in plugin/isApplicationCompleted at SQL query : '.$query, Jlog::ERROR, 'plugins');
 		}
 
-		// If he hasn't, no discount for him.
+		// If he hasn't, no discount for him. If he has, exit to regular procedure.
 		if ($uploaded_document == 0)
 			$scholarship_document_id = NULL;
+		else
+			return;
 
 	}
 
@@ -68,6 +70,7 @@ if ($jinput->get('view') == 'form') {
 			$sent = count($m_application->getHikashopOrder($fnumInfos, true))>0?1:0;
 
 			if (!$paid && !$sent && $attachments >= 100 && $forms >= 100) {
+				// Profile number and document ID are concatenanted, this is equal to the menu corresponding to the free option (or the paid option in the case of document_id = NULL)
 				$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile.$scholarship_document_id)));
 				$mainframe->redirect($checkout_url);
 			}

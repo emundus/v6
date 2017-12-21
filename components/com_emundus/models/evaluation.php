@@ -1612,14 +1612,17 @@ class EmundusModelEvaluation extends JModelList
 		return $this->_db->loadAssocList();
 	}
 
-	function getLettersTemplateByID($id) {
+	function getLettersTemplateByID($id = null) {
 		try {
 			//$query = "SELECT * FROM #__emundus_setup_letters WHERE id=" . $id;
             $query = "SELECT l.*, GROUP_CONCAT( DISTINCT(`lrs`.`status`) SEPARATOR ',' ) as `status`, CONCAT('\"',GROUP_CONCAT( DISTINCT(`lrt`.`training`) SEPARATOR '\",\"' ), '\"') as `training`
             			FROM #__emundus_setup_letters as l
             			left join #__emundus_setup_letters_repeat_status as lrs on lrs.parent_id=l.id
-            			left join #__emundus_setup_letters_repeat_training as lrt on lrt.parent_id=l.id
-            			WHERE l.id=" . $id;
+						left join #__emundus_setup_letters_repeat_training as lrt on lrt.parent_id=l.id ";
+
+			if (isset($id) && !empty($id))
+				$query .= 'WHERE l.id=' . $id;
+
             $this->_db->setQuery($query);
             return $this->_db->loadAssocList();
         }

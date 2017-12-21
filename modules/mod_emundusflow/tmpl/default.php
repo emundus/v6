@@ -52,19 +52,25 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
       <?php endif; ?>
     <?php elseif ($paid == 0 && $orderCancelled): ?>
       <i class="large ban outline icon"></i>
+    <?php elseif ($scholarship) :?>
+      <i class="large student icon"></i>
     <?php else: ?>
       <i class="large add to cart icon"></i>
     <?php endif; ?>
     <div class="content">
       <?php if (!isset($sentOrder) || $sentOrder->order_payment_method != 'paybox') :?>
-        <div class="description"> <?php echo  ($paid>0)?JText::_('APPLICATION_PAID'):JText::_('APPLICATION_NOT_PAID'); ?> </div>
+        <?php if ($scholarship) :?>
+          <div class="description"> <?php echo JText::_('HAS_SCHOLARSHIP'); ?> </div>
+        <?php else: ?>
+          <div class="description"> <?php echo  ($paid>0)?JText::_('APPLICATION_PAID'):JText::_('APPLICATION_NOT_PAID'); ?> </div>
+        <?php endif; ?>
       <?php else :?>
         <div class="description"> <?php echo  ($paid>0)?JText::_('APPLICATION_PAID'):JText::_('PAID_VIA_CARD'); ?> </div>
       <?php endif; ?>
       <div class="description"> <?php echo  ($paid==0 && count($sentOrder)>0 && $sentOrder->order_payment_method != 'paybox')?JText::_('AWAITING_PAYMENT'):'' ?> </div>
       <div class="description">
         <?php echo  ($paid==0 && count($sentOrder)>0 && $sentOrder->order_payment_method == 'paybox')?'<a href="'.$checkout_url.'" title="'.JText::_('RETRY_PAYMENT').'">'.JText::_('RETRY_PAYMENT').'</a>':''; ?>
-        <?php echo  ($paid==0 && count($sentOrder)==0 && $forms>=100 && $attachments>=100 && !$orderCancelled)?'<a href="'.$checkout_url.'" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>':''; ?>
+        <?php echo  ($paid==0 && count($sentOrder)==0 && $forms>=100 && $attachments>=100 && !$orderCancelled && !isset($scholarship))?'<a href="'.$checkout_url.'" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>':''; ?>
         <?php echo  ($paid==0 && count($sentOrder)==0 && $forms>=100 && $attachments>=100 && $orderCancelled)?'<a href="'.$checkout_url.'" title="'.JText::_('PAYMENT_DECLINED').'">'.JText::_('PAYMENT_DECLINED').'</a>':''; ?>
       </div>
     </div>
@@ -77,3 +83,8 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
     </div>
   </div>
 </div>
+<?php
+if ($sent>0) {
+  echo '<style type="text/css"> .submit_form {display: none;} </style>';
+}
+?>

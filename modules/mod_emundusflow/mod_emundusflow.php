@@ -82,6 +82,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 				// If he hasn't, no discount for him.
 				if ($uploaded_document == 0)
 					$scholarship_document = NULL;
+				else
+					$scholarship = true;
 
 			}
 

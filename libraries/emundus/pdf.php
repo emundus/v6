@@ -661,7 +661,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 	// Get form HTML
 	$htmldata = '';
-    $forms ='';
+	$forms ='';
 	if ($form_post)
 		$forms = $m_application->getFormsPDF($user_id, $fnum, $application_form_order);
 
@@ -803,7 +803,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 	$htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
 
-
 	if (!empty($htmldata)) {
 		$pdf->startTransaction();
 		$start_y = $pdf->GetY();
@@ -820,7 +819,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 	@chdir('tmp');
 	if ($output) {
-		if (@$current_user->applicant != 1) {
+		if (!isset($current_user->applicant) && @$current_user->applicant != 1) {
 			//$output?'FI':'F'
 			$name = 'application_form_'.date('Y-m-d_H-i-s').'.pdf';
 			$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.$name, 'FI');
