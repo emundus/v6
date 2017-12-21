@@ -50,7 +50,12 @@ class EmundusViewChecklist extends JViewLegacy
 		$this->assignRef('confirm_form_url', $confirm_form_url);
 
 		$end_date = new JDate($this->_user->fnums[$this->_user->fnum]->end_date);
-		if ($end_date > JFactory::getDate()->format('Y-m-d H:i:s')) {
+
+		$offset 	= $app->get('offset', 'UTC');
+		$dateTime 	= new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+		$now 		= $dateTime->setTimezone(new DateTimeZone($offset));
+
+		if ($end_date < $now) {
 			include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 			$m_checklist = new EmundusModelChecklist;
 			$m_checklist->setDelete(0, $this->_user);

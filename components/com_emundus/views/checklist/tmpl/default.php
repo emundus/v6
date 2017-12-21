@@ -77,7 +77,7 @@ if ($this->show_info_panel) :
                     $div .= '<tr>
                         <td>';
                         if($item->can_be_viewed==1) {
-                        $div .= '<a class="btn btn-xs" href="'.$chemin.$user->id .'/'.$item->filename .'" target="_blank"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> '.JText::_('VIEW').'</a>';
+                        $div .= '<a class="btn btn-success btn-xs" href="'.$chemin.$user->id .'/'.$item->filename .'" target="_blank"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> '.JText::_('VIEW').'</a>';
                         }
                         else {
                         $div .= JText::_('CANT_VIEW') ;
