@@ -54,38 +54,7 @@ $m_files        = new EmundusModelFiles;
 $m_campaign     = new EmundusModelCampaign;
 $m_emails       = new EmundusModelEmails;
 
-// Application fees
-if ($application_fee == 1) {
-    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
-    $fnumInfos = $m_files->getFnumInfos($student->fnum);
-    if (count($fnumInfos) > 0) {
-        $paid = count($m_application->getHikashopOrder($fnumInfos))>0?1:0;
-
-        if (!$paid) {
-
-            if (isset($scholarship_document)) {
-				// See if applicant has uploaded the required scolarship form.
-				try {
-					$query = 'SELECT count(id) FROM #__emundus_uploads
-								WHERE attachment_id = '.$scholarship_document.'
-								AND fnum LIKE '.$db->Quote($user->fnum);
-					$db->setQuery($query);
-					$uploaded_document = $db->loadResult();
-				} catch (Exception $e) {
-					JLog::Add('Error in plugin/isApplicationCompleted at SQL query : '.$query, Jlog::ERROR, 'plugins');
-				}
-				// If he hasn't, no discount for him.
-				if ($uploaded_document == 0)
-					$scholarship_document = NULL;
-			}
-
-            $checkout_url = $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($student->profile.$scholarship_document))).'&usekey=fnum&rowid='.$user->fnum;
-            $app->redirect(JRoute::_($checkout_url));
-        }
-
-    } else $app->redirect('index.php');
-}
 // get current applicant course
 $campaign = $m_campaign->getCampaignByID($student->campaign_id);
 
