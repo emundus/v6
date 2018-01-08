@@ -608,7 +608,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$m_users = new EmundusModelUsers();
 		$res = $m_users->editUser($newuser);
 
-		if ($res !== false || !is_array($res)) {
+		if ($res === true || !is_array($res)) {
 			$res = true;
 			$msg = JText::_('USERS_EDITED');
 		} else {
