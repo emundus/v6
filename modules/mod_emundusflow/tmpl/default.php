@@ -52,14 +52,14 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
       <?php endif; ?>
     <?php elseif ($paid == 0 && $orderCancelled): ?>
       <i class="large ban outline icon"></i>
-    <?php elseif ($scholarship) :?>
+    <?php elseif (isset($scholarship) && $scholarship) :?>
       <i class="large student icon"></i>
     <?php else: ?>
       <i class="large add to cart icon"></i>
     <?php endif; ?>
     <div class="content">
       <?php if (!isset($sentOrder) || $sentOrder->order_payment_method != 'paybox') :?>
-        <?php if ($scholarship) :?>
+        <?php if (isset($scholarship) && $scholarship) :?>
           <div class="description"> <?php echo JText::_('HAS_SCHOLARSHIP'); ?> </div>
         <?php else: ?>
           <div class="description"> <?php echo  ($paid>0)?JText::_('APPLICATION_PAID'):JText::_('APPLICATION_NOT_PAID'); ?> </div>
@@ -79,7 +79,7 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
   <div class="<?php echo $sent>0?'completed':''; ?> step">
     <i class="large time outline icon"></i>
     <div class="content">
-      <div class="description"><span class="label label-<?php echo $current_application->class; ?>"> <?php echo @$current_application->value; ?></span> <?php echo $btn_send; ?></div>
+      <div class="description"><span class="label label-<?php echo $current_application->class; ?>"> <?php echo @$current_application->value; ?></span></div>
     </div>
   </div>
 </div>

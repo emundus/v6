@@ -66,14 +66,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$attachments 		= $m_application->getAttachmentsProgress($user->id, $user->profile, array_keys($applications));
 	$forms 				= $m_application->getFormsProgress($user->id, $user->profile, array_keys($applications));
 
-	// If an application fee is set, we redirect to the "send application" form, this form will redirect to payment if required.
-	/*if ($application_fee == 1)
-		$confirm_form_url = "/index.php?option=com_fabrik&amp;view=form&amp;formid=258&amp;Itemid=1483";
-	else
-		$confirm_form_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;*/
-
-	// Routing all completed applications though the "isApplicationCompleted" plugin (which is active on the form) seems to work better than using the getConfirmUrl method.
-	$confirm_form_url = "/index.php?option=com_fabrik&amp;view=form&amp;formid=258&amp;Itemid=1483";
+	// We redirect to the "send application" form, this form will redirect to payment if required.
+	$confirm_form_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
 
 	// If the user can
 	$profile = $m_profile->getCurrentProfile($user->id);

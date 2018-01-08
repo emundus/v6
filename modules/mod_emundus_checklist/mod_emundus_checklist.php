@@ -22,7 +22,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	//require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 	//require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	//require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-	
+
 	$db = JFactory::getDBO();
 	$document = JFactory::getDocument();
 	$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
@@ -32,7 +32,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 		$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$header_class.".css" );
 	}
 	$document->addStyleSheet("media/com_emundus/css/emundus.css" );
-	
+
 	$app = JFactory::getApplication();
 	$jinput = $app->input;
 	$option = $jinput->get('option');
@@ -62,7 +62,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$query = 'SELECT esa.value, esap.id, esa.id as _id, esap.mandatory, esap.duplicate
 		FROM #__emundus_setup_attachment_profiles esap
 		JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id
-		WHERE esap.displayed = 1 '.$and.' AND esap.profile_id ='.$user->profile.' 
+		WHERE esap.displayed = 1 '.$and.' AND esap.profile_id ='.$user->profile.'
 		ORDER BY esa.ordering';
 
 	$db->setQuery( $query );
@@ -70,10 +70,10 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
 	$mandatory_documents = array();
 	$optional_documents = array();
-	
+
 	if (count($documents) > 0) {
 		foreach ($documents as $document) {
-			if ($document->mandatory == 1) 
+			if ($document->mandatory == 1)
 				$mandatory_documents[] = $document;
 			else
 				$optional_documents[] = $document;
