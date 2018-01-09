@@ -1,9 +1,9 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 3: qcm.php 89 2016-12-07 Benjamin Rivalland
+ * @version 3.8: qcm.php 89 2017-01-05 Benjamin Rivalland
  * @package Fabrik
- * @copyright Copyright (C) 2016 eMundus. All rights reserved.
+ * @copyright Copyright (C) 2017 eMundus. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -125,7 +125,7 @@ if (empty($formModel->getRowId())) {
 
 		if ($reload == 0) {
 			$reload = 1;
-			$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&rq=".$reload.$purl);
+			$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&rq=1&rq=".$reload.$purl);
 		}
 		
 	}
@@ -150,7 +150,7 @@ else {
 		    JLog::add($error, JLog::ERROR, 'com_emundus');
 		}
 		JFactory::getApplication()->enqueueMessage(JText::_('QCM_ALREADY_DONE'), 'error');
-		$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&rq=".$reload."&result=".$result);
+		$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&rq=1&rq=".$reload."&result=".$result);
 	}
 }
 
