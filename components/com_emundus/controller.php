@@ -499,6 +499,11 @@ class EmundusController extends JControllerLegacy {
         $nb = 0;
 
         if (!file_exists(EMUNDUS_PATH_ABS.$user->id)) {
+
+            // An error would occur when the index.html file was missing, the 'Unable to create user file' error appeared yet the folder was created.
+            if (!file_exists(EMUNDUS_PATH_ABS.'index.html'))
+                touch(EMUNDUS_PATH_ABS.'index.html');
+
             if (!mkdir(EMUNDUS_PATH_ABS.$user->id) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html')){
                 $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> Unable to create user file';
                 JLog::add($error, JLog::ERROR, 'com_emundus');
