@@ -979,13 +979,13 @@ class EmundusModelApplication extends JModelList
                                     elseif ($element->plugin=='birthday' && $element->content>0) {
                                         $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
                                     }
-                                    elseif ($element->plugin=='databasejoin') {
+                                    elseif ($element->plugin=='databasejoin' && isset($element->content)) {
                                         $params = json_decode($element->params);
 
                                         $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
 
                                         if ($params->database_join_display_type == 'checkbox'){
-                                            $elt = implode(", ", json_decode (@$element->content));
+                                            $elt = implode(", ", json_decode ($element->content));
                                         }
                                         else {
                                             $from = $params->join_db_name;
