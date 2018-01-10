@@ -23,13 +23,9 @@ if (!empty($this->applications)) : ?>
       <p>
         <?php echo JText::_('FILE_NUMBER'); ?> : <i><?php echo $application->fnum; ?></i>
       </p>
-      <a class="btn btn-warning btn-xs" href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum).'&Itemid='.$Itemid.'#em-panel'); ?>"  role="button">
-          <i class="folder open outline icon"></i> <?php echo JText::_('OPEN_APPLICATION'); ?>
-      </a>
 
-      <?php if((int)($this->attachments[$application->fnum])>=100 && $application->status==0) : ?>
-        <a class="btn btn-xs" href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($this->confirm_form_url)); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
-      <?php endif; ?>
+      <a id='print' class="btn btn-info" href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=pdf'); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?> "> <i class="icon-print"></i> <?php echo JText::_('PRINT_APPLICATION_FILE'); ?></a>
+
     </div>
 
     <div class="col-xs-6 col-md-4">
