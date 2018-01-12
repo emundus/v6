@@ -1,6 +1,8 @@
 <?php
 defined('_JEXEC') or die; 
 
+header('Content-Type: text/html; charset=utf-8');
+
 $lang = JFactory::getLanguage();
 $locallang = $lang->getTag(); 
 if ($locallang == "fr-FR") {
@@ -57,7 +59,7 @@ if ($locallang == "fr-FR") {
                 <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
                 <?php } else {
                     $oldmonth = '';
-                    
+
                     foreach($currentCampaign as $resul) {
                         $dteStart = new DateTime($now); 
                         $dteEnd   = new DateTime($resul->end_date);
@@ -66,10 +68,11 @@ if ($locallang == "fr-FR") {
                         $h = $dteDiff->format("%H"); 
 
                         if ($order == "start_date") {
-                            $month = strftime("%B %Y", strtotime($resul->start_date));
+                            $month = utf8_encode(strftime("%B %Y", strtotime($resul->start_date)));
                         } else {
-                            $month = strftime("%B %Y", strtotime($resul->end_date));
+                            $month = utf8_encode(strftime("%B %Y", strtotime($resul->end_date)));
                         }
+
                         if ($oldmonth != $month) {
                             if (!empty($oldmonth)) { ?>
                     </div> <!-- close campaign block (rt12 toclose) -->
