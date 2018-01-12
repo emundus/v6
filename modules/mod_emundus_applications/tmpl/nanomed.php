@@ -2,7 +2,7 @@
 /**
  * @package   Joomla.Site
  * @subpackage  eMundus
- * @copyright Copyright (C) 2015 emundus.fr. All rights reserved.
+ * @copyright Copyright (C) 2018 emundus.fr. All rights reserved.
  * @license   GNU General Public License version 2 or later; see LICENSE.txt
  */
 // no direct access
@@ -40,20 +40,11 @@ echo $description;
       <?php endif; ?>
 
       <?php if($application->status<=1) : ?>
-        <a id="trash" class="btn btn-danger" onClick="deletefile('<?php echo $application->fnum; ?>');" href="#row<?php echo $attachments[$application->fnum]; ?>" title="<?php echo JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> <?php echo JText::_('Delete'); ?></a>
-        <?php if ($application->fnum == $user->fnum): ?>
-          <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=pdf'); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>"><i class"icon-print"></i></a>
-        <?php endif; ?>
-        <?php
-        /*if($forms[$application->fnum] == 0) {
-          echo '
-            <div class="ui segments">
-              <div class="ui yellow segment">
-                <p><i class="info circle icon"></i> '.JText::_('MOD_EMUNDUS_FLOW_EMPTY_FILE_ACTION').'</p></p>
-              </div>
-            </div>';
-        }*/
-        ?>
+        
+        <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=pdf&fnum='.$application->fnum); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
+
+        <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?php echo $application->fnum; ?>');" href="#row<?php echo $attachments[$application->fnum]; ?>" title="<?php echo JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
+
       <?php endif; ?>
     </div>
 
