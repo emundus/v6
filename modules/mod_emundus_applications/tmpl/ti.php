@@ -2,7 +2,7 @@
 /**
  * @package   Joomla.Site
  * @subpackage  eMundus
- * @copyright Copyright (C) 2015 emundus.fr. All rights reserved.
+ * @copyright Copyright (C) 2018 emundus.fr. All rights reserved.
  * @license   GNU General Public License version 2 or later; see LICENSE.txt
  */
 // no direct access
@@ -41,12 +41,12 @@ echo $description;
       <?php if((int)($attachments[$application->fnum])>=100 && $application->status==0) : ?>
         <a class="btn btn-success btn-xs" href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($confirm_form_url)); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
       <?php endif; ?>
+
+      <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=pdf&fnum='.$application->fnum); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
       
       <?php if($application->status<=1) : ?>
         <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?php echo $application->fnum; ?>');" href="#row<?php echo $attachments[$application->fnum]; ?>" title="<?php echo JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
-        <?php if ($application->fnum == $user->fnum): ?>
-          <a id='print' class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base(true).'index.php?option=com_emundus&task=pdf'); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>"><i class="icon-print"></i></a>
-        <?php endif; ?>
+
         <?php 
         if($forms[$application->fnum] == 0) {
           echo '

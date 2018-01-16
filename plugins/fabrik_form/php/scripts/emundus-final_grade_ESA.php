@@ -20,13 +20,19 @@ $jinput 	= JFactory::getApplication()->input;
 $sid 	= $jinput->get('jos_emundus_final_grade___student_id');
 $fnum 	= $jinput->get('jos_emundus_final_grade___fnum');
 $status = $jinput->get('jos_emundus_final_grade___final_grade', null, 'ARRAY');
+$engaged = $jinput->get('jos_emundus_final_grade___engaged', false);
+
+
 
 if (!empty($status[0])) {
 
 	switch ($status[0]) {
 
 		case 4:
-			$step = 7;
+			if ($engaged == 1)
+				$step = 7;
+			else
+				$step = 8;
 			break;
 
 		case 3:

@@ -596,7 +596,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$newuser['em_groups'] 		= JRequest::getVar('groups', null, 'POST', '', 0);
 		$newuser['news'] 			= JRequest::getVar('newsletter', null, 'POST', 'string',0);
 
-		if (preg_match('/^[a-z0-9.-_@]*$/', $newuser['username']) !== 1) {
+		if (preg_match('/^[0-9a-zA-Z\_\@\-\.]+$/', $newuser['username']) !== 1) {
 			echo json_encode((object)array('status' => false, 'msg' => 'LOGIN_NOT_GOOD'));
 			exit;
 		}

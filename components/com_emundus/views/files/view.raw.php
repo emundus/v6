@@ -50,7 +50,7 @@ class EmundusViewFiles extends JViewLegacy
 
 	   	$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_emundus');
-		//$default_actions = $params->get('default_actions', 0);
+		$default_actions = $params->get('default_actions', 0);
 
 	    $this->itemId = $app->input->getInt('Itemid', null);
 	    $this->cfnum = $app->input->getString('cfnum', null);
