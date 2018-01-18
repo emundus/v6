@@ -118,7 +118,7 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron
 				// Set sender
 				$sender = [
 					$mail_from_address,
-					$mail_from_name
+					$fromname
 				];
 
                 $mailer->setSender($sender);
