@@ -79,7 +79,7 @@ class EmundusModelEmails extends JModelList
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_profile_id as eser ON eser.parent_id=eset.id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_group_id as eserg ON eserg.parent_id=eset.id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_user_id as eseru ON eseru.parent_id=eset.id
-                  WHERE eset.step='.$this->_db->Quote($step).' AND eset.to_applicant IN ('.$this->_db->Quote($to_applicant).') AND esp.code IN ("'.implode('","', $code).'")';
+                  WHERE eset.step='.$step.' AND eset.to_applicant IN ('.$to_applicant.') AND esp.code IN ("'.implode('","', $code).'")';
         $this->_db->setQuery( $query );
         $triggers = $this->_db->loadObjectList();
 
