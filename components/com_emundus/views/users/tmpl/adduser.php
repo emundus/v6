@@ -40,7 +40,7 @@
 	</fieldset>
 	<fieldset>
 		<div class="form-group">
-			<label class="control-label" for="profile"><?php echo JText::_('PROFILE_FORM'); ?></label>
+			<label class="control-label" for="profiles"><?php echo JText::_('PROFILE_FORM'); ?></label>
 			<br/>
 			<select id="profiles" name="profiles" class="em-chosen">
 				<option value="0"><?php echo JText::_('PLEASE_SELECT')?></option>
@@ -48,6 +48,16 @@
 					<option id="<?php echo $profile->acl_aro_groups?>" value="<?php echo $profile->id?>"  pub="<?php echo $profile->published?>" <?php if(($this->edit == 1) && ($profile->id == $this->user['profile'])){echo 'selected="true"';}?>><?php echo trim($profile->label);?></option>
 				<?php endforeach;?>
 			</select>
+			<br/><br/>
+			<div class="form-group em-hidden-appli-fields" <?php if(($this->edit != 1) || (empty($this->uOprofiles))){echo 'style="display:none;"';}?>>
+				<label class="control-label" for="otherprofile"><?php echo JText::_('OTHER_PROFILES'); ?></label><br/>
+				<select id="oprofiles" name="otherprofiles" size="5" multiple="multiple" class="em-chosen">
+					<option value="0"><?php echo JText::_('PLEASE_SELECT')?></option>
+					<?php foreach($this->profiles as $otherprofile):?>
+						<option id="<?php echo $otherprofile->acl_aro_groups?>" value="<?php echo $otherprofile->id?>" <?php if(($this->edit == 1) && (array_key_exists($otherprofile->id, $this->uOprofiles))){echo 'selected="true"';}?>><?php echo trim($otherprofile->label);?></option>
+					<?php endforeach;?>
+				</select>
+			</div>
 		</div>
 		<div class="form-group em-hidden-nonapli-fields" <?php if(($this->edit != 1) || ($this->user['university_id'] == 0)){echo 'style="display:none;"';}?>>
 			<label for="university_id"><?php echo JText::_('UNIVERSITY_FROM'); ?></label>

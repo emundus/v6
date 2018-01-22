@@ -438,6 +438,113 @@ class EmundusController extends JControllerLegacy {
         $this->setRedirect($redirect);
     }
 
+     // *****************switch profile controller************
+    
+     function switchprofile() {
+        include_once (JPATH_SITE.'/components/com_emundus/models/profile.php');
+        
+
+        $profile_fnum = JRequest::getVar('profnum', null, 'POST', 'none', 0);
+       
+        $ids= explode('.', $profile_fnum[0]);
+        $profile = $ids[0];
+        
+        
+        $current_user 	= JFactory::getUser();
+        $session    = JFactory::getSession();
+        $aid        = $session->get('emundusUser');
+
+        $model = new EmundusModelProfile;
+        
+        foreach($aid->emProfiles as $emProfile){
+            if($emProfile->id == $profile){
+    
+                if (!in_array($profile, array(1,2,3,4,5,6)) ) {
+                    $fnum = $ids[1];
+                    if($fnum !== ""){
+                        $infos = $model->getFnumDetails($fnum);
+                        
+                        $profile        = $model->getProfileByCampaign($infos['campaign_id']);
+                        $campaign       = $model->getCampaignById($infos['campaign_id']);
+                        $application    = $model->getFnumDetails($fnum);
+                    
+                        if ($aid->id != $infos['applicant_id']) return;
+                        //unset($aid->id);
+                        //$aid->groups[$profile["acl_aro_groups"]]  = $profile["acl_aro_groups"];
+                        $aid->profile       = $profile['profile_id'];
+                        $aid->profile_label = $profile['label'];
+                        $aid->menutype      = $profile['menutype'];
+                        $aid->start_date    = $profile['start_date'];
+                        $aid->end_date      = $profile['end_date'];
+                        $aid->candidature_posted = $infos['submitted'];
+                        $aid->candidature_incomplete = $infos['status']==0?1:0;
+                        $aid->schoolyear    = $campaign['year'];
+                        $aid->code          = $campaign['training'];
+                        $aid->campaign_id   = $infos['campaign_id'];
+                        $aid->campaign_name = $campaign['label'];
+                        $aid->fnum          = $fnum;
+                        $aid->university_id = null;
+                        $aid->applicant     = 1;
+                        $aid->status        = $application['status'];
+                    }  else{
+                        $aid->profile       = $profile;
+                    }
+                }else{ 
+                    if(isset($aid->start_date)){
+                        unset($aid->start_date);
+                    }
+                    if(isset($aid->end_date)){
+                        unset($aid->end_date);
+                    }
+                    if(isset($aid->candidature_posted)){
+                        unset($aid->candidature_posted);
+                    }
+                    if(isset($aid->candidature_incomplete)){
+                        unset($aid->candidature_incomplete);
+                    }
+                    if(isset($aid->schoolyear)){
+                        unset($aid->schoolyear);
+                    }
+                    if(isset($aid->code)){
+                        unset($aid->code);
+                    }
+                    if(isset($aid->campaign_id)){
+                        unset($aid->campaign_id);
+                    }
+                    if(isset($aid->campaign_name)){
+                        unset($aid->campaign_name);
+                    }
+                    if(isset($aid->fnum)){
+                        unset($aid->fnum);
+                    }
+                    if(isset($aid->status)){
+                        unset($aid->status);
+                    }
+                    if(isset($aid->fnums)){
+                        unset($aid->fnums);
+                    }
+                
+                    $aid->profile                = $profile;
+
+                    $profile = $model->getProfileById($profile);
+
+                    $aid->profile_label          = $profile["label"];
+                    $aid->menutype               = $profile["menutype"];
+                    //$aid->university_id          = $profile["university_id"];
+                   // unset($aid->id);
+                   //S $aid->groups[$profile["acl_aro_groups"]]  = $profile["acl_aro_groups"];
+                    $aid->applicant              = 0;
+
+                
+                }
+            }
+        }
+        $session->set('emundusUser', $aid);
+
+        echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
+
+        exit;
+    }
 
     function upload() {
         $eMConfig = JComponentHelper::getParams('com_emundus');

@@ -103,10 +103,12 @@ class EmundusViewUsers extends JViewLegacy
 			$user  = $userModel->getUserInfos($uid);
 			$uGroups = $userModel->getUserGroups($uid);
 			$uCamps = $userModel->getUserCampaigns($uid);
-
+			$uOprofiles = $userModel->getUserOprofiles($uid);
 			$this->assignRef('user', $user);
 			$this->assignRef('uGroups', $uGroups);
 			$this->assignRef('uCamps', $uCamps);
+			$this->assignRef('uOprofiles', $uOprofiles);
+			
 		}
 		$this->assignRef('edit', $edit);
 
