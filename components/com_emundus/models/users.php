@@ -757,6 +757,15 @@ class EmundusModelUsers extends JModelList
                         $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user->id.",".$profile.",'','')";
                         $db->setQuery( $query );
                         $db->Query();
+
+                        $query = 'SELECT `group_id` FROM `#__emundus_groups` WHERE user_id='.$user->id;
+                        $db->setQuery($query);
+                        $em_group_id= $db->loadColumn();
+                        if (!in_array(1, $em_group_id)) { 
+                            $query="INSERT INTO `#__emundus_groups` VALUES ('',".$user->id.",1)";
+                            $db->setQuery( $query );
+                            $db->Query();
+                        }
                     }
                 }
 
@@ -1495,6 +1504,12 @@ class EmundusModelUsers extends JModelList
                     }
                 }
             }
+            if (!in_array($user['profile'], array(8)) ) {
+                $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user['id'].",".$user['profile'].",'','')";
+                $db->setQuery( $query );
+                $db->Query();
+            }
+
             if (!empty($user['em_oprofiles'])) {
                 $oprofiles = explode(',', $user['em_oprofiles']);
 
@@ -1503,10 +1518,12 @@ class EmundusModelUsers extends JModelList
                 $group_id= $db->loadColumn();
 
                 foreach ($oprofiles as $profile) {
+                    if($profile != $user['profile']){
                         $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user['id'].",".$profile.",'','')";
                         $db->setQuery( $query );
                         $db->Query();
-
+                        
+                        // add user groups and usergroup_id = 7 to have all rights
                         $query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id='.$profile;
                         $db->setQuery($query);
                         $acl_aro_group = $db->loadColumn();
@@ -1515,7 +1532,22 @@ class EmundusModelUsers extends JModelList
                             $query="INSERT INTO `#__user_usergroup_map` VALUES (".$user['id'].",".$acl_aro_group[0].")";
                             $db->setQuery( $query );
                             $db->Query();
+                            if (!in_array(7, $group_id)) { 
+                                $query="INSERT INTO `#__user_usergroup_map` VALUES (".$user['id'].",7)";
+                                $db->setQuery( $query );
+                                $db->Query();
+                            }
+                            // add emundus group id
+                                $query = 'SELECT `group_id` FROM `#__emundus_groups` WHERE user_id='.$user['id'];
+                                $db->setQuery($query);
+                                $em_group_id= $db->loadColumn();
+                                if (!in_array(1, $em_group_id)) { 
+                                    $query="INSERT INTO `#__emundus_groups` VALUES ('',".$user['id'].",1)";
+                                    $db->setQuery( $query );
+                                    $db->Query();
+                                }
                         }
+                    }
                 }
             }
            

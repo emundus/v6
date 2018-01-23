@@ -49,8 +49,8 @@
 				<?php endforeach;?>
 			</select>
 			<br/><br/>
-			<div class="form-group em-hidden-appli-fields" <?php if(($this->edit != 1) || (empty($this->uOprofiles))){echo 'style="display:none;"';}?>>
-				<label class="control-label" for="otherprofile"><?php echo JText::_('OTHER_PROFILES'); ?></label><br/>
+			<div >
+				<label class="control-label" for="otherprofile"><?php echo JText::_('ALL_PROFILES'); ?></label><br/>
 				<select id="oprofiles" name="otherprofiles" size="5" multiple="multiple" class="em-chosen">
 					<option value="0"><?php echo JText::_('PLEASE_SELECT')?></option>
 					<?php foreach($this->profiles as $otherprofile):?>

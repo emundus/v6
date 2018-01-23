@@ -563,6 +563,7 @@ class EmundusModelProfile extends JModelList
 		
 		} else {
 			$emundusSession->profile                = $profile["profile"];
+			$emundusSession->emProfiles = $this->getUserProfiles($current_user->id);
 			$emundusSession->profile_label          = $profile["profile_label"];
 			$emundusSession->menutype               = $profile["menutype"];
 			$emundusSession->university_id          = $profile["university_id"];
@@ -576,7 +577,7 @@ class EmundusModelProfile extends JModelList
 	}
 
 	// -----------------switch profile funcion----------------------------------
-	public function switchProfile($profile) {
+	/*public function switchProfile($profile) {
         try {
             $u = JFactory::getUser()->id;
             $user = JFactory::getSession()->get('emundusUser');
@@ -596,7 +597,7 @@ class EmundusModelProfile extends JModelList
             error_log($e->getMessage(), 0);
             return false;
         }
-    }
+    }*/
 
 
 	/**
