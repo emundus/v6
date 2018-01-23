@@ -1467,8 +1467,9 @@ class EmundusModelUsers extends JModelList
             $db->setQuery('delete from #__emundus_users_profiles WHERE user_id='.$user['id']);
             $db->query();
 
-            $db->setQuery( "INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user['id'].",".$user['profile'].",'','')" );
-            $db->Query();
+            
+
+            
 
             if (!empty($user['em_groups'])) {
                 $groups = explode(',', $user['em_groups']);
@@ -1496,12 +1497,28 @@ class EmundusModelUsers extends JModelList
             }
             if (!empty($user['em_oprofiles'])) {
                 $oprofiles = explode(',', $user['em_oprofiles']);
+
+                $query = 'SELECT `group_id` FROM #__user_usergroup_map WHERE user_id='.$user['id'];
+                $db->setQuery($query);
+                $group_id= $db->loadColumn();
+
                 foreach ($oprofiles as $profile) {
                         $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user['id'].",".$profile.",'','')";
                         $db->setQuery( $query );
                         $db->Query();
+
+                        $query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id='.$profile;
+                        $db->setQuery($query);
+                        $acl_aro_group = $db->loadColumn();
+                        
+                        if (!in_array($acl_aro_group[0], $group_id)) {                            
+                            $query="INSERT INTO `#__user_usergroup_map` VALUES (".$user['id'].",".$acl_aro_group[0].")";
+                            $db->setQuery( $query );
+                            $db->Query();
+                        }
                 }
             }
+           
 
 
             if ($user['news'] == 1) {

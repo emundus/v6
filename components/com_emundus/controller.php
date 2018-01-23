@@ -488,6 +488,10 @@ class EmundusController extends JControllerLegacy {
                         $aid->status        = $application['status'];
                     }  else{
                         $aid->profile       = $profile;
+                        $profiles = $model->getProfileById($profile);
+    
+                        $aid->profile_label          = $profiles["label"];
+                        $aid->menutype               = $profiles["menutype"];
                     }
                 }else{ 
                     if(isset($aid->start_date)){
@@ -526,10 +530,10 @@ class EmundusController extends JControllerLegacy {
                 
                     $aid->profile                = $profile;
 
-                    $profile = $model->getProfileById($profile);
+                    $profiles = $model->getProfileById($profile);
 
-                    $aid->profile_label          = $profile["label"];
-                    $aid->menutype               = $profile["menutype"];
+                    $aid->profile_label          = $profiles["label"];
+                    $aid->menutype               = $profiles["menutype"];
                     //$aid->university_id          = $profile["university_id"];
                    // unset($aid->id);
                    //S $aid->groups[$profile["acl_aro_groups"]]  = $profile["acl_aro_groups"];
