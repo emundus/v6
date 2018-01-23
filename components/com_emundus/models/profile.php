@@ -345,7 +345,7 @@ class EmundusModelProfile extends JModelList
 		if (count($code)>0) {
 			$query = 'SELECT DISTINCT(esc.profile_id)
 						FROM  #__emundus_setup_campaigns AS esc 
-						WHERE esc.training IN ("'.implode('","', $code).'")';		
+						WHERE esc.published=1 AND esc.training IN ("'.implode('","', $code).'")';		
 			try
 	        {
 	            $this->_db->setQuery( $query ); 
