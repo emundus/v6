@@ -1018,8 +1018,8 @@ class EmundusHelperFiles
             $profiles = $h_files->getApplicants();
             foreach ($profiles as $prof) {
                 $profile .= '<option value="'.$prof->id.'"';
-                if(!empty($oprofiles) && (in_array($prof->id, $oprofiles) || $prof->id == $oprofiles))
-                    $profile .= ' selected="true"';
+                /*if(!empty($oprofiles) && (in_array($prof->id, $oprofiles) || $prof->id == $oprofiles))
+                    $profile .= ' selected="true"';*/
                 $profile .= '>'.$prof->label.'</option>';
             }
             $profile .= '</select>';

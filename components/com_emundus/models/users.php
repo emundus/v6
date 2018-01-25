@@ -236,7 +236,6 @@ class EmundusModelUsers extends JModelList
                 $and = true;
             }
             if (isset($oprofiles) && !empty($oprofiles) ) {
-
                 $query.= ' AND eup.profile_id IN ("'.implode('","', $oprofiles).'")';
                 $and = true;
             }
@@ -250,13 +249,13 @@ class EmundusModelUsers extends JModelList
             if (isset($search) && !empty($search)) {
                 if ($and) $query .= ' AND ';
                 else { $and = true; $query .=' '; }
-
-                $query .= '(e.lastname LIKE "%'.$db->Quote($search).'%"
-                            OR e.firstname LIKE "%'.$db->Quote($search).'%"
-                            OR u.email LIKE "%'.$db->Quote($search).'%"
-                            OR e.schoolyear LIKE "%'.$db->Quote($search).'%"
-                            OR u.username LIKE "%'.$db->Quote($search).'%"
-                            OR u.id LIKE "%'.$db->Quote($search).'%")';
+               
+                $query .= '(e.lastname LIKE '.$db->Quote('%'.$search.'%').'
+                            OR e.firstname LIKE '.$db->Quote('%'.$search.'%').'
+                            OR u.email LIKE '.$db->Quote('%'.$search.'%').'
+                            OR e.schoolyear LIKE '.$db->Quote('%'.$search.'%').'
+                            OR u.username LIKE '.$db->Quote('%'.$search.'%').'
+                            OR u.id LIKE '.$db->Quote('%'.$search.'%').')';
             }
             /*if(isset($schoolyears) &&  !empty($schoolyears)) {
                 if($and) $query .= ' AND ';
@@ -288,7 +287,6 @@ class EmundusModelUsers extends JModelList
         }
 
         $query .= " GROUP BY u.id ";
-
         return $query;
     }
 
