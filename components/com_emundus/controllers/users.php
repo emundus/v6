@@ -60,7 +60,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		//$db = JFactory::getDBO();
 
 		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) {
-			echo json_encode((object)array('status' => false));
+			echo json_encode((object)array('status' => false, 'uid' => $uid, 'msg' => JText::_('ACCESS_DENIED')));
 			exit;
 		}
 
@@ -77,7 +77,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$groups 		= JRequest::getVar('groups', null, 'POST', 'string',0);
 		$campaigns 		= JRequest::getVar('campaigns', null, 'POST', 'string',0);
 		$news			= JRequest::getVar('newsletter', null, 'POST', 'string',0);
-		
+
 		$password 	= JUserHelper::genRandomPassword();
 		$user 		= clone(JFactory::getUser(0));
 
@@ -107,7 +107,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$other_param['em_groups'] 		= !empty($groups) ? explode(',', $groups): $groups;
 		$other_param['em_campaigns'] 	= !empty($campaigns) ? explode(',', $campaigns): $campaigns;
 		$other_param['news'] 			= $news;
-		
+
 		$m_users = new EmundusModelUsers();
 		$acl_aro_groups = $m_users->getDefaultGroup($profile);
 		$user->groups = $acl_aro_groups;
@@ -116,27 +116,19 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$user->usertype = $usertype;
 
 		$uid = $m_users->adduser($user, $other_param);
-		
+
 		if (is_array($uid)) {
 			$uid['status'] = false;
 			echo json_encode((object) $uid);
 			exit;
 		}
-
-		try {
 			//echo $uid;
-			if (!mkdir(EMUNDUS_PATH_ABS.$uid, 0755) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$uid.DS.'index.html')) {
-				echo json_encode((object)array('status' => false, 'uid' => $uid, 'msg' => JText::_('CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
-				exit;
-			}
-		} catch(Exception $e) {
-			echo json_encode((object)array('status' => false, 'msg' => $e->getMessage(), 'uid' => $uid));
-			exit;
-		}
+		if (!mkdir(EMUNDUS_PATH_ABS.$uid, 0755) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$uid.DS.'index.html'))
+			echo json_encode((object)array('status' => false, 'uid' => $uid, 'msg' => JText::_('CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
 
 		// Envoi de la confirmation de création de compte par email
 		/*
-         * @var EmundusModelEmails $m_users
+         * @var EmundusModelEmails $m_emails
 		 *  */
         $m_emails 	= $this->getModel('emails');
 		$email 	= $m_emails->getEmail('new_account');
@@ -151,13 +143,19 @@ class EmundusControllerUsers extends JControllerLegacy {
         $body 		= preg_replace($tags['patterns'], $tags['replacements'], $email->message);
         $body 		= $m_emails->setTagsFabrik($body);
 
-        $app    = JFactory::getApplication();
-        $email_from_sys = $app->getCfg('mailfrom');
+        $app = JFactory::getApplication();
+		$email_from_sys = $app->getCfg('mailfrom');
 
-        $sender = array(
-            $email_from_sys,
+		// If the email sender has the same domain as the system sender address.
+		if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+			$mail_from_address = $email->emailfrom;
+ 		else
+			$mail_from_address = $email_from_sys;
+
+        $sender = [
+            $email_from_address,
             $fromname
-        );
+		];
 
         $mailer->setSender($sender);
         $mailer->addReplyTo($email->emailfrom, $email->name);
@@ -169,7 +167,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         try {
 			$send = $mailer->Send();
-		
+
 			if ($send === false){
 				JLog::add('No email configuration!', JLog::ERROR, 'com_emundus.email');
 			} else {
@@ -181,15 +179,15 @@ class EmundusControllerUsers extends JControllerLegacy {
 				);
 				$m_emails->logEmail($message);
 			}
-		
+
 		} catch (Exception $e) {
-		
+
 			echo json_encode((object)array('status' => false, 'msg' => JText::_('EMAIL_NOT_SENT')));
 			JLog::add($e->__toString(), JLog::ERROR, 'com_emundus.email');
 			exit();
-		
+
 		}
-		
+
 		echo json_encode((object)array('status' => true, 'msg' => JText::_('USER_CREATED')));
 		exit;
 	}
@@ -596,7 +594,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$newuser['em_groups'] 		= JRequest::getVar('groups', null, 'POST', '', 0);
 		$newuser['news'] 			= JRequest::getVar('newsletter', null, 'POST', 'string',0);
 
-		if (preg_match('/^[a-z0-9.-_@]*$/', $newuser['username']) !== 1) {
+		if (preg_match('/^[0-9a-zA-Z\_\@\-\.]+$/', $newuser['username']) !== 1) {
 			echo json_encode((object)array('status' => false, 'msg' => 'LOGIN_NOT_GOOD'));
 			exit;
 		}
@@ -608,7 +606,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$m_users = new EmundusModelUsers();
 		$res = $m_users->editUser($newuser);
 
-		if ($res !== false || !is_array($res)) {
+		if ($res === true || !is_array($res)) {
 			$res = true;
 			$msg = JText::_('USERS_EDITED');
 		} else {
@@ -623,7 +621,6 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
-	
 
 	public function deleteusers() {
 		$jinput = JFactory::getApplication()->input;
@@ -702,10 +699,17 @@ class EmundusControllerUsers extends JControllerLegacy {
             $app = JFactory::getApplication();
 	        $email_from_sys = $app->getCfg('mailfrom');
 
-	        $sender = array(
-	            $email_from_sys,
-	            $fromname
-	        );
+	        // If the email sender has the same domain as the system sender address.
+            if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+                $mail_from_address = $email->emailfrom;
+            else
+				$mail_from_address = $email_from_sys;
+
+            // Set sender
+            $sender = [
+                $mail_from_address,
+                $fromname
+            ];
 
             $mailer->setSender($sender);
             $mailer->addReplyTo($from, $fromname);

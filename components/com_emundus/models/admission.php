@@ -287,7 +287,7 @@ class EmundusModelAdmission extends JModelList
 
 			if (count(@$filt_params['programme'])>0) {
 
-				foreach ((array)$filt_params['programme'] as $value) {
+				foreach ($filt_params['programme'] as $value) {
 					if ($value == $programme_code) {
 						$groups = $this->getGroupsAdmissionByProgramme($value);
 						if (!empty($groups)) {

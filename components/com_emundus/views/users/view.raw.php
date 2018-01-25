@@ -60,12 +60,12 @@ class EmundusViewUsers extends JViewLegacy
 
 	private function _loadData()
 	{
-		$userModel = new EmundusModelUsers();
-        $userModel->filts_details = $this->filts_details;
-		$users = $userModel->getUsers();
+		$m_users = new EmundusModelUsers();
+        $m_users->filts_details = $this->filts_details;
+		$users = $m_users->getUsers();
 		$this->assignRef('users', $users);
 
-		$pagination = $userModel->getPagination();
+		$pagination = $m_users->getPagination();
 		$this->assignRef('pagination', $pagination);
 
 		$lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
@@ -74,10 +74,10 @@ class EmundusViewUsers extends JViewLegacy
 	}
 
 	private function _loadFilter() {
-        $userModel = new EmundusModelUsers();
+        $m_users = new EmundusModelUsers();
         $model = new EmundusModelFiles;
-        $model->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
-        $model->fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
+        $model->code = $m_users->getUserGroupsProgrammeAssoc($this->_user->id);
+        $model->fnum_assoc = $m_users->getApplicantsAssoc($this->_user->id);
         $this->assignRef('code', $model->code);
         $this->assignRef('fnum_assoc', $model->fnum_assoc);
 
@@ -88,7 +88,7 @@ class EmundusViewUsers extends JViewLegacy
 
 	private function _loadUserForm()
 	{
-		$userModel = new EmundusModelUsers();
+		$m_users = new EmundusModelUsers();
 		$edit = JFactory::getApplication()->input->getInt('edit', null);
 
 
@@ -96,10 +96,10 @@ class EmundusViewUsers extends JViewLegacy
 		if($edit == 1)
 		{
 			$uid = JFactory::getApplication()->input->getInt('user', null);
-			$user  = $userModel->getUserInfos($uid);
-			$uGroups = $userModel->getUserGroups($uid);
-			$uCamps = $userModel->getUserCampaigns($uid);
-			$uOprofiles = $userModel->getUserOprofiles($uid);
+			$user  = $m_users->getUserInfos($uid);
+			$uGroups = $m_users->getUserGroups($uid);
+			$uCamps = $m_users->getUserCampaigns($uid);
+			$uOprofiles = $m_users->getUserOprofiles($uid);
 			
 			$this->assignRef('user', $user);
 			$this->assignRef('uGroups', $uGroups);
@@ -110,49 +110,49 @@ class EmundusViewUsers extends JViewLegacy
 		$this->assignRef('edit', $edit);
 
         if(!empty($this->filts_details['profile_users']))
-    		$profiles = $userModel->getProfilesByIDs($this->filts_details['profile_users']);
+    		$profiles = $m_users->getProfilesByIDs($this->filts_details['profile_users']);
 		else
-            $profiles = $userModel->getProfiles();
+            $profiles = $m_users->getProfiles();
         $this->assignRef('profiles', $profiles);
-		$groups = $userModel->getGroups();
+		$groups = $m_users->getGroups();
 		$this->assignRef('groups', $groups);
 
-		$campaigns = $userModel->getAllCampaigns();
+		$campaigns = $m_users->getAllCampaigns();
 		$this->assignRef('campaigns', $campaigns);
 
-		$universities = $userModel->getUniversities();
+		$universities = $m_users->getUniversities();
 		$this->assignRef('universities', $universities);
 	}
 
 	private function _loadGroupForm()
 	{ 
 		//$model = new EmundusModelFiles();
-		$userModel = new EmundusModelUsers();
-		$actions = $userModel->getActions();
-		$prog = $userModel->getProgramme();
+		$m_users = new EmundusModelUsers();
+		$actions = $m_users->getActions();
+		$prog = $m_users->getProgramme();
 		$this->assignRef('actions', $actions);
 		$this->assignRef('progs', $prog);
 	}
 	private function _loadAffectForm()
 	{
-		$userModel = new EmundusModelUsers();
-		$groups = $userModel->getGroups();
+		$m_users = new EmundusModelUsers();
+		$groups = $m_users->getGroups();
 		$this->assignRef('groups', $groups);
 	}
 	private function _loadRightsForm()
 	{
-		$userModel = new EmundusModelUsers();
+		$m_users = new EmundusModelUsers();
 		$uid = JFactory::getApplication()->input->getInt('user', null);
-		$groups = $userModel->getUserGroups($uid);
+		$groups = $m_users->getUserGroups($uid);
 		$g = array();
 		foreach($groups as $key => $label)
 		{
 			$g[$key]['label'] = $label;
-			$g[$key]['progs'] = $userModel->getGroupProgs($key);
-			$g[$key]['acl'] = $userModel->getGroupsAcl($key);
+			$g[$key]['progs'] = $m_users->getGroupProgs($key);
+			$g[$key]['acl'] = $m_users->getGroupsAcl($key);
 
 		}
-		//$acl = $userModel->getUserACL($uid);
+		//$acl = $m_users->getUserACL($uid);
 		
 		$this->assignRef('groups', $g);
 	}
