@@ -371,9 +371,9 @@ class EmundusModelUsers extends JModelList
 
     public function changeCurrentUserProfile($uid, $pid){
         $db = JFactory::getDBO();
-        $query = 'UPDATE #__emundus_users SET profile = '.(int) $pid.' WHERE user_id='.(int) $uid;
+        $query = 'UPDATE #__emundus_users SET profile ="'.mysql_real_escape_string($pid).'" WHERE user_id='.mysql_real_escape_string($uid);
         $db->setQuery( $query );
-        $db->Query() or die($db->getErrorMsg());
+        $db->query() or die($db->getErrorMsg());
     }
 
     public function getUniversities()
@@ -801,8 +801,8 @@ class EmundusModelUsers extends JModelList
                 $db->Query() or die($db->getErrorMsg());
 
                 //JFactory::getApplication()->enqueueMessage(JText::_('USER_SUCCESSFULLY_ADDED'), 'message');
-                return true;
-                //return $user->id;
+                //return true;
+                return $user->id;
             }
         
         } catch(Exeption $e) {

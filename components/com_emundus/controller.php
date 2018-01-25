@@ -458,7 +458,7 @@ class EmundusController extends JControllerLegacy {
         $p_model = new EmundusModelProfile;
         
         foreach($aid->emProfiles as $emProfile){
-            if($emProfile->id == $profile){
+            if($emProfile->id === $profile){
     
                 if (!in_array($profile, array(1,2,3,4,5,6)) ) {
                     $fnum = $ids[1];
@@ -543,7 +543,7 @@ class EmundusController extends JControllerLegacy {
                 
                 }
                 $u_model = new EmundusModelUsers;
-                $u_model->changeCurrentUserProfile($current_user->id, $profile);
+                $u_model->changeCurrentUserProfile($current_user->id, $emProfile->id);
             }
         }
         $session->set('emundusUser', $aid);
