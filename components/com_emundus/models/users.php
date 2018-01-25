@@ -78,6 +78,7 @@ class EmundusModelUsers extends JModelList
     public function _buildQuery() {
         $session        = JFactory::getSession();
         $params         = $session->get('filt_params');
+        $db             = JFactory::getDBO();
 
         $final_grade    = @$params['finalgrade'];
         $search         = @$params['s'];

@@ -576,29 +576,7 @@ class EmundusModelProfile extends JModelList
 			$app->redirect("index.php?option=com_fabrik&view=form&formid=".$admissionInfo->form_id."&Itemid=2720&usekey=fnum&rowid=".$campaign['fnum']);
 	}
 
-	// -----------------switch profile funcion----------------------------------
-	/*public function switchProfile($profile) {
-        try {
-            $u = JFactory::getUser()->id;
-            $user = JFactory::getSession()->get('emundusUser');
-            //echo $profile;
-            //var_dump ($u);
-            $db = JFactory::getDBO();
-
-            foreach($user->emProfiles as $emProfile){
-                if($emProfile->id == $profile[0]){
-                    $db->setQuery('UPDATE #__emundus_users SET profile = "'.mysql_real_escape_string($profile[0]).'" WHERE user_id = '.mysql_real_escape_string($u));
-                    $db->query();
-                }
-
-            }
-            return true;
-        } catch(Exeption $e) {
-            error_log($query, 0);
-            return false;
-        }
-    }*/
-
+	
 
 	/**
 	 * Returns an object based on supplied user_id that acts as a replacement for the default Joomla user method
