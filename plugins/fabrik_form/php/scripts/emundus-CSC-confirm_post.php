@@ -137,9 +137,13 @@ if (count($ed_director) > 0) {
             $db->execute();
         } catch (Exception $e) {
             // catch any database errors.
+            JLog::add("CSC : Access right ! :: ".$query, JLog::ERROR, 'com_emundus');
         }
         $mail_to[] = $referent->id;
     }
+}
+else {
+    JLog::add("CSC : no ed director found for access right ! :: ".$query, JLog::ERROR, 'com_emundus');
 }
 if (count($thesis_director) > 0) {
     foreach ($thesis_director as $referent) {
@@ -160,11 +164,14 @@ if (count($thesis_director) > 0) {
             $db->execute();
         } catch (Exception $e) {
             // catch any database errors.
+            JLog::add("CSC : Access right ! :: ".$query, JLog::ERROR, 'com_emundus');
         }
         $mail_to[] = $referent->id;
     }
 }
-
+else {
+    JLog::add("CSC : no thesis director found for access right ! :: ".$query, JLog::ERROR, 'com_emundus');
+}
 // Send emails defined in trigger
 $emails = new EmundusModelEmails;
 $step = 1;

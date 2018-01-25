@@ -516,10 +516,10 @@ class EmundusHelperFiles
             $campaigns = @$params['campaign'];
 
             // get profiles for selected programmes or campaigns
-            $plist = $m_profile->getProfileIDByCourse($programme);
+            $plist = $m_profile->getProfileIDByCourse((array)$programme);
             $plist = count($plist) == 0 ? $m_profile->getProfileIDByCampaign($campaigns) : $plist;
         } else {
-            $plist = $m_profile->getProfileIDByCourse($code);
+            $plist = $m_profile->getProfileIDByCourse((array)$code);
         }
 
         if ($plist) {
@@ -947,6 +947,7 @@ class EmundusHelperFiles
 
         $current_s              = @$filt_params['s'];
         $current_profile        = @$filt_params['profile'];
+        $oprofiles              = @$filt_params['oprofiles'];        
         $current_eval           = @$filt_params['user'];
         $miss_doc               = @$filt_params['missing_doc'];
         $current_finalgrade     = @$filt_params['finalgrade'];
@@ -966,6 +967,7 @@ class EmundusHelperFiles
         $current_group          = @$filt_params['group'];
         $current_institution    = @$filt_params['institution'];
         $spam_suspect           = @$filt_params['spam_suspect'];
+        
         $filters = '';
         // Quick filter
         $quick = '<div id="filters">
@@ -1003,6 +1005,28 @@ class EmundusHelperFiles
             $filters .= $profile;
         }
         //if($debug==1) $div .= '<input name="view_calc" type="checkbox" onclick="document.pressed=this.name" value="1" '.$view_calc==1?'checked=checked':''.' />';
+
+        //******other profiles filter ******************
+        if (@$params['profile'] !== NULL) {
+            $profile = '';
+            $hidden = $types['o_profiles'] != 'hidden' ? false : true;
+            if ($types['o_profiles'] != 'hidden')
+                $profile .= '<div class="form-group" id="o_profiles">
+                                    <label class="control-label">'.JText::_('OTHER_PROFILES').'</label>';
+            $profile .= '           <select class="chzn-select em-filt-select" id="select_oprofiles" multiple="multiple" name="o_profiles" '.($types['o_profiles'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'">
+                         <option value="0">'.JText::_('ALL').'</option>';
+            $profiles = $h_files->getApplicants();
+            foreach ($profiles as $prof) {
+                $profile .= '<option value="'.$prof->id.'"';
+                if(!empty($oprofiles) && (in_array($prof->id, $oprofiles) || $prof->id == $oprofiles))
+                    $profile .= ' selected="true"';
+                $profile .= '>'.$prof->label.'</option>';
+            }
+            $profile .= '</select>';
+            if ($types['o_profiles'] != 'hidden')
+                $profile .= '</div>';
+            $filters .= $profile;
+        }
 
         if (@$params['profile_users'] !== NULL) {
             $hidden = $types['profile_users'] != 'hidden' ? false : true;

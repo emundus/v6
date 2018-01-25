@@ -1887,11 +1887,26 @@ where 1 order by ga.fnum asc, g.title';
                         $lastTab[] = $elt->table_join;
                     }
                     else {
-                        $query .= ', (
-                                    SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.' SEPARATOR ", ")
-                                    FROM '.$elt->table_join.'
-                                    WHERE '.$elt->table_join.'.parent_id='.$tableAlias[$elt->tab_name].'.id
-                                  ) AS '. $elt->table_join.'___'.$elt->element_name;
+                        if($elt->element_plugin == 'databasejoin') {
+                            $element_attribs = json_decode($elt->element_attribs);
+
+                            $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->join_val_column_concat).')':'t.'.$element_attribs->join_val_column;
+
+                            $select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
+                                FROM '.$tableAlias[$elt->tab_name].' 
+                                LEFT JOIN '.$elt->table_join.' ON '.$elt->table_join.'.parent_id = '.$tableAlias[$elt->tab_name].'.id  
+                                LEFT JOIN '.$element_attribs->join_db_name.' as t ON t.'.$element_attribs->join_key_column.' = '.$elt->table_join.'.'.$elt->element_name.' 
+                                WHERE '.$tableAlias[$elt->tab_name].'.fnum=c.fnum)';
+
+                            $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
+                        }
+                        else {
+                            $query .= ', (
+                                        SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.' SEPARATOR ", ")
+                                        FROM '.$elt->table_join.'
+                                        WHERE '.$elt->table_join.'.parent_id='.$tableAlias[$elt->tab_name].'.id
+                                      ) AS '. $elt->table_join.'___'.$elt->element_name;
+                        }
                     }
                 }
                 else {
@@ -1915,11 +1930,22 @@ where 1 order by ga.fnum asc, g.title';
                     elseif ($elt->element_plugin == 'databasejoin') {
                         $element_attribs = json_decode($elt->element_attribs);
                         //$elt_array = json_decode(json_encode($elt), true); /*object to array*/
-                        $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->join_val_column_concat).')':'t.'.$element_attribs->join_val_column;
 
-                        $select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
-                            FROM '.$element_attribs->join_db_name.' as t
-                            WHERE t.'.$element_attribs->join_key_column.'='.$tableAlias[$elt->tab_name].'.'.$elt->element_name.')';
+                        if($element_attribs->database_join_display_type=="checkbox"){
+                            $t = $tableAlias[$elt->tab_name].'_repeat_'.$elt->element_name;
+                            $select = '(
+                                SELECT GROUP_CONCAT('.$t.'.'.$elt->element_name.' SEPARATOR ", ")
+                                FROM '.$t.'
+                                WHERE '.$t.'.parent_id='.$tableAlias[$elt->tab_name].'.id
+                              )';
+                        } 
+                        else {
+                            $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->join_val_column_concat).')':'t.'.$element_attribs->join_val_column;
+
+                            $select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
+                                FROM '.$element_attribs->join_db_name.' as t
+                                WHERE t.'.$element_attribs->join_key_column.'='.$tableAlias[$elt->tab_name].'.'.$elt->element_name.')';
+                        }
                     }
 
                     $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
@@ -1936,7 +1962,8 @@ where 1 order by ga.fnum asc, g.title';
             if ($pas !=0 ) {
                 $query .= 'LIMIT ' . $pas . ' OFFSET ' . $start;
             }
-
+/*echo str_replace("#_", "jos", $query);
+die();*/
             $db->setQuery($query);
             return $db->loadAssocList();
         }
