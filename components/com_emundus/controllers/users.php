@@ -76,6 +76,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$univ_id 		= JRequest::getVar('university_id', null, 'POST', 'none',0);
 		$groups 		= JRequest::getVar('groups', null, 'POST', 'string',0);
 		$campaigns 		= JRequest::getVar('campaigns', null, 'POST', 'string',0);
+		$news			= JRequest::getVar('newsletter', null, 'POST', 'string',0);
 		
 		$password 	= JUserHelper::genRandomPassword();
 		$user 		= clone(JFactory::getUser(0));
@@ -98,14 +99,15 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$user->groups = array($jgr);
 		$user->block=0;
 
-		$other_param['firstname'] = $firstname;
-		$other_param['lastname'] = $lastname;
-		$other_param['profile'] = $profile;
-		$other_param['em_oprofiles'] = !empty($oprofiles) ? explode(',', $oprofiles): $oprofiles;
-		$other_param['univ_id'] = $univ_id;
-		$other_param['em_groups'] = !empty($groups) ? explode(',', $groups): $groups;
-		$other_param['em_campaigns'] = !empty($campaigns) ? explode(',', $campaigns): $campaigns;
-		$other_param['news'] = JRequest::getVar('newsletter', null, 'POST', 'string',0);
+		$other_param['firstname'] 		= $firstname;
+		$other_param['lastname'] 		= $lastname;
+		$other_param['profile'] 		= $profile;
+		$other_param['em_oprofiles'] 	= !empty($oprofiles) ? explode(',', $oprofiles): $oprofiles;
+		$other_param['univ_id'] 		= $univ_id;
+		$other_param['em_groups'] 		= !empty($groups) ? explode(',', $groups): $groups;
+		$other_param['em_campaigns'] 	= !empty($campaigns) ? explode(',', $campaigns): $campaigns;
+		$other_param['news'] 			= $news;
+		
 		$m_users = new EmundusModelUsers();
 		$acl_aro_groups = $m_users->getDefaultGroup($profile);
 		$user->groups = $acl_aro_groups;

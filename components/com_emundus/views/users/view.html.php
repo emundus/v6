@@ -65,6 +65,7 @@ class EmundusViewUsers extends JViewLegacy
 		
 		$filts_details	= [
 			'profile_users'		=> 1,
+			'o_profiles'		=> 1,
 			'evaluator_group'	=> 1,
 			'schoolyear'		=> 1,
 			'campaign'			=> 1,
@@ -78,6 +79,7 @@ class EmundusViewUsers extends JViewLegacy
 		];
 		$filts_options 	= [
 			'profile_users'		=> NULL,
+			'o_profiles'		=> NULL,
 			'evaluator_group'	=> NULL,
 			'schoolyear'		=> NULL,
 			'campaign'			=> NULL,

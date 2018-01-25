@@ -442,6 +442,7 @@ class EmundusController extends JControllerLegacy {
     
      function switchprofile() {
         include_once (JPATH_SITE.'/components/com_emundus/models/profile.php');
+        include_once (JPATH_SITE.'/components/com_emundus/models/users.php');
         
 
         $profile_fnum = JRequest::getVar('profnum', null, 'POST', 'none', 0);
@@ -454,7 +455,7 @@ class EmundusController extends JControllerLegacy {
         $session    = JFactory::getSession();
         $aid        = $session->get('emundusUser');
 
-        $model = new EmundusModelProfile;
+        $p_model = new EmundusModelProfile;
         
         foreach($aid->emProfiles as $emProfile){
             if($emProfile->id == $profile){
@@ -462,11 +463,11 @@ class EmundusController extends JControllerLegacy {
                 if (!in_array($profile, array(1,2,3,4,5,6)) ) {
                     $fnum = $ids[1];
                     if($fnum !== ""){
-                        $infos = $model->getFnumDetails($fnum);
+                        $infos = $p_model->getFnumDetails($fnum);
                         
-                        $profile        = $model->getProfileByCampaign($infos['campaign_id']);
-                        $campaign       = $model->getCampaignById($infos['campaign_id']);
-                        $application    = $model->getFnumDetails($fnum);
+                        $profile        = $p_model->getProfileByCampaign($infos['campaign_id']);
+                        $campaign       = $p_model->getCampaignById($infos['campaign_id']);
+                        $application    = $p_model->getFnumDetails($fnum);
                     
                         if ($aid->id != $infos['applicant_id']) return;
                         //unset($aid->id);
@@ -488,7 +489,7 @@ class EmundusController extends JControllerLegacy {
                         $aid->status        = $application['status'];
                     }  else{
                         $aid->profile       = $profile;
-                        $profiles = $model->getProfileById($profile);
+                        $profiles = $p_model->getProfileById($profile);
     
                         $aid->profile_label          = $profiles["label"];
                         $aid->menutype               = $profiles["menutype"];
@@ -530,7 +531,7 @@ class EmundusController extends JControllerLegacy {
                 
                     $aid->profile                = $profile;
 
-                    $profiles = $model->getProfileById($profile);
+                    $profiles = $p_model->getProfileById($profile);
 
                     $aid->profile_label          = $profiles["label"];
                     $aid->menutype               = $profiles["menutype"];
@@ -541,6 +542,8 @@ class EmundusController extends JControllerLegacy {
 
                 
                 }
+                $u_model = new EmundusModelUsers;
+                $u_model->changeCurrentUserProfile($current_user->id, $profile);
             }
         }
         $session->set('emundusUser', $aid);

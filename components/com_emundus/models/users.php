@@ -87,6 +87,7 @@ class EmundusModelUsers extends JModelList
         $groupEval      = @$params['evaluator_group'];
         $spam_suspect   = @$params['spam_suspect'];
         $profile        = @$params['profile'];
+        $oprofiles      = @$params['o_profiles'];
         $newsletter     = @$params['newsletter'];
         $group          = @$params['group'];
         $institution    = @$params['institution'];
@@ -183,7 +184,8 @@ class EmundusModelUsers extends JModelList
         
         $query .= 'u.block as active
                     FROM #__users AS u 
-                    LEFT JOIN #__emundus_users AS e ON u.id = e.user_id 
+                    LEFT JOIN #__emundus_users AS e ON u.id = e.user_id
+                    LEFT JOIN #__emundus_users_profiles AS eup ON e.user_id = eup.user_id  
                     LEFT JOIN #__emundus_groups AS egr ON egr.user_id = u.id
                     LEFT JOIN #__emundus_setup_groups AS esgr ON esgr.id = egr.group_id
                     LEFT JOIN #__emundus_setup_profiles AS espr ON espr.id = e.profile
@@ -230,6 +232,11 @@ class EmundusModelUsers extends JModelList
             }*/
             if (isset($profile) && !empty($profile) && is_numeric($profile)) {
                 $query.= ' AND e.profile = '.mysql_real_escape_string($profile);
+                $and = true;
+            }
+            if (isset($oprofiles) && !empty($oprofiles) ) {
+
+                $query.= ' AND eup.profile_id IN ("'.implode('","', $oprofiles).'")';
                 $and = true;
             }
             if (isset($final_grade) && !empty($final_grade)) {
@@ -360,6 +367,13 @@ class EmundusModelUsers extends JModelList
         $query = 'SELECT eu.profile FROM #__emundus_users eu WHERE eu.user_id='.$uid;
         $db->setQuery( $query );
         return $db->loadResult();
+    }
+
+    public function changeCurrentUserProfile($uid, $pid){
+        $db = JFactory::getDBO();
+        $query = 'UPDATE #__emundus_users SET profile = '.(int) $pid.' WHERE user_id='.(int) $uid;
+        $db->setQuery( $query );
+        $db->Query() or die($db->getErrorMsg());
     }
 
     public function getUniversities()
@@ -758,14 +772,13 @@ class EmundusModelUsers extends JModelList
                         $db->setQuery( $query );
                         $db->Query();
 
-                        $query = 'SELECT `group_id` FROM `#__emundus_groups` WHERE user_id='.$user->id;
+                        $query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id='.$profile;
                         $db->setQuery($query);
-                        $em_group_id= $db->loadColumn();
-                        if (!in_array(1, $em_group_id)) { 
-                            $query="INSERT INTO `#__emundus_groups` VALUES ('',".$user->id.",1)";
-                            $db->setQuery( $query );
-                            $db->Query();
-                        }
+                        $group = $db->loadColumn();
+                    
+                        $group_add = JUserHelper::addUserToGroup($user->id,$group[0]);
+                        //$emuser = array('user_id'=>$user->id);
+                        //$this->affectToGroups(array($emuser) ,array(1) );
                     }
                 }
 
@@ -774,7 +787,7 @@ class EmundusModelUsers extends JModelList
                     $db->setQuery($query);
                     $db->query() or die($db->getErrorMsg());
                 }
-
+                
                
 
                 /*$query="INSERT INTO `#__emundus_users_profiles_history` VALUES ('','".date('Y-m-d H:i:s')."',".$user->id.",".$profile.",'profile')";
@@ -788,8 +801,8 @@ class EmundusModelUsers extends JModelList
                 $db->Query() or die($db->getErrorMsg());
 
                 //JFactory::getApplication()->enqueueMessage(JText::_('USER_SUCCESSFULLY_ADDED'), 'message');
-
-                return $user->id;
+                return true;
+                //return $user->id;
             }
         
         } catch(Exeption $e) {
@@ -1504,54 +1517,33 @@ class EmundusModelUsers extends JModelList
                     }
                 }
             }
-            if (!in_array($user['profile'], array(8)) ) {
-                $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user['id'].",".$user['profile'].",'','')";
-                $db->setQuery( $query );
-                $db->Query();
-            }
+          
+            $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user['id'].",".$user['profile'].",'','')";
+            $db->setQuery( $query );
+            $db->Query();
+            
 
             if (!empty($user['em_oprofiles'])) {
                 $oprofiles = explode(',', $user['em_oprofiles']);
-
-                $query = 'SELECT `group_id` FROM #__user_usergroup_map WHERE user_id='.$user['id'];
-                $db->setQuery($query);
-                $group_id= $db->loadColumn();
-
+                
                 foreach ($oprofiles as $profile) {
                     if($profile != $user['profile']){
                         $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user['id'].",".$profile.",'','')";
                         $db->setQuery( $query );
                         $db->Query();
-                        
-                        // add user groups and usergroup_id = 7 to have all rights
+
                         $query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id='.$profile;
                         $db->setQuery($query);
-                        $acl_aro_group = $db->loadColumn();
-                        
-                        if (!in_array($acl_aro_group[0], $group_id)) {                            
-                            $query="INSERT INTO `#__user_usergroup_map` VALUES (".$user['id'].",".$acl_aro_group[0].")";
-                            $db->setQuery( $query );
-                            $db->Query();
-                            if (!in_array(7, $group_id)) { 
-                                $query="INSERT INTO `#__user_usergroup_map` VALUES (".$user['id'].",7)";
-                                $db->setQuery( $query );
-                                $db->Query();
-                            }
-                            // add emundus group id
-                                $query = 'SELECT `group_id` FROM `#__emundus_groups` WHERE user_id='.$user['id'];
-                                $db->setQuery($query);
-                                $em_group_id= $db->loadColumn();
-                                if (!in_array(1, $em_group_id)) { 
-                                    $query="INSERT INTO `#__emundus_groups` VALUES ('',".$user['id'].",1)";
-                                    $db->setQuery( $query );
-                                    $db->Query();
-                                }
-                        }
+                        $group = $db->loadColumn();
+                    
+                        $group_add = JUserHelper::addUserToGroup($user['id'],$group[0]);
+                        //$emuser = array('user_id'=>$user['id']);
+                        //$ok = $this->affectToGroups(array($emuser) ,array(1) );
                     }
                 }
+                 
+                
             }
-           
-
 
             if ($user['news'] == 1) {
                 $query="INSERT INTO `#__user_profiles` (`user_id`, `profile_key`, `profile_value`, `ordering`) VALUES (".$user['id'].", 'emundus_profiles.newsletter', '1', 4)";
