@@ -516,10 +516,10 @@ class EmundusHelperFiles
             $campaigns = @$params['campaign'];
 
             // get profiles for selected programmes or campaigns
-            $plist = $m_profile->getProfileIDByCourse($programme);
+            $plist = $m_profile->getProfileIDByCourse((array)$programme);
             $plist = count($plist) == 0 ? $m_profile->getProfileIDByCampaign($campaigns) : $plist;
         } else {
-            $plist = $m_profile->getProfileIDByCourse($code);
+            $plist = $m_profile->getProfileIDByCourse((array)$code);
         }
 
         if ($plist) {
