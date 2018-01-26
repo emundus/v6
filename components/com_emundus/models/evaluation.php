@@ -1438,7 +1438,7 @@ class EmundusModelEvaluation extends JModelList
 					LEFT JOIN #__emundus_setup_attachments esa ON esa.id=eu.attachment_id
 					WHERE eu.fnum like '.$this->_db->Quote($fnum).' AND campaign_id='.$campaign_id.'
 					AND eu.attachment_id IN (
-						SELECT DISTINCT(esl.attachment_id) FROM #__emundus_setup_letters esl WHERE esl.status='.$result.'
+						SELECT DISTINCT(esl.attachment_id) FROM #__emundus_setup_letters esl 
 						)
 					AND eu.filename NOT LIKE "%lock%"
 					ORDER BY eu.timedate';
