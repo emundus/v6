@@ -129,7 +129,8 @@ class EmundusModelAdmission extends JModelList
 
 				} elseif ($def_elmt->element_plugin == 'databasejoin') {
 					$attribs = json_decode($def_elmt->element_attribs);
-                    $join_val_column = !empty($attribs->join_val_column)?$attribs->join_val_column:'CONCAT('.str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat).')';
+					$join_val_column_concat = str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat);
+					$join_val_column = (!empty($join_val_column_concat) && $join_val_column_concat!='')?'CONCAT('.$join_val_column_concat.')':$attribs->join_val_column;
 
 					if ($group_params->repeat_group_button == 1) {
 						$query = '(
@@ -141,8 +142,23 @@ class EmundusModelAdmission extends JModelList
 										  where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
 										)
 								  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
-					} else
-						$query = '(select DISTINCT '.$join_val_column.' from '.$attribs->join_db_name.' where '.$attribs->join_db_name.'.'.$attribs->join_key_column.'='.$def_elmt->tab_name . '.' . $def_elmt->element_name.') AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
+					} 
+					else {
+                        if($attribs->database_join_display_type=="checkbox"){
+                            
+                            $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
+                            $query = '(
+                                SELECT GROUP_CONCAT('.$t.'.'.$def_elmt->element_name.' SEPARATOR ", ")
+                                FROM '.$t.'
+                                WHERE '.$t.'.parent_id='.$def_elmt->tab_name.'.id
+                              ) AS `'.$t.'`';
+                        } else {
+                            $query = '(
+                                select DISTINCT '.$join_val_column.' 
+                                from '.$attribs->join_db_name.' 
+                                where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`'.$def_elmt->tab_name . '`.`' . $def_elmt->element_name.'`) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
+                        }
+                    }
 
 					$this->_elements_default[] = $query;
 					//$this->_elements_default[] = ' (SELECT esc.label FROM jos_emundus_setup_campaigns AS esc WHERE esc.id = jos_emundus_campaign_candidature.campaign_id) as `jos_emundus_campaign_candidature.campaign_id` ';
@@ -828,6 +844,7 @@ class EmundusModelAdmission extends JModelList
 
 					case 'campaign':
 						if ($value) {
+							$query['q'] .= ' AND esc.published=1 ';
 
 							if ($value[0] == "%" || empty($value[0]))
 								$query['q'] .= ' ';
