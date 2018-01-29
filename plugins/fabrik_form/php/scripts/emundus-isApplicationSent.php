@@ -63,35 +63,35 @@ $can_read 			 = EmundusHelperAccess::asAccessAction(1,'r',$user->id,$fnum);
 		
 			if(in_array($user->id, $applicants)){
 				//echo $fnum;
-				if ($reload < 3) {
-					$reload++;
-					$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+				if (empty($fnum) && !empty($user->fnum)) {
+					
+					$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
 				}
 				
 			}else{
 				if($is_dead_line_passed ){
-					if ($reload < 3) {
+					if (empty($fnum) && !empty($user->fnum)) {
 						$reload++;
 						JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', utf8_encode(JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($user->end_date) ))));
-						$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+						$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
 					}
 				}else{
 					if($is_app_sent){
 						if($can_edit_until_deadline != 0 ){
-							if ($reload < 3) {
-								$reload++;
-								$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);			
+							if (empty($fnum) && !empty($user->fnum)) {
+								
+								$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);			
 							}
 						}else{
-							if ($reload < 3) {
-								$reload++;
-								$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);				
+							if (empty($fnum) && !empty($user->fnum)) {
+								//$reload++;
+								$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);				
 							}
 						}
 					}else{			
-						if ($reload < 3) {
-							$reload++;
-							$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+						if (empty($fnum) && !empty($user->fnum)) {
+							//$reload++;
+							$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
 						}					
 					}
 				}
