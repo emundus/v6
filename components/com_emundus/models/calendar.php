@@ -22,6 +22,13 @@ class EmundusModelCalendar extends JModelLegacy {
     // Uses Google API credentials to initialize a google service object.
     public function google_authenticate($clientID, $clientSecret, $refreshToken) {
 
+
+        if (!isset($refreshToken) && empty($refreshToken)) {
+            $this->authenticateClient();
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $refreshToken = $eMConfig->get('refreshToken');
+        }
+
         // Get the API client and construct the service object.
         $client = $this->getClient($clientID, $clientSecret);
         $client->refreshToken($refreshToken);
@@ -629,7 +636,7 @@ class EmundusModelCalendar extends JModelLegacy {
                     'port',
                     'path'
                 )
-            ).'?option=com_emundus&view=calendar'
+            ).'?option=com_dpcalendar&view=calendar'
         );
 
         // Refresh the token if it's expired.
