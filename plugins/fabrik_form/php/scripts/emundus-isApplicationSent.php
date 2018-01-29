@@ -45,70 +45,79 @@ try {
 } catch(Exception $e) {
     echo $e->getMessage() . '<br />';
 }
-
+//echo($jinput);
 $view = $jinput->get('view');
 $fnum = $jinput->get('rowid', null);
 $itemid = $jinput->get('Itemid');
 $reload = $jinput->get('r', 0);
 
-if (!isset($fnum) || $view != 'details') {
 
-	if (!EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
-	 	if ($jinput->get('tmpl')=='component') {
-	        JHTML::stylesheet( JURI::base(true).'media/com_fabrik/css/fabrik.css' );
-	        JHTML::stylesheet( JURI::base(true).'media/system/css/modal.css' );
-	        $doc = JFactory::getDocument();
-	        $doc->addScript("media/com_fabrik/js/window-min.js");
-	        $doc->addScript("media/com_fabrik/js/lib/form_placeholder/Form.Placeholder.js");
-	        $doc->addScript("templates/rt_afterburner2/js/rokmediaqueries.js");
-	    }
-	    //echo "<script>$('rt-header').remove(); $('rt-footer').remove(); $('gf-menu-toggle').remove();</script>";
-	} else {
-	    if (($user->fnum != $fnum && $fnum != -1) && !empty($fnum)) {
-	        JError::raiseNotice('ERROR', JText::_('ERROR...'));
-	        $mainframe->redirect(JURI::base(true).'index.php?option=com_emundus&task=openfile&fnum='.$user->fnum);
-	    }
-	}
+$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date))? true : false;
+$is_app_sent 		 = ($user->status != 0)? true : false;
+$can_edit 			 = EmundusHelperAccess::asAccessAction(1,'u',$user->id,$fnum);
+$can_read 			 = EmundusHelperAccess::asAccessAction(1,'r',$user->id,$fnum);
 
-	if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-		 $sid = $jinput->get('sid', null, 'ALNUM');
-	//	$student = JUser::getInstance($sid);
-	//	echo '<a href="index.php?option=com_emundus&view=application&sid='.$student_id.'"><h1>'.$student->name.'</h1></a>';
-		echo !empty($rowid)?'<h4 style="text-align:right">#'.$fnum.'</h4>':'';
 
-	} else {
-
-		if (empty($user->fnum) && !isset($user->fnum) && EmundusHelperAccess::isApplicant($user->id))
-			$mainframe->redirect("index.php?option=com_emundus&view=renew_application");
-
-		if ($jinput->get('view') == 'form' && empty($fnum) && !isset($fnum)) {
-			// Si l'application Form a été envoyee par le candidat : affichage vue details
-			if ($user->candidature_posted > 0 && $user->candidature_incomplete == 0 && $can_edit_until_deadline == 0) {
-				$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
-			} elseif(strtotime(date($now)) > strtotime($user->end_date) && !in_array($user->id, $applicants) ) {
-				JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', utf8_encode(JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($user->end_date) ))));
-				$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
-			} else {
-				if (empty($fnum) || !isset($fnum)) {
-					// redirection vers l'enregistrement du dossier
-					if ($reload < 5) {
+	//echo $fnum;
+	if(isset($user->fnum) && !empty($user->fnum)){
+		
+			if(in_array($user->id, $applicants)){
+				//echo $fnum;
+				if ($reload < 3) {
+					$reload++;
+					$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+				}
+				
+			}else{
+				if($is_dead_line_passed ){
+					if ($reload < 3) {
 						$reload++;
-						$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+						JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', utf8_encode(JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($user->end_date) ))));
+						$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
 					}
+				}else{
+					if($is_app_sent){
+						if($can_edit_until_deadline != 0 ){
+							if ($reload < 3) {
+								$reload++;
+								$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);			
+							}
+						}else{
+							if ($reload < 3) {
+								$reload++;
+								$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);				
+							}
+						}
+					}else{			
+						if ($reload < 3) {
+							$reload++;
+							$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+						}					}
 				}
 			}
-		} else {
-			if(strtotime(date($now)) > strtotime($user->end_date) && !in_array($user->id, $applicants) ) {
-				if ($reload < 5) {
+		
+		
+	}else{
+		if($can_edit == 1){
+			if ($reload < 3) {
+				$reload++;
+				$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);	
+			}	
+		}else{
+			if($can_read == 1){
+				if ($reload < 3) {
 					$reload++;
-					JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', utf8_encode(JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($user->end_date) ))));
-					$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+					$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);
 				}
+			}else{
+				JError::raiseNotice('ACCESS_DENIED',JText::_('ACCESS_DENIED'));
 			}
 		}
 	}
 
-	if (EmundusHelperAccess::isApplicant($user->id) && $copy_application_form == 1 && isset($user->fnum)) {
+
+
+	if ($copy_application_form == 1 && isset($user->fnum)) {
 		if (empty($formModel->getRowId())) {
 			$db 		= JFactory::getDBO();
 			$table 		= $listModel->getTable();
@@ -262,6 +271,6 @@ if (!isset($fnum) || $view != 'details') {
 	        }
 		}
 	}
-}
+
 
 ?>
