@@ -92,7 +92,8 @@ $can_read 			 = EmundusHelperAccess::asAccessAction(1,'r',$user->id,$fnum);
 						if ($reload < 3) {
 							$reload++;
 							$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
-						}					}
+						}					
+					}
 				}
 			}
 		
