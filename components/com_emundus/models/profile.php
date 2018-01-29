@@ -563,7 +563,6 @@ class EmundusModelProfile extends JModelList
 
 		} else {
 			$emundusSession->profile                = $profile["profile"];
-			$emundusSession->emProfiles = $this->getUserProfiles($current_user->id);
 			$emundusSession->profile_label          = $profile["profile_label"];
 			$emundusSession->menutype               = $profile["menutype"];
 			$emundusSession->university_id          = $profile["university_id"];
@@ -596,7 +595,8 @@ class EmundusModelProfile extends JModelList
 		$emundus_user->firstname  = $profile["firstname"];
 		$emundus_user->lastname   = strtoupper($profile["lastname"]);
 		$emundus_user->emGroups   = array_keys($m_users->getUserGroups($current_user->id));
-
+		$emundusSession->emProfiles = $this->getUserProfiles($current_user->id);
+		
 		if (EmundusHelperAccess::isApplicant($current_user->id)) {
 			$campaign 	= $this->getCurrentCampaignInfoByApplicant($current_user->id);
             $incomplete = $this->getCurrentIncompleteCampaignByApplicant($current_user->id);

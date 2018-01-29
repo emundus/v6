@@ -1526,7 +1526,10 @@ class EmundusModelUsers extends JModelList
                 $oprofiles = explode(',', $user['em_oprofiles']);
 
                 foreach ($oprofiles as $profile) {
-                    if($profile != $user['profile']){
+                    $query = 'SELECT COUNT(*) FROM `#__emundus_users_profiles` WHERE user_id='.$user['id'].' AND profile_id='.$profile;
+                    $db->setQuery($query);
+                    $count_profile = $db->loadColumn();
+                    if($count_profile[0] < 1){
                         $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user['id'].",".$profile.",'','')";
                         $db->setQuery( $query );
                         $db->Query();
