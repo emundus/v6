@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -20,7 +20,7 @@ echo $this->loadAnyTemplate('admin:com_admintools/ControlPanel/needsipworkaround
 ?>
 
 <?php if (isset($this->jwarnings) && !empty($this->jwarnings)): ?>
-	<div class="alert alert-danger">
+	<div class="akeeba-block--failure">
 		<h3><?php echo \JText::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_JCONFIG'); ?></h3>
 		<p><?php echo $this->jwarnings?></p>
 	</div>
@@ -28,7 +28,7 @@ echo $this->loadAnyTemplate('admin:com_admintools/ControlPanel/needsipworkaround
 
 <?php /* Stuck database updates warning */?>
 <?php if ($this->stuckUpdates):?>
-	<div class="alert alert-danger">
+	<div class="akeeba-block--failure">
 		<p>
 			<?php
 			echo \JText::sprintf('COM_ADMINTOOLS_CPANEL_ERR_UPDATE_STUCK',
@@ -40,7 +40,7 @@ echo $this->loadAnyTemplate('admin:com_admintools/ControlPanel/needsipworkaround
 <?php endif;?>
 
 <?php if (isset($this->frontEndSecretWordIssue) && !empty($this->frontEndSecretWordIssue)): ?>
-	<div class="alert alert-danger">
+	<div class="akeeba-block--failure">
 		<h3><?php echo \JText::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_FESECRETWORD_HEADER'); ?></h3>
 		<p><?php echo \JText::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_FESECRETWORD_INTRO'); ?></p>
 		<p><?php echo $this->frontEndSecretWordIssue; ?></p>
@@ -49,9 +49,9 @@ echo $this->loadAnyTemplate('admin:com_admintools/ControlPanel/needsipworkaround
 			<?php echo JText::sprintf('COM_ADMINTOOLS_ERR_CONTROLPANEL_FESECRETWORD_WHATTODO_COMMON', $this->newSecretWord); ?>
 		</p>
 		<p>
-			<a class="btn btn-success btn-large"
+			<a class="akeeba-btn--green akeeba-btn--big"
 			   href="index.php?option=com_admintools&view=ControlPanel&task=resetSecretWord&<?php echo $this->container->platform->getToken(true); ?>=1">
-				<span class="icon icon-white icon-refresh"></span>
+				<span class="akion-refresh"></span>
 				<?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_BTN_FESECRETWORD_RESET'); ?>
 			</a>
 		</p>
@@ -65,7 +65,7 @@ if (version_compare(PHP_VERSION, '5.5.0', 'lt')):
 	$akeebaCommonDatePHP = new Date('2015-09-03 00:00:00', 'GMT');
 	$akeebaCommonDateObsolescence = new Date('2016-06-03 00:00:00', 'GMT');
 	?>
-	<div id="phpVersionCheck" class="alert alert-warning">
+	<div id="phpVersionCheck" class="akeeba-block--warning">
 		<h3><?php echo \JText::_('AKEEBA_COMMON_PHPVERSIONTOOOLD_WARNING_TITLE'); ?></h3>
 		<p>
 			<?php echo JText::sprintf(
@@ -81,28 +81,28 @@ if (version_compare(PHP_VERSION, '5.5.0', 'lt')):
 <?php endif; ?>
 
 <?php if ($this->oldVersion): ?>
-	<div class="alert alert-warning">
+	<div class="akeeba-block--warning">
 		<a class="close" data-dismiss="alert" href="#">×</a>
 		<strong><?php echo \JText::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_OLDVERSION'); ?></strong>
 	</div>
 <?php endif; ?>
 
 <?php if ($emptyRoot): ?>
-	<div class="alert alert-error">
+	<div class="akeeba-block--failure">
 		<a class="close" data-dismiss="alert" href="#">×</a>
 		<?php echo \JText::_('COM_ADMINTOOLS_LBL_CONTROLPANEL_EMPTYROOT'); ?>
 	</div>
 <?php endif; ?>
 
 <?php if ($this->needsdlid): ?>
-	<div class="alert alert-success">
+	<div class="akeeba-block--success">
 		<h3>
 			<?php echo \JText::_('COM_ADMINTOOLS_MSG_CONTROLPANEL_MUSTENTERDLID'); ?>
 		</h3>
 		<p>
 			<?php echo JText::sprintf('COM_ADMINTOOLS_LBL_CONTROLPANEL_NEEDSDLID','https://www.akeebabackup.com/instructions/1436-admin-tools-download-id.html'); ?>
 		</p>
-		<form name="dlidform" action="index.php" method="post" class="form-inline">
+		<form name="dlidform" action="index.php" method="post" class="akeeba-form--inline">
 			<input type="hidden" name="option" value="com_admintools" />
 			<input type="hidden" name="view" value="ControlPanel" />
 			<input type="hidden" name="task" value="applydlid" />
@@ -110,9 +110,9 @@ if (version_compare(PHP_VERSION, '5.5.0', 'lt')):
 	<span>
 		<?php echo \JText::_('COM_ADMINTOOLS_MSG_CONTROLPANEL_PASTEDLID'); ?>
 	</span>
-			<input type="text" name="dlid" placeholder="<?php echo \JText::_('COM_ADMINTOOLS_LBL_JCONFIG_DOWNLOADID'); ?>" class="input-xlarge">
-			<button type="submit" class="btn btn-success">
-				<span class="icon icon-checkbox"></span>
+			<input type="text" name="dlid" placeholder="<?php echo \JText::_('COM_ADMINTOOLS_LBL_JCONFIG_DOWNLOADID'); ?>" class="akeeba-input--wide">
+			<button type="submit" class="akeeba-btn--green">
+				<span class="akion-checkmark-round"></span>
 				<?php echo \JText::_('COM_ADMINTOOLS_MSG_CONTROLPANEL_APPLYDLID'); ?>
 			</button>
 		</form>
@@ -122,25 +122,25 @@ if (version_compare(PHP_VERSION, '5.5.0', 'lt')):
 <div id="updateNotice"></div>
 
 <?php if ($this->isPro && !$this->hasplugin): ?>
-	<div class="well">
+	<div class="akeeba-block--info">
 		<h3><?php echo \JText::_('COM_ADMINTOOLS_LBL_GEOGRAPHICBLOCKING_GEOIPPLUGINSTATUS'); ?></h3>
 
 		<p><?php echo \JText::_('COM_ADMINTOOLS_LBL_GEOGRAPHICBLOCKING_GEOIPPLUGINMISSING'); ?></p>
 
-		<a class="btn btn-primary" href="https://www.akeebabackup.com/download/akgeoip.html" target="_blank">
-			<span class="icon icon-white icon-download-alt"></span>
+		<a class="akeeba-btn--primary--small" href="https://www.akeebabackup.com/download/akgeoip.html" target="_blank">
+			<span class="akion-ios-download-outline"></span>
 			<?php echo \JText::_('COM_ADMINTOOLS_LBL_GEOGRAPHICBLOCKING_DOWNLOADGEOIPPLUGIN'); ?>
 		</a>
 	</div>
 <?php elseif ($this->isPro && $this->pluginNeedsUpdate): ?>
-	<div class="well well-small">
+	<div class="akeeba-block--info">
 		<h3><?php echo \JText::_('COM_ADMINTOOLS_LBL_GEOGRAPHICBLOCKING_GEOIPPLUGINEXISTS'); ?></h3>
 
 		<p><?php echo \JText::_('COM_ADMINTOOLS_LBL_GEOGRAPHICBLOCKING_GEOIPPLUGINCANUPDATE'); ?></p>
 
-		<a class="btn btn-small"
+		<a class="akeeba-btn--dark--small"
 		   href="index.php?option=com_admintools&view=ControlPanel&task=updategeoip&<?php echo $this->container->platform->getToken(true); ?>=1">
-			<span class="icon icon-refresh"></span>
+			<span class="akion-refresh"></span>
 			<?php echo \JText::_('COM_ADMINTOOLS_LBL_GEOGRAPHICBLOCKING_UPDATEGEOIPDATABASE'); ?>
 		</a>
 	</div>

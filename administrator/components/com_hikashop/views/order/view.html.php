@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -267,7 +267,8 @@ class OrderViewOrder extends hikashopView{
 
 				$null = null;
 				$fields['entry'] = $fieldsClass->getFields('backend_listing',$null,'entry');
-				$fields['item'] = $fieldsClass->getFields('backend_listing', $order->products,'item');
+				if(!empty($order->products))
+					$fields['item'] = $fieldsClass->getFields('backend_listing', $order->products,'item');
 			}
 			$task='edit';
 
@@ -283,7 +284,7 @@ class OrderViewOrder extends hikashopView{
 						$products[$product->order_product_option_parent_id]['options'][] = &$product;
 
 						$options = true;
-					} else {
+					} elseif(!empty($product->order_product_id)) {
 						if(empty($products[$product->order_product_id]))
 							$products[$product->order_product_id] = array();
 						$products[$product->order_product_id]['product'] = &$product;
@@ -351,7 +352,7 @@ class OrderViewOrder extends hikashopView{
 			$products_ids = array();
 			$productClass = hikashop_get('class.product');
 			foreach($order->products as $item) {
-				if($item->product_id)
+				if(!empty($item->product_id))
 					$products_ids[] = $item->product_id;
 			}
 			if(count($products_ids)){

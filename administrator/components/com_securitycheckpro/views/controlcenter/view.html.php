@@ -34,6 +34,12 @@ $model = $this->getModel();
 //  Parámetros del plugin
 $items= $model->getControlCenterConfig();
 
+// Información para la barra de navegación
+$logs_pending = $model->LogsPending();
+$trackactions_plugin_exists = $model->PluginStatus(8);
+$this->assignRef('logs_pending', $logs_pending);
+$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
+
 // Extraemos los elementos que nos interesan...
 $control_center_enabled= null;
 $secret_key= null;

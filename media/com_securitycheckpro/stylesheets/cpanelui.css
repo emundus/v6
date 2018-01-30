@@ -359,7 +359,7 @@ table {
   padding: 9px 15px;
   border-top: 1px solid #e5e5e5;
 }
-.securitycheck-bootstrap .form-horizontal .control-group .controls .applied{ 
+.applied{ 
 background: transparent url('../images/dialog-apply.png') no-repeat left;
 text-align: center;
 margin-left:20px;
@@ -375,11 +375,11 @@ width: auto;
 -webkit-border-radius: 7px;
 border-radius: 7px;
 }
-.securitycheck-bootstrap .form-horizontal .control-label-more-width{
+.control-label-more-width{
 float:left;
 width:360px;
 padding-top:5px;
-text-align:left
+text-align:left;
 }
 
 table.table th.sysinfo-global-header{

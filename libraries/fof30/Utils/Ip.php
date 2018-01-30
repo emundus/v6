@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -417,18 +417,14 @@ class Ip
 	 * reporting the IPs of intermediate devices, like load balancers. Examples:
 	 * https://www.akeebabackup.com/support/admin-tools/13743-double-ip-adresses-in-security-exception-log-warnings.html
 	 * http://stackoverflow.com/questions/2422395/why-is-request-envremote-addr-returning-two-ips
-	 * The solution used is assuming that the last IP address is the external one.
+	 * The solution used is assuming that the first IP address is the external one (unless $useFirstIpInChain is set to false)
 	 *
 	 * @return  string
 	 */
 	protected static function detectAndCleanIP()
 	{
-		$ip = self::detectIP();
+		$ip = static::detectIP();
 
-		/**
-		 * If you have multiple IPs in the X-Forwarded-For header I will only ever use the FIRST one. See
-		 * https://en.wikipedia.org/wiki/X-Forwarded-For#Format for an explanation.
-		 */
 		if ((strstr($ip, ',') !== false) || (strstr($ip, ' ') !== false))
 		{
 			$ip = str_replace(' ', ',', $ip);
@@ -436,9 +432,10 @@ class Ip
 			$ips = explode(',', $ip);
 			$ip = '';
 
-			while (empty($ip) && !empty($ips))
+			// Loop until we're running out of parts or we have a hit
+			while ($ips)
 			{
-				$ip = array_pop($ips);
+				$ip = array_shift($ips);
 				$ip = trim($ip);
 
 				if (self::$useFirstIpInChain)

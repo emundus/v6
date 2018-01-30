@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -315,6 +315,8 @@ class BasicFactory implements FactoryInterface
 	 * @return  Form|null  The loaded form or null if the form filename doesn't exist
 	 *
 	 * @throws  \RuntimeException If the form exists but cannot be loaded
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
     public function form($name, $source, $viewName, array $options = array(), $replace = true, $xpath = false)
 	{

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1924,7 +1924,7 @@ class hikashopMassactionClass extends hikashopClass{
 		elseif($action['operation'] == 'operation'){
 			$strings = array();
 
-			$symbols = array('%','+','-','/','*','(',')');
+			$symbols = array('%','+','-','/','*','(',')',',');
 			$string = str_replace($symbols,'||',$action['value']);
 			$entries = explode('||',$string);
 

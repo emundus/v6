@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -10,14 +10,17 @@
 defined('_JEXEC') or die;
 
 ?>
-<h1 id="check-header"><?php echo \JText::_('COM_ADMINTOOLS_LBL_CHECKTEMPANDLOGDIRECTORIES_CHECKINPROGRESS'); ?></h1>
+<h1 id="check-header">
+    <?php echo \JText::_('COM_ADMINTOOLS_LBL_CHECKTEMPANDLOGDIRECTORIES_CHECKINPROGRESS'); ?>
+</h1>
 
-<div class="progress progress-striped active">
-	<div class="bar"></div>
+<div class="akeeba-progress">
+    <div class="akeeba-progress-fill" style="width:0%;"></div>
+    <div class="akeeba-progress-status"></div>
 </div>
 
-<div id="message" class="alert" style="display:none"></div>
+<div id="message" class="" style="display:none"></div>
 
-<div id="autoclose" class="alert alert-info" style="display:none">
+<div id="autoclose" class="akeeba-block--info" style="display:none">
 	<p><?php echo \JText::_('COM_ADMINTOOLS_LBL_COMMON_AUTOCLOSEIN3S'); ?></p>
 </div>

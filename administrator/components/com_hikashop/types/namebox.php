@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -85,6 +85,21 @@ class hikashopNameboxType {
 			'displayFormat' => '{discount_code} ({discount_type})',
 			'params' => array(
 			)
+		),
+		'order' => array(
+			'class' => 'class.order',
+			'name' => 'order_number',
+			'mode' => 'list',
+			'displayFormat' => '{order_number} - {user_email} - {order_full_price}',
+			'params' => array(
+			),
+			'options' => array(
+				'olist' => array(
+					'table' => array('order_number' => 'ORDER_NUMBER', 'user_email' => 'CUSTOMER', 'order_full_price' => 'PRICE' ),
+					'displayFormat' => '{order_number} - {user_email} - {order_full_price}',
+				)
+			),
+			'url' => 'order&task=findList'
 		),
 		'order_status' => array(
 			'class' => 'class.orderstatus',
@@ -281,6 +296,9 @@ class hikashopNameboxType {
 
 		$fullLoad = true;
 		list($elements, $values) = $nameboxClass->getNameboxData($typeConfig, $fullLoad, $mode, $value, null, $options);
+
+		if(isset($options['returnOnEmpty']) && empty($elements))
+			return $options['returnOnEmpty'];
 
 		$displayFormat = '';
 		if(!empty($typeConfig['displayFormat']))

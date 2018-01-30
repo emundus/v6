@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -83,8 +83,6 @@ class AtsystemUtilExceptionshandler
 			}
 		}
 
-		$message = AtsystemUtilRescueurl::processBlockMessage($message);
-
 		$r = $this->logBreaches($reason, $extraLogInformation, $extraLogTableInformation);
 
 		if (!$r)
@@ -114,6 +112,8 @@ class AtsystemUtilExceptionshandler
 		{
 			$message = JText::_($message);
 		}
+
+		$message = AtsystemUtilRescueurl::processBlockMessage($message);
 
 		// Show the 403 message
 		if ($this->cparams->getValue('use403view', 0))
@@ -154,265 +154,46 @@ class AtsystemUtilExceptionshandler
 	 */
 	public function logBreaches($reason, $extraLogInformation = '', $extraLogTableInformation = '')
 	{
-		$reasons_nolog     = $this->cparams->getValue('reasons_nolog', 'geoblocking');
-		$reasons_noemail   = $this->cparams->getValue('reasons_noemail', 'geoblocking');
-		$whitelist_domains = $this->cparams->getValue('whitelist_domains', '.googlebot.com,.search.msn.com');
+		$ip = $this->getVisitorIPAddress();
 
-		$reasons_nolog     = explode(',', $reasons_nolog);
-		$reasons_noemail   = explode(',', $reasons_noemail);
-		$whitelist_domains = explode(',', $whitelist_domains);
-
-		// === SANITY CHECK - BEGIN ===
-		// Get our IP address
-		$ip = AtsystemUtilFilter::getIp();
-
-		if ((strpos($ip, '::') === 0) && (strstr($ip, '.') !== false))
-		{
-			$ip = substr($ip, strrpos($ip, ':') + 1);
-		}
-
-		// No point continuing if we can't get an address, right?
-		if (empty($ip) || ($ip == '0.0.0.0'))
+		// No point continuing if I cannot get the visitor's IP address
+		if ($ip === false)
 		{
 			return false;
 		}
 
-		// Make sure it's not an IP in the safe list
-		$safeIPs = $this->cparams->getValue('neverblockips', '');
-
-		if (!empty($safeIPs))
+		// Make sure this IP is not in the "Do not block these IPs" list
+		if ($this->isSafeIP())
 		{
-			$safeIPs = explode(',', $safeIPs);
-
-			if (!empty($safeIPs))
-			{
-				if (AtsystemUtilFilter::IPinList($safeIPs))
-				{
-					return false;
-				}
-			}
+			return false;
 		}
 
-		// Make sure we don't have a list in the administrator white list
-		if ($this->cparams->getValue('ipwl', 0) == 1)
+		// Make sure this IP is not in the administrator white list
+		if ($this->isIPInAdminWhitelist())
 		{
-			$db = $this->container->db;
-			$sql = $db->getQuery(true)
-					->select($db->qn('ip'))
-					->from($db->qn('#__admintools_adminiplist'));
-
-			$db->setQuery($sql);
-
-			try
-			{
-				$ipTable = $db->loadColumn();
-			}
-			catch (Exception $e)
-			{
-				$ipTable = null;
-			}
-
-			if (!empty($ipTable))
-			{
-				if (AtsystemUtilFilter::IPinList($ipTable))
-				{
-					return false;
-				}
-			}
+			return false;
 		}
 
 		// Make sure this IP doesn't resolve to a whitelisted domain
-		if (!empty($whitelist_domains))
+		if ($this->isWhitelistedDomain($ip))
 		{
-			$remote_domain = @gethostbyaddr($ip);
-
-			if (!empty($remote_domain))
-			{
-				foreach ($whitelist_domains as $domain)
-				{
-					$domain = trim($domain);
-
-					if (strrpos($remote_domain, $domain) !== false)
-					{
-						return true;
-					}
-				}
-			}
+			return true;
 		}
-
-		// === SANITY CHECK - END ===
 
 		// Is this a private network IP and IP workaround is off? If so let's raise the flag so we can notify the user
-		// I'll use the Container so I can easily set the flag and then save back to the database
-		try
-		{
-			$this->flagPrivateNetworkIPs();
-		}
-		catch (Exception $e)
-		{
-			// Ignore any failures, they are not show stoppers
-		}
+		$this->flagPrivateNetworkIPs();
 
-		JLoader::import('joomla.utilities.date');
-		$date = new Date();
+		// Get the human readable blocking reason
+		$txtReason = $this->getBlockingReasonHumanReadable($reason, $extraLogTableInformation);
 
-		if ($this->cparams->getValue('logbreaches', 0) && !in_array($reason, $reasons_nolog))
-		{
-			// Logging to file
-			$config = $this->container->platform->getConfig();
+		// Get the email tokens, also used for logging
+		$tokens = $this->getEmailVariables($txtReason);
 
-			$logpath = $config->get('log_path');
+		// Log the security exception to file and the database, if necessary
+		$this->logSecurityException($reason, $extraLogInformation, $extraLogTableInformation, $txtReason, $tokens);
 
-			$fname = $logpath . DIRECTORY_SEPARATOR . 'admintools_breaches.log';
-
-			// -- Check the file size. If it's over 1Mb, archive and start a new log.
-			if (@file_exists($fname))
-			{
-				$fsize = filesize($fname);
-
-				if ($fsize > 1048756)
-				{
-					if (@file_exists($fname . '.1'))
-					{
-						unlink($fname . '.1');
-					}
-
-					@copy($fname, $fname . '.1');
-					@unlink($fname);
-				}
-			}
-
-			// Load the component's administrator translation files
-			$jlang = JFactory::getLanguage();
-			$jlang->load('com_admintools', JPATH_ADMINISTRATOR, 'en-GB', true);
-			$jlang->load('com_admintools', JPATH_ADMINISTRATOR, $jlang->getDefault(), true);
-			$jlang->load('com_admintools', JPATH_ADMINISTRATOR, null, true);
-
-			// Get the reason in human readable format
-			$txtReason = JText::_('COM_ADMINTOOLS_LBL_SECURITYEXCEPTION_REASON_' . strtoupper($reason));
-
-			// Get extra information
-			if ($extraLogTableInformation)
-			{
-				list($logReason,) = explode('|', $extraLogTableInformation);
-				$txtReason .= " ($logReason)";
-			}
-
-			$tokens = $this->getEmailVariables($txtReason);
-
-			// -- Log the exception
-			$fp = @fopen($fname, 'at');
-
-			if ($fp !== false)
-			{
-				fwrite($fp, str_repeat('-', 79) . "\n");
-				fwrite($fp, "Blocking reason: " . $reason . "\n" . str_repeat('-', 79) . "\n");
-				fwrite($fp, "Reason     : " . $txtReason . "\n");
-				fwrite($fp, 'Timestamp  : ' . gmdate('Y-m-d H:i:s') . " GMT\n");
-				fwrite($fp, 'Local time : ' . $tokens['[DATE]'] . " \n");
-				fwrite($fp, 'URL        : ' . $tokens['[URL]'] . "\n");
-				fwrite($fp, 'User       : ' . $tokens['[USER]'] . "\n");
-				fwrite($fp, 'IP         : ' . $tokens['[IP]'] . "\n");
-				fwrite($fp, 'Country    : ' . $tokens['[COUNTRY]'] . "\n");
-				fwrite($fp, 'Continent  : ' . $tokens['[CONTINENT]'] . "\n");
-				fwrite($fp, 'UA         : ' . $tokens['[UA]'] . "\n");
-
-				if (!empty($extraLogInformation))
-				{
-					fwrite($fp, $extraLogInformation . "\n");
-				}
-
-				fwrite($fp, "\n\n");
-				fclose($fp);
-			}
-
-			// ...and write a record to the log table
-			$db = $this->container->db;
-			$logEntry = (object)array(
-				'logdate'   => $date->toSql(),
-				'ip'        => $tokens['[IP]'],
-				'url'       => $tokens['[URL]'],
-				'reason'    => $reason,
-				'extradata' => $extraLogTableInformation,
-			);
-
-			try
-			{
-				$db->insertObject('#__admintools_log', $logEntry);
-			}
-			catch (Exception $e)
-			{
-				// Do nothing if the query fails
-			}
-		}
-
-		$emailbreaches = $this->cparams->getValue('emailbreaches', '');
-
-		if (!empty($emailbreaches) && !in_array($reason, $reasons_noemail))
-		{
-			// Get the site name
-			$config = $this->container->platform->getConfig();
-
-			// Send the email
-			try
-			{
-				$mailer = JFactory::getMailer();
-
-				$mailfrom = $config->get('mailfrom');
-				$fromname = $config->get('fromname');
-
-				// Let's get the most suitable email template
-				$template = $this->getEmailTemplate($reason);
-
-				// Got no template, the user didn't published any email template, or the template doesn't want us to
-				// send a notification email. Anyway, let's stop here
-				if (!$template)
-				{
-					return true;
-				}
-				else
-				{
-					$subject = $template[0];
-					$body = $template[1];
-				}
-
-				$subject = str_replace(array_keys($tokens), array_values($tokens), $subject);
-				$body = str_replace(array_keys($tokens), array_values($tokens), $body);
-
-				$recipients = explode(',', $emailbreaches);
-				$recipients = array_map('trim', $recipients);
-
-				foreach ($recipients as $recipient)
-				{
-					if (empty($recipient))
-					{
-						continue;
-					}
-
-					// This line is required because SpamAssassin is BROKEN
-					$mailer->Priority = 3;
-
-					$mailer->isHtml(true);
-					$mailer->setSender(array($mailfrom, $fromname));
-
-					// Resets the recipients, otherwise they will pile up
-					$mailer->clearAllRecipients();
-
-					if ($mailer->addRecipient($recipient) === false)
-					{
-						// Failed to add a recipient?
-						continue;
-					}
-
-					$mailer->setSubject($subject);
-					$mailer->setBody(AtsystemUtilRescueurl::processBlockMessage($body, $recipient));
-					$mailer->Send();
-				}
-			}
-			catch (\Exception $e)
-			{
-			}
-		}
+		// Email the security exception, if necessary
+		$this->emailSecurityException($reason, $tokens);
 
 		return true;
 	}
@@ -891,6 +672,7 @@ HTML;
 			return;
 		}
 
+		// I'll use the Container so I can easily set the flag and then save back to the database
 		$params = $this->container->params;
 
 		// Run the check only if IP workarounds are off AND the flag is set to 0 (ie not detected)
@@ -913,7 +695,15 @@ HTML;
 
 		// This IP belongs to a private network, let's raise the flag and then notify the user
 		$params->set('detected_exceptions_from_private_network', 1);
-		$params->save();
+
+		try
+		{
+			$params->save();
+		}
+		catch (Exception $e)
+		{
+			// Ignore any failures, they are not show stoppers
+		}
 	}
 
 	public function getComponentParam($key, $default = null)
@@ -1018,5 +808,373 @@ HTML;
 		}
 
 		return $ret;
+	}
+
+	/**
+	 * Get the visitor IP address. Return false if we cannot get an IP address or if we get 0.0.0.0 (broken IP forwarding).
+	 *
+	 * @return  bool|string
+	 */
+	private function getVisitorIPAddress()
+	{
+		// Get our IP address
+		$ip = AtsystemUtilFilter::getIp();
+
+		if ((strpos($ip, '::') === 0) && (strstr($ip, '.') !== false))
+		{
+			$ip = substr($ip, strrpos($ip, ':') + 1);
+		}
+
+		// No point continuing if we can't get an address, right?
+		if (empty($ip) || ($ip == '0.0.0.0'))
+		{
+			return false;
+		}
+
+		return $ip;
+	}
+
+	/**
+	 * Is the IP address in the "Never block these IPs" (safe IPs) list?
+	 *
+	 * @return  bool
+	 */
+	private function isSafeIP()
+	{
+		$safeIPs = $this->cparams->getValue('neverblockips', '');
+
+		if (!empty($safeIPs))
+		{
+			$safeIPs = explode(',', $safeIPs);
+
+			if (!empty($safeIPs))
+			{
+				if (AtsystemUtilFilter::IPinList($safeIPs))
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Is the IP address in the Administrator IP Whitelist?
+	 *
+	 * @return  bool
+	 */
+	private function isIPInAdminWhitelist()
+	{
+		if ($this->cparams->getValue('ipwl', 0) == 1)
+		{
+			$db  = $this->container->db;
+			$sql = $db->getQuery(true)
+			          ->select($db->qn('ip'))
+			          ->from($db->qn('#__admintools_adminiplist'))
+			;
+
+			$db->setQuery($sql);
+
+			try
+			{
+				$ipTable = $db->loadColumn();
+			}
+			catch (Exception $e)
+			{
+				$ipTable = null;
+			}
+
+			if (!empty($ipTable))
+			{
+				if (AtsystemUtilFilter::IPinList($ipTable))
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Does the IP address resolve to one of the whitelisted domain names?
+	 *
+	 * @param   string  $ip
+	 *
+	 * @return  bool
+	 */
+	private function isWhitelistedDomain($ip)
+	{
+		static $whitelist_domains = null;
+
+		if (is_null($whitelist_domains))
+		{
+			$whitelist_domains = $this->cparams->getValue('whitelist_domains', '.googlebot.com,.search.msn.com');
+			$whitelist_domains = explode(',', $whitelist_domains);
+		}
+
+		if (!empty($whitelist_domains))
+		{
+			$remote_domain = @gethostbyaddr($ip);
+
+			if (!empty($remote_domain))
+			{
+				foreach ($whitelist_domains as $domain)
+				{
+					$domain = trim($domain);
+
+					if (strrpos($remote_domain, $domain) !== false)
+					{
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get the blocking reason in a human readable format
+	 *
+	 * @param   string  $reason
+	 * @param   string  $extraLogTableInformation
+	 *
+	 * @return  string
+	 */
+	private function getBlockingReasonHumanReadable($reason, $extraLogTableInformation)
+	{
+		// Load the component's administrator translation files
+		$jlang = JFactory::getLanguage();
+		$jlang->load('com_admintools', JPATH_ADMINISTRATOR, 'en-GB', true);
+		$jlang->load('com_admintools', JPATH_ADMINISTRATOR, $jlang->getDefault(), true);
+		$jlang->load('com_admintools', JPATH_ADMINISTRATOR, null, true);
+
+		// Get the reason in human readable format
+		$txtReason = JText::_('COM_ADMINTOOLS_LBL_SECURITYEXCEPTION_REASON_' . strtoupper($reason));
+
+		if (empty($extraLogTableInformation))
+		{
+			return $txtReason;
+		}
+
+		// Get extra information
+		list($logReason,) = explode('|', $extraLogTableInformation);
+
+		return $txtReason . " ($logReason)";
+	}
+
+	/**
+	 * Write a security exception to the log, as long as logging is enabled and the $reason is not one of the $reasons_nolog ones
+	 *
+	 * @param   string  $reason
+	 * @param   string  $extraLogInformation
+	 * @param   string  $extraLogTableInformation
+	 * @param   string  $txtReason
+	 * @param   array   $tokens
+	 *
+	 * @return  void
+	 */
+	private function logSecurityException($reason, $extraLogInformation, $extraLogTableInformation, $txtReason, $tokens)
+	{
+		$reasons_nolog = $this->cparams->getValue('reasons_nolog', 'geoblocking');
+		$reasons_nolog = explode(',', $reasons_nolog);
+
+		if (!$this->cparams->getValue('logbreaches', 0) || in_array($reason, $reasons_nolog))
+		{
+			return;
+		}
+
+		// Log to file
+		$this->logSecurityExceptionToFile($reason, $extraLogInformation, $txtReason, $tokens);
+
+		// Log to the database table
+		$this->logSecurityExceptionToDatabase($reason, $extraLogTableInformation, $tokens);
+	}
+
+	/**
+	 * Log a security exception to our log file
+	 *
+	 * @param   string  $reason
+	 * @param   string  $extraLogInformation
+	 * @param   string  $txtReason
+	 * @param   array   $tokens
+	 */
+	private function logSecurityExceptionToFile($reason, $extraLogInformation, $txtReason, $tokens)
+	{
+		// Get the log filename
+		$config = $this->container->platform->getConfig();
+		$logpath = $config->get('log_path');
+		$fname = $logpath . DIRECTORY_SEPARATOR . 'admintools_breaches.log';
+
+		// -- Check the file size. If it's over 1Mb, archive and start a new log.
+		if (@file_exists($fname))
+		{
+			$fsize = filesize($fname);
+
+			if ($fsize > 1048756)
+			{
+				if (@file_exists($fname . '.1'))
+				{
+					unlink($fname . '.1');
+				}
+
+				@copy($fname, $fname . '.1');
+				@unlink($fname);
+			}
+		}
+
+		// -- Log the exception
+		$fp = @fopen($fname, 'at');
+
+		if ($fp === false)
+		{
+			return;
+		}
+
+		fwrite($fp, str_repeat('-', 79) . "\n");
+		fwrite($fp, "Blocking reason: " . $reason . "\n" . str_repeat('-', 79) . "\n");
+		fwrite($fp, "Reason     : " . $txtReason . "\n");
+		fwrite($fp, 'Timestamp  : ' . gmdate('Y-m-d H:i:s') . " GMT\n");
+		fwrite($fp, 'Local time : ' . $tokens['[DATE]'] . " \n");
+		fwrite($fp, 'URL        : ' . $tokens['[URL]'] . "\n");
+		fwrite($fp, 'User       : ' . $tokens['[USER]'] . "\n");
+		fwrite($fp, 'IP         : ' . $tokens['[IP]'] . "\n");
+		fwrite($fp, 'Country    : ' . $tokens['[COUNTRY]'] . "\n");
+		fwrite($fp, 'Continent  : ' . $tokens['[CONTINENT]'] . "\n");
+		fwrite($fp, 'UA         : ' . $tokens['[UA]'] . "\n");
+
+		if (!empty($extraLogInformation))
+		{
+			fwrite($fp, $extraLogInformation . "\n");
+		}
+
+		fwrite($fp, "\n\n");
+		fclose($fp);
+	}
+
+	/**
+	 * Log a security exception to the database table
+	 *
+	 * @param   string  $reason
+	 * @param   string  $extraLogInformation
+	 * @param   array   $tokens
+	 *
+	 *
+	 * @since version
+	 */
+	private function logSecurityExceptionToDatabase($reason, $extraLogTableInformation, $tokens)
+	{
+		try
+		{
+			$date     = new Date();
+			$db       = $this->container->db;
+			$url      = $tokens['[URL]'];
+
+			if (strlen($url) > 10240)
+			{
+				$url = substr($url, 0, 10240);
+			}
+
+			$logEntry = (object) array(
+				'logdate'   => $date->toSql(),
+				'ip'        => $tokens['[IP]'],
+				'url'       => $url,
+				'reason'    => $reason,
+				'extradata' => $extraLogTableInformation,
+			);
+
+			$db->insertObject('#__admintools_log', $logEntry);
+		}
+		catch (Exception $e)
+		{
+			// Do nothing if the query fails
+		}
+	}
+
+	/**
+	 * Sends information about the security exception by email
+	 *
+	 * @param   string  $reason
+	 * @param   array   $tokens
+	 *
+	 * @return  bool
+	 */
+	private function emailSecurityException($reason, $tokens)
+	{
+		$emailbreaches   = $this->cparams->getValue('emailbreaches', '');
+		$reasons_noemail = $this->cparams->getValue('reasons_noemail', 'geoblocking');
+		$reasons_noemail = explode(',', $reasons_noemail);
+
+		if (empty($emailbreaches) || in_array($reason, $reasons_noemail))
+		{
+			return true;
+		}
+
+		// Get the site name
+		$config = $this->container->platform->getConfig();
+
+		// Send the email
+		try
+		{
+			$mailer = JFactory::getMailer();
+
+			$mailfrom = $config->get('mailfrom');
+			$fromname = $config->get('fromname');
+
+			// Let's get the most suitable email template
+			$template = $this->getEmailTemplate($reason);
+
+			// Got no template, the user didn't published any email template, or the template doesn't want us to
+			// send a notification email. Anyway, let's stop here
+			if (!$template)
+			{
+				return true;
+			}
+			else
+			{
+				$subject = $template[0];
+				$body    = $template[1];
+			}
+
+			$subject = str_replace(array_keys($tokens), array_values($tokens), $subject);
+			$body    = str_replace(array_keys($tokens), array_values($tokens), $body);
+
+			$recipients = explode(',', $emailbreaches);
+			$recipients = array_map('trim', $recipients);
+
+			foreach ($recipients as $recipient)
+			{
+				if (empty($recipient))
+				{
+					continue;
+				}
+
+				// This line is required because SpamAssassin is BROKEN
+				$mailer->Priority = 3;
+
+				$mailer->isHtml(true);
+				$mailer->setSender(array($mailfrom, $fromname));
+
+				// Resets the recipients, otherwise they will pile up
+				$mailer->clearAllRecipients();
+
+				if ($mailer->addRecipient($recipient) === false)
+				{
+					// Failed to add a recipient?
+					continue;
+				}
+
+				$mailer->setSubject($subject);
+				$mailer->setBody(AtsystemUtilRescueurl::processBlockMessage($body, $recipient));
+				$mailer->Send();
+			}
+		}
+		catch (\Exception $e)
+		{
+		}
+
+		return true;
 	}
 }

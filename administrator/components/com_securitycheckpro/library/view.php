@@ -28,11 +28,5 @@ function __construct() 	{
 	JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECURITYCHECKPRO_CPANEL_FIREWALL_CONFIGURATION'), 'securitycheckpro' );
 	JToolBarHelper::save();
 	JToolBarHelper::apply();
-	JToolBarHelper::custom('redireccion_control_panel','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT_CONTROL_PANEL');
-	JToolBarHelper::custom('redireccion','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT');
-	JToolBarHelper::custom('redireccion_system_info','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT_SYSTEM_INFO');
-
-}
-
-	
+	}	
 }

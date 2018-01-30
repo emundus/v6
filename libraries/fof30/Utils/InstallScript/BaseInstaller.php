@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -43,7 +43,7 @@ class BaseInstaller
 	 *
 	 * @var   string
 	 */
-	protected $maximumJoomlaVersion = '3.9.99';
+	protected $maximumJoomlaVersion = '4.0.99';
 
 	/**
 	 * Post-installation message definitions for Joomla! 3.2 or later.

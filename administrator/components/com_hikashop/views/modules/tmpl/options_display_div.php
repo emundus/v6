@@ -1,21 +1,18 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 $showDescription="";
-if($this->element['div_item_layout_type']!='fade' && $this->element['div_item_layout_type']!='slider_horizontal' && $this->element['div_item_layout_type']!='slider_vertical'){
-	$showDescription='style="display:none"';
-}
+$productEffect="";
+$productEffectDuration="";
+$paneHeight="";
 if(hikashop_level(2)){
-	$productEffect="";
-	$productEffectDuration="";
-	$paneHeight="";
 	if(!isset($this->element['div_item_layout_type'])){
 		$this->element['div_item_layout_type']='inherit';
 	}
@@ -28,7 +25,12 @@ if(hikashop_level(2)){
 		$productEffect='style="display:none"';
 		$productEffectDuration='style="display:none"';
 	}
+	if($this->element['div_item_layout_type']!='fade' && $this->element['div_item_layout_type']!='slider_horizontal' && $this->element['div_item_layout_type']!='slider_vertical'){
+		$showDescription='style="display:none"';
+	}
 }
+
+
 ?>
 <div class="hkc-xl-12 hikashop_module_edit_display_settings_div" data-type="product_layout" data-layout="product_div">
 	<div class="hkc-xl-4 hkc-md-6 hikashop_module_subblock hikashop_module_edit_display_settings_subdiv">

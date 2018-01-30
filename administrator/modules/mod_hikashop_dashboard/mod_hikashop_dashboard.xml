@@ -2,9 +2,9 @@
 <extension type="module" client="administrator" method="upgrade" version="3.1" position="cpanel">
 	<name>HikaShop Dashboard</name>
 	<author>Hikari Software / Obsidev</author>
-	<creationDate>17 novembre 2017</creationDate>
-	<version>3.2.1</version>
-	<copyright>(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<creationDate>26 janvier 2018</creationDate>
+	<version>3.2.2</version>
+	<copyright>(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>www.hikashop.com</authorUrl>
 	<description>HikaShop Dashboard for use in the Joomla! Control Panel page.</description>

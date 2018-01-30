@@ -808,7 +808,7 @@ class plgSystemSecuritycheckpro extends JPlugin{
 		$redirect_options = $this->pro_plugin->getValue('redirect_options',1,'pro_plugin');
 		$redirect_url = $this->pro_plugin->getValue('redirect_url','','pro_plugin');
 		$custom_code = $this->pro_plugin->getValue('custom_code','The webmaster has forbidden your access to this site','pro_plugin');
-				
+		
 		if ($redirect_after_attack){
 			// Tenemos que redigir 
 			if (!$blacklist) {
@@ -1392,14 +1392,10 @@ class plgSystemSecuritycheckpro extends JPlugin{
 	{
 		$ip = $this->get_ip();
 		
-		if ( $ip == 'Not set' ) {
-			return;
-		} 
-				
 		/* Cargamos el lenguaje del sitio */
 		$lang = JFactory::getLanguage();
 		$lang->load('com_securitycheckpro',JPATH_ADMINISTRATOR);
-
+		
 		$continents = $this->geoblock_config->getValue('geoblockcontinents','','geoblock');
 		$continents = empty($continents) ? array() : explode(',', $continents);
 		$countries = $this->geoblock_config->getValue('geoblockcountries','','geoblock');
@@ -1859,32 +1855,59 @@ class plgSystemSecuritycheckpro extends JPlugin{
 		$clientIpAddress = 'Not set';
 		$ip_valid = false;
 		
-		if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR']) {
-			$clientIpAddress = $_SERVER['HTTP_X_FORWARDED_FOR'];			
-			$result_ip_address = explode(', ',$clientIpAddress);
-			$clientIpAddress = $result_ip_address[0];			
-		} else {
-			if ( isset($_SERVER['REMOTE_ADDR']) ) {
-				$clientIpAddress = $_SERVER['REMOTE_ADDR'];
-			}
-		}
-		$ip_valid = filter_var($clientIpAddress, FILTER_VALIDATE_IP);
-		
-		// Si la ip no es válida intentamos extraer la dirección IP remota
-		if ( !$ip_valid ) {
+		// ¿Cómo determinamos la IP?
+		$params = JComponentHelper::getParams('com_securitycheckpro');
+		$avoid_proxies = $params->get('avoid_proxies',1);
+				
+		if ( $avoid_proxies ) {
+			// Ignoramos las cabeceras X-Forwarded-For
 			if ( isset($_SERVER['REMOTE_ADDR']) ) {
 				$clientIpAddress = $_SERVER['REMOTE_ADDR'];			
 			}
 			
 			$ip_valid = filter_var($clientIpAddress, FILTER_VALIDATE_IP);
-			// Si la ip no es válida entonces devolvemos 'Not set'
+			// Si la ip no es válida entonces bloqueamos la petición y mostramos un error 403
 			if ( !$ip_valid ) {
-				$clientIpAddress = 'Not set';
-			}			
+				/* Cargamos el lenguaje del sitio */
+				$lang = JFactory::getLanguage();
+				$lang->load('com_securitycheckpro',JPATH_ADMINISTRATOR);
+				$error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
+				$this->redirection(403,$error_403,true);				
+			} else {
+				return $clientIpAddress;
+			}		
+		} else {	
+			if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR']) {
+				$clientIpAddress = $_SERVER['HTTP_X_FORWARDED_FOR'];			
+				$result_ip_address = explode(', ',$clientIpAddress);
+				$clientIpAddress = $result_ip_address[0];			
+			} else {
+				if ( isset($_SERVER['REMOTE_ADDR']) ) {
+					$clientIpAddress = $_SERVER['REMOTE_ADDR'];
+				}
+			}
+			$ip_valid = filter_var($clientIpAddress, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+			
+			// Si la ip no es válida intentamos extraer la dirección IP remota
+			if ( !$ip_valid ) {
+				if ( isset($_SERVER['REMOTE_ADDR']) ) {
+					$clientIpAddress = $_SERVER['REMOTE_ADDR'];			
+				}
+				
+				$ip_valid = filter_var($clientIpAddress, FILTER_VALIDATE_IP);
+				// Si la ip no es válida entonces bloqueamos la petición y mostramos un error 403
+				if ( !$ip_valid ) {
+					/* Cargamos el lenguaje del sitio */
+					$lang = JFactory::getLanguage();
+					$lang->load('com_securitycheckpro',JPATH_ADMINISTRATOR);
+					$error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
+					$this->redirection(403,$error_403,true);				
+				}			
+			}
+			
+			// Devolvemos el resultado
+			return $clientIpAddress;	
 		}
-		
-		// Devolvemos el resultado
-		return $clientIpAddress;			
 	}
 	
 	// Chequeamos los usuarios administradores/super usuarios

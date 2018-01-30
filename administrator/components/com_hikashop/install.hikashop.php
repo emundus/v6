@@ -23,7 +23,7 @@ if(!function_exists('com_install')) {
 
 class hikashopInstall {
 	var $level = 'Starter';
-	var $version = '3.2.1';
+	var $version = '3.2.2';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';

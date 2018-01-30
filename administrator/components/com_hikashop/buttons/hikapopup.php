@@ -1,19 +1,15 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 if(!HIKASHOP_J30) {
-	if(!HIKASHOP_PHP5){
-		$toolbarInstance =& JToolbar::getInstance();
-	} else {
-		$toolbarInstance = JToolbar::getInstance();
-	}
+	$toolbarInstance = JToolbar::getInstance();
 	$toolbarInstance->loadButtonType('Popup');
 	class JButtonHikaPopup extends JButtonPopup {
 		public function fetchButton($type = 'Popup', $name = '', $text = '', $url = '', $width = 640, $height = 480, $top = 0, $left = 0, $onClose = '', $title = '', $footer = '') {
@@ -27,7 +23,7 @@ if(!HIKASHOP_J30) {
 			$doTask = $url; //$this->_getCommand($name, $url, $width, $height, $top, $left);
 			$id = 'modal-toolbar-' . $name;
 
-			$popup = hikaserial::get('shop.helper.popup');
+			$popup = hikashop_get('helper.popup');
 			$params = array(
 				'width' => $width,
 				'height' => $height,
@@ -41,8 +37,9 @@ if(!HIKASHOP_J30) {
 		}
 	}
 } else {
-	JToolbar::getInstance()->loadButtonType('Popup');
-	class JToolbarButtonHikapopup extends JToolbarButtonPopup {
+	class JToolbarButtonHikapopup extends JToolbarButton {
+		protected $_name = 'Popup';
+
 		public function fetchButton($type = 'Modal', $name = '', $text = '', $url = '', $width = 640, $height = 480, $top = 0, $left = 0, $onClose = '', $title = '') {
 			list($name, $icon) = explode('#', $name, 2);
 			$name .= '-btnpopup';
@@ -103,6 +100,10 @@ if(!HIKASHOP_J30) {
 			}
 
 			return implode("\n", $html);
+		}
+
+		public function fetchId($type, $name) {
+			return $this->_parent->getName() . '-popup-' . $name;
 		}
 	}
 }

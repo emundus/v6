@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -186,7 +186,7 @@ class plgHikashoppaymentEpay extends hikashopPaymentPlugin
 			'SEK' => '752', 'SGD' => '702', 'SHP' => '654', 'SIT' => '705', 'SKK' => '703', 'SLL' => '694', 'SOS' => '706', 'SRG' => '740', 'STD' => '678', 'SVC' => '222', 'SYP' => '760',
 			'SZL' => '748', 'THB' => '764', 'TJS' => '972', 'TMM' => '795', 'TND' => '788', 'TOP' => '776', 'TPE' => '626', 'TRL' => '792', 'TRY' => '949', 'TTD' => '780', 'TWD' => '901',
 			'TZS' => '834', 'UAH' => '980', 'UGX' => '800', 'USD' => '840', 'UYU' => '858', 'UZS' => '860', 'VEB' => '862', 'VND' => '704', 'VUV' => '548', 'XAF' => '950', 'XCD' => '951',
-			'XOF' => '952', 'XPF' => '953', 'YER' => '886', 'YUM' => '891', 'ZAR' => '710', 'ZMK' => '894', 'ZWD' => '716'
+			'XOF' => '952', 'XPF' => '953', 'YER' => '886', 'YUM' => '891', 'ZAR' => '710', 'ZMK' => '894', 'ZWD' => '716', 'ZMW' => '967'
 		);
 		$code = strtoupper(trim($code));
 		if(isset( $codes[$code] ))

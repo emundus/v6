@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -24,75 +24,74 @@ class hikashopFieldsType {
 		$this->allValues = array(
 			'text' => array(
 				'name' => JText::_('FIELD_TEXT'),
-				'options' => array("size","required","default","columnname","filtering","maxlength","readonly","placeholder","translatable","attribute","regex")
+				'options' => array('size','required','default','columnname','filtering','maxlength','readonly','placeholder','translatable','attribute','regex')
 			),
 			'link' => array(
 				'name' => JText::_('LINK'),
-				'options' => array("size","required","default","columnname","filtering","maxlength","readonly","attribute","regex")
+				'options' => array('size','required','default','columnname','filtering','maxlength','readonly','target_blank','attribute','regex')
 			),
 			'textarea' => array(
 				'name' => JText::_('FIELD_TEXTAREA'),
-				'options' => array("cols","rows","required","default","columnname","filtering","readonly","maxlength","placeholder","translatable","attribute","regex")
+				'options' => array('cols','rows','required','default','columnname','filtering','readonly','maxlength','placeholder','translatable','attribute','regex')
 			),
 			'wysiwyg' => array(
 				'name' => JText::_('WYSIWYG'),
-				'options' => array("cols","rows","required","default","columnname","filtering","translatable","regex")
+				'options' => array('cols','rows','required','default','columnname','filtering','translatable','regex')
 			),
 			'radio' => array(
 				'name' => JText::_('FIELD_RADIO'),
-				'options' => array("multivalues","required","default","columnname","attribute","inline")
+				'options' => array('multivalues','required','default','columnname','attribute','inline')
 			),
 			'checkbox' => array(
 				'name' => JText::_('FIELD_CHECKBOX'),
-				'options' => array("multivalues","required","default","columnname","attribute","inline")
+				'options' => array('multivalues','required','default','columnname','attribute','inline')
 			),
 			'singledropdown' => array(
 				'name' => JText::_('FIELD_SINGLEDROPDOWN'),
-				'options' => array("multivalues","required","default","columnname","attribute")
+				'options' => array('multivalues','required','default','columnname','attribute')
 			),
 			'multipledropdown' => array(
 				'name' => JText::_('FIELD_MULTIPLEDROPDOWN'),
-				'options' => array("multivalues","size","default","columnname","attribute")
+				'options' => array('multivalues','size','default','columnname','attribute')
 			),
 			'date' => array(
 				'name' => JText::_('FIELD_DATE'),
-				'options' => array("required","format","size","default","columnname","allow")
+				'options' => array('required','format','size','default','columnname','allow')
 			),
 			'zone' => array(
 				'name' => JText::_('FIELD_ZONE'),
-				'options' => array("required","zone","default","columnname","pleaseselect","attribute")
+				'options' => array('required','zone','default','columnname','pleaseselect','attribute')
 			),
 		);
 
 		if(hikashop_level(2)) {
 			if($type == 'entry'|| empty($type)) {
-				$this->allValues["coupon"] = array(
+				$this->allValues['coupon'] = array(
 					'name' => JText::_('HIKASHOP_COUPON'),
-					'options' => array("size","required","default","columnname")
+					'options' => array('size','required','default','columnname')
 				);
 			}
-			$this->allValues["file"] = array(
+			$this->allValues['file'] = array(
 				'name' => JText::_('HIKA_FILE'),
-				'options' => array("required","default","columnname","attribute")
+				'options' => array('required','default','columnname','attribute')
 			);
-			$this->allValues["image"] = array(
+			$this->allValues['image'] = array(
 				'name' => JText::_('HIKA_IMAGE'),
-				'options' => array("required","default","columnname","attribute")
+				'options' => array('required','default','columnname','attribute')
 			);
 			$this->allValues['ajaxfile'] = array(
 				'name' => JText::_('FIELD_AJAX_FILE'),
-				'options' => array("required","default","columnname")
+				'options' => array('required','default','columnname')
 			);
 			$this->allValues['ajaximage'] = array(
 				'name' => JText::_('FIELD_AJAX_IMAGE'),
-				'options' => array("required","default","columnname","imagesize")
+				'options' => array('required','default','columnname','imagesize')
 			);
 		}
-		$this->allValues["customtext"] = array(
+		$this->allValues['customtext'] = array(
 			'name' => JText::_('CUSTOM_TEXT'),
-			'options' => array("customtext")
+			'options' => array('customtext')
 		);
-
 		if($this->externalValues == null) {
 			$this->externalValues = array();
 			$this->externalOptions = array();

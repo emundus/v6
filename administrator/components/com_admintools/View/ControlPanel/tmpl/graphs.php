@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -15,39 +15,41 @@ $template = $this->container->template;
 $graphDayFrom = gmdate('Y-m-d', time() - 30 * 24 * 3600);
 ?>
 
-<h3>
-	<?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_DASHBOARD_EXCEPTIONS'); ?>
-</h3>
+<div class="akeeba-panel--default">
+    <header class="akeeba-block-header">
+        <h3><?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_DASHBOARD_EXCEPTIONS'); ?></h3>
+    </header>
 
-<div class="form-inline">
-	<label>
-		<?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_DASHBOARD_FROMDATE'); ?>
-	</label>
+    <div class="akeeba-form--inline">
+        <div class="akeeba-form-group">
+            <label><?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_DASHBOARD_FROMDATE'); ?></label>
 
-	<?php echo \JHtml::_('calendar', $graphDayFrom, 'admintools_graph_datepicker', 'admintools_graph_datepicker'); ?>
+            <?php echo \JHtml::_('calendar', $graphDayFrom, 'admintools_graph_datepicker', 'admintools_graph_datepicker'); ?>
+        </div>
 
-	<button class="btn" id="admintools_graph_reload" onclick="return false;">
-		<?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_DASHBOARD_RELOADGRAPHS'); ?>
-	</button>
-</div>
+        <div class="akeeba-form-group--actions">
+            <button class="akeeba-btn--dark" id="admintools_graph_reload" onclick="return false;">
+                <?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_DASHBOARD_RELOADGRAPHS'); ?>
+            </button>
+        </div>
+    </div>
 
-<div id="admintoolsExceptionsLineChart">
-	<img src="<?php echo $template->parsePath('admin://components/com_admintools/media/images/throbber.gif'); ?>"
-		 id="akthrobber"/>
+    <div id="admintoolsExceptionsLineChart">
+        <span id="akthrobber" class="akion-load-a"></span>
 
-	<p id="admintoolsExceptionsLineChartNoData" style="display:none">
-		<?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_DASHBOARD_STATS_NODATA'); ?>
-	</p>
-</div>
+        <p id="admintoolsExceptionsLineChartNoData" style="display:none">
+            <?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_DASHBOARD_STATS_NODATA'); ?>
+        </p>
+    </div>
 
-<div class="clearfix"></div>
+    <div class="clearfix"></div>
 
-<h3><?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_DASHBOARD_EXCEPTSTATS'); ?></h3>
-<div id="admintoolsExceptionsPieChart">
-	<img src="<?php echo $template->parsePath('admin://components/com_admintools/media/images/throbber.gif'); ?>"
-		 id="akthrobber2"/>
+    <h3><?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_DASHBOARD_EXCEPTSTATS'); ?></h3>
+    <div id="admintoolsExceptionsPieChart">
+        <span id="akthrobber2" class="akion-load-a"></span>
 
-	<p id="admintoolsExceptionsPieChartNoData" style="display:none">
-		<?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_DASHBOARD_STATS_NODATA'); ?>
-	</p>
+        <p id="admintoolsExceptionsPieChartNoData" style="display:none">
+            <?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_DASHBOARD_STATS_NODATA'); ?>
+        </p>
+    </div>
 </div>

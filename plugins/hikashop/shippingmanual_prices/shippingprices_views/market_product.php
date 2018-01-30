@@ -1,14 +1,15 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><dt class="hikamarket_product_plugin_shippingprices"><label><?php echo JText::_('SHIPPING_PRICES'); ?></label></dt>
-<dd class="hikamarket_product_plugin_shippingprices">
+?><div class="hikamarket_section_container hikamarket_section_product_plugin_shippingprices">
+	<h3 data-section-toggle="product_plugin_shippingprices" class="hikamarket_section_toggle"><?php echo JText::_('SHIPPING_PRICES'); ?></h3>
+	<div id="hikamarket_section_product_plugin_shippingprices">
 	<table class="adminlist table table-striped" style="cell-spacing:1px;width:100%;">
 		<thead>
 			<tr>
@@ -173,4 +174,5 @@ var hikashop_shippingprice = {
 	hikashop_shippingprice.cpt[<?php echo $product_id; ?>] = <?php echo $i; ?>;
 }
 </script>
-</dd>
+	</div>
+</div>

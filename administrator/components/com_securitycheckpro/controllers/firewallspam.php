@@ -19,12 +19,6 @@ jimport('joomla.application.component.controller');
 class SecuritycheckprosControllerFirewallSpam extends SecuritycheckproController
 {
 
-/* Redirecciona las peticiones al componente */
-function redireccion()
-{
-	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=firewallspam&view=firewallcpanel' );
-}
-
 
 /* Guarda los cambios y redirige al cPanel */
 public function save()

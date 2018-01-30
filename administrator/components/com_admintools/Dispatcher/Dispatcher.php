@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -86,6 +86,11 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
 	    $lang->load('lib_fof30', JPATH_ADMINISTRATOR, 'en-GB', true, true);
 	    $lang->load('lib_fof30', JPATH_ADMINISTRATOR, null, true, false);
 
+		// FEF Renderer options. Used to load the common CSS file.
+		$this->container->renderer->setOptions([
+			'custom_css' => 'admin://components/com_admintools/media/css/backend.min.css'
+		]);
+
 	    // Load the version file
         @include_once($this->container->backEndPath . '/version.php');
 
@@ -108,9 +113,6 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
                 Ip::workaroundIPIssues();
             }
         }
-
-        // Add CSS
-        $this->container->template->addCSS('admin://components/com_admintools/media/css/backend.min.css');
 
         // ========== Master password check ==========
         // Control Check

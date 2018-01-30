@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    3.2.1
+ * @version    3.2.2
  * @author     hikashop.com
- * @copyright  (C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 (function() {
@@ -893,7 +893,7 @@ var hikashop = {
 		if(containerName && product_id)
 			container = d.forms['hikashop_product_form_' + product_id + '_' + containerName] || d.forms[containerName];
 
-		url += (url.indexOf('?') >= 0 ? '&' : '?') + 'tmpl=ajax';
+		url += (url.indexOf('?') >= 0 ? '&' : '?') + 'tmpl=raw';
 
 		if(container) {
 			if(window.FormData) {
@@ -1017,7 +1017,7 @@ var hikashop = {
 		if(!cart_type || cart_type == '')
 			return true;
 
-		url += (url.indexOf('?') >= 0 ? '&' : '?') + 'tmpl=ajax';
+		url += (url.indexOf('?') >= 0 ? '&' : '?') + 'tmpl=raw';
 		var cart_id = parseInt(el.getAttribute('data-cart-id')),
 			cart_product_id = parseInt(el.getAttribute('data-cart-product-id'));
 		if(cart_id === NaN || cart_product_id === NaN)
@@ -1063,10 +1063,10 @@ var hikashop = {
 			container = d.getElementById(container);
 		if(window.FormData) {
 			data = new FormData(form);
-			data.append('tmpl', 'ajax');
+			data.append('tmpl', 'raw');
 		} else {
 			data = o.getFormData(form);
-			data += '&tmpl=ajax';
+			data += '&tmpl=raw';
 		}
 		form.processing = true;
 		if(container)
@@ -1088,7 +1088,7 @@ var hikashop = {
 		if(!el)
 			return false;
 		var open = el.style.display == 'none';
-		if(type != 'hover')
+		if(type != 'hover' && type != 'toggle')
 			type = 'click';
 		if(jQuery) {
 			jQuery(el).slideToggle('fast');
@@ -1110,7 +1110,7 @@ var hikashop = {
 			el.toggleFunction = null;
 			return true;
 		}
-		if(type == 'hover')
+		if(type != 'click')
 			return true;
 
 		var f = function(evt) {

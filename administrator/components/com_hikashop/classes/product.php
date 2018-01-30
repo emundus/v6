@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -3061,7 +3061,7 @@ class hikashopProductClass extends hikashopClass{
 			'product_dimension_unit','product_width','product_length','product_height','files',
 			'product_contact','product_max_per_order','product_min_per_order','product_sale_start',
 			'product_sale_end','product_manufacturer_id','file_path','file_name','file_description',
-			'product_warehouse_id'
+			'product_warehouse_id','product_selection_method'
 		);
 		$fieldsClass = hikashop_get('class.field');
 		$fields = $fieldsClass->getFields('frontcomp',$element,'product','checkout&task=state');

@@ -431,7 +431,8 @@ public function protect()
 	}
 	
 	/* Comprobamos si hay que proteger las cabeceras X-Frame del navegador */
-	if ( !($this->getValue("xframe_options") == 'NO') ) {
+	$xframe_options = $this->getValue("xframe_options");
+	if ( (!empty($xframe_options)) && ($this->getValue("xframe_options") != 'NO') ) {
 		
 			$rules .= PHP_EOL . "## Begin Securitycheck Pro Xframe-options protection";
 			$rules .= PHP_EOL . "## Don't allow any pages to be framed - Defends against CSRF";

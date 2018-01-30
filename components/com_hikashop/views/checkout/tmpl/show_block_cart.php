@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -30,6 +30,14 @@ defined('_JEXEC') or die('Restricted access');
 			<th id="hikashop_cart_product_name_title" class="hikashop_cart_product_name_title hikashop_cart_title"><?php
 				echo JText::_('CART_PRODUCT_NAME');
 			?></th>
+<?php
+	if(hikashop_level(1) && !empty($this->extraFields['product'])) {
+		foreach($this->extraFields['product'] as $fieldname => $field) {
+			$row_count++;
+			echo '<th class="hikashop_cart_product_'.$fieldname.'" class="hikashop_cart_product_'.$fieldname.'_title hikashop_cart_title">'.$this->fieldClass->trans($field->field_realname).'</th>';
+		}
+	}
+?>
 			<th id="hikashop_cart_product_price_title" class="hikashop_cart_product_price_title hikashop_cart_title"><?php
 				echo JText::_('CART_PRODUCT_UNIT_PRICE');
 			?></th>
@@ -193,6 +201,21 @@ defined('_JEXEC') or die('Restricted access');
 			echo '<div class="hikashop_cart_product_custom_item_fields">'.$html.'</div>';
 ?>
 			</td>
+<?php
+	if(hikashop_level(1) && !empty($this->extraFields['product'])) {
+		foreach($this->extraFields['product'] as $field) {
+			$namekey = $field->field_namekey;
+?>			<td data-title="<?php echo $this->fieldClass->trans($field->field_realname); ?>" class="hikashop_cart_product_field_<?php echo $namekey; ?>">
+<?php
+			if(!empty($product->$namekey)) {
+				echo '<p class="hikashop_checkout_cart_product_'.$namekey.'">' . $this->fieldClass->show($field, $product->$namekey) . '</p>';
+			}
+?>
+			</td>
+<?php
+		}
+	}
+?>
 			<td data-title="<?php echo JText::_('CART_PRODUCT_UNIT_PRICE'); ?>" class="hikashop_cart_product_price_value"><?php
 				echo $this->getDisplayProductPrice($product, true);
 

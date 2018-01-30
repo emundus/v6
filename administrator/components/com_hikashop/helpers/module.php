@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -130,15 +130,30 @@ class hikashopModuleHelper {
 	}
 
 	public function _getParams(&$obj) {
-		if(!empty($obj->params)) {
-			$obj->module = true;
-			return true;
-		}
-
 		global $Itemid;
 		$app = JFactory::getApplication();
 		$menus	= $app->getMenu();
 		$menu	= $menus->getActive();
+
+		if(!empty($obj->params)) {
+			$obj->module = true;
+
+			if($obj->params->get('content_synchronize')){
+				$id = null;
+				if(HIKASHOP_J30 && isset($menu)) {
+					$productParams = $menu->params->get('hk_product',false);
+					if($productParams && isset($productParams->category))
+						$id = $productParams->category;
+					$categoryParams = $menu->params->get('hk_category', false);
+					if($categoryParams && isset($categoryParams->category))
+						$id = $categoryParams->category;
+				}
+				if($id)
+					$obj->params->set('selectparentlisting', $id);
+			}
+			return true;
+		}
+
 
 		if(!empty($Itemid) && !empty($menu) && !empty($menuData->link) && strpos($menu->link,'option='.HIKASHOP_COMPONENT)!==false && (strpos($menu->link,'view=category')!==false || strpos($menu->link,'view=')===false)){
 			$app->setUserState(HIKASHOP_COMPONENT.'.category_item_id',$Itemid);

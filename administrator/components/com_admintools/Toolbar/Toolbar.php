@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -72,8 +72,6 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 		$bar = JToolbar::getInstance('toolbar');
 		$bar->appendButton('Popup', 'search', 'Preview', 'index.php?option=com_admintools&view=HtaccessMaker&task=preview&tmpl=component', 640, 380);
 
-		//JToolbarHelper::preview('index.php?option=com_admintools&view=HtaccessMaker&tmpl=component');
-
 		JToolbarHelper::divider();
 		JToolbarHelper::back('JTOOLBAR_BACK', 'index.php?option=com_admintools');
 	}
@@ -87,7 +85,6 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 
 		$bar = JToolbar::getInstance('toolbar');
 		$bar->appendButton('Popup', 'preview', 'Preview', 'index.php?option=com_admintools&view=NginXConfMaker&task=preview&tmpl=component', 640, 380);
-		//JToolbarHelper::preview('index.php?option=com_admintools&view=NginXConfMaker&tmpl=component');
 
 		JToolbarHelper::divider();
 		JToolbarHelper::back('JTOOLBAR_BACK', 'index.php?option=com_admintools');
@@ -213,7 +210,7 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 			$text = JText::_('COM_ADMINTOOLS_BLACKLISTEDADDRESSES_IMPORT');
 
 			$html = <<<HTML
-<button class="btn btn-small btn-primary" onclick="location.href='index.php?option=com_admintools&amp;view=BlacklistedAddresses&amp;task=import';">
+<button class="btn btn-sm btn-small btn-primary" onclick="location.href='index.php?option=com_admintools&amp;view=BlacklistedAddresses&amp;task=import';">
 	<span class="icon-upload"></span>
 	$text
 </button>
@@ -225,7 +222,7 @@ HTML;
 		$text = JText::_('COM_ADMINTOOLS_BLACKLISTEDADDRESSES_EXPORT');
 
 		$html = <<<HTML
-<button class="btn btn-small btn-primary" onclick="location.href='index.php?option=com_admintools&amp;view=BlacklistedAddresses&amp;format=csv';">
+<button class="btn btn-sm btn-small btn-primary" onclick="location.href='index.php?option=com_admintools&amp;view=BlacklistedAddresses&amp;task=export&amp;format=csv';">
 	<span class="icon-download"></span>
 	$text
 </button>

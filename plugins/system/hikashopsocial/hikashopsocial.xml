@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="1.5" method="upgrade" group="system">
 	<name>System - Hikashop Social Plugin</name>
-	<creationDate>17 novembre 2017</creationDate>
-	<version>3.2.1</version>
+	<creationDate>26 janvier 2018</creationDate>
+	<version>3.2.2</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>This plugin enables you to add a Facebook "like" button and a Twitter button</description>
 	<files>
@@ -16,6 +16,7 @@
 		<param name="display_fb" type="radio" default="1" label="HIKA_DISPLAY_FACEBOOK_BUTTON" description="DISPLAY_FACEBOOK_BUTTON">
 			<option value="0">HIKASHOP_NO</option>
 			<option value="1">HIKASHOP_YES</option>
+			<option value="2">OPEN_GRAPH_META_ONLY</option>
 		</param>
 		<param name="display_twitter" type="radio" default="1" label="HIKA_DISPLAY_TWITTER_BUTTON" description="DISPLAY_TWITTER_BUTTON">
 			<option value="0">HIKASHOP_NO</option>
@@ -127,6 +128,7 @@
 				<field name="display_fb" type="radio" default="1" label="HIKA_DISPLAY_FACEBOOK_BUTTON" description="DISPLAY_FACEBOOK_BUTTON" class="btn-group btn-group-yesno">
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>
+					<option value="2">OPEN_GRAPH_META_ONLY</option>
 				</field>
 				<field name="display_twitter" type="radio" default="1" label="HIKA_DISPLAY_TWITTER_BUTTON" description="DISPLAY_TWITTER_BUTTON" class="btn-group btn-group-yesno">
 					<option value="0">HIKASHOP_NO</option>

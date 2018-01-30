@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -40,9 +40,12 @@ class CategoryViewCategory  extends HikaShopView {
 			$module->initialize($params);
 			$cid = $params->params->get('selectparentlisting');
 		}
+		$category = null;
 		if(!empty($cid)){
 			$categoryClass = hikashop_get('class.category');
 			$category = $categoryClass->get($cid);
+		}
+		if(!empty($category)) {
 			if($category->category_type=='manufacturer'){
 				$query = 'SELECT * FROM '.hikashop_table('product').' as a ' .
 					'JOIN '.hikashop_table('category').' as cat ' .
@@ -116,7 +119,9 @@ class CategoryViewCategory  extends HikaShopView {
 						foreach($images as $image){
 							if($row->product_id==$image->file_ref_id){
 								foreach(get_object_vars($image) as $key => $name){
-									if(!is_object($products[$k]->images[0])){
+									if(empty($products[$k]->images))
+										$products[$k]->images = array();
+									if(empty($products[$k]->images[0]) || !is_object($products[$k]->images[0])){
 										$products[$k]->images[0] = new stdClass();
 									}
 									$products[$k]->images[0]->$key = $name;

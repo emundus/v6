@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -134,7 +134,7 @@ class TaxViewTax extends hikashopView{
 			$filters = '';
 		}
 
-		$database->setQuery('SELECT order_tax_info, order_currency_id FROM '.hikashop_table('order').$filters);
+		$database->setQuery('SELECT order_tax_info, order_currency_id, order_discount_price, order_discount_tax FROM '.hikashop_table('order').$filters);
 		$orders_taxes = $database->loadObjectList();
 
 		$config = hikashop_config();
@@ -156,7 +156,7 @@ class TaxViewTax extends hikashopView{
 				$info =& $orders_taxes[$k]->order_tax_info;
 				if(!$info) continue;
 				foreach($info as $k2 => $taxes_info){
-					$tax_amount = $taxes_info->tax_amount;
+					$tax_amount = $taxes_info->tax_amount + $v->order_discount_price - $v->order_discount_tax;
 					if(!isset($taxes_info->tax_rate)) $taxes_info->tax_rate = $rows[$taxes_info->tax_namekey]->tax_rate;
 					if($taxes_info->tax_rate != 0)
 						$info[$k2]->amount = $currencyClass->round($tax_amount/$taxes_info->tax_rate,$currencyClass->getRounding($v->order_currency_id));

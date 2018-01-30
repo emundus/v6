@@ -27,7 +27,6 @@ function display($tpl = null)
 {
 
 JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECURITYCHECKPRO_RULES_VIEW_LOGS'), 'securitycheckpro' );
-JToolBarHelper::custom('redireccion','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT');
 
 
 // Obtenemos los datos del modelo
@@ -37,6 +36,15 @@ JToolBarHelper::custom('redireccion','arrow-left','arrow-left','COM_SECURITYCHEC
 	
 	$model = $this->getModel("ruleslogs");
 	$log_details = $model->load_rules_logs();
+	
+	// Información para la barra de navegación
+	require_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/library/model.php';
+	$common_model = new SecuritycheckproModel();
+
+	$logs_pending = $common_model->LogsPending();
+	$trackactions_plugin_exists = $common_model->PluginStatus(8);
+	$this->assignRef('logs_pending', $logs_pending);
+	$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
 	
 	// Ponemos los datos y la paginación en el template
 	$this->assignRef('log_details',$log_details);

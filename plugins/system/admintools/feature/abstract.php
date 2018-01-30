@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -10,6 +10,7 @@ defined('_JEXEC') or die;
 use Akeeba\AdminTools\Admin\Helper\Storage;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
+use Joomla\CMS\Application\BaseApplication;
 
 class AtsystemFeatureAbstract
 {
@@ -31,7 +32,7 @@ class AtsystemFeatureAbstract
 	/** @var   bool   Should I skip filtering (because of whitelisted IPs, WAF Exceptions etc) */
 	protected $skipFiltering = false;
 
-	/** @var   JApplicationWeb  The CMS application */
+	/** @var   JApplicationWeb|\Joomla\CMS\Application\WebApplication  The CMS application */
 	protected $app = null;
 
 	/** @var   JDatabaseDriver  The database driver */
@@ -62,16 +63,16 @@ class AtsystemFeatureAbstract
 	/**
 	 * Public constructor. Creates the feature class.
 	 *
-	 * @param   JApplication                              $app               The CMS application
-	 * @param   JDatabase                                 $db                The database driver
-	 * @param   JRegistry                                 $params            Plugin parameters
-	 * @param   Storage                                   $componentParams   Component parameters
-	 * @param   JInput                                    $input             Global input object
-	 * @param   AtsystemUtilExceptionshandler             $exceptionsHandler Security exceptions handler class (or null if the feature is not implemented)
-	 * @param   array                                     $exceptions        A list of WAF exceptions
-	 * @param   bool                                      $skipFiltering     Should I skip the filtering?
-	 * @param   Container                                 $container         The component container
-	 * @param   plgSystemAdmintools                       $parentPlugin      The plugin we belong to
+	 * @param   JApplication|BaseApplication   $app                The CMS application
+	 * @param   JDatabase                      $db                 The database driver
+	 * @param   JRegistry                      $params             Plugin parameters
+	 * @param   Storage                        $componentParams    Component parameters
+	 * @param   JInput                         $input              Global input object
+	 * @param   AtsystemUtilExceptionshandler  $exceptionsHandler  Security exceptions handler class (or null if the feature is not implemented)
+	 * @param   array                          $exceptions         A list of WAF exceptions
+	 * @param   bool                           $skipFiltering      Should I skip the filtering?
+	 * @param   Container                      $container          The component container
+	 * @param   plgSystemAdmintools            $parentPlugin       The plugin we belong to
 	 */
 	public function __construct($app, $db, JRegistry &$params, Storage &$componentParams, JInput &$input, &$exceptionsHandler, array &$exceptions, &$skipFiltering, $container, $parentPlugin)
 	{

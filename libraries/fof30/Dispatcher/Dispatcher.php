@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -23,7 +23,7 @@ defined('_JEXEC') or die;
 class Dispatcher
 {
 	/** @var   string  The name of the default view, in case none is specified */
-	public $defaultView = 'main';
+	public $defaultView = null;
 
 	/** @var  array  Local cache of the dispatcher configuration */
 	protected $config = array();
@@ -60,6 +60,8 @@ class Dispatcher
 		$this->container = $container;
 
 		$this->config = $config;
+
+		$this->defaultView = $container->appConfig->get('dispatcher.defaultView', $this->defaultView);
 
 		if (isset($config['defaultView']))
 		{

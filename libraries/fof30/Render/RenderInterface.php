@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -59,6 +59,8 @@ interface RenderInterface
 	 *                                   returned.
 	 *
 	 * @return  string    The HTML rendering of the form
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	function renderForm(Form &$form, DataModel $model, $formType = null, $raw = false);
 
@@ -69,6 +71,8 @@ interface RenderInterface
 	 * @param   DataModel $model The model providing our data
 	 *
 	 * @return  string    The HTML rendering of the form
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	function renderFormBrowse(Form &$form, DataModel $model);
 
@@ -79,6 +83,8 @@ interface RenderInterface
 	 * @param   DataModel $model The model providing our data
 	 *
 	 * @return  string    The HTML rendering of the form
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	function renderFormRead(Form &$form, DataModel $model);
 
@@ -89,6 +95,8 @@ interface RenderInterface
 	 * @param   DataModel $model The model providing our data
 	 *
 	 * @return  string    The HTML rendering of the form
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	function renderFormEdit(Form &$form, DataModel $model);
 
@@ -100,6 +108,8 @@ interface RenderInterface
 	 * @param   string    $formType The form type: edit, browse or read
 	 *
 	 * @return  string    The HTML rendering of the form
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	function renderFormRaw(Form &$form, DataModel $model, $formType = null);
 
@@ -126,6 +136,8 @@ interface RenderInterface
 	 * @param   boolean   $showHeader Should I render the fieldset's header?
 	 *
 	 * @return  string    The HTML rendering of the fieldset
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	function renderFieldset(\stdClass &$fieldset, Form &$form, DataModel $model, $formType, $showHeader = true);
 
@@ -137,6 +149,8 @@ interface RenderInterface
 	 * @param    string $title The title of the label
 	 *
 	 * @return    string        The rendered label
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	function renderFieldsetLabel($field, Form &$form, $title);
 
@@ -146,6 +160,8 @@ interface RenderInterface
 	 * @param   \SimpleXMLElement $fieldset
 	 *
 	 * @return  boolean
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	function isTabFieldset($fieldset);
 

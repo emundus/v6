@@ -1,12 +1,12 @@
 <extension type="component" version="2.5.0" method="upgrade">
 	<name>Admintools</name>
-	<creationDate>2017-10-02</creationDate>
+	<creationDate>2018-01-25</creationDate>
 	<author>Nicholas K. Dionysopoulos</author>
 	<authorEmail>nicholas@akeebabackup.com</authorEmail>
 	<authorUrl>http://www.akeebabackup.com</authorUrl>
-	<copyright>Copyright (c)2010-2017 Nicholas K. Dionysopoulos</copyright>
+	<copyright>Copyright (c)2010-2018 Nicholas K. Dionysopoulos</copyright>
 	<license>This component in released under the GNU/GPL v3 or later license</license>
-	<version>4.3.1</version>
+	<version>5.0.0.b1</version>
 	<description>Security and utilitarian tools for Joomla! site administrators</description>
 
 	<!-- Public front end files -->
@@ -32,7 +32,6 @@
             <folder>assets</folder>
             <folder>Controller</folder>
             <folder>Dispatcher</folder>
-            <folder>Form</folder>
             <folder>Helper</folder>
             <folder>media</folder>
             <folder>Model</folder>

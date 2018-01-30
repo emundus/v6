@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -224,16 +224,14 @@ defined('_JEXEC') or die('Restricted access');
 			echo JHTML::_('hikaselect.booleanlist', 'field_options[inline]', '', @$this->field->field_options['inline']);
 		?></dd>
 
-<?php if(!empty($this->field->field_type) && $this->field->field_type == 'link') { ?>
-		<dt data-hk-display="target"><label for="field_placeholder"><?php
+		<dt data-hk-display="target_blank"><label for="field_target_blank"><?php
 			echo JText::_('FIELD_TARGET_BLANK');
 		?></label></dt>
-		<dd data-hk-display="target"><?php
+		<dd data-hk-display="target_blank"><?php
 			if(!isset($this->field->field_options['target_blank']))
 				$this->field->field_options['target_blank'] = 1;
 			echo JHTML::_('hikaselect.booleanlist', 'field_options[target_blank]' , '', (int)$this->field->field_options['target_blank']);
 		?></dd>
-<?php } ?>
 
 		<dt data-hk-display="default"><label><?php
 			echo JText::_('FIELD_DEFAULT');
@@ -511,14 +509,14 @@ defined('_JEXEC') or die('Restricted access');
 	<div class="hikashop_tile_title"><?php echo JText::_('DISPLAY'); ?></div>
 	<dl class="hika_options large">
 
-		<dt><label><?php
+		<dt><label<?php echo $this->docFieldTip('frontcomp');?>><?php
 			echo JText::_('DISPLAY_FRONTCOMP');
 		?></label></dt>
 		<dd><?php
 			echo JHTML::_('hikaselect.booleanlist', 'data[field][field_frontcomp]', '', @$this->field->field_frontcomp);
 		?></dd>
 
-		<dt><label><?php
+		<dt><label<?php echo $this->docFieldTip('back_form');?>><?php
 			echo JText::_('DISPLAY_BACKEND_FORM');
 		?></label></dt>
 		<dd><?php
@@ -526,7 +524,7 @@ defined('_JEXEC') or die('Restricted access');
 		?></dd>
 
 <?php if(!in_array($this->field->field_table, array('address'))) { ?>
-		<dt><label><?php
+		<dt><label<?php echo $this->docFieldTip('back_list');?>><?php
 			echo JText::_('DISPLAY_BACKEND_LISTING');
 		?></label></dt>
 		<dd><?php

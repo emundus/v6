@@ -125,7 +125,10 @@ private $defaultConfig = array(
 	'inspector_forbidden_words'	=> 'wp-login.php,.git,owl.prev,tmp.php,home.php,Guestbook.php,aska.cgi,default.asp,jax_guestbook.php,bbs.cg,gastenboek.php,light.cgi,yybbs.cgi,wsdl.php,wp-content,cache_aqbmkwwx.php,.suspected,seo-joy.cgi,google-assist.php,wp-main.php,sql_dump.php,xmlsrpc.php',
 	'write_log_inspector'	=> 1,
 	'action_inspector'	=>	2,
-	'send_email_inspector'	=>	0
+	'send_email_inspector'	=>	0,
+	'delete_period'	=> 0,
+	'ip_logging'	=>	0,
+	'loggable_extensions'	=> array('0' => 'com_banners','1' => 'com_cache','2' => 'com_categories','3' => 'com_config','4' => 'com_contact','5' => 'com_content','6' => 'com_installer','7' => 'com_media','8' => 'com_menus','9' => 'com_messages','10' => 'com_modules','11' => 'com_newsfeeds','12' => 'com_plugins','13' => 'com_redirect','14' => 'com_tags','15' => 'com_templates','16' => 'com_users')
 	);
 
 
@@ -273,15 +276,15 @@ public function save($key_name)
 function getConfig()
 {
 	if(interface_exists('JModel')) {
-		$params = JModelLegacy::getInstance('FirewallCPanel','SecuritycheckProsModel');
+		$params = JModelLegacy::getInstance('FirewallConfig','SecuritycheckProsModel');
 	} else {
-		$params = JModel::getInstance('FirewallCPanel','SecuritycheckProsModel');
+		$params = JModel::getInstance('FirewallConfig','SecuritycheckProsModel');
 	}
 	
 	/* Si por alguna razón la variable $params no está definida, creamos un objeto para definirla */
 	if ( !$params) {		
-		require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'firewallcpanel.php';
-		$params = new SecuritycheckprosModelFirewallCPanel();				
+		require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'firewallconfig.php';
+		$params = new SecuritycheckprosModelFirewallConfig();				
 	} else {		
 	}
 	
@@ -296,9 +299,9 @@ function getConfig()
 function getCronConfig()
 {
 	if(interface_exists('JModel')) {
-		$params = JModelLegacy::getInstance('FirewallCPanel','SecuritycheckProsModel');
+		$params = JModelLegacy::getInstance('FirewallConfig','SecuritycheckProsModel');
 	} else {
-		$params = JModel::getInstance('FirewallCPanel','SecuritycheckProsModel');
+		$params = JModel::getInstance('FirewallConfig','SecuritycheckProsModel');
 	}
 	
 	$config = array();
@@ -312,9 +315,9 @@ function getCronConfig()
 function getControlCenterConfig()
 {
 	if(interface_exists('JModel')) {
-		$params = JModelLegacy::getInstance('FirewallCPanel','SecuritycheckProsModel');
+		$params = JModelLegacy::getInstance('FirewallConfig','SecuritycheckProsModel');
 	} else {
-		$params = JModel::getInstance('FirewallCPanel','SecuritycheckProsModel');
+		$params = JModel::getInstance('FirewallConfig','SecuritycheckProsModel');
 	}
 	
 	$config = array();
@@ -328,9 +331,9 @@ function getControlCenterConfig()
 function saveConfig($newParams, $key_name = 'cparams')
 {
 	if(interface_exists('JModel')) {
-		$params = JModelLegacy::getInstance('FirewallCPanel','SecuritycheckProsModel');
+		$params = JModelLegacy::getInstance('FirewallConfig','SecuritycheckProsModel');
 	} else {
-		$params = JModel::getInstance('FirewallCPanel','SecuritycheckProsModel');
+		$params = JModel::getInstance('FirewallConfig','SecuritycheckProsModel');
 	}
 
 	foreach($newParams as $key => $value)
@@ -958,6 +961,7 @@ function get_subscriptions_status() {
 		
 	// Chequeamos si el plugin 'update database' está instalado
 	$update_database_plugin_exists = $this->PluginStatus(4);	
+	$trackactions_plugin_exists = $this->PluginStatus(8);
 	
 	// Buscamos el Download ID 
 	$plugin = JPluginHelper::getPlugin('system', 'securitycheckpro_update_database');
@@ -974,6 +978,7 @@ function get_subscriptions_status() {
 	if ( empty($downloadid) ) {
 		$mainframe->setUserState("scp_update_database_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_UPDATE_DATABASE_DOWNLOAD_ID_EMPTY' ));		
 		$mainframe->setUserState("scp_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_UPDATE_DATABASE_DOWNLOAD_ID_EMPTY' ));
+		$mainframe->setUserState("trackactions_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_UPDATE_DATABASE_DOWNLOAD_ID_EMPTY' ));
 	} else {
 		if ( function_exists('curl_init') ) {
 			// Obtenemos la respuesta de cada url
@@ -983,9 +988,15 @@ function get_subscriptions_status() {
 			} else {
 				$mainframe->setUserState("scp_update_database_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED' ));
 			}
+			if ($trackactions_plugin_exists) {
+				$this->getxml_response("trackactions",$downloadid);
+			} else {
+				$mainframe->setUserState("trackactions_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED' ));
+			}
 		} else {
 			$mainframe->setUserState("scp_update_database_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_CURL_NOT_DEFINED' ));		
 			$mainframe->setUserState("scp_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_CURL_NOT_DEFINED' ));
+			$mainframe->setUserState("trackactions_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_CURL_NOT_DEFINED' ));
 		}
 		
 	}	
@@ -1002,6 +1013,8 @@ function getxml_response($product,$downloadid) {
 		$xmlfile = "https://securitycheck.protegetuordenador.com/update/updates_securitycheckpro_update_database.xml";		
 	} else 	if ($product == "scp") {
 		$xmlfile = "https://securitycheck.protegetuordenador.com/update/updates_securitycheckpro.xml";		
+	}else 	if ($product == "trackactions") {
+		$xmlfile = "https://securitycheck.protegetuordenador.com/update/updates_trackactions.xml";	
 	}
 							
 	// Url con la que hemos de contactar para ver el estado de la subscripción
@@ -1066,6 +1079,8 @@ function getxml_response($product,$downloadid) {
 						$mainframe->setUserState("scp_update_database_subscription_status",JText::_('COM_SECURITYCHECKPRO_EXPIRED'));
 					} else if ($product == "scp") {
 						$mainframe->setUserState("scp_subscription_status",JText::_('COM_SECURITYCHECKPRO_EXPIRED'));
+					} else if ($product == "trackactions") {
+						$mainframe->setUserState("trackactions_subscription_status",JText::_('COM_SECURITYCHECKPRO_EXPIRED'));
 					}
 				} 
 			} else {
@@ -1074,6 +1089,8 @@ function getxml_response($product,$downloadid) {
 					$mainframe->setUserState("scp_update_database_subscription_status",JText::_('COM_SECURITYCHECKPRO_ACTIVE'));
 				} else if ($product == "scp") {
 					$mainframe->setUserState("scp_subscription_status",JText::_('COM_SECURITYCHECKPRO_ACTIVE'));
+				} else if ($product == "trackactions") {
+					$mainframe->setUserState("trackactions_subscription_status",JText::_('COM_SECURITYCHECKPRO_ACTIVE'));
 				}
 			}
 		} else {
@@ -1082,6 +1099,32 @@ function getxml_response($product,$downloadid) {
 		
 	// Cerramos el manejador
 	curl_close($ch);
+}
+
+/* Función que determina el número de logs marcados como "no leido"*/
+function LogsPending() {
+		
+	$db = JFactory::getDBO();
+	$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE marked=0';
+	$db->setQuery( $query );
+	$db->execute();
+	$enabled = $db->loadResult();
+	
+	return $enabled;
+}
+
+/* Borra las tablas #_sessions y #_securitycheckpro_sessions */
+function purge_sessions(){
+	$db = JFactory::getDBO();
+	// Tabla 'sessions'
+	$query = 'TRUNCATE TABLE #__session' ;
+	$db->setQuery( $query );
+	$db->execute();
+	
+	// Tabla 'securitycheckpro_sessions'
+	$query = 'TRUNCATE TABLE #__securitycheckpro_sessions' ;
+	$db->setQuery( $query );
+	$db->execute();
 }
 
 }
