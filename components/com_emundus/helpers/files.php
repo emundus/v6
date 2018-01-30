@@ -81,12 +81,6 @@ class EmundusHelperFiles
         $session = JFactory::getSession();
         $params = $session->get('filt_params');
 
-  /*      if (!$session->has('filt_params'))
-            $session->set('filt_params', array());
-
-        $session->set('filt_menu', array());
-        $params = JFactory::getSession()->get('filt_params');*/
-
         //Filters
         $tables         = explode(',', $menu_params->get('em_tables_id'));
         $filts_names    = explode(',', $menu_params->get('em_filters_names'));
@@ -555,7 +549,7 @@ class EmundusHelperFiles
                     INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
                     INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
                     INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id
-                    LEFT JOIN #__fabrik_joins AS joins ON tab.id = joins.list_id AND groupe.id=joins.group_id
+                    LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
                     INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
                     INNER JOIN #__emundus_setup_profiles as p on p.menutype=menu.menutype ';
             $where = 'WHERE tab.published = 1';
@@ -721,16 +715,16 @@ class EmundusHelperFiles
         if (!empty($elements_id) && isset($elements_id)) {
 
             $db = JFactory::getDBO();
-            $query = 'SELECT element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.id, element.plugin as element_plugin, groupe.id as group_id, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias, joins.table_join
+            $query = 'SELECT element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, groupe.id as group_id, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias, joins.table_join
                     FROM #__fabrik_elements element
                     INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
                     INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
                     INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-                    LEFT JOIN #__fabrik_joins AS joins ON tab.id = joins.list_id AND groupe.id=joins.group_id
+                    LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
                     WHERE element.id IN ('.ltrim($elements_id, ',').')
                     ORDER BY formgroup.ordering, element.ordering ';
             try {
-
+//echo "<hr>".str_replace('#_', 'jos', $query);
                 $db->setQuery($query);
                 $res = $db->loadObjectList('id');
 
@@ -742,7 +736,6 @@ class EmundusHelperFiles
             foreach ($res as $kId => $r) {
                 $elementsIdTab[$kId] = $r;
             }
-
             return $elementsIdTab;
         } else return array();
     }
@@ -1018,8 +1011,8 @@ class EmundusHelperFiles
             $profiles = $h_files->getApplicants();
             foreach ($profiles as $prof) {
                 $profile .= '<option value="'.$prof->id.'"';
-                if(!empty($oprofiles) && (in_array($prof->id, $oprofiles) || $prof->id == $oprofiles))
-                    $profile .= ' selected="true"';
+                /*if(!empty($oprofiles) && (in_array($prof->id, $oprofiles) || $prof->id == $oprofiles))
+                    $profile .= ' selected="true"';*/
                 $profile .= '>'.$prof->label.'</option>';
             }
             $profile .= '</select>';

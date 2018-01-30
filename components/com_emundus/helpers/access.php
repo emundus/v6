@@ -141,8 +141,7 @@ class EmundusHelperAccess {
 	 * @return	boolean		As acces or not
 	 * @since	6.0
 	*/
-	static function asAccessAction($action_id, $crud, $user_id=null, $fnum=null)
-	{
+	static function asAccessAction($action_id, $crud, $user_id=null, $fnum=null){
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 		$userModel = new EmundusModelUsers();
 		if (!is_null($fnum) && !empty($fnum))

@@ -236,7 +236,6 @@ class EmundusModelUsers extends JModelList
                 $and = true;
             }
             if (isset($oprofiles) && !empty($oprofiles) ) {
-
                 $query.= ' AND eup.profile_id IN ("'.implode('","', $oprofiles).'")';
                 $and = true;
             }
@@ -250,13 +249,13 @@ class EmundusModelUsers extends JModelList
             if (isset($search) && !empty($search)) {
                 if ($and) $query .= ' AND ';
                 else { $and = true; $query .=' '; }
-
-                $query .= '(e.lastname LIKE "%'.$db->Quote($search).'%"
-                            OR e.firstname LIKE "%'.$db->Quote($search).'%"
-                            OR u.email LIKE "%'.$db->Quote($search).'%"
-                            OR e.schoolyear LIKE "%'.$db->Quote($search).'%"
-                            OR u.username LIKE "%'.$db->Quote($search).'%"
-                            OR u.id LIKE "%'.$db->Quote($search).'%")';
+               
+                $query .= '(e.lastname LIKE '.$db->Quote('%'.$search.'%').'
+                            OR e.firstname LIKE '.$db->Quote('%'.$search.'%').'
+                            OR u.email LIKE '.$db->Quote('%'.$search.'%').'
+                            OR e.schoolyear LIKE '.$db->Quote('%'.$search.'%').'
+                            OR u.username LIKE '.$db->Quote('%'.$search.'%').'
+                            OR u.id LIKE '.$db->Quote('%'.$search.'%').')';
             }
             /*if(isset($schoolyears) &&  !empty($schoolyears)) {
                 if($and) $query .= ' AND ';
@@ -288,7 +287,6 @@ class EmundusModelUsers extends JModelList
         }
 
         $query .= " GROUP BY u.id ";
-
         return $query;
     }
 
@@ -1519,16 +1517,20 @@ class EmundusModelUsers extends JModelList
                 }
             }
 
-            $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user['id'].",".$user['profile'].",'','')";
+           /* $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user['id'].",".$user['profile'].",'','')";
             $db->setQuery( $query );
-            $db->Query();
+            $db->Query();*/
 
 
             if (!empty($user['em_oprofiles'])) {
                 $oprofiles = explode(',', $user['em_oprofiles']);
 
                 foreach ($oprofiles as $profile) {
-                    if($profile != $user['profile']){
+                    /*var_dump($profile);
+                    $query = 'SELECT COUNT(*) FROM `#__emundus_users_profiles` WHERE user_id='.$user['id'].' AND profile_id='.(int)$profile;
+                    $db->setQuery($query);
+                    $count_profile = $db->loadColumn();*/
+                    //if((int)$count_profile[0] == 0){
                         $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user['id'].",".$profile.",'','')";
                         $db->setQuery( $query );
                         $db->Query();
@@ -1540,7 +1542,7 @@ class EmundusModelUsers extends JModelList
                         $group_add = JUserHelper::addUserToGroup($user['id'],$group[0]);
                         //$emuser = array('user_id'=>$user['id']);
                         //$ok = $this->affectToGroups(array($emuser) ,array(1) );
-                    }
+                   // }
                 }
 
             }

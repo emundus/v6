@@ -32,7 +32,7 @@ if(isset($user->profile) && $user->profile>0) {
         }
     }
     echo('<br/><div class="styled-select slate"');
-    echo '<legend><select id="profile" name="profiles" onchange="postCProfile()"> ';
+    echo '<legend><select class="form-control form-control-sm" id="profile" name="profiles" onchange="postCProfile()"> ';
     
     foreach($user->emProfiles as $profile){
         if(array_key_exists($profile->id,$ids_array)){
@@ -44,8 +44,8 @@ if(isset($user->profile) && $user->profile>0) {
     }
 }
     echo '</select></legend></div><br/>';
-    //echo(json_encode($user));
-
+    echo(json_encode($user));
+    
 
 ?>
 
