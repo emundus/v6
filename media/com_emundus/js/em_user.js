@@ -780,7 +780,27 @@ $(document).ready(function()
 						                  }
 					                  })
 			                    break;
-			                 
+							 
+								/*case 29:
+								// change current profile
+								$.ajax(
+									{
+										type:'get',
+										url:url,
+										dataType:'html',
+										data:{user:sid},
+										success: function(result)
+										{
+											  $('.modal-body').empty();
+											$('.modal-body').append(result);
+										},
+										error: function (jqXHR, textStatus, errorThrown)
+										{
+											console.log(jqXHR.responseText);
+										}
+									})
+							  break;*/
+								
 			                  case 21:
 				                  //activate
 								   $('#em-modal-actions').modal('hide');
@@ -1047,6 +1067,7 @@ $(document).ready(function()
 			                  case 20:
 								  var groups = "";
 								  var campaigns = "";
+								  var oprofiles = "";
 
 				                  if($("#groups").val() != null && $("#groups").val().length > 0)
 				                  {
@@ -1062,6 +1083,15 @@ $(document).ready(function()
 					                  {
 						                  campaigns+= $("#campaigns").val()[i];
 						                  campaigns+= ',';
+					                  }
+								  }
+								  if($("#oprofiles").val() && $("#oprofiles").val().length > 0)
+				                  {
+					                  for(var i = 0; i < $("#oprofiles").val().length ; i++)
+					                  {
+						                  oprofiles+= $("#oprofiles").val()[i];
+										  oprofiles+= ',';
+										  //alert($("#oprofiles").val()[i]);
 					                  }
 				                  }
 							      var login = $('#login').val();
@@ -1090,7 +1120,8 @@ $(document).ready(function()
 							                 login:login,
 							                 firstname:fn,
 							                 lastname:ln,
-							                 campaigns:campaigns.substr(0 , campaigns.length - 1),
+											 campaigns:campaigns.substr(0 , campaigns.length - 1),
+											 oprofiles:oprofiles.substr(0 , oprofiles.length - 1),											 
 							                 groups:groups.substr(0, groups.length - 1),
 							                 profile:profile,
 							                 jgr:$('#profiles option:selected').attr('id'),
@@ -1185,8 +1216,9 @@ $(document).ready(function()
 				                  break;
 			                  case 24:
 				                  var groups = "";
-				                  var campaigns = "";
-
+								  var campaigns = "";
+								  var oprofiles = "";								  
+								
 				                  if($("#groups").val() != null && $("#groups").val().length > 0)
 				                  {
 					                  for(var i = 0; i < $("#groups").val().length ; i++)
@@ -1201,6 +1233,15 @@ $(document).ready(function()
 					                  {
 						                  campaigns+= $("#campaigns").val()[i];
 						                  campaigns+= ',';
+					                  }
+								  }
+								  if($("#oprofiles").val() && $("#oprofiles").val().length > 0)
+				                  {
+					                  for(var i = 0; i < $("#oprofiles").val().length ; i++)
+					                  {
+						                  oprofiles+= $("#oprofiles").val()[i];
+										  oprofiles+= ',';
+										  //alert($("#oprofiles").val()[i]);
 					                  }
 				                  }
 				                  var login = $('#login').val();
@@ -1230,7 +1271,8 @@ $(document).ready(function()
 							                  login:login,
 							                  firstname:fn,
 							                  lastname:ln,
-							                  campaigns:campaigns.substr(0 , campaigns.length - 1),
+											  campaigns:campaigns.substr(0 , campaigns.length - 1),
+											  oprofiles:oprofiles.substr(0 , oprofiles.length - 1),											  
 							                  groups:groups.substr(0, groups.length - 1),
 							                  profile:profile,
 							                  jgr:$('#profiles option:selected').attr('id'),

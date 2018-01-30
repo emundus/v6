@@ -157,7 +157,7 @@ class EmundusModelFiles extends JModelLegacy
                     $column = (!empty($join_val_column_concat) && $join_val_column_concat!='')?'CONCAT('.$join_val_column_concat.')':$attribs->join_val_column;
                     //$column = (!empty($attribs->join_val_column_concat) && $attribs->join_val_column_concat!='')?'CONCAT('.$attribs->join_val_column_concat.')':$attribs->join_val_column;
 
-                    if (@$group_params->repeat_group_button == 1) {
+                   if (@$group_params->repeat_group_button == 1) {
                         $query = '(
                                     select GROUP_CONCAT('.$column.' SEPARATOR ", ")
                                     from '.$attribs->join_db_name.'
@@ -167,8 +167,22 @@ class EmundusModelFiles extends JModelLegacy
                                           where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
                                         )
                                   ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
-                    } else
-                        $query = '(select DISTINCT '.$column.' from '.$attribs->join_db_name.' where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`'.$def_elmt->tab_name . '`.`' . $def_elmt->element_name.'`) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
+                    } else {
+                        if($attribs->database_join_display_type=="checkbox"){
+                            
+                            $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
+                            $query = '(
+                                SELECT GROUP_CONCAT('.$t.'.'.$def_elmt->element_name.' SEPARATOR ", ")
+                                FROM '.$t.'
+                                WHERE '.$t.'.parent_id='.$def_elmt->tab_name.'.id
+                              ) AS `'.$t.'`';
+                        } else {
+                            $query = '(
+                                select DISTINCT '.$column.' 
+                                from '.$attribs->join_db_name.' 
+                                where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`'.$def_elmt->tab_name . '`.`' . $def_elmt->element_name.'`) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
+                        }
+                    }
 
                     $this->_elements_default[] = $query;
                     //$this->_elements_default[] = ' (SELECT esc.label FROM jos_emundus_setup_campaigns AS esc WHERE esc.id = jos_emundus_campaign_candidature.campaign_id) as `jos_emundus_campaign_candidature.campaign_id` ';
@@ -267,9 +281,9 @@ class EmundusModelFiles extends JModelLegacy
     public function _buildContentOrderBy()
     {
         $menu = @JSite::getMenu();
-		$current_menu = $menu->getActive();
-		$menu_params = $menu->getParams($current_menu->id);
-		$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
+        $current_menu = $menu->getActive();
+        $menu_params = $menu->getParams($current_menu->id);
+        $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
 
         $session = JFactory::getSession();
         $filter_order = $session->get('filter_order');
@@ -467,6 +481,7 @@ class EmundusModelFiles extends JModelLegacy
                                             $sql = 'SELECT join_from_table FROM #__fabrik_joins WHERE table_join like '.$db->Quote($tab[0]);
                                             $db->setQuery($sql);
                                             $join_from_table = $db->loadResult();
+
                                             if (!empty($join_from_table)) {
                                                 $table = $join_from_table;
                                                 $table_join = $tab[0];
@@ -610,17 +625,13 @@ class EmundusModelFiles extends JModelLegacy
                     case 'campaign':
                         if ($value)
                         {
+                            $query['q'] .= ' AND esc.published=1 ';
+
                             if ($value[0] == "%" || empty($value[0]))
                                 $query['q'] .= ' ';
                             else
                             {
-                                $query['q'] .= ' and esc.id IN (' . implode(',', $value) . ') ';
-                                /*if(!isset($query['campaign']))
-                                {
-                                    $query['campaign'] = true;
-                                    if (!array_key_exists('jos_emundus_setup_campaigns', $tableAlias))
-                                        $query['join'] .= ' left join #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id ';
-                                }*/
+                                $query['q'] .= ' AND esc.id IN (' . implode(',', $value) . ') ';
                             }
                         }
                         break;
@@ -902,7 +913,10 @@ class EmundusModelFiles extends JModelLegacy
 
             $dbo->setQuery($query);
             $res = $dbo->loadAssocList();
-//echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';
+/*
+if (JFactory::getUser()->id == 63)
+    echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';
+*/
             return $res;
         }
         catch(Exception $e)
@@ -1887,11 +1901,36 @@ where 1 order by ga.fnum asc, g.title';
                         $lastTab[] = $elt->table_join;
                     }
                     else {
-                        $query .= ', (
-                                    SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.' SEPARATOR ", ")
-                                    FROM '.$elt->table_join.'
-                                    WHERE '.$elt->table_join.'.parent_id='.$tableAlias[$elt->tab_name].'.id
-                                  ) AS '. $elt->table_join.'___'.$elt->element_name;
+                        if($elt->element_plugin == 'databasejoin') {
+                            $element_attribs = json_decode($elt->element_attribs);
+
+                            if($element_attribs->database_join_display_type=="checkbox"){
+                                $t = $elt->table_join.'_repeat_'.$elt->element_name;
+                                $select = '(
+                                    SELECT GROUP_CONCAT('.$t.'.'.$elt->element_name.' SEPARATOR ", ")
+                                    FROM '.$t.'
+                                    WHERE '.$t.'.parent_id='.$elt->table_join.'.id
+                                  ) ';
+                            }
+                            else {
+                                $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->join_val_column_concat).')':'t.'.$element_attribs->join_val_column;
+
+                                $select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
+                                    FROM '.$tableAlias[$elt->tab_name].' 
+                                    LEFT JOIN '.$elt->table_join.' ON '.$elt->table_join.'.parent_id = '.$tableAlias[$elt->tab_name].'.id  
+                                    LEFT JOIN '.$element_attribs->join_db_name.' as t ON t.'.$element_attribs->join_key_column.' = '.$elt->table_join.'.'.$elt->element_name.' 
+                                    WHERE '.$tableAlias[$elt->tab_name].'.fnum=c.fnum)';
+                            }
+
+                            $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
+                        }
+                        else {
+                            $query .= ', (
+                                        SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.' SEPARATOR ", ")
+                                        FROM '.$elt->table_join.'
+                                        WHERE '.$elt->table_join.'.parent_id='.$tableAlias[$elt->tab_name].'.id
+                                      ) AS '. $elt->table_join.'___'.$elt->element_name;
+                        }
                     }
                 }
                 else {
@@ -1915,11 +1954,22 @@ where 1 order by ga.fnum asc, g.title';
                     elseif ($elt->element_plugin == 'databasejoin') {
                         $element_attribs = json_decode($elt->element_attribs);
                         //$elt_array = json_decode(json_encode($elt), true); /*object to array*/
-                        $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->join_val_column_concat).')':'t.'.$element_attribs->join_val_column;
 
-                        $select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
-                            FROM '.$element_attribs->join_db_name.' as t
-                            WHERE t.'.$element_attribs->join_key_column.'='.$tableAlias[$elt->tab_name].'.'.$elt->element_name.')';
+                        if($element_attribs->database_join_display_type=="checkbox"){
+                            $t = $tableAlias[$elt->tab_name].'_repeat_'.$elt->element_name;
+                            $select = '(
+                                SELECT GROUP_CONCAT('.$t.'.'.$elt->element_name.' SEPARATOR ", ")
+                                FROM '.$t.'
+                                WHERE '.$t.'.parent_id='.$tableAlias[$elt->tab_name].'.id
+                              )';
+                        } 
+                        else {
+                            $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->join_val_column_concat).')':'t.'.$element_attribs->join_val_column;
+
+                            $select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
+                                FROM '.$element_attribs->join_db_name.' as t
+                                WHERE t.'.$element_attribs->join_key_column.'='.$tableAlias[$elt->tab_name].'.'.$elt->element_name.')';
+                        }
                     }
 
                     $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
@@ -1936,13 +1986,14 @@ where 1 order by ga.fnum asc, g.title';
             if ($pas !=0 ) {
                 $query .= 'LIMIT ' . $pas . ' OFFSET ' . $start;
             }
-
+/*echo str_replace("#_", "jos", $query);
+die();*/
             $db->setQuery($query);
             return $db->loadAssocList();
         }
         catch(Exception $e)
         {
-            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage().' :: '.$query;
             JLog::add($error, JLog::ERROR, 'com_emundus');
             JFactory::getApplication()->enqueueMessage($error, 'error');
 
