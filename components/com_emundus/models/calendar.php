@@ -524,7 +524,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
         try {
 
-            $query = "SELECT u.id, name, email FROM #__users AS u LEFT JOIN #__emundus_users AS eu ON eu.user_id = u.id WHERE eu.profile IN (".$profilesToNotify.") AND u.id IN (".implode(",", $program_user_ids).")";
+            $query = "SELECT u.id, u.name, eu.email FROM #__users AS u LEFT JOIN #__emundus_users AS eu ON eu.user_id = u.id WHERE eu.profile IN (".$profilesToNotify.") AND u.id IN (".implode(",", $program_user_ids).")";
 
             $db->setQuery($query);
             return $db->loadObjectList();
