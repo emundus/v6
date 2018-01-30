@@ -58,7 +58,16 @@ class EmundusModelProfile extends JModelList
                   	ORDER BY esp.label';
         $db->setQuery($query);
         return $db->loadObjectList();
-    }
+	}
+	
+	public function  getApplicantsProfilesArray(){
+		$obj_profiles = $this->getApplicantsProfiles();
+		$array_p = array();
+		foreach ($obj_profiles as $profile){
+			array_push($array_p, $profile->id);
+		}
+		return $array_p;
+	}
 
 	function getUserProfiles($uid)
 	{

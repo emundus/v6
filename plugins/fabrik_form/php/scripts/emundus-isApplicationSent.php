@@ -57,8 +57,8 @@ $is_app_sent 		 = ($user->status != 0)? true : false;
 $can_edit 			 = EmundusHelperAccess::asAccessAction(1,'u',$user->id,$fnum);
 $can_read 			 = EmundusHelperAccess::asAccessAction(1,'r',$user->id,$fnum);
 
+	
 
-	//echo $fnum;
 	if(isset($user->fnum) && !empty($user->fnum)){
 		
 			if(in_array($user->id, $applicants)){
@@ -106,7 +106,7 @@ $can_read 			 = EmundusHelperAccess::asAccessAction(1,'r',$user->id,$fnum);
 					$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);
 				}
 			}else{
-				JError::raiseNotice('ACCESS_DENIED',JText::_('ACCESS_DENIED'));
+				JError::raiseNotice('ACCESS_DENIED', JText::_('ACCESS_DENIED'));
 				$mainframe->redirect("index.php");
 			}
 		}
