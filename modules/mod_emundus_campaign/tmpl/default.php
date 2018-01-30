@@ -3,6 +3,9 @@ defined('_JEXEC') or die;
 
 header('Content-Type: text/html; charset=utf-8');
 
+$app = JFactory::getApplication();
+$searchword = $app->input->getString('searchword', null);
+
 $lang = JFactory::getLanguage();
 $locallang = $lang->getTag(); 
 if ($locallang == "fr-FR") {
@@ -13,9 +16,9 @@ if ($locallang == "fr-FR") {
 
 ?>
 <form action="<?php echo JRoute::_(JUri::getInstance()->toString(), true, $params->get('')); ?>" method="post" id="search_program">
-    <?php if(isset($_POST['searchword']) && !empty($_POST['searchword'])) { ?>
+    <?php if(isset($searchword) && !empty($searchword)) { ?>
         <div class="rt-grid-12">
-            <p><b><?php echo JText::_("RESULT_FOR")." : ".$_POST['searchword']; ?></b></p>
+            <p><b><?php echo JText::_("RESULT_FOR")." : ".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8'); ?></b></p>
         </div>
     <?php } ?>
     <div class="rt-grid-12" id="navfilter">
@@ -39,7 +42,7 @@ if ($locallang == "fr-FR") {
             <div class="navsearch-content">
                 <div class="rt-grid-4">
                     <div class="input-group">
-                        <input name="searchword" type="text" class="form-control" placeholder="<?php  echo JText::_("SEARCH")."..." ; ?>" <?php if (isset($_POST['searchword']) && !empty($_POST['searchword'])) { echo "value=".$_POST['searchword'];}; ?>>
+                        <input name="searchword" type="text" class="form-control" placeholder="<?php  echo JText::_("SEARCH")."..." ; ?>" <?php if (isset($searchword) && !empty($searchword)) { echo "value=".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8');}; ?>>
                         <span class="input-group-btn">
                             <button class="btn btn-default sch" type="submit"><?php  echo JText::_("SEARCH"); ?></button>
                         </span>

@@ -456,11 +456,12 @@ class EmundusController extends JControllerLegacy {
         $aid        = $session->get('emundusUser');
 
         $m_profile = new EmundusModelProfile;
-
+        
+        $applicant_profiles = $m_profile->getApplicantsProfilesArray();
         foreach($aid->emProfiles as $emProfile){
             if($emProfile->id === $profile){
 
-                if (!in_array($profile, array(1,2,3,4,5,6)) ) {
+                if (in_array($profile, $applicant_profiles) ) {
                     $fnum = $ids[1];
                     if($fnum !== ""){
                         $infos = $m_profile->getFnumDetails($fnum);

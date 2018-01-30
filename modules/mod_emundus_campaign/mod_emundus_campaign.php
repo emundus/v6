@@ -27,25 +27,29 @@ $showprogramme=$params->get('mod_em_campaign_param_showprogramme');
 $condition ='';
 
 $session = JFactory::getSession();
+$db = JFactory::getDbo();
 
-if (isset($_GET['order_date']) && !empty($_GET['order_date']))
-    $session->set('order_date', $_GET['order_date']);
+$app = JFactory::getApplication();
+$order_date = $app->input->getString('order_date', null);
+$order_time = $app->input->getString('order_time', null);
+$searchword = $app->input->getString('searchword', null);
+
+if (isset($order_date) && !empty($order_date))
+    $session->set('order_date', $order_date);
 elseif (empty($order))
     $session->set('order_date', $mod_em_campaign_order);
 
-if (isset($_GET['order_time']) && !empty($_GET['order_time']))
-    $session->set('order_time', $_GET['order_time']);
+if (isset($order_time) && !empty($order_time))
+    $session->set('order_time', $order_time);
 elseif (empty($order))
     $session->set('order_time', $mod_em_campaign_order_type);
 
 $order = $session->get('order_date');
 $ordertime = $session->get('order_time');
 
-if (isset($_POST['searchword']) && !empty($_POST['searchword'])) {
-    $searchword=$_POST['searchword'];
-    $condition = "AND CONCAT(pr.code,ca.label,pr.label,ca.description,ca.short_description) LIKE '%$searchword%'";
+if (isset($searchword) && !empty($searchword)) {
+    $condition = ' AND CONCAT(pr.code,ca.label,pr.label,ca.description,ca.short_description) LIKE "%"'.$db->Quote($searchword).'"%"';
 }
-
 
 switch ($mod_em_campaign_groupby) {
     case 'month':

@@ -44,8 +44,8 @@ if(isset($user->profile) && $user->profile>0) {
     }
 }
     echo '</select></legend></div><br/>';
-    echo(json_encode($user));
-    
+   // echo(json_encode($user));
+  
 
 ?>
 
