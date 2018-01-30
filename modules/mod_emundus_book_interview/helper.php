@@ -48,7 +48,8 @@
 
                 $query = "SELECT id, title, start_date, description
                 FROM #__dpcalendar_events
-                WHERE metakey IS NULL
+                WHERE state = 1
+                AND (booking_information IS NULL OR booking_information = '')
                 AND start_date >= ".$db->Quote($now)."
                 AND catid IN (
                     SELECT GROUP_CONCAT(id)
@@ -65,7 +66,6 @@
             } catch (Exception $e) {
                 JLog::add('Error in mod_emundus_book_interview at: getEvents', Jlog::ERROR, 'com_emundus');
             }
-
 
             foreach($events as $event) {
 
