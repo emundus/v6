@@ -194,7 +194,7 @@ abstract class modScpadminQuickIconsHelper
 			}
 			
 			$array_check_file_integrity = array(
-						'link' => JRoute::_( 'index.php?option=com_securitycheckpro&controller=filemanager&task=files_integrity_panel&'. JSession::getFormToken() .'=1' ),
+						'link' => JRoute::_( 'index.php?option=com_securitycheckpro&controller=cpanel&task=go_to_fileintegrity()' ),
 						'image' => $check_file_integrity_image,
 						'text' => $check_file_integrity_label,
 						'access' => true
@@ -215,8 +215,8 @@ abstract class modScpadminQuickIconsHelper
 				$check_malwarescan_label = JText::_('MOD_SECURITYCHECKPRO_MALWARESCAN_WRONG');
 			}
 			
-			$array_malwarescan_integrity = array(
-						'link' => JRoute::_( 'index.php?option=com_securitycheckpro&controller=filemanager&task=malwarescan_panel&'. JSession::getFormToken() .'=1' ),
+			$array_malwarescan_integrity = array(			
+						'link' => JRoute::_( 'index.php?option=com_securitycheckpro&controller=cpanel&task=go_to_malware()' ),
 						'image' => $check_malwarescan_image,
 						'text' => $check_malwarescan_label,
 						'access' => true

@@ -13,6 +13,10 @@ defined('_JEXEC') or die('Restricted Access');
 $lang = JFactory::getLanguage();
 $lang->load('com_securitycheckpro.sys');
 
+// Load plugin language
+$lang2 = JFactory::getLanguage();
+$lang2->load('plg_system_securitycheckpro');
+
 $review = sprintf( $lang->_('COM_SECURITYCHECKPRO_REVIEW'), '<a href="http://extensions.joomla.org/extensions/extension/access-a-security/site-security/securitycheck-pro" target="_blank">', '</a>' );
 $translator_name = $lang->_('COM_SECURITYCHECKPRO_TRANSLATOR_NAME');
 $firewall_plugin_status = $lang->_('COM_SECURITYCHECKPRO_FIREWALL_PLUGIN_STATUS');
@@ -22,89 +26,54 @@ $spam_protection_plugin_status = $lang->_('COM_SECURITYCHECKPRO_SPAM_PROTECTION_
 $logs_status = $lang->_('COM_SECURITYCHECKPRO_LOGS_STATUS');
 $autoupdate_status = $lang->_('COM_SECURITYCHECKPRO_AUTOUPDATE_STATUS');
 $translator_url = $lang->_('COM_SECURITYCHECKPRO_TRANSLATOR_URL');
-if (!file_exists(JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . "language" . DIRECTORY_SEPARATOR . $lang->get("tag") . DIRECTORY_SEPARATOR . $lang->get("tag") . ".com_securitycheckpro.ini")){
-	// No existe traducci�n
-	$translator_name = "<blink>" . $lang->get("name") . " translation is missing.</blink> Please contribute writing this translation. It's easy. Click to see how.";
-	$translator_url = "https://securitycheck.protegetuordenador.com/index.php/forum/13-news-and-announcement/4-contribute-send-us-your-translation";
-}
 
-JHtml::_('behavior.tooltip');
+// Cargamos el comportamiento modal para mostrar las ventanas para exportar
 JHtml::_('behavior.modal');
-JHtml::_('jquery.framework');
 
-// Add style declaration
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-JHTML::stylesheet($media_url);
-
-$bootstrap_css = "media/com_securitycheckpro/stylesheets/bootstrap.min.css";
-JHTML::stylesheet($bootstrap_css);
+// Eliminamos la carga de las librerías mootools
+$document = JFactory::getDocument();
+$rootPath = JURI::root(true);
+$arrHead = $document->getHeadData();
+unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
+unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
+$document->setHeadData($arrHead);
 
 $opa_icons = "media/com_securitycheckpro/stylesheets/opa-icons.css";
 JHTML::stylesheet($opa_icons);
 
-$jquery_meter = "media/com_securitycheckpro/stylesheets/jquery.percentageloader-0.1.css";
-JHTML::stylesheet($jquery_meter);
+$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
+JHTML::stylesheet($media_url);
+
+// Css circle
+JHTML::stylesheet('media/com_securitycheckpro/new/css/circle.css');
 
 // Load Javascript
 $document = JFactory::getDocument();
-//$document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/jquery.js');
-$document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/charisma.js');
-// Char libraries
-$document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/excanvas.js');
-$document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/jquery.flot.min.js');
-$document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/jquery.flot.pie.min.js');
-$document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/jquery.flot.stack.js');
-$document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/jquery.flot.resize.min.js');
-$document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/bootstrap-tab.js');
-//Jquery meter
-$document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/jquery.percentageloader-0.1.js');
 //Cookie
-$document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/js.cookie.js');
+$document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/new/js/js.cookie.js');
 
 // Url to be used on statistics
 $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&view=logs&datefrom=%s&dateto=%s';
 ?>
 
-<script type="text/javascript" language="javascript">
-		
-	window.addEvent('domready', function() {
-		//pie chart
-		var data = [
-		{ label: "A",  data: <?php echo $this->total_firewall_rules; ?>},
-		{ label: "B",  data: <?php echo $this->total_blocked_access; ?>},
-		{ label: "C",  data: <?php echo $this->total_user_session_protection; ?>}
-		];
+  <!-- Bootstrap core JavaScript -->
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
+<!-- Page level plugin JavaScript-->
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chart.js/Chart.min.js"></script>
 
-		if(jQuery("#piechart").length)
-		{
-			jQuery.plot(jQuery("#piechart"), data,
-			{
-				series: {
-						pie: {
-								show: true
-						}
-				},
-				grid: {
-						hoverable: true,
-						clickable: true
-				},
-				legend: {
-					show: false
-				}
-			});
-				
-			function pieHover(event, pos, obj)
-			{
-				if (!obj)
-						return;
-				percent = parseFloat(obj.series.percent).toFixed(2);
-				jQuery("#hover").html('<span style="font-weight: bold; color: '+obj.series.color+'">'+obj.series.label+' ('+percent+'%)</span>');
-			}
-			jQuery("#piechart").bind("plothover", pieHover);
-		}
-		
+<?php 
+// Cargamos el contenido común
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
+?>
+
+<script type="text/javascript" language="javascript">
+
+	jQuery(document).ready(function() {
+		// Actualizamos los datos del gráfico 'pie'
+		Chart.defaults.global.defaultFontFamily='-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif',Chart.defaults.global.defaultFontColor="#292b2c";var ctx=document.getElementById("piechart"),piechart=new Chart(ctx,{type:"pie",data:{labels:['<?php echo JText::_('COM_SECURITYCHECKPRO_BLOCKED_ACCESS'); ?>','<?php echo JText::_('COM_SECURITYCHECKPRO_USER_AND_SESSION_PROTECTION'); ?>','<?php echo JText::_('COM_SECURITYCHECKPRO_FIREWALL_RULES_APLIED'); ?>'],datasets:[{data:['<?php echo $this->total_blocked_access; ?>','<?php echo $this->total_user_session_protection; ?>','<?php echo $this->total_firewall_rules; ?>'],backgroundColor:["#007bff","#dc3545","#ffc107"]}]}});
+			
 		<?php 
-			// Actualizamos la variable de estado para no mostrar m�s el popup
+			// Actualizamos la variable de estado para no mostrar más el popup
 			$mainframe = JFactory::getApplication();						
 		?>
 		
@@ -121,11 +90,11 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 		
 		//Tooltip subscripcion
 		jQuery("#subscriptions_status").tooltip();
+		jQuery("#scp_version").tooltip();
+		jQuery("#update_database_version").tooltip();
 		
 		if( Cookies.get('SCPInfoMessage') ){
-            //it is still within the day
-            //hide the div			
-           jQuery("#mensaje_informativo").hide();		  
+            //it is still within the day          		  
         } else {
             //either cookie already expired, or user never visit the site
             //create the cookie			
@@ -149,32 +118,31 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 	function muestra_progreso(){
 		jQuery("#div_boton_subida").hide();
 		jQuery("#div_loading").show();
-	}	
-	
+	}
 </script>
 
 <script type="text/javascript" language="javascript">
 
 	function Set_Easy_Config() {
 		url = 'index.php?option=com_securitycheckpro&controller=cpanel&format=raw&task=Set_Easy_Config';
-		new Request({
+		jQuery.ajax({
 			url: url,							
 			method: 'GET',
-			onSuccess: function(responseText){
-				window.location.reload();				
+			success: function(data){
+				location.reload();				
 			}
-		}).send();
+		});
 	}
 	
 	function Set_Default_Config() {
 		url = 'index.php?option=com_securitycheckpro&controller=cpanel&format=raw&task=Set_Default_Config';
-		new Request({
+		jQuery.ajax({
 			url: url,							
 			method: 'GET',
-			onSuccess: function(responseText){
-				window.location.reload();				
+			success: function(data){
+				location.reload();				
 			}
-		}).send();
+		});
 	}
 		
 </script>
@@ -186,7 +154,7 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 		$aleatorio = rand(1,5);
 		switch ($aleatorio) {
 			case 1:
-				// Logs este a�o
+				// Logs este año
 				$valor_a_mostrar = $this->this_year_logs;
 				$period = JText::_('COM_SECURITYCHECKPRO_CPANEL_THIS_YEAR');
 				break;
@@ -211,88 +179,108 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 				$period = JText::_('COM_SECURITYCHECKPRO_CPANEL_TODAY');
 				break;
 		}
-		$contador++;
+		$contador++;		
 	}
 	
 ?>
-	
+
+<!-- Bootstrap core CSS-->
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+<!-- Custom fonts for this template-->
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
+ <!-- Custom styles for this template-->
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
+  
 <form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro');?>" method="post" name="adminForm" id="adminForm">
 
-<?php
-	if ($valor_a_mostrar != 0) {
-?>
-<div id="mensaje_informativo" class="alert alert-success">
-     <h4><?php echo JText::sprintf('COM_SECURITYCHECKPRO_INFO_MESSAGE',$valor_a_mostrar,$period) ?></h4>
- </div>
-<?php
-	}
-?>
-
-<div id="div_update_geoblock_database" class="modal hide fade">
-	<fieldset class="uploadform" style="margin-left: 10px;">
-		<legend><?php echo JText::_('COM_SECURITYCHECKPRO_UPDATE_DATABASE_TEXT'); ?></legend>
-		<div class="form-actions center" id="div_refresh" style="display:none;">
-		<span class="tammano-18"><?php echo JText::_('COM_SECURITYCHECKPRO_GEOIPV2_NEEDS_UPDATE'); ?></span><br/><br/>
-		<button class="btn btn-inverse" type="button" onclick="Joomla.submitbutton('go_to_geoblock');"><?php echo JText::_( 'COM_SECURITYCHECKPRO_GO_TO_GEOBLOCK' ); ?></button>
-		<button class="btn btn-info" type="button" onclick="oculta_popup(); Joomla.submitbutton('automatic_updates_geoblock');"><?php echo JText::_( 'COM_SECURITYCHECKPRO_AUTOMATIC_UPDATES_GEOBLOCK' ); ?></button>
-		</div>						
-	</fieldset>			
-</div>
-
-<div class="securitycheck-bootstrap">
-	<div class="row-fluid">	
-			
-		<div class="box span12">
-			<div class="box-header well" data-original-title>
-				<i class="icon-tasks"></i><?php echo ' ' . JText::_('COM_SECURITYCHECKPRO_CPANEL_EXTENSION_STATUS'); ?>
-				<div class="box-icon">
-					<a href="#" class="btn btn-close btn-round"><i class="icon-remove"></i></a>
-				</div>
+	<!-- Modal update geoblock -->
+	<div class="modal hide bd-example-modal-lg" id="div_update_geoblock_database" tabindex="-1" role="dialog" aria-labelledby="div_update_geoblock_databaseLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h2 class="modal-title" id="div_update_geoblock_databaseLabel"><?php echo JText::_('COM_SECURITYCHECKPRO_UPDATE_DATABASE_TEXT'); ?></h2>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>				
+			  </div>
+			  <div class="modal-body">	
+				<span class="tammano-18"><?php echo JText::_('COM_SECURITYCHECKPRO_GEOIPV2_NEEDS_UPDATE'); ?></span><br/><br/>	
+			  </div>
+				<div class="modal-footer" id="div_boton_subida">
+					<button class="btn btn-inverse" type="button" onclick="Joomla.submitbutton('go_to_geoblock');"><?php echo JText::_( 'COM_SECURITYCHECKPRO_GO_TO_GEOBLOCK' ); ?></button>
+					<button class="btn btn-info" type="button" onclick="oculta_popup(); Joomla.submitbutton('automatic_updates_geoblock');"><?php echo JText::_( 'COM_SECURITYCHECKPRO_AUTOMATIC_UPDATES_GEOBLOCK' ); ?></button>
+				</div>			  
 			</div>
+		  </div>
+		</div>
+		
+		<?php 
+		// Cargamos la navegación
+		include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/navigation.php';
+		?>	
+		
 			<?php
+				if ($valor_a_mostrar != 0) {		
+			?>
+			<div id="mensaje_informativo" class="alert alert-success" style="display: none;">
+				 <h4><?php echo JText::sprintf('COM_SECURITYCHECKPRO_INFO_MESSAGE',$valor_a_mostrar,$period) ?></h4>
+			 </div>
+			<?php
+				}
+			?>
+		
+		  <!-- Breadcrumb-->
+		  <ol class="breadcrumb">
+			<li class="breadcrumb-item">
+			  <a href="#"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_DASHBOARD'); ?></a>
+			</li>
+			<li class="breadcrumb-item active"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_MYDASHBOARD'); ?></li>
+		  </ol>
+		  
+		 <?php
 				$app = JComponentHelper::getParams('com_securitycheckpro');
 				$downloadid = $app->get('downloadid');
 				if ( empty($downloadid) ) {
 			?>		
-			<div class="span10 label" style="margin-bottom: 15px; margin-left: 10%;">
-				<h4><?php echo JText::_( 'COM_SECURITYCHECKPRO_DOWNLOAD_ID' ); ?></h4>
-				<p><?php echo JText::_( 'COM_SECURITYCHECKPRO_DOWNLOAD_ID_MESSAGE' ); ?></p>				
-				<a href="index.php?option=com_config&view=component&component=com_securitycheckpro&path=&return=<?php echo base64_encode(JURI::getInstance()->toString()); ?>" class="btn btn-info">
-					<i class="icon-edit icon-white"> </i>
-					<?php echo JText::_('COM_SECURITYCHECKPRO_FILL_IT_NOW'); ?>
-				</a>				
-			</div>
-			
+			<div class="card text-center mb-3">
+				<div class="card-header">
+					<?php echo JText::_( 'COM_SECURITYCHECKPRO_DOWNLOAD_ID' ); ?>
+				</div>
+				<div class="card-body">
+					<p class="card-text"><?php echo JText::_( 'COM_SECURITYCHECKPRO_DOWNLOAD_ID_MESSAGE' ); ?></p>
+					<a href="index.php?option=com_config&view=component&component=com_securitycheckpro&path=&return=<?php echo base64_encode(JURI::getInstance()->toString()); ?>" class="btn btn-info">
+					<i class="icon-edit icon-white"></i>					
+						<?php echo JText::_('COM_SECURITYCHECKPRO_FILL_IT_NOW'); ?>
+					</a>
+				</div>				
+			</div>			
 			<?php 
 				}
-			?>
-			
-		<?php 
-			// Import Securitycheckpros model
-			JLoader::import('joomla.application.component.model');
-			JLoader::import('filemanager', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR. 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
-			$model = JModelLegacy::getInstance( 'filemanager', 'SecuritycheckprosModel');
-			
-			if ( empty($model) ) {
-				$mainframe->setUserState( "exists_filemanager", false );		
-			} else {
-				$mainframe->setUserState( "exists_filemanager", true );
-			}
-						
-			// Chequeamos si existe el fichero filemanager, necesario para lanzar las tareas de integridad y permisos
-			$exists_filemanager = $mainframe->getUserState( "exists_filemanager", true );
-									
-			// Si no existe, deshabilitamos el Cron para evitar una p�gina en blanco
-			if ( !$exists_filemanager ) { ?>
-				<div class="centrado span11 label label-important" style="margin-bottom: 20px; font-size: 16px;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MANDATORY_FILE_MISSING' ); ?></div>
-		<?php	} ?>
-		
-		<div class="box-content">
-		
-			<div class="well span2 top-block">
-				<?php $enabled = $this->firewall_plugin_enabled; ?>
-				<span class="sc-icon32 sc-icon-darkgray sc-icon-globe"></span>
-				<div><?php echo($firewall_plugin_status); ?></div>
+			?> 
+				
+		<!-- Contenido principal -->
+      <div class="row">
+				
+		<div class="col-xl-3 col-sm-6 mb-3">
+		<?php
+			$enabled = $this->firewall_plugin_enabled;
+			if ($enabled){
+		?>
+		    <div class="card border-success text-center">
+		<?php } else { ?>
+			<div class="card border-danger text-center">
+		<?php } ?>	
+			<div class="card-header">
+				<?php echo $firewall_plugin_status; ?>
+			</div>
+            <div class="card-body">				
+				<?php
+					if ($enabled) { ?>
+						<span class="sc-icon32 sc-icon-green sc-icon-globe"></span>					
+				<?php  } else { ?>
+						<span class="sc-icon32 sc-icon-darkgray sc-icon-globe"></span>
+				<?php 	}  ?>								
 				<div>
 				<?php
 						if ($enabled){ ?>
@@ -306,7 +294,7 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 					if ($enabled){ 
 				?>
 					<button class="btn btn-danger" onclick="Joomla.submitbutton('disable_firewall')" href="#">
-						<i class="icon-off icon-white"> </i>
+						<i class="fa fa-fw fa-power-off"> </i>
 						<?php echo JText::_('COM_SECURITYCHECKPRO_DISABLE'); ?>
 					</button>
 				<?php 	}else{ ?>
@@ -315,13 +303,30 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 						<?php echo JText::_('COM_SECURITYCHECKPRO_ENABLE'); ?>
 					</button>
 				<?php	}  ?>
-				</div>
+				</div>              
+            </div>            
+          </div>
+        </div>
+	  
+		<div class="col-xl-3 col-sm-6 mb-3">
+		<?php
+			$enabled = $this->cron_plugin_enabled;
+			if ($enabled){
+		?>
+		    <div class="card border-success text-center">
+		<?php } else { ?>
+			<div class="card border-danger text-center">
+		<?php } ?>	
+			<div class="card-header">
+				<?php echo $cron_plugin_status; ?>
 			</div>
-			
-			<div class="well span2 top-block">
-				<?php $enabled = $this->cron_plugin_enabled; ?>
-				<span class="sc-icon32 sc-icon-darkgray sc-icon-clock"></span>
-				<div><?php echo($cron_plugin_status); ?></div>
+            <div class="card-body">
+				<?php
+					if ($enabled) { ?>
+						<span class="sc-icon32 sc-icon-green sc-icon-clock"></span>						
+				<?php  } else { ?>
+						<span class="sc-icon32 sc-icon-darkgray sc-icon-clock"></span>
+				<?php 	}  ?>							
 				<div>
 				<?php
 						if ($enabled){ ?>
@@ -335,7 +340,7 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 					if ($enabled){ 
 				?>
 					<button class="btn btn-danger" onclick="Joomla.submitbutton('disable_cron')" href="#">
-						<i class="icon-off icon-white"> </i>
+						<i class="fa fa-fw fa-power-off"> </i>
 						<?php echo JText::_('COM_SECURITYCHECKPRO_DISABLE'); ?>
 					</button>
 				<?php 	}else{ ?>
@@ -344,37 +349,37 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 						<?php echo JText::_('COM_SECURITYCHECKPRO_ENABLE'); ?>
 					</button>
 				<?php	}  ?>
-				</div>
+				</div>              
+            </div>            
+          </div>
+        </div>
+        
+		<div class="col-xl-3 col-sm-6 mb-3">
+		<?php
+			$exists = $this->update_database_plugin_exists; 
+			$enabled = $this->update_database_plugin_enabled;
+			if ($enabled){
+		?>
+		    <div class="card border-success text-center">
+		<?php } else { 
+			if ($exists){ ?>
+				<div class="card border-danger text-center">
+			<?php } else { ?>
+				<div class="card text-center">
+			<?php } ?>
+		<?php } ?>	
+			<div class="card-header">
+				<?php echo $update_database_plugin_status; ?>
 			</div>
-			
-			<div data-rel="tooltip" title="<?php echo $this->logs_pending . JText::_( 'COM_SECURITYCHECKPRO_UNREAD_LOGS' ); ?>" class="well span2 top-block">
-				<span class="sc-icon32 sc-icon-darkgray sc-icon-clipboard"></span>
-				<div><?php echo($logs_status); ?></div>
-				<div>
+            <div class="card-body">
 				<?php
-						if ($this->logs_pending == 0){ ?>
-							<span class="label label-success"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_NO_LOGS_PENDING' )); ?></span>
-				<?php 	}else{ ?>
-							<span class="label label-warning"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_LOGS_PENDING' )); ?></span>
-				<?php	}  ?>
-				</div>
-				<span class="notification"><?php echo($this->logs_pending); ?></span>
-			</div>
-			
-			<div class="well span2 top-block">
-				<?php $exists = $this->update_database_plugin_exists; 
-					$enabled = $this->update_database_plugin_enabled; 
-				?>
-				<?php
-						if (!$exists) { ?>
-							<span class="sc-icon32 sc-icon-black sc-icon-refresh"></span>						
+					if (!$exists) { ?>
+						<span class="sc-icon32 sc-icon-black sc-icon-refresh"></span>						
 				<?php  } else if ($enabled && $exists){ ?>
-							<span class="sc-icon32 sc-icon-green sc-icon-refresh"></span>
+						<span class="sc-icon32 sc-icon-green sc-icon-refresh"></span>
 				<?php 	}else if (!$enabled && $exists){ ?>
-							<span class="sc-icon32 sc-icon-darkgray sc-icon-refresh"></span>
-				<?php	}  ?>
-				
-				<div><?php echo($update_database_plugin_status); ?></div>
+						<span class="sc-icon32 sc-icon-darkgray sc-icon-refresh"></span>
+				<?php	}  ?>								
 				<div>
 				<?php
 						if (!$exists) { ?>
@@ -391,7 +396,7 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 					if ($enabled && $exists ){ 
 				?>
 					<button class="btn btn-danger" onclick="Joomla.submitbutton('disable_update_database')" href="#">
-						<i class="icon-off icon-white"> </i>
+						<i class="fa fa-fw fa-power-off"> </i>
 						<?php echo JText::_('COM_SECURITYCHECKPRO_DISABLE'); ?>
 					</button>
 				<?php } else if (!$enabled && $exists ) { ?>
@@ -402,23 +407,37 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 				<?php } else if (!$exists ) { ?>
 					<a class="btn btn-info" type="button" href="https://securitycheck.protegetuordenador.com/index.php/our-products/securitycheck-pro-database-update" target="_blank"><?php echo JText::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></a>
 				<?php } ?>
-				</div>
-			</div>	
-
-			<div class="well span2 top-block">
-				<?php $exists = $this->spam_protection_plugin_exists; 
-					$enabled = $this->spam_protection_plugin_enabled; 
-				?>
+				</div>              
+            </div>            
+          </div>
+        </div>
+     	  
+	  <div class="col-xl-3 col-sm-6 mb-3">
+		<?php
+			$exists = $this->spam_protection_plugin_exists; 
+			$enabled = $this->spam_protection_plugin_enabled;
+			if ($enabled){
+		?>
+		    <div class="card border-success text-center">
+		<?php } else { 
+			if ($exists){ ?>
+				<div class="card border-danger text-center">
+			<?php } else { ?>
+				<div class="card text-center">
+			<?php } ?>
+		<?php } ?>	
+			<div class="card-header">
+				<?php echo $spam_protection_plugin_status; ?>
+			</div>
+            <div class="card-body">
 				<?php
-						if (!$exists) { ?>
-							<span class="sc-icon32 sc-icon-black sc-icon-user"></span>						
+					if (!$exists) { ?>
+						<span class="sc-icon32 sc-icon-black sc-icon-user"></span>						
 				<?php  } else if ($enabled && $exists){ ?>
-							<span class="sc-icon32 sc-icon-green sc-icon-user"></span>
+						<span class="sc-icon32 sc-icon-green sc-icon-user"></span>
 				<?php 	}else if (!$enabled && $exists){ ?>
-							<span class="sc-icon32 sc-icon-darkgray sc-icon-user"></span>
-				<?php	}  ?>
-				
-				<div><?php echo($spam_protection_plugin_status); ?></div>
+						<span class="sc-icon32 sc-icon-darkgray sc-icon-user"></span>
+				<?php	}  ?>								
 				<div>
 				<?php
 						if (!$exists) { ?>
@@ -435,7 +454,7 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 					if ($enabled && $exists ){ 
 				?>
 					<button class="btn btn-danger" onclick="Joomla.submitbutton('disable_spam_protection')" href="#">
-						<i class="icon-off icon-white"> </i>
+						<i class="fa fa-fw fa-power-off"> </i>
 						<?php echo JText::_('COM_SECURITYCHECKPRO_DISABLE'); ?>
 					</button>
 				<?php } else if (!$enabled && $exists ) { ?>
@@ -446,291 +465,41 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 				<?php } else if (!$exists ) { ?>
 					<a class="btn btn-info" type="button" href="https://securitycheck.protegetuordenador.com/index.php/our-products/securitycheck-spam-protection" target="_blank"><?php echo JText::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></a>
 				<?php } ?>
+				</div>              
+            </div>            
+          </div>
+        </div>
+      </div>
+		
+	<div class="row">
+        <div class="col-lg-6">
+        <!-- Statistics-->
+			<div class="card mb-3">
+				<div class="card-header">
+					<i class="fa fa-bars"></i>
+					<?php echo ' ' . JText::_('COM_SECURITYCHECKPRO_CPANEL_STATISTICS'); ?>
 				</div>
-			</div>
-		</div>
-		
-		<div class="well span5 top-block" id="topLoader">
-			<strong><?php echo JText::_( 'COM_SECURITYCHECKPRO_SECURITY_OVERALL_SECURITY_STATUS' ); ?></strong>
-			<button class="btn btn-info btn-mini right" type="button" onclick="Joomla.submitbutton('Go_system_info')" href="#"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_STATUS' ); ?></i></button>
-		</div>
+				<div class="card-body">
 				
-		<div class="well span3 top-block">
-			<strong><a href="#" id="subscriptions_status" data-toggle="tooltip" title="<?php echo JText::_( 'COM_SECURITYCHECKPRO_SUBSCRIPTIONS_STATUS_EXPLAINED' ); ?>"><?php echo JText::_( 'COM_SECURITYCHECKPRO_SUBSCRIPTIONS_STATUS' ); ?></a></strong>
-			<p></p>
-			<?php
-				$expired = false;
-				$mainframe = JFactory::getApplication();
-				$scp_update_database_subscription_status = $mainframe->getUserState("scp_update_database_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_NOT_DEFINED' ));
-				if ( $scp_update_database_subscription_status == JText::_( 'COM_SECURITYCHECKPRO_ACTIVE' ) ) {					
-					$span_update_database = "<span class=\"label label-success\">";								
-				} else if ( $scp_update_database_subscription_status == JText::_( 'COM_SECURITYCHECKPRO_EXPIRED' ) ) {
-					$span_update_database = "<span class=\"label label-important\">";
-					$expired = true;
-				} else {
-					$span_update_database = "<span class=\"label label-inverse\">";
-					$exists = $this->update_database_plugin_exists;					
-					if ( !$exists ) {
-						$scp_update_database_subscription_status = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED' );
-					}
-				}
-				$scp_subscription_status = $mainframe->getUserState("scp_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_NOT_DEFINED' ));
-				if ( $scp_subscription_status == JText::_( 'COM_SECURITYCHECKPRO_ACTIVE' ) ) {					
-					$span_scp = "<span class=\"label label-success\">";								
-				} else if ( $scp_subscription_status == JText::_( 'COM_SECURITYCHECKPRO_EXPIRED' ) ) {
-					$span_scp = "<span class=\"label label-important\">";	
-					$expired = true;
-				} else {
-					$span_scp = "<span class=\"label label-inverse\">";					
-				}				
-			?>
-			<p>Securitycheck Pro&nbsp&nbsp&nbsp<?php echo $span_scp ?><?php echo $scp_subscription_status ?> </span></p>
-			<p>Securitycheck Pro Update Database&nbsp&nbsp&nbsp<?php echo $span_update_database ?><?php echo $scp_update_database_subscription_status ?> </span></p>
-			<?php if ( $expired ) { ?>
-					<a class="btn btn-small btn-info" type="button" href="https://securitycheck.protegetuordenador.com/subscriptions" target="_blank"><?php echo JText::_('COM_SECURITYCHECKPRO_RENEW'); ?></a>
-			<?php	} ?>
-		</div>
-		
-		<div class="span11 alert alert-warning"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_HELP'); ?></div>
-	</div>
-	
-	<div class="row-fluid" id="cpanel">
-		<div class="box span6">
-			<div class="box-header well" data-original-title>
-				<i class="icon-home"></i><?php echo ' ' . JText::_('COM_SECURITYCHECKPRO_CPANEL_MAIN_MENU'); ?>
-			</div>
-		<div class="box-content">
-			<fieldset>
-			<legend><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_OPTIONS'); ?></legend>
-			<div class="icon">
-				<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=securitycheckpro&'. JSession::getFormToken() .'=1' );?>">
-				<div class="sc-icon-check_vuln">&nbsp;</div>
-				<span><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_CHECK_VULNERABILITIES_TEXT'); ?></span>
-				</a>
-			</div>
+					<ul class="nav nav-tabs" role="tablist" id="myTab">
+					  <li class="nav-item">
+						<a class="nav-link active" data-toggle="tab" href="#historic" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_HISTORIC'); ?></a>
+					  </li>
+					  <li class="nav-item">
+						<a class="nav-link" data-toggle="tab" href="#detail" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_DETAIL'); ?></a>
+					  </li>
+					  <li class="nav-item">
+						<a class="nav-link" data-toggle="tab" href="#lists" role="tab"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_LISTS'); ?></a>
+					  </li>
+					</ul>
 
-			<div class="icon">
-				<?php 
-					// Chequeamos si existe el fichero filemanager, necesario para lanzar las tareas de integridad y permisos
-					$mainframe =JFactory::getApplication();
-					$exists_filemanager = $mainframe->getUserState( "exists_filemanager", true );
-					
-					if ( $exists_filemanager ) {						
-				?>	
-				<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=filemanager&view=filemanager&'. JSession::getFormToken() .'=1' );
-	?>">
-				<?php } else { ?>
-				<a href="#">
-				<?php }  ?>
-				<div class="sc-icon-file_manager">&nbsp;</div>
-				<span><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_FILE_MANAGER_TEXT'); ?></span>
-				</a>
-			</div>	
-
-			<div class="icon">
-				<?php 
-					// Chequeamos si existe el fichero filemanager, necesario para lanzar las tareas de integridad y permisos
-					$mainframe =JFactory::getApplication();
-					$exists_filemanager = $mainframe->getUserState( "exists_filemanager", true );
-					
-					if ( $exists_filemanager ) {						
-				?>	
-				<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=filemanager&task=files_integrity_panel&'. JSession::getFormToken() .'=1' );?>">
-				<?php } else { ?>
-				<a href="#">
-				<?php }  ?>
-				<div class="sc-icon-file_integrity">&nbsp;</div>
-				<span><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_FILE_INTEGRITY_TEXT'); ?></span>
-				</a>
-			</div>				
-			
-			<div class="icon">
-				<a href="<?php echo 'index.php?option=com_securitycheckpro&controller=securitycheckpro&view=logs'?>">
-				<div class="sc-icon-view_logs">&nbsp;</div>
-				<span><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_VIEW_FIREWALL_LOGS'); ?></span>
-				</a>
-			</div>	
-			
-			<div class="icon">
-				<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=protection&view=protection&'. JSession::getFormToken() .'=1' );?>">
-				<div class="sc-icon-htaccess_protection">&nbsp;</div>
-				<span><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT'); ?></span>
-				</a>
-			</div>
-			
-			<div class="icon">
-				<?php 
-					// Chequeamos si existe el fichero filemanager, necesario para lanzar las tareas de integridad y permisos
-					$mainframe =JFactory::getApplication();
-					$exists_filemanager = $mainframe->getUserState( "exists_filemanager", true );
-					
-					if ( $exists_filemanager ) {						
-				?>	
-				<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=filemanager&task=malwarescan_panel&'. JSession::getFormToken() .'=1' );?>">
-				<?php } else { ?>
-				<a href="#">
-				<?php }  ?>
-				
-					<div class="sc-icon-malwarescan">&nbsp;</div>
-				<span><?php echo JText::_('COM_SECURITYCHECKPRO_MALWARESCAN'); ?></span>
-				</a>
-			</div>	
-			
-		</fieldset>
-		
-		<fieldset>
-			<legend><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_CONFIGURATION'); ?></legend>
-			<div class="icon">
-				<a href="index.php?option=com_config&view=component&component=com_securitycheckpro&path=&return=<?php echo base64_encode(JURI::getInstance()->toString()) ?>">
-				<div class="sc-icon-configuration">&nbsp;</div>
-				<span><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_GLOBAL_CONFIGURATION'); ?></span>
-				</a>
-			</div>
-			
-			<div class="icon">
-				<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=firewallcpanel&view=firewallcpanel&'. JSession::getFormToken() .'=1' );?>">
-				<div class="sc-icon-firewall_config">&nbsp;</div>
-				<span><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_FIREWALL_CONFIGURATION'); ?></span>
-				</a>
-			</div>	
-			
-			<div class="icon">
-				<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=cron&view=cron&'. JSession::getFormToken() .'=1' );?>">
-				<div class="sc-icon-cron_config">&nbsp;</div>
-				<span><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_CRON_CONFIGURATION'); ?></span>
-				</a>
-			</div>
-			
-			<div class="icon">
-				<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=filemanager&view=sysinfo&'. JSession::getFormToken() .'=1' );
-	?>">
-				<div class="sc-icon-sysinfo">&nbsp;</div>
-				<span><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_SYSINFO_TEXT'); ?></span>
-				</a>
-			</div>
-			
-			<div class="icon">
-				<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=rules&view=rules&'. JSession::getFormToken() .'=1' );
-	?>">
-				<div class="sc-icon-acl">&nbsp;</div>
-				<span><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_RULES_TEXT'); ?></span>
-				</a>
-			</div>
-			
-			<div class="icon">
-				<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=controlcenter&view=controlcenter&'. JSession::getFormToken() .'=1' );
-	?>">
-				<div class="sc-icon-controlcenter">&nbsp;</div>
-				<span><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_CONTROLCENTER_TEXT'); ?></span>
-				</a>
-		</div>	
-			
-		</fieldset>
-		
-		<fieldset>
-			<legend><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_TASKS'); ?></legend>
-			<div class="icon">
-				<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=filemanager&view=initialize_data&'. JSession::getFormToken() .'=1' );?>">
-				<div class="sc-icon-initialize_data">&nbsp;</div>
-				<span><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_INITIALIZE_DATA'); ?></span>
-				</a>
-			</div>
-			<div class="icon">
-				<a href="#" onclick="Joomla.submitbutton('Export_config')">
-				<div class="sc-icon-export_config">&nbsp;</div>
-				<span><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_EXPORT_CONFIG'); ?></span>
-				</a>
-			</div>
-			<div class="icon">
-				<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=filemanager&view=upload&'. JSession::getFormToken() .'=1' );?>">
-				<div class="sc-icon-import_config">&nbsp;</div>
-				<span><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_IMPORT_CONFIG'); ?></span>
-				</a>
-			</div>
-		</fieldset>
-		
-		<div id="purge_sessions" class="modal hide fade">
-			<fieldset style="margin-left: 10px;">
-				<legend><?php echo JText::_('COM_SECURITYCHECKPRO_PURGE_SESSIONS'); ?></legend>
-				<div class="control-group" id="div_messages">
-					<label class="control-label"><?php echo JText::_('COM_SECURITYCHECKPRO_PURGE_SESSIONS_MESSAGE'); ?></label>						
-					<label class="control-label"><?php echo JText::_('COM_SECURITYCHECKPRO_PURGE_SESSIONS_MESSAGE_EXPLAINED'); ?></label>
-				</div>
-				<div class="form-actions center" id="div_loading" style="display:none;">
-					<span class="tammano-18"><?php echo JText::_('COM_SECURITYCHECKPRO_PURGING'); ?></span><br/>
-					<img src="/media/com_securitycheckpro/images/loading.gif" width="30" height="30" />
-				</div>
-				<div class="form-actions" id="div_boton_subida">
-					<input class="btn btn-primary" type="button" id="boton_subida" value="<?php echo JText::_('COM_SECURITYCHECKPRO_YES'); ?>" onclick= "muestra_progreso(); Joomla.submitbutton('purge_sessions');"  />
-					<button type="button" class="btn btn-default" data-dismiss="modal"><?php echo JText::_('COM_SECURITYCHECKPRO_NO'); ?></button>
-				</div>				
-			</fieldset>			
-		</div>	
-		
-		
-		<fieldset>
-			<legend><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_PERFORMANCE'); ?></legend>
-			<div class="icon">
-				<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro&controller=dbcheck&view=dbcheck&'. JSession::getFormToken() .'=1' );?>">
-					<div class="sc-icon-dbcheck">&nbsp;</div>
-				<span><?php echo JText::_('COM_SECURITYCHECKPRO_DB_OPTIMIZATION'); ?></span>
-				</a>
-			</div>	
-			
-			<div class="icon">
-				<a href="#purge_sessions" data-toggle="modal">
-					<div class="sc-icon-purgesessions">&nbsp;</div>
-				<span><?php echo JText::_('COM_SECURITYCHECKPRO_PURGE_SESSIONS'); ?></span>
-				</a>
-			</div>
-			
-		</fieldset>
-		</div>
-		</div>
-				
-		<div class="box span3">
-			<div class="box-header well" data-original-title>
-				<i class="icon-list-alt"></i><?php echo ' ' . JText::_('COM_SECURITYCHECKPRO_CPANEL_STATISTICS'); ?>
-				<div class="box-icon">
-					<a href="#" class="btn btn-minimize btn-round"><i class="icon-chevron-up"></i></a>
-					<a href="#" class="btn btn-close btn-round"><i class="icon-remove"></i></a>
-				</div>
-			</div>
-			<div class="box-content">
-				<ul class="nav nav-tabs" id="myTab">
-					<li class="active"><a href="#historic"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_HISTORIC'); ?></a></li>
-					<li><a href="#detail"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_DETAIL'); ?></a></li>
-					<li><a href="#lists"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_LISTS'); ?></a></li>
-				</ul>
-				<div id="myTabContent" class="tab-content">
-					<div class="tab-pane active" id="historic">
+					<div class="tab-content">
+					  <div class="tab-pane active" id="historic" role="tabpanel">
 						<h5 style="text-align: center;"><?php echo JText::_('COM_SECURITYCHECKPRO_GRAPHIC_HEADER'); ?></h5>
-						<div id="piechart" style="height:300px"></div>
-						<ul class="dashboard-list">
-							<li>
-								<div class="yellow">
-									<span>A</span>
-									<?php echo JText::_('COM_SECURITYCHECKPRO_FIREWALL_RULES_APLIED'); ?>
-									<?php echo ' (' . $this->total_firewall_rules . ')'; ?>
-								</div>
-							</li>
-							<li>
-								<div class="blue">
-									<span>B</span>
-									<?php echo JText::_('COM_SECURITYCHECKPRO_BLOCKED_ACCESS'); ?>
-									<?php echo ' (' . $this->total_blocked_access . ')'; ?>
-								</div>
-							</li>
-							<li>
-								<div class="red">
-									<span>C</span>
-									<?php echo JText::_('COM_SECURITYCHECKPRO_USER_AND_SESSION_PROTECTION'); ?>
-									<?php echo ' (' . $this->total_user_session_protection . ')'; ?>
-								</div>
-							</li>
-						</ul>	
-					</div>
-					<div class="tab-pane" id="detail">
+						<canvas id="piechart" width="100%" height="40"></canvas>						
+					  </div>
+					  
+					  <div class="tab-pane" id="detail" role="tabpanel">
 						<table class="table table-striped">
 							<thead>
 							  <tr>
@@ -855,9 +624,9 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 								</tr>
 							</tbody>
 						</table>
-					</div>
-
-					<div class="tab-pane" id="lists">
+					  </div>
+					  
+					  <div class="tab-pane" id="lists" role="tabpanel">
 						<table class="table table-striped">
 							<thead>
 							  <tr>
@@ -962,112 +731,184 @@ $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&vie
 										<?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_MANAGE_LISTS'); ?>
 								</button>
 							</div>						
-					</div>
-					</div>	
-				</div>
-			</div>				
+						</div>
+					  </div>
+					  
+					<!-- Tab content -->  
+					</div>					
+				
+					<div class="span11 alert alert-warning"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_HELP'); ?></div>
+				</div>				
+			</div>			
 		</div>
-					
-		<div class="box span3">
-			<div class="box-header well" data-original-title>
-				<i class="icon-ok"></i><?php echo ' ' . JText::_('COM_SECURITYCHECKPRO_CPANEL_EASY_CONFIG'); ?>
-				<div class="box-icon">
-					<a href="#" class="btn btn-minimize btn-round"><i class="icon-chevron-up"></i></a>
-					<a href="#" class="btn btn-close btn-round"><i class="icon-remove"></i></a>
+		
+
+		<div class="col-lg-2">
+			<!-- Overall status -->
+			<div class="card mb-3">
+				<div class="card-header">
+					<i class="fa fa-chart-pie"></i>
+					<?php echo JText::_( 'COM_SECURITYCHECKPRO_SECURITY_OVERALL_SECURITY_STATUS' ); ?>
 				</div>
-			</div>
-			<div class="box-content buttonwrapper">
-				<?php $easy_config_applied = $this->easy_config_applied; ?>
-				<div class="buttonwrapper"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CPANEL_EASY_CONFIG_STATUS' ); ?></div>
-				<?php
-						if ($easy_config_applied){ ?>
-							<span class="label label-success"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_CPANEL_APPLIED' )); ?></span>
-				<?php 	}else{ ?>
-							<span class="label label-info"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_CPANEL_NOT_APPLIED' )); ?></span>
-				<?php	}  ?>
-				<div class="easy_config"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_CPANEL_EASY_CONFIG_DEFINITION' )); ?></div>
-				<?php
-						if ($easy_config_applied){ ?>
-							<button class="btn btn-primary" type="button" onclick="Set_Default_Config();"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CPANEL_APPLY_DEFAULT_CONFIG' ); ?></button>
-				<?php 	}else{ ?>
-							<button class="btn btn-success" type="button" onclick="Set_Easy_Config();"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CPANEL_APPLY_EASY_CONFIG' ); ?></button>							
-						</p>
-						<p class="center">
-				<?php	}  ?>				
+				<div class="card-body">
+					<div style="text-align: right;">
+						<button class="btn btn-info btn-mini right" type="button" onclick="Joomla.submitbutton('Go_system_info')" href="#"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CHECK_STATUS' ); ?></i></button>
+					</div>					
+					<?php 
+						$class = "c100 p" .$this->overall . " green";
+						if ( ($this->overall > 0) && ($this->overall < 60) ) {
+							$class = "c100 p" .$this->overall . " orange";
+						} else if ( ($this->overall >= 60) && ($this->overall < 80) ) {
+							$class = "c100 p" .$this->overall . '"';
+						} 
+					?>
+					<div class="<?php echo $class; ?>">
+                    <span><?php echo $this->overall . "%"; ?></span>
+                    <div class="slice">
+                        <div class="bar"></div>
+                        <div class="fill"></div>
+                    </div>
+                </div>
+				</div>
+				<div class="card-footer small text-muted"><?php echo JText::_( 'COM_SECURITYCHECKPRO_UPDATE_DATE' ); echo date('Y-m-d H:i:s'); ?>
+				</div>
+			</div>						
+			
+			<!-- Overall status -->
+			<div class="card text-white bg-info mb-3" style="max-width: 20rem;">
+			  <div class="card-header"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CPANEL_DISCLAIMER' ); ?></div>
+			  <div class="card-body">
+				<p class="card-text"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CPANEL_DISCLAIMER_TEXT' ); ?></p>
+			  </div>
 			</div>
 		</div>
 		
-		<div class="box span3">
-			<div class="box-header well" data-original-title>
-				<i class="icon-thumbs-up"></i><?php echo ' ' . JText::_('COM_SECURITYCHECKPRO_CPANEL_HELP_US'); ?>
-				<div class="box-icon">
-					<a href="#" class="btn btn-minimize btn-round"><i class="icon-chevron-up"></i></a>
-					<a href="#" class="btn btn-close btn-round"><i class="icon-remove"></i></a>
+		<div class="col-lg-3">
+			<!-- Subscription status -->
+			<div class="card mb-3">
+				<div class="card-header">
+					<i class="fa fa-ellipsis-v-alt"></i>
+					<a href="#" id="subscriptions_status" data-toggle="tooltip" title="<?php echo JText::_( 'COM_SECURITYCHECKPRO_SUBSCRIPTIONS_STATUS_EXPLAINED' ); ?>"><?php echo JText::_( 'COM_SECURITYCHECKPRO_SUBSCRIPTIONS_STATUS' ); ?></a>
 				</div>
-			</div>
-			<div class="box-content">
-				<div><?php echo($review); ?></div>
-				<div><?php echo('<a href="' . $translator_url . '" target="_blank">' . $translator_name . '</a>'); ?></div>			
-			</div>
-		</div>
-				
+				<div class="card-body">
+					<?php
+						$expired = false;
+						$mainframe = JFactory::getApplication();
+						$exists = $this->update_database_plugin_exists;
+						$exists_trackactions = $this->trackactions_plugin_exists;						
 						
-		<div class="box span3">
-			<div class="box-header well" data-original-title>
-				<i class="icon-bullhorn"></i><?php echo ' ' . JText::_('COM_SECURITYCHECKPRO_CPANEL_DISCLAIMER'); ?>
-				<div class="box-icon">
-					<a href="#" class="btn btn-minimize btn-round"><i class="icon-chevron-up"></i></a>
-					<a href="#" class="btn btn-close btn-round"><i class="icon-remove"></i></a>
+						if ( !$exists ) {
+							$span_update_database = "Securitycheck Pro Update Database<br/><span class=\"label label-inverse\">";
+							$scp_update_database_subscription_status = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED' );
+						} else {
+							$scp_update_database_subscription_status = $mainframe->getUserState("scp_update_database_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_NOT_DEFINED' ));
+							$span_update_database = "Securitycheck Pro Update Database<br/>(<span id=\"update_database_version\" data-toggle=\"tooltip\" title=\"" . JText::_( 'COM_SECURITYCHECKPRO_VERSION_INSTALLED' ) . ":&nbsp;" . $this->version_update_database . "\" class=\"badge badge-info\">" . $this->version_update_database . "</span>)&nbsp;&nbsp;";
+							if ( $scp_update_database_subscription_status == JText::_( 'COM_SECURITYCHECKPRO_ACTIVE' ) ) {					
+								$span_update_database .= "<span class=\"label label-success\">";								
+							} else if ( $scp_update_database_subscription_status == JText::_( 'COM_SECURITYCHECKPRO_EXPIRED' ) ) {
+								$span_update_database .= "<span class=\"label label-important\">";
+								$expired = true;
+							} else {
+								$span_update_database .= "<span class=\"label label-inverse\">";
+							}
+						}
+						
+						if ( !$exists_trackactions ) {
+							$span_trackactions = "Track Actions<br/><span class=\"label label-inverse\">";
+							$trackactions_subscription_status = JText::_( 'COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED' );
+						} else {
+							$trackactions_subscription_status = $mainframe->getUserState("trackactions_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_NOT_DEFINED' ));
+							$span_trackactions = "Track Actions<br/>(<span id=\"trackactions_version\" data-toggle=\"tooltip\" title=\"" . JText::_( 'COM_SECURITYCHECKPRO_VERSION_INSTALLED' ) . ":&nbsp;" . $this->version_trackactions . "\" class=\"badge badge-info\">" . $this->version_trackactions . "</span>)&nbsp;&nbsp;";
+							if ( $trackactions_subscription_status == JText::_( 'COM_SECURITYCHECKPRO_ACTIVE' ) ) {					
+								$span_trackactions .= "<span class=\"label label-success\">";								
+							} else if ( $trackactions_subscription_status == JText::_( 'COM_SECURITYCHECKPRO_EXPIRED' ) ) {
+								$span_trackactions .= "<span class=\"label label-important\">";
+								$expired = true;
+							} else {
+								$span_trackactions .= "<span class=\"label label-inverse\">";
+							}
+						}
+						
+						$scp_subscription_status = $mainframe->getUserState("scp_subscription_status",JText::_( 'COM_SECURITYCHECKPRO_NOT_DEFINED' ));
+						if ( $scp_subscription_status == JText::_( 'COM_SECURITYCHECKPRO_ACTIVE' ) ) {					
+							$span_scp = "<span class=\"label label-success\">";								
+						} else if ( $scp_subscription_status == JText::_( 'COM_SECURITYCHECKPRO_EXPIRED' ) ) {
+							$span_scp = "<span class=\"label label-important\">";	
+							$expired = true;
+						} else {
+							$span_scp = "<span class=\"label label-inverse\">";					
+						}												
+					?>
+					<p>Securitycheck Pro<br/>(<span id="scp_version" data-toggle="tooltip" title="<?php echo JText::_( 'COM_SECURITYCHECKPRO_VERSION_INSTALLED' ); ?>:&nbsp;<?php echo $this->version_scp; ?>" class="badge badge-info"><?php echo $this->version_scp ?></span>)&nbsp;&nbsp;<?php echo $span_scp ?><?php echo $scp_subscription_status ?> </span></p>
+					<p><?php echo $span_update_database ?><?php echo $scp_update_database_subscription_status ?> </span></p>
+					<p><?php echo $span_trackactions ?><?php echo $trackactions_subscription_status ?> </span></p>
+					<?php if ( $expired ) { ?>
+							<a class="btn btn-small btn-info" type="button" href="https://securitycheck.protegetuordenador.com/subscriptions" target="_blank"><?php echo JText::_('COM_SECURITYCHECKPRO_RENEW'); ?></a>
+					<?php	} ?>		
+				</div>				
+			</div>	
+			
+			<!-- Easy config -->
+			<div class="card mb-3">
+				<div class="card-header">
+					<i class="fa fa-cog"></i>
+					<?php echo JText::_( 'COM_SECURITYCHECKPRO_CPANEL_EASY_CONFIG' ); ?>
+				</div>
+				<div class="card-body text-center">
+					<?php $easy_config_applied = $this->easy_config_applied; ?>
+					<div><?php echo JText::_( 'COM_SECURITYCHECKPRO_CPANEL_EASY_CONFIG_STATUS' ); ?></div>
+					<?php
+							if ($easy_config_applied){ ?>
+								<span class="label label-success"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_CPANEL_APPLIED' )); ?></span>
+					<?php 	}else{ ?>
+								<span class="label label-info"><?php echo(JText::_( 'COM_SECURITYCHECKPRO_CPANEL_NOT_APPLIED' )); ?></span>
+					<?php	}  ?>
+					<br/>
+					<br/>
+					<div><?php echo(JText::_( 'COM_SECURITYCHECKPRO_CPANEL_EASY_CONFIG_DEFINITION' )); ?></div>
+					<?php
+							if ($easy_config_applied){ ?>
+								<button class="btn btn-primary" type="button" onclick="Set_Default_Config();"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CPANEL_APPLY_DEFAULT_CONFIG' ); ?></button>
+					<?php 	}else{ ?>
+								<button class="btn btn-success" type="button" onclick="Set_Easy_Config();"><?php echo JText::_( 'COM_SECURITYCHECKPRO_CPANEL_APPLY_EASY_CONFIG' ); ?></button>														
+					<?php	}  ?>	
+				</div>
+			</div>	
+			
+			<!-- Help us -->
+			<div class="card bg-light mb-3">
+				<div class="card-body text-center">
+					<h3 class="card-title"><i class="fa fa-thumbs-up"></i>&nbsp;&nbsp;<?php echo ' ' . JText::_('COM_SECURITYCHECKPRO_CPANEL_HELP_US'); ?></h3>
+					<p class="card-text">
+						<?php echo($review); ?><br/><br/>
+						<i class="fa fa-info-square"></i>&nbsp;&nbsp;<?php echo('<a href="' . $translator_url . '" target="_blank">' . $translator_name . '</a>'); ?>
+					</p>
 				</div>
 			</div>
-			<div class="box-content">
-				<div class="alert alert-info">
-					<p><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_DISCLAIMER_TEXT'); ?></p>
-				</div>
-			</div>			
 		</div>
+			
 	</div>
-</div>
-
-<script>
-		jQuery(function() {
-			var topLoader = jQuery("#topLoader").percentageLoader({width: 100, height: 100, controllable : false, progress : 0.5, onProgressUpdate : function(val) {
-              topLoader.setValue(Math.round(val * 100.0));
-            }});
-
-			var topLoaderRunning = false;
-		  
-			// Cuando el DOM este disponible, actualizamos el porcentaje
-			window.addEvent('domready', function() {
-				if (topLoaderRunning) {
-				  return;
-				}
-				topLoaderRunning = true;
-				topLoader.setProgress(0);
-			   
-				var kb = 0;
-				// Porcentaje de cumplimiento
-				var percent = <?php echo $this->overall ?>;
-				
-				var animateFunc = function() {
-					kb += 5;
-					topLoader.setProgress(kb/100);
-								
-					if (kb < percent) {
-						setTimeout(animateFunc, 55);
-					} else {
-						topLoaderRunning = false;
-					}
-				}
-				
-				setTimeout(animateFunc, 55);
-				
-			 });
-        });      
-</script>
-
+	
+	<!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#isisJsData">
+      <i class="fa fa-angle-up"></i>
+    </a>
+	
+<!-- End Main panel -->	
+</div> 
+  
+  <!-- Bootstrap core JavaScript -->
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>
+<!-- Custom scripts for all pages -->
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sb-admin.js"></script> 
+ <!-- Core plugin JavaScript-->
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery-easing/jquery.easing.min.js"></script>
+ 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />
 <input type="hidden" name="boxchecked" value="1" />
 <input type="hidden" name="controller" value="cpanel" />
 </form>
+
+

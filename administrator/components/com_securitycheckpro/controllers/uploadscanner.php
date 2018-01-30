@@ -19,12 +19,6 @@ jimport('joomla.application.component.controller');
 class SecuritycheckprosControllerUploadScanner extends SecuritycheckproController
 {
 
-/* Redirecciona las peticiones al componente */
-function redireccion()
-{
-	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=uploadscanner&view=firewallcpanel' );
-}
-
 
 /* Guarda los cambios y redirige al cPanel */
 public function save()

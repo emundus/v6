@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -163,16 +163,20 @@ if(!empty($this->rows)) {
 
 		$filters_params = '';
 		if(!empty($this->filters)){
+			$reseted = hikaInput::get()->getVar('reseted');
 			foreach($this->filters as $uniqueFitler){
 				$name = 'filter_'.$uniqueFitler->filter_namekey;
 				$value = hikaInput::get()->getVar($name);
 				if(is_array($value))
 					$value = implode('::', $value);
-
+				if($reseted)
+					$value = '';
 				$filters_params .= '&'.$name . '=' . $value;
 
 				$name .= '_values';
 				$value = hikaInput::get()->getVar($name);
+				if($reseted)
+					continue;
 				if(is_array($value))
 					$value = implode('::', $value);
 				if(empty($value))
@@ -206,7 +210,7 @@ window.localPage.infiniteScroll = function(container_name) {
 	container.loading = true;
 	o.addClass(container, 'loading');
 
-	var url = '<?php echo HIKASHOP_LIVE; ?>index.php?option=com_hikashop&ctrl=product&task=listing&cid=<?php echo (int)(is_array($this->pageInfo->filter->cid) ? reset($this->pageInfo->filter->cid) : $this->pageInfo->filter->cid); ?>&limitstart=HIKAPAGE<?php echo $filters_params; ?>&Itemid=<?php echo (int)$Itemid; ?>&tmpl=ajax';
+	var url = '<?php echo HIKASHOP_LIVE; ?>index.php?option=com_hikashop&ctrl=product&task=listing&cid=<?php echo (int)(is_array($this->pageInfo->filter->cid) ? reset($this->pageInfo->filter->cid) : $this->pageInfo->filter->cid); ?>&limitstart=HIKAPAGE<?php echo $filters_params; ?>&Itemid=<?php echo (int)$Itemid; ?>&tmpl=raw';
 	url = url.replace(/HIKAPAGE/g, <?php echo (int)$this->pageInfo->limit->value; ?> * window.localPage.infiniteScrollPage);
 	o.xRequest(url, null, function(xhr) {
 		if(xhr.responseText.length == 0) {

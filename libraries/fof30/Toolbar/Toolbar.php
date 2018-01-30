@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -14,6 +14,7 @@ use FOF30\Toolbar\Exception\UnknownButtonType;
 use FOF30\Utils\StringHelper;
 use FOF30\View\DataView\DataViewInterface;
 use FOF30\View\View;
+use Joomla\Utilities\ArrayHelper;
 use JToolBarHelper;
 use JText;
 
@@ -696,8 +697,17 @@ class Toolbar
 
 		if (!empty($to_order))
 		{
-			\JArrayHelper::sortObjects($to_order, 'ordering');
-			$views = \JArrayHelper::getColumn($to_order, 'view');
+			if (class_exists('JArrayHelper'))
+			{
+				\JArrayHelper::sortObjects($to_order, 'ordering');
+				$views = \JArrayHelper::getColumn($to_order, 'view');
+			}
+			else
+			{
+				ArrayHelper::sortObjects($to_order, 'ordering');
+				$views = ArrayHelper::getColumn($to_order, 'view');
+			}
+
 		}
 
 		// If not using the metadata file, let's put the cpanel view on top

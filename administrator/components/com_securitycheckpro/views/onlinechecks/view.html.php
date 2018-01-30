@@ -18,22 +18,11 @@ protected $state;
 **/
 function display($tpl = null)
 {
-$document = JFactory::getDocument();
-$document->addStyleDeclaration('.icon-32-view_log {background-image: url(../media/com_securitycheckpro/images/view_log.png);}');
-$document->addStyleDeclaration('.icon-32-delete_files {background-image: url(../media/com_securitycheckpro/images/delete_files.png);}');
 
-if ( version_compare(JVERSION, '3.0', 'ge') ) {
-	// Botones Joomla 3.x
-	JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECURITYCHECKPRO_ONLINE_CHECK_LOGS'), 'securitycheckpro' );
-	JToolBarHelper::custom('redireccion_malware_scan_status','arrow-left','arrow-left','COM_SECURITYCHECKPRO_BACK');
-	JToolBarHelper::custom('download_log_file', 'out-2', 'out-2', 'COM_SECURITYCHECKPRO_DOWNLOAD_LOG');
-	JToolBarHelper::custom('delete_files','remove','remove','COM_SECURITYCHECKPRO_DELETE_FILE');
-} else {
-	// Botones Joomla 2.5
-	JToolBarHelper::custom('redireccion_malware_scan_status','back','back','COM_SECURITYCHECKPRO_BACK');
-	JToolBarHelper::custom('download_log_file','export','export','COM_SECURITYCHECKPRO_DOWNLOAD_LOG');
-	JToolBarHelper::custom('delete_files','delete_files','delete_files','COM_SECURITYCHECKPRO_DELETE_FILE');
-}
+JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECURITYCHECKPRO_ONLINE_CHECK_LOGS'), 'securitycheckpro' );
+JToolBarHelper::custom('download_log_file', 'out-2', 'out-2', 'COM_SECURITYCHECKPRO_DOWNLOAD_LOG');
+JToolBarHelper::custom('delete_files','remove','remove','COM_SECURITYCHECKPRO_DELETE_FILE');
+JToolBarHelper::custom('view_log','eye','eye','COM_SECURITYCHECKPRO_REPAIR_VIEW_LOG_MESSAGE');
 
 
 // Filtro
@@ -48,6 +37,12 @@ $items= $model->load();
 
 // ... y los ponemos en el template
 $this->assignRef('items',$items);
+
+// Información para la barra de navegación
+$logs_pending = $model->LogsPending();
+$trackactions_plugin_exists = $model->PluginStatus(8);
+$this->assignRef('logs_pending', $logs_pending);
+$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
 
 if ( !empty($items) ) {
 	$pagination = $this->get('Pagination');

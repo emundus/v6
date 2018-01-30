@@ -16,38 +16,56 @@ jimport('joomla.application.component.controller');
  * Controlador de la clase FileManager
  *
  */
-class SecuritycheckprosControllerFileManager extends JControllerLegacy
+class SecuritycheckprosControllerFileManager extends SecuritycheckproController
 {
 
 public function  __construct() {
-		parent::__construct();
+		parent::__construct();	
+		
+		$view = JFactory::getApplication()->input->get('view', null);
+		$task = JFactory::getApplication()->input->get('task', null);
+								
+		if ( $view == "filesintegrity") {
+			$view = $this->getView( 'filesintegrity', 'html' );
+			$view->setModel( $this->getModel( 'filemanager' ) );			
+		} else if ( $view == "filemanager") {			
+			$view = $this->getView( 'filemanager', 'html' );
+			$view->setModel( $this->getModel( 'filemanager' ) );
+		} else if ( $view == "malwarescan") {			
+			$view = $this->getView( 'malwarescan', 'html' );
+			$view->setModel( $this->getModel( 'filemanager' ) );
+			if ( $task != "view_file") {
+				$mainframe = JFactory::getApplication();
+				// Si la tarea es distinta a "view_file" inicializamos la variable de estado 'contenido'
+				$mainframe->setUserState('contenido', "vacio");
+			}
+		}
+		
 }
 
 /* Mostramos el Panel de Control del Gestor de archivos */
 public function display($cachable = false, $urlparams = Array())
 {
-	JRequest::setVar('hidemainmenu', 1);
-		
+	$view = JFactory::getApplication()->input->get('view', 'filemanager');
+	if ( $view == "filesintegrity") {
+		JRequest::setVar( 'view', 'filesintegrity' );
+	} else if ( $view == "filemanager") {
+		JRequest::setVar( 'view', 'filemanager' );
+	} else if ( $view == "malwarescan") {
+		JRequest::setVar( 'view', 'malwarescan' );
+	}
+	
 	parent::display();
 }
 
-/* Función que nos permite establecer la vista 'filesintegrity' y usar el modelo 'filemanager' conjuntamente */
-public function files_integrity_panel()
-{
-$view = $this->getView( 'filesintegrity', 'html' );
-$view->setModel( $this->getModel( 'filemanager' ) );
-$view->display();
-
-}
-
-/* Función que nos permite establecer la vista 'malwarescan' y usar el modelo 'filemanager' conjuntamente */
+/* Función que nos permite establecer la vista 'malwarescan' y usar el modelo 'filemanager' conjuntamente 
 public function malwarescan_panel()
 {
 $view = $this->getView( 'malwarescan', 'html' );
 $view->setModel( $this->getModel( 'filemanager' ) );
 $view->display();
 
-}
+}*/
 	
 /* Redirecciona las peticiones al Panel de Control */
 function redireccion_control_panel()
@@ -96,7 +114,7 @@ public function view_file_permissions()
 /* Mostramos información sobre los archivos sospechosos de contener malware */
 public function view_files_malwarescan()
 {
-	JRequest::setVar( 'view', 'malwarescanstatus' );
+	JRequest::setVar( 'view', 'filemanager' );
 	
 	parent::display();
 } 
@@ -113,6 +131,11 @@ public function initialize_data()
 function acciones(){
 	$model = $this->getModel("filemanager");
 	
+	/* Instanciamos el mainframe para guardar variables de estado de usuario */
+	$mainframe = JFactory::getApplication();
+	// Ponemos en la sesión de usuario que se ha lanzado una reparación de permisos
+	$mainframe->setUserState("repair_launched",null);
+			
 	$model->set_campo_filemanager('files_scanned',0);
 	$model->set_campo_filemanager('last_check',date('Y-m-d H:i:s'));
 	$message = JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_IN_PROGRESS');
@@ -277,7 +300,7 @@ function GoToVuln()
 /* Redirecciona a la opción de mostrar la integridad de archivos */
 function GoToIntegrity()
 {
-	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=filemanager&task=files_integrity_panel&'. JSession::getFormToken() .'=1' );		
+	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=filemanager&view=filesintegrity&'. JSession::getFormToken() .'=1' );		
 }
 
 /* Redirecciona a la opción de mostrar los permisos de archivos/directorios */
@@ -344,6 +367,251 @@ function GoToMalware()
 function redireccion_system_info()
 {
 	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=filemanager&view=sysinfo&'. JSession::getFormToken() .'=1' );
+}
+
+/* Establece correctamente los permisos de archivos y/o carpetas */
+function repair()
+{
+	$model = $this->getModel("filemanager");
+	$model->repair();
+				
+	parent::display();
+}
+
+public function getEstado_cambiopermisos() {
+	$model = $this->getModel("filemanager");
+	$message = $model->get_campo_filemanager('estado_cambio_permisos');
+	$message = JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_' .$message);
+	echo $message;
+}
+
+/* Añade ruta(s) a la lista de excepciones */
+function addfile_exception()
+{
+	$model = $this->getModel("filemanager");
+	// Obtenemos el valor del campo "table" del formulario, que indicará de qué pantalla venimos y qué tabla queremos modificar
+	$table = $this->input->post->get("table",null);	
+	if ( empty($table) ) {
+		Jerror::raiseWarning(null, JText::_('COM_SECURITYCHECKPRO_NO_DATA_TO_EXPORT'));
+	} else {
+		$model->addfile_exception($table);
+	}
+			
+	parent::display();
+}
+
+/* Borra ruta(s) de la lista de excepciones */
+function deletefile_exception()
+{
+	$model = $this->getModel("filemanager");
+	// Obtenemos el valor del campo "table" del formulario, que indicará de qué pantalla venimos  y qué tabla queremos modificar
+	$table = $this->input->post->get("table",null);
+	if ( empty($table) ) {
+		Jerror::raiseWarning(null, JText::_('COM_SECURITYCHECKPRO_NO_DATA_TO_EXPORT'));
+	} else {
+		$model->deletefile_exception($table);
+	}
+		
+	parent::display();
+}
+
+/* Marca como seguros todos los archivos de la BBDD que aparecen como inseguros. Esto es útil cuando hay actualizaciones o la primera vez que lanzamos 'File Integrity' */
+function mark_all_unsafe_files_as_safe() {
+	
+	$model = $this->getModel("filemanager");
+	$model->mark_all_unsafe_files_as_safe();
+			
+	parent::display();
+}
+
+/* Marca como seguros todos los archivos de la BBDD seleccionados */
+function mark_checked_files_as_safe() {
+	
+	$model = $this->getModel("filemanager");
+	$model->mark_checked_files_as_safe();
+			
+	parent::display();
+}
+
+/* Acciones al pulsar el botón para exportar la información */
+function export_logs_integrity(){
+		
+	/** @var string fileintegrity's name */
+	$fileintegrity_name = '';
+	
+	// Establecemos la ruta donde se almacenaran los escaneos
+	$this->folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR;
+	
+	// Obtenemos el nombre del escaneo actual
+	$db = JFactory::getDBO();
+	$query = $db->getQuery(true)
+		->select(array($db->quoteName('storage_value')))
+		->from($db->quoteName('#__securitycheckpro_storage'))
+		->where($db->quoteName('storage_key').' = '.$db->quote('fileintegrity_resume'));
+	$db->setQuery($query);
+	$stack_integrity = $db->loadResult();	
+	$stack_integrity = json_decode($stack_integrity, true);
+		
+	if(!empty($stack_integrity)) {
+		$fileintegrity_name = $stack_integrity['filename'];
+				
+		// Leemos el contenido del fichero
+		if ( JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$fileintegrity_name) ) {
+			$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$fileintegrity_name);
+			// Eliminamos la parte del fichero que evita su lectura al acceder directamente
+			$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
+		}
+		
+		$stack = json_decode($stack, true);
+		$stack = $stack['files_folders'];
+		
+		$csv_export = "";
+		
+		// Cabecera del archivo
+		$headers = array(JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_RUTA' ),JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TAMANNO'), JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_LAST_MODIFIED'), 'Info');
+		$csv_export .= implode(",",$headers);
+		
+		for ($i = 0 , $n = count($stack) ; $i < $n ; $i++) {
+			$csv_export .= "\n" .$stack[$i]['path'];
+			$size = filesize($stack[$i]['path']);
+			$csv_export .= "," .$size;		
+			$last_modified = date('Y-m-d H:i:s',filemtime($stack[$i]['path']));
+			$csv_export .= "," .$last_modified;	
+			$csv_export .= "," .$stack[$i]['notes'];
+		}
+				
+		// Mandamos el contenido al navegador
+		$config = JFactory::getConfig();
+		$sitename = $config->get('sitename');
+		// Remove whitespaces of sitename
+		$sitename = str_replace(' ', '', $sitename);
+		$timestamp = date('mdy_his');
+		$filename = "securitycheckpro_fileintegrity_" . $sitename . "_" . $timestamp . ".csv";
+		@ob_end_clean();	
+		ob_start();	
+		header( 'Content-Type: text/plain' );
+		header( 'Content-Disposition: attachment;filename=' . $filename );
+		print $csv_export;
+		exit();
+	} else {
+		Jerror::raiseWarning(null, JText::_('COM_SECURITYCHECKPRO_NO_DATA_TO_EXPORT'));
+		$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=filemanager&view=filesintegrity&'. JSession::getFormToken() .'=1' );			
+	}	
+}
+
+function online_check_files()
+{
+	$model = $this->getModel("filemanager");
+	$error = $model->online_check_files();
+	
+	if ( !$error ) {
+		$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=onlinechecks&view=onlinechecks&'. JSession::getFormToken() .'=1' );
+	} else {
+		JRequest::setVar( 'view', 'malwarescan' );
+	
+		parent::display();
+	}
+	
+}
+
+/* Chequea hashes contra el servicio OPWAST Metadefender Cloud */
+function online_check_hashes()
+{
+	$model = $this->getModel("filemanager");
+	$error = $model->online_check_hashes();
+
+	
+	if ( !$error ) {
+		$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=onlinechecks&view=onlinechecks&'. JSession::getFormToken() .'=1' );
+	} else {
+		JRequest::setVar( 'view', 'malwarescan' );
+	
+		parent::display();
+	}
+}
+
+/* Añade ruta(s) a la lista de excepciones */
+function manage_online_logs()
+{
+	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=onlinechecks&view=onlinechecks&'. JSession::getFormToken() .'=1' );
+}
+
+/* Restaura archivos movidos a la carpeta 'quarantine' */
+function restore_quarantined_file()
+{
+	$model = $this->getModel("filemanager");
+	$model->quarantined_file('restore');
+	
+	JRequest::setVar( 'view', 'malwarescan' );
+	
+	parent::display();
+}
+
+/* Borra archivos movidos a la carpeta 'quarantine' */
+function delete_quarantined_file()
+{
+	$model = $this->getModel("filemanager");
+	$model->quarantined_file('delete');
+	
+	JRequest::setVar( 'view', 'malwarescan' );
+	
+	parent::display();
+}
+
+/**
+ * Exportar logs en formato csv
+ */
+function csv_export_malware()
+{
+	// Obtenemos los archivos reportados
+	$model = $this->getModel("filemanager");
+	$items = $model->loadStack("malwarescan","malwarescan");
+	$csv_export = "";
+		
+	// Cabecera del archivo
+	$headers = array(JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_RUTA'),JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_TAMANNO' ),JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_LAST_MODIFIED'),JText::_('COM_SECURITYCHECKPRO_MALWARESCAN_TYPE'), JText::_('COM_SECURITYCHECKPRO_MALWARESCAN_DESCRIPTION'), JText::_('COM_SECURITYCHECKPRO_MALWARESCAN_CODE_DESCRIPTION'), JText::_('COM_SECURITYCHECKPRO_MALWARESCAN_ALERT_LEVEL'), 'Safe', 'Hash', 'Data_id', 'Rest_ip', JText::_( 'COM_SECURITYCHECKPRO_MALWARESCAN_ONLINE_CHECK' ), JText::_( 'COM_SECURITYCHECKPRO_MOVED_TO_QUARANTINE' ), 'Quarantined file name');
+	$csv_export .= implode(";",$headers);
+
+	for ($i = 0 , $n = count($items) ; $i < $n ; $i++) {		
+		$csv_export .= "\n" .implode(";",$items[$i]);
+	}
+	
+	// Mandamos el contenido al navegador
+	$config = JFactory::getConfig();
+	$sitename = $config->get('sitename');
+	// Remove whitespaces of sitename
+	$sitename = str_replace(' ', '', $sitename);
+	$timestamp = date('mdy_his');
+	$filename = "securitycheckpro_malwarescan_results_" . $sitename . "_" . $timestamp . ".csv";
+	@ob_end_clean();	
+	ob_start();	
+	header( 'Content-Type: text/csv' );
+	header( 'Content-Disposition: attachment;filename=' . $filename );
+	print $csv_export;
+	exit();
+	
+}
+
+/* Función para borrar archivos sospechosos */
+function delete_file()
+{
+	$model = $this->getModel("filemanager");
+	$model->delete_files();
+	
+	$mainframe = JFactory::getApplication();	
+	$mainframe->setUserState('contenido', "vacio");
+	
+	JRequest::setVar( 'view', 'malwarescan' );
+	parent::display();	
+}
+
+/* Función para borrar archivos sospechosos */
+function view_file()
+{
+	$model = $this->getModel("filemanager");
+	$model->view_file();
+	
+	parent::display();	
 }
 
 }

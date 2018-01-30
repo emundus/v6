@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -36,7 +36,7 @@ defined('_JEXEC') or die('Restricted access');
 		</tfoot>
 		<tr>
 			<td width="130px" height="100%" style="width:130px;vertical-align:top;">
-				<div style="width:130px;height:100%;overflow:auto;">
+				<div style="width:130px;height:100%;overflow:auto;position:fixed;">
 <?php
 echo $this->treeContent;
 ?>

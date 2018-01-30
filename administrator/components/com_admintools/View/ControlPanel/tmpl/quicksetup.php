@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -12,23 +12,22 @@ defined('_JEXEC') or die;
 $uriBase = rtrim(JUri::base(), '/');
 
 ?>
-<h2>
-	<?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_HEADER_QUICKSETUP'); ?>
-</h2>
 
-<p class="small alert alert-warning">
-	<?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_HEADER_QUICKSETUP_HELP'); ?>
-</p>
+<div class="akeeba-panel--default">
+    <header class="akeeba-block-header">
+        <h3><?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_HEADER_QUICKSETUP'); ?></h3>
+    </header>
 
-<div>
-	<a href="index.php?option=com_admintools&view=QuickStart" class="btn cpanel-icon">
-		<img
-				src="<?php echo $uriBase; ?>/components/com_admintools/media/images/quickstart-32.png"
-				class="at-icon" alt="<?php echo \JText::_('COM_ADMINTOOLS_TITLE_QUICKSTART'); ?>"/>
-	<span class="title">
-		<?php echo \JText::_('COM_ADMINTOOLS_TITLE_QUICKSTART'); ?><br/>
-	</span>
-	</a>
+    <p class="akeeba-block--warning small">
+        <?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_HEADER_QUICKSETUP_HELP'); ?>
+    </p>
+
+    <div class="akeeba-grid--small">
+        <div>
+            <a href="index.php?option=com_admintools&view=QuickStart" class="akeeba-action--orange">
+                <span class="akion-flash"></span>
+                <?php echo \JText::_('COM_ADMINTOOLS_TITLE_QUICKSTART'); ?>
+            </a>
+        </div>
+    </div>
 </div>
-
-<div class="clearfix"></div>

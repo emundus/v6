@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -31,7 +31,7 @@ class Filters extends Observer
 		$db = $model->getDbo();
 
 		$fields     = $model->getTableFields();
-		$blacklist  = $model->blacklistFilters();
+		$blacklist  = $model->getBlacklistFilters();
 		$filterZero = $model->getBehaviorParam('filterZero', null);
 		$tableAlias = $model->getBehaviorParam('tableAlias', null);
 

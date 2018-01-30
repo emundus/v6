@@ -20,12 +20,17 @@ jimport('joomla.application.component.controller');
 class SecuritycheckprosControllerOnlineChecks extends SecuritycheckproController
 {
 
-
-/* Redirige a la página anterior */
-function redireccion_malware_scan_status()
-{
-	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=filemanager&task=malwarescan_panel&'. JSession::getFormToken() .'=1' );			
-
+public function  __construct() {
+		parent::__construct();	
+		
+		$task = JFactory::getApplication()->input->get('task', null);
+										
+		if ( $task != "view_file") {
+			$mainframe = JFactory::getApplication();
+			// Si la tarea es distinta a "view_file" inicializamos la variable de estado 'contenido'
+			$mainframe->setUserState('contenido', "vacio");		
+		}
+		
 }
 
 /* Borra ficheros de logs */
@@ -46,6 +51,16 @@ function download_log_file()
 		
 	JRequest::setVar( 'view', 'onlinechecks' );
 		
+	parent::display();	
+		
+}
+
+/* View onlinechecks log */
+function view_log()
+{
+	$model = $this->getModel("onlinechecks");	
+	$model->view_log();
+			
 	parent::display();	
 		
 }

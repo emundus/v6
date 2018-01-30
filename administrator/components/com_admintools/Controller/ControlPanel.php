@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -145,16 +145,15 @@ class ControlPanel extends Controller
 			);
 
 			$result = <<<ENDRESULT
-	<div class="alert alert-warning">
+	<div class="akeeba-block--warning">
 		<h3>
-			<span class="icon icon-exclamation-sign glyphicon glyphicon-exclamation-sign"></span>
 			{$strings['header']}
 		</h3>
 		<p>
-			<a href="index.php?option=com_installer&view=Update" class="btn btn-primary">
+			<a href="index.php?option=com_installer&view=Update" class="akeeba-btn--primary">
 				{$strings['button']}
 			</a>
-			<a href="{$strings['infourl']}" target="_blank" class="btn btn-small btn-info">
+			<a href="{$strings['infourl']}" target="_blank" class="akeeba-btn--ghost">
 				{$strings['infolbl']}
 			</a>
 		</p>

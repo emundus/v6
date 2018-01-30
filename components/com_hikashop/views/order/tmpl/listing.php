@@ -1,29 +1,15 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><div id="hikashop_order_listing">
 <?php global $Itemid; ?>
-<div class="header hikashop_header_title"><h1><?php echo JText::_('ORDERS');?></h1></div>
-
-<div class="toolbar hikashop_header_buttons" id="toolbar" style="float: right;">
-	<table class="hikashop_no_border">
-		<tr>
-			<td>
-				<a onclick="javascript:submitbutton('cancel'); return false;" href="#">
-					<span class="icon-32-back" title="<?php echo JText::_('HIKA_BACK'); ?>"></span>
-					<?php echo JText::_('HIKA_BACK'); ?>
-				</a>
-			</td>
-		</tr>
-	</table>
-</div>
-<div style="clear:both"></div>
+<?php echo $this->toolbarHelper->process($this->toolbar, $this->title); ?>	
 
 <form action="<?php echo hikashop_completeLink('order'); ?>" method="post" name="adminForm" id="adminForm">
 	<div class="hikashop_search_block">
@@ -158,12 +144,32 @@ defined('_JEXEC') or die('Restricted access');
 			);
 		}
 
+		if(!empty($row->actions)) {
+			$dropData = array_merge($dropData, $row->actions);
+		}
+
 		if(!empty($dropData)) {
-			echo $this->dropdownHelper->display(
-				JText::_('HIKA_MORE'),
-				$dropData,
-				array('type' => 'btn', 'right' => true, 'up' => false)
-			);
+			if(count($dropData) == 1) {
+				$d = reset($dropData);
+				$link = '#';
+				$extra = '';
+				if(!empty($d['link']))
+					$link = $d['link'];
+				if(!empty($d['extra']))
+					$extra .= ' '.trim($d['extra']);
+				if(!empty($d['click']))
+					$extra .= ' onclick="'.trim($d['click']).'"';
+
+?>
+<a href="<?php echo $link; ?>" class="<?php echo $config->get('css_button','hikabtn'); ?> hikabtn_order_action" <?php echo $extra; ?>><?php echo $d['name']; ?></a>
+<?php
+			} else {
+				echo $this->dropdownHelper->display(
+					JText::_('HIKA_MORE'),
+					$dropData,
+					array('type' => 'btn', 'right' => true, 'up' => false)
+				);
+			}
 		}
 			?></td>
 <?php } ?>

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -731,6 +731,18 @@ class hikashopCategoryClass extends hikashopClass {
 		$currentLeft = $left;
 		$currentDepth = $depth;
 		$pkey = end($this->pkeys);
+		if(is_null($element)) {
+			$query = 'SELECT category_left,category_right,category_depth,'.$pkey.',category_parent_id FROM '.hikashop_table(end($this->tables)).' ORDER BY category_left ASC';
+			$this->database->setQuery($query);
+			$categories = $this->database->loadObjectList();
+			$this->categories = array();
+			foreach($categories as $cat) {
+				$this->categories[$cat->category_parent_id][] = $cat;
+				if(empty($cat->category_parent_id)) {
+					$element = $cat;
+				}
+			}
+		}
 		if(!empty($this->categories[$element->$pkey])) {
 			$depth++;
 			foreach($this->categories[$element->$pkey] as $child){
@@ -940,12 +952,12 @@ class hikashopCategoryClass extends hikashopClass {
 					continue;
 
 				$o = new stdClass();
-				if($v->category_left+1==$v->category_right){
+				if($v->category_left + 1 == $v->category_right) {
 					$o->status = 4;
 				}else{
 					$o->status = 3;
 				}
-				$o->name = (!empty($v->translation)) ? $v->translation :  JText::_($v->category_name);
+				$o->name = (!empty($v->translation)) ? $v->translation : JText::_($v->category_name);
 				$o->value = $k;
 				$o->data = array();
 

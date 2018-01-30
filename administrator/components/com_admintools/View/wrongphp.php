@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaBackup
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -40,6 +40,16 @@ elseif (version_compare(PHP_VERSION, '5.7.0', 'lt'))
 elseif (version_compare(PHP_VERSION, '7.1.0', 'lt'))
 {
 	$akeebaCommonDatePHP = new DateTime('2018-12-03 00:00:00', $tx);
+}
+// PHP 7.1
+elseif (version_compare(PHP_VERSION, '7.2.0', 'lt'))
+{
+	$akeebaCommonDatePHP = new DateTime('2019-12-1 00:00:00', $tx);
+}
+// PHP 7.2
+elseif (version_compare(PHP_VERSION, '7.3.0', 'lt'))
+{
+	$akeebaCommonDatePHP = new DateTime('2020-11-30 00:00:00', $tx);
 }
 
 ?>

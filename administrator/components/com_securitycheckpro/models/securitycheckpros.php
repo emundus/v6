@@ -635,4 +635,70 @@ function get_last_update() {
 	return $last_date;
 }
 
+/* Método para cargar todas las vulnerabilidades de un componente pasado en la url */
+function filter_vulnerable_extension($product)
+{
+	$data = null;
+	$content = "";
+	$db = JFactory::getDBO();
+	
+	// Cargamos los datos
+	if (empty( $data )) {
+		$product = filter_var($product, FILTER_SANITIZE_STRING);
+		$query = ' SELECT * FROM #__securitycheckpro_db '.
+				'  WHERE id IN (SELECT vuln_id FROM #__securitycheckpro_vuln_components WHERE Product = "'.$product .'")';			
+		$db->setQuery( $query );
+		$data = $db->loadAssocList();			
+	}	
+	
+	$content = '<table class="table table-bordered table-hover">
+					<thead>
+						<tr>
+							<th class="alert alert-dark text-center" align="center">' . JText::_( "COM_SECURITYCHECKPRO_VULNERABILITY_DETAILS" ) . '
+							</th>
+							<th class="alert alert-dark text-center" align="center">' . JText::_( "COM_SECURITYCHECKPRO_VULNERABILITY_CLASS" ) . '
+							</th>
+							<th class="alert alert-dark text-center" align="center">' . JText::_( "COM_SECURITYCHECKPRO_VULNERABILITY_PUBLISHED" ) . '
+							</th>
+							<th class="alert alert-dark text-center" align="center">' . JText::_( "COM_SECURITYCHECKPRO_VULNERABILITY_VULNERABLE" ) . '
+							</th>
+							<th class="alert alert-dark text-center" align="center">' . JText::_( "COM_SECURITYCHECKPRO_VULNERABILITY_SOLUTION" ) . '
+							</th>
+						</tr>
+					</thead>';
+	foreach ($data as $element) {
+		$description_sanitized = filter_var($element['description'], FILTER_SANITIZE_STRING);
+		$class_sanitized = filter_var($element['vuln_class'], FILTER_SANITIZE_STRING);
+		$published_sanitized = filter_var($element['published'], FILTER_SANITIZE_STRING);
+		$vulnerable_sanitized = filter_var($element['vulnerable'], FILTER_SANITIZE_STRING);
+		$solution_type = filter_var($element['solution_type'], FILTER_SANITIZE_STRING);
+		$solution = filter_var($element['solution'], FILTER_SANITIZE_STRING);
+		if ( $solution_type == 'update' ) {
+			$solution = JText::_('COM_SECURITYCHECKPRO_SOLUTION_TYPE_UPDATE') . ' ' . $solution;				
+		} else if ( $solution_type == 'none' ){
+			$solution = JText::_('COM_SECURITYCHECKPRO_SOLUTION_TYPE_NONE');
+		}
+		
+		$content .= '<tr>
+						<td class="text-center">' . $description_sanitized . '
+						</td>
+						<td class="text-center">' . $class_sanitized . '
+						</td>
+						<td class="text-center">' . $published_sanitized . '
+						</td>
+						<td class="text-center">' . $vulnerable_sanitized . '
+						</td>
+						<td class="text-center">' . $solution . '
+						</td>
+					</tr>';		
+	}
+	
+	$content .= '</table>';
+	
+
+
+	
+	return $content;
+}
+
 }

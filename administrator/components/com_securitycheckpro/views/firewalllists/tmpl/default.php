@@ -110,6 +110,7 @@ JHtml::_('jquery.framework');
 		document.getElementById(Id).innerHTML = '';
 	}
 	
+	// Set the active tab on load
 	window.onload = function() {
 		ActiveTab = getStoredValue('active');
 		$('.nav-tabs a[href=#'+ActiveTab+']').tab('show');

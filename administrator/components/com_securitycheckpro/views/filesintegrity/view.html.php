@@ -24,8 +24,6 @@ function display($tpl = null)
 {
 
 JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECURITYCHECKPRO_CPANEL_FILE_INTEGRITY_CONTROL_PANEL_TEXT'), 'securitycheckpro' );
-JToolBarHelper::custom('redireccion_control_panel','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT_CONTROL_PANEL');
-JToolBarHelper::custom('redireccion_system_info','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT_SYSTEM_INFO');
 
 // Obtenemos los datos del modelo
 $model = $this->getModel("filemanager");
@@ -35,15 +33,16 @@ $files_with_bad_integrity = $model->loadStack("fileintegrity_resume","files_with
 
 $task_ended = $model->get_campo_filemanager("estado_integrity");
 
-// Si no se está ejecutando ninguna tarea, mostramos la opción 'view files integrity'
-if ( strtoupper($task_ended) != 'IN_PROGRESS' ) {
-	JToolBarHelper::custom( 'view_files_integrity', 'locked', 'locked', 'COM_SECURITYCHECKPRO_VIEW_FILES_INTEGRITY' ); 
-}
-
 // Obtenemos el algoritmo seleccionado para crear el valor hash y si está habilitada la opción para escanear sólo ficheros ejecutables
 $params = JComponentHelper::getParams('com_securitycheckpro');
 $hash_alg = $params->get('file_integrity_hash_alg','SHA1');
 $scan_executables_only = $params->get('scan_executables_only',0);
+
+// Información para la barra de navegación
+$logs_pending = $model->LogsPending();
+$trackactions_plugin_exists = $model->PluginStatus(8);
+$this->assignRef('logs_pending', $logs_pending);
+$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
 
 // Ponemos los datos en el template
 $this->assignRef('last_check_integrity', $last_check_integrity);
@@ -51,6 +50,37 @@ $this->assignRef('files_scanned_integrity', $files_scanned_integrity);
 $this->assignRef('hash_alg', $hash_alg); 
 $this->assignRef('files_with_bad_integrity', $files_with_bad_integrity); 
 $this->assignRef('scan_executables_only', $scan_executables_only);
+
+// Filesstatus
+
+// Filtro por tipo de extensión
+$this->state= $model->getState();
+
+$fileintegrity_search = $this->state->get('filter.fileintegrity_search');
+$filter_fileintegrity_status = $this->state->get('filter.fileintegrity_status');
+
+// Establecemos el valor del filtro 'fileintegrity_status' a cero para que muestre sólo los permisos incorrectos
+if ( $filter_fileintegrity_status == ''){
+	$this->state->set('filter.fileintegrity_status',0);
+}
+
+$items = $model->loadStack("integrity","file_integrity");
+
+$show_all = $this->state->get('showall',0);
+$database_error = $model->get_campo_filemanager("estado_integrity");
+
+// Ponemos los datos en el template
+$this->assignRef('items', $items);
+$this->assignRef('show_all', $show_all);
+$this->assignRef('database_error', $database_error);
+
+if ( !empty($items) ) {
+	$pagination = $model->getPagination();
+	$this->assignRef('pagination', $pagination);
+	JToolBarHelper::custom('mark_all_unsafe_files_as_safe','flag-2','flag-2','COM_SECURITYCHECKPRO_FILEINTEGRITY_MARK_ALL_UNSAFE_FILES_AS_SAFE');
+	JToolBarHelper::custom('mark_checked_files_as_safe','flag','flag','COM_SECURITYCHECKPRO_FILEINTEGRITY_MARK_CHECKED_FILES_AS_SAFE');
+	JToolBarHelper::custom('export_logs_integrity', 'out-2', 'out-2', 'COM_SECURITYCHECKPRO_EXPORT_INFO_CSV', false);
+}
 
 parent::display($tpl);
 }

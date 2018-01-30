@@ -13,7 +13,7 @@ jimport( 'joomla.access.rule' );
 /**
 * Modelo Vulninfo
 */
-class SecuritycheckprosModelVulninfo extends JModelLegacy
+class SecuritycheckprosModelVulninfo extends SecuritycheckproModel
 {
 /**
 * Array de datos
@@ -92,14 +92,14 @@ return $query;
 /**
  * Método para cargar todas las vulnerabilidades de los componentes
  */
-function getData()
+function datos()
 {
-	// Cargamos los datos
-	if (empty( $this->_data )) {
-		$query = $this->_buildQuery();
-		$this->_data = $this->_getList($query, $this->getState('limitstart'), $this->getState('limit'));				
-	}
+	
+	$db = JFactory::getDBO();
+	$query = 'SELECT * FROM #__securitycheckpro_db ORDER BY id DESC';
+	$db->setQuery($query, $this->getState('limitstart'), $this->getState('limit'));
+	$data = $db->loadAssocList();
 		
-	return $this->_data;
+	return $data;
 }
 }

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -564,7 +564,14 @@ class hikashopFileClass extends hikashopClass {
 			$found = false;
 			switch($field_table){
 				case 'entry':
-					$entriesData = $app->getUserState(HIKASHOP_COMPONENT.'.entries_fields');
+					$hikashop_config =& hikashop_config();
+					if($hikashop_config->get('checkout_legacy', 0)) {
+						$entriesData = $app->getUserState(HIKASHOP_COMPONENT.'.entries_fields');
+					}else{
+						$class = hikashop_get('class.cart');
+						$cart = $class->getFullCart();
+						$entriesData = @$cart->cart_fields->_entries;
+					}
 					if(!empty($entriesData)){
 						foreach($entriesData as $entryData){
 							if(@$entryData->$field_namekey==$name){

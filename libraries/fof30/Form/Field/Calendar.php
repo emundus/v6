@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -14,6 +14,8 @@ use FOF30\Form\Form;
 use FOF30\Model\DataModel;
 use FOF30\Tests\Helpers\TravisLogger;
 use \JHtml;
+use JText;
+use SimpleXMLElement;
 
 defined('_JEXEC') or die;
 
@@ -22,6 +24,8 @@ defined('_JEXEC') or die;
 /**
  * Form Field class for the FOF framework
  * Supports a calendar / date field.
+ *
+ * @deprecated 3.1  Support for XML forms will be removed in FOF 4
  */
 class Calendar extends \JFormFieldCalendar implements FieldInterface
 {
@@ -59,7 +63,7 @@ class Calendar extends \JFormFieldCalendar implements FieldInterface
 	/**
 	 * Method to get certain otherwise inaccessible properties from the form field object.
 	 *
-	 * @param   string  $name  The property name for which to the the value.
+	 * @param   string $name The property name for which to the the value.
 	 *
 	 * @return  mixed  The property value or null.
 	 *
@@ -121,20 +125,47 @@ class Calendar extends \JFormFieldCalendar implements FieldInterface
 	}
 
 	/**
+	 * Overridden to enable time display by default in the FOF Calendar field. This is required for backwards
+	 * compatibility: all previous Joomla! version would display the time and/or let you specify a time in the Calendar
+	 * field. Joomla! 3.7 broke this, stripping away the time by default.
+	 *
+	 * @param SimpleXMLElement $element
+	 * @param mixed            $value
+	 * @param null             $group
+	 *
+	 * @return bool
+	 */
+	public function setup(SimpleXMLElement $element, $value, $group = null)
+	{
+		$ret = parent::setup($element, $value, $group);
+
+		// Show time by default in the FOF Calendar field
+		$showTimeValue = (string) $this->element['showtime'];
+
+		if (empty($showTimeValue))
+		{
+			$this->showtime = true;
+		}
+
+		return $ret;
+	}
+
+
+	/**
 	 * Method to get the calendar input markup.
 	 *
-	 * @param   string  $display  The display to render ('static' or 'repeatable')
+	 * @param   string $display The display to render ('static' or 'repeatable')
 	 *
-	 * @return  string	The field input markup.
+	 * @return  string    The field input markup.
 	 *
 	 * @since   2.1.rc4
 	 */
 	protected function getCalendar($display)
 	{
 		// Initialize some field attributes.
-		$format  = $this->format ? $this->format : '%Y-%m-%d';
-		$class   = $this->class ? $this->class : '';
-		$default = $this->element['default'] ? (string) $this->element['default'] : '';
+		$format      = $this->format ? $this->format : '%Y-%m-%d';
+		$class       = $this->class ? $this->class : '';
+		$default     = $this->element['default'] ? (string) $this->element['default'] : '';
 
 		// Get some system objects.
 		$config = $this->form->getContainer()->platform->getConfig();
@@ -193,6 +224,16 @@ class Calendar extends \JFormFieldCalendar implements FieldInterface
 			// Build the attributes array.
 			$attributes = array();
 
+			if ($this->placeholder)
+			{
+				$attributes['placeholder'] = $this->placeholder;
+			}
+
+			if ($this->class)
+			{
+				$attributes['class'] = $this->class;
+			}
+
 			if ($this->size)
 			{
 				$attributes['size'] = $this->size;
@@ -223,15 +264,76 @@ class Calendar extends \JFormFieldCalendar implements FieldInterface
 				$attributes['onChange'] = $this->onchange;
 			}
 
+			if ($this->autocomplete)
+			{
+				$attributes['autocomplete'] = $this->autocomplete;
+			}
+
+			if ($this->autofocus)
+			{
+				$attributes['autofocus'] = $this->autofocus;
+			}
+
+			if ($this->filter)
+			{
+				$attributes['filter'] = $this->filter;
+			}
+
+			if ($this->today)
+			{
+				$attributes['todayBtn'] = $this->today;
+			}
+
+			if ($this->weeknumbers)
+			{
+				$attributes['weekNumbers'] = $this->weeknumbers;
+			}
+
+			if ($this->showtime)
+			{
+				$attributes['showTime'] = in_array(strtolower($this->showtime), ['true', '1', 'on', 'yes']);
+			}
+			elseif ($this->time)
+			{
+				$attributes['showTime'] = in_array(strtolower($this->time), ['true', '1', 'on', 'yes']);
+			}
+
+			if ($this->filltable)
+			{
+				$attributes['fillTable'] = in_array(strtolower($this->filltable), ['true', '1', 'on', 'yes']);
+			}
+
+			if ($this->timeformat)
+			{
+				$attributes['timeFormat'] = $this->timeformat;
+			}
+
+			if ($this->singleheader)
+			{
+				$attributes['singleHeader'] = in_array(strtolower($this->singleheader), ['true', '1', 'on', 'yes']);
+			}
+
 			if ($this->required)
 			{
-				$attributes['required'] = 'required';
+				$attributes['required']      = 'required';
 				$attributes['aria-required'] = 'true';
 			}
 
 			// Including fallback code for HTML5 non supported browsers.
 			JHtml::_('jquery.framework');
 			JHtml::_('script', 'system/html5fallback.js', false, true);
+
+			if (($format == '%Y-%m-%d') && isset($attributes['showTime']))
+			{
+				if ($attributes['showTime'])
+				{
+					$format = JText::_('DATE_FORMAT_CALENDAR_DATETIME');
+				}
+				else
+				{
+					$format = JText::_('DATE_FORMAT_CALENDAR_DATE');
+				}
+			}
 
 			return JHtml::_('calendar', $this->value, $this->name, $this->id, $format, $attributes);
 		}
@@ -240,8 +342,8 @@ class Calendar extends \JFormFieldCalendar implements FieldInterface
 			if (!$this->value
 				&& (string) $this->element['empty_replacement'])
 			{
-                $replacement_key = (string) $this->element['empty_replacement'];
-				$value = \JText::_($replacement_key);
+				$replacement_key = (string) $this->element['empty_replacement'];
+				$value           = \JText::_($replacement_key);
 			}
 			else
 			{
@@ -250,8 +352,8 @@ class Calendar extends \JFormFieldCalendar implements FieldInterface
 			}
 
 			return '<span class="' . $this->id . ' ' . $class . '">' .
-			htmlspecialchars($value, ENT_COMPAT, 'UTF-8') .
-			'</span>';
+				htmlspecialchars($value, ENT_COMPAT, 'UTF-8') .
+				'</span>';
 		}
 	}
 }

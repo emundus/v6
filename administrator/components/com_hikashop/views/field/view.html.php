@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -102,6 +102,7 @@ function setVisible(value) {
 				array('name' => 'order_form', 'title' => JText::_('field_product_order_form')), // back (ex: field_product_order_form)
 				array('name' => 'back_cart_details', 'title' => JText::_('field_product_backend_cart_details')), // (ex: field_product_backend_cart_details)
 				array('name' => 'front_cart_details', 'title' => JText::_('field_product_frontend_cart_details')), // (ex: field_product_frontend_cart_details)
+				array('name' => 'checkout', 'title' => JText::_('field_product_checkout')), // (ex: field_product_checkout)
 
 				array('name' => 'mail_order_notif', 'title' => JText::_('field_product_order_notification'), 'group' => 'mail'), // (ex: field_product_order_notification)
 				array('name' => 'mail_status_notif', 'title' => JText::_('field_product_order_status_notification'), 'group' => 'mail'), // (ex: field_product_order_status_notification)
@@ -275,5 +276,36 @@ function setVisible(value) {
 
 		$fieldClass = hikashop_get('class.field');
 		$this->assignRef('fieldsClass', $fieldClass);
+	}
+
+	protected function loadCfgLng() {
+		static $loaded = false;
+		if($loaded)
+			return;
+		$lg = JFactory::getLanguage();
+		$lg->load('com_hikashop_config', JPATH_SITE);
+		$loaded = true;
+	}
+
+	public function getDoc($key) {
+		$this->loadCfgLng();
+		$namekey = 'HK_CONFIG_' . strtoupper(trim($key));
+		$ret = JText::_($namekey);
+		if($ret == $namekey) {
+			return '';
+		}
+		return $ret;
+	}
+
+	public function docFieldTip($key) {
+		if(!empty($this->field->field_table))
+			$key = 'field_'.str_replace(array('.','-'),'_', $this->field->field_table).'_'. $key;
+		else
+			$key = 'field_'.$key;
+
+		$ret = $this->getDoc($key);
+		if(empty($ret))
+			return '';
+		return 	' data-toggle="hk-tooltip" data-title="'.htmlspecialchars($ret, ENT_COMPAT, 'UTF-8').'"';
 	}
 }

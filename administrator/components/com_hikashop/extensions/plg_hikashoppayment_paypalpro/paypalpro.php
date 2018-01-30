@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -247,7 +247,7 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 		return true;
 	}
 
-	 function onAfterOrderCreate(&$order, &$do) {
+	function onAfterOrderCreate(&$order, &$do) {
 	 	$this->loadOrderData($order);
 		$this->loadPaymentParams($order);
 		if($this->app->isAdmin())
@@ -256,7 +256,6 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 			return true;
 		if(empty($this->payment_params))
 			return false;
-
 
 		if(!empty($this->transaction_id)){
 			$email = new stdClass();
@@ -269,8 +268,8 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 
 			$this->modifyOrder($order,$order->order_status,false,$email);
 
-			$class = hikashop_get('class.cart');
-			$class->cleanCartFromSession();
+			$cartClass = hikashop_get('class.cart');
+			$cartClass->cleanCartFromSession(false);
 		}
 	 }
 

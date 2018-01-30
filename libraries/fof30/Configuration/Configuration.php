@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -126,7 +126,7 @@ class Configuration
 		// Get the folders of the component
 		$componentPaths = $this->container->platform->getComponentBaseDirs($component);
 		$filesystem     = $this->container->filesystem;
-		$path = $componentPaths['admin'];
+		$path           = $componentPaths['admin'];
 
 		if (isset($this->container['backEndPath']))
 		{
@@ -184,7 +184,7 @@ class Configuration
 
 			if (class_exists($class, true))
 			{
-				/** @var   \FOF30\Configuration\Domain\DomainInterface  $o */
+				/** @var   \FOF30\Configuration\Domain\DomainInterface $o */
 				$o = new $class;
 				$o->parseDomain($xml, $ret);
 			}

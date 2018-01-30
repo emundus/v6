@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 		<img src="<?php echo HIKASHOP_IMAGES.'spinner.gif';?>" />
 	</span>
 	<br/>
-	<form id="hikashop_paygate_form" name="hikashop_paygate_form" action="<?php echo $this->payment_params->payment_url;?>" method="post">
+	<form id="hikashop_paygate_form" name="hikashop_paygate_form" action="<?php echo $this->url;?>" method="post">
 		<div id="hikashop_paygate_end_image" class="hikashop_paygate_end_image">
 			<input id="hikashop_paygate_button" class="btn btn-primary" type="submit" value="<?php echo JText::_('PAY_NOW');?>" name="" alt="<?php echo JText::_('PAY_NOW');?>" />
 		</div>

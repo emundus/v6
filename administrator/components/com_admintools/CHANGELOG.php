@@ -1,4 +1,26 @@
 <?php die() ?>
+Admin Tools 5.0.0.b1
+================================================================================
++ Rewritten interface using our brand new Akeeba Frontend Framework
++ Joomla! 4 compatibility
+~ Simplified tab names in the Configure WAF page
+# [LOW] Security exception not logged in the database if the URL is too long
+# [LOW] Fixed fatal error while exporting empty list of Blacklisted Addresses
+
+Admin Tools 4.3.2
+================================================================================
++ Added 404Shield feature: accessing suspicious 404 pages (ie wp-login.php) will raise a security exception
++ Added Email PHP Exceptions feature: when a PHP exception is raised, an email will be sent with debug information
++ Display info about exceptions and PHP 7+ fatal errors in the backend
+- Removed "Monitor Super User accounts" feature. While it works just fine, users seem to be too confused by it.
+~ PHP 7.2 compatibility: renaming Object class to BaseObject in the PHP File Change Scanner engine
+- Removed "Monitor Super User accounts" feature. While it works just fine, users seem to be too confused by it.
+~ PHP 7.2 compatibility: renaming Object class to BaseObject in the PHP File Change Scanner engine
+# [LOW] WAF Blacklist could cause login failure if you tried to upgrade Admin Tools by overwriting its files instead of going through the proper Joomla! extension update feature
+# [LOW] The [RESCUEINFO] tag was not being replaced in the blocked request message
+# [LOW] If you don't log a security exception reason but allow emails to be sent for it the email variables are not replaced (gh-147)
+# [LOW] Whitelisted IPs can now add and edit users with manager or above permissions
+
 Admin Tools 4.3.1
 ================================================================================
 + Added warning if HHVM is used instead of PHP
@@ -6,8 +28,8 @@ Admin Tools 4.3.1
 + Support for Joomla's task=viewName.taskName notation in the WAF Exceptions feature (gh-137)
 + Clicking on "Reload update information" will fix Joomla! erroneously reporting an update is available when you have the latest version installed
 + You can now define the timezone used when sending emails with security advice (gh-139)
-+ WAF Blacklist rules can now apply in just the frontend of your site (default), just the backend or both (gh-138).
 + Added Console Warning feature (inform the user to prevent Self XSS) (gh-136)
++ WAF Blacklist rules can now apply in just the frontend of your site (default), just the backend or both.
 - Removed unused Options
 ~ Updates now use HTTPS URLs for both the XML update stream and the package download itself
 # [MEDIUM] Rescue URL feature was not working

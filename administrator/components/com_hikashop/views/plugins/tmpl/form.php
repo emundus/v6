@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -337,10 +337,24 @@ function hika_payment_algorithm(el) {
 			'zone_id',
 			'payment_shipping_methods_id',
 			'payment_currency',
+			array('payment_params','payment_min_price'),
+			array('payment_params','payment_max_price'),
+			array('payment_params','payment_min_quantity'),
+			array('payment_params','payment_max_quantity'),
+			array('payment_params','payment_min_weight'),
+			array('payment_params','payment_max_weight'),
+			array('payment_params','payment_min_volume'),
+			array('payment_params','payment_max_volume'),
+			array('payment_params','payment_zip_prefix'),
+			array('payment_params','payment_min_zip'),
+			array('payment_params','payment_max_zip'),
+			array('payment_params','payment_zip_suffix'),
 			'shipping_currency',
 			array('shipping_params','shipping_warehouse_filter'),
 			array('shipping_params','shipping_min_price'),
 			array('shipping_params','shipping_max_price'),
+			array('shipping_params','shipping_min_quantity'),
+			array('shipping_params','shipping_max_quantity'),
 			array('shipping_params','shipping_min_weight'),
 			array('shipping_params','shipping_max_weight'),
 			array('shipping_params','shipping_min_volume'),

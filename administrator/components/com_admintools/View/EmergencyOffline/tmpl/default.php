@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -11,28 +11,37 @@
 defined('_JEXEC') or die;
 
 ?>
-	<form action="index.php" name="adminForm" id="adminForm" method="post">
-		<input type="hidden" name="option" value="com_admintools"/>
-		<input type="hidden" name="view" value="EmergencyOffline"/>
-		<input type="hidden" name="task" value="offline"/>
-		<input type="submit" class="btn btn-large btn-danger" value="<?php echo \JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_SETOFFLINE'); ?>"/>
-		<input type="hidden" name="<?php echo $this->container->platform->getToken(true); ?>" value="1"/>
-	</form>
+<form action="index.php" name="adminForm" id="adminForm" method="post">
+    <input type="hidden" name="option" value="com_admintools"/>
+    <input type="hidden" name="view" value="EmergencyOffline"/>
+    <input type="hidden" name="task" value="offline"/>
+    <p>
+        <input type="submit" class="akeeba-btn--red--big" value="<?php echo \JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_SETOFFLINE'); ?>"/>
+    </p>
+    <input type="hidden" name="<?php echo $this->container->platform->getToken(true); ?>" value="1"/>
+</form>
 
 <?php if ( ! ($this->offline)): ?>
-	<p><?php echo \JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_PREAPPLY'); ?></p>
-	<p><?php echo \JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_PREAPPLYMANUAL'); ?></p>
+    <p class="akeeba-block--info">
+	    <?php echo \JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_PREAPPLY'); ?>
+    </p>
+	<p class="akeeba-block--warning">
+        <?php echo \JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_PREAPPLYMANUAL'); ?>
+    </p>
 	<pre><?php echo $this->htaccess ?></pre>
 <?php endif; ?>
 
 <?php if ($this->offline): ?>
+
 	<form action="index.php" name="adminForm" id="adminForm" method="post">
 		<input type="hidden" name="option" value="com_admintools"/>
 		<input type="hidden" name="view" value="EmergencyOffline"/>
 		<input type="hidden" name="task" value="online"/>
-		<input type="submit" class="btn btn-large btn-success" value="<?php echo \JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_UNAPPLY'); ?>"/>
+        <p>
+            <input type="submit" class="akeeba-btn--green--big" value="<?php echo \JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_UNAPPLY'); ?>"/>
+        </p>
 		<input type="hidden" name="<?php echo $this->container->platform->getToken(true); ?>" value="1"/>
 	</form>
-	<p><?php echo \JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_PREUNAPPLY'); ?></p>
-	<p><?php echo \JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_PREUNAPPLYMANUAL'); ?></p>
+	<p class="akeeba-block--info"><?php echo \JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_PREUNAPPLY'); ?></p>
+	<p class="akeeba-block--warning"><?php echo \JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_PREUNAPPLYMANUAL'); ?></p>
 <?php endif; ?>
