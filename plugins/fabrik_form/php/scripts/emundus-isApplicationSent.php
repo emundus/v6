@@ -64,14 +64,12 @@ $can_read 			 = EmundusHelperAccess::asAccessAction(1,'r',$user->id,$fnum);
 			if(in_array($user->id, $applicants)){
 				//echo $fnum;
 				if (empty($fnum) && !empty($user->fnum)) {
-					
 					$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
 				}
 				
 			}else{
 				if($is_dead_line_passed ){
 					if (empty($fnum) && !empty($user->fnum)) {
-						//$reload++;
 						JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', utf8_encode(JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($user->end_date) ))));
 						$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
 					}
@@ -79,18 +77,15 @@ $can_read 			 = EmundusHelperAccess::asAccessAction(1,'r',$user->id,$fnum);
 					if($is_app_sent){
 						if($can_edit_until_deadline != 0 ){
 							if (empty($fnum) && !empty($user->fnum)) {
-								
 								$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);			
 							}
 						}else{
 							if (empty($fnum) && !empty($user->fnum)) {
-								//$reload++;
 								$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);				
 							}
 						}
 					}else{			
 						if (empty($fnum) && !empty($user->fnum)) {
-							//$reload++;
 							$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum);
 						}					
 					}
@@ -99,19 +94,20 @@ $can_read 			 = EmundusHelperAccess::asAccessAction(1,'r',$user->id,$fnum);
 		
 		
 	}else{
-		if($can_edit == 1){
+		if($can_edit != 0){
 			if ($reload < 3) {
 				$reload++;
 				$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);	
 			}	
 		}else{
-			if($can_read == 1){
+			if($can_read != 0){
 				if ($reload < 3) {
 					$reload++;
 					$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);
 				}
 			}else{
 				JError::raiseNotice('ACCESS_DENIED',JText::_('ACCESS_DENIED'));
+				$mainframe->redirect("index.php");
 			}
 		}
 	}
