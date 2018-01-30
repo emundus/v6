@@ -22,6 +22,13 @@ class EmundusModelCalendar extends JModelLegacy {
     // Uses Google API credentials to initialize a google service object.
     public function google_authenticate($clientID, $clientSecret, $refreshToken) {
 
+
+        if (!isset($refreshToken) && empty($refreshToken)) {
+            $this->authenticateClient();
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $refreshToken = $eMConfig->get('refreshToken');
+        }
+
         // Get the API client and construct the service object.
         $client = $this->getClient($clientID, $clientSecret);
         $client->refreshToken($refreshToken);
@@ -323,7 +330,6 @@ class EmundusModelCalendar extends JModelLegacy {
 
         } catch (Exception $e) {
             JLog::add("SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
-            die(json_encode(['status' => false]));
         }
 
         try {
@@ -333,7 +339,6 @@ class EmundusModelCalendar extends JModelLegacy {
 
         } catch (Exception $e) {
             JLog::add("SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
-            die(json_encode(['status' => false]));
         }
 
         $params = json_decode($params);
@@ -428,73 +433,75 @@ class EmundusModelCalendar extends JModelLegacy {
         else
             $email = $m_emails->getEmail('booking_deleted_recipient');
 
-        foreach ($recipients as $recipient) {
+        if (isset($recipients) && is_array($recipients)) {
+            foreach ($recipients as $recipient) {
 
-            $post = array(
-                'FNUM'          => $user->fnum,
-                'EVENT_DATE'    => $event_date,
-                'EVENT_TIME'    => $event_time,
-                'USER_NAME'     => $user->name,
-                'RECIPIENT_NAME'=> $recipient->name,
-                'PROGRAM'       => $params->program
-            );
-
-            // An array containing the tag names is created.
-            $tags = $m_emails->setTags($recipient->id, $post);
-
-            // Tags are replaced with their corresponding values using the PHP preg_replace function.
-            $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
-            $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
-            $body = $m_emails->setTagsFabrik($body, array($user->fnum));
-
-            // TODO: Try to get these tags out of this code, either put them in the DB or make a function that builds the emails with the template?
-            $body = preg_replace(array("/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"), array($subject, $body), $email->Template);
-
-            $email_from_sys = $config->get('mailfrom');
-            $email_from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
-
-            if ($email->name === null)
-                $mail_from_name = $config->get('fromname');
-            else
-                $mail_from_name = $email->name;
-
-            // If the email sender has the same domain as the system sender address.
-            if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
-                $mail_from_address = $email_from;
-            else
-                $mail_from_address = $email_from_sys;
-
-            // Set sender
-            $sender = [
-                $mail_from_address,
-                $mail_from_name
-            ];
-
-            // Configure email sender
-            $mailer->ClearAllRecipients();
-            $mailer->setSender($sender);
-            $mailer->addReplyTo($email_from, $mail_from_name);
-            $mailer->addRecipient($recipient->email);
-            $mailer->setSubject($subject);
-            $mailer->isHTML(true);
-            $mailer->Encoding = 'base64';
-            $mailer->setBody($body);
-
-            // Send and log the email.
-            $send = $mailer->Send();
-            if ( $send !== true ) {
-                echo 'Error sending email: ' . $send->__toString();
-                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-            } else {
-                $message = array(
-                    'user_id_from' => $from_id,
-                    'user_id_to' => $recipient->id,
-                    'subject' => $subject,
-                    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$recipient->email.'</i><br>'.$body
+                $post = array(
+                    'FNUM'          => $user->fnum,
+                    'EVENT_DATE'    => $event_date,
+                    'EVENT_TIME'    => $event_time,
+                    'USER_NAME'     => $user->name,
+                    'RECIPIENT_NAME'=> $recipient->name,
+                    'PROGRAM'       => $params->program
                 );
-                $m_emails->logEmail($message);
-            }
 
+                // An array containing the tag names is created.
+                $tags = $m_emails->setTags($recipient->id, $post);
+
+                // Tags are replaced with their corresponding values using the PHP preg_replace function.
+                $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
+                $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+                $body = $m_emails->setTagsFabrik($body, array($user->fnum));
+
+                // TODO: Try to get these tags out of this code, either put them in the DB or make a function that builds the emails with the template?
+                $body = preg_replace(array("/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"), array($subject, $body), $email->Template);
+
+                $email_from_sys = $config->get('mailfrom');
+                $email_from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
+
+                if ($email->name === null)
+                    $mail_from_name = $config->get('fromname');
+                else
+                    $mail_from_name = $email->name;
+
+                    // If the email sender has the same domain as the system sender address.
+                if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+                    $mail_from_address = $email_from;
+                else
+                    $mail_from_address = $email_from_sys;
+
+                // Set sender
+                $sender = [
+                    $mail_from_address,
+                    $mail_from_name
+                ];
+
+                // Configure email sender
+                $mailer->ClearAllRecipients();
+                $mailer->setSender($sender);
+                $mailer->addReplyTo($email_from, $mail_from_name);
+                $mailer->addRecipient($recipient->email);
+                $mailer->setSubject($subject);
+                $mailer->isHTML(true);
+                $mailer->Encoding = 'base64';
+                $mailer->setBody($body);
+
+                // Send and log the email.
+                $send = $mailer->Send();
+                if ( $send !== true ) {
+                    echo 'Error sending email: ' . $send->__toString();
+                    JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                } else {
+                    $message = array(
+                        'user_id_from' => $from_id,
+                        'user_id_to' => $recipient->id,
+                        'subject' => $subject,
+                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$recipient->email.'</i><br>'.$body
+                    );
+                    $m_emails->logEmail($message);
+                }
+
+            }
         }
 
         return true;
@@ -519,7 +526,6 @@ class EmundusModelCalendar extends JModelLegacy {
 
         } catch (Exception $e) {
             JLog::add("SQL Query: ".$query." SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
-            die(json_encode(['status' => false]));
         }
 
         try {
@@ -531,7 +537,6 @@ class EmundusModelCalendar extends JModelLegacy {
 
         } catch (Exception $e) {
             JLog::add("SQL Query: ".$query." SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
-            die(json_encode(['status' => false]));
         }
 
 
@@ -629,7 +634,7 @@ class EmundusModelCalendar extends JModelLegacy {
                     'port',
                     'path'
                 )
-            ).'?option=com_emundus&view=calendar'
+            ).'?option=com_dpcalendar&view=calendar'
         );
 
         // Refresh the token if it's expired.
