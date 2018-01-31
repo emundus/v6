@@ -113,8 +113,8 @@ CREATE TABLE  `#__admintools_log` (
 	`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 	`logdate` datetime NOT NULL,
 	`ip` varchar(40) DEFAULT NULL,
-	`url` varchar(255) DEFAULT NULL,
-	`reason` enum('other', 'admindir', 'awayschedule', 'adminpw','ipwl','ipbl','sqlishield','antispam','tpone','tmpl','template','muashield','csrfshield','badbehaviour','geoblocking','rfishield','dfishield','uploadshield','xssshield','httpbl','loginfailure','securitycode', 'sessionshield', 'external', 'nonewadmins', 'nonewfrontendadmins', 'configmonitor', 'phpshield') DEFAULT 'other',
+	`url` varchar(10240) DEFAULT NULL,
+	`reason` enum('other', 'admindir', 'awayschedule', 'adminpw','ipwl','ipbl','sqlishield','antispam','tpone','tmpl','template','muashield','csrfshield','badbehaviour','geoblocking','rfishield','dfishield','uploadshield','xssshield','httpbl','loginfailure','securitycode', 'sessionshield', 'external', 'nonewadmins', 'nonewfrontendadmins', 'configmonitor', 'phpshield', '404shield') DEFAULT 'other',
 	`extradata` mediumtext,
 	UNIQUE KEY `id` (`id`),
 	KEY `#__admintools_log_logdate_reason` (`logdate`, `reason`)
@@ -343,7 +343,7 @@ ALTER TABLE `#__admintools_log` CHANGE `reason` `reason` ENUM(
 			'tpone','tmpl','template','muashield','csrfshield','badbehaviour',
 			'geoblocking','rfishield','dfishield','uploadshield','xssshield',
 			'httpbl', 'loginfailure', 'securitycode', 'external', 'awayschedule', 'admindir', 'sessionshield',
-			'nonewadmins', 'nonewfrontendadmins', 'configmonitor', 'phpshield');
+			'nonewadmins', 'nonewfrontendadmins', 'configmonitor', 'phpshield', '404shield');
 			]]></query>
 		</action>
 
@@ -599,6 +599,13 @@ VALUES('rescueurl', '*', 'Rescue URL requested on [SITENAME] for [USER]', '<div 
 </div>
 </div>', 1, 1, 1, 'minute', '2017-06-20 09:50:00', 800, '2017-06-20 09:50:00', 800);
 
+			]]></query>
+		</action>
+
+		<action table="#__admintools_log" canfail="1">
+			<condition type="true"/>
+			<query><![CDATA[
+ALTER TABLE `#__admintools_log` CHANGE `url` `url` varchar(10240) DEFAULT NULL;
 			]]></query>
 		</action>
 

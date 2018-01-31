@@ -1,13 +1,35 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
+$app = JFactory::getApplication();
+if(!$app->isAdmin()) {
+	class hikashopToolbarHelper {
+		public $aliases;
+
+		public function __construct() {
+			$this->aliases = array();
+		}
+
+		public function process($toolbar, $title = '') {
+			$ret = '';
+			if(empty($toolbar))
+				return $ret;
+
+			$js = null;
+			$params = new HikaParameter();
+			$params->set('toolbar', $toolbar);
+			$params->set('title', $title);
+			echo hikashop::getLayout('toolbar', 'default', $params, $js);
+		}
+	}
+} else {
 class hikashopToolbarHelper {
 	var $aliases;
 
@@ -15,7 +37,7 @@ class hikashopToolbarHelper {
 		$this->aliases = array();
 	}
 
-	public function process($toolbar) {
+	public function process($toolbar, $title = '') {
 		$config =& hikashop_config();
 		$bar = JToolBar::getInstance('toolbar');
 
@@ -195,4 +217,5 @@ class hikashopToolbarHelper {
 	public function customTool(&$bar, $toolname, $tool) {
 		return false;
 	}
+}
 }

@@ -6,13 +6,13 @@
  * @link       http://www.emundus.fr
  * @license    GNU/GPL
 */
- 
+
 // no direct access
- 
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
- 
+
 jimport( 'joomla.application.component.view');
- 
+
 /**
  * User view
  *
@@ -20,7 +20,7 @@ jimport( 'joomla.application.component.view');
  * @subpackage	com_emundus
  * @since 1.6
  */
- 
+
 class EmundusViewUsers extends JViewLegacy
 {
 	var $_user = null;
@@ -43,11 +43,11 @@ class EmundusViewUsers extends JViewLegacy
 	}
 
     private function _loadData() {
-		$userModel = new EmundusModelUsers();
-		$users = $userModel->getUsers();
+		$m_users = new EmundusModelUsers();
+		$users = $m_users->getUsers();
 		$this->assignRef('users', $users);
 
-		$pagination = $userModel->getPagination();
+		$pagination = $m_users->getPagination();
 		$this->assignRef('pagination', $pagination);
 
 		$lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
@@ -62,9 +62,10 @@ class EmundusViewUsers extends JViewLegacy
 		$session 	= JFactory::getSession();
 		$params 	= $session->get('filt_params');
 		$state 		= $params;
-		
+
 		$filts_details	= [
 			'profile_users'		=> 1,
+			'o_profiles'		=> 1,
 			'evaluator_group'	=> 1,
 			'schoolyear'		=> 1,
 			'campaign'			=> 1,
@@ -78,6 +79,7 @@ class EmundusViewUsers extends JViewLegacy
 		];
 		$filts_options 	= [
 			'profile_users'		=> NULL,
+			'o_profiles'		=> NULL,
 			'evaluator_group'	=> NULL,
 			'schoolyear'		=> NULL,
 			'campaign'			=> NULL,
@@ -94,31 +96,33 @@ class EmundusViewUsers extends JViewLegacy
 
 	private function _loadUserForm()
 	{
-		$userModel = new EmundusModelUsers();
+		$m_users = new EmundusModelUsers();
 		$edit = JFactory::getApplication()->input->getInt('edit', null);
 
 		if($edit == 1)
 		{
 			$uid = JFactory::getApplication()->input->getInt('user', null);
-			$user  = $userModel->getUserInfos($uid);
-			$uGroups = $userModel->getUserGroups($uid);
-			$uCamps = $userModel->getUserCampaigns($uid);
-
+			$user  		= $m_users->getUserInfos($uid);
+			$uGroups 	= $m_users->getUserGroups($uid);
+			$uCamps 	= $m_users->getUserCampaigns($uid);
+			$uOprofiles = $m_users->getUserOprofiles($uid);
 			$this->assignRef('user', $user);
 			$this->assignRef('uGroups', $uGroups);
 			$this->assignRef('uCamps', $uCamps);
+			$this->assignRef('uOprofiles', $uOprofiles);
+
 		}
 		$this->assignRef('edit', $edit);
 
-		$profiles = $userModel->getProfiles();
+		$profiles = $m_users->getProfiles();
 		$this->assignRef('profiles', $profiles);
-		$groups = $userModel->getGroups();
+		$groups = $m_users->getGroups();
 		$this->assignRef('groups', $groups);
 
-		$campaigns = $userModel->getAllCampaigns();
+		$campaigns = $m_users->getAllCampaigns();
 		$this->assignRef('campaigns', $campaigns);
 
-		$universities = $userModel->getUniversities();
+		$universities = $m_users->getUniversities();
 		$this->assignRef('universities', $universities);
 	}
 
@@ -127,27 +131,27 @@ class EmundusViewUsers extends JViewLegacy
 		$model = new EmundusModelFiles();
 		$umodel = new EmundusModelUsers();
 		$actions = $model->getActions('1,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23');
-		$prog = $umodel->getProgramme(); 
+		$prog = $umodel->getProgramme();
 		$this->assignRef('actions', $actions);
 		$this->assignRef('progs', $prog);
 	}
 	private function _loadAffectForm()
 	{
-		$userModel = new EmundusModelUsers();
-		$groups = $userModel->getGroups();
+		$m_users = new EmundusModelUsers();
+		$groups = $m_users->getGroups();
 		$this->assignRef('groups', $groups);
 	}
 	private function _loadRightsForm()
 	{
-		$userModel = new EmundusModelUsers();
+		$m_users = new EmundusModelUsers();
 		$uid = JFactory::getApplication()->input->getInt('user', null);
-		$groups = $userModel->getUserGroups($uid);
+		$groups = $m_users->getUserGroups($uid);
 		$g = array();
 		foreach($groups as $key => $label)
 		{
 			$g[$key]['label'] = $label;
-			$g[$key]['progs'] = $userModel->getGroupProgs($key);
-			$g[$key]['acl'] = $userModel->getGroupsAcl($key);
+			$g[$key]['progs'] = $m_users->getGroupProgs($key);
+			$g[$key]['acl'] = $m_users->getGroupsAcl($key);
 
 		}
 
@@ -156,14 +160,14 @@ class EmundusViewUsers extends JViewLegacy
 
 	private function _loadGroupRights()
 	{
-		$userModel = new EmundusModelUsers();
+		$m_users = new EmundusModelUsers();
 		$gid = JFactory::getApplication()->input->getInt('rowid', null);
-		$group = $userModel->getGroupProgs($gid); 
+		$group = $m_users->getGroupProgs($gid);
 		$g[0]['label'] = $group[0]['group_label'];
-		$g[0]['progs'] = $userModel->getGroupProgs($gid);
-		$g[0]['acl'] = $userModel->getGroupsAcl($gid);
+		$g[0]['progs'] = $m_users->getGroupProgs($gid);
+		$g[0]['acl'] = $m_users->getGroupsAcl($gid);
 //var_dump($g[0]['acl']);
-		$users = $userModel->getGroupUsers($gid);
+		$users = $m_users->getGroupUsers($gid);
 
 		$this->assignRef('groups', $g);
 		$this->assignRef('users', $users);
@@ -213,8 +217,8 @@ class EmundusViewUsers extends JViewLegacy
 				break;
 			default :
 				@EmundusHelperFiles::clear();
-			    $userModel = new EmundusModelUsers();
-			    $actions = $userModel->getActions("19,20,21,22,23,24,25,26");
+			    $m_users = new EmundusModelUsers();
+			    $actions = $m_users->getActions("19,20,21,22,23,24,25,26");
 
 			    $acts = array('user' => array(), 'group' => array());
 			    if(!empty($actions))

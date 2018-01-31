@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -516,7 +516,7 @@ foreach($results as $i => $oneResult){
 			if(!empty($field->field_value) && is_string($fields[$namekey]->field_value)) {
 				$fields[$namekey]->field_value = $this->explodeValues($fields[$namekey]->field_value);
 			}
-			if($data == null || empty($data))
+			if(!is_array($data) && ($data == null || empty($data)))
 				$data = new stdClass();
 			if(is_object($data) && empty($data->$id) && !empty($namekey) && empty($data->$namekey)) {
 				if(empty($fields[$namekey]->field_options['pleaseselect']) && $fields[$namekey]->field_type != 'zone') {
@@ -526,10 +526,12 @@ foreach($results as $i => $oneResult){
 				}
 			} else if(is_array($data) && !empty($namekey)) {
 				$v = (empty($fields[$namekey]->field_options['pleaseselect'])) ? $field->field_default : '';
-				foreach($data as &$d) {
-					if(!empty($d->$namekey) || !empty($d->$id))
-						continue;
-					$d->$namekey = $v;
+				if(count($data)) {
+					foreach($data as &$d) {
+						if(!empty($d->$namekey) || !empty($d->$id))
+							continue;
+						$d->$namekey = $v;
+					}
 				}
 			}
 			if(!empty($fields[$namekey]->field_options['zone_type']) && $fields[$namekey]->field_options['zone_type'] == 'country'){
@@ -788,14 +790,19 @@ foreach($results as $i => $oneResult){
 	}
 
 	public function getFilteredInput($type, &$oldData, $report = true, $varname = 'data', $force = false, $area = '') {
-		$allCat = $this->getCategories($type, $oldData);
-		$fields =& $this->getData($area, $type, false, $allCat);
+		$typeName = $type;
+		if(is_array($type)) {
+			$typeName = $type[1];
+		}
+
+		$allCat = $this->getCategories($typeName, $oldData);
+		$fields =& $this->getData($area, $typeName, false, $allCat);
 		$data = $this->getInput($type, $oldData, $report, $varname, $force, $area);
 
 		if(!$data)
 			return $data;
 
-		if($type == 'entry' && $area == 'frontcomp') {
+		if($typeName == 'entry' && $area == 'frontcomp') {
 			$ret = array();
 			foreach($data as $key => $d) {
 				$r = new stdClass();
@@ -875,22 +882,7 @@ foreach($results as $i => $oneResult){
 					continue;
 			}
 
-			$field_type = $field->field_type;
-			$classType = 'hikashopField'.ucfirst($field_type);
-
-			if(substr($field->field_type, 0, 4) == 'plg.') {
-				$field_type = substr($field->field_type, 4);
-				JPluginHelper::importPlugin('hikashop', $field_type);
-
-				$classType = 'hikashopField'.ucfirst($field_type);
-				if(!class_exists($classType))
-					$classType = 'hikashop'.ucfirst($field_type);
-			}
-
-			if(!class_exists($classType))
-				continue;
-
-			$class = new $classType($this);
+			$class = $this->_getFieldTypeClass($field);
 
 			if($type == 'item' && !empty($oldData->product_id) && !empty($field->field_value_all)) {
 				if(empty($fullProduct)) {
@@ -1003,22 +995,8 @@ foreach($results as $i => $oneResult){
 			foreach($oneType as $k => $oneField) {
 				if(!empty($oneField->field_js_added))
 					continue;
-
-				$field_type = $oneField->field_type;
-				$classType = 'hikashopField'.ucfirst($field_type);
-				if(substr($oneField->field_type,0,4) == 'plg.') {
-					$field_type = substr($oneField->field_type,4);
-					JPluginHelper::importPlugin('hikashop', $field_type);
-
-					$classType = 'hikashopField'.ucfirst($field_type);
-					if(!class_exists($classType))
-						$classType = 'hikashop'.ucfirst($field_type);
-				}
-				if(!class_exists($classType)) {
-					continue;
-				}
-				$class = new $classType($this);
-				$class->JSCheck($oneField,$requiredFields[$type],$validMessages[$type],$values[$type]);
+				$class = $this->_getFieldTypeClass($oneField);
+				$class->JSCheck($oneField, $requiredFields[$type], $validMessages[$type], $values[$type]);
 
 				if(!empty($oneField->field_options['regex'])){
 					$this->regexs[$type][$oneField->field_namekey] = str_replace(array("\\","'"),array("\\\\","\'"),$oneField->field_options['regex']);
@@ -1330,10 +1308,15 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 
 		$fieldOptions = hikaInput::get()->get('field_options', array(), 'array');
 		foreach($fieldOptions as $column => $value) {
+			if($value === '')
+				continue;
+
 			if(is_array($value)) {
 				foreach($value as $id => $val) {
 					if($column != 'parent_value')
 						hikashop_secureField($id);
+					if($val === '')
+						continue;
 					$fieldOptions[$column][$id] = $safeHtmlFilter->clean($val, 'string');
 				}
 			} else {
@@ -1447,6 +1430,11 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 
 			if($field->field_namekey > 50) {
 				$this->errors[] = 'Please specify a shorter column name';
+				return false;
+			}
+
+			if(is_numeric($field->field_namekey[0])) {
+				$this->errors[] = 'The first character of the column name needs to be a letter';
 				return false;
 			}
 
@@ -1604,23 +1592,14 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 
 	function display(&$field, $value, $map, $inside = false, $options = '', $test = false, $allFields = null, $allValues = null, $requiredDisplay = true) {
 		$field_type = $field->field_type;
-		$classType = 'hikashopField'.ucfirst($field_type);
-		if(substr($field->field_type,0,4) == 'plg.') {
-			$field_type = substr($field->field_type,4);
-			JPluginHelper::importPlugin('hikashop', $field_type);
-
-			$classType = 'hikashopField'.ucfirst($field_type);
-			if(!class_exists($classType))
-				$classType = 'hikashop'.ucfirst($field_type);
-		}
-		if(!class_exists($classType))
+		$obj = $this->_getFieldTypeClass($field);
+		if(get_class($obj) == 'hikashopFieldItem')
 			return 'Plugin '.$field_type.' missing or deactivated';
 
-		$class = new $classType($this);
 		if(is_string($value))
 			$value = htmlspecialchars($value, ENT_COMPAT,'UTF-8');
 
-		$html = $class->display($field,$value,$map,$inside,$options,$test,$allFields,$allValues);
+		$html = $obj->display($field,$value,$map,$inside,$options,$test,$allFields,$allValues);
 
 		if($requiredDisplay && !empty($field->field_required))
 			$html .=' <span class="hikashop_field_required">*</span>';
@@ -1636,9 +1615,14 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 	function _getFieldTypeClass(&$field) {
 		$field_type = $field->field_type;
 		$classType = 'hikashopField'.ucfirst($field_type);
+		if(substr($field->field_type,0,7) == 'joomla.') {
+			$classType = 'hikashopFieldJoomla';
+		}
 		if(substr($field->field_type,0,4) == 'plg.') {
-			$field_type = substr($field->field_type,4);
-			JPluginHelper::importPlugin('hikashop', $field_type);
+			$field_type = substr($field->field_type, 4);
+			$plg = hikashop_import('hikashop', $field_type);
+			if(method_exists($plg, 'initFieldClass'))
+				$plg->initFieldClass();
 
 			$classType = 'hikashopField'.ucfirst($field_type);
 			if(!class_exists($classType))
@@ -2551,8 +2535,6 @@ class hikashopFieldZone extends hikashopFieldSingledropdown {
 				$value = '';
 			return true;
 		}
-		if($field->field_required && @$field->field_options['zone_type'] == 'state')
-			return true;
 
 		if(!empty($this->report)) {
 			if($this->report === true) {

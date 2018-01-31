@@ -113,6 +113,8 @@ JText::script('SHARE_PROGRESS');
 JText::script('SENT');
 JText::script('FILES_GENERATED');
 JText::script('STATE');
+JText::script('SWITCH_PROFILE');
+JText::script('PROFILE_CHOSEN');
 
 //Export Excel
 JText::script('COM_EMUNDUS_ADD_DATA_TO_CSV');

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -20,11 +20,36 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 	var $name = 'paypal';
 	var $doc_form = 'paypal';
 
-	function __construct(&$subject, $config) {
-		parent::__construct($subject, $config);
-	}
+	var $pluginConfig = array(
+		'url' => array('URL', 'input'),
+		'email' => array('HIKA_EMAIL', 'input'),
+		'address_type' => array('PAYPAL_ADDRESS_TYPE', 'list', array(
+			'0' => 'NO_ADDRESS',
+			'billing' => 'HIKASHOP_BILLING_ADDRESS',
+			'shipping' => 'HIKASHOP_SHIPPING_ADDRESS',
+		)),
+		'address_override' => array('ADDRESS_OVERRIDE', 'boolean', 0),
+		'no_shipping' => array('NO_SHIPPING', 'radio', array(
+			'2' => 'REQUIRED',
+			'1' => 'HIKASHOP_YES',
+			'0' => 'HIKASHOP_NO',
+		)),
+		'notification' => array('ALLOW_NOTIFICATIONS', 'boolean', 1),
+		'details' => array('SEND_DETAILS_OF_ORDER', 'boolean', 0),
+		'notes' => array('FEDEX_SHOW_NOTES', 'boolean', 0),
+		'validation' => array('ENABLE_VALIDATION', 'boolean', 1),
+		'debug' => array('DEBUG', 'boolean', 0),
+		'cancel_url' => array('CANCEL_URL', 'input'),
+		'return_url' => array('RETURN_URL', 'input'),
+		'cpp_header_image' => array('HEADER_IMAGE', 'input'),
+		'ips' => array('IPS', 'ips', ''),
+		'invalid_status' => array('INVALID_STATUS', 'orderstatus'),
+		'pending_status' => array('PENDING_STATUS', 'orderstatus'),
+		'verified_status' => array('VERIFIED_STATUS', 'orderstatus'),
+		'rm' => array('PAYPAL_RETURN_METHOD', 'boolean', 1),
+	);
 
-	function onBeforeOrderCreate(&$order,&$do){
+	public function onBeforeOrderCreate(&$order,&$do){
 		if(parent::onBeforeOrderCreate($order, $do) === true)
 			return true;
 
@@ -34,7 +59,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		}
 	}
 
-	function onAfterOrderConfirm(&$order, &$methods, $method_id) {
+	public function onAfterOrderConfirm(&$order, &$methods, $method_id) {
 		parent::onAfterOrderConfirm($order, $methods, $method_id);
 
 		if($this->currency->currency_locale['int_frac_digits'] > 2)
@@ -199,7 +224,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		return $this->showPage('end');
 	}
 
-	function onPaymentNotification(&$statuses) {
+	public function onPaymentNotification(&$statuses) {
 
 		$vars = array();
 		$data = array();
@@ -361,19 +386,16 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 			return false;
 		}
 
-		if($completed){
+		if($completed) {
 			$order_status = $this->payment_params->verified_status;
-		}else{
+		} else {
 			$order_status = $this->payment_params->pending_status;
 			$order_text = JText::sprintf('CHECK_DOCUMENTATION',HIKASHOP_HELPURL.'payment-paypal-error#pending')."\r\n\r\n".$order_text;
 		}
 		if($dbOrder->order_status == $order_status)
 			return true;
 
-		$config =& hikashop_config();
-		if($config->get('order_confirmed_status', 'confirmed') == $order_status) {
-			$history->notified = 1;
-		}
+		$history->notified = 1;
 
 		$email = new stdClass();
 		$email->subject = JText::sprintf('PAYMENT_NOTIFICATION_FOR_ORDER','Paypal',$vars['payment_status'],$dbOrder->order_number);
@@ -383,14 +405,14 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		return true;
 	}
 
-	function sendRequest($url, $data){
+	protected function sendRequest($url, $data){
 		$response = $this->_sendRequestSocket($url,$data);
 		if(!$response)
 			$response = $this->_sendRequestCURL($url,$data);
 		return $response;
 	}
 
-	function _sendRequestCURL($url, $data) {
+	protected function _sendRequestCURL($url, $data) {
 		if(!function_exists('curl_version')) {
 			if($this->payment_params->debug)
 				echo 'CURL is not available'. "\r\n\r\n";
@@ -448,7 +470,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		return $response;
 	}
 
-	function _sendRequestSocket($url, $data){
+	protected function _sendRequestSocket($url, $data){
 		if(!function_exists('fsockopen')) {
 			if($this->payment_params->debug)
 				echo 'fsockopen function does not exist'. "\r\n\r\n";
@@ -505,7 +527,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		return $response;
 	}
 
-	function onPaymentConfiguration(&$element) {
+	public function onPaymentConfiguration(&$element) {
 		$subtask = hikaInput::get()->getCmd('subtask', '');
 		if($subtask == 'ips') {
 			$ips = null;
@@ -538,7 +560,28 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		}
 	}
 
-	function onPaymentConfigurationSave(&$element) {
+	public function pluginConfigDisplay($fieldType, $data, $type, $paramsType, $key, $element){
+		if($fieldType == 'ips') {
+			$map = 'data['.$type.']['.$paramsType.']['.$key.']';
+			$value = @$element->$paramsType->$key;
+			return '
+<textarea id="paypal_ips" name="'.$map.'">'.
+	(!empty($value) && is_array($value) ? trim(implode(',', $value)):'').
+'</textarea><br/>
+<a href="#" onclick="return paypal_refreshIps();">'.JText::_('REFRESH_IPS').'</a>
+<script type="text/javascript">
+function paypal_refreshIps() {
+	var w = window, d = document, o = w.Oby;
+	o.xRequest("'.hikashop_completeLink('plugins&plugin_type=payment&task=edit&name='.$this->name.'&subtask=ips',true,true).'", null, function(xhr) {
+		d.getElementById("paypal_ips").value = xhr.responseText;
+	});
+	return false;
+}
+</script>';
+		}
+	}
+
+	public function onPaymentConfigurationSave(&$element) {
 		if(!empty($element->payment_params->ips))
 			$element->payment_params->ips = explode(',', $element->payment_params->ips);
 
@@ -551,7 +594,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		return true;
 	}
 
-	function getPaymentDefaultValues(&$element) {
+	public function getPaymentDefaultValues(&$element) {
 		$element->payment_name = 'PayPal';
 		$element->payment_description='You can pay by credit card or paypal using this payment method';
 		$element->payment_images = 'MasterCard,VISA,Credit_card,PayPal';
@@ -638,11 +681,13 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		return $res;
 	}
 
-	function _getIPList(&$ipList) {
+	protected function _getIPList(&$ipList) {
 		$hosts = array(
 			'www.paypal.com',
 			'notify.paypal.com',
-			'ipn.sandbox.paypal.com'
+			'ipnpb.paypal.com',
+			'ipn.sandbox.paypal.com',
+			'ipnpb.sandbox.paypal.com'
 		);
 
 		$ipList = array();

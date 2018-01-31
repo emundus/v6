@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -290,7 +290,13 @@ abstract class AtsystemUtilRescueurl
 				else
 				{
 					$app           = \JFactory::getApplication();
-					static::$isCLI = $app instanceof \Exception || $app instanceof \JApplicationCli;
+					static::$isCLI =
+						$app instanceof \Exception ||
+						(
+							version_compare(JVERSION, '3.99999.99999', 'gt')
+								? ($app instanceof \Joomla\CMS\Application\CliApplication)
+								: ($app instanceof JApplicationCli)
+						);
 				}
 			}
 			catch (\Exception $e)

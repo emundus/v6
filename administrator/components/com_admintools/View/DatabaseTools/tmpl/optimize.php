@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -15,9 +15,12 @@ defined('_JEXEC') or die;
 	<h1><?php echo \JText::_('COM_ADMINTOOLS_LBL_DATABASETOOLS_OPTIMIZEDB_COMPLETE'); ?></h1>
 <?php endif; ?>
 
-	<div class="progress progress-striped active">
-		<div class="bar" style="width: <?php echo $this->percent ?>%"></div>
-	</div>
+	<div class="akeeba-progress">
+        <div class="akeeba-progress-fill" style="width:<?php echo $this->percent ?>%;"></div>
+        <div class="akeeba-progress-status">
+			<?php echo $this->percent ?>%
+        </div>
+    </div>
 
 <?php if (!empty($this->table)): ?>
 	<form action="index.php" name="adminForm" id="adminForm">
@@ -30,7 +33,7 @@ defined('_JEXEC') or die;
 <?php endif; ?>
 
 <?php if ($this->percent == 100): ?>
-	<div class="alert alert-info" id="admintools-databasetools-autoclose">
+	<div class="akeeba-block--info" id="admintools-databasetools-autoclose">
 		<p><?php echo \JText::_('COM_ADMINTOOLS_LBL_COMMON_AUTOCLOSEIN3S'); ?></p>
 	</div>
 <?php endif; ?>

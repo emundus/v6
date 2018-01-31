@@ -1,10 +1,9 @@
 <?php
 /**
- *  @package AdminTools
- *  @copyright Copyright (c)2010-2013 Nicholas K. Dionysopoulos
- *  @license GNU General Public License version 3, or later
- *  @version $Id$
- *  @ modified by Jose A. Luque for Securitycheck Pro Control Center extension
+* Modelo Onlinechecks para el Componente Securitycheckpro
+* @ author Jose A. Luque
+* @ Copyright (c) 2011 - Jose A. Luque
+* @license GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 // Chequeamos si el archivo está incluído en Joomla!
@@ -48,19 +47,24 @@ return $this->_pagination;
 /* Ver un fichero de log */
 public function view_log()
 {
+
 	// Creamos el objeto JInput para obtener las variables del formulario
 	$jinput = JFactory::getApplication()->input;
 	
 	// Obtenemos las rutas de los ficheros a analizar
 	$filename = $jinput->get('onlinechecks_logs_table',null,'array');
+		
+	$mainframe = JFactory::getApplication();
 	
-	if ( !empty($filenames) || (count($filenames) > 1) ) {	
+	if ( !empty($filename) && (count($filename) == 1) ) {	
 		// Establecemos la ruta donde están almacenados los escaneos
 		$folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR;
-		$file_content = JFile::read($folder_path.$filename);
+		$file_content = JFile::read($folder_path.$filename[0]);
+		$contenido = $mainframe->setUserState('contenido', $file_content);
 		
 	}else {
-		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_SELECT_ONLY_A_FILE'),'error');	
+		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_SELECT_ONLY_A_FILE'),'error');
+		$contenido = $mainframe->setUserState('contenido', "vacio");
 	}
 
 }
@@ -184,7 +188,7 @@ function download_log_file(){
 	// Obtenemos las rutas de los ficheros a analizar
 	$filename = $jinput->get('onlinechecks_logs_table',null,'array');
 	
-	if ( !empty($filename) || (count($filename) > 1) ) {		
+	if ( !empty($filename) && (count($filename) == 1) ) {		
 		// Establecemos la ruta donde se almacenarán los escaneos
 		$folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR;
 

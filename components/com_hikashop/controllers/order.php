@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -57,25 +57,31 @@ class orderController extends hikashopController {
 
 	protected function _check($message = true) {
 		$order_id = hikashop_getCID('order_id');
-		if(empty($order_id))
-			return $this->listing();
+		if(empty($order_id)) {
+			$this->listing();
+			return false;
+		}
 
 		$orderClass = hikashop_get('class.order');
 		$order = $orderClass->get($order_id);
-		if(empty($order))
-			return $this->listing();
+		if(empty($order)) {
+			$this->listing();
+			return false;
+		}
 
 		$userClass = hikashop_get('class.user');
 		$user = $userClass->get($order->order_user_id);
-		if(empty($user))
-			return $this->listing();
+		if(empty($user)) {
+			$this->listing();
+			return false;
+		}
 
-		if(empty($user->user_cms_id) || (int)$user->user_cms_id == 0){
+		if(empty($user->user_cms_id) || (int)$user->user_cms_id == 0) {
 			$token = hikaInput::get()->getVar('order_token');
-			if(empty($order->order_token) || $token != $order->order_token){
+			if(empty($order->order_token) || $token != $order->order_token) {
 				return false;
 			}
-		}elseif(!$this->isLogged($message)){
+		} elseif(!$this->isLogged($message)) {
 			return false;
 		}
 
@@ -229,7 +235,9 @@ class orderController extends hikashopController {
 		$products = $cartClass->cartProductsToArray( $order->products );
 
 		$ret = $cartClass->addProduct(0, $products);
+
 		if($ret === false) {
+			$cartClass->enqueueCartMessages(0);
 			parent::listing();
 			return false;
 		}

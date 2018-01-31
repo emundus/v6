@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -17,7 +17,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 	var $fedex_methods = array(
 		array('key'=>1,'code' => 'FEDEX_GROUND', 'name' => 'FedEx Ground', 'countries' => 'USA, PUERTO RICO', 'zones' => array('country_United_States_of_America_223','country_Puerto_Rico_172') , 'destinations' => array('country_United_States_of_America_223','country_Puerto_Rico_172')),
 		array('key'=>2,'code' => 'FEDEX_2_DAY', 'name' => 'FedEx 2 Day', 'countries' => 'USA, PUERTO RICO', 'zones' => array('country_United_States_of_America_223','country_Puerto_Rico_172'), 'destinations' => array('country_United_States_of_America_223','country_Puerto_Rico_172')),
-		array('key'=>3,'code' => 'FEDEX_EXPRESS_SAVER', 'name' => 'FedEx Express Saver Time Pickup', 'countries' => 'USA, PUERTO RICO', 'zones' => array('country_United_States_of_America_223','country_Puerto_Rico_172'), 'destinations' => array('country_United_States_of_America_223','country_Puerto_Rico_172')),
+		array('key'=>3,'code' => 'FEDEX_EXPRESS_SAVER', 'name' => 'FedEx Express Saver', 'countries' => 'USA, PUERTO RICO', 'zones' => array('country_United_States_of_America_223','country_Puerto_Rico_172'), 'destinations' => array('country_United_States_of_America_223','country_Puerto_Rico_172')),
 		array('key'=>4,'code' => 'FIRST_OVERNIGHT', 'name' => 'FedEx First Overnight', 'countries' => 'USA, PUERTO RICO', 'zones' => array('country_United_States_of_America_223','country_Puerto_Rico_172'), 'destinations' => array('country_United_States_of_America_223','country_Puerto_Rico_172')),
 		array('key'=>5,'code' => 'GROUND_HOME_DELIVERY', 'name' => 'FedEx Ground (Home Delivery)', 'countries' => 'USA, PUERTO RICO', 'zones' => array('country_United_States_of_America_223','country_Puerto_Rico_172'), 'destinations' => array('country_United_States_of_America_223','country_Puerto_Rico_172')),
 		array('key'=>6,'code' => 'PRIORITY_OVERNIGHT', 'name' => 'FedEx Priority Overnight', 'countries' => 'USA, PUERTO RICO', 'zones' => array('country_United_States_of_America_223','country_Puerto_Rico_172'), 'destinations' => array('country_United_States_of_America_223','country_Puerto_Rico_172')),
@@ -887,29 +887,29 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 			} else {
 				$uom = $pkg["PackageWeight"]["UnitOfMeasurement"]['Code'];
 			}
-			$dimensions = array("Dimensions"=>array(
-					'Length' => 0,
-					'Width' => 0,
-					'Height' => 0,
-					'Units' => 'IN')
-				);
-			if(isset($pkg['Dimensions']) && is_array($pkg['Dimensions'])){
-				$dimensions = array("Dimensions"=>array(
+			$dimensions = array(
+				'Length' => 0,
+				'Width' => 0,
+				'Height' => 0,
+				'Units' => 'IN'
+			);
+			if(isset($pkg['Dimensions']) && is_array($pkg['Dimensions'])) {
+				$dimensions = array(
 					'Length' => $pkg['Dimensions']['Length'],
 					'Width' => $pkg['Dimensions']['Width'],
 					'Height' => $pkg['Dimensions']['Height'],
-					'Units' => $pkg['Dimensions']['UnitOfMeasurement']['Code'])
+					'Units' => $pkg['Dimensions']['UnitOfMeasurement']['Code']
 				);
 			}
 
 			$packageLineItem[$x] = array(
-				'SequenceNumber'=>$x+1,
-				'GroupPackageCount'=>1,
+				'SequenceNumber' => $x + 1,
+				'GroupPackageCount' => 1,
 				'Weight' => array(
 					'Value' => $pkg['PackageWeight']['Weight'],
 					'Units' => $uom
 				),
-				$dimensions
+				'Dimensions' => $dimensions
 			);
 			$x++;
 		}

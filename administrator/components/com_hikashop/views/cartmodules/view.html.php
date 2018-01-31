@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -67,5 +67,34 @@ class CartmodulesViewCartmodules extends hikashopView{
 		}
 		$config = hikashop_config();
 		$this->default_params = $config->get('default_params');
+
+		if ($this->element['small_cart'] != 0) {		
+			$disaply_settings_array = array(
+				'image_in_cart' => $this->element['image_in_cart'],
+				'show_cart_product_name' =>  $this->element['show_cart_product_name'],
+				'show_cart_quantity' => $this->element['show_cart_quantity'],
+				'show_cart_delete' => $this->element['show_cart_delete'],
+				'show_coupon' => $this->element['show_coupon'],
+				'show_shipping' => $this->element['show_shipping'],
+				'show_taxes' => $this->element['show_taxes'],
+			); 
+			$error_message = '';
+			$find= 0;
+			foreach($disaply_settings_array as $k => $v) {
+				if ($v == 1) {
+					$find = 1;
+					break;
+				}
+			}
+			if (($this->element['show_cart_proceed'] == 1) && ($find == 0))
+				$error_message = JText::_('HIKA_MOD_DISPLAY_ERROR_PROCEED');
+			if (($this->element['show_cart_proceed'] == 0) && ($find == 0))
+				$error_message = JText::_('HIKA_MOD_DISPLAY_ERROR');
+
+			if ($error_message != '') {
+				$app = JFactory::getApplication();
+				$app->enqueueMessage($error_message, 'error');
+			}
+		}
 	}
 }

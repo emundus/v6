@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -96,7 +96,11 @@ class ProductController extends hikashopController {
 		$product_id = hikaInput::get()->getInt('cid');
 		$productClass = hikashop_get('class.product');
 		$product = $productClass->get($product_id);
-		echo '<textarea style="width:100%" rows="5"><a class="hikashop_html_add_to_cart_link" href="'. hikashop_contentLink('product&task=updatecart&qty=1&cid='.$product_id, $product, false, false, false, true).'">'.JText::_('ADD_TO_CART').'</a></textarea>';
+		$menusClass = hikashop_get('class.menus');
+		$id = $menusClass->loadAMenuItemId('','');
+		if(!empty($id))
+			$id = '&Itemid='.$id;
+		echo '<textarea style="width:100%" rows="5"><a class="hikashop_html_add_to_cart_link" href="'. hikashop_completeLink('product&task=updatecart&qty=1&cid='.$product_id.$id, false, false, false, true).'">'.JText::_('ADD_TO_CART').'</a></textarea>';
 	}
 
 	function save() {

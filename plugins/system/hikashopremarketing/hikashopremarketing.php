@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -147,20 +147,27 @@ class plgSystemHikashopremarketing extends JPlugin
 			}
 		}
 
+		$id = trim($this->params->get('adwordsid'));
+		$extraJS = '';
+		if($id != (int)$id){
+			$extraJS = 'alert(\'You have configured the remarketing plugin of HikaShop with a wrong Adword ID. It should be a number. Please edit it via the Joomla plugins manager and correct it.\');';
+		}
+
 		$js = '<!-- Google code for remarketingtag -->
 <script type="text/javascript">
 
 var google_tag_params = {'.implode(', ',$params).' };
-var google_conversion_id = '.(int)$this->params->get('adwordsid').';
+var google_conversion_id = '.(int)$id.';
 var google_custom_params = window.google_tag_params;
 var google_remarketing_only = true;
+'.$extraJS.'
 
 </script>
 <script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
 </script>
 <noscript>
 <div style="display:inline;">
-<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/'.$this->params->get('adwordsid').'/?value=0&guid=ON&script=0"/>
+<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/'.(int)$id.'/?value=0&guid=ON&script=0"/>
 </div>
 </noscript>
 ';

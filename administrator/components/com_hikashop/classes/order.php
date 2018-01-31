@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -229,8 +229,13 @@ class hikashopOrderClass extends hikashopClass {
 					$query .= ' AND a.order_invoice_created >= '.mktime(0, 0, 0, $m, $d, $y);
 				}
 				$this->database->setQuery($query);
-				$order->order_invoice_id = $this->database->loadResult();
-				if(empty($order->order_invoice_id)) $order->order_invoice_id = 1;
+				$order->order_invoice_id = (int)$this->database->loadResult();
+
+				$start_order_invoice_id = (int)$config->get('start_order_invoice_id', 1);
+				if($start_order_invoice_id <= 0) $start_order_invoice_id = 1;
+				if(empty($order->order_invoice_id) || $order->order_invoice_id <= 1)
+					$order->order_invoice_id = $start_order_invoice_id;
+
 				$order->order_invoice_number = hikashop_encode($order, 'invoice');
 				$order->order_invoice_created = time();
 			}
@@ -318,8 +323,23 @@ class hikashopOrderClass extends hikashopClass {
 			}
 
 			$cart_order_products = $orderProductClass->save($order->cart->products);
-			if(!empty($cart_order_products) && is_array($cart_order_products))
+			if(!empty($cart_order_products) && is_array($cart_order_products)) {
 				$order->cart_order_products = $cart_order_products;
+
+				if(!empty($order->order_payment_params->recurring) && !empty($order->order_payment_params->recurring['products'])) {
+					$recurring_cart_products = $order->order_payment_params->recurring['products'];
+					$recurring_order_products = array();
+					foreach($recurring_cart_products as $k) {
+						$recurring_order_products[] = $order->cart_order_products[$k];
+					}
+					$order->order_payment_params->recurring['products'] = $recurring_order_products;
+					$query = 'UPDATE '.hikashop_table('order').
+						' SET order_payment_params = '.$this->database->Quote(serialize($order->order_payment_params)).
+						' WHERE order_id = '.(int)$order->order_id;
+					$this->database->setQuery($query);
+					$this->database->query();
+				}
+			}
 
 			if($config->get('update_stock_after_confirm') && !in_array($order->order_status, $stock_statuses)){
 				foreach($order->cart->products as $k => $product){
@@ -352,7 +372,7 @@ class hikashopOrderClass extends hikashopClass {
 				} else {
 					$code = $order->order_discount_code;
 				}
-				$query = 'UPDATE '.hikashop_table('discount').' SET discount_used_times = discount_used_times + 1 WHERE discount_code='.$this->database->Quote($code).' AND discount_type=\'coupon\' LIMIT 1';
+				$query = 'UPDATE '.hikashop_table('discount').' SET discount_used_times = discount_used_times - 1 WHERE discount_code='.$this->database->Quote($code).' AND discount_type=\'coupon\' LIMIT 1';
 				$this->database->setQuery($query);
 				$this->database->query();
 			}
@@ -370,7 +390,6 @@ class hikashopOrderClass extends hikashopClass {
 			if($updateQty !== null) {
 				$this->loadProducts($order);
 				if(!empty($order->products)) {
-					$orderProductClass = hikashop_get('class.order_product');
 					foreach($order->products as $product) {
 						$product->change = $updateQty;
 						$orderProductClass->update($product);
@@ -774,6 +793,16 @@ class hikashopOrderClass extends hikashopClass {
 		if(empty($order->paymentOptions) && !empty($cart->paymentOptions))
 			$order->paymentOptions = array_merge($cart->paymentOptions);
 
+		if(!empty($order->paymentOptions)) {
+			foreach($order->paymentOptions as $k => $v) {
+				if($v === false)
+					continue;
+				if(empty($order->order_payment_params))
+					$order->order_payment_params = new stdClass();
+				$order->order_payment_params->$k = $v;
+			}
+		}
+
 		$cleanCart = $cartClass->getFullCart($cart_id);
 		unset($cleanCart->products);
 
@@ -783,6 +812,18 @@ class hikashopOrderClass extends hikashopClass {
 			return false;
 
 		$order->order_id = (int)$ret;
+
+		if(hikashop_level(2)){
+			if(!empty($cart->cart_fields) && is_string($cart->cart_fields))
+					$cart->cart_fields = json_decode($cart->cart_fields);
+			if(!empty($cart->cart_fields->_entries)) {
+				$entryClass = hikashop_get('class.entry');
+				foreach($cart->cart_fields->_entries as $entryData){
+					$entryData->order_id = $order->order_id;
+					$entryClass->save($entryData);
+				}
+			}
+		}
 
 		$pluginsClass = hikashop_get('class.plugins');
 		$removeCart = false;
@@ -1287,7 +1328,6 @@ class hikashopOrderClass extends hikashopClass {
 			}
 		}
 
-		$this->orderNumber($order);
 		$order->order_subtotal = $order->order_full_price + $order->order_discount_price - $order->order_shipping_price - $order->order_payment_price;
 
 		$this->loadAddress($order->order_shipping_address_id,$order,'shipping','name',$type);
@@ -1319,6 +1359,12 @@ class hikashopOrderClass extends hikashopClass {
 					$order->override_shipping_address = $override;
 				}
 			}
+		}
+
+		if(!empty($order->order_payment_id)) {
+			$query = 'SELECT * FROM ' . hikashop_table('payment') . ' WHERE payment_id = ' . (int)$order->order_payment_id;
+			$this->database->setQuery($query);
+			$order->payment = $this->database->loadObject();
 		}
 
 		$this->loadProducts($order);
@@ -1600,7 +1646,6 @@ class hikashopOrderClass extends hikashopClass {
 				if(!isset($product->order))$product->order=new stdClass();
 				$product->order->order_number = 0;
 			}
-			$this->orderNumber($product->order);
 			$this->loadMailNotif($product);
 		}
 		return $product;
@@ -1669,7 +1714,6 @@ class hikashopOrderClass extends hikashopClass {
 			$userClass = hikashop_get('class.user');
 			$order->customer = $userClass->get($order->order_user_id);
 		}
-		$this->orderNumber($order);
 		global $Itemid;
 		$url = '';
 		if(!empty($Itemid))
@@ -1722,7 +1766,7 @@ class hikashopOrderClass extends hikashopClass {
 		$this->loadBackLocale();
 	}
 
-	public function loadBackLocale(){
+	public function loadBackLocale() {
 		$app = JFactory::getApplication();
 		if(!$app->isAdmin())
 			return;
@@ -1837,9 +1881,11 @@ class hikashopOrderClass extends hikashopClass {
 		$order = $this->loadFullOrder($order_id);
 
 		unset($order->order_id);
+		unset($order->order_created);
 		unset($order->order_number);
 		unset($order->order_invoice_id);
 		unset($order->order_invoice_number);
+		unset($order->order_invoice_created);
 		unset($order->order_subtotal);
 		unset($order->override_shipping_address);
 		unset($order->order_subtotal_no_vat);
@@ -1855,5 +1901,130 @@ class hikashopOrderClass extends hikashopClass {
 		}
 
 		return $this->save($order);
+	}
+	public function getList($filters = array(), $options = array()) {
+		$query = 'SELECT * '.
+			' FROM ' .  hikashop_table('order') .
+			' ORDER BY order_created DESC';
+		$this->db->setQuery($query);
+		$ret = $this->db->loadObjectList();
+		return $ret;
+	}
+
+	public function &getNameboxData($typeConfig, &$fullLoad, $mode, $value, $search, $options) {
+		$ret = array(
+			0 => array(),
+			1 => array()
+		);
+
+		$fullLoad = false;
+		$displayFormat = !empty($options['displayFormat']) ? $options['displayFormat'] : @$typeConfig['displayFormat'];
+
+		$start = (int)@$options['start']; // TODO
+		$limit = (int)@$options['limit'];
+		$page = (int)@$options['page'];
+		if($limit <= 0)
+			$limit = 50;
+
+		$select = array('o.*', 'u.user_email');
+		$table = array(hikashop_table('order').' AS o');
+		$where = array(
+			'order_type' => 'o.order_type = '.$this->db->Quote('sale')
+		);
+
+		if(!empty($search)) {
+			$searchMap = array('o.order_id', 'o.order_number', 'u.user_email');
+			if(!HIKASHOP_J30)
+				$searchVal = '\'%' . $this->db->getEscaped(JString::strtolower($search), true) . '%\'';
+			else
+				$searchVal = '\'%' . $this->db->escape(JString::strtolower($search), true) . '%\'';
+			$where['search'] = '('.implode(' LIKE '.$searchVal.' OR ', $searchMap).' LIKE '.$searchVal.')';
+		}
+
+		$order = ' ORDER BY o.order_created DESC';
+
+		$query = 'SELECT '.implode(', ', $select) . ' FROM ' . implode(' ', $table) . ' LEFT JOIN #__hikashop_user as u ON o.order_user_id = u.user_id WHERE ' . implode(' AND ', $where).$order;
+		$this->db->setQuery($query, $page, $limit);
+
+		$orders = $this->db->loadObjectList('order_id');
+
+		if(count($orders) < $limit)
+			$fullLoad = true;
+
+		$currencyClass = hikashop_get('class.currency');
+		foreach($orders as $order) {
+			$order->order_full_price = $currencyClass->format($order->order_full_price, $order->order_currency_id);
+			$ret[0][$order->order_id] = $order;
+		}
+
+		if(!empty($value)) {
+			if($mode == hikashopNameboxType::NAMEBOX_SINGLE && isset($ret[0][$value])) {
+				$ret[1][$value] = $ret[0][$value];
+			} elseif($mode == hikashopNameboxType::NAMEBOX_MULTIPLE && is_array($value)) {
+				foreach($value as $v) {
+					if(isset($ret[0][$v])) {
+						$ret[1][$v] = $ret[0][$v];
+					}
+				}
+			}
+		}
+		return $ret;
+	}
+
+	public function createRecurringSuborder($order_id) {
+		$order = $this->loadFullOrder($order_id, false, false);
+
+		if(empty($order))
+			return false;
+
+		$config = hikashop_config();
+
+		$order->old = $this->get($order_id);
+		$rem = array(
+			'order_id', 'order_number', 'order_invoice_id', 'order_invoice_number',
+			'order_created', 'order_invoice_created',
+			'order_subtotal', 'order_subtotal_no_vat', 'override_shipping_address',
+			'history', 'shipping_address', 'billing_address'
+		);
+		foreach($rem as $r) {
+			if(!isset($order->old->$r) && isset($order->$r))
+				$order->old->$r = $order->$r;
+			unset($order->$r);
+		}
+
+		$order->order_parent_id = (int)$order_id;
+		$order->order_status = $config->get('order_created_status', 'created');;
+
+		if(!empty($order->order_payment_params->recurring) && !empty($order->order_payment_params->recurring['products'])) {
+			$order_products = $order->order_payment_params->recurring['products'];
+			foreach($order->products as $k => $product) {
+				if(!in_array((int)$product->order_product_id, $order_products)) {
+					unset($order->products[$k]);
+					continue;
+				}
+				$order->products[$k]->order_product_parent_id = (int)$product->order_product_id;
+			}
+			$this->recalculateFullPrice($order, $order->products);
+		}
+
+		JPluginHelper::importPlugin('hikashop');
+		JPluginHelper::importPlugin('hikashoppayment');
+		JPluginHelper::importPlugin('hikashopshipping');
+		$dispatcher = JDispatcher::getInstance();
+
+		$dispatcher->trigger('onBeforeCreateRecurringSuborder', array($order_id, &$order));
+
+		$this->sendEmailAfterOrderCreation = false;
+		foreach($order->products as $k => $product) {
+			$order->products[$k]->cart_product_id = $order->products[$k]->order_product_id;
+			$order->products[$k]->cart_product_option_parent_id = $order->products[$k]->order_product_option_parent_id;
+		}
+		$order->cart =& $order;
+
+		$ret = $this->save($order);
+
+		$dispatcher->trigger('onAfterCreateRecurringSuborder', array($order_id, &$order));
+
+		return $ret;
 	}
 }

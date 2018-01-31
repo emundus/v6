@@ -16,22 +16,39 @@ function booleanlist( $name, $attribs = null, $selected = null, $id=false )
 		JHTML::_('select.option',  '0', JText::_( 'COM_SECURITYCHECKPRO_NO' ) ),
 		JHTML::_('select.option',  '1', JText::_( 'COM_SECURITYCHECKPRO_YES' ) )
 	);
-	return JHTML::_('select.genericlist',  $arr, $name, $attribs, 'value', 'text', (int) $selected, $id );
+	return JHTML::_('select.genericlist',  $arr, $name, 'class="chosen-select-no-single"', 'value', 'text', (int) $selected, $id );
 }
 
-JHTML::_( 'behavior.framework' );
+// Cargamos el comportamiento modal para mostrar las ventanas para exportar
+JHtml::_('behavior.modal');
 
-// Add style declaration
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-JHTML::stylesheet($media_url);
+// Eliminamos la carga de las librerías mootools
+$document = JFactory::getDocument();
+$rootPath = JURI::root(true);
+$arrHead = $document->getHeadData();
+unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
+unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
+$document->setHeadData($arrHead);
 
-$bootstrap_css = "media/com_securitycheckpro/stylesheets/bootstrap.min.css";
-JHTML::stylesheet($bootstrap_css);
-
-JHtml::_('formbehavior.chosen', 'select');
-
-$site_url = JURI::base();
 ?>
+
+  <!-- Bootstrap core JavaScript -->
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
+
+<?php 
+// Cargamos el contenido común
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
+?>
+
+<!-- Bootstrap core CSS-->
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+<!-- Custom fonts for this template-->
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
+ <!-- Custom styles for this template-->
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
+ <!-- Chosen styles -->
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/chosen.css" rel="stylesheet">
 
 <script type="text/javascript" language="javascript">
 
@@ -82,55 +99,75 @@ var Password = {
 </script>
 
 
-<div class="securitycheck-bootstrap">
+<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&view=controlcenter&'. JSession::getFormToken() .'=1');?>" method="post" name="adminForm" id="adminForm">
 
-<?php if ( function_exists('openssl_encrypt') ) { ?>
-
-<form action="index.php" name="adminForm" id="adminForm" method="post" class="form form-horizontal">
-	<input type="hidden" name="option" value="com_securitycheckpro" />
-	<input type="hidden" name="view" value="controlcenter" />
-	<input type="hidden" name="boxchecked" value="1" />
-	<input type="hidden" name="task" id="task" value="save" />
-	<input type="hidden" name="controller" value="controlcenter" />
-	<?php echo JHTML::_( 'form.token' ); ?>
-	
-	<fieldset>
-		<legend><?php echo JText::_('COM_SECURITYCHECKPRO_CONTROLCENTER_TEXT') ?></legend>
+		<?php 
+		// Cargamos la navegación
+		include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/navigation.php';
+		?>
+						
+			<!-- Breadcrumb-->
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item">
+					<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro' );?>"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_DASHBOARD'); ?></a>
+				</li>
+				<li class="breadcrumb-item active"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_CONTROLCENTER_TEXT'); ?></li>
+			</ol>
+			
+			<?php if ( function_exists('openssl_encrypt') ) { ?>
+			
+			<div class="card mb-6">
+				<div class="card-body">
+					<div class="row">
+						<div class="alert alert-info">
+							<?php echo JText::_('COM_SECURITYCHECKPRO_CONTROLCENTER_EXPLAIN'); ?>	
+						</div>
 		
-		<div class="alert alert-info">
-			<?php echo JText::_('COM_SECURITYCHECKPRO_CONTROLCENTER_EXPLAIN'); ?>	
-		</div>
-		
-		<div class="control-group">
-			<label for="control_center_enabled" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_CONTROLCENTER_ENABLED_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_CONTROLCENTER_ENABLED_TEXT'); ?></label>
-			<div class="controls controls-row">
-				<?php echo booleanlist('control_center_enabled', array(), $this->control_center_enabled) ?>				
+						<div class="col-xl-6 mb-6">
+							<div class="card-header text-white bg-primary">
+								<?php echo JText::_('COM_SECURITYCHECKPRO_GLOBAL_PARAMETERS') ?>
+							</div>
+							<div class="card-body">
+								<h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_CONTROLCENTER_ENABLED_TEXT'); ?></h4>										
+								<div class="controls controls-row">
+									<?php echo booleanlist('control_center_enabled', array(), $this->control_center_enabled) ?>				
+								</div>
+								<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_CONTROLCENTER_ENABLED_EXPLAIN') ?></small></p></blockquote>										
+								<h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_SECRET_KEY_TEXT'); ?></h4>										
+								<div class="input-prepend">
+									<input class="input-xlarge" type="text" name="secret_key" id="secret_key" value="<?php echo $this->secret_key ?>" readonly>
+								</div>
+												
+								<div class="input-append">
+									<input type='button' class="btn btn-primary" value='<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_GENERATE_KEY_TEXT') ?>' onclick='document.getElementById("secret_key").value = Password.generate(32)' />
+								</div>
+								<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_SECRET_KEY_EXPLAIN') ?></small></p></blockquote>
+							</div>
+						</div>
+					</div>					
+				</div>
 			</div>
-			<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_CONTROLCENTER_ENABLED_EXPLAIN') ?></small></p></blockquote>
+			<?php } else { ?>
+				<div class="alert alert-error">
+					<?php echo JText::_('COM_SECURITYCHECKPRO_CONTROLCENTER_ENCRYPT_LIBRARY_NOT_PRESENT'); ?>	
+				</div>
+
+			<?php } ?>
 		</div>
-		
-		<div class="control-group">
-			<label for="secret_key" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_SECRET_KEY_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_SECRET_KEY_TEXT'); ?></label>
-				
-				<div class="input-prepend">
-					<input class="input-xlarge" type="text" name="secret_key" id="secret_key" value="<?php echo $this->secret_key ?>" readonly>
-				</div>
-								
-				<div class="input-append">
-					<input type='button' class="btn btn-primary" value='<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_GENERATE_KEY_TEXT') ?>' onclick='document.getElementById("secret_key").value = Password.generate(32)' />
-				</div>
-				<div class="controls controls-row">
-				</div>
-			<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_SECRET_KEY_EXPLAIN') ?></small></p></blockquote>
-		</div>
-	</fieldset>
-</form>
-
-<?php } else { ?>
-	<div class="alert alert-error">
-		<?php echo JText::_('COM_SECURITYCHECKPRO_CONTROLCENTER_ENCRYPT_LIBRARY_NOT_PRESENT'); ?>	
-	</div>
-
-<?php } ?>
-
 </div>
+
+<!-- Bootstrap core JavaScript -->
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>
+<!-- Custom scripts for all pages -->
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sb-admin.js"></script> 
+<!-- Chosen scripts -->
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js"></script>
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/chosen/init.js"></script>
+
+<input type="hidden" name="option" value="com_securitycheckpro" />
+<input type="hidden" name="view" value="controlcenter" />
+<input type="hidden" name="boxchecked" value="1" />
+<input type="hidden" name="task" id="task" value="save" />
+<input type="hidden" name="controller" value="controlcenter" />	
+</form>

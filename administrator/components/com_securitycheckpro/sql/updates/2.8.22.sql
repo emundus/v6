@@ -346,7 +346,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.0.101');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.0.92');
 
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_url_inspector_logs` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -366,3 +366,13 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_url_inspector_logs` (
 `date_added` DATETIME,
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_trackactions` (
+`id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+`message` TEXT NOT NULL DEFAULT '',
+`log_date` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`extension` VARCHAR(50) NOT NULL DEFAULT '',
+`user_id` INT(11) NOT NULL DEFAULT '0',
+`ip_address` VARCHAR(30) NOT NULL DEFAULT '0.0.0.0',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

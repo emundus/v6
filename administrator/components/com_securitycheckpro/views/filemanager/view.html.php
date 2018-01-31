@@ -24,8 +24,6 @@ function display($tpl = null)
 {
 
 JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECURITYCHECKPRO_CPANEL_FILE_MANAGER_CONTROL_PANEL_TEXT'), 'securitycheckpro' );
-JToolBarHelper::custom('redireccion_control_panel','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT_CONTROL_PANEL');
-JToolBarHelper::custom('redireccion_system_info','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT_SYSTEM_INFO');
 
 // Obtenemos los datos del modelo
 $model = $this->getModel("filemanager");
@@ -35,20 +33,68 @@ $incorrect_permissions = $model->loadStack("filemanager_resume","files_with_inco
 
 $task_ended = $model->get_campo_filemanager("estado");
 
-// Si no se está ejecutando ninguna tarea, mostramos la opción 'view files integrity'
-if ( strtoupper($task_ended) != 'IN_PROGRESS' ) {
-	JToolBarHelper::custom( 'view_file_permissions', 'eye', 'eye', 'COM_SECURITYCHECKPRO_VIEW_FILE_PERMISSIONS' );
-}
-
 // Obtenemos si está habilitada la opción para escanear sólo ficheros ejecutables
 $params = JComponentHelper::getParams('com_securitycheckpro');
 $scan_executables_only = $params->get('scan_executables_only',0);
+
+// Información para la barra de navegación
+$logs_pending = $model->LogsPending();
+$trackactions_plugin_exists = $model->PluginStatus(8);
+$this->assignRef('logs_pending', $logs_pending);
+$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
 
 // Ponemos los datos en el template
 $this->assignRef('last_check', $last_check);
 $this->assignRef('files_scanned', $files_scanned);
 $this->assignRef('incorrect_permissions', $incorrect_permissions);
 $this->assignRef('scan_executables_only', $scan_executables_only);
+
+/* Filesstatus */
+
+/* Cargamos el lenguaje del sitio */
+$lang = JFactory::getLanguage();
+$lang->load('com_securitycheckpro',JPATH_ADMINISTRATOR);
+
+// Filtro por tipo de extensión
+$this->state= $this->get('State');
+$search = $this->state->get('filter.filemanager_search');
+$filter_kind = $this->state->get('filter.filemanager_kind');
+$filter_permissions_status = $this->state->get('filter.filemanager_permissions_status');
+
+// Establecemos el valor del filtro 'permissions_status' a cero para que muestre sólo los permisos incorrectos
+if ( $filter_permissions_status == ''){
+	$this->state->set('filter.filemanager_permissions_status',0);
+}
+
+// Establecemos el valor del filtro 'kind' a 'File' para que muestre sólo los ficheros
+if ( $filter_kind == ''){
+	$this->state->set('filter.filemanager_kind',$lang->_('COM_SECURITYCHECKPRO_FILEMANAGER_FILE'));
+}
+
+$items_permissions = $model->loadStack("permissions","file_manager");
+$files_with_incorrect_permissions = $model->loadStack("filemanager_resume","files_with_incorrect_permissions");
+$show_all = $this->state->get('showall',0);
+$database_error = $model->get_campo_filemanager("estado");
+
+// Ponemos los datos en el template
+$this->assignRef('items_permissions', $items_permissions);
+$this->assignRef('files_with_incorrect_permissions', $files_with_incorrect_permissions);
+$this->assignRef('show_all', $show_all);
+$this->assignRef('database_error', $database_error);
+
+if ( !empty($items_permissions) ) {
+	$pagination = $this->get('Pagination');
+	$this->assignRef('pagination', $pagination);	
+}
+
+$mainframe = JFactory::getApplication();
+$repair_launched = $mainframe->getUserState("repair_launched",null);
+$this->assignRef('repair_launched', $repair_launched);
+
+if ( !empty($repair_launched) ) {
+	$repair_log = $model->get_repair_log();
+	$this->assignRef('repair_log', $repair_log);
+}
 
 parent::display($tpl);
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -14,12 +14,12 @@ $returnUrl = base64_encode('index.php?option=com_admintools&view=' . $this->getN
 
 ?>
 <?php if (!$this->pluginExists): ?>
-    <p class="alert alert-error">
+    <p class="akeeba-block--failure small">
         <a class="close" data-dismiss="alert" href="#">×</a>
         <?php echo \JText::_('COM_ADMINTOOLS_ERR_CONFIGUREWAF_NOPLUGINEXISTS'); ?>
     </p>
 <?php elseif (!$this->pluginActive): ?>
-    <p class="alert alert-error">
+    <p class="akeeba-block--failure small">
         <a class="close" data-dismiss="alert" href="#">×</a>
         <?php echo \JText::_('COM_ADMINTOOLS_ERR_CONFIGUREWAF_NOPLUGINACTIVE'); ?>
         <br/>
@@ -28,7 +28,7 @@ $returnUrl = base64_encode('index.php?option=com_admintools&view=' . $this->getN
         </a>
     </p>
 <?php elseif ($this->isMainPhpDisabled && !empty($this->mainPhpRenamedTo)): ?>
-    <p class="alert alert-error">
+    <p class="akeeba-block--failure small">
         <a class="close" data-dismiss="alert" href="#">×</a>
 		<?php echo \JText::sprintf('COM_ADMINTOOLS_ERR_CONFIGUREWAF_MAINPHPRENAMED_KNOWN', $this->mainPhpRenamedTo); ?>
         <br/>
@@ -37,12 +37,12 @@ $returnUrl = base64_encode('index.php?option=com_admintools&view=' . $this->getN
         </a>
     </p>
 <?php elseif ($this->isMainPhpDisabled): ?>
-    <p class="alert alert-error">
+    <p class="akeeba-block--failure small">
         <a class="close" data-dismiss="alert" href="#">×</a>
 		<?php echo \JText::_('COM_ADMINTOOLS_ERR_CONFIGUREWAF_MAINPHPRENAMED_UNKNOWN'); ?>
     </p>
 <?php elseif (!$this->pluginLoaded && !$this->isRescueMode): ?>
-    <p class="alert alert-error">
+    <p class="akeeba-block--failure small">
         <a class="close" data-dismiss="alert" href="#">×</a>
 		<?php echo \JText::_('COM_ADMINTOOLS_ERR_CONFIGUREWAF_PLUGINNOTLOADED'); ?>
     </p>

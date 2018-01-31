@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -246,6 +246,7 @@ class ProductViewProduct extends HikaShopView {
 				$category_selected = '_'.$pageInfo->filter->cid;
 				$this->paramBase.=$category_selected;
 			}
+
 			$pageInfo->filter->price_display_type = $this->params->get('price_display_type');
 			if(hikaInput::get()->getVar('hikashop_front_end_main',0)){
 				$oldValue = $app->getUserState($this->paramBase.'.list_limit');
@@ -255,7 +256,7 @@ class ProductViewProduct extends HikaShopView {
 				if($config->get('redirect_post',0)){
 					if(isset($_REQUEST['limit_'.$this->params->get('main_div_name').$category_selected])){
 						$pageInfo->limit->value = hikaInput::get()->getInt('limit_'.$this->params->get('main_div_name').$category_selected);
-					}elseif(isset($_REQUEST['limit']) && (empty($this->module) || hikaInput::get()->getVar('hikashop_front_end_main',0))){
+					}elseif(isset($_REQUEST['limit']) && (empty($this->module) || (hikaInput::get()->getVar('task', 'listing') == 'listing' && hikaInput::get()->getVar('hikashop_front_end_main',0)))){
 						$pageInfo->limit->value = hikaInput::get()->getInt('limit');
 					}else{
 						$pageInfo->limit->value = $this->params->get('limit');
@@ -305,6 +306,7 @@ class ProductViewProduct extends HikaShopView {
 					$pageInfo->filter->order->value = 'b.product_id';
 				}
 			}
+
 		} else {
 			$doc = JFactory::getDocument();
 			$pageInfo->filter->cid = hikaInput::get()->getInt("cid", $this->params->get('selectparentlisting'));
@@ -557,6 +559,21 @@ class ProductViewProduct extends HikaShopView {
 					} else {
 						$filters[] = 'discount.discount_zone_id = \'\'';
 					}
+				}
+			}else{
+				$discountFilters = array();
+				$discountFilters[] = 'discount.discount_type = ' . $database->Quote('discount');
+				$discountFilters[] = 'discount.discount_published = 1';
+				$discountFilters[] = '(discount.discount_quota = 0 OR discount.discount_quota > discount.discount_used_times)';
+				$discountFilters[] = 'discount.discount_start < '.time().'';
+				$discountFilters[] = '(discount.discount_end = 0 OR discount.discount_end > '.time().')';
+
+				hikashop_addACLFilters($discountFilters, 'discount_access', 'discount', 2, false);
+				$query = 'SELECT discount_id FROM #__hikashop_discount AS discount WHERE '.implode(' AND ',$discountFilters);
+				$database->setQuery($query);
+				$matchingDiscount = $database->loadResult();
+				if(!$matchingDiscount) {
+					$filters[] = 'product_id = 0';
 				}
 			}
 		}
@@ -1838,6 +1855,7 @@ class ProductViewProduct extends HikaShopView {
 		if(!isset($element->main) || is_null($element->main))
 			$element->main = new stdClass();
 
+
 		foreach($element->variants as $k => $variant) {
 			$default = true;
 			foreach($element->characteristics as $characteristic) {
@@ -1923,7 +1941,7 @@ class ProductViewProduct extends HikaShopView {
 				$new = new stdClass;
 				$new->product_published = 0;
 				$new->product_quantity = 0;
-				$productClass->checkVariant($new, $element, $map);
+				$productClass->checkVariant($new, $element, $map, true);
 				$element->variants[$new->map] = $new;
 			}
 		}

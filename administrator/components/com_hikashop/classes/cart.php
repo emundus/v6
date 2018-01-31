@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1445,6 +1445,26 @@ class hikashopCartClass extends hikashopClass {
 		return true;
 	}
 
+	public function enqueueCartMessages($cart_id) {
+		if((int)$cart_id == 0)
+			$cart_id = $this->getCurrentCartId();
+		if($cart_id === false)
+			return false;
+		if(empty(self::$cache['msg'][$cart_id]) && empty(self::$cache['full'][$cart_id]->messages))
+			return false;
+
+		$cart_messages = isset(self::$cache['full'][$cart_id]->messages) ? self::$cache['full'][$cart_id]->messages : self::$cache['msg'][$cart_id];
+
+		$app = JFactory::getApplication();
+		foreach($cart_messages as $msg) {
+			$app->enqueueMessage($msg['msg'], $msg['type']);
+		}
+		unset(self::$cache['msg'][$cart_id]);
+		if(isset(self::$cache['full'][$cart_id]->messages))
+			self::$cache['full'][$cart_id]->messages = array();
+		return true;
+	}
+
 	public function addProduct($cart_id, $products, $options = array()) {
 		if(empty($products))
 			return false;
@@ -1692,7 +1712,7 @@ class hikashopCartClass extends hikashopClass {
 
 		$cart_id = $cart->cart_id;
 		self::$cache['full'][$cart_id]->payment->custom_html = $custom_html;
-		foreach(self::$cache['full'][$cart_id]->usable_methods_payment as &$p) {
+		foreach(self::$cache['full'][$cart_id]->usable_methods->payment as &$p) {
 			if($p->payment_id != $payment_id)
 				continue;
 			$p->custom_html = $custom_html;
@@ -3304,6 +3324,85 @@ class hikashopCartClass extends hikashopClass {
 			}
 		}
 		return $paymentType;
+	}
+
+	function loadNotification($cart_id, $type) {
+		$cart = $this->getFullCart($cart_id);
+		if(empty($cart)) {
+			return false;
+		}
+
+		$mailClass = hikashop_get('class.mail');
+		$config = hikashop_config();
+		$data = new stdClass();
+		$data->cart = $cart;
+		$userClass = hikashop_get('class.user');
+		$data->user = $userClass->get($cart->user_id);
+		$mail = $mailClass->get($type, $data);
+		$subject = strtoupper($type).'_SUBJECT';
+		if(empty($mail->subject) || $mail->subject == $subject)
+			$mail->subject = JText::sprintf($subject, $data->user->name, $data->user->user_email, $data->cart->cart_name);
+		$mail->from_email = $config->get('from_email');
+		$mail->from_name = $config->get('from_name');
+		return $mail;
+	}
+
+	public function &getNameboxData($typeConfig, &$fullLoad, $mode, $value, $search, $options) {
+		$ret = array(
+			0 => array(),
+			1 => array()
+		);
+
+		$fullLoad = false;
+		$displayFormat = !empty($options['displayFormat']) ? $options['displayFormat'] : @$typeConfig['displayFormat'];
+
+		$start = (int)@$options['start']; // TODO
+		$limit = (int)@$options['limit'];
+		$page = (int)@$options['page'];
+		if($limit <= 0)
+			$limit = 50;
+
+		$type = @$options['type'];
+		if(empty($type))
+			$type = 'cart';
+
+		$select = array('c.*', 'u.user_email');
+		$table = array(hikashop_table('cart').' AS c');
+		$where = array(
+			'cart_type' => 'c.cart_type = '.$this->db->Quote($type)
+		);
+
+		if(!empty($search)) {
+			$searchMap = array('c.cart_id', 'c.cart_name', 'u.user_email');
+			if(!HIKASHOP_J30)
+				$searchVal = '\'%' . $this->db->getEscaped(JString::strtolower($search), true) . '%\'';
+			else
+				$searchVal = '\'%' . $this->db->escape(JString::strtolower($search), true) . '%\'';
+			$where['search'] = '('.implode(' LIKE '.$searchVal.' OR ', $searchMap).' LIKE '.$searchVal.')';
+		}
+
+		$order = ' ORDER BY c.cart_modified DESC';
+
+		$query = 'SELECT '.implode(', ', $select) . ' FROM ' . implode(' ', $table) . ' LEFT JOIN #__hikashop_user as u ON c.user_id = u.user_id WHERE ' . implode(' AND ', $where).$order;
+		$this->db->setQuery($query, $page, $limit);
+
+		$ret[0] = $this->db->loadObjectList('cart_id');
+
+		if(count($ret[0]) < $limit)
+			$fullLoad = true;
+
+		if(!empty($value)) {
+			if($mode == hikashopNameboxType::NAMEBOX_SINGLE && isset($ret[0][$value])) {
+				$ret[1][$value] = $ret[0][$value];
+			} elseif($mode == hikashopNameboxType::NAMEBOX_MULTIPLE && is_array($value)) {
+				foreach($value as $v) {
+					if(isset($ret[0][$v])) {
+						$ret[1][$v] = $ret[0][$v];
+					}
+				}
+			}
+		}
+		return $ret;
 	}
 
 	 public function initCart() {

@@ -36,15 +36,7 @@ function display($tpl = null)
 $document = JFactory::getDocument();
 $document->addStyleDeclaration('.icon-48-securitycheckpro {background-image: url(../media/com_securitycheckpro/images/tick_48x48.png);}');
 
-if ( version_compare(JVERSION, '3.0', 'ge') ) {
-	// Botones Joomla 3.x
-	JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECURITYCHECKPRO_DB_OPTIMIZATION'), 'securitycheckpro' );
-	JToolBarHelper::custom('redireccion_control_panel','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT_CONTROL_PANEL');
-} else {
-	// Botones Joomla 2.5
-	JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECURITYCHECKPRO_DB_OPTIMIZATION'), 'securitycheckpro' );
-	JToolBarHelper::custom('redireccion_control_panel','back','back','COM_SECURITYCHECKPRO_REDIRECT_CONTROL_PANEL');
-}
+JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECURITYCHECKPRO_DB_OPTIMIZATION'), 'securitycheckpro' );
 
 // Extraemos el tipo de tablas que serán mostradas
 $params = JComponentHelper::getParams('com_securitycheckpro');
@@ -53,6 +45,11 @@ $show_tables = $params->get('tables_to_check','All');
 // Extraemos la última optimización de la bbdd
 $model = $this->getModel("dbcheck");
 $last_check_database = $model->get_campo_filemanager("last_check_database");
+
+$logs_pending = $model->LogsPending();
+$trackactions_plugin_exists = $model->PluginStatus(8);
+$this->assignRef('logs_pending', $logs_pending);
+$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
 
 $this->supported = $this->get('IsSupported');
 $this->tables 	 = $this->get('Tables');

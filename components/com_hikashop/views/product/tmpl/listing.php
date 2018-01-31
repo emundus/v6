@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -129,7 +129,7 @@ if($this->module) {
 }
 
 $title = (string)$this->params->get($title_key, '');
-if($title_key == 'show_page_heading' && $title === '') {
+if((!$this->module || hikaInput::get()->getVar('hikashop_front_end_main', 0)) && $title_key == 'show_page_heading' && $title === '') {
 	$params = JComponentHelper::getParams('com_menus');
 	$title = $params->get('show_page_heading');
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -214,7 +214,7 @@ class Platform extends BasePlatform
 	public function getTemplateSuffixes()
 	{
 		$jversion = new \JVersion;
-		$versionParts = explode('.', $jversion->RELEASE);
+		$versionParts = explode('.', $jversion->getShortVersion());
 		$majorVersion = array_shift($versionParts);
 		$suffixes = array(
 			'.j' . str_replace('.', '', $jversion->getHelpVersion()),
@@ -826,10 +826,20 @@ class Platform extends BasePlatform
 	{
 		\JLoader::import('joomla.user.authentication');
 		$app = \JFactory::getApplication();
+		$user = $this->getUser();
 		$options = array('remember' => false);
-		$parameters = array('username' => $this->getUser()->username);
+		$parameters = array(
+			'username' => $user->username,
+			'id' => $user->id
+		);
 
-		$ret = $app->triggerEvent('onLogoutUser', array($parameters, $options));
+		// Set clientid in the options array if it hasn't been set already and shared sessions are not enabled.
+		if (!$app->get('shared_session', '0'))
+		{
+			$options['clientid'] = $app->getClientId();
+		}
+
+		$ret = $app->triggerEvent('onUserLogout', array($parameters, $options));
 
 		return !in_array(false, $ret, true);
 	}

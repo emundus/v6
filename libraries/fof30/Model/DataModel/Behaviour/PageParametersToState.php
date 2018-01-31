@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -30,8 +30,10 @@ class PageParametersToState extends Observer
 		}
 
 		// Get the page parameters
+		/** @var \JApplicationSite $app */
+		$app    = \JFactory::getApplication();
 		/** @var \JRegistry|Registry $params */
-		$params = \JFactory::getApplication()->getPageParameters();
+		$params = $app->getParams();
 
 		// Extract the page parameter keys
 		$asArray = $params->toArray();

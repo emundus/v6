@@ -151,7 +151,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_click` (
 CREATE TABLE IF NOT EXISTS `#__hikashop_config` (
 	`config_namekey` varchar(200) NOT NULL,
 	`config_value` text NOT NULL,
-	`config_default` text NOT NULL,
+	`config_default` text NULL,
 	PRIMARY KEY (`config_namekey`)
 ) ENGINE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/;
 

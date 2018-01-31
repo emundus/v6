@@ -35,12 +35,24 @@ $copy_application_form = $eMConfig->get('copy_application_form', 0);
 $user 	= JFactory::getSession()->get('emundusUser');
 $db 	= JFactory::getDBO();
 
-if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){
+include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
+$m_profile = new EmundusModelProfile();
+$applicant_profiles = $m_profile->getApplicantsProfilesArray();
+
+if (!in_array($user->profile, $applicant_profiles)){
 	echo "<hr>";
 	echo '<h1><img src="'.JURI::base(true).'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
 	echo "<hr>";
 	exit();
 }
+
+/*if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){
+	echo "<hr>";
+	echo '<h1><img src="'.JURI::base(true).'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
+	echo "<hr>";
+	exit();
+}*/
+
 
 // duplication is defined
 if ($copy_application_form == 1 && isset($user->fnum)) {
@@ -251,7 +263,6 @@ if (EmundusHelperAccess::asApplicantAccessLevel($user->id)){
 
 			$db->setQuery( $query );
 			$link = $db->loadResult();
-
 		if(empty($link)) {
 			$query = 'SELECT CONCAT(link,"&Itemid=",id) 
 			FROM #__menu 
@@ -278,7 +289,7 @@ if (EmundusHelperAccess::asApplicantAccessLevel($user->id)){
 	$link = JRoute::_('index.php?option=com_fabrik&view=form&formid='.$formid.'&usekey=fnum&rowid='.$fnum);
 	//$link = "index.php?option=com_emundus&view=application&sid=".$sid.'&fnum='.$fnum;
 }
-
+			
 header('Location: '.$link);
 exit();
  ?>

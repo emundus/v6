@@ -24,8 +24,6 @@ function display($tpl = null)
 {
 
 JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | '.JText::_('COM_SECURITYCHECKPRO_VULNERABILITIES'), 'securitycheckpro' );
-JToolBarHelper::custom('redireccion_control_panel','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT_CONTROL_PANEL');
-JToolBarHelper::custom('redireccion_system_info','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT_SYSTEM_INFO');
 JToolBarHelper::custom( 'mostrar', 'database', 'database', 'COM_SECURITYCHECKPRO_LIST' );
 
 // Obtenemos los datos del modelo...
@@ -35,12 +33,14 @@ $update_database_plugin_exists = $model->PluginStatus(4);
 $last_check = $model->get_campo_bbdd('securitycheckpro_update_database','last_check');
 $database_version = $model->get_campo_bbdd('securitycheckpro_update_database','version');
 $database_message = $model->get_campo_bbdd('securitycheckpro_update_database','message');
+$logs_pending = $model->LogsPending();
+$trackactions_plugin_exists = $model->PluginStatus(8);
 
 if ( $update_database_plugin_exists ) {
 	$plugin_id = $model->get_plugin_id(1);
 	$last_update = $model->get_last_update();	
 } else {
-	$last_update = 'Dec 11 2017';
+	$last_update = 'Aug 18 2017';
 }
 
 // Filtro por tipo de extensión
@@ -78,6 +78,8 @@ $this->assignRef('last_update', $last_update);
 if ( $update_database_plugin_exists ) {
 	$this->assignRef('plugin_id', $plugin_id);
 }
+$this->assignRef('logs_pending', $logs_pending);
+$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
 
 parent::display($tpl);
 }

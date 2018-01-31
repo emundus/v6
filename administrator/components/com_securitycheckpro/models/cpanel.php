@@ -16,6 +16,7 @@ jimport('joomla.updater.update' );
 jimport('joomla.installer.helper' );
 jimport('joomla.installer.installer' );
 jimport( 'joomla.application.component.controller' );
+jimport( 'joomla.html.html.behavior' );
 
 // Load library
 require_once(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'loader.php');
@@ -137,18 +138,6 @@ JLoader::import('securitycheckpros', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR .
 $securitycheckpro_model = JModelLegacy::getInstance( 'securitycheckpros', 'SecuritycheckprosModel');
 $securitycheckpro_model->actualizarbbdd( $result );
 $logs_pending = $this->LogsPending();
-}
-
-/* Función que determina el número de logs marcados como "no leido"*/
-function LogsPending() {
-		
-	$db = JFactory::getDBO();
-	$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE marked=0';
-	$db->setQuery( $query );
-	$db->execute();
-	$enabled = $db->loadResult();
-	
-	return $enabled;
 }
 
 /* Función que obtiene el id del plugin de: '1' -> Securitycheck Pro , '2' -> Securitycheck Pro Cron */
@@ -478,20 +467,6 @@ function enable_plugin($plugin){
 	$db->execute();		
 }
 
-/* Borra las tablas #_sessions y #_securitycheckpro_sessions */
-function purge_sessions(){
-	$db = JFactory::getDBO();
-	// Tabla 'sessions'
-	$query = 'TRUNCATE TABLE #__session' ;
-	$db->setQuery( $query );
-	$db->execute();
-	
-	// Tabla 'securitycheckpro_sessions'
-	$query = 'TRUNCATE TABLE #__securitycheckpro_sessions' ;
-	$db->setQuery( $query );
-	$db->execute();
-}
-
 /* Función que establece las actualizaciones automáticas de Geolite2 */
 function enable_automatic_updates() {
 	
@@ -519,5 +494,87 @@ function enable_automatic_updates() {
 	parent::cleanCache('_system', 0);
 	parent::cleanCache('_system', 1);
 }
+
+/* Función que obtiene la versión del componente pasado como argumento */
+function get_version($extension) {
+
+	$version = '0.0.0';
+	
+	$db = JFactory::getDBO();
+	if ( $extension == 'securitycheckpro' ) {
+		$query = 'SELECT manifest_cache FROM #__extensions WHERE name="Securitycheck Pro"';
+	} else if ( $extension == 'databaseupdate' ) {
+		$query = 'SELECT manifest_cache FROM #__extensions WHERE name="System - Securitycheck Pro Update Database" and type="plugin"';
+	} else if ( $extension == 'trackactions' ) {
+		$query = 'SELECT manifest_cache FROM #__extensions WHERE name="Track Actions Package" and type="package"';
+	} 
+	
+	$db->setQuery( $query );
+	$db->execute();
+	$manifest_json = $db->loadResult();
+	
+	if ( !empty($manifest_json) ) {
+		$manifest_decoded = json_decode($manifest_json);
+		$version = $manifest_decoded->version;
+	}
+		
+	return $version;
+}
+
+public static function modal($selector='a.modal', $params = array())
+{
+        static $modals;
+        static $included;
+
+        $document = &JFactory::getDocument();
+
+        // Load the necessary files if they haven't yet been loaded
+        if (!isset($included)) {
+                // Load the javascript and css
+                //JHtml::_('behavior.framework');
+                JHTML::_('script','system/modal.js', false, true);
+                JHTML::_('stylesheet','system/modal.css', array(), true);
+
+                $included = true;
+        }
+
+        if (!isset($modals)) {
+                $modals = array();
+        }
+
+        $sig = md5(serialize(array($selector,$params)));
+        if (isset($modals[$sig]) && ($modals[$sig])) {
+                return;
+        }
+
+        // Setup options object
+        $opt['ajaxOptions']     = (isset($params['ajaxOptions']) && (is_array($params['ajaxOptions']))) ? $params['ajaxOptions'] : null;
+        $opt['size']            = (isset($params['size']) && (is_array($params['size']))) ? $params['size'] : null;
+        $opt['shadow']          = (isset($params['shadow'])) ? $params['shadow'] : null;
+        $opt['onOpen']          = (isset($params['onOpen'])) ? $params['onOpen'] : null;
+        $opt['onClose']         = (isset($params['onClose'])) ? $params['onClose'] : null;
+        $opt['onUpdate']        = (isset($params['onUpdate'])) ? $params['onUpdate'] : null;
+        $opt['onResize']        = (isset($params['onResize'])) ? $params['onResize'] : null;
+        $opt['onMove']          = (isset($params['onMove'])) ? $params['onMove'] : null;
+        $opt['onShow']          = (isset($params['onShow'])) ? $params['onShow'] : null;
+        $opt['onHide']          = (isset($params['onHide'])) ? $params['onHide'] : null;
+
+        $options = JHtmlBehavior::_getJSObject($opt);
+
+        // Attach modal behavior to document
+        $document->addScriptDeclaration("
+        window.addEvent('domready', function() {
+
+                SqueezeBox.initialize(".$options.");
+                SqueezeBox.assign($$('".$selector."'), {
+                        parse: 'rel'
+                });
+        });");
+
+        // Set static array
+        $modals[$sig] = true;
+        return;
+}
+
 
 }

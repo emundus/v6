@@ -42,10 +42,7 @@ if ( ($server == 'apache') || ($server == 'iis') ) {
 	JToolBarHelper::custom('generate_rules','key','key','COM_SECURITYCHECKPRO_GENERATE_RULES');
 }
 
-JToolBarHelper::save();
 JToolBarHelper::apply();
-JToolBarHelper::custom('redireccion_control_panel','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT_CONTROL_PANEL');
-JToolBarHelper::custom('redireccion_system_info','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT_SYSTEM_INFO');
 
 // Obtenemos la configuración actual...
 $config = $model->getConfig();
@@ -56,6 +53,15 @@ $this->assign('protection_config', $config);
 $this->assign('config_applied', $config_applied);
 $this->assign('ExistsHtaccess',	$model->ExistsFile('.htaccess'));
 $this->assignRef('server', $server);
+
+// Extraemos información necesaria 
+require_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/library/model.php';
+$common_model = new SecuritycheckproModel();
+
+$logs_pending = $common_model->LogsPending();
+$trackactions_plugin_exists = $common_model->PluginStatus(8);
+$this->assignRef('logs_pending', $logs_pending);
+$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);	
 
 parent::display($tpl);
 }

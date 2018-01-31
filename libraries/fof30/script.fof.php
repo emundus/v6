@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -36,7 +36,7 @@ class lib_fof30InstallerScript
 	 *
 	 * @var   string
 	 */
-	protected $maximumJoomlaVersion = '3.9.99';
+	protected $maximumJoomlaVersion = '4.0.999';
 
 	/**
 	 * The name of the subdirectory under JPATH_LIBRARIES where this version of FOF is installed.

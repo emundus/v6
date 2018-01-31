@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,43 +12,8 @@ if(empty($this->user_id))
 	return;
 ?>
 <div id="hikashop_address_listing">
-<div class="header hikashop_header_title"><h1><?php echo JText::_('ADDRESSES');?></h1></div>
-
-<div class="toolbar hikashop_header_buttons" id="toolbar" style="float: right;">
-	<table class="hikashop_no_border">
-		<tr>
-			<td>
 <?php
-	if(!empty($this->address_selector)) {
-?>
-	<a href="#newAddress" onclick="return window.localPage.newAddr(this, '<?php echo $this->type; ?>');"><span class="icon-32-new" title="<?php echo JText::_('HIKA_NEW'); ?>"></span><?php echo JText::_('HIKA_NEW'); ?></a>
-<?php
-	} elseif(!empty($this->use_popup)) {
-		echo $this->popup->display(
-			'<span class="icon-32-new" title="'. JText::_('HIKA_NEW').'"></span>'. JText::_('HIKA_NEW'),
-			'HIKA_NEW',
-			hikashop_completeLink('address&task=add',true),
-			'hikashop_new_address_popup',
-			760, 480, '', '', 'link'
-		);
-	} else {
-?>
-	<a href="<?php echo hikashop_completeLink('address&task=add'); ?>"><span class="icon-32-new" title="<?php echo JText::_('HIKA_NEW'); ?>"></span><?php echo JText::_('HIKA_NEW'); ?></a>
-<?php
-	}
-?>
-			</td>
-			<td>
-				<a href="<?php echo hikashop_completeLink('user');?>" >
-					<span class="icon-32-back" title="<?php echo JText::_('HIKA_BACK'); ?>"></span> <?php echo JText::_('HIKA_BACK'); ?>
-				</a>
-			</td>
-		</tr>
-	</table>
-</div>
-<div style="clear:both"></div>
-
-<?php
+echo $this->toolbarHelper->process($this->toolbar, JText::_('ADDRESSES'));
 if(!empty($this->addresses)) {
 	$ctrl = hikaInput::get()->getCmd('ctrl');
 ?>

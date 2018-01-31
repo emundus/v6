@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -333,6 +333,10 @@ class plgHikashoppaymentNets extends hikashopPaymentPlugin
 			$soapSupported = false;
 			if(extension_loaded('soap') || class_exists('SoapClient'))
 				$soapSupported = true;
+			else{
+				$app = JFactory::getApplication();
+				$app->enqueueMessage('The NETS payment plugin requires the SOAP extension to be available on your PHP. Please contact your hosting provider for help on adding that.');
+			}
 		}
 		return $soapSupported;
 	}

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -185,7 +185,7 @@ foreach($this->rows as $row) {
 						</td>
 <?php } ?>
 <?php
-	if(hikashop_level(2) && !empty($productFields)) {
+	if(hikashop_level(1) && !empty($productFields)) {
 		foreach($productFields as $field) {
 			$namekey = $field->field_namekey;
 ?>

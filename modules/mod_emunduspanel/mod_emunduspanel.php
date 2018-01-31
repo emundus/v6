@@ -170,6 +170,39 @@ if (!empty($t__)) {
 
 }
 
+//------switch profile------------------
+
+		
+	/*	
+		$uid = JFactory::getUser()->id;
+		$db = JFactory::getDbo();
+		$query = 'select  profile
+		from #__emundus_users where user_id = '.$uid;
+		$db->setQuery($query);
+		$uData = $db->loadAssoc();
+	
+		$uid = JFactory::getUser()->id;
+		$db = JFactory::getDbo();
+		$query1 = 'select u.username as login, u.email, u.password, eu.firstname, eu.lastname, eu.profile, eu.university_id, up.profile_value as newsletter
+		from #__users as u
+		left join #__emundus_users as eu on eu.user_id = u.id
+		left join #__user_profiles as up on (up.user_id = u.id and up.profile_key like "emundus_profiles.newsletter")
+		where u.id = '.$uid;
+		$db->setQuery($query1);
+		$uData = $db->loadAssoc();
+
+		$query2 = "select esp.id , esp.label, esp.acl_aro_groups, esp.published
+		from #__emundus_setup_profiles as esp
+		left join #__emundus_users_profiles as eup on eup.profile_id = esp.id
+		where eup.user_id = " .$uid;
+		$db->setQuery($query2);
+		$profiles = $db->loadObjectList();
+	 */
+	 
+ 
+//----------------------------------------
+
 if (count(@$user->fnums) > 0 || EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 	require(JModuleHelper::getLayoutPath('mod_emunduspanel'));
 }
+

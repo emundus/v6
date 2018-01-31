@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -470,6 +470,12 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 	if(hikashop_acl('product/edit/quantitylayout')) { ?>
 			<dt class="hikashop_product_quantitylayout"><label><?php echo hikashop_tooltip(JText::_('QUANTITY_LAYOUT_ON_PRODUCT_PAGE'), '', '', JText::_('QUANTITY_LAYOUT'), '', 0); ?></label></dt>
 			<dd class="hikashop_product_quantitylayout"><?php echo $this->quantityDisplayType->display('data[product][product_quantity_layout]' , @$this->product->product_quantity_layout); ?></dd>
+<?php
+	}
+
+	if(hikashop_level(1) && $this->config->get('option_selection_method', 'generic') == 'per_product' && hikashop_acl('product/edit/option_selection_method')) { ?>
+			<dt class="hikashop_product_option_selection_method"><label><?php echo JText::_('OPTIONS_SELECTION_METHOD'); ?></label></dt>
+			<dd class="hikashop_product_option_selection_method"><?php echo $this->quantityDisplayType->display('data[product][product_option_selection_method]' , @$this->product->product_option_selection_method); ?></dd>
 <?php
 	}
 ?>

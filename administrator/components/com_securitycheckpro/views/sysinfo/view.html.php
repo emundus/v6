@@ -22,14 +22,18 @@ class SecuritycheckprosViewsysinfo extends JViewLegacy
 	function display($tpl = null)
 	{
 		JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | '.JText::_('COM_SECURITYCHECKPRO_SYSTEM_INFORMATION'), 'securitycheckpro' );
-		JToolBarHelper::custom('redireccion_control_panel','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT_CONTROL_PANEL');
-				
+						
 		// Obtenemos los datos del modelo
 		$model = $this->getModel("sysinfo");
-		$system_info = $model->getInfo();
+		
+		$system_info = $model->getInfo();		
+		$logs_pending = $model->LogsPending();
+		$trackactions_plugin_exists = $model->PluginStatus(8);
 								
 		// Ponemos los datos y la paginación en el template
 		$this->assignRef('system_info',$system_info);
+		$this->assignRef('logs_pending', $logs_pending);
+		$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
 							
 		parent::display($tpl);
 	}

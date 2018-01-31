@@ -126,6 +126,9 @@ if (count($recipients) > 0) {
         $mail_to[] = $referent->id;
     }
 }
+else {
+    JLog::add("EMPLOIS SU : no user found for access right ! :: ".$query, JLog::ERROR, 'com_emundus');
+}
 
 // Send emails defined in trigger
 $emails = new EmundusModelEmails;

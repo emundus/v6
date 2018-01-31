@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -86,13 +86,16 @@ class plgSystemHikashopsocial extends JPlugin {
 				$styles .= 'width:100%';
 		}
 
-		$html = '<div id="hikashop_social" style="'.$styles.'">' . implode('', $html) . '</div>';
+		$html = implode('', $html);
+
+		if(!empty($html))
+			$html = '<div id="hikashop_social" style="'.$styles.'">' . $html . '</div>';
 
 		$body = str_replace('{hikashop_social}', $html, $body);
 
 		if(!empty($plugin->params['display_fb'])) {
 			$body = str_replace('<html ', '<html xmlns:fb="https://www.facebook.com/2008/fbml" xmlns:og="http://ogp.me/ns# " xmlns:fb="http://ogp.me/ns/fb#" ', $body);
-			if($plugin->params['fb_tag'] == "xfbml") {
+			if($plugin->params['fb_tag'] == "xfbml" && $plugin->params['display_fb'] != 2) {
 				$mainLang = JFactory::getLanguage();
 				$tag = str_replace('-', '_', $mainLang->get('tag'));
 				$fb = '
@@ -268,7 +271,7 @@ function twitterPop(str) {
 
 	function _addFacebookButton(&$plugin) {
 		if(empty($plugin->params['display_fb']))
-			return;
+			return '';
 
 		$element = $this->_getElementInfo();
 		if(empty($element))
@@ -345,32 +348,36 @@ function twitterPop(str) {
 		else
 			$url = hikashop_currentURL('', false);
 
-		$html = '<span class="hikashop_social_fb">';
-		if($plugin->params['position'] == 1)
-			$html = '<span class="hikashop_social_fb_right">';
+		$html = '';
 
-		$url_options = array();
-		if($plugin->params['fb_tag'] == 'iframe') {
+		if($plugin->params['display_fb'] != 2) {
+			$html = '<span class="hikashop_social_fb">';
+			if($plugin->params['position'] == 1)
+				$html = '<span class="hikashop_social_fb_right">';
 
-			foreach($options as $k => $v) {
-				$url_options[] = $k . '=' . urlencode($v);
+			$url_options = array();
+			if($plugin->params['fb_tag'] == 'iframe') {
+
+				foreach($options as $k => $v) {
+					$url_options[] = $k . '=' . urlencode($v);
+				}
+
+				$html .= '<iframe '.
+					'src="//www.facebook.com/plugins/like.php?href='.urlencode($url).'&amp;send=false&amp;'.implode('&amp;', $url_options).'&amp;height=30" '.
+					'scrolling="no" frameborder="0" allowTransparency="true" '.
+					'style="border:none; overflow:hidden;" class="hikashop_social_fb_'.$classname.'"></iframe>';
+			} else {
+				foreach($xfbml_options as $k => $v) {
+					$url_options[] = 'data-' . $k . '="' . urlencode($v) . '"';
+				}
+				if(empty($plugin->params['fb_mode'])){
+					$plugin->params['fb_mode'] = 'fb-like';
+				}
+				$html .= '<div class="'.$plugin->params['fb_mode'].'" data-href="'.$url.'" '.implode(' ', $url_options).'></div>';
 			}
 
-			$html .= '<iframe '.
-				'src="//www.facebook.com/plugins/like.php?href='.urlencode($url).'&amp;send=false&amp;'.implode('&amp;', $url_options).'&amp;height=30" '.
-				'scrolling="no" frameborder="0" allowTransparency="true" '.
-				'style="border:none; overflow:hidden;" class="hikashop_social_fb_'.$classname.'"></iframe>';
-		} else {
-			foreach($xfbml_options as $k => $v) {
-				$url_options[] = 'data-' . $k . '="' . urlencode($v) . '"';
-			}
-			if(empty($plugin->params['fb_mode'])){
-				$plugin->params['fb_mode'] = 'fb-like';
-			}
-			$html .= '<div class="'.$plugin->params['fb_mode'].'" data-href="'.$url.'" '.implode(' ', $url_options).'></div>';
+			$html .= '</span>';
 		}
-
-		$html .= '</span>';
 
 		$this->meta['property="og:title"'] = '<meta property="og:title" content="'.htmlspecialchars($element->name, ENT_COMPAT,'UTF-8').'"/> ';
 

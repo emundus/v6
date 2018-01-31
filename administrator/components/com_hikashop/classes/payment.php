@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -206,13 +206,10 @@ class hikashopPaymentClass extends hikashopClass {
 			$already[$methods[$k]->ordering] = true;
 		}
 
-		$cartClass = hikashop_get('class.cart');
-		$paymentRecurringType = $cartClass->checkSubscription($order);
-
 		$order->paymentOptions = array(
-			'recurring' => ($paymentRecurringType == 'recurring'),
+			'recurring' => false,
 			'term' => false,
-			'recurring' => false
+			'refund' => false
 		);
 		$this->checkPaymentOptions($order);
 
@@ -221,12 +218,7 @@ class hikashopPaymentClass extends hikashopClass {
 
 		if(is_array($usable_methods) && !empty($usable_methods)) {
 			foreach($usable_methods as $k => $usable_method) {
-				if($paymentRecurringType == 'noRecurring' && (!empty($usable_method->features['recurring']) || (isset($usable_method->recurring) && $usable_method->recurring == 1))) {
-					unset($usable_methods[$k]);
-					continue;
-				}
-
-				if($paymentRecurringType == 'recurring' && empty($usable_method->features['recurring']) && (!isset($usable_method->recurring) || $usable_method->recurring != 1)) {
+				if(!empty($order->paymentOptions['recurring']) && empty($usable_method->features['recurring'])) {
 					unset($usable_methods[$k]);
 					continue;
 				}
@@ -295,7 +287,7 @@ class hikashopPaymentClass extends hikashopClass {
 		return;
 	}
 
-	function checkCartMethods(&$cart, $force_selection = false) {
+	public function checkCartMethods(&$cart, $force_selection = false) {
 		$cart_payment_ids = array();
 		$payment_modified = false;
 
@@ -333,17 +325,33 @@ class hikashopPaymentClass extends hikashopClass {
 		return false;
 	}
 
-	function checkPaymentOptions(&$order) {
-		$ret = null;
+	public function checkPaymentOptions(&$order) {
+		if(empty($order->paymentOptions)) {
+			$order->paymentOptions = array(
+				'recurring' => false,
+				'term' => false,
+				'refund' => false
+			);
+		}
 
 		JPluginHelper::importPlugin('hikashop');
+		JPluginHelper::importPlugin('hikashoppayment');
 		$dispatcher = JDispatcher::getInstance();
 		$dispatcher->trigger('onCheckPaymentOptions', array( &$order->paymentOptions, &$order ) );
+
+		if(!empty($order->paymentOptions['recurring'])) {
+			if(empty($order->order_payment_params))
+				$order->order_payment_params = new stdClass();
+
+			$order->order_payment_params->recurring = $order->paymentOptions['recurring'];
+		}
 
 		if(!empty($order->paymentOptions['term'])) {
 			if(empty($order->order_payment_params))
 				$order->order_payment_params = new stdClass();
+
 			$order->order_payment_params->need_authorization = true;
+
 			if(isset($order->order_full_price))
 				$order->order_payment_params->authorization_price = $order->order_full_price;
 			if(isset($order->full_total)) {
@@ -356,6 +364,7 @@ class hikashopPaymentClass extends hikashopClass {
 		if(!empty($order->paymentOptions['refund'])) {
 			if(empty($order->order_payment_params))
 				$order->order_payment_params = new stdClass();
+
 			if(isset($order->order_full_price))
 				$order->order_payment_params->original_price = $order->order_full_price;
 			if(isset($order->full_total)) {
@@ -364,11 +373,9 @@ class hikashopPaymentClass extends hikashopClass {
 					$order->order_payment_params->original_price = $order->full_total->prices[0]->price_value_with_tax;
 			}
 		}
-
-		return $ret;
 	}
 
-	function readCC() {
+	public function readCC() {
 		$app = JFactory::getApplication();
 
 		$payment = $app->getUserState(HIKASHOP_COMPONENT.'.payment_method');
@@ -441,7 +448,7 @@ class hikashopPaymentClass extends hikashopClass {
 		return $ret;
 	}
 
-	function fillListingColumns(&$rows, &$listing_columns, &$view) {
+	public function fillListingColumns(&$rows, &$listing_columns, &$view) {
 		$listing_columns['price'] = array(
 			'name' => 'PRODUCT_PRICE',
 			'col' => 'col_display_price'

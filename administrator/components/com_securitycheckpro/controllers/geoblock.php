@@ -15,12 +15,6 @@ defined('_JEXEC') or die();
 class SecuritycheckProsControllerGeoblock extends SecuritycheckproController
 {
 	
-/* Redirecciona las peticiones al componente */
-function redireccion()
-{
-	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=firewallcpanel&view=firewallcpanel' );
-}
-
 public function save()
 {
 	$model = $this->getModel('geoblock');

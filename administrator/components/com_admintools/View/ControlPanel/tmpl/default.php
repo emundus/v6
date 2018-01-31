@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -10,44 +10,43 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die;
 
-JHtml::_('behavior.modal');
 ?>
 <?php echo $this->loadAnyTemplate('admin:com_admintools/ControlPanel/warnings'); ?>
 
-<div id="restOfCPanel">
-	<div class="row-fluid">
-		<div class="akeeba-cpanel span6">
+<div>
+	<div class="akeeba-container--50-50">
+		<div>
 			<?php if ($this->isRescueMode): ?>
-				<div class="well well-large" id="admintools-rescue">
+				<div class="akeeba-block--failure">
 					<div>
 						<h3><?php echo JText::_('COM_ADMINTOOLS_CONTROLPANEL_RESCUEMODE_HEAD') ?></h3>
 						<p>
 							<?php echo JText::_('COM_ADMINTOOLS_CONTROLPANEL_RESCUEMODE_MESSAGE'); ?>
 						</p>
 						<p>
-							<a class="btn btn-info"
+							<a class="akeeba-btn--primary"
 							   href="https://www.akeebabackup.com/documentation/troubleshooter/atwafissues.html"
 							   target="_blank"
 							>
-								<span class="icon icon-info"></span>
+								<span class="akion-information-circled"></span>
 								<?php echo JText::_('COM_ADMINTOOLS_CONTROLPANEL_RESCUEMODE_BTN_HOWTOUNBLOCK'); ?>
 							</a>
-							<a class="btn btn-danger"
+							<a class="akeeba-btn--red"
 							   href="index.php?option=com_admintools&view=ControlPanel&task=endRescue"
 							>
-								<span class="icon icon-power-cord"></span>
+								<span class="akion-power"></span>
 								<?php echo JText::_('COM_ADMINTOOLS_CONTROLPANEL_RESCUEMODE_BTN_ENDRESCUE'); ?>
 							</a>
 						</p>
 					</div>
 				</div>
-            <?php else: ?>
-                <?php echo $this->loadAnyTemplate('admin:com_admintools/ControlPanel/plugin_warning') ?>
+			<?php else: ?>
+				<?php echo $this->loadAnyTemplate('admin:com_admintools/ControlPanel/plugin_warning') ?>
 				<?php endif; ?>
 
 			<div id="selfBlocked" class="text-center" style="display: none;">
-				<a class="btn btn-large btn-danger" href="<?php echo \JRoute::_('index.php?option=com_admintools&view=ControlPanel&task=unblockme'); ?>">
-					<span class="icon icon-unlock"></span>
+				<a class="akeeba-btn--red--big" href="<?php echo \JRoute::_('index.php?option=com_admintools&view=ControlPanel&task=unblockme'); ?>">
+					<span class="akion-unlocked"></span>
 					<?php echo \JText::_('COM_ADMINTOOLS_CONTROLPANEL_UNBLOCK_ME'); ?>
 				</a>
 			</div>
@@ -64,37 +63,23 @@ JHtml::_('behavior.modal');
 			<?php endif; ?>
 		</div>
 
-		<div id="sidepanes" class="span6">
-			<div class="well">
-				<h3>
-					<?php echo \JText::_('COM_ADMINTOOLS_LBL_CONTROLPANEL_UPDATES'); ?>
-				</h3>
+		<div>
+            <div class="akeeba-panel--default">
+                <header class="akeeba-block-header">
+				    <h3><?php echo \JText::_('COM_ADMINTOOLS_LBL_CONTROLPANEL_UPDATES'); ?></h3>
+                </header>
 
 				<div>
-					<!-- CHANGELOG :: BEGIN -->
 					<p>
 						Admin Tools version <?php echo ADMINTOOLS_VERSION; ?> &bull;
-						<a href="#" id="btnchangelog" class="btn btn-mini">CHANGELOG</a>
-						<a href="index.php?option=com_admintools&view=ControlPanel&task=reloadUpdateInformation" class="btn btn-inverse btn-small">
+						<a href="#" id="btnAdminToolsChangelog" class="akeeba-btn--primary--small">CHANGELOG</a>
+						<a href="index.php?option=com_admintools&view=ControlPanel&task=reloadUpdateInformation" class="akeeba-btn--dark--small">
 							<?php echo \JText::_('COM_ADMINTOOLS_MSG_CONTROLPANEL_RELOADUPDATE'); ?>
 						</a>
 					</p>
 
-					<div class="modal hide fade" id="akeeba-changelog" tabindex="-1" role="dialog" aria-labelledby="changelogDialogLabel" aria-hidden="true">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h3 class="modal-title" id="changelogDialogLabel">
-								<?php echo \JText::_('CHANGELOG'); ?>
-                            </h3>
-                        </div>
-                        <div class="modal-body" id="DialogBody">
-                            <iframe frameborder="0" width="100%" height="400px" src="index.php?option=com_admintools&view=ControlPanel&task=changelog&tmpl=component"></iframe>
-                        </div>
-					</div>
-					<!-- CHANGELOG :: END -->
-
 					<p>Copyright &copy; 2010&ndash;<?php echo date('Y'); ?> Nicholas K. Dionysopoulos / <a
-							href="https://www.akeebabackup.com">Akeeba Ltd</a></p>
+								href="https://www.akeebabackup.com">Akeeba Ltd</a></p>
 					<p>
 						If you use Admin Tools <?php echo ADMINTOOLS_PRO ? 'Professional' : 'Core'; ?>, please post a
 						rating and a review at the <a
@@ -103,33 +88,44 @@ JHtml::_('behavior.modal');
 					</p>
 				</div>
 
-				<?php if (!$this->isPro): ?>
-					<div style="text-align: center;">
-						<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-							<input type="hidden" name="cmd" value="_s-xclick">
-							<input type="hidden" name="hosted_button_id" value="6ZLKK32UVEPWA">
+                <div id="akeeba-changelog" tabindex="-1" role="dialog" aria-hidden="true" style="display:none;">
+                    <div class="akeeba-renderer-fof">
+                        <div class="akeeba-panel--info">
+                            <header class="akeeba-block-header">
+                                <h3>
+						            <?php echo \JText::_('CHANGELOG'); ?>
+                                </h3>
+                            </header>
+                            <div id="DialogBody">
+					            <?php echo $this->formattedChangelog; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-							<p>
-								<input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-butcc-donate.gif" border="0"
-									   name="submit" alt="PayPal - The safer, easier way to pay online." style="width: 73px;">
-								<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
-							</p>
-						</form>
-					</div>
-				<?php endif; ?>
-			</div>
+            <?php if (!$this->isPro): ?>
+                <div style="text-align: center;">
+                    <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+                        <input type="hidden" name="cmd" value="_s-xclick">
+                        <input type="hidden" name="hosted_button_id" value="6ZLKK32UVEPWA">
+
+                        <p>
+                            <input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-butcc-donate.gif" border="0"
+                                   name="submit" alt="PayPal - The safer, easier way to pay online." style="width: 73px;">
+                            <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+                        </p>
+                    </form>
+                </div>
+            <?php endif; ?>
 
 			<?php if ($this->isPro && $this->showstats): ?>
 				<?php echo $this->loadAnyTemplate('admin:com_admintools/ControlPanel/graphs'); ?>
 				<?php echo $this->loadAnyTemplate('admin:com_admintools/ControlPanel/stats'); ?>
 			<?php endif; ?>
 
-			<div id="disclaimer" class="alert alert-info" style="margin-top: 2em;">
-				<a class="close" data-dismiss="alert" href="#">×</a>
-
-				<h3>
-					<?php echo \JText::_('COM_ADMINTOOLS_LBL_CONTROLPANEL_DISCLAIMER'); ?>
-				</h3>
+			<div id="disclaimer" class="akeeba-block--info">
+				<h3><?php echo \JText::_('COM_ADMINTOOLS_LBL_CONTROLPANEL_DISCLAIMER'); ?></h3>
 
 				<p>
 					<?php echo \JText::_('COM_ADMINTOOLS_LBL_CONTROLPANEL_DISTEXT'); ?>
@@ -140,6 +136,3 @@ JHtml::_('behavior.modal');
 </div>
 
 <?php echo !empty($this->statsIframe) ? $this->statsIframe : ''; ?>
-
-
-<div class="clearfix"></div>

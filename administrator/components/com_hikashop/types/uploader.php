@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -281,8 +281,8 @@ class HikashopUploaderType {
 		}
 
 		$js = '';
-		if(!empty($options['uploadUrls'])) {
-			$js .= "\r\n" . 'var hkUploader_'.$id.' = new hkUploaderMgr("'.$id.'", {mode: \'listImg\', url:\''.$options['uploadUrls'][1].'\', formData:'.$options['formData'].', options: {maxPostSize:'.(int)$options['maxPostSize'].', imgClasses:[\''.$options['classes']['firstImg'].'\',\''.$options['classes']['otherImg'].'\']} })';
+		if(!empty($options['uploadUrls']) || !empty($options['buttons'])) {
+			$js .= "\r\n" . 'var hkUploader_'.$id.' = new hkUploaderMgr("'.$id.'", {mode: \'listImg\', url:\''.@$options['uploadUrls'][1].'\', formData:'.$options['formData'].', options: {maxPostSize:'.(int)$options['maxPostSize'].', imgClasses:[\''.$options['classes']['firstImg'].'\',\''.$options['classes']['otherImg'].'\']} })';
 		}
 
 		if(!empty($js)) {

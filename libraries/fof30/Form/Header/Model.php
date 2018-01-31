@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -22,6 +22,8 @@ if (!class_exists('JFormFieldSql'))
 /**
  * Form Field class for FOF
  * Generic list from a model's results
+ *
+ * @deprecated 3.1  Support for XML forms will be removed in FOF 4
  */
 class Model extends Selectable
 {

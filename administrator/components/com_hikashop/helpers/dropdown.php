@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -21,6 +21,8 @@ class hikashopDropdownHelper {
 		$this->init();
 
 		$class = '';
+		if(!empty($options['main_class']))
+			$class .= ' '.$options['main_class'];
 		if(!empty($options['up']))
 			$class .= ' hkdropup';
 
@@ -30,9 +32,10 @@ class hikashopDropdownHelper {
 		if(!empty($options['label-id']))
 			$extra .= ' id="'.$options['label-id'].'"';
 
-		$drop_label = '<span class="hkdropdown-text"'.$extra.'>'.htmlentities($label).'</span>';
+		$caret = ' <span class="caret"></span>';
+		$drop_label = '<span class="hkdropdown-text"'.$extra.'>'.htmlentities($label).'</span>' . $caret;
 		if(!empty($options['hkicon']))
-			$drop_label = '<span class="'.htmlentities($options['hkicon']).'" title="'.htmlentities($label).'"></span> '.htmlentities($label);
+			$drop_label = '<span class="hkdropdown-icon '.htmlentities($options['hkicon']).'" title="'.htmlentities($label).'"></span> <span class="hkdropdown-label">'.htmlentities($label) . $caret . '</span>';
 
 		$extra = '';
 		if(!empty($options['id']))
@@ -47,14 +50,13 @@ class hikashopDropdownHelper {
 				break;
 
 			case 'link':
-				$ret .= '<a href="#" data-toggle="hkdropdown" aria-haspopup="true" aria-expanded="false">'.$drop_label.' <span class="caret"></span>'.'</a>';
+				$ret .= '<a href="#" data-toggle="hkdropdown" aria-haspopup="true" aria-expanded="false">'.$drop_label.'</a>';
 				break;
 
 			case 'button':
 			default:
 				$ret .= '<button type="button" data-toggle="hkdropdown" class="'.$class.'"'.$extra.' aria-haspopup="true" aria-expanded="false">'.
 					$drop_label.
-					' <span class="caret"></span>'.
 					'</button>';
 				break;
 		}

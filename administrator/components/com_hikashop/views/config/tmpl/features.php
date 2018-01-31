@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -437,6 +437,17 @@ function keywords_num_visible(value) {
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('show_filters');?>><?php echo JText::_('DISPLAY_FILTERS_ON_PRODUCT_LISTING');?></td>
 		<td><?php echo JHTML::_('hikaselect.booleanlist', 'config[show_filters]', '', $this->config->get('show_filters', 1)); ?></td>
+	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('collapsable_filter');?>><?php echo JText::_('COLLAPSABLE_FILTERS'); ?></td>
+		<td><?php
+	$arr = array(
+		JHTML::_('select.option', '', JText::_('HIKASHOP_NO') ),
+		JHTML::_('select.option', '1', JText::_('MOBILE_DEVICES') ),
+		JHTML::_('select.option', 'always', JText::_('HIKA_ALWAYS') ),
+	);
+	echo JHTML::_('hikaselect.genericlist', $arr, "config[filter_collapsable]", 'class="inputbox" size="1"', 'value', 'text', $this->config->get('filter_collapsable', 1));
+		?></td>
 	</tr>
 <?php } else { ?>
 	<tr>

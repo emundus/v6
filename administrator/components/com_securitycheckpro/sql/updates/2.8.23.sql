@@ -355,7 +355,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.0.106');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.0.101');
 
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_url_inspector_logs` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,

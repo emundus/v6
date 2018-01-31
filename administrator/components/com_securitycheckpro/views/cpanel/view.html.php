@@ -28,9 +28,9 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
 		
 		//  Parámetros del plugin
 		$items= $model->getConfig();
-						
+								
 		// Extraemos los elementos de las distintas listas...
-		$blacklist_elements= null;
+		$blacklist_elements= array();
 		$pagination_blacklist = null;
 		if ( (!is_null($items['blacklist'])) && ($items['blacklist'] != '') ) {
 			$items['blacklist'] = str_replace(' ','',$items['blacklist']);
@@ -39,7 +39,7 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
 
 		$dynamic_blacklist_elements= $model->get_dynamic_blacklist_ips();
 
-		$whitelist_elements= null;
+		$whitelist_elements= array();
 		$pagination_whitelist = null;
 
 		if ( (!is_null($items['whitelist'])) && ($items['whitelist'] != '') ) {	
@@ -73,6 +73,16 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
 		$total_blocked_access = $model->LogsByType('total_blocked_access');
 		$total_user_session_protection = $model->LogsByType('total_user_session_protection');
 		$easy_config_applied = $model->Get_Easy_Config();
+		// Versiones de los componentes instalados
+		$version_scp = $model->get_version('securitycheckpro');
+		if ($update_database_plugin_exists) {
+			$version_update_database = $model->get_version('databaseupdate');
+			$this->assignRef('version_update_database', $version_update_database);
+		}
+		if ($trackactions_plugin_exists) {
+			$version_trackactions = $model->get_version('trackactions');
+			$this->assignRef('version_trackactions', $version_trackactions);
+		}
 				
 		// Obtenemos el status de la seguridad
 		require_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/models/sysinfo.php';
@@ -119,6 +129,7 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
 		$this->assignRef('whitelist_elements',$whitelist_elements);
 		$this->assignRef('geoip_database_update',$geoip_database_update);
 		$this->assignRef('geolite_automatic_updates',$geolite_automatic_updates);
+		$this->assignRef('version_scp', $version_scp);
 				
 		parent::display();
 	}

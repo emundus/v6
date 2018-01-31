@@ -11,145 +11,46 @@
 defined('_JEXEC') or die('Restricted access');
 JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
 
+// Cargamos el comportamiento modal para mostrar las ventanas para exportar
+JHtml::_('behavior.modal');
 
-// Add style declaration
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-JHTML::stylesheet($media_url);
-
-$bootstrap_css = "media/com_securitycheckpro/stylesheets/bootstrap.min.css";
-JHTML::stylesheet($bootstrap_css);
+// Eliminamos la carga de las librerías mootools
+$document = JFactory::getDocument();
+$rootPath = JURI::root(true);
+$arrHead = $document->getHeadData();
+unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
+unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
+$document->setHeadData($arrHead);
 
 $opa_icons = "media/com_securitycheckpro/stylesheets/opa-icons.css";
 JHTML::stylesheet($opa_icons);
-
-// Load Javascript
-$document = JFactory::getDocument();
-$document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/jquery.js');
-$document->addScript(rtrim(JURI::base(),'/').'/../media/com_securitycheckpro/javascript/bootstrap.js');
-
-?>
-<?php
-if ( empty($this->last_check_database) ) {
-	$this->last_check_database = JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_NEVER' );
-}
 ?>
 
-<div class="securitycheck-bootstrap">
-<div class="row-fluid">
-	<div class="box span12">
-		<div class="box-header well" data-original-title>
-			<i class="icon-tasks"></i><?php echo ' ' . JText::_('COM_SECURITYCHECKPRO_DATABASE_OPTIMIZATION_OPTIONS'); ?>
-		</div>
-		<div class="box-content">
-			
-			<div class="well span3 top-block">
-				<span class="sc-icon32 sc-icon-orange sc-icon-search"></span>
+  <!-- Bootstrap core JavaScript -->
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
 
-				<div><?php echo JText::_( 'COM_SECURITYCHECKPRO_SHOW_TABLES' ); ?></div>
-				<div><span class="label label-info"><?php echo $this->show_tables; ?></span></div>
-				<div style="margin-top: 10px;" class="centrado popover-info">
-					<a data-content="<?php echo JText::_( 'COM_SECURITYCHECKPRO_DB_CONTENT' ); ?>" title="" data-toggle="popover" class="btn btn-mini btn-inverse" href="#" data-original-title="<?php echo JText::_( 'COM_SECURITYCHECKPRO_DB_TITLE' ); ?>"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>	
-				</div>
-			</div>		
-			
-			<div class="well span3 top-block">
-				<span class="sc-icon32 sc-icon-orange sc-icon-date"></span>
-				<div><?php echo JText::_( 'COM_SECURITYCHECKPRO_LAST_OPTIMIZATION_LABEL' ); ?></div>
-				<div><span class="label label-info"><?php echo $this->last_check_database; ?></span></div>
-				<div style="margin-top: 10px;" class="centrado popover-info">
-					<a data-content="<?php echo JText::_( 'COM_SECURITYCHECKPRO_LAST_OPTIMIZATION_DESCRIPTION' ); ?>" title="" data-toggle="popover" class="btn btn-mini btn-inverse" href="#"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>	
-				</div>
-			</div>
-		</div>
-	</div>		
-</div>
-</div>
+<?php 
+// Cargamos el contenido común
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
+?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&controller=dbcheck');?>" method="post" name="adminForm" id="adminForm">
+<!-- Bootstrap core CSS-->
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+<!-- Custom fonts for this template-->
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
+ <!-- Custom styles for this template-->
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/stylesheets/cpanelui.css" rel="stylesheet">
 
-<div id="header_db_optimization" class="securitycheck-bootstrap-content-box-header">
-	<strong><?php echo JText::_( 'COM_SECURITYCHECKPRO_DB_OPTIMIZATION' ); ?></strong>
-</div>
+<script type="text/javascript" language="javascript">
+	jQuery(document).ready(function() {			
+		//Tooltips
+		jQuery("#show_tables").tooltip();
+	});
+</script>
 
-<div id="error_button" class="securitycheck-bootstrap centrado margen-container">	
-</div>
-
-<?php if ($this->supported) { ?>						
-
-<div class="securitycheck-bootstrap">
-	<div id="buttonwrapper" class="buttonwrapper">
-		<button class="btn btn-primary" type="button" onclick="StartDbCheck();"><i class="icon-fire icon-white"></i><?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_START_BUTTON' ); ?></button>
-	</div>
-</div>
-<div class="span10">
-	<div id="securitycheck-bootstrap-main-content">
-		
-	<div id="securitycheck-bootstrap-database" class="securitycheck-bootstrap-content-box hidden">
-		<div class="securitycheck-bootstrap-content-box-content">
-			<div class="securitycheck-bootstrap-progress" id="securitycheck-bootstrap-database-progress"><div class="securitycheckpro-bar" style="width: 0%;"></div></div>
-			<table id="securitycheck-bootstrap-database-table">
-				<thead>
-					<tr>
-						<th width="20%" nowrap="nowrap"><?php echo JText::_('COM_SECURITYCHECKPRO_TABLE_NAME'); ?></th>
-						<th width="1%" nowrap="nowrap"><?php echo JText::_('COM_SECURITYCHECKPRO_TABLE_ENGINE'); ?></th>
-						<th width="1%" nowrap="nowrap"><?php echo JText::_('COM_SECURITYCHECKPRO_TABLE_COLLATION'); ?></th>
-						<th width="1%" nowrap="nowrap"><?php echo JText::_('COM_SECURITYCHECKPRO_TABLE_ROWS'); ?></th>
-						<th width="1%" nowrap="nowrap"><?php echo JText::_('COM_SECURITYCHECKPRO_TABLE_DATA'); ?></th>
-						<th width="1%" nowrap="nowrap"><?php echo JText::_('COM_SECURITYCHECKPRO_TABLE_INDEX'); ?></th>
-						<th width="1%" nowrap="nowrap"><?php echo JText::_('COM_SECURITYCHECKPRO_TABLE_OVERHEAD'); ?></th>
-						<th><?php echo JText::_('COM_SECURITYCHECKPRO_RESULT'); ?></th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php foreach ($this->tables as $i => $table) { ?>
-					<tr class="securitycheck-bootstrap-table-row <?php if ($i % 2) { ?>alt-row<?php } ?> hidden">
-						<td width="20%" nowrap="nowrap"><?php echo $this->escape($table->Name); ?></td>
-						
-						<?php if (strtolower($table->Engine) == 'myisam') { ?>
-						<td width="1%" style="color:#00FF00;" nowrap="nowrap">
-						<?php } else { ?>
-						<td width="1%" nowrap="nowrap">
-						<?php } ?>
-						<?php echo $this->escape($table->Engine); ?></td>
-						<td width="1%" nowrap="nowrap"><?php echo $this->escape($table->Collation); ?></td>
-						<td width="1%" nowrap="nowrap"><?php echo (int) $table->Rows; ?></td>
-						<td width="1%" nowrap="nowrap"><?php echo $this->bytes_to_kbytes($table->Data_length); ?></td>
-						<td width="1%" nowrap="nowrap"><?php echo $this->bytes_to_kbytes($table->Index_length); ?></td>
-						<td width="1%" nowrap="nowrap">
-							<?php if ($table->Data_free > 0) { ?>
-								<?php if (strtolower($table->Engine) == 'myisam') { ?>
-								<b class="securitycheck-bootstrap-level-high"><?php echo $this->bytes_to_kbytes($table->Data_free); ?></b>
-								<?php } else { ?>
-								<em><?php echo JText::_('COM_SECURITYCHECKPRO_NOT_SUPPORTED'); ?></em>
-								<?php } ?>
-							<?php } else { ?>
-								<?php echo $this->bytes_to_kbytes($table->Data_free); ?>
-							<?php } ?>
-						</td>
-						<?php if (strtolower($table->Engine) == 'myisam') { ?>
-						<td id="result<?php echo $i; ?>"></td>
-						<?php } else { ?>
-						<td id="result"><?php echo JText::_('COM_SECURITYCHECKPRO_NO_OPTIMIZATION_NEEDED'); ?></td>
-						<?php } ?>
-						
-					</tr>
-					<?php } ?>
-				</tbody>
-			</table>
-		</div>
-	</div>
-	
-	<script type="text/javascript" language="javascript">
-		var more_info_tag = '<?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?>';
-
-		$(document).ready(function(){
-			$(".popover-info a").popover({
-				placement : 'bottom'
-			});
-		});
-	</script>
-
-	<script type="text/javascript">
+<script type="text/javascript">
 	requestTimeOut = {};
 	requestTimeOut.Seconds = 60;
 
@@ -223,7 +124,8 @@ if ( empty($this->last_check_database) ) {
 	
 	// DB Check
 	function StartDbCheck() {
-		$('#buttonwrapper').remove();
+		hideElement('buttondatabase');
+		
 		Database.Check.unhide('#securitycheck-bootstrap-database');
 				
 		Database.Check.prefix = 'securitycheck-bootstrap-database';
@@ -240,12 +142,137 @@ if ( empty($this->last_check_database) ) {
 		
 		Database.Check.startCheck();	
 	}
-	</script>
-	<?php } else { ?>
-	<div class="alert alert-error"><?php echo JText::_('COM_SECURITYCHECKPRO_DB_CHECK_UNSUPPORTED'); ?></div>
-	<?php } ?>
-	</div>
-</div>
+</script>
+
+<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&controller=dbcheck');?>" style="margin-top: -18px;" method="post" name="adminForm" id="adminForm">
+
+		<?php 
+		// Cargamos la navegación
+		include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/navigation.php';
+		?>
+						
+			<!-- Breadcrumb-->
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item">
+					<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro' );?>"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_DASHBOARD'); ?></a>
+				</li>				
+				<li class="breadcrumb-item active"><?php echo JText::_('COM_SECURITYCHECKPRO_DB_OPTIMIZATION'); ?></li>
+			</ol>
+			
+			<?php if ($this->supported) { ?>		
+					
+			<!-- Contenido principal -->
+			<div class="row">
+			
+				<div class="col-xl-3 col-sm-6 mb-3">
+					<div class="card text-center">						
+						<div class="card-body">						
+							<span class="sc-icon32 sc-icon-orange sc-icon-search"></span>
+							<div style="margin-top: 5px;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_SHOW_TABLES' ); ?></div>
+							<div style="margin-top: 5px;"><span class="label label-info"><?php echo $this->show_tables; ?></span></div>													             
+						</div>
+						<div class="card-footer">
+							<a href="#" id="show_tables" data-toggle="tooltip" title="<?php echo JText::_( 'COM_SECURITYCHECKPRO_DB_CONTENT' ); ?>"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+						</div>
+					</div>
+				</div>
+				
+				<div class="col-xl-3 col-sm-6 mb-3">
+					<div class="card text-center">						
+						<div class="card-body">						
+							<span class="sc-icon32 sc-icon-orange sc-icon-date"></span>
+							<div style="margin-top: 5px;"><?php echo JText::_( 'COM_SECURITYCHECKPRO_LAST_OPTIMIZATION_LABEL' ); ?></div>
+							<div style="margin-top: 5px;"><span class="label label-info"><?php echo $this->last_check_database; ?></span></div>
+						</div>
+						<div class="card-footer">
+							<a href="#" id="show_tables" data-toggle="tooltip" title="<?php echo JText::_( 'COM_SECURITYCHECKPRO_LAST_OPTIMIZATION_DESCRIPTION' ); ?>"><?php echo JText::_( 'COM_SECURITYCHECKPRO_MORE_INFO' ); ?></a>
+						</div>						             						
+					</div>
+				</div>
+				
+				 <div class="col-lg-12">
+					<div class="card mb-3">
+						<div class="card-header">
+							<i class="fa fa-database"></i>
+							<?php echo ' ' . JText::_('COM_SECURITYCHECKPRO_DB_OPTIMIZATION'); ?>
+						</div>
+						<div class="card-body">
+							<div id="buttondatabase" class="text-center">
+								<button class="btn btn-primary" type="button" onclick="StartDbCheck();"><i class="fa fa-fw fa-fire"> </i><?php echo JText::_( 'COM_SECURITYCHECKPRO_FILEMANAGER_START_BUTTON' ); ?></button>
+							</div>
+							
+							<div id="securitycheck-bootstrap-main-content">		
+								<div id="securitycheck-bootstrap-database" class="securitycheck-bootstrap-content-box hidden">
+									<div class="securitycheck-bootstrap-content-box-content">
+										<div class="securitycheck-bootstrap-progress" id="securitycheck-bootstrap-database-progress"><div class="securitycheckpro-bar" style="width: 0%;"></div></div>
+										<table id="securitycheck-bootstrap-database-table">
+											<thead>
+												<tr>
+													<th width="20%" nowrap="nowrap"><?php echo JText::_('COM_SECURITYCHECKPRO_TABLE_NAME'); ?></th>
+													<th width="1%" nowrap="nowrap"><?php echo JText::_('COM_SECURITYCHECKPRO_TABLE_ENGINE'); ?></th>
+													<th width="1%" nowrap="nowrap"><?php echo JText::_('COM_SECURITYCHECKPRO_TABLE_COLLATION'); ?></th>
+													<th width="1%" nowrap="nowrap"><?php echo JText::_('COM_SECURITYCHECKPRO_TABLE_ROWS'); ?></th>
+													<th width="1%" nowrap="nowrap"><?php echo JText::_('COM_SECURITYCHECKPRO_TABLE_DATA'); ?></th>
+													<th width="1%" nowrap="nowrap"><?php echo JText::_('COM_SECURITYCHECKPRO_TABLE_INDEX'); ?></th>
+													<th width="1%" nowrap="nowrap"><?php echo JText::_('COM_SECURITYCHECKPRO_TABLE_OVERHEAD'); ?></th>
+													<th><?php echo JText::_('COM_SECURITYCHECKPRO_RESULT'); ?></th>
+												</tr>
+											</thead>
+											<tbody>
+												<?php foreach ($this->tables as $i => $table) { ?>
+												<tr class="securitycheck-bootstrap-table-row <?php if ($i % 2) { ?>alt-row<?php } ?> hidden">
+													<td width="20%" nowrap="nowrap"><?php echo $this->escape($table->Name); ?></td>
+													
+													<?php if (strtolower($table->Engine) == 'myisam') { ?>
+													<td width="1%" style="color:#00FF00;" nowrap="nowrap">
+													<?php } else { ?>
+													<td width="1%" nowrap="nowrap">
+													<?php } ?>
+													<?php echo $this->escape($table->Engine); ?></td>
+													<td width="1%" nowrap="nowrap"><?php echo $this->escape($table->Collation); ?></td>
+													<td width="1%" nowrap="nowrap"><?php echo (int) $table->Rows; ?></td>
+													<td width="1%" nowrap="nowrap"><?php echo $this->bytes_to_kbytes($table->Data_length); ?></td>
+													<td width="1%" nowrap="nowrap"><?php echo $this->bytes_to_kbytes($table->Index_length); ?></td>
+													<td width="1%" nowrap="nowrap">
+														<?php if ($table->Data_free > 0) { ?>
+															<?php if (strtolower($table->Engine) == 'myisam') { ?>
+															<b class="securitycheck-bootstrap-level-high"><?php echo $this->bytes_to_kbytes($table->Data_free); ?></b>
+															<?php } else { ?>
+															<em><?php echo JText::_('COM_SECURITYCHECKPRO_NOT_SUPPORTED'); ?></em>
+															<?php } ?>
+														<?php } else { ?>
+															<?php echo $this->bytes_to_kbytes($table->Data_free); ?>
+														<?php } ?>
+													</td>
+													<?php if (strtolower($table->Engine) == 'myisam') { ?>
+													<td id="result<?php echo $i; ?>"></td>
+													<?php } else { ?>
+													<td id="result"><?php echo JText::_('COM_SECURITYCHECKPRO_NO_OPTIMIZATION_NEEDED'); ?></td>
+													<?php } ?>
+													
+												</tr>
+												<?php } ?>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			<!-- End contenido principal -->
+			</div>			
+			<?php } else { ?>
+				<div class="alert alert-error"><?php echo JText::_('COM_SECURITYCHECKPRO_DB_CHECK_UNSUPPORTED'); ?></div>
+			<?php } ?>			
+		</div>
+</div>	
+
+  <!-- Bootstrap core JavaScript -->
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>
+<!-- Custom scripts for all pages -->
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sb-admin.js"></script> 
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

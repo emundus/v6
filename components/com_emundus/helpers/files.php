@@ -81,12 +81,6 @@ class EmundusHelperFiles
         $session = JFactory::getSession();
         $params = $session->get('filt_params');
 
-  /*      if (!$session->has('filt_params'))
-            $session->set('filt_params', array());
-
-        $session->set('filt_menu', array());
-        $params = JFactory::getSession()->get('filt_params');*/
-
         //Filters
         $tables         = explode(',', $menu_params->get('em_tables_id'));
         $filts_names    = explode(',', $menu_params->get('em_filters_names'));
@@ -516,10 +510,10 @@ class EmundusHelperFiles
             $campaigns = @$params['campaign'];
 
             // get profiles for selected programmes or campaigns
-            $plist = $m_profile->getProfileIDByCourse($programme);
+            $plist = $m_profile->getProfileIDByCourse((array)$programme);
             $plist = count($plist) == 0 ? $m_profile->getProfileIDByCampaign($campaigns) : $plist;
         } else {
-            $plist = $m_profile->getProfileIDByCourse($code);
+            $plist = $m_profile->getProfileIDByCourse((array)$code);
         }
 
         if ($plist) {
@@ -555,7 +549,7 @@ class EmundusHelperFiles
                     INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
                     INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
                     INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id
-                    LEFT JOIN #__fabrik_joins AS joins ON tab.id = joins.list_id AND groupe.id=joins.group_id
+                    LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
                     INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
                     INNER JOIN #__emundus_setup_profiles as p on p.menutype=menu.menutype ';
             $where = 'WHERE tab.published = 1';
@@ -721,16 +715,16 @@ class EmundusHelperFiles
         if (!empty($elements_id) && isset($elements_id)) {
 
             $db = JFactory::getDBO();
-            $query = 'SELECT element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.id, element.plugin as element_plugin, groupe.id as group_id, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias, joins.table_join
+            $query = 'SELECT element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, groupe.id as group_id, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias, joins.table_join
                     FROM #__fabrik_elements element
                     INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
                     INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
                     INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-                    LEFT JOIN #__fabrik_joins AS joins ON tab.id = joins.list_id AND groupe.id=joins.group_id
+                    LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
                     WHERE element.id IN ('.ltrim($elements_id, ',').')
                     ORDER BY formgroup.ordering, element.ordering ';
             try {
-
+//echo "<hr>".str_replace('#_', 'jos', $query);
                 $db->setQuery($query);
                 $res = $db->loadObjectList('id');
 
@@ -742,7 +736,6 @@ class EmundusHelperFiles
             foreach ($res as $kId => $r) {
                 $elementsIdTab[$kId] = $r;
             }
-
             return $elementsIdTab;
         } else return array();
     }
@@ -947,6 +940,7 @@ class EmundusHelperFiles
 
         $current_s              = @$filt_params['s'];
         $current_profile        = @$filt_params['profile'];
+        $oprofiles              = @$filt_params['oprofiles'];        
         $current_eval           = @$filt_params['user'];
         $miss_doc               = @$filt_params['missing_doc'];
         $current_finalgrade     = @$filt_params['finalgrade'];
@@ -966,6 +960,7 @@ class EmundusHelperFiles
         $current_group          = @$filt_params['group'];
         $current_institution    = @$filt_params['institution'];
         $spam_suspect           = @$filt_params['spam_suspect'];
+        
         $filters = '';
         // Quick filter
         $quick = '<div id="filters">
@@ -1003,6 +998,28 @@ class EmundusHelperFiles
             $filters .= $profile;
         }
         //if($debug==1) $div .= '<input name="view_calc" type="checkbox" onclick="document.pressed=this.name" value="1" '.$view_calc==1?'checked=checked':''.' />';
+
+        //******other profiles filter ******************
+        if (@$params['profile'] !== NULL) {
+            $profile = '';
+            $hidden = $types['o_profiles'] != 'hidden' ? false : true;
+            if ($types['o_profiles'] != 'hidden')
+                $profile .= '<div class="form-group" id="o_profiles">
+                                    <label class="control-label">'.JText::_('OTHER_PROFILES').'</label>';
+            $profile .= '           <select class="chzn-select em-filt-select" id="select_oprofiles" multiple="multiple" name="o_profiles" '.($types['o_profiles'] == 'hidden' ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'">
+                         <option value="0">'.JText::_('ALL').'</option>';
+            $profiles = $h_files->getApplicants();
+            foreach ($profiles as $prof) {
+                $profile .= '<option value="'.$prof->id.'"';
+                /*if(!empty($oprofiles) && (in_array($prof->id, $oprofiles) || $prof->id == $oprofiles))
+                    $profile .= ' selected="true"';*/
+                $profile .= '>'.$prof->label.'</option>';
+            }
+            $profile .= '</select>';
+            if ($types['o_profiles'] != 'hidden')
+                $profile .= '</div>';
+            $filters .= $profile;
+        }
 
         if (@$params['profile_users'] !== NULL) {
             $hidden = $types['profile_users'] != 'hidden' ? false : true;
