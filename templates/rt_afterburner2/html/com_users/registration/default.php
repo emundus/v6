@@ -17,13 +17,29 @@ JHtml::_('behavior.noframes');
 $app = JFactory::getApplication();
 $template = $app->getTemplate();
 
+
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+
 $m_campaign = new EmundusModelCampaign;
 
 $lang->load('tpl_'.$template, JPATH_THEMES.DS.$template);
 //$this->form->reset( true );
 $this->form->loadFile(dirname(__FILE__) . DS . "registration.xml");
 $jform = $app->getUserState('com_users.registration.data');
+
+
+/**check if warning and send a mail to @ email */
+$messages = $app->getMessageQueue();
+$errors = false;
+foreach ($messages as $message) {
+   if ($message[type] == 'warning' && $message[message] == JText::_("COM_USERS_REGISTER_EMAIL1_MESSAGE")) {
+	  echo $message[message];
+	  var_dump($jform);
+   }
+}
+
+/************************************************ */
+
 
 $course = JRequest::getVar('course', null, 'GET', null, 0);
 
@@ -233,5 +249,6 @@ function check_field(){
 	campaign.onclick = function() { if(campaign.value == "") $('em_msg_jform[emundus_profile][campaign]').innerHTML = "<?php echo JText::_('COM_USERS_PROFILE_CAMPAIGN_MESSAGE');?>"; else $('em_msg_jform[emundus_profile][campaign]').innerHTML = ""; };
 }
 check_field();
+
 
 </script>
