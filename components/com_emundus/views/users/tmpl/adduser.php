@@ -20,6 +20,7 @@
 			}
 		?>
 	</h3>
+	
 	<fieldset>
 		<div class="form-group">
 			<label class="control-label" for="firstname"><?php echo JText::_('FIRSTNAME_FORM'); ?></label>
@@ -49,7 +50,7 @@
 				<?php endforeach;?>
 			</select>
 			<br/><br/>
-			<div >
+			<div>
 				<label class="control-label" for="otherprofile"><?php echo JText::_('ALL_PROFILES'); ?></label><br/>
 				<select id="oprofiles" name="otherprofiles" size="5" multiple="multiple" class="em-chosen">
 					<option value="0"><?php echo JText::_('PLEASE_SELECT')?></option>
@@ -79,6 +80,7 @@
 				<?php endforeach;?>
 			</select>
 		</div>
+		
 		<div class="form-group em-hidden-appli-fields" <?php if(($this->edit != 1) || (empty($this->uCamps))){echo 'style="display:none;"';}?>>
 			<label for="campaigns"><?php echo JText::_('CAMPAIGN'); ?></label>
 			<br/>

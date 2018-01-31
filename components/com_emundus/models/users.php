@@ -1435,7 +1435,7 @@ class EmundusModelUsers extends JModelList
                       where ecc.applicant_id = " .$uid;
             $db = $this->getDbo();
             $db->setQuery($query);
-            return $db->loadColumn();
+            return $db->loadAssocList('id', 'label');
         }
         catch(Exeption $e)
         {
@@ -1503,11 +1503,11 @@ class EmundusModelUsers extends JModelList
             if (!empty($user['em_campaigns'])) {
                 $connected = JFactory::getUser()->id;
                 $campaigns = explode(',', $user['em_campaigns']);
-
+                //var_dump($campaigns);
                 $query = 'SELECT campaign_id FROM #__emundus_campaign_candidature WHERE applicant_id='.$user['id'];
                 $db->setQuery($query);
                 $campaigns_id = $db->loadColumn();
-
+                //var_dump($campaigns_id);
                 foreach ($campaigns as $campaign) {
                     if (!in_array($campaign, $campaigns_id)) {
                         $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`) VALUES ('.$user['id'].', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
