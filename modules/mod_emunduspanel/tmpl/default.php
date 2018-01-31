@@ -1,11 +1,11 @@
 <?php // no direct access
-defined('_JEXEC') or die('Restricted access'); 
+defined('_JEXEC') or die('Restricted access');
 
 if (!empty($tab)) {
 ?>
 <div class="emundus_home_page" id="em-panel">
 <?php
-if(isset($user->profile) && $user->profile>0) {
+if (isset($user->profile) && $user->profile > 0) {
 
    /* $title = "<h2 class='title'>".@$module_title."</h2>";
 
@@ -23,40 +23,39 @@ if(isset($user->profile) && $user->profile>0) {
        echo(json_encode($key));
        echo(json_encode($value));
     }*/
-   
+
     $ids_array = array();
-    
-    if($user->fnums){
-        foreach($user->fnums as $fnum){
+
+    if ($user->fnums) {
+        foreach ($user->fnums as $fnum) {
             $ids_array[$fnum->profile_id] = $fnum->fnum;
         }
     }
-    echo('<br/><div class="styled-select slate"');
-    echo '<legend><select class="form-control form-control-sm" id="profile" name="profiles" onchange="postCProfile()"> ';
-    
-    foreach($user->emProfiles as $profile){
-        if(array_key_exists($profile->id,$ids_array)){
-            echo '<option  value="'.$profile->id.".".$ids_array[$profile->id].'"' .(($user->profile == $profile->id)?'selected="selected"':"").'>'.trim($profile->label).'</option>';                
-        }else{      
-            echo '<option  value="'.$profile->id.".".'"' .(($user->profile == $profile->id)?'selected="selected"':"").'>'.trim($profile->label).'</option>';      
+
+    if (!empty($user->emProfiles)) {
+        echo('<br/><div class="styled-select slate"');
+        echo '<legend><select class="form-control form-control-sm" id="profile" name="profiles" onchange="postCProfile()"> ';
+        foreach ($user->emProfiles as $profile) {
+            if (array_key_exists($profile->id,$ids_array))
+                echo '<option  value="'.$profile->id.".".$ids_array[$profile->id].'"' .(($user->profile == $profile->id)?'selected="selected"':"").'>'.trim($profile->label).'</option>';
+            else
+                echo '<option  value="'.$profile->id.".".'"' .(($user->profile == $profile->id)?'selected="selected"':"").'>'.trim($profile->label).'</option>';
         }
-    
+        echo '</select></legend></div><br/>';
     }
 }
-    echo '</select></legend></div><br/>';
    // echo(json_encode($user));
-  
 
 ?>
 
 
-    
+
 
 <div class="ui grid">
-<?php 
-foreach ($tab as $t){ 
+<?php
+foreach ($tab as $t) {
     echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
-} 
+}
 ?>
 </div>
 
@@ -91,7 +90,7 @@ foreach ($tab as $t){
             //alert(current_fnum)
 
             ajax.send();
-            
+
         }
 
     </script>
