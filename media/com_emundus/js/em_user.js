@@ -90,7 +90,7 @@ function formCheck(id)
 	}
 	else
 	{
-		var re = /^[0-9a-zA-Z\_\@\-\.]+$/;
+		var re = /^[0-9a-zA-Z\_\@\-\.\+]+$/;
 		if(id == 'login' && !re.test($('#'+id).val()))
 		{
 			if(!$(this).parent('.form-group').hasClass('has-error'))
