@@ -32,7 +32,7 @@ class EmundusModelProfile extends JModelList
 	*/
 	function getProfile($p)
 	{
-		$query = 'SELECT * FROM #__emundus_setup_profiles WHERE id='.$p;
+		$query = 'SELECT * FROM #__emundus_setup_profiles WHERE id='.(int)$p;
 
 		try
         {
@@ -58,7 +58,35 @@ class EmundusModelProfile extends JModelList
                   	ORDER BY esp.label';
         $db->setQuery($query);
         return $db->loadObjectList();
-    }
+	}
+	
+	public function  getApplicantsProfilesArray(){
+		$obj_profiles = $this->getApplicantsProfiles();
+		$array_p = array();
+		foreach ($obj_profiles as $profile){
+			array_push($array_p, $profile->id);
+		}
+		return $array_p;
+	}
+
+	function getUserProfiles($uid)
+	{
+		$db = JFactory::getDBO();
+		$query = 'SELECT DISTINCT esp.id , esp.label
+		FROM #__emundus_setup_profiles esp
+		LEFT JOIN #__emundus_users_profiles eup on eup.profile_id = esp.id
+		WHERE eup.user_id = '.$uid;
+		try
+        {
+            $db->setQuery($query);
+			return $db->loadObjectList();
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
+	}
 
 	function getProfileByApplicant($aid)
 	{
@@ -79,6 +107,24 @@ class EmundusModelProfile extends JModelList
             JError::raiseError(500, $e->getMessage());
         }
 	}
+
+	function getProfileById($id)
+	{
+		$query = 'SELECT label, menutype, acl_aro_groups from jos_emundus_setup_profiles
+						WHERE id ='.$id;
+
+		try
+        {
+            $this->_db->setQuery( $query );
+			return $this->_db->loadAssoc();
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
+	}
+
 
 	function getCurrentProfile($aid) {
 		$query = 'SELECT eu.*,  esp.*
@@ -102,7 +148,7 @@ class EmundusModelProfile extends JModelList
 	{
 		$query = 'SELECT attachment.*, profile.id AS selected, profile.displayed, profile.mandatory, profile.bank_needed
 					FROM #__emundus_setup_attachments AS attachment
-					LEFT JOIN #__emundus_setup_attachment_profiles AS profile ON profile.attachment_id = attachment.id AND profile.profile_id='.$p.'
+					LEFT JOIN #__emundus_setup_attachment_profiles AS profile ON profile.attachment_id = attachment.id AND profile.profile_id='.(int)$p.'
 					WHERE attachment.published=1
 					ORDER BY attachment.ordering';
 
@@ -122,7 +168,7 @@ class EmundusModelProfile extends JModelList
 	{
 		$query = 'SELECT fbtable.id, fbtable.label, menu.id>0 AS selected, menu.lft AS `order` FROM #__fabrik_lists AS fbtable
 					LEFT JOIN #__menu AS menu ON fbtable.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)
-					AND menu.menutype=(SELECT profile.menutype FROM #__emundus_setup_profiles AS profile WHERE profile.id = '.$p.')
+					AND menu.menutype=(SELECT profile.menutype FROM #__emundus_setup_profiles AS profile WHERE profile.id = '.(int)$p.')
 					WHERE fbtable.created_by_alias = "form" ORDER BY selected DESC, menu.lft ASC, fbtable.label ASC';
 
 		try
@@ -297,7 +343,9 @@ class EmundusModelProfile extends JModelList
         }
 	}
 
-		/**
+
+
+	/**
 	* Gets the list of profiles from array of programmes
 	* @param 	$code 	array 	list of programmes code
 	* @return  	string The greeting to be displayed to the user
@@ -306,7 +354,7 @@ class EmundusModelProfile extends JModelList
 		if (!empty($code)>0) {
 			$query = 'SELECT DISTINCT(esc.profile_id)
 						FROM  #__emundus_setup_campaigns AS esc
-						WHERE esc.training IN ("'.implode('","', $code).'")';
+						WHERE esc.published = 1 AND esc.training IN ("'.implode("','", $code).'")';
 			try
 	        {
 	            $this->_db->setQuery( $query );
@@ -451,12 +499,13 @@ class EmundusModelProfile extends JModelList
 		include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 		include_once(JPATH_SITE.'/components/com_emundus/models/admission.php');
 
-		$m_users 		= new EmundusModelUsers;
+		$m_users 			= new EmundusModelUsers;
+		$m_admission	= new EmundusModelAdmission;
 		$current_user 	= JFactory::getUser();
 		$session        = JFactory::getSession();
 		$app			= JFactory::getApplication();
 
-		$profile = $this->getProfileByApplicant($current_user->id);
+		$profile 		= $this->getProfileByApplicant($current_user->id);
 
 		$emundusSession = new stdClass();
 
@@ -467,12 +516,15 @@ class EmundusModelProfile extends JModelList
 		$emundusSession->firstname 	= $profile["firstname"];
 		$emundusSession->lastname   = strtoupper($profile["lastname"]);
 		$emundusSession->emGroups   = array_keys($m_users->getUserGroups($current_user->id));
+		$emundusSession->emProfiles = $this->getUserProfiles($current_user->id);
+
+
 
 		if (EmundusHelperAccess::isApplicant($current_user->id)) {
 
 			// Get the current user profile
 			$profile = $this->getCurrentProfile($current_user->id);
-
+			//$emundusSession->current_profile   = $profile;
 			// If the profile number is 8 that means he has been admitted
 			// This means that regardless of his other applications he must be considered admitted
 			if ($profile['profile'] != 8) {
@@ -484,7 +536,6 @@ class EmundusModelProfile extends JModelList
 
 			} else {
 
-				$m_admission	= new EmundusModelAdmission;
 				$admissionInfo = $m_admission->getAdmissionInfo($current_user->id);
 
 				if (!empty($admissionInfo)) {
@@ -533,6 +584,8 @@ class EmundusModelProfile extends JModelList
 			$app->redirect("index.php?option=com_fabrik&view=form&formid=".$admissionInfo->form_id."&Itemid=2720&usekey=fnum&rowid=".$campaign['fnum']);
 	}
 
+	
+
 	/**
 	 * Returns an object based on supplied user_id that acts as a replacement for the default Joomla user method
 	 */
@@ -540,7 +593,7 @@ class EmundusModelProfile extends JModelList
 		include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 		include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 
-		$m_users 			= new EmundusModelUsers;
+		$m_users 		= new EmundusModelUsers;
 		$current_user 	= JFactory::getUser($user_id);
 		$profile 		= $this->getProfileByApplicant($current_user->id);
 		$emundus_user 	= new stdClass();
@@ -551,7 +604,8 @@ class EmundusModelProfile extends JModelList
 		$emundus_user->firstname  = $profile["firstname"];
 		$emundus_user->lastname   = strtoupper($profile["lastname"]);
 		$emundus_user->emGroups   = array_keys($m_users->getUserGroups($current_user->id));
-
+		$emundusSession->emProfiles = $this->getUserProfiles($current_user->id);
+		
 		if (EmundusHelperAccess::isApplicant($current_user->id)) {
 			$campaign 	= $this->getCurrentCampaignInfoByApplicant($current_user->id);
             $incomplete = $this->getCurrentIncompleteCampaignByApplicant($current_user->id);

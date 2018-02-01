@@ -1550,18 +1550,6 @@ class EmundusModelUsers extends JModelList
                         $profile = $this->getProfileIDByCampaign($campaign);
                         if (!in_array($profile, $profiles_id)) 
                             $this->addProfileToUser($user['id'],$profile);
-                        
-                        
-                        /*$query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user['id'].",".$profile.",'','')";
-                        $db->setQuery( $query );
-                        $db->Query();
-
-                        $query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id='.$profile;
-                        $db->setQuery($query);
-                        $group = $db->loadColumn();
-
-                        $group_add = JUserHelper::addUserToGroup($user['id'],$group[0]);*/
-
                     }
                 }
             }
@@ -1576,15 +1564,6 @@ class EmundusModelUsers extends JModelList
                 foreach ($oprofiles as $profile) {
                     if (!in_array($profile, $profiles_id)) {
                         $this->addProfileToUser($user['id'],$profile);
-                        /*$query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user['id'].",".$profile.",'','')";
-                        $db->setQuery( $query );
-                        $db->Query();
-
-                        $query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id='.$profile;
-                        $db->setQuery($query);
-                        $group = $db->loadColumn();
-
-                        $group_add = JUserHelper::addUserToGroup($user['id'],$group[0]);*/
                     }   
                 }
 
