@@ -7,22 +7,16 @@ if (!empty($tab)) {
 <?php
 if (isset($user->profile) && $user->profile > 0) {
 
-   /* $title = "<h2 class='title'>".@$module_title."</h2>";
+   // $title = "<h2 class='title'>".@$module_title."</h2>";
 
-    if($show_programme_title == 1)
-        $title .= ' '.$user->profile_label;
+   /* if($show_programme_title == 1)
+        $title .= ' '.$user->profile_label;*/
     if($show_profile_link == 1)
         $title .= ' '.$btn_profile;
     if($show_start_link == 1)
         $title .= ' '.$btn_start;
     echo '<legend>'.$title.'</legend>';
-    */
-    /*$session        = JFactory::getSession();
-    foreach ($session->get('user') as $key => $value) {
-       //$emundusSession->{$key} = $value;
-       echo(json_encode($key));
-       echo(json_encode($value));
-    }*/
+    
 
     $ids_array = array();
 

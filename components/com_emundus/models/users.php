@@ -361,6 +361,20 @@ class EmundusModelUsers extends JModelList
         return $db->loadObjectList();
     }
 
+    public function getUserByEmail($email){
+        $db = JFactory::getDBO();
+        $query = 'SELECT * FROM #__users WHERE email like "'.$email.'"';
+        $db->setQuery( $query );
+        return $db->loadObjectList();
+    }
+
+    public function getProfileIDByCampaign($cid){
+        $db = JFactory::getDBO();
+        $query = 'SELECT `profile_id` FROM `#__emundus_setup_campaigns` WHERE id='.$cid;
+        $db->setQuery($query);        
+        return $db->loadResult();
+    }
+
     public function getCurrentUserProfile($uid){
         $db = JFactory::getDBO();
         $query = 'SELECT eu.profile FROM #__emundus_users eu WHERE eu.user_id='.$uid;
@@ -1461,6 +1475,21 @@ class EmundusModelUsers extends JModelList
         }
     }
 
+    public function addProfileToUser($uid,$pid){
+        $db = JFactory::getDBO();
+        
+        $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$uid.",".$pid.",'','')";
+        $db->setQuery( $query );
+        $db->Query();
+
+        $query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id='.$pid;
+        $db->setQuery($query);
+        $group = $db->loadResult();
+
+        $group_add = JUserHelper::addUserToGroup($uid,$group);
+        
+    }
+
     public function editUser($user) {
         try {
             $u = JFactory::getUser($user['id']);
@@ -1503,35 +1532,27 @@ class EmundusModelUsers extends JModelList
             if (!empty($user['em_campaigns'])) {
                 $connected = JFactory::getUser()->id;
                 $campaigns = explode(',', $user['em_campaigns']);
-                //var_dump($campaigns);
+                
                 $query = 'SELECT campaign_id FROM #__emundus_campaign_candidature WHERE applicant_id='.$user['id'];
                 $db->setQuery($query);
                 $campaigns_id = $db->loadColumn();
-                //var_dump($campaigns_id);
+              
+                $query = 'SELECT profile_id FROM #__emundus_users_profiles WHERE user_id='.$user['id'];
+                $db->setQuery($query);
+                $profiles_id = $db->loadColumn();
                 foreach ($campaigns as $campaign) {
                     if (!in_array($campaign, $campaigns_id)) {
                         $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`) VALUES ('.$user['id'].', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
                         $db->setQuery( $query );
                         $db->query();
-                    }
-                }
-            }
+                        //insert profile******
 
-           /* $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user['id'].",".$user['profile'].",'','')";
-            $db->setQuery( $query );
-            $db->Query();*/
-
-
-            if (!empty($user['em_oprofiles'])) {
-                $oprofiles = explode(',', $user['em_oprofiles']);
-
-                foreach ($oprofiles as $profile) {
-                    /*var_dump($profile);
-                    $query = 'SELECT COUNT(*) FROM `#__emundus_users_profiles` WHERE user_id='.$user['id'].' AND profile_id='.(int)$profile;
-                    $db->setQuery($query);
-                    $count_profile = $db->loadColumn();*/
-                    //if((int)$count_profile[0] == 0){
-                        $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user['id'].",".$profile.",'','')";
+                        $profile = $this->getProfileIDByCampaign($campaign);
+                        if (!in_array($profile, $profiles_id)) 
+                            $this->addProfileToUser($user['id'],$profile);
+                        
+                        
+                        /*$query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user['id'].",".$profile.",'','')";
                         $db->setQuery( $query );
                         $db->Query();
 
@@ -1539,10 +1560,32 @@ class EmundusModelUsers extends JModelList
                         $db->setQuery($query);
                         $group = $db->loadColumn();
 
-                        $group_add = JUserHelper::addUserToGroup($user['id'],$group[0]);
-                        //$emuser = array('user_id'=>$user['id']);
-                        //$ok = $this->affectToGroups(array($emuser) ,array(1) );
-                   // }
+                        $group_add = JUserHelper::addUserToGroup($user['id'],$group[0]);*/
+
+                    }
+                }
+            }
+
+           
+
+            if (!empty($user['em_oprofiles'])) {
+                $oprofiles = explode(',', $user['em_oprofiles']);
+                $query = 'SELECT profile_id FROM #__emundus_users_profiles WHERE user_id='.$user['id'];
+                $db->setQuery($query);
+                $profiles_id = $db->loadColumn();
+                foreach ($oprofiles as $profile) {
+                    if (!in_array($profile, $profiles_id)) {
+                        $this->addProfileToUser($user['id'],$profile);
+                        /*$query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user['id'].",".$profile.",'','')";
+                        $db->setQuery( $query );
+                        $db->Query();
+
+                        $query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id='.$profile;
+                        $db->setQuery($query);
+                        $group = $db->loadColumn();
+
+                        $group_add = JUserHelper::addUserToGroup($user['id'],$group[0]);*/
+                    }   
                 }
 
             }

@@ -14,11 +14,15 @@ JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.noframes');
 
-$app = JFactory::getApplication();
-$template = $app->getTemplate();
-
+$app        = JFactory::getApplication();
+$template   = $app->getTemplate();
+$db         = JFactory::getDBO();
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+
+include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
+
 
 $m_campaign = new EmundusModelCampaign;
 
@@ -32,13 +36,105 @@ $jform = $app->getUserState('com_users.registration.data');
 $messages = $app->getMessageQueue();
 $errors = false;
 foreach ($messages as $message) {
-   if ($message[type] == 'warning' && $message[message] == JText::_("COM_USERS_REGISTER_EMAIL1_MESSAGE")) {
-	  echo $message[message];
-	  var_dump($jform);
+  	if ($message[type] == 'warning' && $message[message] == JText::_("COM_USERS_REGISTER_EMAIL1_MESSAGE")) {
+		try{
+			$chars 		= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?";
+			//$passwd_md5 = md5($passwd);
+			
+			
+			$m_users = new EmundusModelUsers;
+			$user = $m_users->getUserByEmail($jform["email2"]);
+			$uid = (int) $user[0]->id;
+			$emails = new EmundusModelEmails;
+			$mailer = JFactory::getMailer();
+			$email = $emails->getEmail("AccountAlreadyExists");
+			$post = array();
+			$tags = $emails->setTags($uid, $post, null, '');
+			
+			//var_dump($jform);
+			
+
+			$from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
+			$fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
+			$to = $jform["email2"];
+			$subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
+			$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+			$body = $emails->setTagsFabrik($body);
+			
+			
+
+			$email_from_sys = $app->getCfg('mailfrom');
+			
+		
+			// If the email sender has the same domain as the system sender address.
+			if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+				$mail_from_address = $email->emailfrom;
+			else
+				$mail_from_address = $email_from_sys;
+			
+			// Set sender
+			$sender = [
+				$mail_from_address,
+				$fromname
+			];
+		
+			$mailer->setSender($sender);
+			$mailer->addReplyTo($from, $fromname);
+			$mailer->addRecipient($to);
+			$mailer->setSubject($subject);
+			$mailer->isHTML(true);
+			$mailer->Encoding = 'base64';
+			$mailer->setBody($body);
+			//var_dump($mailer);
+			$send = $mailer->Send();
+			if ($send !== true) {
+				$res = false;
+				$msg = JText::_('COM_EMUNDUS_ERROR_CANNOT_SEND_EMAIL').' : '.$send->__toString();
+				JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
+			} else {
+				$message = array(
+					'user_id_to' => $uid,
+					'subject' => $subject,
+					'message' => $body
+				);
+				$emails->logEmail($message);
+				
+				$res = true;
+				//save the profile/program
+				$profile = $m_users->getProfileIDByCampaign((int)$jform["emundus_profile"]['campaign']);
+				
+				$query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$uid.",".$profile.",'','')";
+				$db->setQuery( $query );
+				$db->Query();
+
+				$query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id='.(int)$profile;
+				$db->setQuery($query);
+				$group = $db->loadColumn();
+
+
+				
+                $group_add = JUserHelper::addUserToGroup($uid,$group[0]);
+	
+				$msg = JText::_('COM_EMUNDUS_EMAIL_SENT');
+			}
+
+			echo json_encode((object)array('status' => $res, 'msg' => $msg));
+			
+			/***********************end mail sending ************************* */
+		}
+		catch(Exception $e){
+			error_log($e->getMessage(), 0);
+            return false;
+		}
    }
 }
+//email sending
 
-/************************************************ */
+/*if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) {
+	echo json_encode((object)array('status' => false));
+	exit;
+}*/
+
 
 
 $course = JRequest::getVar('course', null, 'GET', null, 0);
