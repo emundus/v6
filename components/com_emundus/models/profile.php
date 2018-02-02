@@ -59,7 +59,9 @@ class EmundusModelProfile extends JModelList
         $db->setQuery($query);
         return $db->loadObjectList();
 	}
-	
+	/**
+	 * @return array of profile_id for all applicant profiles
+	 */
 	public function  getApplicantsProfilesArray(){
 		$obj_profiles = $this->getApplicantsProfiles();
 		$array_p = array();

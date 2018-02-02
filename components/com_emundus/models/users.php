@@ -368,7 +368,7 @@ class EmundusModelUsers extends JModelList
         return $db->loadObjectList();
     }
 
-    public function getProfileIDByCampaign($cid){
+    public function getProfileIDByCampaignID($cid){
         $db = JFactory::getDBO();
         $query = 'SELECT `profile_id` FROM `#__emundus_setup_campaigns` WHERE id='.$cid;
         $db->setQuery($query);        
@@ -1541,15 +1541,15 @@ class EmundusModelUsers extends JModelList
                 $db->setQuery($query);
                 $profiles_id = $db->loadColumn();
                 foreach ($campaigns as $campaign) {
+                    //insert profile******
+                    $profile = $this->getProfileIDByCampaignID($campaign);
+                    if (!in_array($profile, $profiles_id)) 
+                        $this->addProfileToUser($user['id'],$profile);
                     if (!in_array($campaign, $campaigns_id)) {
                         $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`) VALUES ('.$user['id'].', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
                         $db->setQuery( $query );
                         $db->query();
-                        //insert profile******
-
-                        $profile = $this->getProfileIDByCampaign($campaign);
-                        if (!in_array($profile, $profiles_id)) 
-                            $this->addProfileToUser($user['id'],$profile);
+                        
                     }
                 }
             }

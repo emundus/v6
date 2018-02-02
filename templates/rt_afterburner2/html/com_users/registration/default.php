@@ -101,7 +101,7 @@ foreach ($messages as $message) {
 				
 				$res = true;
 				//save the profile/program
-				$profile = $m_users->getProfileIDByCampaign((int)$jform["emundus_profile"]['campaign']);
+				$profile = $m_users->getProfileIDByCampaignID((int)$jform["emundus_profile"]['campaign']);
 				
 				$query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$uid.",".$profile.",'','')";
 				$db->setQuery( $query );

@@ -39,18 +39,26 @@ if (isset($user->profile) && $user->profile > 0) {
         echo '</select></legend></div><br/>';
     }
 }
-   // echo(json_encode($user));
 
 ?>
 
 
-
-
 <div class="ui grid">
 <?php
-foreach ($tab as $t) {
-    echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
+foreach ($campaigns as $campaign){
+    if($user->profile == $campaign->profile_id){
+        foreach ($tab as $t) {
+            echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
+        }
+    }else{
+        if(!in_array($user->profile, $applicant_profiles)){
+            foreach ($tab as $t) {
+                echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
+            }
+        }
+    }
 }
+
 ?>
 </div>
 
@@ -63,10 +71,6 @@ foreach ($tab as $t) {
         function postCProfile() {
 
             var current_fnum    = $$("#profile").get('value');
-            //var current_fnum    = $$("#profile").get('fnum');
-         // alert(current_profile)
-            //var current_profile    = $$("#profile").get('value');
-
             var ajax = new Request({
                 url:'index.php?option=com_emundus&task=switchprofile',
                 method: 'post',
@@ -74,15 +78,12 @@ foreach ($tab as $t) {
                     profnum: current_fnum
                 },
                 onSuccess: function(result){
-                    //result = JSON.parse(result);
-                    //alert(result)
                     location.reload(true);
                 },
                 onFailure: function (jqXHR, status, err) {
                     alert("ajax sending error");
                   }
             });
-            //alert(current_fnum)
 
             ajax.send();
 

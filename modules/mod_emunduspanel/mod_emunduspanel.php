@@ -15,6 +15,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
+include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
 
 $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
@@ -64,6 +66,14 @@ if (is_array($text) && !empty($text)) {
 }
 
 $btn_profile = '<a class="circular ui icon button" href="'.JRoute::_('index.php?option=com_users&view=profile&layout=edit').'"><i class="user icon"></i>'.JText::_('PROFILE').'</a>';
+
+/***** get an applicant campaign *******/
+$m_campaign = new EmundusModelCampaign;
+$campaigns = $m_campaign->getCampaignByApplicant($current_user->id);
+/***** get applicant profiles *******/
+$m_profiles = new EmundusModelProfile;
+$applicant_profiles = $m_profiles->getApplicantsProfilesArray();
+/***************************************/
 
 if (!empty($t__)) { 
 	
