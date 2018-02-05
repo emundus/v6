@@ -40,8 +40,8 @@ foreach ($messages as $message) {
 		try{
 			$chars 		= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?";
 			//$passwd_md5 = md5($passwd);
-			
-			
+
+
 			$m_users = new EmundusModelUsers;
 			$user = $m_users->getUserByEmail($jform["email2"]);
 			$uid = (int) $user[0]->id;
@@ -50,9 +50,9 @@ foreach ($messages as $message) {
 			$email = $emails->getEmail("AccountAlreadyExists");
 			$post = array();
 			$tags = $emails->setTags($uid, $post, null, '');
-			
+
 			//var_dump($jform);
-			
+
 
 			$from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
 			$fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
@@ -60,24 +60,24 @@ foreach ($messages as $message) {
 			$subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
 			$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
 			$body = $emails->setTagsFabrik($body);
-			
-			
+
+
 
 			$email_from_sys = $app->getCfg('mailfrom');
-			
-		
+
+
 			// If the email sender has the same domain as the system sender address.
 			if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
 				$mail_from_address = $email->emailfrom;
 			else
 				$mail_from_address = $email_from_sys;
-			
+
 			// Set sender
 			$sender = [
 				$mail_from_address,
 				$fromname
 			];
-		
+
 			$mailer->setSender($sender);
 			$mailer->addReplyTo($from, $fromname);
 			$mailer->addRecipient($to);
@@ -98,11 +98,11 @@ foreach ($messages as $message) {
 					'message' => $body
 				);
 				$emails->logEmail($message);
-				
+
 				$res = true;
 				//save the profile/program
 				$profile = $m_users->getProfileIDByCampaignID((int)$jform["emundus_profile"]['campaign']);
-				
+
 				$query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$uid.",".$profile.",'','')";
 				$db->setQuery( $query );
 				$db->Query();
@@ -112,14 +112,14 @@ foreach ($messages as $message) {
 				$group = $db->loadColumn();
 
 
-				
+
                 $group_add = JUserHelper::addUserToGroup($uid,$group[0]);
-	
+
 				$msg = JText::_('COM_EMUNDUS_EMAIL_SENT');
 			}
 
 			echo json_encode((object)array('status' => $res, 'msg' => $msg));
-			
+
 			/***********************end mail sending ************************* */
 		}
 		catch(Exception $e){
@@ -198,9 +198,6 @@ if ((count(@$campaign_id) == 0 && !empty($course)) || count($campaigns) == 0) {
 				<?php else:?>
 					<dt>
 						<?php echo $field->label; ?>
-						<?php if (!$field->required && $field->type!='Spacer'): ?>
-							<span class="optional"><?php echo JText::_('COM_USERS_OPTIONAL'); ?></span>
-						<?php endif; ?>
 					</dt>
 					<dd>
 						<?php echo ($field->type!='Spacer') ? $field->input : "&#160;";  $this->form->setValue($field->name, $field->group, ""); ?>
