@@ -34,9 +34,9 @@ $app = JFactory::getApplication();
 $fnum = $app->input->getString('fnum', null);
 
 
-if(isset($user->menutype)) 
+if (isset($user->menutype))
 	$user_menutype = $user->menutype;
-else 
+else
 	$user_menutype = 'mainmenu';
 
 $folder = $params->get('folder', '');
@@ -55,9 +55,9 @@ $module_title = '';
 
 if (is_array($text) && !empty($text)) {
 	foreach ($text as $t) {
-		if(count($text) != $i) 
+		if(count($text) != $i)
 			$t__ .= $t.',';
-		else 
+		else
 			$t__ .= $t;
 		$i++;
 	}
@@ -75,15 +75,15 @@ $m_profiles = new EmundusModelProfile;
 $applicant_profiles = $m_profiles->getApplicantsProfilesArray();
 /***************************************/
 
-if (!empty($t__)) { 
-	
+if (!empty($t__)) {
+
 	/*if($user_menutype == 'mainmenu')
 		$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id, m.params FROM #__menu m WHERE m.id IN ('.$t__.') ORDER BY m.lft ASC';
 	else */
-	
-	$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id, m.params 
-				FROM #__menu m 
-				WHERE m.id IN ('.$t__.') 
+
+	$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id, m.params
+				FROM #__menu m
+				WHERE m.id IN ('.$t__.')
 				ORDER BY m.lft ASC';
 	$db->setQuery($query);
 	$res = $db->loadObjectList();
@@ -91,7 +91,7 @@ if (!empty($t__)) {
 	if (count($res > 0)) {
 		$tab = array();
 
-		if($user->applicant == 1) {
+		if ($user->applicant == 1) {
 			$link = $res[0]->link.'&Itemid='.$res[0]->id;
 			if (!empty($fnum)) {
 				$app->redirect( $link );
@@ -104,7 +104,7 @@ if (!empty($t__)) {
 
 		echo '<div class="emundus_home_page" id="em-panel">';
 		$j = 0;
-		foreach($res as $r){
+		foreach ($res as $r) {
 			$menu_params = json_decode($r->params, true);
 			$src = '';
 			if (empty($img[$j]) && !empty($menu_params['menu_image']) && empty($menu_params['menu-anchor_css']))
@@ -131,7 +131,7 @@ if (!empty($t__)) {
 		$col = count($tab);
 	}
 
-} elseif(!$current_user->guest) { 
+} elseif (!$current_user->guest) {
 	$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id, m.params
               FROM #__menu m
               WHERE published=1
@@ -145,20 +145,20 @@ if (!empty($t__)) {
 		$tab = array();
 		$tab_temp = array();
 
-		if($user->applicant == 1){
+		if ($user->applicant == 1){
 			$module_title = $show_title;
 			$link = $res[0]->link.'&Itemid='.$res[0]->id;
-			if (!empty($fnum)) { 
+			if (!empty($fnum)) {
 				$app->redirect( $link );
 				exit();
 			}
 			$btn_start = '<a class="btn btn-warning" role="button" href="'.JRoute::_($link).'"><i class="right arrow icon"></i>'.JText::_('START').'</a>';
-		}else{
+		} else {
 			$module_title = '';
 			$btn_start = '';
 		}
-		foreach($res as $r){
-			$menu_params = json_decode($r->params, true); 
+		foreach ($res as $r) {
+			$menu_params = json_decode($r->params, true);
 
 			if (!empty($menu_params['menu-anchor_css'])) {
 				$glyphicon = '<i class="'.$menu_params['menu-anchor_css'].'"></i>';
@@ -170,7 +170,7 @@ if (!empty($t__)) {
 				else
 					$icon = '<img src="'.JURI::base(true).$folder.'files_grey.png" />';
 			}
-			
+
 			$str = '<a href="'.JRoute::_($r->link.'&Itemid='.$r->id).'">'.$glyphicon.$icon.' <br />'.$r->title.'</a>';
 
 			$tab[] = $str;
@@ -182,15 +182,15 @@ if (!empty($t__)) {
 
 //------switch profile------------------
 
-		
-	/*	
+
+	/*
 		$uid = JFactory::getUser()->id;
 		$db = JFactory::getDbo();
 		$query = 'select  profile
 		from #__emundus_users where user_id = '.$uid;
 		$db->setQuery($query);
 		$uData = $db->loadAssoc();
-	
+
 		$uid = JFactory::getUser()->id;
 		$db = JFactory::getDbo();
 		$query1 = 'select u.username as login, u.email, u.password, eu.firstname, eu.lastname, eu.profile, eu.university_id, up.profile_value as newsletter
@@ -208,8 +208,8 @@ if (!empty($t__)) {
 		$db->setQuery($query2);
 		$profiles = $db->loadObjectList();
 	 */
-	 
- 
+
+
 //----------------------------------------
 
 if (count(@$user->fnums) > 0 || EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
