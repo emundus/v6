@@ -654,7 +654,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 				}else  $u->delete();
 				
 			}
-		}
+		} 
 		if($users_id != "")
 			$msg = JText::sprintf('THIS_USER_CAN_NOT_BE_DELETED', $users_id);
 		echo json_encode((object)array('status' => $res, 'msg' => $msg));

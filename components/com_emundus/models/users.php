@@ -1166,7 +1166,7 @@ class EmundusModelUsers extends JModelList
     }
 
     public function changeBlock($users, $state) {
-        try {
+        try { 
             $db = $this->getDbo();
             foreach ($users as $uid) {
                 $uid = intval($uid);
