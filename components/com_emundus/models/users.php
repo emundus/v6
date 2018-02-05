@@ -792,7 +792,7 @@ class EmundusModelUsers extends JModelList
                         $db->setQuery($query);
                         $group = $db->loadColumn();
 
-                        $group_add = JUserHelper::addUserToGroup($user->id,$group[0]);
+                        JUserHelper::addUserToGroup($user->id,$group[0]);
                         //$emuser = array('user_id'=>$user->id);
                         //$this->affectToGroups(array($emuser) ,array(1) );
                     }
@@ -1166,7 +1166,7 @@ class EmundusModelUsers extends JModelList
     }
 
     public function changeBlock($users, $state) {
-        try {
+        try { 
             $db = $this->getDbo();
             foreach ($users as $uid) {
                 $uid = intval($uid);
@@ -1475,19 +1475,41 @@ class EmundusModelUsers extends JModelList
         }
     }
 
+    public function countUserEvaluations($uid){
+        try
+        {
+            $query = "select count(*) from #__emundus_evaluations
+                      where user = " .$uid;
+            $db = $this->getDbo();
+            $db->setQuery($query);
+            return $db->loadResult();
+        }
+        catch(Exeption $e)
+        {
+            error_log($e->getMessage(), 0);
+            return false;
+        }
+    }
+
     public function addProfileToUser($uid,$pid){
-        $db = JFactory::getDBO();
-        
-        $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$uid.",".$pid.",'','')";
-        $db->setQuery( $query );
-        $db->Query();
+        try{
+            $db = JFactory::getDBO();
+            
+            $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$uid.",".$pid.",'','')";
+            $db->setQuery( $query );
+            $db->Query();
 
-        $query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id='.$pid;
-        $db->setQuery($query);
-        $group = $db->loadResult();
+            $query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id='.$pid;
+            $db->setQuery($query);
+            $group = $db->loadResult();
 
-        $group_add = JUserHelper::addUserToGroup($uid,$group);
-        
+            $group_add = JUserHelper::addUserToGroup($uid,$group);
+        }
+        catch(Exeption $e)
+        {
+            error_log($e->getMessage(), 0);
+            return false;
+        }
     }
 
     public function editUser($user) {

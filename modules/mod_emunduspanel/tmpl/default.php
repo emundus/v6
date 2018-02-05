@@ -17,24 +17,26 @@ if (isset($user->profile) && $user->profile > 0) {
         $title .= ' '.$btn_start;
     echo '<legend>'.$title.'</legend>';
 
-    $ids_array = array();
+    if (isset($user->fnums)) {
+        $ids_array = array();
 
-    if ($user->fnums) {
-        foreach ($user->fnums as $fnum) {
-            $ids_array[$fnum->profile_id] = $fnum->fnum;
+        if ($user->fnums) {
+            foreach ($user->fnums as $fnum) {
+                $ids_array[$fnum->profile_id] = $fnum->fnum;
+            }
         }
-    }
 
-    if (!empty($user->emProfiles)) {
-        echo('<br/><div class="styled-select slate"');
-        echo '<legend><select class="form-control form-control-sm" id="profile" name="profiles" onchange="postCProfile()"> ';
-        foreach ($user->emProfiles as $profile) {
-            if (array_key_exists($profile->id,$ids_array))
-                echo '<option  value="'.$profile->id.".".$ids_array[$profile->id].'"' .(($user->profile == $profile->id)?'selected="selected"':"").'>'.trim($profile->label).'</option>';
-            else
-                echo '<option  value="'.$profile->id.".".'"' .(($user->profile == $profile->id)?'selected="selected"':"").'>'.trim($profile->label).'</option>';
+        if (!empty($user->emProfiles)) {
+            echo('<br/><div class="styled-select slate"');
+            echo '<legend><select class="form-control form-control-sm" id="profile" name="profiles" onchange="postCProfile()"> ';
+            foreach ($user->emProfiles as $profile) {
+                if (array_key_exists($profile->id,$ids_array))
+                    echo '<option  value="'.$profile->id.".".$ids_array[$profile->id].'"' .(($user->profile == $profile->id)?'selected="selected"':"").'>'.trim($profile->label).'</option>';
+                else
+                    echo '<option  value="'.$profile->id.".".'"' .(($user->profile == $profile->id)?'selected="selected"':"").'>'.trim($profile->label).'</option>';
+            }
+            echo '</select></legend></div><br/>';
         }
-        echo '</select></legend></div><br/>';
     }
 }
 
@@ -43,15 +45,23 @@ if (isset($user->profile) && $user->profile > 0) {
 
 <div class="ui grid">
 <?php
-foreach ($campaigns as $campaign){
-    if($user->profile == $campaign->profile_id){
+if (!isset($campaign)) {
+    if (!in_array($user->profile, $applicant_profiles)) {
         foreach ($tab as $t) {
             echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
         }
-    }else{
-        if(!in_array($user->profile, $applicant_profiles)){
+    }
+} else {
+    foreach ($campaigns as $campaign) {
+        if ($user->profile == $campaign->profile_id) {
             foreach ($tab as $t) {
                 echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
+            }
+        } else {
+            if (!in_array($user->profile, $applicant_profiles)){
+                foreach ($tab as $t) {
+                    echo '<div class="five wide column element_home_emundus">' . $t . '</div>';
+                }
             }
         }
     }

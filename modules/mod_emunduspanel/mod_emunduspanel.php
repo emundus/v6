@@ -91,7 +91,7 @@ if (!empty($t__)) {
 	if (count($res > 0)) {
 		$tab = array();
 
-		if($user->applicant == 1) {
+		if ($user->applicant == 1) {
 			$link = $res[0]->link.'&Itemid='.$res[0]->id;
 			if (!empty($fnum)) {
 				$app->redirect( $link );
@@ -104,7 +104,7 @@ if (!empty($t__)) {
 
 		echo '<div class="emundus_home_page" id="em-panel">';
 		$j = 0;
-		foreach($res as $r){
+		foreach ($res as $r) {
 			$menu_params = json_decode($r->params, true);
 			$src = '';
 			if (empty($img[$j]) && !empty($menu_params['menu_image']) && empty($menu_params['menu-anchor_css']))
@@ -131,7 +131,7 @@ if (!empty($t__)) {
 		$col = count($tab);
 	}
 
-} elseif(!$current_user->guest) {
+} elseif (!$current_user->guest) {
 	$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id, m.params
               FROM #__menu m
               WHERE published=1
@@ -145,7 +145,7 @@ if (!empty($t__)) {
 		$tab = array();
 		$tab_temp = array();
 
-		if($user->applicant == 1){
+		if ($user->applicant == 1){
 			$module_title = $show_title;
 			$link = $res[0]->link.'&Itemid='.$res[0]->id;
 			if (!empty($fnum)) {
@@ -153,11 +153,11 @@ if (!empty($t__)) {
 				exit();
 			}
 			$btn_start = '<a class="btn btn-warning" role="button" href="'.JRoute::_($link).'"><i class="right arrow icon"></i>'.JText::_('START').'</a>';
-		}else{
+		} else {
 			$module_title = '';
 			$btn_start = '';
 		}
-		foreach($res as $r){
+		foreach ($res as $r) {
 			$menu_params = json_decode($r->params, true);
 
 			if (!empty($menu_params['menu-anchor_css'])) {
