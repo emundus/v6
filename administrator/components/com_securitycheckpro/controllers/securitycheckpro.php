@@ -16,7 +16,7 @@ jimport('joomla.application.component.controller');
 * Securitycheckpros  Controller
 *
 */
-class SecuritycheckprosControllerSecuritycheckpro extends JControllerLegacy
+class SecuritycheckprosControllerSecuritycheckpro extends SecuritycheckproController
 {
 /**
 * constructor (registers additional tasks to methods)
@@ -33,8 +33,7 @@ parent::__construct();
 function mostrar()
 {
 	JRequest::setVar( 'view', 'vulninfo' );
-	JRequest::setVar('hidemainmenu', 1);
-
+		
 	parent::display();
 }
 
@@ -61,8 +60,6 @@ $this->setRedirect( 'index.php?option=com_securitycheckpro&controller=securitych
 function view_logs()
 {
 	JRequest::setVar( 'view', 'logs' );
-	JRequest::setVar('hidemainmenu', 1);
-
 	parent::display(); 
 }
 
@@ -97,8 +94,7 @@ function search()
 function view()
 {
 	JRequest::setVar( 'view', 'securitycheckpro' );
-	JRequest::setVar( 'layout', 'form'  );
-	JRequest::setVar('hidemainmenu', 1);
+	JRequest::setVar( 'layout', 'form'  );	
 
 	parent::display();
 }
@@ -220,6 +216,16 @@ function add_to_whitelist()
 	$model = $this->getModel('logs');
 	$model->add_to_whitelist();
 	$this->view_logs();
+}
+
+/* Añadir Ip(s) a la lista blanca */
+function filter_vulnerable_extension()
+{
+	$product = JRequest::getVar('product');
+	$model = $this->getModel('securitycheckpros');
+	$vuln_extensions = $model->filter_vulnerable_extension($product);
+		
+	echo $vuln_extensions;
 }
 
 }

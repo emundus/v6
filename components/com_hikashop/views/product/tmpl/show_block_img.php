@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -47,8 +47,8 @@ if(!$this->config->get('thumbnail')) {
 
 ?>
 		<div class="hikashop_product_main_image_thumb" id="hikashop_image_main_thumb_div<?php echo $variant_name;?>" <?php echo $style;?> >
-			<div style="<?php if(!empty($divHeight)){ echo 'height:'.($divHeight+20).'px;'; } ?>text-align:center;clear:both;" class="hikashop_product_main_image">
-				<div style="position:relative;text-align:center;clear:both;<?php if(!empty($divWidth)){ echo 'width:'.$divWidth.'px;'; } ?>margin: auto;" class="hikashop_product_main_image_subdiv">
+			<div style="<?php if(!empty($divHeight) && !$this->config->get('image_force_size',true)){ echo 'height:'.($divHeight+20).'px;'; } ?>text-align:center;clear:both;" class="hikashop_product_main_image">
+				<div style="position:relative;text-align:center;clear:both;margin: auto;" class="hikashop_product_main_image_subdiv">
 <?php
 	if($this->image->override) {
 		echo $this->image->display(@$image->file_path, true, @$image->file_name, 'id="hikashop_main_image'.$variant_name.'" itemprop="image" style="margin-top:10px;margin-bottom:10px;display:inline-block;vertical-align:middle"','id="hikashop_main_image_link"', $width, $height);

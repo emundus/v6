@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -13,6 +13,8 @@ defined('_JEXEC') or die;
 
 /**
  * Row selection checkbox. Alias to RowSelect (common typo)
+ *
+ * @deprecated 3.1  Support for XML forms will be removed in FOF 4
  */
 class SelectRow extends RowSelect
 {

@@ -28,22 +28,10 @@ parent::__construct();
 
 }
 
-/* Redirecciona las peticiones al componente */
-function redireccion()
-{
-	$this->setRedirect( 'index.php?option=com_securitycheckpro&controller=securitycheckpro' );
-}
-
-/* Redirecciona las peticiones al Panel de Control */
-function redireccion_control_panel()
-{
-	$this->setRedirect( 'index.php?option=com_securitycheckpro' );
-}
-
 /* Guarda los cambios y redirige al cPanel */
-public function save()
+public function apply()
 {
-	JRequest::checkToken() or die('Invalid Token');
+	//JRequest::checkToken() or die('Invalid Token');
 	$model = $this->getModel('protection');
 	
 	// Obtenemos los valores del formulario; hemos de especificar cada uno de ellos porque el campo 'own_code' ha de contener datos en bruto
@@ -70,17 +58,12 @@ public function save()
 		'backend_protection_applied'	=>	0,
 		'hide_backend_url_redirection'	=>	'not_found'
 	));
+	
 	$model->saveConfig($data, 'cparams');
-
-	$this->setRedirect('index.php?option=com_securitycheckpro&view=cpanel&'. JSession::getFormToken() .'=1',JText::_('COM_SECURITYCHECKPRO_CONFIGSAVED'));
-}
-
-/* Guarda los cambios */
-public function apply()
-{
-	$this->save('cparams');
 	$this->setRedirect('index.php?option=com_securitycheckpro&controller=protection&view=protection&'. JSession::getFormToken() .'=1',JText::_('COM_SECURITYCHECKPRO_CONFIGSAVED'));
+
 }
+
 
 /* Modifica o crear el archivo .htaccess con las configuraciones seleccionadas por el usuario */
 function protect()

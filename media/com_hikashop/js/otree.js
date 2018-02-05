@@ -1,7 +1,7 @@
 /*
 	oTree : Obscurelighty Project ( http://www.obscurelighty.com/ )
 	Author: Jerome GLATIGNY <jerome@obscurelighty.com>
-	Copyright (C) 2010-2017  Jerome GLATIGNY
+	Copyright (C) 2010-2018  Jerome GLATIGNY
 
 	This file is part of Obscurelighty.
 

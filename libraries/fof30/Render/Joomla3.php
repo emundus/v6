@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -58,10 +58,9 @@ class Joomla3 extends AkeebaStrapper
 		\JHTML::_('jquery.framework', true);
 
 		// Wrap output in various classes
-		$version = new \JVersion;
-		$versionParts = explode('.', $version->RELEASE);
-		$minorVersion = str_replace('.', '', $version->RELEASE);
-		$majorVersion = array_shift($versionParts);
+		$versionParts = explode('.', JVERSION);
+		$minorVersion = $versionParts[0] . $versionParts[1];
+		$majorVersion = $versionParts[0];
 
 		$classes = array();
 
@@ -92,7 +91,7 @@ class Joomla3 extends AkeebaStrapper
 			$classes = array_unique($classes);
 		}
 
-		echo '<div id="akeeba-renderjoomla" class="' . implode($classes, ' ') . "\">\n";
+		$this->openPageWrapper($classes);
 
 		// Render the submenu and toolbar
 		if ($input->getBool('render_toolbar', true))
@@ -133,7 +132,8 @@ class Joomla3 extends AkeebaStrapper
 			return;
 		}
 
-		echo "</div>\n";    // Closes akeeba-renderjoomla div
+		// Closes akeeba-renderjoomla div
+		$this->closePageWrapper();
 	}
 
 	/**
@@ -169,6 +169,8 @@ class Joomla3 extends AkeebaStrapper
 	 * @param 	string  $title  The title of the label
 	 *
 	 * @return 	string  The rendered label
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	public function renderFieldsetLabel($field, Form &$form, $title)
 	{
@@ -202,6 +204,28 @@ class Joomla3 extends AkeebaStrapper
 		$html .= "</label>\n";
 
 		return $html;
+	}
+
+	/**
+	 * Opens a page wrapper. The component output will be inside this wrapper.
+	 *
+	 * @param   array  $classes  An array of additional CSS classes to add to the outer page wrapper element.
+	 *
+	 * @return  void
+	 */
+	protected function openPageWrapper($classes)
+	{
+		echo '<div id="akeeba-renderjoomla" class="' . implode($classes, ' ') . "\">\n";
+	}
+
+	/**
+	 * Outputs HTML which closes the page wrappers opened with openPageWrapper.
+	 *
+	 * @return  void
+	 */
+	protected function closePageWrapper()
+	{
+		echo "</div>\n";
 	}
 
 }

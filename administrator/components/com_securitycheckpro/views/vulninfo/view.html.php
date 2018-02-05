@@ -23,17 +23,20 @@ class SecuritycheckprosViewvulninfo extends JViewLegacy
 	{
 		
 		JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECURITYCHECKPRO_VULN_DATABASE_TEXT'), 'securitycheckpro' );
-		JToolBarHelper::custom('redireccion','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT');
-				
+						
 		// Obtenemos los datos del modelo
-		$vuln_details = $this->get('Data');
+		$model = $this->getModel();
+		$vuln_details = $model->datos();				
 		$pagination = $this->get('Pagination');
+		$logs_pending = $model->LogsPending();
+		$trackactions_plugin_exists = $model->PluginStatus(8);
 		
 						
 		// Ponemos los datos y la paginación en el template
 		$this->assignRef('vuln_details',$vuln_details);
 		$this->assignRef('pagination', $pagination);
-		
+		$this->assignRef('logs_pending', $logs_pending);
+		$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);		
 							
 		parent::display($tpl);
 	}

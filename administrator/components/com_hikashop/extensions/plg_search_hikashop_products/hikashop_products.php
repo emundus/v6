@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -192,7 +192,9 @@ class plgSearchHikashop_products extends JPlugin{
 			$count = count($rows);
 			if($count){
 				$limit = $limit-$count;
-				$filters[]='a.product_id NOT IN ('.implode(',',array_keys($rows)).')';
+				$ids = array_keys($rows);
+				JArrayHelper::toInteger($ids);
+				$filters[]='a.product_id NOT IN ('.implode(',', $ids).')';
 			}
 		}
 
@@ -211,7 +213,7 @@ class plgSearchHikashop_products extends JPlugin{
 			$mainRows = $db->loadObjectList("id");
 			if(!empty($mainRows)){
 				foreach($mainRows as $k => $main){
-					$rows[$k]=$main;
+					$rows[(int)$k] = $main;
 				}
 				$count = count( $rows );
 			}
@@ -219,7 +221,9 @@ class plgSearchHikashop_products extends JPlugin{
 		if($count){
 
 			if($multi && !empty($lg)){
-				$query = ' SELECT * FROM '.hikashop_table($trans_table,false) . ' WHERE reference_table=\'hikashop_product\' AND language_id=\''.$lg.'\' AND published=1 AND reference_id IN ('.implode(',',array_keys($rows)).')';
+				$ids = array_keys($rows);
+				JArrayHelper::toInteger($ids);
+				$query = ' SELECT * FROM '.hikashop_table($trans_table,false) . ' WHERE reference_table=\'hikashop_product\' AND language_id=\''.$lg.'\' AND published=1 AND reference_id IN ('.implode(',', $ids).')';
 				$db->setQuery($query);
 				$trans = $db->loadObjectList();
 				foreach($trans as $item){

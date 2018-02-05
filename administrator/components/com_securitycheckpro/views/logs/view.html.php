@@ -27,7 +27,6 @@ function display($tpl = null)
 {
 
 JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' .JText::_('COM_SECURITYCHECKPRO_CPANEL_VIEW_FIREWALL_LOGS_TEXT'), 'securitycheckpro' );
-JToolBarHelper::custom('redireccion_control_panel','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT_CONTROL_PANEL');
 JToolBarHelper::custom('csv_export', 'out-2', 'out-2', 'COM_SECURITYCHECKPRO_EXPORT_LOGS_CSV', false);
 JToolBarHelper::custom('mark_read','checkbox','checkbox','COM_SECURITYCHECKPRO_LOG_READ_CHANGE');
 JToolBarHelper::custom('mark_unread','checkbox-unchecked','checkbox-unchecked','COM_SECURITYCHECKPRO_LOG_NO_READ_CHANGE');
@@ -67,6 +66,13 @@ if ( !empty($items) ) {
 // Obtenemos los parámetros del plugin...
 $model = $this->getModel();	
 $config= $model->getConfig();
+
+// Extraemos información necesaria 
+require_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/library/model.php';
+$common_model = new SecuritycheckproModel();
+
+$logs_pending = $common_model->LogsPending();
+$trackactions_plugin_exists = $common_model->PluginStatus(8);
 		
 $logs_attacks = 0;
 if ( !is_null($config['logs_attacks']) ) {
@@ -74,7 +80,9 @@ if ( !is_null($config['logs_attacks']) ) {
 }
 				
 // ... y los ponemos en el template
-$this->assignRef('logs_attacks',$logs_attacks);						
+$this->assignRef('logs_attacks',$logs_attacks);	
+$this->assignRef('logs_pending', $logs_pending);
+$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);					
 
 parent::display($tpl);
 }

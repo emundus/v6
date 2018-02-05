@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -51,7 +51,7 @@ class plgSystemAdmintools extends JPlugin
 	/** @var   bool   Should I skip filtering (because of whitelisted IPs, WAF Exceptions etc) */
 	public $skipFiltering = false;
 
-	/** @var   JApplicationCms  The application we're runnign in */
+	/** @var   JApplicationCms|\Joomla\CMS\Application\CMSApplication  The application we're running in */
 	public $app = null;
 
 	/** @var   JDatabaseDriver  The Joomla! database driver */
@@ -61,7 +61,7 @@ class plgSystemAdmintools extends JPlugin
 	protected $container;
 
 	/**
-	 * Working around stupid (JoomlaShine) serializing JApplicationCms and, with it, all plugins.
+	 * Working around stupid (JoomlaShine) serializing CMSApplication and, with it, all plugins.
 	 *
 	 * Serializing the entire plugin would cause a security nightmare. So let's try to only save its only immutable
 	 * properties (name and plugin folder). In the wakeup call we'll reconstruct all the mutable properties.
@@ -76,7 +76,7 @@ class plgSystemAdmintools extends JPlugin
 	}
 
 	/**
-	 * Working around stupid (JoomlaShine) serializing JApplicationCms and, with it, all plugins.
+	 * Working around stupid (JoomlaShine) serializing CMSApplication and, with it, all plugins.
 	 *
 	 * Serializing the entire plugin would cause a security nightmare. So let's try to only save its only immutable
 	 * properties (name and plugin folder). In the wakeup call we'll reconstruct all the mutable properties.
@@ -516,7 +516,7 @@ class plgSystemAdmintools extends JPlugin
 
 		if ($this->container->platform->isFrontend())
 		{
-			/** @var \JApplicationSite $app */
+			/** @var \Joomla\CMS\Application\SiteApplication $app */
 			$app = \JFactory::getApplication();
 
 			if ($app->getLanguageFilter())
@@ -805,11 +805,13 @@ class plgSystemAdmintools extends JPlugin
 
 	/**
 	 * This is a separate method instead of being part of __construct in a last ditch attempt to work around stupid.
-	 * Namely, the incompetent kooks at JoomlaShine who serialize the entire JApplicationCms object. Of course it's a
+	 * Namely, the incompetent kooks at JoomlaShine who serialize the entire CMSApplication object. Of course it's a
 	 * security issue. Of course we told them to get their act together. Of course they didn't try to understand. Fine.
 	 * Let me protect my users against you.
 	 *
 	 * @return  void
+	 *
+	 * @throws  Exception
 	 */
 	private function initialize()
 	{

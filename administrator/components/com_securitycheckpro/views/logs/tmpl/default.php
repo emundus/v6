@@ -45,229 +45,279 @@ $type_array = array(JHtml::_('select.option','XSS', JText::_('COM_SECURITYCHECKP
 $leido_array = array(JHtml::_('select.option',0, JText::_('COM_SECURITYCHECKPRO_LOG_NOT_READ')),
 			JHtml::_('select.option',1, JText::_('COM_SECURITYCHECKPRO_LOG_READ')));
 
-JHtml::_('behavior.tooltip');
+// Load plugin language
+$lang2 = JFactory::getLanguage();
+$lang2->load('plg_system_securitycheckpro');
+			
+$vulnerable_array = array(JHtml::_('select.option','Si', JText::_('COM_SECURITYCHECKPRO_HEADING_VULNERABLE')),
+			JHtml::_('select.option','No', JText::_('COM_SECURITYCHECKPRO_GREEN_COLOR')));
+
+JHtml::_('formbehavior.chosen', 'select');
+
+// Cargamos el comportamiento modal para mostrar las ventanas para exportar
 JHtml::_('behavior.modal');
-JHTML::_( 'behavior.framework', true );
 
-// Add style declaration
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-JHTML::stylesheet($media_url);
-
-$bootstrap_css = "media/com_securitycheckpro/stylesheets/bootstrap.min.css";
-JHTML::stylesheet($bootstrap_css);
+// Eliminamos la carga de las librerías mootools
+$document = JFactory::getDocument();
+$rootPath = JURI::root(true);
+$arrHead = $document->getHeadData();
+unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
+unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
+$document->setHeadData($arrHead);
 
 JHtml::_('formbehavior.chosen', 'select');
 
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
+
 ?>
 
-<?php if (!($this->logs_attacks)){ ?>
+  <!-- Bootstrap core JavaScript -->
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/jquery/jquery.min.js"></script>
 
-<div style=" text-align:center; background-color:#F78181; border:1px; border-style:solid ">
-<h2><?php echo JText::_('COM_SECURITYCHECKPRO_LOGS_RECORD_DISABLED'); ?></h2>
-<div id="top"><?php echo JText::_('COM_SECURITYCHECKPRO_LOGS_RECORD_DISABLED_TEXT'); ?></div>
-</div>
-<?php } ?>
-
-
-<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&view=logs');?>" method="post" name="adminForm" id="adminForm">
-
-<div id="filter-bar" class="btn-toolbar">
-	<div class="filter-search btn-group pull-left">
-		<input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER_LABEL'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" title="<?php echo JText::_('JSEARCH_FILTER'); ?>" />
-	</div>
-	<div class="btn-group pull-left">
-		<button class="btn tip" type="submit" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
-		<button class="btn tip" type="button" onclick="document.id('filter_search').value='';this.form.submit();" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
-	</div>
-	<div class="filter-search btn-group pull-left hidden-phone">
-		<?php echo JHTML::_('calendar', $this->getModel()->getState('datefrom',''), 'datefrom', 'datefrom', '%Y-%m-%d', array('onchange'=>'document.adminForm.submit();', 'class' => 'input-small')); ?>
-	</div>
-	<div class="filter-search btn-group pull-left hidden-phone">
-		<?php echo JHTML::_('calendar', $this->getModel()->getState('dateto',''), 'dateto', 'dateto', '%Y-%m-%d', array('onchange'=>'document.adminForm.submit();', 'class' => 'input-small')); ?>
-	</div>
-	<div class="btn-group pull-left">
-		<select name="filter_description" class="inputbox" onchange="this.form.submit()">
-			<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_SELECT_DESCRIPTION');?></option>
-			<?php echo JHtml::_('select.options', $description_array, 'value', 'text', $this->state->get('filter.description'));?>
-		</select>
-	</div>
-	<div class="btn-group pull-left">
-		<select name="filter_type" class="inputbox" onchange="this.form.submit()">
-			<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_TYPE_DESCRIPTION');?></option>
-			<?php echo JHtml::_('select.options', $type_array, 'value', 'text', $this->state->get('filter.type'));?>
-		</select>
-	</div>
-	<div class="btn-group pull-left">
-		<select name="filter_leido" class="inputbox" onchange="this.form.submit()">
-			<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_MARKED_DESCRIPTION');?></option>
-			<?php echo JHtml::_('select.options', $leido_array, 'value', 'text', $this->state->get('filter.leido'));?>
-		</select>
-	</div>
-	</div>
-</div>
-
-<div class="clearfix"> </div>
-
-<div>
-	<span class="badge" style="background-color: #C68C51; padding: 10px 10px 10px 10px; float:right;"><?php echo JText::_('COM_SECURITYCHECKPRO_LIST_LOGS');?></span>
-</div>
-	
-	<table class="table table-bordered table-hover">
-	<thead>
-		<tr>
-			<th class="logs" align="center">
-				<?php echo JHtml::_('grid.sort', 'Ip', 'ip', $listDirn, $listOrder); ?>				
-			</th>
-			<th class="logs" align="center">
-				<?php echo JHtml::_('grid.sort', 'COM_SECURITYCHECKPRO_GEOLOCATION_LABEL', 'geolocation', $listDirn, $listOrder); ?>				
-			</th>
-			<th class="logs" align="center">
-				<?php echo JHtml::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_TIME', 'time', $listDirn, $listOrder); ?>				
-			</th>
-			<th class="logs" align="center">
-				<?php echo JText::_( 'COM_SECURITYCHECKPRO_USER' ); ?>
-			</th>
-			<th class="logs" align="center">
-				<?php echo JHtml::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_DESCRIPTION', 'description', $listDirn, $listOrder); ?>			
-			</th>
-			<th class="logs" align="center">
-				<?php echo JText::_( 'COM_SECURITYCHECKPRO_LOG_URI' ); ?>
-			</th>
-			<th class="logs" align="center">
-				<?php echo JHtml::_('grid.sort', 'COM_SECURITYCHECKPRO_TYPE_COMPONENT', 'component', $listDirn, $listOrder); ?>				
-			</th>
-			<th class="logs" align="center">
-				<?php echo JHtml::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_TYPE', 'type', $listDirn, $listOrder); ?>					
-			</th>
-			<th class="logs" align="center">
-				<?php echo JHtml::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_READ', 'marked', $listDirn, $listOrder); ?>				
-			</th>
-			<th class="logs" align="center">
-				<input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" />
-			</th>
-		</tr>
-	</thead>
-<?php
-$k = 0;
-foreach ($this->items as &$row) {	
+<?php 
+// Cargamos el contenido común
+include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
-<tr>
-	<td align="center">
-			<?php 
-				$ip_sanitized = filter_var($row->ip, FILTER_SANITIZE_STRING);
-			echo $ip_sanitized; ?>	
-	</td>
-	<td align="center">
-			<?php 
-				$geolocation_sanitized = filter_var($row->geolocation, FILTER_SANITIZE_STRING);
-			echo $geolocation_sanitized; ?>	
-	</td>
-	<td align="center">
-			<?php echo $row->time; ?>	
-	</td>
-	<td align="center">
-			<?php 
-			$username_sanitized = filter_var($row->username, FILTER_SANITIZE_STRING);
-			echo $username_sanitized; ?>	
-	</td>
-	<td align="center">
-			<?php $title = JText::_( 'COM_SECURITYCHECK_ORIGINAL_STRING' ); ?>
-			<?php $decoded_string = base64_decode($row->original_string); ?>
-			<?php $decoded_string = filter_var($decoded_string, FILTER_SANITIZE_STRING); ?>
-			<?php $description_sanitized = filter_var($row->description, FILTER_SANITIZE_STRING); ?>
-			<?php echo JText::_( 'COM_SECURITYCHECKPRO_' .$row->tag_description ); ?>
-			<?php echo JText::_( ':' .$description_sanitized ); ?>
-			<?php echo "<br />"; ?>
-			<textarea cols="30" rows="1" readonly><?php echo $decoded_string ?></textarea>
-	</td>	
-	<td align="center">
-			<?php 
-				$uri_sanitized = filter_var($row->uri, FILTER_SANITIZE_STRING);
-			echo substr(($uri_sanitized),0,60); ?>
-	</td>
-	<td align="center">
-			<?php $component_sanitized = filter_var($row->component, FILTER_SANITIZE_STRING);
-			echo substr(($component_sanitized),0,20);	?>	
-	</td>
-	<td align="center">
+
+<!-- Bootstrap core CSS-->
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+<!-- Custom fonts for this template-->
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
+ <!-- Custom styles for this template-->
+<link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/css/sb-admin.css" rel="stylesheet">
+
+<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&view=logs');?>" style="margin-top: -18px;" method="post" name="adminForm" id="adminForm">
+
 		<?php 
-			$type_sanitized = filter_var($row->type, FILTER_SANITIZE_STRING);
-			$type = $type_sanitized;			
-			if ( $type == 'XSS' ){
-				echo ('<img src="../media/com_securitycheckpro/images/xss.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
-			}else if ( $type == 'XSS_BASE64' ){
-				echo ('<img src="../media/com_securitycheckpro/images/xss_base64.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
-			}else if ( $type == 'SQL_INJECTION' ){
-				echo ('<img src="../media/com_securitycheckpro/images/sql_injection.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
-			}else if ( $type == 'SQL_INJECTION_BASE64' ){
-				echo ('<img src="../media/com_securitycheckpro/images/sql_injection_base64.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
-			}else if ( $type == 'LFI' ){
-				echo ('<img src="../media/com_securitycheckpro/images/local_file_inclusion.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
-			}else if ( $type == 'LFI_BASE64' ){
-				echo ('<img src="../media/com_securitycheckpro/images/local_file_inclusion_base64.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
-			}else if ( $type == 'IP_PERMITTED' ){
-				echo ('<img src="../media/com_securitycheckpro/images/permitted.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
-			}else if ( $type == 'IP_BLOCKED' ){
-				echo ('<img src="../media/com_securitycheckpro/images/blocked.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
-			}else if ( $type == 'IP_BLOCKED_DINAMIC' ){
-				echo ('<img src="../media/com_securitycheckpro/images/dinamically_blocked.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
-			}else if ( $type == 'SECOND_LEVEL' ){
-				echo ('<img src="../media/com_securitycheckpro/images/second_level.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
-			}else if ( $type == 'USER_AGENT_MODIFICATION' ){
-				echo ('<img src="../media/com_securitycheckpro/images/http.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
-			}else if ( $type == 'REFERER_MODIFICATION' ){
-				echo ('<img src="../media/com_securitycheckpro/images/http.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
-			}else if ( $type == 'SESSION_PROTECTION' ){
-				echo ('<img src="../media/com_securitycheckpro/images/session_protection.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
-			}else if ( $type == 'SESSION_HIJACK_ATTEMPT' ){
-				echo ('<img src="../media/com_securitycheckpro/images/session_hijack.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
-			}else if ( ($type == 'MULTIPLE_EXTENSIONS') || ($type == 'FORBIDDEN_EXTENSION') ){
-				echo ('<img src="../media/com_securitycheckpro/images/upload_scanner.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
-			}else if ( $type == 'SPAM_PROTECTION' ){
-				echo ('<img src="../media/com_securitycheckpro/images/spam_protection.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
-			}else if ( $type == 'URL_INSPECTOR' ){
-				echo ('<img src="../media/com_securitycheckpro/images/url_inspector.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
-			}			
+		// Cargamos la navegación
+		include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/navigation.php';
 		?>
-	</td>
-	<td align="center">
-		<?php 
-			$marked = $row->marked;			
-			if ( $marked == 1 ){
-				echo ('<img src="../media/com_securitycheckpro/images/read.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_LOG_READ' ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_LOG_READ' ) .'">');
-			} else {
-				echo ('<img src="../media/com_securitycheckpro/images/no_read.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_LOG_UNREAD' ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_LOG_UNREAD' ) .'">');
-			}
-		?>
-	</td>
-	<td align="center">
-			<?php echo JHtml::_('grid.id', $k, $row->id); ?>
-	</td>
-</tr>
-<?php
-$k = $k+1;
-}
-?>
 
-</table>
-
-<div>
-	<?php echo $this->pagination->getListFooter(); echo $this->pagination->getLimitBox(); ?>
+			<?php if (!($this->logs_attacks)){ ?>
+			<div class="alert alert-danger text-center" style="margin-bottom: 10px;">
+				<h2><?php echo JText::_('COM_SECURITYCHECKPRO_LOGS_RECORD_DISABLED'); ?></h2>
+				<div id="top"><?php echo JText::_('COM_SECURITYCHECKPRO_LOGS_RECORD_DISABLED_TEXT'); ?></div>
+			</div>
+			<?php } ?>
+		
+		  <!-- Breadcrumb-->
+		  <ol class="breadcrumb">
+			<li class="breadcrumb-item">
+			  <a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro' );?>"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_DASHBOARD'); ?></a>
+			</li>			
+			<li class="breadcrumb-item active"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_VIEW_FIREWALL_LOGS_TEXT'); ?></li>
+		  </ol>
+			
+			<!-- Contenido principal -->			
+			<div class="card mb-3">
+				<div class="card-body">
+				
+					<div id="filter-bar" class="btn-toolbar">
+						<div class="filter-search btn-group pull-left">
+							<input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER_LABEL'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" title="<?php echo JText::_('JSEARCH_FILTER'); ?>" />
+						</div>
+						<div class="btn-group pull-left">
+							<button class="btn tip" type="submit" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
+							<button class="btn tip" type="button" onclick="document.getElementById('filter_search').value=''; this.form.submit();" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
+						</div>
+						<div class="filter-search btn-group pull-left hidden-phone">
+							<?php echo JHTML::_('calendar', $this->getModel()->getState('datefrom',''), 'datefrom', 'datefrom', '%Y-%m-%d', array('onchange'=>'document.adminForm.submit();', 'class' => 'input-small')); ?>
+						</div>
+						<div class="filter-search btn-group pull-left hidden-phone">
+							<?php echo JHTML::_('calendar', $this->getModel()->getState('dateto',''), 'dateto', 'dateto', '%Y-%m-%d', array('onchange'=>'document.adminForm.submit();', 'class' => 'input-small')); ?>
+						</div>
+						<div class="btn-group pull-left">
+							<select name="filter_description" class="inputbox" onchange="this.form.submit()">
+								<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_SELECT_DESCRIPTION');?></option>
+								<?php echo JHtml::_('select.options', $description_array, 'value', 'text', $this->state->get('filter.description'));?>
+							</select>
+						</div>
+						<div class="btn-group pull-left">
+							<select name="filter_type" class="inputbox" onchange="this.form.submit()">
+								<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_TYPE_DESCRIPTION');?></option>
+								<?php echo JHtml::_('select.options', $type_array, 'value', 'text', $this->state->get('filter.type'));?>
+							</select>
+						</div>
+						<div class="btn-group pull-left">
+							<select name="filter_leido" class="inputbox" onchange="this.form.submit()">
+								<option value=""><?php echo JText::_('COM_SECURITYCHECKPRO_MARKED_DESCRIPTION');?></option>
+								<?php echo JHtml::_('select.options', $leido_array, 'value', 'text', $this->state->get('filter.leido'));?>
+							</select>
+						</div>
+						</div>
+					</div>				
+						<div style="width: 100%; overflow-y: auto; _overflow: auto;	margin: 0 0 1em; font-size: 12px;">
+							<table class="table table-responsive table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+								<thead>
+									<tr>
+										<th class="logs text-center">
+											<?php echo JHtml::_('grid.sort', 'Ip', 'ip', $listDirn, $listOrder); ?>				
+										</th>
+										<th class="logs text-center">
+											<?php echo JHtml::_('grid.sort', 'COM_SECURITYCHECKPRO_GEOLOCATION_LABEL', 'geolocation', $listDirn, $listOrder); ?>				
+										</th>
+										<th class="logs text-center">
+											<?php echo JHtml::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_TIME', 'time', $listDirn, $listOrder); ?>				
+										</th>
+										<th class="logs text-center">
+											<?php echo JText::_( 'COM_SECURITYCHECKPRO_USER' ); ?>
+										</th>
+										<th class="logs text-center">
+											<?php echo JHtml::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_DESCRIPTION', 'description', $listDirn, $listOrder); ?>			
+										</th>
+										<th class="logs text-center" style="width: 35%;">
+											<?php echo JText::_( 'COM_SECURITYCHECKPRO_LOG_URI' ); ?>
+										</th>
+										<th class="logs text-center">
+											<?php echo JHtml::_('grid.sort', 'COM_SECURITYCHECKPRO_TYPE_COMPONENT', 'component', $listDirn, $listOrder); ?>				
+										</th>
+										<th class="logs text-center">
+											<?php echo JHtml::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_TYPE', 'type', $listDirn, $listOrder); ?>					
+										</th>
+										<th class="logs text-center">
+											<?php echo JHtml::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_READ', 'marked', $listDirn, $listOrder); ?>				
+										</th>
+										<th class="logs text-center">
+											<input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" />
+										</th>										
+									</tr>
+								</thead>
+								<?php
+								
+								if ( !empty($this->items) ) {		
+						
+									$k = 0;
+									foreach ($this->items as &$row) {	
+									?>
+									<tr>
+										<td align="center">
+												<?php 
+													$ip_sanitized = filter_var($row->ip, FILTER_SANITIZE_STRING);
+												echo $ip_sanitized; ?>	
+										</td>
+										<td align="center">
+												<?php 
+													$geolocation_sanitized = filter_var($row->geolocation, FILTER_SANITIZE_STRING);
+												echo $geolocation_sanitized; ?>	
+										</td>
+										<td align="center">
+												<?php echo $row->time; ?>	
+										</td>
+										<td align="center">
+												<?php 
+												$username_sanitized = filter_var($row->username, FILTER_SANITIZE_STRING);
+												echo $username_sanitized; ?>	
+										</td>
+										<td align="center">
+												<?php $title = JText::_( 'COM_SECURITYCHECK_ORIGINAL_STRING' ); ?>
+												<?php $decoded_string = base64_decode($row->original_string); ?>
+												<?php $decoded_string = filter_var($decoded_string, FILTER_SANITIZE_STRING); ?>
+												<?php $description_sanitized = filter_var($row->description, FILTER_SANITIZE_STRING); ?>
+												<?php echo JText::_( 'COM_SECURITYCHECKPRO_' .$row->tag_description ); ?>
+												<?php echo JText::_( ':' .$description_sanitized ); ?>
+												<?php echo "<br />"; ?>
+												<textarea cols="30" rows="1" readonly><?php echo $decoded_string ?></textarea>
+										</td>	
+										<td align="center; font-size: 0.75em;">
+												<?php 
+													$uri_sanitized = filter_var($row->uri, FILTER_SANITIZE_STRING);
+												echo substr(($uri_sanitized),0,40); ?>
+												
+										</td>
+										<td align="center">
+												<?php $component_sanitized = filter_var($row->component, FILTER_SANITIZE_STRING);
+												echo substr(($component_sanitized),0,20);	?>	
+										</td>
+										<td align="center">
+											<?php 
+												$type_sanitized = filter_var($row->type, FILTER_SANITIZE_STRING);
+												$type = $type_sanitized;			
+												if ( $type == 'XSS' ){
+													echo ('<img src="../media/com_securitycheckpro/images/xss.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
+												}else if ( $type == 'XSS_BASE64' ){
+													echo ('<img src="../media/com_securitycheckpro/images/xss_base64.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
+												}else if ( $type == 'SQL_INJECTION' ){
+													echo ('<img src="../media/com_securitycheckpro/images/sql_injection.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
+												}else if ( $type == 'SQL_INJECTION_BASE64' ){
+													echo ('<img src="../media/com_securitycheckpro/images/sql_injection_base64.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
+												}else if ( $type == 'LFI' ){
+													echo ('<img src="../media/com_securitycheckpro/images/local_file_inclusion.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
+												}else if ( $type == 'LFI_BASE64' ){
+													echo ('<img src="../media/com_securitycheckpro/images/local_file_inclusion_base64.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
+												}else if ( $type == 'IP_PERMITTED' ){
+													echo ('<img src="../media/com_securitycheckpro/images/permitted.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
+												}else if ( $type == 'IP_BLOCKED' ){
+													echo ('<img src="../media/com_securitycheckpro/images/blocked.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
+												}else if ( $type == 'IP_BLOCKED_DINAMIC' ){
+													echo ('<img src="../media/com_securitycheckpro/images/dinamically_blocked.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
+												}else if ( $type == 'SECOND_LEVEL' ){
+													echo ('<img src="../media/com_securitycheckpro/images/second_level.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
+												}else if ( $type == 'USER_AGENT_MODIFICATION' ){
+													echo ('<img src="../media/com_securitycheckpro/images/http.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
+												}else if ( $type == 'REFERER_MODIFICATION' ){
+													echo ('<img src="../media/com_securitycheckpro/images/http.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
+												}else if ( $type == 'SESSION_PROTECTION' ){
+													echo ('<img src="../media/com_securitycheckpro/images/session_protection.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
+												}else if ( $type == 'SESSION_HIJACK_ATTEMPT' ){
+													echo ('<img src="../media/com_securitycheckpro/images/session_hijack.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
+												}else if ( ($type == 'MULTIPLE_EXTENSIONS') || ($type == 'FORBIDDEN_EXTENSION') ){
+													echo ('<img src="../media/com_securitycheckpro/images/upload_scanner.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
+												}else if ( $type == 'SPAM_PROTECTION' ){
+													echo ('<img src="../media/com_securitycheckpro/images/spam_protection.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
+												}else if ( $type == 'URL_INSPECTOR' ){
+													echo ('<img src="../media/com_securitycheckpro/images/url_inspector.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_TITLE_' .$row->type ) .'">');
+												}			
+											?>
+										</td>
+										<td align="center">
+											<?php 
+												$marked = $row->marked;			
+												if ( $marked == 1 ){
+													echo ('<img src="../media/com_securitycheckpro/images/read.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_LOG_READ' ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_LOG_READ' ) .'">');
+												} else {
+													echo ('<img src="../media/com_securitycheckpro/images/no_read.png" title="' . JText::_( 'COM_SECURITYCHECKPRO_LOG_UNREAD' ) .'" alt="' . JText::_( 'COM_SECURITYCHECKPRO_LOG_UNREAD' ) .'">');
+												}
+											?>
+										</td>
+										<td align="center">
+												<?php echo JHtml::_('grid.id', $k, $row->id); ?>
+										</td>
+									</tr>
+									<?php
+									$k = $k+1;
+									}
+								}
+									?>							
+							</table>						
+						</div>	
+						
+						<?php
+							if ( !empty($this->items) ) {		
+						?>
+						<div style="margin-left: 10px;">
+							<?php echo $this->pagination->getListFooter(); echo $this->pagination->getLimitBox(); ?>
+						</div>							
+						<?php }	?>						
+						
+						<div class="card" style="margin-top: 10px; margin-left: 10px; width: 40rem;">
+							<div class="card-body card-header">
+								<?php echo JText::_('COM_SECURITYCHECKPRO_COPYRIGHT'); ?><br/>
+								<span class="badge badge-success"><?php echo JText::_('COM_SECURITYCHECKPRO_ICONS_ATTRIBUTION'); ?></span>
+							</div>								
+						</div>
+					</div>		  					
+				</div>
+		</div>
 </div>
 
 
-<div class="clearfix"></div>
-
-<div class="accordion-group">
-	<div class="accordion-heading">
-		<?php echo JText::_('COM_SECURITYCHECKPRO_COPYRIGHT'); ?>		
-	</div>
-	<div class="badge badge-success">
-		<?php echo JText::_('COM_SECURITYCHECKPRO_ICONS_ATTRIBUTION'); ?>		
-	</div>	
-</div>
+ <!-- Bootstrap core JavaScript -->
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/bootstrap/js/bootstrap.min.js"></script>
+<!-- Custom scripts for all pages -->
+<script src="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/js/sb-admin.js"></script> 
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -1322,6 +1322,8 @@ class View
 	 * that model.
 	 *
 	 * @param   \FOF30\Model\Model  $model  The model object passed from the XML form renderer
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	public function populateFromModel(Model $model)
 	{

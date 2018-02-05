@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -55,8 +55,6 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 
 	public function termsandconditions() {
 		$terms_article = $this->config->get('checkout_terms', 0);
-		$article = '';
-		$this->assignRef('article', $article);
 
 		if (empty($terms_article))
 			return;
@@ -66,8 +64,10 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		$db->setQuery($sql);
 		$data = $db->loadObject();
 
+		$article = '';
 		if (is_object($data))
 			$article = $data->introtext . $data->fulltext;
+		$this->assignRef('article', $article);
 	}
 
 	public function show() {
@@ -256,12 +256,23 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 	}
 
 	public function loadFields() {
+		$products = null;
+		if(!isset($this->extraFields['product'])){
+			if(empty($this->fieldClass))
+				$this->fieldClass = hikashop_get('class.field');
+			if(!empty($this->checkoutHelper)) {
+				$cart = $this->checkoutHelper->getCart();
+				$products =& $cart->products;
+			}
+			$this->extraFields['product'] = $this->fieldClass->getFields('display:checkout=1', $products, 'product');
+		}
+
 		if(!hikashop_level(2) || !empty($this->extraFields['item']))
 			return;
 		if(empty($this->fieldClass))
 			$this->fieldClass = hikashop_get('class.field');
-		$products = null;
-		if(!empty($this->checkoutHelper)) {
+
+		if(empty($products) && !empty($this->checkoutHelper)) {
 			$cart = $this->checkoutHelper->getCart();
 			$products =& $cart->products;
 		}

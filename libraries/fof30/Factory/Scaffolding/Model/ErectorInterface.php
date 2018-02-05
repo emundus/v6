@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -9,6 +9,11 @@ namespace FOF30\Factory\Scaffolding\Model;
 
 use FOF30\Model\DataModel;
 
+/**
+ * Interface ErectorInterface
+ * @package FOF30\Factory\Scaffolding\Model
+ * @deprecated 3.1  Support for XML forms will be removed in FOF 4
+ */
 interface ErectorInterface
 {
 	/**

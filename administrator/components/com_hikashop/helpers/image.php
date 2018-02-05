@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -388,9 +388,9 @@ window.hikashop.ready( function() {
 
 			$ret->path = $filename = $config->get('default_image');
 			if($ret->path == 'barcode.png') {
-				$fullFilename = HIKASHOP_MEDIA.'images'.DS . $ret->path;
-				$ret->url = HIKASHOP_IMAGES . '/' . $ret->path;
-				$ret->origin_url = HIKASHOP_IMAGES . '/' . $ret->path;
+				$fullFilename = HIKASHOP_MEDIA.'images'.DS . ltrim($ret->path, DS);
+				$ret->url = HIKASHOP_IMAGES . '/' . ltrim($ret->path, '/');
+				$ret->origin_url = HIKASHOP_IMAGES . '/' . ltrim($ret->path, '/');
 				$ret->filename = $ret->path;
 			} else {
 				$fullFilename = $this->uploadFolder . $ret->path;
@@ -458,7 +458,7 @@ window.hikashop.ready( function() {
 				$ret->filename = $filename;
 				$ret->url = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $ret->path);
 				if(empty($ret->origin_url))
-					$ret->origin_url = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $filename);
+					$ret->origin_url = $this->uploadFolder_url . ltrim(str_replace(array('\\/', '\\', '//') , '/', $filename), '/');
 				list($ret->width, $ret->height) = getimagesize($cachePath . $destFolder . DS . $filename);
 				return $ret;
 			}
@@ -471,7 +471,7 @@ window.hikashop.ready( function() {
 			$ret->filename = $filename;
 			$ret->url = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $ret->path);
 			if(empty($ret->origin_url))
-				$ret->origin_url = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $filename);
+				$ret->origin_url = $this->uploadFolder_url . ltrim(str_replace(array('\\/', '\\', '//') , '/', $filename), '/');
 
 			return $ret;
 		}
@@ -638,7 +638,7 @@ window.hikashop.ready( function() {
 			$ret->filename = $filename;
 			$ret->url = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $ret->path);
 			if(empty($ret->origin_url))
-				$ret->origin_url = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $filename);
+				$ret->origin_url = $this->uploadFolder_url . ltrim(str_replace(array('\\/', '\\', '//') , '/', $filename), '/');
 		} else  {
 			static $image_generation_warning = null;
 			if($image_generation_warning === null) {

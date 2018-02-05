@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright 2010-2017 Akeeba Ltd / Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -215,6 +215,13 @@ class Html extends BaseView
 	public $stuckUpdates = false;
 
 	/**
+	 * The fancy formatted changelog of the component
+	 *
+	 * @var  string
+	 */
+	public $formattedChangelog = '';
+
+	/**
 	 * Main Control Panel task
 	 *
 	 * @return  void
@@ -285,6 +292,7 @@ class Html extends BaseView
 		$this->webConfMakerSupported = ServerTechnology::isWebConfigSupported();
 		$this->statsIframe           = $statsModel->collectStatistics(true);
 		$this->extension_id          = $controlPanelModel->getState('extension_id', 0, 'int');
+		$this->formattedChangelog    = $this->formatChangelog();
 		$this->needsdlid             = $controlPanelModel->needsDownloadID();
 		$this->needsQuickSetup       = $controlPanelModel->needsQuickSetupWizard();
 		$this->stuckUpdates          = ($this->container->params->get('updatedb', 0) == 1);
@@ -297,6 +305,7 @@ class Html extends BaseView
 			$this->jwarnings               = $controlPanelModel->checkJoomlaConfiguration();
 		}
 
+		$this->addJavascriptFile('admin://components/com_admintools/media/js/Modal.min.js');
 		$this->addJavascriptFile('admin://components/com_admintools/media/js/ControlPanel.min.js');
 
 		// Pro version, control panel graphs (only if we enabled them in config options)
@@ -329,11 +338,78 @@ akeeba.jQuery(document).ready(function(){
 })
 JS;
 		$this->addJavascriptInline($js);
-
 	}
 
-	protected function onBeforeChangelog()
+	protected function formatChangelog($onlyLast = false)
 	{
-		$this->changeLog = Coloriser::colorise(JPATH_COMPONENT_ADMINISTRATOR . '/CHANGELOG.php');
+		$ret   = '';
+		$file  = $this->container->backEndPath . '/CHANGELOG.php';
+		$lines = @file($file);
+
+		if (empty($lines))
+		{
+			return $ret;
+		}
+
+		array_shift($lines);
+
+		foreach ($lines as $line)
+		{
+			$line = trim($line);
+
+			if (empty($line))
+			{
+				continue;
+			}
+
+			$type = substr($line, 0, 1);
+
+			switch ($type)
+			{
+				case '=':
+					continue;
+					break;
+
+				case '+':
+					$ret .= "\t" . '<li class="akeeba-changelog-added"><span></span>' . htmlentities(trim(substr($line, 2))) . "</li>\n";
+					break;
+
+				case '-':
+					$ret .= "\t" . '<li class="akeeba-changelog-removed"><span></span>' . htmlentities(trim(substr($line, 2))) . "</li>\n";
+					break;
+
+				case '~':
+					$ret .= "\t" . '<li class="akeeba-changelog-changed"><span></span>' . htmlentities(trim(substr($line, 2))) . "</li>\n";
+					break;
+
+				case '!':
+					$ret .= "\t" . '<li class="akeeba-changelog-important"><span></span>' . htmlentities(trim(substr($line, 2))) . "</li>\n";
+					break;
+
+				case '#':
+					$ret .= "\t" . '<li class="akeeba-changelog-fixed"><span></span>' . htmlentities(trim(substr($line, 2))) . "</li>\n";
+					break;
+
+				default:
+					if (!empty($ret))
+					{
+						$ret .= "</ul>";
+						if ($onlyLast)
+						{
+							return $ret;
+						}
+					}
+
+					if (!$onlyLast)
+					{
+						$ret .= "<h3 class=\"akeeba-changelog\">$line</h3>\n";
+					}
+					$ret .= "<ul class=\"akeeba-changelog\">\n";
+
+					break;
+			}
+		}
+
+		return $ret;
 	}
 }

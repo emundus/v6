@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -205,7 +205,7 @@ $js .="
 $js .="
 	hkjQuery('.listing_item_quantity_fields input').change(function(){
 		var name = hkjQuery(this).attr('name').replace('[columns]','').replace('[rows]','');
-		var listType = hkjQuery(this).parent().attr('data-list-type');
+		var listType = hkjQuery(this).closest('.listing_item_quantity_fields').attr('data-list-type');
 		var cCol = 1;
 		if(listType != 'table')
 			cCol = hkjQuery('input[name=\''+name+'[columns]\']').val();

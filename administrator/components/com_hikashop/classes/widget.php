@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -278,6 +278,7 @@ class hikashopWidgetClass extends hikashopClass {
 					$app->redirect(hikashop_completeLink("report&task=edit&cid[]=".$widget_id, false, true));
 				}
 				$this->data($widget,true);
+
 				$encodingHelper = hikashop_get('helper.encoding');
 				@ob_clean();
 				header("Pragma: public");
@@ -301,7 +302,7 @@ class hikashopWidgetClass extends hikashopClass {
 							if(isset($el->$field)){
 								if($convert_date && in_array($field,array('user_created','order_created','order_modified'))) $el->$field=hikashop_getDate($el->$field,$convert_date);
 								if($field == 'calculated_date')	$el->$field=hikashop_getDate($el->timestamp,'d-M-Y');
-								$line[]='"'.str_replace(array("\r","\n"),array('\r','\n'),$el->$field).'"';
+								$line[]='"'.str_replace(array("\r", "\n", '"'),array('\r','\n', '""'),$el->$field).'"';
 							}else{
 								$missing[$field]=$field;
 							}
@@ -325,7 +326,7 @@ class hikashopWidgetClass extends hikashopClass {
 						$line = array();
 						foreach($fieldsLeft as $field){
 							if($convert_date && in_array($field,array('user_created','order_created','order_modified'))) $el->$field=hikashop_getDate($el->$field,$convert_date);
-							$line[]='"'.str_replace(array("\r","\n"),array('\r','\n'),$el->$field).'"';
+							$line[]='"'.str_replace(array("\r", "\n", '"'),array('\r','\n', '""'),$el->$field).'"';
 						}
 						echo $encodingHelper->change(implode($separator,$line),'UTF-8',$widget->widget_params->format).$eol;
 					}
@@ -643,6 +644,7 @@ class hikashopWidgetClass extends hikashopClass {
 					$leftjoin['order_product'] = ' LEFT JOIN '.hikashop_table('order_product').' AS prod ON prod.order_id = a.order_id ';
 				}
 				$leftjoin['product'] = ' LEFT JOIN '.hikashop_table('product').' AS p ON prod.product_id = p.product_id ';
+				$select .= 'DISTINCT(prod.order_product_id), ';
 				$leftjoin['product_category'] = ' LEFT JOIN '.hikashop_table('product_category').' AS cat ON cat.product_id = p.product_id OR cat.product_id=p.product_parent_id';
 				if($widget->widget_params->category_childs){
 					$leftjoin['category'] = ' LEFT JOIN '.hikashop_table('category').' AS categ ON cat.category_id = categ.category_id ';
@@ -842,7 +844,7 @@ class hikashopWidgetClass extends hikashopClass {
 					}
 					$fieldtype=', '.
 					$fieldtype .= empty($type) ? "'Total'" : "CONCAT('',".implode(", ' - ' ,",$type).")";
-					$fieldtype.=' as type';
+					$fieldtype.=' as `type`';
 				}
 
 				break;

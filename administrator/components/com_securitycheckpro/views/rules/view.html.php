@@ -27,7 +27,6 @@ JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | ' . JText::_('COM_SEC
 JToolBarHelper::publish('apply_rules', JText::_('COM_SECURITYCHECKPRO_RULES_APPLY'), true);
 JToolBarHelper::unpublish('not_apply_rules', JText::_('COM_SECURITYCHECKPRO_RULES_NOT_APPLY'), true);
 JToolBarHelper::custom('rules_logs','users','users','COM_SECURITYCHECKPRO_RULES_VIEW_LOGS');
-JToolBarHelper::custom('redireccion_control_panel','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT_CONTROL_PANEL');
 
 // Filtro por tipo de extensión
 $this->state= $this->get('State');
@@ -35,6 +34,15 @@ $acl_search = $this->state->get('filter.acl_search');
 
 $model = $this->getModel("rules");
 $items = $model->load();
+
+// Información para la barra de navegación
+require_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/library/model.php';
+$common_model = new SecuritycheckproModel();
+
+$logs_pending = $common_model->LogsPending();
+$trackactions_plugin_exists = $common_model->PluginStatus(8);
+$this->assignRef('logs_pending', $logs_pending);
+$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
 
 // Ponemos los datos en el template
 $this->assignRef('items', $items);

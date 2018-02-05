@@ -17,14 +17,18 @@ jimport('joomla.installer.helper' );
 jimport('joomla.installer.installer' );
 jimport( 'joomla.application.component.controller' );
 jimport('joomla.filesystem.file');
+jimport('joomla.filesystem.folder');
 
 /**
 * Modelo Filemanager
 */
-class SecuritycheckprosModelFileManager extends JModelLegacy
+class SecuritycheckprosModelFileManager extends SecuritycheckproModel
 {
 /** @var object Pagination */
 var $_pagination = null;
+
+/** @var int Total number of files of Pagination */
+var $total = 0;
 
 /** @var array The files to process */
 private $Stack = array();
@@ -104,8 +108,15 @@ private $skipDirsMalwarescan = array();
 /** @var int Percent of files processed each time */
 private $files_processed = 0;
 
-function __construct()
-{
+function __construct($config = array()) {
+
+	if (empty($config['filter_fields']))
+		{
+			$config['filter_fields'] = array(
+				'malware_type', 'alert_level'
+			);
+		}
+
 	parent::__construct();
 	
 	// Excepción
@@ -212,7 +223,7 @@ function __construct()
 	$db->setQuery($query);
 	$stack_integrity = $db->loadResult();
 	$stack_integrity = json_decode($stack_integrity, true);
-	
+		
 	$query = $db->getQuery(true)
 		->select(array($db->quoteName('storage_value')))
 		->from($db->quoteName('#__securitycheckpro_storage'))
@@ -225,7 +236,7 @@ function __construct()
 		$this->filemanager_name = $stack['filename'];
 	}
 	
-	if( (!empty($stack_integrity)) && (isset($stack_integrity['filename'])) ) {
+	if( (!empty($stack_integrity)) && (isset($stack_integrity['filename'])) ) {			
 		$this->fileintegrity_name = $stack_integrity['filename'];
 	}
 	
@@ -238,6 +249,54 @@ function __construct()
 	
 	// ¿El escaneo de malware usa las mismas excepciones que el de integridad?
 	$this->use_filemanager_exceptions = $params->get('use_filemanager_exceptions',1);
+	
+	// Chequeamos si ha pasado más de una hora desde el último escaneo online para inicializar la variable que la controla
+	$this->check_last_onlinecheck();
+	
+	$mainframe = JFactory::getApplication();
+ 
+	// Obtenemos las variables de paginación de la petición
+	$limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+	$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+
+	// En el caso de que los límites hayan cambiado, los volvemos a ajustar
+	$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
+
+	/* Limitamos a 100 el número de archivos mostrados para evitar que el array desborde la memoria máxima establecida por PHP */
+	if ( $limit == 0 ){
+		$this->setState('limit', 100);
+		$this->setState('showall', 1);
+	} else {
+		$this->setState('limit', $limit);
+	}
+	$this->setState('limitstart', $limitstart);
+}
+
+protected function populateState()
+{
+	// Inicializamos las variables
+	$app		= JFactory::getApplication();
+	
+
+	$search = $app->getUserStateFromRequest('filter.filemanager_search', 'filter_filemanager_search');
+	$this->setState('filter.filemanager_search', $search);
+	$filemanager_kind = $app->getUserStateFromRequest('filter.filemanager_kind', 'filter_filemanager_kind');
+	$this->setState('filter.filemanager_kind', $filemanager_kind);
+	$filemanager_permissions_status = $app->getUserStateFromRequest('filter.filemanager_permissions_status', 'filter_filemanager_permissions_status');
+	$this->setState('filter.filemanager_permissions_status', $filemanager_permissions_status);
+	$filemanager_permissions_status = $app->getUserStateFromRequest('filter.filemanager_permissions_status', 'filter_filemanager_permissions_status');
+	
+	$fileintegrity_search = $app->getUserStateFromRequest('filter.fileintegrity_search', 'filter_fileintegrity_search');
+	$this->setState('filter.fileintegrity_search', $fileintegrity_search);
+	$fileintegrity_status = $app->getUserStateFromRequest('filter.fileintegrity_status', 'filter_fileintegrity_status');
+	$this->setState('filter.fileintegrity_status', $fileintegrity_status);
+	
+	$malwarescan_search = $app->getUserStateFromRequest('filter.malwarescan_search', 'filter_malwarescan_search');
+	$this->setState('filter.malwarescan_search', $malwarescan_search);
+	$malwarescan_status = $app->getUserStateFromRequest('filter.malwarescan_status', 'filter_malwarescan_status');
+	$this->setState('filter.malwarescan_status', $malwarescan_status);
+		
+	parent::populateState();
 }
 
 /* Función que obtiene todos los archivos del sitio */
@@ -690,7 +749,7 @@ public function getFiles($root = null, $include_exceptions, $recursive, $opcion)
 			
 		}
 	} else if ( ($opcion == "malwarescan") || ($opcion == "malwarescan_modified") ) {
-	
+		
 		// Inicializamos las variables
 		$exceptions = $this->skipDirsIntegrity;
 		// Establecemos la ruta donde está la cuarentena
@@ -750,7 +809,7 @@ public function getFiles($root = null, $include_exceptions, $recursive, $opcion)
 			$this->Stack = array_merge($this->Stack, $filtered_array);
 		}
 		
-		if ( !empty($files_name) ) {
+		if ( !empty($files_name) ) {			
 			foreach($files_name as $file) {
 				
 				$file = utf8_encode($file);
@@ -990,7 +1049,7 @@ public function getDirectories($root = null, $include_exceptions, $recursive, $o
 }
 
 /* Función que guarda en la BBDD, en formato json, el contenido de un array con todos los ficheros y directorios */
-private function saveStack($opcion)
+private function saveStack($opcion, $borrar=true)
 {
 	// Inicializamos las variables
 	$result_permissions = true;
@@ -1003,29 +1062,30 @@ private function saveStack($opcion)
 	
 	// Creamos el nuevo objeto query
 	$db = $this->getDbo();
-	
-	// Extraemos la información de los archivos de escaneos online, que no deberán ser borrados...
-	$query = $db->getQuery(true)
-		->select('filename')
-		->from($db->quoteName('#__securitycheckpro_online_checks'));
-	$db->setQuery($query);
-	$online_scan_filenames = $db->loadRowList();
-	
-	// ... y la añadimos al array de exentos
-	foreach ( $online_scan_filenames as $filename ) {
-		array_push($array_exentos,$filename[0]);
-	}
-	
-	
-	// Buscamos ficheros antiguos que no hayan sido borrados...
-	$old_files = JFolder::files($this->folder_path,'.',false,true,$array_exentos);
-	
-	// ... y los borramos
-	foreach($old_files as $old_file) {
-		JFile::delete($old_file);		
-	}
 		
-	if ( $opcion == "permissions" ) {		
+	if ( $borrar ) {
+		// Extraemos la información de los archivos de escaneos online, que no deberán ser borrados...
+		$query = $db->getQuery(true)
+			->select('filename')
+			->from($db->quoteName('#__securitycheckpro_online_checks'));
+		$db->setQuery($query);
+		$online_scan_filenames = $db->loadRowList();
+		
+		// ... y la añadimos al array de exentos
+		foreach ( $online_scan_filenames as $filename ) {
+			array_push($array_exentos,$filename[0]);
+		}
+		
+		// Buscamos ficheros antiguos que no hayan sido borrados...
+		$old_files = JFolder::files($this->folder_path,'.',false,true,$array_exentos);
+		
+		// ... y los borramos
+		foreach($old_files as $old_file) {
+			JFile::delete($old_file);		
+		}
+	}
+	
+		if ( $opcion == "permissions" ) {		
 		// Borramos el fichero del escaneo anterior...
 		if ( JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name) ) {
 			$delete_permissions_file = JFile::delete($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name);
@@ -1128,7 +1188,7 @@ private function saveStack($opcion)
 			$this->set_campo_filemanager('estado_integrity','ENDED');
 		}
 		$this->set_campo_filemanager("files_scanned_integrity",100);
-		
+				
 	} else if ( ($opcion == "malwarescan") || ($opcion == "malwarescan_modified") ) {
 		// Borramos el fichero del escaneo anterior...
 		if ( JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name) ) {
@@ -1185,7 +1245,7 @@ private function saveStack($opcion)
 }
 
 /* Función que obtiene un array con los datos que serán mostrados en la opción 'file manager' */
-function loadStack($opcion,$field)
+function loadStack($opcion,$field,$showall=false)
 {
 	$db = $this->getDbo();
 	$stack = null;
@@ -1205,19 +1265,49 @@ function loadStack($opcion,$field)
 			
 			// Leemos el contenido del fichero
 			$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name);
-			
+			// Eliminamos la parte del fichero que evita su lectura al acceder directamente
+			$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
+						
 			if(empty($stack)) {
 				$this->Stack = array();
 				return;
 			}
 			break;
 		case "integrity":
-			
 			// Leemos el contenido del fichero
-			$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
+			if ( !JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name) ) {
+				$query = $db->getQuery(true)
+					->select(array($db->quoteName('storage_value')))
+					->from($db->quoteName('#__securitycheckpro_storage'))
+					->where($db->quoteName('storage_key').' = '.$db->quote('fileintegrity_resume'));
+				$db->setQuery($query);
+				$stack_integrity = $db->loadResult();
+				$stack_integrity = json_decode($stack_integrity, true);
+	
+				if( (!empty($stack_integrity)) && (isset($stack_integrity['filename'])) ) {			
+					$this->fileintegrity_name = $stack_integrity['filename'];
+				}
+			}
 			
+			$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
+			// Eliminamos la parte del fichero que evita su lectura al acceder directamente
+			$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
+						
 			if(empty($stack)) {
 				$this->Stack_Integrity = array();
+				return;
+			}
+			break;
+		case "malwarescan":
+			// Leemos el contenido del fichero			
+			if ( JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name) ) {
+				$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name);
+				// Eliminamos la parte del fichero que evita su lectura al acceder directamente
+				$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
+			}
+			
+			if(empty($stack)) {
+				$this->Stack_Malwarescan = array();
 				return;
 			}
 			break;
@@ -1267,10 +1357,75 @@ function loadStack($opcion,$field)
 	
 	$stack = json_decode($stack, true);
 	
+	/* Obtenemos el número de registros del array que hemos de mostrar. Si el límite superior es '0', entonces devolvemos todo el array */
+	$upper_limit = $this->getState('limitstart');
+	$lower_limit = $this->getState('limit');
+	
 	switch ($field) {
 		case "file_manager":
-			$this->Stack = array_splice($stack['files_folders'], $this->getState('limitstart'), $this->getState('limit'));
+			/* Obtenemos los valores de los filtros */
+			$filter_permissions_status = $this->state->get('filter.filemanager_permissions_status');
+			$filter_kind = $this->state->get('filter.filemanager_kind');
+			$search = htmlentities($this->state->get('filter.filemanager_search'));
+			
+			$filtered_array = array();
+			/* Si el campo 'search' no está vacío, buscamos en todos los campos del array */			
+			if (!empty($search) ) {
+				$filtered_array = array_values(array_filter($stack['files_folders'], function ($element) use ($filter_permissions_status,$filter_kind,$search) { return ( ($element['safe'] == $filter_permissions_status) && ($element['kind'] == $filter_kind) && ( (strstr($element['path'],$search)) || (strstr($element['last_modified'],$search)) || (strstr($element['permissions'],$search)) ) );} ));
+			} else {
+				$filtered_array = array_values(array_filter($stack['files_folders'], function ($element) use ($filter_permissions_status,$filter_kind) { return ( ($element['safe'] == $filter_permissions_status) && ($element['kind'] == $filter_kind) );} ));				
+			}
+			$this->total = count($filtered_array);			
+			/* Cortamos el array para mostrar sólo los valores mostrados por la paginación */
+			$this->Stack = array_splice($filtered_array, $upper_limit, $lower_limit);
 			return ($this->Stack);
+		case "file_integrity":
+			/* Obtenemos los valores de los filtros */
+			$filter_fileintegrity_status = $this->state->get('filter.fileintegrity_status');
+			$search = htmlentities($this->state->get('filter.fileintegrity_search'));
+			
+			if ( !is_null($stack['files_folders']) ) {
+				$filtered_array = array();
+				/* Si el campo 'search' no está vacío, buscamos en todos los campos del array */			
+				if (!empty($search) ) {
+					$filtered_array = array_values(array_filter($stack['files_folders'], function ($element) use ($filter_fileintegrity_status,$search) { return ( ($element['safe_integrity'] == $filter_fileintegrity_status) && ( (strstr($element['path'],$search)) || (strstr($element['hash'],$search)) || (strstr($element['notes'],$search)) ) );} ));
+				} else {
+					$filtered_array = array_values(array_filter($stack['files_folders'], function ($element) use ($filter_fileintegrity_status) { return ( ($element['safe_integrity'] == $filter_fileintegrity_status) );} ));
+				}
+				$this->total = count($filtered_array);
+				/* Cortamos el array para mostrar sólo los valores mostrados por la paginación */
+				$this->Stack_Integrity = array_splice($filtered_array, $upper_limit, $lower_limit);
+				return ($this->Stack_Integrity);
+			}
+		case "malwarescan":
+			/* Obtenemos los valores de los filtros */
+			$filter_malwarescan_status = $this->state->get('filter.malwarescan_status');
+			$search = htmlentities($this->state->get('filter.malwarescan_search'));
+			if ( !is_null($stack['files_folders']) ) {			
+				$filtered_array = array();
+				/* Si el campo 'search' no está vacío, buscamos en todos los campos del array */			
+				if (!empty($search) ) {
+					$filtered_array = array_values(array_filter($stack['files_folders'], function ($element) use ($filter_malwarescan_status,$search) { return ( ($element['safe_malwarescan'] == $filter_malwarescan_status) && ( (strstr($element['path'],$search)) || (strstr($element['size'],$search)) || (strstr($element['last_modified'],$search)) || (strstr($element['malware_type'],$search)) || (strstr($element['malware_description'],$search)) ) );} ));
+				} else {				
+					$filtered_array = array_values(array_filter($stack['files_folders'], function ($element) use ($filter_malwarescan_status) { return ( ($element['safe_malwarescan'] == $filter_malwarescan_status) );} ));				
+				}			
+				// Ordenamos el array según el nivel de alerta
+				$orderer_filtered_array = array();
+				foreach ($filtered_array as $key => $row) {
+					$orderer_filtered_array[$key] = $row['malware_alert_level'];					
+				}
+				array_multisort($orderer_filtered_array, SORT_ASC, $filtered_array);
+					
+				$this->total = count($filtered_array);
+				
+				/* Cortamos el array para mostrar sólo los valores mostrados por la paginación, excepto si el campo showall es true. Esto es necesario para que funcione correctamente el escaneo contra Metadefender */
+				if ($showall) {
+					$this->Stack_Malwarescan = $filtered_array;	
+				} else {
+					$this->Stack_Malwarescan = array_splice($filtered_array, $upper_limit, $lower_limit);
+				}			
+				return ($this->Stack_Malwarescan);
+			}
 		case "files_scanned":
 			$this->files_scanned = $stack['files_scanned'];
 			return ($this->files_scanned);
@@ -1297,6 +1452,9 @@ function loadStack($opcion,$field)
 			return ($stack['last_check_integrity']);
 		case "last_check_malwarescan":
 			return ($stack['last_check_malwarescan']);
+		case "files_with_incorrect_integrity":
+			$this->files_with_incorrect_integrity = $stack['files_with_incorrect_integrity'];
+			return ($this->files_with_incorrect_integrity);
 		case "files_scanned_malwarescan":
 			$this->files_scanned_malwarescan = $stack['files_scanned_malwarescan'];
 			return ($this->files_scanned_malwarescan);
@@ -1315,7 +1473,7 @@ function scan($opcion){
 
 	$include_exceptions = 1;
 	$folder_exceptions = 0;
-	
+		
 	// Obtenemos la ruta sobre la que vamos a hacer el chequeo
 	$params = JComponentHelper::getParams('com_securitycheckpro');
 	$file_check_path = $params->get('file_manager_path',JPATH_ROOT);
@@ -1327,7 +1485,7 @@ function scan($opcion){
 	}
 	
 	switch ($opcion) {
-		case "permissions":
+		case "permissions":			
 			$this->files_processed_permissions = 0;
 			// Obtenemos si debemos guardar las excepciones
 			$include_exceptions = $params->get('file_manager_include_exceptions_in_database',1);	
@@ -1868,6 +2026,1100 @@ function loadModifiedFiles() {
 	return ($this->Stack_Integrity);
 		
 
+}
+
+/* Función para escribir una entrada en el fichero de logs de cambio de permisos */
+function write_permission_log($log_array){	
+	// Borramos los ficheros de logs antiguos
+	JFile::delete(JPATH_ADMINISTRATOR. DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . 'change_permissions.log.php');
+	jimport('joomla.log.log');
+	JLog::addLogger(array(
+		'text_file' => 'change_permissions.log.php',
+		'text_entry_format' => '{DATETIME} {SEPARATOR} {MESSAGE}'
+	));
+	
+	foreach($log_array as $log) {
+		$logEntry = new JLogEntry(array_pop($log_array));
+		$logEntry->separator = '|';
+		JLog::add($logEntry);
+	}
+}
+
+/* Función que lee el fichero de log al realizarse una reparación */
+function get_repair_log() {
+	// Obtenemos la ruta alfichero de logs, que vendrá marcada por la entrada 'log_path' del fichero 'configuration.php'
+$app = JFactory::getApplication();
+$logName = $app->getCfg('log_path');
+$logName = $logName . DIRECTORY_SEPARATOR ."change_permissions.log.php";
+
+if(!JFile::exists($logName))
+{
+	// El fichero no existe
+	echo '<p>'.JText::_('COM_SECURITYCHECKPRO_LOG_ERROR_LOGFILENOTEXISTS').'</p>';
+	return;
+}
+else
+{
+	// Abrimos el fichero
+	$fp = fopen( $logName, "rt" );
+	if ($fp === FALSE)
+	{
+		// El fichero no se puede leer
+		echo '<p>'.JText::_('COM_SECURITYCHECKPRO_LOG_ERROR_UNREADABLE').'</p>';
+		return;
+	}
+	
+	$fmtString = "";
+
+	while( !feof($fp) ) {
+		// Indica si la línea del log tiene un formato válido, ya que en el fichero de logs existen líneas que no son propias de los logs, como la cabecera php 
+		$valid = true;
+		$line = fgets( $fp );
+		if(!$line) break;
+		$exploded = explode( "|", $line, 3 );	
+		if ( count($exploded)>1 ) {  // Se han devuelto datos; los chequeamos para ver si son válidos
+			unset( $line );
+			switch( trim($exploded[1]) )
+			{
+				case "ERROR":
+					$fmtString .= "<span style=\"color: red; font-weight: bold;\">[";
+					break;
+				case "WARNING":
+					$fmtString .= "<span style=\"color: #D8AD00; font-weight: bold;\">[";
+					break;
+				case "INFO":
+					$fmtString .= "<span style=\"color: black;\">[";
+					break;
+				case "DEBUG":
+					$fmtString .= "<span style=\"color: #666666; font-size: small;\">[";
+					break;
+				case "OK":					
+					$fmtString .= "<span style=\"color: green; font-weight: bold;\">[";
+					break;
+				default:
+					$valid = false;
+					break;
+			}
+			if ( $valid ) {	
+				$fmtString .= $exploded[0] . "] " . htmlspecialchars($exploded[2]) . "</span><br/>\n";							
+			}
+		}
+	}
+		
+	if ( $valid ) {		
+		return $fmtString;
+		unset( $fmtString );
+		unset( $exploded );
+	}
+}
+
+
+}
+
+
+/* Función para cambiar los permisos de los archivos o carpetas con permisos mal configurados */
+function repair(){
+	// Inicializamos las variables que contendrán el nivel y la entrada que se escribirán en el fichero de logs
+	$entrada = '';
+	$nivel = '';
+	$log_array = array();
+			
+	/* Instanciamos el mainframe para guardar variables de estado de usuario */
+	$mainframe = JFactory::getApplication();
+	// Ponemos en la sesión de usuario que se ha lanzado una reparación de permisos
+	$mainframe->setUserState("repair_launched",true);
+		
+	$db = $this->getDbo();
+	
+	// Cargamos el array de archivos
+	if ( JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name) ) {
+		$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name);
+		// Eliminamos la parte del fichero que evita su lectura al acceder directamente
+		$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
+	}
+			
+	if(empty($stack)) {
+		$this->Stack = array();
+		$this->files_scanned = 0;
+		$this->files_with_incorrect_permissions = 0;
+		return;
+	}
+
+	$stack = json_decode($stack, true);
+	
+	// Inicializamos el array que contendrá los ficheros/directorios con los permisos mal configurados
+	$filtered_array= array();
+	
+	$filtered_array = array_values(array_filter($stack['files_folders'], function ($element) { return ( $element['safe'] == 0 );} ));
+		
+	// ¿ Qué método vamos a usar para cambiar los permisos?
+	$params = JComponentHelper::getParams('com_securitycheckpro');
+	$change_permissions_option = $params->get('change_permissions_option','chmod');
+		
+	foreach($filtered_array as $element) {
+		$entrada = '';
+		$nivel = '';
+		(int) $permisos = 0644;
+		if ( $element['kind'] == JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_DIRECTORY') ) {
+			$permisos = 0755;
+		}
+		
+		if ( $change_permissions_option == 'chmod' ){  // Cambiamos los permisos vía chmod
+		
+			$change_result = chmod($element['path'],$permisos);
+			if ( $change_result == 0 ){
+				$nivel = "ERROR";
+				$entrada = $element['path'] . JText::_( 'COM_SECURITYCHECKPRO_REPAIR_CHANGE_PERMISSIONS_FAILED' );				
+			} else {
+				$nivel = "OK";
+				$entrada = $element['path'] . JText::_( 'COM_SECURITYCHECKPRO_REPAIR_CHANGE_PERMISSIONS_OK' );				
+			}
+		} else if ( $change_permissions_option == 'ftp' ){  // Cambiamos los permisos vía ftp
+			// Obtenemos los parámetros de conexión al FTP del fichero 'configuration.php'
+			jimport('joomla.client.helper');
+			$ftpOptions = JClientHelper::getCredentials('ftp');
+					
+			if ($ftpOptions['enabled'] == 1) {
+				// Conectamos al cliente FTP
+				jimport('joomla.client.ftp');
+				$ftp = &JFTP::getInstance(
+					$ftpOptions['host'], $ftpOptions['port'], null,
+					$ftpOptions['user'], $ftpOptions['pass']
+				);
+				
+				$result = $ftp->chmod($element['path'],$permisos);
+				if ( $result ) {
+					$nivel = "OK";
+					$entrada = $element['path'] . JText::_( 'COM_SECURITYCHECKPRO_REPAIR_CHANGE_PERMISSIONS_OK' );					
+				} else {
+					$nivel = "ERROR";
+					$entrada = $element['path'] . JText::_( 'COM_SECURITYCHECKPRO_REPAIR_CHANGE_PERMISSIONS_FAILED' );
+				}
+				
+			}				
+		}
+		
+		// Añadimos una entrada al array del fichero de logs
+		array_push($log_array,$nivel .'|' .$entrada);			
+	} 
+		
+	$this->write_permission_log($log_array);
+	$this->set_campo_filemanager('estado_cambio_permisos','ENDED');
+	
+	// Importamos el modelo 'filemanager'...
+	JLoader::import('joomla.application.component.model');
+	JLoader::import('cpanel', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR. 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
+	// ... y lanzamos un escaneo para actualizar los resultados
+	$filemanager_model = JModelLegacy::getInstance( 'filemanager', 'SecuritycheckprosModel');
+	$filemanager_model->set_campo_filemanager('estado','IN_PROGRESS'); 
+	$filemanager_model->scan("permissions");	
+	$filemanager_model->set_campo_filemanager('estado','ENDED');
+}
+
+/* Función para la paginación */
+function getPagination()
+{
+// Cargamos el contenido si es que no existe todavía
+if (empty($this->_pagination)) {
+	jimport('joomla.html.pagination');
+$this->_pagination = new JPagination($this->total, $this->getState('limitstart'), $this->getState('limit') );
+}
+return $this->_pagination;
+}
+
+/* Función que cambia a '1' el valor del campo 'safe_integrity' de todos los ficheros de la BBDD cuyo valor actual sea '0' (están marcados como no seguros) */
+function mark_all_unsafe_files_as_safe(){
+	
+	// Cargamos los archivos de la BBDD
+	$db = $this->getDbo();
+	
+	if ( JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name) ) {
+		$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
+		// Eliminamos la parte del fichero que evita su lectura al acceder directamente
+		$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
+	}
+	
+	$query = $db->getQuery(true)
+		->select(array($db->quoteName('storage_value')))
+		->from($db->quoteName('#__securitycheckpro_storage'))
+		->where($db->quoteName('storage_key').' = '.$db->quote('fileintegrity_resume'));
+	$db->setQuery($query);
+	$stack_resume = $db->loadResult();
+		
+	if(empty($stack)) {
+		return;
+	}
+
+	$stack = json_decode($stack, true);
+	$stack_resume = json_decode($stack_resume, true);
+	
+	// Si existen archivos con permisos incorrectos, les cambiamos su estado
+	if ($stack_resume['files_with_incorrect_integrity'] > 0 ) {
+	
+		/* Cargamos el lenguaje del sitio */
+		$lang = JFactory::getLanguage();
+		$lang->load('com_securitycheckpro',JPATH_ADMINISTRATOR);
+		
+		// Cargamos las variables con el contenido almacenado en la BBDD
+		$this->Stack_Integrity = $stack['files_folders'];
+		$this->files_scanned_integrity = $stack_resume['files_scanned_integrity'];
+		$this->files_with_incorrect_integrity = 0;
+		$this->last_check_integrity = $stack_resume['last_check_integrity'];
+		
+		$tamanno_array = count($this->Stack_Integrity);
+		$indice = 0;
+		
+		while ( $indice < $tamanno_array ) {
+			/* Dejamos sin efecto el tiempo máximo de ejecución del script. Esto es necesario cuando existen miles de archivos a escanear */
+			set_time_limit(0);
+			if ( $this->Stack_Integrity[$indice]['safe_integrity'] == 0 ) {
+				$this->Stack_Integrity[$indice]['notes'] = $lang->_('COM_SECURITYCHECKPRO_FILEINTEGRITY_OK');
+				$this->Stack_Integrity[$indice]['safe_integrity'] = (int) 1;				
+			}
+			$indice++;
+		}
+		
+		// Guardamos los cambios
+		$this->saveStack("integrity",false);
+	}
+}
+
+/* Función que cambia a '1' el valor del campo 'safe_integrity' de todos los ficheros seleccionados */
+function mark_checked_files_as_safe(){
+	// Creamos el objeto JInput para obtener las variables del formulario
+	$jinput = JFactory::getApplication()->input;
+	
+	// Obtenemos las rutas de los ficheros a analizar
+	$filenames = $jinput->get('filesintegritystatus_table',null,'array');
+	
+	// Cargamos los archivos de la BBDD
+	$db = $this->getDbo();
+	
+	// Leemos el contenido del fichero
+	if ( JFile::exists($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name) ) {
+		$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
+		// Eliminamos la parte del fichero que evita su lectura al acceder directamente
+		$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
+	}
+	
+	$query = $db->getQuery(true)
+		->select(array($db->quoteName('storage_value')))
+		->from($db->quoteName('#__securitycheckpro_storage'))
+		->where($db->quoteName('storage_key').' = '.$db->quote('fileintegrity_resume'));
+	$db->setQuery($query);
+	$stack_resume = $db->loadResult();
+	
+	if(empty($stack)) {
+		return;
+	}
+
+	$stack = json_decode($stack, true);
+	$stack_resume = json_decode($stack_resume, true);
+	
+	// Si existen archivos con permisos incorrectos, les cambiamos su estado
+	if ($stack_resume['files_with_incorrect_integrity'] > 0 ) {
+		// Cargamos el lenguaje del sitio
+		$lang = JFactory::getLanguage();
+		$lang->load('com_securitycheckpro',JPATH_ADMINISTRATOR);
+		
+		// Creamos un array de rutas
+		$this->Stack_Integrity = $stack['files_folders'];
+		$array_paths = array_map( function ($element) { return $element['path']; },$this->Stack_Integrity );
+		// Número de elementos del array		
+		$tamanno_array = count($filenames);
+			
+		foreach ( $filenames as $path ) {
+			// Buscamos el índice del array que contiene la información que queremos modificar...			
+			$array_key = array_search($path,$array_paths);
+			if (is_numeric($array_key) ) {
+				// ... y actualizamos la información
+				$this->Stack_Integrity[$array_key]['safe_integrity'] = 1;	
+				$this->Stack_Integrity[$array_key]['notes'] = $lang->_('COM_SECURITYCHECKPRO_FILEINTEGRITY_OK');							
+			}
+			
+		}
+		// Actualizamos los parámetros de archivos escaneados y con integridad incorrecta
+		$this->files_scanned_integrity = $stack_resume['files_scanned_integrity'];
+		$this->files_with_incorrect_integrity = $stack_resume['files_with_incorrect_integrity'] - $tamanno_array;
+						
+		// Guardamos los cambios
+		$this->saveStack("integrity",false);
+	}
+		
+}
+
+/* Chequea archivos contra el servicio OPWAST Metadefender Cloud */
+function online_check_files()
+{
+	// Inicializamos las variables
+	$this->analized_keys_array = array();
+	$error = false;
+	
+	// Config.
+	$api    = 'https://scan.metadefender.com/v2/file';	
+	
+	// Obtenemos la API key
+	$params = JComponentHelper::getParams('com_securitycheckpro');
+	$apikey = $params->get('opswat_key','');
+	
+	// Creamos el objeto JInput para obtener las variables del formulario
+	$jinput = JFactory::getApplication()->input;
+	
+	// Obtenemos las rutas de los ficheros a analizar
+	$paths = $jinput->get('malwarescan_status_table',null,'array');
+	
+	// Chequeamos si la función 'curl_init' está definida. Si no lo está mostramos un error y salimos de la función
+	if ( !function_exists('curl_init') ) {
+		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_CURL_NOT_DEFINED'));
+		return $error;
+	}
+			
+	if ( !empty($paths) ) {	
+		
+		// Creamos el nuevo objeto query
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
+		
+		// Cargamos el contenido del fichero de archivos sospechosos
+		$malwarescan_data = $this->loadStack("malwarescan","malwarescan",true);
+		// Creamos un array de rutas para modificar los elementos que hayan sido escaneados
+		$array_paths = array_map( function ($element) { return $element['path']; },$malwarescan_data );
+		
+		// Número de archivos escaneados en la última hora
+		$this->analized_files_last_hour = $this->get_online_analyzed_values("files");
+		
+		// Chequeamos si sobrepasamos el límite de archivos a analizar por hora (25)
+		if ( ($this->analized_files_last_hour) + (count($paths)) <= 25 ) {
+			foreach($paths as $path) {		
+				// Buscamos la clave del array a modificar
+				$array_key = array_search($path,$array_paths);
+				
+				// Si tenemos un 'data_id' válido no volvemos a preguntar por uno al servicio online. Esto significa que ya hemos remitido el fichero para su analisis.
+				if ( empty($malwarescan_data[$array_key]['data_id']) ) {
+							
+					// Path sanitizada
+					$file = $db->escape($path);
+					
+					// Build headers array.
+					$headers = array(
+						'apikey: '.$apikey,
+						'filename: '.$file
+					);
+
+					// Build options array.
+					$options = array(
+						CURLOPT_URL     => $api,
+						CURLOPT_HTTPHEADER  => $headers,
+						CURLOPT_POST        => true,
+						CURLOPT_POSTFIELDS  => file_get_contents($file),
+						CURLOPT_RETURNTRANSFER  => true,
+						CURLOPT_SSL_VERIFYPEER  => false
+					);
+
+					// Init & execute API call.
+					$ch = curl_init();
+					curl_setopt_array($ch, $options);
+					$response = json_decode(curl_exec($ch), true);
+					
+					// Obtenemos el resultado de la consulta. Cualquier código devuelto diferente a 200 indicará un error.
+					$http_status = curl_getinfo($ch,CURLINFO_HTTP_CODE);
+					
+					if ( $http_status == 200 ) {
+									
+						// Buscamos la clave del array a modificar
+						$array_key = array_search($path,$array_paths);
+						// Almacenamos el valor encontrado para utilizarlo posteriormente
+						array_push($this->analized_keys_array,$array_key);
+						
+						// Y añadimos los campos 'data_id' y 'rest_ip'
+						$data_id = $response['data_id'];
+						$rest_ip = $response['rest_ip'];
+						$malwarescan_data[$array_key]['data_id'] = $data_id;
+						$malwarescan_data[$array_key]['rest_ip'] = $rest_ip;
+						
+						// Incrementamos el valor de la variable de archivos analizados
+						$this->analized_files_last_hour++;	
+						
+					} else {
+						JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_ERROR_RETURNED',$http_status),'error');
+					}
+				} else {
+					// Almacenamos el valor encontrado para utilizarlo posteriormente
+					array_push($this->analized_keys_array,$array_key);					
+				}
+			}
+			
+			// Actualizamos los valores de los campos relacionados con el analisis online
+			$this->set_campo_filemanager('online_checked_files',$this->analized_files_last_hour);
+			$this->set_campo_filemanager('last_online_check_malwarescan',date('Y-m-d H:i:s'));		
+
+			// Buscamos el resultado de los análisis. Para ello preguntamos al servicio Metadefender Cloud sobre cada 'result_id' devuelto.
+			$this->look_for_results($apikey,$malwarescan_data,"files");	
+		} else {
+			JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_REACHED_ONLINE_FILES'),'error');
+			$error = true;
+		}
+	} else {
+		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_NO_FILES_SELECTED'),'error');	
+		$error = true;
+	}
+	
+	return $error;
+	
+}
+
+/* Chequea hashes contra el servicio OPWAST Metadefender Cloud */
+function online_check_hashes()
+{
+	
+	// Inicializamos las variables
+	$this->analized_keys_array = array();
+	$error = false;
+	
+	// Obtenemos la API key
+	$params = JComponentHelper::getParams('com_securitycheckpro');
+	$apikey = $params->get('opswat_key','');
+	
+	// Creamos el objeto JInput para obtener las variables del formulario
+	$jinput = JFactory::getApplication()->input;
+	
+	// Obtenemos las rutas de los ficheros a analizar
+	$paths = $jinput->get('malwarescan_status_table',null,'array');
+				
+	if ( !empty($paths) ) {	
+		
+		// Creamos el nuevo objeto query
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
+		
+		// Cargamos el contenido del fichero de archivos sospechosos
+		$malwarescan_data = $this->loadStack("malwarescan","malwarescan",true);
+				
+		// Creamos un array de rutas para modificar los elementos que hayan sido escaneados
+		$array_paths = array_map( function ($element) { return $element['path']; },$malwarescan_data );
+		
+		// Número de archivos escaneados en la última hora
+		$this->analized_hashes_last_hour = $this->get_online_analyzed_values("hashes");
+		
+		// Chequeamos si sobrepasamos el límite de hashes a analizar por hora (1000)
+		if ( ($this->analized_hashes_last_hour) + (count($paths)) <= 1000 ) {
+			foreach($paths as $path) {		
+				// Buscamos la clave del array a modificar
+				$array_key = array_search($path,$array_paths);
+				// Almacenamos el valor encontrado para utilizarlo posteriormente
+				array_push($this->analized_keys_array,$array_key);					
+			}
+			
+			// Preguntamos directamente al servicio online por cada valor hash seleccionado.
+			$this->look_for_results($apikey,$malwarescan_data,"hashes");	
+		} else {
+			JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_REACHED_ONLINE_FILES'),'error');
+			$error = true;
+		}
+	
+	} else {
+		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_NO_FILES_SELECTED'),'error');	
+		$error = true;
+	}
+	
+	return $error;
+		
+}
+
+/* Función que obtiene el número de archivos o hashes escaneados online durante la última hora */
+function get_online_analyzed_values($type){
+
+	// Inicializamos las variables
+	$analyzed = 0;
+	
+	// Import Securitycheckpros model
+	JLoader::import('joomla.application.component.model');
+	JLoader::import('filemanager', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR. 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
+	$model = JModelLegacy::getInstance( 'filemanager', 'SecuritycheckprosModel');
+	
+	$last_check = new DateTime(date('Y-m-d',strtotime($this->get_campo_filemanager('last_online_check_malwarescan'))));
+	$now = new DateTime(date('Y-m-d',strtotime($model->currentDateTime_func())));
+					
+	// Calculamos las horas que han pasado desde el último chequeo
+	(int) $interval = $now->diff($last_check)->format("%h");
+		
+	// Si ha pasado una hora o más desde el último escaneo, inicializamos el valor almacenado en la BBDD. De lo contrario devolvemos el valor almacenado en la BBDD.
+	if ( $interval >= 1 ) {
+		switch ( $type ) {
+			case "files":
+				$this->set_campo_filemanager('online_checked_files',0);
+				break;
+			case "hashes":
+				$this->set_campo_filemanager('online_checked_hashes',0);
+				break;
+		}
+	} else {
+		switch ( $type ) {
+			case "files":
+				$analyzed = $this->get_campo_filemanager('online_checked_files');
+				break;
+			case "hashes":
+				$analyzed = $this->get_campo_filemanager('online_checked_hashes');
+				break;
+		}
+		
+	}
+	
+	return $analyzed;
+}
+
+/* Función que obtiene el resultado de cada uno de los archivos o hashes escaneados online */
+private function look_for_results($apikey,$malwarescan_data,$opcion) {
+
+	/* Inicializamos las variables */
+	$array_infected_files = array();
+	$json_infected_files = null;
+	
+	/* Cargamos el lenguaje del sitio */
+	$lang = JFactory::getLanguage();
+	$lang->load('com_securitycheckpro',JPATH_ADMINISTRATOR);
+	
+	// Inicializamos las variables
+	switch ( $opcion ) {
+			case "files":
+				$file_analysis_result = "#<?php die('Forbidden.'); ?>" . PHP_EOL . "<h3>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_FILE_SCAN') . "</h3>" . PHP_EOL;
+				break;
+			case "hashes":
+				$file_analysis_result = "#<?php die('Forbidden.'); ?>" . PHP_EOL . "<h3>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_HASHES_SCAN') . "</h3>" . PHP_EOL;
+				break;
+	}
+	$threats_found = 0;
+	
+	foreach ($this->analized_keys_array as $array_key) {
+	
+		switch ( $opcion ) {
+			case "files":
+				//Config.
+				// Cuando el escaneo del archivo se está realizando, hemos de hacer consultas al servidor proporcionado por la clave 'rest_ip'
+				$api        = 'https://' . $malwarescan_data[$array_key]['rest_ip'] . '/file/' .$malwarescan_data[$array_key]['data_id'];
+				
+				//Build headers array.
+				$headers = array(
+					'apikey: '.$apikey
+				);
+
+				//Build options array.
+				$options = array(
+					CURLOPT_URL     => $api,
+					CURLOPT_HTTPHEADER  => $headers,
+					CURLOPT_RETURNTRANSFER  => true,
+					CURLOPT_SSL_VERIFYPEER  => false
+				);
+
+				$response = "";
+				//Init & execute API call.
+				$ch = curl_init();
+				curl_setopt_array($ch, $options);
+				
+				do {
+					$response = json_decode(curl_exec($ch), true);
+				}
+				while ($response["scan_results"]["progress_percentage"] != 100);
+				
+				// Una vez finalizado el escaneo, hacemos una petición más (esta vez al servicio en scan.metadefender.com) para obtener el resultado
+				$api        = 'https://scan.metadefender.com/v2/file/' .$malwarescan_data[$array_key]['data_id'];
+				
+				//Build headers array.
+				$headers = array(
+					'apikey: '.$apikey
+				);
+
+				//Build options array.
+				$options = array(
+					CURLOPT_URL     => $api,
+					CURLOPT_HTTPHEADER  => $headers,
+					CURLOPT_RETURNTRANSFER  => true,
+					CURLOPT_SSL_VERIFYPEER  => false
+				);
+
+				$response = "";
+				//Init & execute API call.
+				$ch = curl_init();
+				curl_setopt_array($ch, $options);
+				
+				$response = json_decode(curl_exec($ch), true);
+				break;
+			case "hashes":
+				// Establecemos el valor del hash en la variable 'api'
+				$api = 'https://hashlookup.metadefender.com/v2/hash/' . $malwarescan_data[$array_key]['sha1_value'];
+							
+				// Build headers array.
+				$headers = array(
+					'apikey: '.$apikey
+				);
+
+				// Build options array.
+				$options = array(
+					CURLOPT_URL     => $api,
+					CURLOPT_HTTPHEADER  => $headers,
+					CURLOPT_RETURNTRANSFER  => true,
+					CURLOPT_SSL_VERIFYPEER  => false
+				);
+
+				// Init & execute API call.
+				$ch = curl_init();
+				curl_setopt_array($ch, $options);
+				
+				$response = json_decode(curl_exec($ch), true);
+				
+				// Incrementamos el valor de la variable de archivos analizados
+				$this->analized_hashes_last_hour++;				
+				
+				break;
+		}
+		
+		if ( is_array($response) ) {
+					
+			// Guardamos el resultado del escaneo online
+			$malwarescan_data[$array_key]['online_check'] = $response["scan_results"]["scan_all_result_i"];
+		
+			// Guardamos el resultado del escaneo online
+			$malwarescan_data[$array_key]['online_check'] = $response["scan_results"]["scan_all_result_i"];
+			
+			if ( !array_key_exists("scan_results",$response) ) {
+				// El hash no se ha encontrado pero el resultado del escaneo es un array con el formato "hash = Not found"
+				// Guardamos el resultado del escaneo online ( le asignamos el valor '15' )
+				$malwarescan_data[$array_key]['online_check'] = 15;
+				// Añadimos el resultado a la variable que será volcada en el fichero de resultados. Pasamos los datos del fichero ya que el hash no se ha encontrado en la BBDD
+				$file_analysis_result .= $this->format_data($response,true,$malwarescan_data[$array_key]);
+			} else {
+		
+				// Actualizamos la variable de amenazas encontradas si es que se han encontrado
+				if ( ($response["scan_results"]["scan_all_result_i"] == 1) || ($response["scan_results"]["scan_all_result_i"] == 2) ) {
+					$threats_found++;
+					
+					/* Extraemos sólo el nombre del fichero. Como los valores hash pueden corresponder a ficheros con caracteres de separación (/ y \) de otros sistema operativo, hemos de buscar y reemplazar los que puedan existir por el del sistema operativo que opera (que vendrá dado por DIRECTORY_SEPARATOR) */
+					$nombre = $response["file_info"]["display_name"];
+					$to_change = array("/","\\");
+					$nombre = str_replace($to_change, DIRECTORY_SEPARATOR, $nombre);
+					$nombre = basename($nombre);
+					
+					// Añadimos el nombre al array de ficheros infectados
+					$array_infected_files[] = $nombre;	
+				} 
+				
+				// Añadimos el resultado a la variable que será volcada en el fichero de resultados
+				$file_analysis_result .= $this->format_data($response);
+			}
+		} else {
+			// Guardamos el resultado del escaneo online ( le asignamos el valor '15' )
+			$malwarescan_data[$array_key]['online_check'] = 15;
+			
+			// Añadimos el resultado a la variable que será volcada en el fichero de resultados. Pasamos los datos del fichero ya que el hash no se ha encontrado en la BBDD
+			$file_analysis_result .= $this->format_data($response,true,$malwarescan_data[$array_key]);
+		}
+	}
+		
+	// Cambiamos el formato del array a json para almacenarlo en la bbdd
+	if ( !empty($array_infected_files) ) {
+		$json_infected_files = json_encode($array_infected_files);
+	}
+	
+	// Si la opción seleccionada es el escaneo de hashes, actualizamos las variables correspondientes en la bbdd.
+	if ( $opcion == "hashes" ) {
+		// Actualizamos los valores de los campos relacionados con el analisis online
+		$this->set_campo_filemanager('online_checked_hashes',$this->analized_hashes_last_hour);
+		$this->set_campo_filemanager('last_online_check_malwarescan',date('Y-m-d H:i:s'));	
+	}
+	
+	// Borramos el fichero del escaneo anterior...
+	$delete_malwarescan_file = JFile::delete($this->folder_path.$this->malwarescan_name);
+			
+	// ... y almacenamos el nuevo contenido
+	try {
+		$content_malwarescan = utf8_encode(json_encode(array('files_folders'	=> $malwarescan_data)));
+		$content_malwarescan = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $content_malwarescan;
+		$result_malwarescan = JFile::write($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name, $content_malwarescan);
+	} catch (Exception $e) {
+				
+	}
+	
+	// Comprobamos si hay algo que escribir
+	if ( !is_null($file_analysis_result) ) {
+		// Escribimos el contenido del buffer en un fichero
+		$status = $this->write_file($file_analysis_result,$threats_found,count($this->analized_keys_array),$json_infected_files);
+	}
+}
+
+/* Función que formatea los datos de entrada (en un array) para adaptarlos al del fichero */
+private function format_data($response, $not_found = false, $file_data = null) {
+	
+	/* Cargamos el lenguaje del sitio */
+	$lang = JFactory::getLanguage();
+	$lang->load('com_securitycheckpro',JPATH_ADMINISTRATOR);
+
+	// Inicializamos las variables
+	$data = null;
+	$scan_result = '';
+	
+	// El hash se ha encontrado en la BBDD
+	if ( !$not_found ) {
+	
+		$data = "<h4>" . $response["file_info"]["display_name"] . "</h4>" . PHP_EOL;
+		$data .= "<p>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_UPLOAD_TIMESTAMP') . ": " . $response["file_info"]["upload_timestamp"] . "</p>" . PHP_EOL;
+		$data .= "<p>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_FILE_SIZE') . ": " . $response["file_info"]["file_size"] . "</p>" . PHP_EOL;
+		$data .= "<p>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_DATA_ID') . ": " . $response["data_id"] . "</p>" . PHP_EOL;
+		$data .= "<p>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SHA256') . ": " . $response["file_info"]["sha256"] . "</p>" . PHP_EOL;
+			
+		switch ($response["scan_results"]["scan_all_result_i"]) {
+			case 0:
+				$scan_result = "<span style=\"color: #008000;\"><strong>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS_CLEAN') . "</span></strong>";
+				break;
+			case 1:
+				$scan_result = "<span style=\"color: #FF0000;\"><strong>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS_INFECTED') . "</span></strong>";
+				break;
+			case 2:
+				$scan_result = "<span style=\"color: #FF4000;\"><strong>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS_SUSPICIOUS') . "</span></strong>";
+				break;
+			case 3:
+				$scan_result = "<span style=\"color: #61380B;\"><strong>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS_FAILED_TO_SCAN') . "</span></strong>";
+				break;
+			case 4:
+				$scan_result = "<span style=\"color: #000000;\"><strong>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS_CLEANED') . "</span></strong>";
+				break;
+			case 5:
+				$scan_result = "<span style=\"color: #000000;\"><strong>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS_UNKNOW') . "</span></strong>";
+				break;
+			case 6:
+				$scan_result = "<span style=\"color: #000000;\"><strong>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS_QUARANTINED') . "</span></strong>";
+				break;
+			case 7:
+				$scan_result = "<span style=\"color: #000000;\"><strong>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS_SKIPPED_CLEAN') . "</span></strong>";
+				break;
+			case 8:
+				$scan_result = "<span style=\"color: #000000;\"><strong>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS_SKIPPED_DIRTY') . "</span></strong>";
+				break;
+			case 9:
+				$scan_result = "<span style=\"color: #61380B;\"><strong>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS_EXCEEDED_DEPTH') . "</span></strong>";
+			case 10:
+				$scan_result = "<span style=\"color: #61380B;\"><strong>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS_NOT_SCANNED') . "</span></strong>";
+				break;
+			case 11:
+				$scan_result = "<span style=\"color: #61380B;\"><strong>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS_ABORTED') . "</span></strong>";
+				break;
+			case 12:
+				$scan_result = "<span style=\"color: #61380B;\"><strong>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS_ENCRYPTED') . "</span></strong>";
+				break;
+			case 13:
+				$scan_result = "<span style=\"color: #61380B;\"><strong>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS_EXCEEDED_SIZE') . "</span></strong>";
+				break;
+			case 14:
+				$scan_result = "<span style=\"color: #61380B;\"><strong>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS_EXCEEDED_FILE_NUMBER') . "</span></strong>";
+				break;
+		}
+		$data .= "<p>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS') . ": " . $scan_result . "</p>" . PHP_EOL;
+		$data .= "<p>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_TOTAL_AVS') . ": " . $response["scan_results"]["total_avs"] . "</p>" . PHP_EOL . PHP_EOL;
+			
+		// Actualizamos la variable de amenazas encontradas si es que se han encontrado
+		if ( $response["scan_results"]["scan_all_result_i"] == 1 ) {
+			$data .= "<h5 style=\"color: #2E64FE;\">" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_AVS_RESULT') . "</h5>" . PHP_EOL;
+			$data .= "<table border=\"1\">" . PHP_EOL;
+			$data .= "<thead>" . PHP_EOL;
+			$data .= "<tr>" . PHP_EOL;
+			$data .= "<th>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_AV_ENGINE') . "</th>" . PHP_EOL;
+			$data .= "<th>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_DEF_TIME') . "</th>" . PHP_EOL;
+			$data .= "<th>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_TIME') . "</th>" . PHP_EOL;
+			$data .= "<th>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_THREAT_FOUND') . "</th>" . PHP_EOL;
+			$data .= "</tr>";
+			$data .= "</thead>";
+			$data .= "</tbody>";		
+			
+			// Extraemos los nombres de los motores de antivirus usados
+			$av_engines =  array_keys($response["scan_results"]['scan_details']);
+			$indice = 0;
+			foreach ($response["scan_results"]['scan_details'] as $av){
+				$data .= "<tr>" . PHP_EOL;
+				if ( empty($av['threat_found']) ) {
+					$data .= "<td style=\"text-align: center; vertical-align: middle;\">" . $av_engines[$indice] . "</td>" . PHP_EOL;
+				} else {
+					$data .= "<td style=\"text-align: center; vertical-align: middle;\"><font color=#5858FA>" . $av_engines[$indice] . "</font></td>" . PHP_EOL;
+				}
+				$data .= "<td style=\"text-align: center; vertical-align: middle;\">" . $av['def_time'] . "</td>" . PHP_EOL;
+				$data .= "<td style=\"text-align: center; vertical-align: middle;\">" . $av['scan_time'] . "</td>" . PHP_EOL;
+				if ( empty($av['threat_found']) ) {
+					$data .= "<td style=\"text-align: center; vertical-align: middle;\">" . $av['threat_found'] . "</td>" . PHP_EOL;
+				} else {
+					$data .= "<td style=\"text-align: center; vertical-align: middle;\"><font color=red>" . $av['threat_found'] . "</font></td>" . PHP_EOL;
+				}
+				$data .= "</tr>" . PHP_EOL;
+				$indice++;
+			}
+			$data .= "</tbody>";
+			$data .= "</table>" . PHP_EOL;
+		}
+	} else {
+		$data = "<h4>" . $file_data["path"] . "</h4>" . PHP_EOL;
+		$data .= "<p>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SHA256') . ": " . $file_data["sha1_value"] . "</p>" . PHP_EOL;
+		$scan_result = "<span style=\"color: #61380B;\"><strong>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS_HASH_NOT_FOUND') . "</span></strong>";
+		$data .= "<p>" . $lang->_('COM_SECURITYCHECKPRO_MALWARESCAN_SCAN_RESULTS') . ": " . $scan_result . "</p>" . PHP_EOL;
+	}
+	
+	return $data;
+
+}
+
+/* Función que guarda el resultado del escaneo en un fichero y actualiza la bbdd */
+private function write_file($file_analysis_result,$threats,$files_checked,$infected_files) {
+
+	// Nombre del fichero
+	$filename = $this->generateKey();
+	
+	// Comprobamos si hay que borrar archivos por alcanzar el límite establecido
+	$this->check_logs_stored();
+	
+	// Escribrimos el fichero
+	try {
+		$file_result = JFile::write($this->folder_path.DIRECTORY_SEPARATOR.$filename, $file_analysis_result);
+	} catch (Exception $e) {
+				
+	}
+	
+	// Actualizamos la bbdd con la información de este nuevo fichero
+	if ( $file_result ) {
+		$db = JFactory::getDBO();
+			
+		// Sanitizamos las entradas
+		$filename = filter_var($filename, FILTER_SANITIZE_STRING);
+		$files_checked = filter_var($files_checked, FILTER_SANITIZE_STRING);
+		$threats = filter_var($threats, FILTER_SANITIZE_STRING);
+		$filename = $db->escape($filename);
+		$files_checked = $db->escape($files_checked);
+		$threats = $db->escape($threats);
+		$infected_files = $db->escape($infected_files);
+			
+		$sql = "INSERT INTO `#__securitycheckpro_online_checks` ( `filename`, `files_checked`, `threats_found`, `scan_date`, `infected_files` ) VALUES ('{$filename}', '{$files_checked}', '{$threats}', now(), '{$infected_files}')";
+		$db->setQuery($sql);
+		$db->execute();
+	}
+
+}
+
+// Chequeamos si ha pasado más de una hora desde el último escaneo online para inicializar la variable que la controla
+private function check_last_onlinecheck() {
+
+	// Último escaneo
+	$last_check = new DateTime($this->get_campo_filemanager("last_online_check_malwarescan"));
+
+	// Ahora
+	$now = new DateTime(date('Y-m-d H:i:s'));
+
+	// Diferencia
+	$difference = $last_check->diff($now);
+
+	// Si ha pasado más de una hora, inicializamos la variable
+	if ( (($difference->h)>=1) || ( (($difference->h)==0) && (($difference->d)>=1) ) ) {
+		$this->set_campo_filemanager("online_checked_files",0);
+	}
+
+}
+
+private function check_logs_stored() {
+
+	// Inicializamos las variables
+	$files_deleted = 0;
+	
+	// Consultamos los valores de configuración
+	$params = JComponentHelper::getParams('com_securitycheckpro');
+	(int) $log_files_to_store = $params->get('log_files_stored',5);
+	
+	$db = JFactory::getDBO();
+			
+	$sql = "SELECT COUNT(*) FROM `#__securitycheckpro_online_checks`";
+	$db->setQuery($sql);
+	(int) $logs_stored = $db->loadResult();
+		
+	// Si se ha sobrepasado el límite de archivos que se deben guardar, los borramos del directorio y de la bbdd
+	if ( $logs_stored >= $log_files_to_store ) {
+	
+		// Extraemos el array de ficheros almacenados en orden descendente
+		$query = $db->getQuery(true)
+		->select(array('filename'))
+		->from($db->quoteName('#__securitycheckpro_online_checks'))
+		->order('scan_date DESC');
+		$db->setQuery($query);
+		$filenames = $db->loadRowList();
+
+
+				
+		// Inicializamos el índice para recorrer el array
+		$indice = 0;
+		foreach ( $filenames as $filename ) {
+			if ( $indice >= ($log_files_to_store-1) ) {
+				// Borramos el fichero
+				$delete_file = JFile::delete($this->folder_path.$filename[0]);
+				// Si el fichero se ha borrado actualizamos la bbdd
+				if ( $delete_file ) {
+					$query = $db->getQuery(true)
+						->delete($db->quoteName('#__securitycheckpro_online_checks'))
+						->where($db->quoteName('filename').' = '.$db->quote($filename[0]));
+					$db->setQuery($query);
+					$db->execute();
+				}
+				$files_deleted++;
+			}
+			$indice++;
+		}
+		JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_DELETED_OLD_FILES',$files_deleted));				
+	}	
+
+
+}
+
+/* Restaura a su ubicación original archivos movidos a la carpeta 'quarantine' */
+public function quarantined_file($opcion) {
+	
+	// Establecemos la ruta donde está la cuarentena
+	$quarantine_folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR.'quarantine';
+	
+	$stack = JFile::read($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name);
+	// Eliminamos la parte del fichero que evita su lectura al acceder directamente
+	$stack = str_replace("#<?php die('Forbidden.'); ?>",'',$stack);
+	
+	$stack = json_decode($stack, true);
+	
+	// Datos del fichero en formato array
+	$data = $stack['files_folders'];
+	
+	// Creamos el objeto JInput para obtener las variables del formulario
+	$jinput = JFactory::getApplication()->input;
+	
+	// Obtenemos las rutas de los ficheros que serán restaurados a su ubicación anterior
+	$paths = $jinput->get('malwarescan_status_table','0','array');
+	
+	// Inicializamos las variables
+	if ( !empty($paths) ) {	
+		foreach($paths as $path) {
+			// Buscamos el elemento en el array
+			$value = array_search($path,array_column($data,'path'));
+			if ( is_int($value) ) {
+				switch ( $opcion ) {
+					case "restore":	
+						// Movemos el archivo a su ruta original				
+						$copy_resume = JFile::move($data[$value]['quarantined_file_name'],$path);
+						// Si se ha movido con éxito, actualizamos los datos
+						if ( $copy_resume ) {
+							// Actualizamos los datos del fichero
+							$data[$value]['moved_to_quarantine'] = 0;
+							$data[$value]['safe_malwarescan'] = 0;
+							$data[$value]['quarantined_file_name'] = "";
+						}
+					break;
+					case "delete":
+						// Movemos el archivo a su ruta original				
+						$delete_resume = JFile::delete($data[$value]['quarantined_file_name']);
+						// Si se borrado con éxito, actualizamos los datos
+						if ( $delete_resume ) {
+							unset($data[$value]);
+						}
+					break;
+				}
+						
+			}
+				
+		}		
+	}
+	
+	// Establecemos la ruta donde se almacenan los escaneos
+	$this->folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR;
+	
+		
+	// Obtenemos el nombre de los escaneos anteriores
+	$db = $this->getDbo();
+	$query = $db->getQuery(true)
+		->select(array($db->quoteName('storage_value')))
+		->from($db->quoteName('#__securitycheckpro_storage'))
+		->where($db->quoteName('storage_key').' = '.$db->quote('malwarescan_resume'));
+	$db->setQuery($query);
+	$stack_malwarescan = $db->loadResult();	
+	$stack_malwarescan = json_decode($stack_malwarescan, true);
+		
+	if(!empty($stack_malwarescan)) {
+		$malwarescan_name = $stack_malwarescan['filename'];
+	}
+	
+	try {
+		$malware_content = utf8_encode(json_encode(array('files_folders'	=> $data)));
+		$malware_content = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $malware_content;
+		$result_malware = JFile::write($this->folder_path.DIRECTORY_SEPARATOR.$malwarescan_name, $malware_content);			
+			
+	} catch (Exception $e) {	
+		
+	}
+	
+}
+
+/* Función para borrar archivos sospechosos */
+function delete_files()
+{
+	// Creamos el objeto JInput para obtener las variables del formulario
+	$jinput = JFactory::getApplication()->input;
+	
+	// Obtenemos las rutas de los ficheros a borrar
+	$paths = $jinput->get('malwarescan_status_table',null,'array');
+	
+	// Cargamos los datos almacenados en el fichero del escaneo
+	$this->loadStack("malwarescan","malwarescan");
+		
+	if ( empty($paths) ) {
+		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_NO_FILES_SELECTED'),'error');
+	} else {
+		$count=0;
+		foreach ($paths as $path) {
+			$deleted = JFile::delete($path);
+			if ( $deleted) {				
+				$count++;
+				foreach ($this->Stack_Malwarescan as $key => $value) {					
+					if ( $value['path'] == $path ) {
+						// Eliminamos la entrada del array...
+						unset($this->Stack_Malwarescan[$key]);
+						// ... y reorganizamos los índices del array
+						$this->Stack_Malwarescan = array_values($this->Stack_Malwarescan);
+					}
+				}
+			} else {
+				JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_DELETE_FILE_ERROR',$path),'error');
+			}
+		}
+		// Obtenemos los datos del número de archivos escaneados, sospechosos y fecha de escaneo
+		$this->loadStack("malwarescan_resume","files_scanned_malwarescan");
+		$this->loadStack("malwarescan_resume","suspicious_files");
+		$this->loadStack("malwarescan_resume","last_check_malwarescan");
+		// Actualizamos el número de archivos sospechosos según el número de archivos que hayamos borrado
+		$this->suspicious_files = $this->suspicious_files - $count;
+		// salvamos los datos
+		$this->saveStack();
+		JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_DELETED_FROM_LIST',$count),'message');	
+	}
+		
+}
+
+/* Función para borrar archivos sospechosos */
+function view_file()
+{
+	// Creamos el objeto JInput para obtener las variables del formulario
+	$jinput = JFactory::getApplication()->input;
+	
+	// Obtenemos las rutas de los ficheros a borrar
+	$paths = $jinput->get('malwarescan_status_table',null,'array');
+			
+	$mainframe = JFactory::getApplication();
+		
+	if ( empty($paths) ) {		
+		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_NO_FILES_SELECTED'),'error');	
+		$contenido = $mainframe->setUserState('contenido', "vacio");
+	} else {
+		if ( count($paths) > 1 ) {
+			JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_SELECT_ONLY_ONE_FILE'),'error');	
+		} else {
+			$file_content = JFile::read($paths[0]);		
+			$contenido = $mainframe->setUserState('contenido', $file_content);				
+		}		
+	}
 }
 
 }

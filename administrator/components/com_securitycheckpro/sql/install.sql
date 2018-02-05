@@ -347,7 +347,7 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_surveyforce','component','3.2.4','==','3.0.0','>=','Survey Force Deluxe Component','SQL Injection Vulnerability','Sep 21 2017','3.2.4','update','3.2.5'),
 ('com_spmoviedb','component','1.3','==','3.0.0','>=','SP Movie Database Component','SQL Injection Vulnerability','Sep 22 2017','1.3','update','1.4'),
 ('com_ns_downloadshop','component','2.2.6','==','3.0.0','>=','NS Download Shop Component','SQL Injection Vulnerability','Oct 01 2017','Version 2.2.6','none','No details'),
-('com_zhyandexmap','component','6.1.1.0','==','3.0.0','>=','Zh YandexMap Component','SQL Injection Vulnerability','Oct 01 2017','Version 6.1.1.0','none','No details'),
+('com_zhyandexmap','component','6.1.1.0','==','3.0.0','>=','Zh YandexMap Component','SQL Injection Vulnerability','Oct 01 2017','Version 6.1.1.0','update','6.2.0.0'),
 ('com_price_alert','component','3.0.4','<=','3.0.0','>=','Price Alert for Virtuemart Component','SQL Injection Vulnerability','Oct 18 2017','Version 3.0.4 and previous','none','No details'),
 ('com_ajaxquiz','component','1.8.0','==','3.0.0','>=','Ajax Quiz Component','SQL Injection Vulnerability','Oct 18 2017','Version 1.8.0','none','No details'),
 ('plugin_googlemap3','plugin','3.5.2','<=','3.0.0','>=','Google Maps by Reumer','Malicious update','Oct 21 2017','Version 3.5','update','3.5.2'),
@@ -356,7 +356,19 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('Joomla!','core','3.8.1','<=','3.0.0','>=','Joomla! LDAP Information Disclosure','Inadequate escaping in the LDAP authentication plugin','Nov 07 2017','Joomla! versions 1.5.0 through 3.8.1','update','3.8.2'),
 ('Joomla!','core','3.8.1','<=','3.0.0','>=','Joomla! 2-factor-authentication bypass vulnerability','---','Nov 07 2017','Joomla! versions 3.2.0 through 3.8.1','update','3.8.2'),
 ('Joomla!','core','3.8.1','<=','3.0.0','>=','Joomla! Information Disclosure vulnerability','logic bug in com_fields','Nov 07 2017','Joomla! versions 3.7.0 through 3.8.1','update','3.8.2'),
-('com_virtuemart','component','3.2.4','==','3.0.0','>=','Virtuemart Component','XSS Vulnerability','Dec 04 2017','Version 3.2.4','update','3.2.6');
+('com_virtuemart','component','3.2.4','==','3.0.0','>=','Virtuemart Component','XSS Vulnerability','Dec 04 2017','Version 3.2.4','update','3.2.6'),
+('com_jbuildozer','component','1.4.1','==','3.0.0','>=','JBuildozer Component','SQL Injection Vulnerability','Dec 20 2017','Version 1.4.1','none','No details'),
+('com_jevideogallery','component','3.0.5','==','3.0.0','>=','JEXTN Video Gallery Component','SQL Injection Vulnerability','Dec 20 2017','Version 3.0.5','none','No details'),
+('com_nge','component','2.1.0','==','3.0.0','>=','NextGen Editor Component','SQL Injection Vulnerability','Dec 20 2017','Version 2.1.0','none','No details'),
+('com_bigfileuploader','component','1.0.2','==','3.0.0','>=','Big File uploader Editor Component','File upload Vulnerability','Dec 20 2017','Version 1.0.2','none','No details'),
+('com_bookpro','component','1.0','==','3.0.0','>=','JB Visa Component','SQL Injection Vulnerability','Jan 06 2018','Version 1.0','none','No details'),
+('com_b2jcontact','component','2.1.14','<=','3.0.0','>=','B2j Contact Component','Several Vulnerabilities','Dec 20 2017','Version 2.1.14 and lower','update','2.1.15'),
+('com_myproject','component','2.0','==','3.0.0','>=','My Projects Component','SQL Injection Vulnerability','Dec 20 2017','Version 2.0','update','2.1'),
+('com_userbench','component','1.0','==','3.0.0','>=','User Bench Component','SQL Injection Vulnerability','Jan 01 2018','Version 1.0','update','1.1'),
+('com_easydiscuss','component','4.0.20','<=','3.0.0','>=','Easy Discuss Component','XSS Vulnerability','Jan 08 2018','Version 4.0.20 and previous','update','4.0.21'),
+('com_guru','component','5.0.15','<=','3.0.0','>=','Guru Pro Component','SQL Injection Vulnerability','Jan 08 2018','Version 5.0.15 and previous','update','5.0.16'),
+('com_ajaxquiz','component','2.0','<=','3.0.0','>=','Ajax Quiz Component','SQL Injection Vulnerability','Jan 09 2018','Version 2.0 and lower','update','2.1'),
+('com_enmasse','component','1.0','>=','3.0.0','>=','En Masse Component','SQL Injection Vulnerability','Jan 15 2018','all known versions','none','No details');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -477,7 +489,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.0.106');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.0.107');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (
@@ -496,3 +508,65 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_url_inspector_logs` (
 `date_added` DATETIME,
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_trackactions` (
+`id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+`message` TEXT NOT NULL DEFAULT '',
+`log_date` DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00',
+`extension` VARCHAR(50) NOT NULL DEFAULT '',
+`user_id` INT(11) NOT NULL DEFAULT '0',
+`ip_address` VARCHAR(40) NOT NULL DEFAULT '0.0.0.0',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_trackactions_extensions` (
+ `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+ `extension` VARCHAR(100) NOT NULL DEFAULT '',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT IGNORE INTO `#__securitycheckpro_trackactions_extensions` (`id`, `extension`) VALUES
+(1, 'com_banners'),
+(2, 'com_cache'),
+(3, 'com_categories'),
+(4, 'com_config'),
+(5, 'com_contact'),
+(6, 'com_content'),
+(7, 'com_installer'),
+(8, 'com_media'),
+(9, 'com_menus'),
+(10, 'com_messages'),
+(11, 'com_modules'),
+(12, 'com_newsfeeds'),
+(13, 'com_plugins'),
+(14, 'com_redirect'),
+(15, 'com_tags'),
+(16, 'com_templates'),
+(17, 'com_users');
+
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_trackactions_tables_data` (
+`id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+`type_title` varchar(255) NOT NULL DEFAULT '',
+`type_alias` varchar(255) NOT NULL DEFAULT '',
+`title_holder` varchar(255) DEFAULT NULL,
+`table_values` varchar(255) DEFAULT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT IGNORE INTO `#__securitycheckpro_trackactions_tables_data` (`id`, `type_title`, `type_alias`, `title_holder`, `table_values`) VALUES
+(1, 'article', 'com_content.article', 'title', '{"table_type":"Content","table_prefix":"JTable"}'),
+(2, 'article', 'com_content.form', 'title', '{"table_type":"Content","table_prefix":"JTable"}'),
+(3, 'banner', 'com_banners.banner', 'name', '{"table_type":"Banner","table_prefix":"BannersTable"}'),
+(4, 'user_note', 'com_users.note', 'subject', '{"table_type":"Note","table_prefix":"UsersTable"}'),
+(5, 'media', 'com_media.file', 'name', '{"table_type":"","table_prefix":""}'),
+(6, 'category', 'com_categories.category', 'title', '{"table_type":"Category","table_prefix":"JTable"}'),
+(7, 'menu', 'com_menus.menu', 'title', '{"table_type":"Menu","table_prefix":"JTable"}'),
+(8, 'menu_item', 'com_menus.item', 'title', '{"table_type":"Menu","table_prefix":"JTable"}'),
+(9, 'newsfeed', 'com_newsfeeds.newsfeed', 'name', '{"table_type":"Newsfeed","table_prefix":"NewsfeedsTable"}'),
+(10, 'link', 'com_redirect.link', 'old_url', '{"table_type":"Link","table_prefix":"RedirectTable"}'),
+(11, 'tag', 'com_tags.tag', 'title', '{"table_type":"Tag","table_prefix":"TagsTable"}'),
+(12, 'style', 'com_templates.style', 'title', '{"table_type":"","table_prefix":""}'),
+(13, 'plugin', 'com_plugins.plugin', 'name', '{"table_type":"Extension","table_prefix":"JTable"}'),
+(14, 'component_config', 'com_config.component', 'name', '{"table_type":"","table_prefix":""}'),
+(15, 'contact', 'com_contact.contact', 'name', '{"table_type":"Contact","table_prefix":"ContactTable"}'),
+(16, 'module', 'com_modules.module', 'title', '{"table_type":"Module","table_prefix":"JTable"}'),
+(17, 'access_level', 'com_users.level', 'title', '{"table_type":"Viewlevel","table_prefix":"JTable"}'),
+(18, 'banner_client', 'com_banners.client', 'name', '{"table_type":"Client","table_prefix":"BannersTable"}');

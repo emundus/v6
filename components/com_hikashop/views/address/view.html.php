@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -54,6 +54,38 @@ class addressViewAddress extends HikaShopView {
 		$this->address_selector = (int)$config->get('user_address_selector', 0);
 
 		hikashop_setPageTitle('ADDRESSES');
+
+		$this->toolbar = array();
+		if(!empty($this->address_selector)) {
+			$this->toolbar['new'] = array(
+				'icon' => 'new',
+				'name' => JText::_('HIKA_NEW'),
+				'javascript' => 'return window.localPage.newAddr(this, \''.$this->type.'\');'
+			);
+		}elseif($this->use_popup) {
+			$this->toolbar['new'] = array(
+				'icon' => 'new',
+				'name' => JText::_('HIKA_NEW'),
+				'url' => hikashop_completeLink('address&task=add', true),
+				'popup' => array(
+					'id' => 'hikashop_new_address_popup',
+					'width' => 760,
+					'height' => 480
+					)
+			);
+		}else{
+			$this->toolbar['new'] = array(
+				'icon' => 'new',
+				'name' => JText::_('HIKA_NEW'),
+				'url' => hikashop_completeLink('address&task=add')
+			);
+		}
+
+		$this->toolbar['back'] = array(
+			'icon' => 'back',
+			'name' => JText::_('HIKA_BACK'),
+			'url' => hikashop_completeLink('user&task=cpanel')
+		);
 	}
 
 	public function show() {
@@ -246,6 +278,18 @@ class addressViewAddress extends HikaShopView {
 
 		$cart = hikashop_get('helper.cart');
 		$this->assignRef('cart', $cart);
+
+		$this->toolbar = array();
+		$this->toolbar['save'] = array(
+			'icon' => 'save',
+			'name' => JText::_('HIKA_SAVE'),
+			'javascript' => 'return window.localPage.saveAddr(this);'
+		);
+		$this->toolbar['back'] = array(
+			'icon' => 'back',
+			'name' => JText::_('HIKA_BACK'),
+			'url' => hikashop_completeLink('address&task=listing')
+		);
 	}
 
 	public function select() {

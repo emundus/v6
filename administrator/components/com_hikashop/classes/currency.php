@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -2048,7 +2048,7 @@ class hikashopCurrencyClass extends hikashopClass{
 		return parent::save($element);
 	}
 
-	function addDiscount(&$price, &$discount, $discount_before_tax, $zone_id, $product_tax_id) {
+	function addDiscount(&$price, $discount, $discount_before_tax, $zone_id, $product_tax_id) {
 		$config = hikashop_config();
 		if($config->get('floating_tax_prices', 0)) {
 			$price->price_value = $price->price_value_with_tax;

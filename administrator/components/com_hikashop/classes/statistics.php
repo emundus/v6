@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -73,11 +73,8 @@ class hikashopStatisticsClass extends hikashopClass {
 			'vars' => array(
 				'DATE_RANGE' => 'past.month',
 			),
-			'vars-2' => array(
-				'DATE_RANGE' => 'past.month-1',
-			),
 			'query' => array(
-				'get' => 'object',
+				'get' => 'list',
 				'select' => array(
 					'SUM(hk_order.order_full_price) as value',
 					'hk_order.order_currency_id as currency'
@@ -89,7 +86,8 @@ class hikashopStatisticsClass extends hikashopClass {
 					'order_created' => ($created_status ?
 						'hk_order.order_created >= {DATE_START} AND ({DATE_END} <= 0 OR hk_order.order_created <= {DATE_END})':
 						'hk_order.order_invoice_created >= {DATE_START} AND ({DATE_END} <= 0 OR hk_order.order_invoice_created <= {DATE_END})'),
-				)
+				),
+				'group' => 'hk_order.order_currency_id'
 			)
 		);
 
@@ -108,9 +106,6 @@ class hikashopStatisticsClass extends hikashopClass {
 			),
 			'vars' => array(
 				'DATE_RANGE' => 'past.month',
-			),
-			'vars-2' => array(
-				'DATE_RANGE' => 'past.month-1',
 			),
 			'query' => array(
 				'get' => 'single',
@@ -140,9 +135,6 @@ class hikashopStatisticsClass extends hikashopClass {
 				'view' => hikashop_completeLink('order&task=listing'),
 			),
 			'vars' => array(
-				'DATE_RANGE' => 'past.month',
-			),
-			'vars-2' => array(
 				'DATE_RANGE' => 'past.month',
 			),
 			'query' => array(
@@ -1036,9 +1028,6 @@ jQuery(window).on("resize", function(){
 		if(!is_array($data['value']))
 			$data['value'] = array($data['value']);
 
-		if(isset($data['vars-2'])) {
-			$data['value'][] = $this->processQuery($data['query'], $data['vars-2']);
-		}
 
 		if(isset($data['format']) && $data['format'] == 'percentage' && count($data['value']) == 2) {
 			$a = hikashop_toFloat($data['value'][0]);
@@ -1053,7 +1042,7 @@ jQuery(window).on("resize", function(){
 			$d[] = $this->getFormatedValue($value, @$data['format']);
 		}
 
-		$value = reset($d);
+		$value = $this->getMergedValue($d, @$data['format']);
 
 		if(!empty($data['tile']['mode']) && $data['tile']['mode'] == 'small') {
 			$background = '';
@@ -1475,5 +1464,12 @@ window.localPage.chartsInit[window.localPage.chartsInit.length] = function() {
 				break;
 		}
 		return $ret;
+	}
+
+	protected function getMergedValue($value, $format, $data = array()) {
+		$f = reset($value);
+		if(is_object($f))
+			return $f;
+		return implode('<br/>', $value);
 	}
 }

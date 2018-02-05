@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -76,10 +76,9 @@ class AkeebaStrapper extends RenderBase implements RenderInterface
 
 
 		// Wrap output in various classes
-		$version = new \JVersion;
-		$versionParts = explode('.', $version->RELEASE);
-		$minorVersion = str_replace('.', '', $version->RELEASE);
-		$majorVersion = array_shift($versionParts);
+		$versionParts = explode('.', JVERSION);
+		$minorVersion = $versionParts[0] . $versionParts[1];
+		$majorVersion = $versionParts[0];
 
 		$classes = array();
 
@@ -161,6 +160,8 @@ class AkeebaStrapper extends RenderBase implements RenderInterface
 	 * @param   Form  &$form  The form we are rendering
 	 *
 	 * @return  void
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	protected function loadValidationScript(Form &$form)
 	{
@@ -224,10 +225,6 @@ JS;
 	 */
 	protected function renderLinkbar_classic($view, $task)
 	{
-		// Prevent phpStorm from complaining
-		if ($view) {}
-		if ($task) {}
-
 		$platform = $this->container->platform;
 
 		if ($platform->isCli())
@@ -235,9 +232,12 @@ JS;
 			return;
 		}
 
+		$isJoomla4 = version_compare(JVERSION, '3.99999.99999', 'gt');
+		$isJoomla3 = !$isJoomla4 && version_compare(JVERSION, '3.0.0', 'ge');
+
 		// Do not render a submenu unless we are in the the admin area
-		$toolbar				 = $this->container->toolbar;
-		$renderFrontendSubmenu	 = $toolbar->getRenderFrontendSubmenu();
+		$toolbar               = $this->container->toolbar;
+		$renderFrontendSubmenu = $toolbar->getRenderFrontendSubmenu();
 
 		if (!$platform->isBackend() && !$renderFrontendSubmenu)
 		{
@@ -316,27 +316,38 @@ JS;
 				}
 				else
 				{
-					echo "<li";
+					echo "<li class=\"nav-item";
 
-					if ($link['active'])
+					if ($link['active'] && $isJoomla3)
 					{
-						echo ' class="active"';
+						echo ' active"';
 					}
 
-					echo ">";
+					echo "\">";
 
 					if ($link['icon'])
 					{
-						echo "<i class=\"icon icon-" . $link['icon'] . "\"></i>";
+						echo "<span class=\"icon icon-" . $link['icon'] . "\"></span>";
 					}
 
-					if ($link['link'])
+					if ($isJoomla3)
 					{
-						echo "<a href=\"" . $link['link'] . "\">" . $link['name'] . "</a>";
+						if ($link['link'])
+						{
+							echo "<a href=\"" . $link['link'] . "\">" . $link['name'] . "</a>";
+						}
+						else
+						{
+							echo $link['name'];
+						}
 					}
 					else
 					{
-						echo $link['name'];
+						$class = $link['active'] ? 'active' : '';
+
+						$href = $link['link'] ? $link['link'] : '#';
+
+						echo "<a href=\"$href\" class=\"nav-link $class\">{$link['name']}</a>";
 					}
 				}
 
@@ -359,10 +370,6 @@ JS;
 	 */
 	protected function renderLinkbar_joomla($view, $task)
 	{
-		// Prevent phpStorm from complaining
-		if ($view) {}
-		if ($task) {}
-
 		$platform = $this->container->platform;
 
 		// On command line don't do anything
@@ -372,8 +379,8 @@ JS;
 		}
 
 		// Do not render a submenu unless we are in the the admin area
-		$toolbar				 = $this->container->toolbar;
-		$renderFrontendSubmenu	 = $toolbar->getRenderFrontendSubmenu();
+		$toolbar               = $this->container->toolbar;
+		$renderFrontendSubmenu = $toolbar->getRenderFrontendSubmenu();
 
 		if (!$platform->isBackend() && !$renderFrontendSubmenu)
 		{
@@ -527,6 +534,8 @@ JS;
 	 * @param   DataModel  $model  The model providing our data
 	 *
 	 * @return  string    The HTML rendering of the form
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	public function renderFormBrowse(Form &$form, DataModel $model)
 	{
@@ -918,6 +927,8 @@ JS;
 	 * @param   DataModel  $model  The model providing our data
 	 *
 	 * @return  string    The HTML rendering of the form
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	public function renderFormRead(Form &$form, DataModel $model)
 	{
@@ -933,6 +944,8 @@ JS;
 	 * @param   DataModel  $model  The model providing our data
 	 *
 	 * @return  string    The HTML rendering of the form
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	public function renderFormEdit(Form &$form, DataModel $model)
 	{
@@ -1038,6 +1051,8 @@ JS;
 	 * @param   string    $formType  The form type e.g. 'edit' or 'read'
 	 *
 	 * @return  string    The HTML rendering of the form
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	public function renderFormRaw(Form &$form, DataModel $model, $formType = null)
 	{
@@ -1127,6 +1142,8 @@ JS;
 	 * @param   string     $innerHtml   Render inner tab if set
 	 *
 	 * @return  string    The HTML rendering of the fieldset
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	public function renderFieldset(\stdClass &$fieldset, Form &$form, DataModel $model, $formType, $showHeader = true, &$innerHtml = null)
 	{
@@ -1339,6 +1356,8 @@ JS;
 	 * @param 	string		$title		The title of the label
 	 *
 	 * @return 	string		The rendered label
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	public function renderFieldsetLabel($field, Form &$form, $title)
 	{
@@ -1405,6 +1424,8 @@ JS;
 	 *                                   returned.
 	 *
 	 * @return  string    The HTML rendering of the form
+	 *
+	 * @deprecated 3.1  Support for XML forms will be removed in FOF 4
 	 */
 	function renderForm(Form &$form, DataModel $model, $formType = null, $raw = false)
 	{

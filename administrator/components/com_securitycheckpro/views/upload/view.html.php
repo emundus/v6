@@ -22,10 +22,16 @@ class SecuritycheckprosViewUpload extends JViewLegacy
 	function display($tpl = null)
 	{
 		JToolBarHelper::title( JText::_( 'Securitycheck Pro' ).' | '.JText::_('COM_SECURITYCHECKPRO_IMPORT_CONFIG_TITLE'), 'securitycheckpro' );
-		JToolBarHelper::custom('redireccion_control_panel','arrow-left','arrow-left','COM_SECURITYCHECKPRO_REDIRECT_CONTROL_PANEL');
-				
-					
-							
+		
+		// Información para la barra de navegación
+		require_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/library/model.php';
+		$common_model = new SecuritycheckproModel();
+
+		$logs_pending = $common_model->LogsPending();
+		$trackactions_plugin_exists = $common_model->PluginStatus(8);
+		$this->assignRef('logs_pending', $logs_pending);
+		$this->assignRef('trackactions_plugin_exists', $trackactions_plugin_exists);
+		
 		parent::display($tpl);
 	}
 }

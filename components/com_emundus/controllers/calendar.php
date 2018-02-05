@@ -39,14 +39,21 @@ class EmundusControllerCalendar extends JControllerLegacy {
         $calendar_alias     = str_replace(' ', '-', $calendar_title);
 
         // Google API info is obtained via the module params
-        $google_client_id       = $eMConfig->get('clientId');
-        $google_secret_key      = $eMConfig->get('clientSecret');
-        $google_refresh_token   = $eMConfig->get('refreshToken');
+        $google = $eMConfig->get('useGoogle');
+
+        if ($google == 1) {
+            $google_client_id       = $eMConfig->get('clientId');
+            $google_secret_key      = $eMConfig->get('clientSecret');
+            $google_refresh_token   = $eMConfig->get('refreshToken');
+        }
         $dpcalendar_parent_id   = $eMConfig->get('parentCalId');
 
-        $service = $m_calendar->google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
-
-        $google_calendar_id = $m_calendar->google_add_calendar($service, $calendar_title);
+        if ($google == 1) {
+            $service = $m_calendar->google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
+            $google_calendar_id = $m_calendar->google_add_calendar($service, $calendar_title);
+        } else {
+            $google_calendar_id = '';
+        }
 
         $m_calendar->dpcalendar_add_calendar($calendar_title, $calendar_alias, $calendar_color, $google_calendar_id, $dpcalendar_parent_id, $calendar_program);
 
@@ -66,18 +73,24 @@ class EmundusControllerCalendar extends JControllerLegacy {
         $fnum           = $jinput->get('fnum', null, 'string');
         $contact_info   = $jinput->get('contactInfo', null, 'array');
 
-        $google_client_id       = $eMConfig->get('clientId');
-        $google_secret_key      = $eMConfig->get('clientSecret');
-        $google_refresh_token   = $eMConfig->get('refreshToken');
+        $google = $eMConfig->get('useGoogle');
+
+        if ($google == 1) {
+            $google_client_id       = $eMConfig->get('clientId');
+            $google_secret_key      = $eMConfig->get('clientSecret');
+            $google_refresh_token   = $eMConfig->get('refreshToken');
+        }
 
         $dpcalendar_event = $m_calendar->dpcalendar_confirm_interview($event_id, $user_id, $fnum, $contact_info);
 
-        $service = $m_calendar->google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
+        $result = true;
 
-        $result = $m_calendar->google_add_event($service, $dpcalendar_event);
+        if ($google == 1) {
+            $service    = $m_calendar->google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
+            $result     = $m_calendar->google_add_event($service, $dpcalendar_event);
+        }
 
-        if ($result)
-            $result = $m_calendar->email_event($event_id, true);
+        $m_calendar->email_event($event_id, true);
 
         echo json_encode(['status' => $result]);
 
@@ -91,16 +104,20 @@ class EmundusControllerCalendar extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
         $event_id = $jinput->get("eventId", null, "string");
 
-        $google_client_id       = $eMConfig->get('clientId');
-        $google_secret_key      = $eMConfig->get('clientSecret');
-        $google_refresh_token   = $eMConfig->get('refreshToken');
+        $google = $eMConfig->get('useGoogle');
 
-        $service = $m_calendar->google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
-        $m_calendar->google_delete_event($event_id, $service);
+        if ($google == 1) {
+            $google_client_id       = $eMConfig->get('clientId');
+            $google_secret_key      = $eMConfig->get('clientSecret');
+            $google_refresh_token   = $eMConfig->get('refreshToken');
+
+            $service = $m_calendar->google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
+            $m_calendar->google_delete_event($event_id, $service);
+        }
+
         $result = $m_calendar->dpcalendar_delete_interview($event_id);
 
-        if ($result)
-            $result = $m_calendar->email_event($event_id, false);
+        $m_calendar->email_event($event_id, false);
 
         echo json_encode(['status' => $result]);
 

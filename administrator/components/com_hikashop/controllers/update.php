@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -67,11 +67,14 @@ class updateController extends HikashopBridgeController {
 		return $this->_iframe(HIKASHOP_UPDATEURL.'update');
 	}
 	function _iframe($url){
-		$config =& hikashop_config();
-		$menu_style = $config->get('menu_style','title_bottom');
-		if(HIKASHOP_J30) $menu_style = 'content_top';
-		if($menu_style=='content_top'){
-			echo hikashop_getMenu('',$menu_style);
+		$app = JFactory::getApplication();
+		if($app->isAdmin()){
+			$config =& hikashop_config();
+			$menu_style = $config->get('menu_style','title_bottom');
+			if(HIKASHOP_J30) $menu_style = 'content_top';
+			if($menu_style=='content_top'){
+				echo hikashop_getMenu('',$menu_style);
+			}
 		}
 
 		if(hikashop_isSSL())
@@ -83,6 +86,10 @@ class updateController extends HikashopBridgeController {
 <?php
 	}
 	function wizard(){
+		$app = JFactory::getApplication();
+		if(!$app->isAdmin()){
+			return;
+		}
 		$lang = JFactory::getLanguage();
 		$code = $lang->getTag();
 		$path = JLanguage::getLanguagePath(JPATH_ROOT).DS.$code.DS.$code.'.com_hikashop.ini';

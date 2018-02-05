@@ -71,7 +71,7 @@ public function getListQuery()
 		
 	$query->select('a.*');
 	$query->from('#__securitycheckpro_logs AS a');
-	$query->where('(a.ip LIKE '.$search.' OR a.time LIKE '.$search.' OR a.description LIKE '.$search.' OR a.uri LIKE '.$search.' OR a.geolocation LIKE '.$search.')');
+	$query->where('(a.ip LIKE '.$search.' OR a.time LIKE '.$search.' OR a.username LIKE '.$search.' OR a.description LIKE '.$search.' OR a.uri LIKE '.$search.' OR a.geolocation LIKE '.$search.')');
 	
 	// Filtramos la descripcion
 	if ($description = $this->getState('filter.description')) {
@@ -341,9 +341,9 @@ public function load($key_name)
 function getConfig()
 {
 	if(interface_exists('JModel')) {
-		$params = JModelLegacy::getInstance('FirewallCPanel','SecuritycheckProsModel');
+		$params = JModelLegacy::getInstance('FirewallConfig','SecuritycheckProsModel');
 	} else {
-		$params = JModel::getInstance('FirewallCPanel','SecuritycheckProsModel');
+		$params = JModel::getInstance('FirewallConfig','SecuritycheckProsModel');
 	}
 	
 	$config = array();

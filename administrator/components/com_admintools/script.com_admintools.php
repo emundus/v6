@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  * @version   $Id$
  *
@@ -59,6 +59,13 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 	protected $minimumJoomlaVersion = '3.3.0';
 
 	/**
+	 * The maximum Joomla! version this extension can be installed on
+	 *
+	 * @var   string
+	 */
+	protected $maximumJoomlaVersion = '4.0.999';
+
+	/**
 	 * Obsolete files and folders to remove from both paid and free releases. This is used when you refactor code and
 	 * some files inevitably become obsolete and need to be removed.
 	 *
@@ -97,8 +104,46 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 			// -- removed features
 			'plugins/system/admintools/feature/twofactorauth.php',
 			'plugins/system/admintools/feature/xssshield.php',
-			//     ...because some people have never updated to 3.6, apparently?!
+			// ...because some people have never updated to 3.6, apparently?!
 			'plugins/system/admintools/feature/blockinstall.php',
+
+            // Obsolete engine files
+            'administrator/components/com_admintools/engine/Base/Object.php',
+
+            // Moving to FEF
+			'administrator/components/com_admintools/Helper/Coloriser.php',
+            'administrator/components/com_admintools/View/ScanAlerts/tmpl/form.default.xml',
+            'administrator/components/com_admintools/View/ScanAlerts/Form.php',
+            'administrator/components/com_admintools/View/Scans/tmpl/form.default.xml',
+            'administrator/components/com_admintools/View/Scans/tmpl/form.form.xml',
+            'administrator/components/com_admintools/View/Scans/Form.php',
+            'administrator/components/com_admintools/View/WAFEmailTemplates/Form.php',
+            'administrator/components/com_admintools/View/WAFEmailTemplates/tmpl/form.default.xml',
+            'administrator/components/com_admintools/View/IPAutoBanHistories/Form.php',
+            'administrator/components/com_admintools/View/IPAutoBanHistories/tmpl/form.default.xml',
+            'administrator/components/com_admintools/View/AutoBannedAddresses/Form.php',
+            'administrator/components/com_admintools/View/AutoBannedAddresses/tmpl/form.default.xml',
+            'administrator/components/com_admintools/View/ExceptionsFromWAF/Form.php',
+            'administrator/components/com_admintools/View/ExceptionsFromWAF/tmpl/form.default.xml',
+            'administrator/components/com_admintools/View/ExceptionsFromWAF/tmpl/form.form.xml',
+            'administrator/components/com_admintools/View/WAFBlacklistedRequests/Form.php',
+            'administrator/components/com_admintools/View/WAFBlacklistedRequests/tmpl/form.default.xml',
+            'administrator/components/com_admintools/View/WAFBlacklistedRequests/tmpl/form.form.xml',
+            'administrator/components/com_admintools/View/WhitelistedAddresses/Form.php',
+            'administrator/components/com_admintools/View/WhitelistedAddresses/tmpl/form.default.xml',
+            'administrator/components/com_admintools/View/WhitelistedAddresses/tmpl/form.form.xml',
+            'administrator/components/com_admintools/View/SecurityExceptions/Form.php',
+            'administrator/components/com_admintools/View/SecurityExceptions/tmpl/form.default.xml',
+            'administrator/components/com_admintools/View/BadWords/Form.php',
+            'administrator/components/com_admintools/View/BadWords/tmpl/form.default.xml',
+            'administrator/components/com_admintools/View/BadWords/tmpl/form.form.xml',
+            'administrator/components/com_admintools/View/BlacklistedAddresses/Form.php',
+            'administrator/components/com_admintools/View/BlacklistedAddresses/tmpl/form.default.xml',
+            'administrator/components/com_admintools/View/BlacklistedAddresses/tmpl/form.form.xml',
+            'administrator/components/com_admintools/View/Redirections/tmpl/form.form.xml',
+			'administrator/components/com_admintools/View/Redirections/tmpl/form.default.xml',
+            'administrator/components/com_admintools/View/Redirections/Form.php',
+
 		),
 		'folders' => array(
 			// Obsolete folders from AT 1.x, 2.x and 3.x
@@ -119,6 +164,10 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 
 			// Public media directory (moved to administrator)
 			'media/com_admintools',
+
+            // Moving to FEF
+            'administrator/components/com_admintools/Form',
+            'administrator/components/com_admintools/media/images',
 		)
 	);
 
@@ -213,6 +262,9 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 
 		// Parent method
 		parent::postflight($type, $parent);
+
+		// Add ourselves to the list of extensions depending on Akeeba FEF
+		$this->addDependency('file_fef', $this->componentName);
 
 		// Uninstall post-installation messages we are no longer using
 		$this->uninstallObsoletePostinstallMessages();

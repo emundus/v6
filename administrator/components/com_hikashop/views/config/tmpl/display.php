@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -244,6 +244,22 @@ window.localPage.imagepopupmode = function(el) {
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('characteristic_display');?>><?php echo JText::_('CHARACTERISTICS_DISPLAY'); ?></td>
 		<td><?php echo $this->characteristicdisplayType->display('config[characteristic_display]',$this->config->get('characteristic_display')); ?></td>
+	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('product_selection_method');?>><?php echo JText::_('PRODUCT_SELECTION_METHOD'); ?></td>
+		<td><?php
+			if(hikashop_level(1)) {
+				$options = array(
+					JHTML::_('hikaselect.option', 'generic', JText::_('FIELD_SINGLEDROPDOWN')),
+					JHTML::_('hikaselect.option', 'check', JText::_('FIELD_CHECKBOX')),
+					JHTML::_('hikaselect.option', 'radio', JText::_('FIELD_RADIO')),
+					JHTML::_('hikaselect.option', 'per_product', JText::_('ON_A_PER_PRODUCT_BASIS'))
+				);
+				echo JHTML::_('select.genericlist', $options, 'config[product_selection_method]', '', 'value', 'text', $this->config->get('product_selection_method', 'generic'));
+			} else {
+				echo hikashop_getUpgradeLink('essential');
+			}
+		?></td>
 	</tr>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('show_quantity_field');?>><?php echo JText::_('ADD_TO_CART_ON_LISTINGS');?></td>

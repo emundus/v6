@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.1
+ * @version	3.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -80,22 +80,22 @@ function hikashopUpdateVariantData(selection) {
 		if(empty($element->main->characteristics))
 			return '';
 
+		$app = JFactory::getApplication();
+		$doc = JFactory::getDocument();
+
 		$this->characteristics=&$element->main->characteristics;
 		foreach($this->characteristics as $k => $characteristic) {
 			if(empty($this->characteristics[$k]->characteristic_display_method)) {
 				$this->characteristics[$k]->characteristic_display_method = $params->get('characteristic_display');
 			}
 		}
-		$this->load();
 
-		$app = JFactory::getApplication();
-		$doc = JFactory::getDocument();
-
-		$chromePath = JPATH_THEMES.DS.$app->getTemplate().DS.'html'.DS.'hikashop_characteristics.php';
+		$html = '';
+		$chromePath = JPATH_THEMES . DS . $app->getTemplate() . DS . 'html' . DS . 'hikashop_characteristics.php';
 		if(file_exists($chromePath)) {
 			require_once ($chromePath);
 			if(function_exists('hikashop_characteristics_html')) {
-				$html = hikashop_characteristics_html($element,$params,$this);
+				$html = hikashop_characteristics_html($element, $params, $this);
 			}
 		}
 
@@ -106,6 +106,8 @@ function hikashopUpdateVariantData(selection) {
 
 		if(!empty($html))
 			return $html . $extra_html;
+
+		$this->load();
 
 		switch($params->get('characteristic_display')){
 			case 'table':
@@ -147,7 +149,7 @@ function hikashopUpdateVariantData(selection) {
 													$class = ' hikashop_product_variant_out_of_stock';
 													$classspan=' hikashop_product_variant_out_of_stock_span';
 												}else {
-													$extra = ' data-stock="'.$variant->product_quantity.'"';
+													$extra = ' data-stock="'.(int)$variant->product_quantity.'"';
 												}
 												break 2;
 											}
@@ -254,8 +256,8 @@ function hikashopUpdateVariantData(selection) {
 
 			if(strpos($val, '<img ') !== false)
 				$val = str_replace('<img ', '<img onclick="return hikashopUpdateVariant(\'hikashop_product_characteristic_'.$characteristic_id.$key.'\');" ', $val);
-
-			$this->values[] = JHTML::_('select.option', $key,( $characteristic_display!='radio' && count(strip_tags($val)) ? strip_tags($val) : $val ));
+			$clean = strip_tags($val);
+			$this->values[] = JHTML::_('select.option', $key, ($characteristic_display != 'radio' && !empty($clean) ? $clean : $val) );
 		}
 
 		$type = 'onclick';
@@ -266,7 +268,7 @@ function hikashopUpdateVariantData(selection) {
 
 		$options = ' '.$type.'="return hikashopUpdateVariant(this);"';
 
-		$html = JHTML::_('select.'.$characteristic_display.'list',   $this->values, $map, 'class="inputbox" size="1"' . $options, 'value', 'text', (int)$value,$id );
+		$html = JHTML::_('select.'.$characteristic_display.'list', $this->values, $map, 'class="inputbox" size="1"' . $options, 'value', 'text', (int)$value,$id );
 		return $html;
 	}
 }

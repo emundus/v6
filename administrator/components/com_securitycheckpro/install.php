@@ -27,28 +27,131 @@ class com_SecuritycheckproInstallerScript {
 	// url plugin habilitado?
 	public $url_plugin_enabled = false;
 		
-	/** @var array Obsolete files and folders to remove  */
+	/** @var array Obsolete files and folders to remove after new UI  */
 	private $ObsoleteFilesAndFolders = array(
 		'files'	=> array(
-			// Outdated media files
-			'media/com_securitycheckpro/images/blocked.jpg',
-			'media/com_securitycheckpro/images/dinamically_blocked.jpg',
-			'media/com_securitycheckpro/images/http.jpg',
-			'media/com_securitycheckpro/images/no_read.jpg',
-			'media/com_securitycheckpro/images/oval_blue_left.gif',
-			'media/com_securitycheckpro/images/oval_blue_right.gif',
-			'media/com_securitycheckpro/images/oval_green_left.gif',
-			'media/com_securitycheckpro/images/oval_green_right.gif',
-			'media/com_securitycheckpro/images/permitted.jpg',
-			'media/com_securitycheckpro/images/read.jpg',
-			'media/com_securitycheckpro/images/second_level.jpg',
-			'media/com_securitycheckpro/images/session_hijack.jpg',
-			'media/com_securitycheckpro/images/session_protection.jpg',
-			'media/com_securitycheckpro/images/task_running.gif',
-			// Geoip outdated files
-			'administrator/components/com_securitycheckpro/helpers/geoip.php',
-			'administrator/components/com_securitycheckpro/helpers/GeoIP.dat',
-			'administrator/components/com_securitycheckpro/helpers/geoblock.php',			
+			// Outdated css files
+			'media/com_securitycheckpro/stylesheets/jquery.percentageloader-0.1.css',
+			// Outdated code
+			'administrator/components/com_securitycheckpro/controllers/firewallemail.php',
+			'administrator/components/com_securitycheckpro/controllers/firewallexceptions.php',
+			'administrator/components/com_securitycheckpro/controllers/firewallinspector.php',
+			'administrator/components/com_securitycheckpro/controllers/firewalllogs.php',
+			'administrator/components/com_securitycheckpro/controllers/firewallmethods.php',
+			'administrator/components/com_securitycheckpro/controllers/firewallmode.php',
+			'administrator/components/com_securitycheckpro/controllers/firewallredirection.php',
+			'administrator/components/com_securitycheckpro/controllers/firewallsecond.php',
+			'administrator/components/com_securitycheckpro/controllers/firewallsessionprotection.php',
+			'administrator/components/com_securitycheckpro/controllers/firewallspam.php',
+			'administrator/components/com_securitycheckpro/controllers/filesstatus.php',
+			'administrator/components/com_securitycheckpro/controllers/filesintegritystatus.php',
+			'administrator/components/com_securitycheckpro/controllers/malwarescanstatus.php',
+			'administrator/components/com_securitycheckpro/controllers/logview.php',
+			'administrator/components/com_securitycheckpro/models/firewallemail.php',
+			'administrator/components/com_securitycheckpro/models/firewallexceptions.php',
+			'administrator/components/com_securitycheckpro/models/firewallinspector.php',
+			'administrator/components/com_securitycheckpro/models/firewalllogs.php',
+			'administrator/components/com_securitycheckpro/models/firewallmethods.php',
+			'administrator/components/com_securitycheckpro/models/firewallmode.php',
+			'administrator/components/com_securitycheckpro/models/firewallredirection.php',
+			'administrator/components/com_securitycheckpro/models/firewallsecond.php',
+			'administrator/components/com_securitycheckpro/models/firewallsessionprotection.php',
+			'administrator/components/com_securitycheckpro/models/firewallspam.php',
+			'administrator/components/com_securitycheckpro/models/filesstatus.php',
+			'administrator/components/com_securitycheckpro/models/filesintegritystatus.php',
+			'administrator/components/com_securitycheckpro/models/malwarescanstatus.php',
+			'administrator/components/com_securitycheckpro/models/logview.php',
+			'administrator/components/com_securitycheckpro/models/securitycheckpro.php',
+			// Outdated image files
+			'media/images/acl.png',
+			'media/images/box_empty.png',
+			'media/images/box_full.png',
+			'media/images/check_vulnerabilities.png',
+			'media/images/circulo_rojo.png',
+			'media/images/circulo_rojo.jpg',
+			'media/images/circulo_verde.png',
+			'media/images/circulo_verde.jpg',
+			'media/images/configuration.png',
+			'media/images/controlcenter.png',
+			'media/images/cron.png',
+			'media/images/dbcheck.png',
+			'media/images/delete_htaccess.png',
+			'media/images/dialog-apply.png',
+			'media/images/email.png',
+			'media/images/error_small.png',
+			'media/images/exceptions.png',
+			'media/images/export_config.png',
+			'media/images/file_integrity.png',
+			'media/images/file_manager.png',
+			'media/images/firewall_config.png',
+			'media/images/firewall_logs.png',
+			'media/images/geoblock.png',
+			'media/images/green_flag.png',
+			'media/images/green_flags.png',
+			'media/images/htaccess_protection.png',
+			'media/images/import_config.png',
+			'media/images/initialize_data.png',
+			'media/images/kexi.png',
+			'media/images/malwarescan.png',
+			'media/images/methods.png',
+			'media/images/mode.png',
+			'media/images/ok_small.png',
+			'media/images/protect.png',
+			'media/images/purge_sessions.png',
+			'media/images/quickicon_logs_empty.png',
+			'media/images/quickicon_shield_green.png',
+			'media/images/quickicon_shield_red.png',
+			'media/images/quickicon_shield_yellow.png',
+			'media/images/quickicons_can_not_connect.png',
+			'media/images/quickicons_file_integrity_ok.png',
+			'media/images/quickicons_file_integrity_wrong.png',
+			'media/images/quickicons_file_permissions_ok.png',
+			'media/images/quickicons_file_permissions_wrong.png',
+			'media/images/quickicons_no_update_available.png',
+			'media/images/quickicons_update_available.png',
+			'media/images/redirection.png',
+			'media/images/repair.png',
+			'media/images/rules_logs.png',
+			'media/images/second.png',
+			'media/images/spamprotection.png',
+			'media/images/sysinfo.png',
+			'media/images/trackactions.png',
+			'media/images/upload_scanner_panel.png',
+			'media/images/url_inspector_panel.png',
+			'media/images/user_session_protection.png',
+			'media/images/view_analyzed_files.png',
+			'media/images/view_files_integrity.png',
+			'media/images/view_trackactions_logs.png',
+			'media/images/waf_lists.png',
+			
+			
+			
+		),
+		'folders'	=> array(
+			// Removed views
+			'administrator/components/com_securitycheckpro/views/firewallcpanel',	
+			'administrator/components/com_securitycheckpro/views/securitycheckpro',
+			'administrator/components/com_securitycheckpro/views/filesintegritystatus',
+			'administrator/components/com_securitycheckpro/views/filesstatus',
+			'administrator/components/com_securitycheckpro/views/firewallemail',
+			'administrator/components/com_securitycheckpro/views/firewallexceptions',
+			'administrator/components/com_securitycheckpro/views/firewalinspector',
+			'administrator/components/com_securitycheckpro/views/firewalllogs',
+			'administrator/components/com_securitycheckpro/views/firewallmethods',
+			'administrator/components/com_securitycheckpro/views/firewallmode',
+			'administrator/components/com_securitycheckpro/views/firewallredirection',
+			'administrator/components/com_securitycheckpro/views/firewallsecond',
+			'administrator/components/com_securitycheckpro/views/firewallsessionprotection',
+			'administrator/components/com_securitycheckpro/views/firewallspam',
+			'administrator/components/com_securitycheckpro/views/firewalltrackactions',
+			'administrator/components/com_securitycheckpro/views/geoblock',
+			'administrator/components/com_securitycheckpro/views/initialize_data',
+			'administrator/components/com_securitycheckpro/views/logsfilesstatus',
+			'administrator/components/com_securitycheckpro/views/logview',
+			'administrator/components/com_securitycheckpro/views/malwarescanstatus',
+			'administrator/components/com_securitycheckpro/views/uploadscanner',
+			// Removed obsolete javascript
+			'media/com_securitycheckpro/javascript',
 		)
 	);
 			
@@ -99,18 +202,18 @@ class com_SecuritycheckproInstallerScript {
 		// Remove files
 		JLoader::import('joomla.filesystem.file');
 		if(!empty($ObsoleteFilesAndFolders['files'])) foreach($ObsoleteFilesAndFolders['files'] as $file) {
-			$f = JPATH_ROOT.'/'.$file;
+			$f = JPATH_ROOT.'/'.$file;			
 			if(!JFile::exists($f)) continue;
-			$res= JFile::delete($f);			
+			$res = JFile::delete($f);			
 		}
 		
-		/* Remove folders (Not used now, but could be useful in a future)
+		/* Remove folders */
 		JLoader::import('joomla.filesystem.file');
-		if(!empty($ObsoleteFiles['folders'])) foreach($ObsoleteFiles['folders'] as $folder) {
+		if(!empty($ObsoleteFilesAndFolders['folders'])) foreach($ObsoleteFilesAndFolders['folders'] as $folder) {
 			$f = JPATH_ROOT.'/'.$folder;
-			if(!JFolder::exists($f)) continue;
-			JFolder::delete($f);
-		}*/
+			if(!JFolder::exists($f)) continue;			
+			$res = JFolder::delete($f);							
+		}
 	}
 	
 	/* Chequea las opciones para lanzar el Cron y las adapta al formato de la versión 2.8.0 */

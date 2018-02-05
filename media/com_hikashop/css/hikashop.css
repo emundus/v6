@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    3.2.1
+ * @version    3.2.2
  * @author     hikashop.com
- * @copyright  (C) 2010-2017 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 .hk-container {
@@ -618,7 +618,7 @@ ul.hika_tabs > li.active > a:focus {
 .hikabtn:hover {
 	text-decoration: none;
 	color:#333;
-	background-color:#e6e6e6;
+	background-color:#f2f2f2;
 	border-color:#adadad;
 }
 
@@ -648,7 +648,7 @@ ul.hika_tabs > li.active > a:focus {
 	border-bottom-right-radius:0;
 	border-top-right-radius:0;
 }
-.hikabtn-group > .hikabtn:last-child:not(:first-child) {
+.hikabtn-group > .hikabtn:last-child:not(:first-child), .hikabtn-group > .dropdown-toggle:not(:first-child) {
 	border-bottom-left-radius:0;
 	border-top-left-radius:0;
 }
@@ -1043,4 +1043,52 @@ div.hikashop_messages li { list-style-type : none; }
 
 .hikashop_products_listing{
 	clear:both;
+}
+@media only screen and (max-width: 640px) {
+	.hikashop_filter_main {
+		width: 100% !important;
+	}
+}
+.hikashop_filter_fieldset {
+	display:inline-block;
+}
+.hikashop_filter_fieldset h3 {
+    display: inline-block;
+	margin: 0px;
+}
+.hikashop_filter_collapsable_title_mobile {
+	display: none;
+}
+.hikashop_filter_fieldset_always h3 {
+    display: none;
+}
+div.hikashop_filter_collapsable_content_mobile {
+    display: block;
+}
+@media only screen and (max-width: 640px) {
+	.hikashop_filter_collapsable_title_mobile {
+		display: block;
+	}
+	.hikashop_filter_fieldset_mobile h3 {
+		display: none;
+	}
+	div.hikashop_filter_collapsable_content_mobile {
+		display: none;
+	}
+}
+
+@media only screen and (max-device-width: 1024px) {
+	.hika_toolbar a, div.hika_toolbar .hkdropdown{
+		display: block !important;
+		width: 100%;
+	}
+	.hika_toolbar span {
+		display: inline-block !important;
+	}
+	.hika_toolbar .btnName {
+		width: auto !important;
+	}
+	.hika_toolbar .btnIcon, div.hika_toolbar .hkdropdown-icon {
+		float: left !important;
+	}
 }
