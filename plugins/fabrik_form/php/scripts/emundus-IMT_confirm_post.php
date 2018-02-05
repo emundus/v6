@@ -44,7 +44,7 @@ if (empty($current_user->fnum) || !isset($current_user->fnum)) {
     $current_user->fnum = $fnum;
 }
 
-$recipients[] = array('email' => $current_user->email);
+$recipients[] = array('email' => $student->email);
 
 // Récupération des données du mail
 try {

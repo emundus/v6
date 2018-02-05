@@ -13,6 +13,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 
+
 /**
  * users Controller
  *
@@ -623,7 +624,10 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 
 	public function deleteusers() {
+		
 		$jinput = JFactory::getApplication()->input;
+		$app        = JFactory::getApplication();
+		
 		$users = $jinput->getString('users', null);
 		$m_users = new EmundusModelUsers();
 		if ($users === 'all') {
@@ -636,17 +640,25 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		$res = true;
 		$msg = JText::_('COM_EMUNDUS_USERS_DELETED');
-
+		$users_id = "";
 		foreach ($users as $user) {
 			if (is_numeric($user)) {
 				$u = JUser::getInstance($user);
-				if (!$u->delete()) {
+				$count = $m_users->countUserEvaluations($user);
+				
+				if ($count > 0) {
+					/** user disactivation */
+					$m_users->changeBlock(array($user),1);
+					$users_id .= $user." ,";
 					$res = false;
-					$msg = $u->getError();
-				}
+				}else  $u->delete();
+				
 			}
-		}
+		} 
+		if($users_id != "")
+			$msg = JText::sprintf('THIS_USER_CAN_NOT_BE_DELETED', $users_id);
 		echo json_encode((object)array('status' => $res, 'msg' => $msg));
+		
 		exit;
 	}
 
