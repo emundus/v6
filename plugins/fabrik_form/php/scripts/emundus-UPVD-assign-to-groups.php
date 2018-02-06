@@ -75,6 +75,7 @@ foreach ($groups as $group) {
     try {
 
         $db->setQuery($query);
+        $db->execute();
 
     } catch (Exception $e) {
         JLog::add('Error in script/UPVD-assign-to-groups setting rights to groups at query: '.$query, JLog::ERROR, 'com_emundus');
