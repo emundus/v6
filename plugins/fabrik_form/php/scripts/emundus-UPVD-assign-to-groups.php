@@ -56,8 +56,9 @@ if ($user->code === 'doc') {
 
 
 // Using the institution IDs we can get the groups attached to it.
-$query = 'SELECT id FROM #__emundus_setup_groups
-                WHERE institution_id IN ('.implode(',',$institution_ids).')';
+$query = 'SELECT DISTINCT(g.id) FROM #__emundus_setup_groups AS g
+                LEFT JOIN #__emundus_setup_groups_repeat_institution_id AS i ON i.parent_id = g.id
+                WHERE i.institution_id IN ('.implode(',',$institution_ids).')';
 
 try {
 
@@ -69,15 +70,30 @@ try {
 }
 
 foreach ($groups as $group) {
-    $query = 'INSERT INTO #__emundus_group_assoc (`group_id`, `action_id`, `fnum`, `c`, `r`, `u`, `d`)
-                VALUES ('.$group.', 1, '.$user->fnum.', 0, 1, 0, 0)';
+
+    $query = 'SELECT COUNT(id) FROM #__emundus_group_assoc
+                WHERE group_id = '.$group.' AND action_id = 1 AND fnum LIKE '.$db->Quote($user->fnum);
 
     try {
 
         $db->setQuery($query);
-        $db->execute();
+        $cpt = $db->loadResult();
 
     } catch (Exception $e) {
-        JLog::add('Error in script/UPVD-assign-to-groups setting rights to groups at query: '.$query, JLog::ERROR, 'com_emundus');
+        JLog::add('Error in script/UPVD-assign-to-groups getting groups at query: '.$query, JLog::ERROR, 'com_emundus');
+    }
+
+    if ($cpt == 0) {
+        $query = 'INSERT INTO #__emundus_group_assoc (`group_id`, `action_id`, `fnum`, `c`, `r`, `u`, `d`)
+                    VALUES ('.$group.', 1, '.$db->Quote($user->fnum).', 0, 1, 0, 0)';
+
+        try {
+
+            $db->setQuery($query);
+            $db->execute();
+
+        } catch (Exception $e) {
+            JLog::add('Error in script/UPVD-assign-to-groups setting rights to groups at query: '.$query, JLog::ERROR, 'com_emundus');
+        }
     }
 }
