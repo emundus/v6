@@ -83,7 +83,7 @@ class EmundusModelFiles extends JModelLegacy
 
         $session = JFactory::getSession();
 
-        if (!$session->has('filter_order') || $session->get('filter_order') == 'jos_emundus_campaign_candidature.date_submitted') {
+        if (!$session->has('filter_order') || $session->get('filter_order') == 'jos_emundus_campaign_candidature.id') {
             if (in_array('overall', $em_other_columns)) {
 
                 $session->set('filter_order', 'overall');
@@ -91,7 +91,7 @@ class EmundusModelFiles extends JModelLegacy
 
             } else {
 
-                $session->set('filter_order', 'jos_emundus_campaign_candidature.date_submitted');
+                $session->set('filter_order', 'jos_emundus_campaign_candidature.id');
                 $session->set('filter_order_Dir', 'desc');
 
             }
@@ -285,9 +285,9 @@ class EmundusModelFiles extends JModelLegacy
         $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
 
         $session = JFactory::getSession();
-        $filter_order = 'jos_emundus_campaign_candidature.date_submitted';//$session->get('filter_order');
+        $filter_order = 'jos_emundus_campaign_candidature.id';//$session->get('filter_order');
         $filter_order_Dir = $session->get('filter_order_Dir');
-      
+
         $can_be_ordering = array();
         if(count($this->_elements) > 0) {
             foreach ($this->_elements as $element) {
@@ -303,8 +303,8 @@ class EmundusModelFiles extends JModelLegacy
         $can_be_ordering[] = 'status';
         $can_be_ordering[] = 'name';
         $can_be_ordering[] = 'eta.id_tag';
-        
-        
+
+
         if (in_array('overall', $em_other_columns))
             $can_be_ordering[] = 'overall';
 
