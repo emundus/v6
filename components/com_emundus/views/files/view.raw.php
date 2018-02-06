@@ -365,9 +365,9 @@ class EmundusViewFiles extends JViewLegacy
 				    $data = JText::_('NO_RESULT');
 			    }
 
-			    /* Get the values from the state object that were inserted in the model's construct function */
+				/* Get the values from the state object that were inserted in the model's construct function */
 			    $lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
-			    $lists['order']     = JFactory::getSession()->get( 'filter_order' );
+				$lists['order']     = JFactory::getSession()->get( 'filter_order' );
 			    $this->assignRef('lists', $lists);
 			    $this->assignRef('actions', $actions);
 			    $pagination = $this->get('Pagination');
