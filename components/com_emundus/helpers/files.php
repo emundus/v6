@@ -1355,7 +1355,7 @@ class EmundusHelperFiles
 
             foreach($tagList as $p) {
                 $tag .= '<option value="'.$p['id'].'"';
-                if(!empty($current_tag) && in_array($p['id'], $current_tag)) $tag .= ' selected="true"';
+                if(!empty($current_tag) && in_array($p['id'], (array)$current_tag)) $tag .= ' selected="true"';
                 $tag .= '>'.$p['label'].'</option>';
             }
             $tag .= '</select>';
