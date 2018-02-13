@@ -1966,14 +1966,13 @@ class EmundusControllerFiles extends JControllerLegacy
                     continue;
 
                 if ($zip->open($path, ZipArchive::CREATE) == TRUE) {
-                    $dossier = EMUNDUS_PATH_ABS . $users[$fnum]->id . DS . $fnum;
+                    $dossier = EMUNDUS_PATH_ABS . $users[$fnum]->id . DS;
 
                     application_form_pdf($users[$fnum]->id, $fnum, false);
                     $application_pdf = $fnum . '_application.pdf';
+                    $filename = $fnum . '_' . $users[$fnum]->name . DS . $application_pdf;
 
-                    $filename = $fnum . '_' . $application_pdf;
-
-                    if (!$zip->addFile($dossier . DS . $application_pdf, $filename))
+                    if (!$zip->addFile($dossier . $application_pdf, $filename))
                         continue;
 
                     $zip->close();

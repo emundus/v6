@@ -249,7 +249,7 @@ class EmundusModelUsers extends JModelList
             if (isset($search) && !empty($search)) {
                 if ($and) $query .= ' AND ';
                 else { $and = true; $query .=' '; }
-               
+
                 $query .= '(e.lastname LIKE '.$db->Quote('%'.$search.'%').'
                             OR e.firstname LIKE '.$db->Quote('%'.$search.'%').'
                             OR u.email LIKE '.$db->Quote('%'.$search.'%').'
@@ -371,7 +371,7 @@ class EmundusModelUsers extends JModelList
     public function getProfileIDByCampaignID($cid){
         $db = JFactory::getDBO();
         $query = 'SELECT `profile_id` FROM `#__emundus_setup_campaigns` WHERE id='.$cid;
-        $db->setQuery($query);        
+        $db->setQuery($query);
         return $db->loadResult();
     }
 
@@ -1166,7 +1166,7 @@ class EmundusModelUsers extends JModelList
     }
 
     public function changeBlock($users, $state) {
-        try { 
+        try {
             $db = $this->getDbo();
             foreach ($users as $uid) {
                 $uid = intval($uid);
@@ -1494,7 +1494,7 @@ class EmundusModelUsers extends JModelList
     public function addProfileToUser($uid,$pid){
         try{
             $db = JFactory::getDBO();
-            
+
             $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$uid.",".$pid.",'','')";
             $db->setQuery( $query );
             $db->Query();
@@ -1554,29 +1554,29 @@ class EmundusModelUsers extends JModelList
             if (!empty($user['em_campaigns'])) {
                 $connected = JFactory::getUser()->id;
                 $campaigns = explode(',', $user['em_campaigns']);
-                
+
                 $query = 'SELECT campaign_id FROM #__emundus_campaign_candidature WHERE applicant_id='.$user['id'];
                 $db->setQuery($query);
                 $campaigns_id = $db->loadColumn();
-              
+
                 $query = 'SELECT profile_id FROM #__emundus_users_profiles WHERE user_id='.$user['id'];
                 $db->setQuery($query);
                 $profiles_id = $db->loadColumn();
                 foreach ($campaigns as $campaign) {
                     //insert profile******
                     $profile = $this->getProfileIDByCampaignID($campaign);
-                    if (!in_array($profile, $profiles_id)) 
+                    if (!in_array($profile, $profiles_id))
                         $this->addProfileToUser($user['id'],$profile);
                     if (!in_array($campaign, $campaigns_id)) {
                         $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`) VALUES ('.$user['id'].', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
                         $db->setQuery( $query );
                         $db->query();
-                        
+
                     }
                 }
             }
 
-           
+
 
             if (!empty($user['em_oprofiles'])) {
                 $oprofiles = explode(',', $user['em_oprofiles']);
@@ -1586,7 +1586,7 @@ class EmundusModelUsers extends JModelList
                 foreach ($oprofiles as $profile) {
                     if (!in_array($profile, $profiles_id)) {
                         $this->addProfileToUser($user['id'],$profile);
-                    }   
+                    }
                 }
 
             }
@@ -1720,6 +1720,34 @@ class EmundusModelUsers extends JModelList
         return $dbo->execute();
     }
 
+    /**
+     * Connect to LDAP
+     * @return mixed
+     */
+    public function searchLDAP ($search)
+    {
+        // Create LDAP object using params entered in plugin
+        $plugin = JPluginHelper::getPlugin('authentication', 'ldap');
+        $params = new JRegistry($plugin->params);
+        $ldap = new JLDAP($params);
 
+        if (!$ldap->connect())
+            return false;
 
+        if (!$ldap->bind())
+            return false;
+
+        // filters are different based on the LDAP tree, therefore we put them in the eMundus params.
+        $params = JComponentHelper::getParams('com_emundus');
+        $ldapFilters = $params->get('ldapFilters');
+
+        // Filters come in a list separated by commas, but are fed into the LDAP object as an array.
+        // The area to put the search term is defined as [SEARCH] in the param.
+        $filters = explode(',', str_replace('[SEARCH]', $search, $ldapFilters));
+
+        $ret = new stdClass();
+        $ret->status = true;
+        $ret->users = $ldap->search($filters);
+        return $ret;
+    }
 }
