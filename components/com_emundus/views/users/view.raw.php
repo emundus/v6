@@ -91,8 +91,6 @@ class EmundusViewUsers extends JViewLegacy
 		$m_users = new EmundusModelUsers();
 		$edit = JFactory::getApplication()->input->getInt('edit', null);
 
-
-
 		if($edit == 1)
 		{
 			$uid = JFactory::getApplication()->input->getInt('user', null);
@@ -100,20 +98,21 @@ class EmundusViewUsers extends JViewLegacy
 			$uGroups = $m_users->getUserGroups($uid);
 			$uCamps = $m_users->getUserCampaigns($uid);
 			$uOprofiles = $m_users->getUserOprofiles($uid);
-			
+
 			$this->assignRef('user', $user);
 			$this->assignRef('uGroups', $uGroups);
 			$this->assignRef('uCamps', $uCamps);
 			$this->assignRef('uOprofiles', $uOprofiles);
-			
+
 		}
 		$this->assignRef('edit', $edit);
 
-        if(!empty($this->filts_details['profile_users']))
+        if (!empty($this->filts_details['profile_users']))
     		$profiles = $m_users->getProfilesByIDs($this->filts_details['profile_users']);
 		else
             $profiles = $m_users->getProfiles();
-        $this->assignRef('profiles', $profiles);
+		$this->assignRef('profiles', $profiles);
+
 		$groups = $m_users->getGroups();
 		$this->assignRef('groups', $groups);
 
@@ -122,10 +121,15 @@ class EmundusViewUsers extends JViewLegacy
 
 		$universities = $m_users->getUniversities();
 		$this->assignRef('universities', $universities);
+
+		// Get the LDAP elements.
+		$params = JComponentHelper::getParams('com_emundus');
+		$ldapElements = $params->get('ldapElements');
+		$this->assignRef('ldapElements', $ldapElements);
 	}
 
 	private function _loadGroupForm()
-	{ 
+	{
 		//$model = new EmundusModelFiles();
 		$m_users = new EmundusModelUsers();
 		$actions = $m_users->getActions();
@@ -153,7 +157,7 @@ class EmundusViewUsers extends JViewLegacy
 
 		}
 		//$acl = $m_users->getUserACL($uid);
-		
+
 		$this->assignRef('groups', $g);
 	}
 
@@ -163,7 +167,7 @@ class EmundusViewUsers extends JViewLegacy
 		if(!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
 			die("ACCESS_DENIED");
 
-		$layout = JFactory::getApplication()->input->getString('layout', null); 
+		$layout = JFactory::getApplication()->input->getString('layout', null);
 		switch ($layout) {
 			case 'user':
 				$this->_loadData();
@@ -188,7 +192,7 @@ class EmundusViewUsers extends JViewLegacy
 				$menu = JSite::getMenu();
 				$current_menu  = $menu->getActive();
 				$params = $menu->getParams($current_menu->id);
-			
+
 				//$mfiles = $this->getModel('Users');
 
 				$items = EmundusHelperFiles::getMenuList($params);
@@ -201,10 +205,10 @@ class EmundusViewUsers extends JViewLegacy
 						if ($actions[$note[0]][$note[1]] == 1) {
 							$actions[$note[0]]['multi'] = $note[2];
 							$actions[$note[0]]['grud'] = $note[1];
-							$item->action = $actions[$note[0]]; 
+							$item->action = $actions[$note[0]];
 							$menuActions[] = $item;
 						}
-					} else 
+					} else
 						$menuActions[] = $item;
 				}
 
@@ -223,4 +227,4 @@ class EmundusViewUsers extends JViewLegacy
 		parent::display($tpl);
 	}
 
-} 
+}

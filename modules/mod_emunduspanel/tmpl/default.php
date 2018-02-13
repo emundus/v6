@@ -7,7 +7,10 @@ if (!empty($tab)) {
 <?php
 if (isset($user->profile) && $user->profile > 0) {
 
-    //$title = "<h2 class='title'>".@$module_title."</h2>";
+    if (!empty($module_title))
+        $title = "<h2 class='title'>".@$module_title."</h2>";
+    else
+        $title = "";
 
     if ($show_programme_title == 1)
         $title .= ' '.$user->profile_label;
@@ -15,6 +18,7 @@ if (isset($user->profile) && $user->profile > 0) {
         $title .= ' '.$btn_profile;
     if ($show_start_link == 1)
         $title .= ' '.$btn_start;
+
     echo '<legend>'.$title.'</legend>';
 
     if (isset($user->fnums)) {
@@ -45,7 +49,7 @@ if (isset($user->profile) && $user->profile > 0) {
 
 <div class="ui grid">
 <?php
-if (empty($campaigns)) {
+if (!isset($campaigns) || empty($campaigns)) {
     if (!in_array($user->profile, $applicant_profiles)) {
         foreach ($tab as $t) {
             echo '<div class="five wide column element_home_emundus">' . $t . '</div>';

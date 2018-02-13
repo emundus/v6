@@ -691,3 +691,8 @@ thead th:hover {
     color: deepskyblue;
 }
 
+
+.ldap-card {
+	background-color: #EEEEEE;
+	color: #3a87ad;
+}

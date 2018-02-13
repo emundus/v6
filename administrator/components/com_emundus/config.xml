@@ -186,5 +186,7 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="ldapFilters" type="text" required="false" label="COM_EMUNDUS_LDAP_FILTERS_LABEL" description="COM_EMUNDUS_LDAP_FILTERS_DESC" />
+		<field name="ldapElements" type="text" required="false" label="COM_EMUNDUS_LDAP_ELEMENTS_LABEL" description="COM_EMUNDUS_LDAP_ELEMENTS_DESC" default="uid, mail, givenName, sn, telephoneNumber" />
 	</fieldset>
 </config>

@@ -65,22 +65,26 @@ class EmundusControllerUsers extends JControllerLegacy {
 			exit;
 		}
 
-		$itemid 		= JRequest::getVar('Itemid', null, 'POST', 'none',0);
-		$firstname 		= JRequest::getVar('firstname', null, 'POST', 'none',0);
-		$lastname 		= JRequest::getVar('lastname', null, 'POST', 'none',0);
-		$username 		= JRequest::getVar('login', null, 'POST', 'none',0);
-		$name 			= strtolower($firstname).' '.strtoupper($lastname);
-		$email 			= JRequest::getVar('email', null, 'POST', 'none',0);
-		$profile 		= JRequest::getVar('profile', null, 'POST', 'none',0);
-		$oprofiles 		= JRequest::getVar('oprofiles', null, 'POST', 'string',0);
-		$jgr 			= JRequest::getVar('jgr', null, 'POST', 'none',0);
-		$univ_id 		= JRequest::getVar('university_id', null, 'POST', 'none',0);
-		$groups 		= JRequest::getVar('groups', null, 'POST', 'string',0);
-		$campaigns 		= JRequest::getVar('campaigns', null, 'POST', 'string',0);
-		$news			= JRequest::getVar('newsletter', null, 'POST', 'string',0);
+		$jinput 	= JFactory::getApplication()->input;
+		$itemid 	= $jinput->post->get('Itemid', null, null);
+		$firstname 	= $jinput->post->get('firstname', null, null);
+		$lastname 	= $jinput->post->get('lastname', null, null);
+		$username 	= $jinput->post->get('login', null, null);
+		$name 		= strtolower($firstname).' '.strtoupper($lastname);
+		$email 		= $jinput->post->get('email', null, null);
+		$profile 	= $jinput->post->get('profile', null, null);
+		$oprofiles 	= $jinput->post->get('oprofiles', null, 'string');
+		$jgr 		= $jinput->post->get('jgr', null, null);
+		$univ_id 	= $jinput->post->get('university_id', null, null);
+		$groups 	= $jinput->post->get('groups', null, 'string');
+		$campaigns 	= $jinput->post->get('campaigns', null, 'string');
+		$news		= $jinput->post->get('newsletter', null, 'string');
+		$ldap		= $jinput->post->get('ldap', 0, null);
 
-		$password 	= JUserHelper::genRandomPassword();
-		$user 		= clone(JFactory::getUser(0));
+		// If we are creating a new user from the LDAP system, he does not have a password.
+		if ($ldap == 0)
+			$password 	= JUserHelper::genRandomPassword();
+		$user = clone(JFactory::getUser(0));
 
 		if (preg_match('/^[0-9a-zA-Z\_\@\-\.]+$/', $username) !== 1) {
 			echo json_encode((object)array('status' => false, 'msg' => JText::_('USERNAME_NOT_GOOD')));
@@ -94,7 +98,8 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$user->name=$name;
 		$user->username=$username;
 		$user->email=$email;
-		$user->password=md5($password);
+		if ($ldap == 0)
+			$user->password=md5($password);
 		$user->registerDate=date('Y-m-d H:i:s');
 		$user->lastvisitDate=date('Y-m-d H:i:s');
 		$user->groups = array($jgr);
@@ -131,15 +136,24 @@ class EmundusControllerUsers extends JControllerLegacy {
 		/*
          * @var EmundusModelEmails $m_emails
 		 *  */
-        $m_emails 	= $this->getModel('emails');
-		$email 	= $m_emails->getEmail('new_account');
-        $mailer = JFactory::getMailer();
-        $post 	= array('PASSWORD' => $password);
-        $tags 	= $m_emails->setTags($user->id, $post, null, $password);
+		$m_emails = $this->getModel('emails');
+
+		// If we are creating an ldap account, we need to send a different email.
+		if ($ldap == 1)
+			$email = $m_emails->getEmail('new_ldap_account');
+		else
+			$email = $m_emails->getEmail('new_account');
+
+		$mailer = JFactory::getMailer();
+		if ($ldap == 0) {
+			$post 	= array('PASSWORD' => $password);
+			$tags 	= $m_emails->setTags($user->id, $post, null, $password);
+		} else {
+			$tags = $m_emails->setTags($user->id, array(), null, null);
+		}
 
         $from 		= preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
         $fromname 	= preg_replace($tags['patterns'], $tags['replacements'], $email->name);
-        $to 		= $file['email'];
         $subject 	= preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
         $body 		= preg_replace($tags['patterns'], $tags['replacements'], $email->message);
         $body 		= $m_emails->setTagsFabrik($body);
@@ -154,7 +168,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 			$mail_from_address = $email_from_sys;
 
         $sender = [
-            $email_from_address,
+            $mail_from_address,
             $fromname
 		];
 
@@ -624,10 +638,10 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 
 	public function deleteusers() {
-		
+
 		$jinput = JFactory::getApplication()->input;
 		$app        = JFactory::getApplication();
-		
+
 		$users = $jinput->getString('users', null);
 		$m_users = new EmundusModelUsers();
 		if ($users === 'all') {
@@ -645,20 +659,20 @@ class EmundusControllerUsers extends JControllerLegacy {
 			if (is_numeric($user)) {
 				$u = JUser::getInstance($user);
 				$count = $m_users->countUserEvaluations($user);
-				
+
 				if ($count > 0) {
 					/** user disactivation */
 					$m_users->changeBlock(array($user),1);
 					$users_id .= $user." ,";
 					$res = false;
 				}else  $u->delete();
-				
+
 			}
-		} 
+		}
 		if($users_id != "")
 			$msg = JText::sprintf('THIS_USER_CAN_NOT_BE_DELETED', $users_id);
 		echo json_encode((object)array('status' => $res, 'msg' => $msg));
-		
+
 		exit;
 	}
 
@@ -772,5 +786,49 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		echo json_encode((object)array('status' => $res, 'msg' => $msg));
 		exit;
+	}
+
+	/**
+	 * Search the LDAP for a user to add.
+	 */
+	public function ldapsearch () {
+
+		if (!EmundusHelperAccess::asAccessAction(12, 'c')) {
+			echo json_encode((object)array('status' => false));
+			exit;
+		}
+
+		$m_users = new EmundusModelusers();
+
+		$search = JFactory::getApplication()->input->getString('search', null);
+
+		$return = $m_users->searchLDAP($search);
+
+		// If no users are found :O or the LDAP is broken
+		if (!$return) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Failed to connect to the ldap']);
+			exit;
+		}
+
+		// Iterate through all of the LDAP search results and check if they exist already.
+		$users = [];
+		if (is_array($return->users)) {
+			foreach ($return->users as $user) {
+
+				if (!empty($user['jpegPhoto']))
+					$user['jpegPhoto'] = null;
+
+				if (JUserHelper::getUserId($user['uid'][0]) > 0)
+					$user['exists'] = true;
+				else
+					$user['exists'] = false;
+
+				$users[] = $user;
+			}
+		}
+
+		echo json_encode((object) ['status' => $return->status, 'ldapUsers' => $users, 'count' => count($users)]);
+		exit;
+
 	}
 }
