@@ -37,7 +37,7 @@ try {
 
 // If the person is a doctorant then they are only going inbound to UPVD.
 // UPVD ID = 108
-if ($user->code === 'doc') {
+if ($user->profile == 1008) {
     $institution_ids[] = 108;
 } else {
 
