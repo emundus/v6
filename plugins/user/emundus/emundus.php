@@ -3,7 +3,7 @@
  * @package     Joomla
  * @subpackage  eMundus
  * @link        http://www.emundus.fr
- * @copyright   Copyright (C) 2016 eMundus. All rights reserved.
+ * @copyright   Copyright (C) 2018 eMundus. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  * @author      eMundus SAS - Benjamin Rivalland
  */
@@ -99,7 +99,7 @@ class plgUserEmundus extends JPlugin
         $app            = JFactory::getApplication();
         $config         = JFactory::getConfig();
         $mail_to_user   = $this->params->get('mail_to_user', 1);
-        $db = JFactory::getDBO();
+        $db             = JFactory::getDBO();
 
         if (count($details) > 0) {
             //$profile = @isset($details['emundus_profile']['profile'])?@$details['emundus_profile']['profile']:@$details['profile'];
@@ -211,7 +211,8 @@ class plgUserEmundus extends JPlugin
 
                 $this->onUserLogin($user);
 
-                $app->redirect('index.php?option=com_users&view=profile&user_id='.$user['id']);
+                if (!$app->isAdmin()) 
+                    $app->redirect('index.php?option=com_users&view=profile&user_id='.$user['id']);
             }
         }
     }
