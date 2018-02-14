@@ -253,7 +253,8 @@ if ($s == '')
 									});
 
 									userCard += '</div></div>';
-									ldapResult.append(userCard)
+									if (typeof username.value != 'undefined' && typeof mail.value != 'undefined' && typeof fname.value != 'undefined' && typeof lname.value != 'undefined')
+										ldapResult.append(userCard)
 								});
 
 								$('.create-user').on('click', function(e) {
