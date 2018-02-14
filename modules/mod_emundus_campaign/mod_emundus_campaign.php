@@ -64,6 +64,11 @@ switch ($mod_em_campaign_groupby) {
         else
             $condition .= ' ORDER BY training, end_date';
         break;
+    case 'ordering':
+        if ($order == "start_date")
+            $condition .= ' ORDER BY ordering, start_date';
+        else
+            $condition .= ' ORDER BY ordering, end_date';
 }
 
 

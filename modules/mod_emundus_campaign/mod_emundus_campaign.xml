@@ -32,6 +32,7 @@
                     <field type="list" name="mod_em_campaign_groupby" default="" label="MOD_EM_CAMPAIGN_GROUP" description="MOD_EM_CAMPAIGN_GROUP_DESC">
                         <option value="month">LIST_MONTH</option>
                         <option value="program">LIST_PROGRAM</option>
+						<option value="ordering">LIST_ORDERING</option>
                     </field>
 					<field type="list" name="mod_em_campaign_orderby" default="" label="MOD_EM_CAMPAIGN_ORDER" description="MOD_EM_CAMPAIGN_ORDER_DESC">
 						<option value="start_date">LIST_DATE_START</option>
