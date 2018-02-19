@@ -504,7 +504,7 @@ class EmundusHelperFilters {
 		if (isset($itemid) && !empty($itemid)) {
 			$user = JFactory::getUser();
 			$db = JFactory::getDBO();
-			$query = 'SELECT * FROM #__emundus_filters WHERE user='.$user->id.' AND item_id='.$itemid;
+			$query = 'SELECT * FROM #__emundus_filters WHERE user='.$user->id.' AND constraints LIKE "%col%" item_id='.$itemid;
 			$db->setQuery( $query );
 			return $db->loadObjectlist();
 		}
