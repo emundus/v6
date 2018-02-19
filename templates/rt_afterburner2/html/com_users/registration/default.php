@@ -36,7 +36,7 @@ $jform = $app->getUserState('com_users.registration.data');
 $messages = $app->getMessageQueue();
 $errors = false;
 foreach ($messages as $message) {
-  	if (($message[type] == 'error' && $message[message] == JText::_("COM_USERS_REGISTER_EMAIL1_MESSAGE")) || ($message[type] == 'warning' && $message[message] == JText::_("COM_USERS_REGISTER_EMAIL1_MESSAGE"))) {
+  	if ($message[message] == JText::_("COM_USERS_REGISTER_EMAIL1_MESSAGE")) {
 		try{
 			$chars 		= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?";
 			//$passwd_md5 = md5($passwd);
