@@ -69,6 +69,22 @@ class EmundusControllerMigration extends JControllerLegacy
 	* @return bool
 	*/
 	function duplicatefilesforfnum() {
+		jimport('joomla.log.log');
+		JLog::addLogger(
+		    array(
+		        // Sets file name
+		        'text_file' => 'com_emundus.mgr.php'
+		    ),
+		    // Sets messages of all log levels to be sent to the file
+		    JLog::ALL,
+		    // The log category/categories which should be recorded in this file
+		    // In this case, it's just the one category from our extension, still
+		    // we need to put it inside an array
+		    array('com_emundus')
+		);
+
+		JLog::add('duplicatefilesforfnum START', JLog::ERROR, 'com_emundus');
+
 		require_once (JPATH_COMPONENT_SITE.DS.'models'.DS.'users.php');
 		require_once (JPATH_COMPONENT_SITE.DS.'models'.DS.'files.php');
 
@@ -83,6 +99,7 @@ class EmundusControllerMigration extends JControllerLegacy
 			return false;
 
 		foreach ($users as $user) {
+			JLog::add('USER : '.$user->applicant_id, JLog::ERROR, 'com_emundus');
 
 			// For each user in campaign_candidature we have one or more fnums but only one is attached to a file with data
 			// We need to find the file containing the data so that we can copy it to the others
@@ -93,6 +110,8 @@ class EmundusControllerMigration extends JControllerLegacy
 
 			// Next step is finding the fnum that is assosicated to the data
 			// For this we will go through all of the fnums and separate the one with data from the others
+			$dataFnum = null;
+			$emptyFnums = [];
 			foreach ($files as $file) {
 
 				if ($m_migration->testFnum($file->fnum))
@@ -100,10 +119,13 @@ class EmundusControllerMigration extends JControllerLegacy
 				else
 					$emptyFnums[] = $file->fnum;
 
+				JLog::add('dataFnum : '.$dataFnum . '---- emptyFnums' .$file->fnum , JLog::ERROR, 'com_emundus');
+
 			}
 
 			// Next we will copy the one with data to the ones without
-			$m_migration->copyFnumTablePicker($dataFnum, $emptyFnums);
+			if (!empty($dataFnum) && !empty($emptyFnum))
+				$m_migration->copyFnumTablePicker($dataFnum, $emptyFnums);
 		}
 
 		return true;

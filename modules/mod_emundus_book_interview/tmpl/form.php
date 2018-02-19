@@ -10,7 +10,7 @@ defined('_JEXEC') or die;
         <select class="form-control" name="em-book-interview" id="em-book-interview" aria-describedby="bookHelp">
             <option value=""><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_PICK_A_DATE"); ?></option>
             <?php foreach ($available_events as $event) :?>
-                <option value="<?php echo $event->id ?>"><?php echo $event->title." <strong>".$event->start_date."</strong> ".$event->description ?></option>
+                <option value="<?php echo $event->id ?>"><?php echo $event->title." <strong>".$event->start_date." ".$offset."</strong> ".$event->description ?></option>
             <?php endforeach; ?>
         </select>
         <small id="bookHelp" class="form-text text-muted"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_SELECT_HELP"); ?></small>

@@ -96,6 +96,21 @@ class EmundusModelCalendar extends JModelLegacy {
         $db = Jfactory::getDbo();
         $user = JFactory::getUser($user_id);
 
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $booked_prefix = $eMConfig->get('bookedPrefix');
+
+        $m_emails = new EmundusModelEmails;
+
+        $post = array(
+            'USER_NAME'     => $user->name,
+            'USER_EMAIL'    => $user->email
+        );
+
+        // An array containing the tag names is created.
+        $tags = $m_emails->setTags($user->id, $post);
+
+        $booked_prefix = preg_replace($tags['patterns'], $tags['replacements'], $booked_prefix);
+
         // Get event
         try {
 
@@ -107,7 +122,7 @@ class EmundusModelCalendar extends JModelLegacy {
             die(json_encode(['status' => false]));
         }
 
-        $event->title = '(BOOKED) '.$event->title;
+        $event->title = $booked_prefix.' - '.$event->title;
         $event->description = $user->name;
         $event->booking_information = $user->id;
         $event->capacity = '1';
@@ -232,6 +247,7 @@ class EmundusModelCalendar extends JModelLegacy {
     public function dpcalendar_delete_interview($event_id) {
 
         $db = JFactory::getDbo();
+        $user = JFactory::getSession()->get('emundusUser');
 
         try {
 
@@ -255,7 +271,33 @@ class EmundusModelCalendar extends JModelLegacy {
             die(json_encode(['status' => false]));
         }
 
-        $title = str_replace("(BOOKED) ", "", $title);
+        // Get event
+        try {
+
+            $db->setQuery("SELECT booking_information FROM #__dpcalendar_events WHERE id = ".$event_id);
+            $user_id = $db->loadResult();
+
+        } catch (Exception $e) {
+            JLog::add("SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+            die (json_encode(['status' => false]));
+        }
+
+        $post = array(
+            'USER_NAME'     => $user->name,
+            'USER_EMAIL'    => $user->email
+        );
+
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $booked_prefix = $eMConfig->get('bookedPrefix');
+
+        $m_emails = new EmundusModelEmails;
+
+        // An array containing the tag names is created.
+        $tags = $m_emails->setTags($user->id, $post);
+
+        $booked_prefix = preg_replace($tags['patterns'], $tags['replacements'], $booked_prefix);
+
+        $title = str_replace($booked_prefix." - ", "", $title);
 
         try {
 
