@@ -53,10 +53,8 @@ JText::script('COM_EMUNDUS_ACCESS_ACCESS_FILE');
 JText::script('COM_EMUNDUS_CONFIRM_DELETE_FILE');
 JText::script('COM_EMUNDUS_SHOW_ELEMENTS');
 JText::script('COM_EMUNDUS_CHOOSE_PRG');
-JText::script('COM_EMUNDUS_CHOOSE_CAMP');
 JText::script('COM_EMUNDUS_CHOOSE_PRG_DEFAULT');
 JText::script('COM_EMUNDUS_CHOOSE_FORM_ELEM');
-JText::script('COM_EMUNDUS_CHOOSE_EVAL_FORM_ELEM');
 JText::script('COM_EMUNDUS_CHOOSEN_FORM_ELEM');
 Jtext::script('COM_EMUNDUS_CHOOSE_ADMISSION_FORM_ELEM');
 Jtext::script('COM_EMUNDUS_CHOOSEN_ADMISSION_FORM_ELEM');
@@ -78,12 +76,6 @@ JText::script('COM_EMUNDUS_DOWNLOAD_ZIP');
 JText::script('COM_EMUNDUS_PUBLISH');
 JText::script('COM_EMUNDUS_COPY_FILE');
 JText::script('COM_EMUNDUS_SHARE_FILE');
-JText::script('PLEASE_SELECT_FILTER');
-JText::script('DELETE');
-JText::script('FILTER_SAVED');
-JText::script('FILTER_DELETED');
-JText::script('SQL_ERROR');
-
 
 JText::script('LOADING');
 JText::script('TITLE');

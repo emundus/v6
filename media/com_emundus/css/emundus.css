@@ -733,8 +733,8 @@ display:inline;
 
 /* SWITCH PROFILE SELECT BOX*/
 
-  #profile
-   {
+  select#profile,
+  select#profile-color {
 	background-position: 100% center;
 	background-repeat: no-repeat;
 	border: 3px solid rgba(75, 74, 74, 0.404);

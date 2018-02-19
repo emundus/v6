@@ -281,7 +281,7 @@ class EmundusModelEvaluation extends JModelList
         {
             //var_dump($session->get('filt_params'));
             //$element_id = array();
-			$filt_params = $session->get('filt_params');
+            $filt_params = $session->get('filt_params');
             if (count(@$filt_params['programme'])>0) {
                 foreach (array_unique($filt_params['programme']) as $value) {
                     $groups = $this->getGroupsEvalByProgramme($value);
