@@ -36,6 +36,8 @@ if (isset($user->fnum)) {
 
         $available_events = $helper->getEvents($user);
 
+        $offset = JFactory::getConfig()->get('offset');
+
         $contact_info = array();
         if ($params->get('skype') == 1)
             $contact_info['skype'] = JText::_('ENTER_SKYPE_ID');
