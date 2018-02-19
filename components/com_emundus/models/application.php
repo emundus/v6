@@ -855,7 +855,12 @@ class EmundusModelApplication extends JModelList
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
                                     }
                                     elseif ($element->plugin=='birthday' && $element->content>0) {
-                                        $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                        $format = 'Y-n-j';
+                                        $d = DateTime::createFromFormat($format, $r_elt);
+                                        if($d && $d->format($format) == $r_elt)
+                                            $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
+                                        else
+                                            $elt = $r_elt;
                                     }
                                     elseif($element->plugin=='databasejoin') {
                                         $params = json_decode($element->params);
