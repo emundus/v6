@@ -1257,6 +1257,9 @@ class EmundusControllerFiles extends JControllerLegacy
                 case 'evaluators':
                     $colOpt['evaluators'] = $h_files->createEvaluatorList($col[1], $m_files);
                     break;
+                case 'tags':
+                    $colOpt['tags'] = $m_files->getTagsByFnum($fnums);
+                    break;
             }
         }
         $status = $m_files->getStatusByFnums($fnums);
@@ -1364,12 +1367,25 @@ class EmundusControllerFiles extends JControllerLegacy
                         else
                             $line .= "\t";
                         break;
+
+                    case "tags":
+                        $tags = "";
+                       
+                        foreach ($colOpt['tags'] as $tag) {
+                            if ($tag['fnum'] == $fnum['fnum']) {
+                                $tags .= $tag['label'] . ",";
+                            }
+                        }
+                        $line .= $tags . "\t";
+                       
+                        break;
                 }
             }
             // On met les données du fnum dans le CSV
             $element_csv[] = $line;
             $line = "";
             $i++;
+            
         }
         // On remplit le fichier CSV
         foreach ($element_csv as $data) {
