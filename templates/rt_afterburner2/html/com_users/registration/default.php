@@ -116,6 +116,10 @@ foreach ($messages as $message) {
 
 				$msg = JText::_('COM_EMUNDUS_EMAIL_SENT');
 			}
+			$app->enqueueMessage(JText::_('COM_USERS_REGISTER_CHECK_YOUR_MAIL'), 'notice');
+			$app->redirect('index.php');
+			
+
 
 
 			echo json_encode((object)array('status' => $res, 'msg' => $msg));
