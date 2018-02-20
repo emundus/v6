@@ -905,7 +905,7 @@ $(document).ready(function()
             switch (id) {
                 case 'save-filter':
                     var filName = prompt(filterName);
-                    if (filName != "") {
+                    if (filName != null) {
                         $.ajax({
                             type: 'POST',
                             url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=savefilters&Itemid=' + itemId,
@@ -1562,6 +1562,7 @@ $(document).ready(function()
                                                                 '</button></h5></th>'+
                                                             '</tr></table>'+
                                                             '</div>' +
+<<<<<<< Updated upstream
                                                             '<div class="panel-body" style="height:200px; overflow:auto;">' +
                                                                 '<div id="appelement" style="display: none">'+
                                                                     '<select name="em-export-form" id="em-export-form" class="chzn-select"></select>' +
@@ -1580,10 +1581,40 @@ $(document).ready(function()
                                                                 '</div>' +
                                                                 '<div id="admelement" style="display: none">' +
                                                                     '<select name="em-admission-export-form" id="em-admission-export-form" class="chzn-select"></select>' +
+=======
+<<<<<<< Updated upstream
+                                                            '<div class="panel-body">' +
+                                                                '<select name="em-export-form" id="em-export-form" class="chzn-select"></select>' +
+                                                                '<div id="elements-popup" style="width : 95%;margin : auto; display: none">' +
+                                                                '</div>' +
+=======
+                                                            '<div class="panel-body" style="height:130px; overflow:auto;">' +
+                                                                '<div id="appelement" style="display: none">'+
+                                                                    //'<select name="em-export-form" id="em-export-form" class="chzn-select"></select>' +
+                                                                    '<div id="elements-popup" style="width : 95%;margin : auto; ">' +
+                                                                    '</div>' +
+                                                                '</div>'+
+                                                                '<div id="evalelement" style="display: none">' +
+                                                                    //'<select name="em-eval-export-form" id="em-eval-export-form" class="chzn-select"></select>' +
+                                                                    '<div id="eval-elements-popup" style="width : 95%;margin : auto; ">' +
+                                                                    '</div>' +
+                                                                '</div>' +
+                                                                '<div id="decelement" style="display: none">' +
+                                                                    //'<select name="em-decision-export-form" id="em-decision-export-form" class="chzn-select"></select>' +
+                                                                    '<div id="decision-elements-popup" style="width : 95%;margin : auto;">' +
+                                                                    '</div>' +
+                                                                '</div>' +
+                                                                '<div id="admelement" style="display: none">' +
+                                                                    //'<select name="em-admission-export-form" id="em-admission-export-form" class="chzn-select"></select>' +
+>>>>>>> Stashed changes
                                                                     '<div id="admission-elements-popup" style="width : 95%;margin : auto; ">' +
                                                                     '</div>' +
                                                                 '</div>' +
 
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
                                                             '</div>' +
                                                         '</div>' +
                                                     '</div>');
@@ -1864,7 +1895,11 @@ $(document).ready(function()
                                             }
                                         });
 
+<<<<<<< Updated upstream
                                         
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
 
                                         // If we are on the admission page, we need to add selection options for the decision and admission forms
                                        // if ($("#view").val() == "admission") {
@@ -1907,8 +1942,68 @@ $(document).ready(function()
                                                                                 */
                                             //nbprg = result.nbprg;
 
+<<<<<<< Updated upstream
                                             
                                        // }
+=======
+                                            nbprg = result.nbprg;
+
+                                            $.ajax({
+                                                type: 'get',
+                                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=admission',
+
+                                                success: function (data) {
+                                                    $('#admission-elements-popup').empty();
+                                                    $('#em-admission-export-form').empty();
+                                                    $('#em-admission-export').empty();
+                                                    if (nbprg == 1) {
+                                                        $.ajax({
+                                                            type:'get',
+                                                            url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getformelem&form=admission',
+                                                            dataType:'json',
+
+                                                            success: function(result) {
+
+                                                                var item='';
+                                                                item+='<option value="0" selected>Select an option</option>';
+
+                                                                for (var d in result.elts) {
+
+                                                                    if (isNaN(parseInt(d)))
+                                                                        break;
+
+                                                                    if (Joomla.JText._(result.elts[d].element_label) == "")
+                                                                        var elt_label = result.elts[d].element_label;
+                                                                    else
+                                                                        var elt_label = Joomla.JText._(result.elts[d].element_label);
+
+                                                                    item += '<option value="'+result.elts[d].element_id+'" data-value="'+result.elts[d].element_label+'">'+elt_label+'</option>';
+                                                                }
+
+                                                                $('#admission-elements-popup').append(data);
+                                                                $('#em-admission-export-form').append(item);
+                                                                $('#em-admission-export-form').trigger("chosen:updated");
+                                                                item ="";
+
+                                                                for (var d in result.defaults) {
+                                                                    if (isNaN(parseInt(d)))
+                                                                        break;
+                                                                    item += '<li class="em-admission-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                }
+
+                                                                $('#em-admission-export').append(item);
+                                                                $('.btn-success').show();
+                                                                $('#admission_elements_detail').show();
+                                                            },
+
+                                                            error: function (jqXHR, textStatus, errorThrown) {
+                                                                console.log(jqXHR.responseText);
+                                                            }
+
+                                                        });
+=======
+                                  
+>>>>>>> Stashed changes
                                       
                                        // get export excel saved filter
                                         $.ajax({
@@ -1922,6 +2017,10 @@ $(document).ready(function()
                                                             break;
                                                         $('#filt_save').append('<option value="' + result.filter[d].id + '">' + result.filter[d].name + '</option>');
                                                         $('#filt_save').trigger("chosen:updated");
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
                                                     }
                                                 } else {
                                                     $('#err-filter').show();
@@ -1945,6 +2044,11 @@ $(document).ready(function()
                             });
 
 
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
                            //*** on export excel filter change ******************************/
                             $('#filt_save').on('change', function() {
                                 var id = $(this).val();
@@ -2170,6 +2274,11 @@ $(document).ready(function()
                                                                                                                                         //**** on change, check the elements and add it to selected elements */
                                                                                                                                         var elements = filter.elements;
                                                                                                                                         var others = filter.objects;
+<<<<<<< Updated upstream
+=======
+                                                                                                                                        var methode = filter.methode;
+                                                                                                                                      
+>>>>>>> Stashed changes
                                                                                                                                         for (var d in elements) {
                                                                                                                                             if (isNaN(parseInt(d)))
                                                                                                                                                 break;
@@ -2185,11 +2294,18 @@ $(document).ready(function()
                                                                                                                                         }
 
                                                                                                                                         if(others != ""){
+<<<<<<< Updated upstream
+=======
+                                                                                                                                            
+                                                                                                                                            $('#oelts').find('input[type=checkbox]:checked').removeAttr('checked');
+                                                                                                                                           
+>>>>>>> Stashed changes
                                                                                                                                             for (var d in others) {
                                                                                                                                                 if (isNaN(parseInt(d)))
                                                                                                                                                     break;
                                                                                                                                                 
                                                                                                                                                 $('#em-ex-' + others[d]).prop("checked", true);
+<<<<<<< Updated upstream
                                                                                                                                                 var checked = $('#em-ex-' + others[d]).is(':checked');
                                                                                                                                                 /*if (checked == true) {
                                                                                                                                                     var text =  $("label[for='em-ex-" + others[d] + "']").text();
@@ -2200,6 +2316,13 @@ $(document).ready(function()
     
                                                                                                                                             }
                                                                                                                                         }
+=======
+                                                                                                        
+                                                                                                                                            }
+                                                                                                                                        }
+
+                                                                                                                                        $('input[name=em-export-methode][value="'+methode+'"]').prop("checked",true);
+>>>>>>> Stashed changes
                                                                                                                                         
                         
                                                                                                                                     },
@@ -2286,6 +2409,10 @@ $(document).ready(function()
 
 
 
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
                             $('#em-export-prg').on('change', function() {
                                 var code = $(this).val();
                                 if (code != 0) {
@@ -2547,16 +2674,36 @@ $(document).ready(function()
                                     $('#elements-popup').hide();
                                 }
                             });
+<<<<<<< Updated upstream
                             $('.modal-body').append('<table style="margin-left:14px;width:95%;"><tr><td><div id="list-element-export"  style="height:150px;" class="panel panel-default xclsform" ></div></td><td id="elts"></td></tr></table></div>');
 
                             var defaults = '<h5>  '+Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM')+'</h5><div id="em-export-elts" style="height:70%;width:40%;overflow:auto;" class="well" ><ul id="em-export"></ul></div>';
+=======
+<<<<<<< Updated upstream
+                            $('.modal-body').append('<div id="list-element-export" class="panel panel-default xclsform"></div>');
+
+                            var defaults = '<h5>  '+Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM')+'</h5><div id="em-export-elts" class="well"><ul id="em-export"></ul></div>';
+=======
+                            $('.modal-body').append('<div id="main"><div id="list-element-export" class="panel panel-default xclsform"></div><div id="oelts"></div></div>');
+
+                            var defaults = '<h5>  '+Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM')+'</h5><div id="em-export-elts" style="height:73%;overflow:auto;" class="well" ><ul id="em-export"></ul></div>';
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
                             $('#list-element-export').append(defaults);
 
                             var grId = null;
                             var menu = null;
 
+<<<<<<< Updated upstream
                             $('#elts').append('<div style="height:150px; width:65%;" class="panel panel-default xclsform">' +
+=======
+<<<<<<< Updated upstream
+                            $('#list-element-export').append('<div class="well">' +
+=======
+                            $('#oelts').append('<div style="height:150px; width:65%;" class="panel panel-default xclsform">' +
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
                             '<input class="em-ex-check" type="checkbox" value="photo" name="em-ex-photo" id="em-ex-photo"/>' +
                             '<label for="em-ex-photo">'+Joomla.JText._('COM_EMUNDUS_PHOTO')+'</label> <br/>' +
                             '<input class="em-ex-check" type="checkbox" value="forms" name="em-ex-forms" id="em-ex-forms"/>' +
@@ -2568,8 +2715,17 @@ $(document).ready(function()
                             '<input class="em-ex-check" type="checkbox" value="comment" name="em-ex-comment" id="em-ex-comment"/>' +
                             '<label for="em-ex-comment">'+Joomla.JText._('COM_EMUNDUS_COMMENT')+'</label> <br/>' +
                             '</div></div>');
+<<<<<<< Updated upstream
 
                             $('.modal-body').append('<div class="panel panel-default xclsform">'+
+=======
+<<<<<<< Updated upstream
+                            $('#em-export-form').chosen({width: "95%"});
+                            $('.xclsform').css({width: "95%", 'margin': "auto", 'margin-top': "15px"});
+=======
+
+                            $('.modal-body').append('<div id="methode" class="panel panel-default xclsform">'+
+>>>>>>> Stashed changes
                                 '<form  style="margin-left:15px;margin-top:20px;">'+
                                     '<input type="radio" name="em-export-methode" id="em-export-methode" value="0" checked>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+
                                     '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+
@@ -2581,10 +2737,23 @@ $(document).ready(function()
                             
 
                             $('#em-export-form').chosen({width: "95%"});
+<<<<<<< Updated upstream
                             $('#filt_save').chosen({width: "95%"});
                             $('.xclsform').css({width: "95%", 'margin': "auto", 'margin-top': "15px"});
                             $('th').css({'padding-right':"40px"});
                             $('td').css({'padding-top':"10px"});
+=======
+                            $('#em-eval-export-form').chosen({width: "95%"});
+                            $('#em-decision-export-form').chosen({width: "95%"});
+                            $('#em-admission-export-form').chosen({width: "95%"});
+                            $('#filt_save').chosen({width: "95%"});
+                            $('.xclsform').css({width: "95%", 'margin': "auto", 'margin-top': "15px"});
+                            $('th').css({'padding-right':"40px"});
+                            $('#main').css({width: "95%",'margin': "auto" ,'margin-bottom': "180px", 'position':"relative"});
+                            $('#list-element-export').css({'float': "left",'height':"150px", 'width':"69%",'position':"absolute"});
+                            $('#oelts').css({'float': "left", 'width':"30%", 'margin-left':"70%"});
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
                             $('head').append('<link rel="stylesheet" href="media/com_emundus/css/emundus.css" type="text/css" />');
                            
                             /*** export excel filter */
@@ -3105,10 +3274,20 @@ $(document).ready(function()
     //}
     });
 
+<<<<<<< Updated upstream
     /*** onclick save filter button */
     
     $(document).on('click', '#savefilter', function(e) {
         var code = $('#em-export-prg').val();
+=======
+<<<<<<< Updated upstream
+=======
+    /*** onclick save export excel filter button */
+    
+    $(document).on('click', '#savefilter', function(e) {
+        var code = $('#em-export-prg').val();
+        var exp_methode = $('#em-export-methode:checked').val();
+>>>>>>> Stashed changes
         var params = '{"programme":"'+code+'","elements":'
         var eltJson = "{";
         var i = 0;
@@ -3135,10 +3314,18 @@ $(document).ready(function()
             params += ',"objects":""';
         else 
             params += ',"objects":'+objJson;
+<<<<<<< Updated upstream
         params += '}';
         
         var filName = prompt(filterName);
         if (filName != "") {
+=======
+        params += ',"methode":"'+exp_methode+'"';
+        params += '}';
+        
+        var filName = prompt(filterName);
+        if (filName != null) {
+>>>>>>> Stashed changes
             $.ajax({
                 type: 'post',
                 url: 'index.php?option=com_emundus&controller=files&task=saveExcelFilter&Itemid=' + itemId,
@@ -3215,6 +3402,10 @@ $(document).ready(function()
 
     
     /********************************* */
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     // Modals for actions such as exporting documents to pdf
     $(document).on('click', '#em-modal-actions .btn.btn-success', function(e) {
         $.ajaxQ.abortAll();
