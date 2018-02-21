@@ -919,7 +919,7 @@ class EmundusModelAdmission extends JModelList
 					case 'status':
 						if ($value) {
 
-							if ( $value[0] == "%" || !isset($value[0]) )
+							if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' )
 								$query['q'] .= ' ';
 							else
 								$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
@@ -1052,7 +1052,7 @@ class EmundusModelAdmission extends JModelList
 		$query .= ' LEFT JOIN #__emundus_users as eue on eue.user_id = jos_emundus_admission.user ';
 		$query .= $q['join'];
 
-		$query .= ' where 1 = 1 ' . $q['q'];
+		$query .= ' where c.status > 0 ' . $q['q'];
 
 		if (isset($current_fnum) && !empty($current_fnum))
 			$query .= ' AND c.fnum like '.$dbo->Quote($current_fnum);

@@ -1001,7 +1001,7 @@ class EmundusModelEvaluation extends JModelList
 		}
 
 		// force menu filter
-		if (count($filt_menu['status'])>0 && !empty($filt_menu['status'][0]) && $filt_menu['status'][0] != "%") {
+		if (count($filt_menu['status'])>0 && !empty($filt_menu['status'][0]) && isset($filt_menu['status']) && $filt_menu['status'][0] != "%") {
 			$query['q'] .= ' AND c.status IN ("' . implode('","', $filt_menu['status']) . '") ';
 		}
 
@@ -1077,8 +1077,7 @@ class EmundusModelEvaluation extends JModelList
 						 '#__emundus_setup_campaigns', 'jos_emundus_setup_campaigns',
 						 '#__emundus_evaluations', 'jos_emundus_evaluations',
 						 '#__emundus_users', 'jos_emundus_users',
-						 '#__users', 'jos_users',
-                         '#__emundus_tag_assoc', 'jos_emundus_tag_assoc'
+						 '#__users', 'jos_users'
 						 );
 		$leftJoin = '';
 		if (count($this->_elements)>0) {
@@ -1117,7 +1116,7 @@ class EmundusModelEvaluation extends JModelList
 		$query .= $q['join'];
 
 		if (empty($current_fnum))
-			$query .= ' WHERE 1 = 1 ';
+			$query .= ' WHERE c.status > 0 ';
 		else
 			$query .= ' WHERE c.fnum like ' . $current_fnum;
 

@@ -714,7 +714,7 @@ class EmundusModelFiles extends JModelLegacy
                     case 'status':
                         if ($value)
                         {
-                            if ( $value[0] == "%" || !isset($value[0]) )
+                            if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' )
                                 $query['q'] .= ' ';
                             else
                             {
@@ -923,7 +923,7 @@ if (JFactory::getUser()->id == 63)
         catch(Exception $e)
         {
             echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
         }
     }
 
