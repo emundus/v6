@@ -1099,8 +1099,8 @@ class EmundusModelEvaluation extends JModelList
 					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = c.campaign_id
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = c.applicant_id
-					LEFT JOIN #__users as u on u.id = c.applicant_id
-                    LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=c.fnum ' ;
+					LEFT JOIN #__users as u on u.id = c.applicant_id ';
+//                    LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=c.fnum ' ;
 		$q = $this->_buildWhere($lastTab);
 
 
