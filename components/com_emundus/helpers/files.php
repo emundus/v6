@@ -335,16 +335,54 @@ class EmundusHelperFiles
         return $db->loadObjectList();
     }
     
-    public function getProgramCampaigns($code){
+    public function getProgramCampaigns($code = array(), $year = array()) { // methode a revoir
         $db = JFactory::getDBO();
-        $query = 'SELECT * FROM `#__emundus_setup_campaigns` WHERE training LIKE "'.$code.'"';
-        try {
-            $db->setQuery( $query );
-            return $db->loadObjectList();
-        } catch (Exception $e) {
-            throw $e;
+        // ONLY FILES LINKED TO MY GROUPS
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+        $m_users = new EmundusModelUsers();
+        if (!empty($code) && is_array($code)) {
+            
+            if ($code[0] == '%') {
+                
+                $user = JFactory::getUser();
+                $code = $m_users->getUserGroupsProgrammeAssoc($user->id);
+                //$where = 'training IN ("'.implode('","', $code).'")';
+                if (!empty($year) && is_array($year)){
+                    if ($year[0] == '%') {
+                        $year = $m_users->getSchoolyears();
+                        $where = 'training IN ("'.implode('","', $code).'") AND year IN ("'.implode('","', $year).'")';
+                    }else{
+                        $where = 'training IN ("'.implode('","', $code).'") AND year IN ("'.implode('","', $year).'")';
+                    }
+                }
+                else{
+                    $where = 'training  IN ("'.implode('","', $code).'")';
+                }
+                //////////////////////////////////
+            } else{
+                if ($year[0] == '%') {
+                    $year = $m_users->getSchoolyears();
+                    $where = 'training IN ("'.implode('","', $code).'") AND year IN ("'.implode('","', $year).'")';
+                }else{
+                    $where = 'training IN ("'.implode('","', $code).'") AND year IN ("'.implode('","', $year).'")';
+                }
+            }
+            
+        } else{
+            if (!empty($year) && is_array($year)){
+                if ($year[0] == '%') {
+                    $year = $m_users->getSchoolyears();
+                    $where = 'year  IN ("'.implode('","', $year).'")';
+                }else{
+                    $where = 'year  IN ("'.implode('","', $year).'")';
+                }
+            }else{
+                $where = '1=1';
+            }
         }
-
+        $query = 'SELECT *  FROM #__emundus_setup_campaigns WHERE published=1 AND '.$where.' ORDER BY training, year DESC';
+        $db->setQuery( $query );
+        return $db->loadObjectList();
     }
 
     public  function getProgrammes($code = array()) {
@@ -514,7 +552,6 @@ class EmundusHelperFiles
         $m_profile  = new EmundusModelProfile;
 
         $db = JFactory::getDBO();
-
 
         if (count($code) == 0) {
             $params = JFactory::getSession()->get('filt_params');

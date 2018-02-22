@@ -913,7 +913,6 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $defaultElements    = $m_files->getDefaultElements();
         $elements           = $h_files->getElements();
-
         $res = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);
         echo json_encode((object)$res);
         exit;
@@ -2462,23 +2461,28 @@ class EmundusControllerFiles extends JControllerLegacy
     public function getProgramCampaigns(){
         $html = '';
         $session     = JFactory::getSession();
-        $jinput = JFactory::getApplication()->input;
-        $code = $jinput->get('code', null);
+        $filt_params = $session->get('filt_params');
+        //$jinput = JFactory::getApplication()->input;
+        //$code = $jinput->get('code', null);
         //echo $code;
         $h_files = new EmundusHelperFiles;
-        $campaigns = $h_files->getProgramCampaigns($code);
-        //var_dump($campaigns);
-        $nbcamp = count($campaigns);
+        $campaigns = $h_files->getProgramCampaigns($filt_params['programme'], $filt_params['schoolyear']);
+        //$programmes = $h_files->getProgrammes($filt_params['programme']);
+        $nbprg = count($campaigns);
+        /*if (empty($filt_params)){
+            $params['programme'] = $programmes;
+            $session->set('filt_params', $params);
+        }*/
 
         foreach ($campaigns as $c) {
-            if ($nbcamp == 1) {
-                $html .= '<option value="'.$code.'" selected>'.$c->label.' - '.$code.'('.$c->year.')</option>';
+            if ($nbprg == 1) {
+                $html .= '<option value="'.$c->training.'" selected>'.$c->label.' - '.$c->training.'('.$c->year.')</option>';
             } else {
-                $html .= '<option value="'.$code.'">'.$c->label.' - '.$code.'('.$c->year.')</option>';
+                $html .= '<option value="'.$c->training.'">'.$c->label.' - '.$c->training.'('.$c->year.')</option>';
             }
         }
 
-        echo json_encode((object)(array('status' => true, 'html' => $html, 'nbcamp' => $nbcamp)));
+        echo json_encode((object)(array('status' => true, 'html' => $html, 'nbprg' => $nbprg)));
         exit;
     }
 
@@ -2545,12 +2549,6 @@ class EmundusControllerFiles extends JControllerLegacy
             $query = 'SELECT * from #__emundus_filters  where user = '.$user_id.' and constraints LIKE "%excelfilter%"';
             $db->setQuery($query);
             $result = $db->loadObjectList();
-
-            //$nbprg = count($export_excel_params);
-            /*if ($session->get('excelfilter') == null){
-                $session->set('excelfilter', $result);
-                var_dump($session->get('excelfilter'));
-            }*/
             
             echo json_encode((object)(array('status' => true, 'filter' => $result)));
             exit;
