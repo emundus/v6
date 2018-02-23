@@ -895,7 +895,7 @@ class EmundusModelFiles extends JModelLegacy
             $query .= $leftJoin;
 
         $query .= $q['join'];
-        $query .= " where 1=1 ".$q['q'];
+        $query .= " where u.block=0 AND ".$q['q'];
 
         $query .= ' GROUP BY jos_emundus_campaign_candidature.fnum';
 
@@ -1983,7 +1983,7 @@ where 1 order by ga.fnum asc, g.title';
 
             $query .= $leftJoin. ' '. $leftJoinMulti;
 
-            $query .= 'where c.fnum in ("'.implode('","', $fnums).'") ';
+            $query .= 'where u.block=0 AND c.fnum in ("'.implode('","', $fnums).'") ';
             if ($pas !=0 ) {
                 $query .= 'LIMIT ' . $pas . ' OFFSET ' . $start;
             }
