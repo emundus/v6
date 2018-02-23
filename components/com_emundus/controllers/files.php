@@ -1196,7 +1196,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $h_files = new EmundusHelperFiles;
         $elements = $h_files->getElementsName(implode(',',$col));
-
+        
         // re-order elements
         $ordered_elements = array();
         foreach ($col as $c) {
@@ -1300,7 +1300,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         $line .= $status[$v]['value']."\t";
                         $uid = intval(substr($v, 21, 7));
                         $userProfil = JUserHelper::getProfile($uid)->emundus_profile;
-                        $line .= strtoupper($userProfil['lastname'])."\t";
+                        $lastname = (!empty($userProfil['lastname']))?$userProfil['lastname']:JFactory::getUser($uid)->name;
                         $line .= $userProfil['firstname']."\t";
                     } else $line .= $v."\t";
 
@@ -1372,7 +1372,7 @@ class EmundusControllerFiles extends JControllerLegacy
                        
                         foreach ($colOpt['tags'] as $tag) {
                             if ($tag['fnum'] == $fnum['fnum']) {
-                                $tags .= $tag['label'] . ",";
+                                $tags .= $tag['label'] . ", ";
                             }
                         }
                         $line .= $tags . "\t";
@@ -2462,18 +2462,15 @@ class EmundusControllerFiles extends JControllerLegacy
         $html = '';
         $session     = JFactory::getSession();
         $filt_params = $session->get('filt_params');
-        //$jinput = JFactory::getApplication()->input;
-        //$code = $jinput->get('code', null);
-        //echo $code;
         $h_files = new EmundusHelperFiles;
         $campaigns = $h_files->getProgramCampaigns($filt_params['programme'], $filt_params['schoolyear']);
-        //$programmes = $h_files->getProgrammes($filt_params['programme']);
+        $programmes = $h_files->getProgrammes($filt_params['programme']);
+        
         $nbprg = count($campaigns);
-        /*if (empty($filt_params)){
+        if (empty($filt_params)){
             $params['programme'] = $programmes;
             $session->set('filt_params', $params);
-        }*/
-
+        }
         foreach ($campaigns as $c) {
             if ($nbprg == 1) {
                 $html .= '<option value="'.$c->training.'" selected>'.$c->label.' - '.$c->training.'('.$c->year.')</option>';

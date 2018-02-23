@@ -342,13 +342,13 @@ class EmundusHelperFiles
         $m_users = new EmundusModelUsers();
         if (!empty($code) && is_array($code)) {
             
-            if ($code[0] == '%') {
+            if ($code[0] == '%' || $code[0] == "") {
                 
                 $user = JFactory::getUser();
                 $code = $m_users->getUserGroupsProgrammeAssoc($user->id);
                 //$where = 'training IN ("'.implode('","', $code).'")';
                 if (!empty($year) && is_array($year)){
-                    if ($year[0] == '%') {
+                    if ($year[0] == '%' || $year[0] == "" ) {
                         $year = $m_users->getSchoolyears();
                         $where = 'training IN ("'.implode('","', $code).'") AND year IN ("'.implode('","', $year).'")';
                     }else{
@@ -360,17 +360,22 @@ class EmundusHelperFiles
                 }
                 //////////////////////////////////
             } else{
-                if ($year[0] == '%') {
-                    $year = $m_users->getSchoolyears();
-                    $where = 'training IN ("'.implode('","', $code).'") AND year IN ("'.implode('","', $year).'")';
+                if (!empty($year) && is_array($year)){
+                    if ($year[0] == '%' || $year[0] == "") {
+                        $year = $m_users->getSchoolyears();
+                        $where = 'training IN ("'.implode('","', $code).'") AND year IN ("'.implode('","', $year).'")';
+                    }else{
+                        $where = 'training IN ("'.implode('","', $code).'") AND year IN ("'.implode('","', $year).'")';
+                    }
                 }else{
-                    $where = 'training IN ("'.implode('","', $code).'") AND year IN ("'.implode('","', $year).'")';
+                    $where = 'training  IN ("'.implode('","', $code).'")';
                 }
             }
             
         } else{
+           
             if (!empty($year) && is_array($year)){
-                if ($year[0] == '%') {
+                if ($year[0] == '%' || $year[0] == "") {
                     $year = $m_users->getSchoolyears();
                     $where = 'year  IN ("'.implode('","', $year).'")';
                 }else{

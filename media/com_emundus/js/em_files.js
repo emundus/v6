@@ -556,7 +556,7 @@ function generate_csv(json, eltJson, objJson) {
         $.ajax(
             {
                 type: 'post',
-                url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=generate_array',
+                url: 'index.php?option=com_emundus&controller=files&task=generate_array',
                 dataType: 'JSON',
                 data: {
                     file: file,
@@ -584,7 +584,7 @@ function generate_csv(json, eltJson, objJson) {
                             $.ajax(
                                 {
                                     type: 'post',
-                                    url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=export_xls_from_csv',
+                                    url: 'index.php?option=com_emundus&controller=files&task=export_xls_from_csv',
                                     dataType: 'JSON',
                                     data: {csv: file, nbcol: nbcol, start: start},
                                     success: function (result) {
@@ -636,7 +636,7 @@ function generate_csv(json, eltJson, objJson) {
         $.ajax(
             {
                 type: 'post',
-                url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=export_xls_from_csv',
+                url: 'index.php?option=com_emundus&controller=files&task=export_xls_from_csv',
                 dataType: 'JSON',
                 data: {csv: file, nbcol: nbcol, start: start},
                 success: function (result) {
@@ -1560,26 +1560,27 @@ $(document).ready(function()
                                                                 '<span class="glyphicon glyphicon-plus"></span>' +
                                                                 '</button></h5></th>'+
                                                             '</tr></table>'+
+                                                            
                                                             '</div>' +
-                                                            '<div class="panel-body" style="height:130px; overflow:auto;">' +
-                                                                '<div id="appelement" style="display: none">'+
+                                                            '<div class="panel-body">' +
+                                                                '<div id="appelement">'+
                                                                     //'<select name="em-export-form" id="em-export-form" class="chzn-select"></select>' +
-                                                                    '<div id="elements-popup" style="width : 95%;margin : auto; ">' +
+                                                                    '<div id="elements-popup" style="width : 95%;margin : auto; display: none; ">' +
                                                                     '</div>' +
                                                                 '</div>'+
-                                                                '<div id="evalelement" style="display: none">' +
+                                                                '<div id="evalelement">' +
                                                                     //'<select name="em-eval-export-form" id="em-eval-export-form" class="chzn-select"></select>' +
-                                                                    '<div id="eval-elements-popup" style="width : 95%;margin : auto; ">' +
+                                                                    '<div id="eval-elements-popup" style="width : 95%;margin : auto; display: none;">' +
                                                                     '</div>' +
                                                                 '</div>' +
-                                                                '<div id="decelement" style="display: none">' +
+                                                                '<div id="decelement">' +
                                                                     //'<select name="em-decision-export-form" id="em-decision-export-form" class="chzn-select"></select>' +
-                                                                    '<div id="decision-elements-popup" style="width : 95%;margin : auto;">' +
+                                                                    '<div id="decision-elements-popup" style="width : 95%;margin : auto; display: none;">' +
                                                                     '</div>' +
                                                                 '</div>' +
-                                                                '<div id="admelement" style="display: none">' +
+                                                                '<div id="admelement">' +
                                                                     //'<select name="em-admission-export-form" id="em-admission-export-form" class="chzn-select"></select>' +
-                                                                    '<div id="admission-elements-popup" style="width : 95%;margin : auto; ">' +
+                                                                    '<div id="admission-elements-popup" style="width : 95%;margin : auto; display: none;">' +
                                                                     '</div>' +
                                                                 '</div>' +
 
@@ -1594,17 +1595,43 @@ $(document).ready(function()
 
                                 success: function(result) {
                                     if (result.status) {
+                                        // get export excel saved filter
+                                        $.ajax({
+                                            type:'get',
+                                            url: 'index.php?option=com_emundus&controller=files&task=getExportExcelFilter',
+                                            dataType:'json',
+                                            success: function (result) {
+                                                if (result.status) {
+                                                    for(var d in result.filter){
+                                                        if (isNaN(parseInt(d)))
+                                                            break;
+                                                        $('#filt_save').append('<option value="' + result.filter[d].id + '">' + result.filter[d].name + '</option>');
+                                                        $('#filt_save').trigger("chosen:updated");
+                                                    }
+                                                } else {
+                                                    $('#err-filter').show();
+                                                    setTimeout(function(e) {
+                                                        $('#err-filter').hide();
+                                                    }, 600);
+                                                }
+                            
+                                            },
+                                            error: function(jqXHR, textStatus, errorThrown) {
+                                                console.log(jqXHR.responseText);
+                                            }
+                                        });
 
                                         $('#em-export-prg').append(result.html);
                                         $('#em-export-prg').trigger("chosen:updated");
-
+                                        var year = $("#em-export-prg option:selected").text().split('(')[1];
+                                        year = year.substr(0, year.length - 1);
                                         var code = $('#em-export-prg').val();
 
                                         nbprg = result.nbprg;
 
                                         $.ajax({
                                             type: 'get',
-                                            url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code,
+                                            url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&year='+year+'&code=' + code,
 
                                             success: function (data) {
                                                 $('#elements-popup').empty();
@@ -1652,15 +1679,12 @@ $(document).ready(function()
                                                             $('#elements-popup').append(data);
                                                             $('#em-export-form').append(item);
                                                             $('#em-export-form').trigger("chosen:updated");
-                                                            item ="";
+                                                            item ='';
 
                                                             for (var d in result.defaults) {
                                                                 if (isNaN(parseInt(d)))
                                                                     break;
-                                                                if ($('#view').val()!="evaluation" && $('#view').val()!="decision" && $('#view').val()!="admission")
-                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
-                                                                else
-                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                             }
 
                                                             $('#em-export').append(item);
@@ -1670,7 +1694,7 @@ $(document).ready(function()
                                                           /***evaluation elements */
                                                           $.ajax({
                                                             type: 'get',
-                                                            url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=evaluation',
+                                                            url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&year='+year+'&code=' + code + '&form=evaluation',
             
                                                             success: function (data) {
                                                                 $('#eval-elements-popup').empty();
@@ -1717,7 +1741,7 @@ $(document).ready(function()
                                                                             //***decision elements */
                                                                             $.ajax({
                                                                                 type: 'get',
-                                                                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=decision',
+                                                                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&year='+year+'&code=' + code + '&form=decision',
                                 
                                                                                 success: function (data) {
                                                                                     $('#decision-elements-popup').empty();
@@ -1764,7 +1788,7 @@ $(document).ready(function()
                                                                                                 /***admission elements */
                                                                                                 $.ajax({
                                                                                                     type: 'get',
-                                                                                                    url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=admission',
+                                                                                                    url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&year='+year+'&code=' + code + '&form=admission',
                                                     
                                                                                                     success: function (data) {
                                                                                                         $('#admission-elements-popup').empty();
@@ -1867,36 +1891,7 @@ $(document).ready(function()
                                             }
                                         });
 
-                                  
-                                      
-                                       // get export excel saved filter
-                                        $.ajax({
-                                            type:'get',
-                                            url: 'index.php?option=com_emundus&controller=files&task=getExportExcelFilter',
-                                            dataType:'json',
-                                            success: function (result) {
-                                                if (result.status) {
-                                                    for(var d in result.filter){
-                                                        if (isNaN(parseInt(d)))
-                                                            break;
-                                                        $('#filt_save').append('<option value="' + result.filter[d].id + '">' + result.filter[d].name + '</option>');
-                                                        $('#filt_save').trigger("chosen:updated");
-                                                    }
-                                                } else {
-                                                    $('#err-filter').show();
-                                                    setTimeout(function(e) {
-                                                        $('#err-filter').hide();
-                                                    }, 600);
-                                                }
-                            
-                                            },
-                                            error: function(jqXHR, textStatus, errorThrown) {
-                                                console.log(jqXHR.responseText);
-                                            }
-                                        });
-
-                                        
-       
+                             
                                     }
                                 },
                                 error: function (jqXHR, textStatus, errorThrown)
@@ -1909,7 +1904,6 @@ $(document).ready(function()
                            //*** on export excel filter change ******************************/
                             $('#filt_save').on('change', function() {
                                 var id = $(this).val();
-                                
                                 if(id != 0){
                                     $.ajax({
                                         type:'get',
@@ -1926,17 +1920,21 @@ $(document).ready(function()
                                                         var filter = jQuery.parseJSON(constraints.excelfilter);
                                                         var label = filter.programme;
                                                         var code = filter.code;
-                                                    
+                                                        var year = label.split('(')[1];
+                                                        year = year.substr(0, year.length - 1);
+                                                        
                                                         if (code != 0) {
                                                             html = '<option value="'+code+'">'+label+'</option>';
                                                             if($("#em-export-prg option[value="+code+"]").length == 0){
                                                                 $('#em-export-prg').append(html);// add option to list
                                                             }
-                                                            $("#em-export-prg option[value="+code+"]").prop('selected', true);
+                                                            $('#em-export-prg').val(code);
+                                                            $('#em-export-prg').trigger("chosen:updated");
+                                                            
                                                             /*** application form elements */
                                                             $.ajax({
                                                                 type: 'get',
-                                                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&viewcall=files&code=' + code,
+                                                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&viewcall=files&year='+year+'&code=' + code,
                                                                 
                                                                 success: function (data) {
                                                                     
@@ -1945,7 +1943,7 @@ $(document).ready(function()
                                                                     /*** evaluation elements */
                                                                     $.ajax({
                                                                         type: 'get',
-                                                                        url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=evaluation',
+                                                                        url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&year='+year+'&code=' + code + '&form=evaluation',
                                                                     
                                                                         success: function (data) {
                                                                             $('#eval-elements-popup').empty();
@@ -1954,7 +1952,7 @@ $(document).ready(function()
                                                                                 /*** decision elements */
                                                                             $.ajax({
                                                                                 type: 'get',
-                                                                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=decision',
+                                                                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&year='+year+'&code=' + code + '&form=decision',
                                                                             
                                                                                 success: function (data) {
                                                                                     $('#decision-elements-popup').empty();
@@ -1964,7 +1962,7 @@ $(document).ready(function()
                                                                                     /*** admission elements */
                                                                                     $.ajax({
                                                                                         type: 'get',
-                                                                                        url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=admission',
+                                                                                        url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&year='+year+'&code=' + code + '&form=admission',
                                                                                     
                                                                                         success: function (data) {
                                                                                             $('#admission-elements-popup').empty();
@@ -2059,18 +2057,25 @@ $(document).ready(function()
                                             console.log(jqXHR.responseText);
                                         }
                                     });
+                                }else{
+                                    $('.btn-success').hide();
+                                    $('#elements_detail').hide();
+                                    $('#elements-popup').hide();
                                 }
                             });   
 
 
 
                             $('#em-export-prg').on('change', function() {
+                              
                                 var code = $(this).val();
                                 if (code != 0) {
+                                    var year = $("#em-export-prg option:selected").text().split('(')[1];
+                                    year = year.substr(0, year.length - 1);
                                      /*** application form elements */
                                     $.ajax({
                                         type: 'get',
-                                        url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&viewcall=files&code=' + code,
+                                        url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&viewcall=files&year='+year+'&code=' + code,
                                         
                                         success: function (data) {
                                             //$('.btn-success').show();
@@ -2084,12 +2089,12 @@ $(document).ready(function()
                                                 {
                                                     var item='';
                                                     item+='<option value="0" selected>Select an option</option>';
+                                                   
                                                     for (var d in result.elts) {
                                                         if (isNaN(parseInt(d)))
                                                             break;
 
                                                         var menu_tmp = result.elts[d].title;
-
                                                         if (menu != menu_tmp) {
                                                             item += '<optgroup label="________________________________"><option disabled class="emundus_search_elm" value="-">' + menu_tmp.toUpperCase() + '</option></optgroup>';
                                                             menu = menu_tmp;
@@ -2099,15 +2104,13 @@ $(document).ready(function()
                                                             item += '</optgroup>'
                                                         if (grId != result.elts[d].group_id)
                                                             item += '<optgroup label=">> '+result.elts[d].group_label+'">'
-
+                                                        
                                                         grId = result.elts[d].group_id
-
-                                                        if ($('#view').val()!="evaluation" && $('#view').val()!="decision" && $('#view').val()!="admission")
-                                                            item += '<option value="'+result.elts[d].id+'" data-value="'+result.elts[d].element_label+'">'+result.elts[d].element_label+'</option>';
-                                                        else
-                                                            item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
-
+                                                        
+                                                        item += '<option value="'+result.elts[d].id+'" data-value="'+result.elts[d].element_label+'">'+result.elts[d].element_label+'</option>';
+                                                        
                                                     }
+                                                    
                                                     $('#em-export-form').append(item);
                                                     $('#em-export-form').trigger("chosen:updated");
                                                     item ="";
@@ -2115,13 +2118,189 @@ $(document).ready(function()
                                                     for (var d in result.defaults) {
                                                         if (isNaN(parseInt(d)))
                                                             break;
-                                                        if ($('#view').val()!="evaluation" && $('#view').val()!="decision" && $('#view').val()!="admission")
-                                                            item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
-                                                        else
-                                                            item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                       
+                                                        item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                     }
 
                                                     $('#em-export').append(item);
+
+                                                     /*** evaluation elements */
+                                                    $.ajax({
+                                                        type: 'get',
+                                                        url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&year='+year+'&code=' + code + '&form=evaluation',
+                                                    
+                                                        success: function (data) {
+                                                            $('#eval-elements-popup').empty();
+                                                            $('#em-eval-export-form').empty();
+                                                            //$('#em-eval-export').empty();
+                                                                $.ajax({
+                                                                    type:'get',
+                                                                    url: 'index.php?option=com_emundus&controller=evaluation&task=getformelem',
+                                                                    dataType:'json',
+
+                                                                    success: function(result) {
+
+                                                                        var item='';
+                                                                        item+='<option value="0" selected>Select an option</option>';
+
+                                                                        for (var d in result.elts) {
+
+                                                                            if (isNaN(parseInt(d)))
+                                                                                break;
+
+                                                                            if (Joomla.JText._(result.elts[d].element_label) == "")
+                                                                                var elt_label = result.elts[d].element_label;
+                                                                            else
+                                                                                var elt_label = Joomla.JText._(result.elts[d].element_label);
+
+                                                                            item += '<option value="'+result.elts[d].element_id+'" data-value="'+result.elts[d].element_label+'">'+elt_label+'</option>';
+                                                                        }
+
+                                                                        $('#eval-elements-popup').append(data);
+                                                                        $('#em-eval-export-form').append(item);
+                                                                        $('#em-eval-export-form').trigger("chosen:updated");
+                                                                        item ="";
+
+                                                                        for (var d in result.defaults) {
+                                                                            if (isNaN(parseInt(d)))
+                                                                                break;
+                                                                            item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                        }
+
+                                                                        $('#em-export').append(item);
+                                                                        
+                                                                        /*** decision elements */
+                                                                        $.ajax({
+                                                                            type: 'get',
+                                                                            url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&year='+year+'&code=' + code + '&form=decision',
+                                                                        
+                                                                            success: function (data) {
+                                                                                $('#decision-elements-popup').empty();
+                                                                                $('#em-decision-export-form').empty();
+                                                                                //$('#em-decision-export').empty();
+                                                                                
+                                                                                    $.ajax({
+                                                                                        type:'get',
+                                                                                        url: 'index.php?option=com_emundus&controller=admission&task=getformelem&form=decision',
+                                                                                        dataType:'json',
+
+                                                                                        success: function(result) {
+
+                                                                                            var item='';
+                                                                                            item+='<option value="0" selected>Select an option</option>';
+
+                                                                                            for (var d in result.elts) {
+
+                                                                                                if (isNaN(parseInt(d)))
+                                                                                                    break;
+
+                                                                                                if (Joomla.JText._(result.elts[d].element_label) == "")
+                                                                                                    var elt_label = result.elts[d].element_label;
+                                                                                                else
+                                                                                                    var elt_label = Joomla.JText._(result.elts[d].element_label);
+
+                                                                                                item += '<option value="'+result.elts[d].element_id+'" data-value="'+result.elts[d].element_label+'">'+elt_label+'</option>';
+                                                                                            }
+                                                                                    
+                                                                                            $('#decision-elements-popup').append(data);
+                                                                                            $('#em-decision-export-form').append(item);
+                                                                                            $('#em-decision-export-form').trigger("chosen:updated");
+                                                                                            item ="";
+
+                                                                                            for (var d in result.defaults) {
+                                                                                                if (isNaN(parseInt(d)))
+                                                                                                    break;
+                                                                                                item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                            }
+
+                                                                                            $('#em-export').append(item);
+                                                                                            $('.btn-success').show();
+                                                                                            
+                                                                                            /*** admission elements */
+                                                                                            $.ajax({
+                                                                                                type: 'get',
+                                                                                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&year='+year+'&code=' + code + '&form=admission',
+                                                                                            
+                                                                                                success: function (data) {
+                                                                                                    $('#admission-elements-popup').empty();
+                                                                                                    $('#em-admission-export-form').empty();
+                                                                                                    //$('#em-admission-export').empty();
+                                                                                                        $.ajax({
+                                                                                                            type:'get',
+                                                                                                            url: 'index.php?option=com_emundus&controller=admission&task=getformelem&form=admission',
+                                                                                                            dataType:'json',
+
+                                                                                                            success: function(result) {
+
+                                                                                                                var item='';
+                                                                                                                item+='<option value="0" selected>Select an option</option>';
+
+                                                                                                                for (var d in result.elts) {
+
+                                                                                                                    if (isNaN(parseInt(d)))
+                                                                                                                        break;
+
+                                                                                                                    if (Joomla.JText._(result.elts[d].element_label) == "")
+                                                                                                                        var elt_label = result.elts[d].element_label;
+                                                                                                                    else
+                                                                                                                        var elt_label = Joomla.JText._(result.elts[d].element_label);
+
+                                                                                                                    item += '<option value="'+result.elts[d].element_id+'" data-value="'+result.elts[d].element_label+'">'+elt_label+'</option>';
+                                                                                                                }
+
+                                                                                                                $('#admission-elements-popup').append(data);
+                                                                                                                $('#em-admission-export-form').append(item);
+                                                                                                                $('#em-admission-export-form').trigger("chosen:updated");
+                                                                                                                item ="";
+
+                                                                                                                for (var d in result.defaults) {
+                                                                                                                    if (isNaN(parseInt(d)))
+                                                                                                                        break;
+                                                                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                                                }
+
+                                                                                                                $('#em-export').append(item);
+                                                                                                                //$('.btn-success').show();
+                                                                                                                //$('#admission_elements_detail').show();
+                                                                                                            },
+
+                                                                                                            error: function (jqXHR, textStatus, errorThrown) {
+                                                                                                                console.log(jqXHR.responseText);
+                                                                                                            }
+
+                                                                                                        });
+                                                                                                    
+                                                                                                },
+                                                                                                error: function (jqXHR, textStatus, errorThrown) {
+                                                                                                    console.log(jqXHR.responseText);
+                                                                                                }
+                                                                                            });
+                                                                                        },
+
+                                                                                        error: function (jqXHR, textStatus, errorThrown) {
+                                                                                            console.log(jqXHR.responseText);
+                                                                                        }
+
+                                                                                    });
+                                                                                
+                                                                            },
+                                                                            error: function (jqXHR, textStatus, errorThrown) {
+                                                                                console.log(jqXHR.responseText);
+                                                                            }
+                                                                        });
+                                                                    },
+
+                                                                    error: function (jqXHR, textStatus, errorThrown) {
+                                                                        console.log(jqXHR.responseText);
+                                                                    }
+
+                                                                });
+                                                            
+                                                        },
+                                                        error: function (jqXHR, textStatus, errorThrown) {
+                                                            console.log(jqXHR.responseText);
+                                                        }
+                                                    });
 
                                                 },
                                                 error: function (jqXHR, textStatus, errorThrown)
@@ -2137,184 +2316,7 @@ $(document).ready(function()
                                             console.log(jqXHR.responseText);
                                         }
                                     });
-                                     /*** evaluation elements */
-                                     $.ajax({
-                                        type: 'get',
-                                        url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=evaluation',
-                                       
-                                        success: function (data) {
-                                            $('#eval-elements-popup').empty();
-                                            $('#em-eval-export-form').empty();
-                                            //$('#em-eval-export').empty();
-                                                $.ajax({
-                                                    type:'get',
-                                                    url: 'index.php?option=com_emundus&controller=evaluation&task=getformelem',
-                                                    dataType:'json',
-
-                                                    success: function(result) {
-
-                                                        var item='';
-                                                        item+='<option value="0" selected>Select an option</option>';
-
-                                                        for (var d in result.elts) {
-
-                                                            if (isNaN(parseInt(d)))
-                                                                break;
-
-                                                            if (Joomla.JText._(result.elts[d].element_label) == "")
-                                                                var elt_label = result.elts[d].element_label;
-                                                            else
-                                                                var elt_label = Joomla.JText._(result.elts[d].element_label);
-
-                                                            item += '<option value="'+result.elts[d].element_id+'" data-value="'+result.elts[d].element_label+'">'+elt_label+'</option>';
-                                                        }
-
-                                                        $('#eval-elements-popup').append(data);
-                                                        $('#em-eval-export-form').append(item);
-                                                        $('#em-eval-export-form').trigger("chosen:updated");
-                                                        item ="";
-
-                                                        for (var d in result.defaults) {
-                                                            if (isNaN(parseInt(d)))
-                                                                break;
-                                                            item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
-                                                        }
-
-                                                        $('#em-export').append(item);
-                                                        //$('.btn-success').show();
-                                                        //$('#eval_elements_detail').show();
-                                                    },
-
-                                                    error: function (jqXHR, textStatus, errorThrown) {
-                                                        console.log(jqXHR.responseText);
-                                                    }
-
-                                                });
-                                            
-                                        },
-                                        error: function (jqXHR, textStatus, errorThrown) {
-                                            console.log(jqXHR.responseText);
-                                        }
-                                    });
-                                    /*** decision elements */
-                                    $.ajax({
-                                        type: 'get',
-                                        url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=decision',
-                                       
-                                        success: function (data) {
-                                            $('#decision-elements-popup').empty();
-                                            $('#em-decision-export-form').empty();
-                                            //$('#em-decision-export').empty();
-                                            
-                                                $.ajax({
-                                                    type:'get',
-                                                    url: 'index.php?option=com_emundus&controller=admission&task=getformelem&form=decision',
-                                                    dataType:'json',
-
-                                                    success: function(result) {
-
-                                                        var item='';
-                                                        item+='<option value="0" selected>Select an option</option>';
-
-                                                        for (var d in result.elts) {
-
-                                                            if (isNaN(parseInt(d)))
-                                                                break;
-
-                                                            if (Joomla.JText._(result.elts[d].element_label) == "")
-                                                                var elt_label = result.elts[d].element_label;
-                                                            else
-                                                                var elt_label = Joomla.JText._(result.elts[d].element_label);
-
-                                                            item += '<option value="'+result.elts[d].element_id+'" data-value="'+result.elts[d].element_label+'">'+elt_label+'</option>';
-                                                        }
-                                                
-                                                        $('#decision-elements-popup').append(data);
-                                                        $('#em-decision-export-form').append(item);
-                                                        $('#em-decision-export-form').trigger("chosen:updated");
-                                                        item ="";
-
-                                                        for (var d in result.defaults) {
-                                                            if (isNaN(parseInt(d)))
-                                                                break;
-                                                            item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
-                                                        }
-
-                                                        $('#em-export').append(item);
-                                                        $('.btn-success').show();
-                                                        //$('#decision_elements_detail').show();
-                                                    },
-
-                                                    error: function (jqXHR, textStatus, errorThrown) {
-                                                        console.log(jqXHR.responseText);
-                                                    }
-
-                                                });
-                                            
-                                        },
-                                        error: function (jqXHR, textStatus, errorThrown) {
-                                            console.log(jqXHR.responseText);
-                                        }
-                                    });
-                                     /*** admission elements */
-                                    $.ajax({
-                                        type: 'get',
-                                        url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=admission',
-                                       
-                                        success: function (data) {
-                                            $('#admission-elements-popup').empty();
-                                            $('#em-admission-export-form').empty();
-                                            //$('#em-admission-export').empty();
-                                                $.ajax({
-                                                    type:'get',
-                                                    url: 'index.php?option=com_emundus&controller=admission&task=getformelem&form=admission',
-                                                    dataType:'json',
-
-                                                    success: function(result) {
-
-                                                        var item='';
-                                                        item+='<option value="0" selected>Select an option</option>';
-
-                                                        for (var d in result.elts) {
-
-                                                            if (isNaN(parseInt(d)))
-                                                                break;
-
-                                                            if (Joomla.JText._(result.elts[d].element_label) == "")
-                                                                var elt_label = result.elts[d].element_label;
-                                                            else
-                                                                var elt_label = Joomla.JText._(result.elts[d].element_label);
-
-                                                            item += '<option value="'+result.elts[d].element_id+'" data-value="'+result.elts[d].element_label+'">'+elt_label+'</option>';
-                                                        }
-
-                                                        $('#admission-elements-popup').append(data);
-                                                        $('#em-admission-export-form').append(item);
-                                                        $('#em-admission-export-form').trigger("chosen:updated");
-                                                        item ="";
-
-                                                        for (var d in result.defaults) {
-                                                            if (isNaN(parseInt(d)))
-                                                                break;
-                                                            item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
-                                                        }
-
-                                                        $('#em-export').append(item);
-                                                        //$('.btn-success').show();
-                                                        //$('#admission_elements_detail').show();
-                                                    },
-
-                                                    error: function (jqXHR, textStatus, errorThrown) {
-                                                        console.log(jqXHR.responseText);
-                                                    }
-
-                                                });
-                                            
-                                        },
-                                        error: function (jqXHR, textStatus, errorThrown) {
-                                            console.log(jqXHR.responseText);
-                                        }
-                                    });
+                                  
                                     $('.btn-success').show();
                                     $('#elements_detail').show();
                                     
@@ -3058,7 +3060,7 @@ $(document).ready(function()
                 $.ajax(
                     {
                         type: 'post',
-                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnums_csv',
+                        url: 'index.php?option=com_emundus&controller=files&task=getfnums_csv',
                         dataType: 'JSON',
                         data: {fnums: checkInput},
                         success: function (result) {
@@ -3067,7 +3069,7 @@ $(document).ready(function()
                                 $.ajax(
                                     {
                                         type: 'post',
-                                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=create_file_csv',
+                                        url: 'index.php?option=com_emundus&controller=files&task=create_file_csv',
                                         dataType: 'JSON',
                                         success: function (result) {
                                             if (result.status) {
@@ -3553,18 +3555,18 @@ $(document).ready(function()
     $(document).on('click', '#showelements', function() {
         $.ajaxQ.abortAll();
         if ($(this).hasClass("btn btn-info")) {
-            $('#admelement').hide();
-            $('#decelement').hide();
-            $('#evalelement').hide();
-            $('#appelement').show();
-
+            $('#eval-elements-popup').hide();
+            $('#decision-elements-popup').hide();
+            $('#admission-elements-popup').hide();
+            //$('#showevalelements').removeClass("btn btn-elements-success").addClass("btn btn-info");
+            //$('#showevalelements').find("span").remove()
+            //$('#showevalelements').append('<span class="glyphicon glyphicon-plus"></span>');
             $('#elements-popup').toggle(400);
             $(this).removeClass("btn btn-info").addClass("btn btn-elements-success");
             $(this).empty();
             $(this).append('<span class="glyphicon glyphicon-minus"></span>');
 
         } else {
-            $('#appelement').hide();
             $('#elements-popup').hide();
             $(this).removeClass("btn btn-elements-success").addClass("btn btn-info");
             $(this).empty();
@@ -3575,19 +3577,17 @@ $(document).ready(function()
     $(document).on('click', '#showevalelements', function() {
         $.ajaxQ.abortAll();
         if ($(this).hasClass("btn btn-info")) {
-            $('#admelement').hide();
-            $('#decelement').hide();
-            $('#appelement').hide();
-            $('#evalelement').show();
+            $('#elements-popup').hide();
+            $('#decision-elements-popup').hide();
+            $('#admission-elements-popup').hide();
 
-            $('#eval_elements-popup').toggle(400);
+            $('#eval-elements-popup').toggle(400);
             $(this).removeClass("btn btn-info").addClass("btn btn-elements-success");
             $(this).empty();
             $(this).append('<span class="glyphicon glyphicon-minus"></span>');
 
         } else {
-            $('#evalelement').hide();
-            $('#eval_elements-popup').hide();
+            $('#eval-elements-popup').hide();
             $(this).removeClass("btn btn-elements-success").addClass("btn btn-info");
             $(this).empty();
             $(this).append('<span class="glyphicon glyphicon-plus"></span>');
@@ -3597,19 +3597,17 @@ $(document).ready(function()
     $(document).on('click', '#showdecisionelements', function() {
         $.ajaxQ.abortAll();
         if ($(this).hasClass("btn btn-info")) {
-            $('#appelement').hide();
-            $('#admelement').hide();
-            $('#evalelement').hide();
-            $('#decelement').show();
+            $('#elements-popup').hide();
+            $('#eval-elements-popup').hide();
+            $('#admission-elements-popup').hide();
 
-            $('#decision_elements-popup').toggle(400);
+            $('#decision-elements-popup').toggle(400);
             $(this).removeClass("btn btn-info").addClass("btn btn-elements-success");
             $(this).empty();
             $(this).append('<span class="glyphicon glyphicon-minus"></span>');
 
         } else {
-            $('#decelement').hide();
-            $('#decision_elements-popup').hide();
+            $('#decision-elements-popup').hide();
             $(this).removeClass("btn btn-elements-success").addClass("btn btn-info");
             $(this).empty();
             $(this).append('<span class="glyphicon glyphicon-plus"></span>');
@@ -3619,10 +3617,9 @@ $(document).ready(function()
     $(document).on('click', '#showadmissionelements', function() {
         $.ajaxQ.abortAll();
         if ($(this).hasClass("btn btn-info")) {
-            $('#appelement').hide();
-            $('#decelement').hide();
-            $('#evalelement').hide();
-            $('#admelement').show();
+            $('#elements-popup').hide();
+            $('#eval-elements-popup').hide();
+            $('#decision-elements-popup').hide();
 
             $('#admission-elements-popup').toggle(400);
             $(this).removeClass("btn btn-info").addClass("btn btn-elements-success");
@@ -3630,7 +3627,6 @@ $(document).ready(function()
             $(this).append('<span class="glyphicon glyphicon-minus"></span>');
 
         } else {
-            $('#admelement').hide();
             $('#admission-elements-popup').hide();
             $(this).removeClass("btn btn-elements-success").addClass("btn btn-info");
             $(this).empty();

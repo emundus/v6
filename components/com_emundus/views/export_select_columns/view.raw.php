@@ -44,15 +44,19 @@ class EmundusViewExport_select_columns extends JViewLegacy
         $prg    = $jinput->get('code', null);
         $view   = $jinput->get('viewcall', null);
         $form   = $jinput->get('form', null);
+        $year   = $jinput->get('year', null);
         
         $code       = array();
+        $years       = array();
         $code[]     = $prg;
+        $years[]     = $year;
 		
         $current_user = JFactory::getUser();
 
         if ($view == "evaluation" || $form == "decision" || $form == "admission" || $form == "evaluation") {
             $session = JFactory::getSession();
             $params['programme'] = $code;
+            $params['schoolyear'] = $years;
             $session->set('filt_params', $params);
         }
 
