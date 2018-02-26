@@ -1078,7 +1078,8 @@ class EmundusModelEvaluation extends JModelList
 						 '#__emundus_setup_campaigns', 'jos_emundus_setup_campaigns',
 						 '#__emundus_evaluations', 'jos_emundus_evaluations',
 						 '#__emundus_users', 'jos_emundus_users',
-						 '#__users', 'jos_users'
+						 '#__users', 'jos_users',
+						 '#__emundus_tag_assoc', 'jos_emundus_tag_assoc'
 						 );
 		$leftJoin = '';
 		if (count($this->_elements)>0) {
@@ -1100,8 +1101,12 @@ class EmundusModelEvaluation extends JModelList
 					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = c.campaign_id
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = c.applicant_id
-					LEFT JOIN #__users as u on u.id = c.applicant_id ';
-//                    LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=c.fnum ' ;
+					LEFT JOIN #__users as u on u.id = c.applicant_id 
+                    LEFT JOIN (
+					  SELECT GROUP_CONCAT(id_tag SEPARATOR ", ") id_tag, fnum
+					  FROM jos_emundus_tag_assoc 
+					  GROUP BY fnum
+					) eta ON c.fnum = eta.fnum ' ;
 		$q = $this->_buildWhere($lastTab);
 
 
@@ -1141,13 +1146,12 @@ class EmundusModelEvaluation extends JModelList
 
 			$dbo->setQuery($query);
 			$res = $dbo->loadAssocList();
-//echo '<hr>'.str_replace('#_', 'jos', $query).'<hr>';
 			return $res;
 		}
 		catch(Exception $e)
 		{
 			echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.str_replace('#_', 'jos', $query), JLog::ERROR, 'com_emundus');
 		}
 	}
 
