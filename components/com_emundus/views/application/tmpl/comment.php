@@ -36,20 +36,20 @@ JFactory::getSession()->set('application_layout', 'comment');
             <div class="panel-body">
                 <ul class="list-group">
                 <?php
-				if(count($this->userComments) > 0) {
+				if (count($this->userComments) > 0) {
 					$i=0;
-					foreach($this->userComments as $comment){ ?>
+					foreach ($this->userComments as $comment) { ?>
                     <li class="list-group-item" id="<?php echo $comment->id; ?>">
                         <div class="row">
                             <div class="col-xs-10 col-md-11">
                                 <div>
-                                    <a href="#"><?php echo $comment->reason; ?></a>
+                                    <a href="#"><?php echo htmlspecialchars($comment->reson, ENT_QUOTES, 'UTF-8'); ?></a>
                                     <div class="mic-info">
                                         <a href="#"><?php echo $comment->name; ?></a> - <?php echo JHtml::_('date', $comment->date, JText::_('DATE_FORMAT_LC2')); ?>
                                     </div>
                                 </div>
                                 <div class="comment-text">
-                                    <?php echo $comment->comment; ?>
+                                    <?php echo htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8'); ?>
                                 </div>
                                 <?php if($this->_user->id == $comment->user_id || EmundusHelperAccess::asAccessAction(10, 'd', $this->_user->id, $this->fnum)):?>
                                 <div class="action">
@@ -60,7 +60,7 @@ JFactory::getSession()->set('application_layout', 'comment');
 								<?php endif; ?>
 								<?php if($this->_user->id == $comment->user_id || EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $this->fnum)):?>
                                 <div class="action">
-									<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#edit-comment" title="<?php echo JText::_('EDIT');?>" data-cid="<?php echo $comment->id ?>" data-cname="<?php echo $comment->reason ?>" data-ctext="<?php echo $comment->comment ?>">
+									<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#edit-comment" title="<?php echo JText::_('EDIT');?>" data-cid="<?php echo $comment->id; ?>" data-cname="<?php echo htmlspecialchars($comment->reason, ENT_QUOTES, 'UTF-8'); ?>" data-ctext="<?php echo htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8'); ?>">
                                         <span class="glyphicon glyphicon-edit"></span>
 									</button>
 								</div>
@@ -113,6 +113,15 @@ JFactory::getSession()->set('application_layout', 'comment');
 </div>
 
 <script type="text/javascript">
+
+function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+ }
 
 $(document).off('click', '.comments .btn.btn-danger.btn-xs');
 $(document).on('click', '.comments .btn.btn-danger.btn-xs', function(e)
@@ -188,19 +197,19 @@ $(document).on('click', '#form .btn.btn-success', function(f)
 						'<div class="row">'+
 							'<div class="col-xs-10 col-md-11">'+
 								'<div>'+
-									'<a href="#">'+title+'</a>'+
+									'<a href="#">'+escapeHtml(title)+'</a>'+
 									'<div class="mic-info">'+
 										'<a href="#"><?php echo $this->_user->name; ?></a> - <?php echo JHtml::_('date', date('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2')); ?>'+
 									'</div>'+
 								'</div>'+
-								'<div class="comment-text">'+comment+'</div>'+
+								'<div class="comment-text">'+escapeHtml(comment)+'</div>'+
 								'<div class="action">'+
 									'<button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('DELETE');?>">'+
 										'<span class="glyphicon glyphicon-trash"></span>'+
 									'</button>'+
 								'</div>'+
 								'<div class="action">'+
-									'<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#edit-comment" title="<?php echo JText::_('EDIT');?>" data-cid="'+result.id+'" data-cname="'+title+'" data-ctext="'+comment+'">'+
+									'<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#edit-comment" title="<?php echo JText::_('EDIT');?>" data-cid="'+result.id+'" data-cname="'+escapeHtml(title)+'" data-ctext="'+escapeHtml(comment)+'">'+
                                         '<span class="glyphicon glyphicon-edit"></span>'+
 									'</button>'+
 								'</div>'+
@@ -261,12 +270,12 @@ $(document).on('click', '#editCommentBtn', function editComment() {
 			if (result.status) {
 				$('#edit-comment .close').click();
 				$('.comments li#'+id).empty();
-				$('.comments li#'+id).append('<div class="row"><div class="col-xs-10 col-md-11"><div><a href="#">'+title+'</a><div class="mic-info">'+
+				$('.comments li#'+id).append('<div class="row"><div class="col-xs-10 col-md-11"><div><a href="#">'+escapeHtml(title)+'</a><div class="mic-info">'+
 										'<a href="#"><?php echo $this->_user->name; ?></a> - <?php echo JHtml::_('date', date('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2')); ?>'+
 									'</div></div>'+
-				'<div class="comment-text">'+text+'</div>'+
+				'<div class="comment-text">'+escapeHtml(text)+'</div>'+
 				'<div class="action"><button type="button" class="btn btn-danger btn-xs" title="Delete"> <span class="glyphicon glyphicon-trash"> </span></button> </div>'+
-				'<div class="action"><button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#edit-comment" title="Edit" data-cid="'+id+'" data-cname="'+title+'" data-ctext="'+text+'"> <span class="glyphicon glyphicon-edit"> </span></button> </div></div></div>');
+				'<div class="action"><button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#edit-comment" title="Edit" data-cid="'+id+'" data-cname="'+escapeHtml(title)+'" data-ctext="'+escapeHtml(text)+'"> <span class="glyphicon glyphicon-edit"> </span></button> </div></div></div>');
 			} else {
 				$('#form').append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
 			}

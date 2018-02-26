@@ -659,18 +659,18 @@ thead th:hover {
     left:0;
     bottom:0;
     overflow: scroll;
-   
+
 }
 .false-table thead, .false-table thead th{
     position:fixed;
     z-index:2;
 }
 */
-/*scroll side  
+/*scroll side
     height: 1000px !important;
     overflow-y:scroll !important;
 }
-.scroll-body { 
+.scroll-body {
     height: 1000px !important;
     overflow-y:scroll !important;
 }*/
