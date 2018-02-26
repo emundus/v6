@@ -71,8 +71,8 @@ if (!empty($s_elements)) {
         // We are going to use the form value as a way to make unique IDs so the JS works correctly :)  
         if (isset($this->form) && !empty($this->form)) {
 
-            echo '<input type="checkbox" id="emundus_checkall_'.$this->form.'" class="emundusall otherForm" data-check=".emunduspage" onClick="javascript:check_all(\'emundus_checkall_'.$this->form.'\')" /> ';
-            echo '<label for="emundus_checkall">'.JText::_('SELECT_ALL').'</label>';
+           // echo '<input type="checkbox" id="emundus_checkall_'.$this->form.'" class="emundusall otherForm" data-check=".emunduspage" onClick="javascript:check_all(\'emundus_checkall_'.$this->form.'\')" /> ';
+           // echo '<label for="emundus_checkall">'.JText::_('SELECT_ALL').'</label>';
             echo '<div id="emundus_elements_'.$this->form.'" class="otherForm">';
             $tbl_tmp='';
             $grp_tmp='';
