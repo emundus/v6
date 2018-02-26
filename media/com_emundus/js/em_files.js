@@ -550,7 +550,6 @@ function generate_csv(json, eltJson, objJson) {
     var file = json.file;
     var nbcol = json.nbcol;
     var methode = json.methode;
-
     $.ajaxQ.abortAll();
     if (start+limit <= maxcsv) {
         $.ajax(
@@ -1538,9 +1537,8 @@ $(document).ready(function()
 
                             $('.modal-body').append('<div id="elements_detail" style="display: none">' +
                                                         '<div class="panel panel-default xclsform">' +
-                                                            '<div class="panel-heading">'+
-                                                            '<table><tr>'+
-                                                                '<th><h5>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+
+                                                            '<div class="panel-heading"><h5>' +
+                                                                Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+
                                                                 ' <button type="button" id="showelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
                                                                 '<span class="glyphicon glyphicon-plus"></span>' +
                                                                  '</button></h5></th>' +
@@ -1583,11 +1581,9 @@ $(document).ready(function()
                                                                     '<div id="admission-elements-popup" style="width : 95%;margin : auto; display: none;">' +
                                                                     '</div>' +
                                                                 '</div>' +
-
                                                             '</div>' +
                                                         '</div>' +
                                                     '</div>');
-                        
                             $.ajax({
                                 type:'get',
                                 url: 'index.php?option=com_emundus&controller=files&task=getProgramCampaigns',
@@ -1887,7 +1883,6 @@ $(document).ready(function()
                                                         }
 
                                                     });
-                                                           
                                                         
                                             },
 
@@ -1906,7 +1901,6 @@ $(document).ready(function()
                                             }
                                         });
 
-                             
                                     }
                                 },
                                 error: function (jqXHR, textStatus, errorThrown)
@@ -2080,7 +2074,6 @@ $(document).ready(function()
                             });   
 
 
-
                             $('#em-export-prg').on('change', function() {
                               
                                 var code = $(this).val();
@@ -2093,7 +2086,7 @@ $(document).ready(function()
                                         url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&viewcall=files&year='+year+'&code=' + code,
                                         
                                         success: function (data) {
-                                            //$('.btn-success').show();
+                                            $('.btn-success').show();
                                             $('#em-export-form').empty();
                                             $('#em-export').empty();
                                             $.ajax({
@@ -2138,7 +2131,7 @@ $(document).ready(function()
                                                     }
 
                                                     $('#em-export').append(item);
-
+                                                  
                                                      /*** evaluation elements */
                                                     $.ajax({
                                                         type: 'get',
@@ -2316,7 +2309,6 @@ $(document).ready(function()
                                                             console.log(jqXHR.responseText);
                                                         }
                                                     });
-
                                                 },
                                                 error: function (jqXHR, textStatus, errorThrown)
                                                 {
@@ -2346,12 +2338,14 @@ $(document).ready(function()
 
                             var defaults = '<h5 style="padding-left:15px;">  '+Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM')+'</h5><div id="em-export-elts" style="height:73%;overflow:auto;" class="well" ><ul id="em-export"></ul></div>';
 
+
                             $('#list-element-export').append(defaults);
 
                             var grId = null;
                             var menu = null;
 
                             $('#oelts').append('<div style="height:150px; width:65%; padding-top:20px;" class="panel panel-default xclsform">' +
+
                             '<input class="em-ex-check" type="checkbox" value="photo" name="em-ex-photo" id="em-ex-photo"/>' +
                             '<label for="em-ex-photo">'+Joomla.JText._('COM_EMUNDUS_PHOTO')+'</label> <br/>' +
                             '<input class="em-ex-check" type="checkbox" value="forms" name="em-ex-forms" id="em-ex-forms"/>' +
@@ -3583,6 +3577,7 @@ $(document).ready(function()
             $(this).append('<span class="glyphicon glyphicon-minus"></span>');
 
         } else {
+
             $('#elements-popup').hide();
             $(this).removeClass("btn btn-elements-success").addClass("btn btn-info");
             $(this).empty();
@@ -3590,7 +3585,7 @@ $(document).ready(function()
 
         }
     });
-    $(document).on('click', '#showevalelements', function() {
+    $(document).on('click', '#showadmissionelements', function() {
         $.ajaxQ.abortAll();
         if ($(this).hasClass("btn btn-info")) {
             $('#elements-popup').hide();
@@ -3598,12 +3593,14 @@ $(document).ready(function()
             $('#admission-elements-popup').hide();
 
             $('#eval-elements-popup').toggle(400);
+
             $(this).removeClass("btn btn-info").addClass("btn btn-elements-success");
             $(this).empty();
             $(this).append('<span class="glyphicon glyphicon-minus"></span>');
 
         } else {
             $('#eval-elements-popup').hide();
+
             $(this).removeClass("btn btn-elements-success").addClass("btn btn-info");
             $(this).empty();
             $(this).append('<span class="glyphicon glyphicon-plus"></span>');
@@ -3616,6 +3613,7 @@ $(document).ready(function()
             $('#elements-popup').hide();
             $('#eval-elements-popup').hide();
             $('#admission-elements-popup').hide();
+
 
             $('#decision-elements-popup').toggle(400);
             $(this).removeClass("btn btn-info").addClass("btn btn-elements-success");
@@ -3644,12 +3642,12 @@ $(document).ready(function()
 
         } else {
             $('#admission-elements-popup').hide();
+
             $(this).removeClass("btn btn-elements-success").addClass("btn btn-info");
             $(this).empty();
             $(this).append('<span class="glyphicon glyphicon-plus"></span>');
 
         }
-        
     });
 
 

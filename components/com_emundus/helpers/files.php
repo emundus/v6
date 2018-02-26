@@ -334,7 +334,7 @@ class EmundusHelperFiles
         $db->setQuery( $query );
         return $db->loadObjectList();
     }
-    
+ 
     public function getProgramCampaigns($code = array(), $year = array()) { // methode a revoir
         $db = JFactory::getDBO();
         // ONLY FILES LINKED TO MY GROUPS
@@ -1689,11 +1689,11 @@ class EmundusHelperFiles
         $user = JFactory::getUser();
         $db = JFactory::getDBO();
         if (is_null($id) && !empty($itemid)) {
-            $query = 'SELECT * FROM #__emundus_filters WHERE user='.$user->id.' AND constraints LIKE "%col%" AND item_id='.$itemid;
+            $query = 'SELECT * FROM #__emundus_filters WHERE user='.$user->id.' AND item_id='.$itemid;
             $db->setQuery( $query );
             return $db->loadObjectlist();
         } elseif(!empty($id)) {
-            $query = 'SELECT * FROM #__emundus_filters WHERE id='.$id.' AND constraints LIKE "%col%"';
+            $query = 'SELECT * FROM #__emundus_filters WHERE id='.$id;
             $db->setQuery( $query );
             return $db->loadObject();
         }
@@ -2209,29 +2209,5 @@ class EmundusHelperFiles
     public function createFnum($campaign_id, $user_id){
         $fnum    = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
         return $fnum;
-    }
-
-    /**
-     * save the export excel filter
-     */
-    public function addExcelFilter($filter_name, $params){
-        try
-        {
-            $db = JFactory::getDBO();
-            $user = JFactory::getUser()->id;
-            //var_dump($user);
-            $query = 'INSERT INTO #__emundus_filters(user, name, constraints, item_id) VALUES ('.(int)$user.', "'.$filter_name.'","'.$db->quote($params).'",542)';
-            echo $query;
-            $db->setQuery($query);
-            $db->execute();
-            
-            return true;
-        }
-        catch (Exception $e)
-        {
-            error_log($e->getMessage());
-            error_log($query);
-            return false;
-        }
     }
 }

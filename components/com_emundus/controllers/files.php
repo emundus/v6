@@ -2457,7 +2457,6 @@ class EmundusControllerFiles extends JControllerLegacy
         echo json_encode((object)(array('status' => true, 'html' => $html, 'nbprg' => $nbprg)));
         exit;
     }
-
     public function getProgramCampaigns(){
         $html = '';
         $session     = JFactory::getSession();
@@ -2554,5 +2553,4 @@ class EmundusControllerFiles extends JControllerLegacy
             exit;
         }
     }
-    
 }
