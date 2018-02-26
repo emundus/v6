@@ -334,16 +334,16 @@ class EmundusHelperFiles
         $db->setQuery( $query );
         return $db->loadObjectList();
     }
- 
+
     public function getProgramCampaigns($code = array(), $year = array()) { // methode a revoir
         $db = JFactory::getDBO();
         // ONLY FILES LINKED TO MY GROUPS
         require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
         $m_users = new EmundusModelUsers();
         if (!empty($code) && is_array($code)) {
-            
+
             if ($code[0] == '%' || $code[0] == "") {
-                
+
                 $user = JFactory::getUser();
                 $code = $m_users->getUserGroupsProgrammeAssoc($user->id);
                 //$where = 'training IN ("'.implode('","', $code).'")';
@@ -371,9 +371,9 @@ class EmundusHelperFiles
                     $where = 'training  IN ("'.implode('","', $code).'")';
                 }
             }
-            
+
         } else{
-           
+
             if (!empty($year) && is_array($year)){
                 if ($year[0] == '%' || $year[0] == "") {
                     $year = $m_users->getSchoolyears();
@@ -994,7 +994,7 @@ class EmundusHelperFiles
 
         $current_s              = @$filt_params['s'];
         $current_profile        = @$filt_params['profile'];
-        $oprofiles              = @$filt_params['oprofiles'];        
+        $oprofiles              = @$filt_params['oprofiles'];
         $current_eval           = @$filt_params['user'];
         $miss_doc               = @$filt_params['missing_doc'];
         $current_finalgrade     = @$filt_params['finalgrade'];
@@ -1014,7 +1014,7 @@ class EmundusHelperFiles
         $current_group          = @$filt_params['group'];
         $current_institution    = @$filt_params['institution'];
         $spam_suspect           = @$filt_params['spam_suspect'];
-        
+
         $filters = '';
         // Quick filter
         $quick = '<div id="filters">

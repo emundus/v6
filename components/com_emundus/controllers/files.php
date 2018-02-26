@@ -1196,7 +1196,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $h_files = new EmundusHelperFiles;
         $elements = $h_files->getElementsName(implode(',',$col));
-        
+
         // re-order elements
         $ordered_elements = array();
         foreach ($col as $c) {
@@ -1369,14 +1369,14 @@ class EmundusControllerFiles extends JControllerLegacy
 
                     case "tags":
                         $tags = "";
-                       
+
                         foreach ($colOpt['tags'] as $tag) {
                             if ($tag['fnum'] == $fnum['fnum']) {
                                 $tags .= $tag['label'] . ", ";
                             }
                         }
                         $line .= $tags . "\t";
-                       
+
                         break;
                 }
             }
@@ -1384,7 +1384,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $element_csv[] = $line;
             $line = "";
             $i++;
-            
+
         }
         // On remplit le fichier CSV
         foreach ($element_csv as $data) {
@@ -2464,7 +2464,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $h_files = new EmundusHelperFiles;
         $campaigns = $h_files->getProgramCampaigns($filt_params['programme'], $filt_params['schoolyear']);
         $programmes = $h_files->getProgrammes($filt_params['programme']);
-        
+
         $nbprg = count($campaigns);
         if (empty($filt_params)){
             $params['programme'] = $programmes;
@@ -2539,13 +2539,13 @@ class EmundusControllerFiles extends JControllerLegacy
         $user_id   = JFactory::getUser()->id;
         $session     = JFactory::getSession();
         try {
-            
+
             //$export_excel_params = $session->get('excelfilter');
-            
+
             $query = 'SELECT * from #__emundus_filters  where user = '.$user_id.' and constraints LIKE "%excelfilter%"';
             $db->setQuery($query);
             $result = $db->loadObjectList();
-            
+
             echo json_encode((object)(array('status' => true, 'filter' => $result)));
             exit;
         } catch (Exception $e) {
