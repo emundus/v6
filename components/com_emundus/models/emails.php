@@ -859,5 +859,26 @@ class EmundusModelEmails extends JModelList
         return $string;
     }
 
+    /**
+     * Gets all emails sent to the User id.
+     * @param Int user ID
+     * @return Mixed Array
+     */
+    public function get_messages_to_user($user_id) {
+
+        $query = 'SELECT * FROM #__messages WHERE user_id_to ='.$user_id.' ORDER BY date_time desc';
+
+        try {
+
+            $this->_db->setquery($query);
+            return $this->_db->loadObjectList();
+
+        } catch (Exception $e) {
+            JLog::add('Error gatting messages sent to user: '.$user_id.' at query: '.$query, JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+    }
+
 }
 ?>

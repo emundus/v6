@@ -327,6 +327,20 @@ class EmundusViewApplication extends JViewLegacy
 					}
 					break;
 
+				case 'mail':
+					// This view gets a recap of all the emails sent to the User by the platofrm, requires applicant_email read rights.
+					if (EmundusHelperAccess::asAccessAction(9, 'r', $this->_user->id, $fnum)) {
+
+						$m_emails = new EmundusModelEmails();
+						$messages = $m_emails->get_messages_to_user(intval($fnumInfos['applicant_id']));
+						$this->assignRef('messages', $messages);
+
+					} else {
+						echo JText::_("RESTRICTED_ACCESS");
+						exit();
+					}
+					break;
+
 				case 'admission':
                     if (EmundusHelperAccess::asAccessAction(32, 'r', $this->_user->id, $fnum)) {
 						$student = JFactory::getUser(intval($fnumInfos['applicant_id']));
