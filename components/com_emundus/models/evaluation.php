@@ -1500,6 +1500,24 @@ class EmundusModelEvaluation extends JModelList
         }
     }
 
+    /**
+     * 	Get all evaluations accross all programs for a student application file
+     *	@param fnum 		the file number in question
+     * 	@return array
+    **/
+    function getEvaluationsByFnum($fnum) {
+        try {
+
+	        $query = 'SELECT * FROM #__emundus_evaluations ee WHERE ee.fnum like ' . $fnum.' ORDER BY ee.id DESC' ;
+            $this->_db->setQuery($query);
+            return $this->_db->loadObjectList();
+
+		} catch(Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+    }
+
 	/**
      * 	Copy a line by ID from the evaluation table and use it to overrite or create another line
      *	@param fromID 		line to copy data from
