@@ -913,6 +913,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $defaultElements    = $m_files->getDefaultElements();
         $elements           = $h_files->getElements();
+
         $res = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);
         echo json_encode((object)$res);
         exit;
@@ -1196,7 +1197,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $h_files = new EmundusHelperFiles;
         $elements = $h_files->getElementsName(implode(',',$col));
-        
+
         // re-order elements
         $ordered_elements = array();
         foreach ($col as $c) {
@@ -1256,9 +1257,6 @@ class EmundusControllerFiles extends JControllerLegacy
                 case 'evaluators':
                     $colOpt['evaluators'] = $h_files->createEvaluatorList($col[1], $m_files);
                     break;
-                case 'tags':
-                    $colOpt['tags'] = $m_files->getTagsByFnum($fnums);
-                    break;
             }
         }
         $status = $m_files->getStatusByFnums($fnums);
@@ -1300,7 +1298,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         $line .= $status[$v]['value']."\t";
                         $uid = intval(substr($v, 21, 7));
                         $userProfil = JUserHelper::getProfile($uid)->emundus_profile;
-                        $lastname = (!empty($userProfil['lastname']))?$userProfil['lastname']:JFactory::getUser($uid)->name;
+                        $line .= strtoupper($userProfil['lastname'])."\t";
                         $line .= $userProfil['firstname']."\t";
                     } else $line .= $v."\t";
 
@@ -1366,25 +1364,12 @@ class EmundusControllerFiles extends JControllerLegacy
                         else
                             $line .= "\t";
                         break;
-
-                    case "tags":
-                        $tags = "";
-                       
-                        foreach ($colOpt['tags'] as $tag) {
-                            if ($tag['fnum'] == $fnum['fnum']) {
-                                $tags .= $tag['label'] . ", ";
-                            }
-                        }
-                        $line .= $tags . "\t";
-                       
-                        break;
                 }
             }
             // On met les données du fnum dans le CSV
             $element_csv[] = $line;
             $line = "";
             $i++;
-            
         }
         // On remplit le fichier CSV
         foreach ($element_csv as $data) {
@@ -2456,101 +2441,5 @@ class EmundusControllerFiles extends JControllerLegacy
 
         echo json_encode((object)(array('status' => true, 'html' => $html, 'nbprg' => $nbprg)));
         exit;
-    }
-    public function getProgramCampaigns(){
-        $html = '';
-        $session     = JFactory::getSession();
-        $filt_params = $session->get('filt_params');
-        $h_files = new EmundusHelperFiles;
-        $campaigns = $h_files->getProgramCampaigns($filt_params['programme'], $filt_params['schoolyear']);
-        $programmes = $h_files->getProgrammes($filt_params['programme']);
-        
-        $nbprg = count($campaigns);
-        if (empty($filt_params)){
-            $params['programme'] = $programmes;
-            $session->set('filt_params', $params);
-        }
-        foreach ($campaigns as $c) {
-            if ($nbprg == 1) {
-                $html .= '<option value="'.$c->training.'" selected>'.$c->label.' - '.$c->training.'('.$c->year.')</option>';
-            } else {
-                $html .= '<option value="'.$c->training.'">'.$c->label.' - '.$c->training.'('.$c->year.')</option>';
-            }
-        }
-
-        echo json_encode((object)(array('status' => true, 'html' => $html, 'nbprg' => $nbprg)));
-        exit;
-    }
-
-  /*  public function save_excelfilter(){
-        $session     = JFactory::getSession();
-        $jinput = JFactory::getApplication()->input;
-        $params       = $jinput->getString('params', null);
-        $filter_name = $jinput->getString('filt_name', null);
-        //var_dump($params.$filter_name);
-        $h_files = new EmundusHelperFiles;
-        $res = $h_files->addExcelFilter($filter_name, $params);
-        if($res)
-            echo json_encode((object)(array('status' => true)));
-        exit;
-    }*/
-
-    public function saveExcelFilter()
-    {
-        $db = JFactory::getDBO();
-        $jinput         = JFactory::getApplication()->input;
-        $name           = $jinput->getString('filt_name', null);
-        $current_user   = JFactory::getUser();
-        $user_id        = $current_user->id;
-        $itemid         = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-        //$filt_params    = JFactory::getSession()->get('filt_params');
-        //$adv_params     = JFactory::getSession()->get('adv_cols');
-        //$constraints    = array('filter'=>$filt_params, 'col'=>$adv_params);
-        $params       = $jinput->getString('params', null);
-        $constraints    = array('excelfilter'=>$params);
-
-        $constraints = json_encode($constraints);
-
-        if (empty($itemid))
-            $itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
-
-        $time_date = (date('Y-m-d H:i:s'));
-
-        $query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('".$time_date."',".$user_id.",'".$name."',".$db->quote($constraints).",".$itemid.")";
-        $db->setQuery( $query );
-
-        try {
-
-            $db->Query();
-            $query = 'select f.id, f.name from #__emundus_filters as f where f.time_date = "'.$time_date.'" and user = '.$user_id.' and name="'.$name.'" and item_id="'.$itemid.'"';
-            //echo $query;
-            $db->setQuery($query);
-            $result = $db->loadObject();
-            echo json_encode((object)(array('status' => true, 'filter' => $result)));
-            exit;
-
-        } catch (Exception $e) {
-            echo json_encode((object)(array('status' => false)));
-            exit;
-        }
-    }
-    public function getExportExcelFilter(){
-        $db = JFactory::getDBO();
-        $user_id   = JFactory::getUser()->id;
-        $session     = JFactory::getSession();
-        try {
-            
-            //$export_excel_params = $session->get('excelfilter');
-            
-            $query = 'SELECT * from #__emundus_filters  where user = '.$user_id.' and constraints LIKE "%excelfilter%"';
-            $db->setQuery($query);
-            $result = $db->loadObjectList();
-            
-            echo json_encode((object)(array('status' => true, 'filter' => $result)));
-            exit;
-        } catch (Exception $e) {
-            echo json_encode((object)(array('status' => false)));
-            exit;
-        }
     }
 }

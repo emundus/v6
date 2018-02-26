@@ -571,7 +571,9 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $form   = $jinput->getString('form', null);
 
         $m_admission    = $this->getModel('Admission');
+        $m_evaluation   = $this->getModel('Evaluation');
         $h_files        = new EmundusHelperFiles;
+
 
         $defaultElements = $m_admission->getAdmissionElementsName(0, 1);
 

@@ -34,8 +34,6 @@ JLog::addLogger(
     array('com_emundus.email')
 );
 // translation for javacript
-JText::script('COM_EMUNDUS_EX');
-JText::script('TAGS');
 JText::script('COM_EMUNDUS_ACCESS_FILE');
 JText::script('COM_EMUNDUS_ACCESS_ATTACHMENT');
 JText::script('COM_EMUNDUS_ACCESS_TAGS');

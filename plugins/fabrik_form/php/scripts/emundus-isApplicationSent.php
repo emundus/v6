@@ -12,53 +12,52 @@ defined( '_JEXEC' ) or die();
  * See COPYRIGHT.php for copyright notices and details.
  * @description Verification de l'autorisation de mettre a jour le formulaire
  */
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+
+jimport('joomla.log.log');
+JLog::addLogger(
+    array(
+        // Sets file name
+        'text_file' => 'com_emundus.duplicate.php'
+    ),
+    JLog::ALL,
+    array('com_emundus')
+);
+
+$user = JFactory::getSession()->get('emundusUser');
+if (empty($user))
+	$user = JFactory::getUser();
 $mainframe = JFactory::getApplication();
+$jinput = $mainframe->input;
 
-if (!$mainframe->isAdmin()) {
-	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$copy_application_form = $eMConfig->get('copy_application_form', 0);
+$can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
+$id_applicants 			 = $eMConfig->get('id_applicants', '0');
+$applicants 			 = explode(',',$id_applicants);
 
-	jimport('joomla.log.log');
-	JLog::addLogger(
-	    array(
-	        // Sets file name
-	        'text_file' => 'com_emundus.duplicate.php'
-	    ),
-	    JLog::ALL,
-	    array('com_emundus')
-	);
-
-	$user = JFactory::getSession()->get('emundusUser');
-	if (empty($user))
-		$user = JFactory::getUser();
-
-	$jinput = $mainframe->input;
-
-	$eMConfig = JComponentHelper::getParams('com_emundus');
-	$copy_application_form = $eMConfig->get('copy_application_form', 0);
-	$can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
-	$id_applicants 			 = $eMConfig->get('id_applicants', '0');
-	$applicants 			 = explode(',',$id_applicants);
-
-	$offset = $mainframe->get('offset', 'UTC');
-	try {
-	    $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
-	    $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
-	    $now = $dateTime->format('Y-m-d H:i:s');
-	    //echo "::".$this->now;
-	} catch(Exception $e) {
-	    echo $e->getMessage() . '<br />';
-	}
-	//echo($jinput);
-	$view = $jinput->get('view');
-	$fnum = $jinput->get('rowid', null);
-	$itemid = $jinput->get('Itemid');
-	$reload = $jinput->get('r', 0);
+$offset=JFactory::getApplication()->get('offset', 'UTC');
+try {
+    $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+    $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+    $now = $dateTime->format('Y-m-d H:i:s');
+    //echo "::".$this->now;
+} catch(Exception $e) {
+    echo $e->getMessage() . '<br />';
+}
+//echo($jinput);
+$view = $jinput->get('view');
+$fnum = $jinput->get('rowid', null);
+$itemid = $jinput->get('Itemid');
+$reload = $jinput->get('r', 0);
 
 
-	$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date))? true : false;
-	$is_app_sent 		 = ($user->status != 0)? true : false;
-	$can_edit 			 = EmundusHelperAccess::asAccessAction(1,'u',$user->id,$fnum);
-	$can_read 			 = EmundusHelperAccess::asAccessAction(1,'r',$user->id,$fnum);
+$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date))? true : false;
+$is_app_sent 		 = ($user->status != 0)? true : false;
+$can_edit 			 = EmundusHelperAccess::asAccessAction(1,'u',$user->id,$fnum);
+$can_read 			 = EmundusHelperAccess::asAccessAction(1,'r',$user->id,$fnum);
+
+	
 
 	if(isset($user->fnum) && !empty($user->fnum)){
 		
@@ -269,6 +268,6 @@ if (!$mainframe->isAdmin()) {
 	        }
 		}
 	}
-}
+
 
 ?>

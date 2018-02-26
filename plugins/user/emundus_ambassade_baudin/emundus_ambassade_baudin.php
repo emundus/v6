@@ -66,15 +66,14 @@ class plgUserEmundus_ambassade_baudin extends JPlugin
                     $db->setQuery($query);
                     $db->execute();
 
-                    // set session
-                    $session        = JFactory::getSession();
-                    $emundusSession = new stdClass();
-                    foreach ($session->get('user') as $key => $value) {
-                        $emundusSession->{$key} = $value;
-                    }
-                    $emundusSession->menutype = $p->menutype;
-                    $emundusSession->profile = $p->id;
-                    $session->set('emundusUser', $emundusSession);
+                    $current_user->menutype = $p->menutype;
+                    $current_user->profile = $p->id;
+                    $session->set('emundusUser', $current_user);
+
+                    $session_user = $session->get('user');
+                    $session_user->menutype = $p->menutype;
+                    $session_user->profile = $p->id;
+                    $session->set('user', $session_user);
 
                 } catch (Exception $e) {
                     $app->enqueueMessage($e->getMessage());
