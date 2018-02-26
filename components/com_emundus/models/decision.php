@@ -901,7 +901,7 @@ class EmundusModelDecision extends JModelList
 					case 'status':
 						if ($value)
 						{
-							if ( $value[0] == "%" || !isset($value[0]) )
+							if ( $value[0] == "%" || !isset($value[0]) || $value[0] == ''  )
 								$query['q'] .= ' ';
 							else
 							{
@@ -937,7 +937,30 @@ class EmundusModelDecision extends JModelList
 				}
 			}
 		}
-		return $query;
+		// force menu filter
+        if (count($filt_menu['status'])>0 &&
+            isset($filt_menu['status']) &&
+            !empty($filt_menu['status']) &&
+            $filt_menu['status'][0] != "%") {
+            $query['q'] .= ' AND c.status IN ("' . implode('","', $filt_menu['status']) . '") ';
+        }
+
+        if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%"){
+            $sql_code = '1=1';
+        } elseif(count($filt_menu['programme'])>0 && isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
+            $sql_code = ' sp.code IN ("'.implode('","', $filt_menu['programme']).'") ';
+        } else {
+            // ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
+            // if(count($this->code)>0)
+            $sql_code = ' sp.code IN ("'.implode('","', $this->code).'") ';
+        }
+        $sql_fnum = '';
+        if(count($this->fnum_assoc)>0)
+            $sql_fnum = ' OR c.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
+
+        $query['q'] .= ' AND ('.$sql_code.' '.$sql_fnum.') ';
+
+        return $query;
 	}
 
 	private function _buildSearch($str, $tableAlias = array())
@@ -1047,16 +1070,11 @@ class EmundusModelDecision extends JModelList
 		}
 		$query .= ' LEFT JOIN #__emundus_users as eue on eue.user_id = jos_emundus_final_grade.user ';
 		$query .= $q['join'];
-		$query .= ' where 1 = 1 ' . $q['q'];
+		$query .= ' where c.status > 0 ' . $q['q'];
 
 		if (isset($current_fnum) && !empty($current_fnum)) {
 			$query .= ' AND c.fnum like '.$dbo->Quote($current_fnum);
 		}
-		// ONLY FILES LINKED TO MY GROUPS
-		//$code = $userModel->getUserGroupsProgrammeAssoc($current_user->id);
-		//$fnum_assoc = $userModel->getApplicantsAssoc($current_user->id);
-		$query .= ' AND (sp.code IN ("'.implode('","', $this->code).'") OR c.fnum IN ("'.implode('","', $this->fnum_assoc).'")) ';
-		//////////////////////////////////////////////////////////////
 
 		if (in_array('overall', $em_blocks_names))
 			$query .= ' GROUP BY c.fnum';
@@ -1084,6 +1102,7 @@ class EmundusModelDecision extends JModelList
 
 		} catch (Exception $e) {
 			echo $e->getMessage();
+			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
 		}
 	}
 
