@@ -168,7 +168,7 @@ class EmundusModelFiles extends JModelLegacy
                                   ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
                     } else {
                         if($attribs->database_join_display_type=="checkbox"){
-                            
+
                             $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
                             $query = '(
                                 SELECT GROUP_CONCAT('.$t.'.'.$def_elmt->element_name.' SEPARATOR ", ")
@@ -177,8 +177,8 @@ class EmundusModelFiles extends JModelLegacy
                               ) AS `'.$t.'`';
                         } else {
                             $query = '(
-                                select DISTINCT '.$column.' 
-                                from '.$attribs->join_db_name.' 
+                                select DISTINCT '.$column.'
+                                from '.$attribs->join_db_name.'
                                 where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`'.$def_elmt->tab_name . '`.`' . $def_elmt->element_name.'`) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
                         }
                     }
@@ -895,7 +895,7 @@ class EmundusModelFiles extends JModelLegacy
             $query .= $leftJoin;
 
         $query .= $q['join'];
-        $query .= " where u.block=0 AND ".$q['q'];
+        $query .= " where u.block=0 ".$q['q'];
 
         $query .= ' GROUP BY jos_emundus_campaign_candidature.fnum';
 
@@ -1917,9 +1917,9 @@ where 1 order by ga.fnum asc, g.title';
                                 $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->join_val_column_concat).')':'t.'.$element_attribs->join_val_column;
 
                                 $select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
-                                    FROM '.$tableAlias[$elt->tab_name].' 
-                                    LEFT JOIN '.$elt->table_join.' ON '.$elt->table_join.'.parent_id = '.$tableAlias[$elt->tab_name].'.id  
-                                    LEFT JOIN '.$element_attribs->join_db_name.' as t ON t.'.$element_attribs->join_key_column.' = '.$elt->table_join.'.'.$elt->element_name.' 
+                                    FROM '.$tableAlias[$elt->tab_name].'
+                                    LEFT JOIN '.$elt->table_join.' ON '.$elt->table_join.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
+                                    LEFT JOIN '.$element_attribs->join_db_name.' as t ON t.'.$element_attribs->join_key_column.' = '.$elt->table_join.'.'.$elt->element_name.'
                                     WHERE '.$tableAlias[$elt->tab_name].'.fnum=c.fnum)';
                             }
 
@@ -1963,7 +1963,7 @@ where 1 order by ga.fnum asc, g.title';
                                 FROM '.$t.'
                                 WHERE '.$t.'.parent_id='.$tableAlias[$elt->tab_name].'.id
                               )';
-                        } 
+                        }
                         else {
                             $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->join_val_column_concat).')':'t.'.$element_attribs->join_val_column;
 
