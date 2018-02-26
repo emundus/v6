@@ -94,6 +94,15 @@ $htmldata .=
 <tr>
 ';
 
+if ( ! function_exists( 'exif_imagetype' ) ) {
+    function exif_imagetype ( $filename ) {
+        if ( ( list($width, $height, $type, $attr) = getimagesize( $filename ) ) !== false ) {
+            return $type;
+        }
+    return false;
+    }
+}
+
 if (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar))
 	$htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar.'" width="100" align="left" /></td>';
 elseif (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar))

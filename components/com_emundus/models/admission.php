@@ -301,7 +301,7 @@ class EmundusModelAdmission extends JModelList
 			$elements_id = array();
             $filt_params = $session->get('filt_params');
 
-			if (count(@$filt_params['programme'])>0) {
+			if (is_array(@$filt_params['programme'])>0) {
 
 				foreach ($filt_params['programme'] as $value) {
 					if ($value == $programme_code) {
@@ -347,7 +347,7 @@ class EmundusModelAdmission extends JModelList
 			$elements_id = array();
             $filt_params = $session->get('filt_params');
 
-			if (count(@$filt_params['programme'])>0) {
+			if (is_array(@$filt_params['programme'])>0) {
 
 				foreach ($filt_params['programme'] as $value) {
 					if ($value == $programme_code) {
