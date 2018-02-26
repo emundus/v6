@@ -548,8 +548,12 @@ class EmundusModelApplication extends JModelList
                                 $elt = date($date_params->date_form_format, strtotime($element->content));
 
                             } elseif ($element->plugin=='birthday' && $element->content>0) {
-
-                                $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                $format = 'Y-n-j';
+                                $d = DateTime::createFromFormat($format, $element->content);
+                                if($d && $d->format($format) == $element->content)
+                                    $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                else
+                                    $elt = $element->content;
 
                             } elseif ($element->plugin=='databasejoin') {
 
@@ -642,8 +646,12 @@ class EmundusModelApplication extends JModelList
                                         $elt = date($date_params->date_form_format, strtotime($r_elt));
 
                                     } elseif ($elements[$j]->plugin=='birthday' && $r_elt>0) {
-
-                                        $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
+                                        $format = 'Y-n-j';
+                                        $d = DateTime::createFromFormat($format, $r_elt);
+                                        if($d && $d->format($format) == $r_elt)
+                                            $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
+                                        else
+                                            $elt = $r_elt;
 
                                     } elseif ($elements[$j]->plugin == 'databasejoin') {
 
@@ -711,8 +719,12 @@ class EmundusModelApplication extends JModelList
                                 $elt = date($date_params->date_form_format, strtotime($element->content));
 
                             } elseif ($element->plugin=='birthday' && $element->content>0) {
-
-                                $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                $format = 'Y-n-j';
+                                $d = DateTime::createFromFormat($format, $element->content);
+                                if($d && $d->format($format) == $element->content)
+                                    $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                else
+                                    $elt = $element->content;
 
                             } elseif ($element->plugin=='databasejoin') {
 
@@ -931,7 +943,7 @@ class EmundusModelApplication extends JModelList
                                                 if($d && $d->format($format) == $r_elt)
                                                     $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
                                                 else
-                                                    $elt = $element->content;
+                                                    $elt = $r_elt;
                                             }
                                             elseif($elements[$j]->plugin=='databasejoin') {
                                                 $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
@@ -999,7 +1011,12 @@ class EmundusModelApplication extends JModelList
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
                                     }
                                     elseif ($element->plugin=='birthday' && $element->content>0) {
-                                        $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                        $format = 'Y-n-j';
+                                        $d = DateTime::createFromFormat($format, $element->content);
+                                        if($d && $d->format($format) == $element->content)
+                                            $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                        else
+                                            $elt = $element->content;
                                     }
                                     elseif ($element->plugin=='databasejoin') {
                                         $params = json_decode($element->params);
@@ -1320,7 +1337,12 @@ class EmundusModelApplication extends JModelList
                                             }
 
                                             elseif ($elements[$j]->plugin=='birthday' && $r_elt>0) {
-                                                $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
+                                                $format = 'Y-n-j';
+                                                $d = DateTime::createFromFormat($format, $r_elt);
+                                                if($d && $d->format($format) == $r_elt)
+                                                    $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
+                                                else
+                                                    $elt = $r_elt;
                                             }
 
                                             elseif ($elements[$j]->plugin=='databasejoin') {
@@ -1413,8 +1435,14 @@ class EmundusModelApplication extends JModelList
                                                     $elt = date($date_params->date_form_format, strtotime($r_elt));
                                                 }
 
-                                                elseif ($elements[$j]->plugin=='birthday' && $r_elt>0)
-                                                    $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
+                                                elseif ($elements[$j]->plugin=='birthday' && $r_elt>0) {
+                                                    $format = 'Y-n-j';
+                                                    $d = DateTime::createFromFormat($format, $r_elt);
+                                                    if($d && $d->format($format) == $r_elt)
+                                                        $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
+                                                    else
+                                                        $elt = $r_elt;
+                                                }
 
                                                 elseif ($elements[$j]->plugin=='databasejoin') {
                                                     $params = json_decode($elements[$j]->params);
@@ -1500,7 +1528,12 @@ class EmundusModelApplication extends JModelList
                                             $elt = date($params->date_form_format, strtotime($element->content));
                                         }
                                         elseif ($element->plugin=='birthday' && $element->content>0) {
-                                            $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                            $format = 'Y-n-j';
+                                            $d = DateTime::createFromFormat($format, $element->content);
+                                            if($d && $d->format($format) == $element->content)
+                                                $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                            else
+                                                $elt = $element->content;
                                         }
                                         elseif ($element->plugin=='databasejoin') {
                                             $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
@@ -1681,8 +1714,12 @@ td {
                                             $elt = date($date_params->date_form_format, strtotime($r_elt));
                                         }
                                         elseif ($elements[$j]->plugin=='birthday' && $r_elt>0) {
-                                            //$date_params = json_decode($element->params);
-                                            $elt = strftime('%d/%m/%Y', strtotime($r_elt));
+                                            $format = 'Y-n-j';
+                                            $d = DateTime::createFromFormat($format, $r_elt);
+                                            if($d && $d->format($format) == $r_elt)
+                                                $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
+                                            else
+                                                $elt = $r_elt;
                                         }
                                         elseif($elements[$j]->plugin=='databasejoin') {
                                             $params = json_decode($elements[$j]->params);
@@ -1725,8 +1762,12 @@ td {
 
                                     }
                                     elseif ($element->plugin=='birthday' && $element->content>0) {
-                                        //$date_params = json_decode($element->params);
-                                        $elt = strftime('%d/%m/%Y', strtotime($element->content));
+                                        $format = 'Y-n-j';
+                                        $d = DateTime::createFromFormat($format, $element->content);
+                                        if($d && $d->format($format) == $element->content)
+                                            $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                        else
+                                            $elt = $element->content;
                                     }
                                     elseif($element->plugin=='databasejoin') {
                                         $params = json_decode($element->params);
