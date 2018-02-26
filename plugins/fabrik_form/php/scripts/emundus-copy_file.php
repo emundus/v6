@@ -67,15 +67,17 @@ if ($copied == 1) {
 		require_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
 		require_once(JPATH_SITE.'/components/com_emundus/helpers/menu.php');
 
+		$m_application = new EmundusModelApplication;
 		$profiles = new EmundusModelProfile();
 
         $fnumInfos = $profiles->getFnumDetails($fnum_from);
+        
         $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
 		
-		$result = EmundusModelApplication::copyApplication($fnum_from, $fnum_to, $pid);
+		$result = $m_application->copyApplication($fnum_from, $fnum_to, $pid);
 
 		if ($result)
-			$result = EmundusModelApplication::copyDocuments($fnum_from, $fnum_to, $pid);
+			$result = $m_application->copyDocuments($fnum_from, $fnum_to, $pid);
 
 // 4. Duplicate attachment for new fnum
 // TODO
