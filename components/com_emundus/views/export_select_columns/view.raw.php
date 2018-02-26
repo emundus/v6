@@ -38,7 +38,6 @@ class EmundusViewExport_select_columns extends JViewLegacy
     function display($tpl = null) {
 
         require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 
         $jinput = JFactory::getApplication()->input;
         $prg    = $jinput->get('code', null);
@@ -53,7 +52,7 @@ class EmundusViewExport_select_columns extends JViewLegacy
 		
         $current_user = JFactory::getUser();
 
-        if ($view == "evaluation" || $form == "decision" || $form == "admission" || $form == "evaluation") {
+        if ($view == "evaluation" || $form == "decision" || $form == "admission") {
             $session = JFactory::getSession();
             $params['programme'] = $code;
             $params['schoolyear'] = $years;
@@ -64,15 +63,12 @@ class EmundusViewExport_select_columns extends JViewLegacy
             die(JText::_('ACCESS_DENIED'));
 
         $m_admission = new EmundusModelAdmission;
-        $m_eval = new EmundusModelEvaluation;
 
         //@TODO fix bug when a different application form is created for the same programme. Need to now the campaign id, then associated profile and menu links...
         if ($form == "decision")
             $elements = $m_admission->getAdmissionElementsName(1, 1);
         elseif ($form == "admission")
-            $elements = $m_admission->getApplicantAdmissionElementsName(0, 0);     
-        elseif ($form == "evaluation")
-            $elements = $m_eval->getEvaluationElementsName(1, 1);  
+            $elements = $m_admission->getApplicantAdmissionElementsName(0, 0);        
         else
 		    $elements = EmundusHelperFiles::getElements($code);
 		

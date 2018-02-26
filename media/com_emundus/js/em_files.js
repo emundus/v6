@@ -1844,7 +1844,9 @@ $(document).ready(function()
                                                                                                     error: function (jqXHR, textStatus, errorThrown) {
                                                                                                         console.log(jqXHR.responseText);
                                                                                                     }
+                                                    
                                                                                                 });
+                                                                                                        
                                                                                             },
                                 
                                                                                             error: function (jqXHR, textStatus, errorThrown) {
@@ -1854,9 +1856,11 @@ $(document).ready(function()
                                                                                         });
                                                                                     
                                                                                 },
+                                
                                                                                 error: function (jqXHR, textStatus, errorThrown) {
                                                                                     console.log(jqXHR.responseText);
                                                                                 }
+                                
                                                                             });
 
                                                                         },
@@ -1868,9 +1872,11 @@ $(document).ready(function()
                                                                     });
                                                                 
                                                             },
+            
                                                             error: function (jqXHR, textStatus, errorThrown) {
                                                                 console.log(jqXHR.responseText);
                                                             }
+            
                                                         });
                                                            
                                                         
@@ -1881,6 +1887,15 @@ $(document).ready(function()
                                                         }
 
                                                     });
+                                                           
+                                                        
+                                            },
+
+                                            error: function (jqXHR, textStatus, errorThrown) {
+                                                console.log(jqXHR.responseText);
+                                            }
+
+                                        });
                                                     $('.btn-success').show();
                                                     $('#elements_detail').show();
                                                 }
@@ -3083,6 +3098,7 @@ $(document).ready(function()
                                                     $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0 / ' + totalfile + '</p></div>');
                                                 else
                                                     $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0</p></div>');
+
                                                 generate_csv(json, eltJson, objJson);
                                             }
                                         },
@@ -3635,7 +3651,6 @@ $(document).ready(function()
         }
         
     });
-    
 
 
 })
