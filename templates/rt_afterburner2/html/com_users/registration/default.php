@@ -38,16 +38,17 @@ $errors = false;
 foreach ($messages as $message) {
   	if ($message[message] == JText::_("COM_USERS_REGISTER_EMAIL1_MESSAGE")) {
 		try{
-			$chars 		= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?";
+			$chars 	= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?";
 			//$passwd_md5 = md5($passwd);
 
 
 			$m_users = new EmundusModelUsers;
 			$user = $m_users->getUserByEmail($jform["email2"]);
 			$uid = (int) $user[0]->id;
+			
 			$emails = new EmundusModelEmails;
 			$mailer = JFactory::getMailer();
-			$email = $emails->getEmail("AccountAlreadyExists");
+			$email = $emails->getEmail("account_already_exists");
 			$post = array();
 			$tags = $emails->setTags($uid, $post, null, '');
 
@@ -111,8 +112,6 @@ foreach ($messages as $message) {
 				$db->setQuery($query);
 				$group = $db->loadColumn();
 
-
-
                 $group_add = JUserHelper::addUserToGroup($uid,$group[0]);
 
 				$msg = JText::_('COM_EMUNDUS_EMAIL_SENT');
@@ -140,15 +139,19 @@ foreach ($messages as $message) {
 
 
 $course = JRequest::getVar('course', null, 'GET', null, 0);
+$cid 	= JRequest::getVar('cid', null, 'GET', null, 0);
 
-if (!empty($course)) {
+if (!empty($course) && empty($cid)) {
 	$campaigns = $m_campaign->getCampaignsByCourse($course);
+	$campaign_id = $campaigns['id'];
+} elseif (!empty($cid)) {
+	$campaigns = $m_campaign->getCampaignByID($cid);
 	$campaign_id = $campaigns['id'];
 } else {
 	$campaigns = $m_campaign->getAllowedCampaign();
 }
 
-if ((count(@$campaign_id) == 0 && !empty($course)) || count($campaigns) == 0) {
+if ((count(@$campaign_id) == 0 && (!empty($course) && !empty($cid))) || count($campaigns) == 0) {
 	$app->enqueueMessage(JText::_('EMUNDUS_NO_CAMPAIGN'), 'error');
 	JLog::add('No available campaign', JLog::ERROR, 'com_emundus');
 } else {
@@ -220,6 +223,7 @@ if ((count(@$campaign_id) == 0 && !empty($course)) || count($campaigns) == 0) {
 			<a href="<?php echo JRoute::_('index.php');?>" title="<?php echo JText::_('JCANCEL');?>"><?php echo JText::_('JCANCEL');?></a>
 			<input type="hidden" name="option" value="com_users" />
 			<input type="hidden" name="course" value="<?php echo $course; ?>" />
+			<input type="hidden" name="cid" value="<?php echo $cid; ?>" />
 			<input type="hidden" name="task" value="registration.register" />
 			<?php echo JHtml::_('form.token');?>
 		</div>
@@ -252,18 +256,21 @@ else
 <script>
 
 var courseInURL = "<?php echo (isset($course)) ? 'true' : 'null'; ?>";
+var cidInUrl 	= "<?php echo (isset($cid)) ? 'true' : 'null' ?>";
 
-if (courseInURL == 'true') {
+if (courseInURL == 'true' && cidInUrl == 'true') {
 	var campaign = document.getElementById('jform_emundus_profile_campaign');
-	var cText = campaign.options[1].text;
-	campaign.selectedIndex = 1;
-	campaign.style.display = 'none';
+	if (campaign.options.length === 2) {
+		var cText = campaign.options[1].text;
+		campaign.selectedIndex = 1;
+		campaign.style.display = 'none';
 
-	var newItem = document.createElement("p");       // Create a <li> node
-	var textnode = document.createTextNode(cText);  // Create a text node
-	newItem.appendChild(textnode);
+		var newItem = document.createElement("p");       // Create a <li> node
+		var textnode = document.createTextNode(cText);  // Create a text node
+		newItem.appendChild(textnode);
 
-	campaign.parentNode.insertBefore(newItem, campaign);
+		campaign.parentNode.insertBefore(newItem, campaign);
+	}
 }
 
 
@@ -275,7 +282,7 @@ function validateEmail(email) {
 function check_field(){
 	campaign_id = "<?php echo $campaign_id ?>";
 	campaign = $('jform_emundus_profile_campaign');
-	if(campaign_id != "") {
+	if (campaign_id != "") {
 		for (var i=0 ; i<campaign.options.length ; ++i) {
 			if(campaign.options[i].value == campaign_id)
 				campaign.options[i].selected=true;
