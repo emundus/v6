@@ -557,6 +557,9 @@ class EmundusModelCalendar extends JModelLegacy {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $profilesToNotify = $eMConfig->get('mailRecipients');
 
+        if ($profilesToNotify == '-1')
+            return null;
+
         try {
 
             $query = "SELECT user_id FROM #__emundus_groups WHERE group_id IN ( ";
