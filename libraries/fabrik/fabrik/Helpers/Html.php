@@ -13,18 +13,18 @@ namespace Fabrik\Helpers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \JComponentHelper;
-use \stdClass;
-use \JModelLegacy;
-use \JHtmlBootstrap;
-use \JVersion;
-use \JUri;
-use \JRoute;
-use \JHtml;
-use \JFactory;
-use \JFile;
-use \JText;
-use \JBrowser;
+use JBrowser;
+use JComponentHelper;
+use JFactory;
+use JFile;
+use JHtml;
+use JHtmlBootstrap;
+use JModelLegacy;
+use JRoute;
+use JText;
+use JUri;
+use JVersion;
+use stdClass;
 
 jimport('joomla.filesystem.file');
 
@@ -1843,9 +1843,9 @@ EOD;
 	 */
 	public static function debug($content, $title = 'output:')
 	{
-		$config = JComponentHelper::getParams('com_fabrik');
-		$app    = JFactory::getApplication();
-		$input  = $app->input;
+		$config  = JComponentHelper::getParams('com_fabrik');
+		$app     = JFactory::getApplication();
+		$input   = $app->input;
 
 		if ($config->get('use_fabrikdebug') == 0)
 		{
@@ -1862,18 +1862,24 @@ EOD;
 			return;
 		}
 
+		$jconfig = JFactory::getConfig();
+		$secret = $jconfig->get('secret');
+
 		echo '<div class="fabrikDebugOutputTitle">' . $title . '</div>';
 		echo '<div class="fabrikDebugOutput fabrikDebugHidden">';
 
 		if (is_object($content) || is_array($content))
 		{
-			echo '<pre>' . htmlspecialchars(print_r($content, true)) . '</pre>';
+		    $content = print_r($content, true);
+			$content = str_replace($secret, 'xxxxxxxxx', $content);
+			echo '<pre>' . htmlspecialchars($content) . '</pre>';
 		}
 		else
 		{
+		    $content = str_replace($secret, 'xxxxxxxxx', $content);
 			// Remove any <pre> tags provided by e.g. JQuery::dump
 			$content = preg_replace('/(^\s*<pre( .*)?>)|(<\/pre>\s*$)/i', '', $content);
-			echo htmlspecialchars($content);
+			echo '<pre>' . htmlspecialchars($content) . '</pre>';
 		}
 
 		echo '</div>';
@@ -2117,7 +2123,7 @@ EOD;
 	 * @param   string $locale locale e.g 'en_US'
 	 * @param   array  $meta   meta tags to add
 	 *
-	 * @return  void|string
+	 * @return  string
 	 */
 	public static function facebookGraphAPI($appId, $locale = 'en_US', $meta = array())
 	{
@@ -2125,54 +2131,54 @@ EOD;
 		{
 			self::$facebookgraphapi = true;
 
-			return "<div id=\"fb-root\"></div>
-			<script>
-			window.fbAsyncInit = function() {
-			FB.init({appId: '$appId', status: true, cookie: true,
-			xfbml: true});
-		};
-		(function() {
-		var e = document.createElement('script'); e.async = true;
-		e.src = document.location.protocol +
-		'//connect.facebook.net/$locale/all.js';
-		document.getElementById('fb-root').appendChild(e);
-		}());
-		</script>";
-		}
+			$document  = JFactory::getDocument();
+			$data      = array('custom' => array());
+			$typeFound = false;
 
-		$document  = JFactory::getDocument();
-		$data      = array('custom' => array());
-		$typeFound = false;
-
-		foreach ($meta as $k => $v)
-		{
-			if (is_array($v))
+			foreach ($meta as $k => $v)
 			{
-				$v = implode(',', $v);
-			}
-
-			$v = strip_tags($v);
-
-			// $$$ rob og:type required
-			if ($k == 'og:type')
-			{
-				$typeFound = true;
-
-				if ($v == '')
+				if (is_array($v))
 				{
-					$v = 'article';
+					$v = implode(',', $v);
 				}
+
+				$v = strip_tags($v);
+
+				// $$$ rob og:type required
+				if ($k == 'og:type')
+				{
+					$typeFound = true;
+
+					if ($v == '')
+					{
+						$v = 'article';
+					}
+				}
+
+				$data['custom'][] = '<meta property="' . $k . '" content="' . $v . '"/>';
 			}
 
-			$data['custom'][] = '<meta property="' . $k . '" content="' . $v . '"/>';
+			if (!$typeFound)
+			{
+				$data['custom'][] = '<meta property="og:type" content="article"/>';
+			}
+
+			$document->setHeadData($data);
 		}
 
-		if (!$typeFound)
-		{
-			$data['custom'][] = '<meta property="og:type" content="article"/>';
-		}
+        $retStr = <<<EOT
+  <!-- Load Facebook SDK for JavaScript -->
+  <div id="fb-root"></div>
+  <script id="fb-like-script">(function(d, s, id) {
+    var js, fjs = d.getElementById('fb-like-script');
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/$locale/sdk.js#xfbml=1&version=v2.11";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+EOT;
 
-		$document->setHeadData($data);
+		return $retStr;
 	}
 
 	/**
@@ -2344,8 +2350,11 @@ EOD;
 
 		foreach ($bits as $key => $val)
 		{
-			$val = str_replace('"', "'", $val);
-			$p .= $key . '="' . $val . '" ';
+		    if (!\FabrikWorker::isJSON($val))
+            {
+			    $val = str_replace('"', "'", $val);
+			    $p .= $key . '="' . $val . '" ';
+			}
 		}
 
 		return $p;
@@ -2830,15 +2839,12 @@ EOD;
 	{
 		if (empty($href) || StringHelper::strtolower($href) == 'http://' || StringHelper::strtolower($href) == 'https://')
 		{
-			// Don't return empty links
 			return '';
 		}
 
 		if (Worker::isEmail($href))
 		{
-			jimport('joomla.mail.helper');
-
-			return JHTML::_('email.cloak', $href);
+			return '<a href="mailto:' . $href . '">' . $lbl . '</a>';
 		}
 
 		if ($normalize)
@@ -3112,11 +3118,31 @@ EOD;
 	 *
 	 * @return  void
 	 */
-	public static function getGridSpan($spanSize)
+	public static function getGridSpan($size, $viewport = 'medium')
 	{
-		$layout                = self::getLayout('fabrik-grid-span');
-		$displayData           = new stdClass;
-		$displayData->spanSize = $spanSize;
-		return $layout->render($displayData);
+	    static $spans;
+	    $size = (int)$size;
+
+	    if (!is_array($spans))
+        {
+            $spans = array();
+        }
+
+        if (!array_key_exists($viewport, $spans))
+        {
+            $spans[$viewport] = array();
+        }
+
+        if (!array_key_exists($size, $spans[$viewport]))
+        {
+
+	        $layout                = self::getLayout('fabrik-grid-span');
+	        $displayData           = new stdClass;
+	        $displayData->spanSize = $size;
+	        $displayData->viewport = $viewport;
+            $spans[$viewport][$size] = $layout->render($displayData);
+        }
+
+        return $spans[$viewport][$size];
 	}
 }

@@ -1,20 +1,30 @@
-.dp-module-map-root form > div {
-	margin-bottom: 5px;
+.dp-module-map-root .dp-actions-container {
+    padding-top: 5px;
+}
+
+.dp-module-map-form-container input,
+.dp-module-map-form-container select {
+	width: 100%;
+	overflow: hidden;
 }
 
 .dp-module-map-form-container {
+	margin: 0 -5px;
 	display: flex;
 	flex-wrap: wrap;
 }
 
-.dp-module-map-root [name=search], .dp-module-map-root [name=location] {
-	flex-grow: 1;
+.dp-module-map-form-container > div {
+	display: flex;
+	flex: 1 1 260px;
+	margin: 0 5px 10px;
 }
 
-.dp-module-map-root [name=start-date], .dp-module-map-root [name=end-date] {
-	width: 95px;
+.dp-module-map-date input {
+	flex: 1 0 0;
 }
 
-.dp-module-map-root [name=radius], .dp-module-map-root [name=length-type] {
-	width: 111px;
+.dp-module-map-date input + input,
+.dp-module-map-area select + select {
+	margin-left: 10px;
 }

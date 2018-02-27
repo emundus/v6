@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -142,6 +142,10 @@ if($this->invoice_type == 'order') {
 									echo JText::_('HIKA_FILES');
 								?></th>
 <?php
+	}
+	if($this->invoice_type == 'order' && !empty($this->action_column)) {
+		$colspan++;
+		echo '<th class="hikashop_order_item_actions_title title titletoggle">' . JText::_('ACTIONS') . '</th>';
 	}
 ?>
 								<th class="hikashop_order_item_price_title title"><?php
@@ -324,7 +328,36 @@ if($this->invoice_type == 'order') {
 									</span>
 								</td>
 <?php		}
-		} ?>					<td data-title="<?php echo JText::_('UNIT_PRICE'); ?>" class="hikashop_order_item_price_value"><?php
+		}
+		if($this->invoice_type == 'order' && !empty($this->action_column)) {
+			echo '<td data-title="' . JText::_('ACTIONS') . '" class="hikashop_order_item_actions_value">';
+			if(!empty($product->actions)) {
+				if(count($product->actions) == 1) {
+					$d = reset($product->actions);
+					$link = '#';
+					$extra = '';
+					if(!empty($d['link']))
+						$link = $d['link'];
+					if(!empty($d['extra']))
+						$extra .= ' '.trim($d['extra']);
+					if(!empty($d['click']))
+						$extra .= ' onclick="'.trim($d['click']).'"';
+
+?>
+<a href="<?php echo $link; ?>" class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikabtn_order_action" <?php echo $extra; ?>><?php echo $d['name']; ?></a>
+<?php
+				} else {
+					echo $this->dropdownHelper->display(
+						JText::_('HIKA_MORE'),
+						$product->actions,
+						array('type' => 'btn', 'right' => true, 'up' => false)
+					);
+				}
+			}
+			echo '</td>';
+		}
+?>
+								<td data-title="<?php echo JText::_('UNIT_PRICE'); ?>" class="hikashop_order_item_price_value"><?php
 									if($this->config->get('price_with_tax')) {
 										echo '<span>'.$this->currencyHelper->format($product->order_product_price + $product->order_product_tax, $this->order->order_currency_id).'</span>';
 									} else {

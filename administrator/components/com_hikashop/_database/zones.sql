@@ -4310,4 +4310,5 @@ INSERT IGNORE INTO `#__hikashop_zone` (`zone_id`, `zone_namekey`, `zone_name`, `
 (4566, 'state_Western_4566', 'Western', 'Western', '', 'W', 'state', 1),
 (4567, 'state_Banjul_4567', 'Banjul', 'Banjul', '', 'B', 'state', 1),
 (4568, 'state_Yobe_State_4568', 'Yobe State', 'Yobe State', '', 'YO', 'state', 1),
-(4569, 'state_FCT_Abuja_4569', 'FCT Abuja', 'FCT Abuja', '', 'FC', 'state', 1);
+(4569, 'state_FCT_Abuja_4569', 'FCT Abuja', 'FCT Abuja', '', 'FC', 'state', 1),
+(4570, 'state_Panam_Oeste_4570', 'Panamá Oeste', 'Panamá Oeste', '', '10', 'state', 1);

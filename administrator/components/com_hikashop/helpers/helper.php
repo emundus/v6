@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,7 +24,7 @@ define('HIKASHOP_J30',version_compare($jversion,'3.0.0','>=') ? true : false);
 
 define('HIKASHOP_PHP5',version_compare(PHP_VERSION,'5.0.0', '>=') ? true : false);
 
-define('HIKASHOP_VERSION', '3.2.2');
+define('HIKASHOP_VERSION', '3.3.0');
 
 class hikashop {
 	public static function getDate($time = 0,$format = '%d %B %Y %H:%M'){ return hikashop_getDate($time,$format); }
@@ -246,7 +246,7 @@ function hikashop_getTime($date){
 			$timeoffset = $config->get('offset');
 		}
 		if(HIKASHOP_J16){
-			$dateC = JFactory::getDate($date,$timeoffset);
+			$dateC = JFactory::getDate('now', $timeoffset);
 			$timeoffset = $dateC->getOffsetFromGMT(true);
 		}
 	}
@@ -1035,7 +1035,7 @@ function hikashop_footer(){
 		$link.='?partner_id='.$aff;
 	}
 	$text = '<!--  HikaShop Component powered by '.$link.' -->
-	<!-- version '.$config->get('level').' : '.$config->get('version').' [1801261524] -->';
+	<!-- version '.$config->get('level').' : '.$config->get('version').' [1802271207] -->';
 	if(!$config->get('show_footer',true)) return $text;
 	$text .= '<div class="hikashop_footer" style="text-align:center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 	$app= JFactory::getApplication();
@@ -1840,6 +1840,7 @@ class hikashopClass extends JObject {
 		}
 		if($status) {
 			return empty($element->$pkey) ? $this->database->insertid() : $element->$pkey;
+
 		}
 		return false;
 	}
@@ -3031,6 +3032,11 @@ class hikashopShippingPlugin extends hikashopPlugin {
 		$this->volumeHelper = hikashop_get('helper.volume');
 		$this->weightHelper = hikashop_get('helper.weight');
 
+		if(!empty($order->cart_currency_id))
+			$currentCurrency = $order->cart_currency_id;
+		else
+			$currentCurrency = hikashop_getCurrency();
+
 		foreach($rates as &$rate) {
 			$rate->shippingkey = $shippingClass->getShippingProductsData($order, $order->products);
 			$shipping_prices = $order->shipping_prices[$rate->shippingkey];
@@ -3049,10 +3055,10 @@ class hikashopShippingPlugin extends hikashopPlugin {
 					$price = $shipping_prices->real_without_tax;
 			}
 
-			if($rate->shipping_currency_id != hikashop_getCurrency()){
-				$rate->shipping_price = $currencyClass->convertUniquePrice($rate->shipping_price, $rate->shipping_currency_id, $rate->shipping_currency_id);
+			if($rate->shipping_currency_id != $currentCurrency){
+				$rate->shipping_price = $currencyClass->convertUniquePrice($rate->shipping_price, $rate->shipping_currency_id, $currentCurrency);
 				$rate->shipping_currency_id_orig = $rate->shipping_currency_id;
-				$rate->shipping_currency_id = hikashop_getCurrency();
+				$rate->shipping_currency_id = $currentCurrency;
 			}
 			if(bccomp($price, 0, 5) && isset($rate->shipping_params->shipping_percentage) && bccomp($rate->shipping_params->shipping_percentage, 0, 3)){
 				$rate->shipping_price = $rate->shipping_price + $price * $rate->shipping_params->shipping_percentage / 100;
@@ -3435,6 +3441,7 @@ class hikashopShippingPlugin extends hikashopPlugin {
 			}
 			if(!empty($options['limit'])) {
 				$total_quantity = $qty;
+
 				while ($total_quantity > 0) {
 					foreach ($options['limit'] as $limit_key => $limit_value) {
 						$valid = $this->processPackageLimit($limit_key, $limit_value , $p, $total_quantity, $current, array('weight' => $weight_unit, 'volume' => $volume_unit));
@@ -3455,7 +3462,7 @@ class hikashopShippingPlugin extends hikashopPlugin {
 						$ret[] = $current;
 						$total_quantity = $qty;
 						$current = array('w' => 0, 'x' => 0, 'y' => 0, 'z' => 0);
-					} else if($total_quantity < $qty) {
+					} else if($total_quantity <= $qty) {
 
 						$factor = 1;
 						if(empty($current['w']) && empty($current['x']) && empty($current['y']) && empty($current['z']) && $total_quantity*2 <= $qty)
@@ -3478,16 +3485,19 @@ class hikashopShippingPlugin extends hikashopPlugin {
 						$total_quantity = 0;
 				}
 			}
-			$current['w'] += $weight * $qty;
-			$current['x'] += ($d[0] * $qty);
-			$current['y'] = max($current['y'], $d[1]);
-			$current['z'] = max($current['z'], $d[2]);
+			if($qty > 0) {
+				$current['w'] += $weight * $qty;
+				$current['x'] += ($d[0] * $qty);
+				$current['y'] = max($current['y'], $d[1]);
+				$current['z'] = max($current['z'], $d[2]);
+			}
 		}
 		if($error)
 			return false;
 		if(empty($ret))
 			return $current;
-		$ret[] = $current;
+		if($current['w'] != 0 || $current['x'] != 0 || $current['y'] != 0 || $current['z'] != 0)
+			$ret[] = $current;
 		return $ret;
 	}
 
@@ -3703,8 +3713,12 @@ if(HIKASHOP_J30) {
 
 			$new_ret = array();
 			foreach($ret as $k => $v) {
-				foreach($v as $k2 => $v2) {
-					$new_ret[$k2][$k] = $v2;
+				if(is_array($v)){
+					foreach($v as $k2 => $v2) {
+						$new_ret[$k2][$k] = $v2;
+					}
+				}else{
+					$new_ret[$k] = $v;
 				}
 			}
 			return $new_ret;

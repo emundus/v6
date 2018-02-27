@@ -74,7 +74,7 @@ if ($this->showFilters) {
 	endif;
 	?>
 	<div class="fabrik_groupdata">
-		<div class="groupdataMsg">
+		<div class="groupDataMsg">
 			<div class="emptyDataMessage" style="<?php echo $this->emptyStyle?>">
 				<?php echo $this->emptyDataMessage; ?>
 			</div>
@@ -86,8 +86,9 @@ if ($this->showFilters) {
 	foreach ($group as $this->_row) :
 		$items[] = $this->loadTemplate('row');
 	endforeach;
-	$class = 'fabrik_row well row-striped ' . $this->_row->class;
+	$class = 'fabrik_row well row-striped';
 	echo FabrikHelperHTML::bootstrapGrid($items, $columns, $class, true, $this->_row->id);
+
 	?>
 	</div>
 	<?php

@@ -13,10 +13,14 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+$rowClass = isset($this->_row->rowClass) ? $this->_row->rowClass : '';
 ?>
+<div class="<?php echo $rowClass; ?>">
 <?php foreach ($this->headings as $heading => $label) :
 	$d = @$this->_row->data->$heading;
-	if (isset($this->showEmpty) && $this->showEmpty === false && trim(strip_tags($d)) == '') :
+	
+	//skip empty elements but don't skip the checkbox (delete, list plugins)
+	if (isset($this->showEmpty) && $this->showEmpty === false && trim(strip_tags($d)) == '' && $heading != 'fabrik_select') :
 		continue;
 	endif;
 	$h = $this->headingClass[$heading];
@@ -34,3 +38,4 @@ defined('_JEXEC') or die('Restricted access');
 	<?php
 endforeach;
 ?>
+</div>

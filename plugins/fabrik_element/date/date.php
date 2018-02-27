@@ -294,7 +294,7 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 			$name .= '[date]';
 		}
 
-		$class          = 'fabrikinput inputbox inout ' . $params->get('bootstrap_class', 'input-small');
+		$class          = 'fabrikinput inputbox input ' . $params->get('bootstrap_class', 'input-small');
 		$element->width = (int) $element->width < 0 ? 1 : (int) $element->width;
 		$calOpts        = array('class' => $class, 'size' => $element->width, 'maxlength' => '19');
 
@@ -355,7 +355,8 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 		$btnLayout  = FabrikHelperHTML::getLayout('fabrik-button');
 		$layoutData = (object) array(
 			'class' => 'timeButton',
-			'label' => FabrikHelperHTML::image($file, 'form', @$this->tmpl, $opts)
+			'label' => FabrikHelperHTML::image($file, 'form', @$this->tmpl, $opts),
+			'aria'	=> ' aria-label="' . FText::_('PLG_ELEMENT_DATE_ARIA_LABEL_TIME') . '"'
 		);
 
 		$str[] = $btnLayout->render($layoutData);
@@ -797,7 +798,8 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 			$layoutData = (object) array(
 				'class' => 'calendarbutton',
 				'id'    => $id . '_cal_img',
-				'label' => $img
+				'label' => $img,
+				'aria'	=> ' aria-label="' . FText::_('PLG_ELEMENT_DATE_ARIA_LABEL_DATE') . '"'
 			);
 			$img        = $btnLayout->render($layoutData);
 			$html[]     = '<div class="input-append">';
@@ -1089,7 +1091,7 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 		if ($formModel->isNewRecord() && $value !== '')
 		{
 			// OK for : Default to current  = no Local time = yes
-			if (!$defaultToday)
+			if (!$defaultToday && !$formModel->failedValidation())
 			{
 				$date = new DateTime($date, $timeZone);
 				return $date->format('Y-m-d H:i:s');
@@ -1178,9 +1180,15 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 				{
 					$v = str_replace(array("'", '"'), '', $v);
 				}
+
+				$filterType = FABRIKFILTER_NOQUOTES;
+			}
+			else
+			{
+				$filterType = FabrikWorker::isNullDate($value) ? FABRIKFILTER_TEXT : $eval;
 			}
 
-			return parent::getFilterValue($value, $condition, FABRIKFILTER_QUERY);
+			return parent::getFilterValue($value, $condition, $filterType);
 		}
 
 		$params       = $this->getParams();
@@ -2196,7 +2204,7 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 				$query = ' (DAYOFYEAR(' . $this->addConvert($key) . ') >= DAYOFYEAR(NOW()) AND YEAR(' . $this->addConvert($key) . ') = YEAR(NOW())) ';
 				break;
 			case 'today':
-				$query = ' (' . $this->addConvert($key) . ' >= CURDATE() AND ' . $this->addConvert($this->addConvert($key)) . ' < CURDATE() + INTERVAL 1 DAY) ';
+				$query = ' (' . $this->addConvert($key) . ' >= CURDATE() AND ' . $this->addConvert($key) . ' < CURDATE() + INTERVAL 1 DAY) ';
 				break;
 			case 'yesterday':
 				$query = ' (' . $this->addConvert($key) . ' >= CURDATE() - INTERVAL 1 DAY AND ' . $this->addConvert($key) . ' < CURDATE()) ';
@@ -2281,6 +2289,11 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 	 */
 	public function onCopyRow($val)
 	{
+		if ($this->defaultOnCopy())
+		{
+			$val = $this->getFrontDefaultValue();
+		}
+
 		if (!FabrikWorker::isDate($val))
 		{
 			return $val;
@@ -2302,6 +2315,18 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 		}
 
 		return $val;
+	}
+
+	/**
+	 * Called when save as copy form button clicked
+	 *
+	 * @param   mixed $val value to copy into new record
+	 *
+	 * @return  mixed  value to copy into new record
+	 */
+	public function onSaveAsCopy($val)
+	{
+		return $this->onCopyRow($val);
 	}
 
 	/**

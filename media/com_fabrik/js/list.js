@@ -478,7 +478,7 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                 opts.option = 'com_fabrik';
                 opts.view = 'list';
                 opts.format = 'csv';
-                opts.Itemid = this.options.Itemid;
+                //opts.Itemid = this.options.Itemid;
                 opts.listid = this.id;
                 opts.listref = this.options.listRef;
                 opts.download = 0;
@@ -489,9 +489,11 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                     opts[key[0]] = key[1];
                 });
 
+                var url = '?' + 'Itemid=' + this.options.Itemid;
+
                 // Append the custom_qs to the URL to enable querystring filtering of the list data
                 var myAjax = new Request.JSON({
-                    url       : '?' + this.options.csvOpts.custom_qs,
+                    url       : url,
                     method    : 'post',
                     data      : opts,
                     onError   : function (text, error) {
@@ -998,6 +1000,7 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                                 self._updateRows(json);
                                 Fabrik.loader.stop('listform_' + self.options.listRef);
                                 Fabrik['filter_listform_' + self.options.listRef].onUpdateData();
+                                Fabrik['filter_listform_' + self.options.listRef].updateFilterCSS(json);
                                 Fabrik.fireEvent('fabrik.list.submit.ajax.complete', [self, json]);
                                 if (json.msg) {
                                     window.alert(json.msg);
@@ -1286,7 +1289,8 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                 gdata.each(function (groupData, groupKey) {
                     tbody = self.options.isGrouped ? self.list.getElements('.fabrik_groupdata')[gcounter] : self.tbody;
                     tbody = jQuery(tbody);
-                    tbody.empty();
+                    //tbody.empty();
+                    tbody.children().not('.groupDataMsg').remove();
 
                     // Set the group by heading
                     if (self.options.isGrouped) {
@@ -1327,7 +1331,7 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
             _updateEmptyDataMsg: function (empty) {
                 var list = jQuery(this.list);
                 var fabrikDataContainer = list.parent('.fabrikDataContainer');
-                var emptyDataMessage = list.parent('.fabrikForm').find('.emptyDataMessage');
+                var emptyDataMessage = list.closest('.fabrikForm').find('.emptyDataMessage');
                 if (empty) {
                     /*
                      * if (typeOf(fabrikDataContainer) !== 'null') {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -56,6 +56,7 @@ class addressViewAddress extends HikaShopView {
 		hikashop_setPageTitle('ADDRESSES');
 
 		$this->toolbar = array();
+		global $Itemid;
 		if(!empty($this->address_selector)) {
 			$this->toolbar['new'] = array(
 				'icon' => 'new',
@@ -66,7 +67,7 @@ class addressViewAddress extends HikaShopView {
 			$this->toolbar['new'] = array(
 				'icon' => 'new',
 				'name' => JText::_('HIKA_NEW'),
-				'url' => hikashop_completeLink('address&task=add', true),
+				'url' => hikashop_completeLink('address&task=add&Itemid='.$Itemid, true),
 				'popup' => array(
 					'id' => 'hikashop_new_address_popup',
 					'width' => 760,
@@ -77,14 +78,14 @@ class addressViewAddress extends HikaShopView {
 			$this->toolbar['new'] = array(
 				'icon' => 'new',
 				'name' => JText::_('HIKA_NEW'),
-				'url' => hikashop_completeLink('address&task=add')
+				'url' => hikashop_completeLink('address&task=add&Itemid='.$Itemid)
 			);
 		}
 
 		$this->toolbar['back'] = array(
 			'icon' => 'back',
 			'name' => JText::_('HIKA_BACK'),
-			'url' => hikashop_completeLink('user&task=cpanel')
+			'url' => hikashop_completeLink('user&task=cpanel&Itemid='.$Itemid)
 		);
 	}
 

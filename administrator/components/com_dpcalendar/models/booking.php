@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -36,8 +36,9 @@ class DPCalendarModelBooking extends JModelAdmin
 		$user    = JFactory::getUser();
 		$oldItem = null;
 
-		$events  = array();
-		$tickets = array();
+		$events            = array();
+		$eventsWithTickets = array();
+		$tickets           = array();
 		if (!array_key_exists('id', $data) || !$data['id']) {
 			$data['price']    = 0;
 			$data['id']       = 0;
@@ -45,7 +46,7 @@ class DPCalendarModelBooking extends JModelAdmin
 			$amountTickets    = 0;
 
 			// On front we force the user id to the logged in user
-			if (JFactory::getApplication()->isSite()) {
+			if (JFactory::getApplication()->isClient('site')) {
 				$data['user_id'] = $user->id;
 			}
 
@@ -71,10 +72,15 @@ class DPCalendarModelBooking extends JModelAdmin
 				$event->amount_tickets = array();
 
 				$paymentRequired = false;
+				$newTickets      = false;
 				if (!$event->price) {
 					// Free event
 					$event->amount_tickets[0] = $this->getAmountTickets($event, $data, $amount, 0);
 					$amountTickets            += $event->amount_tickets[0];
+
+					if (!$newTickets && $event->amount_tickets[0]) {
+						$newTickets = true;
+					}
 				} else {
 					foreach ($event->price->value as $index => $value) {
 						$event->amount_tickets[$index] = $this->getAmountTickets($event, $data, $amount, $index);
@@ -89,6 +95,10 @@ class DPCalendarModelBooking extends JModelAdmin
 							// Determine the price based on the amount of tickets
 							$data['price'] += \DPCalendar\Helper\Booking::getPriceWithDiscount($value, $event) * $event->amount_tickets[$index];
 						}
+
+						if (!$newTickets && $event->amount_tickets[$index]) {
+							$newTickets = true;
+						}
 					}
 				}
 
@@ -97,6 +107,9 @@ class DPCalendarModelBooking extends JModelAdmin
 					$data['state'] = 1;
 				}
 
+				if ($newTickets) {
+					$eventsWithTickets[] = $event;
+				}
 				$events[] = $event;
 			}
 
@@ -122,6 +135,7 @@ class DPCalendarModelBooking extends JModelAdmin
 			foreach ($tickets as $ticket) {
 				$events[] = $this->getEvent($ticket->event_id);
 			}
+			$eventsWithTickets = $events;
 		}
 
 		// Fetch the latitude/longitude
@@ -181,9 +195,9 @@ class DPCalendarModelBooking extends JModelAdmin
 							// Increase the seat
 							$ticket->seat++;
 							$event->book(true);
-							$t = $ticketModel->getItem($ticketModel->getState($this->getName() . '.id'));
+							$t               = $ticketModel->getItem($ticketModel->getState($this->getName() . '.id'));
 							$t->event_prices = $prices;
-							$tickets[] = $t;
+							$tickets[]       = $t;
 						} else {
 							$this->setError($this->getError() . PHP_EOL . $ticketModel->getError());
 						}
@@ -245,14 +259,14 @@ class DPCalendarModelBooking extends JModelAdmin
 
 			// Send a mail to the booker
 			$subject = DPCalendarHelper::renderEvents(
-				$events,
+				$eventsWithTickets,
 				JText::_('COM_DPCALENDAR_NOTIFICATION_EVENT_BOOK_USER_SUBJECT'),
 				null,
 				$additionalVars
 			);
 			$body    = trim(
 				DPCalendarHelper::renderEvents(
-					$events,
+					$eventsWithTickets,
 					DPCalendarHelper::getStringFromParams('bookingsys_new_booking_mail', 'COM_DPCALENDAR_NOTIFICATION_EVENT_BOOK_USER_BODY', $params),
 					null,
 					$additionalVars
@@ -296,7 +310,7 @@ class DPCalendarModelBooking extends JModelAdmin
 
 			$additionalVars['bookingDetails'] = $oldDetails;
 		} else if ($oldItem && ($oldItem->state == 3 || $oldItem->state == 4) && $item->state == 1 && $params->get('booking_send_mail_paid', 1)) {
-			// We have a successfull payment
+			// We have a successful payment
 			$subject = DPCalendarHelper::renderEvents(
 				array(),
 				JText::_('COM_DPCALENDAR_NOTIFICATION_EVENT_BOOK_USER_PAYED_SUBJECT'),
@@ -305,7 +319,8 @@ class DPCalendarModelBooking extends JModelAdmin
 			);
 			$body    = DPCalendarHelper::renderEvents(
 				array(),
-				DPCalendarHelper::getStringFromParams('bookingsys_paid_booking_mail', 'COM_DPCALENDAR_NOTIFICATION_EVENT_BOOK_USER_PAYED_BODY', $params),
+				DPCalendarHelper::getStringFromParams('bookingsys_paid_booking_mail', 'COM_DPCALENDAR_NOTIFICATION_EVENT_BOOK_USER_PAYED_BODY',
+					$params),
 				null,
 				$additionalVars
 			);
@@ -333,15 +348,20 @@ class DPCalendarModelBooking extends JModelAdmin
 		}
 
 		// Send the notification to the groups
-		$subject = DPCalendarHelper::renderEvents($events, JText::_('COM_DPCALENDAR_NOTIFICATION_EVENT_BOOK_SUBJECT'), null, $additionalVars);
-		$body    = DPCalendarHelper::renderEvents($events, JText::_('COM_DPCALENDAR_NOTIFICATION_EVENT_BOOK_BODY'), null, $additionalVars);
+		$subject = DPCalendarHelper::renderEvents(
+			$eventsWithTickets,
+			JText::_('COM_DPCALENDAR_NOTIFICATION_EVENT_BOOK_SUBJECT'),
+			null,
+			$additionalVars
+		);
+		$body    = DPCalendarHelper::renderEvents($eventsWithTickets, JText::_('COM_DPCALENDAR_NOTIFICATION_EVENT_BOOK_BODY'), null, $additionalVars);
 
 		DPCalendarHelper::sendMail($subject, $body, 'notification_groups_book');
 
 		if ($params->get('booking_send_mail_author', 1)) {
 			// Send to the authors of the events
 			$authors = array();
-			foreach ($events as $e) {
+			foreach ($eventsWithTickets as $e) {
 				$authors[$e->created_by] = $e->created_by;
 			}
 			foreach ($authors as $authorId) {

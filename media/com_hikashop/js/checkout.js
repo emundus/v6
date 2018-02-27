@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    3.2.2
+ * @version    3.3.0
  * @author     hikashop.com
  * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -28,7 +28,7 @@ var hikashopCheckout = {
 			el_name = "hikashop_checkout_" + type_clean + "_" + step + "_" + id,
 			t = this, d = document, w = window, o = w.Oby,
 			el = d.getElementById(el_name);
-		if(!el)
+		if(!el || !window.checkout.urls.show)
 			return false;
 		o.addClass(el, "hikashop_checkout_loading");
 
@@ -52,6 +52,13 @@ var hikashopCheckout = {
 
 		if(!el)
 			return false;
+
+		if(!window.checkout.urls.submit || !window.checkout.token) {
+			var f = d.getElementById('hikashop_checkout_form');
+			if(!f) return false;
+			f.submit();
+			return false;
+		}
 
 		if(data === undefined || !data) {
 			formData = o.getFormData(el);
@@ -140,7 +147,7 @@ var hikashopCheckout = {
 				e.preventDefault();
 				t.submitBlock(task, step, pos);
 			});
-	}
+		}
 	}
 };
 

@@ -305,7 +305,10 @@ class FabrikViewFormBase extends FabrikView
 		$params = $model->getParams();
 		$view = $model->isEditable() === false ? 'details' : 'form';
 
-		if ($params->get('process-jplugins', 2) == 1 || ($params->get('process-jplugins', 2) == 2 && $model->isEditable() === false))
+		if ($params->get('process-jplugins', 2) == 1
+			|| ($params->get('process-jplugins', 2) == 2 && $model->isEditable() === false)
+			|| ($params->get('process-jplugins', 2) == 3 && $model->isEditable() === true)
+		)
 		{
 			$cloak = $view === 'details' && $this->app->input->get('format') !== 'pdf';
 			FabrikHelperHTML::runContentPlugins($text, $cloak);
@@ -436,7 +439,7 @@ class FabrikViewFormBase extends FabrikView
 		if ($this->showPrint)
 		{
 			$text            = FabrikHelperHTML::image('print');
-			$this->printLink = '<a href="#" class="btn btn-default" class="printlink" onclick="window.print();return false;">' . $text . '</a>';
+			$this->printLink = '<a href="#" class="btn btn-default fabrikPrintIcon" onclick="window.print();return false;">' . $text . '</a>';
 		}
 
 		if ($input->get('tmpl') != 'component')
@@ -799,6 +802,7 @@ class FabrikViewFormBase extends FabrikView
 		$minRepeat      = array();
 		$showMaxRepeats = array();
 		$minMaxErrMsg   = array();
+		$numRepeatEls   = array();
 
 		foreach ($this->groups as $g)
 		{
@@ -994,7 +998,7 @@ class FabrikViewFormBase extends FabrikView
 
 		$layoutData = (object) array(
 			'type' => 'reset',
-			'class' => 'btn-warning button clearSession',
+			'class' => $params->get('reset_button_class', 'btn-warning') . ' button clearSession',
 			'name' => 'Reset',
 			'label' => $resetLabel,
 			'formModel' => $model
@@ -1010,7 +1014,7 @@ class FabrikViewFormBase extends FabrikView
 
 		$layoutData       = (object) array(
 			'type' => 'submit',
-			'class' => 'button',
+			'class' => $params->get('copy_button_class', '') . ' button',
 			'name' => 'Copy',
 			'label' => $copyLabel,
 			'formModel' => $model
@@ -1027,7 +1031,7 @@ class FabrikViewFormBase extends FabrikView
 
 		$layoutData = (object) array(
 			'type' => $model->isAjax() ? 'button' : 'submit',
-			'class' => 'button',
+			'class' => $params->get('apply_button_class', '') . ' button',
 			'name' => 'apply',
 			'label' => $applyLabel,
 			'formModel' => $model
@@ -1045,7 +1049,7 @@ class FabrikViewFormBase extends FabrikView
 
 		$layoutData = (object) array(
 			'type' => 'submit',
-			'class' => 'btn-danger button',
+			'class' => $params->get('delete_button_class', 'btn-danger') . ' button',
 			'name' => 'delete',
 			'label' => $deleteLabel,
 			'formModel' => $model
@@ -1073,16 +1077,23 @@ class FabrikViewFormBase extends FabrikView
 		$multiPageSession = $model->sessionModel && $model->sessionModel->last_page > 0;
 		$form->clearMultipageSessionButton = $multiPageSession ? $btnLayout->render($layoutData) : '';
 
-		$layoutData = (object) array(
-			'type' => 'button',
-			'class' => 'button',
-			'name' => 'Goback',
-			'label' => $goBackLabel,
-			'attributes' => $model->isAjax() ? '' : FabrikWorker::goBackAction(),
-			'formModel' => $model
-		);
+		if (!$this->isMambot)
+		{
+			$layoutData = (object) array(
+				'type' => 'button',
+				'class' => $params->get('goback_button_class', '') . ' button',
+				'name' => 'Goback',
+				'label' => $goBackLabel,
+				'attributes' => $model->isAjax() ? '' : FabrikWorker::goBackAction(),
+				'formModel' => $model
+			);
 
-		$form->gobackButton = $params->get('goback_button', 0) ? $btnLayout->render($layoutData) : '';
+			$form->gobackButton = $params->get('goback_button', 0) ? $btnLayout->render($layoutData) : '';
+		}
+		else
+		{
+			$form->gobackButton = '';
+		}
 
 		if ($model->isEditable() && $params->get('submit_button', 1))
 		{
@@ -1099,7 +1110,7 @@ class FabrikViewFormBase extends FabrikView
 
 			$layoutData = (object) array(
 				'type' => $model->isAjax() ? 'button' : 'submit',
-				'class' => 'btn-primary button ' . $submitClass,
+				'class' => $params->get('save_button_class', 'btn-primary') . ' button ' . $submitClass,
 				'name' => 'Submit',
 				'label' => $submitLabel,
 				'id' => 'fabrikSubmit_' . $model->getId(),

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,7 +20,6 @@ window.Oby.registerAjax(<?php echo $events; ?>, function(params) {
 	if(!el) return;
 	if(params && params.resp && (params.resp.ret === 0 || params.resp.module == <?php echo (int)$module_id; ?>)) return;
 	if(params && params.type && params.type != '<?php echo $this->cart_type; ?>') return;
-	if(params && params.cart_empty) return;
 	o.addClass(el, "hikashop_checkout_loading");
 	o.xRequest("<?php echo hikashop_completeLink('product&task=cart&module_id='.$module_id . '&module_type='.$this->cart_type.'&return_url='.urlencode(base64_encode(hikashop_currentURL('return_url'))), true, false, true); ?>", {update: el}, function(xhr){
 		o.removeClass(el, "hikashop_checkout_loading");
@@ -73,7 +72,7 @@ if(empty($this->rows)) {
 
 
 $css_button = $this->config->get('css_button', 'hikabtn');
-$css_button_checkout = $this->config->get('css_button_checkout', '');
+$css_button_checkout = $this->config->get('css_button_checkout', 'hikashop_cart_proceed_to_checkout');
 
 $group = (int)$this->config->get('group_options', 0);
 $small_cart = (int)$this->params->get('small_cart', 0);
@@ -226,6 +225,7 @@ $shows = array(
 	'price' => (int)$this->params->get('show_price', 1),
 	'coupon' => (int)$this->params->get('show_coupon', 0),
 	'shipping' => (int)$this->params->get('show_shipping', 0),
+	'payment' => (int)$this->params->get('show_payment', 0),
 	'taxes' => (int)$this->params->get('show_taxes', 0),
 );
 $columns = array(
@@ -291,6 +291,22 @@ if(!empty($shows['price']) && $this->element->cart_type == 'cart') {
 						echo $this->currencyClass->format(@$this->element->coupon->discount_value_without_tax * -1, @$this->element->coupon->discount_currency_id);
 					else
 						echo $this->currencyClass->format(@$this->element->coupon->discount_value * -1, @$this->element->coupon->discount_currency_id);
+				?></td>
+<?php if(!empty($columns['delete'])) { ?>
+				<td></td>
+<?php } ?>
+			</tr>
+<?php } ?>
+<?php 
+if(!empty($shows['payment']) && !empty($this->element->payment) && $this->element->payment->payment_price !== null) { ?>
+			<tr>
+<?php if($colspan > 0) { ?>
+				<td class="hikashop_cart_module_payment_title" colspan="<?php echo $colspan; ?>"><?php
+					echo JText::_('HIKASHOP_PAYMENT');
+				?></td>
+<?php } ?>
+				<td class="hikashop_cart_module_payment_value"><?php
+					echo $this->currencyClass->format($this->element->payment->payment_price, $this->total->prices[0]->price_currency_id);
 				?></td>
 <?php if(!empty($columns['delete'])) { ?>
 				<td></td>

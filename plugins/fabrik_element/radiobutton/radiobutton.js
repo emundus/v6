@@ -148,12 +148,20 @@ define(['jquery', 'fab/elementlist'], function (jQuery, FbElementList) {
             }
             this._getSubElements().each(function (sub) {
                 if (sub.value === v) {
-                    sub.checked = 'checked';
+                    sub.set('checked', true);
+                }
+                else {
+                    sub.set('checked', false);
                 }
             });
         },
 
         update: function (val) {
+            if (typeOf(val) === 'array')
+            {
+                val = val.shift();
+            }
+            this.setValue(val);
             if (!this.options.editable) {
                 if (val === '') {
                     this.element.innerHTML = '';
@@ -162,14 +170,8 @@ define(['jquery', 'fab/elementlist'], function (jQuery, FbElementList) {
                 this.element.innerHTML = $H(this.options.data).get(val);
                 return;
             } else {
-                var els = this._getSubElements();
-                if (typeOf(val) === 'array') {
-                    els.each(function (el) {
-                        if (val.contains(el.value)) {
-                            this.setButtonGroupCSS(el);
-                        }
-                    }.bind(this));
-                } else {
+                if (this.options.btnGroup) {
+                    var els = this._getSubElements();
                     els.each(function (el) {
                         if (el.value === val) {
                             this.setButtonGroupCSS(el);
@@ -184,12 +186,30 @@ define(['jquery', 'fab/elementlist'], function (jQuery, FbElementList) {
                 this.watchAddToggle();
                 this.watchAdd();
             }
+            this._getSubElements().each(function (sub, i) {
+                sub.id = this.options.element + '_input_' + i;
+                var label = sub.getParent('label');
+                if (label) {
+                    label.htmlFor = sub.id;
+                }
+            }.bind(this));
             this.parent(c);
             this.btnGroup();
         },
 
         getChangeEvent: function () {
             return this.options.changeEvent;
+        },
+
+        /**
+         * Get the dom selector that events should be attached to, need to include label for button groups
+         * @returns {string}
+         */
+        eventDelegate: function () {
+            var str = 'input[type=' + this.type + '][name^=' + this.options.fullName + ']';
+            str += ', [class*=fb_el_' + this.options.fullName + '] .fabrikElement label';
+
+            return str;
         }
 
     });

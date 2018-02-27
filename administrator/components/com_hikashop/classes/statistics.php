@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -39,7 +39,7 @@ class hikashopStatisticsClass extends hikashopClass {
 		$this->timeoffsetStr = ''.$this->timeoffset;
 		if($this->timeoffset == 0)
 			$this->timeoffsetStr  = '';
-		else if($this->timeoffset  > 0)
+		else if($this->timeoffset > 0)
 			$this->timeoffsetStr  = '+' . $this->timeoffset ;
 	}
 
@@ -745,7 +745,8 @@ class hikashopStatisticsClass extends hikashopClass {
 			$limit = (int)$queryData['limit'];
 		if($limit === null)
 			$limit = -1;
-
+		$this->db->setQuery('SET @@session.time_zone = \'+00:00\'');
+		$this->db->query();
 		$this->db->setQuery($query, $offset, $limit);
 		switch($queryData['get']) {
 			case 'object':

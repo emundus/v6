@@ -288,7 +288,7 @@ class FabrikViewListBase extends FabrikView
 		$opts->groupByOpts                 = new stdClass;
 		$opts->groupByOpts->isGrouped      = (bool) $this->isGrouped;
 		$opts->groupByOpts->collapseOthers = (bool) $params->get('group_by_collapse_others', false);
-		$opts->groupByOpts->startCollapsed = (bool) $params->get('group_by_start_collapsed', false);
+		$opts->groupByOpts->startCollapsed = (bool) $input->get('start_collapsed', $params->get('group_by_start_collapsed', false));
 		$opts->groupByOpts->bootstrap      = FabrikWorker::j3();
 
 		// If table data starts as empty then we need the html from the row
@@ -396,6 +396,7 @@ class FabrikViewListBase extends FabrikView
 		$fbConfig = JComponentHelper::getParams('com_fabrik');
 		$profiler = JProfiler::getInstance('Application');
 		$input    = $this->app->input;
+		$itemId   = FabrikWorker::itemId();
 
 		/** @var FabrikFEModelList $model */
 		$model = $this->getModel();
@@ -517,7 +518,18 @@ class FabrikViewListBase extends FabrikView
 		}
 
 		$this->emptyLink     = $model->canEmpty() ? '#' : '';
-		$this->csvImportLink = $this->showCSVImport ? JRoute::_('index.php?option=com_' . $this->package . '&view=import&filetype=csv&listid=' . $item->id) : '';
+
+		if ($this->showCSVImport)
+		{
+			$this->csvImportLink = 'index.php?option=com_' . $this->package . '&view=import&filetype=csv&listid=' . $item->id;
+			$this->csvImportLink .= empty($itemId) ? '' : '&Itemid=' . $itemId;
+			$this->csvImportLink = JRoute::_($this->csvImportLink);
+		}
+		else
+		{
+			$this->csvImportLink = '';
+		}
+
 		$this->showAdd       = $model->canAdd();
 
 		if ($this->showAdd)
@@ -567,6 +579,8 @@ class FabrikViewListBase extends FabrikView
                 $pdfLink .= '&group_by=' . $this->app->input->get('group_by', '');
             }
 
+            // Add the listref so we get the right filters if doing PDF from a module or content plugin
+            $pdfLink .= '&setListRefFromRequest=1&listref=' . $model->getRenderContext();
 			$this->pdfLink = JRoute::_($pdfLink);
 		}
 
@@ -596,6 +610,7 @@ class FabrikViewListBase extends FabrikView
 
 		$this->hasButtons     = $model->getHasButtons();
 		$this->grouptemplates = $model->groupTemplates;
+		$this->gotOptionalFilters = $model->gotOptionalFilters();
 		$this->params         = $params;
 		$this->loadTemplateBottom();
 		$this->getManagementJS($this->rows);
@@ -697,7 +712,7 @@ class FabrikViewListBase extends FabrikView
 
 		if ($params->get('process-jplugins'))
 		{
-			$cloak = $params->get('cloak_emails', '0') === '1';
+			$cloak = $params->get('cloak_emails', '0') === '1' && $this->app->input->get('format') !== 'pdf';
 			FabrikHelperHTML::runContentPlugins($text, $cloak);
 		}
 
@@ -716,7 +731,7 @@ class FabrikViewListBase extends FabrikView
 	{
 		$model                     = $this->getModel();
 		$this->buttons             = new stdClass;
-		$buttonProperties          = array('class' => 'fabrikTip', 'opts' => "{notice:true}",
+		$buttonProperties          = array('class' => 'fabrikTip', 'opts' => '{"notice":true}',
 			'title' => '<span>' . FText::_('COM_FABRIK_EXPORT_TO_CSV') . '</span>');
 		$buttonProperties['alt']   = FText::_('COM_FABRIK_EXPORT_TO_CSV');
 		$this->buttons->csvexport  = FabrikHelperHTML::image('csv-export.png', 'list', $this->tmpl, $buttonProperties);

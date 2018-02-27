@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,7 +10,22 @@ defined('_JEXEC') or die('Restricted access');
 ?><?php
 if(!empty($this->options['current_login']) && empty($this->mainUser->guest) && empty($this->ajax))
 	return;
-
+if(empty($this->ajax)) {
+?>
+<script type="text/javascript">
+if(!window.checkout) window.checkout = {};
+window.checkout.refreshLogin = function(step, id) { return window.checkout.refreshBlock('login', step, id); };
+window.checkout.submitLogin = function(step, id, action) {
+	if(action === undefined)
+		action = '';
+	var el = document.getElementById('login_view_action_' + step + '_' + id);
+	if(el)
+		el.value = action;
+	return window.checkout.submitBlock('login', step, id);
+};
+</script>
+<?php
+}
 if(empty($this->ajax)) {
 ?>
 <div id="hikashop_checkout_login_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>" class="hikashop_checkout_login">
@@ -92,7 +107,7 @@ if(invalid_field)
 	if($this->options['display_method'] == 0) {
 		if(empty($this->options['current_login']) && (!empty($this->options['registration']) || !empty($this->options['registration_not_allowed'])) && !empty($this->options['show_login'])) {
 ?>
-		<div class="hk-container-fluid">
+	<div class="hk-container-fluid">
 		<div class="hkc-lg-4">
 <?php
 		}
@@ -118,10 +133,12 @@ if(invalid_field)
 		if(empty($this->options['current_login']) && !empty($this->options['registration'])) {
 ?>
 			<div id="hikashop_checkout_registration">
-				<h2><?php
-					$txt = !empty($this->options['registration_guest']) ? 'GUEST' : 'HIKA_REGISTRATION';
-					echo JText::_($txt);
-				?></h2>
+				<h2>
+<?php
+			$txt = !empty($this->options['registration_guest']) ? 'GUEST' : 'HIKA_REGISTRATION';
+			echo JText::_($txt);
+?>
+				</h2>
 <?php
 			if(!empty($this->options['registration']) || !empty($this->options['registration_guest'])) {
 				$this->setLayout('sub_block_login_registration');
@@ -137,19 +154,19 @@ if(invalid_field)
 		if(empty($this->options['current_login']) && (!empty($this->options['registration']) || !empty($this->options['registration_not_allowed'])) && !empty($this->options['show_login'])) {
 ?>
 		</div>
-		</div>
+	</div>
 <?php
 		}
 	} else {
 ?>
 	<!-- THIS IS THE SWITCHER DISPLAY, RADIO BUTTON ON THE LEFT, FORMS ON THE RIGHT-->
-		<div class="hk-container-fluid">
+	<div class="hk-container-fluid">
 <?php
 		if(($this->options['show_login'] && $this->options['registration_count'] > 0) || $this->options['registration_count'] > 1) {
 
 ?>
-			<div class="hkc-lg-4">
-				<h2><?php echo JText::_('IDENTIFICATION'); ?></h2>
+		<div class="hkc-lg-4">
+			<h2><?php echo JText::_('IDENTIFICATION'); ?></h2>
 <?php
 			$values = array();
 			$v = null;
@@ -299,10 +316,12 @@ function displayRegistration(el) {
 		if(empty($this->options['current_login']) && !empty($this->options['registration'])) {
 ?>
 			<div id="hikashop_checkout_registration">
-				<h2 id="hika_registration_type"><?php
-					$txt = (!empty($this->options['registration_guest']) && $this->options['registration_count'] == 1) ? 'GUEST' : 'HIKA_REGISTRATION';
-					echo JText::_($txt);
-				?></h2>
+				<h2 id="hika_registration_type">
+<?php
+			$txt = (!empty($this->options['registration_guest']) && $this->options['registration_count'] == 1) ? 'GUEST' : 'HIKA_REGISTRATION';
+			echo JText::_($txt);
+?>
+				</h2>
 <?php
 			if(!empty($this->options['registration']) || !empty($this->options['registration_guest'])) {
 				$this->setLayout('sub_block_login_registration');
@@ -326,31 +345,15 @@ function displayRegistration(el) {
 <?php
 		}
 ?>
+		</div>
 	</div>
-</div>
 <?php
 	}
 ?>
 	<input type="hidden" id="login_view_action_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>" name="login_view_action" value="" />
 <?php
-
 if(empty($this->ajax)) {
-
 ?>
 </div>
-
-<script type="text/javascript">
-if(!window.checkout) window.checkout = {};
-window.checkout.refreshLogin = function(step, id) { return window.checkout.refreshBlock('login', step, id); };
-window.checkout.submitLogin = function(step, id, action) {
-	if(action === undefined)
-		action = '';
-	var el = document.getElementById('login_view_action_' + step + '_' + id);
-	if(el)
-		el.value = action;
-	return window.checkout.submitBlock('login', step, id);
-};
-</script>
 <?php
-
 }

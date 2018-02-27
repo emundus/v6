@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -273,8 +273,16 @@ function updateCustomFeesPanel(active) {
 		if(empty($field_type))
 			$field_type = 'address';
 
+		$id = hikaInput::get()->getInt('state_field_id', 0);
+		$field_options = '';
+		if($id){
+			$class = hikashop_get('class.field');
+			$field = $class->get($id);
+			$field_options = $field->field_options;
+		}
+
 		$class = hikashop_get('type.country');
-		echo $class->displayStateDropDown($namekey, $field_id, $field_namekey, $field_type);
+		echo $class->displayStateDropDown($namekey, $field_id, $field_namekey, $field_type, '', $field_options);
 
 		exit;
 	}

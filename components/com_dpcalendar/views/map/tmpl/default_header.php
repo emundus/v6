@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -27,51 +27,52 @@ $form->addClass('dp-actions-container', true);
 $c = $form->addChild(new Container('basic', ['form-container']));
 
 // The search input field
-$i = $c->addChild(new Input('search', 'text', 'search', $this->state->get('filter.search')));
+$i = $c->addChild(new Container('search', ['search']))->addChild(new Input('search', 'text', 'search', $this->state->get('filter.search')));
 $i->addAttribute('onchange', 'this.form.submit();');
 $i->addAttribute('placeholder', JText::_('JGLOBAL_FILTER_LABEL'));
 
 // Add the datepicker buttons
+$dc   = $c->addChild(new Container('date', ['date']));
 $date = $this->state->get('list.start-date');
 if ($date) {
-	$date = \DPCalendar\Helper\DPCalendarHelper::getDateFromString($date, null, true, $this->params->get('event_form_date_format', 'm.d.Y'));
+	$date = \DPCalendar\Helper\DPCalendarHelper::getDate($date, true);
 }
 DPCalendarHelper::renderLayout(
 	'content.button.datetime',
 	array(
 		'id'          => 'start',
-		'root'        => $c,
+		'root'        => $dc,
 		'name'        => 'start-date',
 		'date'        => $date,
 		'title'       => JText::_('COM_DPCALENDAR_FIELD_START_DATE_LABEL'),
 		'placeholder' => JText::_('COM_DPCALENDAR_FIELD_START_DATE_LABEL'),
 		'onchange'    => 'this.form.submit();',
-		'dateFormat'  => $this->params->get('event_form_date_format', 'm.d.Y')
+		'dateFormat'  => $this->params->get('map_date_format', 'm.d.Y')
 	)
 );
 
 $date = $this->state->get('list.end-date');
 if ($date) {
-	$date = \DPCalendar\Helper\DPCalendarHelper::getDateFromString($date, null, true, $this->params->get('event_form_date_format', 'm.d.Y'));
+	$date = \DPCalendar\Helper\DPCalendarHelper::getDate($date, true);
 }
 DPCalendarHelper::renderLayout(
 	'content.button.datetime',
 	array(
 		'id'          => 'end',
-		'root'        => $c,
+		'root'        => $dc,
 		'name'        => 'end-date',
 		'date'        => $date,
 		'title'       => JText::_('COM_DPCALENDAR_FIELD_END_DATE_LABEL'),
 		'placeholder' => JText::_('COM_DPCALENDAR_FIELD_END_DATE_LABEL'),
 		'onchange'    => 'this.form.submit();',
-		'dateFormat'  => $this->params->get('event_form_date_format', 'm.d.Y')
+		'dateFormat'  => $this->params->get('map_date_format', 'm.d.Y')
 	)
 );
 
 $c = $form->addChild(new Container('location', ['form-container']));
 
 // The location search input field
-$i = $c->addChild(
+$i = $c->addChild(new Container('search', ['search']))->addChild(
 	new Input(
 		'text',
 		'text',
@@ -83,9 +84,11 @@ $i = $c->addChild(
 );
 $i->addAttribute('onchange', 'this.form.submit();');
 
+$ac = $c->addChild(new Container('area', ['area']));
+
 // Add the select box
 $radius = $this->state->get('filter.radius', 50);
-$s      = $c->addChild(new Select('radius', 'radius'));
+$s      = $ac->addChild(new Select('radius', 'radius'));
 $s->addAttribute('onchange', 'this.form.submit();');
 $s->addOption(5, 5, 5 == $radius);
 $s->addOption(10, 10, 10 == $radius);
@@ -98,7 +101,7 @@ $s->addOption(JText::_('JALL'), -1, -1 == $radius);
 
 // Add the length type select box
 $length = $this->state->get('filter.length-type');
-$s      = $c->addChild(new Select('length-type', 'length-type'));
+$s      = $ac->addChild(new Select('length-type', 'length-type'));
 $s->addAttribute('onchange', 'this.form.submit();');
 $s->addOption(JText::_('COM_DPCALENDAR_FIELD_CONFIG_MAP_LENGTH_TYPE_METER'), 'm', 'm' == $length);
 $s->addOption(JText::_('COM_DPCALENDAR_FIELD_CONFIG_MAP_LENGTH_TYPE_MILE'), 'mile', 'mile' == $length);

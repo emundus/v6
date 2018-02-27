@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
-* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -22,7 +22,7 @@ $lang = JFactory::getLanguage();
 		<div class="akeeba-form-group">
 			<label for="linkmigration"><?php echo \JText::_('COM_ADMINTOOLS_LBL_SEOANDLINKTOOLS_OPT_LINKMIGRATION'); ?></label>
 
-            <?php echo Select::booleanswitch('linkmigration', $this->salconfig['linkmigration']); ?>
+            <?php echo \JHtml::_('FEFHelper.select.booleanswitch', 'linkmigration', $this->salconfig['linkmigration']); ?>
 		</div>
 		<div class="akeeba-form-group">
 			<label for="migratelist"
@@ -43,7 +43,7 @@ $lang = JFactory::getLanguage();
 		<div class="akeeba-form-group">
 			<label for="httpsizer"><?php echo \JText::_('COM_ADMINTOOLS_LBL_SEOANDLINKTOOLS_OPT_HTTPSIZER'); ?></label>
 
-            <?php echo Select::booleanswitch('httpsizer', $this->salconfig['httpsizer']); ?>
+            <?php echo \JHtml::_('FEFHelper.select.booleanswitch', 'httpsizer', $this->salconfig['httpsizer']); ?>
 		</div>
 	</div>
 

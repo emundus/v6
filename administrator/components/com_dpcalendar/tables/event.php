@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -14,11 +14,6 @@ class DPCalendarTableEvent extends JTable
 
 	public function __construct(&$db = null)
 	{
-		if ($db == null) {
-			$db = JFactory::getDbo();
-		}
-		parent::__construct('#__dpcalendar_events', 'id', $db);
-
 		if (\DPCalendar\Helper\DPCalendarHelper::isJoomlaVersion('4', '<')) {
 			JObserverMapper::addObserverClassToClass('JTableObserverTags', 'DPCalendarTableEvent', array('typeAlias' => 'com_dpcalendar.event'));
 			JObserverMapper::addObserverClassToClass(
@@ -27,6 +22,11 @@ class DPCalendarTableEvent extends JTable
 				array('typeAlias' => 'com_dpcalendar.event')
 			);
 		}
+
+		if ($db == null) {
+			$db = JFactory::getDbo();
+		}
+		parent::__construct('#__dpcalendar_events', 'id', $db);
 
 		$this->access         = \DPCalendar\Helper\DPCalendarHelper::getComponentParameter('event_form_access', $this->access);
 		$this->access_content = \DPCalendar\Helper\DPCalendarHelper::getComponentParameter('event_form_access_content');
@@ -82,14 +82,6 @@ class DPCalendarTableEvent extends JTable
 			$this->alias = JApplicationHelper::stringURLSafe($this->alias);
 		}
 
-		$timezone = JFactory::getApplication()->getCfg('offset');
-		$user     = JFactory::getUser();
-		if ($user->get('id')) {
-			$userTimezone = $user->getParam('timezone');
-			if (!empty($userTimezone)) {
-				$timezone = $userTimezone;
-			}
-		}
 		$start = DPCalendarHelper::getDate($this->start_date, $this->all_day);
 		$end   = DPCalendarHelper::getDate($this->end_date, $this->all_day);
 
@@ -152,14 +144,14 @@ class DPCalendarTableEvent extends JTable
 					$this->price      = $table->price;
 					$hardReset        = false;
 
-					JFactory::getLanguage()->load('com_dpcalendar', JPATH_ADMINISTRATOR . DS . 'components' . DS . 'com_dpcalendar');
+					JFactory::getLanguage()->load('com_dpcalendar', JPATH_ADMINISTRATOR . '/components/com_dpcalendar');
 					JFactory::getApplication()->enqueueMessage(JText::_('COM_DPCALENDAR_ERR_TABLE_NO_DATE_CHANGE'), 'notice');
 				}
 			}
 		}
 
 		// Only delete the childs when a hard reset must be done
-		if ($this->id > 0 && $this->original_id == '-1' && $hardReset) {
+		if ($this->id > 0 && $hardReset) {
 			$this->_db->setQuery('delete from #__dpcalendar_events where original_id = ' . (int)$this->id);
 			$this->_db->execute();
 		}

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -29,6 +29,14 @@ if(!$this->config->get('floating_tax_prices',0)){ ?>
 		<input type="text" size="5" style="width:70px;" id="hikashop_<?php echo $this->form_key; ?>_qty_edit" name="" value="<?php echo $this->price->price_min_quantity; ?>"/>
 	</dd>
 <?php if(hikashop_level(2)) { ?>
+	<dt><?php echo JText::_('START_DATE'); ?></dt>
+	<dd>
+		<?php echo JHTML::_('calendar', hikashop_getDate((@$this->price->price_start_date?@$this->price->price_start_date:''),'%Y-%m-%d %H:%M'), 'price_start_date', 'hikashop_' . $this->form_key . '_start_date_edit', '%Y-%m-%d %H:%M', array('size' => '20', 'showTime' => true)); ?>
+	</dd>
+	<dt><?php echo JText::_('END_DATE'); ?></dt>
+	<dd>
+		<?php echo JHTML::_('calendar', hikashop_getDate((@$this->price->price_end_date?@$this->price->price_end_date:''),'%Y-%m-%d %H:%M'), 'price_end_date', 'hikashop_' . $this->form_key . '_end_date_edit', '%Y-%m-%d %H:%M', array('size' => '20', 'showTime' => true)); ?>
+	</dd>
 	<dt><?php echo JText::_('ACCESS_LEVEL'); ?></dt>
 	<dd>
 		<?php echo $this->joomlaAcl->display('hikashop_' . $this->form_key . '_acl_edit'.$this->price->price_id, @$this->price->price_access, true, true, 'hikashop_' . $this->form_key . '_acl_edit'); ?>

@@ -4,13 +4,31 @@ DPCalendar = window.DPCalendar || {};
 	"use strict";
 
 	DPCalendar.createCalendar = function (calendar, options) {
-		DPCalendar.loader('hide', calendar.parent()[0]);
 
-		options['defaultDate'] = moment(
-			options['year'] + '-' +
-			DPCalendar.pad(parseInt(options['month']), 2) + '-' +
-			DPCalendar.pad(options['date'], 2)
-		);
+		var adaptScroll = function (date) {
+			if (!date) {
+				date = calendar.fullCalendar('getDate');
+			}
+			var cell = calendar[0].querySelector('th[data-date^="' + date.format("YYYY-MM-DD") + '"]');
+			if (!cell) {
+				return;
+			}
+
+			var scroller = calendar[0].querySelector('.fc-time-area .fc-scroller');
+
+			if (!scroller) {
+				return;
+			}
+
+			scroller.scrollLeft = 0;
+
+			var scrollerBounds = scroller.getBoundingClientRect();
+			var cellBounds = cell.getBoundingClientRect();
+
+			scroller.scrollLeft = cellBounds.left + cellBounds.width / 2 - scrollerBounds.left - scrollerBounds.width / 2;
+		}
+
+		DPCalendar.loader('hide', calendar.parent()[0]);
 
 		if (options['use_hash']) {
 			// Parsing the hash
@@ -47,12 +65,20 @@ DPCalendar = window.DPCalendar || {};
 				var date = new Date(tmpYear, tmpMonth, tmpDay, 0, 0, 0);
 				var d = calendar.fullCalendar('getDate');
 				var view = calendar.fullCalendar('getView');
-				if (date.getYear() != d.year() || date.month() != d.month() || date.date() != d.date())
+				if (date.getYear() != d.year() || date.month() != d.month() || date.date() != d.date()) {
 					calendar.fullCalendar('gotoDate', date);
-				if (view.name != tmpView)
+				}
+				if (view.name != tmpView) {
 					calendar.fullCalendar('changeView', tmpView);
+				}
 			});
 		}
+
+		options['defaultDate'] = moment(
+			options['year'] + '-' +
+			DPCalendar.pad(parseInt(options['month']), 2) + '-' +
+			DPCalendar.pad(options['date'], 2)
+		);
 
 		// Loading the list view when we have a small screen
 		if (document.body.clientWidth < options['screen_size_list_view']) {
@@ -98,15 +124,20 @@ DPCalendar = window.DPCalendar || {};
 				window.location.hash = newHash;
 			}
 
-			var map = document.getElementById('dp-calendar-map');
-			if (map && map.dpmap) {
-				DPCalendar.Map.clearMarkers(map.dpmap);
+			adaptScroll();
+
+			var map = calendar[0].parentElement.querySelector('.dpcalendar-map');
+			if (map == null || map.dpmap == null || !options['show_map']) {
+				return;
 			}
+			DPCalendar.Map.clearMarkers(map.dpmap);
 		};
-		options['eventRender'] = function (event, element) {
+
+		options['eventRender'] = function (event, e) {
+			var element = e[0];
 			// Add a class if available
 			if (event.view_class) {
-				element.addClass(event.view_class);
+				element.classList.add(event.view_class);
 			}
 
 			if (event.description) {
@@ -118,21 +149,35 @@ DPCalendar = window.DPCalendar || {};
 
 				var content = document.createElement('div');
 				content.innerHTML = desc;
-				tippy(element[0], {interactive: true, delay: 100, arrow: true, html: content});
+				element.tippy = tippy(element, {
+					interactive: true,
+					delay: 100,
+					arrow: true,
+					html: content,
+					flipDuration: 0,
+					performance: true,
+					popperOptions: {
+						modifiers: {
+							preventOverflow: {
+								enabled: false
+							}
+						}
+					}
+				});
+			}
 
-				if (event.fgcolor) {
-					element.css('color', event.fgcolor).find('.fc-event-inner').css('color', event.fgcolor);
-				}
+			if (event.fgcolor) {
+				element.style.color = event.fgcolor;
 			}
 
 			var map = calendar[0].parentElement.querySelector('.dpcalendar-map');
-			if (map == null || map.dpmap == null) {
+			if (map == null || map.dpmap == null || !options['show_map']) {
 				return;
 			}
 
 			// Adding the locations to the map
-			jQuery.each(event.location, function (i, loc) {
-				var locationData = JSON.parse(JSON.stringify(loc));
+			for (var i = 0; i < event.location.length; i++) {
+				var locationData = JSON.parse(JSON.stringify(event.location[i]));
 				locationData.title = event.title;
 				locationData.color = event.color;
 
@@ -143,7 +188,7 @@ DPCalendar = window.DPCalendar || {};
 				locationData.description = desc;
 
 				DPCalendar.Map.createMarker(map.dpmap, locationData);
-			});
+			}
 		};
 
 		// Handling the messages in the returned data
@@ -158,23 +203,45 @@ DPCalendar = window.DPCalendar || {};
 
 		// Drag and drop support
 		options['eventDrop'] = function (event, delta, revertFunc, jsEvent, ui, view) {
+			if (event.resourceId) {
+				// @Todo implement resource drop
+				revertFunc();
+				return false;
+			}
+
 			DPCalendar.loader('show', calendar.parent()[0]);
-			jQuery(jsEvent.target).tooltip('hide');
-			jQuery.ajax({
-				type: 'POST',
+			Joomla.request({
+				method: 'POST',
 				url: 'index.php?option=com_dpcalendar&task=event.move',
-				data: {
-					id: event.id,
-					minutes: delta.asMinutes(),
-					allDay: delta.asMinutes() == 0
-				},
-				success: function (data) {
+				data: 'id=' + event.id + '&minutes=' + delta.asMinutes() + '&allDay=' + (delta.asMinutes() == 0),
+				onSuccess: function (data) {
 					DPCalendar.loader('hide', calendar.parent()[0]);
-					var json = jQuery.parseJSON(data);
-					if (json.data.url)
+
+					var json = JSON.parse(data);
+
+					if (json.data.url) {
 						event.url = json.data.url;
-					if (json.messages != null && jQuery('#system-message-container').length) {
+					}
+
+					if (!json.success) {
+						revertFunc();
+						return;
+					}
+
+					if (json.messages == null) {
+						revertFunc();
+						return;
+					}
+
+					if (document.getElementById('system-message-container')) {
 						Joomla.renderMessages(json.messages);
+					}
+
+					for (var type in json.messages) {
+						if (type != 'message') {
+							revertFunc();
+							return;
+						}
 					}
 				}
 			});
@@ -183,27 +250,38 @@ DPCalendar = window.DPCalendar || {};
 		// Resize support
 		options['eventResize'] = function (event, delta, revertFunc, jsEvent, ui, view) {
 			DPCalendar.loader('show', calendar.parent()[0]);
-			jQuery(jsEvent.target).tooltip('hide');
-			jQuery.ajax({
-				type: 'POST',
+			Joomla.request({
+				method: 'POST',
 				url: 'index.php?option=com_dpcalendar&task=event.move',
-				data: {
-					id: event.id,
-					minutes: delta.asMinutes(),
-					allDay: false,
-					onlyEnd: true
-				},
-				success: function (data) {
+				data: 'id=' + event.id + '&minutes=' + delta.asMinutes() + '&onlyEnd=1&allDay=' + (delta.asMinutes() == 0),
+				onSuccess: function (data) {
 					DPCalendar.loader('hide', calendar.parent()[0]);
-					var json = jQuery.parseJSON(data);
-					if (json.data.url)
+
+					var json = JSON.parse(data);
+
+					if (json.data.url) {
 						event.url = json.data.url;
-					if (json.messages != null && jQuery('#system-message-container').length) {
+					}
+
+					if (!json.success) {
+						revertFunc();
+						return;
+					}
+
+					if (json.messages == null) {
+						revertFunc();
+						return;
+					}
+
+					if (document.getElementById('system-message-container')) {
 						Joomla.renderMessages(json.messages);
 					}
 
-					if (!json.data.success) {
-						revertFunc();
+					for (var type in json.messages) {
+						if (type != 'message') {
+							revertFunc();
+							return;
+						}
 					}
 				}
 			});
@@ -213,6 +291,11 @@ DPCalendar = window.DPCalendar || {};
 		options['eventClick'] = function (event, jsEvent, view) {
 			jsEvent.stopPropagation();
 
+			var tippy = jsEvent.currentTarget.tippy;
+			if (tippy) {
+				tippy.hide(tippy.getPopperElement(jsEvent.currentTarget));
+			}
+
 			if (options['show_event_as_popup'] == 2) {
 				return false;
 			}
@@ -221,7 +304,7 @@ DPCalendar = window.DPCalendar || {};
 				// Opening the Joomal modal box
 				var url = new Url(event.url);
 				url.query.tmpl = 'component';
-				DPCalendar.modal(url, calendar.data('popupwidth'), calendar.data('popupheight'),function (frame) {
+				DPCalendar.modal(url, calendar.data('popupwidth'), calendar.data('popupheight'), function (frame) {
 					// Check if there is a system message
 					var innerDoc = frame.contentDocument || frame.contentWindow.document;
 					if (innerDoc.getElementById('system-message').children.length < 1) {
@@ -238,10 +321,10 @@ DPCalendar = window.DPCalendar || {};
 			return false;
 		};
 
-		options['dayClick'] = function (date, jsEvent, view) {
-			var form = calendar.parent().find('form[name=adminForm]');
+		options['dayClick'] = function (date, jsEvent, view, resource) {
+			var form = calendar[0].parentElement.querySelector('form[name=adminForm]');
 
-			if (form.length > 0) {
+			if (form) {
 				jsEvent.stopPropagation();
 
 				// Setting some defaults on the quick add popup form
@@ -249,26 +332,36 @@ DPCalendar = window.DPCalendar || {};
 					date.hours(8);
 				}
 
-				var start = form.find('#jform_start_date');
-				start.val(date.format(start.attr('format')));
+				var start = form.querySelector('#jform_start_date');
+				start.value = date.format(start.getAttribute('format'));
 
-				var end = form.find('#jform_end_date');
-				end.val(date.format(end.attr('format')));
+				var end = form.querySelector('#jform_end_date');
+				end.value = date.format(end.getAttribute('format'));
 
-				form.find('#jform_start_date_time').timepicker('setTime', date.toDate());
+				jQuery(form.querySelector('#jform_start_date_time')).timepicker('setTime', new Date(date.toISOString()));
 				date.hours(date.hours() + 1);
-				form.find('#jform_end_date_time').timepicker('setTime', date.toDate());
+				jQuery(form.querySelector('#jform_end_date_time')).timepicker('setTime', new Date(date.toISOString()));
 
-				if (options['event_create_form'] == 1 && jQuery(window).width() > 600) {
-					new Popper(jsEvent.target, form.parent()[0], {
+				// Set location information
+				if (resource) {
+					var parts = resource.id.split('-');
+					form.querySelector('input[name="jform[location_ids][]"]').value = [parts[0]];
+
+					if (parts.length > 1) {
+						form.querySelector('input[name="jform[rooms][]"]').value = [resource.id];
+					}
+				}
+
+				if (options['event_create_form'] == 1 && window.innerWidth > 600) {
+					new Popper(jsEvent.target, form.parentElement, {
 						onCreate: function (data) {
 							data.instance.popper.querySelector('#jform_title').focus();
 						}
 					});
-					form.parent().show();
+					form.parentElement.style.display = 'block';
 				} else {
 					// Open the edit page
-					form.find('input[name=task]').val('');
+					form.querySelector('input[name=task]').value = '';
 					form.submit();
 				}
 			} else if (options['header'].right.indexOf('agendaDay') > 0) {
@@ -304,7 +397,14 @@ DPCalendar = window.DPCalendar || {};
 							weekdaysShort: options['dayNamesShort']
 						},
 						onSelect: function (date) {
-							calendar.fullCalendar('gotoDate', picker.getMoment());
+							var d = picker.getMoment();
+							var newHash = 'year=' + d.year() + '&month=' + (d.month() + 1) + '&day=' + d.date() + '&view=' + calendar.fullCalendar('getView').name;
+							if (options['use_hash'] && window.location.hash.replace(/&amp;/gi, "&") != newHash) {
+								window.location.hash = newHash;
+							} else {
+								calendar.fullCalendar('gotoDate', d);
+							}
+							adaptScroll(d);
 							this.destroy();
 						}
 					});
@@ -354,12 +454,29 @@ DPCalendar = window.DPCalendar || {};
 		}
 		options['eventSources'] = sources;
 
+		moment.updateLocale('en', {
+			months: options['dayNames'],
+			monthsShort: options['monthNamesShort'],
+			weekdays: options['dayNames'],
+			weekdaysShort: options['dayNamesShort'],
+			weekdaysMin: options['dayNamesMin']
+		});
+
 		// Loading the calendar
-		calendar.fullCalendar(jQuery.extend({}, options));
+		calendar.fullCalendar(options);
+
+		adaptScroll();
 
 		// Replace class names with the one from Joomla
-		jQuery('.fc-icon-icon-print').attr('class', options['icon_print']);
-		jQuery('.fc-icon-icon-calendar').attr('class', options['icon_calendar']);
+		var icon = document.querySelector('.fc-icon-icon-print');
+		if (icon) {
+			icon.setAttribute('class', options['icon_print']);
+		}
+
+		icon = document.querySelector('.fc-icon-icon-calendar');
+		if (icon) {
+			icon.setAttribute('class', options['icon_calendar']);
+		}
 
 		// Toggle the list of calendars
 		var root = calendar[0].parentElement;
@@ -379,14 +496,14 @@ DPCalendar = window.DPCalendar || {};
 		}
 
 		// Modify the calendar list
-		jQuery.each(options['eventSources'], function (index, value) {
-			jQuery('#dp-calendar-list input').each(function (indexInput) {
-				var input = jQuery(this);
-				if (value.url == input.val()) {
-					input.attr('checked', true);
+		for (var i = 0; i < options['eventSources'].length; i++) {
+			var elements = calendar[0].parentElement.querySelectorAll('.dp-calendar-list input');
+			for (var j = 0; j < elements.length; j++) {
+				if (options['eventSources'][i].url == elements[j].value) {
+					elements[j].setAttribute('checked', true);
 				}
-			});
-		});
+			}
+		}
 	}
 
 	DPCalendar.updateCalendar = function (input, calendar) {

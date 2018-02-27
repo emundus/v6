@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,6 +16,11 @@ class OrderstatusController extends hikashopController {
 	var $orderingMap = 'orderstatus_ordering';
 	var $groupVal = 0;
 
+
+	function __construct() {
+		parent::__construct();
+		$this->display[] = 'findList';
+	}
 
 	public function findList() {
 		$search = hikaInput::get()->getVar('search', '');

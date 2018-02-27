@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -376,6 +376,14 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			$params['js'] .= $view->fieldsClass->jsToggle($view->extraFields['address'], $view->address, 0, 'hikashop_', array('return_data' => true, 'suffix_type' => '_'.$view->step.'_'.$view->block_position));
 			$check_values['address'] = $view->address;
 		}
+
+		$affiliate = $view->config->get( 'affiliate_registration_default', 0);
+		if($affiliate) {
+			$affiliate = 'checked="checked"';
+		} else {
+			$affiliate = '';
+		}
+		$view->affiliate_checked = $affiliate;
 	}
 
 	public function checkMarker($markerName, $oldMarkers, $newMarkers, &$controller, $params) {

@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    3.2.2
+ * @version    3.3.0
  * @author     hikashop.com
  * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -225,6 +225,8 @@ var Oby = {
 			target = d;
 		var typelist = ['input','select','textarea'];
 		for(var t in typelist) {
+			if(!typelist.hasOwnProperty(t))
+				continue;
 			t = typelist[t];
 			var inputs = target.getElementsByTagName(t);
 			for(var i = 0; i < inputs.length; i++) {
@@ -253,6 +255,7 @@ var Oby = {
 				if( (etype != 'file' && etype != 'submit') && evalue != null ) {
 					//if( ret != '' ) ret += '&';
 					//ret += encodeURI(inputs[i].name) + '=' + encodeURIComponent(evalue);
+
 					if(ret.hasOwnProperty(n)) {
 						if(typeof(ret[n]) != 'object')
 							ret[n] = [ ret[n] ];
@@ -276,6 +279,8 @@ var Oby = {
 			v = data[k];
 			if(typeof(v) == 'object') {
 				for(var i in v) {
+					if(!v.hasOwnProperty(i))
+						continue;
 					if( ret != '' ) ret += '&';
 					ret += encodeURI(k) + '=' + encodeURIComponent(v[i]);
 				}
@@ -1037,7 +1042,7 @@ var hikashop = {
 				o.removeClass(container, "hikashop_checkout_loading");
 
 			var resp = Oby.evalJSON(xhr.responseText);
-			var cart_id = (resp && resp.ret) ? resp.ret : parseInt(xhr.responseText);
+			cart_id = (resp && resp.ret) ? resp.ret : ((resp && resp.empty && resp.empty == 'true') ? cart_id : parseInt(xhr.responseText));
 			if(cart_id === NaN)
 				return;
 			window.Oby.fireAjax(cart_type+'.updated', {id: cart_id, type: cart_type, resp: resp, notify: false});

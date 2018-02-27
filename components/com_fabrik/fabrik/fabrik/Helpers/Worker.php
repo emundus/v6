@@ -34,6 +34,7 @@ use JLog;
 use JMail;
 use JMailHelper;
 use JModelLegacy;
+use Joomla\CMS\Application\CMSApplication;
 use JPath;
 use JSession;
 use JTable;
@@ -428,7 +429,7 @@ class Worker
 		preg_match("/[+|-][0-9]* (week\b|year\b|day\b|month\b)/i", $date, $matches2);
 
 		// E.g. next Wednesday
-		preg_match("/[next|last]* (\monday\b|tuesday\b|wednesday\b|thursday\b|friday\b|saturday\b|sunday\b)/i", $date, $matches3);
+		preg_match("/[next|last]* (monday\b|tuesday\b|wednesday\b|thursday\b|friday\b|saturday\b|sunday\b)/i", $date, $matches3);
 		$matches = array_merge($matches, $matches2, $matches3);
 
 		if (!empty($matches))
@@ -466,7 +467,7 @@ class Worker
 		preg_match("/[+|-][0-9]* (week\b|year\b|day\b|month\b)/i", $date, $matches2);
 
 		// E.g. next Wednesday
-		preg_match("/[next|last]* (\monday\b|tuesday\b|wednesday\b|thursday\b|friday\b|saturday\b|sunday\b)/i", $date, $matches3);
+		preg_match("/[next|last]* (monday\b|tuesday\b|wednesday\b|thursday\b|friday\b|saturday\b|sunday\b)/i", $date, $matches3);
 		$matches = array_merge($matches, $matches2, $matches3);
 
 		if (!empty($matches))
@@ -857,8 +858,22 @@ class Worker
 	 */
 	public function replaceRequest(&$msg)
 	{
-		$f       = JFilterInput::getInstance();
-		$request = $f->clean($_REQUEST, 'array');
+		static $request;
+
+		if (!is_array($request))
+		{
+			$request = array();
+			$f       = JFilterInput::getInstance();
+
+			foreach ($_REQUEST as $k => $v)
+			{
+				if (is_string($v))
+				{
+					$request[$k] = $f->clean($v, 'CMD');
+				}
+			}
+		}
+
 
 		foreach ($request as $key => $val)
 		{
@@ -1753,6 +1768,7 @@ class Worker
 		if (!self::$database)
 		{
 			self::$database = array();
+			self::$database = array();
 		}
 
 		if (!array_key_exists($sig, self::$database))
@@ -1964,22 +1980,35 @@ class Worker
 	 * Test if a string is a compatible date
 	 *
 	 * @param   string $d Date to test
+	 * @param   bool   $notNull  don't allow null / empty dates
+	 *
+	 * @return    bool
+	 */
+	public static function isNullDate($d)
+	{
+		$db         = self::getDbo();
+		$aNullDates = array('0000-00-000000-00-00', '0000-00-00 00:00:00', '0000-00-00', '', $db->getNullDate());
+
+		return in_array($d, $aNullDates);
+	}
+
+	/**
+	 * Test if a string is a compatible date
+	 *
+	 * @param   string $d Date to test
      * @param   bool   $notNull  don't allow null / empty dates
 	 *
 	 * @return    bool
 	 */
 	public static function isDate($d, $notNull = true)
 	{
-		$db         = self::getDbo();
-		$aNullDates = array('0000-00-000000-00-00', '0000-00-00 00:00:00', '0000-00-00', '', $db->getNullDate());
-
 		// Catch for ','
 		if (strlen($d) < 2)
 		{
 			return false;
 		}
 
-		if ($notNull && in_array($d, $aNullDates))
+		if ($notNull && self::isNullDate($d))
 		{
 			return false;
 		}
@@ -1993,6 +2022,84 @@ class Worker
 		}
 
 		return true;
+	}
+
+
+	public static function addMonthsInterval($months, DateTime $date)
+	{
+		$next = new DateTime($date->format('d-m-Y H:i:s'));
+		$next->modify('last day of +' . $months . ' month');
+
+		if ($date->format('d') > $next->format('d'))
+		{
+			return $date->diff($next);
+		}
+		else
+		{
+			return new DateInterval('P' . $months . 'M');
+		}
+	}
+
+	public static function addMonths($months, DateTime $date)
+	{
+		return $date->add(self::addMonthsInterval($months, $date));
+	}
+
+	/**
+	 * Get a user's TZ offset in MySql format, suitable for CONVERT_TZ
+	 *
+	 * @param  int  userId  userid or null (use logged on user if null)
+	 *
+	 * @return  string  symbolic timezone name (America/Chicago)
+	 */
+	public static function getUserTzOffsetMySql($userId = null)
+	{
+		$tz = self::getUserTzName($userId);
+		$tz = new \DateTimeZone($tz);
+		$date = new \DateTime("now", $tz);
+		$offset = $tz->getOffset($date) . ' seconds';
+		$dateOffset = clone $date;
+		$dateOffset->sub(\DateInterval::createFromDateString($offset));
+		$interval = $dateOffset->diff($date);
+		return $interval->format('%R%H:%I');
+	}
+
+	/**
+	 * Get a user's TZ offset in seconds
+	 *
+	 * @param  int  userId  userid or null (use logged on user if null)
+	 *
+	 * @return  int  seconds offset
+	 */
+	public static function getUserTzOffset($userId = null)
+	{
+		$tz = self::getUserTzName($userId);
+		$tz = new \DateTimeZone($tz);
+		$date = new \DateTime("now", $tz);
+		return $tz->getOffset($date);
+	}
+
+	/**
+	 * Get a user's TZ name
+	 *
+	 * @param  int  userId  userid or null (use logged on user if null)
+	 *
+	 * @return  string  symbolic timezone name (America/Chicago)
+	 */
+	public static function getUserTzName($userId = null)
+	{
+		if (empty($userId))
+		{
+			$user = JFactory::getUser();
+		}
+		else
+		{
+			$user = JFactory::getUser($userId);
+		}
+		$config = JFactory::getConfig();
+		$tz = $user->getParam('timezone', $config->get('offset'));
+
+		return $tz;
 	}
 
 	/**
@@ -2505,7 +2612,7 @@ class Worker
 	 */
 	public static function canPdf($puke = true)
 	{
-		$file = COM_FABRIK_LIBRARY . '/vendor/dompdf/dompdf/autoload.inc.php';
+		$file = COM_FABRIK_LIBRARY . '/vendor/dompdf/dompdf/composer.json';
 
 		if (!JFile::exists($file))
 		{
@@ -2621,12 +2728,12 @@ class Worker
 	/**
 	 * Remove messages from JApplicationCMS
 	 *
-	 * @param   JApplicationCMS $app  Application to kill messages from
+	 * @param   CMSApplication $app  Application to kill messages from
 	 * @param   string          $type Message type e.g. 'warning', 'error'
 	 *
 	 * @return  array  Remaining messages.
 	 */
-	public static function killMessage(\JApplicationSite $app, $type)
+	public static function killMessage(CMSApplication $app, $type)
 	{
 		$appReflection = new \ReflectionClass(get_class($app));
 		$_messageQueue = $appReflection->getProperty('_messageQueue');
@@ -2694,5 +2801,30 @@ class Worker
 		}
 
 		return $getID3;
+	}
+
+	public static function getMemoryLimit($symbolic = false)
+	{
+		$memory    = trim(ini_get('memory_limit'));
+		$memory    = trim($memory);
+
+		if ($symbolic)
+		{
+			return $memory;
+		}
+
+		$last = strtolower($memory[strlen($memory)-1]);
+		$val  = substr($memory, 0, -1);
+
+		switch($last) {
+			case 'g':
+				$val *= 1024;
+			case 'm':
+				$val *= 1024;
+			case 'k':
+				$val *= 1024;
+		}
+
+		return $val;
 	}
 }

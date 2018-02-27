@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 namespace DPCalendar\Plugin;
@@ -191,8 +191,12 @@ abstract class PaymentPlugin extends \JPlugin
 		}
 		$return            = new \stdClass();
 		$return->status    = true;
-		$return->statement = \JText::_($this->params->get('payment_statement'));
 		$return->type      = $this->_name;
+		$return->statement = \DPCalendar\Helper\DPCalendarHelper::getStringFromParams(
+			'payment_statement',
+			'PLG_DPCALENDARPAY_MANUAL_PAYMENT_STATEMENT_TEXT',
+			$this->params
+		);
 
 		return $return;
 	}

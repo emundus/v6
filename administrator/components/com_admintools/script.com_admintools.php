@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
-* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  * @version   $Id$
  *
@@ -291,6 +291,31 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 				$params->setValue('quickstart', 1, true);
 			}
 		}
+
+		/**
+		 * If this is an update disable the "Monitor Super User accounts" feature. It only happens ONCE. This will
+		 * prevent people from complaining about this feature doing exactly what it's supposed to do.
+		 */
+		if (!defined('ADMINTOOLS_THIS_IS_INSTALLATION_FROM_SCRATCH'))
+        {
+	        if (!class_exists('Akeeba\\AdminTools\\Admin\\Helper\\Storage'))
+	        {
+		        @include_once $parent->getParent()->getPath('source') . '/backend/Helper/Storage.php';
+	        }
+
+	        if (class_exists('Akeeba\\AdminTools\\Admin\\Helper\\Storage'))
+	        {
+		        $params = new \Akeeba\AdminTools\Admin\Helper\Storage();
+		        $params->load();
+		        $mustDisable = $params->getValue('disabled_superuserslist', 0) == 0;
+
+		        if ($mustDisable)
+                {
+	                $params->setValue('superuserslist', 0, false);
+	                $params->setValue('disabled_superuserslist', 1, true);
+                }
+	        }
+        }
 	}
 
 	/**

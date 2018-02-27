@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
-* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -39,7 +39,7 @@ $uriBase = rtrim(JUri::base(), '/');
 
         <?php if ($this->htMakerSupported): ?>
             <a href="index.php?option=com_admintools&view=AdminPassword" class="akeeba-action--orange">
-                <span class="akion-locked"></span>
+                <span class="akion-<?php echo $this->adminLocked ? 'locked' : 'unlocked'; ?>"></span>
                 <?php echo \JText::_('COM_ADMINTOOLS_TITLE_ADMINPW'); ?><br/>
             </a>
         <?php endif; ?>

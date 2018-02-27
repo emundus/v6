@@ -197,13 +197,28 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	 * Delete a file
 	 *
 	 * @param   string  $filepath  file to delete
+	 * @param   bool    $prependRoot  also test with root prepended
 	 *
 	 * @return  void
 	 */
 
-	public function delete($filepath)
+	public function delete($filepath, $prependRoot = true)
 	{
-		JFile::delete($filepath);
+		if (JFile::exists($filepath))
+		{
+			return JFile::delete($filepath);
+		}
+		else
+		{
+			if ($prependRoot)
+			{
+				$filepath = COM_FABRIK_BASE . '/' . FabrikString::ltrimword($filepath, COM_FABRIK_BASE . '/');
+
+				return JFile::delete($filepath);
+			}
+
+			return false;
+		}
 	}
 
 	/**
@@ -470,5 +485,32 @@ class Filesystemstorage extends FabrikStorageAdaptor
 		$filepath = JPath::clean($filepath);
 
 		return $filepath;
+	}
+
+	/**
+	 * Check for snooping
+	 *
+	 * @param   string   $folder   The file path
+	 *
+	 * @return  void
+	 */
+	public function checkPath($folder)
+	{
+		if ($this->appendServerPath())
+		{
+			JPath::check($folder);
+		}
+	}
+
+	/**
+	 * Return the directory separator - can't use DIRECTORY_SEPARATOR by default, as s3 uses /
+	 *
+	 * @return string
+	 *
+	 * @since 3.8
+	 */
+	public function getDS()
+	{
+		return DIRECTORY_SEPARATOR;
 	}
 }

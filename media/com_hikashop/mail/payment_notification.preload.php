@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -237,13 +237,13 @@ if(!empty($data->cart->products)){
 	}
 	$templates['PRODUCT_LINE'] = $cartProducts;
 
-	if(bccomp($data->order->order_discount_price,0,5) || bccomp($data->cart->order_shipping_price,0,5) || bccomp($data->cart->order_payment_price,0,5) || ($data->cart->full_total->prices[0]->price_value!=$data->cart->full_total->prices[0]->price_value_with_tax) || !empty($data->cart->additional)){
+	if(bccomp($data->order->order_discount_price,0,5) != 0 || bccomp($data->cart->order_shipping_price,0,5) != 0 || bccomp($data->cart->order_payment_price,0,5) != 0 || ($data->cart->full_total->prices[0]->price_value!=$data->cart->full_total->prices[0]->price_value_with_tax) || !empty($data->cart->additional)){
 		$cartFooters[] = array(
 			'NAME' => JText::_('SUBTOTAL'),
 			'VALUE' => $currencyHelper->format($subtotal,$data->cart->order_currency_id)
 		);
 	}
-	if(bccomp($data->cart->order_discount_price,0,5)) {
+	if(bccomp($data->cart->order_discount_price,0,5) != 0) {
 		if($config->get('price_with_tax')) {
 			$t = $currencyHelper->format($data->order_discount_price*-1,$data->cart->order_currency_id);
 		}else{
@@ -254,7 +254,7 @@ if(!empty($data->cart->products)){
 			'VALUE' => $t
 		);
 	}
-	if(bccomp($data->cart->order_shipping_price,0,5)){
+	if(bccomp($data->cart->order_shipping_price,0,5) != 0){
 		if($config->get('price_with_tax')) {
 			$t = $currencyHelper->format($data->cart->order_shipping_price,$data->cart->order_currency_id);
 		}else{
@@ -265,7 +265,7 @@ if(!empty($data->cart->products)){
 			'VALUE' => $t
 		);
 	}
-	if(bccomp($data->cart->order_payment_price,0,5)){
+	if(bccomp($data->cart->order_payment_price,0,5) != 0){
 		if($config->get('price_with_tax')) {
 			$t = $currencyHelper->format($data->cart->order_payment_price, $data->cart->order_currency_id);
 		} else {

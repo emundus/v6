@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,9 +10,10 @@ defined('_JEXEC') or die('Restricted access');
 ?><?php
 class userViewUser extends HikaShopView {
 
-	var $extraFields=array();
-	var $requiredFields = array();
-	var	$validMessages = array();
+	public $extraFields=array();
+	public $requiredFields = array();
+	public $validMessages = array();
+	public $triggerView = array('hikashop');
 
 	public function display($tpl = null) {
 		$function = $this->getLayout();
@@ -49,53 +50,6 @@ class userViewUser extends HikaShopView {
 				'description' => JText::_('VIEW_ORDERS')
 			),
 		);
-		if(hikashop_level(1)) {
-			if($config->get('enable_multicart'))
-				$buttons['cart'] = array(
-					'link' => hikashop_completeLink('cart&task=showcarts&cart_type=cart'.$url_itemid),
-					'level' => 0,
-					'image' => 'cart',
-					'text' => JText::_('CARTS'),
-					'description' => JText::_('DISPLAY_THE_CARTS')
-				);
-			else
-				$buttons['cart'] = array(
-					'link' => hikashop_completeLink('cart&task=showcart&cart_type=cart'.$url_itemid),
-					'level' => 0,
-					'image' => 'cart',
-					'text' => JText::_('CARTS'),
-					'description' => JText::_('DISPLAY_THE_CART')
-				);
-
-			if($config->get('enable_wishlist')) {
-				if($config->get('enable_multicart'))
-					$buttons['wishlist'] = array(
-						'link' => hikashop_completeLink('cart&task=showcarts&cart_type=wishlist'.$url_itemid),
-						'level' => 0,
-						'image' => 'wishlist',
-						'text' => JText::_('WISHLISTS'),
-						'description' => JText::_('DISPLAY_THE_WISHLISTS')
-					);
-				else
-					$buttons['wishlist'] = array(
-						'link' => hikashop_completeLink('cart&task=showcart&cart_type=wishlist'.$url_itemid),
-						'level' => 0,
-						'image' => 'wishlist',
-						'text' => JText::_('WISHLISTS'),
-						'description' => JText::_('DISPLAY_THE_WISHLIST')
-					);
-			}
-
-			if($config->get('enable_customer_downloadlist'))
-				$buttons['download'] = array(
-					'link' => hikashop_completeLink('user&task=downloads'.$url_itemid),
-					'level' => 0,
-					'image' => 'downloads',
-					'text' => JText::_('DOWNLOADS'),
-					'description' => JText::_('DISPLAY_THE_DOWNLOADS')
-				);
-		}
-
 		JPluginHelper::importPlugin('hikashop');
 		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
@@ -364,152 +318,7 @@ else
 
 	public function downloads() {
 		$user = hikashop_loadUser(true);
-		if(hikashop_loadUser() == null)
+		if(empty($user))
 			return false;
-
-		$app = JFactory::getApplication();
-		$db = JFactory::getDBO();
-		$config = hikashop_config();
-		$this->assignRef('config', $config);
-
-		$order_statuses = explode(',', $config->get('order_status_for_download', 'shipped,confirmed'));
-		foreach($order_statuses as $k => $o) {
-			$order_statuses[$k] = $db->Quote( trim($o) );
-		}
-		$download_time_limit = $config->get('download_time_limit',0);
-		$this->assignRef('download_time_limit', $download_time_limit);
-
-		$paramBase = HIKASHOP_COMPONENT.'.'.$this->getName();
-
-		$pageInfo = new stdClass();
-		$pageInfo->filter = new stdClass();
-		$pageInfo->filter->order = new stdClass();
-		$pageInfo->limit = new stdClass();
-
-		$pageInfo->filter->order->value = $app->getUserStateFromRequest($paramBase.'.filter_order', 'filter_order', 'max_order_created', 'cmd');
-		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest($paramBase.'.filter_order_Dir', 'filter_order_Dir', 'desc', 'word');
-		$pageInfo->search = $app->getUserStateFromRequest($paramBase.'.search', 'search', '', 'string');
-		$pageInfo->search = JString::strtolower($pageInfo->search);
-		$pageInfo->limit->start = $app->getUserStateFromRequest($paramBase.'.limitstart', 'limitstart', 0, 'int');
-
-		$oldValue = $app->getUserState($paramBase.'.list_limit');
-		$searchMap = array(
-			'op.order_product_name',
-			'f.file_name'
-		);
-		$order = '';
-		if(!empty($pageInfo->filter->order->value)) {
-			if($pageInfo->filter->order->value == 'f.file_name')
-				$order = ' ORDER BY f.file_name '.$pageInfo->filter->order->dir.', f.file_path '.$pageInfo->filter->order->dir;
-			else
-				$order = ' ORDER BY '.$pageInfo->filter->order->value.' '.$pageInfo->filter->order->dir;
-		}
-
-		$filters = array(
-			'o.order_type = \'sale\'',
-			'o.order_status IN ('.implode(',', $order_statuses).')',
-			'f.file_ref_id > 0',
-			'f.file_type = \'file\'',
-			'o.order_user_id = ' . $user->user_id,
-		);
-		if(!empty($pageInfo->search)) {
-			$searchVal = '\'%'.hikashop_getEscaped(JString::strtolower(trim($pageInfo->search)),true).'%\'';
-			$filter = '('.implode(' LIKE '.$searchVal.' OR ',$searchMap).' LIKE '.$searchVal.')';
-			$filters[] =  $filter;
-		}
-		$filters = implode(' AND ',$filters);
-
-		if(empty($oldValue)) {
-			$oldValue = $app->getCfg('list_limit');
-		}
-
-		$pageInfo->limit->value = $app->getUserStateFromRequest( $paramBase.'.list_limit', 'limit', $app->getCfg('list_limit'), 'int' );
-		if($oldValue!=$pageInfo->limit->value) {
-			$pageInfo->limit->start = 0;
-			$app->setUserState($paramBase.'.limitstart',0);
-		}
-		$select = 'o.order_id, o.order_created, p.*, f.*, op.* ';
-		$selectSum = ', MIN(o.order_created) as min_order_created, MAX(o.order_created) as max_order_created, SUM(op.order_product_quantity) as file_quantity ';
-		$selectUniq = ', IF( REPLACE(LEFT(f.file_path, 1) , \'#\', \'@\') = \'@\', CONCAT(f.file_id, \'@\', o.order_id), f.file_id ) as uniq_id';
-		$query = ' FROM '.hikashop_table('order').' AS o ' .
-			' INNER JOIN '.hikashop_table('order_product').' AS op ON op.order_id = o.order_id ' .
-			' INNER JOIN '.hikashop_table('product').' AS p ON op.product_id = p.product_id ' .
-			' INNER JOIN '.hikashop_table('file').' AS f ON (op.product_id = f.file_ref_id OR p.product_parent_id = f.file_ref_id) ' .
-			' WHERE ' . $filters;
-		$groupBy = ' GROUP BY uniq_id ';
-
-		$db->setQuery('SELECT '. $select . $selectSum . $selectUniq . $query . $groupBy . $order, (int)$pageInfo->limit->start, (int)$pageInfo->limit->value);
-		$downloadData = $db->loadObjectList('uniq_id');
-
-		if(!empty($pageInfo->search)) {
-			$downloadData = hikashop_search($pageInfo->search,$downloadData,'order_id');
-		}
-		$db->setQuery('SELECT COUNT(*) as all_results_count FROM (SELECT f.file_id ' . $selectUniq . $query . $groupBy . ') AS all_results');
-
-		$pageInfo->elements = new stdClass();
-		$pageInfo->elements->total = $db->loadResult('total');
-		$pageInfo->elements->page = count($downloadData);
-
-		$file_ids = array();
-		$order_ids = array();
-
-		foreach($downloadData as $k => $data) {
-			if((int)$data->order_id > 0)
-				$order_ids[(int)$data->order_id] = (int)$data->order_id;
-			$downloadData[$k]->download_total = 0;
-			$downloadData[$k]->downloads = array();
-			$downloadData[$k]->orders = array();
-			if(strpos($k,'@') === false)
-				$file_ids[] = $k;
-		}
-
-		if(!empty($file_ids)) {
-			$db->setQuery('SELECT ' . $select . $query . ' AND f.file_id IN (' . implode(',', $file_ids) . ')');
-			$orders = $db->loadObjectList();
-			foreach($orders as $o) {
-				if(isset($downloadData[$o->file_id])) {
-					$downloadData[$o->file_id]->orders[(int)$o->order_id] = $o;
-					$downloadData[$o->file_id]->orders[(int)$o->order_id]->file_qty = 0;
-					$downloadData[$o->file_id]->orders[(int)$o->order_id]->download_total = 0;
-				}
-				$order_ids[(int)$o->order_id] = (int)$o->order_id;
-			}
-		}
-
-		if(!empty($order_ids)) {
-			$db->setQuery('SELECT * FROM ' . hikashop_table('download') . ' WHERE order_id IN (' . implode(',', $order_ids) . ')');
-			$downloads = $db->loadObjectList();
-			foreach($downloads as $download) {
-				$uniq_id = $download->file_id . '@' . $download->order_id;
-				if(isset($downloadData[$uniq_id])) {
-					$downloadData[$uniq_id]->download_total += (int)$download->download_number;
-					$downloadData[$uniq_id]->downloads[$download->file_pos] = $download;
-				} else if(isset($downloadData[$download->file_id])) {
-					$downloadData[$download->file_id]->download_total += (int)$download->download_number;
-					if(isset($downloadData[$download->file_id]->orders[$download->order_id])) {
-						$downloadData[$download->file_id]->orders[$download->order_id]->file_qty++;
-						$downloadData[$download->file_id]->orders[$download->order_id]->download_total += (int)$download->download_number;
-					}
-				}
-			}
-		}
-
-		jimport('joomla.html.pagination');
-		$pagination = hikashop_get('helper.pagination', $pageInfo->elements->total, $pageInfo->limit->start, $pageInfo->limit->value);
-		$pagination->hikaSuffix = '';
-
-		$this->assignRef('pagination',$pagination);
-		$this->assignRef('pageInfo',$pageInfo);
-		$this->assignRef('downloadData', $downloadData);
-
-		$toolbar_array = array();
-
-		$back = array(
-			'icon' => 'back',
-			'name' => JText::_('HIKA_BACK'),
-			'url' =>  hikashop_completeLink('user&task=cpanel')
-		);
-		$toolbar_array['back'] = $back;
-		$this->toolbar = $toolbar_array;
 	}
 }

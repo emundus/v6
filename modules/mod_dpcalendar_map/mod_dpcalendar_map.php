@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 
@@ -10,8 +10,7 @@ defined('_JEXEC') or die();
 
 use Joomla\Registry\Registry;
 
-JLoader::import('components.com_dpcalendar.helpers.dpcalendar', JPATH_ADMINISTRATOR);
-if (!class_exists('DPCalendarHelper')) {
+if (!JLoader::import('components.com_dpcalendar.helpers.dpcalendar', JPATH_ADMINISTRATOR)) {
 	return;
 }
 

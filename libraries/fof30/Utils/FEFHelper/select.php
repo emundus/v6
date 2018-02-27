@@ -709,4 +709,52 @@ abstract class FEFHelperSelect
 		return $html;
 	}
 
+	/**
+	 * Creates two radio buttons styled with FEF to appear as a YES/NO switch
+	 *
+	 * @param	string	$name		Name of the field
+	 * @param	string	$selected	Selected field
+	 * @param	array	$attribs	Additional attributes to add to the switch
+	 *
+	 * @return	string	The HTML for the switch
+	 */
+	public static function booleanswitch($name, $selected, array $attribs = array())
+	{
+		if (empty($attribs))
+		{
+			$attribs = array('class' => 'akeeba-toggle');
+		}
+		else
+		{
+			if (isset($attribs['class']))
+			{
+				$attribs['class'] .= ' akeeba-toggle';
+			}
+			else
+			{
+				$attribs['class'] = 'akeeba-toggle';
+			}
+		}
+
+		$temp = '';
+
+		foreach ($attribs as $key => $value)
+		{
+			$temp .= $key . ' = "' . $value . '"';
+		}
+
+		$attribs = $temp;
+
+		$checked_1 = $selected ? '' : 'checked ';
+		$checked_2 = $selected ? 'checked ' : '';
+
+		$html  = '<div '.$attribs.'>';
+		$html .= 	'<input type="radio" class="radio-yes" name="'.$name.'" '.$checked_2.'id="'.$name .'-2" value="1">';
+		$html .=	'<label for="'.$name.'-2" class="green">'.JText::_('JYES').'</label>';
+		$html .=	'<input type="radio" class="radio-no" name="'.$name.'" '.$checked_1.'id="'.$name .'-1" value="0">';
+		$html .= 	'<label for="'.$name.'-1" class="red">'.JText::_('JNO').'</label>';
+		$html .= '</div>';
+
+		return $html;
+	}
 }

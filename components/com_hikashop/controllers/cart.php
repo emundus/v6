@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 class CartController extends hikashopController {
 	public $display = array(
 		'show', 'listing', 'cancel', '',
-		'sendcart','printcart',
+		'share','printcart',
 		'showcart','showcarts'
 	);
 	public $modify_views = array();
@@ -19,7 +19,8 @@ class CartController extends hikashopController {
 	public $modify = array(
 		'apply','save',
 		'setcurrent',
-		'addtocart'
+		'addtocart',
+		'sendshare'
 	);
 	public $delete = array('remove');
 	public $type = 'cart';
@@ -137,7 +138,97 @@ class CartController extends hikashopController {
 		return $this->listing();
 	}
 
-	public function sendcart() {
+	public function share() {
+		hikashop_nocache();
+		hikaInput::get()->set('tmpl','component');
+		$cart_id = hikashop_getCID('cart_id');
+		if(empty($cart_id)) {
+			hikashop_display('No wishlist ID provided');
+			return false;
+		}
+		$cartClass = hikashop_get('class.cart');
+		$cart = $cartClass->getFullCart($cart_id);
+		if(empty($cart)) {
+			hikashop_display('We couldn`\'t find any wishlist to share for the id '.$cart_id);
+			return false;
+		}
+		if($cart->cart_type != 'wishlist') {
+			hikashop_display('The Id provided is not a wishlist');
+			return false;
+		}
+		$user_id = hikashop_loadUser(false);
+		if($cart->user_id != $user_id) {
+			hikashop_display('You are not the owner of the wishlist');
+			return false;
+		}
+		hikaInput::get()->set('layout', 'share');
+		return parent::display();
+	}
+
+	public function sendshare(){
+		$emails = hikaInput::get()->getVar('emails','');
+		if(empty($emails)) {
+			hikashop_display(JText::_('PLEASE_ENTER_EMAIL_ADDRESSES'), 'error');
+			return $this->share();
+		}
+		hikashop_nocache();
+		$emails = preg_split("/[\s,]+/", $emails);
+		jimport('joomla.mail.helper');
+		$ok = true;
+		$bcc = array();
+		foreach($emails as $k => $email){
+			$email = trim($email);
+			if(empty($email))
+				continue;
+			if(method_exists('JMailHelper', 'isEmailAddress') && !JMailHelper::isEmailAddress($email)){
+				hikashop_display(JText::sprintf('THE_EMAIL_ADDRESS_X_IS_INVALID', $email), 'error');
+				$ok = false;
+			}else{
+				$bcc[] = $email;
+			}
+		}
+
+
+
+		if(!$ok)
+			return $this->share();
+
+		$cart_id = hikashop_getCID('cart_id');
+		if(empty($cart_id)) {
+			hikashop_display('No wishlist ID provided');
+			return false;
+		}
+
+		$cartClass = hikashop_get('class.cart');
+		$cart = $cartClass->getFullCart($cart_id);
+		$user_id = hikashop_loadUser(false);
+		if($cart->user_id != $user_id) {
+			hikashop_display('You are not the owner of the wishlist');
+			return false;
+		}
+
+		if($cart->cart_share == 'nobody'){
+			$cart->cart_share = 'email';
+			$cartClass->save($cart);
+		}
+
+		$mail = $cartClass->loadNotification($cart_id, 'wishlist_share');
+
+		if(!$mail)
+			hikashop_display('We couldn`\'t find any wishlist to share for the id '.$cart_id);
+
+		$copy = hikaInput::get()->getInt('copy');
+		if($copy){
+			$bcc[] = $mail->data->user->user_email;
+		}
+		$mail->bcc_email = $bcc;
+		$mailClass = hikashop_get('class.mail');
+		$status = $mailClass->sendMail($mail);
+		if(!$status) {
+			hikashop_display(JText::_('AN_ERROR_OCCURED_DURING_THE_SENDING_OF_THE_EMAIL'), 'error');
+			return $this->share();
+		}
+		hikashop_display(JText::_('THE_EMAIL_HAS_BEEN_SENT_SUCCESSFULLY'));
 	}
 
 	public function printcart() {

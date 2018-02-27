@@ -443,6 +443,8 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                         // http://fabrik.unfuddle.com/projects/17220/tickets/by_number/703?cycle=true
                         document.id(id).getElements('.fabrikinput').setStyle('opacity', '1');
                         this.showGroupTab(id);
+                        // if it was hidden by group's "Show Group" setting ("Yes, but hidden"), need to show()
+                        fxElement.show();
                     }
                     break;
                 case 'hide':
@@ -459,6 +461,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     }
 	                if (groupfx) {
 		                this.showGroupTab(id);
+                        fxElement.show();
 	                }
                     break;
                 case 'fadeout':
@@ -1365,7 +1368,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 hiddenElements = [];
                 // insert hidden element of hidden elements (!) used by validation code for "skip if hidden" option
                 jQuery.each(this.formElements, function (id, el) {
-                   if (el.element && jQuery(el.element.closest('.fabrikHide')).length !== 0) {
+                   if (el.element && jQuery(el.element).closest('.fabrikHide').length !== 0) {
                        hiddenElements.push(id);
                    }
                 });

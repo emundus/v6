@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
-* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -9,31 +9,11 @@
 
 use Akeeba\AdminTools\Admin\Helper\Html;
 use Akeeba\AdminTools\Admin\Helper\Select;
+use FOF30\Utils\FEFHelper\Html as FEFHtml;
 
 defined('_JEXEC') or die;
 
-$escapedOrder = addslashes($this->order);
-$js = <<< JS
-
-;// This comment is intentionally put here to prevent badly written plugins from causing a Javascript error
-// due to missing trailing semicolon and/or newline in their code.
-Joomla.orderTable = function () {
-	table = document.getElementById("sortTable");
-	direction = document.getElementById("directionTable");
-	order = table.options[table.selectedIndex].value;
-	if (order != '$escapedOrder')
-	{
-		dirn = 'asc';
-	}
-	else
-	{
-		dirn = direction.options[direction.selectedIndex].value;
-	}
-	Joomla.tableOrdering(order, dirn, '');
-}
-
-JS;
-
+$js = FEFHtml::jsOrderingBackend($this->order);
 $this->getContainer()->template->addJSInline($js);
 
 $model = $this->getModel();
@@ -46,7 +26,7 @@ echo $this->loadAnyTemplate('admin:com_admintools/ControlPanel/plugin_warning');
 <form name="enableForm" action="index.php" method="post" class="akeeba-form--inline">
     <div class="akeeba-form-group">
         <label for="urlredirection"><?php echo JText::_('COM_ADMINTOOLS_LBL_REDIRECTION_PREFERENCE'); ?></label>
-        <?php echo Select::booleanswitch('urlredirection', $this->urlredirection) ?>
+        <?php echo \JHtml::_('FEFHelper.select.booleanswitch', 'urlredirection', $this->urlredirection) ?>
     </div>
     <button class="akeeba-btn--dark--small"><?php echo JText::_('COM_ADMINTOOLS_LBL_REDIRECTION_PREFERENCE_SAVE') ?></button>
 
@@ -82,43 +62,7 @@ echo $this->loadAnyTemplate('admin:com_admintools/ControlPanel/plugin_warning');
             </div>
         </div>
 
-        <div class="akeeba-filter-bar akeeba-filter-bar--right">
-            <div class="akeeba-filter-element akeeba-form-group">
-                <label for="limit" class="element-invisible">
-                    <?php echo \JText::_('JFIELD_PLG_SEARCH_SEARCHLIMIT_DESC'); ?>
-                </label>
-                <?php echo $this->pagination->getLimitBox(); ?>
-            </div>
-
-            <div class="akeeba-filter-element akeeba-form-group">
-                <label for="directionTable" class="element-invisible">
-                    <?php echo \JText::_('JFIELD_ORDERING_DESC'); ?>
-                </label>
-                <select name="directionTable" id="directionTable" class="input-medium custom-select" onchange="Joomla.orderTable()">
-                    <option value="">
-                        <?php echo \JText::_('JFIELD_ORDERING_DESC'); ?>
-                    </option>
-                    <option value="asc" <?php echo ($this->order_Dir == 'asc') ? 'selected="selected"' : ""; ?>>
-                        <?php echo \JText::_('JGLOBAL_ORDER_ASCENDING'); ?>
-                    </option>
-                    <option value="desc" <?php echo ($this->order_Dir == 'desc') ? 'selected="selected"' : ""; ?>>
-                        <?php echo \JText::_('JGLOBAL_ORDER_DESCENDING'); ?>
-                    </option>
-                </select>
-            </div>
-
-            <div class="akeeba-filter-element akeeba-form-group">
-                <label for="sortTable" class="element-invisible">
-                    <?php echo \JText::_('JGLOBAL_SORT_BY'); ?>
-                </label>
-                <select name="sortTable" id="sortTable" class="input-medium custom-select" onchange="Joomla.orderTable()">
-                    <option value="">
-                        <?php echo \JText::_('JGLOBAL_SORT_BY'); ?>
-                    </option>
-                    <?php echo \JHtml::_('select.options', $this->sortFields, 'value', 'text', $this->order); ?>
-                </select>
-            </div>
-        </div>
+		<?php echo FEFHtml::selectOrderingBackend($this->getPagination(), $this->sortFields, $this->order, $this->order_Dir)?>
 
     </section>
 
