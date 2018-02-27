@@ -244,7 +244,7 @@ class EmundusModelDecision extends JModelList
             //var_dump($session->get('filt_params'));
             //$element_id = array();
             $filt_params = $session->get('filt_params');
-            if (count(@$filt_params['programme'])>0) {
+            if (is_array(@$filt_params['programme'])) {
                 foreach ($filt_params['programme'] as $value) {
                     $groups = $this->getGroupsDecisionByProgramme($value);
                     if (empty($groups)) {
@@ -279,7 +279,7 @@ class EmundusModelDecision extends JModelList
             $elements_id = array();
             $filt_params = $session->get('filt_params');
 
-            if (count(@$filt_params['programme'])>0) {
+            if (is_array(@$filt_params['programme'])) {
                 foreach ($filt_params['programme'] as $value) {
                     if ($value == $programme_code) {
                         $groups = $this->getGroupsDecisionByProgramme($value);
