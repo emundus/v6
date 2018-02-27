@@ -562,20 +562,14 @@ class EmundusModelCalendar extends JModelLegacy {
 
         try {
 
-            $query = "SELECT user_id FROM #__emundus_groups WHERE group_id IN ( ";
-            $query .= "SELECT DISTINCT(g.id) FROM #__emundus_setup_groups AS g ";
-            $query .= "LEFT JOIN #__emundus_setup_groups_repeat_course AS gr ON gr.parent_id = g.id WHERE gr.course = ".$db->Quote($program_name).")";
-
-            $db->setQuery($query);
-            $program_user_ids = $db->loadColumn();
-
-        } catch (Exception $e) {
-            JLog::add("SQL Query: ".$query." SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
-        }
-
-        try {
-
-            $query = "SELECT u.id, u.name, eu.email FROM #__users AS u LEFT JOIN #__emundus_users AS eu ON eu.user_id = u.id WHERE eu.profile IN (".$profilesToNotify.") AND u.id IN (".implode(",", $program_user_ids).")";
+            $query = "SELECT eu.user_id, u.name, u.email FROM #__emundus_groups AS eg
+                        LEFT JOIN #__emundus_users AS eu ON eu.user_id = eg.user_id
+                        LEFT JOIN #__users AS u ON eu.user_id = u.id
+                        WHERE eu.profile IN (".$profilesToNotify.") AND eg.group_id IN (
+                            SELECT DISTINCT(g.id) FROM #__emundus_setup_groups AS g
+                            LEFT JOIN #__emundus_setup_groups_repeat_course AS gr ON gr.parent_id = g.id
+                            WHERE gr.course = ".$db->Quote($program_name)."
+                        )";
 
             $db->setQuery($query);
             return $db->loadObjectList();
@@ -583,7 +577,6 @@ class EmundusModelCalendar extends JModelLegacy {
         } catch (Exception $e) {
             JLog::add("SQL Query: ".$query." SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
         }
-
 
     }
 
