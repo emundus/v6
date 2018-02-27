@@ -78,7 +78,7 @@ function search() {
         dataType: 'json',
         url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=setfilters',
         data: ({
-            val: JSON.stringify((Object.assign({}, inputs))),
+            val: JSON.stringify(($.extend({}, inputs))),
             multi: false,
             elements: true
         }),
@@ -91,9 +91,9 @@ function search() {
         error: function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText);
         }
-
     });
 }
+
 function clearchosen(cible){
     $(cible).val("%");
     //$('#select_multiple_programmes option[value="%"]').attr('selected',true);
