@@ -334,58 +334,11 @@ class EmundusHelperFiles
         $db->setQuery( $query );
         return $db->loadObjectList();
     }
-
-    public function getProgramCampaigns($code = array(), $year = array()) { // methode a revoir
+    
+    public function getProgramCampaigns($code) {
         $db = JFactory::getDBO();
-        // ONLY FILES LINKED TO MY GROUPS
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
-        $m_users = new EmundusModelUsers();
-        if (!empty($code) && is_array($code)) {
-
-            if ($code[0] == '%' || $code[0] == "") {
-
-                $user = JFactory::getUser();
-                $code = $m_users->getUserGroupsProgrammeAssoc($user->id);
-                //$where = 'training IN ("'.implode('","', $code).'")';
-                if (!empty($year) && is_array($year)){
-                    if ($year[0] == '%' || $year[0] == "" ) {
-                        $year = $m_users->getSchoolyears();
-                        $where = 'training IN ("'.implode('","', $code).'") AND year IN ("'.implode('","', $year).'")';
-                    }else{
-                        $where = 'training IN ("'.implode('","', $code).'") AND year IN ("'.implode('","', $year).'")';
-                    }
-                }
-                else{
-                    $where = 'training  IN ("'.implode('","', $code).'")';
-                }
-                //////////////////////////////////
-            } else{
-                if (!empty($year) && is_array($year)){
-                    if ($year[0] == '%' || $year[0] == "") {
-                        $year = $m_users->getSchoolyears();
-                        $where = 'training IN ("'.implode('","', $code).'") AND year IN ("'.implode('","', $year).'")';
-                    }else{
-                        $where = 'training IN ("'.implode('","', $code).'") AND year IN ("'.implode('","', $year).'")';
-                    }
-                }else{
-                    $where = 'training  IN ("'.implode('","', $code).'")';
-                }
-            }
-
-        } else{
-
-            if (!empty($year) && is_array($year)){
-                if ($year[0] == '%' || $year[0] == "") {
-                    $year = $m_users->getSchoolyears();
-                    $where = 'year  IN ("'.implode('","', $year).'")';
-                }else{
-                    $where = 'year  IN ("'.implode('","', $year).'")';
-                }
-            }else{
-                $where = '1=1';
-            }
-        }
-        $query = 'SELECT *  FROM #__emundus_setup_campaigns WHERE published=1 AND '.$where.' ORDER BY training, year DESC';
+       
+        $query = 'SELECT *  FROM #__emundus_setup_campaigns WHERE published=1 AND training  LIKE "'.$code.'" ORDER BY year DESC';
         $db->setQuery( $query );
         return $db->loadObjectList();
     }
@@ -543,14 +496,15 @@ class EmundusHelperFiles
 
     /**
      * @param array $code
+     * @param array $years
      * @param array $fabrik_elements
      * @return array
      */
-    public static function getElements($code = array(), $fabrik_elements = array()) {
+    public static function getElements($code = array(), $years = array(), $fabrik_elements = array()) {
         require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-
+        
 
         $h_menu     = new EmundusHelperMenu;
         $m_user     = new EmundusModelUsers;
@@ -562,12 +516,13 @@ class EmundusHelperFiles
             $params = JFactory::getSession()->get('filt_params');
             $programme = $params['programme'];
             $campaigns = @$params['campaign'];
-
+            
             // get profiles for selected programmes or campaigns
             $plist = $m_profile->getProfileIDByCourse((array)$programme);
             $plist = count($plist) == 0 ? $m_profile->getProfileIDByCampaign($campaigns) : $plist;
+            
         } else {
-            $plist = $m_profile->getProfileIDByCourse((array)$code);
+            $plist = $m_profile->getProfileIDByCourse($code, $years);
         }
 
         if ($plist) {
@@ -769,10 +724,11 @@ class EmundusHelperFiles
         if (!empty($elements_id) && isset($elements_id)) {
 
             $db = JFactory::getDBO();
-            $query = 'SELECT element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, groupe.id as group_id, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias, joins.table_join
+            $query = 'SELECT element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, forme.id as form_id, forme.label as form_label, groupe.id as group_id, groupe.label as group_label, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias, joins.table_join
                     FROM #__fabrik_elements element
                     INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
                     INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
+                    INNER JOIN #__fabrik_forms AS forme ON formgroup.form_id = forme.id 
                     INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
                     LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
                     WHERE element.id IN ('.ltrim($elements_id, ',').')
@@ -1689,11 +1645,11 @@ class EmundusHelperFiles
         $user = JFactory::getUser();
         $db = JFactory::getDBO();
         if (is_null($id) && !empty($itemid)) {
-            $query = 'SELECT * FROM #__emundus_filters WHERE user='.$user->id.' AND item_id='.$itemid;
+            $query = 'SELECT * FROM #__emundus_filters WHERE user='.$user->id.' AND constraints LIKE "%col%" AND item_id='.$itemid;
             $db->setQuery( $query );
             return $db->loadObjectlist();
         } elseif(!empty($id)) {
-            $query = 'SELECT * FROM #__emundus_filters WHERE id='.$id;
+            $query = 'SELECT * FROM #__emundus_filters WHERE id='.$id.' AND constraints LIKE "%col%"';
             $db->setQuery( $query );
             return $db->loadObject();
         }

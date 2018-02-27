@@ -1182,7 +1182,13 @@ class EmundusControllerFiles extends JControllerLegacy
         $nbcol      = $jinput->getVar('nbcol', 0);
         $elts       = $jinput->getString('elts', null);
         $objs       = $jinput->getString('objs', null);
+        $opts       = $jinput->getString('opts', null);
         $methode    = $jinput->getString('methode', null);
+
+       
+        $opts = $this->getcolumn($opts);
+       
+        //var_dump($opts);
 
         $col    = $this->getcolumn($elts);
         $colsup = $this->getcolumnSup($objs);
@@ -1196,15 +1202,13 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $h_files = new EmundusHelperFiles;
         $elements = $h_files->getElementsName(implode(',',$col));
-
+        //var_dump($elements);die;
         // re-order elements
         $ordered_elements = array();
         foreach ($col as $c) {
             $ordered_elements[$c] = $elements[$c];
         }
-
         $fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
-
         // On met a jour la liste des fnums traités
         $fnums = array();
         foreach ($fnumsArray as $fnum) {
@@ -1266,14 +1270,30 @@ class EmundusControllerFiles extends JControllerLegacy
         $element_csv = array();
         $i = $start;
 
+
         // On traite les en-têtes
         if ($start == 0) {
-            $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('CAMPAIGN')."\t";
+            $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('PROGRAMME')."\t";
             $nbcol = 6;
             foreach ($ordered_elements as $fKey => $fLine) {
                 if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id') {
-                    $line .= $fLine->element_label . "\t";
-                    $nbcol++;
+                    if(count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted"){
+                        if(in_array("form-title", $opts) && in_array("form-group", $opts)){
+                            $line .= $fLine->form_label." > ".$fLine->group_label." > ".$fLine->element_label. "\t";
+                            $nbcol++;
+                        }elseif(count($opts) == 1){
+                            if(in_array("form-title", $opts)){
+                                $line .= $fLine->form_label." > ".$fLine->element_label. "\t";
+                                $nbcol++;
+                            }elseif(in_array("form-group", $opts)){
+                                $line .= $fLine->group_label." > ".$fLine->element_label. "\t";
+                                $nbcol++;
+                            }
+                        }
+                    }else{
+                        $line .= $fLine->element_label. "\t";
+                        $nbcol++;
+                    }
                 }
             }
             foreach ($colsup as $kOpt => $vOpt) {
@@ -1288,7 +1308,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $element_csv[] = $line;
             $line = "";
         }
-
+        //var_dump($fnumsArray);die;
         // On parcours les fnums
         foreach ($fnumsArray as $fnum) {
             // On traite les données du fnum
@@ -1301,6 +1321,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         $uid = intval(substr($v, 21, 7));
                         $userProfil = JUserHelper::getProfile($uid)->emundus_profile;
                         $lastname = (!empty($userProfil['lastname']))?$userProfil['lastname']:JFactory::getUser($uid)->name;
+                        $line .= $lastname."\t";
                         $line .= $userProfil['firstname']."\t";
                     } else $line .= $v."\t";
 
@@ -2462,23 +2483,20 @@ class EmundusControllerFiles extends JControllerLegacy
         $session     = JFactory::getSession();
         $filt_params = $session->get('filt_params');
         $h_files = new EmundusHelperFiles;
-        $campaigns = $h_files->getProgramCampaigns($filt_params['programme'], $filt_params['schoolyear']);
-        $programmes = $h_files->getProgrammes($filt_params['programme']);
-
-        $nbprg = count($campaigns);
-        if (empty($filt_params)){
-            $params['programme'] = $programmes;
-            $session->set('filt_params', $params);
-        }
+        $jinput = JFactory::getApplication()->input;
+        $code       = $jinput->getString('code', null);
+        $campaigns = $h_files->getProgramCampaigns($code);
+        
+        $nbcamp = count($campaigns);
         foreach ($campaigns as $c) {
-            if ($nbprg == 1) {
-                $html .= '<option value="'.$c->training.'" selected>'.$c->label.' - '.$c->training.'('.$c->year.')</option>';
+            if ($nbcamp == 1) {
+                $html .= '<option value="'.$c->year.'" selected>'.$c->label.' - '.$c->training.'('.$c->year.')</option>';
             } else {
-                $html .= '<option value="'.$c->training.'">'.$c->label.' - '.$c->training.'('.$c->year.')</option>';
+                $html .= '<option value="'.$c->year.'">'.$c->label.' - '.$c->training.'('.$c->year.')</option>';
             }
         }
 
-        echo json_encode((object)(array('status' => true, 'html' => $html, 'nbprg' => $nbprg)));
+        echo json_encode((object)(array('status' => true, 'html' => $html, 'nbcamp' => $nbcamp)));
         exit;
     }
 
