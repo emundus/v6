@@ -19,7 +19,7 @@ JFactory::getSession()->set('application_layout', 'mail');
             <div class="panel-body">
 
                 <?php if (!$this->messages) :?>
-                    <h3> <?php echo JText::_('ERROR_GETTING MESSAGES'); ?> </h3>
+                    <h3> <?php echo JText::_('ERROR_GETTING_MESSAGES'); ?> </h3>
                 <?php elseif (count($this->messages) === 0) :?>
                     <h3> <?php echo JText::_('NO_MESSAGES_FOUND'); ?> </h3>
                 <?php else :?>

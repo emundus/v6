@@ -724,7 +724,7 @@ class EmundusHelperFiles
                     WHERE element.id IN ('.ltrim($elements_id, ',').')
                     ORDER BY formgroup.ordering, element.ordering ';
             try {
-//echo "<hr>".str_replace('#_', 'jos', $query);
+//echo "<hr>".str_replace('#_', 'jos', $query); die();
                 $db->setQuery($query);
                 $res = $db->loadObjectList('id');
 
@@ -1876,7 +1876,6 @@ class EmundusHelperFiles
         $evaluations = $m_files->getFnumArray($fnums, $elements);
 
         $data = array();
-        //$i = 0;
 
         foreach ($evaluations as $eval) {
 
@@ -1930,8 +1929,6 @@ class EmundusHelperFiles
                     $str = $eval['label'].' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.JFactory::getUser($eval['jos_emundus_evaluations___user_raw'])->name;
 
                 $data[$eval['fnum']][$eval['jos_emundus_evaluations___user_raw']] = $str;
-
-                //$i++;
             }
         }
         return $data;
@@ -1944,6 +1941,7 @@ class EmundusHelperFiles
 
         $m_evaluation   = new EmundusModelEvaluation();
         $m_files        = new EmundusModelFiles;
+        $h_files        = new EmundusHelperFiles;
 
         if (!is_array($fnums)) {
             $fnumInfo = $m_files->getFnumInfos($fnums);
@@ -1954,6 +1952,7 @@ class EmundusHelperFiles
 
         $element_id = $m_evaluation->getAllDecisionElements(1, $fnumInfo['training']);
         $elements = $h_files->getElementsName(implode(',',$element_id));
+
         $evaluations = $m_files->getFnumArray($fnums, $elements);
 
         $data = array();
@@ -2005,8 +2004,6 @@ class EmundusHelperFiles
                 }
 
                 $data[$eval['fnum']][$eval['jos_emundus_final_grade___user']] = $str;
-
-                //$i++;
             }
         }
 
