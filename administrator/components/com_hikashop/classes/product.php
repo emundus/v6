@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -419,7 +419,31 @@ class hikashopProductClass extends hikashopClass{
 		}
 
 		if(hikashop_acl('product/edit/description')) {
-			$product->product_description = hikaInput::get()->getRaw('product_description','');
+			$product->product_description = hikaInput::get()->getRaw('product_description', '');
+
+			$product->product_description_raw = hikaInput::get()->getRaw('product_description_raw', null);
+			$default_description_type = $config->get('default_description_type', '');
+			if(empty($product_id) && !empty($default_description_type))
+				$product->product_description_type = $default_description_type;
+			if(!empty($oldProduct->product_description_type))
+				$product->product_description_type = $oldProduct->product_description_type;
+
+			if($product->product_description_raw !== null && !empty($product->product_description_type) && $product->product_description_type != 'html') {
+				$contentparserType = hikashop_get('type.contentparser');
+				$description_types = $contentparserType->load();
+				if(isset($description_types[ $product->product_description_type ])) {
+
+					$product->product_description = $product->product_description_raw;
+
+					JPluginHelper::importPlugin('hikashop');
+					$dispatcher = JDispatcher::getInstance();
+					$dispatcher->trigger('onHkContentParse', array( &$product->product_description, $product->product_description_type ));
+				} else {
+					$product->product_description_type = null;
+					unset($product->product_description);
+				}
+			}
+
 			if((int)$config->get('safe_product_description', 0)) {
 				$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
 				$product->product_description = $safeHtmlFilter->clean($product->product_description, 'string');
@@ -511,11 +535,18 @@ class hikashopProductClass extends hikashopClass{
 
 			if(empty($product->prices[$k]))
 				$product->prices[$k] = new stdClass();
-
 			if(isset($value['price_value']))
 				$product->prices[$k]->price_value = hikashop_toFloat($value['price_value']);
 			if(isset($value['price_access']))
 				$product->prices[$k]->price_access = preg_replace('#[^a-z0-9,]#i', '', $value['price_access']);
+			if(!empty($value['price_start_date']))
+				$product->prices[$k]->price_start_date = hikashop_getTime($value['price_start_date']);
+			else
+				$product->prices[$k]->price_start_date = '';
+			if(!empty($value['price_end_date']))
+				$product->prices[$k]->price_end_date = hikashop_getTime($value['price_end_date']);
+			else
+				$product->prices[$k]->price_end_date = '';
 
 			if(isset($value['price_users']))
 				$product->prices[$k]->price_users = preg_replace('#[^0-9,]#i', '', $value['price_users']);
@@ -846,7 +877,33 @@ class hikashopProductClass extends hikashopClass{
 		unset($product->bundle);
 
 		if(hikashop_acl('product/variant/description')) {
-			$product->product_description = hikaInput::get()->getRaw('product_variant_description','');
+			$product->product_description = hikaInput::get()->getRaw('product_variant_description', '');
+
+			$product->product_description_raw = hikaInput::get()->getRaw('product_variant_description_raw', null);
+			$default_description_type = $config->get('default_description_type', '');
+			if($new && !empty($default_description_type))
+				$product->product_description_type = $default_description_type;
+			if($new && isset($productParent->product_description_type))
+				$product->product_description_type = $productParent->product_description_type;
+			if(!empty($oldProduct->product_description_type))
+				$product->product_description_type = $oldProduct->product_description_type;
+
+			if($product->product_description_raw !== null && !empty($product->product_description_type) && $product->product_description_type != 'html') {
+				$contentparserType = hikashop_get('type.contentparser');
+				$description_types = $contentparserType->load();
+				if(isset($description_types[ $product->product_description_type ])) {
+
+					$product->product_description = $product->product_description_raw;
+
+					JPluginHelper::importPlugin('hikashop');
+					$dispatcher = JDispatcher::getInstance();
+					$dispatcher->trigger('onHkContentParse', array( &$product->product_description, $product->product_description_type ));
+				} else {
+					$product->product_description_type = null;
+					unset($product->product_description);
+				}
+			}
+
 			if((int)$config->get('safe_product_description', 0)) {
 				$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
 				$product->product_description = $safeHtmlFilter->clean($product->product_description, 'string');
@@ -891,6 +948,14 @@ class hikashopProductClass extends hikashopClass{
 					$product->prices[$k]->price_value = hikashop_toFloat($value['price_value']);
 				if($acls['acl'] && isset($value['price_access']))
 					$product->prices[$k]->price_access = preg_replace('#[^a-z0-9,]#i', '', $value['price_access']);
+				if(!empty($value['price_start_date']))
+					$product->prices[$k]->price_start_date = hikashop_getTime($value['price_start_date']);
+				else
+					$product->prices[$k]->price_start_date = '';
+				if(!empty($value['price_end_date']))
+					$product->prices[$k]->price_end_date = hikashop_getTime($value['price_end_date']);
+				else
+					$product->prices[$k]->price_start_date = '';
 				if($acls['acl'] && isset($value['price_users']))
 					$product->prices[$k]->price_users = preg_replace('#[^0-9,]#i', '', $value['price_users']);
 				if($acls['currency'] && isset($value['price_currency_id']))
@@ -1649,7 +1714,7 @@ class hikashopProductClass extends hikashopClass{
 		$ids = array();
 		foreach($rows as $key => $row) {
 			if(!is_null($row->product_id)) {
-				$ids[] = $row->product_id;
+				$ids[] = (int)$row->product_id;
 				$this->addAlias($rows[$key]);
 			}
 		}
@@ -1768,13 +1833,19 @@ class hikashopProductClass extends hikashopClass{
 		if(!hikashop_level(1))
 			return true;
 
-		if($options['load_custom_product_fields']){
+		if($options['load_custom_product_fields']) {
 			$fieldsClass = hikashop_get('class.field');
 			$this->productFields = $fieldsClass->getFields($options['load_custom_product_fields'], $rows, 'product', 'checkout&task=state');
 		}
 
 		if(!hikashop_level(2))
 			return true;
+
+		if(!$options['load_custom_item_fields'])
+			return true;
+
+		if(empty($fieldsClass))
+			$fieldsClass = hikashop_get('class.field');
 
 		$this->itemFields = $fieldsClass->getFields('frontcomp', $rows, 'item', 'checkout&task=state');
 		if(empty($this->itemFields))
@@ -2171,14 +2242,19 @@ class hikashopProductClass extends hikashopClass{
 
 					if(empty($price->price_users))
 						$price->price_users = '';
-					$line.=','.$this->database->Quote($price->price_access).','.$this->database->Quote($price->price_users);
+					if(empty($price->price_start_date))
+						$price->price_start_date = 0;
+					if(empty($price->price_end_date))
+						$price->price_end_date = 0;
+
+					$line.=','.$this->database->Quote($price->price_access).','.$this->database->Quote($price->price_users).','.(int)$price->price_start_date.','.(int)$price->price_end_date;
 				}
 				$insert[]=$line.')';
 			}
 			if(!empty($insert)){
 				$select = 'price_currency_id,price_product_id,price_min_quantity,price_value,price_id,price_site_id';
 				if(hikashop_level(2)){
-					$select.=',price_access,price_users';
+					$select.=',price_access,price_users,price_start_date,price_end_date';
 				}
 				$query = 'REPLACE '.hikashop_table('price').' ('.$select.') VALUES '.implode(',',$insert).';';
 				$this->database->setQuery($query);

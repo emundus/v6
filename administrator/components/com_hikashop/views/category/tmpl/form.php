@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -181,11 +181,10 @@ defined('_JEXEC') or die('Restricted access');
 <?php if($this->category_image){ ?>
 				<fieldset class="adminform" id="htmlfieldset">
 					<legend><?php echo JText::_( 'HIKA_IMAGE' ); ?></legend>
-					<span id="category_image-<?php echo @$this->element->file_id;?>">
-						<?php echo $this->image->display(@$this->element->file_path,true,"",'','', 100, 100); ?>
-					<span class="spanloading"><?php if(!empty($this->element->file_path)) echo $this->toggle->delete("category_image-".$this->element->file_id,'category-'.$this->element->category_id,'file',true); ?></span><br/></span>
-					<input type="file" name="files[]" size="30" />
-					<?php echo JText::sprintf('MAX_UPLOAD',(hikashop_bytes(ini_get('upload_max_filesize')) > hikashop_bytes(ini_get('post_max_size'))) ? ini_get('post_max_size') : ini_get('upload_max_filesize')); ?>
+<?php
+			$this->setLayout('form');
+			echo $this->loadTemplate('image');
+?>
 				</fieldset>
 <?php } ?>
 				<fieldset class="adminform">

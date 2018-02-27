@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -184,7 +184,7 @@ class hikashopModulesClass extends hikashopClass{
 			return true;
 
 		if(in_array($ctrl, array('product', 'category'))) {
-			if(!in_array($task, array('show', 'listing', 'compare')))
+			if(!in_array($task, array('show', 'listing', 'compare', 'waitlist', 'contact')))
 				return true;
 
 			if($task == 'show' && $ctrl == 'product' && (int)$params->get('display_on_product_page', 1) == 0)
@@ -197,6 +197,8 @@ class hikashopModulesClass extends hikashopClass{
 			if($task == 'listing' && $ctrl == 'category' && (int)$params->get('display_on_category_listing_page', 1) == 0)
 				return false;
 			if($task == 'contact' && $ctrl == 'product' && (int)$params->get('display_on_contact_page', 1) == 0)
+				return false;
+			if($task == 'waitlist' && $ctrl == 'product' && (int)$params->get('display_on_waitlist_page', 1) == 0)
 				return false;
 		}
 		if($ctrl == 'checkout' && (int)$params->get('display_on_checkout_page', 1) == 0) {

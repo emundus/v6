@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -141,7 +141,7 @@ class hikashopImportHelper
 		}
 		jimport('joomla.filesystem.folder');
 		jimport('joomla.filesystem.file');
-		$app =& JFactory::getApplication();
+		$app = JFactory::getApplication();
 		$files = JFolder::files($uploadFolder);
 		if(!empty($files)){
 			$imageHelper = hikashop_get('helper.image');
@@ -1164,7 +1164,7 @@ class hikashopImportHelper
 				$data[$namekey] = $this->db->loadResult();
 				if(empty($data[$namekey])){
 					if($error){
-						$app =& JFactory::getApplication();
+						$app = JFactory::getApplication();
 						$app->enqueueMessage('The '.$type.' category "'.$code.'" could not be found in the database. Products imported and using this '.$type.' category will be linked to the main '.$type.' category.');
 						$name = 'main'.ucfirst($type).'Category';
 						$data[$namekey] = @$this->$name;

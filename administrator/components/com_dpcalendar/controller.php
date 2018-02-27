@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -12,7 +12,16 @@ class DPCalendarController extends JControllerLegacy
 
 	public function display($cachable = false, $urlparams = false)
 	{
-		$view = $this->input->get('view', 'cpanel');
+		$view = $this->input->get('view');
+
+		if (!$view) {
+			if ($this->input->get->get('filter')) {
+				$view = 'events';
+			} else {
+				$view = 'cpanel';
+			}
+		}
+
 		$this->input->set('view', $view);
 		$layout = $this->input->getCmd('layout', 'default');
 		$id     = $this->input->getInt('id');

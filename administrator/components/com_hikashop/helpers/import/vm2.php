@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -939,8 +939,9 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 
 
 	function addVirtuemartCategoryLevel(){
+
 		$this->db->setQuery('ALTER TABLE `'. $this->vmprefix .'virtuemart_category_categories` ADD `level` INT(11)');
-		$this->db->query();
+		try{ $this->db->query(); }catch(Exception $e){}
 	}
 	function addVirtuemartCategoryLevelcolumn($level, $childs = array()){
 		$level = (int)$level;

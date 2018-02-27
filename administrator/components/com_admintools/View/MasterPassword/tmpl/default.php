@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
-* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -50,7 +50,7 @@ use Akeeba\AdminTools\Admin\Helper\Select;
 				<label for="views[<?php echo $this->escape($view); ?>]"
 					  ><?php echo \JText::_($langKey); ?></label>
 
-                <?php echo Select::booleanswitch('views[' . $view . ']', ($locked ? 1 : 0), array('class' => 'masterpwcheckbox')); ?>
+                <?php echo \JHtml::_('FEFHelper.select.booleanswitch', 'views[' . $view . ']', ($locked ? 1 : 0), array('class' => 'masterpwcheckbox')); ?>
 			</div>
 		<?php endforeach; ?>
     </div>

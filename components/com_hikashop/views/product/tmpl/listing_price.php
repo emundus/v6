@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -81,46 +81,46 @@ if(isset($this->row->product_msrp) && @$this->row->product_msrp > 0.0 && hikaInp
 			}
 
 			if(!empty($this->row->discount)){
-				if($this->params->get('show_discount')==1){
+				if($this->params->get('show_discount') == 1) {
 					echo '<span class="hikashop_product_discount">'.JText::_('PRICE_DISCOUNT_START');
-					if(bccomp($this->row->discount->discount_flat_amount,0,5)!==0){
-						echo $this->currencyHelper->format(-1*$this->row->discount->discount_flat_amount,$price->price_currency_id);
-					}elseif(bccomp($this->row->discount->discount_percent_amount,0,5)!==0){
+					if(bccomp($this->row->discount->discount_flat_amount, 0, 5) !== 0) {
+						echo $this->currencyHelper->format( -1 * $this->row->discount->discount_flat_amount, $price->price_currency_id);
+					} elseif(bccomp($this->row->discount->discount_percent_amount, 0, 5) !== 0) {
 						echo -1*$this->row->discount->discount_percent_amount.'%';
 					}
 					echo JText::_('PRICE_DISCOUNT_END').'</span>';
-				}elseif($this->params->get('show_discount')==2){
+				} elseif($this->params->get('show_discount') == 2) {
 					echo '<span class="hikashop_product_price_before_discount">'.JText::_('PRICE_DISCOUNT_START');
 					if($this->params->get('price_with_tax')){
 						echo $this->currencyHelper->format($price->price_value_without_discount_with_tax,$price->price_currency_id);
 					}
-					if($this->params->get('price_with_tax')==2){
+					if($this->params->get('price_with_tax') == 2) {
 						echo JText::_('PRICE_BEFORE_TAX');
 					}
-					if($this->params->get('price_with_tax')==2||!$this->params->get('price_with_tax')){
+					if($this->params->get('price_with_tax') == 2 || !$this->params->get('price_with_tax')) {
 						echo $this->currencyHelper->format($price->price_value_without_discount,$price->price_currency_id);
 					}
-					if($this->params->get('price_with_tax')==2){
+					if($this->params->get('price_with_tax') == 2) {
 						echo JText::_('PRICE_AFTER_TAX');
 					}
 					if($this->params->get('show_original_price') && !empty($price->price_orig_value_without_discount_with_tax)){
 						echo JText::_('PRICE_BEFORE_ORIG');
-						if($this->params->get('price_with_tax')){
+						if($this->params->get('price_with_tax')) {
 							echo $this->currencyHelper->format($price->price_orig_value_without_discount_with_tax,$price->price_orig_currency_id);
 						}
-						if($this->params->get('price_with_tax')==2){
+						if($this->params->get('price_with_tax') == 2) {
 							echo JText::_('PRICE_BEFORE_TAX');
 						}
-						if($this->params->get('price_with_tax')==2||!$this->params->get('price_with_tax') && !empty($price->price_orig_value_without_discount)){
+						if($this->params->get('price_with_tax') == 2 || !$this->params->get('price_with_tax') && !empty($price->price_orig_value_without_discount)) {
 							echo $this->currencyHelper->format($price->price_orig_value_without_discount,$price->price_orig_currency_id);
 						}
-						if($this->params->get('price_with_tax')==2){
+						if($this->params->get('price_with_tax') == 2) {
 							echo JText::_('PRICE_AFTER_TAX');
 						}
 						echo JText::_('PRICE_AFTER_ORIG');
 					}
 					echo JText::_('PRICE_DISCOUNT_END').'</span>';
-				}elseif($this->params->get('show_discount')==3){
+				} elseif($this->params->get('show_discount') == 3) {
 
 				}
 			}

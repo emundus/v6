@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -114,7 +114,8 @@ if (is_numeric($min)) {
 }
 $options['minTime'] = $min;
 
-$options['nowIndicator'] = (boolean)$params->get('current_time_indicator', 1);
+$options['nowIndicator']     = (boolean)$params->get('current_time_indicator', 1);
+$options['displayEventTime'] = (boolean)$params->get('show_event_time', 1);
 
 if ($params->get('event_limit', '') != '-1') {
 	$options['eventLimit'] = $params->get('event_limit', '') == '' ? 2 : $params->get('event_limit', '') + 1;
@@ -188,6 +189,7 @@ if (!\DPCalendar\Helper\DPCalendarHelper::isFree() && $resourceViews && $resourc
 	\JHtml::_('stylesheet', 'com_dpcalendar/scheduler/scheduler.min.css', ['relative' => true]);
 
 	$options['slotLabelFormat'] = null;
+	$options['slotWidth']       = $params->get('location_column_width');
 	$options['smallTimeFormat'] = Fullcalendar::convertFromPHPDate($params->get('timeformat_day', 'g:i a'));
 
 	// Load the model
@@ -224,29 +226,43 @@ $options['views']               = array();
 $options['views']['month']      = array(
 	'titleFormat'            => Fullcalendar::convertFromPHPDate($params->get('titleformat_month', 'F Y')),
 	'timeFormat'             => Fullcalendar::convertFromPHPDate($params->get('timeformat_month', 'g:i a')),
-	'columnFormat'           => Fullcalendar::convertFromPHPDate($params->get('columnformat_month', 'D')),
+	'columnHeaderFormat'     => Fullcalendar::convertFromPHPDate($params->get('columnformat_month', 'D')),
 	'groupByDateAndResource' => !empty($options['resources']) && in_array('month', $resourceViews)
 );
 $options['views']['agendaWeek'] = array(
 	'titleFormat'            => Fullcalendar::convertFromPHPDate($params->get('titleformat_week', 'M j Y')),
 	'timeFormat'             => Fullcalendar::convertFromPHPDate($params->get('timeformat_week', 'g:i a')),
-	'columnFormat'           => Fullcalendar::convertFromPHPDate($params->get('columnformat_week', 'D n/j')),
+	'columnHeaderFormat'     => Fullcalendar::convertFromPHPDate($params->get('columnformat_week', 'D n/j')),
 	'groupByDateAndResource' => !empty($options['resources']) && in_array('week', $resourceViews)
 );
 $options['views']['agendaDay']  = array(
 	'titleFormat'            => Fullcalendar::convertFromPHPDate($params->get('titleformat_day', 'F j Y')),
 	'timeFormat'             => Fullcalendar::convertFromPHPDate($params->get('timeformat_day', 'g:i a')),
-	'columnFormat'           => Fullcalendar::convertFromPHPDate($params->get('columnformat_day', 'l')),
+	'columnHeaderFormat'     => Fullcalendar::convertFromPHPDate($params->get('columnformat_day', 'l')),
 	'groupByDateAndResource' => !empty($options['resources']) && in_array('day', $resourceViews)
 );
 $options['views']['list']       = array(
-	'titleFormat'      => Fullcalendar::convertFromPHPDate($params->get('titleformat_list', 'M j Y')),
-	'timeFormat'       => Fullcalendar::convertFromPHPDate($params->get('timeformat_list', 'g:i a')),
-	'columnFormat'     => Fullcalendar::convertFromPHPDate($params->get('columnformat_list', 'D')),
-	'listDayFormat'    => Fullcalendar::convertFromPHPDate($params->get('dayformat_list', 'l')),
-	'listDayAltFormat' => Fullcalendar::convertFromPHPDate($params->get('dateformat_list', 'F j, Y')),
-	'duration'         => array('days' => $params->get('list_range', 30)),
-	'noEventsMessage'  => JText::_('COM_DPCALENDAR_ERROR_EVENT_NOT_FOUND', true)
+	'titleFormat'        => Fullcalendar::convertFromPHPDate($params->get('titleformat_list', 'M j Y')),
+	'timeFormat'         => Fullcalendar::convertFromPHPDate($params->get('timeformat_list', 'g:i a')),
+	'columnHeaderFormat' => Fullcalendar::convertFromPHPDate($params->get('columnformat_list', 'D')),
+	'listDayFormat'      => Fullcalendar::convertFromPHPDate($params->get('dayformat_list', 'l')),
+	'listDayAltFormat'   => Fullcalendar::convertFromPHPDate($params->get('dateformat_list', 'F j, Y')),
+	'duration'           => array('days' => $params->get('list_range', 30)),
+	'noEventsMessage'    => JText::_('COM_DPCALENDAR_ERROR_EVENT_NOT_FOUND', true)
+);
+
+// Timeline views
+$options['views']['timelineYear']  = array(
+	'timeFormat' => Fullcalendar::convertFromPHPDate($params->get('timeformat_timeline_year', 'g:i a'))
+);
+$options['views']['timelineMonth'] = array(
+	'timeFormat' => Fullcalendar::convertFromPHPDate($params->get('timeformat_timeline_month', 'g:i a'))
+);
+$options['views']['timelineWeek']  = array(
+	'timeFormat' => Fullcalendar::convertFromPHPDate($params->get('timeformat_timeline_week', 'g:i a'))
+);
+$options['views']['timelineDay']   = array(
+	'timeFormat' => Fullcalendar::convertFromPHPDate($params->get('timeformat_timeline_day', 'g:i a'))
 );
 
 // Set up the month and day names
@@ -272,6 +288,7 @@ for ($i = 1; $i <= 12; $i++) {
 
 // Some DPCalendar specific options
 $options['show_event_as_popup']   = $params->get('show_event_as_popup');
+$options['show_map']              = $params->get('show_map', 1);
 $options['use_hash']              = $params->get('use_hash');
 $options['event_create_form']     = (int)$params->get('event_create_form', 1);
 $options['screen_size_list_view'] = $params->get('screen_size_list_view', 500);

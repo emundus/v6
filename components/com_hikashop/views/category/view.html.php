@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -177,7 +177,7 @@ class CategoryViewCategory extends HikaShopView {
 
 		$this->assignRef('category_selected',$category_selected);
 		if($this->params->get('category_order', 'inherit') == 'inherit') {
-			if(empty($defaultParams['category_order']) || $defaultParams['category_order'] == 'inherit')
+			if(empty($defaultParams['category_order']) || $defaultParams['category_order'] == 'inherit' || is_numeric($defaultParams['category_order']))
 				$defaultParams['category_order'] = 'category_ordering';
 			$this->params->set('category_order', $defaultParams['category_order']);
 		}
@@ -187,7 +187,6 @@ class CategoryViewCategory extends HikaShopView {
 				$defaultParams['order_dir'] = 'ASC';
 			$this->params->set('order_dir', $defaultParams['order_dir']);
 		}
-
 		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest( $this->paramBase.".filter_order_Dir", 'filter_order_Dir_'.$this->params->get('main_div_name').$category_selected,	$this->params->get('order_dir','ASC'), 'word');
 		$pageInfo->filter->order->value = $app->getUserStateFromRequest( $this->paramBase.".filter_order", 'filter_order_'.$this->params->get('main_div_name').$category_selected,	'a.'.$this->params->get('category_order','category_ordering'), 'cmd');
 

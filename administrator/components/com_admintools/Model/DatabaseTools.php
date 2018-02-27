@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
-* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -9,7 +9,9 @@ namespace Akeeba\AdminTools\Admin\Model;
 
 defined('_JEXEC') or die;
 
+use Exception;
 use FOF30\Model\Model;
+use JSessionStorage;
 
 class DatabaseTools extends Model
 {
@@ -157,17 +159,51 @@ class DatabaseTools extends Model
 		return $table;
 	}
 
+	/**
+	 * Asks the Joomla! session storage handler to garbage collect any open sessions. This SHOULD remove expired
+	 * sessions, as long as Joomla implements this feature for the given handler.
+	 *
+	 * @return  void
+	 *
+	 * @since   5.0.0
+	 */
+	public function garbageCollectSessions()
+	{
+		$options = array();
+		$conf = $this->container->platform->getConfig();
+		$handler = $conf->get('session_handler', 'none');
+
+		// config time is in minutes
+		$options['expire'] = ($conf->get('lifetime')) ? $conf->get('lifetime') * 60 : 900;
+
+		$storage = JSessionStorage::getInstance($handler, $options);
+		$storage->gc($options['expire']);
+	}
+
+	/**
+	 * Clean and optimize the #__sessions table. The idea is that the sessions table may get corrupt over time due to
+	 * the number of read / write operations and / or ending up with stuck phantom session records.
+	 *
+	 * @return  void
+	 */
 	public function purgeSessions()
 	{
 		$db = $this->container->db;
 
-		$db->setQuery('TRUNCATE TABLE ' . $db->qn('#__session'));
-		$db->execute();
+		try
+		{
+			$db->setQuery('TRUNCATE TABLE ' . $db->qn('#__session'));
+			$db->execute();
 
-		$db->setQuery('DELETE FROM ' . $db->qn('#__session'));
-		$db->execute();
+			$db->setQuery('DELETE FROM ' . $db->qn('#__session'));
+			$db->execute();
 
-		$db->setQuery('OPTIMIZE TABLE ' . $db->qn('#__session'));
-		$db->execute();
+			$db->setQuery('OPTIMIZE TABLE ' . $db->qn('#__session'));
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			return;
+		}
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -46,7 +46,7 @@ class ImportController extends hikashopController
 				if(hikashop_level(2)){
 					$this->_folder();
 				}else{
-					$app =& JFactory::getApplication();
+					$app = JFactory::getApplication();
 					$app->enqueueMessage(Text::_('ONLY_FROM_HIKASHOP_BUSINESS'),'error');
 				}
 				break;
@@ -61,7 +61,7 @@ class ImportController extends hikashopController
 					$table = $this->db->loadResult();
 					if (empty($table))
 					{
-						$app =& JFactory::getApplication();
+						$app = JFactory::getApplication();
 						$app->enqueueMessage('VirtueMart has not been found in the database','error');
 					}
 					else
@@ -83,7 +83,7 @@ class ImportController extends hikashopController
 				$table = $this->db->loadResult();
 				if (empty($table))
 				{
-					$app =& JFactory::getApplication();
+					$app = JFactory::getApplication();
 					$app->enqueueMessage('Mijoshop has not been found in the database','error');
 				}
 				else
@@ -98,7 +98,7 @@ class ImportController extends hikashopController
 				$table = $this->db->loadResult();
 				if (empty($table))
 				{
-					$app =& JFactory::getApplication();
+					$app = JFactory::getApplication();
 					$app->enqueueMessage('Redshop has not been found in the database','error');
 				}
 				else
@@ -138,7 +138,7 @@ class ImportController extends hikashopController
 	}
 
 	function _file(){
-		$importFile =  hikaInput::get()->files->get('importfile', array(), 'array');
+		$importFile =  hikaInput::get()->files->getVar('importfile', array(), 'array');
 		$this->importHelper->overwrite = hikaInput::get()->getInt('file_update_products');
 		$this->importHelper->createCategories = hikaInput::get()->getInt('file_create_categories');
 		$this->importHelper->force_published = hikaInput::get()->getInt('file_force_publish');

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -29,16 +29,6 @@ class hikashopNameboxType {
 				'onlyNode' => true
 			),
 		),
-		'category' => array(
-			'class' => 'class.category',
-			'name' => 'category_name',
-			'mode' => 'tree',
-			'url' => 'category&task=getTree',
-			'options' => array(
-				'tree_url' => 'category&task=getTree&category_id={ID}',
-				'tree_key' => '{ID}',
-			),
-		),
 		'brand' => array(
 			'class' => 'class.category',
 			'name' => 'category_name',
@@ -53,6 +43,33 @@ class hikashopNameboxType {
 			'url' => 'category&task=findList&category_type=manufacturer',
 			'options' => array(
 				'tree_url' => 'category&task=getTree&category_type=manufacturer&category_id={ID}',
+				'tree_key' => '{ID}',
+			),
+		),
+		'cart' => array(
+			'class' => 'class.cart',
+			'name' => 'cart_name',
+			'mode' => 'list',
+			'displayFormat' => '{cart_name} - {user_email} - {cart_id}',
+			'params' => array(
+				'type' => 'cart'
+			),
+			'options' => array(
+				'olist' => array(
+					'table' => array('cart_name' => 'HIKA_NAME', 'user_email' => 'CUSTOMER', 'cart_id' => 'ID' ),
+					'displayFormat' => '{cart_name} - {user_email} - {cart_id}',
+				)
+			),
+			'url_params' => array('TYPE'),
+			'url' => 'cart&task=findList&type={TYPE}'
+		),
+		'category' => array(
+			'class' => 'class.category',
+			'name' => 'category_name',
+			'mode' => 'tree',
+			'url' => 'category&task=getTree',
+			'options' => array(
+				'tree_url' => 'category&task=getTree&category_id={ID}',
 				'tree_key' => '{ID}',
 			),
 		),
@@ -83,7 +100,10 @@ class hikashopNameboxType {
 			'name' => 'discount_code',
 			'mode' => 'list',
 			'displayFormat' => '{discount_code} ({discount_type})',
+			'url' => 'discount&task=findList&type={TYPE}',
+			'url_params' => array('TYPE'),
 			'params' => array(
+				'type' => ''
 			)
 		),
 		'order' => array(

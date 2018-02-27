@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 
@@ -31,7 +31,7 @@ DPCalendarHelper::renderLayout('share.linkedin', array('params' => $this->params
 DPCalendarHelper::renderLayout('share.xing',     array('params' => $this->params, 'root' => $sc));
 
 // The text before content
-$this->root->addChild(new Container('text-before'))->setContent(JHtml::_('content.prepare', $this->params->get('textbefore')));
+$this->root->addChild(new Container('text-before'))->setContent(JHtml::_('content.prepare', JText::_($this->params->get('textbefore'))));
 
 $this->params->set('use_hash', true);
 
@@ -47,7 +47,7 @@ DPCalendarHelper::renderLayout(
 );
 
 // The text after content
-$this->root->addChild(new Container('text-after'))->setContent(JHtml::_('content.prepare', $this->params->get('textafter')));
+$this->root->addChild(new Container('text-after'))->setContent(JHtml::_('content.prepare', JText::_($this->params->get('textafter'))));
 
 // The comments container
 $cc = $this->root->addChild(new Container('comments', array('noprint')));

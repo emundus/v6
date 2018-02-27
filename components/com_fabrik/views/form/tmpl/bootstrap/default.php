@@ -12,9 +12,6 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-$doc = JFactory::getDocument();
-$doc->addStyleSheet( 'media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css' );
-
 $form = $this->form;
 $model = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';
@@ -29,7 +26,7 @@ endif;
 
 if ($this->params->get('show-title', 1)) :?>
 <div class="page-header">
-	<h1><?php $title = explode('-', $form->label); echo !empty($title[1])?$title[1]:$title[0]; ?></h1>
+	<h1><?php echo $form->label;?></h1>
 </div>
 <?php
 endif;

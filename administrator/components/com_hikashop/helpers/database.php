@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -156,7 +156,6 @@ class hikashopDatabaseHelper {
 			try{
 				$this->db->setQuery('SHOW COLUMNS FROM ' . $oneTableName);
 				$fields2 = $this->db->loadObjectList();
-
 			} catch(Exception $e) {
 				$fields2 = null;
 				$msg = $e->getMessage();
@@ -195,6 +194,15 @@ class hikashopDatabaseHelper {
 						'success',
 						sprintf('Problem solved - table "%s" created', $table_name)
 					);
+
+					$fields2 = null;
+					try{
+						$this->db->setQuery('SHOW COLUMNS FROM ' . $oneTableName);
+						$fields2 = $this->db->loadObjectList();
+					} catch(Exception $e) {
+						$fields2 = null;
+						$msg = $e->getMessage();
+					}
 				}
 			}
 

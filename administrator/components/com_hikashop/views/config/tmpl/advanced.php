@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -64,6 +64,12 @@ echo $this->leftmenu(
 		<td class="hk_tbl_key"<?php echo $this->docTip('editor');?>><?php echo JText::_('HIKA_EDITOR'); ?></td>
 		<td><?php
 			echo $this->editorType->display('config[editor]', $this->config->get('editor'));
+		?></td>
+	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('description_format');?>><?php echo JText::_('DESCRIPTION_DEFAULT_FORMAT'); ?></td>
+		<td><?php
+			echo $this->contentparserType->display('config[default_description_type]', $this->config->get('default_description_type'));
 		?></td>
 	</tr>
 	<tr>

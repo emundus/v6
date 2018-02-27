@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -549,7 +549,12 @@ function checkAllBox(id, type){
 		$volume_unit = 'in';
 		if($warehouse->units == 'kg') {
 			$weight_unit = 'kg';
+			if(isset($limitations['w']))
+				$limitations['w'] = 68.04;
+
 			$volume_unit = 'cm';
+			if(isset($limitations['dimension']))
+				$limitations['dimension'] = 419.1;
 		}
 
 		if($exclude_dimensions) {

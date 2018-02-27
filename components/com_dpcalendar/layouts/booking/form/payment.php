@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -69,7 +69,7 @@ if ($bookingId && $booking->state == 4) {
 /** @var Container $root * */
 $root = $root->addChild(new Container('options'));
 
-// SHow the booking text when there is only one event
+// Show the booking text when there is only one event
 if (count($events) == 1 && reset($events)->booking_information) {
 	$root->addChild(new Element('payment-text'))->setContent(reset($events)->booking_information);
 }
@@ -88,8 +88,8 @@ if ($needsPayment || ($bookingId && $booking->state == 3)) {
 	}
 
 	$activatedPlugins = array();
-	foreach ($events as $event) {
-		$activatedPlugins[$event->plugintype] = true;
+	foreach ($events as $e) {
+		$activatedPlugins[$e->plugintype] = true;
 	}
 
 	// Loop trough all payment plugins

@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 namespace DPCalendar\Helper;
@@ -166,7 +166,11 @@ class DPCalendarHelper
 
 	public static function getDate($date = null, $allDay = null, $tz = null)
 	{
-		$dateObj = \JFactory::getDate($date, $tz);
+		if ($date instanceof \JDate) {
+			$dateObj = clone $date;
+		} else {
+			$dateObj = \JFactory::getDate($date, $tz);
+		}
 
 		$timezone = \JFactory::getApplication()->getCfg('offset');
 		$user     = \JFactory::getUser();

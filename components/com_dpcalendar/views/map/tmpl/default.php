@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -24,6 +24,7 @@ JHtml::_('script', 'com_dpcalendar/dpcalendar/views/map/default.min.js', ['relat
 JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/views/map/default.min.css', ['relative' => true]);
 
 // Load the language files
+JFactory::getLanguage()->load('com_dpcalendar', JPATH_ADMINISTRATOR . '/components/com_dpcalendar');
 JFactory::getLanguage()->load('', JPATH_ADMINISTRATOR);
 JText::script('COM_DPCALENDAR_FIELD_CONFIG_EVENT_LABEL_NO_EVENT_TEXT');
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -573,7 +573,7 @@ class ProductViewProduct extends HikaShopView {
 				$database->setQuery($query);
 				$matchingDiscount = $database->loadResult();
 				if(!$matchingDiscount) {
-					$filters[] = 'product_id = 0';
+					$filters[] = 'b.product_id = 0';
 				}
 			}
 		}
@@ -866,7 +866,7 @@ class ProductViewProduct extends HikaShopView {
 				if(is_array($_POST[$key])) {
 					$_POST[$key] = implode('::',$_POST[$key]);
 				}
-				$parameters[$name] = $_POST[$key];
+				$parameters[$name] = urlencode($_POST[$key]);
 			}
 		}
 		return $parameters;
@@ -1743,11 +1743,15 @@ class ProductViewProduct extends HikaShopView {
 		}
 		foreach($element->variants as $k2 => $variant) {
 			$key = '';
-			foreach($variant->characteristics as $char) {
-				if(in_array($sort,array('old','ordering'))) {
-					$key .= sprintf('%04d', $char->$order).'+';
-				} else {
-					$key .= $char->$order.'+';
+			if($sort == 'price'){
+				$key .= sprintf('%020.5f', $variant->product_sort_price);
+			} else {
+				foreach($variant->characteristics as $char) {
+					if(in_array($sort,array('old','ordering'))) {
+						$key .= sprintf('%04d', $char->$order).'+';
+					} else {
+						$key .= $char->$order.'+';
+					}
 				}
 			}
 			$key .= $variant->product_id;

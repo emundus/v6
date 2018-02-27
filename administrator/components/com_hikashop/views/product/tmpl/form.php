@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -15,6 +15,10 @@ defined('_JEXEC') or die('Restricted access');
 <form action="<?php echo hikashop_completeLink('product');?>" method="post" onsubmit="window.productMgr.prepare();" name="adminForm" id="adminForm" enctype="multipart/form-data">
 	<!-- Product edition header -->
 	<div id="hikashop_product_edition_header" style="<?php if(empty($this->product->characteristics)) echo 'display:none;'; ?>">
+
+	<span id="hikashop_variants_missing_error" style="<?php if(!empty($this->product->variants)) echo 'display:none;'; ?>">
+		<?php echo hikashop_display(JText::_('GO_IN_VARIANTS_TAB_AND_GENERATE_VARIANTS'), 'info'); ?>
+	</span>
 <?php
 	if(!empty($this->product)) {
 		$image = $this->imageHelper->getThumbnail(@$this->product->images[0]->file_path, array(50,50), array('default' => true));
@@ -253,6 +257,21 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 			<dd class="hikashop_product_canonical"><input id="data_product__product_canonical" type="text" style="width:100%" size="45" name="data[product][product_canonical]" value="<?php echo $this->escape(@$this->product->product_canonical); ?>"/></dd>
 <?php
 		}
+		if(hikashop_acl('product/edit/condition')) { ?>
+			<dt class="hikashop_product_condition"><label for="data_product__product_condition"><?php echo JText::_('HIKA_CONDITION'); ?></label></dt>
+			<dd class="hikashop_product_condition">
+<?php
+			$options = array(
+				JHTML::_('hikaselect.option', 'NewCondition', JText::_('HIKA_NEW')),
+				JHTML::_('hikaselect.option', 'UsedCondition', JText::_('HIKA_USED')),
+				JHTML::_('hikaselect.option', 'RefurbishedCondition', JText::_('HIKA_REFURBISHED')),
+				JHTML::_('hikaselect.option', '', JText::_('HIKA_NONE'))
+			);
+			echo JHTML::_('select.genericlist', $options, 'data[product][product_condition]', '', 'value', 'text', @$this->product->product_condition);
+?>
+			</dd>
+<?php
+		}
 ?>
 		</dl>
 	</div></div>
@@ -271,7 +290,7 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 				<label for="data_product__product_min_per_order"><?php echo JText::_('QUANTITY_PER_ORDER'); ?></label>
 <?php
 		if(HIKASHOP_BACK_RESPONSIVE)
-			echo '<div class="hikashop_product_qtyperorder_dt">To</div>';
+			echo '<div class="hikashop_product_qtyperorder_dt">'.JText::_('HIKA_QTY_RANGE_TO').'</div>';
 ?>
 			</dt>
 			<dd class="hikashop_product_qtyperorder">
@@ -473,9 +492,20 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 <?php
 	}
 
-	if(hikashop_level(1) && $this->config->get('option_selection_method', 'generic') == 'per_product' && hikashop_acl('product/edit/option_selection_method')) { ?>
-			<dt class="hikashop_product_option_selection_method"><label><?php echo JText::_('OPTIONS_SELECTION_METHOD'); ?></label></dt>
-			<dd class="hikashop_product_option_selection_method"><?php echo $this->quantityDisplayType->display('data[product][product_option_selection_method]' , @$this->product->product_option_selection_method); ?></dd>
+	if(hikashop_level(1) && $this->config->get('product_selection_method', 'generic') == 'per_product' && hikashop_acl('product/edit/option_selection_method')) { ?>
+			<dt class="hikashop_product_option_selection_method"><label><?php echo JText::_('PRODUCT_SELECTION_METHOD'); ?></label></dt>
+			<dd class="hikashop_product_option_selection_method"><?php
+			if(hikashop_level(1)) {
+				$options = array(
+					JHTML::_('hikaselect.option', 'generic', JText::_('FIELD_SINGLEDROPDOWN')),
+					JHTML::_('hikaselect.option', 'check', JText::_('FIELD_CHECKBOX')),
+					JHTML::_('hikaselect.option', 'radio', JText::_('FIELD_RADIO')),
+					JHTML::_('hikaselect.option', 'per_product', JText::_('ON_A_PER_PRODUCT_BASIS'))
+				);
+				echo JHTML::_('select.genericlist', $options, 'data[product][product_option_method]', '', 'value', 'text', @$this->product->product_option_method);
+			} else {
+				echo hikashop_getUpgradeLink('essential');
+			} ?></dd>
 <?php
 	}
 ?>

@@ -2,15 +2,16 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
-JLoader::import('components.com_dpcalendar.helpers.dpcalendar', JPATH_ADMINISTRATOR);
-if (!class_exists('DPCalendarHelper')) {
+if (!JLoader::import('components.com_dpcalendar.helpers.dpcalendar', JPATH_ADMINISTRATOR)) {
 	return;
 }
+
+// @deprecated Will be removed in the next major version
 JLoader::import('components.com_dpcalendar.helpers.schema', JPATH_ADMINISTRATOR);
 
 JFactory::getLanguage()->load('com_dpcalendar', JPATH_ADMINISTRATOR . '/components/com_dpcalendar');
@@ -29,23 +30,32 @@ foreach ($model->getItems() as $calendar) {
 	$ids[] = $calendar->id;
 }
 
-$startDate = DPCalendarHelper::getDate(trim($params->get('start_date', '')));
+$startDate = trim($params->get('start_date', ''));
+if ($startDate == 'start of day') {
+	$startDate = DPCalendarHelper::getDate();
+	$startDate->setTime(0, 0, 0);
+} else {
+	$startDate = DPCalendarHelper::getDate($startDate);
+}
 
 // Round to the last quater
 $startDate->sub(new DateInterval("PT" . $startDate->format("s") . "S"));
 $startDate->sub(new DateInterval("PT" . ($startDate->format("i") % 15) . "M"));
 
-$startDate = $startDate->format('U');
-
 $endDate = trim($params->get('end_date', ''));
-if ($endDate) {
+if ($endDate == 'same day') {
+	$endDate = clone $startDate;
+	$endDate->setTime(23, 59, 59);
+} else if ($endDate) {
 	$tmp = DPCalendarHelper::getDate($endDate);
 	$tmp->sub(new DateInterval("PT" . $tmp->format("s") . "S"));
 	$tmp->sub(new DateInterval("PT" . ($tmp->format("i") % 15) . "M"));
-	$endDate = $tmp->format('U');
+	$endDate = $tmp;
 } else {
 	$endDate = null;
 }
+
+$startDate = $startDate->format('U');
 
 $model = JModelLegacy::getInstance('Events', 'DPCalendarModel', array('ignore_request' => true));
 $model->getState();
@@ -71,6 +81,14 @@ $events = $model->getItems();
 if (!$events && !$params->get('empty_text', 1)) {
 	return;
 }
+
+// Sort the array by user date
+usort($events, function ($e1, $e2) {
+	$d1 = DPCalendarHelper::getDate($e1->start_date, $e1->all_day);
+	$d2 = DPCalendarHelper::getDate($e2->start_date, $e2->all_day);
+
+	return strcmp($d1->format('c', true), $d2->format('c', true));
+});
 
 JPluginHelper::importPlugin('content');
 JPluginHelper::importPlugin('dpcalendar');

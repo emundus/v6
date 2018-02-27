@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -45,7 +45,7 @@ class hikashopSeoHelper {
 
 		if (empty($element->$meta_description)) {
 
-			$max = (($max < 1) ? 1 : ($max == 0 || $max > 254) ? 254 : $max);
+			$max = (($max < 1) ? 1 : ($max == 0) ? 300 : $max);
 
 			$substr = (function_exists('mb_substr')) ? 'mb_substr' : 'substr';
 

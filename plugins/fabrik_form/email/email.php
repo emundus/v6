@@ -91,8 +91,8 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 			. $input->get('rowid', '', 'string');
 		$this->data['fabrik_viewurl'] = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $this->package . '&amp;view=details&amp;formid=' . $formModel->get('id') . '&amp;rowid='
 			. $input->get('rowid', '', 'string');
-		$this->data['fabrik_editlink'] = '<a href="' . $this->data['fabrik_editurl'] . '">' . FText::_('EDIT') . '</a>';
-		$this->data['fabrik_viewlink'] = '<a href="' . $this->data['fabrik_viewurl'] . '">' . FText::_('VIEW') . '</a>';
+		$this->data['fabrik_editlink'] = '<a href="' . $this->data['fabrik_editurl'] . '">' . FText::_('COM_FABRIK_EDIT') . '</a>';
+		$this->data['fabrik_viewlink'] = '<a href="' . $this->data['fabrik_viewurl'] . '">' . FText::_('COM_FABRIK_VIEW') . '</a>';
 
 		/**
 		 * Added option to run content plugins on message text.  Note that rather than run it one time at the
@@ -325,7 +325,14 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 					}
 				}
 
-				$this->pdfAttachment($thisAttachments);
+				try
+				{
+					$this->pdfAttachment($thisAttachments);
+				}
+				catch (Exception $e)
+				{
+					$this->app->enqueueMessage($e->getMessage(), 'error');
+				}
 
 				/*
 				 * Sanity check for attachment files existing.  Could have base folder paths for things
@@ -436,9 +443,40 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		/** @var FabrikFEModelForm $model */
 		$model = $this->getModel();
 		$model->setRowId($this->data['rowid']);
+
+		/*
 		$document = JFactory::getDocument();
 		$docType = $document->getType();
 		$document->setType('pdf');
+		*/
+
+		/*
+		 * We are going to swap out the raw document object with an HTML document
+         * in order to work around some plugins that don't do proper environment
+		 * checks before trying to use HTML document functions.
+		 */
+		$raw = clone JFactory::getDocument();
+		$lang = JFactory::getLanguage();
+
+		// Get the document properties.
+		$attributes = array (
+			'charset'   => 'utf-8',
+			'lineend'   => 'unix',
+			'tab'       => '  ',
+			'language'  => $lang->getTag(),
+			'direction' => $lang->isRtl() ? 'rtl' : 'ltr'
+		);
+
+		// Get the HTML document.
+		$html = JDocument::getInstance('pdf', $attributes);
+
+		// Todo: Why is this document fetched and immediately overwritten?
+		$document = JFactory::getDocument();
+
+		// Swap the documents.
+		$document = $html;
+
+
 		$input = $this->app->input;
 
 		/*
@@ -564,7 +602,10 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		}
 
 		// Reset document type
-		$document->setType($docType);
+		//$document->setType($docType);
+
+		// Swap the documents back.
+		$document = $raw;
 	}
 
 	/**

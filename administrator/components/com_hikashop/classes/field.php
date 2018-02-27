@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1413,6 +1413,8 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 			$field->field_value = implode("\n", $field->field_value);
 		}
 
+
+
 		if(!preg_match('#^([a-z0-9_-]+ *= *"[\p{L}\p{N}\p{Z} ]+" *)* *$#i', $fieldOptions['attribute'])){
 			$this->errors[] = 'Please specify a correct attribute';
 			return false;
@@ -1494,12 +1496,6 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 						return false;
 					}
 				}
-
-				foreach($tables as $table_name) {
-					$query = 'ALTER TABLE '.$this->fieldTable($table_name).' ADD `'.$field->field_namekey.'` TEXT NULL';
-					$this->database->setQuery($query);
-					$this->database->query();
-				}
 			}
 		}
 
@@ -1515,6 +1511,8 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 		unset($field->guest_mode);
 
 		$field->field_categories = $cat;
+
+
 		$field_id = $this->save($field);
 		if(!$field_id)
 			return false;
@@ -1533,7 +1531,45 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 
 	}
 
-	function delete(&$elements){
+	function save(&$field){
+
+		JPluginHelper::importPlugin( 'hikashop' );
+		$dispatcher = JDispatcher::getInstance();
+		$do = true;
+		$new = empty($field->field_id);
+		if($new)
+			$dispatcher->trigger( 'onBeforeFieldCreate', array( & $field, & $do) );
+		else
+			$dispatcher->trigger( 'onBeforeFieldUpdate', array( & $field, & $do) );
+
+		if(!$do)
+			return false;
+
+		$status = parent::save($field);
+		if(empty($status))
+			return $status;
+
+		if($new && $field->field_type != 'customtext') {
+			$tables = array($field->field_table);
+			if($field->field_table == 'item')
+				$tables = array('cart_product', 'order_product');
+			foreach($tables as $table_name) {
+				$query = 'ALTER TABLE '.$this->fieldTable($table_name).' ADD `'.$field->field_namekey.'` TEXT NULL';
+				$this->database->setQuery($query);
+				$this->database->query();
+			}
+		}
+
+		if($new) {
+			$field->field_id = $status;
+			$dispatcher->trigger( 'onAfterFieldCreate', array( & $field ) );
+		} else
+			$dispatcher->trigger( 'onAfterFieldUpdate', array( & $field ) );
+
+		return $status;
+	}
+
+	function delete(&$elements, $keepdata = true){
 		if(!is_array($elements))
 			$elements = array($elements);
 
@@ -1542,6 +1578,14 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 		}
 
 		if(empty($elements))
+			return false;
+
+		JPluginHelper::importPlugin('hikashop');
+		$dispatcher = JDispatcher::getInstance();
+		$do = true;
+		$dispatcher->trigger('onBeforeFieldDelete', array( & $elements, & $do, & $keepdata) );
+
+		if(!$do)
 			return false;
 
 		$this->database->setQuery('SELECT `field_namekey`,`field_id`,`field_table`,`field_type` FROM '.hikashop_table('field').'  WHERE `field_core` = 0 AND `field_id` IN ('.implode(',',$elements).')');
@@ -1564,15 +1608,20 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 				$namekeys[$oneField->field_table][] = $oneField->field_namekey;
 			}
 		}
-		foreach($namekeys as $table => $fields) {
-			$this->database->setQuery('ALTER TABLE '.$this->fieldTable($table).' DROP `'.implode('`, DROP `',$fields).'`');
-			$this->database->query();
+		if(!$keepdata) {
+			foreach($namekeys as $table => $fields) {
+				$this->database->setQuery('ALTER TABLE '.$this->fieldTable($table).' DROP `'.implode('`, DROP `',$fields).'`');
+				$this->database->query();
+			}
 		}
 
 		$this->database->setQuery('DELETE FROM '.hikashop_table('field').' WHERE `field_id` IN ('.implode(',',array_keys($fieldsToDelete)).')');
 		$result = $this->database->query();
 		if(!$result)
 			return false;
+
+
+		$dispatcher->trigger('onAfterFieldDelete', array( & $elements, $keepdata) );
 
 		$affectedRows = $this->database->getAffectedRows();
 
@@ -2450,10 +2499,12 @@ class hikashopFieldZone extends hikashopFieldSingledropdown {
 			}
 
 			$stateNamekey = str_replace('country','state',$field->field_namekey);
+			$id = 0;
 			if(!empty($allFields)) {
 				foreach($allFields as &$f) {
 					if($f->field_type == 'zone' && !empty($f->field_options['zone_type']) && $f->field_options['zone_type'] == 'state') {
 						$stateNamekey = $f->field_namekey;
+						$id = $f->field_id;
 						break;
 					}
 				}
@@ -2465,7 +2516,7 @@ class hikashopFieldZone extends hikashopFieldSingledropdown {
 			);
 			$form_name = str_replace(array('data[',']['.$field->field_namekey.']'), '', $map);
 
-			$changeJs = 'window.hikashop.changeState(this,\''.$stateId.'\',\''.$field->field_url.'field_type='.$form_name.'&field_id='.$stateId.'&field_namekey='.$stateNamekey.'&namekey=\'+this.value);';
+			$changeJs = 'window.hikashop.changeState(this,\''.$stateId.'\',\''.$field->field_url.'field_type='.$form_name.'&field_id='.$stateId.'&field_namekey='.$stateNamekey.'&namekey=\'+this.value+\'&state_field_id=\'+'.(int)$id.');';
 			if(!empty($options) && stripos($options,'onchange="')!==false){
 				$options = preg_replace('#onchange="#i','onchange="'.$changeJs,$options);
 			}else{
@@ -2477,7 +2528,7 @@ class hikashopFieldZone extends hikashopFieldSingledropdown {
 				$locale = strtolower(substr($lang->get('tag'),0,2));
 				$js = 'window.hikashop.ready( function() {
 	var el = document.getElementById(\''.$this->prefix.$field->field_namekey.$this->suffix.'\');
-	window.hikashop.changeState(el,\''.$stateId.'\',\''.$field->field_url.'lang='.$locale.'&field_type='.$form_name.'&field_id='.$stateId.'&field_namekey='.$stateNamekey.'&namekey=\'+el.value);
+	window.hikashop.changeState(el,\''.$stateId.'\',\''.$field->field_url.'lang='.$locale.'&field_type='.$form_name.'&field_id='.$stateId.'&field_namekey='.$stateNamekey.'&namekey=\'+el.value+\'&state_field_id=\'+'.(int)$id.');
 });';
 				$doc->addScriptDeclaration($js);
 			}
@@ -2485,6 +2536,9 @@ class hikashopFieldZone extends hikashopFieldSingledropdown {
 			$stateId = str_replace(array('[',']'),array('_',''),$map);
 
 			$dropdown = '';
+
+			if(empty($field->field_options['pleaseselect']) && empty($value))
+				$value = $field->field_default;
 
 			if($allFields != null) {
 				$country = null;

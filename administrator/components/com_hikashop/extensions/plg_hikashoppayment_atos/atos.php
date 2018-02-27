@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -716,7 +716,7 @@ function insertCards(){
 		$app = JFactory::getApplication();
 		jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.path');
-		$file = hikaInput::get()->files->get($name, array(), 'array');
+		$file = hikaInput::get()->files->getVar($name, array(), 'array');
 		$message=$this->_getLanguage();
 
 		if(empty($file['name'])){

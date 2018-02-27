@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -71,6 +71,16 @@ defined('_JEXEC') or die('Restricted access');
 				if(!isset($this->element['display_on_contact_page']))
 					$this->element['display_on_contact_page'] = 1;
 				echo JHTML::_('hikaselect.booleanlist', $this->name.'[display_on_contact_page]', '', $this->element['display_on_contact_page']);
+			?></dd>
+		</dl>
+		<dl class="hika_options">
+			<dt class="hikashop_option_name"><?php
+				echo JText::_('COM_HIKASHOP_WAITLIST_VIEW_DEFAULT_TITLE');
+			?></dt>
+			<dd class="hikashop_option_value"><?php
+				if(!isset($this->element['display_on_waitlist_page']))
+					$this->element['display_on_waitlist_page'] = 1;
+				echo JHTML::_('hikaselect.booleanlist', $this->name.'[display_on_waitlist_page]', '', $this->element['display_on_waitlist_page']);
 			?></dd>
 		</dl>
 	</div>

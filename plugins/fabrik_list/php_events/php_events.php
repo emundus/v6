@@ -86,7 +86,7 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 * @return bool currently ignored
 	 */
 
-	public function onPreLoadData()
+	public function onPreLoadData(&$args)
 	{
 		$params = $this->getParams();
 
@@ -210,6 +210,21 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 
 		return $this->doEvaluate($params->get('list_phpevents_onbuildquerywhere'));
 	}
+
+	/**
+	 * On build query where
+	 *
+	 * @param   &$args  Array  Additional options passed into the method when the plugin is called
+
+	 * @return boolean
+	 */
+	public function onGetPluginRowHeadings(&$args)
+	{
+		$params = $this->getParams();
+
+		return $this->doEvaluate($params->get('list_phpevents_ongetpluginrowheadings'), $args);
+	}
+
 
 	/**
 	 * Evaluate supplied PHP

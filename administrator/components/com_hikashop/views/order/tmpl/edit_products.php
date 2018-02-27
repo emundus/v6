@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -38,7 +38,7 @@ defined('_JEXEC') or die('Restricted access');
 		<dt class="hikashop_order_product_vat"><label><?php echo JText::_('VAT'); ?></label></dt>
 		<dd class="hikashop_order_product_vat">
 			<input type="text" name="data[order][product][order_product_tax]" value="<?php echo @$this->orderProduct->order_product_tax; ?>" />
-			<?php echo $this->ratesType->display( "data[order][product][tax_namekey]" , @$this->orderProduct->order_product_tax_info[0]->tax_namekey ); ?>
+			<?php echo $this->ratesType->display( "data[order][product][tax_namekey]" , reset($this->orderProduct->order_product_tax_info)->tax_namekey ); ?>
 		</dd>
 
 		<dt class="hikashop_order_product_quantity"><label><?php echo JText::_('PRODUCT_QUANTITY'); ?></label></dt>

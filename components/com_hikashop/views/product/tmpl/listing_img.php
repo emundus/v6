@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -96,26 +96,8 @@ if($this->params->get('show_vote_product')) {
 	<!-- ADD TO CART BUTTON AREA -->
 <?php
 if($this->params->get('add_to_cart') || $this->params->get('add_to_wishlist')) {
-?>
-	<form action="<?php echo hikashop_completeLink('product&task=updatecart'); ?>" method="post" name="hikashop_product_form_<?php echo $this->row->product_id.'_'.$this->params->get('main_div_name'); ?>"><?php
-	$this->ajax='';
-	if(!$this->config->get('ajax_add_to_cart',0)) {
-		$this->ajax = 'return hikashopModifyQuantity(\''.$this->row->product_id.'\',field,1,\'hikashop_product_form_'.$this->row->product_id.'_'.$this->params->get('main_div_name').'\',\'cart\');';
-	}
-	$this->setLayout('quantity');
+	$this->setLayout('add_to_cart_listing');
 	echo $this->loadTemplate();
-
-	if(!empty($this->ajax) && $this->config->get('redirect_url_after_add_cart','stay_if_cart') == 'ask_user') {
-?>
-		<input type="hidden" name="popup" value="1"/>
-<?php } ?>
-		<input type="hidden" name="product_id" value="<?php echo $this->row->product_id; ?>" />
-		<input type="hidden" name="add" value="1"/>
-		<input type="hidden" name="ctrl" value="product"/>
-		<input type="hidden" name="task" value="updatecart"/>
-		<input type="hidden" name="return_url" value="<?php echo urlencode(base64_encode(urldecode($this->redirect_url))); ?>"/>
-	</form>
-<?php
 }
 ?>
 	<!-- EO ADD TO CART BUTTON AREA -->

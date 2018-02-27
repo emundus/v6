@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -234,7 +234,7 @@ class ConfigController extends hikashopController{
 
 		foreach($steps as $step){
 			if(empty($step)){
-				$app =& JFactory::getApplication();
+				$app = JFactory::getApplication();
 				$app->enqueueMessage('You have an empty step in your checkout workflow.');
 				return false;
 			}

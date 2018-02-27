@@ -15,6 +15,7 @@ require_once JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptor.php';
 
 use Aws\Exception\AwsException;
 use Aws\S3\Exception\S3Exception;
+use GuzzleHttp\Psr7;
 
 
 /**
@@ -107,10 +108,21 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 
 		if (!array_key_exists($filepath, $exists))
 		{
-			$exists[$filepath] = $this->s3->doesObjectExist(
-				$this->getBucketName(),
-				$this->urlToKey($filepath)
-			);
+			try
+			{
+				$exists[$filepath] = $this->s3->doesObjectExist(
+					$this->getBucketName(),
+					$this->urlToKey($filepath)
+				);
+			}
+			catch (Exception $e)
+			{
+				if (FabrikHelperHTML::isDebug())
+				{
+					JFactory::getApplication()->enqueueMessage('S3 exists: ' . $e->getMessage());
+				}
+				return false;
+			}
 		}
 
 		return $exists[$filepath];
@@ -196,6 +208,7 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	public function upload($tmpFile, $filepath)
 	{
 		$filepath = str_replace("\\", '/', $filepath);
+		$mimeType = GuzzleHttp\Psr7\mimetype_from_filename($filepath);
 
 		if (!$this->bucketExists())
 		{
@@ -213,7 +226,7 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 			{
 				if (FabrikHelperHTML::isDebug())
 				{
-					JFactory::getApplication()->enqueueMessage($e->getMessage());
+					JFactory::getApplication()->enqueueMessage('S3 upload createBucket: ' . $e->getMessage());
 				}
 				return false;
 			}
@@ -229,7 +242,8 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 				'SourceFile' => $tmpFile,
 				'Bucket' => $this->getBucketName(),
 				'Key' => $this->urlToKey($filepath),
-				'ACL' => $this->getAcl()
+				'ACL' => $this->getAcl(),
+				'ContentType' => $mimeType
 			];
 
 			if ($this->isEncrypted())
@@ -241,6 +255,10 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 		}
 		catch (Exception $e)
 		{
+			if (FabrikHelperHTML::isDebug())
+			{
+				JFactory::getApplication()->enqueueMessage('S3 upload putObject: ' . $e->getMessage());
+			}
 			return false;
 		}
 
@@ -307,6 +325,10 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 		}
 		catch (Exception $e)
 		{
+			if (FabrikHelperHTML::isDebug())
+			{
+				JFactory::getApplication()->enqueueMessage('S3 write: ' . $e->getMessage());
+			}
 			return false;
 		}
 	}
@@ -330,6 +352,10 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 		}
 		catch (Exception $e)
 		{
+			if (FabrikHelperHTML::isDebug())
+			{
+				JFactory::getApplication()->enqueueMessage('S3 upload read: ' . $e->getMessage());
+			}
 			return false;
 		}
 
@@ -426,10 +452,11 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 		}
 		else
 		{
-			$path = JPath::clean($path);
+			$path = empty($path) ? '' : JPath::clean($path);
 		}
 
 		$path = str_replace("\\", '/', $path);
+		$path = ltrim($path, '/');
 
 		return $path;
 	}
@@ -454,14 +481,31 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	 * Delete a file
 	 *
 	 * @param   string  $filepath  File to delete
+	 * @param   bool    $prependRoot  also test with root prepended
 	 *
 	 * @return  void
 	 */
 
-	public function delete($filepath)
+	public function delete($filepath, $prependRoot = true)
 	{
 		$filepath = $this->urlToPath($filepath);
-		$this->s3->deleteObject($this->getBucketName(), $filepath);
+		try
+		{
+			$this->s3->deleteObject(
+				[
+					'Bucket' => $this->getBucketName(),
+					'Key'    => $this->urlToKey($filepath)
+				]
+			);
+		}
+		catch (Exception $e)
+		{
+			if (FabrikHelperHTML::isDebug())
+			{
+				JFactory::getApplication()->enqueueMessage('S3 delete: ' . $e->getMessage());
+			}
+			return false;
+		}
 	}
 
 	/**
@@ -501,14 +545,37 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	public function _getThumb($file)
 	{
 		$params = $this->getParams();
+		$origFile = $file;
+
+		if ($params->get('make_thumbnail', '0') === '0')
+		{
+			return '';
+		}
+
 		$w = new FabrikWorker;
 
-		$ulDir = COM_FABRIK_BASE . $params->get('ul_directory');
+		$ulDir = '/' . ltrim($params->get('ul_directory'), '/\\');
+
+		if ($this->appendServerPath())
+		{
+			$ulDir = rtrim(COM_FABRIK_BASE. '/\\') . $ulDir;
+		}
+
 		$ulDir = $this->clean($ulDir);
 		$ulDir = $w->parseMessageForPlaceHolder($ulDir);
 
-		$thumbdir = $this->clean(COM_FABRIK_BASE . $params->get('thumb_dir'));
+		$thumbdir = '/' . ltrim($params->get('thumb_dir'), '/\\');
+
+		if ($this->appendServerPath())
+		{
+			$thumbdir = rtrim(COM_FABRIK_BASE, '/\\') . $thumbdir;
+		}
+
+		$thumbdir = $this->clean($thumbdir);
 		$thumbdir = $w->parseMessageForPlaceHolder($thumbdir);
+
+		$ulDir = rtrim($ulDir, '/\\') . '/';
+		$thumbdir = rtrim($thumbdir, '/\\') . '/';
 
 		$file = $w->parseMessageForPlaceHolder($file);
 		$file = str_replace($ulDir, $thumbdir, $file);
@@ -520,6 +587,12 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 		$ext = JFile::getExt($f);
 		$fclean = JFile::stripExt($f);
 		$file = $dir . '/' . $params->get('thumb_prefix') . $fclean . $params->get('thumb_suffix') . '.' . $ext;
+
+		if ($origFile === $file)
+		{
+			// if they set same folder and no prefex, it can wind up being same file, which blows up
+			return '';
+		}
 
 		return $file;
 	}
@@ -535,6 +608,13 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	public function _getCropped($file)
 	{
 		$params = $this->getParams();
+		$origFile = $file;
+
+		if ($params->get('fileupload_crop', '0') === '0')
+		{
+			return '';
+		}
+
 		$w = new FabrikWorker;
 
 		$ulDir = COM_FABRIK_BASE . $params->get('ul_directory');
@@ -550,6 +630,11 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 		$f = basename($file);
 		$dir = dirname($file);
 		$file = $dir . '/' . $f;
+
+		if ($origFile === $file)
+		{
+			return '';
+		}
 
 		return $file;
 	}
@@ -600,6 +685,10 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 		}
 		catch (Exception $e)
 		{
+			if (FabrikHelperHTML::isDebug())
+			{
+				JFactory::getApplication()->enqueueMessage('S3 getFileInfo: ' . $e->getMessage());
+			}
 			return false;
 		}
 
@@ -642,6 +731,11 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 
 	public function preRenderPath($filepath)
 	{
+		if (empty($filepath))
+		{
+			return '';
+		}
+
 		$params = $this->getParams();
 		static $presigned = array();
 
@@ -649,16 +743,52 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 		{
 			if (!array_key_exists($filepath, $presigned))
 			{
-				$cmd      = $this->s3->getCommand('GetObject', [
-					'Bucket' => $this->getBucketName(),
-					'Key'    => $this->urlToKey($filepath)
-				]);
-				$request  = $this->s3->createPresignedRequest($cmd, '+' . $lifetime . ' seconds');
-				$presigned[$filepath] = (string) $request->getUri();
+				try
+				{
+					$cmd                  = $this->s3->getCommand('GetObject', [
+						'Bucket' => $this->getBucketName(),
+						'Key'    => $this->urlToKey($filepath),
+						'ResponseCacheControl' => "no-cache"
+					]);
+					$request              = $this->s3->createPresignedRequest($cmd, '+' . $lifetime . ' seconds');
+					$presigned[$filepath] = (string) $request->getUri();
+				}
+				catch (Exception $e)
+				{
+					if (FabrikHelperHTML::isDebug())
+					{
+						JFactory::getApplication()->enqueueMessage('S3 preRenderPath: ' . $e->getMessage());
+					}
+					return false;
+				}
 			}
 			$filepath = $presigned[$filepath];
 		}
 
 		return $filepath;
+	}
+
+	/**
+	 * Check for snooping
+	 *
+	 * @param   string   $folder   The file path
+	 *
+	 * @return  void
+	 */
+	public function checkPath($folder)
+	{
+		return;
+	}
+
+	/**
+	 * Return the directory separator - can't use DIRECTORY_SEPARATOR by default, as s3 uses /
+	 *
+	 * @return string
+	 *
+	 * @since 3.8
+	 */
+	public function getDS()
+	{
+		return '/';
 	}
 }

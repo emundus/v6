@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -46,6 +46,7 @@ if(!isset($this->element['layout_type']))
 		}
 		?>
 			<input type="hidden" id="data_module__product_layout_type" name="<?php echo $this->name; ?>[layout_type]" value="<?php echo $this->element['layout_type']; ?>">
+			<input type="hidden" id="data_module__product_layout_type_default" name="" value="<?php echo $this->default_params['layout_type']; ?>">
 		</div>
 
 		<!-- Middle part (Display options) -->
@@ -154,8 +155,11 @@ $js .= "
 		hkjQuery('div[data-display-type=\'category\']').hide();
 	else
 		hkjQuery('div[data-display-type=\'product\'], dl[data-display-type=\'product\']').hide();
-	if(ltype != 'div')
-		hkjQuery('div[data-display-tab=\'div\']').hide();
+	if(ltype != 'div') {
+		var defaultLayout = document.getElementById('data_module__product_layout_type_default').value;
+		if(ltype != 'inherit' || defaultLayout != 'div')
+			hkjQuery('div[data-display-tab=\'div\']').hide();
+	}
 	hkjQuery('#content_select_jform_params_hikashopmodule').change(function(){
 		if(hkjQuery(this).val() == 'product'){
 			hkjQuery('div[data-layout=\'product_inherit\']').html('".JText::_('HIKA_INHERIT')." ('+defaultParams['layout_type']+')');
@@ -281,10 +285,15 @@ window.optionMgr = {
 		hkjQuery('#data_module__'+info[0]+'_layout_type').val(info[1]);
 		hkjQuery('div[data-type=\''+info[0]+'_layout_choice\']').removeClass('selected');
 		hkjQuery(el).addClass('selected');
-		if(info[1] == 'div')
+		if(info[1] == 'div') {
 			hkjQuery('div[data-display-tab=\'div\']').show();
-		else
-			hkjQuery('div[data-display-tab=\'div\']').hide();
+		} else {
+			var defaultLayout = document.getElementById('data_module__product_layout_type_default').value;
+			if(info[1] == 'inherit' && defaultLayout == 'div')
+				hkjQuery('div[data-display-tab=\'div\']').show();
+			else
+				hkjQuery('div[data-display-tab=\'div\']').hide();
+		}
 	},
 	hideDisplayOptions : function(optionName,newValue) {
 		var dynamicHide = {

@@ -2,31 +2,35 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
-JLoader::import('components.com_dpcalendar.helpers.dpcalendar', JPATH_ADMINISTRATOR);
+if (!JLoader::import('components.com_dpcalendar.helpers.dpcalendar', JPATH_ADMINISTRATOR)) {
+	return;
+}
 
 class PlgDPCalendarCSV extends \DPCalendar\Plugin\SyncPlugin
 {
-
 	protected $identifier = 'c';
 
-	protected function getContent ($calendarId, JDate $startDate = null, JDate $endDate = null, JRegistry $options)
+	protected function getContent($calendarId, JDate $startDate = null, JDate $endDate = null, JRegistry $options)
 	{
 		$calendar = $this->getDbCal($calendarId);
-		if (empty($calendar))
-		{
+		if (empty($calendar)) {
 			return '';
 		}
+
+		/** @var \Joomla\Registry\Registry $params */
 		$params = $calendar->params;
+
+		// The content
 		$content = DPCalendarHelper::fetchContent($params->get('uri', ''));
 
-		if ($content instanceof Exception)
-		{
+		if ($content instanceof Exception) {
 			$this->log($content->getMessage());
+
 			return '';
 		}
 
@@ -34,38 +38,33 @@ class PlgDPCalendarCSV extends \DPCalendar\Plugin\SyncPlugin
 		$content = str_replace("\xEF\xBB\xBF", '', $content);
 
 		$lines = explode("\n", trim($content));
-		if (count($lines) < 1)
-		{
+		if (!$lines) {
 			return;
 		}
 
 		$k = array(
-				$params->get('all_day', 'all_day') => $params->get('all_day', 'all_day'),
-				$params->get('start_date', 'start_date') => $params->get('start_date', 'start_date'),
-				$params->get('end_date', 'end_date') => $params->get('end_date', 'end_date'),
-				$params->get('title', 'title') => $params->get('title', 'title'),
-				$params->get('description', 'description') => $params->get('description', 'description'),
-				$params->get('rrule', 'rrule') => $params->get('rrule', 'rrule'),
-				$params->get('location', 'location') => $params->get('location', 'location'),
-				$params->get('alias', 'alias') => $params->get('alias', 'alias'),
-				$params->get('color', 'color') => $params->get('color', 'color')
+			$params->get('all_day', 'all_day')         => $params->get('all_day', 'all_day'),
+			$params->get('start_date', 'start_date')   => $params->get('start_date', 'start_date'),
+			$params->get('end_date', 'end_date')       => $params->get('end_date', 'end_date'),
+			$params->get('title', 'title')             => $params->get('title', 'title'),
+			$params->get('description', 'description') => $params->get('description', 'description'),
+			$params->get('rrule', 'rrule')             => $params->get('rrule', 'rrule'),
+			$params->get('location', 'location')       => $params->get('location', 'location'),
+			$params->get('alias', 'alias')             => $params->get('alias', 'alias'),
+			$params->get('color', 'color')             => $params->get('color', 'color')
 		);
-		if ($params->get('has_header', true))
-		{
+		if ($params->get('has_header', true)) {
 			$k = array_flip(str_getcsv(array_shift($lines)));
 		}
 
-		$text = array();
+		$text   = [];
 		$text[] = 'BEGIN:VCALENDAR';
-		foreach ($lines as $key => $line)
-		{
+		foreach ($lines as $key => $line) {
 			$line = trim($line);
-			if (empty($line))
-			{
+			if (empty($line)) {
 				continue;
 			}
-			try
-			{
+			try {
 				$text[] = 'BEGIN:VEVENT';
 
 				$data = str_getcsv($line);
@@ -73,21 +72,15 @@ class PlgDPCalendarCSV extends \DPCalendar\Plugin\SyncPlugin
 				$allDay = $this->getValue($calendar, $data, $k, 'all_day') == 1;
 
 				$startDate = DPCalendarHelper::getDate($this->getValue($calendar, $data, $k, 'start_date'), $allDay);
-				if ($allDay)
-				{
+				if ($allDay) {
 					$text[] = 'DTSTART;VALUE=DATE:' . $startDate->format('Ymd');
-				}
-				else
-				{
+				} else {
 					$text[] = 'DTSTART:' . $startDate->format('Ymd\THis\Z');
 				}
 				$endDate = DPCalendarHelper::getDate($this->getValue($calendar, $data, $k, 'end_date'), $allDay);
-				if ($allDay)
-				{
+				if ($allDay) {
 					$text[] = 'DTEND;VALUE=DATE:' . $endDate->format('Ymd');
-				}
-				else
-				{
+				} else {
 					$text[] = 'DTEND:' . $endDate->format('Ymd\THis\Z');
 				}
 
@@ -97,13 +90,14 @@ class PlgDPCalendarCSV extends \DPCalendar\Plugin\SyncPlugin
 				$text[] = 'DESCRIPTION:' . str_replace("\n\r", '', $this->getValue($calendar, $data, $k, 'description'));
 
 				$rrule = $this->getValue($calendar, $data, $k, 'rrule', false);
-				if (empty($rrule))
-				{
+				if (empty($rrule)) {
+					// Try out only rule for a more convenient way
+					$old = $params->get('rrule');
 					$params->set('rrule', 'rule');
 					$rrule = $this->getValue($calendar, $data, $k, 'rrule', false);
+					$params->set('rrule', $old);
 				}
-				if (! empty($rrule))
-				{
+				if (!empty($rrule)) {
 					$text[] = 'RRULE:' . $rrule;
 				}
 
@@ -114,9 +108,7 @@ class PlgDPCalendarCSV extends \DPCalendar\Plugin\SyncPlugin
 				$text[] = 'X-COLOR:' . $this->getValue($calendar, $data, $k, 'color', false);
 
 				$text[] = 'END:VEVENT';
-			}
-			catch (Exception $e)
-			{
+			} catch (Exception $e) {
 				$this->log($e->getMessage());
 			}
 		}
@@ -125,23 +117,21 @@ class PlgDPCalendarCSV extends \DPCalendar\Plugin\SyncPlugin
 		return $text;
 	}
 
-	private function getValue ($calendar, $data, $k, $key, $throw = true)
+	private function getValue($calendar, $data, $k, $key, $throw = true)
 	{
 		$column = $calendar->params->get($key, $key);
-		if (! key_exists($column, $k))
-		{
-			if ($throw)
-			{
+		if (!key_exists($column, $k)) {
+			if ($throw) {
 				throw new InvalidArgumentException('Key ' . $key . ' not found to get the value from in the CSV file.');
 			}
+
 			return null;
 		}
-		if (! key_exists($k[$column], $data))
-		{
-			if ($throw)
-			{
+		if (!key_exists($k[$column], $data)) {
+			if ($throw) {
 				throw new InvalidArgumentException('Key ' . $key . ' not found to get the value from in the CSV file.');
 			}
+
 			return null;
 		}
 

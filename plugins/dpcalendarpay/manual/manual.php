@@ -2,14 +2,16 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
 
 use Omnipay\Omnipay;
 
-JLoader::import('components.com_dpcalendar.helpers.dpcalendar', JPATH_ADMINISTRATOR);
+if (!JLoader::import('components.com_dpcalendar.helpers.dpcalendar', JPATH_ADMINISTRATOR)) {
+	return;
+}
 
 class PlgDPCalendarPayManual extends \DPCalendar\Plugin\PaymentPlugin
 {
@@ -34,20 +36,6 @@ class PlgDPCalendarPayManual extends \DPCalendar\Plugin\PaymentPlugin
 		);
 
 		return $updates;
-	}
-
-	public function onDPPaymentStatement($payment)
-	{
-		$statement = parent::onDPPaymentStatement($payment);
-		if (!$statement) {
-			return $statement;
-		}
-
-		if (!$statement->statement) {
-			$statement->statement = JText::_($this->params->get('payment_statement', 'PLG_DPCALENDARPAY_MANUAL_PAYMENT_STATEMENT_TEXT'));
-		}
-
-		return $statement;
 	}
 
 	public function onDPPaymentCallBack($bookingmethod, $data)

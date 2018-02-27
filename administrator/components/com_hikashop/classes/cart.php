@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -2694,8 +2694,15 @@ class hikashopCartClass extends hikashopClass {
 		if(empty($cart->products))
 			return $ret;
 
-		if(!in_array($cart->cart_type, array('cart', 'wishlist')))
+		JPluginHelper::importPlugin('hikashop');
+		$dispatcher = JDispatcher::getInstance();
+
+		if(!in_array($cart->cart_type, array('cart', 'wishlist'))) {
+			$dispatcher->trigger('onUnknownCheckCartQuantities', array(&$cart, $parent_products, &$ret) );
 			return $ret;
+		}
+
+		$dispatcher->trigger('onBeforeCheckCartQuantities', array(&$cart, $parent_products) );
 
 		$wishlist = (!empty($cart->cart_type) && $cart->cart_type == 'wishlist');
 
@@ -2885,9 +2892,6 @@ class hikashopCartClass extends hikashopClass {
 		if($wishlist)
 			return $ret;
 
-
-		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
 
 		$product_keys = array_reverse(array_keys($cart->cart_products));
 		foreach($product_keys as $k) {
@@ -3231,99 +3235,6 @@ class hikashopCartClass extends hikashopClass {
 	}
 
 	public function checkSubscription($cart) {
-		$plugin = new stdClass();
-		$plugin->params = array();
-
-		$pluginName = '';
-		JPluginHelper::importPlugin('hikashop');
-		$dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('onCheckSubscriptionPlugin', array( &$pluginName ) );
-
-		if(!empty($pluginName)) {
-			$pluginsClass = hikashop_get('class.plugins');
-			$plugin = $pluginsClass->getByName('hikashop', $pluginName);
-		}
-
-		if(!isset($plugin->params['manysubscriptions']) || empty($plugin->params['manysubscriptions']))
-			$plugin->params['manysubscriptions'] = 0;
-
-		$i = 0;
-		$recurring = 0;
-		$noRecurring = 0;
-		$subLevel = array();
-		$durations = array();
-		$paymentType = 'noRecurring';
-		$oldProduct = null;
-		$totalProducts = 0;
-		if(isset($cart->products) && $cart->products != null) {
-			foreach($cart->products as $product) {
-				if(!isset($product->product_subscription_id) || (int)$product->product_subscription_id == 0) {
-					$noRecurring++;
-				} else {
-					$subLevel[$i] = $product->product_subscription_id;
-					$recurring++;
-				}
-				$i++;
-				$totalProducts += $product->cart_product_quantity;
-
-				if(isset($oldProduct->product_type) &&  $oldProduct->product_type == 'main' && $product->product_type == 'variant') {
-					$noRecurring--;
-					$recurring--;
-				}
-				$oldProduct = $product;
-			}
-		}
-
-		if(empty($subLevel)) {
-			$paymentType = 'noRecurring';
-		} else if((int)$plugin->params['manysubscriptions'] == 0 && $totalProducts > 1 && $recurring > 1) {
-			$enqueueMessage	= JText::_('HIKA_RECUR_ONE_SUBS_ALLOWED');
-		} else {
-			$dispatcher->trigger('onCheckSubscription', array( &$subLevel,&$subs ) );
-			$recurring = 0;
-			$i = 0;
-			if(isset($subs) && !empty($subs)) {
-				foreach($subs as $value) {
-					if(isset($value->recurring) && $value->recurring == '1') {
-						$durations[$i] = $value->duration;
-						$recurring++;
-					}
-					$i++;
-				}
-			}
-			if($recurring == 0) {
-				$paymentType = 'noRecurring';
-			} else{
-				if($noRecurring == 0 && $recurring == 1 && $i == 1) {
-					$paymentType = 'recurring';
-				}
-				else if($noRecurring == 0 && $recurring == $i) {
-					$sameDuration = 0;
-					$durations = array_unique($durations);
-					$sameDuration = array_key_exists('1', $durations);
-
-					if($sameDuration == 1) {
-						$enqueueMessage	= JText::_('HIKA_RECUR_DURATION_TIME');
-					}
-					else{
-						$paymentType = 'recurring';
-					}
-				}
-				else if(($noRecurring >= 1 && $recurring >=1) || ($recurring >= 1 && $recurring <= $i)) {
-					$enqueueMessage	= JText::_('HIKA_RECUR_BOTH_PRODUCT_TYPE');
-				}
-			}
-		}
-
-		if(!empty($enqueueMessage)) {
-			static $displayReccuringMessage = false;
-			if(!$displayReccuringMessage) {
-				$app = JFactory::getApplication();
-				$app->enqueueMessage($enqueueMessage);
-				$displayReccuringMessage = true;
-			}
-		}
-		return $paymentType;
 	}
 
 	function loadNotification($cart_id, $type) {
@@ -3345,6 +3256,26 @@ class hikashopCartClass extends hikashopClass {
 		$mail->from_email = $config->get('from_email');
 		$mail->from_name = $config->get('from_name');
 		return $mail;
+	}
+
+	public function getShareUrl(&$cart) {
+		$cart_share_url = '';
+		global $Itemid;
+		$menu_id = $Itemid;
+		if(in_array($cart->cart_share, array('public', 'email'))) {
+			$menusClass = hikashop_get('class.menus');
+			if($Itemid)
+				$menu_id = $menusClass->getPublicMenuItemId($Itemid);
+			if(empty($menu_id))
+				$menu_id = $menusClass->getPublicMenuItemId();
+		}
+		$url_itemid = '';
+		if(!empty($menu_id))
+			$url_itemid = '&Itemid=' . $menu_id;
+		$link_token = ($cart->cart_share == 'email' && !empty($cart->cart_params->token) ? '&token='.$cart->cart_params->token : '');
+		$cart_share_url = hikashop_cleanURL('index.php?option=com_hikashop&ctrl=cart&task=show&cid='.(int)$cart->cart_id . $link_token . $url_itemid);
+
+		return $cart_share_url;
 	}
 
 	public function &getNameboxData($typeConfig, &$fullLoad, $mode, $value, $search, $options) {

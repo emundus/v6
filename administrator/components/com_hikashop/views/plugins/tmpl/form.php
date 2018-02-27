@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -184,7 +184,7 @@ function hika_payment_algorithm(el) {
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_price][shipping_percentage]"><?php
+						<label for="data[shipping][shipping_params][shipping_percentage]"><?php
 							echo JText::_('DISCOUNT_PERCENT_AMOUNT');
 						?></label>
 					</td>
@@ -193,6 +193,19 @@ function hika_payment_algorithm(el) {
 					</td>
 				</tr>
 				<tr>
+					<td class="key">
+						<label for="data[shipping][shipping_params][shipping_tax]"><?php
+							echo JText::_('AUTOMATIC_TAXES');
+						?></label>
+					</td>
+					<td>
+						<?php
+						if(empty($this->element->shipping_id))
+							$this->element->shipping_params->shipping_tax = 1;
+						echo JHTML::_('hikaselect.booleanlist', "data[shipping][shipping_params][shipping_tax]" , 'onchange="hikashopToggleTax(this.value);"', @$this->element->shipping_params->shipping_tax); ?>
+					</td>
+				</tr>
+				<tr data-tax-display="1">
 					<td class="key">
 						<label for="shipping_tax_id"><?php
 							echo JText::_( 'TAXATION_CATEGORY' );
@@ -831,4 +844,12 @@ function hikashop_switch_tr(el, name, num) {
 		}
 	}
 }
+
+function hikashopToggleTax(value) {
+	var elements = document.querySelectorAll("[data-tax-display]");
+	for(var i = elements.length - 1; i >= 0; i--) {
+		elements[i].style.display = (elements[i].getAttribute("data-tax-display") == value) ? "none" : "";
+	}
+}
+window.hikashop.ready( function(){ hikashopToggleTax('<?php echo (int) @$this->element->shipping_params->shipping_tax; ?>'); });
 </script>

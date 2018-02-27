@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1054,6 +1054,10 @@ class hikashopOrderClass extends hikashopClass {
 					if( !empty($value) || count($value) > 0 )
 						$order->$key = $value;
 				}
+			}elseif($orderFields === false) {
+				hikaInput::get()->set('fail', 1);
+				hikashop_display(JText::sprintf('PLEASE_FILL_THE_FIELD', JText::_('REQUIRED')), 'error');
+				return false;
 			}
 		}
 
@@ -1410,7 +1414,7 @@ class hikashopOrderClass extends hikashopClass {
 		if(!empty($products)) {
 			foreach($products as $product) {
 				if(!empty($product->product_id))
-					$product_ids[] = $product->product_id;
+					$product_ids[] = (int)$product->product_id;
 			}
 		}
 		if(count($product_ids)) {
@@ -1423,7 +1427,7 @@ class hikashopOrderClass extends hikashopClass {
 					foreach($products as $item) {
 						if($product->product_id == $item->product_id && !empty($product->product_parent_id)) {
 							$item->product_parent_id = $product->product_parent_id;
-							$product_ids[]=$product->product_parent_id;
+							$product_ids[]=(int)$product->product_parent_id;
 						}
 					}
 				}

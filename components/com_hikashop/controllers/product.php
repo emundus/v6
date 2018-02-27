@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -70,7 +70,7 @@ class productController extends hikashopController {
 
 		$dispatcher = JDispatcher::getInstance();
 		JPluginHelper::importPlugin('hikashop');
-		$send = (int)$config->get('product_contact', 0);
+		$send = empty($element->product_id) || (int)$config->get('product_contact', 0);
 		$dispatcher->trigger('onBeforeSendContactRequest', array(&$element, &$send));
 
 		jimport('joomla.mail.helper');
@@ -327,6 +327,15 @@ class productController extends hikashopController {
 		$char = hikaInput::get()->getString('characteristic', '');
 		if(!empty($char))
 			return $this->show();
+
+		$config = hikashop_config();
+		if($config->get('catalogue')) {
+			if(in_array($tmpl, array('ajax', 'raw'))) {
+				echo '{ret:0}';
+				exit;
+			}
+			return false;
+		}
 
 		$app = JFactory::getApplication();
 		$cartClass = hikashop_get('class.cart');

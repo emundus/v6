@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -38,7 +38,8 @@ class OrderViewOrder extends hikashopView {
 		$this->loadRef(array(
 			'currencyClass' => 'class.currency',
 			'cartHelper' => 'helper.cart',
-			'dropdownHelper' => 'helper.dropdown'
+			'dropdownHelper' => 'helper.dropdown',
+			'toolbarHelper' => 'helper.toolbar',
 		));
 
 		$params = new HikaParameter();
@@ -124,11 +125,12 @@ class OrderViewOrder extends hikashopView {
 		$currencyClass = hikashop_get('class.currency');
 		$this->assignRef('currencyHelper',$currencyClass);
 
+		global $Itemid;
 		$this->toolbar = array(
 			'back' => array(
 				'icon' => 'back',
 				'name' => JText::_('HIKA_BACK'),
-				'url' => hikashop_completeLink('user&task=cpanel')
+				'url' => hikashop_completeLink('user&task=cpanel&Itemid='.$Itemid)
 			),
 		);
 		$this->title = JText::_('ORDERS');
@@ -194,7 +196,8 @@ class OrderViewOrder extends hikashopView {
 
 		$order =& $this->_order($type);
 
-		$config =& hikashop_config();
+		$config = hikashop_config();
+		$this->assignRef('config', $config);
 
 		$download_time_limit = $config->get('download_time_limit',0);
 		$this->assignRef('download_time_limit', $download_time_limit);
@@ -220,9 +223,6 @@ class OrderViewOrder extends hikashopView {
 			}
 		}
 		$this->assignRef('products',$products);
-
-		$popup = hikashop_get('helper.popup');
-		$this->assignRef('popup', $popup);
 
 		hikashop_setPageTitle(JText::_('HIKASHOP_ORDER').':'.$this->element->order_number);
 
@@ -292,6 +292,13 @@ class OrderViewOrder extends hikashopView {
 		if(JText::_($store)!=$store){
 			$store = JText::_($store);
 		}
+
+		$this->loadRef(array(
+			'currencyHelper' => 'class.currency',
+			'popup' => 'helper.popup',
+			'dropdownHelper' => 'helper.dropdown',
+			'toolbarHelper' => 'helper.toolbar',
+		));
 
 		if(!empty($order->order_payment_id)){
 			$pluginsPayment = hikashop_get('type.plugins');
@@ -368,8 +375,6 @@ class OrderViewOrder extends hikashopView {
 		$this->assignRef('invoice_type',$type);
 		$display_type = 'frontcomp';
 		$this->assignRef('display_type',$display_type);
-		$currencyClass = hikashop_get('class.currency');
-		$this->assignRef('currencyHelper',$currencyClass);
 		$fieldsClass = hikashop_get('class.field');
 		$this->assignRef('fieldsClass',$fieldsClass);
 		if(is_string($order->order_shipping_method))
