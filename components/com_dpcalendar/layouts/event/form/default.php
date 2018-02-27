@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 
@@ -28,9 +28,10 @@ extract($displayData);
 
 // Load the needed JS libraries
 DPCalendarHelper::loadLibrary(array('jquery' => true, 'chosen' => true, 'dpcalendar' => true, 'url' => true));
+JHtml::_('script', 'com_dpcalendar/moment/moment.min.js', ['relative' => true], ['defer' => true]);
 
-JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/layouts/event/form/default.css', ['relative' => true]);
-JHtml::_('script', 'com_dpcalendar/dpcalendar/layouts/event/form/default.js', ['relative' => true], ['defer' => true]);
+JHtml::_('stylesheet', 'com_dpcalendar/dpcalendar/layouts/event/form/default.min.css', ['relative' => true]);
+JHtml::_('script', 'com_dpcalendar/dpcalendar/layouts/event/form/default.min.js', ['relative' => true], ['defer' => true]);
 
 if ($params->get('save_history')) {
 	// Initialise the modal behavior
@@ -72,7 +73,8 @@ if ($event->original_id != '0') {
 	}
 }
 if ($params->get('event_form_check_overlaping', 0)) {
-	$root->addChild(new Alert('message-box', Alert::INFO));
+	$box = $root->addChild(new Alert('message-box', Alert::INFO));
+	$box->addAttribute('data-overlapping', $params->get('event_form_check_overlaping', 0) == '2');
 }
 
 if ($app->isSite()) {
@@ -85,20 +87,22 @@ if ($app->isSite()) {
 // Determine which fieldsets should be hidden
 $externalEvent = !is_numeric($event->catid) && !empty($event->id);
 $hideFieldsets = array();
-if (!$params->get('event_form_change_location', 1)) {
-	$hideFieldsets[] = 'location';
-}
-if ($externalEvent || !$params->get('event_form_change_options', 1)) {
-	$hideFieldsets[] = 'jbasic';
-}
-if ($externalEvent || !$params->get('event_form_change_book', 1) || ($event->catid && !is_numeric($event->catid))) {
-	$hideFieldsets[] = 'booking';
-}
-if ($externalEvent || !$params->get('event_form_change_publishing', 1)) {
-	$hideFieldsets[] = 'publishing';
-}
-if ($externalEvent || !$params->get('event_form_change_metadata', 1)) {
-	$hideFieldsets[] = 'jmetadata';
+if (!$user->authorise('core.admin', 'com_dpcalendar')) {
+	if (!$params->get('event_form_change_location', 1)) {
+		$hideFieldsets[] = 'location';
+	}
+	if ($externalEvent || !$params->get('event_form_change_options', 1)) {
+		$hideFieldsets[] = 'jbasic';
+	}
+	if ($externalEvent || !$params->get('event_form_change_book', 1) || ($event->catid && !is_numeric($event->catid))) {
+		$hideFieldsets[] = 'booking';
+	}
+	if ($externalEvent || !$params->get('event_form_change_publishing', 1)) {
+		$hideFieldsets[] = 'publishing';
+	}
+	if ($externalEvent || !$params->get('event_form_change_metadata', 1)) {
+		$hideFieldsets[] = 'jmetadata';
+	}
 }
 
 // Determine which fields should be hidden

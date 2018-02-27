@@ -3,7 +3,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -113,7 +113,7 @@ if ($event->locations && $params->get('event_show_location', '2')) {
 		}
 
 		if ($rooms) {
-			$rooms .= ' [' . implode(', ', $rooms) . ']';
+			$rooms = ' [' . implode(', ', $rooms) . ']';
 		} else {
 			$rooms = '';
 		}
@@ -175,8 +175,14 @@ if ($author && !$author->guest && $params->get('event_show_author', '1')) {
 
 // Add url
 if ($event->url && $params->get('event_show_url', '1')) {
+	$u      = JUri::getInstance($event->url);
+	$target = null;
+	if ($u->getHost() && JUri::getInstance()->getHost() != $u->getHost()) {
+		$target = '_blank';
+	}
+
 	// Add a link to the url
-	$content = new Link('link', $event->url);
+	$content = new Link('link', $event->url, $target);
 	$content->setContent($event->url);
 
 	DPCalendarHelper::renderLayout(

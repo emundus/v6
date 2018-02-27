@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -62,11 +62,7 @@ class hikashopOrderHelper {
 		$status2 = $database->updateObject(hikashop_table($this->table),$secondElement,$pkey);
 		$status = $status1 && $status2;
 		if($status){
-			if (!HIKASHOP_PHP5) {
-				$app =& JFactory::getApplication();
-			}else{
-				$app = JFactory::getApplication();
-			}
+			$app = JFactory::getApplication();
 			$app->enqueueMessage(JText::_( 'NEW_ORDERING_SAVED' ), 'message');
 		}
 		return $status;

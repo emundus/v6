@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -68,6 +68,7 @@ class hikashopUpdateHelper{
 			,'plg_editors-xtd_hikashopproduct' => array('Hikashop product tag insertion plugin',0,1)
 			,'plg_hikashop_acymailing' => array('HikaShop trigger for AcyMailing filters',0,1)
 			,'plg_hikashop_cartnotify' => array('HikaShop Cart notification Plugin',0,1)
+			,'plg_hikashop_content_markdown' => array('HikaShop Content Markdown Plugin',0,1)
 			,'plg_hikashop_datafeed' => array('Hikashop Products Cron Update Plugin',0,0)
 			,'plg_hikashop_datepickerfield' => array('Hikashop Date Picker Plugin',0,0)
 			,'plg_hikashop_email_history' => array('Hikashop Email History Plugin',0,1)

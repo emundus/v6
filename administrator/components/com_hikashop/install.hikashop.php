@@ -23,7 +23,7 @@ if(!function_exists('com_install')) {
 
 class hikashopInstall {
 	var $level = 'Starter';
-	var $version = '3.2.2';
+	var $version = '3.3.0';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';
@@ -738,6 +738,28 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			$this->databaseHelper->addColumns('waitlist', "`language` varchar(255) NOT NULL DEFAULT ''");
 			$this->databaseHelper->addColumns('cart', "`cart_ip` varchar(255) NOT NULL DEFAULT ''");
 		}
+
+		if(version_compare($this->fromVersion, '3.3.0', '<')) {
+			$this->databaseHelper->addColumns('discount', array(
+				"`discount_tax` tinyint(3) unsigned DEFAULT '0'",
+				"`discount_user_id` varchar(255) NOT NULL DEFAULT ''",
+			));
+			$this->databaseHelper->addColumns('product', array(
+				"`product_description_raw` text NULL",
+				"`product_description_type` varchar(255) NULL",
+				"`product_option_method` smallint(5) unsigned NOT NULL DEFAULT '0',",
+				"`product_condition` varchar(255) NULL"
+			));
+			$this->databaseHelper->addColumns('price', array(
+				"`price_start_date` int(11) unsigned NOT NULL DEFAULT '0'",
+				"`price_end_date` int(11) unsigned NOT NULL DEFAULT '0'",
+			));
+
+			$this->db->setQuery("ALTER TABLE `#__hikashop_product` CHANGE `product_meta_description` `product_meta_description` text NOT NULL;");
+			try{$this->db->query();}catch(Exception $e){}
+			$this->db->setQuery("ALTER TABLE `#__hikashop_category` CHANGE `category_meta_description` `category_meta_description` text NOT NULL;");
+			try{$this->db->query();}catch(Exception $e){}
+		}
 	}
 
 	public function addPref() {
@@ -906,6 +928,10 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			'order_cancel.template' => 'admin_notification',
 			'order_cancel.subject' => 'ORDER_CANCEL_SUBJECT',
 			'order_cancel.published' => 1,
+			'wishlist_share.html' => 1,
+			'wishlist_share.subject' => 'WISHLIST_SHARE_EMAIL_SUBJECT',
+			'wishlist_share.published' => 1,
+			'wishlist_share.template' => 'default',
 
 			'variant_increase_perf' => 1,
 

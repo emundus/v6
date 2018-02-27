@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -154,6 +154,7 @@ class uploadController extends hikashopController {
 				$js = '';
 
 				if($type == 'image') {
+					$imageHelper->autoRotate($file->file_path);
 					$img = $imageHelper->getThumbnail($file->file_path, array(100, 100), array('default' => true));
 					$r->thumbnail_url = $img->url;
 
@@ -371,6 +372,7 @@ class uploadController extends hikashopController {
 
 				}
 
+				$imageHelper->autoRotate($file->file_path);
 				$img = $imageHelper->getThumbnail($file->file_path, array(100, 100), array('default' => true));
 				$ret->thumbnail_url = $img->url;
 

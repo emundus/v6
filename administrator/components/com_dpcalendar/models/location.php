@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -43,15 +43,10 @@ class DPCalendarModelLocation extends JModelAdmin
 		return JTable::getInstance($type, $prefix, $config);
 	}
 
-	public function getForm($data = array(), $loadData = true)
+	public function getForm($data = array(), $loadData = true, $controlName = 'jform')
 	{
-		$app = JFactory::getApplication();
-
 		// Get the form.
-		$form = $this->loadForm('com_dpcalendar.location', 'location', array(
-			'control'   => 'jform',
-			'load_data' => $loadData
-		));
+		$form = $this->loadForm('com_dpcalendar.location', 'location', array('control' => $controlName, 'load_data' => $loadData));
 		if (empty($form)) {
 			return false;
 		}
@@ -75,7 +70,37 @@ class DPCalendarModelLocation extends JModelAdmin
 			$form->removeField('captcha');
 		}
 
+		$this->modifyField($form, 'country');
+		$this->modifyField($form, 'province');
+		$this->modifyField($form, 'city');
+		$this->modifyField($form, 'zip');
+		$this->modifyField($form, 'street');
+		$this->modifyField($form, 'number');
+		$this->modifyField($form, 'url');
+
 		return $form;
+	}
+
+	private function modifyField(JForm $form, $name)
+	{
+		$params = $this->getState('params');
+		if (!$params) {
+			$params = JComponentHelper::getParams('com_dpcalendar');
+
+			if (JFactory::getApplication()->isClient('site')) {
+				$params = JFactory::getApplication()->getParams();
+			}
+		}
+
+		$state = $params->get('location_form_' . $name, 1);
+		switch ($state) {
+			case 0:
+				$form->removeField($name);
+				break;
+			case 2:
+				$form->setFieldAttribute($name, 'required', 'true');
+				break;
+		}
 	}
 
 	protected function loadFormData()
@@ -150,7 +175,7 @@ class DPCalendarModelLocation extends JModelAdmin
 
 		$params = JComponentHelper::getParams('com_dpcalendar');
 
-		if ($app->isSite()) {
+		if ($app->isClient('site')) {
 			$params = $app->getParams();
 		}
 		$this->setState('params', $params);

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -106,6 +106,96 @@ class CategoryController extends hikashopController {
 		hikaInput::get()->set('layout', 'selectstatus');
 		return parent::display();
 	}
+
+
+	public function getUploadSetting($upload_key, $caller = '') {
+
+		$category_id = hikaInput::get()->getInt('category_id', 0);
+
+		$upload_value = null;
+		$upload_keys = array(
+			'category_image' => array(
+				'type' => 'image',
+				'view' => 'form_image_entry'
+			)
+		);
+
+		if(empty($upload_keys[$upload_key]))
+			return false;
+		$upload_value = $upload_keys[$upload_key];
+
+		$shopConfig = hikashop::config();
+
+		$options = array();
+		if($upload_value['type'] == 'image')
+			$options['upload_dir'] = $shopConfig->get('uploadfolder');
+		else
+			$options['upload_dir'] = $shopConfig->get('uploadsecurefolder');
+
+		return array(
+			'limit' => 1,
+			'type' => $upload_value['type'],
+			'layout' => 'category',
+			'view' => $upload_value['view'],
+			'options' => $options,
+			'extra' => array(
+				'category_id' => $category_id
+			)
+		);
+	}
+
+
+	public function manageUpload($upload_key, &$ret, $uploadConfig, $caller = '') {
+		if(empty($ret))
+			return;
+
+		$config = hikashop::config();
+		$category_id = (int)$uploadConfig['extra']['category_id'];
+
+		$file_type = 'category';
+		if(!empty($uploadConfig['extra']['file_type']))
+			$file_type = $uploadConfig['extra']['file_type'];
+
+		$sub_folder = '';
+		if(!empty($uploadConfig['options']['sub_folder']))
+			$sub_folder = str_replace('\\', '/', $uploadConfig['options']['sub_folder']);
+
+		if($caller == 'upload' || $caller == 'addimage') {
+			$file = new stdClass();
+			$file->file_description = '';
+			$file->file_name = $ret->name;
+			$file->file_type = $file_type;
+			$file->file_ref_id = $category_id;
+			$file->file_path = $sub_folder . $ret->name;
+
+			if(strpos($file->file_name, '.') !== false) {
+				$file->file_name = substr($file->file_name, 0, strrpos($file->file_name, '.'));
+			}
+
+			$fileClass = hikashop::get('class.file');
+			$status = $fileClass->save($file, $file_type);
+
+			$ret->file_id = $status;
+			$ret->params->file_id = $status;
+			return;
+		}
+
+		if($caller == 'galleryselect') {
+			$file = new stdClass();
+			$file->file_type = 'category';
+			$file->file_ref_id = $category_id;
+			$file->file_path = $sub_folder . $ret->name;
+
+			$fileClass = hikashop::get('class.file');
+			$status = $fileClass->save($file);
+
+			$ret->file_id = $status;
+			$ret->params->file_id = $status;
+
+			return;
+		}
+	}
+
 
 	function getTree() {
 		hikashop_nocache();

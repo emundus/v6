@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -137,6 +137,7 @@ class uploadController extends hikashopController {
 				$js = '';
 
 				if($type == 'image') {
+					$imageHelper->autoRotate($file->file_path);
 					if(!empty($options['processing']) && $options['processing'] == 'resize')
 						$imageHelper->resizeImage($file->file_path);
 
@@ -319,6 +320,7 @@ class uploadController extends hikashopController {
 
 		$uploadHelper = hikashop_get('helper.upload');
 		$ret = $uploadHelper->process($options);
+
 		if($ret !== false && empty($ret->error) && empty($ret->partial)) {
 			$imageHelper = null;
 			if($type == 'image') {
@@ -344,6 +346,7 @@ class uploadController extends hikashopController {
 			$js = '';
 
 			if($type == 'image') {
+				$imageHelper->autoRotate($file->file_path);
 				if(!empty($options['processing']) && $options['processing'] == 'resize')
 					$imageHelper->resizeImage($file->file_path);
 

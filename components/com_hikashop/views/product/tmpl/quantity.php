@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -14,7 +14,7 @@ if($this->config->get('add_to_cart_legacy', true)) {
 	return;
 }
 
-$catalogue_mode = $this->config->get('catalogue', false) && $this->params->get('add_to_cart', 1);
+$catalogue_mode = $this->config->get('catalogue', false) || !$this->params->get('add_to_cart', 1);
 $enable_wishlist = (hikashop_level(1) && $this->config->get('enable_wishlist', 1) && $this->params->get('add_to_wishlist', 0) && (!$this->config->get('hide_wishlist_guest', 1) || hikashop_loadUser() != null));
 if($catalogue_mode && !$enable_wishlist)
 	return;
@@ -89,7 +89,9 @@ $stock_class = ($stock != 0) ? "" : " hikashop_product_no_stock";
 ?>
 <span class="hikashop_product_stock_count<?php echo $stock_class; ?>">
 <?php
-	if($stock > 0)
+	if(!empty($this->row->product_stock_message))
+		echo JText::_($this->row->product_stock_message);
+	elseif($stock > 0)
 		echo (($stock == 1 && JText::_('X_ITEM_IN_STOCK') != 'X_ITEM_IN_STOCK') ? JText::sprintf('X_ITEM_IN_STOCK', $stock) : JText::sprintf('X_ITEMS_IN_STOCK', $stock));
 	elseif(!$in_stock)
 		echo JText::_('NO_STOCK');
@@ -113,7 +115,10 @@ if(($add_to_cart || $add_to_wishlist) && $display_quantity_field) {
 if($add_to_cart) {
 ?>
 	<a class="<?php echo $css_button . ' ' . $css_button_cart; ?>" rel="nofollow" href="<?php echo hikashop_completeLink($classical_url); ?>" onclick="if(window.hikashop.addToCart) { return window.hikashop.addToCart(this); }" data-addToCart="<?php echo $this->row->product_id; ?>" data-addTo-div="hikashop_product_form" data-addTo-class="add_in_progress"><span><?php
-		echo JText::_('ADD_TO_CART');
+		if(!empty($this->row->product_addtocart_message))
+			echo JText::_($this->row->product_addtocart_message);
+		else
+			echo JText::_('ADD_TO_CART');
 	?></span></a>
 <?php
 }
@@ -121,7 +126,10 @@ if($add_to_cart) {
 if($add_to_wishlist) {
 ?>
 	<a class="<?php echo $css_button . ' ' . $css_button_wishlist; ?>" rel="nofollow" href="<?php echo hikashop_completeLink($classical_url); ?>" onclick="if(window.hikashop.addToWishlist) { return window.hikashop.addToWishlist(this); }" data-addToWishlist="<?php echo $this->row->product_id; ?>" data-addTo-div="hikashop_product_form" data-addTo-class="add_in_progress"><span><?php
-		echo JText::_('ADD_TO_WISHLIST');
+		if(!empty($this->row->product_addtowishlist_message))
+			echo JText::_($this->row->product_addtowishlist_message);
+		else
+			echo JText::_('ADD_TO_WISHLIST');
 	?></span></a>
 <?php
 }

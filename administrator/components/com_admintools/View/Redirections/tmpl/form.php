@@ -48,7 +48,7 @@ defined('_JEXEC') or die;
 					<?php echo JText::_('JPUBLISHED'); ?>
 				</label>
 
-				<?php echo Select::booleanswitch('published', $this->item->published)?>
+				<?php echo \JHtml::_('FEFHelper.select.booleanswitch', 'published', $this->item->published)?>
 				<p>
 					<?php echo JText::_('COM_ADMINTOOLS_REDIRECTIONS_FIELD_PUBLISHED_DESC')?>
 				</p>

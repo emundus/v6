@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -35,7 +35,7 @@ class OrderController extends hikashopController {
 			'product_create','customer_set','customer_save'
 		));
 		$this->display = array_merge($this->display, array(
-			'invoice','address','export','download','remove_history_data'
+			'invoice','address','export','download','remove_history_data', 'findList'
 		));
 		$this->modify = array_merge($this->modify, array(
 			'savechangestatus','saveproduct','saveproduct_delete','copy',
@@ -590,7 +590,12 @@ class OrderController extends hikashopController {
 
 		$tmpl = hikaInput::get()->getVar('tmpl', '');
 		if($tmpl == 'component') {
-			return $this->show();
+			if(hikaInput::get()->get('fail', null)){
+				hikaInput::get()->set('task', 'edit');
+				return $this->edit();
+			}else{
+				return $this->show();
+			}
 		}
 		return $this->listing();
 	}
@@ -699,5 +704,23 @@ class OrderController extends hikashopController {
 		if($tmpl == 'component')
 			return $this->show_products();
 		return $this->show();
+	}
+
+	public function findList() {
+		$search = hikaInput::get()->getVar('search', '');
+		$start = hikaInput::get()->getInt('start', 0);
+		$displayFormat = hikaInput::get()->getVar('displayFormat', '');
+
+		$options = array();
+
+		if(!empty($displayFormat))
+			$options['displayFormat'] = $displayFormat;
+		if($start > 0)
+			$options['page'] = $start;
+
+		$nameboxType = hikashop_get('type.namebox');
+		$elements = $nameboxType->getValues($search, 'order', $options);
+		echo json_encode($elements);
+		exit;
 	}
 }

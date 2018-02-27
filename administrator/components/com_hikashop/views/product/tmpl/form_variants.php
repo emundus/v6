@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -47,6 +47,7 @@ if(!hikashop_acl('product/edit/variants') || empty($this->product->product_id))
 			<th><?php echo JText::_('PRODUCT_QUANTITY'); ?></th>
 			<th style="width:1%"><?php echo JText::_('HIKA_PUBLISHED'); ?></th>
 			<th style="width:1%"><?php echo JText::_('HIKA_DEFAULT'); ?></th>
+			<th style="width:1%"><?php echo JText::_('ID'); ?></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -84,6 +85,7 @@ if(!hikashop_acl('product/edit/variants') || empty($this->product->product_id))
 			<td style="text-align:center">
 				<div class="toggle_loading"><a class="<?php echo $variant_default; ?>" href="#" onclick="return window.productMgr.setDefaultVariant(event, <?php echo $variant->product_id; ?>);"></a></div>
 			</td>
+			<td><?php echo $variant->product_id; ?></td>
 		</tr>
 <?php
 		$k = 1 - $k;
@@ -109,14 +111,21 @@ window.productMgr.variantEdition = {
 	checked: null
 };
 window.productMgr.refreshVariantList = function() {
-	var w = window, o = w.Oby, t = this,
+	var w = window, d = document, o = w.Oby, t = this,
 		url_list = '<?php echo hikashop_completeLink('product&task=variants&product_id='.$this->product->product_id.'&'.hikashop_getFormToken().'=1',true,false,true); ?>';
 	o.xRequest(url_list, {update:'hikashop_product_variant_list'}, function(x,p) {
-		if(!t.variantEdition.current)
-			return;
 		setTimeout(function(){
-			var l = document.getElementById('hikashop_product_variant_line_' + t.variantEdition.current);
-			if(l) window.Oby.addClass(l, 'selectedVariant');
+			var message = d.getElementById('hikashop_variants_missing_error'), tr_found = d.querySelector('[id^="hikashop_product_variant_line_"]');
+			if(message){
+				if(tr_found)
+					message.style.display = 'none';
+				else
+					message.style.display = '';
+			}
+			if(!t.variantEdition.current)
+				return;
+			var l = d.getElementById('hikashop_product_variant_line_' + t.variantEdition.current);
+			if(l) o.addClass(l, 'selectedVariant');
 		},10);
 	});
 };

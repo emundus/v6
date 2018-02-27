@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 
@@ -48,6 +48,9 @@ class JHtmlDateTime
 		if (!isset($options['datepair'])) {
 			$options['datepair'] = '';
 		}
+		if (!isset($options['firstDay'])) {
+			$options['firstDay'] = DPCalendarHelper::getComponentParameter('weekstart', '0');
+		}
 
 		// Handle the special case for "now".
 		$date = null;
@@ -89,6 +92,7 @@ class JHtmlDateTime
 		var picker = new Pikaday({
 			field: document.getElementById('" . $id . "'),
 			numberOfMonths: 1,
+			firstDay: " . $options['firstDay'] . ",
 			format: '" . Fullcalendar::convertFromPHPDate($dateFormat) . "',
 			" . ($date ? "defaultDate: new Date('" . $date->format('Y-m-d') . "')," : '') . "
 			i18n: {
@@ -98,19 +102,19 @@ class JHtmlDateTime
 			},
 			onSelect: function () {
 				var end = document.getElementById('jform_" . $options['datepair'] . "');
-				if(!end) {
+				if(!end || !this.actualDate) {
 					return;
 				}
+				var field = document.getElementById('" . $id . "');
 				var format = '" . Fullcalendar::convertFromPHPDate($dateFormat) . "';
-				var start = this.actualDate.set('h', 0).set('m', 0).set('s', 0).set('ms', 0);
-				var diff = this.getMoment().diff(start);
-				var date = moment(end.value, format);
+				var diff = moment.utc(field.value, format).diff(moment.utc(this.actualDate, format));
+				var date = moment.utc(end.value, format);
 				date.add(diff, 'ms');
 				end.value = date.format(format);
-				picker.actualDate = this.getMoment();
+				picker.actualDate = field.value;
 			}
 		});
-		picker.actualDate = picker.getMoment();
+		picker.actualDate = document.getElementById('" . $id . "').value;
 		";
 
 		$timePickerOptions               = array();

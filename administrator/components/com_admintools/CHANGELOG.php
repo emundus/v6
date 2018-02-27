@@ -1,4 +1,29 @@
 <?php die() ?>
+Admin Tools 5.0.2
+================================================================================
+# [HIGH] .htaccess Maker causes 500 error on Apache 2.4 if mod_filter is not loaded and you enable the "Automatically compress static resources" feature
+# [MEDIUM] WAF Blacklist rules were always applied, regardless if we were in the backend or the frontend
+# [MEDIUM] Fixed Console Warn feature causing issues with RTL languages
+# [LOW] The charts overflow their container and the legend is illegible
+# [LOW] Fixed record editing in WAF Blacklist feature
+# [LOW] Fixed toggling published status in list views in WAF Blacklist and WAF Templates pages
+# [LOW] Feature 404 Shield was always enabled
+
+Admin Tools 5.0.1
+================================================================================
++ Warn users if either FOF or FEF is not installed
+# [MEDIUM] Removed two detection rules which trigger a bug in older versions of PHP
+# [LOW] Regression: "Repair & Optimize tables" button was linking to "Temp and log directory check" page
+# [LOW] Fixed deleting a record from Auto IP Blocking History
+# [LOW] Fixed integration between 404 Shield feature and com_redirect
+
+Admin Tools 5.0.0
+================================================================================
++ Purge Sessions now uses the Joomla! API to garbage collect expired sessions before forcibly truncating the sessions table.
+# [LOW] Missing control for "Monitor Super User accounts" option in Configure WAF page
+# [LOW] Regression: Administrator Password icon should reflect whether the feature is applied or not
+# [LOW] Session table optimizer won't run on Joomla 3.8+
+
 Admin Tools 5.0.0.b1
 ================================================================================
 + Rewritten interface using our brand new Akeeba Frontend Framework
@@ -12,9 +37,7 @@ Admin Tools 4.3.2
 + Added 404Shield feature: accessing suspicious 404 pages (ie wp-login.php) will raise a security exception
 + Added Email PHP Exceptions feature: when a PHP exception is raised, an email will be sent with debug information
 + Display info about exceptions and PHP 7+ fatal errors in the backend
-- Removed "Monitor Super User accounts" feature. While it works just fine, users seem to be too confused by it.
-~ PHP 7.2 compatibility: renaming Object class to BaseObject in the PHP File Change Scanner engine
-- Removed "Monitor Super User accounts" feature. While it works just fine, users seem to be too confused by it.
+~ Disable "Monitor Super User accounts" feature by default. While it works just fine, users seem to be too confused by it. You MUST enable it manually if you need it (recommended!).
 ~ PHP 7.2 compatibility: renaming Object class to BaseObject in the PHP File Change Scanner engine
 # [LOW] WAF Blacklist could cause login failure if you tried to upgrade Admin Tools by overwriting its files instead of going through the proper Joomla! extension update feature
 # [LOW] The [RESCUEINFO] tag was not being replaced in the blocked request message

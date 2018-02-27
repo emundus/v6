@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    3.2.2
+ * @version    3.3.0
  * @author     hikashop.com
  * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -192,18 +192,22 @@
 	left:0;right:0;
 	border-radius: 12px 12px 12px 12px;
 	min-height: 100px;
+	position: relative;
 }
 
 .opload-drop-zone .instructions,
-.opload-drop-zone .text-over {
+.opload-drop-zone .text-over,
+.opload-drop-zone .hover {
 	width:100%;
 	padding-top:35px;
 	text-align:center;
 	display:inline-block;
 }
-.opload-drop-zone .text-over { display: none; }
+.opload-drop-zone .text-over,
+.opload-drop-zone .hover { display: none; }
 .opload-drop-over .instructions { display: none; }
-.opload-drop-over .text-over { display:inline-block; }
+.opload-drop-over .text-over,
+.opload-drop-over .hover { display:inline-block; }
 
 .opload-drop-over {
 	background-color: #d0d0d0;

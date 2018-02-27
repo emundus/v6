@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -389,6 +389,15 @@ class DPCalendarModelEvents extends JModelList
 		// If we have a location filter apply it
 		if ($locationsFilter) {
 			$query->where('v.id in (' . implode(',', ArrayHelper::toInteger($locationsFilter)) . ')');
+		}
+
+		// Filter rooms
+		if ($rooms = $this->getState('filter.rooms')) {
+			$conditions = [];
+			foreach ((array)$rooms as $room) {
+				$conditions[] = 'a.rooms like ' . $db->quote($db->escape('%' . $room . '%'));
+			}
+			$query->where('(' . implode(' or ', $conditions) . ')');
 		}
 
 		// Filter by tags

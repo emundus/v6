@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -281,14 +281,25 @@ class DPCalendarControllerEvent extends JControllerForm
 		}
 
 		if ($success) {
-			DPCalendarHelper::sendMessage(
-				JText::_('JLIB_APPLICATION_SAVE_SUCCESS'),
-				false,
-				array('url' => DPCalendarHelperRoute::getEventRoute($data['id'], $data['catid']))
-			);
-		} else {
-			DPCalendarHelper::sendMessage($model->getError(), true);
+			$event = $model->getItem($data['id']);
+
+			if ($event->start_date == $data['start_date'] && $event->end_date == $data['end_date']) {
+				DPCalendarHelper::sendMessage(
+					JText::_('JLIB_APPLICATION_SAVE_SUCCESS'),
+					false,
+					array('url' => DPCalendarHelperRoute::getEventRoute($data['id'], $data['catid']))
+				);
+
+				return;
+			}
+
+
+			DPCalendarHelper::sendMessage(JText::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'), true);
+
+			return;
 		}
+
+		DPCalendarHelper::sendMessage($model->getError(), true);
 	}
 
 	public function save($key = null, $urlVar = 'e_id')
@@ -361,7 +372,16 @@ class DPCalendarControllerEvent extends JControllerForm
 				$validData['id'] = $data['xreference'];
 			}
 
-			$tmp = JFactory::getApplication()->triggerEvent('onEventSave', array($validData));
+			try {
+				$tmp = JFactory::getApplication()->triggerEvent('onEventSave', array($validData));
+			} catch (InvalidArgumentException $e) {
+				$this->setMessage($e->getMessage(), 'error');
+
+				$this->setRedirect(DPCalendarHelperRoute::getFormRoute($app->getUserState('dpcalendar.event.id'), $this->getReturnPage()));
+
+				return false;
+			}
+
 			foreach ($tmp as $newEventId) {
 				if ($newEventId === false) {
 					continue;
@@ -464,12 +484,22 @@ class DPCalendarControllerEvent extends JControllerForm
 		$model->getState();
 		$model->setState('list.limit', 2);
 		$model->setState('category.id', $data['catid']);
-		$model->setState('filter.ongoing', 1);
+		$model->setState('filter.ongoing', false);
 		$model->setState('filter.expand', true);
 		$model->setState('filter.language', $data['language']);
 		$model->setState('list.start-date', $startDate);
 		$model->setState('list.end-date', $endDate);
 
+		if (DPCalendarHelper::getComponentParameter('event_form_check_overlaping_locations')) {
+			if (!empty($data['location_ids'])) {
+				$model->setState('filter.locations', $data['location_ids']);
+			}
+			if (!empty($data['rooms'])) {
+				$model->setState('filter.rooms', $data['rooms']);
+			}
+		}
+
+		// Get the events in that period
 		$events = $model->getItems();
 
 		if (!isset($data['id']) || !$data['id']) {
@@ -535,9 +565,20 @@ class DPCalendarControllerEvent extends JControllerForm
 			$data['all_day'] = '1';
 		}
 
-		$data['start_date'] = DPCalendarHelper::getDateFromString($data['start_date'], $data['start_date_time'], $data['all_day'] == '1')->toSql(
-			false);
-		$data['end_date']   = DPCalendarHelper::getDateFromString($data['end_date'], $data['end_date_time'], $data['all_day'] == '1')->toSql(false);
+		$data['start_date'] = DPCalendarHelper::getDateFromString(
+			$data['start_date'],
+			$data['start_date_time'],
+			$data['all_day'] == '1'
+		)->toSql(false);
+		$data['end_date']   = DPCalendarHelper::getDateFromString(
+			$data['end_date'],
+			$data['end_date_time'],
+			$data['all_day'] == '1'
+		)->toSql(false);
+
+		if (!empty($data['scheduling_end_date'])) {
+			$data['scheduling_end_date'] = DPCalendarHelper::getDateFromString($data['scheduling_end_date'], null, true)->toSql(false);
+		}
 
 		$this->input->set('jform', $data);
 		$this->input->post->set('jform', $data);

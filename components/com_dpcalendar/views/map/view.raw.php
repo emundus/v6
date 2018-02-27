@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 
@@ -38,6 +38,7 @@ class DPCalendarViewMap extends \DPCalendar\View\BaseView
 				$params = new Registry($module->params);
 				$params->set('map_view_lat', $params->get('lat'));
 				$params->set('map_view_long', $params->get('long'));
+				$params->set('map_date_format', $params->get('date_format', 'm.d.Y'));
 				$access = $module->access;
 			}
 		} else {
@@ -67,25 +68,8 @@ class DPCalendarViewMap extends \DPCalendar\View\BaseView
 		$this->getModel()->setState('filter.length-type', $this->app->getUserStateFromRequest($context . 'length-type', 'length-type'));
 		$this->getModel()->setState('filter.search', $this->app->getUserStateFromRequest($context . 'search', 'search'));
 
-
-		$df = $params->get('event_form_date_format', 'm.d.Y');
-
-		// Transform the start date
-		if ($start = $this->app->getUserStateFromRequest($context . 'start-date', 'start-date')) {
-			// Get the start date from the state
-			$start = DPCalendarHelper::getDateFromString($start, 0, true, $df);
-			$start->setTime(0, 0, 0);
-
-			$this->state->set('list.start-date', $start);
-		}
-		// Transform the end date
-		if ($end = $this->app->getUserStateFromRequest($context . 'end-date', 'end-date')) {
-			// Get the start date from the state
-			$end = DPCalendarHelper::getDateFromString($end, 0, true, $df);
-			$end->setTime(23, 59, 59);
-
-			$this->state->set('list.end-date', $end);
-		}
+		$this->handleDate('start', $params);
+		$this->handleDate('end', $params);
 
 		// Initialise variables
 		$items = $this->get('Items');
@@ -100,5 +84,33 @@ class DPCalendarViewMap extends \DPCalendar\View\BaseView
 		}
 
 		$this->items = $items;
+	}
+
+	private function handleDate($type, $params)
+	{
+		$context = 'com_dpcalendar.map.';
+		$date    = null;
+
+		// Get the date from input
+		$value = $this->app->input->getString($type . '-date', 'notset');
+
+		// New date from request
+		if ($value && $value != 'notset') {
+			$date = DPCalendarHelper::getDateFromString($value, 0, true, $params->get('map_date_format', 'm.d.Y'));
+		}
+
+		// If not set, get it from the session
+		if (!$date && $value == 'notset' && $value = $this->app->getUserState($context . 'end-date')) {
+			$date = \DPCalendar\Helper\DPCalendarHelper::getDate($value);
+		}
+
+		// Transform the date when exists
+		if ($date) {
+			$date->setTime(23, 59, 59);
+		}
+
+		// Set the date
+		$this->state->set('list.' . $type . '-date', $date);
+		$this->app->setUserState($context . $type . '-date', $date ? $date->toSql() : null);
 	}
 }

@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -68,6 +68,7 @@ class DPCalendarViewList extends \DPCalendar\View\BaseView
 		$model->setState('category.id', $this->app->getParams()->get('ids'));
 		$model->setState('category.recursive', true);
 		$model->setState('filter.featured', $this->params->get('list_filter_featured', '2') == '1');
+		$model->setState('filter.my', $this->params->get('show_my_only_list'));
 
 		$now = DPCalendarHelper::getDate();
 		$now->setTime(0, 0, 0);

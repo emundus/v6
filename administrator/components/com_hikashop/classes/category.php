@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -124,13 +124,27 @@ class hikashopCategoryClass extends hikashopClass {
 			$seoHelper->autoFillKeywordMeta($element, 'category');
 		}
 
+		$category_image_id = @$element->category_image;
+		unset($element->category_image);
+
 		$status = $this->save($element);
 
 		if($status) {
 			$translationHelper->handleTranslations('category', $status, $element);
 
-			$fileClass = hikashop_get('class.file');
-			$fileClass->storeFiles('category', $status);
+			if($category_id > 0) {
+				$query = 'DELETE FROM ' . hikashop::table('file') . ' WHERE file_type=\'category\' AND file_ref_id = ' . (int)$category_id . ' ';
+				if($category_image_id != 0)
+					$query .= ' AND file_id != ' . $category_image_id;
+				$this->database->setQuery($query);
+				$this->database->query();
+			}
+
+			if($category_image_id > 0 && $category_id == 0) {
+				$query = 'UPDATE ' . hikashop::table('file') . ' SET file_ref_id = '.(int)$status.' WHERE file_type=\'category\' AND file_ref_id = 0 AND file_id = '.$category_image_id;
+				$this->database->setQuery($query);
+				$this->database->query();
+			}
 		} else {
 			hikaInput::get()->set('fail', $element);
 		}
@@ -571,7 +585,7 @@ class hikashopCategoryClass extends hikashopClass {
 		if($category_image && !empty($rows)){
 			$ids = array();
 			foreach($rows as $row){
-				$ids[]=$row->category_id;
+				$ids[]=(int)$row->category_id;
 			}
 			$this->database->setQuery('SELECT * FROM '.hikashop_table('file').' WHERE file_type=\'category\' AND file_ref_id IN ('.implode(',',$ids).')');
 			$images = $this->database->loadObjectList();

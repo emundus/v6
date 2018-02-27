@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -174,13 +174,13 @@ if ($event->params->get('access-edit')) {
 }
 
 if ($event->params->get('access-delete')) {
-	$return = clone JFactory::getURI();
+	$return = JUri::getInstance(!empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null);
 	if ($this->input->getCmd('view', null) == 'event') {
 		$return->setVar('layout', 'empty');
 	}
 
-	$deleteUrl  = 'index.php?option=com_dpcalendar&task=event.delete&tmpl=';
-	$deleteUrl .= $this->input->getWord('tmpl') . '&return=' . base64_encode($return) . '&e_id=' . $event->id;
+	$deleteUrl = 'index.php?option=com_dpcalendar&task=event.delete&tmpl=';
+	$deleteUrl .= $this->input->getWord('tmpl') . '&return=' . base64_encode($return) . '&e_id=';
 
 	// Add the delete button
 	DPCalendarHelper::renderLayout(
@@ -190,7 +190,7 @@ if ($event->params->get('access-delete')) {
 			'type'    => Icon::DELETE,
 			'root'    => $bc,
 			'text'    => 'COM_DPCALENDAR_DELETE',
-			'onclick' => "location.href='" . JRoute::_($deleteUrl) . "'"
+			'onclick' => "location.href='" . JRoute::_($deleteUrl . $event->id) . "'"
 		)
 	);
 

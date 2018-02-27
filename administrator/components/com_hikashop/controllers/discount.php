@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,6 +20,7 @@ class DiscountController extends hikashopController{
 		$this->display[]='selection';
 		$this->display[]='export';
 		$this->modify[]='useselection';
+		$this->display[]='findList';
 	}
 
 	function copy(){
@@ -71,5 +72,35 @@ class DiscountController extends hikashopController{
 	function useselection(){
 		hikaInput::get()->set('layout', 'useselection');
 		return parent::display();
+	}
+
+	public function findList() {
+		$search = hikaInput::get()->getVar('search', '');
+		$start = hikaInput::get()->getInt('start', 0);
+		$type = hikaInput::get()->getVar('type', '');
+		$displayFormat = hikaInput::get()->getVar('displayFormat', '');
+
+		$types = array(
+			'discount' => 'discount',
+			'coupon' => 'coupon'
+		);
+		if(!empty($type) && !isset($types[$type])) {
+			echo '[]';
+			exit;
+		}
+
+		$options = array();
+
+		if(!empty($displayFormat))
+			$options['displayFormat'] = $displayFormat;
+		if($start > 0)
+			$options['start'] = $start;
+		if(!empty($type))
+			$options['type'] = $type;
+
+		$nameboxType = hikashop_get('type.namebox');
+		$elements = $nameboxType->getValues($search, 'discount', $options);
+		echo json_encode($elements);
+		exit;
 	}
 }

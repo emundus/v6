@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="2.5" method="upgrade" group="hikashop">
+	<name>Hikashop Content Parser - Markdown</name>
+	<creationDate>27 février 2018</creationDate>
+	<version>3.3.0</version>
+	<author>Obsidev</author>
+	<authorEmail>dev@hikashop.com</authorEmail>
+	<authorUrl>http://www.hikashop.com</authorUrl>
+	<copyright>(C) 2011-2018 OBSIDEV. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>This plugin allow to use Markdown content</description>
+	<files>
+		<filename plugin="content_markdown">content_markdown.php</filename>
+		<folder>lib</folder>
+	</files>
+	<params addpath="/components/com_hikashop/params">
+	</params>
+	<config>
+		<fields name="params" addfieldpath="/components/com_hikashop/fields">
+		</fields>
+	</config>
+</extension>

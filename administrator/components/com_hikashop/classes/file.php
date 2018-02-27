@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,7 +16,7 @@ class hikashopFileClass extends hikashopClass {
 	var $error_type = '';
 
 	function saveFile($var_name = 'files', $type = 'image', $allowed = null) {
-		$file = hikaInput::get()->files->get($var_name, array(), 'array');
+		$file = hikaInput::get()->files->getVar($var_name, array(), 'array');
 
 		if(empty($file['name']))
 			return false;
@@ -141,6 +141,7 @@ class hikashopFileClass extends hikashopClass {
 							}
 						}
 						if(!in_array($type,array('file','watermark'))) {
+							$imageHelper->autoRotate($file_path);
 							if($type == 'category') {
 								$imageHelper->resizeImage($file_path,'category');
 							} else {
@@ -312,7 +313,7 @@ class hikashopFileClass extends hikashopClass {
 			$product_ids = array();
 			foreach($order->products as $product){
 				if((int)$product->order_product_quantity >= $file_pos || $file_pos == 1)
-					$product_ids[] = $product->product_id;
+					$product_ids[] = (int)$product->product_id;
 			}
 			if(empty($product_ids)) {
 				$app->enqueueMessage(JText::_('INVALID_FILE_NUMBER'));
@@ -327,7 +328,7 @@ class hikashopFileClass extends hikashopClass {
 					foreach($order->products as $item){
 						if($product->product_id == $item->product_id && !empty($product->product_parent_id)){
 							$item->product_parent_id = $product->product_parent_id;
-							$product_ids[] = $product->product_parent_id;
+							$product_ids[] = (int)$product->product_parent_id;
 						}
 					}
 				}
@@ -407,7 +408,7 @@ class hikashopFileClass extends hikashopClass {
 		return true;
 	}
 
-	function sendFile(&$file, $is_resume=true, $path=null, $options=array()){
+	function sendFile(&$file, $is_resume = true, $path = null, $options = array()) {
 		if(empty($path)) {
 			$path = $this->getPath('file');
 		}
@@ -418,17 +419,20 @@ class hikashopFileClass extends hikashopClass {
 		if(substr($file->file_path,0,7) == 'http://' || substr($file->file_path,0,8) == 'https://' || substr($file->file_path,0,1) == '@' || substr($file->file_path,0,1) == '#' || file_exists($file->file_path) ){
 			$filename = $file->file_path;
 		}
+
 		JPluginHelper::importPlugin('hikashop');
 		$dispatcher = JDispatcher::getInstance();
 		$do = true;
 		$dispatcher->trigger( 'onBeforeDownloadFile', array( &$filename, &$do, &$file, $options) );
-		if(!$do) return false;
+		if(!$do)
+			return false;
 
-		if(substr($filename,0,7) == 'http://' || substr($filename,0,8) == 'https://') {
+		if(substr($filename, 0, 7) == 'http://' || substr($filename, 0, 8) == 'https://') {
 			header('location: '.$filename);
+			$dispatcher->trigger('onAfterDownloadFile', array(&$filename, &$file));
 			exit;
 		}
-		if(substr($filename,0,1) == '@' || substr($filename,0,1) == '#') {
+		if(substr($filename, 0, 1) == '@' || substr($filename, 0, 1) == '#') {
 			exit;
 		}
 
@@ -453,16 +457,16 @@ class hikashopFileClass extends hikashopClass {
 
 		if(function_exists('apache_get_modules')){
 			$modules = apache_get_modules();
-			if (is_array($modules) && count($modules) && in_array('mod_xsendfile', $modules)) {
-				header("Expires: 0");
-				header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+			if(is_array($modules) && count($modules) && in_array('mod_xsendfile', $modules)) {
+				header('Expires: 0');
+				header('Last-Modified: ' . gmdate("D, d M Y H:i:s") . ' GMT');
 				header('Content-Type: application/octet-stream');
 				header('Content-Disposition: attachment; filename="' . $name . '"');
-				header("Cache-Control: maxage=1");
-				header("Pragma: public");
-				header("Content-Transfer-Encoding: binary");
+				header('Cache-Control: maxage=1');
+				header('Pragma: public');
+				header('Content-Transfer-Encoding: binary');
 				header('X-Sendfile: ' . $filename);
-				$dispatcher->trigger( 'onAfterDownloadFile', array( &$filename, &$file) );
+				$dispatcher->trigger('onAfterDownloadFile', array(&$filename, &$file));
 				exit;
 			}
 		}
@@ -484,25 +488,24 @@ class hikashopFileClass extends hikashopClass {
 		if(!empty($options['thumbnail_x']) || !empty($options['thumbnail_y'])) {
 			$extension = strtolower(substr($filename, strrpos($filename, '.') + 1));
 			if(in_array($extension, array('jpg','jpeg','png','gif'))) {
-				if(!ini_get('safe_mode')){
+				if(!ini_get('safe_mode')) {
 					set_time_limit(0);
 				}
 
 				$imageHelper = hikashop_get('helper.image');
-				$img = $imageHelper->getThumbnail($filename, array(100,100), array(), false, false);
+				$img = $imageHelper->getThumbnail($filename, array(100, 100), array(), false, false);
 				if($img->success && !empty($img->data)) {
-
 					$format = $extension;
 					if($format == 'jpg') $format = 'jpeg';
 
-					header("Expires: 0");
-					header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+					header('Expires: 0');
+					header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 					header('Content-Type: image/'.$format);
 					header('Content-Disposition: attachment; filename="' . $name . '"');
 					header('Content-Length: '.strlen($img->data));
-					header("Cache-Control: maxage=1");
-					header("Pragma: public");
-					header("Content-Transfer-Encoding: binary");
+					header('Cache-Control: maxage=1');
+					header('Pragma: public');
+					header('Content-Transfer-Encoding: binary');
 
 					echo $img->data;
 
@@ -510,7 +513,7 @@ class hikashopFileClass extends hikashopClass {
 					ob_flush();
 					unset($img->data);
 					unset($img);
-					$dispatcher->trigger( 'onAfterDownloadFile', array( &$filename, &$file) );
+					$dispatcher->trigger('onAfterDownloadFile', array(&$filename, &$file));
 					exit;
 				}
 			}
@@ -525,17 +528,17 @@ class hikashopFileClass extends hikashopClass {
 			}
 		}
 
-		header("Expires: 0");
-		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+		header('Expires: 0');
+		header('Last-Modified: ' . gmdate("D, d M Y H:i:s") . ' GMT');
 		header('Content-Type: application/octet-stream');
 		header('Content-Disposition: attachment; filename="' . $name . '"');
 		header('Content-Length: '.($seek_end - $seek_start + 1));
-		header("Cache-Control: maxage=1");
-		header("Pragma: public");
-		header("Content-Transfer-Encoding: binary");
+		header('Cache-Control: maxage=1');
+		header('Pragma: public');
+		header('Content-Transfer-Encoding: binary');
 
 		$config = hikashop_config();
-		if($config->get('deactivate_buffering_and_compression',0)){
+		if($config->get('deactivate_buffering_and_compression', 0)) {
 			ini_set('output_buffering', 0);
 			ini_set('zlib.output_compression', 0);
 			hikashop_cleanBuffers();
@@ -543,7 +546,7 @@ class hikashopFileClass extends hikashopClass {
 
 		$fp = fopen($filename, 'rb');
 		fseek($fp, $seek_start);
-		if(!ini_get('safe_mode')){
+		if(!ini_get('safe_mode')) {
 			set_time_limit(0);
 		}
 
@@ -554,7 +557,7 @@ class hikashopFileClass extends hikashopClass {
 		}
 
 		fclose($fp);
-		$dispatcher->trigger('onAfterDownloadFile', array( &$filename, &$file));
+		$dispatcher->trigger('onAfterDownloadFile', array(&$filename, &$file));
 		exit;
 	}
 

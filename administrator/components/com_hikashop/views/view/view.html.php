@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -158,17 +158,18 @@ class ViewViewView extends hikashopView{
 					}
 
 				}
+
 				for($i = 0; $i < count($joomlaTemplates); $i++)  {
 					if(version_compare(JVERSION,'1.6','<')){
 						$joomlaTemplates[$i]->assigned = TemplatesHelper::isTemplateAssigned($joomlaTemplates[$i]->directory);
 						$joomlaTemplates[$i]->published = TemplatesHelper::isTemplateDefault($joomlaTemplates[$i]->directory, $client->id);
 					}
 					if($joomlaTemplates[$i]->published || $joomlaTemplates[$i]->assigned){
+						$templateValues[$joomlaTemplates[$i]->directory]=$joomlaTemplates[$i]->directory;
+
 						if(!empty($pageInfo->filter->template) && $joomlaTemplates[$i]->directory!=$pageInfo->filter->template){
 							continue;
 						}
-
-						$templateValues[$joomlaTemplates[$i]->directory]=$joomlaTemplates[$i]->directory;
 
 						$templateFolder = $tBaseDir.DS.$joomlaTemplates[$i]->directory.DS;
 						foreach($clientTemplates as $template){

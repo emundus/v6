@@ -2,12 +2,12 @@
 <extension version="3.7" type="plugin" group="dpcalendar" method="upgrade">
 	<name>plg_dpcalendar_rsevents</name>
 	<author>Digital Peak</author>
-	<creationDate>Dec 2017</creationDate>
+	<creationDate>Feb 2018</creationDate>
 	<copyright>(C) 2007 - 2014 Digital Peak. All rights reserved.</copyright>
 	<license>http://www.gnu.org/copyleft/gpl.htmlGNU/GPL</license>
 	<authorEmail>info@digital-peak.com</authorEmail>
 	<authorUrl>joomla.digital-peak.com</authorUrl>
-	<version>6.2.1</version>
+	<version>6.3.3</version>
 	<description>PLG_DPCALENDAR_RSEVENTS_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="rsevents">rsevents.php</filename>

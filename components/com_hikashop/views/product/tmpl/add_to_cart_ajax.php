@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -27,8 +27,10 @@ $display_free_wishlist = (int)$this->config->get('display_add_to_wishlist_for_fr
 $display_fields = (int)$this->params->get('display_custom_item_fields', 0);
 $display_quantity_field = (int)$this->params->get('show_quantity_field', 0);
 $global_on_listing = $this->config->get('show_quantity_field') == 2;
-if($global_on_listing)
+if($global_on_listing){
 	$this->row->quantityFieldName = 'data['.$this->row->product_id.']';
+	$display_quantity_field = true;
+}
 
 $has_options = !empty($this->row->has_options) || (!$display_fields && $has_required_fields);
 
@@ -49,7 +51,9 @@ $extra_div_name = $this->params->get('extra_div_name', '');
 ?>
 <span class="hikashop_product_stock_count">
 <?php
-	if($this->row->product_quantity > 0)
+	if(!empty($this->row->product_stock_message))
+		echo JText::_($this->row->product_stock_message);
+	elseif($this->row->product_quantity > 0)
 		echo (($this->row->product_quantity == 1 && JText::_('X_ITEM_IN_STOCK') != 'X_ITEM_IN_STOCK') ? JText::sprintf('X_ITEM_IN_STOCK', $this->row->product_quantity) : JText::sprintf('X_ITEMS_IN_STOCK', $this->row->product_quantity));
 	elseif(!$in_stock)
 		echo JText::_('NO_STOCK');
@@ -102,7 +106,10 @@ if(($add_to_cart || $add_to_wishlist) && (($has_fields && $display_fields) || $d
 if($add_to_cart && !$has_options && !$global_on_listing) {
 ?>
 	<a class="<?php echo $css_button . ' ' . $css_button_cart; ?>" rel="nofollow" href="<?php echo hikashop_completeLink($classical_url); ?>" onclick="if(window.hikashop.addToCart) { return window.hikashop.addToCart(this); }" data-addToCart="<?php echo $this->row->product_id; ?>" data-addTo-div="<?php echo $this->params->get('main_div_name'); ?>"<?php if(!empty($extra_div_name)){ echo ' data-addTo-extra="' . $extra_div_name. '"'; } ?> data-addTo-class="add_in_progress"><span><?php
-		echo JText::_('ADD_TO_CART');
+		if(!empty($this->row->product_addtocart_message))
+			echo JText::_($this->row->product_addtocart_message);
+		else
+			echo JText::_('ADD_TO_CART');
 	?></span></a>
 <?php
 }
@@ -110,7 +117,10 @@ if($add_to_cart && !$has_options && !$global_on_listing) {
 if($add_to_wishlist && !$has_options && !$global_on_listing) {
 ?>
 	<a class="<?php echo $css_button . ' ' . $css_button_wishlist; ?>" rel="nofollow" href="<?php echo hikashop_completeLink($classical_url.'&cart_type=wishlist'); ?>" onclick="if(window.hikashop.addToWishlist) { return window.hikashop.addToWishlist(this); }" data-addToWishlist="<?php echo $this->row->product_id; ?>" data-addTo-div="<?php echo $this->params->get('main_div_name'); ?>"<?php if(!empty($extra_div_name)){ echo ' data-addTo-extra="' . $extra_div_name. '"'; } ?> data-addTo-class="add_in_progress"><span><?php
-		echo JText::_('ADD_TO_WISHLIST');
+		if(!empty($this->row->product_addtowishlist_message))
+			echo JText::_($this->row->product_addtowishlist_message);
+		else
+			echo JText::_('ADD_TO_WISHLIST');
 	?></span></a>
 <?php
 }
@@ -119,7 +129,10 @@ if(($add_to_cart || $add_to_wishlist) && $has_options) {
 	$product_link = hikashop_contentLink('product&task=show&cid='.$this->row->product_id.'&name='.$this->row->alias . $this->itemid . $this->category_pathway, $this->row);
 ?>
 	<a class="<?php echo $css_button . ' ' . $css_button_cart; ?>" href="<?php echo $product_link; ?>"><span><?php
-		echo JText::_('CHOOSE_OPTIONS');
+		if(!empty($this->row->product_chooseoptions_message))
+			echo JText::_($this->row->product_chooseoptions_message);
+		else
+			echo JText::_('CHOOSE_OPTIONS');
 	?></span></a>
 <?php
 }

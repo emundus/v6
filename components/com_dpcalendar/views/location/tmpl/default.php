@@ -2,7 +2,7 @@
 /**
  * @package    DPCalendar
  * @author     Digital Peak http://www.digital-peak.com
- * @copyright  Copyright (C) 2007 - 2017 Digital Peak. All rights reserved.
+ * @copyright  Copyright (C) 2007 - 2018 Digital Peak. All rights reserved.
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 defined('_JEXEC') or die();
@@ -39,8 +39,8 @@ if ($params->get('location_show_resource_view', 1) && !\DPCalendar\Helper\DPCale
 	$resourceParams = clone $params;
 
 	// Some defaults for the calendar
-	$resourceParams->set('header_show_datepicker', false);
-	$resourceParams->set('header_show_print', false);
+	$resourceParams->set('header_show_datepicker', $params->get('location_header_show_datepicker', 1));
+	$resourceParams->set('header_show_title', $params->get('location_header_show_title', 1));
 	$resourceParams->set('header_show_month', false);
 	$resourceParams->set('header_show_week', false);
 	$resourceParams->set('header_show_day', false);
@@ -49,12 +49,15 @@ if ($params->get('location_show_resource_view', 1) && !\DPCalendar\Helper\DPCale
 	$resourceParams->set('header_show_timeline_week', true);
 	$resourceParams->set('header_show_timeline_month', true);
 	$resourceParams->set('header_show_timeline_year', true);
+	$resourceParams->set('timeformat_timeline_year', $params->get('location_timeformat_year', 'g:i a'));
+	$resourceParams->set('timeformat_timeline_month', $params->get('location_timeformat_month', 'g:i a'));
+	$resourceParams->set('timeformat_timeline_week', $params->get('location_timeformat_week', 'g:i a'));
+	$resourceParams->set('timeformat_timeline_day', $params->get('location_timeformat_day', 'g:i a'));
 	$resourceParams->set('show_selection', false);
 	$resourceParams->set('show_map', false);
-	$resourceParams->set('show_compact_events', $params->get('compact_events', 2) == 1);
 	$resourceParams->set('default_view', $params->get('location_default_view', 'resday'));
 	$resourceParams->set('use_hash', true);
-	$resourceParams->set('event_create_form', 0);
+	$resourceParams->set('event_create_form', 2);
 	$resourceParams->set('screen_size_list_view', 0);
 
 	// Resource specific options

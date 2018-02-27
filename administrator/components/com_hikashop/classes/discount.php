@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -22,7 +22,7 @@ class hikashopDiscountClass extends hikashopClass {
 		jimport('joomla.filter.filterinput');
 		$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
 
-		$nameboxes = array('discount_product_id','discount_category_id','discount_zone_id');
+		$nameboxes = array('discount_product_id','discount_category_id','discount_zone_id','discount_user_id');
 
 		$formData = hikaInput::get()->get('data', array(), 'array');
 
@@ -94,7 +94,7 @@ class hikashopDiscountClass extends hikashopClass {
 		if(!empty($discount->discount_code))
 			$discount->discount_code = trim($discount->discount_code);
 
-		$lists = array('discount_product_id', 'discount_category_id');
+		$lists = array('discount_product_id', 'discount_category_id', 'discount_user_id');
 		foreach($lists as $key) {
 			if(empty($discount->$key) || !is_array($discount->$key))
 				continue;
@@ -490,8 +490,9 @@ class hikashopDiscountClass extends hikashopClass {
 		if($limit <= 0)
 			$limit = 200;
 
-		if(@$options['type'])
+		if(@$options['type']) {
 			$category_type = explode(',',$options['type']);
+		}
 
 		$category_types = array();
 		foreach($category_type as $t) {
@@ -503,8 +504,11 @@ class hikashopDiscountClass extends hikashopClass {
 		$where = array('d.discount_type IN ('.implode(',', $category_types).')');
 		$order = ' ORDER BY d.discount_type ASC, d.discount_code ASC';
 
+		if(!empty($search))
+			$where[] = 'd.discount_code LIKE \'%'.$db->escape($search).'%\'';
+
 		$query = 'SELECT '.implode(', ', $select) . ' FROM ' . implode(' ', $table) . ' WHERE ' . implode(' AND ', $where);
-		$db->setQuery($query, 0, $limit);
+		$db->setQuery($query, $start, $limit);
 
 		if(!$app->isAdmin() && $multiTranslation && class_exists('JFalangDatabase')) {
 			$discounts = $db->loadObjectList('discount_id', 'stdClass', false);
@@ -524,13 +528,13 @@ class hikashopDiscountClass extends hikashopClass {
 			if(!is_array($value))
 				$value = array($value);
 
-			$search = array();
+			$filter_id = array();
 			foreach($value as $v) {
-				$search[] = (int)$v;
+				$filter_id[] = (int)$v;
 			}
 			$query = 'SELECT d.* '.
 					' FROM ' . hikashop_table('discount') . ' AS d '.
-					' WHERE d.discount_id IN ('.implode(',', $search).')';
+					' WHERE d.discount_id IN ('.implode(',', $filter_id).')';
 			$db->setQuery($query);
 
 			if(!$app->isAdmin() && $multiTranslation && class_exists('JFalangDatabase')) {

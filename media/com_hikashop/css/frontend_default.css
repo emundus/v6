@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    3.2.2
+ * @version    3.3.0
  * @author     hikashop.com
  * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -190,7 +190,9 @@ span.hkIcon.icon-48-auction {
 	background-image: url("../images/icon-48/flatgrey/hikaauction.png") !important;
 }
 
-
+span.icon-32-email {
+	background-image: url("../images/icon-32/flatgrey/email.png") !important;
+}
 span.icon-32-print {
 	background-image: url("../images/icon-32/flatgrey/print.png") !important;
 }
@@ -234,8 +236,8 @@ span.icon-32-cancel {
 	text-decoration:none;
 	color: #252525;
 }
-.hika_toolbar {
-	float: right;
+.hika_toolbar .hika_toolbar_btn.hika_btn_32 {
+    float: right;
 }
 .hika_toolbar a {
 	display:inline-block;
@@ -281,6 +283,10 @@ div.hika_toolbar span.btnName {
 .hika_toolbar_btn.hikam_btn_32 {
     float: right;
     margin-bottom: 5px;
+}
+
+.hikashop_user_registration_page .chzn-container {
+	margin-bottom: 9px;
 }
 
 div.hikashop_search_block input {
@@ -1217,3 +1223,11 @@ tr.hika_show_cart_total_text_2 {
 .ui-slider-vertical .ui-slider-range { left: 0; width: 100%; }
 .ui-slider-vertical .ui-slider-range-min { bottom: 0; }
 .ui-slider-vertical .ui-slider-range-max { top: 0; }
+
+
+.hikashop_wishlist_share_emails{
+	overflow-x: hidden;
+}
+#cart_link{
+	font-style:italic;
+}

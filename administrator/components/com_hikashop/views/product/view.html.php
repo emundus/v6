@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -230,7 +230,7 @@ class ProductViewProduct extends hikashopView
 		if(!empty($rows)){
 			$ids = array();
 			foreach($rows as $key => $row){
-				$ids[]=$row->product_id;
+				$ids[]=(int)$row->product_id;
 			}
 			$queryImage = 'SELECT * FROM '.hikashop_table('file').' WHERE file_ref_id IN ('.implode(',',$ids).') AND file_type=\'product\' ORDER BY file_ref_id ASC, file_ordering ASC, file_id ASC';
 			$database->setQuery($queryImage);
@@ -1753,6 +1753,7 @@ class ProductViewProduct extends hikashopView
 			$product->product_type = 'main';
 			$product->product_quantity = -1;
 			$product->product_description = '';
+			$product->product_condition = $config->get('product_default_condition', 'newCondition');
 
 			$categoryClass = hikashop_get('class.category');
 			$mainTaxCategory = 'tax';
@@ -1811,10 +1812,32 @@ class ProductViewProduct extends hikashopView
 			$product->prices = array($obj);
 		}
 
+		$default_description_type = $config->get('default_description_type', '');
+		if(empty($product_id) && !empty($default_description_type))
+			$product->product_description_type = $default_description_type;
+
+		if(!empty($product->product_description_type) && $product->product_description_type == 'html')
+			$product->product_description_type = null;
+		if(!empty($product->product_description) && empty($product->product_description_raw))
+			$product->product_description_type = null;
+
+		if(!empty($product->product_description_type)) {
+			$contentparserType = hikashop_get('type.contentparser');
+			$description_types = $contentparserType->load();
+			if(!isset($description_types[ $product->product_description_type ]))
+				$product->product_description_type = null;
+		}
+
 		$editor = hikashop_get('helper.editor');
-		$editor->setEditor($config->get('editor', ''));
-		$editor->name = 'product_description';
-		$editor->content = $product->product_description;
+		if(!empty($product->product_description_type)) {
+			$editor->setEditor('none');
+			$editor->name = 'product_description_raw';
+			$editor->content = @$product->product_description_raw;
+		} else {
+			$editor->setEditor($config->get('editor', ''));
+			$editor->name = 'product_description';
+			$editor->content = $product->product_description;
+		}
 		$editor->height = 200;
 		$this->assignRef('editor', $editor);
 
@@ -2136,15 +2159,36 @@ class ProductViewProduct extends hikashopView
 			$product->prices = array($obj);
 		}
 
+		$default_description_type = $config->get('default_description_type', '');
+		if(empty($product_id) && !empty($default_description_type))
+			$product->product_description_type = $default_description_type;
+
+		if($product->product_description_type == 'html')
+			$product->product_description_type = null;
+		if(!empty($product->product_description) && empty($product->product_description_raw))
+			$product->product_description_type = null;
+
+		if(!empty($product->product_description_type)) {
+			$contentparserType = hikashop_get('type.contentparser');
+			$description_types = $contentparserType->load();
+			if(!isset($description_types[ $product->product_description_type ]))
+				$product->product_description_type = null;
+		}
+
 		$editor = hikashop_get('helper.editor');
 		$editorType = $config->get('editor', '');
-		if(preg_match('/Edge/i', $_SERVER['HTTP_USER_AGENT'])){
+		if(preg_match('/Edge/i', $_SERVER['HTTP_USER_AGENT']))
 			$editorType = 'none';
+		if(!empty($product->product_description_type)) {
+			$editorType = 'none';
+			$editor->name = 'product_variant_description_raw';
+			$editor->content = $product->product_description_raw;
+		} else {
+			$editor->name = 'product_variant_description';
+			$editor->content = $product->product_description;
 		}
-		$editor->setEditor($editorType);
 		$editor->id = 'product_variant_editors_'.time();
-		$editor->name = 'product_variant_description';
-		$editor->content = $product->product_description;
+		$editor->setEditor($editorType);
 		$editor->height = 200;
 		$this->assignRef('editor', $editor);
 

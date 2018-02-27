@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -45,7 +45,7 @@ class ProductViewProduct  extends HikaShopView
 					$ids = array();
 					$productClass = hikashop_get('class.product');
 					foreach($products as $key => $row){
-						$ids[]=$row->product_id;
+						$ids[]=(int)$row->product_id;
 						$productClass->addAlias($products[$key]);
 					}
 					$queryCategoryId='SELECT * FROM '.hikashop_table('product_category').' WHERE product_id IN ('.implode(',',$ids).')';

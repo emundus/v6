@@ -151,9 +151,13 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		// If we are editing a user, we need to make sure the password field is cleared
 		if ($rowId > 0 || $loadCurrentUser)
 		{
-			$this->passwordfield                            = $this->getFieldName('juser_field_password');
-			$formModel->data[$this->passwordfield]          = '';
-			$formModel->data[$this->passwordfield . '_raw'] = '';
+			// don't clear if confirmation plugin is loading, leave it, it'll get encrypted readonly and resubmitted
+			if ($this->app->input->get('fabrik_confirmation', '') !== '1')
+			{
+				$this->passwordfield                            = $this->getFieldName('juser_field_password');
+				$formModel->data[$this->passwordfield]          = '';
+				$formModel->data[$this->passwordfield . '_raw'] = '';
+			}
 
 			$userId = $loadCurrentUser ? JFactory::getUser()->id : null;
 
@@ -316,6 +320,21 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		$formModel = $this->getModel();
 		$params    = $this->getParams();
 		$input     = $this->app->input;
+
+		// clear the 'newuserid' stuff
+		$input->set('newuserid', '');
+		$input->cookie->set('newuserid', '');
+		$this->session->set('newuserid', '');
+		$input->set('newuserid_element', '');
+		$input->cookie->set('newuserid_element', '');
+		$this->session->set('newuserid_element', '');
+
+		// check for confirmation plugin first submit
+		if ($input->get('fabrik_confirmation', '') === '0')
+		{
+			return;
+		}
+
 		$mail      = JFactory::getMailer();
 		$mail->isHtml(true);
 
@@ -974,7 +993,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 			return;
 		}
 
-		if ($params->get('juser_auto_login', false))
+		if ($params->get('juser_auto_login', true))
 		{
 			$this->autoLogin();
 		}
@@ -1014,6 +1033,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 		if ($this->app->login($credentials, $options) === true)
 		{
+			$this->app->setUserState('rememberLogin', true);
 			$this->session->set($context . 'created', true);
 			$user = JFactory::getUser();
 

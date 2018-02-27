@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -106,9 +106,9 @@ class UserController extends hikashopController {
 			$address_id = $addressClass->save($addressData);
 		}
 		if(!$ok || !$address_id){
-			$app =& JFactory::getApplication();
+			$app = JFactory::getApplication();
 			if(version_compare(JVERSION,'1.6','<')){
-				$session =& JFactory::getSession();
+				$session = JFactory::getSession();
 				$session->set('application.queue', $app->_messageQueue);
 			}
 			echo '<html><head><script type="text/javascript">javascript: history.go(-1);</script></head><body></body></html>';

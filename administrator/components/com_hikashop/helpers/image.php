@@ -1,41 +1,61 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	3.2.2
+ * @version	3.3.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class hikashopImageHelper{
+class hikashopImageHelper {
+	public $thumbnail = 1;
 
-	function __construct() {
+	public $uploadFolder_url = null;
+	public $uploadFolder = null;
+	public $thumbnail_x = 100;
+	public $thumbnail_y = 100;
+
+	public $main_uploadFolder_url = null;
+	public $main_uploadFolder = null;
+	public $main_thumbnail_x = null;
+	public $main_thumbnail_y = null;
+
+	public $override = false;
+
+	protected $image_mode = null;
+
+	public function __construct() {
+		$app = JFactory::getApplication();
 		$config =& hikashop_config();
+
 		$uploadFolder = ltrim(JPath::clean(html_entity_decode($config->get('uploadfolder'))),DS);
 		$uploadFolder = rtrim($uploadFolder,DS).DS;
 		$this->uploadFolder_url = str_replace(DS,'/',$uploadFolder);
 		$this->uploadFolder = JPATH_ROOT.DS.$uploadFolder;
-		$app = JFactory::getApplication();
-		if($app->isAdmin()){
+
+		if($app->isAdmin()) {
 			$this->uploadFolder_url = '../'.$this->uploadFolder_url;
 		}else{
 			$this->uploadFolder_url = rtrim(JURI::base(true),'/').'/'.$this->uploadFolder_url;
 		}
-		$this->thumbnail = $config->get('thumbnail',1);
-		$this->thumbnail_x = $config->get('thumbnail_x',100);
-		$this->thumbnail_y = $config->get('thumbnail_y',100);
-		$this->main_thumbnail_x = $this->thumbnail_x;
-		$this->main_thumbnail_y = $this->thumbnail_y;
 		$this->main_uploadFolder_url = $this->uploadFolder_url;
 		$this->main_uploadFolder = $this->uploadFolder;
 
-		static $done = false;
-		static $override = false;
-		if(!$done){
-			$done = true;
+		$this->thumbnail = (int)$config->get('thumbnail', 1);
+
+		$this->thumbnail_x = (int)$config->get('thumbnail_x', 100);
+		$this->thumbnail_y = (int)$config->get('thumbnail_y', 100);
+		$this->main_thumbnail_x = $this->thumbnail_x;
+		$this->main_thumbnail_y = $this->thumbnail_y;
+
+		$this->image_mode = $this->autoDetectMode();
+
+		static $override = null;
+		if($override === null) {
+			$override = false;
 			$chromePath = JPATH_THEMES.DS.$app->getTemplate().DS.'html'.DS.'hikashop_image.php';
-			if (file_exists($chromePath)){
+			if(file_exists($chromePath)) {
 				require_once ($chromePath);
 				$override = true;
 			}
@@ -43,40 +63,966 @@ class hikashopImageHelper{
 		$this->override = $override;
 	}
 
-	function display($path, $addpopup = true, $title = '', $options = '', $optionslink = '', $width = 0, $height = 0, $alt='') {
-		$html = '';
-		$config =& hikashop_config();
-		$this->thumbnail = $config->get('thumbnail',1);
+	private function autoDetectMode() {
+		static $lib = null;
+		if($lib !== null)
+			return $lib;
 
-		if(!$this->_checkImage($this->uploadFolder.$path)) {
-			$config =& hikashop_config();
+		if(extension_loaded('gd')) {
+			$lib = 'GD';
+			return $lib;
+		}
+
+		$app = JFactory::getApplication();
+		if($app->isAdmin()) {
+			$app->enqueueMessage('The PHP GD extension could not be found. Thus, it is impossible to generate thumbnails in PHP from your images. If you want HikaShop to generate thumbnails you need to install/activate GD or ask your hosting company to do so.');
+		}
+
+		$lib = false;
+		return false;
+	}
+
+	public function getPath($file_path, $url = true) {
+		if($url)
+			return $this->uploadFolder_url . $file_path;
+		return $this->uploadFolder . $file_path;
+	}
+
+	public function getFileExtension($filename) {
+		return strtolower(substr($filename, strrpos($filename, '.') + 1));
+	}
+
+	public function getDefaultImage() {
+		jimport('joomla.filesystem.file');
+
+		$config = hikashop_config();
+		$path = $config->get('default_image');
+		$file_path = HIKASHOP_MEDIA.'images'.DS.'barcode.png';
+		if(!empty($path) && JFile::exists($this->main_uploadFolder . $path))
+			$file_path = $this->main_uploadFolder . $path;
+		return $file_path;
+	}
+
+	public function checkSize(&$width, &$height, &$fileObj) {
+		jimport('joomla.filesystem.file');
+
+		if(!empty($fileObj->file_path) && JFile::exists($this->main_uploadFolder . $fileObj->file_path)) {
+			$file_path = $this->main_uploadFolder . $fileObj->file_path;
+		} else {
+			$file_path = $this->getDefaultImage();
+		}
+
+		if(empty($file_path))
+			return;
+
+		list($f_w, $f_h) = @getimagesize($file_path);
+		if(empty($width)) {
+			if($f_h >= $height)
+				list($width, $height) = $this->scaleImage($f_w, $f_h, 0, $height);
+			else
+				$width = $this->main_thumbnail_x;
+		}
+		if(empty($height)) {
+			if($f_w >= $width)
+				list($width, $height) = $this->scaleImage($f_w, $f_h, $width, 0);
+			else
+				$height = $this->main_thumbnail_y;
+		}
+	}
+
+	public function scaleImage($x, $y, $cx, $cy, $scaleMode = 'inside') {
+		if(empty($cx)) $cx = 9999;
+		if(empty($cy)) $cy = 9999;
+
+		if($x < $cx && $y < $cy)
+			return false;
+
+		if($x > 0) $rx = $cx / $x;
+		if($y > 0) $ry = $cy / $y;
+
+		switch($scaleMode) {
+			case 'outside':
+				$r = ($rx > $ry) ? $rx : $ry;
+			break;
+
+			case 'inside':
+			default:
+				$r = ($rx > $ry) ? $ry : $rx;
+			break;
+		}
+		$x = intval($x * $r);
+		$y = intval($y * $r);
+		return array($x, $y);
+	}
+
+	protected function _checkImage($path) {
+		if(empty($path))
+			return false;
+		jimport('joomla.filesystem.file');
+		return JFile::exists($path);
+	}
+
+	protected function getMemoryLimit() {
+		static $memory_limit = null;
+		if($memory_limit !== null)
+			return $memory_limit;
+
+		$memory_limit = ini_get('memory_limit');
+		if(preg_match('/^(\d+)\s*(.)$/', $memory_limit, $matches)) {
+			$m = array('G' => 1073741824, 'M' => 1048576, 'K' => 1024);
+			$unit = strtoupper($matches[2]);
+			if(isset($m[ $unit ]))
+				$memory_limit = (int)$matches[1] * $m[ $unit ];
+			else
+				$memory_limit = 0;
+		}
+		$memory_limit = (int)$memory_limit;
+	}
+
+	public function getImage($filename, &$extension) {
+		$types = array('gif' => 1, 'jpg' => 2, 'jpeg' => 2, 'png' => 3);
+		$data = getimagesize($filename);
+		if(@$types[$extension] != $data[2]) {
+			$extension = array_search($data[2], $types);
+		}
+		$extension = strtolower(trim($extension));
+
+		$res = false;
+		switch($this->image_mode) {
+			case 'Imagick':
+				$res = $this->getImage_Imagick($filename, $extension);
+				break;
+			case 'GD':
+			default:
+				$res = $this->getImage_GD($filename, $extension);
+				break;
+		}
+
+		if($res !== false)
+			return $res;
+
+		static $done = false;
+		$app = JFactory::getApplication();
+		if($app->isAdmin() && !$done) {
+			$done = true;
+			$app->enqueueMessage('The '.$this->image_mode.' library for thumbnails creation is installed and activated on your website. However, it is not configured to support &quot;'.$extension.'&quot; images. Please make sure that you\'re using a valid image extension and contact your hosting company or system administrator in order to make sure that the GD library on your web server supports the image extension: '.$extension);
+		}
+	}
+
+	protected function getImage_GD($filename, &$extension) {
+		$ret = array();
+		switch($extension) {
+			case 'gif':
+				if(!function_exists('imagecreatefromgif'))
+					return false;
+				$ret['res'] = imagecreatefromgif($filename);
+				$ret['gd_tridx'] = imagecolortransparent($ret['res']);
+				imagealphablending($ret['res'], false);
+				imagesavealpha($ret['res'], true);
+				break;
+			case 'jpg':
+			case 'jpeg':
+				if(!function_exists('imagecreatefromjpeg'))
+					return false;
+				$ret['res'] = imagecreatefromjpeg($filename);
+				break;
+			case 'png':
+				if(!function_exists('imagecreatefrompng'))
+					return false;
+				$ret['res'] = imagecreatefrompng($filename);
+				$ret['gd_tridx'] = imagecolortransparent($ret['res']);
+				imagealphablending($ret['res'], false);
+				imagesavealpha($ret['res'], true);
+				break;
+		}
+		if(empty($ret))
+			return false;
+
+		if(function_exists('exif_read_data')) {
+			$exif = @exif_read_data($filename);
+		}
+
+		if(empty($exif['Orientation']))
+			$exif = array('Orientation' => 1);
+		$ret['orientation'] = $exif['Orientation'];
+		$ret['autorotate'] = ($ret['orientation'] != 1);
+
+		$ret['ext'] = $extension;
+		return $ret;
+	}
+
+	protected function getImage_Imagick($filename, &$extension) {
+		$ret = array();
+
+		$ret['res'] = new Imagick($filename);
+
+		if(empty($ret['res']))
+			return false;
+
+		$ret['orientation'] = $ret['res']->getImageOrientation();
+		$ret['autorotate'] = !empty($ret['orientation']) && ($ret['orientation'] != Imagick::ORIENTATION_TOPLEFT);
+
+		$ret['ext'] = $extension;
+		return $ret;
+	}
+
+
+	public function createThumbRes(&$source, $size, $options = array()) {
+		if(isset($size['width']))
+			$size = array('x' => (int)$size['width'], 'y' => (int)$size['height']);
+		if(!isset($size['x']))
+			$size = array('x' => (int)$size[0], 'y' => (int)$size[1]);
+
+		$res = false;
+		switch($this->image_mode) {
+			case 'Imagick':
+				$res = $this->createThumbRes_Imagick($source, $size, $options);
+				break;
+			case 'GD':
+			default:
+				$res = $this->createThumbRes_GD($source, $size, $options);
+				break;
+		}
+
+		if($res !== false)
+			return $res;
+		return $res;
+	}
+
+	protected function createThumbRes_Imagick(&$source, $size, $options = array()) {
+
+		$ret = clone $source;
+		$ret['res']->setBackgroundColor(new ImagickPixel('transparent'));
+
+		$origin_width = $ret['res']->getImageWidth();
+		$origin_height = $ret['res']->getImageHeight();
+
+		if($options['scale'] == 'outside' ) {
+			if ($origin_width > $origin_height) {
+				$resize_w = $origin_width * $new_h / $origin_height;
+				$resize_h = $new_h;
+			} else {
+				$resize_w = $new_w;
+				$resize_h = $origin_height * $new_w / $origin_width;
+			}
+			$ret['res']->cropImage($sx, $sy, ($resize_w - $new_w) / 2, ($resize_h - $new_h) / 2);
+		} else {
+			$sx = !empty($options['scaling'][0]) ? $options['scaling'][0] : $size['x'];
+			$sy = !empty($options['scaling'][1]) ? $options['scaling'][1] : $size['y'];
+			if(empty($options['forcesize'])) {
+				if($origin_width < $sx)
+					$sx = $origin_width;
+				if($origin_height < $sy)
+					$sy = $origin_height;
+			}
+			$ret['res']->thumbnailImage($sx, $sy, empty($options['forcesize']), false);
+		}
+		return $ret;
+	}
+
+	protected function createThumbRes_GD(&$source, $size, $options = array()) {
+		$ret = array(
+			'res' => imagecreatetruecolor($size['x'], $size['y'])
+		);
+		if($ret['res'] === false)
+			return false;
+
+		$ret['ext'] = $source['ext'];
+
+		if(isset($source['gd_tridx'])) {
+			$ret['gd_tridx'] = $source['gd_tridx'];
+
+			$palletSize = imagecolorstotal($source['res']);
+			if($source['gd_tridx'] >= 0 && $source['gd_tridx'] < $palletSize) {
+				$trnprt_color = imagecolorsforindex($source['res'], $transparentIndex);
+				$color = imagecolorallocate($ret['res'], $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
+				imagecolortransparent($ret['res'], $color);
+				imagefill($ret['res'], 0, 0, $color);
+			} elseif($source['ext'] == 'png') {
+				imagealphablending($ret['res'], false);
+				$color = imagecolorallocatealpha($ret['res'], 0, 0, 0, 127);
+				imagefill($ret['res'], 0, 0, $color);
+				imagesavealpha($ret['res'], true);
+			}
+		} else {
+			$bgcolor = $this->GD_getBackgroundColor($source['res'], @$options['background']);
+			imagefill($ret['res'], 0, 0, $bgcolor);
+		}
+
+		if(function_exists('imageantialias')) {
+			imageantialias($ret['res'], true);
+		}
+
+		$origin_width = imagesx($source['res']);
+		$origin_height = imagesy($source['res']);
+		$x = 0;
+		$y = 0;
+		$sx = !empty($options['scaling'][0]) ? $options['scaling'][0] : $size['x'];
+		$sy = !empty($options['scaling'][1]) ? $options['scaling'][1] : $size['y'];
+		if(!empty($options['forcesize'])) {
+			$x = ($size['x'] - $options['scaling'][0]) / 2;
+			$y = ($size['y'] - $options['scaling'][1]) / 2;
+		} else {
+			if($origin_width < $sx)
+				$sx = $origin_width;
+			if($origin_height < $sy)
+				$sy = $origin_height;
+		}
+
+		if(function_exists('imagecopyresampled')) {
+			imagecopyresampled($ret['res'], $source['res'], $x, $y, 0, 0, $sx, $sy, $origin_width, $origin_height);
+		} else {
+			imagecopyresized($ret['res'], $source['res'], $x, $y, 0, 0, $sx, $sy, $origin_width, $origin_height);
+		}
+
+		return $ret;
+	}
+
+	public function setResFilter(&$res, $filter, $options = null) {
+		switch($this->image_mode) {
+			case 'Imagick':
+				return $this->setResFilter_Imagick($res, $filter, $options);
+			case 'GD':
+			default:
+				return $this->setResFilter_GD($res, $filter, $options);
+		}
+		return false;
+	}
+
+	public function setResFilter_Imagick(&$res, $filter, $options) {
+		switch($filter) {
+			case 'grayscale':
+				$res['res']->setImageColorspace(imagick::COLORSPACE_GRAY);
+				break;
+			case 'blur':
+				$res['res']->blurImage(5, 3);
+				break;
+			case 'negate':
+				$res['res']->negateImage(false);
+				break;
+			case 'brightness':
+				$value = (int)$options;
+				if(empty($value) || $value < -255 || $value > 255)
+					return false;
+				if($value > 100)
+					$value = 100;
+				$res['res']->brightnessContrastImage($value, 0);
+				break;
+		}
+		return true;
+	}
+
+	public function setResFilter_GD(&$res, $filter, $options) {
+		$imgFilterFunc = function_exists('imagefilter');
+		switch($filter) {
+			case 'grayscale':
+				if(!$imgFilterFunc)
+					return false;
+				return imagefilter($res['res'], IMG_FILTER_GRAYSCALE);
+			case 'blur':
+				if(!$imgFilterFunc)
+					return false;
+				return imagefilter($res['res'], IMG_FILTER_GAUSSIAN_BLUR);
+			case 'negate':
+				if(!$imgFilterFunc)
+					return false;
+				return imagefilter($res['res'], IMG_FILTER_NEGATE);
+			case 'brightness':
+				if(!$imgFilterFunc)
+					return false;
+				$value = (int)$options;
+				if(empty($value) || $value < -255 || $value > 255)
+					return false;
+				return imagefilter($res['res'], IMG_FILTER_BRIGHTNESS, $value);
+		}
+		return false;
+	}
+
+	public function setResCorners(&$res, $radius = 0, $options = array()) {
+		if(empty($radius) || (int)$radius < 2)
+			return false;
+		switch($this->image_mode) {
+			case 'Imagick':
+				return $this->setResCorners_Imagick($res, $radius, $options);
+			case 'GD':
+			default:
+				return $this->setResCorners_GD($res, $radius, $options);
+		}
+		return false;
+	}
+
+	protected function setResCorners_Imagick(&$res, $radius, $options) {
+		if(!method_exists($res['res'], 'roundCorners'))
+			return false;
+
+		$h = sqrt($radius * $radius / 2);
+		$res['res']->roundCorners($h, $h);
+		return true;
+	}
+
+	protected function setResCorners_GD(&$res, $radius, $options) {
+		$corner_image = imagecreatetruecolor($radius, $radius);
+		imagealphablending($corner_image, false);
+		imagesavealpha($corner_image, true);
+
+		$bgcolor = $this->GD_getBackgroundColor($corner_image, @$options['background']);
+		$color = imagecolorallocatealpha($corner_image, 0, 0, 0, 127);
+		imagecolortransparent($corner_image, $color);
+		imagefill($corner_image, 0, 0, $bgcolor);
+		imagefilledellipse($corner_image, $radius, $radius, $radius * 2, $radius * 2, $color);
+
+		$res_w = imagesx($res['res']);
+		$res_y = imagesy($res['res']);
+
+		imagecopymerge($res['res'], $corner_image, 0, 0, 0, 0, $radius, $radius, 100);
+		$corner_image = imagerotate($corner_image, 90, 0);
+		imagecopymerge($res['res'], $corner_image, 0, $res_y - $radius, 0, 0, $radius, $radius, 100);
+		$corner_image = imagerotate($corner_image, 90, 0);
+		imagecopymerge($res['res'], $corner_image, $res_w - $radius, $res_y - $radius, 0, 0, $radius, $radius, 100);
+		$corner_image = imagerotate($corner_image, 90, 0);
+		imagecopymerge($res['res'], $corner_image, $res_w - $radius, 0, 0, 0, $radius, $radius, 100);
+	}
+
+	public function setResQuality(&$res, $quality) {
+		switch($this->image_mode) {
+			case 'Imagick':
+				return $this->setResQuality_Imagick($res, $quality);
+			case 'GD':
+			default:
+				return $this->setResQuality_GD($res, $quality);
+		}
+		return false;
+	}
+
+	protected function setResQuality_Imagick(&$res, $quality) {
+		$res['quality'] = $quality;
+	}
+
+	protected function setResQuality_GD(&$res, $quality) {
+		$res['quality'] = $quality;
+	}
+
+	public function saveResImage(&$res, $filename) {
+		$folder = dirname($filename);
+		jimport('joomla.filesystem.folder');
+		if(!JFolder::exists($folder))
+			JFolder::create($folder);
+
+		switch($this->image_mode) {
+			case 'Imagick':
+				return $this->saveResImage_Imagick($res, $filename);
+			case 'GD':
+			default:
+				return $this->saveResImage_GD($res, $filename);
+		}
+		return false;
+	}
+
+	protected function saveResImage_Imagick(&$res, $filename) {
+		$status = false;
+		switch($res['ext']) {
+			case 'gif':
+				$res['res']->setImageFormat('gif');
+				break;
+			case 'jpg':
+			case 'jpeg':
+				if(empty($res['quality']))
+					$res['quality'] = 95;
+				$res['res']->setImageCompressionQuality($res['quality']);
+				$res['res']->setImageFormat('jpeg');
+				break;
+			case 'png':
+				if(empty($res['quality']))
+					$res['quality'] = 9;
+				$res['res']->setImageCompressionQuality($res['quality']);
+				$res['res']->setImageFormat('png');
+				break;
+		}
+		return file_put_contents($filename, $res['res']);
+	}
+
+	protected function saveResImage_GD(&$res, $filename) {
+		$status = false;
+		switch($res['ext']) {
+			case 'gif':
+				$status = imagegif($res['res'], $filename);
+				break;
+			case 'jpg':
+			case 'jpeg':
+				if(empty($res['quality']))
+					$res['quality'] = 95;
+				$status = imagejpeg($res['res'], $filename, $res['quality']);
+				break;
+			case 'png':
+				if(empty($res['quality']))
+					$res['quality'] = 9;
+				$status = imagepng($res['res'], $filename, $res['quality']);
+				break;
+		}
+		return $status;
+	}
+
+	public function getImageResContent(&$res) {
+		switch($this->image_mode) {
+			case 'Imagick':
+				return $this->getImageResContent_Imagick($res);
+			case 'GD':
+			default:
+				return $this->getImageResContent_GD($res);
+		}
+		return false;
+	}
+
+	protected function getImageResContent_Imagick(&$res) {
+		switch($res['ext']) {
+			case 'jpg':
+			case 'jpeg':
+				$res['res']->setImageCompressionQuality($res['quality']);
+				break;
+			case 'png':
+				$res['res']->setImageCompressionQuality($res['quality']);
+				break;
+		}
+		return $res['res']->getImageBlob();
+	}
+
+	protected function getImageResContent_GD(&$res) {
+		ob_start();
+		switch($res['ext']) {
+			case 'gif':
+				$status = imagegif($res['res']);
+				break;
+			case 'jpg':
+			case 'jpeg':
+				$status = imagejpeg($res['res'], null, $res['quality']);
+				break;
+			case 'png':
+				$status = imagepng($res['res'], null, $res['quality']);
+				break;
+		}
+		if(!$status)
+			return null;
+		return ob_get_clean();
+	}
+
+	public function freeRes(&$res) {
+		switch($this->image_mode) {
+			case 'Imagick':
+				$this->freeRes_Imagick($res);
+				break;
+			case 'GD':
+			default:
+				$this->freeRes_GD($res);
+				break;
+		}
+
+		$res = false;
+		unset($res);
+	}
+
+	protected function freeRes_Imagick(&$res) {
+		if(!empty($res['res']))
+			$res['res']->clear();
+	}
+
+	protected function freeRes_GD(&$res) {
+		@imagedestroy($res['res']);
+	}
+
+	public function orientateImage(&$res){
+		switch($this->image_mode) {
+			case 'Imagick':
+				$this->orientateImage_Imagick($res);
+				break;
+			case 'GD':
+			default:
+				$this->orientateImage_GD($res);
+				break;
+		}
+	}
+
+	protected function orientateImage_GD(&$res){
+		$rotate = 0;
+		$flip = null;
+		switch($res['orientation']) {
+			case 2:
+				$flip = IMG_FLIP_HORIZONTAL;
+				break;
+			case 3:
+				$flip = IMG_FLIP_VERTICAL;
+				break;
+			case 4:
+				$flip = IMG_FLIP_BOTH;
+				break;
+			case 5:
+				$rotate = -90;
+				$flip = IMG_FLIP_HORIZONTAL;
+				break;
+			case 6:
+				$rotate = -90;
+				break;
+			case 7:
+				$rotate = 90;
+				$flip = IMG_FLIP_HORIZONTAL;
+				break;
+			case 8:
+				$rotate = 90;
+				break;
+			case 1:
+			default:
+				break;
+		}
+
+		if($rotate != 0) {
+			$old =& $res['res'];
+			unset($res['res']);
+			$res['res'] = imagerotate($old, $rotate, 0);
+			imagedestroy($old);
+		}
+		if($flip !== null) {
+			imageflip($res['res'], $flip);
+		}
+		 $res['orientation'] = 1;
+	}
+
+	protected function orientateImage_Imagick(&$res){
+		switch ($res['orientation']) {
+			case Imagick::ORIENTATION_TOPLEFT:
+				break;
+			case Imagick::ORIENTATION_TOPRIGHT:
+				$res['res']->flopImage();
+				break;
+			case Imagick::ORIENTATION_BOTTOMRIGHT:
+				$res['res']->rotateImage("#000", 180);
+				break;
+			case Imagick::ORIENTATION_BOTTOMLEFT:
+				$res['res']->flopImage();
+				$res['res']->rotateImage("#000", 180);
+				break;
+			case Imagick::ORIENTATION_LEFTTOP:
+				$res['res']->flopImage();
+				$res['res']->rotateImage("#000", -90);
+				break;
+			case Imagick::ORIENTATION_RIGHTTOP:
+				$res['res']->rotateImage("#000", 90);
+				break;
+			case Imagick::ORIENTATION_RIGHTBOTTOM:
+				$res['res']->flopImage();
+				$res['res']->rotateImage("#000", 90);
+				break;
+			case Imagick::ORIENTATION_LEFTBOTTOM:
+				$res['res']->rotateImage("#000", -90);
+				break;
+			default:
+				break;
+		}
+		$res['res']->setImageOrientation(Imagick::ORIENTATION_TOPLEFT);
+		$res['orientation'] = Imagick::ORIENTATION_TOPLEFT;
+	}
+
+
+	function getThumbnail($filename, $size = null, $options = array(), $relativePath = true, $cachePath = null) {
+		$config =& hikashop_config();
+		$scalemode = 'inside';
+
+		$jconf = JFactory::getConfig();
+		$jdebug = $jconf->get('debug');
+
+		$ret = new stdClass();
+		$ret->success = false;
+		$ret->external = false;
+		$ret->path = $filename;
+		$ret->height = 0;
+		$ret->width = 0;
+		$ret->req_height = 0;
+		$ret->req_width = 0;
+
+		$fullFilename = $filename;
+		if($relativePath === true)
+			$fullFilename = $this->uploadFolder . $filename;
+		if(is_string($relativePath))
+			$fullFilename = $relativePath . $filename;
+
+		$clean_filename = $fullFilename;
+		try{
+			$clean_filename = JPath::clean(realpath($fullFilename));
+			if((JPATH_ROOT != '') && strpos($clean_filename, JPath::clean(JPATH_ROOT)) !== 0) {
+				if(!defined('MULTISITES_MASTER_ROOT_PATH') || MULTISITES_MASTER_ROOT_PATH == '' || strpos($clean_filename, JPath::clean(MULTISITES_MASTER_ROOT_PATH)) !== 0)
+					return $ret;
+			}
+		}catch(Exception $e) {
+		}
+
+
+		if(empty($size) || !is_array($size) || (!isset($size['x']) && !isset($size[0]) && !isset($size['width'])))
+			$size = array('x' => (int)$config->get('thumbnail_x', 100), 'y' => (int)$config->get('thumbnail_y', 100));
+		if(isset($size['width']))
+			$size = array('x' => (int)$size['width'], 'y' => (int)$size['height']);
+		if(!isset($size['x']))
+			$size = array('x' => (int)$size[0], 'y' => (int)$size[1]);
+		$ret->req_height = $size['y'];
+		$ret->req_width = $size['x'];
+
+		if(preg_match('#^https?://#i', $filename) === 1) {
+			$ret->url = $ret->origin_url = $filename;
+			$ret->filename = basename($filename);
+			$urlArray = parse_url($filename);
+			$url = ($urlArray['scheme'].'://'.$urlArray['host'].str_replace('%2F', '/', urlencode($urlArray['path'])));
+			$url .= isset($urlArray['query']) ? '?'.$urlArray['query'] : '';
+			list($ret->width, $ret->height) = @getimagesize($url);
+			$ret->success = true;
+			$ret->external = true;
+			return $ret;
+		}
+
+		if($cachePath !== false && empty($cachePath))
+			$cachePath = $this->uploadFolder;
+		else if($cachePath !== false)
+			$cachePath = rtrim(JPath::clean($cachePath), DS) . DS;
+
+		if(!JFile::exists($fullFilename)) {
+			if($jdebug && !empty($filename)) {
+				$p = JProfiler::getInstance('Application');
+				$dbgtrace = debug_backtrace();
+				$dbgfile = str_replace('\\', '/', $dbgtrace[0]['file']);
+				$dbgline = $dbgtrace[0]['line'];
+				unset($dbgtrace);
+				$p->mark('HikaShop image ['.$fullFilename.'] does not exists (from: '.substr($dbgfile, strrpos($dbgfile, '/')+1).':'.$dbgline.')');
+			}
+
+			if(!isset($options['default']))
+				return $ret;
+
+			$ret->path = $filename = $config->get('default_image');
+			if($ret->path == 'barcode.png') {
+				$fullFilename = HIKASHOP_MEDIA.'images'.DS . ltrim($ret->path, DS);
+				$ret->url = HIKASHOP_IMAGES . '/' . ltrim($ret->path, '/');
+				$ret->origin_url = HIKASHOP_IMAGES . '/' . ltrim($ret->path, '/');
+				$ret->filename = $ret->path;
+			} else {
+				$fullFilename = $this->uploadFolder . $ret->path;
+			}
+			if(!JFile::exists($fullFilename)) {
+				return $ret;
+			}
+			$clean_filename = JPath::clean(realpath($fullFilename));
+			unset($ret->url);
+			unset($ret->filename);
+		}
+
+		$optString = '';
+		if(!empty($options['forcesize'])) $optString .= 'f';
+		if(!empty($options['grayscale'])) $optString .= 'g';
+		if(!empty($options['blur'])) $optString .= 'b';
+
+		if(!empty($options['scale'])) {
+			switch($options['scale']) {
+				case 'outside':
+					$scalemode = 'outside';
+					$optString .= 'sO';
+				case 'inside':
+					break;
+			}
+		}
+		if(!empty($options['background']) && is_string($options['background']) && strtolower($options['background']) != '#ffffff') {
+			$optString .= 'c'.trim(strtoupper($options['background']), '#');
+		}
+
+		if(!empty($options['radius']) && (int)$options['radius'] > 2) $optString .= 'r'.(int)$options['radius'];
+
+		$destFolder = 'thumbnails' . DS . $size['y'] . 'x' . $size['x'] . $optString;
+
+		$extension = $this->getFileExtension($filename); // strtolower(substr($filename, strrpos($filename, '.') + 1));
+
+		$origin = new stdClass();
+		if($extension == 'svg') {
+			$scaling = false;
+			$origin->width = $ret->req_width;
+			$origin->height = $ret->req_height;
+			$options['forcesize'] = false;
+		} else {
+			list($origin->width, $origin->height) = getimagesize($clean_filename);
+			$ret->orig_height = $origin->height;
+			$ret->orig_width = $origin->width;
+
+			$scaling = $this->scaleImage($origin->width, $origin->height, $size['x'], $size['y'], $scalemode);
+			if($scaling !== false) {
+				$this->thumbnail_x = $scaling[0];
+				$this->thumbnail_y = $scaling[1];
+			} else {
+				$this->thumbnail_x = $origin->width;
+				$this->thumbnail_y = $origin->height;
+			}
+
+			if(empty($size['x']))
+				$size['x'] = $scaling[0];
+			if(empty($size['y']))
+				$size['y'] = $scaling[1];
+
+			if($cachePath !== false && JFile::exists($cachePath . $destFolder . DS . $filename)) {
+				$ret->success = true;
+				$ret->path = $destFolder . DS . $filename;
+				$ret->filename = $filename;
+				$ret->url = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $ret->path);
+				if(empty($ret->origin_url))
+					$ret->origin_url = $this->uploadFolder_url . ltrim(str_replace(array('\\/', '\\', '//') , '/', $filename), '/');
+				list($ret->width, $ret->height) = getimagesize($cachePath . $destFolder . DS . $filename);
+				return $ret;
+			}
+		}
+
+		if($scaling === false && empty($options['forcesize'])) {
+			$ret->success = true;
+			$ret->width = $origin->width;
+			$ret->height = $origin->height;
+			$ret->filename = $filename;
+			$ret->url = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $ret->path);
+			if(empty($ret->origin_url))
+				$ret->origin_url = $this->uploadFolder_url . ltrim(str_replace(array('\\/', '\\', '//') , '/', $filename), '/');
+
+			return $ret;
+		}
+		unset($ret->url);
+		if($scaling === false) {
+			$scaling = array($origin->width, $origin->height);
+		}
+
+		$quality = array(
+			'jpg' => 95,
+			'png' => 9
+		);
+		if(!empty($options['quality'])) {
+			if(is_array($options['quality'])) {
+				if(!empty($options['quality']['jpg']))
+					$quality['jpg'] = (int)$options['quality']['jpg'];
+				if(!empty($options['quality']['png']))
+					$quality['png'] = (int)$options['quality']['png'];
+			} elseif((int)$options['quality'] > 0) {
+				$quality['jpg'] = (int)$options['quality'];
+			}
+		}
+
+		if($config->get('image_check_memory', 1)) {
+			$memory_limit = $this->getMemoryLimit();
+			if($memory_limit > 0) {
+				$rest = $memory_limit - memory_get_usage();
+
+				$e_x = empty($options['forcesize']) ? $scaling[0] : $size['x'];
+				$e_y = empty($options['forcesize']) ? $scaling[1] : $size['y'];
+				$estimation = (($origin->width * $origin->height) + ($e_x * $e_y)) * 8;
+
+				if($estimation > $rest) {
+					$ret->success = false;
+					$app = JFactory::getApplication();
+					$app->enqueueMessage(JText::sprintf('WARNING_IMAGE_TOO_BIG_FOR_MEMORY', $filename));
+					return $ret;
+				}
+			}
+		}
+
+		$resMain = $this->getImage($fullFilename, $extension);
+		if(!$resMain)
+			return false;
+
+		$options['scaling'] = $scaling;
+		$thumbSize = array(
+			'x' => empty($options['forcesize']) ? $scaling[0] : $size['x'],
+			'y' => empty($options['forcesize']) ? $scaling[1] : $size['y'],
+		);
+		$resThumb = $this->createThumbRes($resMain, $thumbSize, $options);
+
+		$this->freeRes($resMain);
+
+		switch($extension) {
+			case 'png':
+				$this->setResQuality($resThumb, $quality['png']);
+				break;
+			case 'jpg':
+			case 'jpeg':
+				$this->setResQuality($resThumb, $quality['jpg']);
+				break;
+		}
+
+		if(!empty($options['radius']) && (int)$options['radius'] > 2)
+			$this->setResCorners($resThumb, (int)$options['radius']);
+
+		if(!empty($options['grayscale']))
+			$this->setResFilter($resThumb, 'grayscale', null);
+		if(!empty($options['blur']))
+			$this->setResFilter($resThumb, 'blur', $options['blur']);
+
+		$imageContent = $this->getImageResContent($resThumb);
+		$status = ($imageContent !== false && $imageContent !== null);
+
+		$this->freeRes($resThumb);
+
+		if($cachePath === false) {
+			$ret->success = $status;
+			$ret->data = $imageContent;
+			return $ret;
+		}
+
+		$ret->success = $status && JFile::write($cachePath . $destFolder . DS . $filename, $imageContent);
+		if($ret->success) {
+			list($ret->width, $ret->height) = getimagesize($cachePath . $destFolder . DS . $filename);
+			$ret->path = $destFolder . DS . $filename;
+			$ret->filename = $filename;
+			$ret->url = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $ret->path);
+			if(empty($ret->origin_url))
+				$ret->origin_url = $this->uploadFolder_url . ltrim(str_replace(array('\\/', '\\', '//') , '/', $filename), '/');
+		} else  {
+			static $image_generation_warning = null;
+			if($image_generation_warning === null) {
+				$app = JFactory::getApplication();
+				$app->enqueueMessage(JText::sprintf('WRITABLE_FOLDER', $cachePath . $destFolder), 'error');
+				$image_generation_warning = true;
+			}
+		}
+
+		return $ret;
+	}
+
+
+	public function display($path, $addpopup = true, $title = '', $options = '', $optionslink = '', $width = 0, $height = 0, $alt = '') {
+		$config =& hikashop_config();
+		$this->thumbnail = (int)$config->get('thumbnail', 1);
+
+		jimport('joomla.filesystem.file');
+
+		$this->uploadFolder_url = $this->main_uploadFolder_url;
+		$this->uploadFolder = $this->main_uploadFolder;
+
+		$html = '';
+		if(!JFile::exists($this->uploadFolder . $path)) {
 			$path = $config->get('default_image');
 			if($path == 'barcode.png') {
 				$this->uploadFolder_url = HIKASHOP_IMAGES;
 				$this->uploadFolder = HIKASHOP_MEDIA.'images'.DS;
 			}
-
-			if(!$this->_checkImage($this->uploadFolder.$path)) {
+			if(!JFile::exists($this->uploadFolder. $path)) {
 				$this->uploadFolder_url = $this->main_uploadFolder_url;
 				$this->uploadFolder = $this->main_uploadFolder;
 				return $html;
 			}
 		}
 
-		if(empty($alt)){
+		if(empty($alt)) {
 			$alt = $title;
-		}else{
+		} else {
 			$title = $alt;
 		}
-		$extension = strtolower(substr($path, strrpos($path, '.') + 1));
-		if($extension=='svg'){
-			$this->width = $width;
-			$this->height = $height;
+
+		$extension = $this->getFileExtension($path);
+		if($extension == 'svg') {
+			$this->width = max((int)$width, 0);
+			$this->height = max((int)$height, 0);
 			$this->thumbnail = false;
-			$options.=' height="'.$height.'" width="'.$width.'" ';
-		}else{
-			list($this->width, $this->height) = getimagesize($this->uploadFolder.$path);
+			$options .= ' height="' . $this->height . '" width="' . $this->width . '" ';
+		} else {
+			list($this->width, $this->height) = getimagesize($this->uploadFolder . $path);
 		}
+
+		$module = false;
 		if($width != 0 && $height != 0) {
 			$module = array(
 				0 => $height,
@@ -84,16 +1030,12 @@ class hikashopImageHelper{
 			);
 			$this->main_thumbnail_x = $width;
 			$this->main_thumbnail_y = $height;
-
-			$html = $this->displayThumbnail($path, $title, is_string($addpopup), $options, $module, $alt);
-		} else {
-			$html = $this->displayThumbnail($path, $title, is_string($addpopup), $options, false, $alt);
 		}
+		$html = $this->displayThumbnail($path, $title, is_string($addpopup), $options, $module, $alt);
 
 		if($addpopup) {
-			$config =& hikashop_config();
-			$popup_x = $config->get('max_x_popup',760);
-			$popup_y = $config->get('max_y_popup',480);
+			$popup_x = (int)$config->get('max_x_popup',760);
+			$popup_y = (int)$config->get('max_y_popup',480);
 			$this->width += 20;
 			$this->height += 30;
 			if($this->width > $popup_x)
@@ -169,7 +1111,7 @@ window.hikashop.ready( function() {
 				if(!empty($this->no_size_override)) {
 					$this->thumbnail_x = '';
 					$this->thumbnail_y = '';
-					$this->uploadFolder_url_thumb = $this->uploadFolder_url.$path;
+					$this->uploadFolder_url_thumb = $this->uploadFolder_url . $path;
 				}
 				if($this->override && function_exists('hikashop_small_image_link_render')) {
 					$html = hikashop_small_image_link_render($this,$path,$addpopup,$optionslink,$html,$title,$alt);
@@ -191,81 +1133,12 @@ window.hikashop.ready( function() {
 		return $html;
 	}
 
-	function _checkImage($path){
-		if(!empty($path)){
-			jimport('joomla.filesystem.file');
-			if(JFile::exists($path)){
-				return true;
-			}
+	function displayThumbnail($path, $title = '', $reduceSize = false, $options = '', $module = false, $alt = '') {
+		if((empty($this->main_thumbnail_x) && !empty($this->main_thumbnail_y)) || (empty($this->main_thumbnail_y) && !empty($this->main_thumbnail_x))) {
+			$module[0] = $this->main_thumbnail_y;
+			$module[1] = $this->main_thumbnail_x;
 		}
-		return false;
-	}
-
-	function checkSize(&$width,&$height,&$row){
-		$exists=false;
-		if(!empty($row->file_path)){
-			jimport('joomla.filesystem.file');
-			if(JFile::exists(HIKASHOP_MEDIA.'upload'.DS.$row->file_path)){
-				$exists=true;
-			}else{
-				$exists=false;
-			}
-		}
-
-		if(!$exists){
-			$config =& hikashop_config();
-			$path = $config->get('default_image');
-			if($path == 'barcode.png'){
-				$file_path=HIKASHOP_MEDIA.'images'.DS.'barcode.png';
-			}
-			if(!empty($path)){
-				jimport('joomla.filesystem.file');
-				if(JFile::exists($this->main_uploadFolder.$path)){
-					$exists=true;
-				}
-			}else{
-				$exists=false;
-			}
-			if($exists){
-				$file_path=$this->main_uploadFolder.$path;
-			}
-		}else{
-			$file_path=$this->main_uploadFolder.$row->file_path;
-		}
-		if(!empty($file_path)){
-			$theImage= new stdClass();
-			list($theImage->width, $theImage->height) = getimagesize($file_path);
-			if(empty($width)){
-				if($theImage->height >= $height){
-					list($width, $height) = $this->scaleImage($theImage->width, $theImage->height, 0, $height);
-				}else{
-					$width=$this->main_thumbnail_x;
-				}
-			}
-			if(empty($height)){
-				if($theImage->width >= $width){
-					list($width, $height) = $this->scaleImage($theImage->width, $theImage->height, $width, 0);
-				}else{
-					$height=$this->main_thumbnail_y;
-				}
-			}
-		}
-
-	}
-
-	function getPath($file_path,$url=true){
-		if($url){
-			return $this->uploadFolder_url.$file_path;
-		}
-		return $this->uploadFolder.$file_path;
-	}
-
-	function displayThumbnail($path,$title='',$reduceSize=false,$options='',$module=false,$alt=''){
-		if((empty($this->main_thumbnail_x) && !empty($this->main_thumbnail_y)) || (empty($this->main_thumbnail_y) && !empty($this->main_thumbnail_x))){
-			$module[0]=$this->main_thumbnail_y;
-			$module[1]=$this->main_thumbnail_x;
-		}
-		$new = $this->scaleImage($this->width, $this->height,$this->main_thumbnail_x,$this->main_thumbnail_y);
+		$new = $this->scaleImage($this->width, $this->height, $this->main_thumbnail_x, $this->main_thumbnail_y);
 
 		if($new !== false) {
 			$this->thumbnail_x = $new[0];
@@ -275,16 +1148,16 @@ window.hikashop.ready( function() {
 			$this->thumbnail_y = $this->height;
 		}
 
-		if($module){
-			if(empty($this->main_thumbnail_y)){$this->main_thumbnail_y=0;}
-			if(empty($this->main_thumbnail_x)){$this->main_thumbnail_x=0;}
-			$folder='thumbnail_'.$this->main_thumbnail_y.'x'.$this->main_thumbnail_x;
-		}else{
-			$folder='thumbnail_'.$this->thumbnail_y.'x'.$this->thumbnail_x;
+		if($module) {
+			if(empty($this->main_thumbnail_y)) $this->main_thumbnail_y = 0;
+			if(empty($this->main_thumbnail_x)) $this->main_thumbnail_x = 0;
+			$folder = 'thumbnail_'.$this->main_thumbnail_y.'x'.$this->main_thumbnail_x;
+		} else {
+			$folder = 'thumbnail_'.$this->thumbnail_y.'x'.$this->thumbnail_x;
 		}
 
-		if(!$reduceSize && !$module ){
-			$options.=' height="'.$this->thumbnail_y.'" width="'.$this->thumbnail_x.'" ';
+		if(!$reduceSize && !$module) {
+			$options .= ' height="'.$this->thumbnail_y.'" width="'.$this->thumbnail_x.'" ';
 		}
 
 		if($this->thumbnail){
@@ -313,372 +1186,13 @@ window.hikashop.ready( function() {
 		return '<img src="'.$this->uploadFolder_url_thumb.'" alt="'.htmlentities($alt).'" title="'.htmlentities($title).'" '.$options.' />';
 	}
 
-	function getThumbnail($filename, $size = null, $options = array(), $relativePath = true, $cachePath = null) {
-		$config =& hikashop_config();
-		$scalemode = 'inside';
-
-		$jconf = JFactory::getConfig();
-		$jdebug = $jconf->get('debug');
-
-		$ret = new stdClass();
-		$ret->success = false;
-		$ret->external = false;
-		$ret->path = $filename;
-		$ret->height = 0;
-		$ret->width = 0;
-		$ret->req_height = 0;
-		$ret->req_width = 0;
-
-		$fullFilename = $filename;
-		if($relativePath === true)
-			$fullFilename = $this->uploadFolder . $filename;
-		if(is_string($relativePath))
-			$fullFilename = $relativePath . $filename;
-
-		$clean_filename = $fullFilename;
-		try{
-			$clean_filename = JPath::clean(realpath($fullFilename));
-			if((JPATH_ROOT != '') && strpos($clean_filename, JPath::clean(JPATH_ROOT)) !== 0) {
-				if(!defined('MULTISITES_MASTER_ROOT_PATH') || MULTISITES_MASTER_ROOT_PATH == '' || strpos($clean_filename, JPath::clean(MULTISITES_MASTER_ROOT_PATH)) !== 0)
-					return $ret;
-			}
-		}catch(Exception $e) {
-		}
-
-
-		if(empty($size) || !is_array($size) || (!isset($size['x']) && !isset($size[0]) && !isset($size['width'])))
-			$size = array('x' => (int)$config->get('thumbnail_x', 100), 'y' => (int)$config->get('thumbnail_y', 100));
-		if(isset($size['width']))
-			$size = array('x' => (int)$size['width'], 'y' => (int)$size['height']);
-		if(!isset($size['x']))
-			$size = array('x' => (int)$size[0], 'y' => (int)$size[1]);
-		$ret->req_height = $size['y'];
-		$ret->req_width = $size['x'];
-
-		if(preg_match('#^https?://#i', $filename) === 1) {
-			$ret->url = $ret->origin_url = $filename;
-			$ret->filename = basename($filename);
-			$urlArray = parse_url($filename);
-			$url = ($urlArray['scheme'].'://'.$urlArray['host'].str_replace('%2F', '/', urlencode($urlArray['path'])));
-			$url .= isset($urlArray['query']) ? '?'.$urlArray['query'] : '';
-			list($ret->width, $ret->height) = @getimagesize($url);
-			$ret->success = true;
-			$ret->external = true;
-			return $ret;
-		}
-
-		if($cachePath !== false && empty($cachePath))
-			$cachePath = $this->uploadFolder;
-		else if($cachePath !== false)
-			$cachePath = rtrim(JFolder::cleanPath($cachePath), DS) . DS;
-
-
-		if(!JFile::exists($fullFilename)) {
-			if($jdebug && !empty($filename)) {
-				$p = JProfiler::getInstance('Application');
-				$dbgtrace = debug_backtrace();
-				$dbgfile = str_replace('\\', '/', $dbgtrace[0]['file']);
-				$dbgline = $dbgtrace[0]['line'];
-				unset($dbgtrace);
-				$p->mark('HikaShop image ['.$fullFilename.'] does not exists (from: '.substr($dbgfile, strrpos($dbgfile, '/')+1).':'.$dbgline.')');
-			}
-
-			if(!isset($options['default']))
-				return $ret;
-
-			$ret->path = $filename = $config->get('default_image');
-			if($ret->path == 'barcode.png') {
-				$fullFilename = HIKASHOP_MEDIA.'images'.DS . ltrim($ret->path, DS);
-				$ret->url = HIKASHOP_IMAGES . '/' . ltrim($ret->path, '/');
-				$ret->origin_url = HIKASHOP_IMAGES . '/' . ltrim($ret->path, '/');
-				$ret->filename = $ret->path;
-			} else {
-				$fullFilename = $this->uploadFolder . $ret->path;
-			}
-			if(!JFile::exists($fullFilename)) {
-				return $ret;
-			}
-			$clean_filename = JPath::clean(realpath($fullFilename));
-			unset($ret->url);
-			unset($ret->filename);
-		}
-
-		$optString = '';
-		if(!empty($options['forcesize'])) $optString .= 'f';
-		if(!empty($options['grayscale'])) $optString .= 'g';
-		if(!empty($options['blur'])) $optString .= 'b';
-
-		if(!empty($options['scale'])) {
-			switch($options['scale']) {
-				case 'outside':
-					$scalemode = 'outside';
-					$optString .= 'sO';
-				case 'inside':
-					break;
-			}
-		}
-		if(!empty($options['background']) && is_string($options['background']) && strtolower($options['background']) != '#ffffff') {
-			$optString .= 'c'.trim(strtoupper($options['background']), '#');
-		}
-
-		if(!empty($options['radius']) && (int)$options['radius'] > 2) $optString .= 'r'.(int)$options['radius'];
-
-		$destFolder = 'thumbnails' . DS . $size['y'] . 'x' . $size['x'] . $optString;
-
-		$extension = strtolower(substr($filename, strrpos($filename, '.') + 1));
-
-		$origin = new stdClass();
-		if($extension == 'svg') {
-			$scaling = false;
-			$origin->width = $ret->req_width;
-			$origin->height = $ret->req_height;
-			$options['forcesize'] = false;
-		} else {
-			list($origin->width, $origin->height) = getimagesize($clean_filename);
-			$ret->orig_height = $origin->height;
-			$ret->orig_width = $origin->width;
-
-			$scaling = $this->scaleImage($origin->width, $origin->height, $size['x'], $size['y'], $scalemode);
-			if($scaling !== false) {
-				$this->thumbnail_x = $scaling[0];
-				$this->thumbnail_y = $scaling[1];
-			} else {
-				$this->thumbnail_x = $origin->width;
-				$this->thumbnail_y = $origin->height;
-			}
-
-			if(empty($size['x']))
-				$size['x'] = $scaling[0];
-			if(empty($size['y']))
-				$size['y'] = $scaling[1];
-
-			if($cachePath !== false && JFile::exists($cachePath . $destFolder . DS . $filename)) {
-				$ret->success = true;
-				$ret->path = $destFolder . DS . $filename;
-				$ret->filename = $filename;
-				$ret->url = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $ret->path);
-				if(empty($ret->origin_url))
-					$ret->origin_url = $this->uploadFolder_url . ltrim(str_replace(array('\\/', '\\', '//') , '/', $filename), '/');
-				list($ret->width, $ret->height) = getimagesize($cachePath . $destFolder . DS . $filename);
-				return $ret;
-			}
-		}
-
-		if($scaling === false && empty($options['forcesize'])) {
-			$ret->success = true;
-			$ret->width = $origin->width;
-			$ret->height = $origin->height;
-			$ret->filename = $filename;
-			$ret->url = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $ret->path);
-			if(empty($ret->origin_url))
-				$ret->origin_url = $this->uploadFolder_url . ltrim(str_replace(array('\\/', '\\', '//') , '/', $filename), '/');
-
-			return $ret;
-		}
-		unset($ret->url);
-		if($scaling === false) {
-			$scaling = array($origin->width, $origin->height);
-		}
-
-		$quality = array(
-			'jpg' => 95,
-			'png' => 9
-		);
-		if(!empty($options['quality'])) {
-			if(is_array($options['quality'])) {
-				if(!empty($options['quality']['jpg']))
-					$quality['jpg'] = (int)$options['quality']['jpg'];
-				if(!empty($options['quality']['png']))
-					$quality['png'] = (int)$options['quality']['png'];
-			} elseif((int)$options['quality'] > 0) {
-				$quality['jpg'] = (int)$options['quality'];
-			}
-		}
-
-		if($config->get('image_check_memory', 1)) {
-			static $memory_limit = null;
-			if($memory_limit === null) {
-				$memory_limit = ini_get('memory_limit');
-				if(preg_match('/^(\d+)\s*(.)$/', $memory_limit, $matches)) {
-					$m = array('G' => 1073741824, 'M' => 1048576, 'K' => 1024);
-					$unit = strtoupper($matches[2]);
-					if(isset($m[ $unit ]))
-						$memory_limit = (int)$matches[1] * $m[ $unit ];
-					else
-						$memory_limit = 0;
-				}
-				$memory_limit = (int)$memory_limit;
-			}
-
-			if($memory_limit > 0) {
-				$rest = $memory_limit - memory_get_usage();
-
-				$e_x = empty($options['forcesize']) ? $scaling[0] : $size['x'];
-				$e_y = empty($options['forcesize']) ? $scaling[1] : $size['y'];
-				$estimation = (($origin->width * $origin->height) + ($e_x * $e_y)) * 8;
-
-				if($estimation > $rest) {
-					$ret->success = false;
-					$app = JFactory::getApplication();
-					$app->enqueueMessage(JText::sprintf('WARNING_IMAGE_TOO_BIG_FOR_MEMORY', $filename));
-					return $ret;
-				}
-			}
-		}
-
-		$img = $this->_getImage($fullFilename, $extension);
-		if(!$img)
-			return false;
-
-		$transparentIndex = imagecolortransparent($img);
-		if(in_array($extension, array('gif', 'png'))) {
-			imagealphablending($img, false);
-			imagesavealpha($img, true);
-		}
-
-		if(empty($options['forcesize']))
-			$thumb = imagecreatetruecolor($scaling[0], $scaling[1]);
-		else
-			$thumb = imagecreatetruecolor($size['x'], $size['y']);
-
-		$bgcolor = $this->_getBackgroundColor($thumb, @$options['background']);
-		if(in_array($extension,array('gif', 'png'))) {
-			$palletSize = imagecolorstotal($img);
-			if($transparentIndex >= 0 && $transparentIndex < $palletSize) {
-				$trnprt_color = imagecolorsforindex($img, $transparentIndex);
-				$color = imagecolorallocate($thumb, $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
-				imagecolortransparent($thumb, $color);
-				imagefill($thumb, 0, 0, $color);
-			} elseif($extension == 'png') {
-				imagealphablending($thumb, false);
-				$color = imagecolorallocatealpha($thumb, 0, 0, 0, 127);
-				imagefill($thumb, 0, 0, $color);
-				imagesavealpha($thumb, true);
-			}
-		} else {
-			imagefill($thumb, 0, 0, $bgcolor);
-		}
-
-		if(function_exists('imageantialias')) {
-			imageantialias($thumb, true);
-		}
-
-		$x = 0;
-		$y = 0;
-		$sx = $scaling[0];
-		$sy = $scaling[1];
-		if(!empty($options['forcesize'])) {
-			$x = ($size['x'] - $scaling[0]) / 2;
-			$y = ($size['y'] - $scaling[1]) / 2;
-		} else {
-			if($origin->width < $sx) $sx = $origin->width;
-			if($origin->height < $sy) $sy = $origin->height;
-		}
-
-		if(function_exists('imagecopyresampled')) {
-			imagecopyresampled($thumb, $img, $x, $y, 0, 0, $sx, $sy, $origin->width, $origin->height);
-		} else {
-			imagecopyresized($thumb, $img, $x, $y, 0, 0, $sx, $sy, $origin->width, $origin->height);
-		}
-
-		if(!empty($options['radius']) && (int)$options['radius'] > 2) {
-			$radius = (int)$options['radius'];
-			$corner_image = imagecreatetruecolor($radius, $radius);
-			imagealphablending($corner_image, false);
-			imagesavealpha($corner_image, true);
-			$bgcolor = $this->_getBackgroundColor($corner_image, @$options['background']);
-			$color = imagecolorallocatealpha($corner_image, 0, 0, 0, 127);
-			imagecolortransparent($corner_image, $color);
-			imagefill($corner_image, 0, 0, $bgcolor);
-			imagefilledellipse($corner_image, $radius, $radius, $radius * 2, $radius * 2, $color);
-			imagecopymerge($thumb, $corner_image, 0, 0, 0, 0, $radius, $radius, 100);
-			$corner_image = imagerotate($corner_image, 90, 0);
-			imagecopymerge($thumb, $corner_image, 0, $scaling[1] - $radius, 0, 0, $radius, $radius, 100);
-			$corner_image = imagerotate($corner_image, 90, 0);
-			imagecopymerge($thumb, $corner_image, $scaling[0] - $radius, $scaling[1] - $radius, 0, 0, $radius, $radius, 100);
-			$corner_image = imagerotate($corner_image, 90, 0);
-			imagecopymerge($thumb, $corner_image, $scaling[0] - $radius, 0, 0, 0, $radius, $radius, 100);
-		}
-
-		if(function_exists('imagefilter')) {
-			if(!empty($options['grayscale']))
-				imagefilter($thumb, IMG_FILTER_GRAYSCALE);
-			if(!empty($options['blur']))
-				imagefilter($thumb, IMG_FILTER_GAUSSIAN_BLUR);
-		}
-
-		ob_start();
-		switch($extension) {
-			case 'gif':
-				$status = imagegif($thumb);
-				break;
-			case 'jpg':
-			case 'jpeg':
-				$status = imagejpeg($thumb, null, $quality['jpg']);
-				break;
-			case 'png':
-				$status = imagepng($thumb, null, $quality['png']);
-				break;
-		}
-
-		imagedestroy($img);
-		@imagedestroy($thumb);
-
-		$imageContent = ob_get_clean();
-		if($cachePath === false) {
-			$ret->success = $status;
-			$ret->data = $imageContent;
-			return $ret;
-		}
-
-		$ret->success = $status && JFile::write($cachePath . $destFolder . DS . $filename, $imageContent);
-		if($ret->success) {
-			list($ret->width, $ret->height) = getimagesize($cachePath . $destFolder . DS . $filename);
-			$ret->path = $destFolder . DS . $filename;
-			$ret->filename = $filename;
-			$ret->url = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $ret->path);
-			if(empty($ret->origin_url))
-				$ret->origin_url = $this->uploadFolder_url . ltrim(str_replace(array('\\/', '\\', '//') , '/', $filename), '/');
-		} else  {
-			static $image_generation_warning = null;
-			if($image_generation_warning === null) {
-				$app = JFactory::getApplication();
-				$app->enqueueMessage(JText::sprintf('WRITABLE_FOLDER', $cachePath . $destFolder), 'error');
-				$image_generation_warning = true;
-			}
-		}
-
-		return $ret;
-	}
-
-	function _getBackgroundColor($resource, $color) {
-		if(!empty($color)) {
-			if(is_array($color)) {
-				$bgcolor = imagecolorallocatealpha($resource, $color[0], $color[1], $color[2], 0);
-				if($bgcolor === false || $bgcolor === -1)
-					$bgcolor = imagecolorallocate($resource, $color[0], $color[1], $color[2]);
-			} elseif( is_string($color) ) {
-				$rgb = str_split(ltrim($color, '#'), 2);
-				$bgcolor = imagecolorallocatealpha($resource, hexdec($rgb[0]), hexdec($rgb[1]), hexdec($rgb[2]), 0);
-				if($bgcolor === false || $bgcolor === -1)
-					$bgcolor = imagecolorallocate($resource, hexdec($rgb[0]), hexdec($rgb[1]), hexdec($rgb[2]));
-			}
-		}
-		if(empty($bgcolor)) {
-			$bgcolor = imagecolorallocatealpha($resource, 255, 255, 255, 0);
-			if($bgcolor === false || $bgcolor === -1)
-				$bgcolor = imagecolorallocate($resource, 255, 255, 255);
-		}
-		return $bgcolor;
-	}
-
 	function generateThumbnail($file_path, $module = false){
 		$ok = true;
 		if(!$this->thumbnail)
 			return $ok;
 
 		$ok = false;
-		if(!$this->checkGD())
+		if(!$this->image_mode)
 			return $ok;
 
 		$config =& hikashop_config();
@@ -711,86 +1225,44 @@ window.hikashop.ready( function() {
 		return $ok;
 	}
 
-	function checkGD(){
-		static $gd_ok = null;
-		if($gd_ok !== null)
-			return $gd_ok;
-
-		$gd_ok = false;
-		if(function_exists('gd_info')) {
-			$gd = gd_info();
-			$gd_ok = isset($gd['GD Version']);
+	public function autoRotate($file_path) {
+		$image = $this->uploadFolder.$file_path;
+		$extension = $this->getFileExtension($image);
+		$resMain = $this->getImage($image, $extension);
+		if($resMain['autorotate']) {
+			$this->orientateImage($resMain);
+			$this->saveResImage($resMain, $image);
 		}
-		if(!$gd_ok) {
-			$app =& JFactory::getApplication();
-			if($app->isAdmin()) {
-				$app->enqueueMessage('The PHP GD extension could not be found. Thus, it is impossible to generate thumbnails in PHP from your images. If you want HikaShop to generate thumbnails you need to install/activate GD or ask your hosting company to do so.');
-			}
-		}
-		return $gd_ok;
+		$this->freeRes($resMain);
 	}
 
-	function resizeImage($file_path, $type = 'image', $size = null, $options = null) {
+	function resizeImage($file_path, $type = 'image') {
+
 		$config =& hikashop_config();
 		$image_x = $config->get('image_x',0);
 		$image_y = $config->get('image_y',0);
-		if(!empty($size) && is_array($size)) {
-			if(isset($size['x']) || isset($size['y'])) {
-				$image_x = (int)@$size['x'];
-				$image_y = (int)@$size['y'];
-			} else if(isset($size['width']) || isset($size['height'])) {
-				$image_x = (int)@$size['width'];
-				$image_y = (int)@$size['height'];
-			} else {
-				$image_x = $size[0];
-				$image_y = $size[1];
-			}
-		}
-
-		$watermark_name = '';
-		if(empty($options) || (isset($options['watermark']) && $options['watermark'] === true)) {
-			$watermark_name = $config->get('watermark','');
-		}
-		if(!empty($options['watermark']) && is_string($options['wartermark'])) {
-			$watermark_name = $options['watermark'];
-		}
+		$watermark_name = $config->get('watermark','');
 
 		$ok = true;
 		if(($image_x || $image_y) || !empty($watermark_name)){
-			$ok = false;
-			$gd_ok = false;
-			if(function_exists('gd_info')) {
-				$gd = gd_info();
+			$new = getimagesize($this->uploadFolder . $file_path);
+			$this->width=$new[0];
+			$this->height=$new[1];
 
-				if(isset($gd["GD Version"])) {
-					$gd_ok = true;
-					$new = getimagesize($this->uploadFolder . $file_path);
-					$this->width=$new[0];
-					$this->height=$new[1];
-
-					if(!$image_x && !$image_y && empty($watermark_name)){
-						return true;
-					}
-					if($image_x || $image_y){
-						$new = $this->scaleImage($this->width, $this->height,$image_x,$image_y);
-						if($new === false) {
-							$new = array($this->width, $this->height);
-						}
-					}
-
-					$ok = $this->_resizeImage($file_path, $new[0], $new[1], $this->uploadFolder, $type, $watermark_name);
+			if(!$image_x && !$image_y && empty($watermark_name)){
+				return true;
+			}
+			if($image_x || $image_y){
+				$new = $this->scaleImage($this->width, $this->height,$image_x,$image_y);
+				if($new === false) {
+					$new = array($this->width, $this->height);
 				}
 			}
-			if(!$gd_ok){
-				$app = JFactory::getApplication();
-				if($app->isAdmin()){
-					$app->enqueueMessage('The PHP GD extension could not be found. Thus, it is impossible to process your images in PHP. If you want HikaShop to process your images, you need to install GD or ask your hosting company to do so. Note that it\'s also possible that GD is enabled but without JPG images processing support and thus only PNG and GIF images can be processed. You should also contact your hosting company in such case in order to add the --with-jpeg-dir flag to your PHP.');
-				}
-			}
+
+			$ok = $this->_resizeImage($file_path, $new[0], $new[1], $this->uploadFolder, $type, $watermark_name);
 		}
 		return $ok;
 	}
-
 
 	function _resizeImage($file_path, $newWidth, $newHeight, $dstFolder = '', $type = 'thumbnail', $watermark = '') {
 		$image = $this->uploadFolder.$file_path;
@@ -799,11 +1271,11 @@ window.hikashop.ready( function() {
 			$dstFolder = $this->uploadFolder.'thumbnail_'.$this->thumbnail_y.'x'.$this->thumbnail_x.DS;
 		$watermark_path = '';
 
-		if(hikashop_level(2) && $type=='image') {
+		if(hikashop_level(2) && $type == 'image') {
 			$config =& hikashop_config();
 			$watermark_name = $watermark;
 			if(empty($watermark_name) && $watermark_name !== false)
-				$watermark_name = $config->get('watermark','');
+				$watermark_name = $config->get('watermark', '');
 
 			if(!empty($watermark_name)) {
 				$watermark_path = $this->main_uploadFolder.$watermark_name;
@@ -812,13 +1284,8 @@ window.hikashop.ready( function() {
 					$watermark_path = '';
 				} else {
 					$wm_extension = strtolower(substr($watermark_path,strrpos($watermark_path,'.')+1));
-					$watermark = $this->_getImage($watermark_path,$wm_extension);
-					if($watermark) {
-						if(in_array($wm_extension,array('gif','png'))) {
-							imagealphablending($watermark, false);
-							imagesavealpha($watermark,true);
-						}
-					} else {
+					$watermark = $this->getImage($watermark_path,$wm_extension);
+					if(!$watermark) {
 						$watermark_path = '';
 					}
 				}
@@ -827,39 +1294,11 @@ window.hikashop.ready( function() {
 
 		$extension = strtolower(substr($file_path,strrpos($file_path,'.')+1));
 
-		$img = $this->_getImage($image,$extension);
+		$img = $this->getImage($image,$extension);
 		if(!$img) return false;
 
-		if(in_array($extension,array('gif','png'))){
-			imagealphablending($img, false);
-			imagesavealpha($img,true);
-		}
 		if($newWidth!=$this->width || $newHeight!=$this->height) {
-			$thumb = ImageCreateTrueColor($newWidth, $newHeight);
-
-			if(in_array($extension,array('gif','png'))){
-				$trnprt_indx = imagecolortransparent($img);
-
-				if ($trnprt_indx >= 0) {
-					$trnprt_color = imagecolorsforindex($img, $trnprt_indx);
-					$trnprt_indx = imagecolorallocate($thumb, $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
-					imagefill($thumb, 0, 0, $trnprt_indx);
-					imagecolortransparent($thumb, $trnprt_indx);
-				} elseif($extension == 'png') {
-					imagealphablending($thumb, false);
-					$color = imagecolorallocatealpha($thumb, 0, 0, 0, 127);
-					imagefill($thumb, 0, 0, $color);
-					imagesavealpha($thumb,true);
-				}
-			}
-			if(function_exists("imageAntiAlias")) {
-				imageAntiAlias($thumb,true);
-			}
-			if(function_exists("imagecopyresampled")){
-				ImageCopyResampled($thumb, $img, 0, 0, 0, 0, $newWidth, $newHeight,$this->width, $this->height);
-			}else{
-				ImageCopyResized($thumb, $img, 0, 0, 0, 0, $newWidth, $newHeight,$this->width, $this->height);
-			}
+			$thumb = $this->createThumbRes($img, array('width' => $newWidth, 'height' => $newHeight), array());
 		} else {
 			$thumb =& $img;
 		}
@@ -871,113 +1310,72 @@ window.hikashop.ready( function() {
 			if($dest_x < 0) $dest_x = 0;
 			$dest_y = $newHeight - $wm_height - $padding;
 			if($dest_y < 0) $dest_y = 0;
-			$trnprt_color=null;
-			if(in_array($extension,array('gif','png'))){
-				$trnprt_indx = imagecolortransparent($img);
-				if ($trnprt_indx >= 0) {
-					$trnprt_color = imagecolorsforindex($img, $trnprt_indx);
-				}
-			}
-			imagealphablending($thumb, false);
-			imagealphablending($watermark, false);
-			$this->imagecopymerge_alpha($thumb, $watermark, $dest_x, $dest_y, 0, 0, $wm_width, $wm_height, (int)$config->get('opacity',0),$trnprt_color);
-			imagedestroy($watermark);
+			$this->addWaterMark($thumb, $watermark, $dest_x, $dest_y, $wm_width, $wm_height);
+			$this->freeRes($watermark);
 		}
 
 		$dest = $dstFolder.$file_path;
-		ob_start();
-		switch($extension){
-			case 'gif':
-				$status = imagegif($thumb);
-				break;
-			case 'jpg':
-			case 'jpeg':
-				$status = imagejpeg($thumb,null,100);
-				break;
-			case 'png':
-				$status = imagepng($thumb,null,0);
-				break;
-		}
+		$status = $this->saveResImage($thumb, $dest);
 
-		$imageContent = ob_get_clean();
-		$status = $status && JFile::write($dest, $imageContent);
-
-		imagedestroy($img);
-		@imagedestroy($thumb);
+		$this->freeRes($img);
+		$this->freeRes($thumb);
 		return $status;
 	}
 
-	function _getImage($image, &$extension){
-		if(!$this->checkGD()) return;
-
-		$types = array('gif' => 1, 'jpg' => 2, 'jpeg' => 2, 'png' => 3);
-		$data = getimagesize($image);
-		if(@$types[$extension] != $data[2]){
-			$extension = array_search($data[2], $types);
+	public function addWaterMark($thumb, $watermark, $dest_x, $dest_y, $wm_width, $wm_height, $opacity=null){
+		if(is_null($opacity)) {
+			$config = hikashop_config();
+			$opacity = (int)$config->get('opacity',0);
 		}
 
-		switch($extension){
-			case 'gif':
-				if(function_exists('ImageCreateFromGIF')) return ImageCreateFromGIF($image);
+		switch($this->image_mode) {
+			case 'Imagick':
+				$this->addWaterMark_Imagick($thumb, $watermark, $dest_x, $dest_y, $wm_width, $wm_height, $opacity);
 				break;
-			case 'jpg':
-			case 'jpeg':
-				if(function_exists('ImageCreateFromJPEG')) return ImageCreateFromJPEG($image);
+			case 'GD':
+			default:
+				$this->addWaterMark_GD($thumb, $watermark, $dest_x, $dest_y, $wm_width, $wm_height, $opacity);
 				break;
-			case 'png':
-				if(function_exists('ImageCreateFromPNG')) return ImageCreateFromPNG($image);
-				break;
-		}
-		static $done = false;
-		$app = JFactory::getApplication();
-		if($app->isAdmin() && !$done){
-			$done = true;
-			$app->enqueueMessage('The GD library for thumbnails creation is installed and activated on your website. However, it is not configured to support &quot;'.$extension.'&quot; images. Please make sure that you\'re using a valid image extension and contact your hosting company or system administrator in order to make sure that the GD library on your web server supports the image extension: '.$extension);
 		}
 	}
 
-	function scaleImage($x, $y, $cx, $cy, $scaleMode = 'inside') {
-		if(empty($cx)) $cx = 9999;
-		if(empty($cy)) $cy = 9999;
+	protected function addWaterMark_Imagick($thumb, $watermark, $dest_x, $dest_y, $wm_width, $wm_height, $opacity) {
+		$thumb['res']->compositeImage($watermark['res'], Imagick::COMPOSITE_OVER, $dest_x, $dest_y);
+	}
 
-		if ($x >= $cx || $y >= $cy) {
-			if ($x>0) $rx = $cx / $x;
-			if ($y>0) $ry = $cy / $y;
-
-			switch($scaleMode) {
-
-				case 'outside': {
-					if ($rx > $ry)
-						$r = $rx;
-					else
-						$r = $ry;
-				}
-				break;
-
-				case 'inside':
-				default: {
-					if ($rx > $ry)
-						$r = $ry;
-					else
-						$r = $rx;
-				}
-				break;
+	protected function addWaterMark_GD($thumb, $watermark, $dest_x, $dest_y, $wm_width, $wm_height, $opacity) {
+		$trnprt_color=null;
+		if(in_array($thumb['ext'], array('gif','png'))){
+			if ($thumb['gd_tridx'] >= 0) {
+				$trnprt_color = imagecolorsforindex($thumb['res'], $thumb['gd_tridx']);
 			}
-			$x = intval($x * $r);
-			$y = intval($y * $r);
-			return array($x,$y);
 		}
-		return false;
+		$this->GD_imagecopymerge_alpha($thumb['res'], $watermark['res'], $dest_x, $dest_y, 0, 0, $wm_width, $wm_height, $opacity, $trnprt_color);
 	}
 
 
+	protected function GD_getBackgroundColor($resource, $color) {
+		if(!empty($color)) {
+			if(is_array($color)) {
+				$bgcolor = imagecolorallocatealpha($resource, $color[0], $color[1], $color[2], 0);
+				if($bgcolor === false || $bgcolor === -1)
+					$bgcolor = imagecolorallocate($resource, $color[0], $color[1], $color[2]);
+			} elseif( is_string($color) ) {
+				$rgb = str_split(ltrim($color, '#'), 2);
+				$bgcolor = imagecolorallocatealpha($resource, hexdec($rgb[0]), hexdec($rgb[1]), hexdec($rgb[2]), 0);
+				if($bgcolor === false || $bgcolor === -1)
+					$bgcolor = imagecolorallocate($resource, hexdec($rgb[0]), hexdec($rgb[1]), hexdec($rgb[2]));
+			}
+		}
+		if(empty($bgcolor)) {
+			$bgcolor = imagecolorallocatealpha($resource, 255, 255, 255, 0);
+			if($bgcolor === false || $bgcolor === -1)
+				$bgcolor = imagecolorallocate($resource, 255, 255, 255);
+		}
+		return $bgcolor;
+	}
 
-
-
-
-
-	function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct, $trans = NULL)
-	{
+	protected function GD_imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct, $trans = NULL) {
 		$dst_w = imagesx($dst_im);
 		$dst_h = imagesy($dst_im);
 
@@ -1012,5 +1410,19 @@ window.hikashop.ready( function() {
 		}
 		return true;
 	}
-
 }
+
+if(!function_exists('imageflip')) {
+	define("IMG_FLIP_HORIZONTAL", 1);
+	define("IMG_FLIP_VERTICAL", 2);
+	define("IMG_FLIP_BOTH", 3);
+
+	function imageflip($resource, $mode) {
+		if($mode == IMG_FLIP_VERTICAL || $mode == IMG_FLIP_BOTH)
+			$resource = imagerotate($resource, 180, 0);
+		if($mode == IMG_FLIP_HORIZONTAL || $mode == IMG_FLIP_BOTH)
+			$resource = imagerotate($resource, 90, 0);
+		return $resource;
+	}
+}
+

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AdminTools
-* Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -64,6 +64,7 @@ class DatabaseTools extends Controller
 	{
 		/** @var \Akeeba\AdminTools\Admin\Model\DatabaseTools $model */
 		$model = $this->getModel();
+		$model->garbageCollectSessions();
 		$model->purgeSessions();
 		$this->setRedirect('index.php?option=com_admintools', \JText::_('COM_ADMINTOOLS_LBL_DATABASETOOLS_PURGESESSIONS_COMPLETE'));
 	}
