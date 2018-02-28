@@ -895,12 +895,12 @@ class EmundusModelFiles extends JModelLegacy
             $query .= $leftJoin;
 
         $query .= $q['join'];
-        $query .= " where u.block=0 AND ".$q['q'];
+        $query .= " where u.block=0  ".$q['q'];
 
         $query .= ' GROUP BY jos_emundus_campaign_candidature.fnum';
 
         $query .=  $this->_buildContentOrderBy();
-
+       
         $dbo->setQuery($query);
         try
         {
