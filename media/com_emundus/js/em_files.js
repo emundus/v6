@@ -1763,52 +1763,52 @@ $(document).ready(function()
                                                                                                 //$('#em-decision-export').empty();
                                                                                             
                                                                                                 $.ajax({
-                                                                                                    type:'get',
-                                                                                                    url: 'index.php?option=com_emundus&controller=admission&task=getformelem&form=decision',
-                                                                                                    dataType:'json',
-
-                                                                                                    success: function(result) {
-
-                                                                                                        var item='';
-                                                                                                        item+='<option value="0" selected>Select an option</option>';
-
-                                                                                                        for (var d in result.elts) {
-
-                                                                                                            if (isNaN(parseInt(d)))
-                                                                                                                break;
-                                        
-                                                                                                            if (Joomla.JText._(result.elts[d].element_label) == "")
-                                                                                                                var elt_label = result.elts[d].element_label;
-                                                                                                            else
-                                                                                                                var elt_label = Joomla.JText._(result.elts[d].element_label);
-
-                                                                                                            item += '<option value="'+result.elts[d].element_id+'" data-value="'+result.elts[d].element_label+'">'+elt_label+'</option>';
-                                                                                                        }
-                                                                                                
-                                                                                                        $('#decision-elements-popup').append(data);
-                                                                                                        $('#em-decision-export-form').append(item);
-                                                                                                        $('#em-decision-export-form').trigger("chosen:updated");
-                                                                                                        item ="";
-
-                                                                                                        for (var d in result.defaults) {
-                                                                                                            if (isNaN(parseInt(d)))
-                                                                                                                break;
-                                                                                                            item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
-                                                                                                        }
-
-                                                                                                        $('#em-export').append(item);
-                                                                                                    // $('.btn-success').show();
-                                                                                                        //$('#decision_elements_detail').show();
-                                                                                                        /***admission elements */
-                                                                                                        $.ajax({
-                                                                                                            type: 'get',
-                                                                                                            url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=admission',
-                                                            
-                                                                                                            success: function (data) {
-                                                                                                                $('#admission-elements-popup').empty();
-                                                                                                                $('#em-admission-export-form').empty();
-                                                                                                                //$('#em-admission-export').empty();
-                                                                                                                
+                                                                                                                type:'get',
+                                                                                                                url: 'index.php?option=com_emundus&controller=admission&task=getformelem&form=decision',
+                                                                                                                dataType:'json',
+                                                    
+                                                                                                                success: function(result) {
+                                                    
+                                                                                                                    var item='';
+                                                                                                                    item+='<option value="0" selected>Select an option</option>';
+                                                    
+                                                                                                                    for (var d in result.elts) {
+                                                    
+                                                                                                                        if (isNaN(parseInt(d)))
+                                                                                                                            break;
+                                                    
+                                                                                                                        if (Joomla.JText._(result.elts[d].element_label) == "")
+                                                                                                                            var elt_label = result.elts[d].element_label;
+                                                                                                                        else
+                                                                                                                            var elt_label = Joomla.JText._(result.elts[d].element_label);
+                                                    
+                                                                                                                        item += '<option value="'+result.elts[d].element_id+'" data-value="'+result.elts[d].element_label+'">'+elt_label+'</option>';
+                                                                                                                    }
+                                                                                                            
+                                                                                                                    $('#decision-elements-popup').append(data);
+                                                                                                                    $('#em-decision-export-form').append(item);
+                                                                                                                    $('#em-decision-export-form').trigger("chosen:updated");
+                                                                                                                    item ="";
+                                                    
+                                                                                                                    for (var d in result.defaults) {
+                                                                                                                        if (isNaN(parseInt(d)))
+                                                                                                                            break;
+                                                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                                                    }
+                                                    
+                                                                                                                   // $('#em-export').append(item);
+                                                                                                                // $('.btn-success').show();
+                                                                                                                    //$('#decision_elements_detail').show();
+                                                                                                                    /***admission elements */
+                                                                                                                    $.ajax({
+                                                                                                                        type: 'get',
+                                                                                                                        url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=admission',
+                                                                        
+                                                                                                                        success: function (data) {
+                                                                                                                            $('#admission-elements-popup').empty();
+                                                                                                                            $('#em-admission-export-form').empty();
+                                                                                                                            //$('#em-admission-export').empty();
+                                                                                                                            
                                                                                                                     $.ajax({
                                                                                                                         type:'get',
                                                                                                                         url: 'index.php?option=com_emundus&controller=admission&task=getformelem&form=admission',
@@ -2281,7 +2281,7 @@ $(document).ready(function()
                                                                                                             item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                                                                         }
             
-                                                                                                        $('#em-export').append(item);
+                                                                                                        //$('#em-export').append(item);
                                                                                                         $('.btn-success').show();
                                                                                                         
                                                                                                         /*** admission elements */
@@ -2550,7 +2550,7 @@ $(document).ready(function()
                                                                                                 item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                                                             }
 
-                                                                                            $('#em-export').append(item);
+                                                                                            //$('#em-export').append(item);
                                                                                             $('.btn-success').show();
 
                                                                                             /*** admission elements */
@@ -3950,7 +3950,6 @@ $(document).ready(function()
             $(this).append('<span class="glyphicon glyphicon-minus"></span>');
 
         } else {
-
             $('#elements-popup').hide();
             $(this).removeClass("btn btn-elements-success").addClass("btn btn-info");
             $(this).empty();
@@ -3966,14 +3965,12 @@ $(document).ready(function()
             $('#admission-elements-popup').hide();
 
             $('#eval-elements-popup').toggle(400);
-
             $(this).removeClass("btn btn-info").addClass("btn btn-elements-success");
             $(this).empty();
             $(this).append('<span class="glyphicon glyphicon-minus"></span>');
 
         } else {
             $('#eval-elements-popup').hide();
-
             $(this).removeClass("btn btn-elements-success").addClass("btn btn-info");
             $(this).empty();
             $(this).append('<span class="glyphicon glyphicon-plus"></span>');
@@ -3986,7 +3983,6 @@ $(document).ready(function()
             $('#elements-popup').hide();
             $('#eval-elements-popup').hide();
             $('#admission-elements-popup').hide();
-
 
             $('#decision-elements-popup').toggle(400);
             $(this).removeClass("btn btn-info").addClass("btn btn-elements-success");
@@ -4015,7 +4011,6 @@ $(document).ready(function()
 
         } else {
             $('#admission-elements-popup').hide();
-
             $(this).removeClass("btn btn-elements-success").addClass("btn btn-info");
             $(this).empty();
             $(this).append('<span class="glyphicon glyphicon-plus"></span>');

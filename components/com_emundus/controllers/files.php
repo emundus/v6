@@ -1276,7 +1276,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('PROGRAMME')."\t";
             $nbcol = 6;
             foreach ($ordered_elements as $fKey => $fLine) {
-                if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id') {
+                if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code') {
                     if(count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted"){
                         if(in_array("form-title", $opts) && in_array("form-group", $opts)){
                             $line .= $fLine->form_label." > ".$fLine->group_label." > ".$fLine->element_label. "\t";
