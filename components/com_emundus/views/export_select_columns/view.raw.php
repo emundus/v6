@@ -44,6 +44,7 @@ class EmundusViewExport_select_columns extends JViewLegacy
         $view   = $jinput->get('viewcall', null);
         $form   = $jinput->get('form', null);
         
+
         $code       = array();
         $code[]     = $prg;
 		
@@ -66,7 +67,7 @@ class EmundusViewExport_select_columns extends JViewLegacy
         elseif ($form == "admission")
             $elements = $m_admission->getApplicantAdmissionElementsName(0, 0);        
         else
-		    $elements = EmundusHelperFiles::getElements($code);
+		    $elements = EmundusHelperFiles::getElements($code, $years);
 		
         $this->assignRef('elements', $elements);
         $this->assignRef('form', $form);
