@@ -22,7 +22,7 @@ jimport( 'joomla.plugin.plugin' );
  * @package     Joomla
  * @subpackage  System
  */
-class  plgSystemEmundus_period extends JPlugin
+class plgSystemEmundus_period extends JPlugin
 {
     /**
      * Constructor
@@ -36,7 +36,7 @@ class  plgSystemEmundus_period extends JPlugin
      * @param   array  $config  An array that holds the plugin configuration
      * @since   1.0
      */
-    function plgSystemEmundus_period(& $subject, $config)
+    function __construct(& $subject, $config)
     {
         parent::__construct($subject, $config);
         $this->loadLanguage( );
