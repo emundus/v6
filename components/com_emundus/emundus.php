@@ -247,7 +247,7 @@ JHtml::styleSheet( 'media/com_emundus/css/emundus_files.css');
 $app = JFactory::getApplication();
 
 // Require specific controller if requested
-if($controller = $app->input->get('controller', '', 'WORD')) {
+if ($controller = $app->input->get('controller', '', 'WORD')) {
     $path = JPATH_COMPONENT.DS.'controllers'.DS.$controller.'.php';
     if (file_exists($path)) {
         require_once $path;
@@ -259,7 +259,7 @@ if($controller = $app->input->get('controller', '', 'WORD')) {
 // Create the controller
 $classname    = 'EmundusController'.$controller;
 $controller   = new $classname();
- 
+
 $user = JFactory::getUser();
 $name = $app->input->get('view', '', 'WORD');
 
@@ -267,9 +267,9 @@ if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name
     $controller->execute($app->input->get('task', '', 'WORD'));
 } elseif ($user->guest && $name != 'emailalert' && $name !='programme') {
     $controller->setRedirect('index.php', JText::_("ACCESS_DENIED"), 'error');
-} else { 
+} else {
     // Perform the Request task
-    $controller->execute( $app->input->get('task', '', 'WORD') );
+    $controller->execute($app->input->get('task', '', 'WORD'));
 }
 // Redirect if set by the controller
 $controller->redirect();

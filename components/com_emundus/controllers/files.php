@@ -1222,7 +1222,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     if (count($photos) > 0) {
                         $pictures = array();
                         foreach ($photos as $photo) {
-                            $folder = $baseUrl.EMUNDUS_PATH_REL.$photo['user_id'];
+                            $folder = EMUNDUS_PATH_REL.$photo['user_id'];
                             $pictures[$photo['fnum']] = '<a href="'.$folder.'/'.$photo['filename'].'" target="_blank"><img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></a>';
                         }
                         $colOpt['PHOTO'] = $pictures;
