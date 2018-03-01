@@ -1188,8 +1188,6 @@ class EmundusControllerFiles extends JControllerLegacy
        
         $opts = $this->getcolumn($opts);
        
-        //var_dump($opts);
-
         $col    = $this->getcolumn($elts);
         $colsup = $this->getcolumnSup($objs);
         $colOpt = array();
@@ -1226,7 +1224,9 @@ class EmundusControllerFiles extends JControllerLegacy
                         $pictures = array();
                         foreach ($photos as $photo) {
                             $folder = $baseUrl.EMUNDUS_PATH_REL.$photo['user_id'];
-                            $pictures[$photo['fnum']] = '<a href="'.$folder.'/'.$photo['filename'].'" target="_blank"><img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></a>';
+                            $link = '=hyperlink("' . $folder.'/'.$photo['filename'] . '","'.$photo['filename'].'")';
+                            $pictures[$photo['fnum']] = $link;
+                            //$pictures[$photo['fnum']] = '<a href="'.$folder.'/'.$photo['filename'].'" target="_blank"><img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></a>';
                         }
                         $colOpt['PHOTO'] = $pictures;
                     } else {
@@ -1562,6 +1562,7 @@ class EmundusControllerFiles extends JControllerLegacy
         for ($i=ord("A");$i<=ord("Z");$i++) {
             $colonne_by_id[]=chr($i);
         }
+        
         for ($i=ord("A");$i<=ord("Z");$i++) {
             for ($j=ord("A");$j<=ord("Z");$j++) {
                 $colonne_by_id[]=chr($i).chr($j);
@@ -1635,10 +1636,14 @@ class EmundusControllerFiles extends JControllerLegacy
                 $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i].'1')->setConditionalStyles($conditionalStyles);
                 $objPHPExcel->getActiveSheet()->duplicateConditionalStyle($conditionalStyles,$colonne_by_id[$i].'1:'.$colonne_by_id[$i].($nbrow+ 1));
             }
-
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         }
+        
+       
+        
+        
 
+        
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         $objWriter->save(JPATH_BASE.DS.'tmp'.DS.JFactory::getUser()->id.'_extraction.xls');
         $link = JFactory::getUser()->id.'_extraction.xls';
@@ -1650,7 +1655,6 @@ class EmundusControllerFiles extends JControllerLegacy
         $session     = JFactory::getSession();
         $session->clear('fnums_export');
         $result = array('status' => true, 'link' => $link);
-
         echo json_encode((object) $result);
         exit();
 
@@ -2500,19 +2504,6 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-  /*  public function save_excelfilter(){
-        $session     = JFactory::getSession();
-        $jinput = JFactory::getApplication()->input;
-        $params       = $jinput->getString('params', null);
-        $filter_name = $jinput->getString('filt_name', null);
-        //var_dump($params.$filter_name);
-        $h_files = new EmundusHelperFiles;
-        $res = $h_files->addExcelFilter($filter_name, $params);
-        if($res)
-            echo json_encode((object)(array('status' => true)));
-        exit;
-    }*/
-
     public function saveExcelFilter()
     {
         $db = JFactory::getDBO();
@@ -2521,9 +2512,6 @@ class EmundusControllerFiles extends JControllerLegacy
         $current_user   = JFactory::getUser();
         $user_id        = $current_user->id;
         $itemid         = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-        //$filt_params    = JFactory::getSession()->get('filt_params');
-        //$adv_params     = JFactory::getSession()->get('adv_cols');
-        //$constraints    = array('filter'=>$filt_params, 'col'=>$adv_params);
         $params       = $jinput->getString('params', null);
         $constraints    = array('excelfilter'=>$params);
 
@@ -2556,10 +2544,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $db = JFactory::getDBO();
         $user_id   = JFactory::getUser()->id;
         $session     = JFactory::getSession();
+
         try {
-
-            //$export_excel_params = $session->get('excelfilter');
-
             $query = 'SELECT * from #__emundus_filters  where user = '.$user_id.' and constraints LIKE "%excelfilter%"';
             $db->setQuery($query);
             $result = $db->loadObjectList();
