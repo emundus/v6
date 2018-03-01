@@ -900,7 +900,7 @@ class EmundusModelFiles extends JModelLegacy
         $query .= ' GROUP BY jos_emundus_campaign_candidature.fnum';
 
         $query .=  $this->_buildContentOrderBy();
-
+       
         $dbo->setQuery($query);
         try
         {
