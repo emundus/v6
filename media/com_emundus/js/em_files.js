@@ -3419,7 +3419,7 @@ $(document).ready(function()
                 objJson += '}';
 
 
-                var methode = $('#em-export-methode').val();
+                var methode = $('#em-export-methode:checked').val();
                
                 var options = "{";
                 i = 0;
