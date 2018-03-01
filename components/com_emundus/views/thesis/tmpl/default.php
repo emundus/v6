@@ -14,7 +14,7 @@ $user = JFactory::getUser();
 
 $doc->addStyleSheet( 'components/com_emundus/assets/css/item.css');
 $doc->addStyleSheet('components/com_emundus/assets/css/list.css');
-JHtml::stylesheet('bootstrap.min.css',  'media/com_emundus/lib/bootstrap-emundus/css/');
+JHtml::stylesheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
 
 $canEdit = $user->authorise('core.edit', 'com_emundus.' . $this->item->id);
 if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus' . $this->item->id)) {
