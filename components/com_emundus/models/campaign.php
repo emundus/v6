@@ -5,7 +5,7 @@
  * @package    	Joomla
  * @subpackage 	eMundus
  * @link       	http://www.emundus.fr
- * @copyright	Copyright (C) 2016 eMundus. All rights reserved.
+ * @copyright	Copyright (C) 2018 eMundus. All rights reserved.
  * @license    	GNU/GPL
  * @author     	Benjamin Rivalland
  */
@@ -205,6 +205,18 @@ class EmundusModelCampaign extends JModelList
 					ORDER BY ecc.date_time DESC';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObjectList();
+	}
+
+	function getCampaignByFnum($fnum)
+	{
+		$query = 'SELECT esc.*,ecc.fnum, esp.menutype, esp.label as profile_label
+					FROM #__emundus_campaign_candidature AS ecc
+					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ecc.campaign_id
+					LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = esc.profile_id
+					WHERE ecc.fnum like '.$this->_db->Quote($fnum).'
+					ORDER BY ecc.date_time DESC';
+		$this->_db->setQuery( $query );
+		return $this->_db->loadObject();
 	}
 
 	function getCampaignSubmittedByApplicant($aid)
