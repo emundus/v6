@@ -2731,24 +2731,4 @@ die();*/
         }
     }
 
-     
-    public function getFormByGroup($group)
-    {
-        try
-        {
-            $db = JFactory::getDbo();
-
-            $query = 'SELECT label FROM #__fabrik_groups
-                        WHERE id = '.$group;
-
-            $db->setQuery($query);
-            return $db->loadResult() ;
-        }
-        catch(Exception $e)
-        {
-            throw $e;
-        }
-    }
-
-
 }

@@ -1533,9 +1533,7 @@ $(document).ready(function()
                              
  
                             $('.modal-body').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select class="chzn-select" name="em-export-prg" id="em-export-prg"><option value="0" >-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option></select><br/><br/><div id="camp" style="display:none;"><select name="em-export-camp" id="em-export-camp" style="display: none;" class="chzn-select"><option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option></select></div></div></div>');
-                           
-                            //$('.modal-body').append('<div id="campaigns_to_choose"  style="display: none" class="panel-body"><select name="em-export-camp" id="em-export-camp" style="width: 95%;display: none;" class="chzn-select"><option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option></select></div>');
-
+                
                             $('.modal-body').append('<div id="elements_detail" style="display: none">' +
                                                         '<div class="panel panel-default xclsform">' +
                                                             '<div class="panel-heading">'+
@@ -1564,22 +1562,18 @@ $(document).ready(function()
                                                             '</div>' +
                                                             '<div class="panel-body">' +
                                                                 '<div id="appelement">'+
-                                                                    //'<select name="em-export-form" id="em-export-form" class="chzn-select"></select>' +
                                                                     '<div id="elements-popup" style="width : 95%;margin : auto; display: none; ">' +
                                                                     '</div>' +
                                                                 '</div>'+
                                                                 '<div id="evalelement">' +
-                                                                    //'<select name="em-eval-export-form" id="em-eval-export-form" class="chzn-select"></select>' +
                                                                     '<div id="eval-elements-popup" style="width : 95%;margin : auto; display: none;">' +
                                                                     '</div>' +
                                                                 '</div>' +
                                                                 '<div id="decelement">' +
-                                                                    //'<select name="em-decision-export-form" id="em-decision-export-form" class="chzn-select"></select>' +
                                                                     '<div id="decision-elements-popup" style="width : 95%;margin : auto; display: none;">' +
                                                                     '</div>' +
                                                                 '</div>' +
                                                                 '<div id="admelement">' +
-                                                                    //'<select name="em-admission-export-form" id="em-admission-export-form" class="chzn-select"></select>' +
                                                                     '<div id="admission-elements-popup" style="width : 95%;margin : auto; display: none;">' +
                                                                     '</div>' +
                                                                 '</div>' +
@@ -1649,7 +1643,6 @@ $(document).ready(function()
                 
                                                             success: function (data) {
                                                                 $('#elements-popup').empty();
-                                                                $('#em-export-form').empty();
                                                                 $('#em-export').empty();
 
                                                                 $.ajax({
@@ -1691,8 +1684,6 @@ $(document).ready(function()
                                                                         }
 
                                                                         $('#elements-popup').append(data);
-                                                                        $('#em-export-form').append(item);
-                                                                        $('#em-export-form').trigger("chosen:updated");
                                                                         item ='';
 
                                                                         for (var d in result.defaults) {
@@ -1712,7 +1703,6 @@ $(document).ready(function()
                             
                                                                             success: function (data) {
                                                                                 $('#eval-elements-popup').empty();
-                                                                                $('#em-eval-export-form').empty();
                                                                                 //$('#em-eval-export').empty();
                                                                             
                                                                                 $.ajax({
@@ -1739,8 +1729,6 @@ $(document).ready(function()
                                                                                         }
                                                                                 
                                                                                         $('#eval-elements-popup').append(data);
-                                                                                        $('#em-eval-export-form').append(item);
-                                                                                        $('#em-eval-export-form').trigger("chosen:updated");
                                                                                         item ="";
 
                                                                                         for (var d in result.defaults) {
@@ -1759,7 +1747,6 @@ $(document).ready(function()
                                             
                                                                                             success: function (data) {
                                                                                                 $('#decision-elements-popup').empty();
-                                                                                                $('#em-decision-export-form').empty();
                                                                                                 //$('#em-decision-export').empty();
                                                                                             
                                                                                                 $.ajax({
@@ -1786,8 +1773,6 @@ $(document).ready(function()
                                                                                                                     }
                                                                                                             
                                                                                                                     $('#decision-elements-popup').append(data);
-                                                                                                                    $('#em-decision-export-form').append(item);
-                                                                                                                    $('#em-decision-export-form').trigger("chosen:updated");
                                                                                                                     item ="";
                                                     
                                                                                                                     for (var d in result.defaults) {
@@ -1806,7 +1791,6 @@ $(document).ready(function()
                                                                         
                                                                                                                         success: function (data) {
                                                                                                                             $('#admission-elements-popup').empty();
-                                                                                                                            $('#em-admission-export-form').empty();
                                                                                                                             //$('#em-admission-export').empty();
                                                                                                                             
                                                                                                                     $.ajax({
@@ -1833,8 +1817,6 @@ $(document).ready(function()
                                                                                                                             }
                                                             
                                                                                                                             $('#admission-elements-popup').append(data);
-                                                                                                                            $('#em-admission-export-form').append(item);
-                                                                                                                            $('#em-admission-export-form').trigger("chosen:updated");
                                                                                                                             item ="";
                                                             
                                                                                                                             for (var d in result.defaults) {
@@ -2147,7 +2129,6 @@ $(document).ready(function()
                                                     
                                                     success: function (data) {
                                                         //$('.btn-success').show();
-                                                        $('#em-export-form').empty();
                                                         $('#em-export').empty();
                                                         $.ajax({
                                                             type:'get',
@@ -2179,8 +2160,6 @@ $(document).ready(function()
                                                                     
                                                                 }
                                                                 
-                                                                $('#em-export-form').append(item);
-                                                                $('#em-export-form').trigger("chosen:updated");
                                                                 item ="";
             
                                                                 for (var d in result.defaults) {
@@ -2199,7 +2178,6 @@ $(document).ready(function()
                                                                 
                                                                     success: function (data) {
                                                                         $('#eval-elements-popup').empty();
-                                                                        $('#em-eval-export-form').empty();
                                                                         //$('#em-eval-export').empty();
                                                                             $.ajax({
                                                                                 type:'get',
@@ -2225,8 +2203,6 @@ $(document).ready(function()
                                                                                     }
             
                                                                                     $('#eval-elements-popup').append(data);
-                                                                                    $('#em-eval-export-form').append(item);
-                                                                                    $('#em-eval-export-form').trigger("chosen:updated");
                                                                                     item ="";
             
                                                                                     for (var d in result.defaults) {
@@ -2244,7 +2220,6 @@ $(document).ready(function()
                                                                                     
                                                                                         success: function (data) {
                                                                                             $('#decision-elements-popup').empty();
-                                                                                            $('#em-decision-export-form').empty();
                                                                                             //$('#em-decision-export').empty();
                                                                                             
                                                                                                 $.ajax({
@@ -2271,8 +2246,6 @@ $(document).ready(function()
                                                                                                         }
                                                                                                 
                                                                                                         $('#decision-elements-popup').append(data);
-                                                                                                        $('#em-decision-export-form').append(item);
-                                                                                                        $('#em-decision-export-form').trigger("chosen:updated");
                                                                                                         item ="";
             
                                                                                                         for (var d in result.defaults) {
@@ -2291,7 +2264,6 @@ $(document).ready(function()
                                                                                                         
                                                                                                             success: function (data) {
                                                                                                                 $('#admission-elements-popup').empty();
-                                                                                                                $('#em-admission-export-form').empty();
                                                                                                                 //$('#em-admission-export').empty();
                                                                                                                     $.ajax({
                                                                                                                         type:'get',
@@ -2317,8 +2289,6 @@ $(document).ready(function()
                                                                                                                             }
             
                                                                                                                             $('#admission-elements-popup').append(data);
-                                                                                                                            $('#em-admission-export-form').append(item);
-                                                                                                                            $('#em-admission-export-form').trigger("chosen:updated");
                                                                                                                             item ="";
             
                                                                                                                             for (var d in result.defaults) {
@@ -2416,7 +2386,6 @@ $(document).ready(function()
 
                                         success: function (data) {
                                             $('.btn-success').show();
-                                            $('#em-export-form').empty();
                                             $('#em-export').empty();
                                             $.ajax({
                                                 type:'get',
@@ -2448,8 +2417,6 @@ $(document).ready(function()
 
                                                     }
 
-                                                    $('#em-export-form').append(item);
-                                                    $('#em-export-form').trigger("chosen:updated");
                                                     item ="";
 
                                                     for (var d in result.defaults) {
@@ -2468,7 +2435,6 @@ $(document).ready(function()
                                                     
                                                         success: function (data) {
                                                             $('#eval-elements-popup').empty();
-                                                            $('#em-eval-export-form').empty();
                                                             //$('#em-eval-export').empty();
                                                                 $.ajax({
                                                                     type:'get',
@@ -2494,8 +2460,6 @@ $(document).ready(function()
                                                                         }
 
                                                                         $('#eval-elements-popup').append(data);
-                                                                        $('#em-eval-export-form').append(item);
-                                                                        $('#em-eval-export-form').trigger("chosen:updated");
                                                                         item ="";
 
                                                                         for (var d in result.defaults) {
@@ -2513,7 +2477,6 @@ $(document).ready(function()
                                                                         
                                                                             success: function (data) {
                                                                                 $('#decision-elements-popup').empty();
-                                                                                $('#em-decision-export-form').empty();
                                                                                 //$('#em-decision-export').empty();
 
                                                                                     $.ajax({
@@ -2540,8 +2503,6 @@ $(document).ready(function()
                                                                                             }
 
                                                                                             $('#decision-elements-popup').append(data);
-                                                                                            $('#em-decision-export-form').append(item);
-                                                                                            $('#em-decision-export-form').trigger("chosen:updated");
                                                                                             item ="";
 
                                                                                             for (var d in result.defaults) {
@@ -2560,7 +2521,6 @@ $(document).ready(function()
                                                                                             
                                                                                                 success: function (data) {
                                                                                                     $('#admission-elements-popup').empty();
-                                                                                                    $('#em-admission-export-form').empty();
                                                                                                     //$('#em-admission-export').empty();
                                                                                                         $.ajax({
                                                                                                             type:'get',
@@ -2586,8 +2546,6 @@ $(document).ready(function()
                                                                                                                 }
 
                                                                                                                 $('#admission-elements-popup').append(data);
-                                                                                                                $('#em-admission-export-form').append(item);
-                                                                                                                $('#em-admission-export-form').trigger("chosen:updated");
                                                                                                                 item ="";
 
                                                                                                                 for (var d in result.defaults) {
@@ -2713,10 +2671,6 @@ $(document).ready(function()
 
 
 
-                            $('#em-export-form').chosen({width: "95%"});
-                            $('#em-eval-export-form').chosen({width: "95%"});
-                            $('#em-decision-export-form').chosen({width: "95%"});
-                            $('#em-admission-export-form').chosen({width: "95%"});
                             $('#em-export-prg').chosen({width: "95%"});
                             $('#em-export-camp').chosen({width: "95%"});
                             $('#filt_save').chosen({width: "85%"});
@@ -3941,9 +3895,7 @@ $(document).ready(function()
             $('#eval-elements-popup').hide();
             $('#decision-elements-popup').hide();
             $('#admission-elements-popup').hide();
-            //$('#showevalelements').removeClass("btn btn-elements-success").addClass("btn btn-info");
-            //$('#showevalelements').find("span").remove()
-            //$('#showevalelements').append('<span class="glyphicon glyphicon-plus"></span>');
+            
             $('#elements-popup').toggle(400);
             $(this).removeClass("btn btn-info").addClass("btn btn-elements-success");
             $(this).empty();
