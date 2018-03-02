@@ -1,4 +1,11 @@
 <?php
+/**
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ */
+
 // No direct access to this file
 defined('_JEXEC') or die;
 
@@ -36,9 +43,12 @@ class com_falangInstallerScript
            'components' => array(
                        'falang' => array(
                            'frontEndEdition'  => 0,
+                           'show_tpl_lang' =>0,
                            'show_list'  => 1,
                            'show_form' => 1,
-                           'component_list' => 'com_menus#menu#id#items,item#10#13com_content#content#id#default,articles,article#10#13com_categories#categories#id#default,categories,category#10#13com_modules#modules#id#default,modules,module#10#13com_newsfeeds#newsfeeds#id#default,newsfeeds,newsfeed'
+                           'component_list' => 'com_menus#menu#id#items,item#10#13com_content#content#id#default,articles,article,featured#10#13com_categories#categories#id#default,categories,category#10#13com_modules#modules#id#default,modules,module#10#13com_newsfeeds#newsfeeds#id#default,newsfeeds,newsfeed',
+	                       'copy_images_and_urls' => 0,
+	                       'advanced_menu_show' => 0
                    )
            )
         );
@@ -50,6 +60,21 @@ class com_falangInstallerScript
             ),
             'folders' => array()
         );
+
+	/**
+	 * The minimum PHP version required to install this extension
+	 *
+	 * @var   string
+	 */
+	protected $minimumPHPVersion = '5.3.3';
+
+	/**
+	 * The minimum Joomla! version required to install this extension
+	 *
+	 * @var   string
+	 */
+	protected $minimumJoomlaVersion = '3.4.0';
+
 
     private $falangRemoveFilesPaid = array(
         'files'	=> array(
@@ -74,13 +99,97 @@ class com_falangInstallerScript
                 $params['component_list'] = $this->installation_params['components']['falang']['component_list'];
                 $this->setParams( $params );
             }
+            //update module params for advance dropdown and show_name value version 2.2.1
+            if (version_compare($this->_previous_version, '2.2.0', 'le')) {
+                $db = JFactory::getDbo();
+                $db->setQuery('SELECT params FROM #__extensions WHERE name = ' . $db->quote('mod_falang'));
+                $params = json_decode($db->loadResult(), true);
+                $params['show_name'] = '0';
+                $params['advanced_dropdown'] = '0';
+
+                $paramsString = json_encode( $params );
+                $db->setQuery('UPDATE #__extensions SET params = ' .
+                    $db->quote($paramsString) .
+                    ' WHERE name = ' . $db->quote('mod_falang'));
+                $db->query();
+
+                //update module params
+                $query = $db->getQuery(true);
+                $db->getQuery(true);
+                $query->select('id,params')
+                    ->from('#__modules')
+                    ->where('module= "mod_falang"');
+                $db->setQuery($query);
+                $rows =  $db->loadObjectList();
+
+                foreach ($rows as $row) {
+                    $params = json_decode($row->params,true);
+                    $params['show_name'] = '0';
+                    $params['advanced_dropdown'] = '0';
+                    $paramsString = json_encode( $params );
+                    $db->setQuery('UPDATE #__modules SET params = ' .
+                        $db->quote($paramsString) .
+                        ' WHERE id = ' . $row->id);
+                    $db->query();
+                }
+
+            }
+
         }
 
         function preflight($type, $parent)
         {
+
+	        // Check the minimum PHP version. Issue a very stern warning if it's not met.
+	        if (!empty($this->minimumPHPVersion))
+	        {
+		        if (defined('PHP_VERSION'))
+		        {
+			        $version = PHP_VERSION;
+		        }
+		        elseif (function_exists('phpversion'))
+		        {
+			        $version = phpversion();
+		        }
+		        else
+		        {
+			        $version = '5.0.0'; // all bets are off!
+		        }
+
+		        if (!version_compare($version, $this->minimumPHPVersion, 'ge'))
+		        {
+			        $msg = "<h1>Your PHP version is too old</h1>";
+			        $msg .= "<p>You need PHP $this->minimumPHPVersion or later to install this component. Support for PHP 5.3.3 and earlier versions has been discontinued by our company as we publicly announced in February 2013.</p>";
+			        $msg .= "<p>You are using PHP $version which is an extremely old version, released more than four years ago. This version contains known functional and security issues. The functional issues do not allow you to run Akeeba Backup and cannot be worked around. The security issues mean that your site <b>can be easily hacked</b> since that these security issues are well known for over four years.</p>";
+			        $msg .= "<p>You have to ask your host to immediately update your site to PHP $this->minimumPHPVersion or later, ideally the latest available version of PHP 5.4. If your host won't do that you are advised to switch to a better host to ensure the security of your site. If you have to stay with your current host for reasons beyond your control you can use Akeeba Backup 4.0.5 or earlier, available from our downloads page.</p>";
+
+			        JLog::add($msg, JLog::WARNING, 'jerror');
+
+			        return false;
+		        }
+	        }
+
             $this->_previous_version = $this->getParam('version');
+
+            // abort if the current Joomla release is older
+            if( version_compare(JVERSION, $this->minimumJoomlaVersion, 'lt') ) {
+                $application = JFactory::getApplication();
+                $application->enqueueMessage(JText::_('COM_FALANG_JOOMLA_TOOOLD_MESSAGE'), 'notice');
+                return false;
+            }
         }
 
+		/**
+		 * Runs right after any installation action is preformed on the component.
+		 *
+		 * @param  string    $type   - Type of PostFlight action. Possible values are:
+		 *                           - * install
+		 *                           - * update
+		 *                           - * discover_install
+		 * @param  \stdClass $parent - Parent object calling object.
+		 *
+		 * @return void
+		 */
         function postflight($type, $parent)
         {
                 JLoader::import('joomla.filesystem.file');
@@ -95,16 +204,19 @@ class com_falangInstallerScript
                 }
                 $this->_removeObsoleteFilesAndFolders($falangRemoveFiles);
 
-                $status = $this->_installSubextensions($parent);
+                $status = $this->_installSubextensions($parent,$type);
                 $this->_setDefaultParams($type);
 
                 // Remove update site
                 $this->_removeUpdateSite();
 
+	            //Fix plugin order languagefilter and falangdriver (due to the 3.6.2 joomla version)
+	            require_once JPATH_ADMINISTRATOR.'/components/com_falang/helpers/controllerHelper.php';
+	            FalangControllerHelper::_checkPlugin();
         }
 
 
-        private function _installSubextensions($parent) {
+        private function _installSubextensions($parent,$type) {
                 $src = $parent->getParent()->getPath('source');
 
                 $db = JFactory::getDbo();
@@ -126,7 +238,7 @@ class com_falangInstallerScript
                                         $db->setQuery($sql);
                                         $count = $db->loadResult();
                                         // Modify where it's published and its published state
-                                        if(!$count) {
+                                        if($count == 1 && $type == 'install') {
                                                 // A. Position and state
                                                 list($modulePosition, $modulePublished) = $modulePreferences;
 
@@ -138,7 +250,7 @@ class com_falangInstallerScript
                                                         $sql->set($db->qn('published').' = '.$db->q('1'));
                                                 }
                                                 $db->setQuery($sql);
-                                                $db->query();
+                                                $db->execute();
 
                                                 // C. Link to all pages
                                                 $query = $db->getQuery(true);
@@ -286,11 +398,35 @@ class com_falangInstallerScript
                 JFile::delete($f);
             }
         }
+
+		//version before 3.7.0 don't support custom fields
+	    if( version_compare(JVERSION, '3.7.0', '<') ) {
+		    $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/fields.xml';
+		    if (JFile::exists($f)) {
+			    JFile::delete($f);
+		    }
+		    $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/fields_groups.xml';
+		    if (JFile::exists($f)) {
+			    JFile::delete($f);
+		    }
+		    $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/fields_values.xml';
+		    if (JFile::exists($f)) {
+			    JFile::delete($f);
+		    }
+
+	    }
+
+	    //remove custom fiels value
+	    $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/fields_values.xml';
+	    if (JFile::exists($f)) {
+		    JFile::delete($f);
+	    }
+
     }
 
 
     /**
-     * Remove the update site specification from Joomla! – we no longer support
+     * Removes obsolete update sites created for old falang version type collection on package
      */
     private function _removeUpdateSite()
     {

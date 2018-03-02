@@ -254,7 +254,6 @@ class LiveUpdateDownloadHelper
 				$result = ini_get('allow_url_fopen');
 			}
 		}
-
 		return $result;
 	}
 

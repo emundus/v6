@@ -1,57 +1,39 @@
 <?php
 /**
- * @package     FaLang for Joomla!
+ * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2012-2013. All rights reserved.
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
-// Check to ensure this file is included in Joomla!
-defined( '_JEXEC' ) or die( 'Restricted access' );
+// No direct access to this file
+defined('_JEXEC') or die;
 
 JHtml::_('behavior.tooltip');
-
-if (FALANG_J30) {
-    JHtml::_('formbehavior.chosen', 'select');
-}
+JHtml::_('formbehavior.chosen', 'select');
 
 
 $user = JFactory::getUser();
 $db = JFactory::getDBO();
-if (FALANG_J30) {
-    if (isset($this->filterlist) && count($this->filterlist)>0){
-        $filterOptions = '<div id="filter-bar" class="btn-toolbar">';
-        foreach ($this->filterlist as $fl){
-            if (is_array($fl) && !empty($fl['position']) && $fl['position'] != 'sidebar')		$filterOptions .= "<div class='btn-group pull-left'>".$fl["html"]."</div>";
-        }
-        //inverted due to the float right
-        $filterOptions .= '<div class="btn-group pull-right">'.$this->pageNav->getLimitBox().'</div>';
-        $filterOptions .= '<div class="btn-group pull-right">'.$this->clist.'</div>';
-        $filterOptions .= '<div class="btn-group pull-right">'.$this->langlist.'</div>';
-        $filterOptions .= '</div>';
-
-    } else {
-        $filterOptions = '<div id="filter-bar" class="btn-toolbar">';
-        //inverted due to the float right
-        $filterOptions .= '<div class="btn-group pull-right">'.$this->pageNav->getLimitBox().'</div>';
-        $filterOptions .= '<div class="btn-group pull-right">'.$this->clist.'</div>';
-        $filterOptions .= '<div class="btn-group pull-right">'.$this->langlist.'</div>';
-        $filterOptions .= '</div>';
+if (isset($this->filterlist) && count($this->filterlist)>0){
+    $filterOptions = '<div id="filter-bar" class="btn-toolbar">';
+    foreach ($this->filterlist as $fl){
+        if (is_array($fl) && !empty($fl['position']) && $fl['position'] != 'sidebar')		$filterOptions .= "<div class='btn-group pull-left'>".$fl["html"]."</div>";
     }
- } else {
-    $filterOptions = '<table><tr><td width="100%"></td>';
-    $filterOptions .= '<td  nowrap="nowrap" align="center">' .JText::_('COM_FALANG_SELECT_LANGUAGE'). ':<br/>' .$this->langlist. '</td>';
-    $filterOptions .= '<td  nowrap="nowrap" align="center">' .JText::_('COM_FALANG_SELECT_CONTENT_ELEMENT'). ':<br/>' .$this->clist. '</td>';
-    $filterOptions .= '</tr></table>';
+    //inverted due to the float right
+    $filterOptions .= '<div class="btn-group pull-right">'.$this->pageNav->getLimitBox().'</div>';
+    $filterOptions .= '<div class="btn-group pull-right">'.$this->clist.'</div>';
+    $filterOptions .= '<div class="btn-group pull-right">'.$this->langlist.'</div>';
+    $filterOptions .= '</div>';
 
-    if (isset($this->filterlist) && count($this->filterlist)>0){
-        $filterOptions .= '<table><tr><td width="100%"></td>';
-        foreach ($this->filterlist as $fl){
-            if (is_array($fl))		$filterOptions .= "<td nowrap='nowrap' align='center'>".$fl["title"].":<br/>".$fl["html"]."</td>";
-        }
-        $filterOptions .= '</tr></table>';
-    }
- }
+} else {
+    $filterOptions = '<div id="filter-bar" class="btn-toolbar">';
+    //inverted due to the float right
+    $filterOptions .= '<div class="btn-group pull-right">'.$this->pageNav->getLimitBox().'</div>';
+    $filterOptions .= '<div class="btn-group pull-right">'.$this->clist.'</div>';
+    $filterOptions .= '<div class="btn-group pull-right">'.$this->langlist.'</div>';
+    $filterOptions .= '</div>';
+}
 
 
 
@@ -68,19 +50,11 @@ if (FALANG_J30) {
 
     <?php  echo $filterOptions; ?>
 
-    <?php if (FALANG_J30) { ?>
-        <div class="clearfix"> </div>
-        <table class="table table-striped">
-    <?php } else { ?>
-        <table class="adminlist" cellspacing="1">
-    <?php } ?>
+    <div class="clearfix"> </div>
+    <table class="table table-striped">
     <thead>
         <tr>
-          <?php  if (FALANG_J30) { ?>
-            <th width="20"><input type="checkbox" name="checkall-toggle" value="" onclick="Joomla.checkAll(this);" /></th>
-          <?php } else { ?>
-            <th width="20"><input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(<?php echo count($this->rows); ?>);" /></th>
-          <?php }  ?>
+          <th width="20"><input type="checkbox" name="checkall-toggle" value="" onclick="Joomla.checkAll(this);" /></th>
           <th class="title" width="20%" align="left"  nowrap="nowrap"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_TITLE');?></th>
           <th width="10%" align="left" nowrap="nowrap"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_LANGUAGE');?></th>
           <th width="20%" align="left" nowrap="nowrap"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_TRANSLATION');?></th>
@@ -92,11 +66,7 @@ if (FALANG_J30) {
     </thead>
     <tfoot>
         <tr>
-            <?php if (FALANG_J30) { ?>
-    		      <td align="left" colspan="7">
-              <?php } else { ?>
-    		      <td align="center" colspan="7">
-              <?php } ?>
+ 		      <td align="left" colspan="7">
 			<?php echo $this->pageNav->getListFooter(); ?>
 		  </td>
 		</tr>
@@ -111,7 +81,8 @@ if (FALANG_J30) {
     <tr class="<?php echo "row$k"; ?>">
       <td width="20">
         <?php		if ($row->checked_out && $row->checked_out != $user->id) { ?>
-        &nbsp;
+            <span class="icon-checkedout" title="<?php echo JText::_('COM_FALANG_TRANSLATE_ITEM_LOCKED');?>"></span>
+
         <?php		} else { ?>
         <input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->translation_id."|".$row->id."|".$row->language_id; ?>" onclick="Joomla.isChecked(this.checked);" />
         <?php		} ?>
@@ -167,13 +138,7 @@ if (FALANG_J30) {
                        $href = JHtml::_('jgrid.published', $row->published, $i, 'translate.');
 				}
 				else {
-                    if (FALANG_J30) {
-                        $href = JHtml::_('jgrid.published', $row->published , $i, 'translate.',false);
-                    } else {
-                        $href = '<a class="jgrid">';
-                        $href .= '<span class="state expired"><span class="text">'.JText::_('COM_FALANG_EXPIRED').'</span></span>';
-                        $href .= '</a>';
-                    }
+                       $href = JHtml::_('jgrid.published', $row->published , $i, 'translate.',false);
 				}
 				?>
       <td align="center"><?php echo $href;?></td>
@@ -199,27 +164,15 @@ if (FALANG_J30) {
   </tr>
   <tr align="center">
     <td>
-        <?php if (FALANG_J30) { ?>
             <i class="icon-publish"></i>
-        <?php } else {
-                    echo JHTML::_('image.administrator', 'admin/tick.png', NULL, NULL, NULL, JText::_('COM_FALANG_TRANSLATION_PUBLISHED'),array('style' => 'width:12px;height:12px'));
-              } ?>
     </td>
     <td> <?php echo JText::_('COM_FALANG_TRANSLATION_PUBLISHED');?>  |</td>
     <td>
-        <?php if (FALANG_J30) { ?>
-            <i class="icon-unpublish"></i>
-        <?php } else {
-                    echo JHTML::_('image.administrator', 'admin/publish_x.png', NULL, NULL, NULL, JText::_('COM_FALANG_TRANSLATION_NOT_PUBLISHED'),array('style' => 'width:12px;height:12px'));
-              } ?>
+        <i class="icon-unpublish"></i>
     </td>
     <td> <?php echo JText::_('COM_FALANG_TRANSLATION_NOT_PUBLISHED');?></td>
     <td>
-        <?php if (FALANG_J30) { ?>
         <i class="icon-unpublish disabled"></i>
-        <?php } else {
-                echo JHTML::_('image.administrator', 'admin/publish_r.png', NULL, NULL, NULL, JText::_('COM_FALANG_STATE_TOGGLE'),array('style' => 'width:12px;height:12px'));
-              } ?>
     </td>
     <td> <?php echo JText::_('COM_FALANG_STATE_TOGGLE');?></td>
   </tr>

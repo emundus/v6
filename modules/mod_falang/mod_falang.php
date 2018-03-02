@@ -1,12 +1,12 @@
 <?php
 /**
- * @package	Joomla.Site
- * @subpackage	MOD_FALANG
- * @copyright	Copyright (C) 2005 - 2011 Open Source Matters, Inc. All rights reserved.
- * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
-// no direct access
+// No direct access to this file
 defined('_JEXEC') or die;
 
 // Include the syndicate functions only once

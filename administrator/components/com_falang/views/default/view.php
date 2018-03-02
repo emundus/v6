@@ -1,13 +1,13 @@
 <?php
 /**
- * @package     FaLang for Joomla!
+ * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2012-2013. All rights reserved.
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
-// Check to ensure this file is included in Joomla!
-defined( '_JEXEC' ) or die;
+// No direct access to this file
+defined('_JEXEC') or die;
 
 jimport('joomla.html.pane');
 
@@ -34,7 +34,6 @@ require_once JPATH_ROOT.'/administrator/components/com_falang/legacy/view.php';
 
 class FalangViewDefault extends LegacyView {
 
-	public $showVersion = true;
 
     protected $state;
 
@@ -69,16 +68,41 @@ class FalangViewDefault extends LegacyView {
 		JHTML::_('behavior.tooltip');
 		parent::display($tpl);
 
-		$this->versionInfo();
+		$this->footer();
 	}
 
-	public function versionInfo(){
-		if ($this->showVersion){
+	public function footer()
+	{
 		$version = new FalangVersion();
-		?><div align="center"><span class="smallgrey">Falang Version <?php echo $version->getVersionFull() .', '. $version->getCopyright();?> Copyright by <a href="http://www.faboba.com" target="_blank" class="smallgrey">Faboba</a> </span></div>
-	<?php		
-		}
+		?>
+		<div align="center">
+		<?php if ($version->_versiontype == 'free')
+		{ ?>
+			<div class="alert alert-warning" style="padding: 15px">
+				<p>
+					<?php echo JText::_('COM_FALANG_FREE_VERSION_FOOTER_MSG'); ?>
+				</p>
+				<a class="btn btn-danger" target="_blank"
+				   href="https://www.faboba.com/composants/falang/donwload.html?utm_source=Joomla&utm_medium=upgradebutton&utm_campaign=freeversion">
+					<span class="icon-heart"></span><?php echo JText::_('COM_FALANG_FREE_VERSION_FOOTER_BTN_LABEL'); ?>
+				</a>
+			</div>
+		<?php } ?>
+			Falang <?php echo $version->getVersionFull(); ?>
+			<br />
+			<div class="footer_review">
+				<?php echo JText::_('COM_FALANG_FOOTER_LIKE_MSG'); ?><a href="https://extensions.joomla.org/extension/falang/" target="_blank"><?php echo JText::_('COM_FALANG_FOOTER_LEAVE_MSG'); ?></a>
+				<a class="stars" href="https://extensions.joomla.org/extension/falang/" target="_blank">
+					<span class="icon-star"></span><span class="icon-star"></span><span class="icon-star"></span><span class="icon-star"></span><span class="icon-star"></span>
+				</a>
+			</div>
+			<br />
+			&copy; 2017 - Faboba.com All right Reserved
+			<p></p>
+		</div>
+		<?php
 	}
+
 	
 	/** 
 	 * Returns the path of the help file to be included as output for the page
@@ -110,7 +134,8 @@ class FalangViewDefault extends LegacyView {
 	 *
 	 */
 	protected function _hideSubmenu(){
-		JHTML::stylesheet( 'hidesubmenu.css', 'administrator/components/com_falang/assets/css/' );
+		$document = JFactory::getDocument();
+		$document->addStyleSheet(JURI::base().'components/com_falang/assets/css/hidesubmenu.css');
 	}
 
 	 /**
@@ -178,4 +203,4 @@ class FalangViewDefault extends LegacyView {
 		SqueezeBox.setContent('iframe', SqueezeBox.url );*/
 	}
 }
-?>
+

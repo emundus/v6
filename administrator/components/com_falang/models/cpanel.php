@@ -1,16 +1,13 @@
 <?php
 /**
- * @version		3.0
- * @package		Joomla
- * @subpackage	Falang
- * @author      Stéphane Bouey
- * @copyright	Copyright (C) 2012 Faboba
- * @license		GNU/GPL, see LICENSE.php
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
-
-// Check to ensure this file is included in Joomla!
-defined( '_JEXEC' ) or die;
+// No direct access to this file
+defined('_JEXEC') or die;
 
 require_once JPATH_ROOT.'/administrator/components/com_falang/legacy/model.php';
 
@@ -645,6 +642,84 @@ class CPanelModelCPanel extends LegacyModel
 			}
 		}
 		return $unpublishedTranslations;
+	}
+
+	public function updateDownloadId(){
+
+		// For joomla versions < 3.1 (no extra query available)
+		if (version_compare(JVERSION, '3.1', 'lt')) {
+			return;
+		}
+
+		$db = $this->getDbo();
+		// Get current extension ID
+		$extension_id = $this->getExtensionId();
+		if (!$extension_id)
+		{
+			return;
+		}
+
+		$component = JComponentHelper::getComponent('com_falang');
+		$dlid = $component->params->get('downloadid', '');
+
+		if (empty($dlid)) return;
+
+		// store only valid downloadid
+		if (!preg_match('/^([0-9]{1,}:)?[0-9a-f]{32}$/i', $dlid)) return;
+
+		$extra_query = "'dlid=$dlid'";
+
+		// Get the update sites for current extension
+		$query = $db->getQuery(true)
+			->select($db->qn('update_site_id'))
+			->from($db->qn('#__update_sites_extensions'))
+			->where($db->qn('extension_id') . ' = ' . $db->q($extension_id));
+		$db->setQuery($query);
+		$updateSiteIDs = $db->loadColumn(0);
+
+		// Loop through all update sites
+		foreach ($updateSiteIDs as $id)
+		{
+			$query = $db->getQuery(true)
+				->update('#__update_sites')
+				->set('extra_query = '.$extra_query)
+				->where('update_site_id = "'.$id.'"');
+			$db->setQuery($query);
+			$db->execute();
+		}
+	}
+
+	/**
+	 * Get extension Id
+	 *
+	 * @params void
+	 *
+	 * @return  extension id
+	 *
+	 * @since 1.1.7
+	 *
+	 */
+	public function getExtensionId()
+	{
+		$db = $this->getDbo();
+		$extensionType = 'package';
+		$extensionElement = 'pkg_falang';
+		// Get current extension ID
+		$query = $db->getQuery(true)
+			->select($db->qn('extension_id'))
+			->from($db->qn('#__extensions'))
+			->where($db->qn('type') . ' = ' . $db->q($extensionType))
+			->where($db->qn('element') . ' = ' . $db->q($extensionElement));
+		$db->setQuery($query);
+		$extension_id = $db->loadResult();
+		if (empty($extension_id))
+		{
+			return 0;
+		}
+		else
+		{
+			return $extension_id;
+		}
 	}
 }
 

@@ -278,11 +278,13 @@ class TranslateController extends LegacyController   {
 
 			// get's the config settings on how to store original files
 			$storeOriginalText = ($this->_falangManager->getCfg('storageOfOriginal') == 'md5') ? false : true;
+			JPluginHelper::importPlugin('system');
+			$dispatcher = JEventDispatcher::getInstance();
+			$dispatcher->trigger('onBeforeTranslationBind');
+
 			$actContentObject->bind( $_POST, '', '', true,  $storeOriginalText);
 			if ($actContentObject->store() == null)	{
                 //
-                JPluginHelper::importPlugin('falang');
-                $dispatcher = JDispatcher::getInstance();
                 $dispatcher->trigger('onAfterTranslationSave', array($_POST));
                 $this->view->message = JText::_('COM_FALANG_TRANSLATE_SAVED');
 			}

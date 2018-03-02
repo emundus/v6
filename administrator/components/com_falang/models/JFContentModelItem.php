@@ -1,12 +1,17 @@
 <?php
-defined( '_JEXEC' ) or die( 'Restricted access' );
+/**
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ */
+
+// No direct access to this file
+defined('_JEXEC') or die;
 
 include_once(JPATH_ADMINISTRATOR."/components/com_content/models/article.php");
 
-
 class JFTempContentModelItem extends ContentModelArticle {
-
-
     /**
      * Overload Method to get a form object - we MUST NOT use JPATH_COMPONENT
      *
@@ -103,7 +108,7 @@ class JFContentModelItem extends JFTempContentModelItem {
 
             // Note that to populate the initial value of the urlparams
             $conf = JFactory::getConfig();
-            $elementTable = $conf->getValue('falang.elementTable',false);
+            $elementTable = $conf->get('falang.elementTable',false);
             foreach ($elementTable->Fields as $efield) {
                 if ($efield->Name=="link" && isset($efield->translationContent->value) && $efield->translationContent->value!==""){
                     $uri = new JURI($efield->translationContent->value);

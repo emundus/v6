@@ -1,14 +1,13 @@
 <?php
 /**
- * @version		1.2.0
- * @package		Joomla
- * @subpackage	Falang
- * @author      Stéphane Bouey
- * @copyright	Copyright (C) 2012-2013 Faboba
- * @license		GNU/GPL, see LICENSE.php
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
-defined( '_JEXEC' ) or die( 'Restricted access' );
+// No direct access to this file
+defined('_JEXEC') or die;
 
 function getTranslationFilters($catid, $contentElement)
 {
@@ -50,7 +49,7 @@ class translationFilter
 	// Should we use session data to remember previous selections?
 	var $rememberValues = true;
 
-	function translationFilter($contentElement=null){
+	public function __construct($contentElement=null){
 
 		if (intval(JRequest::getVar('filter_reset',0))){
 			$this->filter_value =  $this->filterNullValue;
@@ -88,11 +87,11 @@ class translationFilter
 
 class translationResetFilter extends translationFilter
 {
-	function translationResetFilter ($contentElement){
+	public function __construct($contentElement){
 		$this->filterNullValue=-1;
 		$this->filterType="reset";
 		$this->filterField = "";
-		parent::translationFilter($contentElement);
+		parent::__construct($contentElement);
 	}
 
 	function _createFilter(){
@@ -121,11 +120,11 @@ class translationResetFilter extends translationFilter
 
 class translationFrontpageFilter extends translationFilter
 {
-	function translationFrontpageFilter ($contentElement){
+	public function __construct($contentElement){
 		$this->filterNullValue=-1;
 		$this->filterType="frontpage";
 		$this->filterField = $contentElement->getFilter("frontpage");
-		parent::translationFilter($contentElement);
+		parent::__construct($contentElement);
 	}
 
 	function _createFilter(){
@@ -196,11 +195,11 @@ class translationFrontpageFilter extends translationFilter
 
 class translationArchiveFilter extends translationFilter
 {
-	function translationArchiveFilter ($contentElement){
+	public function __construct($contentElement){
 		$this->filterNullValue=-1;
 		$this->filterType="archive";
 		$this->filterField = $contentElement->getFilter("archive");
-		parent::translationFilter($contentElement);
+		parent::__construct($contentElement);
 	}
 
 	function _createFilter(){
@@ -262,11 +261,12 @@ class translationArchiveFilter extends translationFilter
 class translationCategoryFilter extends translationFilter
 {
 	var $section_filter_value;
-	function translationCategoryFilter ($contentElement){
+
+	public function __construct($contentElement){
 		$this->filterNullValue=-1;
 		$this->filterType="category";
 		$this->filterField = $contentElement->getFilter("category");
-		parent::translationFilter($contentElement);
+		parent::__construct($contentElement);
 
 	}
 
@@ -320,11 +320,11 @@ class translationCategoryFilter extends translationFilter
 
 class translationAuthorFilter extends translationFilter
 {
-	function translationAuthorFilter ($contentElement){
+	public function __construct($contentElement){
 		$this->filterNullValue=-1;
 		$this->filterType="author";
 		$this->filterField = $contentElement->getFilter("author");
-		parent::translationFilter($contentElement);
+		parent::__construct($contentElement);
 	}
 
 
@@ -371,11 +371,12 @@ class translationAuthorFilter extends translationFilter
 
 class translationExtensionFilter extends translationFilter
 {
-    function translationExtensionFilter ($contentElement){
+
+	public function __construct($contentElement){
         $this->filterNullValue='';
         $this->filterType="extension";
         $this->filterField = $contentElement->getFilter("extension");
-        parent::translationFilter($contentElement);
+        parent::__construct($contentElement);
     }
 
 
@@ -427,11 +428,11 @@ class translationExtensionFilter extends translationFilter
 
 class translationKeywordFilter extends translationFilter
 {
-	function translationKeywordFilter($contentElement){
+	public function __construct($contentElement){
 		$this->filterNullValue="";
 		$this->filterType="keyword";
 		$this->filterField = $contentElement->getFilter("keyword");
-		parent::translationFilter($contentElement);
+		parent::__construct($contentElement);
 	}
 
 
@@ -474,11 +475,11 @@ class translationKeywordFilter extends translationFilter
 
 class translationModuleFilter  extends translationFilter
 {
-	function translationModuleFilter ($contentElement){
+	public function __construct($contentElement){
 		$this->filterNullValue=-1;
 		$this->filterType="module";
 		$this->filterField = $contentElement->getFilter("module");
-		parent::translationFilter($contentElement);
+		parent::__construct($contentElement);
 	}
 
 	function _createFilter(){
@@ -491,13 +492,70 @@ class translationModuleFilter  extends translationFilter
 	}
 }
 
+//new 2.8.2 filter by module type
+class translationModuletypeFilter  extends translationFilter
+{
+	public function __construct($contentElement){
+		$this->filterNullValue="-+-+";
+		$this->filterType="moduletype";
+		$this->filterField = $contentElement->getFilter("moduletype");
+		parent::__construct($contentElement);
+	}
+
+	function _createFilter(){
+		if (!$this->filterField ) return "";
+		$filter="";
+
+		//since joomla 3.0 filter_value can be '' too not only filterNullValue
+		if (isset($this->filter_value) && strlen($this->filter_value) > 0  && $this->filter_value!=$this->filterNullValue){
+			$filter = "c.".$this->filterField."='".$this->filter_value."'";
+		}
+		return $filter;
+	}
+
+	function _createfilterHTML(){
+		$db = JFactory::getDBO();
+		$lang = JFactory::getLanguage();
+
+		if (!$this->filterField) return "";
+		$MmoduletypeOptions=array();
+
+		$sql = "SELECT DISTINCT module FROM #__modules WHERE client_id = 0 ORDER BY module ASC";
+		$db->setQuery($sql);
+		$cats = $db->loadObjectList();
+		$catcount=0;
+		foreach($cats as $cat){
+			//get translate name system by administrator/components/com_modules/models/modules.php translate method
+			$extension = $cat->module;
+			$clientPath = JPATH_SITE;
+			$source = $clientPath . "/modules/$extension";
+			$lang->load("$extension.sys", $clientPath, null, false, true)
+			|| $lang->load("$extension.sys", $source, null, false, true);
+			$name = JText::_($cat->module);
+			$MmoduletypeOptions[] = JHTML::_('select.option', $cat->module, $name);
+			$catcount++;
+		}
+		$Menutypelist=array();
+
+			$Menutypelist["title"]= JText::_('COM_FALANG_SELECT_MODULE');
+			$Menutypelist["position"] = 'sidebar';
+			$Menutypelist["name"]= 'moduletype_filter_value';
+			$Menutypelist["type"]= 'moduletype';
+			$Menutypelist["options"] = $MmoduletypeOptions;
+			$Menutypelist["html"] = JHTML::_('select.genericlist', $MmoduletypeOptions, 'moduletype_filter_value', 'class="inputbox" size="1" onchange="document.adminForm.submit();"', 'value', 'text', $this->filter_value );
+
+		return $Menutypelist;
+
+	}
+}
+
 class translationMenutypeFilter  extends translationFilter
 {
-	function translationMenutypeFilter ($contentElement){
+	public function __construct($contentElement){
 		$this->filterNullValue="-+-+";
 		$this->filterType="menutype";
 		$this->filterField = $contentElement->getFilter("menutype");
-		parent::translationFilter($contentElement);
+		parent::__construct($contentElement);
 	}
 
 	function _createFilter(){
@@ -554,14 +612,14 @@ class translationMenutypeFilter  extends translationFilter
  * filters translations based on creation/modification date of original
  *
  */
-class translationChangedFilter extends translationFilter
+	class translationChangedFilter extends translationFilter
 {
-	function translationChangedFilter ($contentElement){
+	public function __construct($contentElement){
 		$this->filterNullValue=-1;
 		$this->filterType="lastchanged";
 		$this->filterField = $contentElement->getFilter("changed");
 		list($this->_createdField,$this->_modifiedField) = explode("|",$this->filterField);
-		parent::translationFilter($contentElement);
+		parent::__construct($contentElement);
 	}
 
 	function _createFilter(){
@@ -623,11 +681,11 @@ class translationChangedFilter extends translationFilter
 
 class translationTrashFilter extends translationFilter
 {
-	function translationTrashFilter ($contentElement){
+	public function __construct($contentElement){
 		$this->filterNullValue=-1;
 		$this->filterType="trash";
 		$this->filterField = $contentElement->getFilter("trash");
-		parent::translationFilter($contentElement);
+		parent::__construct($contentElement);
 	}
 
 	function _createFilter(){
@@ -650,11 +708,11 @@ class translationTrashFilter extends translationFilter
 
 class translationPublishedFilter extends translationFilter
 {
-	function translationPublishedFilter ($contentElement){
+	public function __construct($contentElement){
 		$this->filterNullValue='';
 		$this->filterType="published";
 		$this->filterField = $contentElement->getFilter("published");
-		parent::translationFilter($contentElement);
+		parent::__construct($contentElement);
 	}
 
 	function _createFilter(){
@@ -722,7 +780,7 @@ class TranslateParams
 	var $fields;
 	var $fieldname;
 
-	function TranslateParams($original, $translation, $fieldname, $fields=null){
+	public function __construct($original, $translation, $fieldname, $fields=null){
 
 		$this->origparams =  $original;
 		$this->transparams = $translation;
@@ -744,8 +802,7 @@ class TranslateParams
 
 	function editTranslation(){
 		$returnval = array( "editor_".$this->fieldname, "refField_".$this->fieldname );
-		// parameters : areaname, content, hidden field, width, height, rows, cols
-		editorArea( "editor_".$this->fieldname,  $this->transparams, "refField_".$this->fieldname, '100%;', '300', '70', '15' ) ;
+		JFactory::getEditor()->display("editor_" . $this->fieldname, $this->transparams, "refField_" . $this->fieldname, '100%;', '300', '70', '15');
 		echo $this->transparams;
 		return $returnval;
 	}
@@ -853,7 +910,9 @@ SCRIPT;
 
 	}
     function editTranslation(){
+	    echo '<div class="form-horizontal translation-field-'.$this->fieldname.'">';
         echo $this->transparams->render("refField_".$this->fieldname);
+        echo '</div';
         return false;
     }
 }
@@ -872,7 +931,9 @@ class JFMenuParams extends JObject
 	function render($type)
 	{
 		$this->menuform = $this->form;
-        echo JHtml::_('sliders.start','params');
+		echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'collapse0'));
+		$i = 0;
+
 
 		$fieldSets = $this->form->getFieldsets('request');
 		if ($fieldSets)
@@ -881,7 +942,7 @@ class JFMenuParams extends JObject
 			{
 				$hidden_fields = '';
 				$label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_MENUS_' . $name . '_FIELDSET_LABEL';
-                  echo JHtml::_('sliders.panel',JText::_($label),$name . '-options');
+  				  echo JHtml::_('bootstrap.addTab', 'myTab', 'collapse' . ($i++), addslashes(JText::_($label)), true);
 
 				if (isset($fieldSet->description) && trim($fieldSet->description)) :
 					echo '<p class="tip">' . htmlspecialchars(JText::_($fieldSet->description), ENT_QUOTES, 'UTF-8')  . '</p>';
@@ -889,16 +950,11 @@ class JFMenuParams extends JObject
 				?>
 				<div class="clr"></div>
 				<fieldset class="panelform">
-					<ul class="adminformlist">
-						<?php foreach ($this->form->getFieldset($name) as $field)
-						{ ?>
+
+						<?php foreach ($this->form->getFieldset($name) as $field){ ?>
 							<?php if (!$field->hidden)
 							{
-								//echo $field->value;
-								?>
-								<li><?php echo $field->label; ?>
-									<?php echo $field->input; ?></li>
-								<?php
+								echo $field->renderField();
 							}
 							else
 							{
@@ -907,11 +963,12 @@ class JFMenuParams extends JObject
 							<?php } ?>
 
 						<?php } ?>
-					</ul>
+
 					<?php echo $hidden_fields; ?>
 				</fieldset>
 
 				<?php
+				echo JHtml::_('bootstrap.endTab');
 			}
 		}
 
@@ -921,9 +978,10 @@ class JFMenuParams extends JObject
 			foreach ($paramsfieldSets as $name => $fieldSet)
 			{
 				$label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_MENUS_' . $name . '_FIELDSET_LABEL';
-                  echo JHtml::_('sliders.panel',JText::_($label),$name . '-options');
+  				  echo JHtml::_('bootstrap.addTab', 'myTab', 'collapse' . ($i++),JText::_($label), true);
 
-                if (isset($fieldSet->description) && trim($fieldSet->description)) :
+
+				if (isset($fieldSet->description) && trim($fieldSet->description)) :
 					echo '<p class="tip">' . htmlspecialchars(JText::_($fieldSet->description), ENT_QUOTES, 'UTF-8') . '</p>';
 				endif;
 				?>
@@ -931,18 +989,16 @@ class JFMenuParams extends JObject
 				<fieldset class="panelform">
 					<ul class="adminformlist">
 						<?php foreach ($this->form->getFieldset($name) as $field) : ?>
-							<li><?php echo $field->label; ?>
-								<?php echo $field->input; ?></li>
+							<?php echo $field->renderField(); ?>
 						<?php endforeach; ?>
 					</ul>
 				</fieldset>
 
 				<?php
-//                JHtml::_('tabs.end');
-
+				echo JHtml::_('bootstrap.endTab');
             }
 		}
-        echo JHtml::_('sliders.end');
+		echo JHtml::_('bootstrap.endTabSet');
 		return;
 
 	}
@@ -964,78 +1020,103 @@ class JFContentParams extends JObject
     function render($type)
     {
 
-		echo JHtml::_('sliders.start','params');
+	    echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'basic'));
+		$paramsfieldSets = $this->form->getFieldsets('attribs');
+		if ($paramsfieldSets)
+		{
 
-        $paramsfieldSets = $this->form->getFieldsets('attribs');
-        if ($paramsfieldSets)
-        {
-            foreach ($paramsfieldSets as $name => $fieldSet)
-            {
-                $label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_CONTENT_' . $name . '_FIELDSET_LABEL';
-                if ($name == 'basic-limited') {
-                    continue;
-                }
-                if ($name == 'editorConfig' ) {
-                    $label = 'COM_CONTENT_SLIDER_EDITOR_CONFIG';
-                }
-                echo JHtml::_('sliders.panel',JText::_($label),$name . '-options');
+			foreach ($paramsfieldSets as $name => $fieldSet)
+			{
+				$label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_CONTENT_' . $name . '_FIELDSET_LABEL';
+				if ($name == 'basic-limited') {
+					continue;
+				}
+				if ($name == 'editorConfig' ) {
+					$label = 'COM_CONTENT_SLIDER_EDITOR_CONFIG';
+				}
+				echo JHtml::_('bootstrap.addTab', 'myTab', $name, addslashes(JText::_($label)), true);
 
-                if (isset($fieldSet->description) && trim($fieldSet->description)) :
-                    echo '<p class="tip">' . htmlspecialchars(JText::_($fieldSet->description), ENT_QUOTES, 'UTF-8') . '</p>';
-                endif;
-                ?>
-                <div class="clr"></div>
-                <fieldset class="panelform">
-                    <ul class="adminformlist">
-                        <?php foreach ($this->form->getFieldset($name) as $field) : ?>
-                            <li><?php echo $field->label; ?>
-                                <?php echo $field->input; ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </fieldset>
+				if (isset($fieldSet->description) && trim($fieldSet->description)) :
+					echo '<p class="tip">' . htmlspecialchars(JText::_($fieldSet->description), ENT_QUOTES, 'UTF-8') . '</p>';
+				endif;
+				?>
+				<div class="clr"></div>
+				<fieldset class="panelform">
+					<?php foreach ($this->form->getFieldset($name) as $field) : ?>
 
-                <?php
-            }
-        }
+						<?php echo $field->renderField(); ?>
+					<?php endforeach; ?>
+				</fieldset>
 
-        //v2.1 add image in translation
-		//$params = JComponentHelper::getParams('com_content');
+				<?php
+				echo JHtml::_('bootstrap.endTab');
 
-//		if ($params->get('show_urls_images_backend') == 1) {
-//			$imagesfieldSets = $this->form->getFieldsets('images');
-//			if ($imagesfieldSets) {
-//				foreach ($imagesfieldSets as $name => $fieldSet) {
-//					$label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_CONTENT_' . $name . '_FIELDSET_LABEL';
-//					if ($name == 'basic-limited') {
-//						continue;
-//					}
-//					if ($name == 'editorConfig') {
-//						$label = 'COM_CONTENT_SLIDER_EDITOR_CONFIG';
-//					}
-//					echo JHtml::_('sliders.panel', JText::_($label), $name . '-images');
-//
-//					if (isset($fieldSet->description) && trim($fieldSet->description)) :
-//						echo '<p class="tip">' . htmlspecialchars(JText::_($fieldSet->description), ENT_QUOTES, 'UTF-8') . '</p>';
-//					endif;
-//					?>
-<!--					<div class="clr"></div>-->
-<!--					<fieldset class="panelform">-->
-<!--						<ul class="adminformlist">-->
-<!--							--><?php //foreach ($this->form->getFieldset($name) as $field) : ?>
-<!--								<li>--><?php //echo $field->label; ?>
-<!--									--><?php //echo $field->input; ?><!--</li>-->
-<!--							--><?php //endforeach; ?>
-<!--						</ul>-->
-<!--					</fieldset>-->
-<!---->
-<!--				--><?php
-//				}
-//			}
-//		}
-        echo JHtml::_('sliders.end');
-        return;
+			}
 
-    }
+		}
+
+		//v2.1 add images in translation
+		$params = JComponentHelper::getParams('com_content');
+		if ($params->get('show_urls_images_backend') == 1) {
+			$imagesfields = $this->form->getGroup('images');
+			$urlsfields = $this->form->getGroup('urls');
+			echo JHtml::_('bootstrap.addTab', 'myTab', 'images', JText::_('COM_CONTENT_FIELDSET_URLS_AND_IMAGES', true));
+            ?> <div class="row-fluid"> <?php
+			if ($imagesfields) {
+				?>
+
+				<div class="span6">
+					<?php echo $this->form->renderField('images') ?>
+					<?php foreach ($imagesfields as $field) : ?>
+						<?php echo $field->renderField(); ?>
+					<?php endforeach; ?>
+				</div>
+			<?php
+			}
+			if ($urlsfields) {
+				?>
+				<div class="span6">
+					<?php echo $this->form->renderField('urls') ?>
+					<?php foreach ($urlsfields as $field) : ?>
+						<?php echo $field->renderField(); ?>
+					<?php endforeach; ?>
+				</div>
+			<?php
+			}
+            ?> </div> <?php
+			echo JHtml::_('bootstrap.endTab');
+		}
+
+		//2.8.3 support of custom fields
+	    $customfieldSets = $this->form->getFieldsets('com_fields');
+	    if (isset($customfieldSets))
+	    {
+		    foreach ($customfieldSets as $name => $fieldSet)
+		    {
+			    $label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_CONTENT_' . $name . '_FIELDSET_LABEL';
+			    echo JHtml::_('bootstrap.addTab', 'myTab', $name, addslashes(JText::_($label)), true);
+
+			    if (isset($fieldSet->description) && trim($fieldSet->description)) :
+				    echo '<p class="tip">' . htmlspecialchars(JText::_($fieldSet->description), ENT_QUOTES, 'UTF-8') . '</p>';
+			    endif;
+			    ?>
+			    <div class="clr"></div>
+			    <fieldset class="panelform">
+				    <ul class="adminformlist">
+					    <?php foreach ($this->form->getFieldset($name) as $field) : ?>
+						    <?php echo $field->renderField(); ?>
+					    <?php endforeach; ?>
+				    </ul>
+			    </fieldset>
+
+			    <?php
+			    echo JHtml::_('bootstrap.endTab');
+		    }
+	    }
+		echo JHtml::_('bootstrap.endTabSet');
+
+		return;
+	}
 
 }
 
@@ -1078,13 +1159,16 @@ class TranslateParams_menu extends TranslateParams_xml
 		$this->trans_modelItem->setState('item.id', $contentid);
 		if ($translation != "")
 		{
-			$translation = json_decode($translation);
+			//fix bug in hikashop force return as array
+			$translation = json_decode($translation,true);
 		}
 
 		$translationMenuModelForm = $this->trans_modelItem->getForm();
 
-		if (isset($translation->jfrequest)){
-			$translationMenuModelForm->bind(array("params" => $translation, "request" =>$translation->jfrequest));
+		//2.8.4
+        //due to hikashop bugfix we need to get jfrequest by $translation['jfrequest'] and no more by $translation->jfrequest
+		if (isset($translation['jfrequest'])){
+			$translationMenuModelForm->bind(array("params" => $translation, "request" =>$translation['jfrequest']));
 		}
 		else {
 			$translationMenuModelForm->bind(array("params" => $translation));
@@ -1133,7 +1217,7 @@ class JFModuleParams extends JObject
 	function render($type)
 	{
 
-        echo JHtml::_('sliders.start', 'module-sliders');
+		echo JHtml::_('bootstrap.startTabSet', 'module-sliders', array('active' => 'basic-options'));
 
         $paramsfieldSets = $this->form->getFieldsets('params');
 		if ($paramsfieldSets)
@@ -1141,34 +1225,59 @@ class JFModuleParams extends JObject
 			foreach ($paramsfieldSets as $name => $fieldSet)
 			{
 				$label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_MODULES_' . $name . '_FIELDSET_LABEL';
-                echo JHtml::_('sliders.panel', JText::_($label), $name.'-options');
+				echo JHtml::_('bootstrap.addTab', 'module-sliders', $name.'-options', addslashes(JText::_($label)));
 				if (isset($fieldSet->description) && trim($fieldSet->description)) :
 					echo '<p class="tip">' . htmlspecialchars(JText::_($fieldSet->description), ENT_QUOTES, 'UTF-8')  . '</p>';
 				endif;
 				?>
 				<div class="clr"></div>
 				<fieldset class="panelform">
-					<ul class="adminformlist">
 						<?php foreach ($this->form->getFieldset($name) as $field) : ?>
-							<li><?php echo $field->label; ?>
-								<?php echo $field->input; ?></li>
+							<?php echo $field->renderField(); ?>
 						<?php endforeach; ?>
-					</ul>
 				</fieldset>
-
 				<?php
+				echo JHtml::_('bootstrap.endTab');
 			}
 		}
-        echo JHtml::_('sliders.end');
-
         //not render assignment menu
         //depends on the original menu
-
+		echo JHtml::_('bootstrap.endTabSet');
 		return;
 
 	}
 
 }
+
+class JFFieldsParams extends JObject
+{
+
+	protected $form = null;
+	protected $item = null;
+
+	function __construct($form=null, $item=null)
+	{
+		$this->form = $form;
+		$this->item = $item;
+
+	}
+
+	function render($type)
+	{
+	    $options = ['readonly' => true];
+		$paramsfieldSets = $this->form->getFieldsets('fieldparams');
+		if ($paramsfieldSets) {
+			foreach ($paramsfieldSets as $name => $fieldSet) {
+				foreach ($this->form->getFieldset($name) as $field) {
+				    echo $field->renderField($options);
+                }
+			}
+		}
+		return;
+	}
+
+}
+
 
 
 class TranslateParams_modules extends TranslateParams_xml
@@ -1212,7 +1321,9 @@ class TranslateParams_modules extends TranslateParams_xml
 		$this->trans_modelItem->setState('module.id', $contentid);
 		if ($translation != "")
 		{
-			$translation = json_decode($translation);
+		    //for return as associated array and not a stdclass
+            //fix bug with easyblog
+			$translation = json_decode($translation,true);
 		}
 		$translationModuleModelForm = $this->trans_modelItem->getForm();
 		if (isset($translation->jfrequest)){
@@ -1227,6 +1338,99 @@ class TranslateParams_modules extends TranslateParams_xml
 		JRequest::setVar("id", $oldid);
 
 		$this->transparams = new JFModuleParams($translationModuleModelForm, $this->trans_modelItem->getItem());
+
+	}
+
+	function showOriginal()
+	{
+		parent::showOriginal();
+
+		$output = "";
+		if ($this->origparams->getNumParams('advanced'))
+		{
+			$fieldname = 'orig_' . $this->fieldname;
+			$output .= $this->origparams->render($fieldname, 'advanced');
+		}
+		if ($this->origparams->getNumParams('other'))
+		{
+			$fieldname = 'orig_' . $this->fieldname;
+			$output .= $this->origparams->render($fieldname, 'other');
+		}
+		if ($this->origparams->getNumParams('legacy'))
+		{
+			$fieldname = 'orig_' . $this->fieldname;
+			$output .= $this->origparams->render($fieldname, 'legacy');
+		}
+		echo $output;
+
+	}
+
+
+	function editTranslation()
+	{
+		parent::editTranslation();
+
+	}
+
+}
+
+class TranslateParams_fields extends TranslateParams_xml
+{
+
+	function __construct($original, $translation, $fieldname, $fields=null)
+	{
+		require_once JPATH_ADMINISTRATOR.'/components/com_fields/helpers/fields.php';
+
+		parent::__construct($original, $translation, $fieldname, $fields);
+		$lang = JFactory::getLanguage();
+		$lang->load("com_fields", JPATH_ADMINISTRATOR);
+
+		$cid = JRequest::getVar('cid', array(0));
+		$oldcid = $cid;
+		$translation_id = 0;
+		if (strpos($cid[0], '|') !== false)
+		{
+			list($translation_id, $contentid, $language_id) = explode('|', $cid[0]);
+		}
+
+		// if we have an existing translation then load this directly!
+		// This is important for modules to populate the assignement fields
+
+		//$contentid = $translation_id?$translation_id : $contentid;
+
+		//TODO sbou check this
+		JRequest::setVar("cid", array($contentid));
+		JRequest::setVar("edit", true);
+
+		JLoader::import('models.JFFieldModelItem', FALANG_ADMINPATH);
+
+		// Get The Original State Data
+		// model's populate state method assumes the id is in the request object!
+		$oldid = JRequest::getInt("id", 0);
+		JRequest::setVar("id", $contentid);
+
+		// NOW GET THE TRANSLATION - IF AVAILABLE
+		$this->trans_modelItem = new JFFieldModelItem();
+		$this->trans_modelItem->setState('field.id', $contentid);
+		if ($translation != "")
+		{
+			//for return as associated array and not a stdclass
+			//fix bug with easyblog
+			$translation = json_decode($translation,true);
+		}
+		$translationFieldModelForm = $this->trans_modelItem->getForm();
+		if (isset($translation->jfrequest)){
+			$translationFieldModelForm->bind(array("fieldparams" => $translation, "request" =>$translation->jfrequest));
+		}
+		else {
+			$translationFieldModelForm->bind(array("fieldparams" => $translation));
+		}
+
+		$cid = $oldcid;
+		JRequest::setVar('cid', $cid);
+		JRequest::setVar("id", $oldid);
+
+		$this->transparams = new JFFieldsParams($translationFieldModelForm, $this->trans_modelItem->getItem());
 
 	}
 
@@ -1309,15 +1513,15 @@ class TranslateParams_content extends TranslateParams_xml
         $this->trans_contentModelItem->setState('article.id', $contentid);
         if ($translation != "")
         {
-            $translation = json_decode($translation);
+            $translation = json_decode($translation,true);
         }
         $translationcontentModelForm = $this->trans_contentModelItem->getForm();
-        if (isset($translation->jfrequest)){
-            $translationcontentModelForm->bind(array("attribs" => $translation, "request" =>$translation->jfrequest));
-        }
-        else {
-            $translationcontentModelForm->bind(array("attribs" => $translation));
-        }
+
+		if (isset($translation->jfrequest)) {
+			$translationcontentModelForm->bind(array("attribs" => $translation,"images" => $translation,"urls" => $translation, "request" => $translation->jfrequest));
+		} else {
+			$translationcontentModelForm->bind(array("attribs" => $translation,"images" => $translation,"urls" => $translation));
+		}
 
         // reset old values in REQUEST array
         $cid = $oldcid;
@@ -1363,7 +1567,7 @@ class TranslateParams_components extends TranslateParams_xml
 	var $orig_menuModelItem;
 	var $trans_menuModelItem;
 
-	function TranslateParams_components($original, $translation, $fieldname, $fields=null){
+	public function __construct($original, $translation, $fieldname, $fields=null){
 		$lang = JFactory::getLanguage();
 		$lang->load("com_config", JPATH_ADMINISTRATOR);
 
@@ -1441,7 +1645,7 @@ class JFCategoryParams extends JObject
 	function render($type)
 	{
 
-		echo JHtml::_('sliders.start', 'module-sliders');
+		echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'basic'));
 
 		$paramsfieldSets = $this->form->getFieldsets('params');
 		if ($paramsfieldSets)
@@ -1449,8 +1653,8 @@ class JFCategoryParams extends JObject
 			foreach ($paramsfieldSets as $name => $fieldSet)
 			{
 				$label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_CATEGORIES_' . $name . '_FIELDSET_LABEL';
-				echo JHtml::_('sliders.panel', JText::_($label), $name.'-options');
-				if (isset($fieldSet->description) && trim($fieldSet->description)) :
+				echo JHtml::_('bootstrap.addTab', 'myTab', $name, addslashes(JText::_($label)), true);
+    				if (isset($fieldSet->description) && trim($fieldSet->description)) :
 					echo '<p class="tip">' . htmlspecialchars(JText::_($fieldSet->description), ENT_QUOTES, 'UTF-8')  . '</p>';
 				endif;
 				?>
@@ -1458,18 +1662,16 @@ class JFCategoryParams extends JObject
 				<fieldset class="panelform">
 					<ul class="adminformlist">
 						<?php foreach ($this->form->getFieldset($name) as $field) : ?>
-							<li><?php echo $field->label; ?>
-								<?php echo $field->input; ?></li>
+							<?php echo $field->renderField(); ?>
 						<?php endforeach; ?>
 					</ul>
 				</fieldset>
 
 			<?php
+				echo JHtml::_('bootstrap.endTab');
 			}
 		}
-		echo JHtml::_('sliders.end');
-
-
+		echo JHtml::_('bootstrap.endTabSet');
 		return;
 
 	}
@@ -1516,7 +1718,7 @@ class TranslateParams_categories extends TranslateParams_xml
 		$this->trans_modelItem->setState('category.id', $contentid);
 		if ($translation != "")
 		{
-			$translation = json_decode($translation);
+			$translation = json_decode($translation,true);
 		}
 		$translationCategoryModelForm = $this->trans_modelItem->getForm();
 		if (isset($translation->jfrequest)){
@@ -1566,7 +1768,3 @@ class TranslateParams_categories extends TranslateParams_xml
 	}
 
 }
-
-
-
-?>

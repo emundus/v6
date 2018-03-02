@@ -1,11 +1,14 @@
 <?php
 /**
- * Created by JetBrains PhpStorm.
- * User: stephane
- * Date: 04/12/12
- * Time: 10:54
- * To change this template use File | Settings | File Templates.
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
+
+// No direct access to this file
+defined('_JEXEC') or die;
+
 $contentElement = $this->falangManager->getContentElement( $this->id );
 
 ?>
