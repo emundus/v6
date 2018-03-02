@@ -1225,7 +1225,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         foreach ($photos as $photo) {
                             $folder = $baseUrl.EMUNDUS_PATH_REL.$photo['user_id'];
                            
-                            $link = '=HYPERLINK("'.JURI::base(). $folder.'/'.$photo['filename'] . '","'.$photo['filename'].'")';
+                            $link = '=HYPERLINK("'.JURI::base(). $folder.'/tn_'.$photo['filename'] . '","'.$photo['filename'].'")';
                             $pictures[$photo['fnum']] = $link;
                             //$pictures[$photo['fnum']] = '<a href="'.$folder.'/'.$photo['filename'].'" target="_blank"><img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></a>';
                         }
