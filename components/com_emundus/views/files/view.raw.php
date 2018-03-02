@@ -41,7 +41,7 @@ class EmundusViewFiles extends JViewLegacy
 
     public function display($tpl = null)
     {
-
+		
 		$current_user = JFactory::getUser();
 		$h_files = new EmundusHelperFiles;
 
@@ -58,7 +58,7 @@ class EmundusViewFiles extends JViewLegacy
 
 		$m_files = $this->getModel('Files');
 
-	    $h_files->setMenuFilter();
+		$h_files->setMenuFilter();
 
 		switch ($layout)
 		{
@@ -117,7 +117,7 @@ class EmundusViewFiles extends JViewLegacy
                 $m_user = new EmundusModelUsers();
 
                 $m_files->code = $m_user->getUserGroupsProgrammeAssoc($current_user->id);
-
+				
                 // get all fnums manually associated to user
 		        $groups = $m_user->getUserGroups($current_user->id, 'Column');
         		$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
@@ -177,13 +177,13 @@ class EmundusViewFiles extends JViewLegacy
         		$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
 		        $fnum_assoc = $m_user->getApplicantsAssoc($current_user->id);
 		        $m_files->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
-
-                $this->assignRef('code', $m_files->code);
+				$this->assignRef('code', $m_files->code);
+				
                 $this->assignRef('fnum_assoc', $m_files->fnum_assoc);
-
+				
 			    // get applications files
 				$users = $this->get('Users');
-
+				
 				// Get elements from model and proccess them to get an easy to use array containing the element type
 				$elements = $m_files->getElementsVar();
 				foreach ($elements as $elt) {
@@ -202,7 +202,7 @@ class EmundusViewFiles extends JViewLegacy
 
 				// Do not display photos unless specified in params
 				$displayPhoto = false;
-
+				
 			    $defaultElements = $this->get('DefaultElements');
 			    $data = array(array('check' => '#', 'name' => JText::_('APPLICATION_FILES'), 'status' => JText::_('STATUS')));
 			    $fl = array();

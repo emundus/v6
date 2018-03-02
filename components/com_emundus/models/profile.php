@@ -352,14 +352,16 @@ class EmundusModelProfile extends JModelList
 	* @param 	$code 	array 	list of programmes code
 	* @return  	string The greeting to be displayed to the user
 	*/
-	function getProfileIDByCourse($code = array()) {
-		if (!empty($code)>0) {
+	function getProfileIDByCourse($code = array(), $years = array()) {
+		
+		if (!empty($code)>0 && $years[0] != 0) {
 			$query = 'SELECT DISTINCT(esc.profile_id)
 						FROM  #__emundus_setup_campaigns AS esc
-						WHERE esc.published = 1 AND esc.training IN ("'.implode("','", $code).'")';
+						WHERE esc.published = 1 AND esc.training IN ("'.implode("','", $code).'") AND esc.year IN ("'.implode("','", $years).'")';
+			
 			try
 	        {
-	            $this->_db->setQuery( $query );
+				$this->_db->setQuery( $query );
 				$res = $this->_db->loadColumn();
 	        }
 	        catch(Exception $e)
@@ -368,7 +370,22 @@ class EmundusModelProfile extends JModelList
             	JError::raiseError(500, $e->getMessage());
 	        }
 		}
-		else
+		elseif(!empty($code)>0){
+			$query = 'SELECT DISTINCT(esc.profile_id)
+						FROM  #__emundus_setup_campaigns AS esc
+						WHERE esc.published = 1 AND esc.training IN ("'.implode("','", $code).'")';
+			
+			try
+	        {
+				$this->_db->setQuery( $query );
+				$res = $this->_db->loadColumn();
+	        }
+	        catch(Exception $e)
+	        {
+	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+            	JError::raiseError(500, $e->getMessage());
+	        }
+		}else
 			$res = $code;
 
 		return $res;

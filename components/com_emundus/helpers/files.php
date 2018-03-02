@@ -334,6 +334,14 @@ class EmundusHelperFiles
         $db->setQuery( $query );
         return $db->loadObjectList();
     }
+    
+    public function getProgramCampaigns($code) {
+        $db = JFactory::getDBO();
+       
+        $query = 'SELECT *  FROM #__emundus_setup_campaigns WHERE published=1 AND training  LIKE "'.$code.'" ORDER BY year DESC';
+        $db->setQuery( $query );
+        return $db->loadObjectList();
+    }
 
     public  function getProgrammes($code = array()) {
         $db = JFactory::getDBO();
@@ -488,14 +496,15 @@ class EmundusHelperFiles
 
     /**
      * @param array $code
+     * @param array $years
      * @param array $fabrik_elements
      * @return array
      */
-    public static function getElements($code = array(), $fabrik_elements = array()) {
+    public static function getElements($code = array(), $years = array(), $fabrik_elements = array()) {
         require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-
+        
 
         $h_menu     = new EmundusHelperMenu;
         $m_user     = new EmundusModelUsers;
@@ -503,17 +512,17 @@ class EmundusHelperFiles
 
         $db = JFactory::getDBO();
 
-
         if (count($code) == 0) {
             $params = JFactory::getSession()->get('filt_params');
             $programme = $params['programme'];
             $campaigns = @$params['campaign'];
-
+            
             // get profiles for selected programmes or campaigns
             $plist = $m_profile->getProfileIDByCourse((array)$programme);
             $plist = count($plist) == 0 ? $m_profile->getProfileIDByCampaign($campaigns) : $plist;
+            
         } else {
-            $plist = $m_profile->getProfileIDByCourse((array)$code);
+            $plist = $m_profile->getProfileIDByCourse($code, $years);
         }
 
         if ($plist) {
@@ -715,16 +724,17 @@ class EmundusHelperFiles
         if (!empty($elements_id) && isset($elements_id)) {
 
             $db = JFactory::getDBO();
-            $query = 'SELECT element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, groupe.id as group_id, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias, joins.table_join
+            $query = 'SELECT element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, forme.id as form_id, forme.label as form_label, groupe.id as group_id, groupe.label as group_label, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias, joins.table_join
                     FROM #__fabrik_elements element
                     INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
                     INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
+                    INNER JOIN #__fabrik_forms AS forme ON formgroup.form_id = forme.id 
                     INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
                     LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
                     WHERE element.id IN ('.ltrim($elements_id, ',').')
                     ORDER BY formgroup.ordering, element.ordering ';
             try {
-//echo "<hr>".str_replace('#_', 'jos', $query); die();
+//echo "<hr>".str_replace('#_', 'jos', $query);
                 $db->setQuery($query);
                 $res = $db->loadObjectList('id');
 
@@ -940,7 +950,7 @@ class EmundusHelperFiles
 
         $current_s              = @$filt_params['s'];
         $current_profile        = @$filt_params['profile'];
-        $oprofiles              = @$filt_params['oprofiles'];        
+        $oprofiles              = @$filt_params['oprofiles'];
         $current_eval           = @$filt_params['user'];
         $miss_doc               = @$filt_params['missing_doc'];
         $current_finalgrade     = @$filt_params['finalgrade'];
@@ -960,7 +970,7 @@ class EmundusHelperFiles
         $current_group          = @$filt_params['group'];
         $current_institution    = @$filt_params['institution'];
         $spam_suspect           = @$filt_params['spam_suspect'];
-        
+
         $filters = '';
         // Quick filter
         $quick = '<div id="filters">
@@ -1635,11 +1645,11 @@ class EmundusHelperFiles
         $user = JFactory::getUser();
         $db = JFactory::getDBO();
         if (is_null($id) && !empty($itemid)) {
-            $query = 'SELECT * FROM #__emundus_filters WHERE user='.$user->id.' AND item_id='.$itemid;
+            $query = 'SELECT * FROM #__emundus_filters WHERE user='.$user->id.' AND constraints LIKE "%col%" AND item_id='.$itemid;
             $db->setQuery( $query );
             return $db->loadObjectlist();
         } elseif(!empty($id)) {
-            $query = 'SELECT * FROM #__emundus_filters WHERE id='.$id;
+            $query = 'SELECT * FROM #__emundus_filters WHERE id='.$id.' AND constraints LIKE "%col%"';
             $db->setQuery( $query );
             return $db->loadObject();
         }
