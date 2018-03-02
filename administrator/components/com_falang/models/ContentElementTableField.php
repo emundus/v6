@@ -1,49 +1,14 @@
 <?php
 /**
- * Joom!Fish - Multi Lingual extention and translation manager for Joomla!
- * Copyright (C) 2003 - 2011, Think Network GmbH, Munich
- *
- * All rights reserved.  The Joom!Fish project is a set of extentions for
- * the content management system Joomla!. It enables Joomla!
- * to manage multi lingual sites especially in all dynamic information
- * which are stored in the database.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,USA.
- *
- * The "GNU General Public License" (GPL) is available at
- * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
- * -----------------------------------------------------------------------------
- * $Id: ContentElementTableField.php 1580 2011-04-16 17:11:41Z akede $
- * @package joomfish
- * @subpackage Models
- *
-*/
-
-// Don't allow direct linking
-defined( '_JEXEC' ) or die( 'Restricted access' );
-
-/**
- * Description of a table field
- *
- * @package joomfish
- * @subpackage administrator
- * @copyright 2003 - 2011, Think Network GmbH, Munich
- * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License
- * @version $Revision: 1580 $
- * @author Alex Kempkens <joomfish@thinknetwork.com>
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
+
+// No direct access to this file
+defined('_JEXEC') or die;
+
 class ContentElementTablefield {
 	var $Type='';
 	var $Name='';
@@ -79,7 +44,7 @@ class ContentElementTablefield {
 
 	/** Standard constructur
 	*/
-	function ContentElementTablefield( $tablefieldElement ) {
+	public function __construct($tablefieldElement){
 		$this->Type = trim( $tablefieldElement->getAttribute( 'type' ) );
 		$this->Name = trim( $tablefieldElement->getAttribute( 'name' ) );
 		$this->Lable = trim( $tablefieldElement->textContent );
@@ -150,5 +115,33 @@ class ContentElementTablefield {
 			}
 		}
 	}
+
+	//new 2.8.2 preHandler use to copy images&urls params to empty translation.
+	// 2.8.3 copy only is param's set in backend to display image&url links
+	public function preHandlerArticleImagesAndUrls($element){
+		$falangManager =  FalangManager::getInstance();
+		$contentParms = JComponentHelper::getParams('com_content');
+		if ($falangManager->getCfg('copy_images_and_urls',0) && $contentParms->get('show_urls_images_backend',0) ){
+			if (!is_null($element))
+			{
+				$attibs = $element->IndexedFields["attribs"];
+				$images = $element->IndexedFields["images"];
+				$urls   = $element->IndexedFields["urls"];
+
+				$registry = new JRegistry;
+				$registry->loadString($attibs->originalValue);
+				if (!empty($images))
+				{
+					$registry->loadString($images->originalValue);
+				}
+				if (!empty($urls))
+				{
+					$registry->loadString($urls->originalValue);
+				}
+				$this->originalValue = $registry->toString();
+			}
+	}
+	}
+
 }
 

@@ -1,6 +1,6 @@
 <?php 
 JHTML::_('behavior.modal'); 
-JHTML::stylesheet( 'emundus.css', 'media/com_emundus/css' );
+JHTML::stylesheet( 'media/com_emundus/css/emundus.css' );
 defined('_JEXEC') or die('Restricted access'); 
 $Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 

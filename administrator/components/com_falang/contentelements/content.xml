@@ -13,13 +13,16 @@
   		<field type="text" name="alias"  length="50" maxlength="250" translate="1" posthandler="filterTitle">Alias</field>
   		<field type="htmltext" name="introtext" translate="1" prehandleroriginal="fetchArticleText" prehandlertranslation="fetchArticleTranslation" posthandler="saveArticleText" ebuttons="ignore">Article Text</field>
   		<field type="hiddentext" name="fulltext" translate="1" ebuttons="readmore">Fulltext</field>
-  		<field type="text" name="metakey" length="50" maxlength="250" translate="1">Metakey</field>
+  		<field type="textarea" name="metakey"  rows="2" columns="80" translate="1">Metakey</field>
   		<field type="textarea" name="metadesc"  rows="5" columns="80" translate="1">Metadesc</field>
   		<field type="created_date" name="created" translate="0">Created</field>
   		<field type="modified_date" name="modified" translate="0">Modified</field>
   		<field type="checked_out_by" name="checked_out" translate="0">Check out by</field>
   		<field type="checked_out_date" name="checked_out_time" translate="0">Check out date</field>
-        <field type="params" name="attribs" translate="1">Attributes</field>
+		<field type="params" name="attribs" translate="1"  posthandler="saveArticleImagesAndUrls" prehandlertranslation="fetchArticleTranslation" prehandler="preHandlerArticleImagesAndUrls">Attributes</field>
+		<field type="hiddentext" name="images" translate="1">Images</field>
+		<field type="hiddentext" name="urls" translate="1">Urls</field>
+		<filter>c.language="*"</filter>
   	</table>
   	<component>
   		<form>com_content#content#id#task#!edit</form>

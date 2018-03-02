@@ -123,4 +123,118 @@ class EmundusControllerCalendar extends JControllerLegacy {
 
     }
 
+
+    public function createtimeslots() {
+
+        $m_calendar = new EmundusModelCalendar();
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
+        $jinput = JFactory::getApplication()->input;
+
+        // Information about the timeslots to create is obtained through the POST data.
+        $calendar_id    = $jinput->get('calId', null, 'INT');
+        $start_day       = $jinput->get('sDate', null, 'STR');
+        $end_day        = $jinput->get('eDate', null, 'STR');
+        $start_time     = $jinput->get('sTime', null, 'STR');
+        $end_time       = $jinput->get('eTime', null, 'STR');
+        $ts_length      = $jinput->get('tsLength', 50, 'INT');
+        $pause_length   = $jinput->get('pLength', 10, 'INT');
+
+        // Convert to PHP date object.
+        $start_day  = date('Y-m-d', strtotime($start_day));
+        $end_day    = date('Y-m-d', strtotime($end_day));
+        $today      = date('Y-m-d');
+
+        // Check if the days selected are in the future.
+        if ($today > $start_day || $today > $end_day) {
+            echo json_encode([
+                'status' => false,
+                'error' => JText::_('CALENDAR_DATES_TOO_EARLY')
+            ]);
+            die;
+        }
+
+        // Check that the start day is before the end day.
+        if ($start_day > $end_day) {
+            echo json_encode([
+                'status' => false,
+                'error' => JText::_('CALENDAR_END_DATE_TOO_EARLY')
+            ]);
+            die;
+        }
+
+        // Convert time to PHP date object.
+        $start_time = date('H:i', strtotime($start_time));
+        $end_time   = date('H:i', strtotime($end_time));
+
+
+        // Check that there is at least enough room for an entire time slot in a day.
+        $start_time_with_timeslot = $start_time;
+        $start_time_with_timeslot->modify("+{$ts_length} minutes");
+        if ($start_time_with_timeslot > $end_time) {
+            echo json_encode([
+                'status' => false,
+                'error' => JText::_('CALENDAR_END_TIME_TOO_EARLY')
+            ]);
+            die;
+        }
+
+        // Build a single start date from both the start time and and the start date.
+        $current_date = $start_day;
+        $current_date->modify("+ ".date('H',$start_time)." hours");
+        $current_date->modify("+ ".date('i',$start_time)." minutes");
+        $start_date = $current_date;
+
+        // Build a single end date from the end time and end date.
+        $end_date = $end_day;
+        $end_date->modify("+ ".date('H',$end_time)." hours");
+        $end_date->modify("+ ".date('i',$end_time)." minutes");
+
+        $nb_days = 0;
+        $start_dates = array();
+        $end_dates = array();
+        while ($current_date < $end_date) {
+
+            // Check that there is at least enough room for an entire time slot.
+            $time_with_timeslot = $current_date;
+            $time_with_timeslot->modify("+{$ts_length} minutes");
+
+            // If the next timeslot will cause the day to overflow then we should just move on to the next day.
+            // Thins also means reseting the hours and minutes.
+            if (date('H:i', $time_with_timeslot) > date('H:i', $end_date)) {
+
+                // Reset the date back to the beggining, this helps reset hours and minutes.
+                $current_date = $start_date;
+
+                // If it's a Friday, skip the weekend.
+                if (date('w', $current_date) == 5)
+                    $nb_days = $nb_days + 3;
+                else
+                    $nb_days++;
+
+                // Move the current date to the next day.
+                $current_date->modify('+'.$nb_days.' day');
+                continue;
+
+            }
+
+            // Add the current timedate to the list of start dates.
+            $start_dates[] = $current_date;
+
+            // Move the date up for the duration of the even times.
+            $current_date->modify("+{$ts_length} minutes");
+
+            // Current time is now at the event end.
+            $end_dates[] = $current_date;
+
+            // Add the buffer time in between events.
+            $current_date->modify("+{$pause_length} minutes");
+
+
+        }
+
+        echo json_encode(['status' => true]);
+
+    }
+
 }

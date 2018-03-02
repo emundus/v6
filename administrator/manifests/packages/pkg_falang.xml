@@ -1,19 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<extension type="package" version="2.5" method="upgrade">
+<extension type="package" version="3.0" method="upgrade">
 	<name>FaLang Package</name>
 	<author>Stéphane Bouey</author>
-	<creationDate>December 2012</creationDate>
+	<creationDate>December 2017</creationDate>
  	<packagename>falang</packagename>
-	 <version>2.2.0</version>
+	 <version>2.9.6</version>
 	 <url>http://www.faboba.com</url>
+	 <variant>basic</variant>
 	 <packager>Stéphane Bouey</packager>
 	 <packagerurl>http://www.faboba.com</packagerurl>
 	 <description>FaLang! Installer Package.</description>
+	 
+	 <!-- List of extensions to install -->
 	 <files folder="packages">
-		 <file type="module" id="mod_falang" client="site">mod_falang_220.zip</file>
-		 <file type="plugin" id="falangdriver" group="system">plg_falangdriver_220.zip</file>
-		 <file type="plugin" id="falangquickjump" group="system">plg_falangquickjump_220.zip</file>
-		 <file type="component" id="com_falang" >com_falang_220.zip</file>
+	     <!-- Modules -->
+		 <file type="module" id="mod_falang" client="site">mod_falang_296.zip</file>
+		 
+		  <!-- Plugins -->
+		 <file type="plugin" id="falangdriver" group="system">plg_falangdriver_296.zip</file>
+		 <file type="plugin" id="falangquickjump" group="system">plg_falangquickjump_296.zip</file>
+		 
+		 <!-- Component -->
+		 <file type="component" id="com_falang" >com_falang_296.zip</file>
 	 </files>
+
+	 <!-- Update servers -->
+    <updateservers>
+        <server type="extension" priority="1" name="Falang Basic">http://www.faboba.com/update/falang/pkgfalangbas.xml</server>
+    </updateservers>	 
 	 
 </extension>

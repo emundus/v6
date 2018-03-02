@@ -1,5 +1,14 @@
 <?php
-defined('JPATH_PLATFORM') or die;
+/**
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ */
+
+// No direct access to this file
+defined('_JEXEC') or die;
+
 /**
  * MySQLi FaLang database driver
  *
@@ -9,9 +18,8 @@ defined('JPATH_PLATFORM') or die;
  * @since       11.1
  */
 
-require_once(dirname(__FILE__)).'/../legacy/legacydatabasedrivermysqli.php';
 
-class JOverrideDatabase extends LegacyDatabaseDriverMySQLi
+class JOverrideDatabase extends JDatabaseDriverMysqli
 {
 
     function __construct($options){

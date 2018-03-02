@@ -1,14 +1,13 @@
 <?php
 /**
- * @package     Joomla.Platform
- * @subpackage  Database
- *
- * @copyright   Copyright (C) 2005 - 2011 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
-defined('JPATH_PLATFORM') or die;
-
+// No direct access to this file
+defined('_JEXEC') or die;
 
 require_once( JPATH_SITE.'/components/com_falang/helpers/defines.php' );
 require_once( JPATH_SITE.'/components/com_falang/helpers/falang.class.php' );
@@ -22,9 +21,8 @@ require_once( JPATH_SITE."/administrator/components/com_falang/classes/FalangMan
  * @see         http://php.net/manual/en/book.mysql.php
  * @since       11.1
  */
-require_once(dirname(__FILE__)).'/../legacy/legacydatabasedrivermysql.php';
 
-class JOverrideDatabase extends LegacyDatabaseDriverMySQL
+class JOverrideDatabase extends JDatabaseDriverMysql
 {
 
     function __construct($options){

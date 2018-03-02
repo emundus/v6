@@ -21,6 +21,26 @@
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>
         </field>
+        <field name="copy_images_and_urls"
+               type="radio"
+               default="1"
+               class="btn-group btn-group-yesno"
+               label="COM_FALANG_CONFIG_COPY_IMAGES_AND_URLS_LABEL"
+               description="COM_FALANG_CONFIG_COPY_IMAGES_AND_URLS_DESC">
+            <option value="0">NO</option>
+            <option value="1">YES</option>
+        </field>
+
+        <field
+                name="show_tpl_lang"
+                type="radio"
+                default="0"
+                class="btn-group btn-group-yesno"
+                label="COM_FALANG_FIELD_SHOW_TPLLANG_LABEL"
+                description="COM_FALANG_FIELD_SHOW_TPLLANG_DESC" >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+        </field>
         <!-- <<< [PAID] <<< -->
         <field
                 name="show_list"
@@ -55,6 +75,18 @@
                 label="COM_FALANG_FALANGQUICKJUMP_COMPONENT_LIST_LABEL"
                 description="COM_FALANG_FALANGQUICKJUMP_COMPONENT_LIST_DESC"
                 />
+
+        <field
+                name="advanced_menu_show"
+                type="radio"
+                default="0"
+                class="btn-group btn-group-yesno"
+                label="COM_FALANG_ADVANDED_MENU_SHOW_LABEL"
+                description="COM_FALANG_ADVANDED_MENU_SHOW_DESC"
+               >
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
         </fieldset>
         <fieldset name="translation"
                   label="COM_FALANG_CONGIG_MANAGE_TRANSLATION"
@@ -88,7 +120,6 @@
 			<option value="0">NO</option>
 			<option value="1">YES</option>
 		</field>
-
     </fieldset>
         <fieldset name="debug"
 		label="COM_FALANG_CONFIG_DEBUG_LABEL"

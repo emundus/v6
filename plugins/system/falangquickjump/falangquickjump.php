@@ -3,12 +3,11 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2012-2013 Faboba. All rights reserved.
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
-
-// no direct access
-defined('_JEXEC') or die ;
+// No direct access to this file
+defined('_JEXEC') or die;
 
 jimport('joomla.plugin.plugin');
 
@@ -17,15 +16,20 @@ if( !defined('DS') ) {
     define( 'DS', DIRECTORY_SEPARATOR );
 }
 
-require_once( JPATH_SITE.'/components/com_falang/helpers/defines.php' );
-require_once( JPATH_SITE.'/components/com_falang/helpers/falang.class.php' );
+jimport('joomla.filesystem.file');
+if (JFile::exists(JPATH_SITE.'/components/com_falang/helpers/defines.php')){
+	require_once( JPATH_SITE.'/components/com_falang/helpers/defines.php' );
+}
+if (JFile::exists(JPATH_SITE.'/components/com_falang/helpers/falang.class.php')) {
+	require_once( JPATH_SITE.'/components/com_falang/helpers/falang.class.php' );
+}
 
 
 
 class plgSystemFalangquickjump extends JPlugin
 {
 
-    function plgSystemFalangquickjump(&$subject, $config)
+    public function __construct(& $subject, $config)
     {
         parent::__construct($subject, $config);
         $this->loadLanguage();
@@ -82,10 +86,7 @@ class plgSystemFalangquickjump extends JPlugin
                     JHtml::register('Grid.id', array($this, 'gridIdHook'));
                 }
                 if ($params->get('show_form',true)) {
-                    // Add the Toolbar in edit layout only on joomla 3
-                    if (version_compare(JVERSION, '3.0', 'ge')) {
                         $this->addToolbar();
-                    }
                 }
             }
         }
@@ -114,29 +115,8 @@ class plgSystemFalangquickjump extends JPlugin
         JText::script('JGLOBAL_TITLE');
         $doc = JFactory::getDocument();
         // @deprecated used for Joomla 2.5
-        $tpl = (version_compare(JVERSION, '3.0', 'ge') ? '' : '_25');
-        $doc->addScript('../plugins/system/falangquickjump/assets/falangqj'.$tpl.'.js');
+        $doc->addScript('../plugins/system/falangquickjump/assets/falangqj.js');
         $doc->addStyleSheet(JUri::root().'administrator/components/com_falang/assets/css/falang.css');
-
-        //add style for joomala 2.5
-        if (version_compare(JVERSION, '3.0', 'l')) {
-            $css = "a.label:hover{text-decoration: none;}";
-            $css    .= "a.label span {color: #fff;}";
-            $css    .= "a.label{";
-            $css    .= "display: inline-block;";
-            $css    .= "padding: 2px 4px;";
-            $css    .= "font-size: 11px;";
-            $css    .= "font-weight: bold;";
-            $css    .= "line-height: 14px;";
-            $css    .= "color: #fff;";
-            $css    .= "vertical-align: baseline;";
-            $css    .= "white-space: nowrap;";
-            $css    .= "text-shadow: 0 -1px 0 rgba(0,0,0,0.25);";
-            $css    .= "background-color: #999;}";
-
-            $doc->addStyleDeclaration($css);
-
-        }
 
         $result = array();
 
@@ -150,7 +130,12 @@ class plgSystemFalangquickjump extends JPlugin
             $contentElement = $falangManager->getContentElement($component[1]);
             JLoader::import( 'models.ContentObject',FALANG_ADMINPATH);
             $actContentObject = new ContentObject( $language->lang_id, $contentElement );
-            $actContentObject->loadFromContentID( $id );
+            $loaded = $actContentObject->loadFromContentID( $id );
+
+            if (!$loaded){
+                $result['hide'] = 'true';
+                continue;
+            }
 
             $result['status'][$language->sef] = $actContentObject->state . '|' .$actContentObject->published;
 
@@ -222,6 +207,8 @@ class plgSystemFalangquickjump extends JPlugin
             return;
         }
 
+        //Fix for joomla 3.5
+        if (is_array($id)){$id = $id[0];}
 
         //Load ToolBar
         $bar = JToolBar::getInstance('toolbar');
@@ -248,7 +235,12 @@ class plgSystemFalangquickjump extends JPlugin
             $contentElement = $falangManager->getContentElement($mapping[1]);
             JLoader::import( 'models.ContentObject',FALANG_ADMINPATH);
             $actContentObject = new ContentObject( $language->lang_id, $contentElement );
-            $actContentObject->loadFromContentID( $id );
+            $loaded = $actContentObject->loadFromContentID( $id );
+
+	        //hide quickicon button if speicific language is set to the item
+	        if (!$loaded){
+	        	continue;
+	        }
 
             $class="quickmodal ";
             //-1 not exist, 0 old , 1 uptodate
@@ -281,10 +273,19 @@ class plgSystemFalangquickjump extends JPlugin
 
         $input = JFactory::getApplication()->input;
         $option = $input->get('option', false, 'cmd');
-        $view = $input->get('view', false, 'cmd');
+        $view = $input->get('view', 'default', 'cmd');
+
+        //load content element quickjump if exist first
+	    $falangManager = FalangManager::getInstance();
+	    $contentElmentName = str_replace('com_','',$option);
+	    $contentElement = $falangManager->getContentElement($contentElmentName);
+	    if (isset($contentElement)){
+		    $quickjumps = $contentElement->getQuickjumps();
+	    }
+
+
 
         //load supported component
-        //        $falangManager = FalangManager::getInstance();
         //        $contentElements = $falangManager->getContentElements();
 
         //        $value = array();
@@ -299,9 +300,16 @@ class plgSystemFalangquickjump extends JPlugin
         $component_list = $params->get('component_list');
         $value = explode("\r\n",$component_list);
 
+        //Add quickjump from content element to the last element , so they can be overrided.
+        if (isset($quickjumps)){
+	        $value = array_merge($value,$quickjumps);
+        }
+
         $components =$value;
         $mapping=null;
         foreach ($components as $component){
+        	//if empty line go to next
+	        if (empty($component)){continue;}
             $map = explode("#",$component);
             $mapviews = explode(',',$map[3]);
             $mpvcnt = count($mapviews);

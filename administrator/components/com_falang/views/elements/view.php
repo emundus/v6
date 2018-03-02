@@ -1,13 +1,13 @@
 <?php
 /**
- * @package     FaLang for Joomla!
+ * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2012-2013. All rights reserved.
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
-// Check to ensure this file is included in Joomla!
-defined( '_JEXEC' ) or die( 'Restricted access' );
+// No direct access to this file
+defined('_JEXEC') or die;
 
 JLoader::import( 'views.default.view',FALANG_ADMINPATH);
 
@@ -41,32 +41,21 @@ class ElementsViewElements extends FalangViewDefault
 	protected function addToolbar() {
 		// Set toolbar items for the page
 		JToolBarHelper::custom("elements.installer","archive","archive", JText::_( 'COM_FALANG_INSTALL' ),false);
-        if (FALANG_J30) {
-            JToolBarHelper::custom("elements.detail","eye","eye", JText::_( 'COM_FALANG_DETAIL' ),true);
-        } else {
-            JToolBarHelper::custom("elements.detail","preview","preview", JText::_( 'COM_FALANG_DETAIL' ),true);
-        }
+        JToolBarHelper::custom("elements.detail","eye","eye", JText::_( 'COM_FALANG_DETAIL' ),true);
+
 		JToolBarHelper::deleteList(JText::_("COM_FALANG_TRANSLATION_DELETE_MSG"), "elements.remove");
 		JToolBarHelper::help( 'screen.elements', true);
 
-        if (FALANG_J30) {
-            JHtmlSidebar::setAction('index.php?option=com_falang&view=element');
+		JHtmlSidebar::setAction('index.php?option=com_falang&view=element');
 
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTROL_PANEL'), 'index.php?option=com_falang');
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_TRANSLATION'), 'index.php?option=com_falang&amp;task=translate.overview');
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_ORPHANS'), 'index.php?option=com_falang&amp;task=translate.orphans');
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTENT_ELEMENTS'), 'index.php?option=com_falang&amp;task=elements.show', true);
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_HELP_AND_HOWTO'), 'index.php?option=com_falang&amp;task=help.show', false);
+		JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTROL_PANEL'), 'index.php?option=com_falang');
+		JHtmlSidebar::addEntry(JText::_('COM_FALANG_TRANSLATION'), 'index.php?option=com_falang&amp;task=translate.overview');
+		JHtmlSidebar::addEntry(JText::_('COM_FALANG_ORPHANS'), 'index.php?option=com_falang&amp;task=translate.orphans');
+		JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTENT_ELEMENTS'), 'index.php?option=com_falang&amp;task=elements.show', true);
+		JHtmlSidebar::addEntry(JText::_('COM_FALANG_HELP_AND_HOWTO'), 'index.php?option=com_falang&amp;task=help.show', false);
 
-            $this->sidebar = JHtmlSidebar::render();
+		$this->sidebar = JHtmlSidebar::render();
 
-        } else {
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_CONTROL_PANEL'), 'index.php?option=com_falang');
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_TRANSLATION'), 'index.php?option=com_falang&amp;task=translate.overview');
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_ORPHANS'), 'index.php?option=com_falang&amp;task=translate.orphans');
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_CONTENT_ELEMENTS'), 'index.php?option=com_falang&amp;task=elements.show', true);
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_HELP_AND_HOWTO'), 'index.php?option=com_falang&amp;task=help.show', false);
-        }
 
 	}
 	

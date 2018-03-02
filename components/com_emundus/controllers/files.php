@@ -1183,8 +1183,12 @@ class EmundusControllerFiles extends JControllerLegacy
         $nbcol      = $jinput->getVar('nbcol', 0);
         $elts       = $jinput->getString('elts', null);
         $objs       = $jinput->getString('objs', null);
+        $opts       = $jinput->getString('opts', null);
         $methode    = $jinput->getString('methode', null);
 
+       
+        $opts = $this->getcolumn($opts);
+       
         $col    = $this->getcolumn($elts);
         $colsup = $this->getcolumnSup($objs);
         $colOpt = array();
@@ -1197,15 +1201,13 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $h_files = new EmundusHelperFiles;
         $elements = $h_files->getElementsName(implode(',',$col));
-
+        //var_dump($elements);die;
         // re-order elements
         $ordered_elements = array();
         foreach ($col as $c) {
             $ordered_elements[$c] = $elements[$c];
         }
-
         $fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
-
         // On met a jour la liste des fnums traités
         $fnums = array();
         foreach ($fnumsArray as $fnum) {
@@ -1222,8 +1224,13 @@ class EmundusControllerFiles extends JControllerLegacy
                     if (count($photos) > 0) {
                         $pictures = array();
                         foreach ($photos as $photo) {
+
                             $folder = $baseUrl.EMUNDUS_PATH_REL.$photo['user_id'];
-                            $pictures[$photo['fnum']] = '<a href="'.$folder.'/'.$photo['filename'].'" target="_blank"><img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></a>';
+                           
+                            $link = '=HYPERLINK("'.JURI::base(). $folder.'/tn_'.$photo['filename'] . '","'.$photo['filename'].'")';
+                            $pictures[$photo['fnum']] = $link;
+                            //$pictures[$photo['fnum']] = '<a href="'.$folder.'/'.$photo['filename'].'" target="_blank"><img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></a>';
+
                         }
                         $colOpt['PHOTO'] = $pictures;
                     } else {
@@ -1257,6 +1264,9 @@ class EmundusControllerFiles extends JControllerLegacy
                 case 'evaluators':
                     $colOpt['evaluators'] = $h_files->createEvaluatorList($col[1], $m_files);
                     break;
+                case 'tags':
+                    $colOpt['tags'] = $m_files->getTagsByFnum($fnums);
+                    break;
             }
         }
         $status = $m_files->getStatusByFnums($fnums);
@@ -1264,14 +1274,30 @@ class EmundusControllerFiles extends JControllerLegacy
         $element_csv = array();
         $i = $start;
 
+
         // On traite les en-têtes
         if ($start == 0) {
-            $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('CAMPAIGN')."\t";
+            $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('PROGRAMME')."\t";
             $nbcol = 6;
             foreach ($ordered_elements as $fKey => $fLine) {
-                if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id') {
-                    $line .= $fLine->element_label . "\t";
-                    $nbcol++;
+                if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_label != 'Programme') {
+                    if(count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted"){
+                        if(in_array("form-title", $opts) && in_array("form-group", $opts)){
+                            $line .= $fLine->form_label." > ".$fLine->group_label." > ".$fLine->element_label. "\t";
+                            $nbcol++;
+                        }elseif(count($opts) == 1){
+                            if(in_array("form-title", $opts)){
+                                $line .= $fLine->form_label." > ".$fLine->element_label. "\t";
+                                $nbcol++;
+                            }elseif(in_array("form-group", $opts)){
+                                $line .= $fLine->group_label." > ".$fLine->element_label. "\t";
+                                $nbcol++;
+                            }
+                        }
+                    }else{
+                        $line .= $fLine->element_label. "\t";
+                        $nbcol++;
+                    }
                 }
             }
             foreach ($colsup as $kOpt => $vOpt) {
@@ -1286,7 +1312,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $element_csv[] = $line;
             $line = "";
         }
-
+        //var_dump($fnumsArray);die;
         // On parcours les fnums
         foreach ($fnumsArray as $fnum) {
             // On traite les données du fnum
@@ -1298,7 +1324,8 @@ class EmundusControllerFiles extends JControllerLegacy
                         $line .= $status[$v]['value']."\t";
                         $uid = intval(substr($v, 21, 7));
                         $userProfil = JUserHelper::getProfile($uid)->emundus_profile;
-                        $line .= strtoupper($userProfil['lastname'])."\t";
+                        $lastname = (!empty($userProfil['lastname']))?$userProfil['lastname']:JFactory::getUser($uid)->name;
+                        $line .= $lastname."\t";
                         $line .= $userProfil['firstname']."\t";
                     } else $line .= $v."\t";
 
@@ -1364,12 +1391,25 @@ class EmundusControllerFiles extends JControllerLegacy
                         else
                             $line .= "\t";
                         break;
+
+                    case "tags":
+                        $tags = "";
+
+                        foreach ($colOpt['tags'] as $tag) {
+                            if ($tag['fnum'] == $fnum['fnum']) {
+                                $tags .= $tag['label'] . ", ";
+                            }
+                        }
+                        $line .= $tags . "\t";
+
+                        break;
                 }
             }
             // On met les données du fnum dans le CSV
             $element_csv[] = $line;
             $line = "";
             $i++;
+
         }
         // On remplit le fichier CSV
         foreach ($element_csv as $data) {
@@ -1526,6 +1566,7 @@ class EmundusControllerFiles extends JControllerLegacy
         for ($i=ord("A");$i<=ord("Z");$i++) {
             $colonne_by_id[]=chr($i);
         }
+        
         for ($i=ord("A");$i<=ord("Z");$i++) {
             for ($j=ord("A");$j<=ord("Z");$j++) {
                 $colonne_by_id[]=chr($i).chr($j);
@@ -1599,10 +1640,14 @@ class EmundusControllerFiles extends JControllerLegacy
                 $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i].'1')->setConditionalStyles($conditionalStyles);
                 $objPHPExcel->getActiveSheet()->duplicateConditionalStyle($conditionalStyles,$colonne_by_id[$i].'1:'.$colonne_by_id[$i].($nbrow+ 1));
             }
-
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         }
+        
+       
+        
+        
 
+        
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         $objWriter->save(JPATH_BASE.DS.'tmp'.DS.JFactory::getUser()->id.'_extraction.xls');
         $link = JFactory::getUser()->id.'_extraction.xls';
@@ -1614,7 +1659,6 @@ class EmundusControllerFiles extends JControllerLegacy
         $session     = JFactory::getSession();
         $session->clear('fnums_export');
         $result = array('status' => true, 'link' => $link);
-
         echo json_encode((object) $result);
         exit();
 
@@ -2441,5 +2485,80 @@ class EmundusControllerFiles extends JControllerLegacy
 
         echo json_encode((object)(array('status' => true, 'html' => $html, 'nbprg' => $nbprg)));
         exit;
+    }
+    public function getProgramCampaigns(){
+        $html = '';
+        $session     = JFactory::getSession();
+        $filt_params = $session->get('filt_params');
+        $h_files = new EmundusHelperFiles;
+        $jinput = JFactory::getApplication()->input;
+        $code       = $jinput->getString('code', null);
+        $campaigns = $h_files->getProgramCampaigns($code);
+        
+        $nbcamp = count($campaigns);
+        foreach ($campaigns as $c) {
+            if ($nbcamp == 1) {
+                $html .= '<option value="'.$c->year.'" selected>'.$c->label.' - '.$c->training.'('.$c->year.')</option>';
+            } else {
+                $html .= '<option value="'.$c->year.'">'.$c->label.' - '.$c->training.'('.$c->year.')</option>';
+            }
+        }
+
+        echo json_encode((object)(array('status' => true, 'html' => $html, 'nbcamp' => $nbcamp)));
+        exit;
+    }
+
+    public function saveExcelFilter()
+    {
+        $db = JFactory::getDBO();
+        $jinput         = JFactory::getApplication()->input;
+        $name           = $jinput->getString('filt_name', null);
+        $current_user   = JFactory::getUser();
+        $user_id        = $current_user->id;
+        $itemid         = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $params       = $jinput->getString('params', null);
+        $constraints    = array('excelfilter'=>$params);
+
+        $constraints = json_encode($constraints);
+
+        if (empty($itemid))
+            $itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
+
+        $time_date = (date('Y-m-d H:i:s'));
+
+        $query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('".$time_date."',".$user_id.",'".$name."',".$db->quote($constraints).",".$itemid.")";
+        $db->setQuery( $query );
+
+        try {
+
+            $db->Query();
+            $query = 'select f.id, f.name from #__emundus_filters as f where f.time_date = "'.$time_date.'" and user = '.$user_id.' and name="'.$name.'" and item_id="'.$itemid.'"';
+            //echo $query;
+            $db->setQuery($query);
+            $result = $db->loadObject();
+            echo json_encode((object)(array('status' => true, 'filter' => $result)));
+            exit;
+
+        } catch (Exception $e) {
+            echo json_encode((object)(array('status' => false)));
+            exit;
+        }
+    }
+    public function getExportExcelFilter(){
+        $db = JFactory::getDBO();
+        $user_id   = JFactory::getUser()->id;
+        $session     = JFactory::getSession();
+
+        try {
+            $query = 'SELECT * from #__emundus_filters  where user = '.$user_id.' and constraints LIKE "%excelfilter%"';
+            $db->setQuery($query);
+            $result = $db->loadObjectList();
+
+            echo json_encode((object)(array('status' => true, 'filter' => $result)));
+            exit;
+        } catch (Exception $e) {
+            echo json_encode((object)(array('status' => false)));
+            exit;
+        }
     }
 }

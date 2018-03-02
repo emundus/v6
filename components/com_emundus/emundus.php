@@ -34,6 +34,8 @@ JLog::addLogger(
     array('com_emundus.email')
 );
 // translation for javacript
+JText::script('COM_EMUNDUS_EX');
+JText::script('JTAG');
 JText::script('COM_EMUNDUS_ACCESS_FILE');
 JText::script('COM_EMUNDUS_ACCESS_ATTACHMENT');
 JText::script('COM_EMUNDUS_ACCESS_TAGS');
@@ -53,13 +55,16 @@ JText::script('COM_EMUNDUS_ACCESS_ACCESS_FILE');
 JText::script('COM_EMUNDUS_CONFIRM_DELETE_FILE');
 JText::script('COM_EMUNDUS_SHOW_ELEMENTS');
 JText::script('COM_EMUNDUS_CHOOSE_PRG');
+JText::script('COM_EMUNDUS_CHOOSE_CAMP');
 JText::script('COM_EMUNDUS_CHOOSE_PRG_DEFAULT');
 JText::script('COM_EMUNDUS_CHOOSE_FORM_ELEM');
+JText::script('COM_EMUNDUS_CHOOSE_EVAL_FORM_ELEM');
 JText::script('COM_EMUNDUS_CHOOSEN_FORM_ELEM');
 Jtext::script('COM_EMUNDUS_CHOOSE_ADMISSION_FORM_ELEM');
 Jtext::script('COM_EMUNDUS_CHOOSEN_ADMISSION_FORM_ELEM');
 Jtext::script('COM_EMUNDUS_CHOOSE_DECISION_FORM_ELEM');
 Jtext::script('COM_EMUNDUS_CHOOSEN_DECISION_FORM_ELEM');
+JText::script('COM_EMUNDUS_CHOOSE_OTHER_COL');
 JText::script('COM_EMUNDUS_PHOTO');
 JText::script('COM_EMUNDUS_FORMS');
 JText::script('COM_EMUNDUS_ATTACHMENT');
@@ -76,6 +81,16 @@ JText::script('COM_EMUNDUS_DOWNLOAD_ZIP');
 JText::script('COM_EMUNDUS_PUBLISH');
 JText::script('COM_EMUNDUS_COPY_FILE');
 JText::script('COM_EMUNDUS_SHARE_FILE');
+JText::script('PLEASE_SELECT_FILTER');
+JText::script('DELETE');
+JText::script('FILTER_SAVED');
+JText::script('FILTER_DELETED');
+JText::script('SQL_ERROR');
+JText::script('COM_EMUNDUS_FORM_TITLE');
+JText::script('COM_EMUNDUS_FORM_GROUP');
+JText::script('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION');
+JText::script('COM_EMUNDUS_CHOOSE_OTHER_OPTION');
+
 
 JText::script('LOADING');
 JText::script('TITLE');
@@ -247,7 +262,7 @@ JHtml::styleSheet( 'media/com_emundus/css/emundus_files.css');
 $app = JFactory::getApplication();
 
 // Require specific controller if requested
-if($controller = $app->input->get('controller', '', 'WORD')) {
+if ($controller = $app->input->get('controller', '', 'WORD')) {
     $path = JPATH_COMPONENT.DS.'controllers'.DS.$controller.'.php';
     if (file_exists($path)) {
         require_once $path;
@@ -259,7 +274,7 @@ if($controller = $app->input->get('controller', '', 'WORD')) {
 // Create the controller
 $classname    = 'EmundusController'.$controller;
 $controller   = new $classname();
- 
+
 $user = JFactory::getUser();
 $name = $app->input->get('view', '', 'WORD');
 
@@ -267,9 +282,9 @@ if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name
     $controller->execute($app->input->get('task', '', 'WORD'));
 } elseif ($user->guest && $name != 'emailalert' && $name !='programme') {
     $controller->setRedirect('index.php', JText::_("ACCESS_DENIED"), 'error');
-} else { 
+} else {
     // Perform the Request task
-    $controller->execute( $app->input->get('task', '', 'WORD') );
+    $controller->execute($app->input->get('task', '', 'WORD'));
 }
 // Redirect if set by the controller
 $controller->redirect();

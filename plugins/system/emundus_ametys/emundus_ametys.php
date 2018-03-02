@@ -36,7 +36,7 @@ class  plgSystemEmundus_ametys extends JPlugin
      * @param   array  $config  An array that holds the plugin configuration
      * @since   1.0
      */
-    function plgSystemEmundus_ametys(& $subject, $config)
+    function __construct(& $subject, $config)
     {
         parent::__construct($subject, $config);
         $this->loadLanguage( );

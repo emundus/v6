@@ -1,27 +1,10 @@
 <?php
 /**
- * Falang component
- *
- * @package Falang
- * @link http://www.faboba.com
- * @copyright	Copyright (C) 2012 Faboba. All rights reserved.
- * @license GNU General Public License v3
- *
- * This file is part of Falang.
- *
- * Falang is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 of the License.
- *
- * Falang is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Falang.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+  */
 
 // ensure this file is being included by a parent file
 defined( '_JEXEC' ) or die;
@@ -38,6 +21,7 @@ class Falang {
 		Falang::translateList($rows,  $language , $tableArray);
 		return $rows;
 	}
+
 
 	/**
 	 * Translates a list of items
@@ -140,6 +124,16 @@ class Falang {
 	public static function translateListWithIDs( &$rows, $ids, $reference_table, $language, $refTablePrimaryKey="id", & $tableArray, $querySQL, $allowfallback=true )
 	{
         $params = JComponentHelper::getParams('com_falang');
+
+		//v2.2.1
+		//use this to translate categories routes
+		if ($reference_table == 'categories'){
+			$jfm = FalangManager::getInstance();
+			$tmpLang = $jfm::getLanguageForUrlTranslation();
+			if (!empty($tmpLang)){
+				$language = $tmpLang;
+			}
+		}
 
 		//print " translateListWithIDs for ids=$ids refTablePrimaryKey=$refTablePrimaryKey<br>" ;
 		//$debug = $config->get("debug") == 1 ? true : false;

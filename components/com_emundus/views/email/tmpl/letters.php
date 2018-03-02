@@ -5,12 +5,11 @@ $document = JFactory::getDocument();
 
 JHTML::_('behavior.modal'); 
 JHTML::_('behavior.tooltip'); 
-JHTML::stylesheet( 'emundus.css', 'media/com_emundus/css/' );
-//JHTML::stylesheet( 'light2.css', 'templates/rt_afterburner/css/' );
-JHTML::stylesheet( 'general.css', 'templates/system/css/' );
-JHTML::stylesheet( 'system.css', 'templates/system/css/' );
+JHTML::stylesheet( 'media/com_emundus/cssemundus.css/' );
+JHTML::stylesheet( 'templates/system/css/general.css' );
+JHTML::stylesheet( 'templates/system/csssystem.css/' );
 // AJAX upload
-JHTML::script('webtoolkit.aim.js', 'media/com_emundus/js/');
+JHTML::script('media/com_emundus/js/webtoolkit.aim.js');
 
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');

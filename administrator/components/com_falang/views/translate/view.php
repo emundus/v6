@@ -1,15 +1,13 @@
 <?php
 /**
- * @version		1.2.0
- * @package		Joomla
- * @subpackage	Falang
- * @author      Stéphane Bouey
- * @copyright	Copyright (C) 2012-2013 Faboba
- * @license		GNU/GPL, see LICENSE.php
+ * @package     Falang for Joomla!
+ * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
  */
 
-// Check to ensure this file is included in Joomla!
-defined( '_JEXEC' ) or die( 'Restricted access' );
+// No direct access to this file
+defined('_JEXEC') or die;
 
 JLoader::import( 'views.default.view',FALANG_ADMINPATH);
 
@@ -17,8 +15,6 @@ JLoader::import( 'views.default.view',FALANG_ADMINPATH);
  * View class for translation overview
  *
  * @static
- * @package		Joom!Fish
- * @subpackage	translation
  * @since 2.0
  */
 class TranslateViewTranslate extends FalangViewDefault
@@ -122,38 +118,28 @@ class TranslateViewTranslate extends FalangViewDefault
 		JToolBarHelper::deleteList(JText::_( 'COM_FALANG_TRANSLATION_DELETE_MSG' ), "translate.remove");
 		JToolBarHelper::help( 'screen.translate.overview', true);
 
-        if (FALANG_J30) {
-            JHtmlSidebar::setAction('index.php?option=com_falang&view=translate');
-            //set sidebar items for the page
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTROL_PANEL'), 'index.php?option=com_falang', false);
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_TRANSLATION'), 'index.php?option=com_falang&amp;task=translate.overview', true);
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_ORPHANS'), 'index.php?option=com_falang&amp;task=translate.orphans');
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTENT_ELEMENTS'), 'index.php?option=com_falang&amp;task=elements.show', false);
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_HELP_AND_HOWTO'), 'index.php?option=com_falang&amp;task=help.show', false);
-        } else {
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_CONTROL_PANEL'), 'index.php?option=com_falang', false);
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_TRANSLATION'), 'index.php?option=com_falang&amp;task=translate.overview', true);
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_ORPHANS'), 'index.php?option=com_falang&amp;task=translate.orphans');
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_CONTENT_ELEMENTS'), 'index.php?option=com_falang&amp;task=elements.show', false);
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_HELP_AND_HOWTO'), 'index.php?option=com_falang&amp;task=help.show', false);
-        }
+        JHtmlSidebar::setAction('index.php?option=com_falang&view=translate');
+        //set sidebar items for the page
+        JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTROL_PANEL'), 'index.php?option=com_falang', false);
+        JHtmlSidebar::addEntry(JText::_('COM_FALANG_TRANSLATION'), 'index.php?option=com_falang&amp;task=translate.overview', true);
+        JHtmlSidebar::addEntry(JText::_('COM_FALANG_ORPHANS'), 'index.php?option=com_falang&amp;task=translate.orphans');
+        JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTENT_ELEMENTS'), 'index.php?option=com_falang&amp;task=elements.show', false);
+        JHtmlSidebar::addEntry(JText::_('COM_FALANG_HELP_AND_HOWTO'), 'index.php?option=com_falang&amp;task=help.show', false);
 
         //set filter for the page
-        if (FALANG_J30) {
-            if (isset($this->filterlist) && count($this->filterlist)>0){
-                foreach ($this->filterlist as $fl){
-                    if (is_array($fl) && !empty($fl['position']) && $fl['position'] == 'sidebar')
-                    JHtmlSidebar::addFilter(
-                        $fl["title"],
-                        $fl["type"].'_filter_value',
-                        JHtml::_('select.options', $fl["options"], 'value', 'text', $this->state->get('filter.'.$fl["type"]), true)
-                    );
-                }
+        if (isset($this->filterlist) && count($this->filterlist)>0){
+            foreach ($this->filterlist as $fl){
+                if (is_array($fl) && !empty($fl['position']) && $fl['position'] == 'sidebar')
+                JHtmlSidebar::addFilter(
+                    $fl["title"],
+                    $fl["type"].'_filter_value',
+                    JHtml::_('select.options', $fl["options"], 'value', 'text', $this->state->get('filter.'.$fl["type"]), true)
+                );
             }
-
-            $this->sidebar = JHtmlSidebar::render();
-
         }
+
+        $this->sidebar = JHtmlSidebar::render();
+
 
     }
 
@@ -221,38 +207,27 @@ class TranslateViewTranslate extends FalangViewDefault
 		JToolBarHelper::deleteList(JText::_('COM_FALANG_TRANSLATION_DELETE_MSG'), "translate.removeorphan");
 		JToolBarHelper::help( 'screen.translate.orphans', true);
 
-        if (FALANG_J30){
-            JHtmlSidebar::setAction('index.php?option=com_falang&view=translate');
+        JHtmlSidebar::setAction('index.php?option=com_falang&view=translate');
 
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTROL_PANEL'), 'index.php?option=com_falang', false);
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_TRANSLATION'), 'index.php?option=com_falang&amp;task=translate.overview', false);
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_ORPHANS'), 'index.php?option=com_falang&amp;task=translate.orphans', true);
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTENT_ELEMENTS'), 'index.php?option=com_falang&amp;task=elements.show', false);
-            JHtmlSidebar::addEntry(JText::_('COM_FALANG_HELP_AND_HOWTO'), 'index.php?option=com_falang&amp;task=help.show', false);
-        } else {
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_CONTROL_PANEL'), 'index.php?option=com_falang', false);
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_TRANSLATION'), 'index.php?option=com_falang&amp;task=translate.overview', false);
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_ORPHANS'), 'index.php?option=com_falang&amp;task=translate.orphans', true);
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_CONTENT_ELEMENTS'), 'index.php?option=com_falang&amp;task=elements.show', false);
-            JSubMenuHelper::addEntry(JText::_('COM_FALANG_HELP_AND_HOWTO'), 'index.php?option=com_falang&amp;task=help.show', false);
-        }
+        JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTROL_PANEL'), 'index.php?option=com_falang', false);
+        JHtmlSidebar::addEntry(JText::_('COM_FALANG_TRANSLATION'), 'index.php?option=com_falang&amp;task=translate.overview', false);
+        JHtmlSidebar::addEntry(JText::_('COM_FALANG_ORPHANS'), 'index.php?option=com_falang&amp;task=translate.orphans', true);
+        JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTENT_ELEMENTS'), 'index.php?option=com_falang&amp;task=elements.show', false);
+        JHtmlSidebar::addEntry(JText::_('COM_FALANG_HELP_AND_HOWTO'), 'index.php?option=com_falang&amp;task=help.show', false);
 
         //set filter for the page
-        if (FALANG_J30) {
-            if (isset($this->filterlist) && count($this->filterlist)>0){
-                foreach ($this->filterlist as $fl){
-                    if (is_array($fl) && $fl['position'] == 'sidebar')
-                        JHtmlSidebar::addFilter(
-                            $fl["title"],
-                            $fl["type"].'_filter_value',
-                            JHtml::_('select.options', $fl["options"], 'value', 'text', $this->state->get('filter.'.$fl["type"]), true)
-                        );
-                }
+        if (isset($this->filterlist) && count($this->filterlist)>0){
+            foreach ($this->filterlist as $fl){
+                if (is_array($fl) && $fl['position'] == 'sidebar')
+                    JHtmlSidebar::addFilter(
+                        $fl["title"],
+                        $fl["type"].'_filter_value',
+                        JHtml::_('select.options', $fl["options"], 'value', 'text', $this->state->get('filter.'.$fl["type"]), true)
+                    );
             }
-
-            $this->sidebar = JHtmlSidebar::render();
-
         }
+
+        $this->sidebar = JHtmlSidebar::render();
 
 	}
 
